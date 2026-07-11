@@ -28,6 +28,6 @@
 
 - [母版清单](../../docs/standards/current/03_母版清单.md)
 - [全量母版生成提示词](../../docs/standards/current/04_全量母版生成提示词.md)
-- [V2 位图母版首轮验收报告](../../docs/standards/current/07_V2位图母版首轮验收报告.md)
+- [V2 位图母版首轮验收报告](../../docs/standards/current/71_验收报告_V2位图母版首轮.md)
 
 新图片通过母版 P0 验收后，按 C01、C02、M01–M16 编号替换或补充当前资产。未通过验收的生成图不得作为视频强参考。

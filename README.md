@@ -20,7 +20,9 @@
 5. [尺寸与比例规范](docs/standards/current/05_尺寸与比例规范.md)
 6. [巨大物品选题库](docs/standards/current/06_巨大物品选题库.md)
 7. [配乐与音效执行规范](docs/standards/current/07_配乐与音效执行规范.md)
-8. [版本迁移说明](docs/standards/current/99_版本迁移说明.md)
+8. [A-Lite 低成本生产规范](docs/standards/current/08_A-Lite低成本生产规范V1.0.md)
+9. [成片评审与发布验收规范](docs/standards/current/09_成片评审与发布验收规范.md)
+10. [版本迁移说明](docs/standards/current/99_版本迁移说明.md)
 
 ## 目录
 
@@ -29,6 +31,7 @@ assets/
   masters/              视觉母版及资产状态说明
 docs/
   standards/current/    main 唯一生效的完整生产规范
+  strategy/             IP 路线图与战略层文档
   research/             外部作品与镜头语言研究
 episodes/
   giant-delivery-box/   巨大快递盒复盘、重制执行表和旧版交付证据
