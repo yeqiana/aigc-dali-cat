@@ -19,7 +19,8 @@
 4. [全量母版生成提示词](docs/standards/current/04_全量母版生成提示词.md)
 5. [尺寸与比例规范](docs/standards/current/05_尺寸与比例规范.md)
 6. [巨大物品选题库](docs/standards/current/06_巨大物品选题库.md)
-7. [版本迁移说明](docs/standards/current/99_版本迁移说明.md)
+7. [配乐与音效执行规范](docs/standards/current/07_配乐与音效执行规范.md)
+8. [版本迁移说明](docs/standards/current/99_版本迁移说明.md)
 
 ## 目录
 
@@ -42,6 +43,7 @@ episodes/
 - 每个动作片段包含预备、爆发和结果。
 - 角色使用动画电影头身、块状绒毛和夸张身体表演。
 - 结尾包含第二次翻转或循环动作。
+- 最终视频提示词必须包含完整的动作同步管弦乐、因果音效、高潮前静默和循环尾音设计。
 
 ## 巨大快递盒
 
