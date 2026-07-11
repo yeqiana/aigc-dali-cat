@@ -53,6 +53,8 @@ docs/standards/current/00_当前版本与执行入口.md
 - `docs/standards/current/07_配乐与音效执行规范.md`
 - `docs/standards/current/08_A-Lite低成本生产规范V1.0.md`
 - `docs/standards/current/09_成片评审与发布验收规范.md`
+- `docs/standards/current/10_通用场景母版验收标准_V1.1.md`
+- `docs/standards/current/11_通用室内场景平面动线图生成规范.md`
 
 旧 `02_单集生产表.md` 已停用，仅作为模板分流入口。
 
