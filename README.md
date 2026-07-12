@@ -1,85 +1,40 @@
-# 《啾啾和大力》AI 短视频资产库
+# 《啾啾和大力》AI 动画生产仓库
 
-本仓库管理《啾啾和大力》的当前生产规范、视觉母版、战略路线图、单集执行表、复盘和交付资产。
+本仓库管理《啾啾和大力》的生产规范、视觉母版、Storyboard（故事板）导演层、单集执行表、路线图、验收和交付资产。
 
----
+## 当前版本与首集
 
-## 当前体系
+- 当前体系：V2.2 Storyboard 导演层升级；
+- 当前首集：EP001《大力挑战世界最大坚果》（`episodes/giant-nut/`）；
+- 当前状态：已立项，待生成 6 张独立 Storyboard 图；未制作、未验收、未发布；
+- 原《纸袋突然鼓起来》保留为候选、未排期历史方案，不再是 EP001。
 
-当前使用 V4.0 分级生产体系：
-
-- A-Lite：6—8 秒，1 段动态，1—2 张关键帧，验证新题材；
-- B：8—12 秒，1—2 段动态，五集连续故事；
-- C：10—15 秒以上，2—4 段动态，只重制数据胜出题材。
-
-生产新内容从：
+核心公式：
 
 ```text
-docs/standards/current/00_当前版本与执行入口.md
+大力认真 → 啾啾直接 → 世界荒诞
+异常已发生 → 大力执行 → 啾啾偏离 → 物理失效 → 延迟反应 → 尾梗
 ```
 
-开始。
-
----
-
-## 当前执行顺序
+## 完整生产流程
 
 ```text
-禁重复检查
-→ 选择模式
-→ 复制 02A / 02B / 02C
-→ 使用角色和比例 P0
-→ 生成
-→ 分模式验收
-→ 发布
-→ 数据复盘
+立项与禁重复 → Storyboard 导演表 → Storyboard 图 → Storyboard P0
+→ Keyframe（关键帧）计划 → Keyframe 生成与 P0 → 分段视频
+→ 配乐音效与剪辑 → 成片 P0 → 发布与数据复盘
 ```
 
----
+Storyboard 必须先于 Keyframe。A-Lite 默认 6 张 SB、合理范围 5—8 张；正式 KF 数量由风险决定，成本由复用、分段、剪辑与降级控制。
 
-## 当前关键文件
+## 主要入口
 
-- `docs/strategy/已发布内容与禁重复清单.md`
-- `docs/strategy/啾啾和大力_抖音100集IP路线图_低成本优化版V2.2.md`
-- `docs/standards/current/00_当前版本与执行入口.md`
-- `docs/standards/current/01_最终执行规范.md`
-- `docs/standards/current/02A_A-Lite单集生产表.md`
-- `docs/standards/current/02B_连续故事单集生产表.md`
-- `docs/standards/current/02C_精品重制单集生产表.md`
-- `docs/standards/current/03_母版清单.md`
-- `docs/standards/current/04_全量母版生成提示词.md`
-- `docs/standards/current/05_尺寸与比例规范.md`
-- `docs/standards/current/06_巨大物品选题库.md`
-- `docs/standards/current/07_配乐与音效执行规范.md`
-- `docs/standards/current/08_A-Lite低成本生产规范V1.0.md`
-- `docs/standards/current/09_成片评审与发布验收规范.md`
-- `docs/standards/current/10_通用场景母版验收标准_V1.1.md`
-- `docs/standards/current/11_通用室内场景平面动线图生成规范.md`
+- [当前版本与执行入口](docs/standards/current/00_当前版本与执行入口.md)
+- [最终执行规范](docs/standards/current/01_最终执行规范.md)
+- [A-Lite 单集生产表模板](docs/standards/current/02A_A-Lite单集生产表.md)
+- [Storyboard 生成规范](docs/standards/current/12_故事板（Storyboard）生成规范.md)
+- [已发布内容与禁重复清单](docs/strategy/已发布内容与禁重复清单.md)
+- [100 集路线图 V2.2](docs/strategy/啾啾和大力_抖音100集IP路线图_低成本优化版V2.2.md)
+- [EP001 单集目录](episodes/giant-nut/README.md)
+- [视觉母版说明](assets/masters/README.md)
 
-旧 `02_单集生产表.md` 已停用，仅作为模板分流入口。
-
----
-
-## 永久禁区
-
-不重做：
-
-- 帽子搭便车；
-- 巨大西瓜追逐；
-- 快递盒为家；
-- 蓝帽被带走、追帽、帽子作交通工具。
-
----
-
-## 当前生产阶段
-
-只制作首批 5 条 A-Lite。完成发布和复盘前，不批量生产第 6—10 条，不进入 B/C。
-
----
-
-## 分支
-
-- `main`：当前 V4.0 分级生产体系；
-- `1.0`：旧版快照，只查阅，不复制到当前生产。
-
-历史成片、关键帧和复盘保留，不删除。
+历史成片、失败候选、关键帧和复盘证据保留，不使用候选图覆盖当前 P0 强参考。
