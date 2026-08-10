@@ -2,9 +2,9 @@
 import os, json
 from PIL import Image, ImageDraw, ImageFont
 
-V3_DIR = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\douyin-horror-02\v3_final"
+V3_DIR = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\02_折多山守夜人\v3_final"
 OUT_DIR = os.path.join(V3_DIR, "subtitled")
-JSON_PATH = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\douyin-horror-02\scripts\sub_data.json"
+JSON_PATH = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\02_折多山守夜人\scripts\sub_data.json"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 with open(JSON_PATH, "r", encoding="utf-8") as f:

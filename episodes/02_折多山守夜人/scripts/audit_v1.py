@@ -1,8 +1,8 @@
-﻿import os, glob, sys
+import os, glob, sys
 from PIL import Image
 sys.stdout.reconfigure(encoding='utf-8')
 
-v1 = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\douyin-horror-02\v1_34ratio"
+v1 = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\02_折多山守夜人\v1_34ratio"
 files = sorted(glob.glob(os.path.join(v1, "*.png")))
 
 print("=== 比例检查 ===\n")

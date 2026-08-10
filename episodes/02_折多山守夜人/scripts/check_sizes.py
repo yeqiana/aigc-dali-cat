@@ -1,8 +1,8 @@
-﻿import os, glob, sys
+import os, glob, sys
 from PIL import Image
 sys.stdout.reconfigure(encoding='utf-8')
 
-img_dir = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\douyin-horror-02\images"
+img_dir = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\02_折多山守夜人\images"
 files = sorted(glob.glob(os.path.join(img_dir, "*.png")))
 
 bad = []

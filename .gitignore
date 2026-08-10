@@ -13,5 +13,9 @@ desktop.ini
 *.bak
 *.swp
 
+# Python build artifacts
+__pycache__/
+*.pyc
+
 # Codex tool output
 .codex/

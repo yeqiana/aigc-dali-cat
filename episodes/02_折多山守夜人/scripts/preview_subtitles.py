@@ -1,7 +1,7 @@
-﻿import os, glob
+import os, glob
 from PIL import Image, ImageDraw, ImageFont
 
-img_dir = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\douyin-horror-02\images"
+img_dir = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\02_折多山守夜人\images"
 out_dir = os.path.join(img_dir, "preview")
 os.makedirs(out_dir, exist_ok=True)
 font_path = r"C:\Windows\Fonts\msyh.ttc"

@@ -1,8 +1,8 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-V3_DIR = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\douyin-horror-02\v3_final"
+V3_DIR = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\02_折多山守夜人\v3_final"
 OUT_DIR = os.path.join(V3_DIR, "subtitled")
 os.makedirs(OUT_DIR, exist_ok=True)
 

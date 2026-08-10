@@ -3,7 +3,7 @@ import os, sys
 sys.stdout.reconfigure(encoding='utf-8')
 from PIL import Image, ImageDraw, ImageFont
 
-V3_DIR = r'D:\workspace\YeQianWorkSpace\yeqianigc-dali-cat\episodes\douyin-horror-023_final'
+V3_DIR = r'D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\02_折多山守夜人\v3_final'
 OUT_DIR = os.path.join(V3_DIR, 'subtitled')
 os.makedirs(OUT_DIR, exist_ok=True)
 

@@ -1,8 +1,8 @@
-﻿import os
+import os
 from PIL import Image
 
-old_dir = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\douyin-horror-02\images"
-new_dir = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\douyin-horror-02\images_916"
+old_dir = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\02_折多山守夜人\images"
+new_dir = r"D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\02_折多山守夜人\images_916"
 
 # Compare key images: 07 (12 bowls), 10 (grandfather on TV), 15 (she sits), 12 (dark grid)
 keys = ["图07.png", "图10.png", "图15.png", "图12.png"]
