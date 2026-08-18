@@ -19,3 +19,35 @@ __pycache__/
 
 # Codex tool output
 .codex/
+.playwright-cli/
+
+# Local workbench and review state
+workbench/tmp/
+.codex-review/
+
+# Git 大文件提交规则：默认全部忽略，仅白名单放行（见 AGENTS.md）
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.bmp
+*.ico
+*.tif
+*.tiff
+*.svg
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.wav
+*.mp3
+*.flac
+*.zip
+
+# 白名单 1：角色参考图
+!episodes/**/assets/characters/**
+
+# 白名单 2：竞品与账号截图
+!research/competitors/**
+!research/account/**
