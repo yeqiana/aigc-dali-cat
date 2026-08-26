@@ -19,6 +19,7 @@ STATES = [
 ]
 STATE_FILE = Path("meta/episode-state.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
+SYSTEM_VERSION = "1.1"
 
 
 def now_iso() -> str:
@@ -54,6 +55,7 @@ def init_cmd(args: argparse.Namespace) -> None:
     at = now_iso()
     state = {
         "schema_version": 1,
+        "tool_version": SYSTEM_VERSION,
         "episode_id": args.id,
         "series": args.series,
         "title": args.title,
@@ -69,6 +71,7 @@ def init_cmd(args: argparse.Namespace) -> None:
     }
     manifest = {
         "schema_version": 1,
+        "tool_version": SYSTEM_VERSION,
         "episode": {
             "id": args.id,
             "series": args.series,
@@ -96,6 +99,7 @@ def init_cmd(args: argparse.Namespace) -> None:
         "quality": {
             "production_gate": "pending",
             "propagation_score": None,
+            "s_min_score": None,
             "propagation_decision": "pending",
             "publish_decision": "hold",
             "decision_note": None,

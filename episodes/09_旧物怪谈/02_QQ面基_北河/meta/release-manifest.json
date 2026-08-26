@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "tool_version": "1.1",
+  "episode": {
+    "id": "09-02",
+    "series": "09_旧物怪谈",
+    "title": "2004年，QQ网友约我哥去村里面基",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "9:16"
+  },
+  "release": {
+    "version": "V0.9",
+    "body_frame_count": 20,
+    "publish_dir": null,
+    "body_glob": "[0-9][0-9].png",
+    "cover_path": null,
+    "contact_sheet_path": null
+  },
+  "artifacts": {
+    "story": "episodes/09_旧物怪谈/02_QQ面基_北河/docs/00_项目说明.md",
+    "storyboard": null,
+    "visual_spec": "episodes/09_旧物怪谈/02_QQ面基_北河/docs/03_画风锁定.md",
+    "captions": null,
+    "publish_copy": "episodes/09_旧物怪谈/02_QQ面基_北河/docs/05_发布信息.md",
+    "production_review": null,
+    "propagation_card": null
+  },
+  "quality": {
+    "production_gate": "pending",
+    "propagation_score": null,
+    "s_min_score": null,
+    "propagation_decision": "pending",
+    "publish_decision": "hold",
+    "decision_note": null
+  },
+  "publication": {
+    "platform": "douyin",
+    "actual_title": null,
+    "description": null,
+    "topics": [],
+    "pinned_comment": null,
+    "published_at": null,
+    "post_url": null
+  },
+  "data_review": {
+    "report_path": "reports/数据验收报告.md",
+    "completed_checkpoints": []
+  }
+}

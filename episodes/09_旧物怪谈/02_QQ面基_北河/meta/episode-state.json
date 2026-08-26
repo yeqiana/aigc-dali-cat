@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "tool_version": "1.1",
+  "episode_id": "09-02",
+  "series": "09_旧物怪谈",
+  "title": "2004年，QQ网友约我哥去村里面基",
+  "current_state": "IDEA_LOCKED",
+  "updated_at": "2026-08-26T14:30:05+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-08-26T14:30:05+08:00",
+      "mode": "migration",
+      "note": "历史项目首次接入 V1.1。当前 Git 追踪证据缺少 docs/01_最终发布文案.md、docs/02_最终分镜.md、docs/04_当前终审状态.md，因此按最高可验证阶段落在 IDEA_LOCKED；恢复正式分镜后再通过 transition 推进。"
+    }
+  ]
+}
