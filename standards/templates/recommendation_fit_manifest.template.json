@@ -1,0 +1,42 @@
+{
+  "_schema_version": "recommendation_fit_v1.4",
+  "_note": "新篇模板。历史作品不要批量倒填；未复盘字段保持 null/[]。",
+  "recommendation_fit": {
+    "audience": {
+      "core": [],
+      "adjacent": [],
+      "mismatch": [],
+      "score": null
+    },
+    "diversity": {
+      "compared_recent_works": [],
+      "max_similarity_score": null,
+      "risk_level": null,
+      "mechanism_copy_veto": false,
+      "dimensions": {
+        "core_anomaly_mechanism": null,
+        "story_engine": null,
+        "entry_mode": null,
+        "anomaly_carrier": null,
+        "visual_space": null,
+        "mid_escalation": null,
+        "climax_form": null,
+        "relationship": null,
+        "reality_residue_or_closure": null
+      },
+      "notes": []
+    },
+    "search": {
+      "primary_intents": [],
+      "core_entities": [],
+      "long_tail_queries": [],
+      "score": null,
+      "asset_type": null
+    },
+    "governance": {
+      "status": null,
+      "risks": [],
+      "review_notes": null
+    }
+  }
+}
