@@ -1,4 +1,4 @@
-# Episodes 轻量状态机与发布 Manifest V1.1
+# Episodes 轻量状态机与发布 Manifest V1.2
 
 本目录只解决三件事：
 
@@ -6,7 +6,7 @@
 2. `meta/release-manifest.json`：最终准备发布的版本到底是哪一套；
 3. `validate_episode.py`：在状态推进前检查必要证据、发布文案和本地发布资产。
 
-> V1.1 锁定：增加传播等级自动推导、仓库相对路径硬校验、状态历史合法性校验；不新增生产阶段。
+> V1.2 锁定：在 V1.1 状态机不变的前提下，为发布时间实验增加 `publication.timing_window` 与 `data_review.first_hour_metrics`。1h 只做冷启动实验快照，不新增生产阶段，也不替代 48h 的 `DATA_REVIEWED` 门禁。
 
 它不是新的创作规范。剧情、真实性、字幕、传播评分仍以仓库根目录 `standards/制作规范_正式版.md` 及其从属细则为准。
 
@@ -65,8 +65,10 @@ IDEA_LOCKED
 - 正文张数、发布目录、封面、总览；
 - 故事、分镜、画风、字幕、发布文案、制作验收、传播卡的文件路径；
 - 制作门禁、传播评分与发布决定；
-- 实际发布标题、简介、话题、置顶评论、发布时间；
-- 数据报告和已完成的 6h/24h/48h/7d 节点。
+- 实际发布标题、简介、话题、置顶评论、发布时间，以及可选 `timing_window`（A/B/C/D/organic）；
+- 数据报告和已完成的 6h/24h/48h/7d 正式节点；做发布时间实验时可额外记录 `1h` 与 `first_hour_metrics`。
+
+时间字段规则：`published_at` 是发布时间事实源；`weekday` 从 `published_at` 派生，不在 manifest 重复手填。`first_hour_metrics` 未按时采集就保持 `null`，不得用 6h 或当前总览倒填。
 
 所有路径统一写**仓库根目录相对路径**，例如：
 
@@ -155,10 +157,10 @@ validator 会随状态逐步加严：
 - `VISUAL_CALIBRATED+`：必须存在画风/真实性/校准证据；
 - `PRODUCTION_PASSED+`：必须存在制作验收文件，且 `production_gate=pass`；
 - `PUBLISH_READY+`：必须有最终版本、发布目录、封面、字幕、发布文案、传播卡、0–10 传播分、`s_min_score`、传播结论、实际标题/简介/话题，并且 `publish_decision=go`；
-- 传播结论由 `propagation_score + s_min_score` 按 V1.2 门槛自动推导，手填结论不一致直接失败；
+- 传播结论由 `propagation_score + s_min_score` 按推流规范当前门槛自动推导，手填结论不一致直接失败；
 - `conditional` / `not_recommended` 仍决定发布时，必须填写 `decision_note`，不能静默放行；
 - 非 `--metadata-only` 模式下，`PUBLISH_READY+` 会按 `body_glob` 实际数正文图，数量必须与 `body_frame_count` 一致；
-- `PUBLISHED+`：必须写 `published_at`；
+- `PUBLISHED+`：必须写 `published_at`；若参与 V1.3 发布时间实验，同时填写 `timing_window` 并在发布后约 1h 记录 `first_hour_metrics`；
 - `DATA_REVIEWED`：数据报告必须存在，且至少完成 `48h` 节点；
 - manifest 中所有文件/目录路径必须使用仓库根相对路径；绝对路径、Windows 盘符/UNC、逃出仓库根目录的路径直接失败；
 - state history 必须是合法的相邻前进/显式回退链；历史迁移允许首条 `mode=migration`；

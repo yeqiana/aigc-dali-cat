@@ -19,7 +19,7 @@ STATES = [
 ]
 STATE_FILE = Path("meta/episode-state.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
-SYSTEM_VERSION = "1.1"
+SYSTEM_VERSION = "1.2"
 
 
 def now_iso() -> str:
@@ -111,11 +111,26 @@ def init_cmd(args: argparse.Namespace) -> None:
             "topics": [],
             "pinned_comment": None,
             "published_at": None,
+            "timing_window": None,
             "post_url": None,
         },
         "data_review": {
             "report_path": "reports/数据验收报告.md",
             "completed_checkpoints": [],
+            "first_hour_metrics": {
+                "captured_at": None,
+                "exposure": None,
+                "plays": None,
+                "likes": None,
+                "comments": None,
+                "saves": None,
+                "shares": None,
+                "followers_gained": None,
+                "profile_visits": None,
+                "avg_images_viewed": None,
+                "swipe_away_rate": None,
+                "caption_expand_rate": None,
+            },
         },
     }
     save_json(state_path, state)
