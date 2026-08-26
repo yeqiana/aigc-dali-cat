@@ -73,7 +73,7 @@ IDEA_LOCKED
 所有路径统一写**仓库根目录相对路径**，例如：
 
 ```json
-"storyboard": "episodes/09_旧物怪谈/02_QQ面基_北河/docs/02_最终分镜.md"
+  "storyboard": "episodes/09_旧物怪谈/02_QQ面基_中元节/docs/02_最终分镜.md"
 ```
 
 这样不同剧集仍可保留自己原有的 `docs/`、`images/`、`v3_final/` 等目录，不强制迁移成统一大目录。
@@ -125,7 +125,7 @@ python episodes/_system/episode_state.py transition \
 
 ```bash
 python episodes/_system/validate_episode.py \
-  episodes/09_旧物怪谈/02_QQ面基_北河 \
+  episodes/09_旧物怪谈/02_QQ面基_中元节 \
   --target PRODUCTION_PASSED
 ```
 
@@ -134,7 +134,7 @@ python episodes/_system/validate_episode.py \
 ### 6. 验收一集
 
 ```bash
-python episodes/_system/validate_episode.py episodes/09_旧物怪谈/02_QQ面基_北河
+python episodes/_system/validate_episode.py episodes/09_旧物怪谈/02_QQ面基_中元节
 ```
 
 ### 7. 验收全部已接入状态机的剧集
