@@ -21,6 +21,9 @@ __pycache__/
 .codex/
 .playwright-cli/
 
+# Story 执行层升级包本地安装回执
+.story-upgrade-backups/
+
 # Local workbench and review state
 workbench/tmp/
 .codex-review/

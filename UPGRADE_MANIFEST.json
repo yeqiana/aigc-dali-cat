@@ -1,0 +1,160 @@
+{
+  "package": "aigc-dali-cat-story-skill-upgrade-v1.0",
+  "target_repo": "yeqiana/aigc-dali-cat",
+  "target_branch": "story",
+  "baseline_commit": "b742aca4ee2a1ece2d197cc1fff990d1559786f6",
+  "upgrade_type": "drop-in overlay; does not include existing episode image assets",
+  "file_count": 30,
+  "files": [
+    {
+      "path": ".agents/skills/dali-cat-story/SKILL.md",
+      "bytes": 201,
+      "sha256": "73371e6c1342079842b8310e1cbcc448bba6919308df45415bb241feb1bdcab1"
+    },
+    {
+      "path": ".codex/skills/dali-cat-story/SKILL.md",
+      "bytes": 201,
+      "sha256": "73371e6c1342079842b8310e1cbcc448bba6919308df45415bb241feb1bdcab1"
+    },
+    {
+      "path": ".github/workflows/story-gates.yml",
+      "bytes": 820,
+      "sha256": "adc63a349c606a9383edf4fa1b40dc90a6647ce458eafc8c129201d773571030"
+    },
+    {
+      "path": "INSTALL_WINDOWS.ps1",
+      "bytes": 1286,
+      "sha256": "4ee39a6ce868acd9bd26a490baa77080c3f45290ba1e790967a03d05522a9921"
+    },
+    {
+      "path": "README_UPGRADE.md",
+      "bytes": 3379,
+      "sha256": "dd38bc29bf1f8a4e07eb5614bebf615c7a4cb6aa2570290f91b1fd8f9f3c5f6c"
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 4052,
+      "sha256": "495cc3583b5a76ffe639953619025aa590ddd2a3eb9402734e84e3f6eb963409"
+    },
+    {
+      "path": "install.sh",
+      "bytes": 1134,
+      "sha256": "01a6ff4ec7fc87cb7b9790d3042b1b946c37572afbca4f164a061a10f3592221"
+    },
+    {
+      "path": "skills/dali-cat-story/SKILL.md",
+      "bytes": 1516,
+      "sha256": "505cc82d05e62684c5c334005ed3ed1307ef269f849d7672f6fc2dd18afde06f"
+    },
+    {
+      "path": "skills/dali-cat-story/references/authority-map.md",
+      "bytes": 935,
+      "sha256": "593868cad8ffd18c89999035d467ad55f0848302738df5a0eee8b0dd8e7118d3"
+    },
+    {
+      "path": "skills/dali-cat-story/references/lock-edit-protocol.md",
+      "bytes": 1055,
+      "sha256": "0f6f8f1a259c1dad44e21758ccd85275419387560a1d0a7676abb28f69851aa8"
+    },
+    {
+      "path": "skills/dali-cat-story/references/review-gates.md",
+      "bytes": 1203,
+      "sha256": "fc7fac8e37338cf485add7ed2a4fe45cc6cd5d03bc9ad0df0fc7b4857ae081b0"
+    },
+    {
+      "path": "skills/dali-cat-story/references/story-gates.md",
+      "bytes": 988,
+      "sha256": "833ba1b68892732e293c410fad7938e23b77ce9689f579653894939c37b9d307"
+    },
+    {
+      "path": "skills/dali-cat-story/references/subtitle-gates.md",
+      "bytes": 1015,
+      "sha256": "31c6e24145239cafe0f7eb8009bd97dfa4fcca257036dabc7098d4f0c814128a"
+    },
+    {
+      "path": "skills/dali-cat-story/references/visual-gates.md",
+      "bytes": 806,
+      "sha256": "c1d47da438eec8839fb927d42d4db7ecfbe799064d5ca29b4d26709b8502d48f"
+    },
+    {
+      "path": "skills/dali-cat-story/requirements.txt",
+      "bytes": 15,
+      "sha256": "b4603b9468ade4d639d2c6f73b89d50e1fa5d227c73ab15be0382cca478513e6"
+    },
+    {
+      "path": "skills/dali-cat-story/schema/episode.schema.json",
+      "bytes": 1743,
+      "sha256": "f4dda5f8e02a185b657e618c29c3fdc42bc8016b57c41240394a09d08d912186"
+    },
+    {
+      "path": "skills/dali-cat-story/scripts/README.md",
+      "bytes": 814,
+      "sha256": "b3f9cd4dbacbaa7e4cb4838ad04cfa00c8c5b9cc88628000fe31928227044c3f"
+    },
+    {
+      "path": "skills/dali-cat-story/scripts/_common.py",
+      "bytes": 5844,
+      "sha256": "a53ce2fa07fc9a742d532d1fe430727ddb02006f7b43025701bb4c99dc15979a"
+    },
+    {
+      "path": "skills/dali-cat-story/scripts/bootstrap_episode.py",
+      "bytes": 1614,
+      "sha256": "c700939cec53a11ec526e24d7273fe6e68b0c7f07d24fe0271a7d833e3b534e0"
+    },
+    {
+      "path": "skills/dali-cat-story/scripts/hash_asset.py",
+      "bytes": 426,
+      "sha256": "b2f86fbf63159b674d97ec156da0404e1e8004de81194dd2d61711d02277c585"
+    },
+    {
+      "path": "skills/dali-cat-story/scripts/validate_all.py",
+      "bytes": 868,
+      "sha256": "3f317513b81730d31e91fed9e079128202cba2346a7327ad8baaad1567cd3734"
+    },
+    {
+      "path": "skills/dali-cat-story/scripts/validate_episode.py",
+      "bytes": 4606,
+      "sha256": "59ee637a3638d2648039f273aa7bf6d5aef51fd09dc3834beaa1f8a1129965a8"
+    },
+    {
+      "path": "skills/dali-cat-story/scripts/validate_locked_edits.py",
+      "bytes": 1823,
+      "sha256": "ec6d837bcc998cae0d8f72fae810cbb5c53af84e4ce0867fc4fde9c7c8948512"
+    },
+    {
+      "path": "skills/dali-cat-story/scripts/validate_package.py",
+      "bytes": 2885,
+      "sha256": "52007dd25158a7beed9261b2274cb6a5bce9ccb6ee16ede249e01f97d5f3818c"
+    },
+    {
+      "path": "skills/dali-cat-story/scripts/validate_repo.py",
+      "bytes": 853,
+      "sha256": "e60a196b7de03d38d6d940ef6a793f249a9144b65324c7f5f89f7c988ffdcd14"
+    },
+    {
+      "path": "skills/dali-cat-story/scripts/validate_review_state.py",
+      "bytes": 1824,
+      "sha256": "660a892eba6378c0f1e40b3d2aeebba367b14c777adbb76007bac866ea4c7efe"
+    },
+    {
+      "path": "skills/dali-cat-story/scripts/validate_subtitles.py",
+      "bytes": 4806,
+      "sha256": "4fe65bf41ee3436c5c0bf17883234b2593fa99c1739f0a8a0f51b474c0dea7ee"
+    },
+    {
+      "path": "skills/dali-cat-story/tests/test_validators.py",
+      "bytes": 5078,
+      "sha256": "98af6695f5b2aa7d77cc0ae5f217d415a1f84d7b22a54f95bca5f8481cccf9c1"
+    },
+    {
+      "path": "standards/templates/episode.template.yaml",
+      "bytes": 1897,
+      "sha256": "28388d702bf240ff4f7ad56ed33b775083e1c62d8d971c55e6065ebd65d3877f"
+    },
+    {
+      "path": "standards/templates/subtitles.template.yaml",
+      "bytes": 592,
+      "sha256": "a154229c9df87c77d8857011db9d36a4e7b55e5d928938e07c4b1cc3b467aef6"
+    }
+  ]
+}

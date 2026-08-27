@@ -1,0 +1,29 @@
+voice_card:
+  person: ""
+  age: ""
+  role: ""
+  education_and_knowledge_boundary: ""
+  usual_terms: ""
+  recording_reason: ""
+  knows_now: ""
+  does_not_know: ""
+  allowed_technical_terms: ""
+  forbidden_technical_terms: ""
+  stress_language: ""
+  fear_language_change: ""
+
+# 每一帧要么在 frames 里有字幕，要么进入 silent_frames。
+frames:
+  1: ""
+  2: ""
+  3: ""
+
+silent_frames: []
+
+# 被强调的数字/物件/地点/称呼/异常建议全部登记。
+clues: []
+# 示例：
+# - name: "红手环"
+#   first_frame: 5
+#   payoff_frames: [18, 20]
+#   payoff_type: "现实残留"
