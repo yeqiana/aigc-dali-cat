@@ -1,4 +1,4 @@
-# Episodes 状态机 + Story OS 门禁 V1.3
+# Episodes 状态机 + Story OS 门禁 V1.4
 
 本目录只建立**一套机器阶段状态**。
 
@@ -44,8 +44,10 @@ python episodes/_system/episode_state.py init \
   --id 10-01 \
   --series 10_新系列 \
   --title "新故事" \
-  --frame-count 20 \
-  --aspect-ratio 9:16
+  --frame-count 20
+
+# 未传 --aspect-ratio 时默认 4:5 / 1080×1350
+# 如需竖屏满屏版：追加 --aspect-ratio 9:16（1080×1920）
 ```
 
 初始化同时创建三个 meta 文件。
@@ -112,7 +114,7 @@ python episodes/_system/episode_state.py migrate-gates \
 - recommendation_fit passed
 - publish passed
 - 本地发布图张数正确
-- 本地发布图 1080×1920
+- 本地发布图严格匹配 manifest：4:5=1080×1350（新篇默认），9:16=1080×1920
 - 锁底图 SHA-256 未变化
 
 CI 使用 `--metadata-only`，因此不会要求 Git 中不存在的 publish 图片/锁底图二进制文件。
@@ -162,4 +164,4 @@ python episodes/_system/validate_episode.py --all --metadata-only
 
 - tool_version 1.2 及以前且没有 `story-gates.json`：普通校验只 WARN。
 - 旧剧集如果要继续向前 transition：必须先 `migrate-gates`。
-- V1.3 新剧集缺 `story-gates.json`：FAIL。
+- V1.4 新剧集缺 `story-gates.json`：FAIL。

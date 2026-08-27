@@ -1,4 +1,4 @@
-# Dali Cat Story OS — Repository Execution Contract V1.1
+# Dali Cat Story OS — Repository Execution Contract V1.2
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
@@ -36,7 +36,8 @@ meta/
    - `standards/抖音推流评分与发布后漏斗规范_V1.4.md`
    - `standards/真实性与共享风格锚点规范_V1.1.md`
    - `standards/字幕人话化与声音卡规范_V1.1.md`
-   - `standards/最终字幕视觉规范_V1.0.md`
+   - `standards/最终字幕视觉规范_V1.1.md`
+   - `standards/生产引擎与画幅规范_V1.2.md`
 5. 目标剧集 README / docs / 已锁分镜
 6. 若存在 `meta/episode-state.json`，同时读取三个 meta 文件
 
@@ -105,7 +106,7 @@ python episodes/_system/episode_state.py transition <episode_dir> <TARGET> --not
 - `reviews.recommendation_fit = passed`
 - `reviews.publish = passed`
 - publish 正文数量符合 `body_frame_count`
-- 本地完整验收时，正文发布图必须为 1080×1920
+- 本地完整验收时，正文发布图必须匹配 manifest 画幅：4:5 → 1080×1350；9:16 → 1080×1920；新篇未指定时默认 4:5
 - 锁定底图 SHA-256 不得变化
 
 ## 5. 最小修改协议
@@ -123,6 +124,17 @@ python episodes/_system/episode_state.py transition <episode_dir> <TARGET> --not
 - 必须保存 SHA-256
 - 本地 validator 发现任一锁定资产 hash 改变立即 FAIL
 - 未点名的已通过帧不得连带重做
+
+## 5.1 Production Engine V1.2
+
+正式出图使用 `meta/production-ledger.json` 记录逐帧请求指纹、技术失败、内容返修、候选 SHA-256、approved/lock 资产与批次；它不得保存剧集 stage。
+
+- 未指定画幅：默认 `4:5 / 1080×1350`。
+- 明确指定 `9:16`：使用 `1080×1920`。
+- 技术失败不占内容返修次数；每帧最多一次内容返修。
+- originals / repairs / approved / publish 必须分离，不得覆盖原图。
+- 正式请求默认 prompt ≤260 字符且 ≤900 UTF-8 bytes，reference 默认最多 2 张并记录 role/kind/hash。
+- 详细执行见 `standards/生产引擎与画幅规范_V1.2.md` 和 `episodes/_system/production_ledger.py`。
 
 ## 6. 新篇初始化
 

@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Iterable
 
 from episode_state import MANIFEST_FILE, STATE_FILE, GATES_FILE, STATES, SYSTEM_VERSION
+from canvas_spec import resolve_canvas_spec
 
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 PRODUCTION_DECISIONS = {"pending", "pass", "fail"}
@@ -193,6 +194,10 @@ def check_common(repo_root: Path, state: dict, manifest: dict, findings: list[Fi
     else:
         for key in ("id", "series", "title", "format", "aspect_ratio"):
             require_string(episode, key, findings, "manifest.episode")
+        try:
+            resolve_canvas_spec(episode.get("aspect_ratio"))
+        except ValueError as e:
+            findings.append(Finding("FAIL", "aspect_ratio", str(e)))
         if episode.get("id") != state.get("episode_id"):
             findings.append(Finding("FAIL", "id_drift", "state episode_id != manifest episode.id"))
         if episode.get("series") != state.get("series"):
@@ -417,9 +422,15 @@ def image_dimensions(path: Path) -> tuple[int, int] | None:
     return None
 
 
-def check_publish_images(publish_dir: Path | None, body_glob: str | None, expected_count: object, findings: list[Finding], *, metadata_only: bool) -> None:
+def check_publish_images(publish_dir: Path | None, body_glob: str | None, expected_count: object, aspect_ratio: object, findings: list[Finding], *, metadata_only: bool) -> None:
     if metadata_only or publish_dir is None or not publish_dir.exists() or not body_glob:
         return
+    try:
+        spec = resolve_canvas_spec(aspect_ratio if isinstance(aspect_ratio, str) else None)
+    except ValueError as e:
+        findings.append(Finding("FAIL", "aspect_ratio", str(e)))
+        return
+    expected_size = (spec.width, spec.height)
     files = [p for p in publish_dir.glob(body_glob) if p.is_file()]
     if isinstance(expected_count, int) and len(files) != expected_count:
         findings.append(Finding("FAIL", "body_count_mismatch", f"{publish_dir}: expected {expected_count}, found {len(files)} by {body_glob!r}"))
@@ -429,8 +440,8 @@ def check_publish_images(publish_dir: Path | None, body_glob: str | None, expect
         size = image_dimensions(p)
         if size is None:
             findings.append(Finding("FAIL", "image_dimensions", f"cannot parse image dimensions: {p.name}"))
-        elif size != (1080, 1920):
-            findings.append(Finding("FAIL", "image_size", f"{p.name}: {size[0]}x{size[1]}, expected 1080x1920"))
+        elif size != expected_size:
+            findings.append(Finding("FAIL", "image_size", f"{p.name}: {size[0]}x{size[1]}, expected {expected_size[0]}x{expected_size[1]} for {spec.aspect_ratio}"))
 
 
 def check_stage(repo_root: Path, episode_dir: Path, manifest: dict, current: str, findings: list[Finding], *, metadata_only: bool) -> None:
@@ -479,7 +490,7 @@ def check_stage(repo_root: Path, episode_dir: Path, manifest: dict, current: str
         topics = publication.get("topics")
         if not isinstance(topics, list) or not topics or not all(isinstance(x, str) and x.strip() for x in topics):
             findings.append(Finding("FAIL", "topics", "publication.topics must be a non-empty string array"))
-        check_publish_images(publish_dir, body_glob, release.get("body_frame_count"), findings, metadata_only=metadata_only)
+        check_publish_images(publish_dir, body_glob, release.get("body_frame_count"), (manifest.get("episode") or {}).get("aspect_ratio"), findings, metadata_only=metadata_only)
     if idx >= STATE_MIN["PUBLISHED"]:
         require_string(publication, "published_at", findings, "manifest.publication")
     if idx >= STATE_MIN["DATA_REVIEWED"]:
@@ -542,7 +553,7 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
         elif target_state is not None and effective and STATE_MIN[effective] >= STATE_MIN["STORYBOARD_LOCKED"]:
             findings.append(Finding("FAIL", "legacy_story_gates_required", "旧剧集继续推进前先运行 episode_state.py migrate-gates <episode_dir>"))
         else:
-            findings.append(Finding("WARN", "legacy_without_story_gates", "旧剧集尚未迁移 Story OS V1.1 门禁；保持兼容"))
+            findings.append(Finding("WARN", "legacy_without_story_gates", "旧剧集尚未迁移 Story OS V1.2 门禁；保持兼容"))
     elif effective:
         check_story_os_for_effective(repo_root, state, manifest, gates, effective, findings, metadata_only=metadata_only)
     return findings
@@ -566,7 +577,7 @@ def print_result(episode_dir: Path, findings: list[Finding]) -> bool:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate DALI CAT episode state + Story OS gates V1.3")
+    parser = argparse.ArgumentParser(description="Validate DALI CAT episode state + Story OS gates V1.4")
     parser.add_argument("episode_dir", nargs="?")
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--repo-root")

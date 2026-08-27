@@ -1,6 +1,6 @@
 # 项目协作规则（Codex 自动读取）
 
-## Story OS V1.1 执行入口
+## Story OS V1.2 执行入口
 
 涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须继续读取仓库根目录 `SKILL.md`。
 
@@ -19,6 +19,7 @@
 - [standards/风格锚点_流水席_村子_误入小镇_V1.1.md](standards/风格锚点_流水席_村子_误入小镇_V1.1.md)
 - [standards/真实性与共享风格锚点规范_V1.1.md](standards/真实性与共享风格锚点规范_V1.1.md)
 - [standards/字幕人话化与声音卡规范_V1.1.md](standards/字幕人话化与声音卡规范_V1.1.md)
+- [standards/生产引擎与画幅规范_V1.2.md](standards/生产引擎与画幅规范_V1.2.md)
 
 三者均不建立第二权威；冲突时以 `standards/制作规范_正式版.md` 为准。M00 是可选视觉母风格，不得强制覆盖已有独立采集体系。
 
@@ -26,13 +27,13 @@
 ## 网页 GPT 出图与流量控制
 
 1. 本项目的出图、修图默认由官方网页 ChatGPT 手动完成。Codex 仅使用 `$web-gpt-image-handoff` 基于当集最终分镜生成文字交接单；除非用户明确覆盖，不调用任何本地图片生成或编辑工具。
-2. 交接单必须包含逐图提示词、9:16/1080×1920、角色与场景锁定、负面约束、建议文件名及每 10 张验收项；不得擅自改写正式分镜的剧情与镜头顺序。
+2. 交接单必须包含逐图提示词、画幅与尺寸、角色与场景锁定、负面约束、建议文件名及分批验收项；未指定画幅时默认 **4:5 / 1080×1350**，只有任务/分镜/manifest 明确指定时才使用 **9:16 / 1080×1920**；不得擅自改写正式分镜的剧情与镜头顺序。
 3. 不自动打开或操作网页 ChatGPT，不要求上传整批图片给 Codex。网页生成后，用户仅按需回传本地路径或少量关键截图进行验收和重出建议。
 4. 本规则不改变下列媒体提交白名单和 `.gitignore` 约束。
 
 ## Episodes 机器状态与发布清单
 
-> Story OS V1.1：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
+> Story OS V1.2：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
 
 1. 新建具体剧集时，按 [`episodes/_system/README.md`](episodes/_system/README.md) 初始化 `meta/episode-state.json`、`meta/release-manifest.json` 与 `meta/story-gates.json`；历史剧集不批量伪造状态，只在重新进入制作/发布/复盘时迁移。
 2. 机器状态固定为：`IDEA_LOCKED → STORYBOARD_LOCKED → VISUAL_CALIBRATED → PRODUCTION_PASSED → PUBLISH_READY → PUBLISHED → DATA_REVIEWED`。

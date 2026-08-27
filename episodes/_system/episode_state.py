@@ -8,6 +8,8 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
+
 STATES = [
     "IDEA_LOCKED",
     "STORYBOARD_LOCKED",
@@ -20,7 +22,7 @@ STATES = [
 STATE_FILE = Path("meta/episode-state.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
 GATES_FILE = Path("meta/story-gates.json")
-SYSTEM_VERSION = "1.3"
+SYSTEM_VERSION = "1.4"
 
 
 def now_iso() -> str:
@@ -105,6 +107,7 @@ def init_cmd(args: argparse.Namespace) -> None:
         raise SystemExit("meta already exists; refusing to overwrite")
 
     at = now_iso()
+    canvas = resolve_canvas_spec(args.aspect_ratio)
     state = {
         "schema_version": 1,
         "tool_version": SYSTEM_VERSION,
@@ -129,7 +132,7 @@ def init_cmd(args: argparse.Namespace) -> None:
             "series": args.series,
             "title": args.title,
             "format": args.format,
-            "aspect_ratio": args.aspect_ratio,
+            "aspect_ratio": canvas.aspect_ratio,
         },
         "release": {
             "version": None,
@@ -278,7 +281,7 @@ def show_cmd(args: argparse.Namespace) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="DALI CAT episode state machine V1.3")
+    p = argparse.ArgumentParser(description="DALI CAT episode state machine V1.4")
     sub = p.add_subparsers(dest="command", required=True)
 
     init = sub.add_parser("init", help="initialize state + release manifest + story gates")
@@ -288,13 +291,13 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("--title", required=True)
     init.add_argument("--frame-count", type=int, default=20)
     init.add_argument("--format", default="douyin_photo_carousel")
-    init.add_argument("--aspect-ratio", default="9:16")
+    init.add_argument("--aspect-ratio", default=DEFAULT_ASPECT_RATIO, help="4:5(default, 1080x1350) or 9:16(1080x1920)")
     init.add_argument("--note")
     init.set_defaults(func=init_cmd)
 
     mg = sub.add_parser("migrate-gates", help="add story-gates.json to a legacy episode without changing state")
     mg.add_argument("episode_dir")
-    mg.add_argument("--note", default="旧剧集重新进入制作，接入 Story OS V1.1 门禁")
+    mg.add_argument("--note", default="旧剧集重新进入制作，接入 Story OS V1.2 门禁")
     mg.set_defaults(func=migrate_gates_cmd)
 
     tr = sub.add_parser("transition", help="move to next state or explicitly rewind")

@@ -25,14 +25,14 @@ def fake_png(path: Path, width=1080, height=1920) -> None:
 
 
 class ValidatorTests(unittest.TestCase):
-    def base_state(self, current="IDEA_LOCKED", version="1.3"):
+    def base_state(self, current="IDEA_LOCKED", version="1.4"):
         return {
             "schema_version":1,"tool_version":version,"episode_id":"09-02","series":"09_旧物怪谈",
             "title":"测试故事","current_state":current,"updated_at":"2026-08-27T12:00:00+08:00",
             "history":[{"state":current,"at":"2026-08-27T12:00:00+08:00","mode":"migration","note":"test"}],
         }
 
-    def base_manifest(self, version="1.3"):
+    def base_manifest(self, version="1.4"):
         return {
             "schema_version":1,"tool_version":version,
             "episode":{"id":"09-02","series":"09_旧物怪谈","title":"测试故事","format":"douyin_photo_carousel","aspect_ratio":"9:16"},
@@ -45,7 +45,7 @@ class ValidatorTests(unittest.TestCase):
 
     def base_gates(self):
         return {
-            "schema_version":1,"tool_version":"1.3","episode_id":"09-02",
+            "schema_version":1,"tool_version":"1.4","episode_id":"09-02",
             "story":{"recent5_checked":True,"four_locks_diff_count":2,"mechanism_skin_swap_veto":False,"task_closed":True,"competing_explanations":2,
                      "hook_frames":[1,2,3],"escalation_frames":[7,13],"climax_frame":17,"payoff_frame":20},
             "visual":{"admission_frames":[1,7,13,20],
@@ -131,10 +131,11 @@ class ValidatorTests(unittest.TestCase):
     def test_publish_ready_wrong_dimensions_fail(self):
         with tempfile.TemporaryDirectory() as td:
             repo=Path(td); state=self.base_state("PUBLISH_READY"); manifest=self.base_manifest(); gates=self.base_gates()
+            manifest["episode"]["aspect_ratio"]="4:5"
             self.make_stage_docs(repo,manifest); manifest["quality"].update({"production_gate":"pass","propagation_score":9.2,"s_min_score":8.5,"propagation_decision":"strong","publish_decision":"go"})
             manifest["publication"].update({"actual_title":"标题","description":"简介","topics":["怪谈"]})
             pub=repo/"episodes/09/02/publish"; pub.mkdir(parents=True)
-            for i in range(1,21): fake_png(pub/f"{i:02d}.png",1024 if i==2 else 1080,1920)
+            for i in range(1,21): fake_png(pub/f"{i:02d}.png",1024 if i==2 else 1080,1350)
             cover=repo/"episodes/09/02/cover.png"; fake_png(cover)
             manifest["release"].update({"version":"V1","publish_dir":"episodes/09/02/publish","cover_path":"episodes/09/02/cover.png"})
             ep=self.setup_episode(repo,state,manifest,gates)
