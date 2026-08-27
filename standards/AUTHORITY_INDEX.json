@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "story_os_version": "1.6",
+  "purpose": "Routing only. This file does not create creative rules or a second authority.",
+  "precedence": [
+    "canonical",
+    "active_subordinate",
+    "series_overlay",
+    "reference",
+    "superseded"
+  ],
+  "documents": [
+    {
+      "path": "standards/制作规范_正式版.md",
+      "authority": "canonical",
+      "scope": "global",
+      "active": true
+    },
+    {
+      "path": "standards/抖音推流评分与发布后漏斗规范_V1.4.md",
+      "authority": "active_subordinate",
+      "scope": "distribution_and_post_publish",
+      "active": true,
+      "supersedes": [
+        "standards/抖音推流评分与发布后漏斗规范_V1.2.md",
+        "standards/抖音推流评分与发布后漏斗规范_V1.3.md"
+      ]
+    },
+    {
+      "path": "standards/抖音推流评分与发布后漏斗规范_V1.2.md",
+      "authority": "superseded",
+      "scope": "distribution_and_post_publish",
+      "active": false,
+      "superseded_by": "standards/抖音推流评分与发布后漏斗规范_V1.4.md"
+    },
+    {
+      "path": "standards/抖音推流评分与发布后漏斗规范_V1.3.md",
+      "authority": "superseded",
+      "scope": "distribution_and_post_publish",
+      "active": false,
+      "superseded_by": "standards/抖音推流评分与发布后漏斗规范_V1.4.md"
+    },
+    {
+      "path": "standards/真实性与共享风格锚点规范_V1.1.md",
+      "authority": "active_subordinate",
+      "scope": "capture_authenticity_and_shared_style",
+      "active": true
+    },
+    {
+      "path": "standards/字幕人话化与声音卡规范_V1.1.md",
+      "authority": "active_subordinate",
+      "scope": "caption_voice",
+      "active": true
+    },
+    {
+      "path": "standards/最终字幕视觉规范_V1.1.md",
+      "authority": "active_subordinate",
+      "scope": "caption_visual",
+      "active": true,
+      "supersedes": [
+        "standards/最终字幕视觉规范_V1.0.md"
+      ]
+    },
+    {
+      "path": "standards/最终字幕视觉规范_V1.0.md",
+      "authority": "superseded",
+      "scope": "caption_visual",
+      "active": false,
+      "superseded_by": "standards/最终字幕视觉规范_V1.1.md"
+    },
+    {
+      "path": "standards/生产引擎与画幅规范_V1.2.md",
+      "authority": "active_subordinate",
+      "scope": "production_engine_and_canvas",
+      "active": true
+    },
+    {
+      "path": "standards/风格锚点_流水席_村子_误入小镇_V1.1.md",
+      "authority": "reference",
+      "scope": "optional_visual_mother_style",
+      "active": true,
+      "note": "Optional M00 reference. Must not override an episode's independent capture system."
+    }
+  ],
+  "rules": {
+    "superseded_default_read": false,
+    "unknown_versioned_standard_is_warning": true,
+    "series_overlay_may_override_canonical": false,
+    "state_source": "meta/episode-state.json"
+  }
+}

@@ -1,8 +1,21 @@
-# Dali Cat Story OS — Repository Execution Contract V1.5
+# Dali Cat Story OS — Repository Execution Contract V1.6
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
+
+<!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
+## Story OS V1.6 Golden Path
+
+**第一入口：先读 `START_HERE.md`。** 该文件只负责路由，不建立第二套创作规范。
+
+Golden Path：`选题/去同质化 → Story Lock → 真实性卡/连续性锚点 → 三张校准+四张视觉准入 → Visual Lock → Batch → 逐帧审核/必要返修 → Final Checklist → Release → 数据回填`。
+
+- 创作规则唯一权威仍是 `standards/制作规范_正式版.md`。
+- 阶段唯一事实源仍是 `meta/episode-state.json`。
+- `AUTHORITY_INDEX.json / story-gates / production-ledger / frame-reviews / FINAL_CHECKLIST` 都只是路由或证据，不得成为第二状态机。
+- 不要默认通读整个 `standards/`；按 `standards/AUTHORITY_INDEX.json` 只读取当前任务需要的 active 细则。
+<!-- STORY_OS_V1_6_GOLDEN_PATH_END -->
 
 ## 1. 单一状态源
 
@@ -33,7 +46,8 @@ meta/
 
 按以下顺序：
 
-1. `README.md`
+1. `START_HERE.md`
+2. `README.md`
 2. `AGENTS.md`
 3. `standards/制作规范_正式版.md`
 4. 与任务相关的从属细则：

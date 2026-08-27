@@ -1,8 +1,8 @@
 # 项目协作规则（Codex 自动读取）
 
-## Story OS V1.2 执行入口
+## Story OS V1.6 执行入口
 
-涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须继续读取仓库根目录 `SKILL.md`。
+涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须先读取仓库根目录 `START_HERE.md`，再读取 `SKILL.md`。
 
 - `AGENTS.md`：Codex 自动入口与仓库协作规则。
 - `SKILL.md`：Story OS 执行协议。
@@ -33,7 +33,7 @@
 
 ## Episodes 机器状态与发布清单
 
-> Story OS V1.2：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
+> Story OS V1.6：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
 
 1. 新建具体剧集时，按 [`episodes/_system/README.md`](episodes/_system/README.md) 初始化 `meta/episode-state.json`、`meta/release-manifest.json` 与 `meta/story-gates.json`；历史剧集不批量伪造状态，只在重新进入制作/发布/复盘时迁移。
 2. 机器状态固定为：`IDEA_LOCKED → STORYBOARD_LOCKED → VISUAL_CALIBRATED → PRODUCTION_PASSED → PUBLISH_READY → PUBLISHED → DATA_REVIEWED`。
