@@ -22,7 +22,7 @@ STATES = [
 STATE_FILE = Path("meta/episode-state.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
 GATES_FILE = Path("meta/story-gates.json")
-SYSTEM_VERSION = "1.5"
+SYSTEM_VERSION = "1.4"
 
 
 def now_iso() -> str:
@@ -48,71 +48,8 @@ def ensure_episode_dir(raw: str) -> Path:
     return p
 
 
-def _merge_defaults(dst: dict, defaults: dict) -> dict:
-    for key, value in defaults.items():
-        if key not in dst:
-            dst[key] = value
-        elif isinstance(value, dict) and isinstance(dst.get(key), dict):
-            _merge_defaults(dst[key], value)
-    return dst
-
-
-def machine_defaults(aspect_ratio: str | None = None) -> dict:
+def new_gates(episode_id: str) -> dict:
     return {
-        "authenticity_card": {
-            "story_era": None,
-            "location": None,
-            "photographer": None,
-            "shooting_reason": None,
-            "primary_capture": {"id": None, "device": None},
-            "secondary_captures": [],
-            "secondary_source_explanation": None,
-            "aspect_ratio": aspect_ratio,
-            "capture_states": {
-                "stable": None,
-                "restricted": None,
-                "lost_control": None,
-            },
-            "camera_rules": {
-                "current_device_may_be_fully_visible": False,
-                "current_device_visibility_explanation": None,
-                "photographer_may_be_fully_visible": False,
-                "photographer_visibility_explanation": None,
-            },
-        },
-        "calibration": {
-            "baseline": {"frame": None, "asset_path": None, "sha256": None, "decision": "pending", "note": ""},
-            "worst_condition": {"frame": None, "asset_path": None, "sha256": None, "decision": "pending", "note": ""},
-            "first_major_anomaly": {"frame": None, "asset_path": None, "sha256": None, "decision": "pending", "note": ""},
-        },
-        "calibration_contact_sheet": {"path": None, "sha256": None},
-        "references": {
-            "required": False,
-            "required_anchors": [],
-            "items": [],
-        },
-    }
-
-
-def enable_machine_contract(gates: dict, *, strict: bool, aspect_ratio: str | None = None) -> dict:
-    gates["tool_version"] = SYSTEM_VERSION
-    gates["machine_contract"] = {"version": 1, "strict": strict}
-    visual = gates.setdefault("visual", {})
-    _merge_defaults(visual, machine_defaults(aspect_ratio))
-    evidence = gates.setdefault("production_evidence", {})
-    _merge_defaults(
-        evidence,
-        {
-            "frame_review_dir": "meta/frame-reviews",
-            "review_schema_version": 1,
-            "require_all_frames": True,
-        },
-    )
-    return gates
-
-
-def new_gates(episode_id: str, *, aspect_ratio: str | None = None, strict: bool = True) -> dict:
-    gates = {
         "schema_version": 1,
         "tool_version": SYSTEM_VERSION,
         "episode_id": episode_id,
@@ -159,7 +96,6 @@ def new_gates(episode_id: str, *, aspect_ratio: str | None = None, strict: bool 
             "publish": "pending",
         },
     }
-    return enable_machine_contract(gates, strict=strict, aspect_ratio=aspect_ratio)
 
 
 def init_cmd(args: argparse.Namespace) -> None:
@@ -254,12 +190,11 @@ def init_cmd(args: argparse.Namespace) -> None:
     }
     save_json(state_path, state)
     save_json(manifest_path, manifest)
-    save_json(gates_path, new_gates(args.id, aspect_ratio=canvas.aspect_ratio, strict=True))
+    save_json(gates_path, new_gates(args.id))
     print(f"initialized: {episode_dir}")
     print(f"state   : {state_path}")
     print(f"manifest: {manifest_path}")
     print(f"gates   : {gates_path}")
-    print("machine : strict V1.5 enabled")
 
 
 def migrate_gates_cmd(args: argparse.Namespace) -> None:
@@ -276,8 +211,7 @@ def migrate_gates_cmd(args: argparse.Namespace) -> None:
     episode_id = state.get("episode_id") or (manifest.get("episode") or {}).get("id")
     if not isinstance(episode_id, str) or not episode_id.strip():
         raise SystemExit("cannot determine episode id")
-    ratio = ((manifest.get("episode") or {}).get("aspect_ratio"))
-    gates = new_gates(episode_id, aspect_ratio=ratio, strict=False)
+    gates = new_gates(episode_id)
     gates["migration"] = {
         "legacy": True,
         "from_state_tool_version": state.get("tool_version"),
@@ -287,22 +221,7 @@ def migrate_gates_cmd(args: argparse.Namespace) -> None:
     }
     save_json(gates_path, gates)
     print(f"created: {gates_path}")
-    print("Legacy compatibility mode: machine_contract.strict=false. Fill real evidence before enabling strict gates.")
-
-
-def enable_machine_cmd(args: argparse.Namespace) -> None:
-    episode_dir = ensure_episode_dir(args.episode_dir)
-    gates_path = episode_dir / GATES_FILE
-    manifest_path = episode_dir / MANIFEST_FILE
-    if not gates_path.exists() or not manifest_path.exists():
-        raise SystemExit("story-gates.json + release-manifest.json are required")
-    gates = load_json(gates_path)
-    manifest = load_json(manifest_path)
-    ratio = ((manifest.get("episode") or {}).get("aspect_ratio"))
-    enable_machine_contract(gates, strict=True, aspect_ratio=ratio)
-    save_json(gates_path, gates)
-    print(f"machine gates enabled: {gates_path}")
-    print("No review was auto-passed. Fill authenticity/calibration/reference/frame evidence before advancing.")
+    print("Next: fill real gate evidence, then validate/transition. No stage was changed.")
 
 
 def transition_cmd(args: argparse.Namespace) -> None:
@@ -330,13 +249,6 @@ def transition_cmd(args: argparse.Namespace) -> None:
         )
         if result.returncode != 0:
             raise SystemExit(f"target gate failed; state remains {current}")
-        machine = Path(__file__).with_name("machine_gate.py")
-        result = subprocess.run(
-            [sys.executable, str(machine), str(episode_dir), "--target", target],
-            check=False,
-        )
-        if result.returncode != 0:
-            raise SystemExit(f"machine evidence gate failed; state remains {current}")
     elif tgt_idx < cur_idx and args.rewind:
         mode = "rewind"
     else:
@@ -369,10 +281,10 @@ def show_cmd(args: argparse.Namespace) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="DALI CAT episode state machine V1.5")
+    p = argparse.ArgumentParser(description="DALI CAT episode state machine V1.4")
     sub = p.add_subparsers(dest="command", required=True)
 
-    init = sub.add_parser("init", help="initialize state + release manifest + strict machine story gates")
+    init = sub.add_parser("init", help="initialize state + release manifest + story gates")
     init.add_argument("episode_dir")
     init.add_argument("--id", required=True)
     init.add_argument("--series", required=True)
@@ -385,12 +297,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     mg = sub.add_parser("migrate-gates", help="add story-gates.json to a legacy episode without changing state")
     mg.add_argument("episode_dir")
-    mg.add_argument("--note", default="旧剧集重新进入制作，接入 Story OS V1.5 门禁")
+    mg.add_argument("--note", default="旧剧集重新进入制作，接入 Story OS V1.2 门禁")
     mg.set_defaults(func=migrate_gates_cmd)
-
-    em = sub.add_parser("enable-machine-gates", help="enable strict V1.5 machine evidence gates for an existing episode")
-    em.add_argument("episode_dir")
-    em.set_defaults(func=enable_machine_cmd)
 
     tr = sub.add_parser("transition", help="move to next state or explicitly rewind")
     tr.add_argument("episode_dir")

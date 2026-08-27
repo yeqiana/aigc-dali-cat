@@ -1,0 +1,63 @@
+{
+  "backup_schema": 1,
+  "package": "Story OS Machine Gates",
+  "package_version": "1.5",
+  "created_at": "2026-08-27T14:47:33+08:00",
+  "repo": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat",
+  "git_branch": "story",
+  "git_head": "3b9844730d5913c37de50d7687ee07e5d5f3520f",
+  "status": "rolled_back",
+  "files": [
+    {
+      "path": ".github/workflows/story-gates.yml",
+      "existed": true,
+      "original_sha256": "d2553a8574b77021fd2ba1678216fa449ed96cc9f4d13c555ced0686401d3cf6"
+    },
+    {
+      "path": "README_UPGRADE_V1.5.md",
+      "existed": false,
+      "original_sha256": null
+    },
+    {
+      "path": "SKILL.md",
+      "existed": true,
+      "original_sha256": "866fcb66ef1cdf0e9f156384bf67ea436d3838ab56fc6370e5ba0d115181f813"
+    },
+    {
+      "path": "episodes/_system/README.md",
+      "existed": true,
+      "original_sha256": "ec8cd9f3af816f8e59dac2c197be3ce879cd33d25b77c524f80060c97b1cb4eb"
+    },
+    {
+      "path": "episodes/_system/calibration_sheet.py",
+      "existed": false,
+      "original_sha256": null
+    },
+    {
+      "path": "episodes/_system/episode_state.py",
+      "existed": true,
+      "original_sha256": "9912024d60cc64d77d72612120436f6a60e95f4602e8d034ed9a356ceb4d7bb0"
+    },
+    {
+      "path": "episodes/_system/evidence_tool.py",
+      "existed": false,
+      "original_sha256": null
+    },
+    {
+      "path": "episodes/_system/machine_gate.py",
+      "existed": false,
+      "original_sha256": null
+    },
+    {
+      "path": "episodes/_system/test_machine_gate.py",
+      "existed": false,
+      "original_sha256": null
+    },
+    {
+      "path": "standards/templates/authenticity-card.machine-v1.json",
+      "existed": false,
+      "original_sha256": null
+    }
+  ],
+  "rolled_back_at": "2026-08-27T14:47:34+08:00"
+}

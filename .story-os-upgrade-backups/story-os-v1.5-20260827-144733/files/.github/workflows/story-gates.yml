@@ -32,10 +32,6 @@ jobs:
       - name: Compile Story OS
         run: python -m compileall -q episodes/_system skills/dali-cat-story
       - name: State machine and Story OS unit tests
-        run: |
-          python episodes/_system/test_validator.py -v
-          python episodes/_system/test_machine_gate.py -v
+        run: python episodes/_system/test_validator.py -v
       - name: Validate tracked episode metadata
         run: python episodes/_system/validate_episode.py --all --metadata-only
-      - name: Validate strict machine evidence metadata
-        run: python episodes/_system/machine_gate.py --all --metadata-only

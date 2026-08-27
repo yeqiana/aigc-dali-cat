@@ -1,0 +1,24 @@
+{
+  "story_era": "",
+  "location": "",
+  "photographer": "",
+  "shooting_reason": "",
+  "primary_capture": {
+    "id": "",
+    "device": ""
+  },
+  "secondary_captures": [],
+  "secondary_source_explanation": null,
+  "aspect_ratio": "4:5",
+  "capture_states": {
+    "stable": "",
+    "restricted": "",
+    "lost_control": ""
+  },
+  "camera_rules": {
+    "current_device_may_be_fully_visible": false,
+    "current_device_visibility_explanation": null,
+    "photographer_may_be_fully_visible": false,
+    "photographer_visibility_explanation": null
+  }
+}

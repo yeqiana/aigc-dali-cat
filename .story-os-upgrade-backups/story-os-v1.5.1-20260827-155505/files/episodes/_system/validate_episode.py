@@ -545,18 +545,7 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
     gates = load_json(gates_path, findings, required=False)
     state_v = str(state.get("tool_version") or "")
     manifest_v = str(manifest.get("tool_version") or "")
-
-    def version_at_least(raw: str, minimum: tuple[int, int]) -> bool:
-        try:
-            parts = raw.strip().split(".")
-            value = (int(parts[0]), int(parts[1]) if len(parts) > 1 else 0)
-        except (TypeError, ValueError, IndexError):
-            return False
-        return value >= minimum
-
-    # Story Gates became mandatory in Story OS V1.4. Keep that boundary
-    # monotonic when SYSTEM_VERSION advances.
-    new_system_episode = version_at_least(state_v, (1, 4)) or version_at_least(manifest_v, (1, 4))
+    new_system_episode = state_v == SYSTEM_VERSION or manifest_v == SYSTEM_VERSION
 
     if gates is None:
         if new_system_episode:
