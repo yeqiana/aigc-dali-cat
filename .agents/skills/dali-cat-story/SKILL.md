@@ -1,3 +1,3 @@
-# dali-cat-story entrypoint
+# dali-cat-story entrypoint V1.1
 
-Read repository root `SKILL.md`, then `skills/dali-cat-story/SKILL.md`. The repository root contract and canonical files under `standards/` take precedence over this shim.
+Read repository root `SKILL.md`. `episode-state.json` is the only stage source; `story-gates.json` contains gate evidence only.

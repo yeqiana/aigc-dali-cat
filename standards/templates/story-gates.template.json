@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "tool_version": "1.3",
+  "episode_id": "__EPISODE_ID__",
+  "story": {
+    "recent5_checked": false,
+    "four_locks_diff_count": 0,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": false,
+    "competing_explanations": 0,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [],
+    "climax_frame": null,
+    "payoff_frame": null
+  },
+  "visual": {
+    "admission_frames": [],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": null,
+        "location": null,
+        "key_prop": null,
+        "wardrobe": null,
+        "weather_time": null
+      }
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": false
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "pending",
+    "authenticity": "pending",
+    "continuity": "pending",
+    "visual_admission": "pending",
+    "subtitle": "pending",
+    "production": "pending",
+    "recommendation_fit": "pending",
+    "publish": "pending"
+  }
+}

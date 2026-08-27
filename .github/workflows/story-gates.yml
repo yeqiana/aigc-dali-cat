@@ -7,12 +7,18 @@ on:
       - "standards/**"
       - "skills/dali-cat-story/**"
       - "SKILL.md"
+      - "AGENTS.md"
+      - ".github/workflows/story-gates.yml"
   push:
     branches: [story]
     paths:
-      - "episodes/**/episode.yaml"
+      - "episodes/**/meta/**"
+      - "episodes/_system/**"
       - "skills/dali-cat-story/**"
       - "standards/templates/**"
+      - "SKILL.md"
+      - "AGENTS.md"
+      - ".github/workflows/story-gates.yml"
   workflow_dispatch:
 
 jobs:
@@ -23,9 +29,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install validator dependency
-        run: python -m pip install -r skills/dali-cat-story/requirements.txt
-      - name: Unit tests
-        run: python -m unittest discover -s skills/dali-cat-story/tests -v
-      - name: Validate episode manifests
-        run: python skills/dali-cat-story/scripts/validate_repo.py .
+      - name: Compile Story OS
+        run: python -m compileall -q episodes/_system skills/dali-cat-story
+      - name: State machine and Story OS unit tests
+        run: python episodes/_system/test_validator.py -v
+      - name: Validate tracked episode metadata
+        run: python episodes/_system/validate_episode.py --all --metadata-only

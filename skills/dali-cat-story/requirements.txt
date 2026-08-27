@@ -1,1 +1,1 @@
-PyYAML>=6.0,<7
+# V1.1 core validators use Python standard library only.

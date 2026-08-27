@@ -19,7 +19,8 @@ STATES = [
 ]
 STATE_FILE = Path("meta/episode-state.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
-SYSTEM_VERSION = "1.2"
+GATES_FILE = Path("meta/story-gates.json")
+SYSTEM_VERSION = "1.3"
 
 
 def now_iso() -> str:
@@ -45,11 +46,62 @@ def ensure_episode_dir(raw: str) -> Path:
     return p
 
 
+def new_gates(episode_id: str) -> dict:
+    return {
+        "schema_version": 1,
+        "tool_version": SYSTEM_VERSION,
+        "episode_id": episode_id,
+        "story": {
+            "recent5_checked": False,
+            "four_locks_diff_count": 0,
+            "mechanism_skin_swap_veto": False,
+            "task_closed": False,
+            "competing_explanations": 0,
+            "hook_frames": [1, 2, 3],
+            "escalation_frames": [],
+            "climax_frame": None,
+            "payoff_frame": None,
+        },
+        "visual": {
+            "admission_frames": [],
+            "continuity": {
+                "required": ["location", "key_prop", "weather_time"],
+                "anchors": {
+                    "protagonist": None,
+                    "location": None,
+                    "key_prop": None,
+                    "wardrobe": None,
+                    "weather_time": None,
+                },
+            },
+        },
+        "subtitles": {
+            "required": True,
+            "sound_card_completed": False,
+        },
+        "locks": {
+            "edit_mode": "none",
+            "assets": [],
+        },
+        "reviews": {
+            "story": "pending",
+            "authenticity": "pending",
+            "continuity": "pending",
+            "visual_admission": "pending",
+            "subtitle": "pending",
+            "production": "pending",
+            "recommendation_fit": "pending",
+            "publish": "pending",
+        },
+    }
+
+
 def init_cmd(args: argparse.Namespace) -> None:
     episode_dir = ensure_episode_dir(args.episode_dir)
     state_path = episode_dir / STATE_FILE
     manifest_path = episode_dir / MANIFEST_FILE
-    if state_path.exists() or manifest_path.exists():
+    gates_path = episode_dir / GATES_FILE
+    if state_path.exists() or manifest_path.exists() or gates_path.exists():
         raise SystemExit("meta already exists; refusing to overwrite")
 
     at = now_iso()
@@ -135,9 +187,38 @@ def init_cmd(args: argparse.Namespace) -> None:
     }
     save_json(state_path, state)
     save_json(manifest_path, manifest)
+    save_json(gates_path, new_gates(args.id))
     print(f"initialized: {episode_dir}")
-    print(f"state: {state_path}")
+    print(f"state   : {state_path}")
     print(f"manifest: {manifest_path}")
+    print(f"gates   : {gates_path}")
+
+
+def migrate_gates_cmd(args: argparse.Namespace) -> None:
+    episode_dir = ensure_episode_dir(args.episode_dir)
+    state_path = episode_dir / STATE_FILE
+    manifest_path = episode_dir / MANIFEST_FILE
+    gates_path = episode_dir / GATES_FILE
+    if gates_path.exists():
+        raise SystemExit(f"story gates already exist: {gates_path}")
+    if not state_path.exists() or not manifest_path.exists():
+        raise SystemExit("legacy episode must already have episode-state.json + release-manifest.json")
+    state = load_json(state_path)
+    manifest = load_json(manifest_path)
+    episode_id = state.get("episode_id") or (manifest.get("episode") or {}).get("id")
+    if not isinstance(episode_id, str) or not episode_id.strip():
+        raise SystemExit("cannot determine episode id")
+    gates = new_gates(episode_id)
+    gates["migration"] = {
+        "legacy": True,
+        "from_state_tool_version": state.get("tool_version"),
+        "from_manifest_tool_version": manifest.get("tool_version"),
+        "created_at": now_iso(),
+        "note": args.note,
+    }
+    save_json(gates_path, gates)
+    print(f"created: {gates_path}")
+    print("Next: fill real gate evidence, then validate/transition. No stage was changed.")
 
 
 def transition_cmd(args: argparse.Namespace) -> None:
@@ -176,6 +257,7 @@ def transition_cmd(args: argparse.Namespace) -> None:
     at = now_iso()
     data["current_state"] = target
     data["updated_at"] = at
+    data["tool_version"] = SYSTEM_VERSION
     data.setdefault("history", []).append(
         {"state": target, "at": at, "mode": mode, "note": args.note}
     )
@@ -185,15 +267,21 @@ def transition_cmd(args: argparse.Namespace) -> None:
 
 def show_cmd(args: argparse.Namespace) -> None:
     episode_dir = ensure_episode_dir(args.episode_dir)
-    data = load_json(episode_dir / STATE_FILE)
+    data = {
+        "state": load_json(episode_dir / STATE_FILE),
+        "manifest": load_json(episode_dir / MANIFEST_FILE),
+    }
+    gates = episode_dir / GATES_FILE
+    if gates.exists():
+        data["gates"] = load_json(gates)
     print(json.dumps(data, ensure_ascii=False, indent=2))
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Lightweight episode state machine")
+    p = argparse.ArgumentParser(description="DALI CAT episode state machine V1.3")
     sub = p.add_subparsers(dest="command", required=True)
 
-    init = sub.add_parser("init", help="initialize state + draft manifest")
+    init = sub.add_parser("init", help="initialize state + release manifest + story gates")
     init.add_argument("episode_dir")
     init.add_argument("--id", required=True)
     init.add_argument("--series", required=True)
@@ -204,6 +292,11 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("--note")
     init.set_defaults(func=init_cmd)
 
+    mg = sub.add_parser("migrate-gates", help="add story-gates.json to a legacy episode without changing state")
+    mg.add_argument("episode_dir")
+    mg.add_argument("--note", default="旧剧集重新进入制作，接入 Story OS V1.1 门禁")
+    mg.set_defaults(func=migrate_gates_cmd)
+
     tr = sub.add_parser("transition", help="move to next state or explicitly rewind")
     tr.add_argument("episode_dir")
     tr.add_argument("target", choices=STATES)
@@ -211,7 +304,7 @@ def build_parser() -> argparse.ArgumentParser:
     tr.add_argument("--rewind", action="store_true")
     tr.set_defaults(func=transition_cmd)
 
-    show = sub.add_parser("show", help="show current state")
+    show = sub.add_parser("show", help="show state + manifest + gates")
     show.add_argument("episode_dir")
     show.set_defaults(func=show_cmd)
     return p

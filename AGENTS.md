@@ -1,8 +1,19 @@
 # 项目协作规则（Codex 自动读取）
 
+## Story OS V1.1 执行入口
+
+涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须继续读取仓库根目录 `SKILL.md`。
+
+- `AGENTS.md`：Codex 自动入口与仓库协作规则。
+- `SKILL.md`：Story OS 执行协议。
+- `standards/制作规范_正式版.md`：唯一创作规范权威。
+- `meta/episode-state.json`：唯一机器阶段事实源。
+- `meta/story-gates.json`：门禁证据，不保存 stage，不得成为第二状态机。
+
+
 唯一权威规范：[standards/制作规范_正式版.md](standards/制作规范_正式版.md)
 
-传播评分与发布后数据诊断按 [standards/抖音推流评分与发布后漏斗规范_V1.3.md](standards/抖音推流评分与发布后漏斗规范_V1.3.md) 执行；该文件仅解释主规范 8.4/8.5/12.4/12.5，不建立第二权威，冲突时以主规范为准。V1.3 新增发布时间分层实验与 1h 冷启动快照：1h 仅用于时间实验，不替代主规范正式 6h/24h/48h/7d 验收窗口。
+传播评分与发布后数据诊断按 [standards/抖音推流评分与发布后漏斗规范_V1.4.md](standards/抖音推流评分与发布后漏斗规范_V1.4.md) 执行；该文件仅解释主规范 8.4/8.5/12.4/12.5，不建立第二权威，冲突时以主规范为准。V1.3 新增发布时间分层实验与 1h 冷启动快照：1h 仅用于时间实验，不替代主规范正式 6h/24h/48h/7d 验收窗口。
 
 生产真实性、共享画风和字幕人话化按以下从属执行细则：
 - [standards/风格锚点_流水席_村子_误入小镇_V1.1.md](standards/风格锚点_流水席_村子_误入小镇_V1.1.md)
@@ -21,7 +32,9 @@
 
 ## Episodes 机器状态与发布清单
 
-1. 新建具体剧集时，按 [`episodes/_system/README.md`](episodes/_system/README.md) 初始化 `meta/episode-state.json` 与 `meta/release-manifest.json`；历史剧集不批量伪造状态，只在重新进入制作/发布/复盘时迁移。
+> Story OS V1.1：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
+
+1. 新建具体剧集时，按 [`episodes/_system/README.md`](episodes/_system/README.md) 初始化 `meta/episode-state.json`、`meta/release-manifest.json` 与 `meta/story-gates.json`；历史剧集不批量伪造状态，只在重新进入制作/发布/复盘时迁移。
 2. 机器状态固定为：`IDEA_LOCKED → STORYBOARD_LOCKED → VISUAL_CALIBRATED → PRODUCTION_PASSED → PUBLISH_READY → PUBLISHED → DATA_REVIEWED`。
 3. `episode-state.json` 是阶段事实源；README 的状态文案与其冲突时必须修 README，不得反过来只改机器状态来迁就旧文案。
 4. 正向推进必须使用 `episodes/_system/episode_state.py transition`，只能相邻前进。脚本会先用 `validate_episode.py --target` 验收目标门禁，失败时不得手工越级修改 JSON。
