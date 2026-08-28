@@ -1,17 +1,113 @@
-# dali-cat-story entrypoint V1.6
+# dali-cat-story — Story OS V2.0.3 Adapter Contract
 
-Read repository root `START_HERE.md` first, then root `SKILL.md`.
+> This Skill is a **thin execution adapter** for the repository's canonical Story OS.  
+> It does not own a state machine, does not duplicate engine logic, and must not become a second source of creative or release truth.
 
-- `standards/制作规范_正式版.md` is the only creative-rule authority.
-- `episode-state.json` is the only stage source.
-- `story-gates.json`, `production-ledger.json`, frame reviews and FINAL_CHECKLIST are evidence only; none may become a second state machine.
+## 1. Authority
 
-<!-- STORY_OS_V1_8_ADAPTER_BEGIN -->
-## Story OS V1.8 adapter additions
+1. `standards/制作规范_正式版.md` —唯一创作规则权威。
+2. `<episode>/meta/episode-state.json` —唯一机器阶段事实源。
+3. `<episode>/meta/release-manifest.json` —最终发布版本事实。
+4. `story-gates.json / production-ledger.json / frame-reviews/` —只保存证据，不保存第二套 stage。
+5. 每次执行先读取仓库根 `START_HERE.md` 与根 `SKILL.md`，再按 `standards/AUTHORITY_INDEX.json` 路由当前任务需要的 active 细则。
 
-When the user does not explicitly specify another visual style, resolve the default profile to:
-`M00 / MP4 × 网吧 × 流水席旧数码质感校准版`.
+## 2. Canonical Engine
 
-Do not fake obsolete capture artifacts on a modern device. Capture physics and story era override mother-style texture.
-Before STORYBOARD_LOCKED / VISUAL_CALIBRATED / PUBLISH_READY, respect V1.8 approval/text/release hash gates.
-<!-- STORY_OS_V1_8_ADAPTER_END -->
+所有状态推进、门禁、画幅归一、生产闭环和委托交付能力都由仓库唯一实现：
+
+`episodes/_system`
+
+**禁止**把以下核心实现复制到本 Skill 的 `scripts/` 中：
+
+- `episode_state.py`
+- `validate_episode.py`
+- `machine_gate.py`
+- `evidence_gate.py`
+- `canvas_normalize.py`
+- `delegated_delivery.py`
+- `codex_auto_orchestrator.py`
+
+Skill 只允许保留 wrapper / helper。升级 Story OS 时，优先升级 canonical engine 与本 adapter contract，而不是复制实现。
+
+## 3. Human Golden Path
+
+```text
+Story Lock
+→ Visual Lock
+→ Batch
+→ 逐帧审核 / 必要返修
+→ text audit
+→ Release
+→ 6h / 24h / 48h / 7d 数据回填
+```
+
+人类工作流不能衍生第二套机器状态机。
+
+唯一七阶段仍为：
+
+```text
+IDEA_LOCKED
+→ STORYBOARD_LOCKED
+→ VISUAL_CALIBRATED
+→ PRODUCTION_PASSED
+→ PUBLISH_READY
+→ PUBLISHED
+→ DATA_REVIEWED
+```
+
+## 4. V2.0.3 Capability Contract
+
+本 adapter 必须识别并服从以下 canonical capabilities：
+
+- `single_state_machine`
+- `multi_runtime`
+- `machine_gate`
+- `evidence_gate`
+- `production_ledger`
+- `frame_reviews`
+- `canvas_normalization`
+- `deterministic_postflight`
+- `delegated_delivery`
+- `release_manifest`
+- `minimal_edit_contract`
+
+支持的执行环境由根 Story OS contract 决定；当前 contract 覆盖 CODEX / ChatGPT Work / ChatGPT Web。任何 runtime 都不得绕开 Story Lock、Visual Lock、最小修改协议和 Release Lock。
+
+## 5. Canonical Commands
+
+初始化/阶段推进：
+
+```bash
+python episodes/_system/episode_state.py init <episode_dir> --id <id> --series <series> --title "<title>" --frame-count <n>
+python episodes/_system/episode_state.py transition <episode_dir> <TARGET> --note "..."
+```
+
+验证：
+
+```bash
+python episodes/_system/validate_episode.py <episode_dir>
+python episodes/_system/machine_gate.py <episode_dir> --target <TARGET>
+python episodes/_system/evidence_gate.py <episode_dir> --target <TARGET>
+python episodes/_system/contract_sync.py
+```
+
+不要手改 `current_state` 越级。
+
+## 6. Minimal-edit Contract
+
+- `subtitle_only`：底图由 SHA-256 锁定，只改字幕层/文本资产。
+- `crop_only`：只允许改变构图裁切，不重生内容。
+- `regenerate_frame`：只允许重做被点名帧。
+- `regenerate_sequence`：只允许重做明确授权的连续区间。
+- 未点名且已通过帧继续锁定，禁止“顺手统一重做”。
+- Visual Lock 通过前不得进入正式 Batch。
+
+## 7. Production Closure
+
+Agent/worker 返回 `rc=0` 不等于剧集 COMPLETE。正式委托执行必须以 canonical deterministic postflight、release evidence 与真实 publish asset 为准；approved fallback 不得伪装成正式交付。
+
+## 8. V2.0.3 Hardening Rule
+
+V2.0.3 只做契约收敛与同步硬化，不新增第二个字幕审核管线、不新增 Capture Gate、不引入第二套 review state。
+
+> **Invariant: Skill is an adapter, not a Story OS copy. Canonical engine exists only under `episodes/_system`.**

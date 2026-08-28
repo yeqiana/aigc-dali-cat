@@ -1,0 +1,21 @@
+{
+    "story_os_version":  "2.0.3",
+    "release_name":  "Hardening",
+    "installed_at":  "2026-08-28T18:13:47.4322148+08:00",
+    "installer":  "DaliCat_StoryOS_V2.0.3_OneClick",
+    "canonical_engine":  "episodes/_system",
+    "changes":  [
+                    "story_os_manifest",
+                    "contract_sync",
+                    "thin_adapter_contract_sync",
+                    "stale_adapter_docs_cleanup",
+                    "adapter_smoke_tests",
+                    "ci_contract_hardening"
+                ],
+    "deferred":  [
+                     "codex_plugin_packaging",
+                     "conditional_stop_hook",
+                     "new_caption_audit_pipeline",
+                     "capture_feasibility_precheck"
+                 ]
+}

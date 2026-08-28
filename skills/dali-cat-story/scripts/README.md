@@ -1,15 +1,33 @@
-# Validators
+# dali-cat-story adapter scripts — V2.0.3
+
+本目录只保存 **thin adapter wrappers / helpers**，不是第二套 Story OS engine。
+
+## 本目录真实文件
 
 | Script | Purpose |
 |---|---|
-| `bootstrap_episode.py` | 为新单集创建 `episode.yaml` 与字幕源模板 |
-| `validate_episode.py` | schema、阶段状态、故事门禁、反同质化、四张视觉准入 |
-| `validate_package.py` | publish 图数、连续编号、1080×1920 尺寸 |
-| `validate_subtitles.py` | 声音卡、逐图字幕/静默覆盖、重复/AI腔提示、线索回收 |
-| `validate_review_state.py` | review 状态与 release_required |
-| `validate_locked_edits.py` | SHA-256 锁定底图/资产不被误改 |
-| `hash_asset.py` | 生成锁定资产 SHA-256 |
-| `validate_all.py` | 单集总门禁 |
-| `validate_repo.py` | 扫描仓库内已有 `episode.yaml`；兼容未迁移旧集 |
+| `bootstrap_episode.py` | compatibility wrapper；转发到 `episodes/_system/episode_state.py init` |
+| `hash_asset.py` | 轻量 SHA-256 helper；不管理 stage |
+| `validate_all.py` | compatibility wrapper；转发到 `episodes/_system/validate_episode.py` |
 
-开发阶段按 `stage` 渐进启用规则；`--release` 会强制打开发布门禁。
+## Canonical Engine 在哪里
+
+以下能力全部只存在于 `episodes/_system/`：
+
+- `episodes/_system/episode_state.py`
+- `episodes/_system/validate_episode.py`
+- `episodes/_system/machine_gate.py`
+- `episodes/_system/evidence_gate.py`
+- `episodes/_system/canvas_normalize.py`
+- `episodes/_system/delegated_delivery.py`
+- `episodes/_system/codex_auto_orchestrator.py`
+- `episodes/_system/contract_sync.py`
+
+不要为了让 Skill “看起来完整”而复制这些实现。Skill 通过 wrapper 或直接调用 canonical path 使用它们。
+
+## Contract self-check
+
+```bash
+python episodes/_system/contract_sync.py
+python episodes/_system/test_v203_contract_hardening.py -v
+```

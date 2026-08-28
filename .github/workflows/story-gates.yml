@@ -7,6 +7,7 @@ on:
       - "standards/**"
       - "runtimes/**"
       - "skills/dali-cat-story/**"
+      - ".agents/skills/dali-cat-story/**"
       - "SKILL.md"
       - "AGENTS.md"
       - ".github/workflows/story-gates.yml"
@@ -16,6 +17,7 @@ on:
       - "episodes/**/meta/**"
       - "episodes/_system/**"
       - "skills/dali-cat-story/**"
+      - ".agents/skills/dali-cat-story/**"
       - "standards/templates/**"
       - "SKILL.md"
       - "AGENTS.md"
@@ -44,9 +46,13 @@ jobs:
           python episodes/_system/test_v2_multi_runtime.py -v
           python episodes/_system/test_v201_engineering.py -v
           python episodes/_system/test_v202_production_closure.py -v
+          python episodes/_system/test_v203_contract_hardening.py -v
           python episodes/_system/canvas_normalize.py self-test
           python episodes/_system/codex_subscription_image.py self-test
           python episodes/_system/codex_auto_orchestrator.py self-test
+      - name: Validate Story OS contract sync
+        run: python episodes/_system/contract_sync.py
+
       - name: Validate tracked episode metadata
         run: python episodes/_system/validate_episode.py --all --metadata-only
       - name: Validate strict machine evidence metadata

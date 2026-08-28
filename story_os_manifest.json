@@ -1,0 +1,39 @@
+{
+  "story_os_version": "2.0.3",
+  "contract_schema": 1,
+  "release_name": "Hardening",
+  "canonical_engine": "episodes/_system",
+  "canonical_state_source": "<episode>/meta/episode-state.json",
+  "canonical_creative_authority": "standards/制作规范_正式版.md",
+  "stages": [
+    "IDEA_LOCKED",
+    "STORYBOARD_LOCKED",
+    "VISUAL_CALIBRATED",
+    "PRODUCTION_PASSED",
+    "PUBLISH_READY",
+    "PUBLISHED",
+    "DATA_REVIEWED"
+  ],
+  "capabilities": [
+    "single_state_machine",
+    "multi_runtime",
+    "machine_gate",
+    "evidence_gate",
+    "production_ledger",
+    "frame_reviews",
+    "canvas_normalization",
+    "deterministic_postflight",
+    "delegated_delivery",
+    "release_manifest",
+    "minimal_edit_contract"
+  ],
+  "adapters": [
+    "skills/dali-cat-story",
+    ".agents/skills/dali-cat-story"
+  ],
+  "invariants": [
+    "Skill is an adapter, not a Story OS copy.",
+    "Canonical engine exists only under episodes/_system.",
+    "Evidence files never become a second stage source."
+  ]
+}
