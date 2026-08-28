@@ -1,0 +1,17 @@
+{
+  "story_os_version": "2.0.1",
+  "edition": "Multi-Runtime Engineering Hardening",
+  "from_version": "2.0",
+  "installed_at": "2026-08-28T17:05:55.813252+08:00",
+  "backup": ".story-os-upgrade-backups/story-os-v2.0.1-20260828-170555",
+  "features": [
+    "version_unification",
+    "stable_evidence_gate",
+    "codex_subscription_image_backend",
+    "codex_full_auto_orchestrator",
+    "delegated_auto_review_provenance",
+    "runtime_capabilities",
+    "ci_runtime_coverage",
+    "v201_integration_tests"
+  ]
+}

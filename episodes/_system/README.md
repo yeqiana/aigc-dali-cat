@@ -1,6 +1,6 @@
-# Episodes 状态机 + Story OS 门禁 V1.8
+# Episodes 状态机 + Story OS 门禁 V2.0.1
 
-本目录只建立一套机器阶段状态；V1.8 在既有 Machine Evidence / V1.7 Reliability 之上增加默认视觉路由与证据 SHA 门禁，不新增第二状态机。
+本目录只建立一套机器阶段状态；V2.0.1 延续 V1.8 引入的证据 SHA 门禁，并增加稳定 evidence gate 与可执行 Codex runtime，不新增第二状态机。
 
 ## 核心事实源
 
@@ -25,7 +25,7 @@ IDEA_LOCKED
 → DATA_REVIEWED
 ```
 
-正向只能相邻推进；正向推进依次运行 `validate_episode.py`、`machine_gate.py`、`v18_gate.py`。任一失败，状态不变化。
+正向只能相邻推进；正向推进依次运行 `validate_episode.py`、`machine_gate.py`、`evidence_gate.py`。任一失败，状态不变化。
 
 ## 新项目
 

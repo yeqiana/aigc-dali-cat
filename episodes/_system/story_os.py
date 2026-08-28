@@ -68,7 +68,7 @@ def cmd_next(ep: Path):
     print("Precheck:")
     print(f"  python episodes/_system/validate_episode.py \"{ep}\" --target {nxt}")
     print(f"  python episodes/_system/machine_gate.py \"{ep}\" --target {nxt}")
-    print(f"  python episodes/_system/v18_gate.py \"{ep}\" --target {nxt}")
+    print(f"  python episodes/_system/evidence_gate.py \"{ep}\" --target {nxt}")
     print("Transition after PASS:")
     print(f"  python episodes/_system/episode_state.py transition \"{ep}\" {nxt} --note \"...\"")
     return 0
@@ -79,7 +79,7 @@ def forward(script, args):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Story OS V2.0 Multi-Runtime CLI")
+    ap = argparse.ArgumentParser(description="Story OS V2.0.1 Multi-Runtime CLI")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("doctor")
     p = sub.add_parser("status"); p.add_argument("episode_dir")
@@ -94,11 +94,15 @@ def main():
     p = sub.add_parser("approval"); p.add_argument("episode_dir"); p.add_argument("approval_cmd", choices=["story", "visual", "verify", "status"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("release-package"); p.add_argument("episode_dir"); p.add_argument("release_cmd", choices=["build", "verify", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     # Story OS V2.0 Multi-Runtime
-    p = sub.add_parser("runtime"); p.add_argument("runtime_cmd", choices=["detect", "contract", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("runtime"); p.add_argument("runtime_cmd", choices=["detect", "capabilities", "contract", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("checkpoint"); p.add_argument("episode_dir"); p.add_argument("checkpoint_cmd", choices=["init", "show", "set"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("capture-profile"); p.add_argument("profile_cmd", choices=["validate", "list", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("regression"); p.add_argument("regression_cmd", choices=["run", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("fingerprint"); p.add_argument("fingerprint_cmd", choices=["init", "compare", "register"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
+    # Story OS V2.0.1 executable production
+    p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--resume", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=7200)
+    p = sub.add_parser("image-backend"); p.add_argument("backend_cmd", choices=["generate", "self-test"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("delegated-delivery"); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     args = ap.parse_args()
 
     if args.cmd == "doctor":
@@ -109,7 +113,17 @@ def main():
         return forward("capture_profile.py", [args.profile_cmd, *args.extra])
     if args.cmd == "regression":
         return forward("story_regression.py", [args.regression_cmd, *args.extra])
+    if args.cmd == "image-backend":
+        return forward("codex_subscription_image.py", [args.backend_cmd, *args.extra])
     ep = Path(args.episode_dir).resolve()
+    if args.cmd == "run":
+        mode = "resume" if args.resume else "run"
+        extra = [mode, str(ep), "--full-auto"] if args.full_auto else [mode, str(ep)]
+        if args.codex: extra += ["--codex", args.codex]
+        extra += ["--timeout", str(args.timeout)]
+        return forward("codex_auto_orchestrator.py", extra)
+    if args.cmd == "delegated-delivery":
+        return forward("delegated_delivery.py", [str(ep), *args.extra])
     if args.cmd == "checkpoint":
         return forward("runtime_checkpoint.py", [args.checkpoint_cmd, str(ep), *args.extra])
     if args.cmd == "fingerprint":

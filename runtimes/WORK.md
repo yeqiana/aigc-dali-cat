@@ -1,15 +1,7 @@
-# WORK Runtime V2.0
+# WORK Runtime V2.0.1
 
-ChatGPT Work 是“一次下达任务、尽量做到最终交付”的主入口。
+ChatGPT Work 仍是“一次下达任务、尽量做到最终交付”的主入口。用户给 GitHub 地址、story 分支和目标任务并要求全自动后，读取 `START_HERE.md` 与本文件，连续执行 Golden Path。
 
-用户给 GitHub 地址、story 分支和目标任务并要求“全自动”后：
-- 先读 `START_HERE.md`，按权威索引最小读取必要规范。
-- 不把任务降级成只给提示词；当前 Work 工具能直接完成的就直接完成。
-- 先三张真实性校准，再四张视觉准入，再 Batch。
-- 每帧最多一次内容返修。
-- 不在每张图后问“继续吗”。
-- 只有登录、权限、安全确认、工具限制或不可消解硬冲突才暂停。
-- 能生成最终文件/ZIP时直接交付。
+Work 不需要调用本地 Codex orchestrator；当前 Work 工具可以读写工作区、调用图片工具、保存文件时就直接完成。只有登录/权限/安全确认/产品工具边界或一次内容返修仍失败时才暂停。
 
-checkpoint 优先写仓库 `<episode>/meta/runtime-checkpoint.json`；仓库不可写时写 Work workspace。
-自动审查记为 `delegated_auto_review`。
+checkpoint 优先写仓库 `<episode>/meta/runtime-checkpoint.json`，否则写 Work workspace。自动审查记为 `delegated_auto_review`，不得伪称用户亲眼审核。能收集最终文件时直接生成交付 ZIP。

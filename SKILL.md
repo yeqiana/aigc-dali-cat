@@ -1,11 +1,11 @@
-# Dali Cat Story OS — Repository Execution Contract V2.0
+# Dali Cat Story OS — Repository Execution Contract V2.0.1
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
-## Story OS V2.0 Golden Path
+## Story OS V2.0.1 Golden Path
 
 **第一入口：先读 `START_HERE.md`。** 该文件只负责路由，不建立第二套创作规范。
 
@@ -312,3 +312,9 @@ python episodes/_system/story_os.py text-revision <episode_dir> start --file <pa
 
 用户已明确授权“全自动”时，不在正常 Story/Visual/Repair/Release 节点重复询问“是否继续”；只在硬冲突、权限/安全确认、一次内容返修后仍失败等情况暂停。
 <!-- STORY_OS_V2_MULTI_RUNTIME_SKILL_END -->
+
+<!-- STORY_OS_V2_0_1_SKILL_BEGIN -->
+## Story OS V2.0.1 — Executable CODEX Production
+
+CODEX runtime 提供机器可执行入口 `story_os.py run <episode> --full-auto`，并提供基于当前 Codex ChatGPT 登录态的单图 backend `codex_subscription_image.py`。这两者只补执行能力，不建立第二状态机、不改变主规范、不伪造人工批准。
+<!-- STORY_OS_V2_0_1_SKILL_END -->

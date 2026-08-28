@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "2.0",
+  "story_os_version": "2.0.1",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -109,6 +109,12 @@
       "authority": "active_subordinate",
       "scope": "capture_physics_and_reference_budget",
       "active": true
+    },
+    {
+      "path": "standards/Codex全自动编排与订阅态生图规范_V2.0.1.md",
+      "authority": "active_subordinate",
+      "scope": "codex_auto_orchestration_and_subscription_image",
+      "active": true
     }
   ],
   "rules": {
@@ -133,7 +139,8 @@
         "WEB"
       ],
       "ask_user_to_choose": false,
-      "second_stage_forbidden": true
+      "second_stage_forbidden": true,
+      "stable_evidence_gate": "episodes/_system/evidence_gate.py"
     },
     "capture_profile_registry": {
       "path": "standards/capture_profiles/index.json",
@@ -148,6 +155,12 @@
       "account_registry": "reports/account-pattern-registry.json",
       "recent_compare_count": 5,
       "mechanism_veto": true
+    },
+    "codex_auto_orchestrator": {
+      "path": "episodes/_system/codex_auto_orchestrator.py",
+      "image_backend": "episodes/_system/codex_subscription_image.py",
+      "approval_basis": "delegated_auto_review",
+      "may_fake_user_approval": false
     }
   }
 }

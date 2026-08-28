@@ -78,7 +78,7 @@ def check_text_audit(ep: Path, manifest: dict) -> list[str]:
         errors.append('text audit summary.passed must be true')
     source_sha = str(report.get('source_sha256') or '')
     if len(source_sha) != 64:
-        errors.append('text-audit.json missing source_sha256; rerun Story OS V1.8 audit-text')
+        errors.append('text-audit.json missing source_sha256; rerun Story OS audit-text')
     captions = resolve_repo_file((manifest.get('artifacts') or {}).get('captions'))
     if captions is None:
         errors.append('manifest.artifacts.captions missing/unreadable')
@@ -108,7 +108,7 @@ def run_gate(ep: Path, target: str) -> tuple[bool, list[str]]:
     state = load_json(ep / 'meta/episode-state.json')
     manifest = load_json(ep / 'meta/release-manifest.json')
     if not is_v18_episode(state, manifest):
-        return True, ['legacy/pre-V1.8 episode: V1.8 additional gate not enforced until episode metadata is upgraded']
+        return True, ['legacy/pre-V1.8 episode: evidence gate not enforced until episode metadata is upgraded']
     idx = STATES.index(target)
     errors: list[str] = []
 
@@ -127,7 +127,7 @@ def run_gate(ep: Path, target: str) -> tuple[bool, list[str]]:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description='Story OS V1.8 incremental hard gate')
+    ap = argparse.ArgumentParser(description='Compatibility evidence gate implementation introduced in Story OS V1.8')
     ap.add_argument('episode_dir')
     ap.add_argument('--target', required=True, choices=STATES)
     args = ap.parse_args()
@@ -135,7 +135,7 @@ def main() -> int:
     if not ep.is_dir():
         raise SystemExit(f'episode directory not found: {ep}')
     ok, messages = run_gate(ep, args.target)
-    print(f"V1.8 GATE {'PASS' if ok else 'FAIL'} | target={args.target}")
+    print(f"EVIDENCE COMPAT GATE {'PASS' if ok else 'FAIL'} | target={args.target}")
     for msg in messages:
         print(('INFO: ' if ok else 'FAIL: ') + msg)
     return 0 if ok else 2

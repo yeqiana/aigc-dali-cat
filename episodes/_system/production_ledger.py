@@ -437,7 +437,14 @@ def cmd_authorize_repair(args: argparse.Namespace) -> None:
     if frame.get("content_repairs_used", 0) >= 1:
         raise SystemExit("content repair limit reached")
     frame["status"] = "REPAIR_AUTHORIZED"
-    frame["repair_authorization"] = {"at": now_iso(), "note": args.note, "user_approved": True}
+    delegated = bool(getattr(args, "delegated_auto", False))
+    frame["repair_authorization"] = {
+        "at": now_iso(),
+        "note": args.note,
+        "user_approved": not delegated,
+        "delegated_auto_review": delegated,
+        "approval_basis": "delegated_auto_review" if delegated else "direct_user_review",
+    }
     data["updated_at"] = now_iso()
     save_json(path, data)
     print(f"{key}: REPAIR_AUTHORIZED")
@@ -654,6 +661,7 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("episode_dir")
     s.add_argument("--frame", required=True)
     s.add_argument("--note", required=True)
+    s.add_argument("--delegated-auto", action="store_true", help="continuous-execution agent approval; does not claim direct user review")
     s.set_defaults(func=cmd_authorize_repair)
 
     s = sub.add_parser("promote", help="copy current passed candidate into production/approved without overwriting source")

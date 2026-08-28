@@ -1,6 +1,6 @@
 # 项目协作规则（Codex 自动读取）
 
-## Story OS V2.0 执行入口
+## Story OS V2.0.1 执行入口
 
 涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须先读取仓库根目录 `START_HERE.md`，再读取 `SKILL.md`。
 
@@ -38,7 +38,7 @@ Codex 不再被全局限制为“只能生成网页交接单”。当前 Codex �
 
 ## Episodes 机器状态与发布清单
 
-> Story OS V1.8：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
+> Story OS V2.0.1：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
 
 1. 新建具体剧集时，按 [`episodes/_system/README.md`](episodes/_system/README.md) 初始化 `meta/episode-state.json`、`meta/release-manifest.json` 与 `meta/story-gates.json`；历史剧集不批量伪造状态，只在重新进入制作/发布/复盘时迁移。
 2. 机器状态固定为：`IDEA_LOCKED → STORYBOARD_LOCKED → VISUAL_CALIBRATED → PRODUCTION_PASSED → PUBLISH_READY → PUBLISHED → DATA_REVIEWED`。
@@ -67,3 +67,11 @@ Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / MP4 �
 
 V1.8 推进时除原 `validate_episode.py + machine_gate.py` 外，还必须通过 `v18_gate.py`：Story/Visual Approval SHA、最新 Text Audit、Release Package SHA 都不得漂移。
 <!-- STORY_OS_V1_8_AGENTS_END -->
+
+<!-- STORY_OS_V2_0_1_AGENTS_BEGIN -->
+## V2.0.1 Codex 可执行全自动
+
+在 CODEX runtime 且用户明确要求“全自动执行 / 做到最终交付”时，优先使用 `python episodes/_system/story_os.py run <episode_dir> --full-auto` 或遵循同等底层流程。不要再把 CODEX runtime 降级成只写交接提示词。
+
+自动返修必须记录为 `delegated_auto_review`；正式 Story/Visual/Release 的 `user_approved` 只能来自真实直接批准。外部证据门禁统一调用 `evidence_gate.py`。
+<!-- STORY_OS_V2_0_1_AGENTS_END -->

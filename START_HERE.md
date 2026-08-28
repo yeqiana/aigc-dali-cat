@@ -1,4 +1,4 @@
-# Dali Cat Story OS — START HERE V2.0
+# Dali Cat Story OS — START HERE V2.0.1
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
@@ -217,3 +217,17 @@ python episodes/_system/story_os.py release-package <episode_dir> build --user-a
 
 统一恢复证据：`<episode>/meta/runtime-checkpoint.json`。它不是 stage。
 <!-- STORY_OS_V2_MULTI_RUNTIME_END -->
+
+<!-- STORY_OS_V2_0_1_ENGINEERING_BEGIN -->
+## 12. V2.0.1 工程补强
+
+CODEX runtime 新增一键入口：
+
+```bash
+python episodes/_system/story_os.py run <episode_dir> --full-auto
+```
+
+它使用当前 Codex CLI 登录态启动独立全自动 worker；正式图片可通过 `codex_subscription_image.py` 落成真实文件，不要求 API Key。全自动审查统一记为 `delegated_auto_review`，不得伪造 `direct_user_review` 或 Release Lock。
+
+证据门禁外部稳定名统一为 `evidence_gate.py`；`v18_gate.py` 只作为历史兼容实现保留。
+<!-- STORY_OS_V2_0_1_ENGINEERING_END -->
