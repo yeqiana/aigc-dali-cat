@@ -269,3 +269,24 @@ python episodes/_system/machine_gate.py --all --metadata-only
 - 结尾是否产生回看价值
 
 这些仍必须按主规范人工终审。机器只负责：**人工已经做过判断后，不允许证据缺失、状态漂移或返工越界。**
+
+<!-- STORY_OS_V1_7_RELIABILITY_BEGIN -->
+## Story OS V1.7 — Production Reliability
+
+V1.7 不新增 episode stage，只增加生产可靠性证据与文字专修事务：
+
+- `episodes/_system/transport_guard.py`：技术重试请求指纹锁、失败分类、熔断；技术失败不计内容返修。
+- `episodes/_system/text_audit.py`：字幕硬项 + AI 腔警告，只审计不自动改稿。
+- `episodes/_system/text_revision.py`：文字专修 backup → diff → audit → submit → approve/revert；锁定图片/reference/manifest/state 不得变化。
+- `meta/transport-state.json` 与 `meta/text-revisions/` 都是证据/事务，不是第二状态机。
+
+常用入口：
+
+```bash
+python episodes/_system/story_os.py transport <episode_dir> preflight <frame>
+python episodes/_system/story_os.py audit-text <episode_dir> --file <subtitles.yaml>
+python episodes/_system/story_os.py text-revision <episode_dir> start --file <path>
+```
+
+详细执行见 `standards/生产可靠性与文本事务规范_V1.0.md`。
+<!-- STORY_OS_V1_7_RELIABILITY_END -->

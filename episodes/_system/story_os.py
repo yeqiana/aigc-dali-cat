@@ -78,17 +78,27 @@ def forward(script, args):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Story OS V1.6 Golden Path CLI")
+    ap = argparse.ArgumentParser(description="Story OS V1.7 Golden Path CLI")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("doctor")
     p = sub.add_parser("status"); p.add_argument("episode_dir")
     p = sub.add_parser("next"); p.add_argument("episode_dir")
     p = sub.add_parser("checklist"); p.add_argument("episode_dir"); p.add_argument("--no-validators", action="store_true")
+    # Story OS V1.7 reliability adapters (evidence/transaction only; no new episode stage)
+    p = sub.add_parser("audit-text"); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("transport"); p.add_argument("episode_dir"); p.add_argument("transport_cmd", choices=["preflight", "failure", "success", "status"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("text-revision"); p.add_argument("episode_dir"); p.add_argument("revision_cmd", choices=["start", "diff", "submit", "approve", "revert", "status"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     args = ap.parse_args()
 
     if args.cmd == "doctor":
         return forward("story_os_doctor.py", [])
     ep = Path(args.episode_dir).resolve()
+    if args.cmd == "audit-text":
+        return forward("text_audit.py", [str(ep), *args.extra])
+    if args.cmd == "transport":
+        return forward("transport_guard.py", [args.transport_cmd, str(ep), *args.extra])
+    if args.cmd == "text-revision":
+        return forward("text_revision.py", [args.revision_cmd, str(ep), *args.extra])
     if args.cmd == "status":
         return cmd_status(ep)
     if args.cmd == "next":

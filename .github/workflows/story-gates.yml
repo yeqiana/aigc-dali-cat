@@ -35,6 +35,7 @@ jobs:
         run: |
           python episodes/_system/test_validator.py -v
           python episodes/_system/test_machine_gate.py -v
+          python episodes/_system/test_production_reliability.py -v
       - name: Validate tracked episode metadata
         run: python episodes/_system/validate_episode.py --all --metadata-only
       - name: Validate strict machine evidence metadata

@@ -150,3 +150,26 @@ python episodes/_system/story_os.py status <episode_dir>
 ## 8. 一句话原则
 
 **规则可以很多，决策入口只能有一个。**
+
+<!-- STORY_OS_V1_7_RELIABILITY_BEGIN -->
+## 9. V1.7 生产可靠性
+
+Golden Path 七阶段不变。V1.7 只在两个位置增加事务保护：
+
+```text
+Batch 生图请求
+→ production_ledger begin
+→ transport_guard preflight
+→ 调用生图
+→ success / technical failure
+
+已锁图片只修文字
+→ text_revision start
+→ 编辑
+→ diff + text_audit
+→ submit
+→ 用户明确批准 approve / 不满意 revert
+```
+
+技术失败不得消耗内容返修次数；技术重试不得改变请求指纹。文字专修不得触碰批准/发布图片、reference、release manifest、production ledger、episode state 或 story gates。
+<!-- STORY_OS_V1_7_RELIABILITY_END -->

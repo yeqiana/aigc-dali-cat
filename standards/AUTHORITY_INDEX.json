@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "1.6",
+  "story_os_version": "1.7",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -72,6 +72,12 @@
       "path": "standards/生产引擎与画幅规范_V1.2.md",
       "authority": "active_subordinate",
       "scope": "production_engine_and_canvas",
+      "active": true
+    },
+    {
+      "path": "standards/生产可靠性与文本事务规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "production_reliability_and_text_transactions",
       "active": true
     },
     {
