@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "2.0.3.1",
+  "story_os_version": "2.0.3.2",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -54,12 +54,13 @@
     },
     {
       "path": "standards/最终字幕视觉规范_V1.1.md",
-      "authority": "active_subordinate",
+      "authority": "superseded",
       "scope": "caption_visual",
-      "active": true,
+      "active": false,
       "supersedes": [
         "standards/最终字幕视觉规范_V1.0.md"
-      ]
+      ],
+      "superseded_by": "standards/最终字幕视觉规范_V1.2.md"
     },
     {
       "path": "standards/最终字幕视觉规范_V1.0.md",
@@ -120,6 +121,21 @@
       "path": "standards/生产闭环与委托批准规范_V2.0.2.md",
       "authority": "active_subordinate",
       "scope": "production_closure_delegated_approval",
+      "active": true
+    },
+    {
+      "path": "standards/最终字幕视觉规范_V1.2.md",
+      "authority": "active_subordinate",
+      "scope": "caption_visual",
+      "active": true,
+      "supersedes": [
+        "standards/最终字幕视觉规范_V1.1.md"
+      ]
+    },
+    {
+      "path": "standards/创作执行强制规范_V2.0.3.2.md",
+      "authority": "active_subordinate",
+      "scope": "creative_enforcement",
       "active": true
     }
   ],
@@ -182,6 +198,15 @@
         "PAUSED",
         "BLOCKED"
       ]
+    },
+    "creative_enforcement": {
+      "story_review": "episodes/_system/story_review.py",
+      "story_review_evidence": "meta/story-semantic-review.json",
+      "visual_review": "episodes/_system/visual_review.py",
+      "visual_review_evidence": "meta/visual-profile-review.json",
+      "subtitle_renderer": "episodes/_system/subtitle_layout.py",
+      "subtitle_layout_evidence": "meta/subtitle-layout-audit.json",
+      "new_state_forbidden": true
     }
   }
 }

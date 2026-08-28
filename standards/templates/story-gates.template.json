@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "tool_version": "2.0.3.1",
+  "tool_version": "2.0.3.2",
   "episode_id": "__EPISODE_ID__",
   "visual_profile": {
     "mode": "default",
@@ -22,7 +22,8 @@
     ],
     "escalation_frames": [],
     "climax_frame": null,
-    "payoff_frame": null
+    "payoff_frame": null,
+    "semantic_review_path": "meta/story-semantic-review.json"
   },
   "visual": {
     "admission_frames": [],
@@ -95,11 +96,13 @@
       "required": false,
       "required_anchors": [],
       "items": []
-    }
+    },
+    "profile_review_path": "meta/visual-profile-review.json"
   },
   "subtitles": {
     "required": true,
-    "sound_card_completed": false
+    "sound_card_completed": false,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
   },
   "locks": {
     "edit_mode": "none",

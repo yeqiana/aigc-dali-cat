@@ -13,6 +13,7 @@ import time
 from pathlib import Path
 
 from canvas_normalize import normalize, read_canvas
+from visual_profile import compile_prompt_contract
 
 PNG = b'\x89PNG\r\n\x1a\n'
 JPEG = b'\xff\xd8\xff'
@@ -48,19 +49,26 @@ def provider_size(width: int, height: int) -> str:
         return '1024x1536'
     return '1024x1280'
 
-def worker_prompt(scene: str, refs: list[Path], size: str) -> str:
+def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str | None = None) -> str:
     reference_lines = '\n'.join(f'- reference {i}: {p.name}' for i, p in enumerate(refs, 1)) or '- no references'
+    visual_block = (
+        f'<visual_contract>\n{visual_contract.strip()}\n</visual_contract>\n\n'
+        if visual_contract and visual_contract.strip() else ''
+    )
     return (
         'You are an isolated Story OS image worker. Use image_generation exactly once.\n'
         f'{reference_lines}\n'
         'Use attached images only as continuity references required by the scene. '
         f'Do not invent a different story. Request {size}.\n\n'
+        f'{visual_block}'
         f'<scene>\n{scene}\n</scene>\n\n'
+        'The visual contract is mandatory production context, not optional inspiration. '
         'After generation, save or copy the actual generated candidate to ./out.png. '
         'Do not synthesize an image with Python or reuse a cached image. Reply only after out.png exists.'
     )
 
-def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None) -> float:
+
+def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None) -> float:
     scene = prompt_path.read_text(encoding='utf-8').strip()
     if not scene:
         raise BackendError('prompt is empty')
@@ -86,7 +94,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             try:
                 completed = subprocess.run(
                     cmd,
-                    input=worker_prompt(scene, local_refs, size),
+                    input=worker_prompt(scene, local_refs, size, visual_contract),
                     text=True,
                     stdout=log_handle,
                     stderr=subprocess.STDOUT,
@@ -126,11 +134,12 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     prompt_path, refs, output, log = common_validate(args)
     ep = args.episode_dir.expanduser().resolve()
     width, height, aspect = read_canvas(ep)
+    visual = compile_prompt_contract(ep)
     size = provider_size(width, height)
     raw_dir = ep / 'production' / 'raw'
     raw_dir.mkdir(parents=True, exist_ok=True)
     raw_output = raw_dir / f'{int(args.frame):02d}-{int(time.time())}.png'
-    elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex)
+    elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'])
     if output.exists() and args.overwrite:
         output.unlink()
     norm = normalize(raw_output, output, width, height)
@@ -145,6 +154,12 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         'target_size': [width, height],
         'aspect_ratio': aspect,
         'references': [str(p) for p in refs],
+        'visual_profile': {
+            'profile_id': visual['profile_id'],
+            'profile_path': visual['profile_path'],
+            'profile_sha256': visual['profile_sha256'],
+            'capture_profile': visual['capture_profile'],
+        },
         'normalization': norm,
         'elapsed_seconds': elapsed,
     }
@@ -153,7 +168,7 @@ def generate_legacy(args: argparse.Namespace) -> dict:
     prompt_path, refs, output, log = common_validate(args)
     size = args.size
     tmp_raw = output.with_name('.' + output.name + '.raw.png')
-    elapsed = invoke_codex(prompt_path, refs, tmp_raw, log, size, args.timeout, args.codex)
+    elapsed = invoke_codex(prompt_path, refs, tmp_raw, log, size, args.timeout, args.codex, None)
     if output.exists() and args.overwrite:
         output.unlink()
     os.replace(tmp_raw, output)
@@ -185,6 +200,7 @@ def main() -> int:
     args = ap.parse_args()
     if args.cmd == 'self-test':
         assert worker_prompt('x', [], '1024x1280').count('image_generation') == 1
+        assert '<visual_contract>' in worker_prompt('x', [], '1024x1280', 'reality first')
         assert provider_size(1080, 1350) == '1024x1280'
         assert provider_size(1080, 1920) == '1024x1536'
         assert not valid_image(Path('__missing__'))

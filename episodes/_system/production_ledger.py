@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
+from visual_profile import compile_prompt_contract
 
 LEDGER_FILE = Path("meta/production-ledger.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
@@ -281,6 +282,107 @@ def parse_references(values: list[str] | None) -> list[dict]:
     return out
 
 
+def _version_tuple(raw: object) -> tuple[int, ...]:
+    try:
+        return tuple(int(x) for x in str(raw or "").split("."))
+    except ValueError:
+        return (0,)
+
+
+def creative_enforcement_required(ep: Path) -> bool:
+    for rel in ("meta/episode-state.json", "meta/release-manifest.json"):
+        p = ep / rel
+        if not p.is_file():
+            continue
+        try:
+            if _version_tuple(load_json(p).get("tool_version")) >= (2, 0, 3, 2):
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def approved_capture_style_source(ep: Path, ref_path: str) -> str | None:
+    gates_path = ep / "meta/story-gates.json"
+    if not gates_path.is_file():
+        return None
+    gates = load_json(gates_path)
+    visual = gates.get("visual") or {}
+    calibration = visual.get("calibration") or {}
+    passed_paths = set()
+    if isinstance(calibration.get("items"), list):
+        for item in calibration["items"]:
+            if isinstance(item, dict) and item.get("decision") in {"passed", "pass"}:
+                raw = item.get("path") or item.get("asset_path")
+                if raw:
+                    try:
+                        passed_paths.add(repo_relative(Path(raw).resolve() if Path(raw).is_absolute() else repo_root() / raw))
+                    except Exception:
+                        pass
+    else:
+        for key in ("baseline", "worst_condition", "first_major_anomaly"):
+            item = calibration.get(key) or {}
+            if item.get("decision") in {"passed", "pass"}:
+                raw = item.get("asset_path") or item.get("path")
+                if raw:
+                    try:
+                        passed_paths.add(repo_relative(Path(raw).resolve() if Path(raw).is_absolute() else repo_root() / raw))
+                    except Exception:
+                        pass
+    if ref_path in passed_paths:
+        return "approved_calibration"
+
+    for item in ((visual.get("references") or {}).get("items") or []):
+        if not isinstance(item, dict) or item.get("decision") not in {"passed", "pass"}:
+            continue
+        raw = item.get("path")
+        kind = item.get("reference_kind") or item.get("kind")
+        if not raw or kind != "capture_style":
+            continue
+        p = Path(raw)
+        rel = repo_relative(p.resolve() if p.is_absolute() else repo_root() / p)
+        if rel == ref_path:
+            return "approved_reference"
+    return None
+
+
+def enforce_capture_style_provenance(ep: Path, refs: list[dict]) -> None:
+    if not creative_enforcement_required(ep):
+        return
+    for ref in refs:
+        if ref.get("kind") != "capture_style":
+            continue
+        source = approved_capture_style_source(ep, str(ref.get("path") or ""))
+        if source is None:
+            raise SystemExit(
+                "capture_style reference must be an approved calibration frame or an explicitly "
+                "passed capture_style reference; unapproved generated frames cannot recursively define style"
+            )
+        ref["source_kind"] = source
+
+
+def current_visual_provenance(ep: Path) -> dict:
+    contract = compile_prompt_contract(ep)
+    return {
+        "profile_id": contract["profile_id"],
+        "profile_path": contract["profile_path"],
+        "profile_sha256": contract["profile_sha256"],
+        "capture_profile": contract["capture_profile"],
+    }
+
+
+def verify_attempt_visual_provenance(ep: Path, attempt: dict) -> None:
+    request = attempt.get("request") or {}
+    recorded = request.get("visual_profile")
+    if not isinstance(recorded, dict):
+        if creative_enforcement_required(ep):
+            raise SystemExit("generation attempt missing visual profile provenance")
+        return
+    current = current_visual_provenance(ep)
+    for key in ("profile_id", "profile_path", "profile_sha256", "capture_profile"):
+        if str(recorded.get(key)) != str(current.get(key)):
+            raise SystemExit(f"visual profile drift before candidate acceptance: {key}")
+
 def request_fingerprint(payload: dict) -> str:
     encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return sha256_bytes(encoded)
@@ -327,6 +429,8 @@ def cmd_begin(args: argparse.Namespace) -> None:
 
     text = prompt_text(args)
     refs = parse_references(args.reference)
+    enforce_capture_style_provenance(ep, refs)
+    visual_provenance = current_visual_provenance(ep)
     c = data["canvas"]
     payload = {
         "frame": key,
@@ -338,6 +442,7 @@ def cmd_begin(args: argparse.Namespace) -> None:
         "model": args.model,
         "canvas": {"aspect_ratio": c["aspect_ratio"], "width": c["width"], "height": c["height"]},
         "references": refs,
+        "visual_profile": visual_provenance,
     }
     attempt = {
         "attempt_id": uuid.uuid4().hex[:12],
@@ -360,6 +465,7 @@ def cmd_success(args: argparse.Namespace) -> None:
     path, data = get_ledger(ep)
     key, frame = frame_obj(data, args.frame)
     attempt = active_attempt(frame)
+    verify_attempt_visual_provenance(ep, attempt)
     candidate = Path(args.path).resolve()
     if not candidate.is_file():
         raise SystemExit(f"candidate not found: {candidate}")

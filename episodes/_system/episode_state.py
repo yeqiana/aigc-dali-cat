@@ -92,6 +92,9 @@ def enable_machine_contract(gates: dict, *, strict: bool, aspect_ratio: str | No
     gates["machine_contract"] = {"version": 1, "strict": strict}
     visual = gates.setdefault("visual", {})
     _merge_defaults(visual, machine_defaults(aspect_ratio))
+    gates.setdefault("story", {}).setdefault("semantic_review_path", "meta/story-semantic-review.json")
+    gates.setdefault("subtitles", {}).setdefault("layout_audit_path", "meta/subtitle-layout-audit.json")
+    visual.setdefault("profile_review_path", "meta/visual-profile-review.json")
     evidence = gates.setdefault("production_evidence", {})
     _merge_defaults(
         evidence,
@@ -126,8 +129,10 @@ def new_gates(episode_id: str, *, aspect_ratio: str | None = None, strict: bool 
             "escalation_frames": [],
             "climax_frame": None,
             "payoff_frame": None,
+            "semantic_review_path": "meta/story-semantic-review.json",
         },
         "visual": {
+            "profile_review_path": "meta/visual-profile-review.json",
             "admission_frames": [],
             "continuity": {
                 "required": ["location", "key_prop", "weather_time"],
@@ -143,6 +148,7 @@ def new_gates(episode_id: str, *, aspect_ratio: str | None = None, strict: bool 
         "subtitles": {
             "required": True,
             "sound_card_completed": False,
+            "layout_audit_path": "meta/subtitle-layout-audit.json",
         },
         "locks": {
             "edit_mode": "none",

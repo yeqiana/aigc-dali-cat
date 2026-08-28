@@ -1,7 +1,7 @@
 {
-  "story_os_version": "2.0.3.1",
+  "story_os_version": "2.0.3.2",
   "contract_schema": 1,
-  "release_name": "Hardening Closure",
+  "release_name": "Creative Enforcement",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -25,7 +25,10 @@
     "deterministic_postflight",
     "delegated_delivery",
     "release_manifest",
-    "minimal_edit_contract"
+    "minimal_edit_contract",
+    "story_semantic_review",
+    "visual_profile_enforcement",
+    "deterministic_subtitle_layout"
   ],
   "adapters": [
     "skills/dali-cat-story",

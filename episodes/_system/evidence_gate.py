@@ -12,6 +12,9 @@ from delegated_approval import verify as verify_delegated
 from release_package import verify_payload
 from visual_profile import resolve_profile
 from story_os_contract import canonical_stages
+from story_review import review_required as story_review_required, verify as verify_story_review
+from visual_review import review_required as visual_review_required, verify as verify_visual_review
+from subtitle_layout import layout_required as subtitle_layout_required, verify_audit as verify_layout_audit
 
 ROOT=Path(__file__).resolve().parents[2]
 STATES=canonical_stages()
@@ -68,12 +71,19 @@ def run_gate(ep,target):
     idx=STATES.index(target);errors=[];info=[]
     if idx>=STATES.index('STORYBOARD_LOCKED'):
         ok,e,b=any_approval(ep,'story_lock');errors.extend(['story_lock: '+x for x in e] if not ok else []);info.extend(['story_lock basis='+b] if ok else [])
+        if story_review_required(ep):
+            errors.extend(['story_semantic_review: '+x for x in verify_story_review(ep)])
     if idx>=STATES.index('VISUAL_CALIBRATED'):
         try:resolve_profile(ep)
         except SystemExit as exc:errors.append('visual profile: '+str(exc))
         ok,e,b=any_approval(ep,'visual_lock');errors.extend(['visual_lock: '+x for x in e] if not ok else []);info.extend(['visual_lock basis='+b] if ok else [])
+        if visual_review_required(ep):
+            errors.extend(['visual_profile_review: '+x for x in verify_visual_review(ep)])
     if idx>=STATES.index('PUBLISH_READY'):
-        errors.extend(check_text_audit(ep,manifest));direct=direct_release(ep)
+        errors.extend(check_text_audit(ep,manifest))
+        if subtitle_layout_required(ep):
+            errors.extend(['subtitle_layout: '+x for x in verify_layout_audit(ep)])
+        direct=direct_release(ep)
         if not direct:info.append('release_lock basis=direct_user_review')
         else:
             delegated=verify_delegated(ep,'release_lock')

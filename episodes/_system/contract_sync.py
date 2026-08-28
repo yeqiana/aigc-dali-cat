@@ -25,6 +25,9 @@ CORE_ENGINE_FILES = [
     "canvas_normalize.py",
     "delegated_delivery.py",
     "codex_auto_orchestrator.py",
+    "story_review.py",
+    "visual_review.py",
+    "subtitle_layout.py",
 ]
 REQUIRED_CAPABILITIES = {
     "single_state_machine",
@@ -38,6 +41,9 @@ REQUIRED_CAPABILITIES = {
     "delegated_delivery",
     "release_manifest",
     "minimal_edit_contract",
+    "story_semantic_review",
+    "visual_profile_enforcement",
+    "deterministic_subtitle_layout",
 }
 ADAPTER_SKILLS = [
     Path("skills/dali-cat-story/SKILL.md"),
@@ -145,6 +151,17 @@ def collect_errors(root: Path | None = None) -> list[str]:
         except Exception as exc:
             errors.append(f"invalid {rel.as_posix()}: {exc}")
 
+    for rel in [
+        Path("standards/创作执行强制规范_V2.0.3.2.md"),
+        Path("standards/最终字幕视觉规范_V1.2.md"),
+    ]:
+        if not (root / rel).is_file():
+            errors.append(f"missing active creative enforcement standard: {rel.as_posix()}")
+    authority_text = read_text(root / "standards/AUTHORITY_INDEX.json")
+    for token in ["standards/创作执行强制规范_V2.0.3.2.md", "standards/最终字幕视觉规范_V1.2.md"]:
+        if token not in authority_text:
+            errors.append(f"AUTHORITY_INDEX missing active creative enforcement route: {token}")
+
     requirements = root / "episodes/_system/requirements.txt"
     if not requirements.is_file() or "Pillow" not in read_text(requirements):
         errors.append("canonical runtime dependencies missing Pillow: episodes/_system/requirements.txt")
@@ -193,6 +210,41 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "from story_os_contract import story_os_version",
             "STORY_OS_VERSION = story_os_version()",
         ],
+        "delegated_approval.py": [
+            "from story_os_contract import story_os_version",
+            "STORY_OS_VERSION = story_os_version()",
+        ],
+        "visual_profile.py": [
+            "def compile_prompt_contract",
+            "profile_sha256",
+        ],
+        "codex_subscription_image.py": [
+            "from visual_profile import compile_prompt_contract",
+            "<visual_contract>",
+        ],
+        "approval_lock.py": [
+            "verify_story_review",
+            "verify_visual_review",
+        ],
+        "evidence_gate.py": [
+            "from story_os_contract import canonical_stages",
+            "STATES=canonical_stages()",
+            "verify_story_review",
+            "verify_visual_review",
+            "verify_layout_audit",
+        ],
+        "story_review.py": [
+            "CODEX_ISOLATED",
+            "MECHANISM_CONTRADICTION",
+        ],
+        "visual_review.py": [
+            "CODEX_ISOLATED",
+            "visual_profile_match",
+        ],
+        "subtitle_layout.py": [
+            "drop_entire_second_line",
+            "PUNCTUATION_ONLY_SECOND_LINE",
+        ],
         "codex_auto_orchestrator.py": [
             "from story_os_contract import canonical_stages, story_os_version",
             "STORY_OS_VERSION=story_os_version()",
@@ -212,6 +264,10 @@ def collect_errors(root: Path | None = None) -> list[str]:
     orchestrator = engine / "codex_auto_orchestrator.py"
     if orchestrator.is_file() and "2.0.2" in read_text(orchestrator):
         errors.append("codex_auto_orchestrator.py contains stale Story OS V2.0.2 literals")
+
+    delegated = engine / "delegated_approval.py"
+    if delegated.is_file() and ("'2.0.2'" in read_text(delegated) or '"2.0.2"' in read_text(delegated)):
+        errors.append("delegated_approval.py contains stale Story OS V2.0.2 literals")
 
     skill_scripts = root / "skills" / "dali-cat-story" / "scripts"
     for name in CORE_ENGINE_FILES:
@@ -306,6 +362,10 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "python -m pip install -r episodes/_system/requirements.txt",
             "python episodes/_system/contract_sync.py",
             "python episodes/_system/test_v203_contract_hardening.py -v",
+            "python episodes/_system/test_v2032_creative_enforcement.py -v",
+            "python episodes/_system/story_review.py self-test",
+            "python episodes/_system/visual_review.py self-test",
+            "python episodes/_system/subtitle_layout.py self-test",
             "python episodes/_system/story_os.py doctor",
             ".agents/skills/dali-cat-story/**",
         ]:

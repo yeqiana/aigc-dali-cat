@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "story_os_version": "2.0",
+  "story_os_version": "2.0.3.2",
   "cases": [
     {
       "id": "R001",
@@ -55,6 +55,66 @@
         "same_core_mechanism": true,
         "same_middle_escalation": true,
         "same_climax_form": true
+      }
+    },
+    {
+      "id": "R007",
+      "dimension": "mechanism_consistency",
+      "expected": "fail",
+      "source": "鳌太线管护站失败复盘",
+      "fixture": {
+        "same_anomaly_has_unexplained_return_guidance_marking_behaviors": true
+      }
+    },
+    {
+      "id": "R008",
+      "dimension": "causal_order",
+      "expected": "fail",
+      "source": "鳌太线管护站失败复盘",
+      "fixture": {
+        "rule_warning_occurs_after_violation": true,
+        "prior_rule_setup_exists": false
+      }
+    },
+    {
+      "id": "R009",
+      "dimension": "character_stake",
+      "expected": "fail",
+      "source": "鳌太线管护站失败复盘",
+      "fixture": {
+        "missing_person_becomes_plot_tool": true,
+        "relationship_stake_not_established": true
+      }
+    },
+    {
+      "id": "R010",
+      "dimension": "climax_payoff",
+      "expected": "fail",
+      "source": "鳌太线管护站失败复盘",
+      "fixture": {
+        "climax_is_discovery_only": true,
+        "choice_or_cost": false
+      }
+    },
+    {
+      "id": "R011",
+      "dimension": "ending_payoff",
+      "expected": "fail",
+      "source": "鳌太线管护站失败复盘",
+      "fixture": {
+        "ending_adds_new_mechanism": true,
+        "recontextualized_prior_facts": 0
+      }
+    },
+    {
+      "id": "R012",
+      "dimension": "subtitle_layout",
+      "expected": "auto_fix",
+      "source": "用户锁定规则",
+      "fixture": {
+        "wrapped_second_line": "。！？……”）",
+        "contains_semantic_character": false,
+        "required_action": "drop_entire_second_line"
       }
     }
   ]

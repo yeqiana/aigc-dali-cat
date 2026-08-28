@@ -37,15 +37,46 @@ def update_checkpoint(ep,state,next_action,error=None,completion=None):
     write_json(p,d)
 def worker_instruction(ep,resume):
     rel=ep.relative_to(ROOT).as_posix(); mode='resume from checkpoint' if resume else 'start from real current repository state'
-    return f'''You are the Story OS V{STORY_OS_VERSION} autonomous CODEX worker for exactly {rel}. The user authorized continuous full-auto execution; {mode}.
-Read START_HERE.md, SKILL.md, AGENTS.md, runtimes/CODEX.md, AUTHORITY_INDEX, episode state/gates/ledger/reviews/checkpoint.
+    return f"""You are the Story OS V{STORY_OS_VERSION} autonomous CODEX writer/producer for exactly {rel}. The user authorized continuous full-auto execution; {mode}.
+Read START_HERE.md, SKILL.md, AGENTS.md, runtimes/CODEX.md, AUTHORITY_INDEX, standards/创作执行强制规范_V2.0.3.2.md, episode state/gates/ledger/reviews/checkpoint.
 Do not spawn another full-auto supervisor.
-Use delegated approval provenance honestly: after actual self-review, record story/visual delegated locks with `python episodes/_system/delegated_approval.py record "{rel}" story_lock|visual_lock --note "..."`. Never fabricate --user-approved.
-For every new/repair image use `codex_subscription_image.py generate-for-frame "{rel}" --frame NN ...`; it preserves raw output and normalizes to the exact ledger canvas before ledger success.
-Maintain three calibration frames then four visual-admission frames before the rest unless already locked. Reuse matching locked SHA assets. One content repair max; technical failure does not consume repair.
-Create actual publish assets, captions, publish copy, propagation card and PASS text audit. Do not use approved-base fallback as a publish substitute.
+
+STORY LOCK IS THE HIGHEST CREATIVE LOCK.
+Before story_lock, finish the whole story and storyboard but do NOT generate images.
+Run an independent fresh critic:
+  python episodes/_system/story_review.py run-critic "{rel}" --attempt 1
+If it FAILS, read meta/story-semantic-review.json, revise story + affected storyboard exactly once, then run a NEW critic:
+  python episodes/_system/story_review.py run-critic "{rel}" --attempt 2
+If attempt 2 still fails, stop. Never self-author or manually edit the review JSON. Never use propagation score as story proof.
+Only after `story_review.py verify` passes may you record delegated story_lock.
+
+VISUAL LOCK:
+Resolve the visual profile. If the user did not explicitly override it, M00 is mandatory.
+Every formal frame generation via codex_subscription_image.py automatically injects the resolved compact visual contract; never remove or replace it.
+Generate exactly the three registered calibration frames first. Review actual images normally, then run an independent fresh visual critic:
+  python episodes/_system/visual_review.py run-critic "{rel}" --attempt 1
+If it fails, repair/regenerate calibration only within existing one-content-repair limits, then run attempt 2. If still fail, stop.
+Only after `visual_review.py verify` passes may you record delegated visual_lock.
+A capture_style reference may come only from passed calibration or an explicitly passed capture_style reference; production_ledger enforces this.
+
+PRODUCTION:
+For every new/repair image use `codex_subscription_image.py generate-for-frame "{rel}" --frame NN ...`; preserve raw output and exact ledger canvas.
+Maintain production ledger and frame reviews. Reuse matching locked SHA assets. Technical failure does not consume content repair.
+Do not let an early unapproved generated frame recursively become the style mother reference.
+
+SUBTITLES / RELEASE:
+Create the canonical caption source and PASS text audit.
+After all approved base images exist, render publish captions ONLY with:
+  python episodes/_system/subtitle_layout.py render-all "{rel}"
+This renderer deterministically drops a wrapped second line when that line contains punctuation only.
+Then run:
+  python episodes/_system/subtitle_layout.py audit "{rel}"
+Do not substitute another ad-hoc subtitle renderer for V2.0.3.2 episodes.
+Create publish copy, propagation card and actual publish assets. Do not use approved-base fallback as a publish substitute.
+
+Use delegated approval provenance honestly after actual independent review. Never fabricate --user-approved.
 Update runtime-checkpoint continuously. Do not claim completion yourself; the parent orchestrator performs deterministic postflight and packaging after you return.
-'''
+"""
 def run_cmd(args,cwd=ROOT): return subprocess.run([str(x) for x in args],cwd=cwd,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding='utf-8',errors='replace')
 def advance_to_publish_ready(ep):
     sp=ep/'meta/episode-state.json'

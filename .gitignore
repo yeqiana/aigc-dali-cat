@@ -22,7 +22,7 @@ __pycache__/
 .playwright-cli/
 
 # Story 执行层升级包本地安装回执
-.story-os-v*.installed.json
+.story-os-v*installed.json
 .story-upgrade-backups/
 .story-os-upgrade-backups/
 .story-os-backups/
@@ -32,6 +32,7 @@ __pycache__/
 .story-os-venv/
 Story_OS_V2.0_OneClick_FullAuto_Upgrade_UTF8_FINAL/
 Story_OS_V2.0.2_Production_Closure_OneClick_Upgrade_UTF8_FINAL/
+DaliCat_StoryOS_V2.0.3.2_CreativeEnforcement_RootSafe_R3/
 
 # Local workbench and review state
 workbench/tmp/

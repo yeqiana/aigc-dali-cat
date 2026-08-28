@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
@@ -88,6 +89,39 @@ def resolve_profile(ep: Path) -> dict:
         'rule': '显式单集/系列风格优先；具体年代/设备物理表现仍高于母风格质感。',
     }
 
+
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for block in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def compile_prompt_contract(ep: Path) -> dict:
+    """Compile the resolved visual profile into a compact production contract."""
+    profile = resolve_profile(ep)
+    p = (ROOT / profile["profile_path"]).resolve()
+    data = load_json(p) if p.suffix.lower() == ".json" else {}
+    dna = data.get("visual_dna") or {}
+    lines = [
+        f"profile={profile['profile_id']} | {profile.get('profile_name') or ''}",
+        "reality first; the image must still feel like a plausible personal/work record without the anomaly",
+        f"ordinary Chinese life density={dna.get('ordinary_chinese_life_density', 'high')}; retain causal incidental clutter",
+        f"available light only={dna.get('available_light_only', True)}; no invented cinematic key/rim lighting",
+        f"composition={dna.get('composition', 'unposed_imperfect_personal_record')}",
+        f"people={dna.get('people', 'ordinary_unprepared_not_actor_like')}",
+        f"color={dna.get('color', 'environment-driven low/medium saturation')}",
+        f"texture={dna.get('texture', 'capture-device/scene-caused imperfection only')}",
+        f"anomaly={dna.get('anomaly', 'embedded_in_reality_before_spectacle')}",
+        "forbid commercial HDR, promo polish, default portrait bokeh, heroic framing and causeless retro/noise effects",
+        "capture physics and story era override texture; never fake an old device when the story uses a modern phone",
+    ]
+    return {
+        **profile,
+        "profile_sha256": sha256_file(p),
+        "text": "\n".join(lines),
+    }
 
 def cmd_show(args: argparse.Namespace) -> int:
     ep = resolve_episode(args.episode_dir)

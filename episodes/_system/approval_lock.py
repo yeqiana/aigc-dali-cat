@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from visual_profile import resolve_profile
+from story_review import review_required as story_review_required, verify as verify_story_review
+from visual_review import review_required as visual_review_required, verify as verify_visual_review
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path('meta/story-gates.json')
@@ -76,7 +78,13 @@ def story_assets(ep: Path) -> list[dict]:
     artifacts = manifest.get('artifacts') or {}
     story = repo_path(artifacts.get('story'), 'manifest.artifacts.story')
     storyboard = repo_path(artifacts.get('storyboard'), 'manifest.artifacts.storyboard')
-    return [row_for_path(story, 'story'), row_for_path(storyboard, 'storyboard')]
+    rows = [row_for_path(story, 'story'), row_for_path(storyboard, 'storyboard')]
+    if story_review_required(ep):
+        errors = verify_story_review(ep)
+        if errors:
+            raise SystemExit('story semantic review failed: ' + '; '.join(errors))
+        rows.append(row_for_path(ep / 'meta/story-semantic-review.json', 'story_semantic_review'))
+    return rows
 
 
 def visual_assets(ep: Path) -> tuple[list[dict], dict]:
@@ -110,6 +118,11 @@ def visual_assets(ep: Path) -> tuple[list[dict], dict]:
     profile = resolve_profile(ep)
     pp = repo_path(profile.get('profile_path'), 'resolved visual profile')
     rows.append(row_for_path(pp, f"visual_profile:{profile.get('profile_id')}"))
+    if visual_review_required(ep):
+        errors = verify_visual_review(ep)
+        if errors:
+            raise SystemExit('visual profile review failed: ' + '; '.join(errors))
+        rows.append(row_for_path(ep / 'meta/visual-profile-review.json', 'visual_profile_review'))
     return rows, profile
 
 

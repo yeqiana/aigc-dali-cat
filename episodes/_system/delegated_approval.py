@@ -9,10 +9,12 @@ import json
 from pathlib import Path
 
 from approval_lock import story_assets, visual_assets
+from story_os_contract import story_os_version
 
 REL = Path('meta/delegated-approvals.json')
 CHECKPOINT = Path('meta/runtime-checkpoint.json')
 ROOT = Path(__file__).resolve().parents[2]
+STORY_OS_VERSION = story_os_version()
 
 
 def now() -> str:
@@ -68,7 +70,7 @@ def load_store(ep: Path) -> tuple[Path, dict]:
     p = ep / REL
     if p.is_file():
         return p, read_json(p)
-    return p, {'schema_version': 1, 'story_os_version': '2.0.2', 'approvals': {}}
+    return p, {'schema_version': 1, 'story_os_version': STORY_OS_VERSION, 'approvals': {}}
 
 
 def repo_file(raw: str) -> Path:
@@ -111,7 +113,7 @@ def cmd_record(args: argparse.Namespace) -> int:
     if profile is not None:
         payload['resolved_visual_profile'] = profile
     path, store = load_store(ep)
-    store['story_os_version'] = '2.0.2'
+    store['story_os_version'] = STORY_OS_VERSION
     store.setdefault('approvals', {})[args.kind] = payload
     write_json(path, store)
     print(f'{args.kind}: DELEGATED AUTO LOCKED')
