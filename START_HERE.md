@@ -1,4 +1,4 @@
-# Dali Cat Story OS — START HERE V2.0
+# Dali Cat Story OS — START HERE V1.8
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
@@ -203,9 +203,3 @@ python episodes/_system/story_os.py audit-text <episode_dir>
 python episodes/_system/story_os.py release-package <episode_dir> build --user-approved
 ```
 <!-- STORY_OS_V1_8_DEFAULT_STYLE_END -->
-
-<!-- STORY_OS_V2_0_BEGIN -->
-## Story OS V2.0 — 一键全自动交付
-新增 `RUN_AUTO_V2.bat`：锁定故事/分镜 → 三张校准 → 四张视觉准入 → 全量生产 → 自动视觉审核 → 每帧最多一次返修 → 字幕 → SHA → FINAL ZIP。
-V2.0 不新增 episode stage，也不伪造 Story/Visual/Release 的 user-approved。
-<!-- STORY_OS_V2_0_END -->
