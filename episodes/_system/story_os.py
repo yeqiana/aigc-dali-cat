@@ -79,7 +79,7 @@ def forward(script, args):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Story OS V1.8 Golden Path CLI")
+    ap = argparse.ArgumentParser(description="Story OS V2.0 Multi-Runtime CLI")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("doctor")
     p = sub.add_parser("status"); p.add_argument("episode_dir")
@@ -93,11 +93,27 @@ def main():
     p = sub.add_parser("visual-profile"); p.add_argument("episode_dir"); p.add_argument("profile_cmd", choices=["show", "set-default", "set-override"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("approval"); p.add_argument("episode_dir"); p.add_argument("approval_cmd", choices=["story", "visual", "verify", "status"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("release-package"); p.add_argument("episode_dir"); p.add_argument("release_cmd", choices=["build", "verify", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    # Story OS V2.0 Multi-Runtime
+    p = sub.add_parser("runtime"); p.add_argument("runtime_cmd", choices=["detect", "contract", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("checkpoint"); p.add_argument("episode_dir"); p.add_argument("checkpoint_cmd", choices=["init", "show", "set"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("capture-profile"); p.add_argument("profile_cmd", choices=["validate", "list", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("regression"); p.add_argument("regression_cmd", choices=["run", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("fingerprint"); p.add_argument("fingerprint_cmd", choices=["init", "compare", "register"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     args = ap.parse_args()
 
     if args.cmd == "doctor":
         return forward("story_os_doctor.py", [])
+    if args.cmd == "runtime":
+        return forward("runtime_router.py", [args.runtime_cmd, *args.extra])
+    if args.cmd == "capture-profile":
+        return forward("capture_profile.py", [args.profile_cmd, *args.extra])
+    if args.cmd == "regression":
+        return forward("story_regression.py", [args.regression_cmd, *args.extra])
     ep = Path(args.episode_dir).resolve()
+    if args.cmd == "checkpoint":
+        return forward("runtime_checkpoint.py", [args.checkpoint_cmd, str(ep), *args.extra])
+    if args.cmd == "fingerprint":
+        return forward("episode_fingerprint.py", [args.fingerprint_cmd, str(ep), *args.extra])
     if args.cmd == "audit-text":
         return forward("text_audit.py", [str(ep), *args.extra])
     if args.cmd == "transport":

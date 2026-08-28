@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0",
+  "profile_id": "CP08",
+  "name": "screen_recapture",
+  "display_name": "屏幕翻拍 / 旧设备屏摄",
+  "era_hint": "context",
+  "physics": {
+    "dynamic_range": "screen_camera_exposure_conflict",
+    "low_light": "device_dependent",
+    "motion": "device_dependent",
+    "focus": "screen_reflection_conflict",
+    "white_balance": "device_dependent",
+    "compression": "screen_plus_recapture",
+    "edge_behavior": "device_dependent"
+  }
+}

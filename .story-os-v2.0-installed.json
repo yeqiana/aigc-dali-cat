@@ -1,0 +1,22 @@
+{
+  "story_os_version": "2.0",
+  "edition": "Multi-Runtime WORK + CODEX + WEB",
+  "from_version": "1.8",
+  "installed_at": "2026-08-28T16:18:41.240372+08:00",
+  "backup": ".story-os-upgrade-backups/story-os-v2.0-multi-20260828-161841",
+  "runtimes": [
+    "WORK",
+    "CODEX",
+    "WEB"
+  ],
+  "features": [
+    "runtime_auto_routing",
+    "continuous_execution_authorization",
+    "runtime_checkpoint",
+    "capture_profile_registry",
+    "story_regression_library",
+    "episode_fingerprint_registry",
+    "single_episode_state",
+    "utf8_safe_transactional_installer"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0",
+  "name": "Multi-Runtime",
+  "state_source": "meta/episode-state.json",
+  "creative_authority": "standards/制作规范_正式版.md",
+  "routing_order": [
+    "CODEX",
+    "WORK",
+    "WEB"
+  ],
+  "routing": {
+    "CODEX": {
+      "target": "full_auto_file_pipeline",
+      "checkpoint": "repository",
+      "final_zip": "required_when_tools_allow"
+    },
+    "WORK": {
+      "target": "full_auto_workspace_pipeline",
+      "checkpoint": "workspace_and_repository_when_writable",
+      "final_zip": "required_when_tools_allow"
+    },
+    "WEB": {
+      "target": "continuous_best_effort_with_resume",
+      "checkpoint": "conversation_and_repository_when_writable",
+      "final_zip": "best_effort_only_when_tools_allow"
+    }
+  },
+  "common_rules": {
+    "do_not_create_second_episode_stage": true,
+    "do_not_duplicate_creative_rules_per_runtime": true,
+    "explicit_full_auto_request_is_continuous_execution_authorization": true,
+    "do_not_claim_user_personally_reviewed_unseen_assets": true,
+    "calibration_before_batch": true,
+    "visual_admission_before_batch": true,
+    "max_content_repair_per_frame": 1,
+    "reuse_locked_assets": true,
+    "minimal_edit_protocol": true
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0",
+  "profile_id": "CP03",
+  "name": "compact_digital_2008",
+  "display_name": "2000年代卡片数码相机",
+  "era_hint": "2003-2012",
+  "physics": {
+    "dynamic_range": "low",
+    "low_light": "small_sensor_noise_flash_dependency",
+    "motion": "slow_shutter_possible",
+    "focus": "contrast_af_hunt",
+    "white_balance": "device_dependent",
+    "compression": "older_jpeg",
+    "edge_behavior": "device_dependent"
+  }
+}

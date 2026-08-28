@@ -1,6 +1,6 @@
 # 项目协作规则（Codex 自动读取）
 
-## Story OS V1.8 执行入口
+## Story OS V2.0 执行入口
 
 涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须先读取仓库根目录 `START_HERE.md`，再读取 `SKILL.md`。
 
@@ -24,12 +24,17 @@
 这些从属细则均不建立第二权威；冲突时以 `standards/制作规范_正式版.md` 为准。V1.8 起 M00「MP4 × 网吧 × 流水席旧数码质感校准版」在用户未指定时默认启用；显式视觉体系可覆盖，且年代/采集设备物理真实性永远高于母风格质感。
 
 
-## 网页 GPT 出图与流量控制
+## V2.0 Multi-Runtime 执行路由
 
-1. 本项目的出图、修图默认由官方网页 ChatGPT 手动完成。Codex 仅使用 `$web-gpt-image-handoff` 基于当集最终分镜生成文字交接单；除非用户明确覆盖，不调用任何本地图片生成或编辑工具。
-2. 交接单必须包含逐图提示词、画幅与尺寸、角色与场景锁定、负面约束、建议文件名及分批验收项；未指定画幅时默认 **4:5 / 1080×1350**，只有任务/分镜/manifest 明确指定时才使用 **9:16 / 1080×1920**；不得擅自改写正式分镜的剧情与镜头顺序。
-3. 不自动打开或操作网页 ChatGPT，不要求上传整批图片给 Codex。网页生成后，用户仅按需回传本地路径或少量关键截图进行验收和重出建议。
-4. 本规则不改变下列媒体提交白名单和 `.gitignore` 约束。
+涉及 story 分支任务时，先读 `START_HERE.md`，再按 `runtimes/runtime-contract.json` 自动路由，不让用户手工选 runtime。
+
+- 可写仓库文件系统 + terminal/code execution：`runtimes/CODEX.md`
+- ChatGPT Work：`runtimes/WORK.md`
+- 普通 ChatGPT Web：`runtimes/WEB.md`
+
+Codex 不再被全局限制为“只能生成网页交接单”。当前 Codex 原生工具能生成/编辑图片和保存文件时，应直接按 CODEX runtime 执行；缺媒体能力时才降级 checkpoint/handoff。
+
+全自动授权后：先三张校准，再四张视觉准入，再 Batch；每帧最多一次内容返修；已通过且 SHA 未漂移资产必须复用；自动审查不得冒充用户亲眼审核。
 
 ## Episodes 机器状态与发布清单
 

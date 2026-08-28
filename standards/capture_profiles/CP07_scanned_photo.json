@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0",
+  "profile_id": "CP07",
+  "name": "scanned_photo",
+  "display_name": "纸质照片翻拍 / 扫描件",
+  "era_hint": "source-dependent",
+  "physics": {
+    "dynamic_range": "device_dependent",
+    "low_light": "device_dependent",
+    "motion": "device_dependent",
+    "focus": "device_dependent",
+    "white_balance": "device_dependent",
+    "compression": "device_dependent",
+    "edge_behavior": "device_dependent"
+  }
+}

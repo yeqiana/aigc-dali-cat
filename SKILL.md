@@ -1,11 +1,11 @@
-# Dali Cat Story OS — Repository Execution Contract V1.8
+# Dali Cat Story OS — Repository Execution Contract V2.0
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
-## Story OS V1.8 Golden Path
+## Story OS V2.0 Golden Path
 
 **第一入口：先读 `START_HERE.md`。** 该文件只负责路由，不建立第二套创作规范。
 
@@ -302,3 +302,13 @@ python episodes/_system/story_os.py text-revision <episode_dir> start --file <pa
 - `PUBLISH_READY` 前必须有用户明确批准的 `meta/release-package.json`，最终封面/正文/字幕/发布文案/传播卡 hash 全部一致。
 - V1.7 的 transport guard / text revision transaction 原样保留，不重复造轮子。
 <!-- STORY_OS_V1_8_EVIDENCE_END -->
+
+<!-- STORY_OS_V2_MULTI_RUNTIME_SKILL_BEGIN -->
+## Story OS V2.0 Multi-Runtime Execution
+
+- CODEX：文件原生全自动生产，目标 approved/publish/SHA/FINAL ZIP。
+- WORK：持久工作区长任务，目标一次任务尽量做到最终交付。
+- WEB：尽量连续执行；产品工具边界出现时写 checkpoint，下一轮直接恢复。
+
+用户已明确授权“全自动”时，不在正常 Story/Visual/Repair/Release 节点重复询问“是否继续”；只在硬冲突、权限/安全确认、一次内容返修后仍失败等情况暂停。
+<!-- STORY_OS_V2_MULTI_RUNTIME_SKILL_END -->

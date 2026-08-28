@@ -1,4 +1,4 @@
-# Dali Cat Story OS — START HERE V1.8
+# Dali Cat Story OS — START HERE V2.0
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
@@ -203,3 +203,17 @@ python episodes/_system/story_os.py audit-text <episode_dir>
 python episodes/_system/story_os.py release-package <episode_dir> build --user-approved
 ```
 <!-- STORY_OS_V1_8_DEFAULT_STYLE_END -->
+
+<!-- STORY_OS_V2_MULTI_RUNTIME_BEGIN -->
+## 11. V2.0 Multi-Runtime
+
+启动时按 `runtimes/runtime-contract.json` 自动判断执行环境，不询问用户选择模式：
+
+`可写仓库+terminal/code execution → CODEX；ChatGPT Work → WORK；其他普通 ChatGPT → WEB`
+
+三个 runtime 只改变执行方式，不改变创作权威和 episode stage。
+
+用户明确说“全自动执行 / 一次做完 / 做到最终交付 / 不要每步问我”时，视为连续执行授权。正常 Golden Path 不重复询问是否继续；自动审查必须标记为 delegated_auto_review，不得写成用户亲眼审核。
+
+统一恢复证据：`<episode>/meta/runtime-checkpoint.json`。它不是 stage。
+<!-- STORY_OS_V2_MULTI_RUNTIME_END -->
