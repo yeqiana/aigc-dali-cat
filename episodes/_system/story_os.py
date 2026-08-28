@@ -68,6 +68,7 @@ def cmd_next(ep: Path):
     print("Precheck:")
     print(f"  python episodes/_system/validate_episode.py \"{ep}\" --target {nxt}")
     print(f"  python episodes/_system/machine_gate.py \"{ep}\" --target {nxt}")
+    print(f"  python episodes/_system/v18_gate.py \"{ep}\" --target {nxt}")
     print("Transition after PASS:")
     print(f"  python episodes/_system/episode_state.py transition \"{ep}\" {nxt} --note \"...\"")
     return 0
@@ -78,7 +79,7 @@ def forward(script, args):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Story OS V1.7 Golden Path CLI")
+    ap = argparse.ArgumentParser(description="Story OS V1.8 Golden Path CLI")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("doctor")
     p = sub.add_parser("status"); p.add_argument("episode_dir")
@@ -88,6 +89,10 @@ def main():
     p = sub.add_parser("audit-text"); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("transport"); p.add_argument("episode_dir"); p.add_argument("transport_cmd", choices=["preflight", "failure", "success", "status"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("text-revision"); p.add_argument("episode_dir"); p.add_argument("revision_cmd", choices=["start", "diff", "submit", "approve", "revert", "status"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    # Story OS V1.8: default visual IP + approval provenance + release hash
+    p = sub.add_parser("visual-profile"); p.add_argument("episode_dir"); p.add_argument("profile_cmd", choices=["show", "set-default", "set-override"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("approval"); p.add_argument("episode_dir"); p.add_argument("approval_cmd", choices=["story", "visual", "verify", "status"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("release-package"); p.add_argument("episode_dir"); p.add_argument("release_cmd", choices=["build", "verify", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     args = ap.parse_args()
 
     if args.cmd == "doctor":
@@ -99,6 +104,12 @@ def main():
         return forward("transport_guard.py", [args.transport_cmd, str(ep), *args.extra])
     if args.cmd == "text-revision":
         return forward("text_revision.py", [args.revision_cmd, str(ep), *args.extra])
+    if args.cmd == "visual-profile":
+        return forward("visual_profile.py", [args.profile_cmd, str(ep), *args.extra])
+    if args.cmd == "approval":
+        return forward("approval_lock.py", [args.approval_cmd, str(ep), *args.extra])
+    if args.cmd == "release-package":
+        return forward("release_package.py", [args.release_cmd, str(ep), *args.extra])
     if args.cmd == "status":
         return cmd_status(ep)
     if args.cmd == "next":

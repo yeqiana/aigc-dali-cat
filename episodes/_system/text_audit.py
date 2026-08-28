@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import re
@@ -182,7 +183,7 @@ def audit(data: dict, source: Path) -> dict:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description='Story OS V1.7 human-caption and AI-tone audit')
+    ap = argparse.ArgumentParser(description='Story OS V1.8 human-caption and AI-tone audit')
     ap.add_argument('episode_dir', nargs='?', help='episode directory; used for discovery/output')
     ap.add_argument('--file', help='subtitle YAML or plain text file')
     ap.add_argument('--report', help='output JSON report path')
@@ -201,6 +202,7 @@ def main() -> int:
     else:
         data = captions_from_text(source)
     report = audit(data, source)
+    report['source_sha256'] = hashlib.sha256(source.read_bytes()).hexdigest()
 
     if args.report:
         out = Path(args.report).resolve()

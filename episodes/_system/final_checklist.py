@@ -60,6 +60,9 @@ def build(ep: Path, target: str | None, run_validators: bool):
     gates = load(meta / "story-gates.json") or {}
     release = load(meta / "release-manifest.json") or {}
     ledger = load(meta / "production-ledger.json") or {}
+    text_audit = load(meta / "text-audit.json") or {}
+    release_package = load(meta / "release-package.json") or {}
+    approvals = gates.get("approvals", {}) if isinstance(gates.get("approvals"), dict) else {}
     current = state.get("current_state", "UNKNOWN")
     strict = bool(get_nested(gates, "machine_contract", "strict", default=False))
 
@@ -89,6 +92,10 @@ def build(ep: Path, target: str | None, run_validators: bool):
         f"- {mark(bool(reviews.get('production') == 'passed'))} production passed",
         f"- {mark(bool(reviews.get('continuity') == 'passed'))} continuity passed",
         f"- {mark(bool(reviews.get('publish') == 'passed'))} publish review passed",
+        f"- {mark(bool((approvals.get('story_lock') or {}).get('approved')))} Story Lock approval + SHA",
+        f"- {mark(bool((approvals.get('visual_lock') or {}).get('approved')))} Visual Lock approval + SHA",
+        f"- {mark(bool((text_audit.get('summary') or {}).get('passed')))} Text Audit PASS",
+        f"- {mark(bool(release_package.get('package_sha256') and release_package.get('user_approved')))} Release Package SHA locked",
         "",
         "## B. Golden Path 锁点",
         "",

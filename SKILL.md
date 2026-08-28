@@ -1,11 +1,11 @@
-# Dali Cat Story OS — Repository Execution Contract V1.6
+# Dali Cat Story OS — Repository Execution Contract V1.8
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
-## Story OS V1.6 Golden Path
+## Story OS V1.8 Golden Path
 
 **第一入口：先读 `START_HERE.md`。** 该文件只负责路由，不建立第二套创作规范。
 
@@ -290,3 +290,15 @@ python episodes/_system/story_os.py text-revision <episode_dir> start --file <pa
 
 详细执行见 `standards/生产可靠性与文本事务规范_V1.0.md`。
 <!-- STORY_OS_V1_7_RELIABILITY_END -->
+
+<!-- STORY_OS_V1_8_EVIDENCE_BEGIN -->
+## Story OS V1.8 — Default Visual IP + Evidence Locks
+
+- 用户未指定画风/质感：默认 `M00｜MP4 × 网吧 × 流水席旧数码质感校准版`。
+- 显式单集/系列风格可覆盖默认 M00；年代/设备物理真实性永远高于母风格“复古感”。
+- Story Lock 必须保存 story + storyboard 的明确批准和 SHA-256。
+- Visual Lock 必须保存 visual spec、校准联系表、已通过 reference 与解析后 visual profile 的明确批准和 SHA-256。
+- `PUBLISH_READY` 前必须有最新 `meta/text-audit.json`，且其 `source_sha256` 等于当前 captions。
+- `PUBLISH_READY` 前必须有用户明确批准的 `meta/release-package.json`，最终封面/正文/字幕/发布文案/传播卡 hash 全部一致。
+- V1.7 的 transport guard / text revision transaction 原样保留，不重复造轮子。
+<!-- STORY_OS_V1_8_EVIDENCE_END -->

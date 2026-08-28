@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "story_os_version": "1.8",
+  "profile_id": "M00",
+  "profile_version": "1.2",
+  "profile_name": "MP4 × 网吧 × 流水席旧数码质感校准版",
+  "default_when_unspecified": true,
+  "scope": "account_default_visual_mother_style",
+  "principle": "统一视觉语言，不强制统一拍摄设备；具体年代与设备物理表现优先。",
+  "precedence": [
+    "explicit_episode_or_series_visual_profile",
+    "capture_physics_and_story_era",
+    "M00_visual_language"
+  ],
+  "visual_dna": {
+    "reality_first": true,
+    "ordinary_chinese_life_density": "high",
+    "available_light_only": true,
+    "cinematic_lighting": "forbidden_by_default",
+    "commercial_hdr": "forbidden",
+    "portrait_bokeh": "not_default",
+    "composition": "unposed_imperfect_personal_record",
+    "people": "ordinary_unprepared_not_actor_like",
+    "color": "low_to_medium_saturation_environment_driven_no_global_retro_LUT",
+    "texture": "controlled_imperfection_causal_to_capture_device_and_scene",
+    "anomaly": "embedded_in_reality_before_spectacle",
+    "life_clutter": "retain_reasonable_incidental_objects"
+  },
+  "texture_translation": {
+    "old_digital_or_cheap_camera": [
+      "limited_dynamic_range",
+      "edge_softness",
+      "jpeg_compression_when_causal",
+      "weak_low_light",
+      "focus_hesitation",
+      "mixed_white_balance"
+    ],
+    "modern_phone": [
+      "keep_real_device_dynamic_range",
+      "avoid_commercial_polish",
+      "avoid_fake_old_noise_or_fake_low_resolution",
+      "preserve_handheld_snapshot_behavior",
+      "allow_realistic_highlight_or_motion_imperfection"
+    ]
+  },
+  "anchors": [
+    {
+      "id": "F01",
+      "name": "流水席",
+      "role": "warm_crowd_folk_life_density",
+      "source": "episodes/07_误入/中元节误入流水席/docs/03_画风锁定.md"
+    },
+    {
+      "id": "F02",
+      "name": "MP4",
+      "role": "old_digital_object_and_private_album_texture",
+      "source": "episodes/09_旧物怪谈/01_回村中巴捡MP4/docs/03_画风锁定.md"
+    },
+    {
+      "id": "F03",
+      "name": "误入小镇",
+      "role": "county_town_reality_intrusion_and_unposed_capture",
+      "source": "episodes/07_误入/下山误入旧镇/docs/03_画风锁定.md"
+    },
+    {
+      "id": "F04",
+      "name": "网吧",
+      "role": "cheap_indoor_digital_low_light_mixed_fluorescent_texture",
+      "source_status": "user_locked_semantic_anchor",
+      "note": "V1.8 由用户明确指定为主画风组成；待仓库存在正式校准资产时可补 source + SHA，不伪造哈希。"
+    }
+  ],
+  "anti_homogeneity": {
+    "lock_texture_not_scene": true,
+    "do_not_force_recurring_props": [
+      "CRT",
+      "MP4",
+      "plastic_stool",
+      "dirt_road",
+      "old_house",
+      "internet_cafe"
+    ],
+    "rule": "统一现实密度、拍摄行为、现场光和非电影化，不统一剧情空间、异常载体和关键道具。"
+  }
+}

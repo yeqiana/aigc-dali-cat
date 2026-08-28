@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "1.7",
+  "story_os_version": "1.8",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -82,16 +82,36 @@
     },
     {
       "path": "standards/风格锚点_流水席_村子_误入小镇_V1.1.md",
-      "authority": "reference",
+      "authority": "superseded",
       "scope": "optional_visual_mother_style",
+      "active": false,
+      "note": "Optional M00 reference. Must not override an episode's independent capture system.",
+      "superseded_by": "standards/风格锚点_MP4_网吧_流水席_旧数码_V1.2.md"
+    },
+    {
+      "path": "standards/风格锚点_MP4_网吧_流水席_旧数码_V1.2.md",
+      "authority": "active_subordinate",
+      "scope": "default_visual_mother_style",
       "active": true,
-      "note": "Optional M00 reference. Must not override an episode's independent capture system."
+      "supersedes": [
+        "standards/风格锚点_流水席_村子_误入小镇_V1.1.md"
+      ],
+      "note": "Story OS V1.8 account default when user does not specify another visual style. Capture physics/story era take precedence over texture."
     }
   ],
   "rules": {
     "superseded_default_read": false,
     "unknown_versioned_standard_is_warning": true,
     "series_overlay_may_override_canonical": false,
-    "state_source": "meta/episode-state.json"
+    "state_source": "meta/episode-state.json",
+    "default_visual_profile": {
+      "id": "M00",
+      "name": "MP4 × 网吧 × 流水席旧数码质感校准版",
+      "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+      "standard_path": "standards/风格锚点_MP4_网吧_流水席_旧数码_V1.2.md",
+      "use_when_unspecified": true,
+      "explicit_override_wins": true,
+      "capture_physics_and_story_era_win_over_texture": true
+    }
   }
 }

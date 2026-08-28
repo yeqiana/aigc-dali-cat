@@ -58,6 +58,12 @@ def run_doctor():
         "episodes/_system/machine_gate.py",
         "episodes/_system/story_os.py",
         "episodes/_system/final_checklist.py",
+        "episodes/_system/visual_profile.py",
+        "episodes/_system/approval_lock.py",
+        "episodes/_system/release_package.py",
+        "episodes/_system/v18_gate.py",
+        "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+        "standards/风格锚点_MP4_网吧_流水席_旧数码_V1.2.md",
     ]
     for rel in required:
         if not (ROOT / rel).exists():

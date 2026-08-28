@@ -1,6 +1,6 @@
 # 项目协作规则（Codex 自动读取）
 
-## Story OS V1.6 执行入口
+## Story OS V1.8 执行入口
 
 涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须先读取仓库根目录 `START_HERE.md`，再读取 `SKILL.md`。
 
@@ -16,12 +16,12 @@
 传播评分与发布后数据诊断按 [standards/抖音推流评分与发布后漏斗规范_V1.4.md](standards/抖音推流评分与发布后漏斗规范_V1.4.md) 执行；该文件仅解释主规范 8.4/8.5/12.4/12.5，不建立第二权威，冲突时以主规范为准。V1.3 新增发布时间分层实验与 1h 冷启动快照：1h 仅用于时间实验，不替代主规范正式 6h/24h/48h/7d 验收窗口。
 
 生产真实性、共享画风和字幕人话化按以下从属执行细则：
-- [standards/风格锚点_流水席_村子_误入小镇_V1.1.md](standards/风格锚点_流水席_村子_误入小镇_V1.1.md)
+- [standards/风格锚点_MP4_网吧_流水席_旧数码_V1.2.md](standards/风格锚点_MP4_网吧_流水席_旧数码_V1.2.md)
 - [standards/真实性与共享风格锚点规范_V1.1.md](standards/真实性与共享风格锚点规范_V1.1.md)
 - [standards/字幕人话化与声音卡规范_V1.1.md](standards/字幕人话化与声音卡规范_V1.1.md)
 - [standards/生产引擎与画幅规范_V1.2.md](standards/生产引擎与画幅规范_V1.2.md)
 
-三者均不建立第二权威；冲突时以 `standards/制作规范_正式版.md` 为准。M00 是可选视觉母风格，不得强制覆盖已有独立采集体系。
+这些从属细则均不建立第二权威；冲突时以 `standards/制作规范_正式版.md` 为准。V1.8 起 M00「MP4 × 网吧 × 流水席旧数码质感校准版」在用户未指定时默认启用；显式视觉体系可覆盖，且年代/采集设备物理真实性永远高于母风格质感。
 
 
 ## 网页 GPT 出图与流量控制
@@ -33,7 +33,7 @@
 
 ## Episodes 机器状态与发布清单
 
-> Story OS V1.6：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
+> Story OS V1.8：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
 
 1. 新建具体剧集时，按 [`episodes/_system/README.md`](episodes/_system/README.md) 初始化 `meta/episode-state.json`、`meta/release-manifest.json` 与 `meta/story-gates.json`；历史剧集不批量伪造状态，只在重新进入制作/发布/复盘时迁移。
 2. 机器状态固定为：`IDEA_LOCKED → STORYBOARD_LOCKED → VISUAL_CALIBRATED → PRODUCTION_PASSED → PUBLISH_READY → PUBLISHED → DATA_REVIEWED`。
@@ -54,3 +54,11 @@
    - 发布包 zip、`workbench/` 中间处理资产、`.playwright-cli/` 截图
 3. 新增大文件前先 `git status` 确认只出现白名单文件；可用 `git check-ignore <文件>` 验证是否被忽略。
 4. 已误提交的非白名单文件用 `git rm --cached` 移出索引（保留本地），不要删本地文件。
+
+<!-- STORY_OS_V1_8_AGENTS_BEGIN -->
+## V1.8 默认视觉路由
+
+Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / MP4 × 网吧 × 流水席旧数码质感校准版`，再按本集真实性卡决定实际设备表现。不得把“默认 M00”误解成“所有作品都必须旧低清”。
+
+V1.8 推进时除原 `validate_episode.py + machine_gate.py` 外，还必须通过 `v18_gate.py`：Story/Visual Approval SHA、最新 Text Audit、Release Package SHA 都不得漂移。
+<!-- STORY_OS_V1_8_AGENTS_END -->

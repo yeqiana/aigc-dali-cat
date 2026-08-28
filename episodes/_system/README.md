@@ -1,6 +1,6 @@
-# Episodes 状态机 + Story OS 门禁 V1.5
+# Episodes 状态机 + Story OS 门禁 V1.8
 
-本目录只建立一套机器阶段状态；V1.5 新增 Machine Evidence 执行层，但不新增第二状态机。
+本目录只建立一套机器阶段状态；V1.8 在既有 Machine Evidence / V1.7 Reliability 之上增加默认视觉路由与证据 SHA 门禁，不新增第二状态机。
 
 ## 核心事实源
 
@@ -25,7 +25,7 @@ IDEA_LOCKED
 → DATA_REVIEWED
 ```
 
-正向只能相邻推进；正向推进会先运行 `validate_episode.py`，再运行 `machine_gate.py`。任一失败，状态不变化。
+正向只能相邻推进；正向推进依次运行 `validate_episode.py`、`machine_gate.py`、`v18_gate.py`。任一失败，状态不变化。
 
 ## 新项目
 
@@ -109,3 +109,15 @@ python episodes/_system/machine_gate.py --all --metadata-only
 ## 边界
 
 机器只验证硬证据，不替代：手机相册真实感、继续滑动欲望、角色“像不像同一个人”、高潮强度和结尾回看价值。这些仍由人工/多模态终审决定。
+
+<!-- STORY_OS_V1_8_SYSTEM_README_BEGIN -->
+## Story OS V1.8 增量门禁
+
+- 未指定画风：默认 `M00｜MP4 × 网吧 × 流水席旧数码质感校准版`；实际年代/采集设备物理表现优先。
+- `STORYBOARD_LOCKED`：Story Lock 必须有用户批准 + story/storyboard SHA。
+- `VISUAL_CALIBRATED`：Visual Lock 必须有用户批准 + visual spec / 校准 / reference / resolved profile SHA。
+- `PUBLISH_READY`：`meta/text-audit.json` 必须 PASS 且 `source_sha256` 等于当前 captions。
+- `PUBLISH_READY`：`meta/release-package.json` 必须用户批准，且封面/正文/字幕/发布文案/传播卡 SHA 全部一致。
+
+V1.7 的 transport guard 与 text revision transaction 继续沿用，不重复实现。
+<!-- STORY_OS_V1_8_SYSTEM_README_END -->

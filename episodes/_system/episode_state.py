@@ -22,7 +22,7 @@ STATES = [
 STATE_FILE = Path("meta/episode-state.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
 GATES_FILE = Path("meta/story-gates.json")
-SYSTEM_VERSION = "1.5"
+SYSTEM_VERSION = "1.8"
 
 
 def now_iso() -> str:
@@ -116,6 +116,13 @@ def new_gates(episode_id: str, *, aspect_ratio: str | None = None, strict: bool 
         "schema_version": 1,
         "tool_version": SYSTEM_VERSION,
         "episode_id": episode_id,
+        "visual_profile": {
+            "mode": "default",
+            "profile_id": "M00",
+            "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+            "capture_profile": "auto",
+            "override_reason": None,
+        },
         "story": {
             "recent5_checked": False,
             "four_locks_diff_count": 0,
@@ -259,7 +266,7 @@ def init_cmd(args: argparse.Namespace) -> None:
     print(f"state   : {state_path}")
     print(f"manifest: {manifest_path}")
     print(f"gates   : {gates_path}")
-    print("machine : strict V1.5 enabled")
+    print("machine : strict V1.8 enabled")
 
 
 def migrate_gates_cmd(args: argparse.Namespace) -> None:
@@ -337,6 +344,14 @@ def transition_cmd(args: argparse.Namespace) -> None:
         )
         if result.returncode != 0:
             raise SystemExit(f"machine evidence gate failed; state remains {current}")
+        v18_gate = Path(__file__).with_name("v18_gate.py")
+        if v18_gate.exists():
+            result = subprocess.run(
+                [sys.executable, str(v18_gate), str(episode_dir), "--target", target],
+                check=False,
+            )
+            if result.returncode != 0:
+                raise SystemExit(f"V1.8 incremental gate failed; state remains {current}")
     elif tgt_idx < cur_idx and args.rewind:
         mode = "rewind"
     else:
@@ -369,7 +384,7 @@ def show_cmd(args: argparse.Namespace) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="DALI CAT episode state machine V1.5")
+    p = argparse.ArgumentParser(description="DALI CAT episode state machine V1.8")
     sub = p.add_subparsers(dest="command", required=True)
 
     init = sub.add_parser("init", help="initialize state + release manifest + strict machine story gates")
@@ -385,10 +400,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     mg = sub.add_parser("migrate-gates", help="add story-gates.json to a legacy episode without changing state")
     mg.add_argument("episode_dir")
-    mg.add_argument("--note", default="旧剧集重新进入制作，接入 Story OS V1.5 门禁")
+    mg.add_argument("--note", default="旧剧集重新进入制作，接入 Story OS V1.8 门禁")
     mg.set_defaults(func=migrate_gates_cmd)
 
-    em = sub.add_parser("enable-machine-gates", help="enable strict V1.5 machine evidence gates for an existing episode")
+    em = sub.add_parser("enable-machine-gates", help="enable strict V1.8 machine evidence gates for an existing episode")
     em.add_argument("episode_dir")
     em.set_defaults(func=enable_machine_cmd)
 

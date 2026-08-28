@@ -1,4 +1,4 @@
-# Dali Cat Story OS — START HERE V1.6
+# Dali Cat Story OS — START HERE V1.8
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
@@ -173,3 +173,33 @@ Batch 生图请求
 
 技术失败不得消耗内容返修次数；技术重试不得改变请求指纹。文字专修不得触碰批准/发布图片、reference、release manifest、production ledger、episode state 或 story gates。
 <!-- STORY_OS_V1_7_RELIABILITY_END -->
+
+<!-- STORY_OS_V1_8_DEFAULT_STYLE_BEGIN -->
+## 10. V1.8 默认视觉 IP 与三道不可漂移锁
+
+用户没有明确指定画风/质感时，默认解析：
+
+`M00｜MP4 × 网吧 × 流水席旧数码质感校准版`
+
+但它只统一视觉语言；**本集年代和实际采集设备的物理表现优先**，禁止把现代手机硬做成旧低清设备。
+
+V1.8 不新增 episode stage，只给现有 Golden Path 增加证据锁：
+
+```text
+Story Lock → story + storyboard approval SHA
+Visual Lock → visual spec + calibration + references + resolved profile SHA
+Batch → 现有 V1.7 production / transport
+Text Audit → text-audit.json 必须 PASS 且 captions SHA 不漂移
+Release → release-package.json 锁最终封面/正文/字幕/发布文案/传播卡 SHA
+```
+
+常用命令：
+
+```bash
+python episodes/_system/story_os.py visual-profile <episode_dir> show
+python episodes/_system/story_os.py approval <episode_dir> story --user-approved
+python episodes/_system/story_os.py approval <episode_dir> visual --user-approved
+python episodes/_system/story_os.py audit-text <episode_dir>
+python episodes/_system/story_os.py release-package <episode_dir> build --user-approved
+```
+<!-- STORY_OS_V1_8_DEFAULT_STYLE_END -->
