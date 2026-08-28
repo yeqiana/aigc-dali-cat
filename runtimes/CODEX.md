@@ -1,4 +1,6 @@
-# CODEX Runtime V2.0.2
+# CODEX Runtime
+
+当前 Story OS 版本以根目录 `story_os_manifest.json` 为准。
 
 Codex 是文件原生全自动生产 runtime。用户明确“全自动执行”后，正常节点不反复询问继续。
 
@@ -8,7 +10,7 @@ Codex 是文件原生全自动生产 runtime。用户明确“全自动执行”
 python episodes/_system/story_os.py run <episode_dir> --full-auto
 ```
 
-V2.0.2 的“完成”不再等于 Codex worker 进程返回 0。worker 返回后必须执行 deterministic postflight；最终只允许：`COMPLETE / PAUSED / BLOCKED`。
+当前契约中的“完成”不再等于 Codex worker 进程返回 0。worker 返回后必须执行 deterministic postflight；最终只允许：`COMPLETE / PAUSED / BLOCKED`。
 
 正式生图使用：
 

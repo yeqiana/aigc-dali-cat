@@ -8,15 +8,9 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-STATES = [
-    "IDEA_LOCKED",
-    "STORYBOARD_LOCKED",
-    "VISUAL_CALIBRATED",
-    "PRODUCTION_PASSED",
-    "PUBLISH_READY",
-    "PUBLISHED",
-    "DATA_REVIEWED",
-]
+from story_os_contract import canonical_stages
+
+STATES = canonical_stages()
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 HEX64_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 CALIBRATION_ROLES = ("baseline", "worst_condition", "first_major_anomaly")

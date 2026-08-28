@@ -1,44 +1,15 @@
+# DEPRECATED_STORY_OS_INSTALLER
 param(
-  [Parameter(Mandatory=$true, Position=0)]
-  [string]$RepoPath,
-  [switch]$DryRun
+  [Parameter(Mandatory=$false, Position=0)]
+  [string]$RepoPath
 )
-
 $ErrorActionPreference = 'Stop'
-$PackRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$Repo = (Resolve-Path $RepoPath).Path
-
-if (-not (Test-Path (Join-Path $Repo 'standards\制作规范_正式版.md'))) {
-  throw "目标目录不像 aigc-dali-cat/story：缺少 standards/制作规范_正式版.md"
-}
-if (-not (Test-Path (Join-Path $Repo 'episodes'))) {
-  throw "目标目录不像当前 story 分支：缺少 episodes/"
-}
-
-$Items = @(
-  'SKILL.md',
-  'skills',
-  '.agents',
-  '.codex\skills\dali-cat-story',
-  '.github\workflows\story-gates.yml',
-  'standards\templates\episode.template.yaml',
-  'standards\templates\subtitles.template.yaml',
-  'README_UPGRADE.md'
-)
-
-foreach ($Rel in $Items) {
-  $Src = Join-Path $PackRoot $Rel
-  if (-not (Test-Path $Src)) { continue }
-  $Dst = Join-Path $Repo $Rel
-  Write-Host "COPY $Rel"
-  if ($DryRun) { continue }
-  $Parent = Split-Path -Parent $Dst
-  if ($Parent) { New-Item -ItemType Directory -Force -Path $Parent | Out-Null }
-  if ((Get-Item $Src).PSIsContainer) {
-    Copy-Item $Src $Dst -Recurse -Force
-  } else {
-    Copy-Item $Src $Dst -Force
-  }
-}
-
-Write-Host "Done. Next: python -m pip install -r skills/dali-cat-story/requirements.txt"
+Write-Error @"
+INSTALL_WINDOWS.ps1 is retired and must not be used to copy Story OS files.
+Story OS is repository-native now.
+Run from the repository root:
+  python episodes/_system/story_os.py doctor
+  python episodes/_system/contract_sync.py
+See START_HERE.md for the canonical execution path.
+"@
+exit 2

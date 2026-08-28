@@ -12,7 +12,7 @@ def require_pillow():
         from PIL import Image, ImageOps
         return Image, ImageOps
     except Exception as exc:
-        raise SystemExit('Pillow is required. Re-run the V2.0.2 installer.') from exc
+        raise SystemExit('Pillow is required. Run: python -m pip install -r episodes/_system/requirements.txt') from exc
 
 
 def read_canvas(ep: Path) -> tuple[int, int, str]:

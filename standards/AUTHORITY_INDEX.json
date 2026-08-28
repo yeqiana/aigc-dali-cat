@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "2.0.2",
+  "story_os_version": "2.0.3.1",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",

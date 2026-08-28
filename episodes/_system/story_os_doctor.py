@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
-import os
 import re
-import sys
 from pathlib import Path
+
+from contract_sync import collect_errors
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -48,26 +49,44 @@ def scan_episode_meta(issues):
 def run_doctor():
     issues = []
     required = [
+        "story_os_manifest.json",
         "START_HERE.md",
         "SKILL.md",
         "AGENTS.md",
         "standards/制作规范_正式版.md",
         "standards/AUTHORITY_INDEX.json",
+        "runtimes/runtime-contract.json",
+        "skills/dali-cat-story/SKILL.md",
+        ".agents/skills/dali-cat-story/SKILL.md",
+        "episodes/_system/story_os_contract.py",
+        "episodes/_system/contract_sync.py",
+        "episodes/_system/requirements.txt",
         "episodes/_system/episode_state.py",
         "episodes/_system/validate_episode.py",
         "episodes/_system/machine_gate.py",
+        "episodes/_system/evidence_gate.py",
         "episodes/_system/story_os.py",
         "episodes/_system/final_checklist.py",
         "episodes/_system/visual_profile.py",
         "episodes/_system/approval_lock.py",
         "episodes/_system/release_package.py",
-        "episodes/_system/v18_gate.py",
         "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
         "standards/风格锚点_MP4_网吧_流水席_旧数码_V1.2.md",
     ]
     for rel in required:
         if not (ROOT / rel).exists():
             issue(issues, "ERROR", "MISSING_REQUIRED", f"缺少 {rel}")
+
+    if importlib.util.find_spec("PIL") is None:
+        issue(
+            issues,
+            "ERROR",
+            "RUNTIME_DEPENDENCY",
+            "缺少 Pillow；执行 python -m pip install -r episodes/_system/requirements.txt",
+        )
+
+    for error in collect_errors(ROOT):
+        issue(issues, "ERROR", "CONTRACT_SYNC", error)
 
     auth_path = ROOT / "standards/AUTHORITY_INDEX.json"
     if auth_path.exists():
@@ -127,7 +146,7 @@ def main():
         for x in issues:
             print(f"[{x['level']}] {x['code']}: {x['message']}")
         if not issues:
-            print("PASS: Golden Path / authority / state-source baseline looks healthy.")
+            print("PASS: product contract / Golden Path / authority / state-source baseline looks healthy.")
     return 1 if errors else 0
 
 

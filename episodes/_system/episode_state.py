@@ -9,20 +9,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
+from story_os_contract import canonical_stages, story_os_version
 
-STATES = [
-    "IDEA_LOCKED",
-    "STORYBOARD_LOCKED",
-    "VISUAL_CALIBRATED",
-    "PRODUCTION_PASSED",
-    "PUBLISH_READY",
-    "PUBLISHED",
-    "DATA_REVIEWED",
-]
+STATES = canonical_stages()
 STATE_FILE = Path("meta/episode-state.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
 GATES_FILE = Path("meta/story-gates.json")
-SYSTEM_VERSION = "2.0.2"
+SYSTEM_VERSION = story_os_version()
 
 
 def now_iso() -> str:
@@ -384,7 +377,7 @@ def show_cmd(args: argparse.Namespace) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="DALI CAT episode state machine V2.0.2")
+    p = argparse.ArgumentParser(description=f"DALI CAT episode state machine V{SYSTEM_VERSION}")
     sub = p.add_subparsers(dest="command", required=True)
 
     init = sub.add_parser("init", help="initialize state + release manifest + strict machine story gates")

@@ -11,9 +11,10 @@ from approval_lock import verify_lock
 from delegated_approval import verify as verify_delegated
 from release_package import verify_payload
 from visual_profile import resolve_profile
+from story_os_contract import canonical_stages
 
 ROOT=Path(__file__).resolve().parents[2]
-STATES=['IDEA_LOCKED','STORYBOARD_LOCKED','VISUAL_CALIBRATED','PRODUCTION_PASSED','PUBLISH_READY','PUBLISHED','DATA_REVIEWED']
+STATES=canonical_stages()
 
 def load_json(p: Path) -> dict:
     d=json.loads(p.read_text(encoding='utf-8'))

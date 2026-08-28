@@ -1,4 +1,4 @@
-# dali-cat-story adapter scripts — V2.0.3
+# dali-cat-story adapter scripts — V2.0.3.1
 
 本目录只保存 **thin adapter wrappers / helpers**，不是第二套 Story OS engine。
 

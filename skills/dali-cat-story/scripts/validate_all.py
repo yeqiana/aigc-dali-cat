@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compatibility wrapper. V1.1 delegates to the repository's single validator."""
+"""Compatibility wrapper delegating to the repository's single canonical validator."""
 from __future__ import annotations
 import subprocess
 import sys

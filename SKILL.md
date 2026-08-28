@@ -1,11 +1,11 @@
-# Dali Cat Story OS — Repository Execution Contract V2.0.3
+# Dali Cat Story OS — Repository Execution Contract V2.0.3.1
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
-## Story OS V2.0.3 Golden Path
+## Story OS V2.0.3.1 Golden Path
 
 **第一入口：先读 `START_HERE.md`。** 该文件只负责路由，不建立第二套创作规范。
 
@@ -44,20 +44,7 @@ meta/
 
 ## 2. 任务开始前必须读取
 
-按以下顺序：
-
-1. `START_HERE.md`
-2. `README.md`
-2. `AGENTS.md`
-3. `standards/制作规范_正式版.md`
-4. 与任务相关的从属细则：
-   - `standards/抖音推流评分与发布后漏斗规范_V1.4.md`
-   - `standards/真实性与共享风格锚点规范_V1.1.md`
-   - `standards/字幕人话化与声音卡规范_V1.1.md`
-   - `standards/最终字幕视觉规范_V1.1.md`
-   - `standards/生产引擎与画幅规范_V1.2.md`
-5. 目标剧集 README / docs / 已锁分镜
-6. 若存在 `meta/episode-state.json`，同时读取三个核心 meta 文件；若 `machine_contract.strict=true`，还必须读取 production ledger 与 frame reviews。
+读取顺序只由 `START_HERE.md` 第 1 节维护，本文件不再复制第二份顺序。执行到本文件后，继续按 `AGENTS.md → standards/制作规范_正式版.md → AUTHORITY_INDEX.json active 细则 → 目标剧集` 路由。`README.md` 只做项目说明，不是执行入口。
 
 ## 3. 唯一生产状态机
 
@@ -79,10 +66,11 @@ IDEA_LOCKED
 python episodes/_system/episode_state.py transition <episode_dir> <TARGET> --note "..."
 ```
 
-V1.5 正向推进会依次执行：
+当前正向推进会依次执行：
 
-1. `validate_episode.py`：原 Story OS / manifest 门禁；
-2. `machine_gate.py`：真实性、校准、参考资产、逐帧结构化审查、production ledger 硬门禁。
+1. `validate_episode.py`：manifest / 发布条件门禁；
+2. `machine_gate.py`：真实性、校准、参考资产、逐帧结构化审查、production ledger 硬门禁；
+3. `evidence_gate.py`：Story / Visual / Release 的稳定审批 provenance 与 SHA 门禁。
 
 任一失败不得推进。禁止手改 `current_state` 越级。
 

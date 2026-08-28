@@ -1,8 +1,10 @@
 # 项目协作规则（Codex 自动读取）
 
-## Story OS V2.0.2 执行入口
+## Story OS 当前执行入口
 
 涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须先读取仓库根目录 `START_HERE.md`，再读取 `SKILL.md`。
+
+当前产品版本从 `story_os_manifest.json` 读取；不要在 Agent 入口另维护一份版本号。
 
 - `AGENTS.md`：Codex 自动入口与仓库协作规则。
 - `SKILL.md`：Story OS 执行协议。
@@ -38,7 +40,7 @@ Codex 不再被全局限制为“只能生成网页交接单”。当前 Codex �
 
 ## Episodes 机器状态与发布清单
 
-> Story OS V2.0.2：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
+> 当前 Story OS：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
 
 1. 新建具体剧集时，按 [`episodes/_system/README.md`](episodes/_system/README.md) 初始化 `meta/episode-state.json`、`meta/release-manifest.json` 与 `meta/story-gates.json`；历史剧集不批量伪造状态，只在重新进入制作/发布/复盘时迁移。
 2. 机器状态固定为：`IDEA_LOCKED → STORYBOARD_LOCKED → VISUAL_CALIBRATED → PRODUCTION_PASSED → PUBLISH_READY → PUBLISHED → DATA_REVIEWED`。
@@ -65,7 +67,7 @@ Codex 不再被全局限制为“只能生成网页交接单”。当前 Codex �
 
 Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / MP4 × 网吧 × 流水席旧数码质感校准版`，再按本集真实性卡决定实际设备表现。不得把“默认 M00”误解成“所有作品都必须旧低清”。
 
-V1.8 推进时除原 `validate_episode.py + machine_gate.py` 外，还必须通过 `v18_gate.py`：Story/Visual Approval SHA、最新 Text Audit、Release Package SHA 都不得漂移。
+当前推进统一调用稳定外部名 `evidence_gate.py`；`v18_gate.py` 只保留为历史兼容实现。Story/Visual Approval provenance、最新 Text Audit 与 Release 证据都不得漂移。
 <!-- STORY_OS_V1_8_AGENTS_END -->
 
 <!-- STORY_OS_V2_0_1_AGENTS_BEGIN -->

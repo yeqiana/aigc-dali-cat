@@ -1,10 +1,14 @@
 {
   "schema_version": 3,
-  "story_os_version": "2.0.2",
+  "story_os_version": "2.0.3.1",
   "name": "Multi-Runtime + Production Closure",
   "state_source": "meta/episode-state.json",
   "creative_authority": "standards/制作规范_正式版.md",
-  "routing_order": ["CODEX", "WORK", "WEB"],
+  "routing_order": [
+    "CODEX",
+    "WORK",
+    "WEB"
+  ],
   "routing": {
     "CODEX": {
       "target": "deterministic_full_auto_file_pipeline",
@@ -40,6 +44,10 @@
     "minimal_edit_protocol": true,
     "stable_evidence_gate": "episodes/_system/evidence_gate.py",
     "worker_return_code_is_not_completion": true,
-    "completion_states": ["COMPLETE", "PAUSED", "BLOCKED"]
+    "completion_states": [
+      "COMPLETE",
+      "PAUSED",
+      "BLOCKED"
+    ]
   }
 }

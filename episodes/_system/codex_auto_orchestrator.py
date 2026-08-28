@@ -5,8 +5,11 @@ from __future__ import annotations
 import argparse, datetime as dt, json, os, shutil, subprocess, sys, time
 from pathlib import Path
 
+from story_os_contract import canonical_stages, story_os_version
+
 ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=Path('meta/runtime-checkpoint.json')
-STATES=['IDEA_LOCKED','STORYBOARD_LOCKED','VISUAL_CALIBRATED','PRODUCTION_PASSED','PUBLISH_READY','PUBLISHED','DATA_REVIEWED']
+STORY_OS_VERSION=story_os_version()
+STATES=canonical_stages()
 
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec='seconds')
 def read_json(p): return json.loads(p.read_text(encoding='utf-8'))
@@ -27,14 +30,14 @@ def prefix(codex):
     return [str(codex)]
 def update_checkpoint(ep,state,next_action,error=None,completion=None):
     p=ep/CHECKPOINT; d=read_json(p) if p.exists() else {'schema_version':1,'locked_frames':[],'failed_frames':[]}
-    d.update({'story_os_version':'2.0.2','runtime':'CODEX','continuous_execution_authorized':True,'approval_basis':'delegated_continuous_execution','last_completed':state,'next_action':next_action,'updated_at':now()})
+    d.update({'story_os_version':STORY_OS_VERSION,'runtime':'CODEX','continuous_execution_authorized':True,'approval_basis':'delegated_continuous_execution','last_completed':state,'next_action':next_action,'updated_at':now()})
     if error:d['last_error']=error
     else:d.pop('last_error',None)
     if completion:d['completion']=completion
     write_json(p,d)
 def worker_instruction(ep,resume):
     rel=ep.relative_to(ROOT).as_posix(); mode='resume from checkpoint' if resume else 'start from real current repository state'
-    return f'''You are the Story OS V2.0.2 autonomous CODEX worker for exactly {rel}. The user authorized continuous full-auto execution; {mode}.
+    return f'''You are the Story OS V{STORY_OS_VERSION} autonomous CODEX worker for exactly {rel}. The user authorized continuous full-auto execution; {mode}.
 Read START_HERE.md, SKILL.md, AGENTS.md, runtimes/CODEX.md, AUTHORITY_INDEX, episode state/gates/ledger/reviews/checkpoint.
 Do not spawn another full-auto supervisor.
 Use delegated approval provenance honestly: after actual self-review, record story/visual delegated locks with `python episodes/_system/delegated_approval.py record "{rel}" story_lock|visual_lock --note "..."`. Never fabricate --user-approved.
@@ -54,7 +57,7 @@ def advance_to_publish_ready(ep):
         idx=STATES.index(cur)
         if idx>=STATES.index('PUBLISH_READY'): return cur=='PUBLISH_READY','state is beyond/other than PUBLISH_READY'
         target=STATES[idx+1]
-        r=run_cmd([sys.executable,SYSTEM/'episode_state.py','transition',ep,target,'--note','V2.0.2 delegated full-auto evidence transition'])
+        r=run_cmd([sys.executable,SYSTEM/'episode_state.py','transition',ep,target,'--note',f'V{STORY_OS_VERSION} delegated full-auto evidence transition'])
         if r.returncode!=0: return False,r.stdout[-2000:]
     return False,'transition loop exhausted'
 def postflight(ep):
@@ -73,7 +76,7 @@ def postflight(ep):
         errors=verify(ep)
         if errors:return 'BLOCKED','delegated delivery verify failed: '+'; '.join(errors),None
     except SystemExit as exc:return 'PAUSED','delegated delivery incomplete: '+str(exc),None
-    r=run_cmd([sys.executable,SYSTEM/'delegated_approval.py','record',ep,'release_lock','--note','Deterministic V2.0.2 delegated delivery verified'])
+    r=run_cmd([sys.executable,SYSTEM/'delegated_approval.py','record',ep,'release_lock','--note',f'Deterministic V{STORY_OS_VERSION} delegated delivery verified'])
     if r.returncode!=0:return 'BLOCKED','cannot record delegated release approval: '+r.stdout[-1500:],None
     ok,reason=advance_to_publish_ready(ep)
     if not ok:return 'PAUSED','state could not advance to PUBLISH_READY: '+reason,None
@@ -103,7 +106,7 @@ def main():
     p=sub.add_parser('status'); p.add_argument('episode_dir'); p=sub.add_parser('postflight'); p.add_argument('episode_dir'); sub.add_parser('self-test')
     a=ap.parse_args()
     if a.cmd=='self-test':
-        assert STATES[4]=='PUBLISH_READY'; assert CHECKPOINT.as_posix()=='meta/runtime-checkpoint.json'; print('CODEX AUTO ORCHESTRATOR V2.0.2 SELF-TEST PASS'); return 0
+        assert STATES[4]=='PUBLISH_READY'; assert CHECKPOINT.as_posix()=='meta/runtime-checkpoint.json'; print('CODEX AUTO ORCHESTRATOR SELF-TEST PASS'); return 0
     if a.cmd=='status':
         ep=resolve_episode(a.episode_dir); p=ep/CHECKPOINT; print(p.read_text(encoding='utf-8') if p.exists() else 'NO CHECKPOINT'); return 0
     if a.cmd=='postflight':

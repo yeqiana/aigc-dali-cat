@@ -7,10 +7,12 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from story_os_contract import story_os_version
+
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_REL = Path('meta/release-manifest.json')
 PACKAGE_REL = Path('meta/release-package.json')
-STORY_OS_VERSION = '2.0.2'
+STORY_OS_VERSION = story_os_version()
 
 
 def now_iso() -> str:
@@ -223,7 +225,7 @@ def cmd_show(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(description='Story OS V2.0.2 deterministic release package hash')
+    ap = argparse.ArgumentParser(description=f'Story OS V{STORY_OS_VERSION} deterministic release package hash')
     sub = ap.add_subparsers(dest='cmd', required=True)
     p = sub.add_parser('build'); p.add_argument('episode_dir'); p.add_argument('--user-approved', action='store_true'); p.set_defaults(func=cmd_build)
     p = sub.add_parser('verify'); p.add_argument('episode_dir'); p.set_defaults(func=cmd_verify)

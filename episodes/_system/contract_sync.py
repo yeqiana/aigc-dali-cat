@@ -1,33 +1,27 @@
 #!/usr/bin/env python3
-"""Story OS V2.0.3 contract/adapter consistency validator.
+"""Story OS contract/adapter consistency validator.
 
-This validator intentionally checks *contract parity*, not implementation parity.
-The canonical engine is allowed to exist only under episodes/_system; Skill folders
-must remain thin adapters and must not grow proxy copies of core engine modules.
+Checks contract parity, not implementation parity. The product version comes from
+story_os_manifest.json. Episode stage truth remains meta/episode-state.json.
 """
 from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Iterable
 
-EXPECTED_VERSION = "2.0.3"
-EXPECTED_STAGES = [
-    "IDEA_LOCKED",
-    "STORYBOARD_LOCKED",
-    "VISUAL_CALIBRATED",
-    "PRODUCTION_PASSED",
-    "PUBLISH_READY",
-    "PUBLISHED",
-    "DATA_REVIEWED",
-]
+from story_os_contract import CANONICAL_STAGES, load_contract
+
 CORE_ENGINE_FILES = [
+    "story_os_contract.py",
     "episode_state.py",
     "validate_episode.py",
     "machine_gate.py",
     "evidence_gate.py",
+    "release_package.py",
     "canvas_normalize.py",
     "delegated_delivery.py",
     "codex_auto_orchestrator.py",
@@ -59,32 +53,65 @@ def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8-sig")
 
 
-def _contains_v203(text: str) -> bool:
-    return bool(re.search(r"\bV?2\.0\.3\b", text, flags=re.IGNORECASE))
+def read_json(path: Path) -> dict:
+    data = json.loads(read_text(path))
+    if not isinstance(data, dict):
+        raise ValueError("JSON root must be object")
+    return data
+
+
+def declares_version(text: str, version: str) -> bool:
+    return bool(re.search(rf"\bV?{re.escape(version)}\b", text, flags=re.IGNORECASE))
+
+
+def tracked_local_artifacts(root: Path) -> list[str]:
+    if not (root / ".git").exists():
+        return []
+    try:
+        p = subprocess.run(
+            [
+                "git", "-C", str(root), "ls-files", "--",
+                ".story-os-v*.installed.json",
+                ".story-os-*-backups/**",
+                ".story-upgrade-backups/**",
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            check=False,
+        )
+    except OSError:
+        return []
+    if p.returncode != 0:
+        return []
+    # A locally deleted-but-not-yet-committed tracked path is acceptable while applying
+    # the patch. CI will catch it if the deletion is not actually committed.
+    return [x.strip() for x in p.stdout.splitlines() if x.strip() and (root / x.strip()).exists()]
 
 
 def collect_errors(root: Path | None = None) -> list[str]:
     root = root or repo_root()
     errors: list[str] = []
 
-    manifest_path = root / "story_os_manifest.json"
-    if not manifest_path.is_file():
-        return ["missing story_os_manifest.json"]
-
     try:
-        manifest = json.loads(read_text(manifest_path))
-    except Exception as exc:  # pragma: no cover - defensive CLI path
+        manifest = load_contract(root)
+    except Exception as exc:
         return [f"invalid story_os_manifest.json: {exc}"]
 
-    if manifest.get("story_os_version") != EXPECTED_VERSION:
-        errors.append(
-            f"manifest version must be {EXPECTED_VERSION}, got {manifest.get('story_os_version')!r}"
-        )
+    version = manifest.get("story_os_version")
+    if not isinstance(version, str) or not version.strip():
+        errors.append("manifest story_os_version must be a non-empty string")
+        version = "<invalid>"
+    if manifest.get("contract_schema") != 1:
+        errors.append("manifest contract_schema must remain 1")
     if manifest.get("canonical_engine") != "episodes/_system":
         errors.append("canonical_engine must be episodes/_system")
     if manifest.get("canonical_state_source") != "<episode>/meta/episode-state.json":
         errors.append("canonical_state_source must remain <episode>/meta/episode-state.json")
-    if manifest.get("stages") != EXPECTED_STAGES:
+    if manifest.get("canonical_creative_authority") != "standards/制作规范_正式版.md":
+        errors.append("canonical_creative_authority drifted")
+    if manifest.get("stages") != list(CANONICAL_STAGES):
         errors.append("manifest stages drifted from the canonical seven-stage machine")
 
     declared_capabilities = set(manifest.get("capabilities") or [])
@@ -103,15 +130,89 @@ def collect_errors(root: Path | None = None) -> list[str]:
         if not p.is_file():
             errors.append(f"missing contract file: {rel.as_posix()}")
             continue
-        if not _contains_v203(read_text(p)):
-            errors.append(f"{rel.as_posix()} does not declare Story OS V2.0.3")
+        if not declares_version(read_text(p), version):
+            errors.append(f"{rel.as_posix()} does not declare Story OS V{version}")
+
+    for rel in [Path("runtimes/runtime-contract.json"), Path("standards/AUTHORITY_INDEX.json")]:
+        p = root / rel
+        if not p.is_file():
+            errors.append(f"missing contract file: {rel.as_posix()}")
+            continue
+        try:
+            data = read_json(p)
+            if data.get("story_os_version") != version:
+                errors.append(f"{rel.as_posix()} story_os_version must equal manifest ({version})")
+        except Exception as exc:
+            errors.append(f"invalid {rel.as_posix()}: {exc}")
+
+    requirements = root / "episodes/_system/requirements.txt"
+    if not requirements.is_file() or "Pillow" not in read_text(requirements):
+        errors.append("canonical runtime dependencies missing Pillow: episodes/_system/requirements.txt")
+    adapter_requirements = root / "skills/dali-cat-story/requirements.txt"
+    if adapter_requirements.exists():
+        errors.append("thin adapter must not own runtime requirements; use episodes/_system/requirements.txt")
+
+    gitattributes = root / ".gitattributes"
+    if not gitattributes.is_file():
+        errors.append("repository EOL policy missing: .gitattributes")
+    else:
+        attrs = read_text(gitattributes)
+        for token in ["* text=auto eol=lf", "*.cmd text eol=crlf", "*.bat text eol=crlf"]:
+            if token not in attrs:
+                errors.append(f".gitattributes missing EOL token: {token}")
 
     engine = root / "episodes" / "_system"
     for name in CORE_ENGINE_FILES:
         if not (engine / name).is_file():
             errors.append(f"missing canonical engine file: episodes/_system/{name}")
 
-    # Skill scripts must never become a second engine implementation.
+    source_expectations = {
+        "episode_state.py": [
+            "from story_os_contract import canonical_stages, story_os_version",
+            "STATES = canonical_stages()",
+            "SYSTEM_VERSION = story_os_version()",
+        ],
+        "story_os.py": [
+            "from story_os_contract import canonical_stages, story_os_version",
+            "STATES = canonical_stages()",
+            "story_os_version()",
+        ],
+        "runtime_router.py": [
+            "from story_os_contract import story_os_version",
+            "'story_os_version': story_os_version()",
+        ],
+        "machine_gate.py": [
+            "from story_os_contract import canonical_stages",
+            "STATES = canonical_stages()",
+        ],
+        "evidence_gate.py": [
+            "from story_os_contract import canonical_stages",
+            "STATES=canonical_stages()",
+        ],
+        "release_package.py": [
+            "from story_os_contract import story_os_version",
+            "STORY_OS_VERSION = story_os_version()",
+        ],
+        "codex_auto_orchestrator.py": [
+            "from story_os_contract import canonical_stages, story_os_version",
+            "STORY_OS_VERSION=story_os_version()",
+            "STATES=canonical_stages()",
+            "'story_os_version':STORY_OS_VERSION",
+        ],
+    }
+    for name, tokens in source_expectations.items():
+        p = engine / name
+        if not p.is_file():
+            continue
+        text = read_text(p)
+        for token in tokens:
+            if token not in text:
+                errors.append(f"episodes/_system/{name} missing contract token: {token}")
+
+    orchestrator = engine / "codex_auto_orchestrator.py"
+    if orchestrator.is_file() and "2.0.2" in read_text(orchestrator):
+        errors.append("codex_auto_orchestrator.py contains stale Story OS V2.0.2 literals")
+
     skill_scripts = root / "skills" / "dali-cat-story" / "scripts"
     for name in CORE_ENGINE_FILES:
         duplicate = skill_scripts / name
@@ -120,22 +221,21 @@ def collect_errors(root: Path | None = None) -> list[str]:
                 f"duplicate engine implementation forbidden in Skill: {duplicate.relative_to(root).as_posix()}"
             )
 
+    adapter_texts = []
     for rel in ADAPTER_SKILLS:
         p = root / rel
         if not p.is_file():
             continue
         text = read_text(p)
-        for token in [
-            "episodes/_system",
-            "episode-state.json",
-            *sorted(REQUIRED_CAPABILITIES),
-        ]:
+        adapter_texts.append((rel, text))
+        for token in ["episodes/_system", "episode-state.json", *sorted(REQUIRED_CAPABILITIES)]:
             if token not in text:
                 errors.append(f"{rel.as_posix()} missing adapter contract token: {token}")
         if "Skill is an adapter, not a Story OS copy" not in text:
             errors.append(f"{rel.as_posix()} missing thin-adapter invariant")
+    if len(adapter_texts) == 2 and adapter_texts[0][1] != adapter_texts[1][1]:
+        errors.append("skills/ and .agents/ dali-cat-story adapter contracts are not byte-equivalent")
 
-    # Wrapper smoke-level source checks. Runtime behavior is covered by unit tests.
     bootstrap = skill_scripts / "bootstrap_episode.py"
     if not bootstrap.is_file():
         errors.append("missing Skill wrapper: skills/dali-cat-story/scripts/bootstrap_episode.py")
@@ -144,6 +244,8 @@ def collect_errors(root: Path | None = None) -> list[str]:
         for token in ["episodes", "_system", "episode_state.py", '"init"']:
             if token not in text:
                 errors.append(f"bootstrap_episode.py no longer delegates canonical init ({token})")
+        if "V2.0.3 adapter" in text:
+            errors.append("bootstrap_episode.py still hardcodes a product version")
 
     validate_all = skill_scripts / "validate_all.py"
     if not validate_all.is_file():
@@ -153,8 +255,9 @@ def collect_errors(root: Path | None = None) -> list[str]:
         for token in ["episodes", "_system", "validate_episode.py"]:
             if token not in text:
                 errors.append(f"validate_all.py no longer delegates canonical validator ({token})")
+        if "V1.1" in text:
+            errors.append("validate_all.py still carries stale V1.1 adapter wording")
 
-    # Detect stale/phantom script references in the adapter scripts README.
     scripts_readme = skill_scripts / "README.md"
     if not scripts_readme.is_file():
         errors.append("missing skills/dali-cat-story/scripts/README.md")
@@ -171,18 +274,79 @@ def collect_errors(root: Path | None = None) -> list[str]:
             if not target.is_file():
                 errors.append(f"adapter scripts README references missing file: {ref}")
 
-    workflow = root / ".github" / "workflows" / "story-gates.yml"
+    template_path = root / "standards/templates/story-gates.template.json"
+    if not template_path.is_file():
+        errors.append("missing standards/templates/story-gates.template.json")
+    else:
+        try:
+            template = read_json(template_path)
+            if template.get("tool_version") != version:
+                errors.append("story-gates template tool_version drifted from manifest")
+            if (template.get("machine_contract") or {}).get("strict") is not True:
+                errors.append("story-gates template must represent current strict machine contract")
+            visual = template.get("visual") or {}
+            for key in ["authenticity_card", "calibration", "calibration_contact_sheet", "references"]:
+                if key not in visual:
+                    errors.append(f"story-gates template missing visual.{key}")
+            if "production_evidence" not in template:
+                errors.append("story-gates template missing production_evidence")
+            if any(k in template for k in ("current_state", "stage", "workflow_state")):
+                errors.append("story-gates template must never become a second stage source")
+        except Exception as exc:
+            errors.append(f"invalid story-gates template: {exc}")
+
+    workflow = root / ".github/workflows/story-gates.yml"
     if not workflow.is_file():
         errors.append("missing .github/workflows/story-gates.yml")
     else:
         wf = read_text(workflow)
         for token in [
-            ".agents/skills/dali-cat-story/**",
+            "actions/checkout@v7",
+            "actions/setup-python@v7",
+            "python -m pip install -r episodes/_system/requirements.txt",
             "python episodes/_system/contract_sync.py",
             "python episodes/_system/test_v203_contract_hardening.py -v",
+            "python episodes/_system/story_os.py doctor",
+            ".agents/skills/dali-cat-story/**",
         ]:
             if token not in wf:
-                errors.append(f"CI missing V2.0.3 contract check: {token}")
+                errors.append(f"CI missing Story OS hardening check: {token}")
+        for token in ['"story_os_manifest.json"', '"runtimes/**"', '"START_HERE.md"', '"README.md"']:
+            if wf.count(token) < 2:
+                errors.append(f"CI must trigger on {token} for pull_request and story push")
+
+    for runtime_doc in ["runtimes/CODEX.md", "runtimes/WORK.md", "runtimes/WEB.md"]:
+        p = root / runtime_doc
+        if not p.is_file():
+            errors.append(f"missing {runtime_doc}")
+            continue
+        text = read_text(p)
+        if "story_os_manifest.json" not in text:
+            errors.append(f"{runtime_doc} must derive current product version from story_os_manifest.json")
+        if re.match(r"^# .* Runtime V\\d", text):
+            errors.append(f"{runtime_doc} should be product-version-neutral")
+
+    root_readme = root / "README.md"
+    if root_readme.is_file():
+        text = read_text(root_readme)
+        if "新篇执行流程唯一入口" not in text or "START_HERE.md" not in text:
+            errors.append("README.md must delegate the new-episode execution flow to START_HERE.md")
+        if "风格锚点_流水席_村子_误入小镇_V1.1.md" in text:
+            errors.append("README.md still links the superseded V1.1 mother-style file")
+
+    upgrade = root / "README_UPGRADE.md"
+    if upgrade.is_file():
+        text = read_text(upgrade)
+        if "HISTORICAL_ONLY" not in text or "START_HERE.md" not in text:
+            errors.append("README_UPGRADE.md is an unversioned stale active upgrade entrypoint")
+
+    installer = root / "INSTALL_WINDOWS.ps1"
+    if installer.is_file() and "DEPRECATED_STORY_OS_INSTALLER" not in read_text(installer):
+        errors.append("INSTALL_WINDOWS.ps1 is a stale executable installer and must be retired")
+
+    tracked = tracked_local_artifacts(root)
+    if tracked:
+        errors.append("local installer receipts/backups are tracked by git: " + ", ".join(tracked[:10]))
 
     return errors
 
@@ -190,12 +354,13 @@ def collect_errors(root: Path | None = None) -> list[str]:
 def main(argv: Iterable[str] | None = None) -> int:
     errors = collect_errors()
     if errors:
-        print("[FAIL] Story OS V2.0.3 contract sync")
+        print("[FAIL] Story OS contract sync")
         for error in errors:
             print(f"  - {error}")
         return 1
-    print("[PASS] Story OS V2.0.3 contract sync")
-    print("       thin adapters -> episodes/_system canonical engine")
+    version = load_contract(repo_root()).get("story_os_version")
+    print(f"[PASS] Story OS V{version} contract sync")
+    print("       one product version -> one canonical engine -> thin adapters")
     return 0
 
 

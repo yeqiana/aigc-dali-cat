@@ -3,6 +3,11 @@ name: Story Gates
 on:
   pull_request:
     paths:
+      - "story_os_manifest.json"
+      - "START_HERE.md"
+      - "README.md"
+      - "README_UPGRADE.md"
+      - "INSTALL_WINDOWS.ps1"
       - "episodes/**"
       - "standards/**"
       - "runtimes/**"
@@ -14,28 +19,45 @@ on:
   push:
     branches: [story]
     paths:
+      - "story_os_manifest.json"
+      - "START_HERE.md"
+      - "README.md"
+      - "README_UPGRADE.md"
+      - "INSTALL_WINDOWS.ps1"
       - "episodes/**/meta/**"
       - "episodes/_system/**"
       - "skills/dali-cat-story/**"
       - ".agents/skills/dali-cat-story/**"
       - "standards/templates/**"
-      - "SKILL.md"
-      - "AGENTS.md"
-      - "START_HERE.md"
       - "standards/AUTHORITY_INDEX.json"
       - "standards/capture_profiles/**"
       - "standards/story_regressions/**"
+      - "runtimes/**"
+      - "SKILL.md"
+      - "AGENTS.md"
       - ".github/workflows/story-gates.yml"
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: story-gates-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: episodes/_system/requirements.txt
+      - name: Install Story OS runtime dependencies
+        run: python -m pip install -r episodes/_system/requirements.txt
       - name: Compile Story OS
         run: python -m compileall -q episodes/_system skills/dali-cat-story
       - name: State machine and Story OS unit tests
@@ -50,9 +72,10 @@ jobs:
           python episodes/_system/canvas_normalize.py self-test
           python episodes/_system/codex_subscription_image.py self-test
           python episodes/_system/codex_auto_orchestrator.py self-test
-      - name: Validate Story OS contract sync
-        run: python episodes/_system/contract_sync.py
-
+      - name: Validate Story OS contract and repository health
+        run: |
+          python episodes/_system/contract_sync.py
+          python episodes/_system/story_os.py doctor
       - name: Validate tracked episode metadata
         run: python episodes/_system/validate_episode.py --all --metadata-only
       - name: Validate strict machine evidence metadata

@@ -1,0 +1,23 @@
+# BEGIN STORY OS EOL POLICY
+# Canonical repository text is LF for deterministic CI and patching.
+* text=auto eol=lf
+
+# Windows command launchers keep CRLF.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary assets must never receive line-ending conversion.
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.webp -text
+*.gif -text
+*.zip -text
+*.pdf -text
+*.mp4 -text
+*.mov -text
+*.woff -text
+*.woff2 -text
+*.ttf -text
+*.otf -text
+# END STORY OS EOL POLICY

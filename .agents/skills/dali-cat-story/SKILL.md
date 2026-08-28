@@ -1,4 +1,4 @@
-# dali-cat-story — Story OS V2.0.3 Adapter Contract
+# dali-cat-story — Story OS V2.0.3.1 Adapter Contract
 
 > This Skill is a **thin execution adapter** for the repository's canonical Story OS.  
 > It does not own a state machine, does not duplicate engine logic, and must not become a second source of creative or release truth.
@@ -55,7 +55,7 @@ IDEA_LOCKED
 → DATA_REVIEWED
 ```
 
-## 4. V2.0.3 Capability Contract
+## 4. V2.0.3.1 Capability Contract
 
 本 adapter 必须识别并服从以下 canonical capabilities：
 
@@ -106,8 +106,8 @@ python episodes/_system/contract_sync.py
 
 Agent/worker 返回 `rc=0` 不等于剧集 COMPLETE。正式委托执行必须以 canonical deterministic postflight、release evidence 与真实 publish asset 为准；approved fallback 不得伪装成正式交付。
 
-## 8. V2.0.3 Hardening Rule
+## 8. V2.0.3.1 Hardening Rule
 
-V2.0.3 只做契约收敛与同步硬化，不新增第二个字幕审核管线、不新增 Capture Gate、不引入第二套 review state。
+V2.0.3.1 只做契约收敛与同步硬化，不新增第二个字幕审核管线、不新增 Capture Gate、不引入第二套 review state。
 
 > **Invariant: Skill is an adapter, not a Story OS copy. Canonical engine exists only under `episodes/_system`.**

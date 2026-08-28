@@ -10,7 +10,7 @@ from pathlib import Path
 def main() -> int:
     repo = Path(__file__).resolve().parents[3]
     state = repo / "episodes" / "_system" / "episode_state.py"
-    print("Story OS V2.0.3 adapter uses the repository's single canonical state machine.")
+    print("Story OS adapter uses the repository's single canonical state machine.")
     print("Example:")
     print('  python episodes/_system/episode_state.py init <episode_dir> --id 10-01 --series 10_新系列 --title "新故事" --frame-count 20')
     if len(sys.argv) > 1:

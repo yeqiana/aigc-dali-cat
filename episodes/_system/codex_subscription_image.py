@@ -188,7 +188,7 @@ def main() -> int:
         assert provider_size(1080, 1350) == '1024x1280'
         assert provider_size(1080, 1920) == '1024x1536'
         assert not valid_image(Path('__missing__'))
-        print('CODEX SUBSCRIPTION IMAGE BACKEND V2.0.2 SELF-TEST PASS')
+        print('CODEX SUBSCRIPTION IMAGE BACKEND SELF-TEST PASS')
         return 0
     if args.timeout < 60 or args.timeout > 1200:
         raise SystemExit('timeout must be 60..1200 seconds')

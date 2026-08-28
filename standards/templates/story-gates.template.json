@@ -1,7 +1,14 @@
 {
   "schema_version": 1,
-  "tool_version": "1.3",
+  "tool_version": "2.0.3.1",
   "episode_id": "__EPISODE_ID__",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_����_��ˮϯ_������.json",
+    "capture_profile": "auto",
+    "override_reason": null
+  },
   "story": {
     "recent5_checked": false,
     "four_locks_diff_count": 0,
@@ -32,6 +39,62 @@
         "wardrobe": null,
         "weather_time": null
       }
+    },
+    "authenticity_card": {
+      "story_era": null,
+      "location": null,
+      "photographer": null,
+      "shooting_reason": null,
+      "primary_capture": {
+        "id": null,
+        "device": null
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": null,
+      "aspect_ratio": null,
+      "capture_states": {
+        "stable": null,
+        "restricted": null,
+        "lost_control": null
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": null,
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": null
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "worst_condition": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "first_major_anomaly": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      }
+    },
+    "calibration_contact_sheet": {
+      "path": null,
+      "sha256": null
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
     }
   },
   "subtitles": {
@@ -51,5 +114,14 @@
     "production": "pending",
     "recommendation_fit": "pending",
     "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 1,
+    "require_all_frames": true
   }
 }

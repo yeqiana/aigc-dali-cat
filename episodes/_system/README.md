@@ -1,6 +1,6 @@
-# Episodes 状态机 + Story OS 门禁 V2.0.3
+# Episodes 状态机 + Story OS 门禁 V2.0.3.1
 
-本目录只建立一套机器阶段状态；V2.0.3 延续 V1.8 引入的证据 SHA 门禁，并增加稳定 evidence gate 与可执行 Codex runtime，不新增第二状态机。
+本目录只建立一套机器阶段状态；V2.0.3.1 延续 V1.8 引入的证据 SHA 门禁，并增加稳定 evidence gate 与可执行 Codex runtime，不新增第二状态机。
 
 ## 核心事实源
 
@@ -114,10 +114,10 @@ python episodes/_system/machine_gate.py --all --metadata-only
 ## Story OS V1.8 增量门禁
 
 - 未指定画风：默认 `M00｜MP4 × 网吧 × 流水席旧数码质感校准版`；实际年代/采集设备物理表现优先。
-- `STORYBOARD_LOCKED`：Story Lock 必须有用户批准 + story/storyboard SHA。
-- `VISUAL_CALIBRATED`：Visual Lock 必须有用户批准 + visual spec / 校准 / reference / resolved profile SHA。
+- `STORYBOARD_LOCKED`：Story Lock 必须有可验证 approval provenance + story/storyboard SHA；允许 direct_user_review，连续执行授权下也允许 delegated_auto_review。
+- `VISUAL_CALIBRATED`：Visual Lock 必须有可验证 approval provenance + visual spec / 校准 / reference / resolved profile SHA；允许 direct 或已授权 delegated provenance。
 - `PUBLISH_READY`：`meta/text-audit.json` 必须 PASS 且 `source_sha256` 等于当前 captions。
-- `PUBLISH_READY`：`meta/release-package.json` 必须用户批准，且封面/正文/字幕/发布文案/传播卡 SHA 全部一致。
+- `PUBLISH_READY`：Release Lock 必须有 direct release-package 或已授权 delegated approval；最终 delegated delivery 仍必须使用真实 publish 资产，禁止 approved fallback。
 
 V1.7 的 transport guard 与 text revision transaction 继续沿用，不重复实现。
 <!-- STORY_OS_V1_8_SYSTEM_README_END -->

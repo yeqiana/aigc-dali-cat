@@ -1,7 +1,7 @@
 {
-  "story_os_version": "2.0.3",
+  "story_os_version": "2.0.3.1",
   "contract_schema": 1,
-  "release_name": "Hardening",
+  "release_name": "Hardening Closure",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",

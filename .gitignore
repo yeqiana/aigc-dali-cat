@@ -22,9 +22,11 @@ __pycache__/
 .playwright-cli/
 
 # Story 执行层升级包本地安装回执
+.story-os-v*.installed.json
 .story-upgrade-backups/
 .story-os-upgrade-backups/
 .story-os-backups/
+.story-os-*-backups/
 
 # Story OS V2.0 本地虚拟环境与一键升级安装包（不入库）
 .story-os-venv/

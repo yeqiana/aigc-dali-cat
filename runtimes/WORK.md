@@ -1,4 +1,6 @@
-# WORK Runtime V2.0.2
+# WORK Runtime
+
+当前 Story OS 版本以根目录 `story_os_manifest.json` 为准。
 
 ChatGPT Work 仍是“一次下达任务、尽量做到最终交付”的主入口。用户给 GitHub 地址、story 分支和目标任务并要求全自动后，读取 `START_HERE.md` 与本文件，连续执行 Golden Path。
 

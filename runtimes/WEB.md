@@ -1,4 +1,6 @@
-# WEB Runtime V2.0.2
+# WEB Runtime
+
+当前 Story OS 版本以根目录 `story_os_manifest.json` 为准。
 
 普通 ChatGPT Web 的目标仍是：尽量连续自动执行 + checkpoint 续跑。
 

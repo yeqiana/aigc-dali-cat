@@ -7,17 +7,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+from story_os_contract import canonical_stages, story_os_version
+
 SYSTEM_DIR = Path(__file__).resolve().parent
 ROOT = SYSTEM_DIR.parents[1]
-STATES = [
-    "IDEA_LOCKED",
-    "STORYBOARD_LOCKED",
-    "VISUAL_CALIBRATED",
-    "PRODUCTION_PASSED",
-    "PUBLISH_READY",
-    "PUBLISHED",
-    "DATA_REVIEWED",
-]
+STATES = canonical_stages()
 GATE_HINTS = {
     "IDEA_LOCKED": "锁选题：完成最近作品去同质化检查、四把锁、竞争解释与故事入口。",
     "STORYBOARD_LOCKED": "Story Lock：锁完整故事 + 专业分镜 + hook/climax/payoff。",
@@ -79,7 +73,7 @@ def forward(script, args):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Story OS V2.0.2 Multi-Runtime CLI")
+    ap = argparse.ArgumentParser(description=f"Story OS V{story_os_version()} Multi-Runtime CLI")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("doctor")
     p = sub.add_parser("status"); p.add_argument("episode_dir")

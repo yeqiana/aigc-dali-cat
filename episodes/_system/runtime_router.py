@@ -7,6 +7,8 @@ import os
 import shutil
 from pathlib import Path
 
+from story_os_contract import story_os_version
+
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / 'runtimes' / 'runtime-contract.json'
 VALID = {'CODEX', 'WORK', 'WEB'}
@@ -15,7 +17,7 @@ def capabilities() -> dict:
     override = os.getenv('STORY_OS_RUNTIME', '').strip().upper()
     codex = shutil.which('codex') or shutil.which('codex.exe') or shutil.which('codex.cmd')
     return {
-        'story_os_version': '2.0.1',
+        'story_os_version': story_os_version(),
         'runtime_override': override if override in VALID else None,
         'repository_filesystem': ROOT.is_dir(),
         'repository_writable': os.access(ROOT, os.W_OK),
@@ -31,7 +33,7 @@ def detect() -> tuple[str, str]:
     return 'CODEX', 'local repository code execution is available'
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description='Story OS V2.0.1 runtime router')
+    ap = argparse.ArgumentParser(description=f'Story OS V{story_os_version()} runtime router')
     sub = ap.add_subparsers(dest='cmd', required=True)
     p = sub.add_parser('detect'); p.add_argument('--json', action='store_true')
     sub.add_parser('capabilities')
