@@ -28,6 +28,7 @@ __pycache__/
 # Story OS V2.0 本地虚拟环境与一键升级安装包（不入库）
 .story-os-venv/
 Story_OS_V2.0_OneClick_FullAuto_Upgrade_UTF8_FINAL/
+Story_OS_V2.0.2_Production_Closure_OneClick_Upgrade_UTF8_FINAL/
 
 # Local workbench and review state
 workbench/tmp/

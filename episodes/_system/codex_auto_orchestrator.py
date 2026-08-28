@@ -1,151 +1,113 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Launch a repository-native Codex worker to continue Story OS end-to-end."""
+"""Run the repository-native Codex worker and deterministically close/verify full-auto production."""
 from __future__ import annotations
-import argparse
-import datetime as dt
-import json
-import os
-import shutil
-import subprocess
-import time
+import argparse, datetime as dt, json, os, shutil, subprocess, sys, time
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-CHECKPOINT = Path('meta/runtime-checkpoint.json')
+ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=Path('meta/runtime-checkpoint.json')
+STATES=['IDEA_LOCKED','STORYBOARD_LOCKED','VISUAL_CALIBRATED','PRODUCTION_PASSED','PUBLISH_READY','PUBLISHED','DATA_REVIEWED']
 
-def now() -> str:
-    return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec='seconds')
-
-def read_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding='utf-8'))
-
-def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
-
-def resolve_episode(raw: str) -> Path:
-    ep = Path(raw).resolve()
-    if not ep.is_dir():
-        raise SystemExit(f'episode directory not found: {ep}')
-    try:
-        ep.relative_to(ROOT.resolve())
-    except ValueError:
-        raise SystemExit('episode must be inside repository')
+def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec='seconds')
+def read_json(p): return json.loads(p.read_text(encoding='utf-8'))
+def write_json(p,d): p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+def resolve_episode(raw):
+    ep=Path(raw).resolve()
+    if not ep.is_dir(): raise SystemExit(f'episode directory not found: {ep}')
+    try: ep.relative_to(ROOT.resolve())
+    except ValueError: raise SystemExit('episode must be inside repository')
     return ep
-
-def resolve_codex(raw: str | None) -> Path:
-    value = raw or shutil.which('codex') or shutil.which('codex.exe') or shutil.which('codex.cmd')
-    if not value:
-        raise SystemExit('Codex CLI not found. Install/login Codex, then retry.')
+def resolve_codex(raw):
+    value=raw or shutil.which('codex') or shutil.which('codex.exe') or shutil.which('codex.cmd')
+    if not value: raise SystemExit('Codex CLI not found. Install/login Codex, then retry.')
     return Path(value).resolve()
-
-def command_prefix(codex: Path) -> list[str]:
-    if os.name == 'nt' and codex.suffix.lower() in {'.cmd', '.bat'}:
-        return ['cmd.exe', '/d', '/c', str(codex)]
+def prefix(codex):
+    if codex.suffix.lower()=='.py': return [sys.executable,str(codex)]
+    if os.name=='nt' and codex.suffix.lower() in {'.cmd','.bat'}: return ['cmd.exe','/d','/c',str(codex)]
     return [str(codex)]
-
-def update_checkpoint(ep: Path, *, state: str, next_action: str, error: str | None = None) -> None:
-    path = ep / CHECKPOINT
-    data = read_json(path) if path.exists() else {
-        'schema_version': 1,
-        'story_os_version': '2.0.1',
-        'runtime': 'CODEX',
-        'locked_frames': [],
-        'failed_frames': [],
-    }
-    data.update({
-        'story_os_version': '2.0.1',
-        'runtime': 'CODEX',
-        'continuous_execution_authorized': True,
-        'approval_basis': 'delegated_continuous_execution',
-        'last_completed': state,
-        'next_action': next_action,
-        'updated_at': now(),
-    })
-    if error:
-        data['last_error'] = error
-    write_json(path, data)
-
-def worker_instruction(ep: Path, resume: bool) -> str:
-    rel = ep.relative_to(ROOT).as_posix()
-    mode = 'resume from the existing checkpoint first' if resume else 'start from the real current repository state'
-    return f"""You are the Story OS V2.0.1 autonomous CODEX runtime worker for exactly this episode: {rel}.
-
-The user already authorized continuous full-auto execution. {mode}. Do not ask “continue?” at normal Golden Path gates. Read START_HERE.md, SKILL.md, AGENTS.md, runtimes/CODEX.md, standards/AUTHORITY_INDEX.json, the target episode, episode-state, gates, production ledger, reviews and runtime checkpoint.
-
-Hard rules:
-1. Do NOT call story_os.py run, codex_auto_orchestrator.py run, or spawn another full-auto supervisor. You are already the supervisor worker.
-2. Preserve the seven-stage episode-state as the only stage source. runtime-checkpoint is recovery evidence only.
-3. delegated_auto_review is not direct_user_review. Never fabricate --user-approved Story/Visual/Release approval when direct approval evidence does not exist.
-4. You MAY continue production under continuous execution authorization, self-review images, and authorize the one permitted repair using production_ledger.py authorize-repair --delegated-auto.
-5. For new or repaired images use episodes/_system/codex_subscription_image.py generate so every candidate becomes a real file. Keep originals/repairs/approved/publish separate and record SHA with existing tools.
-6. Do the three authenticity calibration frames before broad batch work and the four visual-admission frames before the remainder unless already completed and locked.
-7. Reuse every locked asset whose SHA still matches. Never regenerate an approved unrelated frame for convenience.
-8. Technical failures do not consume content repair. One content repair max. A second content failure becomes NEEDS_USER and stops final-release claims.
-9. Use evidence_gate.py as the stable evidence gate name.
-10. Finish as far as current tools honestly allow: captions/text audit, publish assets, Final Checklist, SHA verification, and a clearly labeled delegated-auto delivery ZIP when actual files can be collected. Do not claim PUBLISH_READY if direct Release Lock evidence is absent.
-11. Continuously update {rel}/meta/runtime-checkpoint.json with last_completed, next_action, locked_frames and failed_frames.
-"""
-
-def run_worker(args: argparse.Namespace, resume: bool) -> int:
-    ep = resolve_episode(args.episode_dir)
-    codex = resolve_codex(args.codex)
-    log = ep / 'meta' / 'codex-auto-run.jsonl'
-    log.parent.mkdir(parents=True, exist_ok=True)
-    update_checkpoint(ep, state='ORCHESTRATOR_STARTED', next_action='CODEX_WORKER_RUNNING')
-    cmd = command_prefix(codex) + [
-        'exec', '--skip-git-repo-check', '--ephemeral', '-s', 'workspace-write',
-        '-C', str(ROOT), '--json', '-'
-    ]
-    started = time.monotonic()
-    with log.open('a', encoding='utf-8', newline='\n') as handle:
-        try:
-            completed = subprocess.run(
-                cmd,
-                input=worker_instruction(ep, resume),
-                text=True,
-                stdout=handle,
-                stderr=subprocess.STDOUT,
-                timeout=args.timeout,
-                check=False,
-            )
+def update_checkpoint(ep,state,next_action,error=None,completion=None):
+    p=ep/CHECKPOINT; d=read_json(p) if p.exists() else {'schema_version':1,'locked_frames':[],'failed_frames':[]}
+    d.update({'story_os_version':'2.0.2','runtime':'CODEX','continuous_execution_authorized':True,'approval_basis':'delegated_continuous_execution','last_completed':state,'next_action':next_action,'updated_at':now()})
+    if error:d['last_error']=error
+    else:d.pop('last_error',None)
+    if completion:d['completion']=completion
+    write_json(p,d)
+def worker_instruction(ep,resume):
+    rel=ep.relative_to(ROOT).as_posix(); mode='resume from checkpoint' if resume else 'start from real current repository state'
+    return f'''You are the Story OS V2.0.2 autonomous CODEX worker for exactly {rel}. The user authorized continuous full-auto execution; {mode}.
+Read START_HERE.md, SKILL.md, AGENTS.md, runtimes/CODEX.md, AUTHORITY_INDEX, episode state/gates/ledger/reviews/checkpoint.
+Do not spawn another full-auto supervisor.
+Use delegated approval provenance honestly: after actual self-review, record story/visual delegated locks with `python episodes/_system/delegated_approval.py record "{rel}" story_lock|visual_lock --note "..."`. Never fabricate --user-approved.
+For every new/repair image use `codex_subscription_image.py generate-for-frame "{rel}" --frame NN ...`; it preserves raw output and normalizes to the exact ledger canvas before ledger success.
+Maintain three calibration frames then four visual-admission frames before the rest unless already locked. Reuse matching locked SHA assets. One content repair max; technical failure does not consume repair.
+Create actual publish assets, captions, publish copy, propagation card and PASS text audit. Do not use approved-base fallback as a publish substitute.
+Update runtime-checkpoint continuously. Do not claim completion yourself; the parent orchestrator performs deterministic postflight and packaging after you return.
+'''
+def run_cmd(args,cwd=ROOT): return subprocess.run([str(x) for x in args],cwd=cwd,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding='utf-8',errors='replace')
+def advance_to_publish_ready(ep):
+    sp=ep/'meta/episode-state.json'
+    if not sp.is_file(): return False,'episode-state missing'
+    for _ in range(6):
+        state=read_json(sp); cur=state.get('current_state')
+        if cur=='PUBLISH_READY': return True,''
+        if cur not in STATES: return False,'invalid episode state'
+        idx=STATES.index(cur)
+        if idx>=STATES.index('PUBLISH_READY'): return cur=='PUBLISH_READY','state is beyond/other than PUBLISH_READY'
+        target=STATES[idx+1]
+        r=run_cmd([sys.executable,SYSTEM/'episode_state.py','transition',ep,target,'--note','V2.0.2 delegated full-auto evidence transition'])
+        if r.returncode!=0: return False,r.stdout[-2000:]
+    return False,'transition loop exhausted'
+def postflight(ep):
+    cp=read_json(ep/CHECKPOINT) if (ep/CHECKPOINT).is_file() else {}
+    failed=cp.get('failed_frames') or []
+    if failed:return 'PAUSED',f'failed_frames present: {failed}',None
+    ledger_path=ep/'meta/production-ledger.json'
+    if not ledger_path.is_file(): return 'PAUSED','production ledger missing',None
+    ledger=read_json(ledger_path); incomplete=[f'{k}:{v.get("status")}' for k,v in (ledger.get('frames') or {}).items() if v.get('status') not in {'PASSED','LOCKED'}]
+    if incomplete:return 'PAUSED','production ledger incomplete: '+', '.join(incomplete[:12]),None
+    r=run_cmd([sys.executable,SYSTEM/'production_ledger.py','audit',ep,'--require-passed'])
+    if r.returncode!=0:return 'PAUSED','production ledger not fully passed:\n'+r.stdout[-2000:],None
+    try:
+        from delegated_delivery import build, verify
+        package=build(ep,'DELEGATED_AUTO')
+        errors=verify(ep)
+        if errors:return 'BLOCKED','delegated delivery verify failed: '+'; '.join(errors),None
+    except SystemExit as exc:return 'PAUSED','delegated delivery incomplete: '+str(exc),None
+    r=run_cmd([sys.executable,SYSTEM/'delegated_approval.py','record',ep,'release_lock','--note','Deterministic V2.0.2 delegated delivery verified'])
+    if r.returncode!=0:return 'BLOCKED','cannot record delegated release approval: '+r.stdout[-1500:],None
+    ok,reason=advance_to_publish_ready(ep)
+    if not ok:return 'PAUSED','state could not advance to PUBLISH_READY: '+reason,None
+    r=run_cmd([sys.executable,SYSTEM/'evidence_gate.py',ep,'--target','PUBLISH_READY'])
+    if r.returncode!=0:return 'BLOCKED','PUBLISH_READY evidence gate failed: '+r.stdout[-2000:],None
+    return 'COMPLETE','all deterministic postflight checks passed',package
+def run_worker(args,resume):
+    ep=resolve_episode(args.episode_dir); codex=resolve_codex(args.codex); log=ep/'meta/codex-auto-run.jsonl'; log.parent.mkdir(parents=True,exist_ok=True)
+    update_checkpoint(ep,'ORCHESTRATOR_STARTED','CODEX_WORKER_RUNNING')
+    cmd=prefix(codex)+['exec','--skip-git-repo-check','--ephemeral','-s','workspace-write','-C',str(ROOT),'--json','-']
+    with log.open('a',encoding='utf-8',newline='\n') as h:
+        try: completed=subprocess.run(cmd,input=worker_instruction(ep,resume),text=True,stdout=h,stderr=subprocess.STDOUT,timeout=args.timeout,check=False)
         except subprocess.TimeoutExpired:
-            update_checkpoint(ep, state='ORCHESTRATOR_BLOCKED', next_action='RESUME_FULL_AUTO', error=f'worker timeout after {args.timeout}s')
-            print(f'FULL-AUTO BLOCKED: timeout; resume with story_os.py run "{ep}" --full-auto --resume')
-            return 3
-    if completed.returncode != 0:
-        update_checkpoint(ep, state='ORCHESTRATOR_BLOCKED', next_action='INSPECT_CODEX_LOG_AND_RESUME', error=f'codex rc={completed.returncode}; log={log}')
-        print(f'FULL-AUTO BLOCKED rc={completed.returncode}; log={log}')
-        return 3
-    update_checkpoint(ep, state='ORCHESTRATOR_WORKER_RETURNED', next_action='VERIFY_CHECKPOINT_AND_DELIVERY')
-    print(f'FULL-AUTO WORKER RETURNED in {round(time.monotonic()-started,1)}s; log={log}')
-    return 0
-
-def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    sub = ap.add_subparsers(dest='cmd', required=True)
-    for name in ('run', 'resume'):
-        p = sub.add_parser(name)
-        p.add_argument('episode_dir')
-        p.add_argument('--full-auto', action='store_true')
-        p.add_argument('--codex')
-        p.add_argument('--timeout', type=int, default=7200)
-    p = sub.add_parser('status'); p.add_argument('episode_dir')
-    sub.add_parser('self-test')
-    args = ap.parse_args()
-    if args.cmd == 'self-test':
-        assert CHECKPOINT.as_posix() == 'meta/runtime-checkpoint.json'
-        print('CODEX AUTO ORCHESTRATOR SELF-TEST PASS')
-        return 0
-    if args.cmd == 'status':
-        ep = resolve_episode(args.episode_dir)
-        path = ep / CHECKPOINT
-        print(path.read_text(encoding='utf-8') if path.exists() else 'NO CHECKPOINT')
-        return 0
-    if not args.full_auto:
-        raise SystemExit('run/resume requires explicit --full-auto')
-    return run_worker(args, resume=args.cmd == 'resume')
-
-if __name__ == '__main__':
-    raise SystemExit(main())
+            update_checkpoint(ep,'ORCHESTRATOR_BLOCKED','RESUME_FULL_AUTO','worker timeout'); print('FULL-AUTO BLOCKED: worker timeout'); return 3
+    if completed.returncode!=0:
+        update_checkpoint(ep,'ORCHESTRATOR_BLOCKED','INSPECT_CODEX_LOG_AND_RESUME',f'codex rc={completed.returncode}; log={log}'); print(f'FULL-AUTO BLOCKED rc={completed.returncode}; log={log}'); return 3
+    status,reason,package=postflight(ep)
+    if status=='COMPLETE':
+        update_checkpoint(ep,'FULL_AUTO_COMPLETE','USER_MAY_PUBLISH',completion={'status':'COMPLETE','package':str(package),'verified_at':now()}); print(f'FULL-AUTO COMPLETE: {package}'); return 0
+    if status=='PAUSED':
+        update_checkpoint(ep,'FULL_AUTO_PAUSED','RESUME_FULL_AUTO',reason,{'status':'PAUSED'}); print('FULL-AUTO PAUSED:',reason); return 4
+    update_checkpoint(ep,'FULL_AUTO_BLOCKED','INSPECT_AND_RESUME',reason,{'status':'BLOCKED'}); print('FULL-AUTO BLOCKED:',reason); return 3
+def main():
+    ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest='cmd',required=True)
+    for name in ('run','resume'):
+        p=sub.add_parser(name); p.add_argument('episode_dir'); p.add_argument('--full-auto',action='store_true'); p.add_argument('--codex'); p.add_argument('--timeout',type=int,default=7200)
+    p=sub.add_parser('status'); p.add_argument('episode_dir'); p=sub.add_parser('postflight'); p.add_argument('episode_dir'); sub.add_parser('self-test')
+    a=ap.parse_args()
+    if a.cmd=='self-test':
+        assert STATES[4]=='PUBLISH_READY'; assert CHECKPOINT.as_posix()=='meta/runtime-checkpoint.json'; print('CODEX AUTO ORCHESTRATOR V2.0.2 SELF-TEST PASS'); return 0
+    if a.cmd=='status':
+        ep=resolve_episode(a.episode_dir); p=ep/CHECKPOINT; print(p.read_text(encoding='utf-8') if p.exists() else 'NO CHECKPOINT'); return 0
+    if a.cmd=='postflight':
+        ep=resolve_episode(a.episode_dir); status,reason,package=postflight(ep); print(status,reason,package or ''); return 0 if status=='COMPLETE' else 4 if status=='PAUSED' else 3
+    if not a.full_auto: raise SystemExit('run/resume requires explicit --full-auto')
+    return run_worker(a,a.cmd=='resume')
+if __name__=='__main__': raise SystemExit(main())

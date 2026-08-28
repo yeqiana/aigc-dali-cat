@@ -43,6 +43,8 @@ jobs:
           python episodes/_system/test_production_reliability.py -v
           python episodes/_system/test_v2_multi_runtime.py -v
           python episodes/_system/test_v201_engineering.py -v
+          python episodes/_system/test_v202_production_closure.py -v
+          python episodes/_system/canvas_normalize.py self-test
           python episodes/_system/codex_subscription_image.py self-test
           python episodes/_system/codex_auto_orchestrator.py self-test
       - name: Validate tracked episode metadata

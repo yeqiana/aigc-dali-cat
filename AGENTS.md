@@ -1,6 +1,6 @@
 # 项目协作规则（Codex 自动读取）
 
-## Story OS V2.0.1 执行入口
+## Story OS V2.0.2 执行入口
 
 涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须先读取仓库根目录 `START_HERE.md`，再读取 `SKILL.md`。
 
@@ -38,7 +38,7 @@ Codex 不再被全局限制为“只能生成网页交接单”。当前 Codex �
 
 ## Episodes 机器状态与发布清单
 
-> Story OS V2.0.1：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
+> Story OS V2.0.2：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
 
 1. 新建具体剧集时，按 [`episodes/_system/README.md`](episodes/_system/README.md) 初始化 `meta/episode-state.json`、`meta/release-manifest.json` 与 `meta/story-gates.json`；历史剧集不批量伪造状态，只在重新进入制作/发布/复盘时迁移。
 2. 机器状态固定为：`IDEA_LOCKED → STORYBOARD_LOCKED → VISUAL_CALIBRATED → PRODUCTION_PASSED → PUBLISH_READY → PUBLISHED → DATA_REVIEWED`。
@@ -75,3 +75,13 @@ V1.8 推进时除原 `validate_episode.py + machine_gate.py` 外，还必须通�
 
 自动返修必须记录为 `delegated_auto_review`；正式 Story/Visual/Release 的 `user_approved` 只能来自真实直接批准。外部证据门禁统一调用 `evidence_gate.py`。
 <!-- STORY_OS_V2_0_1_AGENTS_END -->
+
+<!-- STORY_OS_V2_0_2_AGENTS_BEGIN -->
+## V2.0.2 Production Closure
+
+- `story_os.py run --full-auto` 的成功条件是 postflight COMPLETE，不是 Codex worker rc=0。
+- 正式图片用 `codex_subscription_image.py generate-for-frame`；raw 与 exact-canvas candidate 分离。
+- full-auto self review 后用 `delegated_approval.py record` 锁 Story/Visual；不得伪造 `--user-approved`。
+- Evidence Gate 接受 direct_user_review 或已授权的 delegated_auto_review。
+- delegated delivery 只接受真实 publish 资产，禁止 approved fallback。
+<!-- STORY_OS_V2_0_2_AGENTS_END -->

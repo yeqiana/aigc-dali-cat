@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Package current real publish/approved assets without pretending Release Lock approval."""
+"""Build and verify a complete delegated-auto delivery package from real publish assets."""
 from __future__ import annotations
 import argparse
 import datetime as dt
@@ -9,62 +9,122 @@ import json
 import zipfile
 from pathlib import Path
 
-def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open('rb') as f:
-        for block in iter(lambda: f.read(1024 * 1024), b''):
-            h.update(block)
+ROOT = Path(__file__).resolve().parents[2]
+REPORT_REL = Path('meta/delegated-release.json')
+
+
+def read_json(p: Path) -> dict:
+    d=json.loads(p.read_text(encoding='utf-8'))
+    if not isinstance(d,dict): raise SystemExit(f'JSON root must be object: {p}')
+    return d
+
+def write_json(p: Path,d: dict):
+    p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+def sha256_file(p: Path) -> str:
+    h=hashlib.sha256()
+    with p.open('rb') as f:
+        for b in iter(lambda:f.read(1024*1024),b''): h.update(b)
     return h.hexdigest()
+def repo_rel(p: Path) -> str:
+    try:return p.resolve().relative_to(ROOT.resolve()).as_posix()
+    except ValueError:return p.resolve().as_posix()
+def resolve_repo(raw: object, where: str) -> Path:
+    if not isinstance(raw,str) or not raw.strip(): raise SystemExit(f'{where} missing')
+    rel=Path(raw.strip()); p=(ROOT/rel).resolve() if not rel.is_absolute() else rel.resolve()
+    if not p.is_file(): raise SystemExit(f'{where} missing: {raw}')
+    return p
+def row(p: Path,role: str,arc: str) -> dict:
+    return {'role':role,'path':repo_rel(p),'archive_path':arc,'sha256':sha256_file(p),'bytes':p.stat().st_size}
+
+def gather(ep: Path) -> tuple[list[dict], dict]:
+    manifest_path=ep/'meta/release-manifest.json'; manifest=read_json(manifest_path)
+    release=manifest.get('release') or {}; artifacts=manifest.get('artifacts') or {}
+    pub_raw=release.get('publish_dir')
+    if not isinstance(pub_raw,str) or not pub_raw.strip(): raise SystemExit('manifest.release.publish_dir missing')
+    publish_dir=(ROOT/pub_raw).resolve() if not Path(pub_raw).is_absolute() else Path(pub_raw).resolve()
+    if not publish_dir.is_dir(): raise SystemExit('publish directory missing')
+    body_glob=str(release.get('body_glob') or '[0-9][0-9].png')
+    body=sorted([p for p in publish_dir.glob(body_glob) if p.is_file()],key=lambda p:p.name)
+    expected=release.get('body_frame_count')
+    if not isinstance(expected,int) or expected<=0: raise SystemExit('manifest.release.body_frame_count invalid')
+    if len(body)!=expected: raise SystemExit(f'publish body incomplete: expected={expected}, found={len(body)}')
+    files=[]
+    for p in body: files.append(row(p,f'body:{p.stem}',f'publish/{p.name}'))
+    cover=resolve_repo(release.get('cover_path'),'manifest.release.cover_path'); files.append(row(cover,'cover','cover'+cover.suffix.lower()))
+    required=[('captions','captions'),('publish_copy','publish_copy'),('propagation_card','propagation_card')]
+    for key,role in required:
+        p=resolve_repo(artifacts.get(key),f'manifest.artifacts.{key}')
+        files.append(row(p,role,f'text/{p.name}'))
+    production_review=artifacts.get('production_review')
+    if production_review:
+        p=resolve_repo(production_review,'manifest.artifacts.production_review'); files.append(row(p,'production_review',f'qa/{p.name}'))
+    text_audit=ep/'meta/text-audit.json'
+    if not text_audit.is_file(): raise SystemExit('meta/text-audit.json missing')
+    audit=read_json(text_audit)
+    if ((audit.get('summary') or {}).get('passed')) is not True: raise SystemExit('text audit is not PASS')
+    files.append(row(text_audit,'text_audit','qa/text-audit.json'))
+    files.append(row(manifest_path,'release_manifest','release-manifest.json'))
+    checkpoint=ep/'meta/runtime-checkpoint.json'
+    if checkpoint.is_file(): files.append(row(checkpoint,'runtime_checkpoint','evidence/runtime-checkpoint.json'))
+    ledger=ep/'meta/production-ledger.json'
+    if ledger.is_file(): files.append(row(ledger,'production_ledger','evidence/production-ledger.json'))
+    return files,manifest
+
+def build(ep: Path,label: str) -> Path:
+    files,manifest=gather(ep)
+    out_dir=ep/'deliveries'; out_dir.mkdir(parents=True,exist_ok=True)
+    out=out_dir/f'{ep.name}_{label}.zip'
+    temp=out.with_suffix('.zip.partial')
+    report={
+        'schema_version':2,'story_os_version':'2.0.2','approval_basis':'delegated_auto_review','direct_release_lock':False,
+        'built_at':dt.datetime.now().astimezone().isoformat(),'episode':manifest.get('episode') or {},'files':files,'package':None,
+    }
+    checks=''.join(f"{x['sha256']}  {x['archive_path']}\n" for x in files)
+    with zipfile.ZipFile(temp,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as zf:
+        for x in files:
+            p=resolve_repo(x['path'],'delivery.file'); zf.write(p,x['archive_path'])
+        zf.writestr('checksums.sha256',checks)
+        zf.writestr('DELEGATED_AUTO_REPORT.json',json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+    temp.replace(out)
+    report['package']={'path':repo_rel(out),'sha256':sha256_file(out),'bytes':out.stat().st_size}
+    write_json(ep/REPORT_REL,report)
+    return out
+
+def verify(ep: Path) -> list[str]:
+    rp=ep/REPORT_REL
+    if not rp.is_file(): return ['delegated release report missing']
+    d=read_json(rp); errors=[]; package=d.get('package') or {}
+    try: zp=resolve_repo(package.get('path'),'delegated.package')
+    except SystemExit as exc:return [str(exc)]
+    if sha256_file(zp).lower()!=str(package.get('sha256') or '').lower(): errors.append('delegated ZIP SHA drift')
+    try:
+        with zipfile.ZipFile(zp,'r') as zf:
+            if zf.testzip() is not None: errors.append('delegated ZIP corrupt')
+            names=set(zf.namelist())
+            for x in d.get('files') or []:
+                arc=x.get('archive_path')
+                if arc not in names: errors.append(f'ZIP missing {arc}'); continue
+                if hashlib.sha256(zf.read(arc)).hexdigest().lower()!=str(x.get('sha256') or '').lower(): errors.append(f'ZIP file hash drift {arc}')
+            if 'checksums.sha256' not in names or 'DELEGATED_AUTO_REPORT.json' not in names: errors.append('ZIP metadata missing')
+    except (zipfile.BadZipFile,OSError) as exc: errors.append(str(exc))
+    for x in d.get('files') or []:
+        try:p=resolve_repo(x.get('path'),'delegated.file')
+        except SystemExit as exc:errors.append(str(exc));continue
+        if sha256_file(p).lower()!=str(x.get('sha256') or '').lower(): errors.append(f'source SHA drift {x.get("path")}')
+    return errors
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('episode_dir')
-    ap.add_argument('--label', default='DELEGATED_AUTO')
-    args = ap.parse_args()
-    ep = Path(args.episode_dir).resolve()
-    ledger = ep / 'meta' / 'production-ledger.json'
-    if not ledger.is_file():
-        raise SystemExit('production-ledger missing')
-    data = json.loads(ledger.read_text(encoding='utf-8'))
-    frames = data.get('frames') or {}
-    publish_dir = ep / 'production' / 'publish'
-    approved_dir = ep / 'production' / 'approved'
-    missing = []
-    files = []
-    for key, row in sorted(frames.items()):
-        if row.get('status') not in {'PASSED', 'LOCKED'}:
-            missing.append(f'{key}:{row.get("status")}')
-            continue
-        candidates = list(publish_dir.glob(f'{key}.*')) if publish_dir.is_dir() else []
-        if not candidates:
-            candidates = list(approved_dir.glob(f'{key}.*')) if approved_dir.is_dir() else []
-        candidates = [p for p in candidates if p.is_file()]
-        if not candidates:
-            missing.append(f'{key}:file_missing')
-            continue
-        files.append((key, candidates[0]))
-    if missing:
-        raise SystemExit('cannot package; incomplete frames: ' + ', '.join(missing))
-    out_dir = ep / 'deliveries'
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out = out_dir / f'{ep.name}_{args.label}.zip'
-    report = {
-        'schema_version': 1,
-        'story_os_version': '2.0.1',
-        'approval_basis': 'delegated_auto_review',
-        'direct_release_lock': False,
-        'built_at': dt.datetime.now().astimezone().isoformat(),
-        'files': [],
-    }
-    with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as zf:
-        for key, path in files:
-            arc = f'publish/{key}{path.suffix.lower()}'
-            zf.write(path, arc)
-            report['files'].append({'frame': key, 'path': arc, 'sha256': sha256_file(path)})
-        zf.writestr('DELEGATED_AUTO_REPORT.json', json.dumps(report, ensure_ascii=False, indent=2) + '\n')
-    print(out)
-    print('SHA256', sha256_file(out))
-    return 0
-
-if __name__ == '__main__':
-    raise SystemExit(main())
+    ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest='cmd',required=True)
+    p=sub.add_parser('build'); p.add_argument('episode_dir'); p.add_argument('--label',default='DELEGATED_AUTO')
+    p=sub.add_parser('verify'); p.add_argument('episode_dir')
+    p=sub.add_parser('show'); p.add_argument('episode_dir')
+    args=ap.parse_args(); ep=Path(args.episode_dir).resolve()
+    if args.cmd=='build':
+        out=build(ep,args.label); print(out); print('SHA256',sha256_file(out)); return 0
+    if args.cmd=='show': print((ep/REPORT_REL).read_text(encoding='utf-8')); return 0
+    errors=verify(ep)
+    if errors:
+        for e in errors: print('FAIL:',e)
+        return 2
+    print('DELEGATED DELIVERY VERIFY PASS'); return 0
+if __name__=='__main__': raise SystemExit(main())

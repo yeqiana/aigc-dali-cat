@@ -22,7 +22,7 @@ backend = load('backend201', 'codex_subscription_image.py')
 class EngineeringTests(unittest.TestCase):
     def test_version_contract(self):
         data = json.loads((ROOT / 'runtimes/runtime-contract.json').read_text(encoding='utf-8'))
-        self.assertEqual(data['story_os_version'], '2.0.1')
+        self.assertEqual(data['story_os_version'], '2.0.2')
         self.assertEqual(data['common_rules']['stable_evidence_gate'], 'episodes/_system/evidence_gate.py')
 
     def test_runtime_override(self):
@@ -44,7 +44,7 @@ class EngineeringTests(unittest.TestCase):
     def test_release_version_not_v18(self):
         text = (SYSTEM / 'release_package.py').read_text(encoding='utf-8')
         self.assertNotIn("'story_os_version': '1.8'", text)
-        self.assertIn("STORY_OS_VERSION = '2.0.1'", text)
+        self.assertIn("STORY_OS_VERSION = '2.0.2'", text)
 
     def test_story_os_uses_stable_gate(self):
         text = (SYSTEM / 'story_os.py').read_text(encoding='utf-8')

@@ -1,4 +1,4 @@
-# Dali Cat Story OS — START HERE V2.0.1
+# Dali Cat Story OS — START HERE V2.0.2
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
@@ -231,3 +231,9 @@ python episodes/_system/story_os.py run <episode_dir> --full-auto
 
 证据门禁外部稳定名统一为 `evidence_gate.py`；`v18_gate.py` 只作为历史兼容实现保留。
 <!-- STORY_OS_V2_0_1_ENGINEERING_END -->
+
+<!-- STORY_OS_V2_0_2_CLOSURE_BEGIN -->
+## Story OS V2.0.2 Production Closure
+
+CODEX 全自动完成必须经过 deterministic postflight；worker 正常退出不等于完成。生图必须使用 `generate-for-frame` 走 raw→canvas normalize→ledger。全自动 Story/Visual/Release 使用 delegated approval 证据，不伪造用户亲审。最终 delegated ZIP 禁止 approved fallback，必须包含真实 publish 资产和完整文本/manifest/hash。
+<!-- STORY_OS_V2_0_2_CLOSURE_END -->

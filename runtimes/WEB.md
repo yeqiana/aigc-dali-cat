@@ -1,4 +1,4 @@
-# WEB Runtime V2.0.1
+# WEB Runtime V2.0.2
 
 普通 ChatGPT Web 的目标仍是：尽量连续自动执行 + checkpoint 续跑。
 

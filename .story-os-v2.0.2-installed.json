@@ -1,0 +1,15 @@
+{
+  "story_os_version": "2.0.2",
+  "edition": "Production Closure",
+  "from_version": "2.0.1",
+  "installed_at": "2026-08-28T17:22:55.279942+08:00",
+  "backup": ".story-os-upgrade-backups/story-os-v2.0.2-20260828-172255",
+  "features": [
+    "canvas_normalization",
+    "deterministic_postflight",
+    "delegated_story_visual_release_gate",
+    "complete_delegated_delivery",
+    "episode_state_stable_evidence_gate",
+    "fake_backend_integration_tests"
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "2.0.1",
+  "story_os_version": "2.0.2",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -115,6 +115,12 @@
       "authority": "active_subordinate",
       "scope": "codex_auto_orchestration_and_subscription_image",
       "active": true
+    },
+    {
+      "path": "standards/生产闭环与委托批准规范_V2.0.2.md",
+      "authority": "active_subordinate",
+      "scope": "production_closure_delegated_approval",
+      "active": true
     }
   ],
   "rules": {
@@ -161,6 +167,21 @@
       "image_backend": "episodes/_system/codex_subscription_image.py",
       "approval_basis": "delegated_auto_review",
       "may_fake_user_approval": false
+    },
+    "delegated_approval": {
+      "path": "episodes/_system/delegated_approval.py",
+      "requires_continuous_execution_authorized": true,
+      "may_fake_user_approval": false
+    },
+    "production_closure": {
+      "orchestrator": "episodes/_system/codex_auto_orchestrator.py",
+      "canvas_normalizer": "episodes/_system/canvas_normalize.py",
+      "delivery": "episodes/_system/delegated_delivery.py",
+      "completion_states": [
+        "COMPLETE",
+        "PAUSED",
+        "BLOCKED"
+      ]
     }
   }
 }
