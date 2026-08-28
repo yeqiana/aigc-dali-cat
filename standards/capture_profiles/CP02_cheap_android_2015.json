@@ -1,0 +1,20 @@
+{
+  "profile_id": "CP02",
+  "name": "cheap_android_2015",
+  "display_name": "2010年代中低端安卓",
+  "era_hint": "2012-2018",
+  "physics": {
+    "dynamic_range": "limited",
+    "low_light": "noise_and_smear",
+    "motion": "slow_shutter_smear",
+    "focus": "slower",
+    "white_balance": "mixed_light_shift",
+    "compression": "noticeable_jpeg",
+    "edge_behavior": "soft_denoised"
+  },
+  "schema_version": 1,
+  "forbidden_default_artifacts": [
+    "unmotivated_cinematic_look",
+    "global_fake_retro_effect"
+  ]
+}

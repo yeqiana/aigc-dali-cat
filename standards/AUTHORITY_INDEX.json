@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "1.8",
+  "story_os_version": "2.0",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -97,6 +97,24 @@
         "standards/风格锚点_流水席_村子_误入小镇_V1.1.md"
       ],
       "note": "Story OS V1.8 account default when user does not specify another visual style. Capture physics/story era take precedence over texture."
+    },
+    {
+      "path": "standards/设备物理档案与参考预算规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "capture_physics",
+      "active": true
+    },
+    {
+      "path": "standards/跨篇指纹与回归库规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "account_memory",
+      "active": true
+    },
+    {
+      "path": "standards/自动生产编排规范_V2.0.md",
+      "authority": "active_subordinate",
+      "scope": "auto_production",
+      "active": true
     }
   ],
   "rules": {
@@ -112,6 +130,21 @@
       "use_when_unspecified": true,
       "explicit_override_wins": true,
       "capture_physics_and_story_era_win_over_texture": true
+    },
+    "auto_production": {
+      "state_source": false,
+      "fake_human_approval": false,
+      "delivery_zip": true,
+      "max_content_repair_per_frame": 1
+    },
+    "capture_profile_registry": {
+      "path": "standards/capture_profiles/index.json",
+      "default": "CP01"
+    },
+    "account_pattern_registry": {
+      "path": "reports/account-pattern-registry.json",
+      "recent_compare_count": 5,
+      "mechanism_veto": true
     }
   }
 }

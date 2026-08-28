@@ -1,0 +1,20 @@
+{
+  "profile_id": "CP06",
+  "name": "action_cam",
+  "display_name": "运动相机",
+  "era_hint": "2013+",
+  "physics": {
+    "dynamic_range": "medium",
+    "low_light": "small_sensor_noise",
+    "motion": "high_motion",
+    "focus": "deep_or_fixed",
+    "white_balance": "auto_shift",
+    "compression": "video",
+    "edge_behavior": "wide_angle_distortion"
+  },
+  "schema_version": 1,
+  "forbidden_default_artifacts": [
+    "unmotivated_cinematic_look",
+    "global_fake_retro_effect"
+  ]
+}

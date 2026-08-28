@@ -1,0 +1,20 @@
+{
+  "profile_id": "CP07",
+  "name": "scanned_photo",
+  "display_name": "纸质照片翻拍/扫描",
+  "era_hint": "source_dependent",
+  "physics": {
+    "dynamic_range": "inherits_print",
+    "low_light": "source_dependent",
+    "motion": "scan_none_or_rephoto_blur",
+    "focus": "scan_or_rephoto",
+    "white_balance": "paper_age_cast",
+    "compression": "scan_or_rephoto",
+    "edge_behavior": "paper_edge_or_crop"
+  },
+  "schema_version": 1,
+  "forbidden_default_artifacts": [
+    "unmotivated_cinematic_look",
+    "global_fake_retro_effect"
+  ]
+}

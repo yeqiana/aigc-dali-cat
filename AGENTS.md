@@ -62,3 +62,8 @@ Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / MP4 �
 
 V1.8 推进时除原 `validate_episode.py + machine_gate.py` 外，还必须通过 `v18_gate.py`：Story/Visual Approval SHA、最新 Text Audit、Release Package SHA 都不得漂移。
 <!-- STORY_OS_V1_8_AGENTS_END -->
+
+<!-- STORY_OS_V2_0_AGENT -->
+## V2.0 Auto Production
+用户明确要求无人值守时，可运行 Auto Production；但不得伪造人类批准。M00 管视觉语言，CPxx 管设备物理。先校准、再视觉准入、再剩余帧。第二次内容审核仍失败必须停机，不得打假 FINAL。
+<!-- /STORY_OS_V2_0_AGENT -->

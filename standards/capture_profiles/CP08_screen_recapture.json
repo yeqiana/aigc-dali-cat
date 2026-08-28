@@ -1,0 +1,20 @@
+{
+  "profile_id": "CP08",
+  "name": "screen_recapture",
+  "display_name": "屏幕翻拍",
+  "era_hint": "context",
+  "physics": {
+    "dynamic_range": "screen_exposure_conflict",
+    "low_light": "room_screen_mismatch",
+    "motion": "micro_blur",
+    "focus": "reflection_conflict",
+    "white_balance": "mixed_screen_room",
+    "compression": "screen_plus_recapture",
+    "edge_behavior": "moire_reflection"
+  },
+  "schema_version": 1,
+  "forbidden_default_artifacts": [
+    "unmotivated_cinematic_look",
+    "global_fake_retro_effect"
+  ]
+}

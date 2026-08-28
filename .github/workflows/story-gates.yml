@@ -36,6 +36,8 @@ jobs:
           python episodes/_system/test_validator.py -v
           python episodes/_system/test_machine_gate.py -v
           python episodes/_system/test_production_reliability.py -v
+          python episodes/_system/test_story_os_v2.py -v
+          python episodes/_system/auto_production.py self-test
       - name: Validate tracked episode metadata
         run: python episodes/_system/validate_episode.py --all --metadata-only
       - name: Validate strict machine evidence metadata

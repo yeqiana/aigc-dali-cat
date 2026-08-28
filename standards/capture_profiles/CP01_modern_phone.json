@@ -1,0 +1,20 @@
+{
+  "profile_id": "CP01",
+  "name": "modern_phone",
+  "display_name": "现代智能手机",
+  "era_hint": "2019+",
+  "physics": {
+    "dynamic_range": "medium_high",
+    "low_light": "computational_but_not_magic",
+    "motion": "handheld_or_rolling_shutter_when_causal",
+    "focus": "fast_but_can_hunt",
+    "white_balance": "mostly_stable",
+    "compression": "modern_jpeg_heic",
+    "edge_behavior": "moderately_sharp"
+  },
+  "schema_version": 1,
+  "forbidden_default_artifacts": [
+    "unmotivated_cinematic_look",
+    "global_fake_retro_effect"
+  ]
+}

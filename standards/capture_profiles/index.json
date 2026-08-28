@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0",
+  "purpose": "Capture physics separate from visual IP",
+  "default_profile_id": "CP01",
+  "reference_budget": {
+    "normal": 1,
+    "default_max": 2,
+    "over_max_requires_reason": true
+  },
+  "profiles": [
+    {
+      "profile_id": "CP01",
+      "display_name": "现代智能手机",
+      "file": "CP01_modern_phone.json"
+    },
+    {
+      "profile_id": "CP02",
+      "display_name": "2010年代中低端安卓",
+      "file": "CP02_cheap_android_2015.json"
+    },
+    {
+      "profile_id": "CP03",
+      "display_name": "2000年代卡片数码相机",
+      "file": "CP03_compact_digital_2008.json"
+    },
+    {
+      "profile_id": "CP04",
+      "display_name": "磁带DV / 早期数码摄像机",
+      "file": "CP04_dv_tape.json"
+    },
+    {
+      "profile_id": "CP05",
+      "display_name": "固定监控",
+      "file": "CP05_cctv.json"
+    },
+    {
+      "profile_id": "CP06",
+      "display_name": "运动相机",
+      "file": "CP06_action_cam.json"
+    },
+    {
+      "profile_id": "CP07",
+      "display_name": "纸质照片翻拍/扫描",
+      "file": "CP07_scanned_photo.json"
+    },
+    {
+      "profile_id": "CP08",
+      "display_name": "屏幕翻拍",
+      "file": "CP08_screen_recapture.json"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0",
+  "cases": [
+    {
+      "id": "R001",
+      "dimension": "location_reality",
+      "input": {
+        "rural_village": true,
+        "public_bus_visible": true,
+        "transport_pre_registered": false
+      },
+      "expected": "fail"
+    },
+    {
+      "id": "R002",
+      "dimension": "viewpoint_physics",
+      "input": {
+        "first_person_device_fully_visible": true,
+        "second_source_explained": false
+      },
+      "expected": "fail"
+    },
+    {
+      "id": "R003",
+      "dimension": "minimal_edit",
+      "input": {
+        "edit_mode": "subtitle_only",
+        "locked_base_hash_changed": true
+      },
+      "expected": "fail"
+    },
+    {
+      "id": "R004",
+      "dimension": "caption_voice",
+      "input": {
+        "consecutive_i_found": 3
+      },
+      "expected": "warning"
+    },
+    {
+      "id": "R005",
+      "dimension": "payoff",
+      "input": {
+        "major_final_anomaly": true,
+        "setup_exists": false
+      },
+      "expected": "fail"
+    },
+    {
+      "id": "R006",
+      "dimension": "homogeneity",
+      "input": {
+        "same_core_mechanism": true,
+        "same_middle_escalation": true,
+        "same_climax_form": true
+      },
+      "expected": "fail"
+    }
+  ]
+}
