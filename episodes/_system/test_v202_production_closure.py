@@ -36,7 +36,7 @@ class ClosureTests(unittest.TestCase):
         self.assertEqual(r.returncode,0,r.stdout+r.stderr)
         Image=pillow()
         with Image.open(out) as im:self.assertEqual(im.size,(1080,1350))
-        self.assertTrue(any((ep/'production/raw').glob('01-*.png')))
+        self.assertTrue(any((ep/'media/raw').glob('01-*.png')))
     def setup_release(self):
         ep=self.base/'release'; (ep/'meta').mkdir(parents=True); (ep/'production/publish').mkdir(parents=True); (ep/'docs').mkdir()
         self.make_img(ep/'production/publish/01.png'); self.make_img(ep/'cover.png')
@@ -46,6 +46,15 @@ class ClosureTests(unittest.TestCase):
         (ep/'meta/release-manifest.json').write_text(json.dumps(manifest),encoding='utf-8'); (ep/'meta/text-audit.json').write_text(json.dumps({'summary':{'passed':True},'source_sha256':'x'*64}),encoding='utf-8')
         (ep/'meta/runtime-checkpoint.json').write_text(json.dumps({'continuous_execution_authorized':True,'approval_basis':'delegated_continuous_execution'}),encoding='utf-8')
         return ep
+    def test_delivery_machine_gate_legacy_boundary(self):
+        ep=self.setup_release()
+        self.assertFalse(delivery.machine_gate_required_for_delivery(ep))
+        manifest_path=ep/'meta/release-manifest.json'
+        manifest=json.loads(manifest_path.read_text(encoding='utf-8'))
+        manifest['tool_version']='2.0.3.3'
+        manifest_path.write_text(json.dumps(manifest),encoding='utf-8')
+        self.assertTrue(delivery.machine_gate_required_for_delivery(ep))
+
     def test_delegated_delivery_is_complete_and_verified(self):
         ep=self.setup_release(); z=delivery.build(ep,'TEST'); self.assertEqual(delivery.verify(ep),[])
         with zipfile.ZipFile(z) as f:

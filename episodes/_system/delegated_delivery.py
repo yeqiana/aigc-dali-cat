@@ -10,7 +10,13 @@ import zipfile
 from pathlib import Path
 
 from story_os_contract import story_os_version
-from frame_semantic_review import review_required as frame_semantic_required, verify_episode as verify_frame_semantic_episode
+from frame_semantic_review import (
+    TARGET_CONTRACT as FRAME_SEMANTIC_TARGET,
+    episode_contract_version,
+    review_required as frame_semantic_required,
+    verify_episode as verify_frame_semantic_episode,
+    version_tuple,
+)
 from machine_gate import validate as validate_machine_gate
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -41,15 +47,27 @@ def row(p: Path,role: str,arc: str) -> dict:
     return {'role':role,'path':repo_rel(p),'archive_path':arc,'sha256':sha256_file(p),'bytes':p.stat().st_size}
 
 
+def machine_gate_required_for_delivery(ep: Path) -> bool:
+    """Preserve legacy delivery without weakening current strict contracts.
+
+    Explicit pre-2.0.3.3 episodes that never had story-gates may still be packaged.
+    Any episode with story-gates, and every 2.0.3.3+ contract, must pass machine gate.
+    """
+    if (ep/'meta/story-gates.json').is_file():
+        return True
+    return version_tuple(episode_contract_version(ep)) >= FRAME_SEMANTIC_TARGET
+
+
 def preflight(ep: Path) -> None:
     if frame_semantic_required(ep):
         errors = verify_frame_semantic_episode(ep, metadata_only=False, write_audit=True)
         if errors:
             raise SystemExit('frame semantic preflight failed: ' + '; '.join(errors))
-    findings = validate_machine_gate(ep, 'PRODUCTION_PASSED', metadata_only=False)
-    failures = [str(x) for x in findings if getattr(x, 'level', None) == 'FAIL']
-    if failures:
-        raise SystemExit('PRODUCTION_PASSED machine gate failed before delivery: ' + '; '.join(failures))
+    if machine_gate_required_for_delivery(ep):
+        findings = validate_machine_gate(ep, 'PRODUCTION_PASSED', metadata_only=False)
+        failures = [str(x) for x in findings if getattr(x, 'level', None) == 'FAIL']
+        if failures:
+            raise SystemExit('PRODUCTION_PASSED machine gate failed before delivery: ' + '; '.join(failures))
 
 def gather(ep: Path) -> tuple[list[dict], dict]:
     manifest_path=ep/'meta/release-manifest.json'; manifest=read_json(manifest_path)
