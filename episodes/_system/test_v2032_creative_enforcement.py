@@ -12,6 +12,7 @@ if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
 import contract_sync  # noqa: E402
+import story_os_contract  # noqa: E402
 import story_review  # noqa: E402
 import subtitle_layout  # noqa: E402
 import visual_profile  # noqa: E402
@@ -21,7 +22,7 @@ import visual_review  # noqa: E402
 class CreativeEnforcementTests(unittest.TestCase):
     def test_product_version(self):
         manifest = json.loads((ROOT / "story_os_manifest.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["story_os_version"], "2.0.3.3")
+        self.assertEqual(manifest["story_os_version"], story_os_contract.story_os_version(ROOT))
         self.assertEqual(manifest["stages"], [
             "IDEA_LOCKED", "STORYBOARD_LOCKED", "VISUAL_CALIBRATED",
             "PRODUCTION_PASSED", "PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED",
