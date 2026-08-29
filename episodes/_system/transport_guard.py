@@ -139,10 +139,21 @@ def cmd_preflight(args: argparse.Namespace) -> int:
     if recalculated != fp:
         raise SystemExit('production ledger request_fingerprint does not match request payload; aborting transport')
 
+    direct_exception = (
+        frame.get('status') == 'REPAIRING'
+        and frame.get('user_exception_repairs_used', 0) == 1
+        and any(
+            isinstance(item, dict)
+            and item.get('user_approved') is True
+            and item.get('approval_basis') == 'direct_user_review_exception'
+            and item.get('approval_text')
+            for item in (frame.get('user_exception_authorizations') or [])
+        )
+    )
     prev = previous_technical_attempt(frame)
     if prev is not None:
         prev_fp = prev.get('request_fingerprint')
-        if prev_fp != fp:
+        if prev_fp != fp and not direct_exception:
             raise SystemExit(
                 f'technical retry changed request fingerprint for frame {key}: previous={prev_fp}, current={fp}. '
                 'Do not change prompt/model/capture/references during a technical retry.'
@@ -164,6 +175,8 @@ def cmd_preflight(args: argparse.Namespace) -> int:
     item['active_attempt_id'] = attempt.get('attempt_id')
     item['last_preflight_at'] = now_iso()
     event(item, 'preflight_passed', attempt_id=attempt.get('attempt_id'), fingerprint=fp)
+    if direct_exception:
+        event(item, 'direct_user_exception_fingerprint_change', attempt_id=attempt.get('attempt_id'), fingerprint=fp)
     data['updated_at'] = now_iso()
     save_json(path, data)
     print(f'{key}: transport preflight PASS fingerprint={fp}')

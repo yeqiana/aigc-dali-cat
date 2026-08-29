@@ -1,11 +1,11 @@
-# Dali Cat Story OS — Repository Execution Contract V2.0.3.4
+# Dali Cat Story OS — Repository Execution Contract V2.0.3.5
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
-## Story OS V2.0.3.4 Golden Path
+## Story OS V2.0.3.5 Golden Path
 
 **第一入口：先读 `START_HERE.md`。** 该文件只负责路由，不建立第二套创作规范。
 
@@ -321,3 +321,17 @@ Full-auto pipeline: `worker → deterministic postflight → COMPLETE|PAUSED|BLO
 - `release_evidence_closure`：Release 前再次执行 Production semantic preflight，交付包携带 frame review / audit。
 - recovered/locked 资产没有当前 SHA 的 schema 2 review 时不得继承 PASS。
 - 不新增第八状态。
+
+
+<!-- STORY_OS_V2_0_3_5_RELEASE_GUARD_BEGIN -->
+## Story OS V2.0.3.5 — Release Guard
+
+不新增 episode stage。新增四个发布前 P0 硬证据：
+
+- `meta/recent5-review.json`：真实最近 5 篇 fingerprint + registry SHA 绑定，禁止只写 `recent5_checked=true`。
+- `<series>/meta/series-lock.json` + `meta/series-lock-binding.json`：连续世界观跨集 anchor SHA。
+- `meta/release-semantic-review.json`：fresh isolated critic 审最终 cover/title/01-03/climax/payoff/description。
+- `meta/publish-compliance.json`：AI 内容声明计划 + 虚构上下文治理证据。
+
+旧 V2.0.3.4 episode 默认兼容；V2.0.3.5 新篇或显式 `release_preflight.py enable` 的剧集启用。
+<!-- STORY_OS_V2_0_3_5_RELEASE_GUARD_END -->

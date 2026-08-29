@@ -1,7 +1,7 @@
 {
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.5",
   "contract_schema": 1,
-  "release_name": "Incremental Workspace",
+  "release_name": "Release Guard",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -38,7 +38,11 @@
     "caption_fingerprint_binding",
     "local_media_workspace",
     "media_sha_index",
-    "safe_media_migration"
+    "safe_media_migration",
+    "recent5_evidence_binding",
+    "series_lock_sha_binding",
+    "release_semantic_review",
+    "ai_governance_release_gate"
   ],
   "adapters": [
     "skills/dali-cat-story",

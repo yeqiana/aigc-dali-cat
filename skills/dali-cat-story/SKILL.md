@@ -1,4 +1,4 @@
-# dali-cat-story — Story OS V2.0.3.4 Adapter Contract
+# dali-cat-story — Story OS V2.0.3.5 Adapter Contract
 
 > This Skill is a **thin execution adapter** for the repository's canonical Story OS.  
 > It does not own a state machine, does not duplicate engine logic, and must not become a second source of creative or release truth.

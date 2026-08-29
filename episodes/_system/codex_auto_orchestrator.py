@@ -44,6 +44,17 @@ Do not spawn another full-auto supervisor.
 MINIMAL CLOSURE FIRST:
 Run `python episodes/_system/incremental_closure.py plan "{rel}" --json` before spending a critic call. CLEAN SHA-bound evidence MUST be reused. Do not rerun Story/Visual/Frame critics merely for reassurance.
 
+RELEASE GUARD V2.0.3.5:
+Before Story Lock, run:
+  python episodes/_system/release_preflight.py enable "{rel}"
+  python episodes/_system/release_preflight.py build-recent5 "{rel}"
+Never replace this with story.recent5_checked=true.
+If this is a continuous multi-episode series, create/bind the shared series lock before Visual Lock.
+Before returning from RELEASE work, initialize compliance and run the final release critic:
+  python episodes/_system/release_preflight.py init-compliance "{rel}"
+  python episodes/_system/release_preflight.py run-release-critic "{rel}"
+  python episodes/_system/release_preflight.py verify "{rel}"
+
 STORY LOCK IS THE HIGHEST CREATIVE LOCK.
 Before story_lock, finish the whole story and storyboard but do NOT generate images.
 Run an independent fresh critic:
@@ -115,6 +126,8 @@ def postflight(ep):
     if r.returncode!=0:return 'PAUSED','incremental frame semantic review/audit failed:\n'+r.stdout[-2500:],None
     r=run_cmd([sys.executable,SYSTEM/'machine_gate.py',ep,'--target','PRODUCTION_PASSED'])
     if r.returncode!=0:return 'PAUSED','PRODUCTION_PASSED machine gate failed before packaging:\n'+r.stdout[-2500:],None
+    r=run_cmd([sys.executable,SYSTEM/'release_preflight.py','prepare-auto',ep])
+    if r.returncode!=0:return 'PAUSED','V2.0.3.5 release preflight failed:\n'+r.stdout[-3000:],None
     try:
         from delegated_delivery import build, verify
         package=build(ep,'DELEGATED_AUTO')

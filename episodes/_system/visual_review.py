@@ -60,6 +60,22 @@ def version_tuple(raw: object) -> tuple[int, ...]:
         return (0,)
 
 
+def episode_contract_version(ep: Path) -> str:
+    versions = []
+    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+        p = ep / rel
+        if not p.is_file():
+            continue
+        try:
+            raw = str(read_json(p).get("tool_version") or "")
+            vt = version_tuple(raw)
+            if vt != (0,):
+                versions.append((vt, raw))
+        except Exception:
+            continue
+    return max(versions, key=lambda x: x[0])[1] if versions else story_os_version()
+
+
 def review_required(ep: Path) -> bool:
     for rel in ("meta/episode-state.json", "meta/release-manifest.json"):
         p = ep / rel
@@ -192,7 +208,7 @@ def verify(ep: Path) -> list[str]:
         profile_id=contract["profile_id"],
         profile_sha=contract["profile_sha256"],
         assets=assets,
-        version=story_os_version(),
+        version=episode_contract_version(ep),
     )
 
 

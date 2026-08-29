@@ -31,6 +31,7 @@ __pycache__/
 .story-os-history/
 .story-os-media-migration/
 .story-os-media-inventory.json
+.storyos_backups/
 
 # Story OS local virtualenv / upgrade packages
 .story-os-venv/
@@ -46,6 +47,7 @@ workbench/tmp/
 # Episode media policy:
 # all image/video/audio/archive binaries below episodes/ remain LOCAL ONLY.
 # Git tracks story/meta/code; pixel assets are linked by SHA/media-index.
+episodes/**/media/
 episodes/**/*.png
 episodes/**/*.jpg
 episodes/**/*.jpeg

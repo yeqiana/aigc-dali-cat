@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.5",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -150,6 +150,13 @@
       "scope": "incremental_execution_and_local_media_workspace",
       "active": true,
       "note": "Defines minimal closure, dirty propagation, local media workspace, SHA index and safe migration. Does not create a second stage source."
+    },
+    {
+      "path": "standards/release_preflight_guard_V2.0.3.5.md",
+      "authority": "active_subordinate",
+      "scope": "release_preflight_recent5_series_semantic_governance",
+      "active": true,
+      "note": "Adds release-preflight evidence only; no second stage source."
     }
   ],
   "rules": {
@@ -234,6 +241,15 @@
       "dirty_ratio_full_escalation": 0.25,
       "new_state_forbidden": true,
       "frozen_evidence_media_paths_immutable": true
+    },
+    "release_preflight_guard": {
+      "path": "episodes/_system/release_preflight.py",
+      "recent5_evidence": "meta/recent5-review.json",
+      "series_lock": "<series>/meta/series-lock.json",
+      "series_binding": "meta/series-lock-binding.json",
+      "release_semantic_review": "meta/release-semantic-review.json",
+      "publish_compliance": "meta/publish-compliance.json",
+      "new_state_forbidden": true
     }
   }
 }

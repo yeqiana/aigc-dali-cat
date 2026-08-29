@@ -26,6 +26,7 @@ FRAME_STATES = {
     "ORIGINAL_READY",
     "CONTENT_FAILED",
     "REPAIR_AUTHORIZED",
+    "EXCEPTION_REPAIR_AUTHORIZED",
     "REPAIRING",
     "REPAIR_READY",
     "PASSED",
@@ -420,12 +421,16 @@ def cmd_begin(args: argparse.Namespace) -> None:
         raise SystemExit(f"technical retry must preserve attempt kind {last_kind!r}")
     if kind == "original" and status not in {"PENDING", "TECH_FAILED"}:
         raise SystemExit(f"cannot begin original from {status}")
-    if kind == "repair" and status not in {"REPAIR_AUTHORIZED", "TECH_FAILED"}:
-        raise SystemExit(f"repair requires REPAIR_AUTHORIZED (or TECH_FAILED retry), got {status}")
+    if kind == "repair" and status not in {"REPAIR_AUTHORIZED", "EXCEPTION_REPAIR_AUTHORIZED", "TECH_FAILED"}:
+        raise SystemExit(f"repair requires REPAIR_AUTHORIZED, EXCEPTION_REPAIR_AUTHORIZED, or TECH_FAILED retry; got {status}")
     if kind == "repair" and status == "REPAIR_AUTHORIZED":
         if frame.get("content_repairs_used", 0) >= 1:
             raise SystemExit("content repair limit reached")
         frame["content_repairs_used"] = frame.get("content_repairs_used", 0) + 1
+    if kind == "repair" and status == "EXCEPTION_REPAIR_AUTHORIZED":
+        if frame.get("user_exception_repairs_used", 0) >= 1:
+            raise SystemExit("user exception repair limit reached")
+        frame["user_exception_repairs_used"] = frame.get("user_exception_repairs_used", 0) + 1
 
     text = prompt_text(args)
     refs = parse_references(args.reference)
@@ -556,6 +561,39 @@ def cmd_authorize_repair(args: argparse.Namespace) -> None:
     print(f"{key}: REPAIR_AUTHORIZED")
 
 
+def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
+    """Record one explicit, non-delegable user exception after a hard repair failure.
+
+    This does not reset the ordinary single-repair counter.  It exists so a
+    directly quoted user exception is auditable rather than being disguised as
+    an original request or silently accepted candidate.
+    """
+    ep = episode_dir(args.episode_dir)
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, args.frame)
+    if frame["status"] != "NEEDS_USER":
+        raise SystemExit(f"user exception repair requires NEEDS_USER, got {frame['status']}")
+    if frame.get("content_repairs_used", 0) != 1:
+        raise SystemExit("user exception repair requires exactly one ordinary content repair")
+    if frame.get("user_exception_repairs_used", 0) >= 1:
+        raise SystemExit("user exception repair limit reached")
+    approval = args.approval_text.strip()
+    if not approval:
+        raise SystemExit("direct user approval text is required")
+    frame["status"] = "EXCEPTION_REPAIR_AUTHORIZED"
+    frame.setdefault("user_exception_authorizations", []).append({
+        "at": now_iso(),
+        "approval_text": approval,
+        "reason": args.reason,
+        "user_approved": True,
+        "delegated_auto_review": False,
+        "approval_basis": "direct_user_review_exception",
+    })
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    print(f"{key}: EXCEPTION_REPAIR_AUTHORIZED (direct user exception recorded)")
+
+
 def safe_ext(path: Path) -> str:
     ext = path.suffix.lower()
     return ext if ext in {".png", ".jpg", ".jpeg"} else ".png"
@@ -676,6 +714,17 @@ def cmd_audit(args: argparse.Namespace) -> None:
             failures.append(f"{key}: invalid status {status!r}")
         if frame.get("content_repairs_used", 0) > 1:
             failures.append(f"{key}: content repair count > 1")
+        exception_repairs = frame.get("user_exception_repairs_used", 0)
+        approvals = frame.get("user_exception_authorizations") or []
+        if exception_repairs > 1:
+            failures.append(f"{key}: user exception repair count > 1")
+        if exception_repairs and not any(
+            item.get("user_approved") is True
+            and item.get("approval_basis") == "direct_user_review_exception"
+            and item.get("approval_text")
+            for item in approvals if isinstance(item, dict)
+        ):
+            failures.append(f"{key}: user exception repair lacks direct user approval evidence")
         approved = frame.get("approved_asset")
         if isinstance(approved, dict) and approved.get("path"):
             p = (repo_root() / approved["path"]).resolve()
@@ -769,6 +818,13 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--note", required=True)
     s.add_argument("--delegated-auto", action="store_true", help="continuous-execution agent approval; does not claim direct user review")
     s.set_defaults(func=cmd_authorize_repair)
+
+    s = sub.add_parser("authorize-user-exception-repair", help="record one direct-user exception after the ordinary repair hard-fails")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--approval-text", required=True)
+    s.add_argument("--reason", required=True)
+    s.set_defaults(func=cmd_authorize_user_exception_repair)
 
     s = sub.add_parser("promote", help="copy current passed candidate into production/approved without overwriting source")
     s.add_argument("episode_dir")
