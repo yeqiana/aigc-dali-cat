@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0.3.4",
+  "draft": true,
+  "not_machine_evidence": true,
+  "episode": "10-04",
+  "recommendation_fit": {
+    "audience": {
+      "core": [
+        "第一人称现实怪谈",
+        "川西/川藏旅行内容",
+        "未知文明/世界结构题材",
+        "真实手机相册感",
+        "克制悬疑"
+      ],
+      "adjacent": [
+        "旅行悬疑",
+        "都市传说",
+        "手机摄影",
+        "民俗想象",
+        "世界观脑洞"
+      ],
+      "mismatch": [
+        "血腥猎奇",
+        "怪兽爽文",
+        "仙侠",
+        "硬核科幻科普",
+        "纯搞笑"
+      ],
+      "score_status": "PENDING_FINAL_TITLE_AND_COVER"
+    },
+    "diversity": {
+      "compared_recent_works": [],
+      "max_similarity_score": null,
+      "risk_level": "PENDING_REAL_RECENT5",
+      "mechanism_copy_veto": null,
+      "notes": [
+        "account-pattern-registry 当前没有可用历史 fingerprint；禁止人工伪造。"
+      ]
+    },
+    "search": {
+      "core_entities": [
+        "川藏返程",
+        "山区低云",
+        "无人机",
+        "第一人称救援",
+        "空间错位"
+      ],
+      "primary_intents": [
+        "川藏旅行故事",
+        "第一人称悬疑",
+        "山区异常故事"
+      ],
+      "long_tail_queries": [
+        "一步之外的另一条路故事",
+        "川藏自驾遇到怪事",
+        "山里不存在的地方",
+        "真实手机相册感怪谈"
+      ],
+      "score_status": "PENDING_FINAL_COPY"
+    },
+    "governance": {
+      "status": "REVIEW",
+      "risks": [
+        "真实旅行地名只能作为背景锚点；异常点位必须虚构。"
+      ],
+      "disclosure": "人物、地点细节与异常情节均为虚构创作；画面由AI生成。"
+    }
+  }
+}
