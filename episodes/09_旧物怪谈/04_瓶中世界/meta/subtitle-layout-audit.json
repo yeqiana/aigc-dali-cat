@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0.3.2",
+  "engine": "story_os_subtitle_layout_v1",
+  "canonical_renderer": true,
+  "source": "episodes/09_旧物怪谈/04_瓶中世界/meta/subtitles.yaml",
+  "source_sha256": "491ee93eec60dee442ad7beeacdfae18a5cbd4a0a6bcff93308f14aca9e67d0f",
+  "policy": {
+    "punctuation_only_second_line": "drop_entire_second_line",
+    "max_lines": 2,
+    "font": "Microsoft YaHei Bold",
+    "font_size": 42,
+    "stroke_width": 4,
+    "left_margin": 72
+  },
+  "frames": {
+    "01": {
+      "caption": "我回来帮我爸清厂，桌上却多了个县城。",
+      "lines": [
+        "我回来帮我爸清厂，桌上却多了个县城。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+      "base_sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/01.png",
+      "output_sha256": "58ca98e366bf7895c61ed367dbab949d437c8a4de69cefcfae6254c43be955fd"
+    },
+    "02": {
+      "caption": "瓶壁早就裂了，底座还留着一道红线。",
+      "lines": [
+        "瓶壁早就裂了，底座还留着一道红线。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/02.png",
+      "base_sha256": "9de78d9c59fc512890a6034d8404cae5463602fef42c49228c5fa735df4b83dd",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/02.png",
+      "output_sha256": "3ff4e6259de13c22ee4c70f5e32e0deb3a2e0c4a786723a0294d531b32bc8446"
+    },
+    "03": {
+      "caption": "我把旧照片贴过去，连路口都没差。",
+      "lines": [
+        "我把旧照片贴过去，连路口都没差。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/03.png",
+      "base_sha256": "2d3399d83868ad05a4dbdcccdb20fe544fd8759892c6015e720ff398b34241b6",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/03.png",
+      "output_sha256": "0c111fb5730ae8349a0c8d31aff0dea0267d7b34c438ed3e42d4deffd56a3347"
+    },
+    "04": {
+      "caption": "窗外的吊车一动，瓶子里也跟着动。",
+      "lines": [
+        "窗外的吊车一动，瓶子里也跟着动。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/04.png",
+      "base_sha256": "78366d44f751f25157a6c158097f5a774c70ce6670a88c6657ebc9fea405124d",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/04.png",
+      "output_sha256": "747764ddb00325b39c2f86ff77d2e774415501b61a631ccb496a2cd760060407"
+    },
+    "05": {
+      "caption": "医院催我爸过去，他让我先别碰瓶子。",
+      "lines": [
+        "医院催我爸过去，他让我先别碰瓶子。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/05.png",
+      "base_sha256": "d62829dbdf4785520c8790053b582eaad0a60bf6d6be3272f2312992d590e378",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/05.png",
+      "output_sha256": "86c61b9157023eb7cc5d95f8d1b4156acd19f677aabd74bb6ca3b3b69361cc4d"
+    },
+    "06": {
+      "caption": "我爸只说了一句：底座别动。",
+      "lines": [
+        "我爸只说了一句：底座别动。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/06.png",
+      "base_sha256": "431d2ac5afe6646b4e8222504d8512e5f617fd9e8171629861f99c78f2b03791",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/06.png",
+      "output_sha256": "7e64e94bf813cb74bf580885830466e0ed5099677b86769ee9cbb624539f6311"
+    },
+    "07": {
+      "caption": "我还没碰到它，瓶里的河先歪了。",
+      "lines": [
+        "我还没碰到它，瓶里的河先歪了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/07.png",
+      "base_sha256": "a5687c35b5e35aba2c1ba3cd57e5c4cd10b17d43445a7c6c10451c41bdf778d4",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/07.png",
+      "output_sha256": "b83c95ae8189cea2368eb1a9cd903edb192ee64dc66966c0609440408423d9b2"
+    },
+    "08": {
+      "caption": "我只转了一点，杯里的水先斜了。",
+      "lines": [
+        "我只转了一点，杯里的水先斜了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/08.png",
+      "base_sha256": "3eb9d482c663ff1da20251bf8d5167264ad4fbbbca506f8e589f49f19b8f9e10",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/08.png",
+      "output_sha256": "30e59ebf2ff499d1a390739349db6a842380b99d6c8ab10a50b683d1889a05f7"
+    },
+    "09": {
+      "caption": "接着，屋里所有东西都往一边滑。",
+      "lines": [
+        "接着，屋里所有东西都往一边滑。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/09.png",
+      "base_sha256": "6ae2e8d1b15da963103a763b5b7a2ec6f85d65c588cf3dd226e85863c0a394c9",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/09.png",
+      "output_sha256": "71dd53d22ef806c300f8dd7a8973869eaccaa47ed0cb8d480093e1d104ef23e4"
+    },
+    "10": {
+      "caption": "窗外也一样，整条街像被人抬了起来。",
+      "lines": [
+        "窗外也一样，整条街像被人抬了起来。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/10.png",
+      "base_sha256": "b0c87b8683d26ce97fe75db48e8bed4db4a3a845efc5e327378cdc3d9c361e96",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/10.png",
+      "output_sha256": "e33ec1bc8e80b93b5f2d3da0dbe722a24c011b2cc0fcba4cb58dbe183a4d5df8"
+    },
+    "11": {
+      "caption": "瓶壁裂到哪，外面的路就断到哪。",
+      "lines": [
+        "瓶壁裂到哪，外面的路就断到哪。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/11.png",
+      "base_sha256": "4daeed8206ce769abe0945159b1d2c6c9db2ed308dfa12b7ddd1717d52b6a1d5",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/11.png",
+      "output_sha256": "ff4c4481440eae35914cace16654a7ae45f1cdbfb4a1d289b9b28877de043ed1"
+    },
+    "12": {
+      "caption": "我爸被困在县医院，路已经过不去了。",
+      "lines": [
+        "我爸被困在县医院，路已经过不去了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/12.png",
+      "base_sha256": "9a540b3237162ff7dd9cf5b275ef93026110262523746fada97122687bcdab4b",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/12.png",
+      "output_sha256": "fbc44b1209798c207eae450e9bb691a81641442757e5014ffd7dbe452f8c4c67"
+    },
+    "13": {
+      "caption": "底座那道红线，正好对着瓶里的烟囱。",
+      "lines": [
+        "底座那道红线，正好对着瓶里的烟囱。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/13.png",
+      "base_sha256": "cf0ba07d7c0632e6d45504ea854edffd7d4cb89219c24081346ec78982796660",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/13.png",
+      "output_sha256": "56726320237def5ef673e07bf343e6fe875d215d35e23cca31ac34d31ff9a7c0"
+    },
+    "14": {
+      "caption": "要把县城转回去，就得让裂口再受一次力。",
+      "lines": [
+        "要把县城转回去，就得让裂口再受一次力。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/14.png",
+      "base_sha256": "272b39bbfec4505878e3287d1b4a2c148a1a676bfc3eae22ef8ae154e0cd6ca3",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/14.png",
+      "output_sha256": "21fe75e02a112955d3110a5bf8a4a764f9677d4e37ac042d608f0de3b13c97ca"
+    },
+    "15": {
+      "caption": "瓶子刚动，我的手先被划开了。",
+      "lines": [
+        "瓶子刚动，我的手先被划开了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/15.png",
+      "base_sha256": "8442bd11ad4550ea342faf41d7bfdb10dd0615088d405628c59cbe6f34304303",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/15.png",
+      "output_sha256": "5cc183947ef440f5e77c45d1cdc7b326cdfede940afba38100fb962d9a71b8ea"
+    },
+    "16": {
+      "caption": "红烟囱对上线时，窗外终于开始回正。",
+      "lines": [
+        "红烟囱对上线时，窗外终于开始回正。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/16.png",
+      "base_sha256": "3a9593bb3f3a29b604f7cfe4d0307431543dd204668f5cafe18af377dcf5cb92",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/16.png",
+      "output_sha256": "6f2f07e5fc1b7b3823d2c303aec2043084eb22aa2aaa0aa959827c6238b9a436"
+    },
+    "17": {
+      "caption": "旧机器够了手术费。那只瓶子，我没卖。",
+      "lines": [
+        "旧机器够了手术费。那只瓶子，我没卖。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/17.png",
+      "base_sha256": "d89d7db778064e55d33f2ada3d7428d09058481852bfc43e8116a1941fe0d40b",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/17.png",
+      "output_sha256": "d1b42d4d834e7fbf44dbe67c28d9d2389c1af594468fb567a743e920d6504325"
+    },
+    "18": {
+      "caption": "可前几张照片里，都多了同一道白弧。",
+      "lines": [
+        "可前几张照片里，都多了同一道白弧。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/18.png",
+      "base_sha256": "d90e9055c26b0f65a172c88b593a9eea56d8750f9678d7635df2123ce28288e2",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/18.png",
+      "output_sha256": "6ad922d4ce1686f04e82b3e7c3b4f33217712d445ea2a20a029628d67c73a03a"
+    },
+    "19": {
+      "caption": "我抬头后，县城上面也有一层玻璃。",
+      "lines": [
+        "我抬头后，县城上面也有一层玻璃。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/19.png",
+      "base_sha256": "31d420dba1d188661a454866f2bd1fa141735cd218a58b661c4e266611d02a15",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/19.png",
+      "output_sha256": "62e7619cc1870438a6277f1309a27495babc6eba07ec325daac0c22eb33c0af1"
+    },
+    "20": {
+      "caption": "",
+      "lines": [],
+      "dropped_punctuation_only_second_line": false,
+      "silent": true,
+      "x": 72,
+      "y": 918,
+      "font": "/tmp/msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "base_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/20.png",
+      "base_sha256": "2ea412d3942a2b371b75bc502ed5d3a3231b21b2c0ae60259a79366688723344",
+      "output_path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/20.png",
+      "output_sha256": "e0a94ef16bdec2f6e2d138b4de95c3473ebf8f61c289c4fd3486cb5fdb4de923"
+    }
+  },
+  "summary": {
+    "passed": true,
+    "frame_count": 20
+  }
+}

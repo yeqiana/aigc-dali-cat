@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.0.3.2",
+  "episode_id": "09-04",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_profile": "CP03",
+    "override_reason": null
+  },
+  "story": {
+    "recent5_checked": true,
+    "four_locks_diff_count": 4,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [
+      4,
+      8,
+      10,
+      11,
+      12,
+      15,
+      16
+    ],
+    "climax_frame": 15,
+    "payoff_frame": 20,
+    "semantic_review_path": "meta/story-semantic-review.json"
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [
+      1,
+      3,
+      10,
+      20
+    ],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "20岁女性第一人称，只露手/米灰针织袖口/深藏蓝旧风衣局部，不露清晰正脸",
+        "location": "待拆县玻璃厂二楼办公室：褪色青绿色墙、灰蓝金属柜、旧木桌、窗外红砖烟囱与拆迁吊车",
+        "key_prop": "32cm厚微绿透明窄口玻璃瓶，无塞，小气泡与细裂，缺口榉木圆底座；瓶内河、白校舍、红烟囱、灰楼、转盘",
+        "wardrobe": "主角深藏蓝旧风衣+米灰针织袖口；父亲褪色姜黄工装+深灰裤+灰帽",
+        "weather_time": "初秋阴天，下午到傍晚；窗光+普通日光灯+必要小手电"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "2008年初秋",
+      "location": "中国西北普通县城的待拆玻璃厂二楼办公室、县医院走廊和厂房楼顶；地点虚构",
+      "photographer": "20岁女性主角，第一人称记录",
+      "shooting_reason": "为旧物估价拍照，同时记录帮助父亲清厂的过程",
+      "primary_capture": {
+        "id": "CP03",
+        "device": "2007年前后廉价银色卡片数码相机，竖拍，源照片按安全构图裁为4:5"
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": "无第二拍摄源；相机回放和冲印照片均由主相机此前拍摄，画面中出现的翻盖手机仅承担通话道具，不承担叙事采集",
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "白天旧办公室内，窗光与日光灯混合；低动态范围、边缘略软、轻微旧JPEG压缩，但主体清楚",
+        "restricted": "靠近瓶壁和玻璃反光时自动对焦犹豫，局部高光溢出，构图偏位",
+        "lost_control": "县城倾斜和复位时单手扶桌抓拍，出现有方向的轻微慢快门拖影；关键瓶体、窗外倾斜和道路裂纹仍可辨"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": "当前拍摄设备不完整入镜；图18仅拍摄此前生成的冲印照片与相机回放外观，不显示当前拍摄设备",
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": "主角只露手、米灰针织袖口、深藏蓝风衣局部和必要的模糊倒影，不出现正面清晰脸"
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": 1,
+        "asset_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+        "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+        "decision": "passed",
+        "note": "Locked M00 baseline: 2008 factory office, available light, green county bottle."
+      },
+      "worst_condition": {
+        "frame": 10,
+        "asset_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/10.png",
+        "sha256": "b0c87b8683d26ce97fe75db48e8bed4db4a3a845efc5e327378cdc3d9c361e96",
+        "decision": "passed",
+        "note": "Bottle-linked county tilt at peak instability."
+      },
+      "first_major_anomaly": {
+        "frame": 3,
+        "asset_path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/03.png",
+        "sha256": "2d3399d83868ad05a4dbdcccdb20fe544fd8759892c6015e720ff398b34241b6",
+        "decision": "passed",
+        "note": "Printed photo, bottle and outside chimney alignment."
+      }
+    },
+    "calibration_contact_sheet": {
+      "path": "episodes/09_旧物怪谈/04_瓶中世界/production/calibration-sheet.jpg",
+      "sha256": "81288313922be2ada68a60f66564d7b5365c92163af072098aeb3eb65a735d8b"
+    },
+    "references": {
+      "required": true,
+      "required_anchors": [
+        "location",
+        "key_prop"
+      ],
+      "items": [
+        {
+          "id": "office-m00-v1",
+          "anchor": "location",
+          "kind": "location",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+          "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+          "decision": "passed",
+          "note": "Glass-factory office and exterior chimney."
+        },
+        {
+          "id": "bottle-v1",
+          "anchor": "key_prop",
+          "kind": "prop",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+          "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+          "decision": "passed",
+          "note": "Green county bottle with matching red-white chimney."
+        },
+        {
+          "id": "capture-cp03-v1",
+          "anchor": "capture_profile",
+          "kind": "capture_style",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+          "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+          "decision": "passed",
+          "note": "M00 CP03 old compact-camera realism."
+        },
+        {
+          "id": "father-v1",
+          "anchor": "father",
+          "kind": "identity",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/05.png",
+          "sha256": "d62829dbdf4785520c8790053b582eaad0a60bf6d6be3272f2312992d590e378",
+          "decision": "passed",
+          "note": "Father side-back appearance and mustard workwear before hospital."
+        },
+        {
+          "id": "rooftop-v1",
+          "anchor": "rooftop",
+          "kind": "location",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/20.png",
+          "sha256": "2ea412d3942a2b371b75bc502ed5d3a3231b21b2c0ae60259a79366688723344",
+          "decision": "passed",
+          "note": "Rooftop county view beneath recursive glass boundary."
+        }
+      ]
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": true,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "passed",
+    "subtitle": "passed",
+    "production": "passed",
+    "recommendation_fit": "passed",
+    "publish": "passed"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 1,
+    "require_all_frames": true
+  },
+  "release_review": {
+    "basis": "delegated_auto_review",
+    "reviewed_at": "2026-08-28T21:40:55-04:00",
+    "production_review_path": "docs/06_瓶中世界_终审_V2.0.md",
+    "decision": "passed"
+  }
+}

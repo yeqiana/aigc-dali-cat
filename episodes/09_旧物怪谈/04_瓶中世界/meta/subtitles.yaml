@@ -1,0 +1,58 @@
+voice_card:
+  person: "县城女孩"
+  age: "20岁"
+  role: "回家帮父亲清理待拆玻璃厂旧物"
+  education_and_knowledge_boundary: "能认县城地标，会用卡片相机；不知道异常原理"
+  usual_terms: "瓶子、底座、红烟囱、裂口、县城"
+  recording_reason: "为买家拍清旧样品，也顺手记录清厂"
+  knows_now: "只说当时亲眼看到的动作和后果"
+  does_not_know: "不知道谁制造瓶子，也不知道现实是否真的在更大容器里"
+  allowed_technical_terms: "相机、照片、底座、裂口"
+  forbidden_technical_terms: "尺度映射、递归、重力场、空间拓扑、维度"
+  stress_language: "句子变短，先说动作和后果"
+  fear_language_change: "少解释，允许停顿；终局沉默"
+
+frames:
+  1: "我回来帮我爸清厂，桌上却多了个县城。"
+  2: "瓶壁早就裂了，底座还留着一道红线。"
+  3: "我把旧照片贴过去，连路口都没差。"
+  4: "窗外的吊车一动，瓶子里也跟着动。"
+  5: "医院催我爸过去，他让我先别碰瓶子。"
+  6: "我爸只说了一句：底座别动。"
+  7: "我还没碰到它，瓶里的河先歪了。"
+  8: "我只转了一点，杯里的水先斜了。"
+  9: "接着，屋里所有东西都往一边滑。"
+  10: "窗外也一样，整条街像被人抬了起来。"
+  11: "瓶壁裂到哪，外面的路就断到哪。"
+  12: "我爸被困在县医院，路已经过不去了。"
+  13: "底座那道红线，正好对着瓶里的烟囱。"
+  14: "要把县城转回去，就得让裂口再受一次力。"
+  15: "瓶子刚动，我的手先被划开了。"
+  16: "红烟囱对上线时，窗外终于开始回正。"
+  17: "旧机器够了手术费。那只瓶子，我没卖。"
+  18: "可前几张照片里，都多了同一道白弧。"
+  19: "我抬头后，县城上面也有一层玻璃。"
+
+silent_frames: [20]
+
+clues:
+  - name: "原有裂口、红烟囱与底座红线"
+    first_frame: 2
+    payoff_frames: [13, 16]
+    payoff_type: "复位规则"
+  - name: "瓶内人仰头"
+    first_frame: 4
+    payoff_frames: [20]
+    payoff_type: "终局重读"
+  - name: "指尖未碰时已偏斜的水线"
+    first_frame: 7
+    payoff_frames: [19, 20]
+    payoff_type: "更外层先晃动"
+  - name: "瓶壁裂纹"
+    first_frame: 11
+    payoff_frames: [14, 15]
+    payoff_type: "高潮风险与代价"
+  - name: "白色弧光"
+    first_frame: 18
+    payoff_frames: [19, 20]
+    payoff_type: "现实容器边界"

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0.3.2",
+  "recommendation_fit": {
+    "audience": {
+      "core": ["90后县城怀旧", "旧数码相册", "现实怪谈", "尺度脑洞", "中国老工厂记忆"],
+      "adjacent": ["微缩模型", "都市传说", "第一人称悬疑", "世界结构题材"],
+      "mismatch": ["血腥猎奇", "怪兽爽文", "纯科普", "仙侠特效"],
+      "score": 9.0
+    },
+    "diversity": {
+      "compared_recent_works": [
+        {"title": "中元节误入流水席", "similarity_score": 29},
+        {"title": "下山误入旧镇", "similarity_score": 34},
+        {"title": "中元节最后一单", "similarity_score": 31},
+        {"title": "回村中巴捡MP4", "similarity_score": 43},
+        {"title": "QQ网友约我哥去村里面基", "similarity_score": 38}
+      ],
+      "max_similarity_score": 43,
+      "risk_level": "light",
+      "mechanism_copy_veto": false,
+      "notes": ["旧物和2000年代属于账号品牌连续；实时容器映射、受控复位高潮和递归世界终局均与近期机制不同"]
+    },
+    "search": {
+      "primary_intents": ["2000年代县城工厂", "瓶中世界故事", "旧物怪谈"],
+      "core_entities": ["2008年", "县玻璃厂", "玻璃瓶", "县城", "卡片数码相机"],
+      "long_tail_queries": ["老玻璃厂故事", "瓶子里装着县城", "90后县城回忆", "旧数码怪谈", "微缩县城悬疑"],
+      "score": 8.6
+    },
+    "governance": {
+      "status": "PASS",
+      "risks": [],
+      "disclosure": "人物、地点、情节均为虚构；内容由AI生成"
+    }
+  }
+}

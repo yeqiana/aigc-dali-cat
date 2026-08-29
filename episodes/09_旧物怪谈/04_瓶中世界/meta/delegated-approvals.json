@@ -1,0 +1,306 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0.3.2",
+  "approvals": {
+    "story_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "story_lock",
+      "approved_at": "2026-08-28T12:49:33-04:00",
+      "artifacts": [
+        {
+          "role": "story",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/docs/02_瓶中世界_StoryLock_V2.0.md",
+          "sha256": "15f80ef6de3884f04e19d0a3f6f96c117b4773888cd17d2ab09241d2de55a6e7"
+        },
+        {
+          "role": "storyboard",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/docs/03_瓶中世界_20张正式分镜_V2.0.md",
+          "sha256": "b300b7797f0d126d00d6d5b1d15f6b8644e1334cb7aa2f3d1514dfc21fcd1ca6"
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/meta/story-semantic-review.json",
+          "sha256": "9b5322093ee49558dc477d799678ba9ecf9d24df684b48b7361fc6616d9aaf20"
+        }
+      ],
+      "note": "用户授权全自动连续执行；第二次独立 Story Critic 通过，未伪造用户亲眼批准"
+    },
+    "visual_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "visual_lock",
+      "approved_at": "2026-08-28T13:03:44-04:00",
+      "artifacts": [
+        {
+          "role": "visual_spec",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/docs/04_瓶中世界_视觉规范_V2.0.md",
+          "sha256": "bca77aeb2af2ac022cfde12b107be2b2ab9b8b5484bd6aeaa6b3403b38fc6282"
+        },
+        {
+          "role": "calibration_contact_sheet",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/calibration-sheet.jpg",
+          "sha256": "81288313922be2ada68a60f66564d7b5365c92163af072098aeb3eb65a735d8b"
+        },
+        {
+          "role": "reference:office-m00-v1",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+          "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+        },
+        {
+          "role": "reference:bottle-v1",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+          "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+        },
+        {
+          "role": "reference:capture-cp03-v1",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+          "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+        },
+        {
+          "role": "visual_profile:M00",
+          "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+          "sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c"
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/meta/visual-profile-review.json",
+          "sha256": "c2218aec061d4d1cf75d2e68ce8322972214af462a250c53ec1d7ebf114cf170"
+        }
+      ],
+      "note": "Independent isolated visual critic passed all 3 calibration images; 4 admission frames accepted under delegated_auto_review.",
+      "resolved_visual_profile": {
+        "selection": "default",
+        "profile_id": "M00",
+        "profile_name": "MP4 × 网吧 × 流水席旧数码质感校准版",
+        "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+        "capture_profile": "CP03",
+        "override_reason": null,
+        "rule": "默认视觉母风格只约束视觉语言；具体年代/设备物理表现优先。"
+      }
+    },
+    "release_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "release_lock",
+      "approved_at": "2026-08-28T21:41:41-04:00",
+      "artifacts": [
+        {
+          "role": "body:01",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/01.png",
+          "archive_path": "publish/01.png",
+          "sha256": "58ca98e366bf7895c61ed367dbab949d437c8a4de69cefcfae6254c43be955fd",
+          "bytes": 1938604
+        },
+        {
+          "role": "body:02",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/02.png",
+          "archive_path": "publish/02.png",
+          "sha256": "3ff4e6259de13c22ee4c70f5e32e0deb3a2e0c4a786723a0294d531b32bc8446",
+          "bytes": 1957275
+        },
+        {
+          "role": "body:03",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/03.png",
+          "archive_path": "publish/03.png",
+          "sha256": "0c111fb5730ae8349a0c8d31aff0dea0267d7b34c438ed3e42d4deffd56a3347",
+          "bytes": 1770306
+        },
+        {
+          "role": "body:04",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/04.png",
+          "archive_path": "publish/04.png",
+          "sha256": "747764ddb00325b39c2f86ff77d2e774415501b61a631ccb496a2cd760060407",
+          "bytes": 1971785
+        },
+        {
+          "role": "body:05",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/05.png",
+          "archive_path": "publish/05.png",
+          "sha256": "86c61b9157023eb7cc5d95f8d1b4156acd19f677aabd74bb6ca3b3b69361cc4d",
+          "bytes": 1722144
+        },
+        {
+          "role": "body:06",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/06.png",
+          "archive_path": "publish/06.png",
+          "sha256": "7e64e94bf813cb74bf580885830466e0ed5099677b86769ee9cbb624539f6311",
+          "bytes": 1813551
+        },
+        {
+          "role": "body:07",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/07.png",
+          "archive_path": "publish/07.png",
+          "sha256": "b83c95ae8189cea2368eb1a9cd903edb192ee64dc66966c0609440408423d9b2",
+          "bytes": 1878795
+        },
+        {
+          "role": "body:08",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/08.png",
+          "archive_path": "publish/08.png",
+          "sha256": "30e59ebf2ff499d1a390739349db6a842380b99d6c8ab10a50b683d1889a05f7",
+          "bytes": 1869897
+        },
+        {
+          "role": "body:09",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/09.png",
+          "archive_path": "publish/09.png",
+          "sha256": "71dd53d22ef806c300f8dd7a8973869eaccaa47ed0cb8d480093e1d104ef23e4",
+          "bytes": 1610592
+        },
+        {
+          "role": "body:10",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/10.png",
+          "archive_path": "publish/10.png",
+          "sha256": "e33ec1bc8e80b93b5f2d3da0dbe722a24c011b2cc0fcba4cb58dbe183a4d5df8",
+          "bytes": 1668550
+        },
+        {
+          "role": "body:11",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/11.png",
+          "archive_path": "publish/11.png",
+          "sha256": "ff4c4481440eae35914cace16654a7ae45f1cdbfb4a1d289b9b28877de043ed1",
+          "bytes": 1978987
+        },
+        {
+          "role": "body:12",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/12.png",
+          "archive_path": "publish/12.png",
+          "sha256": "fbc44b1209798c207eae450e9bb691a81641442757e5014ffd7dbe452f8c4c67",
+          "bytes": 1949125
+        },
+        {
+          "role": "body:13",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/13.png",
+          "archive_path": "publish/13.png",
+          "sha256": "56726320237def5ef673e07bf343e6fe875d215d35e23cca31ac34d31ff9a7c0",
+          "bytes": 1742951
+        },
+        {
+          "role": "body:14",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/14.png",
+          "archive_path": "publish/14.png",
+          "sha256": "21fe75e02a112955d3110a5bf8a4a764f9677d4e37ac042d608f0de3b13c97ca",
+          "bytes": 1714850
+        },
+        {
+          "role": "body:15",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/15.png",
+          "archive_path": "publish/15.png",
+          "sha256": "5cc183947ef440f5e77c45d1cdc7b326cdfede940afba38100fb962d9a71b8ea",
+          "bytes": 1474478
+        },
+        {
+          "role": "body:16",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/16.png",
+          "archive_path": "publish/16.png",
+          "sha256": "6f2f07e5fc1b7b3823d2c303aec2043084eb22aa2aaa0aa959827c6238b9a436",
+          "bytes": 1606305
+        },
+        {
+          "role": "body:17",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/17.png",
+          "archive_path": "publish/17.png",
+          "sha256": "d1b42d4d834e7fbf44dbe67c28d9d2389c1af594468fb567a743e920d6504325",
+          "bytes": 1867307
+        },
+        {
+          "role": "body:18",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/18.png",
+          "archive_path": "publish/18.png",
+          "sha256": "6ad922d4ce1686f04e82b3e7c3b4f33217712d445ea2a20a029628d67c73a03a",
+          "bytes": 1808444
+        },
+        {
+          "role": "body:19",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/19.png",
+          "archive_path": "publish/19.png",
+          "sha256": "62e7619cc1870438a6277f1309a27495babc6eba07ec325daac0c22eb33c0af1",
+          "bytes": 1616879
+        },
+        {
+          "role": "body:20",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/publish/20.png",
+          "archive_path": "publish/20.png",
+          "sha256": "e0a94ef16bdec2f6e2d138b4de95c3473ebf8f61c289c4fd3486cb5fdb4de923",
+          "bytes": 1613705
+        },
+        {
+          "role": "cover",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/production/cover/cover.png",
+          "archive_path": "cover.png",
+          "sha256": "78885fc0bea1d53d1aadb07099a14615e848ba807ff7270140033128841df13c",
+          "bytes": 1982361
+        },
+        {
+          "role": "captions",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/meta/subtitles.yaml",
+          "archive_path": "text/subtitles.yaml",
+          "sha256": "491ee93eec60dee442ad7beeacdfae18a5cbd4a0a6bcff93308f14aca9e67d0f",
+          "bytes": 2487
+        },
+        {
+          "role": "publish_copy",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/docs/05_瓶中世界_最终发布文案_V2.0.md",
+          "archive_path": "text/05_瓶中世界_最终发布文案_V2.0.md",
+          "sha256": "cbabe5f685eedea0ff0faa8bd58a12d5cba44623b5f250d690eaaa5eaf644600",
+          "bytes": 1264
+        },
+        {
+          "role": "propagation_card",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/meta/recommendation-fit.json",
+          "archive_path": "text/recommendation-fit.json",
+          "sha256": "5e8ab4a80d2c59c854053f3a09fe75473803b0c1145bef585890c1b600c5de00",
+          "bytes": 1604
+        },
+        {
+          "role": "production_review",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/docs/06_瓶中世界_终审_V2.0.md",
+          "archive_path": "qa/06_瓶中世界_终审_V2.0.md",
+          "sha256": "9090a23bbd18e0fa376fb74e2834c50254db28fb812663d7c13ea60072e182f4",
+          "bytes": 1390
+        },
+        {
+          "role": "text_audit",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/meta/text-audit.json",
+          "archive_path": "qa/text-audit.json",
+          "sha256": "2e63ec96a51dfc885cbbd4c3081fc1be628d989e7d6e31d1788e892a43593945",
+          "bytes": 2731
+        },
+        {
+          "role": "release_manifest",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/meta/release-manifest.json",
+          "archive_path": "release-manifest.json",
+          "sha256": "c973785383914573b4116a73b9553654ca3d71bc0c172b7a8ccca7f327ca58e0",
+          "bytes": 3002
+        },
+        {
+          "role": "runtime_checkpoint",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/meta/runtime-checkpoint.json",
+          "archive_path": "evidence/runtime-checkpoint.json",
+          "sha256": "7bc9b2a1b149864b2abe8903a03d780c9d0a480a91487c152660fa85f108a253",
+          "bytes": 404
+        },
+        {
+          "role": "production_ledger",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/meta/production-ledger.json",
+          "archive_path": "evidence/production-ledger.json",
+          "sha256": "de28498456bff0ae0a6d4aa9ae1f7f0e0a084389f011f485fe3942cf3c2ceb09",
+          "bytes": 110465
+        },
+        {
+          "role": "delegated_zip",
+          "path": "episodes/09_旧物怪谈/04_瓶中世界/deliveries/04_瓶中世界_FINAL_V2.0.zip",
+          "sha256": "925be5198b865d46ac2ec63ebd84fb9f6249ca5deb5272445e15f47885c73ea5"
+        }
+      ],
+      "note": "用户要求仅交付最终ZIP；稳定字幕图与完整发布物已通过校验"
+    }
+  }
+}

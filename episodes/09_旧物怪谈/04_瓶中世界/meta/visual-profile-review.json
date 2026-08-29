@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0.3.2",
+  "profile_id": "M00",
+  "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+  "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "attempt": 1,
+    "reviewed_at": "2026-08-28T13:02:29-04:00"
+  },
+  "calibration": [
+    {
+      "id": "1",
+      "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+      "checks": {
+        "visual_profile_match": true,
+        "reality_first": true,
+        "ordinary_life_density": true,
+        "available_light": true,
+        "unposed_capture": true,
+        "not_cinematic": true,
+        "causal_imperfection": true
+      },
+      "issues": [],
+      "notes": "普通基线成立：旧厂办公室的磨损窗框、瓷砖、木门、杂乱账本纸张、计算器、胶带、纸箱与垃圾篓形成高密度中国工作现场；父亲背身搬箱而非面向镜头表演。阴天窗户过亮、室内暗部压住和边缘偏软均来自可用窗光与廉价旧数码机宽容度，不是统一压暗或商业调色。绿色玻璃瓶中的红白烟囱与窗外烟囱在普通清厂画面中低调对应，异常先嵌入现实而非被做成奇观。"
+    },
+    {
+      "id": "10",
+      "sha256": "b0c87b8683d26ce97fe75db48e8bed4db4a3a845efc5e327378cdc3d9c361e96",
+      "checks": {
+        "visual_profile_match": true,
+        "reality_first": true,
+        "ordinary_life_density": true,
+        "available_light": true,
+        "unposed_capture": true,
+        "not_cinematic": true,
+        "causal_imperfection": true
+      },
+      "issues": [],
+      "notes": "最差条件仍成立：同一办公室、窗外厂区、电线杆、车辆、散乱桌面与普通衣着保留了现实密度；倾斜构图、人物和窗外车辆的方向性拖影、对焦不足与暗部噪感都和突发失衡时慌乱抓拍有明确因果。照明仍是灰天窗光，没有轮廓灯、戏剧性聚光、HDR 或商业高光；倒下的瓶子和现实空间同向倾斜，异常通过现场后果出现而非特效光效。"
+    },
+    {
+      "id": "3",
+      "sha256": "2d3399d83868ad05a4dbdcccdb20fe544fd8759892c6015e720ff398b34241b6",
+      "checks": {
+        "visual_profile_match": true,
+        "reality_first": true,
+        "ordinary_life_density": true,
+        "available_light": true,
+        "unposed_capture": true,
+        "not_cinematic": true,
+        "causal_imperfection": true
+      },
+      "issues": [],
+      "notes": "首次重大异常通过：手持冲印照片、玻璃瓶内烟囱与窗外实景构成可现场复核的三层证据，仍像清厂估价时随手比对而非摆拍海报。手指遮住照片边缘、画面轻微偏位、窗面高光溢出、室内曝光不足和玻璃反射均由近距离手持、窗边逆光与旧相机造成；桌面杂物和破旧办公室没有被为异常清场，符合 M00 的现实优先和异常嵌入。"
+    }
+  ],
+  "issue_codes": [],
+  "summary": {
+    "passed": true
+  }
+}

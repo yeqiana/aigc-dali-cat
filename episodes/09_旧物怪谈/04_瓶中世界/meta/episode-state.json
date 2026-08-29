@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.0.3.2",
+  "episode_id": "09-04",
+  "series": "09_旧物怪谈",
+  "title": "瓶中世界",
+  "current_state": "PUBLISH_READY",
+  "updated_at": "2026-08-28T21:41:43-04:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-08-28T11:08:20-04:00",
+      "note": "2026-08-28 用户授权 Story OS V2.0.3.2 全自动连续执行；重建真实生产闭环"
+    },
+    {
+      "state": "STORYBOARD_LOCKED",
+      "at": "2026-08-28T12:49:47-04:00",
+      "mode": "advance",
+      "note": "第二次独立 Story Critic 通过；delegated_auto_review Story Lock 完成"
+    },
+    {
+      "state": "VISUAL_CALIBRATED",
+      "at": "2026-08-28T13:03:44-04:00",
+      "mode": "advance",
+      "note": "M00/CP03 visual lock passed by independent isolated critic; calibration 01/03/10 and ending admission 20 locked."
+    },
+    {
+      "state": "PRODUCTION_PASSED",
+      "at": "2026-08-28T21:41:17-04:00",
+      "mode": "advance",
+      "note": "20张正文、逐帧审核、字幕布局审计与终审全部通过"
+    },
+    {
+      "state": "PUBLISH_READY",
+      "at": "2026-08-28T21:41:43-04:00",
+      "mode": "advance",
+      "note": "最终ZIP已生成并通过完整性与SHA校验"
+    }
+  ]
+}

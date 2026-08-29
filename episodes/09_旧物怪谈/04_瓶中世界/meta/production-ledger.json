@@ -1,0 +1,2691 @@
+{
+  "schema_version": 1,
+  "engine_version": "1.2",
+  "created_at": "2026-08-28T13:29:32-04:00",
+  "updated_at": "2026-08-28T13:30:43-04:00",
+  "note": "Per-frame production transaction ledger. This is NOT an episode stage source.",
+  "canvas": {
+    "aspect_ratio": "4:5",
+    "width": 1080,
+    "height": 1350,
+    "source": "override"
+  },
+  "policy": {
+    "default_aspect_ratio": "4:5",
+    "prompt_char_limit": 260,
+    "prompt_byte_limit": 900,
+    "max_content_repairs_per_frame": 1,
+    "technical_failures_consume_content_repair": false
+  },
+  "asset_roots": {
+    "originals": "production/originals",
+    "repairs": "production/repairs",
+    "approved": "production/approved",
+    "publish": "production/publish",
+    "contact_sheets": "production/contact-sheets"
+  },
+  "frames": {
+    "01": {
+      "number": 1,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "b6126670152b",
+          "started_at": "2026-08-28T13:29:32-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "01",
+            "kind": "original",
+            "prompt_sha256": "d4404ddaec246f74416aef0af8427bf8cc7d5be767ea0a6621711b1560ae16d3",
+            "prompt_chars": 257,
+            "prompt_bytes": 257,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "26b7f547d72fbfa05ad5d81cc8abb27a03dfcf808f1873a7963394fd1fea90d2",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:32-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/01_original.png",
+            "sha256": "5f1cc3186e19774d40a35fe37d15a924705455196ebc8c2fd55be5822cfd2205",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:32-04:00",
+            "kind": "original",
+            "attempt_id": "b6126670152b"
+          }
+        },
+        {
+          "attempt_id": "8bef47ee3f9f",
+          "started_at": "2026-08-28T13:29:32-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "01",
+            "kind": "repair",
+            "prompt_sha256": "a1d2619c51fdfc41113b3b47de553313930b3dca6af822140bb660ec79500428",
+            "prompt_chars": 245,
+            "prompt_bytes": 245,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "9b7f55eec7cd3a3763d9140602c45ae9b62939ee0c353dc1f18e367a31791147",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:32-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/01.png",
+            "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:32-04:00",
+            "kind": "repair",
+            "attempt_id": "8bef47ee3f9f"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/01.png",
+        "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:32-04:00",
+        "kind": "repair",
+        "attempt_id": "8bef47ee3f9f"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+        "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:32-04:00",
+        "source_sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:32-04:00",
+        "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:32-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:32-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:32-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "02": {
+      "number": 2,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "66ce120d2113",
+          "started_at": "2026-08-28T13:29:34-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "02",
+            "kind": "original",
+            "prompt_sha256": "202cc63716825a37e267be3ca4ed4ce1230f4307c238da3e1c6dd245ed0180bd",
+            "prompt_chars": 253,
+            "prompt_bytes": 253,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "4a2d117ade7c28a94eab0afcf0c6e6139a421e19b824f9afc39d12fd270e3c5d",
+          "notes": "ledger recovery from locked approved asset",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:34-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/02.png",
+            "sha256": "9de78d9c59fc512890a6034d8404cae5463602fef42c49228c5fa735df4b83dd",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:34-04:00",
+            "kind": "original",
+            "attempt_id": "66ce120d2113"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/02.png",
+        "sha256": "9de78d9c59fc512890a6034d8404cae5463602fef42c49228c5fa735df4b83dd",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:34-04:00",
+        "kind": "original",
+        "attempt_id": "66ce120d2113"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/02.png",
+        "sha256": "9de78d9c59fc512890a6034d8404cae5463602fef42c49228c5fa735df4b83dd",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:34-04:00",
+        "source_sha256": "9de78d9c59fc512890a6034d8404cae5463602fef42c49228c5fa735df4b83dd"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:34-04:00",
+        "sha256": "9de78d9c59fc512890a6034d8404cae5463602fef42c49228c5fa735df4b83dd",
+        "reason": "recovered from locked approved asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:34-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked approved candidate; dimensions and content previously reviewed."
+        }
+      ]
+    },
+    "03": {
+      "number": 3,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "c93a362a4292",
+          "started_at": "2026-08-28T13:29:32-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "03",
+            "kind": "original",
+            "prompt_sha256": "30154b38f8e8cffdd5c892ac54d631a7b11cc38ffec6586267d70592388c6f9a",
+            "prompt_chars": 254,
+            "prompt_bytes": 254,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "e77795e0647beab052a3e20cd799634b1890c35d3a82161cd11aca5ba46a0ddb",
+          "notes": "ledger recovery from locked approved asset",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:33-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/03.png",
+            "sha256": "2d3399d83868ad05a4dbdcccdb20fe544fd8759892c6015e720ff398b34241b6",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:33-04:00",
+            "kind": "original",
+            "attempt_id": "c93a362a4292"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/03.png",
+        "sha256": "2d3399d83868ad05a4dbdcccdb20fe544fd8759892c6015e720ff398b34241b6",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:33-04:00",
+        "kind": "original",
+        "attempt_id": "c93a362a4292"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/03.png",
+        "sha256": "2d3399d83868ad05a4dbdcccdb20fe544fd8759892c6015e720ff398b34241b6",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:33-04:00",
+        "source_sha256": "2d3399d83868ad05a4dbdcccdb20fe544fd8759892c6015e720ff398b34241b6"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:33-04:00",
+        "sha256": "2d3399d83868ad05a4dbdcccdb20fe544fd8759892c6015e720ff398b34241b6",
+        "reason": "recovered from locked approved asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:33-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked approved candidate; dimensions and content previously reviewed."
+        }
+      ]
+    },
+    "04": {
+      "number": 4,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "89e21a38029b",
+          "started_at": "2026-08-28T13:29:34-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "04",
+            "kind": "original",
+            "prompt_sha256": "5bff880cd4554e4f65485d1dd936841736cf31bca66b93036ca93878be7acbc0",
+            "prompt_chars": 246,
+            "prompt_bytes": 246,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "9a7135605bc4c0c50641620e4a188a32b2102c40ec727b587e430455298d2d23",
+          "notes": "ledger recovery from locked approved asset",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:34-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/04.png",
+            "sha256": "78366d44f751f25157a6c158097f5a774c70ce6670a88c6657ebc9fea405124d",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:34-04:00",
+            "kind": "original",
+            "attempt_id": "89e21a38029b"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/04.png",
+        "sha256": "78366d44f751f25157a6c158097f5a774c70ce6670a88c6657ebc9fea405124d",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:34-04:00",
+        "kind": "original",
+        "attempt_id": "89e21a38029b"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/04.png",
+        "sha256": "78366d44f751f25157a6c158097f5a774c70ce6670a88c6657ebc9fea405124d",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:34-04:00",
+        "source_sha256": "78366d44f751f25157a6c158097f5a774c70ce6670a88c6657ebc9fea405124d"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:34-04:00",
+        "sha256": "78366d44f751f25157a6c158097f5a774c70ce6670a88c6657ebc9fea405124d",
+        "reason": "recovered from locked approved asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:34-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked approved candidate; dimensions and content previously reviewed."
+        }
+      ]
+    },
+    "05": {
+      "number": 5,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "355471a9cd5f",
+          "started_at": "2026-08-28T13:29:34-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "05",
+            "kind": "original",
+            "prompt_sha256": "5d7a51a77edf7d20b502dce3605c04424261d91d01815a1be2e5f5c8c9a33840",
+            "prompt_chars": 246,
+            "prompt_bytes": 246,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "f071221a6c97d68fcdde1707340f1ff921f4cde49a3655b9be34a8514bd94523",
+          "notes": "ledger recovery from locked approved asset",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:34-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/05.png",
+            "sha256": "d62829dbdf4785520c8790053b582eaad0a60bf6d6be3272f2312992d590e378",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:34-04:00",
+            "kind": "original",
+            "attempt_id": "355471a9cd5f"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/05.png",
+        "sha256": "d62829dbdf4785520c8790053b582eaad0a60bf6d6be3272f2312992d590e378",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:34-04:00",
+        "kind": "original",
+        "attempt_id": "355471a9cd5f"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/05.png",
+        "sha256": "d62829dbdf4785520c8790053b582eaad0a60bf6d6be3272f2312992d590e378",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:34-04:00",
+        "source_sha256": "d62829dbdf4785520c8790053b582eaad0a60bf6d6be3272f2312992d590e378"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:34-04:00",
+        "sha256": "d62829dbdf4785520c8790053b582eaad0a60bf6d6be3272f2312992d590e378",
+        "reason": "recovered from locked approved asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:34-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked approved candidate; dimensions and content previously reviewed."
+        }
+      ]
+    },
+    "06": {
+      "number": 6,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "b1167314132c",
+          "started_at": "2026-08-28T13:29:34-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "06",
+            "kind": "original",
+            "prompt_sha256": "dfbe642e2dc29be8b91af63828bb449857e4ad7feeccdb314f8d5378552bd04c",
+            "prompt_chars": 247,
+            "prompt_bytes": 247,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "8939f212254e677731a98aa96487dc25a4cb845f3a3aee238a648830490af06a",
+          "notes": "ledger recovery from locked approved asset",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:34-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/06.png",
+            "sha256": "431d2ac5afe6646b4e8222504d8512e5f617fd9e8171629861f99c78f2b03791",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:34-04:00",
+            "kind": "original",
+            "attempt_id": "b1167314132c"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/06.png",
+        "sha256": "431d2ac5afe6646b4e8222504d8512e5f617fd9e8171629861f99c78f2b03791",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:34-04:00",
+        "kind": "original",
+        "attempt_id": "b1167314132c"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/06.png",
+        "sha256": "431d2ac5afe6646b4e8222504d8512e5f617fd9e8171629861f99c78f2b03791",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:35-04:00",
+        "source_sha256": "431d2ac5afe6646b4e8222504d8512e5f617fd9e8171629861f99c78f2b03791"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:35-04:00",
+        "sha256": "431d2ac5afe6646b4e8222504d8512e5f617fd9e8171629861f99c78f2b03791",
+        "reason": "recovered from locked approved asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:35-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked approved candidate; dimensions and content previously reviewed."
+        }
+      ]
+    },
+    "07": {
+      "number": 7,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "18822c34989d",
+          "started_at": "2026-08-28T13:29:35-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "07",
+            "kind": "original",
+            "prompt_sha256": "eed010d12d937c302d0be3e636532cbcac2d0832dc6177caa115413d2677457e",
+            "prompt_chars": 236,
+            "prompt_bytes": 236,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "c40a9e4bde69d30601fb886787a4bf7e6bedf707fff7734b861022f535436a95",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:35-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/07_original.png",
+            "sha256": "4cba63842e0d65f36a393bb034729b46980e0411106c6e039dfa255aca6dab04",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:35-04:00",
+            "kind": "original",
+            "attempt_id": "18822c34989d"
+          }
+        },
+        {
+          "attempt_id": "642f4de977ca",
+          "started_at": "2026-08-28T13:29:35-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "07",
+            "kind": "repair",
+            "prompt_sha256": "7ed4b21f7ae55d9ff05d8f4a1dd602d58fe0dfb042545367a757babbcdaa4a0b",
+            "prompt_chars": 238,
+            "prompt_bytes": 238,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "8573d0009b73c82f5f8e00bcfb9e8da3f367f3b48bcc75424c0093dadf6c6749",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:35-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/07.png",
+            "sha256": "a5687c35b5e35aba2c1ba3cd57e5c4cd10b17d43445a7c6c10451c41bdf778d4",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:35-04:00",
+            "kind": "repair",
+            "attempt_id": "642f4de977ca"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/07.png",
+        "sha256": "a5687c35b5e35aba2c1ba3cd57e5c4cd10b17d43445a7c6c10451c41bdf778d4",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:35-04:00",
+        "kind": "repair",
+        "attempt_id": "642f4de977ca"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/07.png",
+        "sha256": "a5687c35b5e35aba2c1ba3cd57e5c4cd10b17d43445a7c6c10451c41bdf778d4",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:35-04:00",
+        "source_sha256": "a5687c35b5e35aba2c1ba3cd57e5c4cd10b17d43445a7c6c10451c41bdf778d4"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:35-04:00",
+        "sha256": "a5687c35b5e35aba2c1ba3cd57e5c4cd10b17d43445a7c6c10451c41bdf778d4",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:35-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:35-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:35-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "08": {
+      "number": 8,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "915cdb12faf6",
+          "started_at": "2026-08-28T13:29:35-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "08",
+            "kind": "original",
+            "prompt_sha256": "1558a574f703898d12d35f4b50892d48d90da12a7fbb7d1327f6ace583d48cab",
+            "prompt_chars": 245,
+            "prompt_bytes": 245,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "ece489145e41d90a550965005c8a05c87156851bc950f37f2ba33cc59e6c95c8",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:35-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/08_original.png",
+            "sha256": "017e4e865f1ebe872fa49a6bb2a05d9dbd8b0d76a15d0b1f746a2433c1d59afc",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:35-04:00",
+            "kind": "original",
+            "attempt_id": "915cdb12faf6"
+          }
+        },
+        {
+          "attempt_id": "387e9e388020",
+          "started_at": "2026-08-28T13:29:35-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "08",
+            "kind": "repair",
+            "prompt_sha256": "4d8b55306da0884cc8a10d101a56129031be6eae2445d8e15d287b3efcde1dea",
+            "prompt_chars": 245,
+            "prompt_bytes": 245,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "2643b952dbd85896ec22f0f69b004dc9c0a79be30226c72a672c0b79133b25c9",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:35-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/08.png",
+            "sha256": "3eb9d482c663ff1da20251bf8d5167264ad4fbbbca506f8e589f49f19b8f9e10",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:35-04:00",
+            "kind": "repair",
+            "attempt_id": "387e9e388020"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/08.png",
+        "sha256": "3eb9d482c663ff1da20251bf8d5167264ad4fbbbca506f8e589f49f19b8f9e10",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:35-04:00",
+        "kind": "repair",
+        "attempt_id": "387e9e388020"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/08.png",
+        "sha256": "3eb9d482c663ff1da20251bf8d5167264ad4fbbbca506f8e589f49f19b8f9e10",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:36-04:00",
+        "source_sha256": "3eb9d482c663ff1da20251bf8d5167264ad4fbbbca506f8e589f49f19b8f9e10"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:36-04:00",
+        "sha256": "3eb9d482c663ff1da20251bf8d5167264ad4fbbbca506f8e589f49f19b8f9e10",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:35-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:36-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:35-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "09": {
+      "number": 9,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "eec404975acf",
+          "started_at": "2026-08-28T13:29:36-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "09",
+            "kind": "original",
+            "prompt_sha256": "25172f8fbaa65d7fe9211b65864a7583fcd5fbaaccc411cb13f0c9314e74c2b2",
+            "prompt_chars": 228,
+            "prompt_bytes": 228,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "1402a1df0fcb26b52af65cb8b5e5bdd5022ff91381e4122dffb0b11e7a3cbc71",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:36-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/09_original.png",
+            "sha256": "7eb01703e2ee65df81229ca8094d79c95dc8887f2c1b56b89b506c06fc5cc5d3",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:36-04:00",
+            "kind": "original",
+            "attempt_id": "eec404975acf"
+          }
+        },
+        {
+          "attempt_id": "1df618978740",
+          "started_at": "2026-08-28T13:29:36-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "09",
+            "kind": "repair",
+            "prompt_sha256": "01ef00e641cfd6e22dfd17af140a41744f132f64be04073cfe0ada25dcc48462",
+            "prompt_chars": 238,
+            "prompt_bytes": 238,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "8d67c6e7c4648920db6d6262546d392c0832c8db8e1f7d808999efcbb7cd6cb7",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:36-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/09.png",
+            "sha256": "6ae2e8d1b15da963103a763b5b7a2ec6f85d65c588cf3dd226e85863c0a394c9",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:36-04:00",
+            "kind": "repair",
+            "attempt_id": "1df618978740"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/09.png",
+        "sha256": "6ae2e8d1b15da963103a763b5b7a2ec6f85d65c588cf3dd226e85863c0a394c9",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:36-04:00",
+        "kind": "repair",
+        "attempt_id": "1df618978740"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/09.png",
+        "sha256": "6ae2e8d1b15da963103a763b5b7a2ec6f85d65c588cf3dd226e85863c0a394c9",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:36-04:00",
+        "source_sha256": "6ae2e8d1b15da963103a763b5b7a2ec6f85d65c588cf3dd226e85863c0a394c9"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:36-04:00",
+        "sha256": "6ae2e8d1b15da963103a763b5b7a2ec6f85d65c588cf3dd226e85863c0a394c9",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:36-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:36-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:36-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "10": {
+      "number": 10,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "a44d3df69dee",
+          "started_at": "2026-08-28T13:29:33-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "10",
+            "kind": "original",
+            "prompt_sha256": "60de7e074d4c39f2761ba9896d6d98085d7a44057cc903a4d143e64dc7de42ac",
+            "prompt_chars": 247,
+            "prompt_bytes": 247,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "dfa666e557b61fb636316d418886d389d66d8320b2a0aa4ea41b940926dfe415",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:33-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/10_original.png",
+            "sha256": "9be1a3e737524845ec135f43a0e63b66385cae19e19c510d64aa255d158b5d9a",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:33-04:00",
+            "kind": "original",
+            "attempt_id": "a44d3df69dee"
+          }
+        },
+        {
+          "attempt_id": "5edce5884003",
+          "started_at": "2026-08-28T13:29:33-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "10",
+            "kind": "repair",
+            "prompt_sha256": "1f1dcaa7a0a9616c4da41f1d3469e1afe66cde2e9b59a1907218983be15bec30",
+            "prompt_chars": 257,
+            "prompt_bytes": 257,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "383a1509116f8c06cb80934acee1ec858d0b21c4e3e0ed8a7a7b507b72597ec5",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:33-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/10.png",
+            "sha256": "b0c87b8683d26ce97fe75db48e8bed4db4a3a845efc5e327378cdc3d9c361e96",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:33-04:00",
+            "kind": "repair",
+            "attempt_id": "5edce5884003"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/10.png",
+        "sha256": "b0c87b8683d26ce97fe75db48e8bed4db4a3a845efc5e327378cdc3d9c361e96",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:33-04:00",
+        "kind": "repair",
+        "attempt_id": "5edce5884003"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/10.png",
+        "sha256": "b0c87b8683d26ce97fe75db48e8bed4db4a3a845efc5e327378cdc3d9c361e96",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:33-04:00",
+        "source_sha256": "b0c87b8683d26ce97fe75db48e8bed4db4a3a845efc5e327378cdc3d9c361e96"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:33-04:00",
+        "sha256": "b0c87b8683d26ce97fe75db48e8bed4db4a3a845efc5e327378cdc3d9c361e96",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:33-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:33-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:33-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "11": {
+      "number": 11,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "73a4605ca19d",
+          "started_at": "2026-08-28T13:29:36-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "11",
+            "kind": "original",
+            "prompt_sha256": "cc529281edaee36ce46bd73733ff6e1c11b91cbed3ae0b4023506f33ee90c199",
+            "prompt_chars": 255,
+            "prompt_bytes": 255,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "79a62cf8b66d3677164e272516f3a1cc89c598595b425872fced5e092b15865b",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:36-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/11_original.png",
+            "sha256": "b04880483c1873eabef9766bd5fedb7d204d04190cc23b24d123537225ca33a8",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:36-04:00",
+            "kind": "original",
+            "attempt_id": "73a4605ca19d"
+          }
+        },
+        {
+          "attempt_id": "29b5d22a8e9a",
+          "started_at": "2026-08-28T13:29:36-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "11",
+            "kind": "repair",
+            "prompt_sha256": "cdf5be99f0b455dc521fe8c196e54385dc08711c5fcb628d6d6edfaab1275b44",
+            "prompt_chars": 259,
+            "prompt_bytes": 259,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "25bfd02eb60ff9a408a27957584beabbec697306b242820e62b36678b263334f",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:36-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/11.png",
+            "sha256": "4daeed8206ce769abe0945159b1d2c6c9db2ed308dfa12b7ddd1717d52b6a1d5",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:36-04:00",
+            "kind": "repair",
+            "attempt_id": "29b5d22a8e9a"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/11.png",
+        "sha256": "4daeed8206ce769abe0945159b1d2c6c9db2ed308dfa12b7ddd1717d52b6a1d5",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:36-04:00",
+        "kind": "repair",
+        "attempt_id": "29b5d22a8e9a"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/11.png",
+        "sha256": "4daeed8206ce769abe0945159b1d2c6c9db2ed308dfa12b7ddd1717d52b6a1d5",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:36-04:00",
+        "source_sha256": "4daeed8206ce769abe0945159b1d2c6c9db2ed308dfa12b7ddd1717d52b6a1d5"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:37-04:00",
+        "sha256": "4daeed8206ce769abe0945159b1d2c6c9db2ed308dfa12b7ddd1717d52b6a1d5",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:36-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:36-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:36-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "12": {
+      "number": 12,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "fdd611ebb7c9",
+          "started_at": "2026-08-28T13:29:37-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "12",
+            "kind": "original",
+            "prompt_sha256": "8c807496c6a8dd0c7bd8e26afa73f5d07138971d094948f41aa76bf2d5a9fcbf",
+            "prompt_chars": 231,
+            "prompt_bytes": 231,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "0916ea77efd69b7bdce0759e8622dba89e90d6f1d673d76c8eae01151843a919",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:37-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/12_original.png",
+            "sha256": "55b12ed37c86ce8e4747c6861402d2adc1fce7e924fd73946e8beea3caf5d9ca",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:37-04:00",
+            "kind": "original",
+            "attempt_id": "fdd611ebb7c9"
+          }
+        },
+        {
+          "attempt_id": "f2e09abd8cac",
+          "started_at": "2026-08-28T13:29:37-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "12",
+            "kind": "repair",
+            "prompt_sha256": "e67129e59540ac7051a8049507e12f2a9f852ee1b3eaee4e5bdb53a3529ec3e0",
+            "prompt_chars": 240,
+            "prompt_bytes": 240,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "817a7cdb0f753e9214582ab0feda9a1bbed327d5e1710afabfd3cb4ef1b80d3a",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:37-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/12.png",
+            "sha256": "9a540b3237162ff7dd9cf5b275ef93026110262523746fada97122687bcdab4b",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:37-04:00",
+            "kind": "repair",
+            "attempt_id": "f2e09abd8cac"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/12.png",
+        "sha256": "9a540b3237162ff7dd9cf5b275ef93026110262523746fada97122687bcdab4b",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:37-04:00",
+        "kind": "repair",
+        "attempt_id": "f2e09abd8cac"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/12.png",
+        "sha256": "9a540b3237162ff7dd9cf5b275ef93026110262523746fada97122687bcdab4b",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:37-04:00",
+        "source_sha256": "9a540b3237162ff7dd9cf5b275ef93026110262523746fada97122687bcdab4b"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:37-04:00",
+        "sha256": "9a540b3237162ff7dd9cf5b275ef93026110262523746fada97122687bcdab4b",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:37-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:37-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:37-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "13": {
+      "number": 13,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "9a89789a4889",
+          "started_at": "2026-08-28T13:29:37-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "13",
+            "kind": "original",
+            "prompt_sha256": "e4a1306bd16108b6cb24901ab37c43f9f4935723ffc69fa9adc48548be0c5e56",
+            "prompt_chars": 234,
+            "prompt_bytes": 234,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "833f9eb84e27cd13a3f6eebf6874c9268607f325e3af3992bbc697177713cf05",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:37-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/13_original.png",
+            "sha256": "34d7620ed43c0e8bf5d8409b36ac0d528ea1af38db3d5dcce744890aba2990fa",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:37-04:00",
+            "kind": "original",
+            "attempt_id": "9a89789a4889"
+          }
+        },
+        {
+          "attempt_id": "720928a236fa",
+          "started_at": "2026-08-28T13:29:37-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "13",
+            "kind": "repair",
+            "prompt_sha256": "ad71c4dcc1a0345c60a4816fe86e4042250ef97c275a8a31bdf1dc9ae65ac7fb",
+            "prompt_chars": 255,
+            "prompt_bytes": 255,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "0040a684dd62cc995882793eb87a11abae9d615e77ce0ccfeb2f7597df07bfeb",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:37-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/13.png",
+            "sha256": "cf0ba07d7c0632e6d45504ea854edffd7d4cb89219c24081346ec78982796660",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:37-04:00",
+            "kind": "repair",
+            "attempt_id": "720928a236fa"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/13.png",
+        "sha256": "cf0ba07d7c0632e6d45504ea854edffd7d4cb89219c24081346ec78982796660",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:37-04:00",
+        "kind": "repair",
+        "attempt_id": "720928a236fa"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/13.png",
+        "sha256": "cf0ba07d7c0632e6d45504ea854edffd7d4cb89219c24081346ec78982796660",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:37-04:00",
+        "source_sha256": "cf0ba07d7c0632e6d45504ea854edffd7d4cb89219c24081346ec78982796660"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:38-04:00",
+        "sha256": "cf0ba07d7c0632e6d45504ea854edffd7d4cb89219c24081346ec78982796660",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:37-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:37-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:37-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "14": {
+      "number": 14,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "57c13e04a6d7",
+          "started_at": "2026-08-28T13:29:38-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "14",
+            "kind": "original",
+            "prompt_sha256": "617dca0104cd048581e1697c9cc41fffa43cbe50847bad2339ec262cb5c0357d",
+            "prompt_chars": 246,
+            "prompt_bytes": 246,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "a2992395688723c5054e76bad02917af9dd44d3f2ae2a9019da33b28b4f9807a",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:38-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/14_original.png",
+            "sha256": "eb68313b78f8a2f5f52dca80e51dfb697289bcf204ca4acdce45f1f9082b1ad2",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:38-04:00",
+            "kind": "original",
+            "attempt_id": "57c13e04a6d7"
+          }
+        },
+        {
+          "attempt_id": "388010389388",
+          "started_at": "2026-08-28T13:29:38-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "14",
+            "kind": "repair",
+            "prompt_sha256": "bb1056d015d2b653533f208bb8e3b2b971ffdd34983a3258bae2224d35a68815",
+            "prompt_chars": 252,
+            "prompt_bytes": 252,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "c2b1abc74aa90085c482e57fe8abe4f5c1184950f74a52c520693868da56c258",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:38-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/14.png",
+            "sha256": "272b39bbfec4505878e3287d1b4a2c148a1a676bfc3eae22ef8ae154e0cd6ca3",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:38-04:00",
+            "kind": "repair",
+            "attempt_id": "388010389388"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/14.png",
+        "sha256": "272b39bbfec4505878e3287d1b4a2c148a1a676bfc3eae22ef8ae154e0cd6ca3",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:38-04:00",
+        "kind": "repair",
+        "attempt_id": "388010389388"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/14.png",
+        "sha256": "272b39bbfec4505878e3287d1b4a2c148a1a676bfc3eae22ef8ae154e0cd6ca3",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:38-04:00",
+        "source_sha256": "272b39bbfec4505878e3287d1b4a2c148a1a676bfc3eae22ef8ae154e0cd6ca3"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:38-04:00",
+        "sha256": "272b39bbfec4505878e3287d1b4a2c148a1a676bfc3eae22ef8ae154e0cd6ca3",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:38-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:38-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:38-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "15": {
+      "number": 15,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "4efe51d3b580",
+          "started_at": "2026-08-28T13:29:38-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "15",
+            "kind": "original",
+            "prompt_sha256": "38559b08f380995d3cba4bea47977ed3a7a6eeb25c33d3717cee763b390d6a04",
+            "prompt_chars": 244,
+            "prompt_bytes": 244,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "55a10aba83559d5ae30ed06d103d32ed49fcc9567cb7791bd114e7dab8de705f",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:38-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/15_original.png",
+            "sha256": "181f9843625aed18997087490fdf99186de0fc60d563efede05a4c8ced7c1699",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:38-04:00",
+            "kind": "original",
+            "attempt_id": "4efe51d3b580"
+          }
+        },
+        {
+          "attempt_id": "239152bba115",
+          "started_at": "2026-08-28T13:29:38-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "15",
+            "kind": "repair",
+            "prompt_sha256": "010b0abccf8fb8ba8188fad5039b974a5cc46c5b7a1d686cf36247c2c81d65fd",
+            "prompt_chars": 255,
+            "prompt_bytes": 255,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "d6f188a243a2faea761dc3022e10a966042b8c01d3123611eb57022e9a09aa3d",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:38-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/15.png",
+            "sha256": "8442bd11ad4550ea342faf41d7bfdb10dd0615088d405628c59cbe6f34304303",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:38-04:00",
+            "kind": "repair",
+            "attempt_id": "239152bba115"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/15.png",
+        "sha256": "8442bd11ad4550ea342faf41d7bfdb10dd0615088d405628c59cbe6f34304303",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:38-04:00",
+        "kind": "repair",
+        "attempt_id": "239152bba115"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/15.png",
+        "sha256": "8442bd11ad4550ea342faf41d7bfdb10dd0615088d405628c59cbe6f34304303",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:39-04:00",
+        "source_sha256": "8442bd11ad4550ea342faf41d7bfdb10dd0615088d405628c59cbe6f34304303"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:39-04:00",
+        "sha256": "8442bd11ad4550ea342faf41d7bfdb10dd0615088d405628c59cbe6f34304303",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:38-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:38-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:38-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "16": {
+      "number": 16,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "75840eea3e6d",
+          "started_at": "2026-08-28T13:29:39-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "16",
+            "kind": "original",
+            "prompt_sha256": "08bc2e4d0c0b1d2263adf2301b57ccc96644ee8a2e96599a2a47c4eecf28883b",
+            "prompt_chars": 251,
+            "prompt_bytes": 251,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "2da68867d897a0d938f7c4509509bfb5ab492dcc6dbd7d46739193166988ca2e",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:39-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/16_original.png",
+            "sha256": "6b9f2a53207b7bc2fb49288de79bb8cd59302f423fcb9e59ecb0f03fc58b51ef",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:39-04:00",
+            "kind": "original",
+            "attempt_id": "75840eea3e6d"
+          }
+        },
+        {
+          "attempt_id": "7ea0b6ad928a",
+          "started_at": "2026-08-28T13:29:39-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "16",
+            "kind": "repair",
+            "prompt_sha256": "715ff9d06f14c45b7ffcafbc5a841ed8170f9d4ffaeddb54fe5cabd65f749b6d",
+            "prompt_chars": 257,
+            "prompt_bytes": 257,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "d4b48a09e5ffb9aca0cc3f09199f8f701d933c0e12047c8d48190a44cf78df77",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:39-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/16.png",
+            "sha256": "3a9593bb3f3a29b604f7cfe4d0307431543dd204668f5cafe18af377dcf5cb92",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:39-04:00",
+            "kind": "repair",
+            "attempt_id": "7ea0b6ad928a"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/16.png",
+        "sha256": "3a9593bb3f3a29b604f7cfe4d0307431543dd204668f5cafe18af377dcf5cb92",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:39-04:00",
+        "kind": "repair",
+        "attempt_id": "7ea0b6ad928a"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/16.png",
+        "sha256": "3a9593bb3f3a29b604f7cfe4d0307431543dd204668f5cafe18af377dcf5cb92",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:39-04:00",
+        "source_sha256": "3a9593bb3f3a29b604f7cfe4d0307431543dd204668f5cafe18af377dcf5cb92"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:39-04:00",
+        "sha256": "3a9593bb3f3a29b604f7cfe4d0307431543dd204668f5cafe18af377dcf5cb92",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:39-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:39-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:39-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "17": {
+      "number": 17,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "e45ea640d661",
+          "started_at": "2026-08-28T13:29:39-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "17",
+            "kind": "original",
+            "prompt_sha256": "83193de87fc7c7a2dcd8e10573cd48d51f33a6147f4b71d9ac13fdd8d3b907a1",
+            "prompt_chars": 243,
+            "prompt_bytes": 243,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "aed5be093508cf512e2c137ab80c138077ffad1bfaf3be3014beeed27ccedd76",
+          "notes": "ledger recovery from locked approved asset",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:39-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/17.png",
+            "sha256": "d89d7db778064e55d33f2ada3d7428d09058481852bfc43e8116a1941fe0d40b",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:39-04:00",
+            "kind": "original",
+            "attempt_id": "e45ea640d661"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/17.png",
+        "sha256": "d89d7db778064e55d33f2ada3d7428d09058481852bfc43e8116a1941fe0d40b",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:39-04:00",
+        "kind": "original",
+        "attempt_id": "e45ea640d661"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/17.png",
+        "sha256": "d89d7db778064e55d33f2ada3d7428d09058481852bfc43e8116a1941fe0d40b",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:39-04:00",
+        "source_sha256": "d89d7db778064e55d33f2ada3d7428d09058481852bfc43e8116a1941fe0d40b"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:39-04:00",
+        "sha256": "d89d7db778064e55d33f2ada3d7428d09058481852bfc43e8116a1941fe0d40b",
+        "reason": "recovered from locked approved asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:39-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked approved candidate; dimensions and content previously reviewed."
+        }
+      ]
+    },
+    "18": {
+      "number": 18,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "4c523ac71d96",
+          "started_at": "2026-08-28T13:29:39-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "18",
+            "kind": "original",
+            "prompt_sha256": "33e78f58806a53537c421ea291c141678a087de1581010dd72b64091b8b5b78d",
+            "prompt_chars": 242,
+            "prompt_bytes": 242,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "3d1efc8ce2b4590a2fa3e7c9935179cf80cf23fd2f82d8aa051be8aceb83b5d2",
+          "notes": "ledger recovery: retained original attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:39-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/18_original.png",
+            "sha256": "5ea186e90afe14fdafd971fb434fb79ef6edc2bcf579c2df454f4b2d3a5b8eea",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:39-04:00",
+            "kind": "original",
+            "attempt_id": "4c523ac71d96"
+          }
+        },
+        {
+          "attempt_id": "3671221358bf",
+          "started_at": "2026-08-28T13:29:40-04:00",
+          "kind": "repair",
+          "request": {
+            "frame": "18",
+            "kind": "repair",
+            "prompt_sha256": "40f4c69d63fb36da9435bb5ac8e5bb211ed972988de36af8cd7ee4daf0561a12",
+            "prompt_chars": 258,
+            "prompt_bytes": 258,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "add90cd5e51325745e2b14281d59b047c5de66904af1af1a752ebdeaaaf2225d",
+          "notes": "ledger recovery: retained repaired approved attempt",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:40-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/18.png",
+            "sha256": "d90e9055c26b0f65a172c88b593a9eea56d8750f9678d7635df2123ce28288e2",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:40-04:00",
+            "kind": "repair",
+            "attempt_id": "3671221358bf"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/18.png",
+        "sha256": "d90e9055c26b0f65a172c88b593a9eea56d8750f9678d7635df2123ce28288e2",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:40-04:00",
+        "kind": "repair",
+        "attempt_id": "3671221358bf"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/18.png",
+        "sha256": "d90e9055c26b0f65a172c88b593a9eea56d8750f9678d7635df2123ce28288e2",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:40-04:00",
+        "source_sha256": "d90e9055c26b0f65a172c88b593a9eea56d8750f9678d7635df2123ce28288e2"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:40-04:00",
+        "sha256": "d90e9055c26b0f65a172c88b593a9eea56d8750f9678d7635df2123ce28288e2",
+        "reason": "recovered repaired locked asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:40-04:00",
+          "decision": "repair",
+          "notes": "Recovered prior content-failed original and its authorized one-round repair history."
+        },
+        {
+          "at": "2026-08-28T13:29:40-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked repaired candidate; dimensions and content previously reviewed."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-28T13:29:40-04:00",
+        "note": "Recovered existing single authorized repair; no new generation performed.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "19": {
+      "number": 19,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "90e15c726ef9",
+          "started_at": "2026-08-28T13:29:48-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "19",
+            "kind": "original",
+            "prompt_sha256": "7740dc4e3c7b4730d1c272c015823570ab8ed56d1dadb98873af2322efa473a1",
+            "prompt_chars": 246,
+            "prompt_bytes": 246,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/20.png",
+                "role": "county rooftop continuity",
+                "kind": "location",
+                "sha256": "2ea412d3942a2b371b75bc502ed5d3a3231b21b2c0ae60259a79366688723344"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "82a6cf65e19d79d0b5738baab5ef46c460464e71fae80feba710bce88dfca35c",
+          "notes": "formal penultimate rooftop candidate",
+          "result": "success",
+          "completed_at": "2026-08-28T13:30:42-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/19_original.png",
+            "sha256": "31d420dba1d188661a454866f2bd1fa141735cd218a58b661c4e266611d02a15",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:30:42-04:00",
+            "kind": "original",
+            "attempt_id": "90e15c726ef9"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/raw/19_original.png",
+        "sha256": "31d420dba1d188661a454866f2bd1fa141735cd218a58b661c4e266611d02a15",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:30:42-04:00",
+        "kind": "original",
+        "attempt_id": "90e15c726ef9"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/19.png",
+        "sha256": "31d420dba1d188661a454866f2bd1fa141735cd218a58b661c4e266611d02a15",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:30:43-04:00",
+        "source_sha256": "31d420dba1d188661a454866f2bd1fa141735cd218a58b661c4e266611d02a15"
+      },
+      "lock": {
+        "at": "2026-08-28T13:30:43-04:00",
+        "sha256": "31d420dba1d188661a454866f2bd1fa141735cd218a58b661c4e266611d02a15",
+        "reason": "penultimate recursive clue passed"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:30:42-04:00",
+          "decision": "pass",
+          "notes": "Faint glass curve, one droplet, county roofline and witnesses establish the penultimate clue; frame 20 adds the shelf-scale reveal."
+        }
+      ]
+    },
+    "20": {
+      "number": 20,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "f76b81009971",
+          "started_at": "2026-08-28T13:29:33-04:00",
+          "kind": "original",
+          "request": {
+            "frame": "20",
+            "kind": "original",
+            "prompt_sha256": "cf56ca45bd5954918aad612d8b3344cc34ad0150516b5feeb2c84359ce41b872",
+            "prompt_chars": 256,
+            "prompt_bytes": 256,
+            "capture_id": "CP03",
+            "model": "gpt-image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "locked M00 compact-camera record",
+                "kind": "capture_style",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49",
+                "source_kind": "approved_calibration"
+              },
+              {
+                "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/01.png",
+                "role": "office and green county bottle",
+                "kind": "prop",
+                "sha256": "7457e4c04a22e70f25ab2c8e13255552d6d1d877233ee5dc8c6c60409842fa49"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP03"
+            }
+          },
+          "request_fingerprint": "f69f2146b1a959e5f26a51d6d5edd1f5296feb4d36c79948b404ee46c7e2f926",
+          "notes": "ledger recovery from locked approved asset",
+          "result": "success",
+          "completed_at": "2026-08-28T13:29:33-04:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/20.png",
+            "sha256": "2ea412d3942a2b371b75bc502ed5d3a3231b21b2c0ae60259a79366688723344",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-28T13:29:33-04:00",
+            "kind": "original",
+            "attempt_id": "f76b81009971"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved_saved/20.png",
+        "sha256": "2ea412d3942a2b371b75bc502ed5d3a3231b21b2c0ae60259a79366688723344",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-28T13:29:33-04:00",
+        "kind": "original",
+        "attempt_id": "f76b81009971"
+      },
+      "approved_asset": {
+        "path": "episodes/09_旧物怪谈/04_瓶中世界/production/approved/20.png",
+        "sha256": "2ea412d3942a2b371b75bc502ed5d3a3231b21b2c0ae60259a79366688723344",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-28T13:29:33-04:00",
+        "source_sha256": "2ea412d3942a2b371b75bc502ed5d3a3231b21b2c0ae60259a79366688723344"
+      },
+      "lock": {
+        "at": "2026-08-28T13:29:33-04:00",
+        "sha256": "2ea412d3942a2b371b75bc502ed5d3a3231b21b2c0ae60259a79366688723344",
+        "reason": "recovered from locked approved asset after truncated-ledger detection"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-28T13:29:33-04:00",
+          "decision": "pass",
+          "notes": "Recovered locked approved candidate; dimensions and content previously reviewed."
+        }
+      ]
+    }
+  },
+  "batches": [
+    {
+      "batch_id": "0f3d652579",
+      "started_at": "2026-08-28T13:29:32-04:00",
+      "ended_at": "2026-08-28T13:29:33-04:00",
+      "frames": [
+        "01",
+        "03",
+        "10"
+      ],
+      "max_successes": 3,
+      "note": "audited ledger recovery batch",
+      "status": "closed",
+      "summary": "recovered locked assets and prior repair decisions"
+    },
+    {
+      "batch_id": "f1e5fee56d",
+      "started_at": "2026-08-28T13:29:33-04:00",
+      "ended_at": "2026-08-28T13:29:34-04:00",
+      "frames": [
+        "20",
+        "02",
+        "04"
+      ],
+      "max_successes": 3,
+      "note": "audited ledger recovery batch",
+      "status": "closed",
+      "summary": "recovered locked assets and prior repair decisions"
+    },
+    {
+      "batch_id": "9d34e9200b",
+      "started_at": "2026-08-28T13:29:34-04:00",
+      "ended_at": "2026-08-28T13:29:35-04:00",
+      "frames": [
+        "05",
+        "06",
+        "07"
+      ],
+      "max_successes": 3,
+      "note": "audited ledger recovery batch",
+      "status": "closed",
+      "summary": "recovered locked assets and prior repair decisions"
+    },
+    {
+      "batch_id": "c66ce98c9f",
+      "started_at": "2026-08-28T13:29:35-04:00",
+      "ended_at": "2026-08-28T13:29:37-04:00",
+      "frames": [
+        "08",
+        "09",
+        "11"
+      ],
+      "max_successes": 3,
+      "note": "audited ledger recovery batch",
+      "status": "closed",
+      "summary": "recovered locked assets and prior repair decisions"
+    },
+    {
+      "batch_id": "b221dd3487",
+      "started_at": "2026-08-28T13:29:37-04:00",
+      "ended_at": "2026-08-28T13:29:38-04:00",
+      "frames": [
+        "12",
+        "13",
+        "14"
+      ],
+      "max_successes": 3,
+      "note": "audited ledger recovery batch",
+      "status": "closed",
+      "summary": "recovered locked assets and prior repair decisions"
+    },
+    {
+      "batch_id": "4edff508ba",
+      "started_at": "2026-08-28T13:29:38-04:00",
+      "ended_at": "2026-08-28T13:29:39-04:00",
+      "frames": [
+        "15",
+        "16",
+        "17"
+      ],
+      "max_successes": 3,
+      "note": "audited ledger recovery batch",
+      "status": "closed",
+      "summary": "recovered locked assets and prior repair decisions"
+    },
+    {
+      "batch_id": "46805e4a98",
+      "started_at": "2026-08-28T13:29:39-04:00",
+      "ended_at": "2026-08-28T13:29:40-04:00",
+      "frames": [
+        "18"
+      ],
+      "max_successes": 3,
+      "note": "audited ledger recovery batch",
+      "status": "closed",
+      "summary": "recovered locked assets and prior repair decisions"
+    },
+    {
+      "batch_id": "1dabe05727",
+      "started_at": "2026-08-28T13:29:48-04:00",
+      "ended_at": "2026-08-28T13:30:43-04:00",
+      "frames": [
+        "19"
+      ],
+      "max_successes": 3,
+      "note": "production batch F",
+      "status": "closed",
+      "summary": "19 passed first candidate"
+    }
+  ]
+}

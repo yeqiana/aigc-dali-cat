@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.0.3.2",
+  "episode": {
+    "id": "09-04",
+    "series": "09_旧物怪谈",
+    "title": "瓶中世界",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "4:5"
+  },
+  "release": {
+    "version": "V2.0",
+    "body_frame_count": 20,
+    "publish_dir": "episodes/09_旧物怪谈/04_瓶中世界/production/publish",
+    "body_glob": "[0-9][0-9].png",
+    "cover_path": "episodes/09_旧物怪谈/04_瓶中世界/production/cover/cover.png",
+    "contact_sheet_path": "episodes/09_旧物怪谈/04_瓶中世界/production/contact-sheets/publish-final.jpg"
+  },
+  "artifacts": {
+    "story": "episodes/09_旧物怪谈/04_瓶中世界/docs/02_瓶中世界_StoryLock_V2.0.md",
+    "storyboard": "episodes/09_旧物怪谈/04_瓶中世界/docs/03_瓶中世界_20张正式分镜_V2.0.md",
+    "visual_spec": "episodes/09_旧物怪谈/04_瓶中世界/docs/04_瓶中世界_视觉规范_V2.0.md",
+    "captions": "episodes/09_旧物怪谈/04_瓶中世界/meta/subtitles.yaml",
+    "publish_copy": "episodes/09_旧物怪谈/04_瓶中世界/docs/05_瓶中世界_最终发布文案_V2.0.md",
+    "production_review": "episodes/09_旧物怪谈/04_瓶中世界/docs/06_瓶中世界_终审_V2.0.md",
+    "propagation_card": "episodes/09_旧物怪谈/04_瓶中世界/meta/recommendation-fit.json"
+  },
+  "quality": {
+    "production_gate": "pass",
+    "propagation_score": 8.8,
+    "s_min_score": 7.8,
+    "propagation_decision": "publishable",
+    "publish_decision": "go",
+    "decision_note": "Story OS V2.0.3.2 全自动终审通过；图20保持静默。"
+  },
+  "publication": {
+    "platform": "douyin",
+    "actual_title": "2008年，我在县玻璃厂发现一只瓶子。我转了一下，整座县城都斜了。",
+    "description": "2008年，我回县玻璃厂帮我爸清仓。桌上那只瓶子里的河、学校和红烟囱，全都和县城对得上。我爸临走前只提醒我：底座别动。可买家要看瓶底，我刚把它转了一点，屋里和窗外的东西就同时滑向一边……人物、地点、情节均为虚构；内容由AI生成。",
+    "topics": [
+      "AI故事",
+      "旧物怪谈",
+      "县城故事",
+      "细思极恐",
+      "脑洞故事",
+      "抖音图文"
+    ],
+    "pinned_comment": "回头再看图04、07和18，它们其实早就不是在提示“瓶子里面有问题”。如果现实外面还有一层，你觉得那只瓶子是谁放在桌上的？",
+    "published_at": null,
+    "timing_window": null,
+    "post_url": null
+  },
+  "data_review": {
+    "report_path": "reports/数据验收报告.md",
+    "completed_checkpoints": [],
+    "first_hour_metrics": {
+      "captured_at": null,
+      "exposure": null,
+      "plays": null,
+      "likes": null,
+      "comments": null,
+      "saves": null,
+      "shares": null,
+      "followers_gained": null,
+      "profile_visits": null,
+      "avg_images_viewed": null,
+      "swipe_away_rate": null,
+      "caption_expand_rate": null
+    }
+  }
+}
