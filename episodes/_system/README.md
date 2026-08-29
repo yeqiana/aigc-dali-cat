@@ -1,6 +1,6 @@
-# Episodes 状态机 + Story OS 门禁 V2.0.3.3
+# Episodes 状态机 + Story OS 门禁 V2.0.3.4
 
-本目录只建立一套机器阶段状态；V2.0.3.3 延续 V1.8 引入的证据 SHA 门禁，并增加稳定 evidence gate 与可执行 Codex runtime，不新增第二状态机。
+本目录只建立一套机器阶段状态；V2.0.3.4 延续 V1.8 引入的证据 SHA 门禁，并增加稳定 evidence gate 与可执行 Codex runtime，不新增第二状态机。
 
 ## 核心事实源
 

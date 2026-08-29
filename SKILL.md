@@ -1,11 +1,11 @@
-# Dali Cat Story OS — Repository Execution Contract V2.0.3.3
+# Dali Cat Story OS — Repository Execution Contract V2.0.3.4
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
-## Story OS V2.0.3.3 Golden Path
+## Story OS V2.0.3.4 Golden Path
 
 **第一入口：先读 `START_HERE.md`。** 该文件只负责路由，不建立第二套创作规范。
 

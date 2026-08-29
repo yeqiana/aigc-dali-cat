@@ -41,6 +41,9 @@ def worker_instruction(ep,resume):
 Read START_HERE.md, SKILL.md, AGENTS.md, runtimes/CODEX.md, AUTHORITY_INDEX, standards/创作执行强制规范_V2.0.3.2.md, standards/生产帧语义强制规范_V1.0.md, episode state/gates/ledger/reviews/checkpoint.
 Do not spawn another full-auto supervisor.
 
+MINIMAL CLOSURE FIRST:
+Run `python episodes/_system/incremental_closure.py plan "{rel}" --json` before spending a critic call. CLEAN SHA-bound evidence MUST be reused. Do not rerun Story/Visual/Frame critics merely for reassurance.
+
 STORY LOCK IS THE HIGHEST CREATIVE LOCK.
 Before story_lock, finish the whole story and storyboard but do NOT generate images.
 Run an independent fresh critic:
@@ -62,15 +65,14 @@ A capture_style reference may come only from passed calibration or an explicitly
 PRODUCTION:
 For every new/repair image use `codex_subscription_image.py generate-for-frame "{rel}" --frame NN ...`; preserve raw output and exact ledger canvas.
 Maintain production ledger. Technical failure does not consume content repair. Do not let an early unapproved generated frame recursively become the style mother reference.
-After ALL final approved frames exist, run a FRESH isolated full-frame-set semantic critic:
-  python episodes/_system/frame_semantic_review.py run-critic "{rel}" --attempt 1
-The critic must judge actual pixels against Story Lock + storyboard + authenticity/continuity anchors, including scene/story-beat fidelity, key prop, character/wardrobe, POV legality, spatial/temporal continuity, anomaly readability, caption-image support and ACTUAL information gain.
-If attempt 1 FAILS, repair ONLY the failed frames within the existing one-content-repair-per-frame limit, then run a NEW isolated critic:
-  python episodes/_system/frame_semantic_review.py run-critic "{rel}" --attempt 2
-If attempt 2 still fails, stop. Never hand-author frame review PASS JSON.
-A recovered/locked asset is reusable as PASS only when meta/frame-reviews/NN.json schema 2 is bound to that exact approved asset SHA and current Story/Storyboard/Visual context. "previously reviewed" text alone is not evidence.
+After ALL current approved frames exist, run the INCREMENTAL semantic reviewer:
+  python episodes/_system/incremental_frame_review.py review "{rel}" --attempt 1
+It automatically selects NOOP / PATCH / FULL. PATCH reviews dirty roots plus continuity neighbors; ending high-risk frames expand context. Story/Storyboard/Visual drift or dirty >25% escalates FULL_FRAME_SET.
+If attempt 1 FAILS, repair ONLY failed dirty frames within the existing one-content-repair-per-frame limit, then run:
+  python episodes/_system/incremental_frame_review.py review "{rel}" --attempt 2
+Never hand-author PASS JSON. A recovered/locked asset is reusable only when current SHA/context/caption fingerprints still match.
 Before leaving production run:
-  python episodes/_system/frame_semantic_review.py audit "{rel}"
+  python episodes/_system/incremental_frame_review.py audit "{rel}"
 
 SUBTITLES / RELEASE:
 Create the canonical caption source and PASS text audit.
@@ -109,8 +111,8 @@ def postflight(ep):
     if incomplete:return 'PAUSED','production ledger incomplete: '+', '.join(incomplete[:12]),None
     r=run_cmd([sys.executable,SYSTEM/'production_ledger.py','audit',ep,'--require-passed'])
     if r.returncode!=0:return 'PAUSED','production ledger not fully passed:\n'+r.stdout[-2000:],None
-    r=run_cmd([sys.executable,SYSTEM/'frame_semantic_review.py','audit',ep])
-    if r.returncode!=0:return 'PAUSED','frame semantic review/audit failed:\n'+r.stdout[-2500:],None
+    r=run_cmd([sys.executable,SYSTEM/'incremental_frame_review.py','audit',ep])
+    if r.returncode!=0:return 'PAUSED','incremental frame semantic review/audit failed:\n'+r.stdout[-2500:],None
     r=run_cmd([sys.executable,SYSTEM/'machine_gate.py',ep,'--target','PRODUCTION_PASSED'])
     if r.returncode!=0:return 'PAUSED','PRODUCTION_PASSED machine gate failed before packaging:\n'+r.stdout[-2500:],None
     try:
@@ -127,7 +129,16 @@ def postflight(ep):
     if r.returncode!=0:return 'BLOCKED','PUBLISH_READY evidence gate failed: '+r.stdout[-2000:],None
     return 'COMPLETE','all deterministic postflight checks passed',package
 def run_worker(args,resume):
-    ep=resolve_episode(args.episode_dir); codex=resolve_codex(args.codex); log=ep/'meta/codex-auto-run.jsonl'; log.parent.mkdir(parents=True,exist_ok=True)
+    ep=resolve_episode(args.episode_dir)
+    pre=run_cmd([sys.executable,SYSTEM/'incremental_closure.py','plan',ep,'--json'])
+    if pre.returncode==0:
+        try: minimal=json.loads(pre.stdout)
+        except Exception: minimal={}
+        if minimal.get('action')=='POSTFLIGHT_ONLY':
+            status,reason,package=postflight(ep)
+            if status=='COMPLETE':
+                update_checkpoint(ep,'MINIMAL_CLOSURE_COMPLETE','USER_MAY_PUBLISH',completion={'status':'COMPLETE','package':str(package),'verified_at':now(),'critic_calls_saved':True}); print(f'MINIMAL CLOSURE COMPLETE: {package}'); return 0
+    codex=resolve_codex(args.codex); log=ep/'meta/codex-auto-run.jsonl'; log.parent.mkdir(parents=True,exist_ok=True)
     update_checkpoint(ep,'ORCHESTRATOR_STARTED','CODEX_WORKER_RUNNING')
     cmd=prefix(codex)+['exec','--skip-git-repo-check','--ephemeral','-s','workspace-write','-C',str(ROOT),'--json','-']
     with log.open('a',encoding='utf-8',newline='\n') as h:

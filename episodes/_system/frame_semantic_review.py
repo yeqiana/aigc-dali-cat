@@ -334,8 +334,8 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
         errors.append(f"frame {key} critic runtime must be CODEX_ISOLATED")
     if provenance.get("isolated_session") is not True:
         errors.append(f"frame {key} critic must be isolated")
-    if provenance.get("review_scope") != "FULL_FRAME_SET":
-        errors.append(f"frame {key} critic review_scope must be FULL_FRAME_SET")
+    if provenance.get("review_scope") not in {"FULL_FRAME_SET", "INCREMENTAL_CONTEXT_SET"}:
+        errors.append(f"frame {key} critic review_scope must be FULL_FRAME_SET or INCREMENTAL_CONTEXT_SET")
     if provenance.get("attempt") not in {1, 2}:
         errors.append(f"frame {key} critic attempt must be 1 or 2")
     checks = data.get("checks") or {}
@@ -393,8 +393,8 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
         provenance = summary.get("critic_provenance") or {}
         if provenance.get("runtime") != "CODEX_ISOLATED" or provenance.get("isolated_session") is not True:
             errors.append("frame semantic summary critic provenance invalid")
-        if provenance.get("review_scope") != "FULL_FRAME_SET":
-            errors.append("frame semantic summary must prove FULL_FRAME_SET review")
+        if provenance.get("review_scope") not in {"FULL_FRAME_SET", "BASELINE_PLUS_PATCHES"}:
+            errors.append("frame semantic summary must prove FULL_FRAME_SET or BASELINE_PLUS_PATCHES review")
         bound = summary.get("frames")
         expected_bound = [{"frame": row["frame"], "asset_sha256": row["sha256"]} for row in frames]
         if bound != expected_bound:
@@ -626,7 +626,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
         "reviewed_at": now(),
         "log": log.relative_to(ROOT).as_posix(),
     }
-    version = story_os_version()
+    version = episode_contract_version(ep)
     rows_by_frame = {str(row.get("frame") or "").zfill(2): row for row in (data.get("frames") or []) if isinstance(row, dict)}
     review_dir = ep / REVIEW_DIR
     review_dir.mkdir(parents=True, exist_ok=True)

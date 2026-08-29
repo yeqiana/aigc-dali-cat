@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from story_os_contract import canonical_stages
-from frame_semantic_review import review_required as semantic_frame_review_required, verify_episode as verify_frame_semantic_episode
+from incremental_frame_review import review_required as semantic_frame_review_required, verify_episode as verify_frame_semantic_episode
 
 STATES = canonical_stages()
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}

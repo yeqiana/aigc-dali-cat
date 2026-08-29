@@ -20,48 +20,52 @@ __pycache__/
 # Codex tool output
 .codex/
 .playwright-cli/
+.codex-review/
 
-# Story 执行层升级包本地安装回执
+# Story OS local install / backup / migration state
 .story-os-v*installed.json
 .story-upgrade-backups/
 .story-os-upgrade-backups/
 .story-os-backups/
 .story-os-*-backups/
+.story-os-history/
+.story-os-media-migration/
+.story-os-media-inventory.json
 
-# Story OS V2.0 本地虚拟环境与一键升级安装包（不入库）
+# Story OS local virtualenv / upgrade packages
 .story-os-venv/
 Story_OS_V2.0_OneClick_FullAuto_Upgrade_UTF8_FINAL/
 DaliCat_StoryOS_*/
 Story_OS_V2.0.2_Production_Closure_OneClick_Upgrade_UTF8_FINAL/
 DaliCat_StoryOS_V2.0.3.2_CreativeEnforcement_RootSafe_R3/
+storyos_*/
 
-# Local workbench and review state
+# Local workbench
 workbench/tmp/
-.codex-review/
 
-# Git 大文件提交规则：默认全部忽略，仅白名单放行（见 AGENTS.md）
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.webp
-*.bmp
-*.ico
-*.tif
-*.tiff
-*.svg
-*.mp4
-*.mov
-*.avi
-*.mkv
-*.wav
-*.mp3
-*.flac
-*.zip
+# Episode media policy:
+# all image/video/audio/archive binaries below episodes/ remain LOCAL ONLY.
+# Git tracks story/meta/code; pixel assets are linked by SHA/media-index.
+episodes/**/*.png
+episodes/**/*.jpg
+episodes/**/*.jpeg
+episodes/**/*.gif
+episodes/**/*.webp
+episodes/**/*.bmp
+episodes/**/*.ico
+episodes/**/*.tif
+episodes/**/*.tiff
+episodes/**/*.svg
+episodes/**/*.mp4
+episodes/**/*.mov
+episodes/**/*.avi
+episodes/**/*.mkv
+episodes/**/*.wav
+episodes/**/*.mp3
+episodes/**/*.flac
+episodes/**/*.zip
 
-# 白名单 1：角色参考图
+# Explicit exception: character anchors are allowed in Git.
 !episodes/**/assets/characters/**
 
-# 白名单 2：竞品与账号截图
-!research/competitors/**
-!research/account/**
+# research/competitors/** and research/account/** are intentionally not ignored.

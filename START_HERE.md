@@ -1,4 +1,4 @@
-# Dali Cat Story OS — START HERE V2.0.3.3
+# Dali Cat Story OS — START HERE V2.0.3.4
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
@@ -242,3 +242,35 @@ CODEX 全自动完成必须经过 deterministic postflight；worker 正常退出
 ## V2.0.3.3 Frame Semantic Enforcement
 
 Batch 完成后，`PRODUCTION_PASSED` 前必须运行 `episodes/_system/frame_semantic_review.py` 的 fresh isolated full-frame-set critic；实际图片必须与 Story Lock / Storyboard / Authenticity Card / Continuity Anchors 一致，并通过 SHA-bound review 与 near-duplicate audit。该证据不新增机器状态。
+<!-- STORY_OS_V2_0_3_4_INCREMENTAL_WORKSPACE_BEGIN -->
+## V2.0.3.4 最小闭环 + 本地媒体工作区
+
+默认先做增量计划，不再无条件重跑整篇：
+
+```bash
+python episodes/_system/incremental_closure.py plan <episode_dir> --json
+```
+
+帧审核统一入口：
+
+```bash
+python episodes/_system/incremental_frame_review.py review <episode_dir> --attempt 1
+```
+
+- CLEAN 的 Story / Visual / Frame 证据按 SHA 直接复用。
+- 只改 1~N 张图时默认审核 dirty frame ±1；终局高风险帧默认 ±2。
+- Story / Storyboard / Visual Contract 改变，或 dirty > 25%，自动升级 FULL_FRAME_SET。
+- 全局 SHA、尺寸、近重复仍执行廉价全量审计。
+
+新篇本地媒体统一放：`media/calibration|raw|candidates|approved|publish|review|archive`；交付放 `release/`；Git 只跟踪 `meta/media-index.json` 与文本/证据，不跟踪这些像素资产。
+
+媒体工具：
+
+```bash
+python episodes/_system/media_workspace.py inventory
+python episodes/_system/media_workspace.py migrate --dry-run
+python episodes/_system/media_workspace.py ensure <episode_dir>
+```
+
+历史未纳管 episode 不自动搬图；重新进入制作时再迁移。
+<!-- STORY_OS_V2_0_3_4_INCREMENTAL_WORKSPACE_END -->

@@ -136,7 +136,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     width, height, aspect = read_canvas(ep)
     visual = compile_prompt_contract(ep)
     size = provider_size(width, height)
-    raw_dir = ep / 'production' / 'raw'
+    raw_dir = ep / 'media' / 'raw'
     raw_dir.mkdir(parents=True, exist_ok=True)
     raw_output = raw_dir / f'{int(args.frame):02d}-{int(time.time())}.png'
     elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'])

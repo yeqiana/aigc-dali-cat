@@ -87,3 +87,12 @@ Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / MP4 �
 - Evidence Gate 接受 direct_user_review 或已授权的 delegated_auto_review。
 - delegated delivery 只接受真实 publish 资产，禁止 approved fallback。
 <!-- STORY_OS_V2_0_2_AGENTS_END -->
+<!-- STORY_OS_V2_0_3_4_AGENTS_BEGIN -->
+## V2.0.3.4 Incremental Workspace
+
+- 全自动执行前先运行 `incremental_closure.py plan`；已有有效 SHA-bound PASS 证据不得无条件重跑。
+- Production 结束后使用 `incremental_frame_review.py review`，由它自动选择 NOOP / PATCH / FULL。
+- PATCH 只看 dirty roots + 必要邻帧；Story/Storyboard/Visual Contract 漂移或 dirty >25% 自动 FULL。
+- 新生产媒体必须写入 `<episode>/media/`；交付写入 `<episode>/release/`。图片/视频/ZIP 保留本地，Git 只保存路径与 SHA 索引。
+- 不得删除被 `.gitignore` 忽略的旧媒体来“整理目录”；迁移必须通过 `media_workspace.py` 的 copy→SHA verify→reference rewrite→remove-old 流程。
+<!-- STORY_OS_V2_0_3_4_AGENTS_END -->

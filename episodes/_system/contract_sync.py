@@ -29,6 +29,9 @@ CORE_ENGINE_FILES = [
     "visual_review.py",
     "frame_semantic_review.py",
     "subtitle_layout.py",
+    "incremental_closure.py",
+    "incremental_frame_review.py",
+    "media_workspace.py",
 ]
 REQUIRED_CAPABILITIES = {
     "single_state_machine",
@@ -48,6 +51,13 @@ REQUIRED_CAPABILITIES = {
     "actual_frame_semantic_review",
     "sha_bound_frame_reviews",
     "release_evidence_closure",
+    "incremental_closure",
+    "dirty_set_propagation",
+    "incremental_frame_review",
+    "caption_fingerprint_binding",
+    "local_media_workspace",
+    "media_sha_index",
+    "safe_media_migration",
 }
 ADAPTER_SKILLS = [
     Path("skills/dali-cat-story/SKILL.md"),
@@ -158,12 +168,13 @@ def collect_errors(root: Path | None = None) -> list[str]:
     for rel in [
         Path("standards/创作执行强制规范_V2.0.3.2.md"),
         Path("standards/生产帧语义强制规范_V1.0.md"),
+        Path("standards/工作区与增量闭环规范_V1.0.md"),
         Path("standards/最终字幕视觉规范_V1.2.md"),
     ]:
         if not (root / rel).is_file():
             errors.append(f"missing active creative enforcement standard: {rel.as_posix()}")
     authority_text = read_text(root / "standards/AUTHORITY_INDEX.json")
-    for token in ["standards/创作执行强制规范_V2.0.3.2.md", "standards/生产帧语义强制规范_V1.0.md", "standards/最终字幕视觉规范_V1.2.md"]:
+    for token in ["standards/创作执行强制规范_V2.0.3.2.md", "standards/生产帧语义强制规范_V1.0.md", "standards/工作区与增量闭环规范_V1.0.md", "standards/最终字幕视觉规范_V1.2.md"]:
         if token not in authority_text:
             errors.append(f"AUTHORITY_INDEX missing active creative enforcement route: {token}")
 
@@ -267,6 +278,23 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "'story_os_version':STORY_OS_VERSION",
         ],
     }
+    source_expectations.update({
+        "incremental_closure.py": [
+            "incremental_frame_review.py",
+            "POSTFLIGHT_ONLY",
+            "PRODUCTION_INCREMENTAL_REQUIRED",
+        ],
+        "incremental_frame_review.py": [
+            "PATCH_LIMIT_RATIO = 0.25",
+            "INCREMENTAL_CONTEXT_SET",
+            "caption_state",
+        ],
+        "media_workspace.py": [
+            "meta/media-index.json",
+            "evidence_frozen",
+            ".story-os-media-migration",
+        ],
+    })
     for name, tokens in source_expectations.items():
         p = engine / name
         if not p.is_file():
@@ -385,6 +413,9 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "python episodes/_system/story_review.py self-test",
             "python episodes/_system/visual_review.py self-test",
             "python episodes/_system/subtitle_layout.py self-test",
+            "python episodes/_system/incremental_closure.py self-test",
+            "python episodes/_system/incremental_frame_review.py self-test",
+            "python episodes/_system/media_workspace.py self-test",
             "python episodes/_system/story_os.py doctor",
             ".agents/skills/dali-cat-story/**",
         ]:

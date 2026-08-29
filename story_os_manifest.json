@@ -1,7 +1,7 @@
 {
-  "story_os_version": "2.0.3.3",
+  "story_os_version": "2.0.3.4",
   "contract_schema": 1,
-  "release_name": "Frame Semantic Enforcement",
+  "release_name": "Incremental Workspace",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -31,7 +31,14 @@
     "deterministic_subtitle_layout",
     "actual_frame_semantic_review",
     "sha_bound_frame_reviews",
-    "release_evidence_closure"
+    "release_evidence_closure",
+    "incremental_closure",
+    "dirty_set_propagation",
+    "incremental_frame_review",
+    "caption_fingerprint_binding",
+    "local_media_workspace",
+    "media_sha_index",
+    "safe_media_migration"
   ],
   "adapters": [
     "skills/dali-cat-story",

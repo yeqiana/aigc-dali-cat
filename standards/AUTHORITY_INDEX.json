@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "2.0.3.3",
+  "story_os_version": "2.0.3.4",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -143,6 +143,13 @@
       "authority": "active_subordinate",
       "scope": "production_frame_semantic_fidelity",
       "active": true
+    },
+    {
+      "path": "standards/工作区与增量闭环规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "incremental_execution_and_local_media_workspace",
+      "active": true,
+      "note": "Defines minimal closure, dirty propagation, local media workspace, SHA index and safe migration. Does not create a second stage source."
     }
   ],
   "rules": {
@@ -218,6 +225,15 @@
       "frame_semantic_review_summary": "meta/frame-semantic-review.json",
       "frame_semantic_review_dir": "meta/frame-reviews",
       "frame_semantic_audit": "meta/frame-semantic-audit.json"
+    },
+    "incremental_workspace": {
+      "planner": "episodes/_system/incremental_closure.py",
+      "frame_reviewer": "episodes/_system/incremental_frame_review.py",
+      "media_workspace": "episodes/_system/media_workspace.py",
+      "media_index": "meta/media-index.json",
+      "dirty_ratio_full_escalation": 0.25,
+      "new_state_forbidden": true,
+      "frozen_evidence_media_paths_immutable": true
     }
   }
 }

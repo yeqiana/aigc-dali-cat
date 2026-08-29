@@ -1,4 +1,4 @@
-# dali-cat-story — Story OS V2.0.3.3 Adapter Contract
+# dali-cat-story — Story OS V2.0.3.4 Adapter Contract
 
 > This Skill is a **thin execution adapter** for the repository's canonical Story OS.  
 > It does not own a state machine, does not duplicate engine logic, and must not become a second source of creative or release truth.
@@ -132,3 +132,25 @@ Canonical capabilities additionally required:
 - `release_evidence_closure`
 
 The adapter does not implement these capabilities itself; canonical implementation remains under `episodes/_system/frame_semantic_review.py`.
+
+<!-- STORY_OS_V2_0_3_4_INCREMENTAL_ADAPTER_BEGIN -->
+## V2.0.3.4 Incremental Workspace Adapter
+
+The adapter delegates incremental/local-media work to the canonical engine; it does not own another state machine.
+
+Canonical capabilities routed here:
+- `incremental_closure`
+- `dirty_set_propagation`
+- `incremental_frame_review`
+- `caption_fingerprint_binding`
+- `local_media_workspace`
+- `media_sha_index`
+- `safe_media_migration`
+
+Canonical implementations remain under `episodes/_system`:
+- `incremental_closure.py`
+- `incremental_frame_review.py`
+- `media_workspace.py`
+
+Skill is an adapter, not a Story OS copy.
+<!-- STORY_OS_V2_0_3_4_INCREMENTAL_ADAPTER_END -->

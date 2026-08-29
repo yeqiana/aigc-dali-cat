@@ -50,3 +50,28 @@ episodes/
 ## 新篇执行
 
 **新篇执行流程唯一入口：[`START_HERE.md`](START_HERE.md)。** README 不再维护第二份 Golden Path；选题、Story Lock、Visual Lock、Batch、text audit、Release 与发布后数据回填顺序均以该入口和根 `SKILL.md` 为准。
+<!-- STORY_OS_V2_0_3_4_LAYOUT_BEGIN -->
+## V2.0.3.4 新篇目录约定
+
+新进入 Story OS 管理的具体篇章使用以下本地工作区：
+
+```text
+<episode>/
+├─ story/                 # Story Lock / storyboard / visual lock / publish copy
+├─ meta/                  # stage / gates / ledger / reviews / media-index
+├─ assets/
+│  ├─ characters/         # 可入 Git
+│  └─ references/         # 本地，不入 Git
+├─ media/                 # 本地，不入 Git
+│  ├─ calibration/
+│  ├─ raw/
+│  ├─ candidates/
+│  ├─ approved/
+│  ├─ publish/
+│  ├─ review/
+│  └─ archive/
+└─ release/               # cover / FINAL.zip，本地，不入 Git
+```
+
+旧篇不做破坏式全仓重排；只有重新进入制作且已有 `meta/episode-state.json` 的篇章才由迁移器安全归档本地媒体。
+<!-- STORY_OS_V2_0_3_4_LAYOUT_END -->
