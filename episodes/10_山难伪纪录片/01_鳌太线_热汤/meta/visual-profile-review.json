@@ -1,0 +1,65 @@
+{
+  "calibration": [
+    {
+      "id": "1",
+      "checks": {
+        "visual_profile_match": true,
+        "reality_first": true,
+        "ordinary_life_density": true,
+        "available_light": true,
+        "unposed_capture": true,
+        "not_cinematic": true,
+        "causal_imperfection": true
+      },
+      "issues": [],
+      "notes": "胸前运动相机式轻广角和不端正取景成立；同行者背身蹲在雪地整理装备，背包、登山杖、安全绳、塑料袋、岩石与拍摄者黄色衣袖形成未清场的现场密度。阴天漫射光、灰冷环境色、边缘遮挡和轻微镜头畸变均符合真实雪坡休整记录，没有英雄构图、商业风光强化或无因复古滤镜。",
+      "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5"
+    },
+    {
+      "id": "10",
+      "checks": {
+        "visual_profile_match": true,
+        "reality_first": true,
+        "ordinary_life_density": true,
+        "available_light": true,
+        "unposed_capture": true,
+        "not_cinematic": true,
+        "causal_imperfection": true
+      },
+      "issues": [],
+      "notes": "白障中仅保留前方同行者、红色安全绳、近景手套与雪坡轮廓，稀疏信息由极端天气而非刻意清场造成。人物偏上且轮廓被风雪吞没，头灯只是现场可见的实用光点；低反差、镜头水雪糊斑、能见度下降和运动中的不稳定感都有直接因果，画面像失控条件下截取的个人安全记录，不像设计过的暴风雪海报。",
+      "sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7"
+    },
+    {
+      "id": "14",
+      "checks": {
+        "visual_profile_match": true,
+        "reality_first": true,
+        "ordinary_life_density": true,
+        "available_light": true,
+        "unposed_capture": true,
+        "not_cinematic": true,
+        "causal_imperfection": true
+      },
+      "issues": [],
+      "notes": "第一人称黑手套和金属杯占据近景，同行者缩在右侧操作热汤，橙色应急保温毯、背包、岩石、积雪和衣物形成因果明确的避险现场杂乱。照明来自头灯及其在金属杯和保温毯上的反射，没有额外轮廓光；雪线拖痕、暗部噪声、局部高光溢出和拥挤遮挡符合风雪低照条件。异常被包在普通求生动作里，没有被摆成英雄救援剧照或商业奇观。",
+      "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1"
+    }
+  ],
+  "issue_codes": [],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.0.3.4",
+  "profile_id": "M00",
+  "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+  "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "attempt": 1,
+    "reviewed_at": "2026-08-29T23:07:33+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/visual-critic-attempt-1.jsonl"
+  }
+}

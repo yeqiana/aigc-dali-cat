@@ -1,0 +1,2150 @@
+{
+  "schema_version": 1,
+  "engine_version": "1.2",
+  "created_at": "2026-08-29T22:40:52+08:00",
+  "updated_at": "2026-08-30T01:01:14+08:00",
+  "note": "Per-frame production transaction ledger. This is NOT an episode stage source.",
+  "canvas": {
+    "aspect_ratio": "4:5",
+    "width": 1080,
+    "height": 1350,
+    "source": "manifest"
+  },
+  "policy": {
+    "default_aspect_ratio": "4:5",
+    "prompt_char_limit": 260,
+    "prompt_byte_limit": 900,
+    "max_content_repairs_per_frame": 1,
+    "technical_failures_consume_content_repair": false
+  },
+  "asset_roots": {
+    "originals": "media/candidates/originals",
+    "repairs": "media/candidates/repairs",
+    "approved": "media/approved",
+    "publish": "media/publish",
+    "contact_sheets": "media/review/contact-sheets"
+  },
+  "frames": {
+    "01": {
+      "number": 1,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "dfa00538fa57",
+          "started_at": "2026-08-29T22:41:19+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "01",
+            "kind": "original",
+            "prompt_sha256": "319bd6cae7145a1c5d933603da3b1d0362f66f902a15dadcfdf6ce754fd7a0d0",
+            "prompt_chars": 118,
+            "prompt_bytes": 348,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "8e9c6d229f599a8371bf1a66d8a9e4ce04a68732b80018d4233e54b28b7d6ae3",
+          "notes": "ordinary baseline calibration",
+          "result": "success",
+          "completed_at": "2026-08-29T22:46:39+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/01.png",
+            "sha256": "a8f7f6e5b40f63b765270ed4abf7ca3be3cde8bf5e80ac2cf096291a0a2108b3",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T22:46:39+08:00",
+            "kind": "original",
+            "attempt_id": "dfa00538fa57"
+          }
+        },
+        {
+          "attempt_id": "f5b613889f88",
+          "started_at": "2026-08-29T22:55:08+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "01",
+            "kind": "repair",
+            "prompt_sha256": "d9ea266f6efd1ec642de328f37de89fed214c75c82b847c56e8c9efac401ecdc",
+            "prompt_chars": 137,
+            "prompt_bytes": 405,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "a58806df54bbde0016c9655269a6fbc40be45e7f7999315d59b4c2e6abf9480c",
+          "notes": "single content repair",
+          "result": "success",
+          "completed_at": "2026-08-29T22:57:37+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/01.png",
+            "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T22:57:37+08:00",
+            "kind": "repair",
+            "attempt_id": "f5b613889f88"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/01.png",
+        "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-29T22:57:37+08:00",
+        "kind": "repair",
+        "attempt_id": "f5b613889f88"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+        "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-29T23:03:34+08:00",
+        "source_sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5"
+      },
+      "lock": {
+        "at": "2026-08-29T23:03:35+08:00",
+        "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+        "reason": "Calibration normal pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-29T22:54:04+08:00",
+          "decision": "repair",
+          "notes": "Normal pixel review: Achuan wardrobe/key equipment anchor drift; baseline continuity hard failure"
+        },
+        {
+          "at": "2026-08-29T23:03:34+08:00",
+          "decision": "pass",
+          "notes": "Single repair passed normal pixel review: CP06 baseline and Achuan anchors match"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-29T22:55:08+08:00",
+        "note": "Normal pixel review hard failure: Achuan wardrobe/equipment anchor drift",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "02": {
+      "number": 2,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "1dcd86e08706",
+          "started_at": "2026-08-29T23:20:52+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "02",
+            "kind": "original",
+            "prompt_sha256": "9e6ebf09d58f27dfe916d208493f4dfef97cc2d23a7cfd77457b5e64ebf784c6",
+            "prompt_chars": 115,
+            "prompt_bytes": 339,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "61d1b7ffec8bf2d9d20b0e8349f468496edca8da2f173bc68cd30e0365b8c6ec",
+          "notes": "production original batch 1",
+          "result": "success",
+          "completed_at": "2026-08-29T23:23:31+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/02.png",
+            "sha256": "21c3044e8f63ca49deb5af4c6d0107fd710dcf18a793fcb600b454423df7d095",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T23:23:31+08:00",
+            "kind": "original",
+            "attempt_id": "1dcd86e08706"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/02.png",
+        "sha256": "21c3044e8f63ca49deb5af4c6d0107fd710dcf18a793fcb600b454423df7d095",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-29T23:23:31+08:00",
+        "kind": "original",
+        "attempt_id": "1dcd86e08706"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/02.png",
+        "sha256": "21c3044e8f63ca49deb5af4c6d0107fd710dcf18a793fcb600b454423df7d095",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-29T23:28:47+08:00",
+        "source_sha256": "21c3044e8f63ca49deb5af4c6d0107fd710dcf18a793fcb600b454423df7d095"
+      },
+      "lock": {
+        "at": "2026-08-29T23:30:32+08:00",
+        "sha256": "21c3044e8f63ca49deb5af4c6d0107fd710dcf18a793fcb600b454423df7d095",
+        "reason": "Production normal pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-29T23:28:43+08:00",
+          "decision": "pass",
+          "notes": "Normal pixel review PASS: 阿川红手套检查胸前背带，灰包侧袋内银杯/红绳/橙毯可读；CP06轻广角与黄色下缘成立，无清晰正脸、无文字、无畸形"
+        }
+      ]
+    },
+    "03": {
+      "number": 3,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "9a68eea37b7c",
+          "started_at": "2026-08-29T23:20:53+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "03",
+            "kind": "original",
+            "prompt_sha256": "98d200c0cde4fb67b2efe6a29054343739b31a8fa389c8059135b31997ad038e",
+            "prompt_chars": 125,
+            "prompt_bytes": 369,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "97e521f3980f7a7275fd6f51d211408e5b13afec9133c9e0e52f8b8320b914c0",
+          "notes": "production original batch 1",
+          "result": "success",
+          "completed_at": "2026-08-29T23:23:32+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/03.png",
+            "sha256": "a46573ebf26abe8eabd0c3e08fae8958c5905dc570490d4e9807ede53d9fa9d1",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T23:23:32+08:00",
+            "kind": "original",
+            "attempt_id": "9a68eea37b7c"
+          }
+        },
+        {
+          "attempt_id": "92f4cfa1adb6",
+          "started_at": "2026-08-29T23:29:10+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "03",
+            "kind": "repair",
+            "prompt_sha256": "371c75553fcc3ca535a21eded1a2e59d09699e3b362ed381c24e8ff4199edae4",
+            "prompt_chars": 141,
+            "prompt_bytes": 417,
+            "capture_id": "CP06",
+            "model": "default",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "90c45353148d2ddddeae0933decbf99938d237f3ba009514899876522e215ed5",
+          "notes": "single content repair",
+          "result": "success",
+          "completed_at": "2026-08-29T23:32:38+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/03.png",
+            "sha256": "7e876da6a9f734079f51e57af29b7fbb61a0294636aa4963bba0142931d5acce",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T23:32:38+08:00",
+            "kind": "repair",
+            "attempt_id": "92f4cfa1adb6"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/03.png",
+        "sha256": "7e876da6a9f734079f51e57af29b7fbb61a0294636aa4963bba0142931d5acce",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-29T23:32:38+08:00",
+        "kind": "repair",
+        "attempt_id": "92f4cfa1adb6"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/03.png",
+        "sha256": "7e876da6a9f734079f51e57af29b7fbb61a0294636aa4963bba0142931d5acce",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-29T23:53:12+08:00",
+        "source_sha256": "7e876da6a9f734079f51e57af29b7fbb61a0294636aa4963bba0142931d5acce"
+      },
+      "lock": {
+        "at": "2026-08-29T23:53:12+08:00",
+        "sha256": "7e876da6a9f734079f51e57af29b7fbb61a0294636aa4963bba0142931d5acce",
+        "reason": "Repair passed isolated pixel review"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-29T23:29:02+08:00",
+          "decision": "repair",
+          "notes": "Hard failure: 03/04 near-duplicate SHA a46573eb; 拉开衣领与阿川白气 beat 未呈现，现有像素更接近04摘手套动作"
+        },
+        {
+          "at": "2026-08-29T23:53:11+08:00",
+          "decision": "pass",
+          "notes": "Repair candidate passed isolated pixel review: 右手拉开衣领动作明确，黄袖口/拉链结霜、阿川风帽裹紧呼气成雾，与04构图明显不同，无近重复"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-29T23:29:02+08:00",
+        "note": "Normal pixel review hard failure: 近重复与 beat 错误",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "04": {
+      "number": 4,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-08-29T23:32:09+08:00",
+          "attempt_id": "44d4b9f477ba",
+          "code": "cross_session_candidate_collision",
+          "message": "parallel workers selected the same global latest generated image; frame04 own generated raw recovered separately"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt_id": "308084ef07b7",
+          "started_at": "2026-08-29T23:20:53+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "04",
+            "kind": "original",
+            "prompt_sha256": "492b94942431cad7c7af50c8ba68619edaf9be8003b785d937af9656411351f3",
+            "prompt_chars": 116,
+            "prompt_bytes": 342,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "311e3b3b0ae54ecbcc697082cfae9f8760f5f7fdf6144a46f8011fa0f6217adf",
+          "notes": "production original batch 1",
+          "result": "success",
+          "completed_at": "2026-08-29T23:23:32+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/04.png",
+            "sha256": "a46573ebf26abe8eabd0c3e08fae8958c5905dc570490d4e9807ede53d9fa9d1",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T23:23:32+08:00",
+            "kind": "original",
+            "attempt_id": "308084ef07b7"
+          }
+        },
+        {
+          "attempt_id": "44d4b9f477ba",
+          "started_at": "2026-08-29T23:29:10+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "04",
+            "kind": "repair",
+            "prompt_sha256": "59e8c7c677d408d08da93ebf6ad67a9134e9f6f6df3630eaef3a4b3b2dafa6f8",
+            "prompt_chars": 152,
+            "prompt_bytes": 450,
+            "capture_id": "CP06",
+            "model": "default",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "944f95bb889562ec6f8e7be2c811545a3ce524caa3976fc38bd3cfb57b49ac98",
+          "notes": "single content repair",
+          "result": "technical_failure",
+          "completed_at": "2026-08-29T23:32:09+08:00",
+          "error": {
+            "code": "cross_session_candidate_collision",
+            "message": "parallel workers selected the same global latest generated image; frame04 own generated raw recovered separately"
+          }
+        },
+        {
+          "attempt_id": "6b075c9fca31",
+          "started_at": "2026-08-29T23:37:43+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "04",
+            "kind": "repair",
+            "prompt_sha256": "59e8c7c677d408d08da93ebf6ad67a9134e9f6f6df3630eaef3a4b3b2dafa6f8",
+            "prompt_chars": 152,
+            "prompt_bytes": 450,
+            "capture_id": "CP06",
+            "model": "default",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "944f95bb889562ec6f8e7be2c811545a3ce524caa3976fc38bd3cfb57b49ac98",
+          "notes": "single content repair",
+          "result": "success",
+          "completed_at": "2026-08-29T23:40:21+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/04.png",
+            "sha256": "5c14108600bc514609c48fb3bc7daf06405d3cc20a2db5aa4f80eb24f62f5961",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T23:40:21+08:00",
+            "kind": "repair",
+            "attempt_id": "6b075c9fca31"
+          }
+        },
+        {
+          "attempt_id": "41619393974a",
+          "started_at": "2026-08-30T00:13:29+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "04",
+            "kind": "repair",
+            "prompt_sha256": "cea188d194670c2dfed08d1ce5c96985d08992cf97fcb32faf4da68e99373db5",
+            "prompt_chars": 160,
+            "prompt_bytes": 474,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "a360ac305e92f472727c59a0d6d6572f7701e804f18d4f6d37990876b3aeaa71",
+          "notes": "Direct-user-approved exception repair: face occlusion and glove-color continuity only.",
+          "result": "success",
+          "completed_at": "2026-08-30T00:16:41+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/04-user-exception.png",
+            "sha256": "3f8a67373787826fea25c87b6ae62f7f1246cc65b64f2ea195db913e78d63158",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:16:41+08:00",
+            "kind": "repair",
+            "attempt_id": "41619393974a"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/04-user-exception.png",
+        "sha256": "3f8a67373787826fea25c87b6ae62f7f1246cc65b64f2ea195db913e78d63158",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T00:16:41+08:00",
+        "kind": "repair",
+        "attempt_id": "41619393974a"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/04.png",
+        "sha256": "3f8a67373787826fea25c87b6ae62f7f1246cc65b64f2ea195db913e78d63158",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:16:42+08:00",
+        "source_sha256": "3f8a67373787826fea25c87b6ae62f7f1246cc65b64f2ea195db913e78d63158"
+      },
+      "lock": {
+        "at": "2026-08-30T00:16:42+08:00",
+        "sha256": "3f8a67373787826fea25c87b6ae62f7f1246cc65b64f2ea195db913e78d63158",
+        "reason": "Direct user exception repair passed pixel review; face and glove-color hard failures resolved."
+      },
+      "reviews": [
+        {
+          "at": "2026-08-29T23:29:02+08:00",
+          "decision": "repair",
+          "notes": "Hard failure: 阿川红手套示意停下未成立，另一只手仍戴手套不可验证；与03像素相同"
+        },
+        {
+          "at": "2026-08-29T23:53:16+08:00",
+          "decision": "repair",
+          "notes": "Confirmed by two isolated critics: 阿川正脸五官清晰可辨违反视觉规范硬失败；主角仍戴手套呈红色与黑灰锁定冲突；动作关系已修复但本帧为唯一一次内容返修，转入 NEEDS_USER"
+        },
+        {
+          "at": "2026-08-30T00:16:41+08:00",
+          "decision": "pass",
+          "notes": "Direct-user-approved exception repair PASS after pixel inspection: Achuan is rear-view with face occluded; deep blue-gray outerwear, gray pack, red safety rope and red glove retained; protagonist shows yellow sleeve plus a single black-gray glove, with chest-rig crop accounting for its foreground placement."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-29T23:29:03+08:00",
+        "note": "Normal pixel review hard failure: 停下手势与单手摘套关系未成立",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      },
+      "user_exception_authorizations": [
+        {
+          "at": "2026-08-30T00:12:42+08:00",
+          "approval_text": "特批第04帧额外返修一次，并记录为用户例外批准。",
+          "reason": "用户在第04帧两次独立审查确认的正脸与手套颜色硬失败后，明确批准仅本帧额外返修一次；不得改动任何已锁帧。",
+          "user_approved": true,
+          "delegated_auto_review": false,
+          "approval_basis": "direct_user_review_exception"
+        }
+      ],
+      "user_exception_repairs_used": 1
+    },
+    "05": {
+      "number": 5,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "2650a7607d82",
+          "started_at": "2026-08-29T23:53:30+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "05",
+            "kind": "original",
+            "prompt_sha256": "4748920d2019f04f1a2593064844b0e8fcc51d3a39061131b98c2af9142dfcdc",
+            "prompt_chars": 115,
+            "prompt_bytes": 339,
+            "capture_id": "CP06",
+            "model": "default",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "4f2c757d465003092baeb5095f6d3563b4918aab395ac85e57351e3a914238a7",
+          "notes": "production original batch 2",
+          "result": "success",
+          "completed_at": "2026-08-29T23:56:26+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/05.png",
+            "sha256": "496153f51ffd72b88994c50fc0bfb754be79902bf15cba108a8c95fbf69ea367",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T23:56:26+08:00",
+            "kind": "original",
+            "attempt_id": "2650a7607d82"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/05.png",
+        "sha256": "496153f51ffd72b88994c50fc0bfb754be79902bf15cba108a8c95fbf69ea367",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-29T23:56:26+08:00",
+        "kind": "original",
+        "attempt_id": "2650a7607d82"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/05.png",
+        "sha256": "496153f51ffd72b88994c50fc0bfb754be79902bf15cba108a8c95fbf69ea367",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:06:49+08:00",
+        "source_sha256": "496153f51ffd72b88994c50fc0bfb754be79902bf15cba108a8c95fbf69ea367"
+      },
+      "lock": {
+        "at": "2026-08-30T00:06:50+08:00",
+        "sha256": "496153f51ffd72b88994c50fc0bfb754be79902bf15cba108a8c95fbf69ea367",
+        "reason": "Delegated pixel review PASS; batch 2 frame locked."
+      },
+      "reviews": [
+        {
+          "at": "2026-08-30T00:06:49+08:00",
+          "decision": "pass",
+          "notes": "Delegated pixel review PASS: left-foot injury event is clear, CP06 chest capture and yellow-sleeve/red-glove continuity retained."
+        }
+      ]
+    },
+    "06": {
+      "number": 6,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "653b9869d326",
+          "started_at": "2026-08-29T23:53:31+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "06",
+            "kind": "original",
+            "prompt_sha256": "e69872fe058e52740c662a2fe708ebf42cdfdf22e1121fc2d28f8a6bf82baa74",
+            "prompt_chars": 116,
+            "prompt_bytes": 342,
+            "capture_id": "CP06",
+            "model": "default",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "4b68d92575988d198677764339b36253859e82bf86cd9b00a1e01b214d98b933",
+          "notes": "production original batch 2",
+          "result": "success",
+          "completed_at": "2026-08-29T23:58:48+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/06.png",
+            "sha256": "922d51db132ac1c145ef519be8272fa460b1d46a4989dba5490809d3cc323294",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T23:58:48+08:00",
+            "kind": "original",
+            "attempt_id": "653b9869d326"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/06.png",
+        "sha256": "922d51db132ac1c145ef519be8272fa460b1d46a4989dba5490809d3cc323294",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-29T23:58:48+08:00",
+        "kind": "original",
+        "attempt_id": "653b9869d326"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/06.png",
+        "sha256": "922d51db132ac1c145ef519be8272fa460b1d46a4989dba5490809d3cc323294",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:06:50+08:00",
+        "source_sha256": "922d51db132ac1c145ef519be8272fa460b1d46a4989dba5490809d3cc323294"
+      },
+      "lock": {
+        "at": "2026-08-30T00:06:50+08:00",
+        "sha256": "922d51db132ac1c145ef519be8272fa460b1d46a4989dba5490809d3cc323294",
+        "reason": "Delegated pixel review PASS; batch 2 frame locked."
+      },
+      "reviews": [
+        {
+          "at": "2026-08-30T00:06:50+08:00",
+          "decision": "pass",
+          "notes": "Delegated pixel review PASS: seated CP06 view, left foot inspection, Achuan face occluded and locked wardrobe/props consistent."
+        }
+      ]
+    },
+    "07": {
+      "number": 7,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "ba8515a0d7aa",
+          "started_at": "2026-08-29T23:53:31+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "07",
+            "kind": "original",
+            "prompt_sha256": "49971ab6cd4e0cf143e6f1413a2219d9ee59258a61cd3916c11b2889c84b7da4",
+            "prompt_chars": 116,
+            "prompt_bytes": 342,
+            "capture_id": "CP06",
+            "model": "default",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "d72c24bd93c9b62d485f3fa78e4b9e11a0258522f59f55c5d1a16a90429d25bf",
+          "notes": "production original batch 2",
+          "result": "success",
+          "completed_at": "2026-08-30T00:05:43+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/07.png",
+            "sha256": "8969655d61dba3c55850c71d5167864726e46b2af76ce01df9229d7f5494305f",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:05:43+08:00",
+            "kind": "original",
+            "attempt_id": "ba8515a0d7aa"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/07.png",
+        "sha256": "8969655d61dba3c55850c71d5167864726e46b2af76ce01df9229d7f5494305f",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T00:05:43+08:00",
+        "kind": "original",
+        "attempt_id": "ba8515a0d7aa"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/07.png",
+        "sha256": "8969655d61dba3c55850c71d5167864726e46b2af76ce01df9229d7f5494305f",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:06:51+08:00",
+        "source_sha256": "8969655d61dba3c55850c71d5167864726e46b2af76ce01df9229d7f5494305f"
+      },
+      "lock": {
+        "at": "2026-08-30T00:06:51+08:00",
+        "sha256": "8969655d61dba3c55850c71d5167864726e46b2af76ce01df9229d7f5494305f",
+        "reason": "Delegated pixel review PASS; batch 2 frame locked."
+      },
+      "reviews": [
+        {
+          "at": "2026-08-30T00:06:51+08:00",
+          "decision": "pass",
+          "notes": "Delegated pixel review PASS: voluntary downhill turn, red safety rope, yellow sleeve and black-gray glove, Achuan viewed from behind only."
+        }
+      ]
+    },
+    "08": {
+      "number": 8,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "e5aeae097646",
+          "started_at": "2026-08-30T00:17:06+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "08",
+            "kind": "original",
+            "prompt_sha256": "174351661a183c292d889b0539f122e7480b37dc542e105875dcc9f695397746",
+            "prompt_chars": 113,
+            "prompt_bytes": 333,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "e1bd09d156caf0eb188a13c7e8dd959bd481ebe42143d6af6926863074e181a5",
+          "notes": "Production original batch 3 sequential.",
+          "result": "success",
+          "completed_at": "2026-08-30T00:19:53+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/08.png",
+            "sha256": "925dbf6712f7fb4c8592dae1e2da45161e7ba3bb2db9c598568f22aee2734eaf",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:19:53+08:00",
+            "kind": "original",
+            "attempt_id": "e5aeae097646"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/08.png",
+        "sha256": "925dbf6712f7fb4c8592dae1e2da45161e7ba3bb2db9c598568f22aee2734eaf",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T00:19:53+08:00",
+        "kind": "original",
+        "attempt_id": "e5aeae097646"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/08.png",
+        "sha256": "925dbf6712f7fb4c8592dae1e2da45161e7ba3bb2db9c598568f22aee2734eaf",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:19:53+08:00",
+        "source_sha256": "925dbf6712f7fb4c8592dae1e2da45161e7ba3bb2db9c598568f22aee2734eaf"
+      },
+      "lock": {
+        "at": "2026-08-30T00:19:53+08:00",
+        "sha256": "925dbf6712f7fb4c8592dae1e2da45161e7ba3bb2db9c598568f22aee2734eaf",
+        "reason": "Delegated pixel review PASS; gait evidence locked."
+      },
+      "reviews": [
+        {
+          "at": "2026-08-30T00:19:53+08:00",
+          "decision": "pass",
+          "notes": "Delegated pixel review PASS: chest-camera downward view shows asymmetric left-foot outward placement, snow drag evidence, yellow jacket and red rope; no blood or third-person drift."
+        }
+      ]
+    },
+    "09": {
+      "number": 9,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "6ac2b0a1b8ca",
+          "started_at": "2026-08-30T00:19:54+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "09",
+            "kind": "original",
+            "prompt_sha256": "cb31ffdc9da005683036baa976a5adbefc790080907114cf78d3d08451ab8898",
+            "prompt_chars": 116,
+            "prompt_bytes": 342,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "179ccfddbd92df16b6ef683efe1667285113616260cbf882eda51c4a43054e04",
+          "notes": "Production original batch 3 sequential.",
+          "result": "success",
+          "completed_at": "2026-08-30T00:22:49+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/09.png",
+            "sha256": "0c8c49ca68dd18654bdd649ebff063623442e3f8391788207c086e4dccfa033c",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:22:49+08:00",
+            "kind": "original",
+            "attempt_id": "6ac2b0a1b8ca"
+          }
+        },
+        {
+          "attempt_id": "1ceb0c375da2",
+          "started_at": "2026-08-30T00:22:50+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "09",
+            "kind": "repair",
+            "prompt_sha256": "7e23d234bf6228ea3b5606e6536b12c49a927bf707ee911196fbdb466605cb7d",
+            "prompt_chars": 149,
+            "prompt_bytes": 441,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+                "role": "calibration-01",
+                "kind": "capture_style",
+                "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "a99f6e400f7c09341bdd05c7b6032900758a043278d09161ba43127e1b4f220e",
+          "notes": "Single content repair for hand-state continuity.",
+          "result": "success",
+          "completed_at": "2026-08-30T00:26:53+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/09.png",
+            "sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:26:53+08:00",
+            "kind": "repair",
+            "attempt_id": "1ceb0c375da2"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/09.png",
+        "sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T00:26:53+08:00",
+        "kind": "repair",
+        "attempt_id": "1ceb0c375da2"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/09.png",
+        "sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:26:53+08:00",
+        "source_sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a"
+      },
+      "lock": {
+        "at": "2026-08-30T00:26:54+08:00",
+        "sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a",
+        "reason": "Single content repair passed; hand-state and dexterity continuity locked."
+      },
+      "reviews": [
+        {
+          "at": "2026-08-30T00:22:50+08:00",
+          "decision": "repair",
+          "notes": "Hard continuity failure: original candidate shows both protagonist hands bare, contradicting locked single-glove state from frame 04."
+        },
+        {
+          "at": "2026-08-30T00:26:53+08:00",
+          "decision": "pass",
+          "notes": "Single repair pixel review PASS: exactly one protagonist black-gray gloved hand, one bare red-white hand missing the buckle, and Achuan red-gloved assist are readable; no malformed fingers."
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-30T00:22:50+08:00",
+        "note": "Continuous-execution authorization: repair only the one-glove and dexterity continuity failure.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "10": {
+      "number": 10,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "33bb95f02f3d",
+          "started_at": "2026-08-29T22:41:20+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "10",
+            "kind": "original",
+            "prompt_sha256": "59a129e3cf3a25f30c6837fc9083d7cb497084746122107d52f441ea14840e7a",
+            "prompt_chars": 107,
+            "prompt_bytes": 315,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "4c8f5e38fae0c9238d2e70a4da42767f4e1af3b913d1d25ac0977499286bbe41",
+          "notes": "worst condition calibration",
+          "result": "success",
+          "completed_at": "2026-08-29T22:46:42+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/10.png",
+            "sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T22:46:42+08:00",
+            "kind": "original",
+            "attempt_id": "33bb95f02f3d"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/10.png",
+        "sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-29T22:46:42+08:00",
+        "kind": "original",
+        "attempt_id": "33bb95f02f3d"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/10.png",
+        "sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-29T22:54:04+08:00",
+        "source_sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7"
+      },
+      "lock": {
+        "at": "2026-08-29T22:54:05+08:00",
+        "sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7",
+        "reason": "Calibration normal review PASS pending independent visual critic"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-29T22:54:04+08:00",
+          "decision": "pass",
+          "notes": "Normal pixel review PASS: CP06 worst condition remains readable and non-cinematic"
+        }
+      ]
+    },
+    "11": {
+      "number": 11,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "e21576685012",
+          "started_at": "2026-08-30T00:31:17+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "11",
+            "kind": "original",
+            "prompt_sha256": "5c95a364c5c5a5452b1d37045424b4b3050c869ef465f967f86401aa61ae580b",
+            "prompt_chars": 117,
+            "prompt_bytes": 343,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/10.png",
+                "role": "calibration-10",
+                "kind": "capture_style",
+                "sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "45b0124161117fd0cdc4de0beb0781a70090765c427010b367643ca941d1bee4",
+          "notes": "Production original: route-light contradiction",
+          "result": "success",
+          "completed_at": "2026-08-30T00:36:32+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/11.png",
+            "sha256": "29795e280f58cbce56ca97b3a5f24e924e8c9f4ff25835387c465ea96b88c54d",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:36:32+08:00",
+            "kind": "original",
+            "attempt_id": "e21576685012"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/11.png",
+        "sha256": "29795e280f58cbce56ca97b3a5f24e924e8c9f4ff25835387c465ea96b88c54d",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T00:36:32+08:00",
+        "kind": "original",
+        "attempt_id": "e21576685012"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/11.png",
+        "sha256": "29795e280f58cbce56ca97b3a5f24e924e8c9f4ff25835387c465ea96b88c54d",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:44:45+08:00",
+        "source_sha256": "29795e280f58cbce56ca97b3a5f24e924e8c9f4ff25835387c465ea96b88c54d"
+      },
+      "lock": {
+        "at": "2026-08-30T00:44:45+08:00",
+        "sha256": "29795e280f58cbce56ca97b3a5f24e924e8c9f4ff25835387c465ea96b88c54d",
+        "reason": "Production delegated pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-30T00:44:44+08:00",
+          "decision": "pass",
+          "notes": "Delegated pixel review PASS: right warm lights versus left red-rope route contradiction readable; CP06/M00 continuity intact."
+        }
+      ]
+    },
+    "12": {
+      "number": 12,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "74ace94bfa2a",
+          "started_at": "2026-08-30T00:36:53+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "12",
+            "kind": "original",
+            "prompt_sha256": "26020fd6306e9d9e48fbc2ea49b07eb4d59c9caaac005fc434a609bca412c030",
+            "prompt_chars": 115,
+            "prompt_bytes": 339,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/10.png",
+                "role": "calibration-10",
+                "kind": "capture_style",
+                "sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "7e34e0d637f48ec0083b715a34a1908e5017333d080c0d155ca8958f5930d0b4",
+          "notes": "Production original: no-footprints spatial contradiction",
+          "result": "success",
+          "completed_at": "2026-08-30T00:39:22+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/12.png",
+            "sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:39:22+08:00",
+            "kind": "original",
+            "attempt_id": "74ace94bfa2a"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/12.png",
+        "sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T00:39:22+08:00",
+        "kind": "original",
+        "attempt_id": "74ace94bfa2a"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/12.png",
+        "sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:44:45+08:00",
+        "source_sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b"
+      },
+      "lock": {
+        "at": "2026-08-30T00:44:46+08:00",
+        "sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b",
+        "reason": "Production delegated pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-30T00:44:45+08:00",
+          "decision": "pass",
+          "notes": "Delegated pixel review PASS: near warm light, untracked snow, and opposite red-rope direction readable in one frame."
+        }
+      ]
+    },
+    "13": {
+      "number": 13,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "b52a26011c3d",
+          "started_at": "2026-08-30T00:39:23+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "13",
+            "kind": "original",
+            "prompt_sha256": "8acd90d4fec5b1c7aa61f43b046a1ecb61def6196abf5b332948182f71d4236c",
+            "prompt_chars": 127,
+            "prompt_bytes": 375,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
+                "role": "calibration-14",
+                "kind": "capture_style",
+                "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "6642947fdb1a6d43a9135a12d85df1f7bed8ef3da553c09e955d03fa126b5834",
+          "notes": "Production original: real black-stone shelter setup",
+          "result": "success",
+          "completed_at": "2026-08-30T00:42:51+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/13.png",
+            "sha256": "de1251b7197f21ebb2626704e2c9ef6eee93c4c6a08b355e97c84988ed6cec54",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:42:51+08:00",
+            "kind": "original",
+            "attempt_id": "b52a26011c3d"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/13.png",
+        "sha256": "de1251b7197f21ebb2626704e2c9ef6eee93c4c6a08b355e97c84988ed6cec54",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T00:42:51+08:00",
+        "kind": "original",
+        "attempt_id": "b52a26011c3d"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/13.png",
+        "sha256": "de1251b7197f21ebb2626704e2c9ef6eee93c4c6a08b355e97c84988ed6cec54",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:44:46+08:00",
+        "source_sha256": "de1251b7197f21ebb2626704e2c9ef6eee93c4c6a08b355e97c84988ed6cec54"
+      },
+      "lock": {
+        "at": "2026-08-30T00:44:47+08:00",
+        "sha256": "de1251b7197f21ebb2626704e2c9ef6eee93c4c6a08b355e97c84988ed6cec54",
+        "reason": "Production delegated pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-30T00:44:46+08:00",
+          "decision": "pass",
+          "notes": "Delegated pixel review PASS: black-stone shelter and orange blanket, silver cup, headlamp, rope, backpacks all readable."
+        }
+      ]
+    },
+    "14": {
+      "number": 14,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "7fc6981068fb",
+          "started_at": "2026-08-29T22:41:20+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "14",
+            "kind": "original",
+            "prompt_sha256": "989463939efed539a347907bf4fad0b271b5d827ac5ad9326f4a90d43443d0cf",
+            "prompt_chars": 116,
+            "prompt_bytes": 342,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "f5bd6e27121ad9d3e8d90254f91e96b4a0b2e069fa0d91e8d9b3c1eb073796d3",
+          "notes": "first major anomaly calibration",
+          "result": "success",
+          "completed_at": "2026-08-29T22:46:43+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/14.png",
+            "sha256": "c7ceafdaff58396cdddb6374a017e154dfe0978ebcb1e58ab6baea0e843f79c0",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T22:46:43+08:00",
+            "kind": "original",
+            "attempt_id": "7fc6981068fb"
+          }
+        },
+        {
+          "attempt_id": "c2e8937c4177",
+          "started_at": "2026-08-29T22:55:08+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "14",
+            "kind": "repair",
+            "prompt_sha256": "20aa2955901a480db5b8e2ebc55f30a2c0284fae45b20617de8bdee766643278",
+            "prompt_chars": 139,
+            "prompt_bytes": 411,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "cf3a24962c4c1fdf0bfb97d1fabcb11d84170c3c10e0d8bf40689bc3a189bf3e",
+          "notes": "single content repair",
+          "result": "success",
+          "completed_at": "2026-08-29T22:57:37+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/14.png",
+            "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T22:57:37+08:00",
+            "kind": "repair",
+            "attempt_id": "c2e8937c4177"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/14.png",
+        "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-29T22:57:37+08:00",
+        "kind": "repair",
+        "attempt_id": "c2e8937c4177"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
+        "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-29T23:03:35+08:00",
+        "source_sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1"
+      },
+      "lock": {
+        "at": "2026-08-29T23:03:35+08:00",
+        "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+        "reason": "Calibration normal pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-29T22:54:05+08:00",
+          "decision": "repair",
+          "notes": "Normal pixel review: hot soup anomaly unreadable, composite-like edge halo, Achuan wardrobe drift"
+        },
+        {
+          "at": "2026-08-29T23:03:35+08:00",
+          "decision": "pass",
+          "notes": "Single repair passed normal pixel review: hot-soup anomaly readable, cold evidence and continuity retained"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-29T22:55:08+08:00",
+        "note": "Normal pixel review hard failure: hot-soup unreadable, edge halo, wardrobe drift",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "15": {
+      "number": 15,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "f58d6070f275",
+          "started_at": "2026-08-30T00:45:09+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "15",
+            "kind": "original",
+            "prompt_sha256": "034ba0e68b4ac58c94761086b587613125dd1f8813dfa9e9bc7b3de5e4264026",
+            "prompt_chars": 128,
+            "prompt_bytes": 378,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
+                "role": "calibration-14",
+                "kind": "capture_style",
+                "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "a6e8884feff31b79f17f7e2935e350bf8c6e77a4c26ca8af30f684e9e6d2788f",
+          "notes": "Production original: full shelter illusion",
+          "result": "success",
+          "completed_at": "2026-08-30T00:47:48+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/15.png",
+            "sha256": "7bc706f0da930ed2f0ec7c25599c0331bdaec6e827e3c3d914bd0b74a40a1885",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:47:48+08:00",
+            "kind": "original",
+            "attempt_id": "f58d6070f275"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/15.png",
+        "sha256": "7bc706f0da930ed2f0ec7c25599c0331bdaec6e827e3c3d914bd0b74a40a1885",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T00:47:48+08:00",
+        "kind": "original",
+        "attempt_id": "f58d6070f275"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/15.png",
+        "sha256": "7bc706f0da930ed2f0ec7c25599c0331bdaec6e827e3c3d914bd0b74a40a1885",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:55:04+08:00",
+        "source_sha256": "7bc706f0da930ed2f0ec7c25599c0331bdaec6e827e3c3d914bd0b74a40a1885"
+      },
+      "lock": {
+        "at": "2026-08-30T00:55:04+08:00",
+        "sha256": "7bc706f0da930ed2f0ec7c25599c0331bdaec6e827e3c3d914bd0b74a40a1885",
+        "reason": "Production delegated pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-30T00:55:03+08:00",
+          "decision": "pass",
+          "notes": "Delegated pixel review PASS: full shelter illusion remains reducible to blanket/headlamp/rocks/backpacks; cold evidence retained."
+        }
+      ]
+    },
+    "16": {
+      "number": 16,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "0f455193e035",
+          "started_at": "2026-08-30T00:47:49+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "16",
+            "kind": "original",
+            "prompt_sha256": "f076ec61de0d86db7b6d6672b189a296d4163b685d638a8eb6c94295ced3a5ae",
+            "prompt_chars": 121,
+            "prompt_bytes": 357,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
+                "role": "calibration-14",
+                "kind": "capture_style",
+                "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "49be92a11ae35a1e3086b21ab657ad2e2d4334d304ddbf3d64cb18b7fc2feb78",
+          "notes": "Production original: steam versus unmelted ice contradiction",
+          "result": "success",
+          "completed_at": "2026-08-30T00:50:24+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/16.png",
+            "sha256": "085c894e0ccb67f810e7c49e6cb95b6fbcd3f95c438281e517b14280f4bda6b7",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:50:24+08:00",
+            "kind": "original",
+            "attempt_id": "0f455193e035"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/16.png",
+        "sha256": "085c894e0ccb67f810e7c49e6cb95b6fbcd3f95c438281e517b14280f4bda6b7",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T00:50:24+08:00",
+        "kind": "original",
+        "attempt_id": "0f455193e035"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/16.png",
+        "sha256": "085c894e0ccb67f810e7c49e6cb95b6fbcd3f95c438281e517b14280f4bda6b7",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:55:04+08:00",
+        "source_sha256": "085c894e0ccb67f810e7c49e6cb95b6fbcd3f95c438281e517b14280f4bda6b7"
+      },
+      "lock": {
+        "at": "2026-08-30T00:55:05+08:00",
+        "sha256": "085c894e0ccb67f810e7c49e6cb95b6fbcd3f95c438281e517b14280f4bda6b7",
+        "reason": "Production delegated pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-30T00:55:04+08:00",
+          "decision": "pass",
+          "notes": "Delegated pixel review PASS: steaming silver bowl and unmelted frost/snow contradiction readable in one frame."
+        }
+      ]
+    },
+    "17": {
+      "number": 17,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "6c1d84683aed",
+          "started_at": "2026-08-30T00:50:25+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "17",
+            "kind": "original",
+            "prompt_sha256": "22de98d76c48bd7f8e52f14d30d9a274c2d597ed2808bcda2894957c83a3576e",
+            "prompt_chars": 122,
+            "prompt_bytes": 360,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
+                "role": "calibration-14",
+                "kind": "capture_style",
+                "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "88c1067107325427326e1df096fe4a333f655f1426e6af9546bcaa5cca083790",
+          "notes": "Production original: silent diners remain reducible to rocks and backpacks",
+          "result": "success",
+          "completed_at": "2026-08-30T00:53:08+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/17.png",
+            "sha256": "3043f8504340af65671e529aaaa798d3bf792db3f2cff56d805373c09e80c3c2",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:53:08+08:00",
+            "kind": "original",
+            "attempt_id": "6c1d84683aed"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/17.png",
+        "sha256": "3043f8504340af65671e529aaaa798d3bf792db3f2cff56d805373c09e80c3c2",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T00:53:08+08:00",
+        "kind": "original",
+        "attempt_id": "6c1d84683aed"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/17.png",
+        "sha256": "3043f8504340af65671e529aaaa798d3bf792db3f2cff56d805373c09e80c3c2",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-30T00:55:05+08:00",
+        "source_sha256": "3043f8504340af65671e529aaaa798d3bf792db3f2cff56d805373c09e80c3c2"
+      },
+      "lock": {
+        "at": "2026-08-30T00:55:05+08:00",
+        "sha256": "3043f8504340af65671e529aaaa798d3bf792db3f2cff56d805373c09e80c3c2",
+        "reason": "Production delegated pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-30T00:55:05+08:00",
+          "decision": "pass",
+          "notes": "Delegated pixel review PASS: silent figures remain visually reducible to rocks/backpacks and add non-response information."
+        }
+      ]
+    },
+    "18": {
+      "number": 18,
+      "status": "ORIGINAL_READY",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "1d851fe2b697",
+          "started_at": "2026-08-30T00:55:23+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "18",
+            "kind": "original",
+            "prompt_sha256": "faadf82bf5f74e22c6a27d845c0d607a9042d61c1897c6cea15439699901b8c2",
+            "prompt_chars": 115,
+            "prompt_bytes": 339,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
+                "role": "calibration-14",
+                "kind": "capture_style",
+                "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "64f9f258ecb98e9a45425daeb539965e94f9104b0eed47b9fef7bbc7b3745705",
+          "notes": "Production original: hand and left-foot body contradiction",
+          "result": "success",
+          "completed_at": "2026-08-30T00:58:27+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/18.png",
+            "sha256": "76a27e12e427aa331ef2fa8a910d43335cef0706a24b388a42367fb0bfa53d5f",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T00:58:27+08:00",
+            "kind": "original",
+            "attempt_id": "1d851fe2b697"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/18.png",
+        "sha256": "76a27e12e427aa331ef2fa8a910d43335cef0706a24b388a42367fb0bfa53d5f",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T00:58:27+08:00",
+        "kind": "original",
+        "attempt_id": "1d851fe2b697"
+      },
+      "approved_asset": null,
+      "lock": null,
+      "reviews": []
+    },
+    "19": {
+      "number": 19,
+      "status": "ORIGINAL_READY",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "9940dd569a56",
+          "started_at": "2026-08-30T00:58:28+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "19",
+            "kind": "original",
+            "prompt_sha256": "5d6278adee66ac60c23e721c28383e35177cf49180deea61469c023bb7d6c6a1",
+            "prompt_chars": 126,
+            "prompt_bytes": 372,
+            "capture_id": "CP06",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
+                "role": "calibration-14",
+                "kind": "capture_style",
+                "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "67c9ece6e715a520a99cc02d015a27dab62e58d529d4078bf5c8e609571009f0",
+          "notes": "Production original: climax refusal of real assistance",
+          "result": "success",
+          "completed_at": "2026-08-30T01:01:14+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/19.png",
+            "sha256": "4c82fc5752b4a09c3b889bb04fbe8ea7ca0857b41fb5ae9df446ad59a7f4eea7",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T01:01:14+08:00",
+            "kind": "original",
+            "attempt_id": "9940dd569a56"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/19.png",
+        "sha256": "4c82fc5752b4a09c3b889bb04fbe8ea7ca0857b41fb5ae9df446ad59a7f4eea7",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-30T01:01:14+08:00",
+        "kind": "original",
+        "attempt_id": "9940dd569a56"
+      },
+      "approved_asset": null,
+      "lock": null,
+      "reviews": []
+    },
+    "20": {
+      "number": 20,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "1ecf048a91f9",
+          "started_at": "2026-08-29T23:08:43+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "20",
+            "kind": "original",
+            "prompt_sha256": "859eb36976eb4fc4882cd080b0fbf20b6740be374f8719cb304b9f75c6a5800e",
+            "prompt_chars": 147,
+            "prompt_bytes": 435,
+            "capture_id": "CP01",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
+                "role": "black-stone-shelter-and-props",
+                "kind": "location",
+                "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "e0c2abf684f911243dd8dfe0414187924f2c5ae8b0e3f2f53e4a7613292e4e8f",
+          "notes": "registered second capture source visual admission",
+          "result": "success",
+          "completed_at": "2026-08-29T23:11:38+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/20.png",
+            "sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-29T23:11:38+08:00",
+            "kind": "original",
+            "attempt_id": "1ecf048a91f9"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/20.png",
+        "sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-08-29T23:11:38+08:00",
+        "kind": "original",
+        "attempt_id": "1ecf048a91f9"
+      },
+      "approved_asset": {
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/20.png",
+        "sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-08-29T23:17:58+08:00",
+        "source_sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6"
+      },
+      "lock": {
+        "at": "2026-08-29T23:17:58+08:00",
+        "sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+        "reason": "Fourth visual admission normal pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-08-29T23:17:57+08:00",
+          "decision": "pass",
+          "notes": "Fourth visual admission normal pixel review PASS: CP01 secondary capture, full prop and reality recontextualization"
+        }
+      ]
+    }
+  },
+  "batches": [
+    {
+      "batch_id": "ac3820591c",
+      "started_at": "2026-08-29T22:41:19+08:00",
+      "ended_at": "2026-08-29T23:18:25+08:00",
+      "frames": [
+        "01",
+        "10",
+        "14"
+      ],
+      "max_successes": 3,
+      "note": "Three registered calibration frames only",
+      "status": "closed",
+      "summary": "01/10/14 calibration completed; 01 and 14 passed after single content repair; 10 reused original"
+    },
+    {
+      "batch_id": "00c19a1bca",
+      "started_at": "2026-08-29T23:08:43+08:00",
+      "ended_at": "2026-08-29T23:18:25+08:00",
+      "frames": [
+        "20"
+      ],
+      "max_successes": 1,
+      "note": "Fourth visual admission frame, CP01 secondary capture",
+      "status": "closed",
+      "summary": "20 fourth visual admission CP01 passed original"
+    },
+    {
+      "batch_id": "ba5053f0c8",
+      "started_at": "2026-08-29T23:20:52+08:00",
+      "ended_at": "2026-08-29T23:53:22+08:00",
+      "frames": [
+        "02",
+        "03",
+        "04"
+      ],
+      "max_successes": 3,
+      "note": "Production batch 1 after Visual Lock",
+      "status": "closed",
+      "summary": "02 passed and locked; 03 passed repair and locked; 04 repair candidate hard-failed twice-confirmed -> NEEDS_USER"
+    },
+    {
+      "batch_id": "b7410e9fb6",
+      "started_at": "2026-08-29T23:53:23+08:00",
+      "ended_at": "2026-08-30T00:07:26+08:00",
+      "frames": [
+        "05",
+        "06",
+        "07"
+      ],
+      "max_successes": 3,
+      "note": "Production batch 2 sequential",
+      "status": "closed",
+      "summary": "05/06/07 production completed sequentially; all passed delegated pixel review and locked."
+    },
+    {
+      "batch_id": "2c1ad3ae25",
+      "started_at": "2026-08-30T00:17:06+08:00",
+      "ended_at": "2026-08-30T00:26:54+08:00",
+      "frames": [
+        "08",
+        "09"
+      ],
+      "max_successes": 2,
+      "note": "Production batch 3: gait and dexterity evidence, sequential after direct-user exception repair.",
+      "status": "closed",
+      "summary": "08 original and 09 single repair passed delegated pixel review and locked."
+    },
+    {
+      "batch_id": "21aba97358",
+      "started_at": "2026-08-30T00:31:08+08:00",
+      "ended_at": "2026-08-30T00:44:47+08:00",
+      "frames": [
+        "11",
+        "12",
+        "13"
+      ],
+      "max_successes": 3,
+      "note": "Production batch 4: route-light contradiction, no-footprints evidence, real shelter setup",
+      "status": "closed",
+      "summary": "11/12/13 originals passed delegated actual-pixel review and locked; frame11 generation succeeded with technical output recovery, no content repair."
+    },
+    {
+      "batch_id": "d00aeb8d52",
+      "started_at": "2026-08-30T00:45:08+08:00",
+      "ended_at": "2026-08-30T00:55:06+08:00",
+      "frames": [
+        "15",
+        "16",
+        "17"
+      ],
+      "max_successes": 3,
+      "note": "Production batch 5: full shelter illusion, unmelted ice contradiction, silent diners",
+      "status": "closed",
+      "summary": "15/16/17 originals passed delegated actual-pixel review and locked; no content repair used."
+    },
+    {
+      "batch_id": "0efdb5511b",
+      "started_at": "2026-08-30T00:55:06+08:00",
+      "ended_at": null,
+      "frames": [
+        "18",
+        "19"
+      ],
+      "max_successes": 2,
+      "note": "Production batch 6: final body contradiction and climax refusal",
+      "status": "open"
+    }
+  ]
+}

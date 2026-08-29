@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.0.3.4",
+  "episode_id": "10-01",
+  "series": "10_山难伪纪录片",
+  "title": "鳌太线·热汤",
+  "current_state": "VISUAL_CALIBRATED",
+  "updated_at": "2026-08-29T23:18:28+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-08-29T14:39:02+08:00",
+      "note": "用户授权 Story OS V2.0.3.4 CODEX runtime 全自动制作，连续执行直到最终交付"
+    },
+    {
+      "state": "STORYBOARD_LOCKED",
+      "at": "2026-08-29T15:14:07+08:00",
+      "mode": "advance",
+      "note": "Story and 20-frame storyboard passed fresh isolated semantic critic attempt 1; delegated_auto_review Story Lock recorded."
+    },
+    {
+      "state": "VISUAL_CALIBRATED",
+      "at": "2026-08-29T23:18:28+08:00",
+      "mode": "advance",
+      "note": "M00+CP06 calibrations passed fresh isolated Visual Critic attempt 1; CP01 frame20 visual admission passed; delegated visual lock recorded."
+    }
+  ]
+}

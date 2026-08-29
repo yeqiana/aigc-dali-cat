@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0.3.4",
+  "last_completed": "ORCHESTRATOR_BLOCKED",
+  "next_action": "INSPECT_CODEX_LOG_AND_RESUME",
+  "locked_frames": [],
+  "failed_frames": [],
+  "note": "Recovery evidence only; NOT a stage source.",
+  "runtime": "CODEX",
+  "continuous_execution_authorized": true,
+  "approval_basis": "delegated_continuous_execution",
+  "user_brief_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/story/00_用户制作简报.md",
+  "user_brief_required": true,
+  "updated_at": "2026-08-30T01:02:53+08:00",
+  "last_error": "codex rc=1; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_山难伪纪录片\\01_鳌太线_热汤\\meta\\codex-auto-run.jsonl"
+}

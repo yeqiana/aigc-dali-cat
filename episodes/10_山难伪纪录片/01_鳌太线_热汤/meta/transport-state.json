@@ -1,0 +1,604 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-29T22:41:20+08:00",
+  "updated_at": "2026-08-30T01:01:14+08:00",
+  "note": "Transport reliability evidence only. This is NOT an episode stage source.",
+  "policy": {
+    "circuit_threshold": 3,
+    "technical_failures_consume_content_repair": false,
+    "technical_retry_must_preserve_request_fingerprint": true
+  },
+  "frames": {
+    "01": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "a58806df54bbde0016c9655269a6fbc40be45e7f7999315d59b4c2e6abf9480c",
+      "events": [
+        {
+          "at": "2026-08-29T22:41:20+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "dfa00538fa57",
+          "fingerprint": "8e9c6d229f599a8371bf1a66d8a9e4ce04a68732b80018d4233e54b28b7d6ae3"
+        },
+        {
+          "at": "2026-08-29T22:46:39+08:00",
+          "event": "transport_success",
+          "fingerprint": "8e9c6d229f599a8371bf1a66d8a9e4ce04a68732b80018d4233e54b28b7d6ae3",
+          "candidate": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_山难伪纪录片\\01_鳌太线_热汤\\media\\candidates\\originals\\01.png"
+        },
+        {
+          "at": "2026-08-29T22:55:08+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "f5b613889f88",
+          "fingerprint": "a58806df54bbde0016c9655269a6fbc40be45e7f7999315d59b4c2e6abf9480c"
+        },
+        {
+          "at": "2026-08-29T22:57:37+08:00",
+          "event": "transport_success",
+          "fingerprint": "a58806df54bbde0016c9655269a6fbc40be45e7f7999315d59b4c2e6abf9480c",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/01.png"
+        }
+      ],
+      "active_attempt_id": "f5b613889f88",
+      "last_preflight_at": "2026-08-29T22:55:08+08:00",
+      "last_success_at": "2026-08-29T22:57:37+08:00"
+    },
+    "10": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "4c8f5e38fae0c9238d2e70a4da42767f4e1af3b913d1d25ac0977499286bbe41",
+      "events": [
+        {
+          "at": "2026-08-29T22:41:20+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "33bb95f02f3d",
+          "fingerprint": "4c8f5e38fae0c9238d2e70a4da42767f4e1af3b913d1d25ac0977499286bbe41"
+        },
+        {
+          "at": "2026-08-29T22:46:42+08:00",
+          "event": "transport_success",
+          "fingerprint": "4c8f5e38fae0c9238d2e70a4da42767f4e1af3b913d1d25ac0977499286bbe41",
+          "candidate": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_山难伪纪录片\\01_鳌太线_热汤\\media\\candidates\\originals\\10.png"
+        }
+      ],
+      "active_attempt_id": "33bb95f02f3d",
+      "last_preflight_at": "2026-08-29T22:41:20+08:00",
+      "last_success_at": "2026-08-29T22:46:42+08:00"
+    },
+    "14": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "cf3a24962c4c1fdf0bfb97d1fabcb11d84170c3c10e0d8bf40689bc3a189bf3e",
+      "events": [
+        {
+          "at": "2026-08-29T22:41:21+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "7fc6981068fb",
+          "fingerprint": "f5bd6e27121ad9d3e8d90254f91e96b4a0b2e069fa0d91e8d9b3c1eb073796d3"
+        },
+        {
+          "at": "2026-08-29T22:46:44+08:00",
+          "event": "transport_success",
+          "fingerprint": "f5bd6e27121ad9d3e8d90254f91e96b4a0b2e069fa0d91e8d9b3c1eb073796d3",
+          "candidate": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_山难伪纪录片\\01_鳌太线_热汤\\media\\candidates\\originals\\14.png"
+        },
+        {
+          "at": "2026-08-29T22:55:09+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "c2e8937c4177",
+          "fingerprint": "cf3a24962c4c1fdf0bfb97d1fabcb11d84170c3c10e0d8bf40689bc3a189bf3e"
+        },
+        {
+          "at": "2026-08-29T22:57:37+08:00",
+          "event": "transport_success",
+          "fingerprint": "cf3a24962c4c1fdf0bfb97d1fabcb11d84170c3c10e0d8bf40689bc3a189bf3e",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/14.png"
+        }
+      ],
+      "active_attempt_id": "c2e8937c4177",
+      "last_preflight_at": "2026-08-29T22:55:09+08:00",
+      "last_success_at": "2026-08-29T22:57:37+08:00"
+    },
+    "20": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "e0c2abf684f911243dd8dfe0414187924f2c5ae8b0e3f2f53e4a7613292e4e8f",
+      "events": [
+        {
+          "at": "2026-08-29T23:08:43+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "1ecf048a91f9",
+          "fingerprint": "e0c2abf684f911243dd8dfe0414187924f2c5ae8b0e3f2f53e4a7613292e4e8f"
+        },
+        {
+          "at": "2026-08-29T23:11:38+08:00",
+          "event": "transport_success",
+          "fingerprint": "e0c2abf684f911243dd8dfe0414187924f2c5ae8b0e3f2f53e4a7613292e4e8f",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/20.png"
+        }
+      ],
+      "active_attempt_id": "1ecf048a91f9",
+      "last_preflight_at": "2026-08-29T23:08:43+08:00",
+      "last_success_at": "2026-08-29T23:11:38+08:00"
+    },
+    "02": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "61d1b7ffec8bf2d9d20b0e8349f468496edca8da2f173bc68cd30e0365b8c6ec",
+      "events": [
+        {
+          "at": "2026-08-29T23:20:53+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "1dcd86e08706",
+          "fingerprint": "61d1b7ffec8bf2d9d20b0e8349f468496edca8da2f173bc68cd30e0365b8c6ec"
+        },
+        {
+          "at": "2026-08-29T23:23:32+08:00",
+          "event": "transport_success",
+          "fingerprint": "61d1b7ffec8bf2d9d20b0e8349f468496edca8da2f173bc68cd30e0365b8c6ec",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/02.png"
+        }
+      ],
+      "active_attempt_id": "1dcd86e08706",
+      "last_preflight_at": "2026-08-29T23:20:53+08:00",
+      "last_success_at": "2026-08-29T23:23:32+08:00"
+    },
+    "03": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "90c45353148d2ddddeae0933decbf99938d237f3ba009514899876522e215ed5",
+      "events": [
+        {
+          "at": "2026-08-29T23:20:53+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "9a68eea37b7c",
+          "fingerprint": "97e521f3980f7a7275fd6f51d211408e5b13afec9133c9e0e52f8b8320b914c0"
+        },
+        {
+          "at": "2026-08-29T23:23:32+08:00",
+          "event": "transport_success",
+          "fingerprint": "97e521f3980f7a7275fd6f51d211408e5b13afec9133c9e0e52f8b8320b914c0",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/03.png"
+        },
+        {
+          "at": "2026-08-29T23:29:15+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "92f4cfa1adb6",
+          "fingerprint": "90c45353148d2ddddeae0933decbf99938d237f3ba009514899876522e215ed5"
+        },
+        {
+          "at": "2026-08-29T23:29:40+08:00",
+          "event": "technical_failure",
+          "category": "backend",
+          "message": "worker stdin encoding invalid UTF-8 (GBK bytes); no candidate produced",
+          "fingerprint": "90c45353148d2ddddeae0933decbf99938d237f3ba009514899876522e215ed5"
+        },
+        {
+          "at": "2026-08-29T23:32:08+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "92f4cfa1adb6",
+          "fingerprint": "90c45353148d2ddddeae0933decbf99938d237f3ba009514899876522e215ed5"
+        },
+        {
+          "at": "2026-08-29T23:32:38+08:00",
+          "event": "transport_success",
+          "fingerprint": "90c45353148d2ddddeae0933decbf99938d237f3ba009514899876522e215ed5",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/03.png"
+        }
+      ],
+      "active_attempt_id": "92f4cfa1adb6",
+      "last_preflight_at": "2026-08-29T23:32:08+08:00",
+      "last_success_at": "2026-08-29T23:32:38+08:00",
+      "last_failure": {
+        "at": "2026-08-29T23:29:40+08:00",
+        "category": "backend",
+        "message": "worker stdin encoding invalid UTF-8 (GBK bytes); no candidate produced"
+      }
+    },
+    "04": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "a360ac305e92f472727c59a0d6d6572f7701e804f18d4f6d37990876b3aeaa71",
+      "events": [
+        {
+          "at": "2026-08-29T23:20:54+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "308084ef07b7",
+          "fingerprint": "311e3b3b0ae54ecbcc697082cfae9f8760f5f7fdf6144a46f8011fa0f6217adf"
+        },
+        {
+          "at": "2026-08-29T23:23:33+08:00",
+          "event": "transport_success",
+          "fingerprint": "311e3b3b0ae54ecbcc697082cfae9f8760f5f7fdf6144a46f8011fa0f6217adf",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/04.png"
+        },
+        {
+          "at": "2026-08-29T23:29:15+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "44d4b9f477ba",
+          "fingerprint": "944f95bb889562ec6f8e7be2c811545a3ce524caa3976fc38bd3cfb57b49ac98"
+        },
+        {
+          "at": "2026-08-29T23:32:09+08:00",
+          "event": "technical_failure",
+          "category": "backend",
+          "message": "parallel worker copied another frame's global-latest image; own raw exists",
+          "fingerprint": "944f95bb889562ec6f8e7be2c811545a3ce524caa3976fc38bd3cfb57b49ac98"
+        },
+        {
+          "at": "2026-08-29T23:32:11+08:00",
+          "event": "transport_success",
+          "fingerprint": "944f95bb889562ec6f8e7be2c811545a3ce524caa3976fc38bd3cfb57b49ac98",
+          "candidate": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_山难伪纪录片\\01_鳌太线_热汤\\media\\candidates\\originals\\04-recovered.png"
+        },
+        {
+          "at": "2026-08-29T23:33:40+08:00",
+          "event": "technical_failure",
+          "category": "rate_limit",
+          "message": "responses websocket fallback 429 Too Many Requests; no candidate produced",
+          "fingerprint": "944f95bb889562ec6f8e7be2c811545a3ce524caa3976fc38bd3cfb57b49ac98"
+        },
+        {
+          "at": "2026-08-29T23:34:29+08:00",
+          "event": "technical_failure",
+          "category": "rate_limit",
+          "message": "second 429 Too Many Requests; waiting before retry",
+          "fingerprint": "944f95bb889562ec6f8e7be2c811545a3ce524caa3976fc38bd3cfb57b49ac98"
+        },
+        {
+          "at": "2026-08-29T23:36:10+08:00",
+          "event": "technical_failure",
+          "category": "rate_limit",
+          "message": "third 429 Too Many Requests; retry cadence increasing",
+          "fingerprint": "944f95bb889562ec6f8e7be2c811545a3ce524caa3976fc38bd3cfb57b49ac98"
+        },
+        {
+          "at": "2026-08-29T23:36:10+08:00",
+          "event": "circuit_opened",
+          "reason": "failure_threshold"
+        },
+        {
+          "at": "2026-08-29T23:37:43+08:00",
+          "event": "circuit_reset",
+          "reason": "rate limit cooldown elapsed; technical retry preserves fingerprint"
+        },
+        {
+          "at": "2026-08-29T23:37:43+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "6b075c9fca31",
+          "fingerprint": "944f95bb889562ec6f8e7be2c811545a3ce524caa3976fc38bd3cfb57b49ac98"
+        },
+        {
+          "at": "2026-08-29T23:40:21+08:00",
+          "event": "transport_success",
+          "fingerprint": "944f95bb889562ec6f8e7be2c811545a3ce524caa3976fc38bd3cfb57b49ac98",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/04.png"
+        },
+        {
+          "at": "2026-08-30T00:15:12+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "41619393974a",
+          "fingerprint": "a360ac305e92f472727c59a0d6d6572f7701e804f18d4f6d37990876b3aeaa71"
+        },
+        {
+          "at": "2026-08-30T00:15:12+08:00",
+          "event": "direct_user_exception_fingerprint_change",
+          "attempt_id": "41619393974a",
+          "fingerprint": "a360ac305e92f472727c59a0d6d6572f7701e804f18d4f6d37990876b3aeaa71"
+        },
+        {
+          "at": "2026-08-30T00:16:41+08:00",
+          "event": "transport_success",
+          "fingerprint": "a360ac305e92f472727c59a0d6d6572f7701e804f18d4f6d37990876b3aeaa71",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/04-user-exception.png"
+        }
+      ],
+      "active_attempt_id": "41619393974a",
+      "last_preflight_at": "2026-08-30T00:15:12+08:00",
+      "last_success_at": "2026-08-30T00:16:41+08:00",
+      "last_failure": {
+        "at": "2026-08-29T23:36:10+08:00",
+        "category": "rate_limit",
+        "message": "third 429 Too Many Requests; retry cadence increasing"
+      }
+    },
+    "05": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "4f2c757d465003092baeb5095f6d3563b4918aab395ac85e57351e3a914238a7",
+      "events": [
+        {
+          "at": "2026-08-29T23:53:30+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "2650a7607d82",
+          "fingerprint": "4f2c757d465003092baeb5095f6d3563b4918aab395ac85e57351e3a914238a7"
+        },
+        {
+          "at": "2026-08-29T23:56:26+08:00",
+          "event": "transport_success",
+          "fingerprint": "4f2c757d465003092baeb5095f6d3563b4918aab395ac85e57351e3a914238a7",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/05.png"
+        }
+      ],
+      "active_attempt_id": "2650a7607d82",
+      "last_preflight_at": "2026-08-29T23:53:30+08:00",
+      "last_success_at": "2026-08-29T23:56:26+08:00"
+    },
+    "06": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "4b68d92575988d198677764339b36253859e82bf86cd9b00a1e01b214d98b933",
+      "events": [
+        {
+          "at": "2026-08-29T23:53:31+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "653b9869d326",
+          "fingerprint": "4b68d92575988d198677764339b36253859e82bf86cd9b00a1e01b214d98b933"
+        },
+        {
+          "at": "2026-08-29T23:58:48+08:00",
+          "event": "transport_success",
+          "fingerprint": "4b68d92575988d198677764339b36253859e82bf86cd9b00a1e01b214d98b933",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/06.png"
+        }
+      ],
+      "active_attempt_id": "653b9869d326",
+      "last_preflight_at": "2026-08-29T23:53:31+08:00",
+      "last_success_at": "2026-08-29T23:58:48+08:00"
+    },
+    "07": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "d72c24bd93c9b62d485f3fa78e4b9e11a0258522f59f55c5d1a16a90429d25bf",
+      "events": [
+        {
+          "at": "2026-08-29T23:53:31+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "ba8515a0d7aa",
+          "fingerprint": "d72c24bd93c9b62d485f3fa78e4b9e11a0258522f59f55c5d1a16a90429d25bf"
+        },
+        {
+          "at": "2026-08-30T00:05:43+08:00",
+          "event": "transport_success",
+          "fingerprint": "d72c24bd93c9b62d485f3fa78e4b9e11a0258522f59f55c5d1a16a90429d25bf",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/07.png"
+        }
+      ],
+      "active_attempt_id": "ba8515a0d7aa",
+      "last_preflight_at": "2026-08-29T23:53:31+08:00",
+      "last_success_at": "2026-08-30T00:05:43+08:00"
+    },
+    "08": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "e1bd09d156caf0eb188a13c7e8dd959bd481ebe42143d6af6926863074e181a5",
+      "events": [
+        {
+          "at": "2026-08-30T00:17:07+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "e5aeae097646",
+          "fingerprint": "e1bd09d156caf0eb188a13c7e8dd959bd481ebe42143d6af6926863074e181a5"
+        },
+        {
+          "at": "2026-08-30T00:19:52+08:00",
+          "event": "transport_success",
+          "fingerprint": "e1bd09d156caf0eb188a13c7e8dd959bd481ebe42143d6af6926863074e181a5",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/08.png"
+        }
+      ],
+      "active_attempt_id": "e5aeae097646",
+      "last_preflight_at": "2026-08-30T00:17:07+08:00",
+      "last_success_at": "2026-08-30T00:19:52+08:00"
+    },
+    "09": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "a99f6e400f7c09341bdd05c7b6032900758a043278d09161ba43127e1b4f220e",
+      "events": [
+        {
+          "at": "2026-08-30T00:19:54+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "6ac2b0a1b8ca",
+          "fingerprint": "179ccfddbd92df16b6ef683efe1667285113616260cbf882eda51c4a43054e04"
+        },
+        {
+          "at": "2026-08-30T00:22:49+08:00",
+          "event": "transport_success",
+          "fingerprint": "179ccfddbd92df16b6ef683efe1667285113616260cbf882eda51c4a43054e04",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/09.png"
+        },
+        {
+          "at": "2026-08-30T00:22:51+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "1ceb0c375da2",
+          "fingerprint": "a99f6e400f7c09341bdd05c7b6032900758a043278d09161ba43127e1b4f220e"
+        },
+        {
+          "at": "2026-08-30T00:26:53+08:00",
+          "event": "transport_success",
+          "fingerprint": "a99f6e400f7c09341bdd05c7b6032900758a043278d09161ba43127e1b4f220e",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/09.png"
+        }
+      ],
+      "active_attempt_id": "1ceb0c375da2",
+      "last_preflight_at": "2026-08-30T00:22:51+08:00",
+      "last_success_at": "2026-08-30T00:26:53+08:00"
+    },
+    "11": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "45b0124161117fd0cdc4de0beb0781a70090765c427010b367643ca941d1bee4",
+      "events": [
+        {
+          "at": "2026-08-30T00:31:18+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "e21576685012",
+          "fingerprint": "45b0124161117fd0cdc4de0beb0781a70090765c427010b367643ca941d1bee4"
+        },
+        {
+          "at": "2026-08-30T00:36:32+08:00",
+          "event": "transport_success",
+          "fingerprint": "45b0124161117fd0cdc4de0beb0781a70090765c427010b367643ca941d1bee4",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/11.png"
+        }
+      ],
+      "active_attempt_id": "e21576685012",
+      "last_preflight_at": "2026-08-30T00:31:18+08:00",
+      "last_success_at": "2026-08-30T00:36:32+08:00"
+    },
+    "12": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "7e34e0d637f48ec0083b715a34a1908e5017333d080c0d155ca8958f5930d0b4",
+      "events": [
+        {
+          "at": "2026-08-30T00:36:53+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "74ace94bfa2a",
+          "fingerprint": "7e34e0d637f48ec0083b715a34a1908e5017333d080c0d155ca8958f5930d0b4"
+        },
+        {
+          "at": "2026-08-30T00:39:22+08:00",
+          "event": "transport_success",
+          "fingerprint": "7e34e0d637f48ec0083b715a34a1908e5017333d080c0d155ca8958f5930d0b4",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/12.png"
+        }
+      ],
+      "active_attempt_id": "74ace94bfa2a",
+      "last_preflight_at": "2026-08-30T00:36:53+08:00",
+      "last_success_at": "2026-08-30T00:39:22+08:00"
+    },
+    "13": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "6642947fdb1a6d43a9135a12d85df1f7bed8ef3da553c09e955d03fa126b5834",
+      "events": [
+        {
+          "at": "2026-08-30T00:39:23+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "b52a26011c3d",
+          "fingerprint": "6642947fdb1a6d43a9135a12d85df1f7bed8ef3da553c09e955d03fa126b5834"
+        },
+        {
+          "at": "2026-08-30T00:42:52+08:00",
+          "event": "transport_success",
+          "fingerprint": "6642947fdb1a6d43a9135a12d85df1f7bed8ef3da553c09e955d03fa126b5834",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/13.png"
+        }
+      ],
+      "active_attempt_id": "b52a26011c3d",
+      "last_preflight_at": "2026-08-30T00:39:23+08:00",
+      "last_success_at": "2026-08-30T00:42:52+08:00"
+    },
+    "15": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "a6e8884feff31b79f17f7e2935e350bf8c6e77a4c26ca8af30f684e9e6d2788f",
+      "events": [
+        {
+          "at": "2026-08-30T00:45:09+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "f58d6070f275",
+          "fingerprint": "a6e8884feff31b79f17f7e2935e350bf8c6e77a4c26ca8af30f684e9e6d2788f"
+        },
+        {
+          "at": "2026-08-30T00:47:48+08:00",
+          "event": "transport_success",
+          "fingerprint": "a6e8884feff31b79f17f7e2935e350bf8c6e77a4c26ca8af30f684e9e6d2788f",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/15.png"
+        }
+      ],
+      "active_attempt_id": "f58d6070f275",
+      "last_preflight_at": "2026-08-30T00:45:09+08:00",
+      "last_success_at": "2026-08-30T00:47:48+08:00"
+    },
+    "16": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "49be92a11ae35a1e3086b21ab657ad2e2d4334d304ddbf3d64cb18b7fc2feb78",
+      "events": [
+        {
+          "at": "2026-08-30T00:47:49+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "0f455193e035",
+          "fingerprint": "49be92a11ae35a1e3086b21ab657ad2e2d4334d304ddbf3d64cb18b7fc2feb78"
+        },
+        {
+          "at": "2026-08-30T00:50:24+08:00",
+          "event": "transport_success",
+          "fingerprint": "49be92a11ae35a1e3086b21ab657ad2e2d4334d304ddbf3d64cb18b7fc2feb78",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/16.png"
+        }
+      ],
+      "active_attempt_id": "0f455193e035",
+      "last_preflight_at": "2026-08-30T00:47:49+08:00",
+      "last_success_at": "2026-08-30T00:50:24+08:00"
+    },
+    "17": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "88c1067107325427326e1df096fe4a333f655f1426e6af9546bcaa5cca083790",
+      "events": [
+        {
+          "at": "2026-08-30T00:50:25+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "6c1d84683aed",
+          "fingerprint": "88c1067107325427326e1df096fe4a333f655f1426e6af9546bcaa5cca083790"
+        },
+        {
+          "at": "2026-08-30T00:53:08+08:00",
+          "event": "transport_success",
+          "fingerprint": "88c1067107325427326e1df096fe4a333f655f1426e6af9546bcaa5cca083790",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/17.png"
+        }
+      ],
+      "active_attempt_id": "6c1d84683aed",
+      "last_preflight_at": "2026-08-30T00:50:25+08:00",
+      "last_success_at": "2026-08-30T00:53:08+08:00"
+    },
+    "18": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "64f9f258ecb98e9a45425daeb539965e94f9104b0eed47b9fef7bbc7b3745705",
+      "events": [
+        {
+          "at": "2026-08-30T00:55:24+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "1d851fe2b697",
+          "fingerprint": "64f9f258ecb98e9a45425daeb539965e94f9104b0eed47b9fef7bbc7b3745705"
+        },
+        {
+          "at": "2026-08-30T00:58:27+08:00",
+          "event": "transport_success",
+          "fingerprint": "64f9f258ecb98e9a45425daeb539965e94f9104b0eed47b9fef7bbc7b3745705",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/18.png"
+        }
+      ],
+      "active_attempt_id": "1d851fe2b697",
+      "last_preflight_at": "2026-08-30T00:55:24+08:00",
+      "last_success_at": "2026-08-30T00:58:27+08:00"
+    },
+    "19": {
+      "consecutive_technical_failures": 0,
+      "circuit": "CLOSED",
+      "locked_request_fingerprint": "67c9ece6e715a520a99cc02d015a27dab62e58d529d4078bf5c8e609571009f0",
+      "events": [
+        {
+          "at": "2026-08-30T00:58:28+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "9940dd569a56",
+          "fingerprint": "67c9ece6e715a520a99cc02d015a27dab62e58d529d4078bf5c8e609571009f0"
+        },
+        {
+          "at": "2026-08-30T01:01:14+08:00",
+          "event": "transport_success",
+          "fingerprint": "67c9ece6e715a520a99cc02d015a27dab62e58d529d4078bf5c8e609571009f0",
+          "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/19.png"
+        }
+      ],
+      "active_attempt_id": "9940dd569a56",
+      "last_preflight_at": "2026-08-30T00:58:28+08:00",
+      "last_success_at": "2026-08-30T01:01:14+08:00"
+    }
+  }
+}

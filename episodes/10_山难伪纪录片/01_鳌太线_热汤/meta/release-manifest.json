@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.0.3.4",
+  "episode": {
+    "id": "10-01",
+    "series": "10_山难伪纪录片",
+    "title": "鳌太线·热汤",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "4:5"
+  },
+  "release": {
+    "version": null,
+    "body_frame_count": 20,
+    "publish_dir": null,
+    "body_glob": "[0-9][0-9].png",
+    "cover_path": null,
+    "contact_sheet_path": null
+  },
+  "artifacts": {
+    "story": "episodes/10_山难伪纪录片/01_鳌太线_热汤/story/01_鳌太线_热汤_StoryLock_V2.0.md",
+    "storyboard": "episodes/10_山难伪纪录片/01_鳌太线_热汤/story/02_鳌太线_热汤_20张正式分镜_V2.0.md",
+    "visual_spec": "episodes/10_山难伪纪录片/01_鳌太线_热汤/story/03_鳌太线_热汤_视觉规范_V2.0.md",
+    "captions": null,
+    "publish_copy": null,
+    "production_review": null,
+    "propagation_card": null
+  },
+  "quality": {
+    "production_gate": "pending",
+    "propagation_score": null,
+    "s_min_score": null,
+    "propagation_decision": "pending",
+    "publish_decision": "hold",
+    "decision_note": null
+  },
+  "publication": {
+    "platform": "douyin",
+    "actual_title": null,
+    "description": null,
+    "topics": [],
+    "pinned_comment": null,
+    "published_at": null,
+    "timing_window": null,
+    "post_url": null
+  },
+  "data_review": {
+    "report_path": "reports/数据验收报告.md",
+    "completed_checkpoints": [],
+    "first_hour_metrics": {
+      "captured_at": null,
+      "exposure": null,
+      "plays": null,
+      "likes": null,
+      "comments": null,
+      "saves": null,
+      "shares": null,
+      "followers_gained": null,
+      "profile_visits": null,
+      "avg_images_viewed": null,
+      "swipe_away_rate": null,
+      "caption_expand_rate": null
+    }
+  }
+}

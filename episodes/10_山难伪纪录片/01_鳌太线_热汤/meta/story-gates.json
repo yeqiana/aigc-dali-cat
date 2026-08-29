@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.0.3.4",
+  "episode_id": "10-01",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_profile": "CP06",
+    "override_reason": null
+  },
+  "story": {
+    "recent5_checked": true,
+    "four_locks_diff_count": 4,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [
+      3,
+      5,
+      8,
+      9,
+      11,
+      12,
+      14,
+      16,
+      18,
+      19
+    ],
+    "climax_frame": 19,
+    "payoff_frame": 20,
+    "semantic_review_path": "meta/story-semantic-review.json"
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [
+      1,
+      10,
+      14,
+      20
+    ],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "27岁男性第一人称；黄色连帽羽绒服、黑色冲锋裤、深灰背包、黑灰手套；左脚受伤；图01-19不露清晰正脸",
+        "location": "鳌太高海拔山地虚构化雪坡、风口与同一处黑石背风点；不提供路线坐标或攻略",
+        "key_prop": "橙色应急保温毯、银色保温杯与金属杯、红色安全绳、两只深色背包、黑色岩石；幻觉层必须能回收到这些现实物",
+        "wardrobe": "主角黄色连帽羽绒服；阿川深青灰冲锋衣、灰色背包、红手套、白光头灯",
+        "weather_time": "阴天午后逐渐转蓝灰黄昏；风雪增强；无暖阳、无奇幻光门"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "当代冬季；具体日期与事故均为虚构",
+      "location": "鳌太高海拔山地的虚构化雪坡、风口与下撤段；不对应真实事故，不提供坐标或路线教程",
+      "photographer": "图01-19由主角胸前固定运动相机连续记录；图20由后来路过者的现代手机记录接应现场",
+      "shooting_reason": "主角记录挑战过程并保留同行安全回看；后来路过者为记录位置并协助接应拍摄图20",
+      "primary_capture": {
+        "id": "CP06",
+        "device": "现代胸前固定运动相机，连续记录中按4:5安全构图取帧；轻广角与运动缺陷必须有现场原因"
+      },
+      "secondary_captures": [
+        {
+          "id": "CP01",
+          "device": "后来路过者的现代智能手机，仅用于图20"
+        }
+      ],
+      "secondary_source_explanation": "图20明确切换为后来路过者站立手机视角，用于记录位置并接上现实接应链；图01-19不使用该机位",
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "图01-04阴天自然光，现代运动相机轻广角，普通户外记录，不做商业风光片",
+        "restricted": "图05-09因摔倒、坐姿、搀扶和跛行产生偏斜、遮挡与轻方向拖影，关键动作仍清楚",
+        "lost_control": "图10-19白障、雪粒、水滴、头灯局部过曝与主体偏位均由天气和动作造成；身体与装备矛盾必须可读"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": "胸前运动相机本体不完整入镜，只允许背带边缘或固定夹局部",
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": "图01-19主角只露肢体与衣物局部；图20完整出现的是被拍摄的主角，拍摄者为已登记后来路过者"
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": 1,
+        "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+        "sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+        "decision": "passed",
+        "note": "Normal pixel review PASS after one content repair"
+      },
+      "worst_condition": {
+        "frame": 10,
+        "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/10.png",
+        "sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7",
+        "decision": "passed",
+        "note": "Normal pixel review PASS original candidate"
+      },
+      "first_major_anomaly": {
+        "frame": 14,
+        "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
+        "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+        "decision": "passed",
+        "note": "Normal pixel review PASS after one content repair"
+      }
+    },
+    "calibration_contact_sheet": {
+      "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/calibration/calibration-contact-sheet.png",
+      "sha256": "ea3218594a95f7961db930552edb5344d1595df5448c7943bb5f89839a0d3e2d"
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": true,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "passed",
+    "subtitle": "pending",
+    "production": "pending",
+    "recommendation_fit": "pending",
+    "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 2,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true
+  }
+}

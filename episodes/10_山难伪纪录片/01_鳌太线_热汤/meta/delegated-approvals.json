@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0.3.4",
+  "approvals": {
+    "story_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "story_lock",
+      "approved_at": "2026-08-29T15:14:06+08:00",
+      "artifacts": [
+        {
+          "role": "story",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/story/01_鳌太线_热汤_StoryLock_V2.0.md",
+          "sha256": "91f1c9d7eb0f139a259183f01251bbc481f66a16e4a7c135e2c1ec695ed14ae5"
+        },
+        {
+          "role": "storyboard",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/story/02_鳌太线_热汤_20张正式分镜_V2.0.md",
+          "sha256": "d9374c2579e5940a8d4400d8f7996ef596ba3615fc18d8ad0e3c759d97c5c0f1"
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/story-semantic-review.json",
+          "sha256": "69ca74e91770497e0ec19ba80cccf13c3b9c26cc5907219dd367c00a97298d02"
+        }
+      ],
+      "note": "Attempt 1 fresh isolated Story Critic PASS; continuous full-auto delegated review."
+    },
+    "visual_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "visual_lock",
+      "approved_at": "2026-08-29T23:18:25+08:00",
+      "artifacts": [
+        {
+          "role": "visual_spec",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/story/03_鳌太线_热汤_视觉规范_V2.0.md",
+          "sha256": "eea76ff540e39d833fb31280d8659535f1a4bd5d58d23311e64fe658993dad92"
+        },
+        {
+          "role": "calibration_contact_sheet",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/calibration/calibration-contact-sheet.png",
+          "sha256": "ea3218594a95f7961db930552edb5344d1595df5448c7943bb5f89839a0d3e2d"
+        },
+        {
+          "role": "visual_profile:M00",
+          "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+          "sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c"
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/visual-profile-review.json",
+          "sha256": "2e3c5c0a6cccd821cba816f89f16f4ed6fb1217b6d13887137f33f970c661949"
+        }
+      ],
+      "note": "Three calibration frames passed fresh Visual Critic attempt 1; fourth visual admission frame 20 passed normal pixel review; delegated continuous execution.",
+      "resolved_visual_profile": {
+        "selection": "default",
+        "profile_id": "M00",
+        "profile_name": "MP4 × 网吧 × 流水席旧数码质感校准版",
+        "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+        "capture_profile": "CP06",
+        "override_reason": null,
+        "rule": "默认视觉母风格只约束视觉语言；具体年代/设备物理表现优先。"
+      }
+    }
+  }
+}

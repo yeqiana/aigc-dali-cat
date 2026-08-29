@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "audited_at": "2026-08-29T23:37:07+08:00",
+  "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_山难伪纪录片\\01_鳌太线_热汤\\meta\\subtitles.yaml",
+  "caption_count": 19,
+  "silent_frames": [
+    20
+  ],
+  "hard_errors": [],
+  "warnings": [],
+  "summary": {
+    "hard_error_count": 0,
+    "warning_count": 0,
+    "passed": true
+  },
+  "source_sha256": "d0ff46d5f25488e6a0ca3a6523c8ce6fdcc3a49ee6bc33d92f1784af0b27a238"
+}
