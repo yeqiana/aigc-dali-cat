@@ -1,11 +1,11 @@
-# Dali Cat Story OS — Repository Execution Contract V2.0.3.2
+# Dali Cat Story OS — Repository Execution Contract V2.0.3.3
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
-## Story OS V2.0.3.2 Golden Path
+## Story OS V2.0.3.3 Golden Path
 
 **第一入口：先读 `START_HERE.md`。** 该文件只负责路由，不建立第二套创作规范。
 
@@ -312,3 +312,12 @@ CODEX runtime 提供机器可执行入口 `story_os.py run <episode> --full-auto
 
 Full-auto pipeline: `worker → deterministic postflight → COMPLETE|PAUSED|BLOCKED`。图片链路必须 `raw → normalize → exact ledger canvas`。全自动批准使用 delegated provenance，不伪装 direct user review；最终 ZIP 必须通过 delegated delivery verify。
 <!-- STORY_OS_V2_0_2_SKILL_END -->
+
+
+## V2.0.3.3 Frame Semantic Enforcement
+
+- `actual_frame_semantic_review`：独立 Critic 审实际最终图片，而不是 prompt。
+- `sha_bound_frame_reviews`：每帧 review 必须绑定当前 approved asset SHA。
+- `release_evidence_closure`：Release 前再次执行 Production semantic preflight，交付包携带 frame review / audit。
+- recovered/locked 资产没有当前 SHA 的 schema 2 review 时不得继承 PASS。
+- 不新增第八状态。

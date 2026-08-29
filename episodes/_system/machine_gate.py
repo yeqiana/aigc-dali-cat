@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from story_os_contract import canonical_stages
+from frame_semantic_review import review_required as semantic_frame_review_required, verify_episode as verify_frame_semantic_episode
 
 STATES = canonical_stages()
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
@@ -303,6 +304,7 @@ def check_frame_review(path: Path, key: str, findings: list[Finding]) -> None:
 
 
 def check_production(repo_root: Path, episode_dir: Path, gates: dict, manifest: dict, findings: list[Finding], *, metadata_only: bool) -> None:
+    semantic_required = semantic_frame_review_required(episode_dir)
     ledger = load_json(episode_dir / "meta/production-ledger.json", findings)
     if ledger is None:
         return
@@ -332,8 +334,12 @@ def check_production(repo_root: Path, episode_dir: Path, gates: dict, manifest: 
             lock = frame.get("lock")
             if not isinstance(lock, dict) or not isinstance(approved, dict) or lock.get("sha256") != approved.get("sha256"):
                 findings.append(Finding("FAIL", "lock_hash", f"{key}: lock hash must equal approved asset hash"))
-        if not metadata_only:
+        if not semantic_required and not metadata_only:
             check_frame_review(review_path(repo_root, episode_dir, gates, key), key, findings)
+
+    if semantic_required:
+        for error in verify_frame_semantic_episode(episode_dir, metadata_only=metadata_only, write_audit=False):
+            findings.append(Finding("FAIL", "frame_semantic_review", error))
 
 
 def validate(episode_dir: Path, target: str, *, metadata_only: bool = False) -> list[Finding]:

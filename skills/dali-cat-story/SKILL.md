@@ -1,4 +1,4 @@
-# dali-cat-story — Story OS V2.0.3.2 Adapter Contract
+# dali-cat-story — Story OS V2.0.3.3 Adapter Contract
 
 > This Skill is a **thin execution adapter** for the repository's canonical Story OS.  
 > It does not own a state machine, does not duplicate engine logic, and must not become a second source of creative or release truth.
@@ -55,7 +55,7 @@ IDEA_LOCKED
 → DATA_REVIEWED
 ```
 
-## 4. V2.0.3.2 Capability Contract
+## 4. V2.0.3.3 Capability Contract
 
 本 adapter 必须识别并服从以下 canonical capabilities：
 
@@ -122,3 +122,13 @@ Capabilities:
 - `deterministic_subtitle_layout`
 
 Story Lock requires the canonical independent semantic review for V2.0.3.2 episodes; Visual Lock requires actual calibration profile review; publish subtitles use the canonical layout renderer/audit. No new episode state is introduced.
+
+
+## V2.0.3.3 Frame Semantic Enforcement
+
+Canonical capabilities additionally required:
+- `actual_frame_semantic_review`
+- `sha_bound_frame_reviews`
+- `release_evidence_closure`
+
+The adapter does not implement these capabilities itself; canonical implementation remains under `episodes/_system/frame_semantic_review.py`.

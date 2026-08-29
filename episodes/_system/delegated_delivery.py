@@ -9,6 +9,10 @@ import json
 import zipfile
 from pathlib import Path
 
+from story_os_contract import story_os_version
+from frame_semantic_review import review_required as frame_semantic_required, verify_episode as verify_frame_semantic_episode
+from machine_gate import validate as validate_machine_gate
+
 ROOT = Path(__file__).resolve().parents[2]
 REPORT_REL = Path('meta/delegated-release.json')
 
@@ -35,6 +39,17 @@ def resolve_repo(raw: object, where: str) -> Path:
     return p
 def row(p: Path,role: str,arc: str) -> dict:
     return {'role':role,'path':repo_rel(p),'archive_path':arc,'sha256':sha256_file(p),'bytes':p.stat().st_size}
+
+
+def preflight(ep: Path) -> None:
+    if frame_semantic_required(ep):
+        errors = verify_frame_semantic_episode(ep, metadata_only=False, write_audit=True)
+        if errors:
+            raise SystemExit('frame semantic preflight failed: ' + '; '.join(errors))
+    findings = validate_machine_gate(ep, 'PRODUCTION_PASSED', metadata_only=False)
+    failures = [str(x) for x in findings if getattr(x, 'level', None) == 'FAIL']
+    if failures:
+        raise SystemExit('PRODUCTION_PASSED machine gate failed before delivery: ' + '; '.join(failures))
 
 def gather(ep: Path) -> tuple[list[dict], dict]:
     manifest_path=ep/'meta/release-manifest.json'; manifest=read_json(manifest_path)
@@ -68,15 +83,36 @@ def gather(ep: Path) -> tuple[list[dict], dict]:
     if checkpoint.is_file(): files.append(row(checkpoint,'runtime_checkpoint','evidence/runtime-checkpoint.json'))
     ledger=ep/'meta/production-ledger.json'
     if ledger.is_file(): files.append(row(ledger,'production_ledger','evidence/production-ledger.json'))
+    for rel_path, role, arc in [
+        ('meta/episode-state.json','episode_state','evidence/episode-state.json'),
+        ('meta/story-gates.json','story_gates','evidence/story-gates.json'),
+        ('meta/story-semantic-review.json','story_semantic_review','qa/story-semantic-review.json'),
+        ('meta/visual-profile-review.json','visual_profile_review','qa/visual-profile-review.json'),
+        ('meta/subtitle-layout-audit.json','subtitle_layout_audit','qa/subtitle-layout-audit.json'),
+        ('meta/frame-semantic-review.json','frame_semantic_review','qa/frame-semantic-review.json'),
+        ('meta/frame-semantic-audit.json','frame_semantic_audit','qa/frame-semantic-audit.json'),
+    ]:
+        p=ep/rel_path
+        if p.is_file(): files.append(row(p,role,arc))
+        elif frame_semantic_required(ep) and rel_path in {'meta/frame-semantic-review.json','meta/frame-semantic-audit.json'}:
+            raise SystemExit(f'required semantic evidence missing: {rel_path}')
+    review_dir=ep/'meta/frame-reviews'
+    if frame_semantic_required(ep):
+        reviews=sorted(review_dir.glob('[0-9][0-9].json')) if review_dir.is_dir() else []
+        expected=((manifest.get('release') or {}).get('body_frame_count'))
+        if not isinstance(expected,int) or len(reviews)!=expected:
+            raise SystemExit(f'frame semantic review count mismatch: expected={expected}, found={len(reviews)}')
+        for p in reviews: files.append(row(p,f'frame_review:{p.stem}',f'qa/frame-reviews/{p.name}'))
     return files,manifest
 
 def build(ep: Path,label: str) -> Path:
+    preflight(ep)
     files,manifest=gather(ep)
     out_dir=ep/'deliveries'; out_dir.mkdir(parents=True,exist_ok=True)
     out=out_dir/f'{ep.name}_{label}.zip'
     temp=out.with_suffix('.zip.partial')
     report={
-        'schema_version':2,'story_os_version':'2.0.2','approval_basis':'delegated_auto_review','direct_release_lock':False,
+        'schema_version':3,'story_os_version':story_os_version(),'approval_basis':'delegated_auto_review','direct_release_lock':False,
         'built_at':dt.datetime.now().astimezone().isoformat(),'episode':manifest.get('episode') or {},'files':files,'package':None,
     }
     checks=''.join(f"{x['sha256']}  {x['archive_path']}\n" for x in files)
@@ -94,6 +130,7 @@ def verify(ep: Path) -> list[str]:
     rp=ep/REPORT_REL
     if not rp.is_file(): return ['delegated release report missing']
     d=read_json(rp); errors=[]; package=d.get('package') or {}
+    if d.get('story_os_version') != story_os_version(): errors.append('delegated report story_os_version mismatch')
     try: zp=resolve_repo(package.get('path'),'delegated.package')
     except SystemExit as exc:return [str(exc)]
     if sha256_file(zp).lower()!=str(package.get('sha256') or '').lower(): errors.append('delegated ZIP SHA drift')

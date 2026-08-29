@@ -70,8 +70,10 @@ jobs:
           python episodes/_system/test_v202_production_closure.py -v
           python episodes/_system/test_v203_contract_hardening.py -v
           python episodes/_system/test_v2032_creative_enforcement.py -v
+          python episodes/_system/test_v2033_frame_semantic_enforcement.py -v
           python episodes/_system/story_review.py self-test
           python episodes/_system/visual_review.py self-test
+          python episodes/_system/frame_semantic_review.py self-test
           python episodes/_system/subtitle_layout.py self-test
           python episodes/_system/canvas_normalize.py self-test
           python episodes/_system/codex_subscription_image.py self-test

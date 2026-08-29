@@ -1,4 +1,4 @@
-# Dali Cat Story OS — START HERE V2.0.3.2
+# Dali Cat Story OS — START HERE V2.0.3.3
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
@@ -237,3 +237,8 @@ python episodes/_system/story_os.py run <episode_dir> --full-auto
 
 CODEX 全自动完成必须经过 deterministic postflight；worker 正常退出不等于完成。生图必须使用 `generate-for-frame` 走 raw→canvas normalize→ledger。全自动 Story/Visual/Release 使用 delegated approval 证据，不伪造用户亲审。最终 delegated ZIP 禁止 approved fallback，必须包含真实 publish 资产和完整文本/manifest/hash。
 <!-- STORY_OS_V2_0_2_CLOSURE_END -->
+
+
+## V2.0.3.3 Frame Semantic Enforcement
+
+Batch 完成后，`PRODUCTION_PASSED` 前必须运行 `episodes/_system/frame_semantic_review.py` 的 fresh isolated full-frame-set critic；实际图片必须与 Story Lock / Storyboard / Authenticity Card / Continuity Anchors 一致，并通过 SHA-bound review 与 near-duplicate audit。该证据不新增机器状态。

@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
-  "story_os_version": "2.0.3.2",
-  "name": "Multi-Runtime + Production Closure",
+  "story_os_version": "2.0.3.3",
+  "name": "Multi-Runtime + Frame Semantic Production Closure",
   "state_source": "meta/episode-state.json",
   "creative_authority": "standards/制作规范_正式版.md",
   "routing_order": [
@@ -48,6 +48,9 @@
       "COMPLETE",
       "PAUSED",
       "BLOCKED"
-    ]
+    ],
+    "fresh_isolated_frame_semantic_critic": true,
+    "sha_bound_frame_review_required": true,
+    "release_must_include_frame_reviews": true
   }
 }

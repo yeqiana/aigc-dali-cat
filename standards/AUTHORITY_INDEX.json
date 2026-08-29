@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "2.0.3.2",
+  "story_os_version": "2.0.3.3",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -137,6 +137,12 @@
       "authority": "active_subordinate",
       "scope": "creative_enforcement",
       "active": true
+    },
+    {
+      "path": "standards/生产帧语义强制规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "production_frame_semantic_fidelity",
+      "active": true
     }
   ],
   "rules": {
@@ -197,7 +203,8 @@
         "COMPLETE",
         "PAUSED",
         "BLOCKED"
-      ]
+      ],
+      "frame_semantic_review": "episodes/_system/frame_semantic_review.py"
     },
     "creative_enforcement": {
       "story_review": "episodes/_system/story_review.py",
@@ -206,7 +213,11 @@
       "visual_review_evidence": "meta/visual-profile-review.json",
       "subtitle_renderer": "episodes/_system/subtitle_layout.py",
       "subtitle_layout_evidence": "meta/subtitle-layout-audit.json",
-      "new_state_forbidden": true
+      "new_state_forbidden": true,
+      "frame_semantic_review": "episodes/_system/frame_semantic_review.py",
+      "frame_semantic_review_summary": "meta/frame-semantic-review.json",
+      "frame_semantic_review_dir": "meta/frame-reviews",
+      "frame_semantic_audit": "meta/frame-semantic-audit.json"
     }
   }
 }

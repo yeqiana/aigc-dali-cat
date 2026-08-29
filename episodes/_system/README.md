@@ -1,6 +1,6 @@
-# Episodes 状态机 + Story OS 门禁 V2.0.3.2
+# Episodes 状态机 + Story OS 门禁 V2.0.3.3
 
-本目录只建立一套机器阶段状态；V2.0.3.2 延续 V1.8 引入的证据 SHA 门禁，并增加稳定 evidence gate 与可执行 Codex runtime，不新增第二状态机。
+本目录只建立一套机器阶段状态；V2.0.3.3 延续 V1.8 引入的证据 SHA 门禁，并增加稳定 evidence gate 与可执行 Codex runtime，不新增第二状态机。
 
 ## 核心事实源
 
@@ -121,3 +121,13 @@ python episodes/_system/machine_gate.py --all --metadata-only
 
 V1.7 的 transport guard 与 text revision transaction 继续沿用，不重复实现。
 <!-- STORY_OS_V1_8_SYSTEM_README_END -->
+
+
+## V2.0.3.3 实际生产帧语义门禁
+
+```bash
+python episodes/_system/frame_semantic_review.py run-critic <episode_dir> --attempt 1
+python episodes/_system/frame_semantic_review.py audit <episode_dir>
+```
+
+V2.0.3.3 新剧集的 `meta/frame-reviews/NN.json` 使用 schema 2，绑定实际 approved SHA，并增加 Story Beat / 人物 / 服装 / POV / 时间线 / 道具 / 异常可读性 / 图文支撑 / actual information gain 审查。

@@ -1,7 +1,7 @@
 {
-  "story_os_version": "2.0.3.2",
+  "story_os_version": "2.0.3.3",
   "contract_schema": 1,
-  "release_name": "Creative Enforcement",
+  "release_name": "Frame Semantic Enforcement",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -28,7 +28,10 @@
     "minimal_edit_contract",
     "story_semantic_review",
     "visual_profile_enforcement",
-    "deterministic_subtitle_layout"
+    "deterministic_subtitle_layout",
+    "actual_frame_semantic_review",
+    "sha_bound_frame_reviews",
+    "release_evidence_closure"
   ],
   "adapters": [
     "skills/dali-cat-story",

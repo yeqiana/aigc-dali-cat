@@ -100,8 +100,11 @@ def enable_machine_contract(gates: dict, *, strict: bool, aspect_ratio: str | No
         evidence,
         {
             "frame_review_dir": "meta/frame-reviews",
-            "review_schema_version": 1,
+            "review_schema_version": 2,
             "require_all_frames": True,
+            "semantic_contract": "actual_frame_v2",
+            "sha_bound": True,
+            "fresh_isolated_critic": True,
         },
     )
     return gates

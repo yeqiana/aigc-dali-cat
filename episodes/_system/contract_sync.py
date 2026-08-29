@@ -27,6 +27,7 @@ CORE_ENGINE_FILES = [
     "codex_auto_orchestrator.py",
     "story_review.py",
     "visual_review.py",
+    "frame_semantic_review.py",
     "subtitle_layout.py",
 ]
 REQUIRED_CAPABILITIES = {
@@ -44,6 +45,9 @@ REQUIRED_CAPABILITIES = {
     "story_semantic_review",
     "visual_profile_enforcement",
     "deterministic_subtitle_layout",
+    "actual_frame_semantic_review",
+    "sha_bound_frame_reviews",
+    "release_evidence_closure",
 }
 ADAPTER_SKILLS = [
     Path("skills/dali-cat-story/SKILL.md"),
@@ -153,12 +157,13 @@ def collect_errors(root: Path | None = None) -> list[str]:
 
     for rel in [
         Path("standards/创作执行强制规范_V2.0.3.2.md"),
+        Path("standards/生产帧语义强制规范_V1.0.md"),
         Path("standards/最终字幕视觉规范_V1.2.md"),
     ]:
         if not (root / rel).is_file():
             errors.append(f"missing active creative enforcement standard: {rel.as_posix()}")
     authority_text = read_text(root / "standards/AUTHORITY_INDEX.json")
-    for token in ["standards/创作执行强制规范_V2.0.3.2.md", "standards/最终字幕视觉规范_V1.2.md"]:
+    for token in ["standards/创作执行强制规范_V2.0.3.2.md", "standards/生产帧语义强制规范_V1.0.md", "standards/最终字幕视觉规范_V1.2.md"]:
         if token not in authority_text:
             errors.append(f"AUTHORITY_INDEX missing active creative enforcement route: {token}")
 
@@ -241,6 +246,16 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "CODEX_ISOLATED",
             "visual_profile_match",
         ],
+        "frame_semantic_review.py": [
+            "CODEX_ISOLATED",
+            "asset_sha256",
+            "scene_storyboard_fidelity",
+            "actual_information_gain",
+        ],
+        "delegated_delivery.py": [
+            "from story_os_contract import story_os_version",
+            "verify_frame_semantic_episode",
+        ],
         "subtitle_layout.py": [
             "drop_entire_second_line",
             "PUNCTUATION_ONLY_SECOND_LINE",
@@ -268,6 +283,10 @@ def collect_errors(root: Path | None = None) -> list[str]:
     delegated = engine / "delegated_approval.py"
     if delegated.is_file() and ("'2.0.2'" in read_text(delegated) or '"2.0.2"' in read_text(delegated)):
         errors.append("delegated_approval.py contains stale Story OS V2.0.2 literals")
+
+    delivery = engine / "delegated_delivery.py"
+    if delivery.is_file() and ("'story_os_version':'2.0.2'" in read_text(delivery) or '"story_os_version": "2.0.2"' in read_text(delivery)):
+        errors.append("delegated_delivery.py contains stale Story OS V2.0.2 literals")
 
     skill_scripts = root / "skills" / "dali-cat-story" / "scripts"
     for name in CORE_ENGINE_FILES:

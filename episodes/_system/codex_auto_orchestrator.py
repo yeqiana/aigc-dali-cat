@@ -38,7 +38,7 @@ def update_checkpoint(ep,state,next_action,error=None,completion=None):
 def worker_instruction(ep,resume):
     rel=ep.relative_to(ROOT).as_posix(); mode='resume from checkpoint' if resume else 'start from real current repository state'
     return f"""You are the Story OS V{STORY_OS_VERSION} autonomous CODEX writer/producer for exactly {rel}. The user authorized continuous full-auto execution; {mode}.
-Read START_HERE.md, SKILL.md, AGENTS.md, runtimes/CODEX.md, AUTHORITY_INDEX, standards/创作执行强制规范_V2.0.3.2.md, episode state/gates/ledger/reviews/checkpoint.
+Read START_HERE.md, SKILL.md, AGENTS.md, runtimes/CODEX.md, AUTHORITY_INDEX, standards/创作执行强制规范_V2.0.3.2.md, standards/生产帧语义强制规范_V1.0.md, episode state/gates/ledger/reviews/checkpoint.
 Do not spawn another full-auto supervisor.
 
 STORY LOCK IS THE HIGHEST CREATIVE LOCK.
@@ -61,8 +61,16 @@ A capture_style reference may come only from passed calibration or an explicitly
 
 PRODUCTION:
 For every new/repair image use `codex_subscription_image.py generate-for-frame "{rel}" --frame NN ...`; preserve raw output and exact ledger canvas.
-Maintain production ledger and frame reviews. Reuse matching locked SHA assets. Technical failure does not consume content repair.
-Do not let an early unapproved generated frame recursively become the style mother reference.
+Maintain production ledger. Technical failure does not consume content repair. Do not let an early unapproved generated frame recursively become the style mother reference.
+After ALL final approved frames exist, run a FRESH isolated full-frame-set semantic critic:
+  python episodes/_system/frame_semantic_review.py run-critic "{rel}" --attempt 1
+The critic must judge actual pixels against Story Lock + storyboard + authenticity/continuity anchors, including scene/story-beat fidelity, key prop, character/wardrobe, POV legality, spatial/temporal continuity, anomaly readability, caption-image support and ACTUAL information gain.
+If attempt 1 FAILS, repair ONLY the failed frames within the existing one-content-repair-per-frame limit, then run a NEW isolated critic:
+  python episodes/_system/frame_semantic_review.py run-critic "{rel}" --attempt 2
+If attempt 2 still fails, stop. Never hand-author frame review PASS JSON.
+A recovered/locked asset is reusable as PASS only when meta/frame-reviews/NN.json schema 2 is bound to that exact approved asset SHA and current Story/Storyboard/Visual context. "previously reviewed" text alone is not evidence.
+Before leaving production run:
+  python episodes/_system/frame_semantic_review.py audit "{rel}"
 
 SUBTITLES / RELEASE:
 Create the canonical caption source and PASS text audit.
@@ -101,6 +109,10 @@ def postflight(ep):
     if incomplete:return 'PAUSED','production ledger incomplete: '+', '.join(incomplete[:12]),None
     r=run_cmd([sys.executable,SYSTEM/'production_ledger.py','audit',ep,'--require-passed'])
     if r.returncode!=0:return 'PAUSED','production ledger not fully passed:\n'+r.stdout[-2000:],None
+    r=run_cmd([sys.executable,SYSTEM/'frame_semantic_review.py','audit',ep])
+    if r.returncode!=0:return 'PAUSED','frame semantic review/audit failed:\n'+r.stdout[-2500:],None
+    r=run_cmd([sys.executable,SYSTEM/'machine_gate.py',ep,'--target','PRODUCTION_PASSED'])
+    if r.returncode!=0:return 'PAUSED','PRODUCTION_PASSED machine gate failed before packaging:\n'+r.stdout[-2500:],None
     try:
         from delegated_delivery import build, verify
         package=build(ep,'DELEGATED_AUTO')

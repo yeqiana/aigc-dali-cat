@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from story_os_contract import story_os_version
+from frame_semantic_review import review_required as frame_semantic_required, verify_episode as verify_frame_semantic_episode
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_REL = Path('meta/release-manifest.json')
@@ -97,6 +98,10 @@ def file_row(path: Path, role: str) -> dict:
 
 
 def build_payload(ep: Path) -> dict:
+    if frame_semantic_required(ep):
+        semantic_errors = verify_frame_semantic_episode(ep, metadata_only=False, write_audit=True)
+        if semantic_errors:
+            raise SystemExit('frame semantic release preflight failed: ' + '; '.join(semantic_errors))
     manifest = load_json(ep / MANIFEST_REL)
     release = manifest.get('release') or {}
     artifacts = manifest.get('artifacts') or {}
@@ -141,8 +146,18 @@ def build_payload(ep: Path) -> dict:
             file_row(publish_copy, 'publish_copy'),
             file_row(propagation, 'propagation_card'),
         ],
+        'evidence': [],
         'package_sha256': None,
     }
+    if frame_semantic_required(ep):
+        evidence_paths = [
+            ep/'meta/frame-semantic-review.json', ep/'meta/frame-semantic-audit.json',
+            ep/'meta/story-semantic-review.json', ep/'meta/visual-profile-review.json',
+            ep/'meta/subtitle-layout-audit.json', ep/'meta/story-gates.json',
+        ] + sorted((ep/'meta/frame-reviews').glob('[0-9][0-9].json'))
+        missing = [str(p.relative_to(ep)) for p in evidence_paths[:2] if not p.is_file()]
+        if missing: raise SystemExit('release evidence missing: ' + ', '.join(missing))
+        payload['evidence'] = [file_row(p, 'evidence') for p in evidence_paths if p.is_file()]
     payload['package_sha256'] = digest_payload(payload)
     return payload
 
@@ -158,6 +173,7 @@ def verify_payload(ep: Path, payload: dict) -> list[str]:
         rows.append(payload['cover'])
     rows.extend([x for x in payload.get('body') or [] if isinstance(x, dict)])
     rows.extend([x for x in payload.get('text_artifacts') or [] if isinstance(x, dict)])
+    rows.extend([x for x in payload.get('evidence') or [] if isinstance(x, dict)])
     if not rows:
         errors.append('release package contains no files')
     for row in rows:
