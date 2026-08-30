@@ -58,7 +58,12 @@
     "frame_impact_model",
     "anomaly_amplification",
     "per_frame_environment_hash",
-    "environment_semantic_review"
+    "environment_semantic_review",
+    "resolved_frame_contract",
+    "frame_contract_sha_binding",
+    "generation_review_contract_parity",
+    "derived_frame_contract_cache",
+    "localized_storyboard_frame_hash"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -69,7 +74,8 @@
     "Canonical engine exists only under episodes/_system.",
     "Evidence files never become a second stage source.",
     "Reality constrains capture behavior, not concept scale or fictional world existence.",
-    "Environment is a physical contract, not a visual filter."
+    "Environment is a physical contract, not a visual filter.",
+    "Resolved Frame Contracts are derived caches; Story, Storyboard, story-gates and Visual Profile remain authoritative."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

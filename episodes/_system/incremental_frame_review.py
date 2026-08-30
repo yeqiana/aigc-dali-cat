@@ -337,6 +337,12 @@ def _decorate_full(ep: Path) -> None:
 
 def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
     all_frames = base.frame_records(ep, require_files=True)
+    binding_errors = base.phase4_binding_errors(ep, all_frames)
+    if binding_errors:
+        print("INCREMENTAL FRAME REVIEW FAIL: stale/missing generation Frame Contract")
+        for error in binding_errors:
+            print("FAIL:", error)
+        return 2
     by_key = {r["frame"]: r for r in all_frames}
     selected = [by_key[k] for k in plan["context_frames"]]
     contexts = base.context_hashes(ep)

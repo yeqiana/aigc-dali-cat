@@ -50,6 +50,12 @@ V2.1 新篇不得直接从一个稳妥题目开始写完整故事。先生成 8�
 Story Lock 后先完成环境合同与逐帧 impact 设计，再进入 Visual Lock。天气不得滤镜化；高冲击异常不得只靠字幕说“更大”，必须在像素中通过尺度参照和前后级差成立。
 <!-- STORY_OS_V2_1_PHASE3_AGENTS_END -->
 
+<!-- STORY_OS_V2_1_PHASE4_AGENTS_BEGIN -->
+## V2.1 Phase 4 Resolved Frame Contract
+
+Environment / Impact Contract 通过后先编译全部 Frame Contracts，再进入 Visual Lock 校准。正式生图不得只依赖临时 scene prompt；scene prompt 与 Resolved Frame Contract 分层存在，后者是当次生产的完整机器合同。若合同 SHA 漂移，旧 generation attempt 不得直接冒充当前合同。
+<!-- STORY_OS_V2_1_PHASE4_AGENTS_END -->
+
 ## Episodes 机器状态与发布清单
 
 > 当前 Story OS：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。

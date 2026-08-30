@@ -22,6 +22,19 @@ Story Lock 通过后、Visual Lock 前必须完成：
 环境是物理条件，不是滤镜；异常可以很大，但高冲击帧必须有现实尺度参照、明确 escalation_from，并保持真实拍摄物理。
 <!-- STORY_OS_V2_1_PHASE3_END -->
 
+<!-- STORY_OS_V2_1_PHASE4_BEGIN -->
+## V2.1 Phase 4：Resolved Frame Contract
+
+Environment / Impact Contract PASS 后、Visual Lock 校准前：
+
+```text
+python episodes/_system/frame_contract.py compile-all <episode>
+python episodes/_system/frame_contract.py verify <episode>
+```
+
+每帧正式生成与最终审核必须绑定同一个 `frame_contract_sha256`。`meta/runtime/contracts/` 只是派生缓存，不是新权威源。
+<!-- STORY_OS_V2_1_PHASE4_END -->
+
 ## 0. 黄金路径（Golden Path）
 
 ```text

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "package": "Story OS V2.1 Phase 4 Resolved Frame Contract",
+  "package_version": "2.1.0-phase4",
+  "installed_at": "2026-08-30T23:28:25.372125+08:00",
+  "actual_git": {
+    "available": true,
+    "branch": "story",
+    "head": "3ece345bc03d94c3bed73e2ff7d25cd76782d276"
+  },
+  "backup": ".storyos_backups\\v21_phase4_20260830_232824",
+  "encoding": "utf-8",
+  "tests": "PASS",
+  "files": [
+    {
+      "path": "story_os_manifest.json",
+      "sha256": "5148ee967c3c90886491b15bcb4929e6df273578ba61caee8a4e7626fdfbc0e7",
+      "bytes": 2657
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "sha256": "242adc45e64d6d996be3c0c199d97ddb2aedee675648c7b7459f67cbd5bf7c66",
+      "bytes": 3788
+    },
+    {
+      "path": "START_HERE.md",
+      "sha256": "5dadc3019dab85283c7fe586e004eafab76184a7b7dae9da4b5444f4c88b3d86",
+      "bytes": 10990
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "d2c913000e2ac5aaa641a405ce2e3594aa7495545311f9046734ea545740923f",
+      "bytes": 17931
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "c399c201031b51c3ce3f225e08ef64a9eeb4f3435d0a51e210cda90ad297d27e",
+      "bytes": 8955
+    },
+    {
+      "path": "standards/AUTHORITY_INDEX.json",
+      "sha256": "b2c9510d0bf9d9c4d95e71d8eaa07e5af2bd302d83526a8ef8ba3acdcf7e04d4",
+      "bytes": 12668
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "0653ed22292754de6d073727f32ede032c3c647d409bbf67f69d48684c333bda",
+      "bytes": 59764
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "sha256": "4320ad1b12c1aa373a3aedd9fc90f7862c8f9fb3984bee084719d182844252b7",
+      "bytes": 9896
+    },
+    {
+      "path": "episodes/_system/codex_auto_orchestrator.py",
+      "sha256": "e32b6e99629289560f63241606f1fa70f79bd87b337edfad9e6658c542664496",
+      "bytes": 15936
+    },
+    {
+      "path": "episodes/_system/validate_episode.py",
+      "sha256": "974be3e337c7110746b99454ada5fccaeccb259b57b2965585c6529ccb9997b5",
+      "bytes": 33137
+    },
+    {
+      "path": "episodes/_system/codex_subscription_image.py",
+      "sha256": "4f6ff4cf649be58fb51314eb339640902292c18205af6e4d37a49d19b06d34c4",
+      "bytes": 10602
+    },
+    {
+      "path": "episodes/_system/production_ledger.py",
+      "sha256": "59a6cbf91e1ba833de6058dd4434fcadbbc0b1a61cb831f17408066e3538d556",
+      "bytes": 36526
+    },
+    {
+      "path": "episodes/_system/frame_semantic_review.py",
+      "sha256": "7c09cda1aff44cca2a2d2597f8bdc74b8a22a267a3221287a93fb73749fefa88",
+      "bytes": 33444
+    },
+    {
+      "path": "episodes/_system/incremental_frame_review.py",
+      "sha256": "3151eeb72116683684ab66098372249f3f880c48d4abb68c881fc0a7f46f7ad3",
+      "bytes": 24096
+    },
+    {
+      "path": "episodes/_system/frame_contract.py",
+      "sha256": "da1f7cf2c2d9de31232d0591d1a1b2e8c03366219fc04b7c0bb5c4c7b8c68433",
+      "bytes": 21170
+    },
+    {
+      "path": "standards/Resolved_Frame_Contract规范_V1.0.md",
+      "sha256": "2bbcaeac083a2dff391e1700737fd94d89699877dc5fec52f522e7517f9f3caf",
+      "bytes": 2787
+    }
+  ]
+}

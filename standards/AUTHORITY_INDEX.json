@@ -178,6 +178,13 @@
       "scope": "environment_physics_and_anomaly_amplification",
       "active": true,
       "note": "Embedded story-gates environment/impact contract; no second authority."
+    },
+    {
+      "path": "standards/Resolved_Frame_Contract规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "resolved_frame_contract_compilation",
+      "active": true,
+      "note": "Engineering compilation standard; runtime frame-contract files are derived caches, not authority."
     }
   ],
   "rules": {
@@ -303,6 +310,20 @@
       "frame_directives_path": "meta/story-gates.json#visual.frame_directives",
       "required_for_contract_min": "2.1.0",
       "independent_weather_file_forbidden": true
+    },
+    "resolved_frame_contract": {
+      "tool": "episodes/_system/frame_contract.py",
+      "cache_root": "meta/runtime/contracts/frames",
+      "index": "meta/runtime/contracts/frame-contract-index.json",
+      "authority_sources": [
+        "Story",
+        "Storyboard",
+        "meta/story-gates.json",
+        "Visual Profile",
+        "approved references"
+      ],
+      "required_for_contract_min": "2.1.0",
+      "cache_is_authority": false
     }
   }
 }

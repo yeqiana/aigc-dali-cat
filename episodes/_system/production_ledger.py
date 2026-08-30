@@ -13,6 +13,7 @@ from pathlib import Path
 
 from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
 from visual_profile import compile_prompt_contract
+import frame_contract as resolved_frame_contract
 
 LEDGER_FILE = Path("meta/production-ledger.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
@@ -372,6 +373,19 @@ def current_visual_provenance(ep: Path) -> dict:
     }
 
 
+def current_frame_contract_provenance(ep: Path, frame: str) -> dict | None:
+    return resolved_frame_contract.provenance(ep, frame)
+
+
+def verify_attempt_frame_contract_provenance(ep: Path, frame: str, attempt: dict) -> None:
+    if not resolved_frame_contract.required(ep):
+        return
+    request = attempt.get("request") or {}
+    errors = resolved_frame_contract.verify_recorded_provenance(ep, frame, request.get("frame_contract"))
+    if errors:
+        raise SystemExit("; ".join(errors))
+
+
 def verify_attempt_visual_provenance(ep: Path, attempt: dict) -> None:
     request = attempt.get("request") or {}
     recorded = request.get("visual_profile")
@@ -436,6 +450,7 @@ def cmd_begin(args: argparse.Namespace) -> None:
     refs = parse_references(args.reference)
     enforce_capture_style_provenance(ep, refs)
     visual_provenance = current_visual_provenance(ep)
+    frame_contract_provenance = current_frame_contract_provenance(ep, key)
     c = data["canvas"]
     payload = {
         "frame": key,
@@ -448,6 +463,7 @@ def cmd_begin(args: argparse.Namespace) -> None:
         "canvas": {"aspect_ratio": c["aspect_ratio"], "width": c["width"], "height": c["height"]},
         "references": refs,
         "visual_profile": visual_provenance,
+        "frame_contract": frame_contract_provenance,
     }
     attempt = {
         "attempt_id": uuid.uuid4().hex[:12],
@@ -471,6 +487,7 @@ def cmd_success(args: argparse.Namespace) -> None:
     key, frame = frame_obj(data, args.frame)
     attempt = active_attempt(frame)
     verify_attempt_visual_provenance(ep, attempt)
+    verify_attempt_frame_contract_provenance(ep, key, attempt)
     candidate = Path(args.path).resolve()
     if not candidate.is_file():
         raise SystemExit(f"candidate not found: {candidate}")

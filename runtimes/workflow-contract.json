@@ -15,7 +15,10 @@
     "reality_limits_capture_not_concept": true,
     "environment_is_physics_not_filter": true,
     "anomaly_amplified_requires_scale_reference": true,
-    "environment_changes_use_per_frame_hashes": true
+    "environment_changes_use_per_frame_hashes": true,
+    "resolved_frame_contract_is_derived_cache": true,
+    "generation_and_review_bind_same_frame_contract_sha": true,
+    "storyboard_local_hash_when_extractable": true
   },
   "steps": {
     "RESTORE": {
@@ -84,7 +87,7 @@
     },
     "VISUAL_LOCK": {
       "depends_on": [
-        "ENVIRONMENT_IMPACT_CONTRACT"
+        "RESOLVED_FRAME_CONTRACT"
       ],
       "cost": "EXPENSIVE",
       "parallelizable": false
@@ -133,6 +136,15 @@
       "cost": "MEDIUM",
       "parallelizable": false,
       "evidence": "meta/story-gates.json#visual.environment_contract+frame_directives"
+    },
+    "RESOLVED_FRAME_CONTRACT": {
+      "depends_on": [
+        "ENVIRONMENT_IMPACT_CONTRACT"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false,
+      "derived_cache": true,
+      "evidence": "meta/runtime/contracts/frame-contract-index.json"
     }
   }
 }

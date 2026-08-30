@@ -16,6 +16,7 @@ from PIL import Image
 
 from story_os_contract import story_os_version
 import environment_contract as phase3_env
+import frame_contract as phase4_contract
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_DIR = Path("meta/frame-reviews")
@@ -185,9 +186,20 @@ def context_hashes(ep: Path) -> dict:
 
 
 def phase3_context_hashes(ep: Path, frame: str) -> dict:
-    if not phase3_env.required(ep):
-        return {}
-    return phase3_env.frame_hashes(ep, frame)
+    out = phase3_env.frame_hashes(ep, frame) if phase3_env.required(ep) else {}
+    if phase4_contract.required(ep):
+        contract = phase4_contract.compile_frame(ep, frame, write_cache=False)
+        out["frame_contract_sha256"] = contract["contract_sha256"]
+    return out
+
+def phase4_binding_errors(ep: Path, frames: list[dict]) -> list[str]:
+    if not phase4_contract.required(ep):
+        return []
+    errors: list[str] = []
+    for frame in frames:
+        errors.extend(phase4_contract.verify_approved_asset_binding(ep, frame["frame"], frame["sha256"]))
+    return errors
+
 
 
 def frame_records(ep: Path, *, require_files: bool) -> list[dict]:
@@ -390,6 +402,7 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
     try:
         frames = frame_records(ep, require_files=not metadata_only)
         contexts = context_hashes(ep)
+        errors.extend(phase4_binding_errors(ep, frames))
     except Exception as exc:
         return [str(exc)]
 
@@ -506,6 +519,8 @@ Read these locked sources before judging:
 - {rel_gates}
 - standards/制作规范_正式版.md
 - standards/生产帧语义强制规范_V1.0.md
+- standards/Resolved_Frame_Contract规范_V1.0.md
+Resolved Frame Contracts: {rel_ep}/meta/runtime/contracts/frames/NN.json. The frame review must honor the SAME contract SHA used by the generation attempt.
 
 Attached images are in numeric order and map as follows:
 {mapping}
@@ -570,6 +585,12 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
         raise RuntimeError("attempt must be 1 or 2; only one automatic content-repair round is permitted")
     frames = frame_records(ep, require_files=True)
     contexts = context_hashes(ep)
+    binding_errors = phase4_binding_errors(ep, frames)
+    if binding_errors:
+        print("FRAME SEMANTIC REVIEW FAIL: stale/missing generation Frame Contract")
+        for error in binding_errors:
+            print("FAIL:", error)
+        return 2
 
     # Cheap deterministic failure before spending a critic call.
     phashes = perceptual_rows(frames)

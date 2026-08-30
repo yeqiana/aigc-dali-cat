@@ -16,7 +16,7 @@ GATE_HINTS = {
     "IDEA_LOCKED": "锁选题：Recent-5 上下文 + 8–12候选 + Concept Ambition + 三传播图无字测试。",
     "STORYBOARD_LOCKED": "Story Lock：锁完整故事 + 专业分镜 + hook/climax/payoff。",
     "VISUAL_CALIBRATED": "Visual Lock：真实性卡 + 连续性锚点 + Environment/Impact Contract + 三张校准 + 四张视觉准入。",
-    "PRODUCTION_PASSED": "Batch：剩余图生产完成；逐帧真实性/连续性审核；必要帧最多一次内容返修。",
+    "PRODUCTION_PASSED": "Batch：Resolved Frame Contract 绑定后完成生产；逐帧真实性/连续性审核；必要帧最多一次内容返修。",
     "PUBLISH_READY": "Release Lock：FINAL_CHECKLIST + 标题/封面/字幕/简介/话题/manifest 全部一致。",
     "PUBLISHED": "记录实际发布时间、平台和最终发布版本事实。",
     "DATA_REVIEWED": "回填 6h/24h/48h/7d 数据，形成下一篇选题输入。",
@@ -85,6 +85,7 @@ def main():
     p = sub.add_parser("regression"); p.add_argument("regression_cmd", choices=["run", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("concept"); p.add_argument("concept_cmd", choices=["init", "run-critic", "verify", "show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("environment"); p.add_argument("environment_cmd", choices=["init", "verify", "resolve-frame", "show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("frame-contract"); p.add_argument("frame_contract_cmd", choices=["compile-all", "compile", "verify", "show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("fingerprint"); p.add_argument("fingerprint_cmd", choices=["init", "compare", "register"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--resume", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=7200)
     p = sub.add_parser("image-backend"); p.add_argument("backend_cmd", choices=["generate", "generate-for-frame", "self-test"]); p.add_argument("extra", nargs=argparse.REMAINDER)
@@ -115,6 +116,7 @@ def main():
     if args.cmd == "checkpoint": return forward("runtime_checkpoint.py", [args.checkpoint_cmd, str(ep), *args.extra])
     if args.cmd == "concept": return forward("concept_ambition.py", [args.concept_cmd, str(ep), *args.extra])
     if args.cmd == "environment": return forward("environment_contract.py", [args.environment_cmd, str(ep), *args.extra])
+    if args.cmd == "frame-contract": return forward("frame_contract.py", [args.frame_contract_cmd, str(ep), *args.extra])
     if args.cmd == "fingerprint": return forward("episode_fingerprint.py", [args.fingerprint_cmd, str(ep), *args.extra])
     if args.cmd == "audit-text": return forward("text_audit.py", [str(ep), *args.extra])
     if args.cmd == "transport": return forward("transport_guard.py", [args.transport_cmd, str(ep), *args.extra])

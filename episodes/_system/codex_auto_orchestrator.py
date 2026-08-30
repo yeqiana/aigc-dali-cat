@@ -90,6 +90,17 @@ For V2.1+ episodes, AFTER Story Lock and BEFORE Visual Lock:
 - Do not add heat haze, rain-on-lens, fog, wet reflections, snow residue or similar effects unless the resolved physical conditions support them.
 - Reality constrains HOW the anomaly is captured, not how large or impossible the anomaly may be.
 
+
+PHASE 4 RESOLVED FRAME CONTRACT:
+For V2.1+ episodes, AFTER Phase 3 Environment/Impact PASS and BEFORE generating Visual Lock calibration frames:
+- Run `python episodes/_system/frame_contract.py compile-all \"{rel}\"`.
+- Run `python episodes/_system/frame_contract.py verify \"{rel}\"`; do not continue on FAIL.
+- Treat `meta/runtime/contracts/frames/NN.json` as derived caches only. Never edit them to change the story.
+- Every formal generation/repair must use the current resolved Frame Contract. `codex_subscription_image.py generate-for-frame` injects it automatically.
+- Production Ledger must record `request.frame_contract.contract_sha256`.
+- If Story / localized Storyboard beat / Visual / Authenticity / Continuity / Environment / Impact / applicable Reference changes, recompile before generation.
+- Do not let an old generation attempt with a stale frame-contract SHA pass as current production evidence.
+- After Visual Lock PASS, run `python episodes/_system/frame_contract.py verify \"{rel}\"` again before Batch. If it is stale, do not patch the cache by hand: recompile and regenerate/review any calibration frame whose generation contract no longer matches.
 VISUAL LOCK:
 Resolve the visual profile. If the user did not explicitly override it, use the repository default profile. Every formal frame generation must obey the resolved compact visual contract.
 Generate exactly the three registered calibration frames first. Review actual images, run visual critic attempt 1, repair calibration only within existing limits if needed, then attempt 2. If still fail, stop.

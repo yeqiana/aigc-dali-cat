@@ -25,6 +25,18 @@
 - 最终实际像素审核绑定 per-frame environment/directive SHA，避免一段天气修改导致全篇无理由重审。
 <!-- STORY_OS_V2_1_PHASE3_END -->
 
+<!-- STORY_OS_V2_1_PHASE4_BEGIN -->
+## V2.1 Phase 4：Resolved Frame Contract
+
+- Environment / Impact Contract 后、Visual Lock 校准前执行 `frame_contract.py compile-all`。
+- 每帧合同合并 Story / 局部分镜 / Visual DNA / Capture / Authenticity / Continuity / Environment / Impact / References。
+- 合同缓存路径：`meta/runtime/contracts/frames/NN.json`。
+- Production Ledger generation request 必须绑定 `frame_contract_sha256`。
+- `codex_subscription_image.py generate-for-frame` 自动注入 `<frame_contract>`。
+- Frame Semantic Review 必须验证批准像素对应 generation attempt 的合同 SHA 与当前 SHA 一致。
+- 合同文件是 derived cache，绝不能反向覆盖 Story/Storyboard/story-gates。
+<!-- STORY_OS_V2_1_PHASE4_END -->
+
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
 ## Story OS V2.0.3.6 Golden Path
 
