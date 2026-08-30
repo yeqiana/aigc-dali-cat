@@ -1,6 +1,39 @@
 {
   "schema_version": 1,
-  "story_os_version": "2.0.3.5",
-  "episodes": [],
+  "story_os_version": "2.0.3.6",
+  "episodes": [
+    {
+      "episode_id": "09-04",
+      "title": "瓶中世界",
+      "dimensions": {
+        "core_anomaly_mechanism": "玻璃容器实时映射并控制现实重力",
+        "story_engine": "为父亲手术费清厂估价时主动转动异常玻璃瓶",
+        "entry_mode": "2008年县玻璃厂旧物清点的第一人称数码记录",
+        "anomaly_carrier": "装着同步县城的玻璃瓶与水泥底座刻线",
+        "primary_visual_space": "待拆县玻璃厂旧办公室和同步倾斜的县城",
+        "middle_escalation": "瓶身裂纹映射道路裂缝，父亲被困医院",
+        "climax_form": "冒着瓶裂城毁风险受控旋转复位并放弃交易",
+        "relationship": "女儿与等待手术的父亲",
+        "reality_residue": "天空白弧证明现实也处于更大容器"
+      },
+      "source": "bootstrap_existing_real_fingerprint"
+    },
+    {
+      "episode_id": "10-01",
+      "title": "鳌太线·热汤",
+      "dimensions": {
+        "core_anomaly_mechanism": "失温下由同一组装备与地形触发的错误感知重组",
+        "story_engine": "为完成上次退线遗憾而在脚崴后硬撑，最终下撤判断失真",
+        "entry_mode": "当代鳌太高寒雪坡的第一人称胸前运动相机记录",
+        "anomaly_carrier": "橙色保温毯、头灯、金属杯、保温杯、背包、黑石和红绳",
+        "primary_visual_space": "风雪中的同一处黑石背风点与下撤雪坡",
+        "middle_escalation": "红绳在左而灯在右，无脚印的灯逐渐被误认成温暖饭棚",
+        "climax_form": "阿川伸手接应时主角推开他并坐回虚构热汤前",
+        "relationship": "受伤主角与持续接应、劝其下撤的队友阿川",
+        "reality_residue": "路过者视角显示黄色羽绒服仍坐雪地，所有暖棚物回到现实装备"
+      },
+      "source": "bootstrap_existing_real_fingerprint"
+    }
+  ],
   "note": "Do not invent historical fingerprints."
 }
