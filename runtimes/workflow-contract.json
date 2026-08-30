@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "workflow_version": "2.1-phase1",
+  "name": "Story OS V2.1 Workflow Engine Foundation",
+  "episode_stage_source": "meta/episode-state.json",
+  "checkpoint_source": "meta/runtime-checkpoint.json",
+  "rules": {
+    "do_not_create_second_episode_stage": true,
+    "cheap_checks_before_expensive_checks": true,
+    "reuse_clean_sha_bound_evidence": true,
+    "zip_is_delivery_adapter_not_stage_gate": true,
+    "codex_production_complete_at_publish_ready": true
+  },
+  "steps": {
+    "RESTORE": {
+      "depends_on": [],
+      "cost": "CHEAP",
+      "parallelizable": false
+    },
+    "INCREMENTAL_PLAN": {
+      "depends_on": [
+        "RESTORE"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false
+    },
+    "TOPIC_GUARD": {
+      "depends_on": [
+        "INCREMENTAL_PLAN"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false
+    },
+    "STORY_BUILD": {
+      "depends_on": [
+        "TOPIC_GUARD"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": false
+    },
+    "STORY_CRITIC": {
+      "depends_on": [
+        "STORY_BUILD"
+      ],
+      "cost": "EXPENSIVE",
+      "parallel_group": "story_review"
+    },
+    "RECENT5_SEMANTIC": {
+      "depends_on": [
+        "STORY_BUILD"
+      ],
+      "cost": "EXPENSIVE",
+      "parallel_group": "story_review"
+    },
+    "VISUAL_LOCK": {
+      "depends_on": [
+        "STORY_CRITIC",
+        "RECENT5_SEMANTIC"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": false
+    },
+    "PRODUCTION": {
+      "depends_on": [
+        "VISUAL_LOCK"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": true
+    },
+    "FRAME_REVIEW": {
+      "depends_on": [
+        "PRODUCTION"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": false
+    },
+    "TEXT_RELEASE": {
+      "depends_on": [
+        "FRAME_REVIEW"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": true
+    },
+    "PUBLISH_READY_GATE": {
+      "depends_on": [
+        "TEXT_RELEASE"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false
+    },
+    "DELIVERY": {
+      "depends_on": [
+        "PUBLISH_READY_GATE"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false,
+      "runtime_optional": true
+    }
+  }
+}

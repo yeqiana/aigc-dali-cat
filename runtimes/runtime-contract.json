@@ -1,7 +1,8 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "story_os_version": "2.0.3.6",
-  "name": "Multi-Runtime + Incremental Workspace Closure",
+  "workflow_contract": "runtimes/workflow-contract.json",
+  "name": "Multi-Runtime + V2.1 Workflow Foundation",
   "state_source": "meta/episode-state.json",
   "creative_authority": "standards/制作规范_正式版.md",
   "routing_order": [
@@ -13,20 +14,27 @@
     "CODEX": {
       "target": "deterministic_full_auto_file_pipeline",
       "checkpoint": "repository",
-      "orchestrator": "episodes/_system/codex_auto_orchestrator.py",
+      "orchestrator": "episodes/_system/workflow_runner.py",
+      "compat_orchestrator": "episodes/_system/codex_auto_orchestrator.py",
       "image_backend": "episodes/_system/codex_subscription_image.py",
       "canvas_normalizer": "episodes/_system/canvas_normalize.py",
       "postflight_required": true,
-      "final_zip": "required"
+      "production_complete_at": "PUBLISH_READY",
+      "delivery_package": false,
+      "final_zip": "not_required"
     },
     "WORK": {
       "target": "full_auto_workspace_pipeline",
       "checkpoint": "workspace_and_repository_when_writable",
+      "production_complete_at": "PUBLISH_READY",
+      "delivery_package": "when_capable",
       "final_zip": "required_when_tools_allow"
     },
     "WEB": {
       "target": "continuous_best_effort_with_resume",
       "checkpoint": "conversation_and_repository_when_writable",
+      "production_complete_at": "PUBLISH_READY",
+      "delivery_package": "when_capable",
       "final_zip": "best_effort_only_when_tools_allow"
     }
   },
@@ -57,6 +65,9 @@
     "incremental_frame_review": "episodes/_system/incremental_frame_review.py",
     "local_media_workspace": "episodes/_system/media_workspace.py",
     "full_review_escalation_dirty_ratio": 0.25,
-    "frozen_evidence_media_paths_immutable": true
+    "frozen_evidence_media_paths_immutable": true,
+    "zip_is_delivery_adapter": true,
+    "codex_zip_not_required_for_completion": true,
+    "workflow_performance_required": true
   }
 }

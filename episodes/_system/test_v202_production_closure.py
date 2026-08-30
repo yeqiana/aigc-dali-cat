@@ -76,6 +76,6 @@ class ClosureTests(unittest.TestCase):
         ep=self.base/'post'; (ep/'meta').mkdir(parents=True)
         (ep/'meta/runtime-checkpoint.json').write_text(json.dumps({'continuous_execution_authorized':True,'approval_basis':'delegated_continuous_execution','failed_frames':[]}),encoding='utf-8')
         (ep/'meta/production-ledger.json').write_text(json.dumps({'canvas':{'aspect_ratio':'4:5','width':1080,'height':1350},'frames':{'01':{'status':'PENDING','content_repairs_used':0,'attempts':[],'approved_asset':None,'lock':None}},'policy':{},'asset_roots':{}}),encoding='utf-8')
-        status,reason,pkg=orch.postflight(ep); self.assertEqual(status,'PAUSED'); self.assertIsNone(pkg)
+        status,reason=orch.postflight(ep); self.assertEqual(status,'PAUSED')
 
 if __name__=='__main__': unittest.main()

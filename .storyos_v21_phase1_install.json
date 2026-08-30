@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "package": "Story OS V2.1 Phase 1 Workflow Foundation",
+  "package_version": "2.1.0-phase1",
+  "installed_at": "2026-08-30T22:24:44+08:00",
+  "verified_story_branch_head": "c58544a89830ee2294b1dd2737b90074f17bf868",
+  "actual_git": {
+    "available": true,
+    "branch": "story",
+    "head": "c58544a89830ee2294b1dd2737b90074f17bf868"
+  },
+  "backup": ".storyos_backups\\v21_phase1_20260830_222443",
+  "encoding": "utf-8",
+  "files": [
+    {
+      "path": "runtimes/runtime-contract.json",
+      "sha256": "d96ff557c62285fca4f48690aeb85c51df50c77100a9529c3e56e6d33e1372eb",
+      "bytes": 2878
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "sha256": "ba1c51e19c82bd26230bd79e95ba29b90716b87ec745b1a666226ee598738c1e",
+      "bytes": 8867
+    },
+    {
+      "path": "episodes/_system/codex_auto_orchestrator.py",
+      "sha256": "baf0455ff9108c19dff6e13d36e6e2031f35d1c11520d61aae463837fe09a638",
+      "bytes": 12629
+    },
+    {
+      "path": "episodes/_system/incremental_closure.py",
+      "sha256": "825ec07f29b7e53ad3c939bfa2cc48157343434c11de4a625e555d2ca13d5d63",
+      "bytes": 5904
+    },
+    {
+      "path": "episodes/_system/runtime_checkpoint.py",
+      "sha256": "588b5dbda1857a2d0a5a418be505914b1dacd289f24ea58000d35e99e7c7e27f",
+      "bytes": 4290
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "sha256": "8270570b109a0c8b5a14e54ccbf940f27cc029bb3923564c616d1321b86c5957",
+      "bytes": 2212
+    },
+    {
+      "path": "episodes/_system/workflow_runner.py",
+      "sha256": "06361e9190ef785877007c8f0d77edbc37b14568bffb75d168702b1f2a201ae7",
+      "bytes": 5473
+    },
+    {
+      "path": "episodes/_system/workflow_dependencies.py",
+      "sha256": "7914c9848550cf48aba69bf331d1ba3e5476ed5d3dfa0af027ff624ea448a218",
+      "bytes": 2183
+    },
+    {
+      "path": "episodes/_system/critic_cache.py",
+      "sha256": "928a8e45ce21fde51a05343612beea1ea8fa7bfb128f3b5ceabab0bced425315",
+      "bytes": 3227
+    },
+    {
+      "path": "episodes/_system/workflow_performance.py",
+      "sha256": "5eb12c8ac90b3337a1b0c18af77284bde00a0892e27c2a66c5b33c61c5e76b7e",
+      "bytes": 3831
+    }
+  ],
+  "tests": "PASS"
+}
