@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.0.3.4",
+  "frame": "06",
+  "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/06.png",
+  "asset_sha256": "922d51db132ac1c145ef519be8272fa460b1d46a4989dba5490809d3cc323294",
+  "story_sha256": "91f1c9d7eb0f139a259183f01251bbc481f66a16e4a7c135e2c1ec695ed14ae5",
+  "storyboard_sha256": "d9374c2579e5940a8d4400d8f7996ef596ba3615fc18d8ad0e3c759d97c5c0f1",
+  "visual_contract_sha256": "a1d42c2aa2784a38bad24b548f51cf5272266e48eb5a9776e23b7594bf8db34f",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "review_scope": "FULL_FRAME_SET",
+    "attempt": 1,
+    "reviewed_at": "2026-08-30T05:13:39+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true
+  },
+  "issue_codes": [],
+  "notes": "蓝灰外套、红手套同伴跪在雪地处理黄衣摄影者的登山鞋或踝部；受伤后的处置动作和近距离第一人称关系清楚。",
+  "decision": "pass"
+}

@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0.3.5",
+  "engine": "story_os_subtitle_layout_v1",
+  "canonical_renderer": true,
+  "source": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/subtitles.yaml",
+  "source_sha256": "d0ff46d5f25488e6a0ca3a6523c8ce6fdcc3a49ee6bc33d92f1784af0b27a238",
+  "policy": {
+    "punctuation_only_second_line": "drop_entire_second_line",
+    "max_lines": 2,
+    "font": "Microsoft YaHei Bold",
+    "font_size": 42,
+    "stroke_width": 4,
+    "left_margin": 72
+  },
+  "frames": {
+    "01": {
+      "caption": "去年我走到半路就退了。这次，我想走完。",
+      "lines": [
+        "去年我走到半路就退了。这次，我想走完。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
+      "base_sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/01.png",
+      "output_sha256": "1cb4cb31e0faf3862ace62e6ec8686486dd96ac9398fc12a216ee007997e9fea"
+    },
+    "02": {
+      "caption": "出发前我和阿川说好，谁出问题谁就下撤。",
+      "lines": [
+        "出发前我和阿川说好，谁出问题谁就下撤。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/02.png",
+      "base_sha256": "21c3044e8f63ca49deb5af4c6d0107fd710dcf18a793fcb600b454423df7d095",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/02.png",
+      "output_sha256": "d077fac2d1f7b274e971761ce060c112ad4de4802a5879b995828b94d6513d95"
+    },
+    "03": {
+      "caption": "风才起来，袖口就结了霜，我却热得想拉开拉链。",
+      "lines": [
+        "风才起来，袖口就结了霜，我却热得想拉开拉链。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/03.png",
+      "base_sha256": "7e876da6a9f734079f51e57af29b7fbb61a0294636aa4963bba0142931d5acce",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/03.png",
+      "output_sha256": "47ee8da79befe39a9e1c3fa31343c2b81f96b766ec02a6643ad0ff5e248c3c0f"
+    },
+    "04": {
+      "caption": "我摘下一只手套。阿川回头，让我赶紧戴回去。",
+      "lines": [
+        "我摘下一只手套。阿川回头，让我赶紧戴回去。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/04.png",
+      "base_sha256": "3f8a67373787826fea25c87b6ae62f7f1246cc65b64f2ea195db913e78d63158",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/04.png",
+      "output_sha256": "62a942894bdedcf634ec6cbd7150d9aa3116491cf35129b5906df1e371276a3d"
+    },
+    "05": {
+      "caption": "左脚踩进石缝，我听见自己叫了一声。",
+      "lines": [
+        "左脚踩进石缝，我听见自己叫了一声。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/05.png",
+      "base_sha256": "496153f51ffd72b88994c50fc0bfb754be79902bf15cba108a8c95fbf69ea367",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/05.png",
+      "output_sha256": "e262806b1f515f01184cf55418c11132f3de4fff166870811743d06fa0909fea"
+    },
+    "06": {
+      "caption": "阿川说，别再硬撑了。我说，再走一段。",
+      "lines": [
+        "阿川说，别再硬撑了。我说，再走一段。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/06.png",
+      "base_sha256": "922d51db132ac1c145ef519be8272fa460b1d46a4989dba5490809d3cc323294",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/06.png",
+      "output_sha256": "fa62c44580872e08cb00d62f64ba2132e3f9bdf6c7f0de216a2478838faf9c1d"
+    },
+    "07": {
+      "caption": "登山杖转向下坡。第二次，认了。",
+      "lines": [
+        "登山杖转向下坡。第二次，认了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/07.png",
+      "base_sha256": "8969655d61dba3c55850c71d5167864726e46b2af76ce01df9229d7f5494305f",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/07.png",
+      "output_sha256": "31abe34dd61901605b65b4f8a41452e2b3e3de825faf0318af231929130245ec"
+    },
+    "08": {
+      "caption": "走了没多远，脚居然不疼了。",
+      "lines": [
+        "走了没多远，脚居然不疼了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/08.png",
+      "base_sha256": "925dbf6712f7fb4c8592dae1e2da45161e7ba3bb2db9c598568f22aee2734eaf",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/08.png",
+      "output_sha256": "8e639854db6a5ef57ee8feb0ce441dbb55b6a272ae9a43e2e5838c22dbc149d5"
+    },
+    "09": {
+      "caption": "可每一步都踩不正，连安全扣都对不上。",
+      "lines": [
+        "可每一步都踩不正，连安全扣都对不上。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/09.png",
+      "base_sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/09.png",
+      "output_sha256": "306611554b1b09f9c6baf0eaa9f131a347a0d8c3124affc9f83bf9925766eb23"
+    },
+    "10": {
+      "caption": "白茫茫一片，我只看那根红绳。",
+      "lines": [
+        "白茫茫一片，我只看那根红绳。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/10.png",
+      "base_sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/10.png",
+      "output_sha256": "c2a6dd6a3ce93305deb11f4a5d3213cafeb34ababda4a3a52ddf693c7a8a0aea"
+    },
+    "11": {
+      "caption": "右边突然亮起一排灯。可红绳，明明在左边。",
+      "lines": [
+        "右边突然亮起一排灯。可红绳，明明在左边。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/11.png",
+      "base_sha256": "29795e280f58cbce56ca97b3a5f24e924e8c9f4ff25835387c465ea96b88c54d",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/11.png",
+      "output_sha256": "4aa6f9cabbd016ac2ffee7fd12010bc92c546586703fc2a238d4f45d434dfa1a"
+    },
+    "12": {
+      "caption": "灯近得像在眼前，雪上却没有一条路。",
+      "lines": [
+        "灯近得像在眼前，雪上却没有一条路。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/12.png",
+      "base_sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/12.png",
+      "output_sha256": "8c8e1916c37ecc54655f0f7e2e6ddaa8cb25b57d8ba43e5726c5b5e13fb15680"
+    },
+    "13": {
+      "caption": "阿川把我按在石头后。他说已经叫了人。",
+      "lines": [
+        "阿川把我按在石头后。他说已经叫了人。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/13.png",
+      "base_sha256": "de1251b7197f21ebb2626704e2c9ef6eee93c4c6a08b355e97c84988ed6cec54",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/13.png",
+      "output_sha256": "ae315554f82aecd45edaeeddfabe9cc7f98e9413682711bcf51d87254ea6ecb8"
+    },
+    "14": {
+      "caption": "风停了。灯、热气，全在我眼前。",
+      "lines": [
+        "风停了。灯、热气，全在我眼前。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
+      "base_sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/14.png",
+      "output_sha256": "525b5d01ee63ade128cbef361c0f7f08fc250fbadccd6fefe6f1c4e2f4a9aeea"
+    },
+    "15": {
+      "caption": "桌上摆着热汤热菜，边上坐满了人。我闻到饭香了。",
+      "lines": [
+        "桌上摆着热汤热菜，边上坐满了人。我闻到饭香了"
+      ],
+      "dropped_punctuation_only_second_line": true,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/15.png",
+      "base_sha256": "7bc706f0da930ed2f0ec7c25599c0331bdaec6e827e3c3d914bd0b74a40a1885",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/15.png",
+      "output_sha256": "02918ddd49e684cd754e320db723ddf49abf96630b364ea0cfe1bcc84df1078b"
+    },
+    "16": {
+      "caption": "汤冒着气。袖口的冰，一点没化。",
+      "lines": [
+        "汤冒着气。袖口的冰，一点没化。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/16.png",
+      "base_sha256": "085c894e0ccb67f810e7c49e6cb95b6fbcd3f95c438281e517b14280f4bda6b7",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/16.png",
+      "output_sha256": "8bf15cccbfe2949d01baef32d9a8dda4bcc3c5e2858e340d82d219f11031e4bc"
+    },
+    "17": {
+      "caption": "我喊了两声。没人抬头。",
+      "lines": [
+        "我喊了两声。没人抬头。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/17.png",
+      "base_sha256": "3043f8504340af65671e529aaaa798d3bf792db3f2cff56d805373c09e80c3c2",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/17.png",
+      "output_sha256": "6d9f3fcce7369f88654659acf418c2eab20aa679d758b5d60917f3642778b44b"
+    },
+    "18": {
+      "caption": "我想端碗，手合不上，左脚也还是歪的。",
+      "lines": [
+        "我想端碗，手合不上，左脚也还是歪的。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/18.png",
+      "base_sha256": "76a27e12e427aa331ef2fa8a910d43335cef0706a24b388a42367fb0bfa53d5f",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/18.png",
+      "output_sha256": "d70a6283b9fda4b52ffef24dcc17be03d168014929d2071f00b0ff277ac90656"
+    },
+    "19": {
+      "caption": "阿川叫我站起来。我推开他，坐回汤前。",
+      "lines": [
+        "阿川叫我站起来。我推开他，坐回汤前。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/19.png",
+      "base_sha256": "b361fbe6213ca82084a857952dae0aabf67862108b7a57f77aa9ef581ed1d170",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/19.png",
+      "output_sha256": "9293235c269a2b1fe28c1d177714b4300235939245be52d546ac0579bb7679fa"
+    },
+    "20": {
+      "caption": "",
+      "lines": [],
+      "dropped_punctuation_only_second_line": false,
+      "silent": true,
+      "x": 72,
+      "y": 918,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/20.png",
+      "base_sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+      "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/20.png",
+      "output_sha256": "432f7da9b22fcf984de9ee2860e69ec8474a211f5f54c248445d4433483c1f10"
+    }
+  },
+  "summary": {
+    "passed": true,
+    "frame_count": 20
+  }
+}

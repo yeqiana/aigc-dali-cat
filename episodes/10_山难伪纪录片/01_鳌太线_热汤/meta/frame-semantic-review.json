@@ -1,0 +1,236 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.0.3.4",
+  "story_sha256": "91f1c9d7eb0f139a259183f01251bbc481f66a16e4a7c135e2c1ec695ed14ae5",
+  "storyboard_sha256": "d9374c2579e5940a8d4400d8f7996ef596ba3615fc18d8ad0e3c759d97c5c0f1",
+  "visual_contract_sha256": "a1d42c2aa2784a38bad24b548f51cf5272266e48eb5a9776e23b7594bf8db34f",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "review_scope": "FULL_FRAME_SET",
+    "attempt": 1,
+    "reviewed_at": "2026-08-30T05:13:39+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "asset_sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5"
+    },
+    {
+      "frame": "02",
+      "asset_sha256": "21c3044e8f63ca49deb5af4c6d0107fd710dcf18a793fcb600b454423df7d095"
+    },
+    {
+      "frame": "03",
+      "asset_sha256": "7e876da6a9f734079f51e57af29b7fbb61a0294636aa4963bba0142931d5acce"
+    },
+    {
+      "frame": "04",
+      "asset_sha256": "3f8a67373787826fea25c87b6ae62f7f1246cc65b64f2ea195db913e78d63158"
+    },
+    {
+      "frame": "05",
+      "asset_sha256": "496153f51ffd72b88994c50fc0bfb754be79902bf15cba108a8c95fbf69ea367"
+    },
+    {
+      "frame": "06",
+      "asset_sha256": "922d51db132ac1c145ef519be8272fa460b1d46a4989dba5490809d3cc323294"
+    },
+    {
+      "frame": "07",
+      "asset_sha256": "8969655d61dba3c55850c71d5167864726e46b2af76ce01df9229d7f5494305f"
+    },
+    {
+      "frame": "08",
+      "asset_sha256": "925dbf6712f7fb4c8592dae1e2da45161e7ba3bb2db9c598568f22aee2734eaf"
+    },
+    {
+      "frame": "09",
+      "asset_sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a"
+    },
+    {
+      "frame": "10",
+      "asset_sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7"
+    },
+    {
+      "frame": "11",
+      "asset_sha256": "29795e280f58cbce56ca97b3a5f24e924e8c9f4ff25835387c465ea96b88c54d"
+    },
+    {
+      "frame": "12",
+      "asset_sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b"
+    },
+    {
+      "frame": "13",
+      "asset_sha256": "de1251b7197f21ebb2626704e2c9ef6eee93c4c6a08b355e97c84988ed6cec54"
+    },
+    {
+      "frame": "14",
+      "asset_sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1"
+    },
+    {
+      "frame": "15",
+      "asset_sha256": "7bc706f0da930ed2f0ec7c25599c0331bdaec6e827e3c3d914bd0b74a40a1885"
+    },
+    {
+      "frame": "16",
+      "asset_sha256": "085c894e0ccb67f810e7c49e6cb95b6fbcd3f95c438281e517b14280f4bda6b7"
+    },
+    {
+      "frame": "17",
+      "asset_sha256": "3043f8504340af65671e529aaaa798d3bf792db3f2cff56d805373c09e80c3c2"
+    },
+    {
+      "frame": "18",
+      "asset_sha256": "76a27e12e427aa331ef2fa8a910d43335cef0706a24b388a42367fb0bfa53d5f"
+    },
+    {
+      "frame": "19",
+      "asset_sha256": "b361fbe6213ca82084a857952dae0aabf67862108b7a57f77aa9ef581ed1d170"
+    },
+    {
+      "frame": "20",
+      "asset_sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6"
+    }
+  ],
+  "perceptual_hashes": [
+    {
+      "frame": "01",
+      "asset_sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
+      "dhash256": "6431e431813f203b18180c9c8743c388668f25818d810f850fc10fb00daf04eb",
+      "ahash256": "ffffffffffff3fff03ff183f0e1f061f041f000f000338003c007e0101100000"
+    },
+    {
+      "frame": "02",
+      "asset_sha256": "21c3044e8f63ca49deb5af4c6d0107fd710dcf18a793fcb600b454423df7d095",
+      "dhash256": "0ce73a67401e301898988c8e0d819d9ebe196a787e7c3e181db519f9099905af",
+      "ahash256": "ffffffffffff03ffb1b33818000f003d007f00c340017000f8007f001f000000"
+    },
+    {
+      "frame": "03",
+      "asset_sha256": "7e876da6a9f734079f51e57af29b7fbb61a0294636aa4963bba0142931d5acce",
+      "dhash256": "0ccf3ccccdd99181718999c0bbc4c6fa4d1849409c738e03bf033e08dec59e63",
+      "ahash256": "ffffff9fff1fff07ff17fb07a2018d810877000f00001800f81ff000f0000000"
+    },
+    {
+      "frame": "04",
+      "asset_sha256": "3f8a67373787826fea25c87b6ae62f7f1246cc65b64f2ea195db913e78d63158",
+      "dhash256": "001f801fc043c86e9c27f83168cbece5e026e071204ca47690e991eb0fa34683",
+      "ahash256": "1fff0fff0fff1fff39ffe1ffc1ff81ff000f00e701fb07f903f207d008000000"
+    },
+    {
+      "frame": "05",
+      "asset_sha256": "496153f51ffd72b88994c50fc0bfb754be79902bf15cba108a8c95fbf69ea367",
+      "dhash256": "a8ad841f8847126c60818d98c48974c3e6668c381831306743c78c3f207600fb",
+      "ahash256": "ffff81ff03ff00ff010701030000008000c01801306603decffe9ffc7ffc3fe0"
+    },
+    {
+      "frame": "06",
+      "asset_sha256": "922d51db132ac1c145ef519be8272fa460b1d46a4989dba5490809d3cc323294",
+      "dhash256": "013f00f681cce38e3f300db031f80b7807aa0bbc471c4f1c1b1c07c3cc71671c",
+      "ahash256": "ffffffff1fb9c600fe007f007f807f80ff00fe00fc20f830703b1c1f00870000"
+    },
+    {
+      "frame": "07",
+      "asset_sha256": "8969655d61dba3c55850c71d5167864726e46b2af76ce01df9229d7f5494305f",
+      "dhash256": "03df03fb03e27b60f942e3a2c65a8d18a92d490733641d8d0b012ec1c979cacc",
+      "ahash256": "ffffffffffcffeffff0fc70f8fff08170e3e1a386608fb3ffe00f80003c00a00"
+    },
+    {
+      "frame": "08",
+      "asset_sha256": "925dbf6712f7fb4c8592dae1e2da45161e7ba3bb2db9c598568f22aee2734eaf",
+      "dhash256": "0b9e271b159b479f63678bd3836929654ce546671f21e67276614c685f14f643",
+      "ahash256": "fffcfffcfffeffffffffffffffdfffcfffdffc4f7c070447e003c80340000000"
+    },
+    {
+      "frame": "09",
+      "asset_sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a",
+      "dhash256": "01f823e2e3e2f9c68dc0c4c90e06ca92178a37267f03fd17f997f29fe18d619c",
+      "ahash256": "ff83ff0ffe0ff21fff1f819f001c002f003f000f000f003e00380038003a0110"
+    },
+    {
+      "frame": "10",
+      "asset_sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7",
+      "dhash256": "009b001f0093035fc32e832d834703750b73096f035f2257623742534719ce0c",
+      "ahash256": "3fff3fff0fff0fff0e7f0e7f1effffff7ffe3ffe3eff2efe0e7e002000200000"
+    },
+    {
+      "frame": "11",
+      "asset_sha256": "29795e280f58cbce56ca97b3a5f24e924e8c9f4ff25835387c465ea96b88c54d",
+      "dhash256": "099f071f0e3f07ef1bf91bfa13a409ff085f0d2f0c17241b648f544b6e43dc07",
+      "ahash256": "fffefffefffc7ff8ffe0f3c0ff00fff07ffc7ffe7bff69ff49ff007e001c0000"
+    },
+    {
+      "frame": "12",
+      "asset_sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b",
+      "dhash256": "002f00bf807fc077c04fc03f003f003f203fc06f903f205f40bf400f802f8027",
+      "ahash256": "03f007fc07fc07fc07fc0ffe7ffe7fffffff1fff1ffe2ffe0ffe07f800000000"
+    },
+    {
+      "frame": "13",
+      "asset_sha256": "de1251b7197f21ebb2626704e2c9ef6eee93c4c6a08b355e97c84988ed6cec54",
+      "dhash256": "00ff23bb0737062734276e376636f72cf9b8e1f387770df727fb07ef676662cb",
+      "ahash256": "7ffe2ffc1fe40cfc60484040c040c040c00087800e003f003fc07fd8ffdc0f90"
+    },
+    {
+      "frame": "14",
+      "asset_sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+      "dhash256": "05ff9ba6cde574c78e6786ef119e586d98e718f360f9766f3a5f19d89b83d768",
+      "ahash256": "fffffffcffe8fffc3df81f800720000003c003e003e06040f000f000b2000400"
+    },
+    {
+      "frame": "15",
+      "asset_sha256": "7bc706f0da930ed2f0ec7c25599c0331bdaec6e827e3c3d914bd0b74a40a1885",
+      "dhash256": "0aeee4fdc18c91e871b9399d13dc4a5fd09fd1db20cb39a91c3d6c3e2d3a7b9a",
+      "ahash256": "0f8081c0fffb878343403300170103f807fc07b607fe707ff878f8f000000000"
+    },
+    {
+      "frame": "16",
+      "asset_sha256": "085c894e0ccb67f810e7c49e6cb95b6fbcd3f95c438281e517b14280f4bda6b7",
+      "dhash256": "06fb8da6cde5746f8e6786ef129e586d50e74ab348f9706b395f18c999c3d769",
+      "ahash256": "fffffffcffc8ffdc3ffc1f800510000001e003e003e060c0f000f000f2008000"
+    },
+    {
+      "frame": "17",
+      "asset_sha256": "3043f8504340af65671e529aaaa798d3bf792db3f2cff56d805373c09e80c3c2",
+      "dhash256": "631f03ef06b3642ec263423120f689f191b58e50033109b427f60b8b47d19761",
+      "ahash256": "07781f801fe0c7fc07de04e001c0038000001c003fffffe9ffc0ff00ff803e00"
+    },
+    {
+      "frame": "18",
+      "asset_sha256": "76a27e12e427aa331ef2fa8a910d43335cef0706a24b388a42367fb0bfa53d5f",
+      "dhash256": "0ff887f013c8601164b5a00c4837811011b131c939130e2307473ba50fad6f11",
+      "ahash256": "ffffffff27ff07ff01ff01ff00ff002f032f030600041c003e003e0018000000"
+    },
+    {
+      "frame": "19",
+      "asset_sha256": "b361fbe6213ca82084a857952dae0aabf67862108b7a57f77aa9ef581ed1d170",
+      "dhash256": "1bc80b8a138a1bfc034e637e53a509610ff2628471873786e6c284d38b8713cb",
+      "ahash256": "3f013f1d3f103f001f580ff017401bcf0fe7071900000000860c0f841f001600"
+    },
+    {
+      "frame": "20",
+      "asset_sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+      "dhash256": "197850e263134f32ec383b686e78ccb08d260d2d6c3a683b591b9e8e5c4c8c86",
+      "ahash256": "fff7ffffff26fe61f9c1fac1fcc1ffe33fff187800f001f01030103f001f801f"
+    }
+  ],
+  "near_duplicate_pairs": [],
+  "issue_codes": [
+    "IDENTITY_DRIFT",
+    "WARDROBE_DRIFT",
+    "POV_ILLEGAL",
+    "UNPLANNED_RECORDER",
+    "UNEXPLAINED_THIRD_PERSON",
+    "SPATIAL_CONTINUITY_BROKEN",
+    "TEMPORAL_CONTRADICTION"
+  ],
+  "critic_summary": {
+    "passed": false,
+    "notes": "20 帧整体形成雪坡受困、绳索下撤、白障寻光、热饮避险的连续主线，但 09 与 12 的摄影者身份和服装锚点发生未解释切换，20 又同时出现非法第三人称全景及从固定避难空间返回高山坡面的时空倒退，因此完整帧集不能通过生产语义门禁。"
+  },
+  "summary": {
+    "passed": false
+  }
+}
