@@ -2,7 +2,7 @@
   "schema_version": 1,
   "engine_version": "1.2",
   "created_at": "2026-08-29T22:40:52+08:00",
-  "updated_at": "2026-08-30T11:55:24+08:00",
+  "updated_at": "2026-08-30T12:05:17+08:00",
   "note": "Per-frame production transaction ledger. This is NOT an episode stage source.",
   "canvas": {
     "aspect_ratio": "4:5",
@@ -2208,7 +2208,7 @@
     },
     "20": {
       "number": 20,
-      "status": "REPAIRING",
+      "status": "LOCKED",
       "content_repairs_used": 1,
       "technical_failures": [],
       "attempts": [
@@ -2293,36 +2293,51 @@
           },
           "request_fingerprint": "aa11c88f13bd5ad93808da2aae2c4ba6654c260252bd553cf4edfb4f59069354",
           "notes": "Direct-user locked-frame ordinary repair: explicit passerby phone and reality payoff.",
-          "result": "pending"
+          "result": "success",
+          "completed_at": "2026-08-30T12:05:16+08:00",
+          "candidate": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/20-user-locked-repair.png",
+            "sha256": "bdda66221188307cb61490b10e793cf5d391490f5581cf6229720ebbceefa84d",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-08-30T12:05:16+08:00",
+            "kind": "repair",
+            "attempt_id": "4082a52faeb4"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/20.png",
-        "sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+        "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/repairs/20-user-locked-repair.png",
+        "sha256": "bdda66221188307cb61490b10e793cf5d391490f5581cf6229720ebbceefa84d",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-08-29T23:11:38+08:00",
-        "kind": "original",
-        "attempt_id": "1ecf048a91f9"
+        "recorded_at": "2026-08-30T12:05:16+08:00",
+        "kind": "repair",
+        "attempt_id": "4082a52faeb4"
       },
       "approved_asset": {
         "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/20.png",
-        "sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+        "sha256": "bdda66221188307cb61490b10e793cf5d391490f5581cf6229720ebbceefa84d",
         "width": 1080,
         "height": 1350,
-        "promoted_at": "2026-08-29T23:17:58+08:00",
-        "source_sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6"
+        "promoted_at": "2026-08-30T12:05:17+08:00",
+        "source_sha256": "bdda66221188307cb61490b10e793cf5d391490f5581cf6229720ebbceefa84d"
       },
       "lock": {
-        "at": "2026-08-29T23:17:58+08:00",
-        "sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
-        "reason": "Fourth visual admission normal pixel review PASS"
+        "at": "2026-08-30T12:05:17+08:00",
+        "sha256": "bdda66221188307cb61490b10e793cf5d391490f5581cf6229720ebbceefa84d",
+        "reason": "Direct-user authorized ordinary repair passed actual pixel payoff review."
       },
       "reviews": [
         {
           "at": "2026-08-29T23:17:57+08:00",
           "decision": "pass",
           "notes": "Fourth visual admission normal pixel review PASS: CP01 secondary capture, full prop and reality recontextualization"
+        },
+        {
+          "at": "2026-08-30T12:05:17+08:00",
+          "decision": "pass",
+          "notes": "Direct-user locked-frame repair pixel review PASS: passerby black glove and phone edge establish CP01; yellow subject, rope, Achuan, orange blanket, thermos and metal cup physically recontextualize the illusion."
         }
       ],
       "superseded_locks": [

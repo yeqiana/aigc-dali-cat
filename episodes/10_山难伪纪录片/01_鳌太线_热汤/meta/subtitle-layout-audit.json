@@ -172,9 +172,9 @@
       "stroke_width": 4,
       "silent": false,
       "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/09.png",
-      "base_sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a",
+      "base_sha256": "0f0d9f08d58a6f4d72ec7100570a165b378761266f68199b37ef5f821bb8c882",
       "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/09.png",
-      "output_sha256": "306611554b1b09f9c6baf0eaa9f131a347a0d8c3124affc9f83bf9925766eb23"
+      "output_sha256": "55ee5dde2ea87759c60b23c69fb93314a13b56a69f5e10bf1dafec21b0617187"
     },
     "10": {
       "caption": "白茫茫一片，我只看那根红绳。",
@@ -226,9 +226,9 @@
       "stroke_width": 4,
       "silent": false,
       "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/12.png",
-      "base_sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b",
+      "base_sha256": "dd5194c65abac8425d2f6ca880b61851973160b6cb0d652e6117e290579c2b6d",
       "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/12.png",
-      "output_sha256": "8c8e1916c37ecc54655f0f7e2e6ddaa8cb25b57d8ba43e5726c5b5e13fb15680"
+      "output_sha256": "6321a7a6131b3fc2404de7b683fbfb5cc9db7ea3716a45929d7c00218dba3948"
     },
     "13": {
       "caption": "阿川把我按在石头后。他说已经叫了人。",
@@ -367,9 +367,9 @@
       "font_size": 42,
       "stroke_width": 4,
       "base_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/20.png",
-      "base_sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+      "base_sha256": "bdda66221188307cb61490b10e793cf5d391490f5581cf6229720ebbceefa84d",
       "output_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/20.png",
-      "output_sha256": "432f7da9b22fcf984de9ee2860e69ec8474a211f5f54c248445d4433483c1f10"
+      "output_sha256": "3a74608c90bf24a3378752231f771bc73f38f6a074482bfdbee045394a2ac032"
     }
   },
   "summary": {

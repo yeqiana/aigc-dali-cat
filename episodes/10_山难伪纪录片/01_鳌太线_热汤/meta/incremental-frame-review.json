@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "story_os_version": "2.0.3.5",
-  "planned_at": "2026-08-30T04:46:49+08:00",
+  "planned_at": "2026-08-30T12:05:23+08:00",
   "action": "FULL",
   "dirty_frames": [
     "01",
@@ -49,64 +49,79 @@
   ],
   "reasons": {
     "01": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "02": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "03": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "04": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "05": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "06": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "07": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "08": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "09": [
-      "missing_review"
+      "asset_sha_changed",
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:character_identity",
+      "check_failed:wardrobe_continuity",
+      "check_failed:pov_photographer_legality"
     ],
     "10": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "11": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "12": [
-      "missing_review"
+      "asset_sha_changed",
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:character_identity",
+      "check_failed:wardrobe_continuity",
+      "check_failed:pov_photographer_legality"
     ],
     "13": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "14": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "15": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "16": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "17": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "18": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "19": [
-      "missing_review"
+      "caption_changed_or_unbound"
     ],
     "20": [
-      "missing_review"
+      "asset_sha_changed",
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:pov_photographer_legality",
+      "check_failed:spatial_continuity",
+      "check_failed:temporal_continuity"
     ]
   },
   "dirty_ratio": 1.0,
