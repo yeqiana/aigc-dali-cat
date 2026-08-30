@@ -15,6 +15,7 @@ from typing import Iterable
 from PIL import Image
 
 from story_os_contract import story_os_version
+import environment_contract as phase3_env
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_DIR = Path("meta/frame-reviews")
@@ -38,6 +39,15 @@ CHECKS = [
     "actual_information_gain",
 ]
 
+V21_PHASE3_CHECKS = [
+    "environment_physics_fidelity",
+    "anomaly_escalation_fidelity",
+    "scale_reference_fidelity",
+]
+
+def checks_for_version(version: str) -> list[str]:
+    return CHECKS + (V21_PHASE3_CHECKS if version_tuple(version) >= (2, 1, 0) else [])
+
 ISSUE_CODES = {
     "FRAME_SCENE_MISMATCH",
     "STORY_BEAT_NOT_VISIBLE",
@@ -53,6 +63,10 @@ ISSUE_CODES = {
     "NEAR_DUPLICATE_ACTUAL_FRAMES",
     "UNEXPLAINED_THIRD_PERSON",
     "UNPLANNED_RECORDER",
+    "WEATHER_PHYSICS_MISMATCH",
+    "WEATHER_CONTINUITY_BROKEN",
+    "ANOMALY_SCALE_UNDERDELIVERED",
+    "SCALE_REFERENCE_MISSING",
 }
 
 
@@ -170,6 +184,12 @@ def context_hashes(ep: Path) -> dict:
     }
 
 
+def phase3_context_hashes(ep: Path, frame: str) -> dict:
+    if not phase3_env.required(ep):
+        return {}
+    return phase3_env.frame_hashes(ep, frame)
+
+
 def frame_records(ep: Path, *, require_files: bool) -> list[dict]:
     ledger = read_json(ep / "meta/production-ledger.json")
     frames = ledger.get("frames")
@@ -277,7 +297,7 @@ def duplicate_pairs(phashes: list[dict]) -> list[dict]:
     return pairs
 
 
-def validate_candidate_rows(rows: object, expected_frames: list[dict]) -> list[str]:
+def validate_candidate_rows(rows: object, expected_frames: list[dict], version: str = "2.0.3.6") -> list[str]:
     errors: list[str] = []
     expected = {row["frame"] for row in expected_frames}
     if not isinstance(rows, list) or len(rows) != len(expected_frames):
@@ -295,7 +315,7 @@ def validate_candidate_rows(rows: object, expected_frames: list[dict]) -> list[s
             errors.append(f"duplicate frame row: {key}")
         seen.add(key)
         checks = row.get("checks") or {}
-        for check in CHECKS:
+        for check in checks_for_version(version):
             if checks.get(check) is not True:
                 errors.append(f"frame {key} checks.{check} must be true")
         codes = row.get("issue_codes")
@@ -313,7 +333,7 @@ def validate_candidate_rows(rows: object, expected_frames: list[dict]) -> list[s
     return errors
 
 
-def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: str, metadata_only: bool) -> list[str]:
+def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: str, metadata_only: bool, phase3_contexts: dict | None = None) -> list[str]:
     errors: list[str] = []
     key = frame["frame"]
     if data.get("schema_version") != SCHEMA_VERSION:
@@ -329,6 +349,9 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
     for field, expected in contexts.items():
         if str(data.get(field) or "").lower() != str(expected).lower():
             errors.append(f"frame {key} {field} mismatch")
+    for field, expected in (phase3_contexts or {}).items():
+        if str(data.get(field) or "").lower() != str(expected).lower():
+            errors.append(f"frame {key} {field} mismatch")
     provenance = data.get("critic_provenance") or {}
     if provenance.get("runtime") != "CODEX_ISOLATED":
         errors.append(f"frame {key} critic runtime must be CODEX_ISOLATED")
@@ -339,7 +362,7 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
     if provenance.get("attempt") not in {1, 2}:
         errors.append(f"frame {key} critic attempt must be 1 or 2")
     checks = data.get("checks") or {}
-    for check in CHECKS:
+    for check in checks_for_version(version):
         if checks.get(check) is not True:
             errors.append(f"frame {key} checks.{check} must be true")
     codes = data.get("issue_codes")
@@ -414,7 +437,7 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
         except Exception as exc:
             errors.append(str(exc))
             continue
-        errors.extend(validate_bound_review(data, frame=frame, contexts=contexts, version=expected_version, metadata_only=metadata_only))
+        errors.extend(validate_bound_review(data, frame=frame, contexts=contexts, version=expected_version, metadata_only=metadata_only, phase3_contexts=phase3_context_hashes(ep, frame["frame"])))
 
     phashes: list[dict] = []
     duplicates: list[dict] = []
@@ -499,8 +522,11 @@ Hard rules for EVERY frame:
 6. spatial_continuity + temporal_continuity: location relationships and timeline must agree with neighboring frames. A father who already left for hospital cannot silently reappear in the factory.
 7. anomaly_readability: the abnormal fact the frame is supposed to prove must be visually legible. If the caption says a river tilted, a red mark aligned with a chimney, or old photos all contain one white arc, those relationships must actually be readable in pixels.
 8. caption_image_support: planned text may add context but must not invent the core visual evidence.
-9. actual_information_gain: compare the ACTUAL adjacent images, not just storyboard descriptions. Near-repeating the same composition at 19/20 while claiming a larger-scale reveal is a FAIL.
-10. PASS only if all eleven checks are true, issue_codes is empty and decision=pass.
+9. actual_information_gain: compare ACTUAL adjacent images, not just storyboard descriptions.
+10. environment_physics_fidelity: V2.1 weather/environment must obey the resolved physical conditions; weather is not a blanket filter.
+11. anomaly_escalation_fidelity: impact 3-4 / anomaly_amplified / climax_impact must visibly exceed escalation_from; caption-only escalation fails.
+12. scale_reference_fidelity: high-impact frames must visibly use the locked real-world scale reference so abnormal size is readable.
+13. PASS only if all required checks are true, issue_codes is empty and decision=pass.
 
 Use issue codes only from this set:
 {', '.join(sorted(ISSUE_CODES))}
@@ -522,7 +548,10 @@ Required shape:
         "temporal_continuity": true,
         "anomaly_readability": true,
         "caption_image_support": true,
-        "actual_information_gain": true
+        "actual_information_gain": true,
+        "environment_physics_fidelity": true,
+        "anomaly_escalation_fidelity": true,
+        "scale_reference_fidelity": true
       }},
       "issue_codes": [],
       "notes": "specific pixel-level evidence",
@@ -608,7 +637,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
         raise RuntimeError("frame semantic critic modified Story Lock / storyboard / visual continuity context")
 
     data = read_json(candidate)
-    candidate_errors = validate_candidate_rows(data.get("frames"), current)
+    candidate_errors = validate_candidate_rows(data.get("frames"), current, version=episode_contract_version(ep))
     global_codes = data.get("issue_codes")
     if not isinstance(global_codes, list):
         candidate_errors.append("global issue_codes must be list")
@@ -639,6 +668,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
             "asset_path": frame["path_rel"],
             "asset_sha256": frame["sha256"],
             **contexts,
+            **phase3_context_hashes(ep, frame["frame"]),
             "critic_provenance": provenance,
             "checks": source.get("checks") or {},
             "issue_codes": source.get("issue_codes") if isinstance(source.get("issue_codes"), list) else ["FRAME_SCENE_MISMATCH"],
@@ -689,14 +719,14 @@ def self_test() -> None:
         "asset_sha256": h,
         **contexts,
         "critic_provenance": {"runtime": "CODEX_ISOLATED", "isolated_session": True, "review_scope": "FULL_FRAME_SET", "attempt": 1},
-        "checks": {key: True for key in CHECKS},
+        "checks": {key: True for key in checks_for_version(story_os_version())},
         "issue_codes": [],
         "decision": "pass",
     }
     assert validate_bound_review(payload, frame=frame, contexts=contexts, version=story_os_version(), metadata_only=True) == []
     payload["asset_sha256"] = "e" * 64
     assert any("asset_sha256" in x for x in validate_bound_review(payload, frame=frame, contexts=contexts, version=story_os_version(), metadata_only=True))
-    candidate = [{"frame": "01", "checks": {key: True for key in CHECKS}, "issue_codes": [], "decision": "pass"}]
+    candidate = [{"frame": "01", "checks": {key: True for key in checks_for_version(story_os_version())}, "issue_codes": [], "decision": "pass"}]
     assert validate_candidate_rows(candidate, [frame]) == []
     candidate[0]["checks"]["temporal_continuity"] = False
     assert validate_candidate_rows(candidate, [frame])

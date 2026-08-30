@@ -1,8 +1,29 @@
-# Dali Cat Story OS — Repository Execution Contract V2.0.3.6.1
+# Story OS — Repository Execution Contract V2.1.0
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
+
+<!-- STORY_OS_V2_1_CONCEPT_BEGIN -->
+## Story OS V2.1：概念野心优先
+
+- 系统名称统一为 Story OS；仓库名/历史 adapter 名不定义创作 IP。
+- V2.1 新篇 Story Lock 前必须 8–12 候选，至少 3 个 A4/A5。
+- 最终题必须定义 Cover/Mid/Climax，Concept Voltage ≥80，无字测试全 PASS。
+- 真实性只约束“怎么拍”，不得用于提前压小异常规模。
+- 正式门禁：`episodes/_system/concept_ambition.py`。
+<!-- STORY_OS_V2_1_CONCEPT_END -->
+
+<!-- STORY_OS_V2_1_PHASE3_BEGIN -->
+## V2.1 Phase 3：环境物理与异常放大
+
+- `visual.environment_contract` 是环境唯一权威字段；禁止新建独立 weather 权威文件。
+- `baseline + segments + frame_overrides` 描述环境时间线。
+- 每帧必须具有 narrative_role / frame_mode / impact_level / required_visual_cues。
+- `anomaly_amplified` / `climax_impact` 必须 impact 3–4，具备 scale_reference 与 escalation_from。
+- 每次正式生图前先解析该帧：`environment_contract.py resolve-frame <episode> --frame NN --json`。
+- 最终实际像素审核绑定 per-frame environment/directive SHA，避免一段天气修改导致全篇无理由重审。
+<!-- STORY_OS_V2_1_PHASE3_END -->
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
 ## Story OS V2.0.3.6 Golden Path

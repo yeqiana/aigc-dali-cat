@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "package": "Story OS V2.1 Phase 1.1 + Phase 2",
+  "package_version": "2.1.0-phase11-phase2",
+  "installed_at": "2026-08-30T22:52:51.802898+08:00",
+  "actual_git": {
+    "available": true,
+    "branch": "story",
+    "head": "7a3073b1888f9cd4064206972d9032058881ac14"
+  },
+  "backup": ".storyos_backups\\v21_phase11_phase2_20260830_225251",
+  "encoding": "utf-8",
+  "tests": "PASS",
+  "files": [
+    {
+      "path": "story_os_manifest.json",
+      "sha256": "54afc5753ba9bf2a5f6283a05fcacb611f83f1111d805c292db7722d176b57d7",
+      "bytes": 2108
+    },
+    {
+      "path": "runtimes/runtime-contract.json",
+      "sha256": "9f3129a2485b257836b87a72cb49bb80b6a4dc0ace8224198e4c7e2ff3c9a60c",
+      "bytes": 2976
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "sha256": "7e12117157e2d2c6ee015d8c352d03dd867cc29d56102157599c7162b0efac84",
+      "bytes": 2949
+    },
+    {
+      "path": "START_HERE.md",
+      "sha256": "27daf9772b5832160cc18869aeaaa02e52acaa77731747f59cdfe4aa27e90020",
+      "bytes": 10113
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "9ae6a94f97f752fa39c932fd743d81890903eff19f71f55c9b1da2c87e6c1f45",
+      "bytes": 16425
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "52d840db5543df997df01c56da8420e43dedfba0e4d621d2f45c9f7dced2d1a3",
+      "bytes": 8143
+    },
+    {
+      "path": "standards/AUTHORITY_INDEX.json",
+      "sha256": "5e622f8917348670a4fbe6d54706c052b82a2f57c02b185b120f6a72d1f6ba84",
+      "bytes": 11262
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "75ce7548d037b5cce7e89722a2223cd21a283810a0bb5440f0e0ca5c2f8d5223",
+      "bytes": 58429
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "sha256": "24235b0636199da23720faafc7f4304e0172dfea24dfd80cfd2d45af6a3eb58d",
+      "bytes": 9175
+    },
+    {
+      "path": "episodes/_system/codex_auto_orchestrator.py",
+      "sha256": "6ff64829131e872ac35e5239a1d0ef83674aaf017d94cb89c65d23224da090e8",
+      "bytes": 13672
+    },
+    {
+      "path": "episodes/_system/story_review.py",
+      "sha256": "33b0a7fdcb255db51c22782a9d7df0ce1eaa722105c3ec83ce2e34b40ecab1e6",
+      "bytes": 15829
+    },
+    {
+      "path": "episodes/_system/visual_review.py",
+      "sha256": "07769e51fcc7d502560de9ff7e1b3ad9ee2ac59a42c75acef94f31728d9ff7ca",
+      "bytes": 15050
+    },
+    {
+      "path": "episodes/_system/delegated_delivery.py",
+      "sha256": "4182135b7927509d5f0124d37f4328d64ac03724773f1d0f3f348269e7e8cace",
+      "bytes": 10370
+    },
+    {
+      "path": "episodes/_system/validate_episode.py",
+      "sha256": "7d6e581181adbb6201201cacac16dbf2d1f2b4b1849bf52567ed4cfb20cb6c5b",
+      "bytes": 32395
+    },
+    {
+      "path": "episodes/_system/workflow_runner.py",
+      "sha256": "18fc5915da4d0e4baadb13be878b15b0be9fc6b0b63881c7d43d1dd1d02f6659",
+      "bytes": 5560
+    },
+    {
+      "path": "episodes/_system/concept_ambition.py",
+      "sha256": "f428acda812a6296e5016f907df69e70ac62633af175644c1f77166190f423a4",
+      "bytes": 15280
+    },
+    {
+      "path": "standards/选题野心与图像传播力规范_V1.0.md",
+      "sha256": "d116e11ef827bac7d26704768511318dc7de3c5f532f2ec8e2b46b2747ed4b2a",
+      "bytes": 1754
+    },
+    {
+      "path": "standards/templates/concept-candidates.template.json",
+      "sha256": "791a7c46a04d9c06cd36a645d9e0535b45e29a3b7b262e14b33fb19506afcfa1",
+      "bytes": 4255
+    }
+  ]
+}

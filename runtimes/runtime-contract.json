@@ -1,8 +1,8 @@
 {
   "schema_version": 4,
-  "story_os_version": "2.0.3.6",
+  "story_os_version": "2.1.0",
   "workflow_contract": "runtimes/workflow-contract.json",
-  "name": "Multi-Runtime + V2.1 Workflow Foundation",
+  "name": "Story OS V2.1 Multi-Runtime Workflow",
   "state_source": "meta/episode-state.json",
   "creative_authority": "standards/制作规范_正式版.md",
   "routing_order": [
@@ -68,6 +68,8 @@
     "frozen_evidence_media_paths_immutable": true,
     "zip_is_delivery_adapter": true,
     "codex_zip_not_required_for_completion": true,
-    "workflow_performance_required": true
+    "workflow_performance_required": true,
+    "concept_ambition_gate_for_v21_new_episodes": true,
+    "reality_limits_capture_not_concept": true
   }
 }

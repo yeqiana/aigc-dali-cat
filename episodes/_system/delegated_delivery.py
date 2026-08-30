@@ -130,7 +130,7 @@ def build(ep: Path,label: str) -> Path:
     out=out_dir/f'{ep.name}_{label}.zip'
     temp=out.with_suffix('.zip.partial')
     report={
-        'schema_version':3,'story_os_version':story_os_version(),'approval_basis':'delegated_auto_review','direct_release_lock':False,
+        'schema_version':3,'story_os_version':episode_contract_version(ep),'approval_basis':'delegated_auto_review','direct_release_lock':False,
         'built_at':dt.datetime.now().astimezone().isoformat(),'episode':manifest.get('episode') or {},'files':files,'package':None,
     }
     checks=''.join(f"{x['sha256']}  {x['archive_path']}\n" for x in files)
@@ -148,7 +148,7 @@ def verify(ep: Path) -> list[str]:
     rp=ep/REPORT_REL
     if not rp.is_file(): return ['delegated release report missing']
     d=read_json(rp); errors=[]; package=d.get('package') or {}
-    if d.get('story_os_version') != story_os_version(): errors.append('delegated report story_os_version mismatch')
+    if d.get('story_os_version') != episode_contract_version(ep): errors.append('delegated report story_os_version mismatch')
     try: zp=resolve_repo(package.get('path'),'delegated.package')
     except SystemExit as exc:return [str(exc)]
     if sha256_file(zp).lower()!=str(package.get('sha256') or '').lower(): errors.append('delegated ZIP SHA drift')

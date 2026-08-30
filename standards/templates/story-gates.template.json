@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "tool_version": "2.0.3.6",
+  "tool_version": "2.1.0",
   "episode_id": "__EPISODE_ID__",
   "visual_profile": {
     "mode": "default",
@@ -97,7 +97,24 @@
       "required_anchors": [],
       "items": []
     },
-    "profile_review_path": "meta/visual-profile-review.json"
+    "profile_review_path": "meta/visual-profile-review.json",
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "",
+      "baseline": {
+        "condition": "",
+        "time_of_day": "",
+        "temperature_feel": "",
+        "ground_state": "",
+        "visibility": "",
+        "wind": "",
+        "precipitation": "",
+        "physical_cues": []
+      },
+      "segments": [],
+      "frame_overrides": {}
+    },
+    "frame_directives": {}
   },
   "subtitles": {
     "required": true,
@@ -128,6 +145,13 @@
     "require_all_frames": true,
     "semantic_contract": "actual_frame_v2",
     "sha_bound": true,
-    "fresh_isolated_critic": true
+    "fresh_isolated_critic": true,
+    "environment_frame_sha_bound": true,
+    "frame_directive_sha_bound": true,
+    "phase3_actual_pixel_checks": [
+      "environment_physics_fidelity",
+      "anomaly_escalation_fidelity",
+      "scale_reference_fidelity"
+    ]
   }
 }

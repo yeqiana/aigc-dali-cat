@@ -41,8 +41,9 @@ def run(args: list[object]) -> subprocess.CompletedProcess[str]:
 
 def load_contract() -> dict:
     data = json.loads(CONTRACT.read_text(encoding="utf-8-sig"))
-    if not isinstance(data, dict) or data.get("workflow_version") != "2.1-phase1":
-        raise SystemExit("invalid V2.1 workflow contract")
+    version = str(data.get("workflow_version") or "") if isinstance(data, dict) else ""
+    if not isinstance(data, dict) or not version.startswith("2.1"):
+        raise SystemExit(f"invalid V2.1 workflow contract: {version!r}")
     return data
 
 

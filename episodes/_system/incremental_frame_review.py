@@ -194,7 +194,7 @@ def _scope_ok(data: dict) -> bool:
     }
 
 
-def _review_clean(data: dict | None, frame: dict, contexts: dict, caption_hash: str, version: str) -> tuple[bool, list[str]]:
+def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, caption_hash: str, version: str) -> tuple[bool, list[str]]:
     reasons: list[str] = []
     if not isinstance(data, dict):
         return False, ["missing_review"]
@@ -206,6 +206,10 @@ def _review_clean(data: dict | None, frame: dict, contexts: dict, caption_hash: 
         reasons.append("asset_path_changed")
     if not _context_match(data, contexts):
         reasons.append("story_visual_context_changed")
+    for field, expected in base.phase3_context_hashes(ep, frame["frame"]).items():
+        if str(data.get(field) or "").lower() != str(expected).lower():
+            reasons.append("phase3_frame_context_changed")
+            break
     if version_tuple(version) >= TARGET and str(data.get("caption_sha256") or "").lower() != caption_hash.lower():
         reasons.append("caption_changed_or_unbound")
     if not _scope_ok(data):
@@ -213,7 +217,7 @@ def _review_clean(data: dict | None, frame: dict, contexts: dict, caption_hash: 
     if data.get("decision") != "pass" or data.get("issue_codes") not in ([], None):
         reasons.append("review_not_pass")
     checks = data.get("checks") or {}
-    for name in base.CHECKS:
+    for name in base.checks_for_version(version):
         if checks.get(name) is not True:
             reasons.append(f"check_failed:{name}")
     return not reasons, reasons
@@ -245,7 +249,7 @@ def build_plan(ep: Path) -> dict:
     context_change = False
     for frame in frames:
         data = _review_data(ep, frame["frame"])
-        clean, why = _review_clean(data, frame, contexts, captions["frame_sha256"][frame["frame"]], version)
+        clean, why = _review_clean(ep, data, frame, contexts, captions["frame_sha256"][frame["frame"]], version)
         if not clean:
             dirty.append(frame["frame"])
             reasons[frame["frame"]] = why
@@ -302,13 +306,13 @@ Attached mapping:
 {mapping}
 
 Attempt {attempt}. Judge ACTUAL pixels. Every supplied frame must pass all checks:
-{', '.join(base.CHECKS)}
+{', '.join(base.checks_for_version(base.episode_contract_version(ep)))}
 Hard failures include wrong scene/beat/prop/person/wardrobe, illegal POV, broken space/time continuity, unreadable anomaly, caption inventing missing evidence, or missing actual information gain.
 Return one row for EVERY supplied context frame, not only dirty roots.
 Use issue codes only from: {', '.join(sorted(base.ISSUE_CODES))}
 
 Write ONLY JSON to {candidate.relative_to(ROOT).as_posix()} with shape:
-{{"frames":[{{"frame":"01","checks":{{"scene_storyboard_fidelity":true,"story_beat_fidelity":true,"key_prop_fidelity":true,"character_identity":true,"wardrobe_continuity":true,"pov_photographer_legality":true,"spatial_continuity":true,"temporal_continuity":true,"anomaly_readability":true,"caption_image_support":true,"actual_information_gain":true}},"issue_codes":[],"notes":"pixel-level evidence","decision":"pass"}}],"issue_codes":[],"summary":{{"passed":true,"notes":"incremental context judgment"}}}}
+{{"frames":[{{"frame":"01","checks":{{"scene_storyboard_fidelity":true,"story_beat_fidelity":true,"key_prop_fidelity":true,"character_identity":true,"wardrobe_continuity":true,"pov_photographer_legality":true,"spatial_continuity":true,"temporal_continuity":true,"anomaly_readability":true,"caption_image_support":true,"actual_information_gain":true,"environment_physics_fidelity":true,"anomaly_escalation_fidelity":true,"scale_reference_fidelity":true}},"issue_codes":[],"notes":"pixel-level evidence","decision":"pass"}}],"issue_codes":[],"summary":{{"passed":true,"notes":"incremental context judgment"}}}}
 If any supplied frame fails, summary.passed=false.
 """
 
@@ -367,7 +371,7 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
     if {r["frame"]: base.sha256_file(r["path"]) for r in current} != before:
         raise RuntimeError("incremental critic modified approved image assets")
     data = read_json(candidate)
-    candidate_errors = base.validate_candidate_rows(data.get("frames"), selected)
+    candidate_errors = base.validate_candidate_rows(data.get("frames"), selected, version=base.episode_contract_version(ep))
     global_codes = data.get("issue_codes")
     if not isinstance(global_codes, list):
         candidate_errors.append("global issue_codes must be list")
@@ -398,6 +402,7 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
             "asset_path": frame["path_rel"],
             "asset_sha256": frame["sha256"],
             **contexts,
+            **base.phase3_context_hashes(ep, frame["frame"]),
             "caption_sha256": captions["frame_sha256"][frame["frame"]],
             "critic_provenance": provenance,
             "checks": source.get("checks") or {},

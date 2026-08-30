@@ -329,7 +329,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
 
     data = read_json(candidate)
     data["schema_version"] = 1
-    data["story_os_version"] = story_os_version()
+    data["story_os_version"] = episode_contract_version(ep)
     data["story_sha256"] = before_story
     data["storyboard_sha256"] = before_board
     data["revision_count"] = attempt - 1
@@ -344,7 +344,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
         data,
         story_sha=before_story,
         storyboard_sha=before_board,
-        version=story_os_version(),
+        version=episode_contract_version(ep),
     )
     final = ep / REVIEW_REL
     write_json(final, data)

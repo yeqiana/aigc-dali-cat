@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "workflow_version": "2.1-phase1",
+  "workflow_version": "2.1",
   "name": "Story OS V2.1 Workflow Engine Foundation",
   "episode_stage_source": "meta/episode-state.json",
   "checkpoint_source": "meta/runtime-checkpoint.json",
@@ -9,7 +9,13 @@
     "cheap_checks_before_expensive_checks": true,
     "reuse_clean_sha_bound_evidence": true,
     "zip_is_delivery_adapter_not_stage_gate": true,
-    "codex_production_complete_at_publish_ready": true
+    "codex_production_complete_at_publish_ready": true,
+    "concept_ambition_before_story_lock": true,
+    "image_first_propagation_gate": true,
+    "reality_limits_capture_not_concept": true,
+    "environment_is_physics_not_filter": true,
+    "anomaly_amplified_requires_scale_reference": true,
+    "environment_changes_use_per_frame_hashes": true
   },
   "steps": {
     "RESTORE": {
@@ -31,9 +37,33 @@
       "cost": "MEDIUM",
       "parallelizable": false
     },
-    "STORY_BUILD": {
+    "CONCEPT_DIVERGENCE": {
       "depends_on": [
         "TOPIC_GUARD"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false,
+      "contract": "8-12 candidates"
+    },
+    "CONCEPT_AMBITION": {
+      "depends_on": [
+        "CONCEPT_DIVERGENCE"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": false,
+      "evidence": "meta/concept-ambition-review.json"
+    },
+    "IMAGE_FIRST_PROPAGATION": {
+      "depends_on": [
+        "CONCEPT_AMBITION"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false,
+      "contract": "Cover + Mid + Climax + wordless test"
+    },
+    "STORY_BUILD": {
+      "depends_on": [
+        "IMAGE_FIRST_PROPAGATION"
       ],
       "cost": "EXPENSIVE",
       "parallelizable": false
@@ -54,8 +84,7 @@
     },
     "VISUAL_LOCK": {
       "depends_on": [
-        "STORY_CRITIC",
-        "RECENT5_SEMANTIC"
+        "ENVIRONMENT_IMPACT_CONTRACT"
       ],
       "cost": "EXPENSIVE",
       "parallelizable": false
@@ -95,6 +124,15 @@
       "cost": "MEDIUM",
       "parallelizable": false,
       "runtime_optional": true
+    },
+    "ENVIRONMENT_IMPACT_CONTRACT": {
+      "depends_on": [
+        "STORY_CRITIC",
+        "RECENT5_SEMANTIC"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false,
+      "evidence": "meta/story-gates.json#visual.environment_contract+frame_directives"
     }
   }
 }

@@ -317,7 +317,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
 
     data = read_json(candidate)
     data["schema_version"] = 1
-    data["story_os_version"] = story_os_version()
+    data["story_os_version"] = episode_contract_version(ep)
     data["profile_id"] = contract["profile_id"]
     data["profile_path"] = contract["profile_path"]
     data["profile_sha256"] = contract["profile_sha256"]
@@ -339,7 +339,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
         profile_id=contract["profile_id"],
         profile_sha=contract["profile_sha256"],
         assets=current_assets,
-        version=story_os_version(),
+        version=episode_contract_version(ep),
     )
     final = ep / REVIEW_REL
     write_json(final, data)

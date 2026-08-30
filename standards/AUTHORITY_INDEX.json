@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "2.0.3.6",
+  "story_os_version": "2.1.0",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -164,6 +164,20 @@
       "scope": "recent5_semantic_deduplication",
       "active": true,
       "note": "Fresh isolated semantic equivalence matrix; Python computes scores and vetoes."
+    },
+    {
+      "path": "standards/选题野心与图像传播力规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "concept_ambition_and_image_first_propagation",
+      "active": true,
+      "note": "V2.1 pre-Story-Lock gate; no second creative authority."
+    },
+    {
+      "path": "standards/环境物理与异常放大规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "environment_physics_and_anomaly_amplification",
+      "active": true,
+      "note": "Embedded story-gates environment/impact contract; no second authority."
     }
   ],
   "rules": {
@@ -217,7 +231,7 @@
       "may_fake_user_approval": false
     },
     "production_closure": {
-      "orchestrator": "episodes/_system/codex_auto_orchestrator.py",
+      "orchestrator": "episodes/_system/workflow_runner.py",
       "canvas_normalizer": "episodes/_system/canvas_normalize.py",
       "delivery": "episodes/_system/delegated_delivery.py",
       "completion_states": [
@@ -225,7 +239,8 @@
         "PAUSED",
         "BLOCKED"
       ],
-      "frame_semantic_review": "episodes/_system/frame_semantic_review.py"
+      "frame_semantic_review": "episodes/_system/frame_semantic_review.py",
+      "compat_orchestrator": "episodes/_system/codex_auto_orchestrator.py"
     },
     "creative_enforcement": {
       "story_review": "episodes/_system/story_review.py",
@@ -265,6 +280,29 @@
       "semantic_recent5_min_contract": "2.0.3.6",
       "semantic_scoring_policy": "max(exact_string,semantic_equivalence)",
       "critic_may_assign_numeric_similarity_score": false
+    },
+    "workflow_engine": {
+      "contract": "runtimes/workflow-contract.json",
+      "runner": "episodes/_system/workflow_runner.py",
+      "episode_stage_source": "meta/episode-state.json"
+    },
+    "concept_ambition": {
+      "standard": "standards/选题野心与图像传播力规范_V1.0.md",
+      "tool": "episodes/_system/concept_ambition.py",
+      "candidates": "meta/concept-candidates.json",
+      "review": "meta/concept-ambition-review.json",
+      "min_candidates": 8,
+      "max_candidates": 12,
+      "min_selected_voltage": 80,
+      "min_high_ambition_candidates": 3,
+      "required_for_contract_min": "2.1.0"
+    },
+    "environment_contract": {
+      "tool": "episodes/_system/environment_contract.py",
+      "authority_path": "meta/story-gates.json#visual.environment_contract",
+      "frame_directives_path": "meta/story-gates.json#visual.frame_directives",
+      "required_for_contract_min": "2.1.0",
+      "independent_weather_file_forbidden": true
     }
   }
 }

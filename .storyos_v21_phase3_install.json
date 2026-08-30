@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "package": "Story OS V2.1 Phase 3 Environment + Anomaly Impact",
+  "package_version": "2.1.0-phase3",
+  "installed_at": "2026-08-30T23:09:34.100410+08:00",
+  "actual_git": {
+    "available": true,
+    "branch": "story",
+    "head": "7a3073b1888f9cd4064206972d9032058881ac14"
+  },
+  "backup": ".storyos_backups\\v21_phase3_20260830_230933",
+  "encoding": "utf-8",
+  "tests": "PASS",
+  "files": [
+    {
+      "path": "story_os_manifest.json",
+      "sha256": "812198665aacc2179d4579a220e317679ece58701034a90e6eed9a33c4836674",
+      "bytes": 2352
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "sha256": "a3ba3faea9ae5cf6bb83b85598a487b10c55d832ccc675f2c4df247ed3e51540",
+      "bytes": 3361
+    },
+    {
+      "path": "START_HERE.md",
+      "sha256": "880b04763334390ff7d4beb5069419a0d8e43e3ee50ec897ab6f9a85d5599846",
+      "bytes": 10521
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "f035541572fe189b3afd49daaf8a4b0c02b898febef4b437f53267728296d960",
+      "bytes": 17151
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "b23ac26ad9f8882f02bcaa3c4a1a5b3a99fcc85ec12f510aacf19d132949c65a",
+      "bytes": 8495
+    },
+    {
+      "path": "standards/AUTHORITY_INDEX.json",
+      "sha256": "3b6fae750ef2a6678dbb9674ed3066d09ee5d02f5368c82c6aac40b94cd43046",
+      "bytes": 11903
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "d94d089a447d8dccc3509608c88245759d0bdb5ec603c79366804bf009e3bf0f",
+      "bytes": 59094
+    },
+    {
+      "path": "standards/templates/story-gates.template.json",
+      "sha256": "705ca89ef4df5381cc1b037f0439938b45bb8418d4df308faa934ff2e5a9a009",
+      "bytes": 3868
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "sha256": "c8f2ee70e4696f2f026788dd437d8ea67ef9bddbcd5ff7b8e37bc2fc91fb0036",
+      "bytes": 9535
+    },
+    {
+      "path": "episodes/_system/codex_auto_orchestrator.py",
+      "sha256": "7109cb19b0ef179b3f334859bebf17ce2c5aefe60e28f41f09791556ba320fff",
+      "bytes": 14761
+    },
+    {
+      "path": "episodes/_system/validate_episode.py",
+      "sha256": "5a82db81c6ee9d4aaa9ffb0fa6517671280c759b949145de4093f01d1132d6da",
+      "bytes": 32775
+    },
+    {
+      "path": "episodes/_system/frame_semantic_review.py",
+      "sha256": "fec470709014da2ea3249c0f8a5f8d59532628f0c0f206c7f698b9c17de39b44",
+      "bytes": 32404
+    },
+    {
+      "path": "episodes/_system/incremental_frame_review.py",
+      "sha256": "609b13a9a10192e8c5223706001b812fb940aba955c650c7f6f79d5f771cb52c",
+      "bytes": 23833
+    },
+    {
+      "path": "episodes/_system/environment_contract.py",
+      "sha256": "bb49a5f1327b1a8624928547e94337c829982d9b5e3084dc520a6bba0b3d40c0",
+      "bytes": 14186
+    },
+    {
+      "path": "standards/环境物理与异常放大规范_V1.0.md",
+      "sha256": "728ff13508e9c11f8db45dc930c97471de11d15d31f44ab7dcfbac1c618164b3",
+      "bytes": 2458
+    }
+  ]
+}

@@ -38,6 +38,18 @@ Codex 不再被全局限制为“只能生成网页交接单”。当前 Codex �
 
 全自动授权后：先三张校准，再四张视觉准入，再 Batch；每帧最多一次内容返修；已通过且 SHA 未漂移资产必须复用；自动审查不得冒充用户亲眼审核。
 
+<!-- STORY_OS_V2_1_AGENTS_BEGIN -->
+## V2.1 Concept Ambition / Image-first
+
+V2.1 新篇不得直接从一个稳妥题目开始写完整故事。先生成 8–12 个候选；不因现实不存在、异常太大或世界规则太怪而提前降级；每个候选先定义 Cover/Mid/Climax；至少 3 个候选进入 A4/A5；运行独立 `concept_ambition.py run-critic`，只允许基于 Concept Voltage ≥80 且无字测试全 PASS 的 selected_id 进入 Story/Storyboard。旧 2.0.x Episode 不追溯补造该 evidence。
+<!-- STORY_OS_V2_1_AGENTS_END -->
+
+<!-- STORY_OS_V2_1_PHASE3_AGENTS_BEGIN -->
+## V2.1 Phase 3 Environment / Anomaly Impact
+
+Story Lock 后先完成环境合同与逐帧 impact 设计，再进入 Visual Lock。天气不得滤镜化；高冲击异常不得只靠字幕说“更大”，必须在像素中通过尺度参照和前后级差成立。
+<!-- STORY_OS_V2_1_PHASE3_AGENTS_END -->
+
 ## Episodes 机器状态与发布清单
 
 > 当前 Story OS：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。

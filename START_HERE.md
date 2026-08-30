@@ -1,9 +1,26 @@
-# Dali Cat Story OS — START HERE V2.0.3.6
+# Story OS — START HERE V2.1.0
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
 > 创作规则唯一权威：`standards/制作规范_正式版.md`  
 > 阶段状态唯一事实源：`<episode>/meta/episode-state.json`
+
+<!-- STORY_OS_V2_1_CONCEPT_BEGIN -->
+## V2.1 概念野心与图像传播入口
+
+新篇 Story Lock 前：最近机制上下文 → 8–12 候选放飞 → Concept Ambition → Cover/Mid/Climax 三传播图 → 无字测试 → 最终题 → Story/Storyboard → Story Critic + Recent-5 Semantic。
+
+核心原则：**概念不要克制，镜头必须真实。** 真实性限制采集表现，不限制异常尺度、虚构遗址、梦境空间或不存在的世界规则。
+<!-- STORY_OS_V2_1_CONCEPT_END -->
+
+<!-- STORY_OS_V2_1_PHASE3_BEGIN -->
+## V2.1 Phase 3：Environment / Impact
+
+Story Lock 通过后、Visual Lock 前必须完成：
+`Environment Contract → Frame Directive → environment_contract.py verify`。
+
+环境是物理条件，不是滤镜；异常可以很大，但高冲击帧必须有现实尺度参照、明确 escalation_from，并保持真实拍摄物理。
+<!-- STORY_OS_V2_1_PHASE3_END -->
 
 ## 0. 黄金路径（Golden Path）
 

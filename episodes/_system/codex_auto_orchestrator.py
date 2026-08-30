@@ -60,12 +60,35 @@ Before returning from RELEASE work, initialize compliance and run the final rele
   python episodes/_system/release_preflight.py run-release-critic \"{rel}\"
   python episodes/_system/release_preflight.py verify \"{rel}\"
 
+PHASE 2 CONCEPT AMBITION GATE:
+For V2.1+ episodes only, BEFORE writing the final Story/Storyboard:
+- Read recent account mechanism context, but do not shrink every idea into a light anomaly.
+- Create meta/concept-candidates.json with 8-12 genuinely different concepts.
+- Do NOT reject an idea merely because its ruin, dream-space, anomaly scale, case phenomenon, creature, geography or world rule cannot exist in reality.
+- Every candidate must define one_line_hook, anomaly_ceiling initial/middle/climax, Cover/Mid/Climax viral frames and discussion_question.
+- At least three candidates must push beyond the normal safe zone.
+- Run `python episodes/_system/concept_ambition.py run-critic \"{rel}\" --attempt 1`.
+- If FAIL, strengthen/replace weak candidates ONCE, then attempt 2. If still FAIL, stop.
+- Verify with `python episodes/_system/concept_ambition.py verify \"{rel}\"`.
+- Build Story/Storyboard ONLY from the selected_id that passed Concept Voltage >=80 and all wordless tests.
+Legacy 2.0.x episodes do not backfill this evidence.
+
 STORY LOCK IS THE HIGHEST CREATIVE LOCK.
 Before story_lock, finish the whole story and storyboard but do NOT generate images.
 Run an independent fresh critic:
   python episodes/_system/story_review.py run-critic \"{rel}\" --attempt 1
 If it FAILS, revise story + affected storyboard exactly once, then run attempt 2. If attempt 2 still fails, stop. Never self-author review JSON.
 Only after `story_review.py verify` passes may you record delegated story_lock.
+
+PHASE 3 ENVIRONMENT / IMPACT CONTRACT:
+For V2.1+ episodes, AFTER Story Lock and BEFORE Visual Lock:
+- Populate story-gates.visual.environment_contract with baseline + segments + frame_overrides. Weather is physics, not a blanket filter.
+- Populate story-gates.visual.frame_directives for EVERY frame: narrative_role, frame_mode, impact_level 0..4, required_visual_cues, scale_reference, escalation_from.
+- anomaly_amplified / climax_impact require impact 3..4, a concrete real-world scale reference, and an earlier escalation_from frame.
+- Run `python episodes/_system/environment_contract.py verify \"{rel}\"`; do not continue on FAIL.
+- Before EACH formal generation/repair, run `python episodes/_system/environment_contract.py resolve-frame \"{rel}\" --frame NN --json` and carry that resolved environment + directive into the frame prompt.
+- Do not add heat haze, rain-on-lens, fog, wet reflections, snow residue or similar effects unless the resolved physical conditions support them.
+- Reality constrains HOW the anomaly is captured, not how large or impossible the anomaly may be.
 
 VISUAL LOCK:
 Resolve the visual profile. If the user did not explicitly override it, use the repository default profile. Every formal frame generation must obey the resolved compact visual contract.

@@ -1,7 +1,7 @@
 {
-  "story_os_version": "2.0.3.6",
+  "story_os_version": "2.1.0",
   "contract_schema": 1,
-  "release_name": "Semantic Fingerprint Guard",
+  "release_name": "Workflow Engine + Concept Ambition",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -45,7 +45,20 @@
     "ai_governance_release_gate",
     "explicit_series_continuity_detection",
     "semantic_recent5_equivalence_review",
-    "sha_bound_recent5_critic_log"
+    "sha_bound_recent5_critic_log",
+    "workflow_engine",
+    "runtime_delivery_decoupling",
+    "workflow_performance",
+    "critic_cache",
+    "concept_ambition_gate",
+    "image_first_propagation_gate",
+    "wordless_propagation_test",
+    "environment_contract",
+    "environment_segments",
+    "frame_impact_model",
+    "anomaly_amplification",
+    "per_frame_environment_hash",
+    "environment_semantic_review"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -54,6 +67,9 @@
   "invariants": [
     "Skill is an adapter, not a Story OS copy.",
     "Canonical engine exists only under episodes/_system.",
-    "Evidence files never become a second stage source."
-  ]
+    "Evidence files never become a second stage source.",
+    "Reality constrains capture behavior, not concept scale or fictional world existence.",
+    "Environment is a physical contract, not a visual filter."
+  ],
+  "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

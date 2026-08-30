@@ -12,6 +12,8 @@ from typing import Iterable
 
 from episode_state import MANIFEST_FILE, STATE_FILE, GATES_FILE, STATES, SYSTEM_VERSION
 from canvas_spec import resolve_canvas_spec
+from concept_ambition import required as concept_ambition_required, verify as verify_concept_ambition
+from environment_contract import required as environment_contract_required, verify as verify_environment_contract
 
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 PRODUCTION_DECISIONS = {"pending", "pass", "fail"}
@@ -567,6 +569,14 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
             findings.append(Finding("WARN", "legacy_without_story_gates", "旧剧集尚未迁移 Story OS V1.2 门禁；保持兼容"))
     elif effective:
         check_story_os_for_effective(repo_root, state, manifest, gates, effective, findings, metadata_only=metadata_only)
+
+    # V2.1 Concept Ambition is pre-Story-Lock evidence, not a second episode stage.
+    if effective and STATE_MIN[effective] >= STATE_MIN["STORYBOARD_LOCKED"] and concept_ambition_required(episode_dir):
+        for error in verify_concept_ambition(episode_dir):
+            findings.append(Finding("FAIL", "concept_ambition_gate", error))
+    if effective and STATE_MIN[effective] >= STATE_MIN["VISUAL_CALIBRATED"] and environment_contract_required(episode_dir):
+        for error in verify_environment_contract(episode_dir):
+            findings.append(Finding("FAIL", "environment_impact_gate", error))
     return findings
 
 
@@ -588,7 +598,7 @@ def print_result(episode_dir: Path, findings: list[Finding]) -> bool:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate DALI CAT episode state + Story OS gates V1.4")
+    parser = argparse.ArgumentParser(description="Validate Story OS episode state + gates")
     parser.add_argument("episode_dir", nargs="?")
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--repo-root")
