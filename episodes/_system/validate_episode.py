@@ -15,6 +15,7 @@ from canvas_spec import resolve_canvas_spec
 from concept_ambition import required as concept_ambition_required, verify as verify_concept_ambition
 from environment_contract import required as environment_contract_required, verify as verify_environment_contract
 from frame_contract import required as frame_contract_required, verify_all as verify_frame_contracts
+from visual_lock_v21 import required as visual_lock_v21_required, verify as verify_visual_lock_v21
 
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 PRODUCTION_DECISIONS = {"pending", "pass", "fail"}
@@ -578,6 +579,10 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
     if effective and STATE_MIN[effective] >= STATE_MIN["VISUAL_CALIBRATED"] and environment_contract_required(episode_dir):
         for error in verify_environment_contract(episode_dir):
             findings.append(Finding("FAIL", "environment_impact_gate", error))
+
+    if effective and STATE_MIN[effective] >= STATE_MIN["VISUAL_CALIBRATED"] and visual_lock_v21_required(episode_dir):
+        for error in verify_visual_lock_v21(episode_dir):
+            findings.append(Finding("FAIL", "visual_lock_v21_gate", error))
 
     if effective and STATE_MIN[effective] >= STATE_MIN["PRODUCTION_PASSED"] and frame_contract_required(episode_dir):
         for error in verify_frame_contracts(episode_dir):

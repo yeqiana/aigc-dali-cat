@@ -18,7 +18,14 @@
     "environment_changes_use_per_frame_hashes": true,
     "resolved_frame_contract_is_derived_cache": true,
     "generation_and_review_bind_same_frame_contract_sha": true,
-    "storyboard_local_hash_when_extractable": true
+    "storyboard_local_hash_when_extractable": true,
+    "visual_lock_four_admissions": true,
+    "high_impact_must_deliver_without_becoming_cinematic": true,
+    "max_parallel_image_workers": 3,
+    "production_ledger_single_writer": true,
+    "technical_failure_does_not_consume_content_repair": true,
+    "scheduler_fail_soft": true,
+    "adaptive_parallel_3_to_2_to_1": true
   },
   "steps": {
     "RESTORE": {
@@ -90,11 +97,19 @@
         "RESOLVED_FRAME_CONTRACT"
       ],
       "cost": "EXPENSIVE",
-      "parallelizable": false
+      "parallelizable": false,
+      "calibration_roles": [
+        "ordinary_baseline",
+        "worst_capture_condition",
+        "first_major_anomaly",
+        "high_impact_admission"
+      ],
+      "critic": "episodes/_system/visual_lock_v21.py",
+      "calibration_count": 4
     },
     "PRODUCTION": {
       "depends_on": [
-        "VISUAL_LOCK"
+        "IMAGE_WAVES"
       ],
       "cost": "EXPENSIVE",
       "parallelizable": true
@@ -145,6 +160,17 @@
       "parallelizable": false,
       "derived_cache": true,
       "evidence": "meta/runtime/contracts/frame-contract-index.json"
+    },
+    "IMAGE_WAVES": {
+      "depends_on": [
+        "VISUAL_LOCK"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": true,
+      "max_parallel": 3,
+      "adaptive_parallel": true,
+      "fail_soft": true,
+      "scheduler": "episodes/_system/image_scheduler.py"
     }
   }
 }

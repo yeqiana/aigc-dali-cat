@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "package": "Story OS V2.1 Phase 5 + Phase 6",
+  "package_version": "2.1.0-phase5-phase6",
+  "installed_at": "2026-08-30T23:54:12.605445+08:00",
+  "actual_git": {
+    "available": true,
+    "branch": "story",
+    "head": "09b9bd4fcae83f9ebd7f3eed5d69997be4282c77"
+  },
+  "backup": ".storyos_backups\\v21_phase56_20260830_235411",
+  "encoding": "utf-8",
+  "tests": "PASS",
+  "max_parallel_image_workers": 3,
+  "files": [
+    {
+      "path": "story_os_manifest.json",
+      "sha256": "63d987ecf88627f47391f2025871e659d68f2d66d3faef88c370576c3896291d",
+      "bytes": 3249
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "sha256": "4b82bddf53e6c86d71420b4e84a89253bc994ca9a56bb51238c87f8365e1045a",
+      "bytes": 4643
+    },
+    {
+      "path": "START_HERE.md",
+      "sha256": "fe6adfbb952a1b5ae1220890bb56c888e704770ae2611ee312b6e6541c548e0e",
+      "bytes": 11452
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "f16ec36fb1b02d5f6511e241bb082624aa71dc057de6e603f62a594633f01d2c",
+      "bytes": 18726
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "c3809699a1cbf883acb0648ee84fb090985ad273d8f89591607d29448ad8f105",
+      "bytes": 9483
+    },
+    {
+      "path": "standards/AUTHORITY_INDEX.json",
+      "sha256": "fc23c1ab0e91d309fb14266844fd3715760e2dc30754b31131ec22806d3e9f78",
+      "bytes": 13607
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "4c877bc40769e8b242944e8f3c2bd8931489fd006cc47a71431937dcc50bba60",
+      "bytes": 60584
+    },
+    {
+      "path": "standards/templates/story-gates.template.json",
+      "sha256": "1ee4d5608eaf05218aa48817f7a53f4a5a14b8987a0035d7207e3ec102c537be",
+      "bytes": 3733
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "sha256": "d353ee5e87c8ff712a10083a145bd1611b6b7ed2741172fa74ba7237fb888948",
+      "bytes": 10598
+    },
+    {
+      "path": "episodes/_system/codex_auto_orchestrator.py",
+      "sha256": "f7ccb3a6c80672508a592bed833aae71959e1c1f3ce71354cf27cc8a81998f69",
+      "bytes": 18951
+    },
+    {
+      "path": "episodes/_system/validate_episode.py",
+      "sha256": "cee68c3c63409cf5f1d672d68579a6cb34c49ac207fc45c50e70e0e243421a8f",
+      "bytes": 33490
+    },
+    {
+      "path": "episodes/_system/visual_review.py",
+      "sha256": "1a6942eedcf7e84877e0c9c3fe598602353f832cd82f079ca452bfad6007d67a",
+      "bytes": 2532
+    },
+    {
+      "path": "episodes/_system/workflow_runner.py",
+      "sha256": "adbc8c65712363f1e16f6c81ace06aedd8434818fcbd68163cb109ff8a15ffce",
+      "bytes": 5780
+    },
+    {
+      "path": "episodes/_system/visual_lock_v21.py",
+      "sha256": "aa321d258d90059bb5b4076686ccd0af13ac930791bf7a39513e515f2417382c",
+      "bytes": 25471
+    },
+    {
+      "path": "episodes/_system/image_scheduler.py",
+      "sha256": "7493aa9c8ae45ac81da84546f55ab140bf44ba9d6dc65f1541ae84422bae51fe",
+      "bytes": 19134
+    },
+    {
+      "path": "episodes/_system/visual_review_legacy.py",
+      "sha256": "07769e51fcc7d502560de9ff7e1b3ad9ee2ac59a42c75acef94f31728d9ff7ca",
+      "bytes": 15050
+    },
+    {
+      "path": "standards/Visual_Lock_V2.1_与有界并发生产规范_V1.0.md",
+      "sha256": "66b0d17f87e98a7c1fe1f47880268e860012ac334ab48c876d0fb8c1e0b8f3a1",
+      "bytes": 2430
+    }
+  ]
+}

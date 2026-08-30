@@ -66,27 +66,10 @@
       }
     },
     "calibration": {
-      "baseline": {
-        "frame": null,
-        "asset_path": null,
-        "sha256": null,
-        "decision": "pending",
-        "note": ""
-      },
-      "worst_condition": {
-        "frame": null,
-        "asset_path": null,
-        "sha256": null,
-        "decision": "pending",
-        "note": ""
-      },
-      "first_major_anomaly": {
-        "frame": null,
-        "asset_path": null,
-        "sha256": null,
-        "decision": "pending",
-        "note": ""
-      }
+      "schema_version": 2,
+      "policy": "four_admission_v21",
+      "items": [],
+      "note": "Frames are selected by visual_lock_v21.py prepare after Phase 3+4 contracts exist."
     },
     "calibration_contact_sheet": {
       "path": null,
@@ -152,6 +135,10 @@
       "environment_physics_fidelity",
       "anomaly_escalation_fidelity",
       "scale_reference_fidelity"
-    ]
+    ],
+    "visual_lock_schema_version": 2,
+    "visual_lock_calibration_count": 4,
+    "image_scheduler_max_parallel": 3,
+    "production_ledger_single_writer": true
   }
 }

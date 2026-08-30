@@ -111,7 +111,10 @@ def main() -> int:
         data = load_contract()
         assert data["rules"]["zip_is_delivery_adapter_not_stage_gate"] is True
         assert "RESTORE" in data["steps"]
-        print("WORKFLOW RUNNER V2.1 SELF-TEST PASS")
+        assert data["rules"].get("max_parallel_image_workers") == 3
+        assert data["rules"].get("production_ledger_single_writer") is True
+        assert "IMAGE_WAVES" in data["steps"]
+        print("WORKFLOW RUNNER V2.1 SELF-TEST PASS | IMAGE_SCHEDULER V2.1 PHASE6")
         return 0
     ep = resolve_episode(args.episode_dir)
     if args.cmd == "plan":

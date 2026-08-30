@@ -37,6 +37,19 @@
 - 合同文件是 derived cache，绝不能反向覆盖 Story/Storyboard/story-gates。
 <!-- STORY_OS_V2_1_PHASE4_END -->
 
+<!-- STORY_OS_V2_1_PHASE56_BEGIN -->
+## V2.1 Phase 5 + 6：四层 Visual Lock 与有界并发
+
+- 新篇 `visual.calibration.policy=four_admission_v21`。
+- Visual Lock 必须有 baseline / worst / first anomaly / high-impact 四张实际像素准入图。
+- high-impact 不因异常巨大而失败；必须同时满足 impact 兑现、尺度参照和真实拍摄可信度。
+- 正式生图由 `image_scheduler.py` 调度，最大并发 3。
+- 并发只发生在 image backend；Production Ledger begin/success/tech-fail 严格单写者。
+- 429/timeout/5xx 自动 3→2→1 降速；稳定两波逐级恢复。
+- technical failure 不消耗内容返修；失败依赖链阻塞，无关帧继续。
+- Repair 继续遵守每帧普通内容返修最多一次。
+<!-- STORY_OS_V2_1_PHASE56_END -->
+
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
 ## Story OS V2.0.3.6 Golden Path
 

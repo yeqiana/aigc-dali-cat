@@ -35,6 +35,16 @@ python episodes/_system/frame_contract.py verify <episode>
 每帧正式生成与最终审核必须绑定同一个 `frame_contract_sha256`。`meta/runtime/contracts/` 只是派生缓存，不是新权威源。
 <!-- STORY_OS_V2_1_PHASE4_END -->
 
+<!-- STORY_OS_V2_1_PHASE56_BEGIN -->
+## V2.1 Phase 5 + 6：Visual Lock / 并发生产
+
+Visual Lock 固定为四层准入：
+
+`ordinary baseline → worst condition → first anomaly → high-impact admission`
+
+baseline 先生成，后三张允许有界并发。统一 Visual Lock Critic PASS 后，Batch 统一使用 `image_scheduler.py`，默认最多 3 个 image worker；技术失败只阻塞依赖帧，无关帧继续。
+<!-- STORY_OS_V2_1_PHASE56_END -->
+
 ## 0. 黄金路径（Golden Path）
 
 ```text

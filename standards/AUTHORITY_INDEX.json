@@ -185,6 +185,13 @@
       "scope": "resolved_frame_contract_compilation",
       "active": true,
       "note": "Engineering compilation standard; runtime frame-contract files are derived caches, not authority."
+    },
+    {
+      "path": "standards/Visual_Lock_V2.1_与有界并发生产规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "visual_lock_and_bounded_concurrent_production",
+      "active": true,
+      "note": "Four-admission Visual Lock plus max-3 single-writer fail-soft image scheduling."
     }
   ],
   "rules": {
@@ -324,6 +331,25 @@
       ],
       "required_for_contract_min": "2.1.0",
       "cache_is_authority": false
+    },
+    "visual_lock_v21": {
+      "tool": "episodes/_system/visual_lock_v21.py",
+      "review_compat_entry": "episodes/_system/visual_review.py",
+      "roles": [
+        "ordinary_baseline",
+        "worst_capture_condition",
+        "first_major_anomaly",
+        "high_impact_admission"
+      ],
+      "required_when_calibration_policy": "four_admission_v21"
+    },
+    "image_scheduler": {
+      "tool": "episodes/_system/image_scheduler.py",
+      "queue": "meta/production-queue.json",
+      "max_parallel": 3,
+      "adaptive": true,
+      "ledger_writer": "scheduler_main_thread_only",
+      "fail_soft": true
     }
   }
 }

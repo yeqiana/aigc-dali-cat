@@ -63,7 +63,16 @@
     "frame_contract_sha_binding",
     "generation_review_contract_parity",
     "derived_frame_contract_cache",
-    "localized_storyboard_frame_hash"
+    "localized_storyboard_frame_hash",
+    "four_admission_visual_lock",
+    "high_impact_visual_admission",
+    "visual_lock_actual_pixel_unified_critic",
+    "bounded_image_concurrency",
+    "critical_path_image_scheduler",
+    "adaptive_parallel_throttle",
+    "fail_soft_image_waves",
+    "repair_queue",
+    "single_writer_production_ledger"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -75,7 +84,10 @@
     "Evidence files never become a second stage source.",
     "Reality constrains capture behavior, not concept scale or fictional world existence.",
     "Environment is a physical contract, not a visual filter.",
-    "Resolved Frame Contracts are derived caches; Story, Storyboard, story-gates and Visual Profile remain authoritative."
+    "Resolved Frame Contracts are derived caches; Story, Storyboard, story-gates and Visual Profile remain authoritative.",
+    "Large anomaly scale is not a Visual Lock failure by itself; capture credibility and promised impact are judged separately.",
+    "Image workers may run concurrently, but Production Ledger mutations remain single-writer.",
+    "Maximum supported formal image concurrency is 3."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

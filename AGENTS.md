@@ -56,6 +56,12 @@ Story Lock 后先完成环境合同与逐帧 impact 设计，再进入 Visual Lo
 Environment / Impact Contract 通过后先编译全部 Frame Contracts，再进入 Visual Lock 校准。正式生图不得只依赖临时 scene prompt；scene prompt 与 Resolved Frame Contract 分层存在，后者是当次生产的完整机器合同。若合同 SHA 漂移，旧 generation attempt 不得直接冒充当前合同。
 <!-- STORY_OS_V2_1_PHASE4_AGENTS_END -->
 
+<!-- STORY_OS_V2_1_PHASE56_AGENTS_BEGIN -->
+## V2.1 Phase 5/6 Execution
+
+Visual Lock 不再只看三张“风格图”：先 baseline，随后 worst condition / first anomaly / high-impact admission 三张可并行，最后统一 Critic。正式 Batch 不允许手工连续调用 image backend 形成隐式串行，应建立 production queue 并由 `image_scheduler.py run --max-workers 3` 执行。Scheduler 返回 PARTIAL 时先处理/重试技术失败，不得把缺帧当 PASS。
+<!-- STORY_OS_V2_1_PHASE56_AGENTS_END -->
+
 ## Episodes 机器状态与发布清单
 
 > 当前 Story OS：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。

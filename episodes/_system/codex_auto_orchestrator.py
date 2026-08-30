@@ -102,18 +102,39 @@ For V2.1+ episodes, AFTER Phase 3 Environment/Impact PASS and BEFORE generating 
 - Do not let an old generation attempt with a stale frame-contract SHA pass as current production evidence.
 - After Visual Lock PASS, run `python episodes/_system/frame_contract.py verify \"{rel}\"` again before Batch. If it is stale, do not patch the cache by hand: recompile and regenerate/review any calibration frame whose generation contract no longer matches.
 VISUAL LOCK:
-Resolve the visual profile. If the user did not explicitly override it, use the repository default profile. Every formal frame generation must obey the resolved compact visual contract.
-Generate exactly the three registered calibration frames first. Review actual images, run visual critic attempt 1, repair calibration only within existing limits if needed, then attempt 2. If still fail, stop.
-Only after `visual_review.py verify` passes may you record delegated visual_lock.
+For the current V2.1 Phase5 flow, activate the four-admission policy:
+1. Run `python episodes/_system/visual_lock_v21.py prepare "{rel}"`. This chooses four DISTINCT real episode frames and writes `meta/visual-lock-plan.json`: ordinary_baseline first, then worst_capture_condition / first_major_anomaly / high_impact_admission.
+2. Create concise scene prompt files at `{rel}/prompts/production/NN.txt` for those frames. Do not duplicate the full rules into scene prompts; Resolved Frame Contract carries the locked context.
+3. Initialize/import the scheduler:
+   python episodes/_system/image_scheduler.py init "{rel}"
+   python episodes/_system/image_scheduler.py import-visual-lock "{rel}" --prompt-dir "{rel}/prompts/production"
+4. Run `python episodes/_system/image_scheduler.py run "{rel}" --max-workers 3`. The baseline dependency makes baseline run first; after it succeeds, the other three admissions may run concurrently. If the scheduler returns PARTIAL because of TECH_FAILED, it has already continued all unrelated work. Use `retry-tech` and rerun after inspecting the technical reason; do not consume content repair.
+5. Run `python episodes/_system/visual_lock_v21.py bind-from-queue "{rel}"`.
+6. Run `python episodes/_system/visual_review.py run-critic "{rel}" --attempt 1`; for Phase5 episodes this dispatches to the four-image unified Visual Lock Critic.
+7. If attempt 1 FAILS, read the actual failed calibration rows. The Visual Lock tool records those ready candidates as CONTENT_FAILED in the production ledger when possible. Authorize ONLY the failed frames with `production_ledger.py authorize-repair --delegated-auto`, create concise repair prompts, enqueue them with `image_scheduler.py add --kind repair --scope repair`, run the scheduler, bind-from-queue again, then run critic attempt 2. If attempt 2 still fails, stop.
+8. Only after `visual_review.py verify` PASS may you record delegated visual_lock.
+9. Run `frame_contract.py verify "{rel}"` again before Batch. Do not hand-edit derived contract caches.
+
+The high-impact admission exists specifically to prevent over-restraint: large/cosmic/impossible anomaly scale is allowed. It must visibly deliver the locked impact/scale reference while keeping plausible optics, available light, atmosphere, occlusion, photographer behavior and non-cinematic capture.
 
 PRODUCTION:
-For every new/repair image use `codex_subscription_image.py generate-for-frame \"{rel}\" --frame NN ...`; preserve raw output and exact ledger canvas.
-Maintain production ledger. Technical failure does not consume content repair.
-After ALL current approved frames exist, run:
-  python episodes/_system/incremental_frame_review.py review \"{rel}\" --attempt 1
-If FAIL, repair ONLY failed dirty frames within one-content-repair limits, then attempt 2.
-Before leaving production run:
-  python episodes/_system/incremental_frame_review.py audit \"{rel}\"
+Do NOT manually serialize all formal `codex_subscription_image.py` calls. Phase6 owns expensive image concurrency.
+- Keep all per-frame scene prompts concise under the existing ledger prompt budget; Frame Contract carries global/visual/environment context.
+- Import remaining original frames:
+  python episodes/_system/image_scheduler.py import-batch "{rel}" --prompt-dir "{rel}/prompts/production"
+- Inspect `image_scheduler.py plan`, then run:
+  python episodes/_system/image_scheduler.py run "{rel}" --max-workers 3
+The scheduler uses high-risk/critical-path priority, `escalation_from` dependencies, unique worker outputs/logs, adaptive 3→2→1 throttling, and fail-soft execution. Only image backend work is concurrent; all production-ledger mutations remain serial in the scheduler main thread.
+- Scheduler PARTIAL is not Production PASS. If TECH_FAILED exists, unrelated frames have already continued; use `retry-tech` then rerun. Technical failure never consumes content-repair budget.
+- After all current approved/candidate frames exist, run:
+  python episodes/_system/incremental_frame_review.py review "{rel}" --attempt 1
+- If content review FAILS, repair ONLY failed dirty frames. Use the existing single content-repair authorization, write a repair prompt, enqueue with:
+  python episodes/_system/image_scheduler.py add "{rel}" --frame NN --kind repair --scope repair --prompt-file <path> ...
+  python episodes/_system/image_scheduler.py run "{rel}" --max-workers 3
+  Then run frame review attempt 2.
+- Before leaving production:
+  python episodes/_system/incremental_frame_review.py audit "{rel}"
+Fast Frame Scout is NOT installed yet; do not skip or replace the final Frame Semantic Critic.
 
 SUBTITLES / RELEASE:
 Create canonical caption source and PASS text audit. Render publish captions only with subtitle_layout.py render-all, then audit.
