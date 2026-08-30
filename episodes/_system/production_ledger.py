@@ -561,6 +561,26 @@ def cmd_authorize_repair(args: argparse.Namespace) -> None:
     print(f"{key}: REPAIR_AUTHORIZED")
 
 
+def cmd_authorize_user_locked_repair(args: argparse.Namespace) -> None:
+    """Reopen a locked frame for its first ordinary repair after direct user scope approval."""
+    ep = episode_dir(args.episode_dir)
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, args.frame)
+    if frame["status"] != "LOCKED":
+        raise SystemExit(f"locked repair requires LOCKED, got {frame['status']}")
+    if frame.get("content_repairs_used", 0) != 0:
+        raise SystemExit("locked repair is only for a frame with no ordinary content repair")
+    approval = args.approval_text.strip()
+    if not approval:
+        raise SystemExit("direct user approval text is required")
+    frame.setdefault("superseded_locks", []).append({"at": now_iso(), "lock": frame.get("lock"), "approved_asset": frame.get("approved_asset")})
+    frame["status"] = "REPAIR_AUTHORIZED"
+    frame["repair_authorization"] = {"at": now_iso(), "note": args.reason, "user_approved": True, "delegated_auto_review": False, "approval_basis": "direct_user_review_locked_repair", "approval_text": approval}
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    print(f"{key}: REPAIR_AUTHORIZED (direct-user locked-frame scope recorded)")
+
+
 def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     """Record one explicit, non-delegable user exception after a hard repair failure.
 
@@ -571,8 +591,8 @@ def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
     key, frame = frame_obj(data, args.frame)
-    if frame["status"] != "NEEDS_USER":
-        raise SystemExit(f"user exception repair requires NEEDS_USER, got {frame['status']}")
+    if frame["status"] not in {"NEEDS_USER", "LOCKED"}:
+        raise SystemExit(f"user exception repair requires NEEDS_USER or LOCKED, got {frame['status']}")
     if frame.get("content_repairs_used", 0) != 1:
         raise SystemExit("user exception repair requires exactly one ordinary content repair")
     if frame.get("user_exception_repairs_used", 0) >= 1:
@@ -580,6 +600,9 @@ def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     approval = args.approval_text.strip()
     if not approval:
         raise SystemExit("direct user approval text is required")
+    prior_lock = frame.get("lock") if frame["status"] == "LOCKED" else None
+    if prior_lock:
+        frame.setdefault("superseded_locks", []).append({"at": now_iso(), "lock": prior_lock, "approved_asset": frame.get("approved_asset")})
     frame["status"] = "EXCEPTION_REPAIR_AUTHORIZED"
     frame.setdefault("user_exception_authorizations", []).append({
         "at": now_iso(),
@@ -818,6 +841,13 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--note", required=True)
     s.add_argument("--delegated-auto", action="store_true", help="continuous-execution agent approval; does not claim direct user review")
     s.set_defaults(func=cmd_authorize_repair)
+
+    s = sub.add_parser("authorize-user-locked-repair", help="reopen a locked frame for its first ordinary repair with direct user scope approval")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--approval-text", required=True)
+    s.add_argument("--reason", required=True)
+    s.set_defaults(func=cmd_authorize_user_locked_repair)
 
     s = sub.add_parser("authorize-user-exception-repair", help="record one direct-user exception after the ordinary repair hard-fails")
     s.add_argument("episode_dir")
