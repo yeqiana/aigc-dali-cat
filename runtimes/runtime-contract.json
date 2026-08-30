@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "story_os_version": "2.0.3.5",
+  "story_os_version": "2.0.3.6",
   "name": "Multi-Runtime + Incremental Workspace Closure",
   "state_source": "meta/episode-state.json",
   "creative_authority": "standards/制作规范_正式版.md",

@@ -44,10 +44,11 @@ Do not spawn another full-auto supervisor.
 MINIMAL CLOSURE FIRST:
 Run `python episodes/_system/incremental_closure.py plan "{rel}" --json` before spending a critic call. CLEAN SHA-bound evidence MUST be reused. Do not rerun Story/Visual/Frame critics merely for reassurance.
 
-RELEASE GUARD V2.0.3.5:
+RELEASE GUARD V2.0.3.6:
 Before Story Lock, run:
   python episodes/_system/release_preflight.py enable "{rel}"
   python episodes/_system/release_preflight.py build-recent5 "{rel}"
+This command must run/reuse the fresh isolated semantic equivalence critic for V2.0.3.6+; never replace it with manual similarity prose.
 Never replace this with story.recent5_checked=true.
 If this is a continuous multi-episode series, create/bind the shared series lock before Visual Lock.
 Before returning from RELEASE work, initialize compliance and run the final release critic:
@@ -127,7 +128,7 @@ def postflight(ep):
     r=run_cmd([sys.executable,SYSTEM/'machine_gate.py',ep,'--target','PRODUCTION_PASSED'])
     if r.returncode!=0:return 'PAUSED','PRODUCTION_PASSED machine gate failed before packaging:\n'+r.stdout[-2500:],None
     r=run_cmd([sys.executable,SYSTEM/'release_preflight.py','prepare-auto',ep])
-    if r.returncode!=0:return 'PAUSED','V2.0.3.5 release preflight failed:\n'+r.stdout[-3000:],None
+    if r.returncode!=0:return 'PAUSED','V2.0.3.6 semantic release preflight failed:\n'+r.stdout[-3000:],None
     try:
         from delegated_delivery import build, verify
         package=build(ep,'DELEGATED_AUTO')

@@ -95,3 +95,11 @@ python episodes/_system/release_preflight.py init-compliance <episode>
 python episodes/_system/release_preflight.py run-release-critic <episode>
 python episodes/_system/release_preflight.py verify <episode>
 ```
+
+
+## 7. V2.0.3.6 Semantic Recent-5
+
+V2.0.3.6 新篇在原 deterministic Recent-5 之外，必须执行 `standards/fingerprint_semantic_guard_V1.0.md`。
+最终相似度取 exact-string 与 semantic-equivalence 两者较高值；mechanism veto 取 OR。
+critic 不得自行给相似度数值，全部分数必须由 Python 根据固定九维权重计算。
+V2.0.3.5.1 及更早 episode 不因仓库升级被强制迁移。

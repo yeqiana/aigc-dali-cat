@@ -1,11 +1,11 @@
-# Dali Cat Story OS — Repository Execution Contract V2.0.3.5.1.1
+# Dali Cat Story OS — Repository Execution Contract V2.0.3.6.1
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
-## Story OS V2.0.3.5.1 Golden Path
+## Story OS V2.0.3.6 Golden Path
 
 **第一入口：先读 `START_HERE.md`。** 该文件只负责路由，不建立第二套创作规范。
 
@@ -344,3 +344,14 @@ Full-auto pipeline: `worker → deterministic postflight → COMPLETE|PAUSED|BLO
 - 栏目/题材分类默认不是连续系列。
 - 只有 `<series>/meta/series-lock.json` 已存在，或 `<series>/meta/series-continuity.json` 显式 `enabled=true`，才启用 Series Lock。
 - 连续系列可先执行 `release_preflight.py declare-series`；`init-series-lock` 会自动写入声明。
+
+
+<!-- STORY_OS_V2_0_3_6_SEMANTIC_RECENT5 -->
+## V2.0.3.6 Semantic Recent-5
+
+- Recent-5 不再只认 fingerprint 字符串完全相等。
+- V2.0.3.6 新篇必须生成 fresh isolated `meta/recent5-semantic-review.json`。
+- critic 只判断九维是否语义等价，不得自行给数值分。
+- Python 固定计算 `effective=max(exact, semantic)`，veto 固定为 exact OR semantic。
+- semantic evidence 绑定 fingerprint SHA、registry SHA、历史 episode IDs、critic log SHA。
+- V2.0.3.5.1 及更早 episode 保持兼容。

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "2.0.3.5.1",
+  "story_os_version": "2.0.3.6",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -157,6 +157,13 @@
       "scope": "release_preflight_recent5_series_semantic_governance",
       "active": true,
       "note": "Adds release-preflight evidence only; no second stage source."
+    },
+    {
+      "path": "standards/fingerprint_semantic_guard_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "recent5_semantic_deduplication",
+      "active": true,
+      "note": "Fresh isolated semantic equivalence matrix; Python computes scores and vetoes."
     }
   ],
   "rules": {
@@ -252,7 +259,12 @@
       "new_state_forbidden": true,
       "series_continuity": "<series>/meta/series-continuity.json",
       "series_detection_mode": "explicit_marker_or_existing_lock_only",
-      "sibling_episode_count_is_continuity_signal": false
+      "sibling_episode_count_is_continuity_signal": false,
+      "semantic_recent5_review": "meta/recent5-semantic-review.json",
+      "semantic_recent5_critic_log": "meta/recent5-semantic-critic.jsonl",
+      "semantic_recent5_min_contract": "2.0.3.6",
+      "semantic_scoring_policy": "max(exact_string,semantic_equivalence)",
+      "critic_may_assign_numeric_similarity_score": false
     }
   }
 }
