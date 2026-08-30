@@ -16,6 +16,8 @@ from concept_ambition import required as concept_ambition_required, verify as ve
 from environment_contract import required as environment_contract_required, verify as verify_environment_contract
 from frame_contract import required as frame_contract_required, verify_all as verify_frame_contracts
 from visual_lock_v21 import required as visual_lock_v21_required, verify as verify_visual_lock_v21
+from fast_frame_scout import required as fast_scout_required, audit as audit_fast_scout
+from final_candidate_snapshot import required as final_snapshot_required, verify as verify_final_snapshot
 
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 PRODUCTION_DECISIONS = {"pending", "pass", "fail"}
@@ -587,6 +589,14 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
     if effective and STATE_MIN[effective] >= STATE_MIN["PRODUCTION_PASSED"] and frame_contract_required(episode_dir):
         for error in verify_frame_contracts(episode_dir):
             findings.append(Finding("FAIL", "resolved_frame_contract_gate", error))
+
+    if effective and STATE_MIN[effective] >= STATE_MIN["PRODUCTION_PASSED"] and fast_scout_required(episode_dir):
+        for error in audit_fast_scout(episode_dir, write_summary=True):
+            findings.append(Finding("FAIL", "fast_frame_scout_gate", error))
+
+    if effective and STATE_MIN[effective] >= STATE_MIN["PUBLISH_READY"] and final_snapshot_required(episode_dir):
+        for error in verify_final_snapshot(episode_dir):
+            findings.append(Finding("FAIL", "final_candidate_snapshot_gate", error))
     return findings
 
 

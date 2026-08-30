@@ -72,7 +72,14 @@
     "adaptive_parallel_throttle",
     "fail_soft_image_waves",
     "repair_queue",
-    "single_writer_production_ledger"
+    "single_writer_production_ledger",
+    "fast_frame_scout",
+    "risk_based_early_review",
+    "scout_never_final_pass",
+    "final_candidate_snapshot",
+    "snapshot_sha_lock",
+    "snapshot_reuse_status",
+    "snapshot_driven_delivery_adapter"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -87,7 +94,10 @@
     "Resolved Frame Contracts are derived caches; Story, Storyboard, story-gates and Visual Profile remain authoritative.",
     "Large anomaly scale is not a Visual Lock failure by itself; capture credibility and promised impact are judged separately.",
     "Image workers may run concurrently, but Production Ledger mutations remain single-writer.",
-    "Maximum supported formal image concurrency is 3."
+    "Maximum supported formal image concurrency is 3.",
+    "Fast Frame Scout may request repair but never authorizes final Production PASS.",
+    "Final Candidate Snapshot is evidence, not a second creative authority.",
+    "V2.1 Delivery Adapter must consume a verified snapshot instead of rescanning mutable publish files."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

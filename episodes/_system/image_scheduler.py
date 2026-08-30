@@ -19,6 +19,7 @@ from pathlib import Path
 
 import frame_contract
 import environment_contract
+import fast_frame_scout as frame_scout
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -251,7 +252,10 @@ def backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->dict:
     if cp.stdout.strip():
         try:payload=json.loads(cp.stdout)
         except Exception:pass
-    return {"returncode":cp.returncode,"stdout":cp.stdout,"payload":payload,"output":out,"log":log,"attempt":attempt}
+    scout=None
+    if cp.returncode==0 and out.is_file() and frame_scout.required(ep):
+        scout=frame_scout.evaluate_candidate(ep,frame,out,codex_raw=codex,timeout=min(240,max(60,timeout)))
+    return {"returncode":cp.returncode,"stdout":cp.stdout,"payload":payload,"output":out,"log":log,"attempt":attempt,"scout":scout}
 
 
 def ledger_success(ep:Path,item:dict,result:dict)->tuple[bool,str]:
@@ -318,8 +322,20 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
             if res.get("returncode")==0 and res.get("output") and Path(res["output"]).is_file():
                 ok,msg=ledger_success(ep,item,res)
             if ok:
-                item["status"]="generated";item["output_path"]=repo_rel(Path(res["output"]));item["log_path"]=repo_rel(Path(res["log"]));item["completed_at"]=now();item["last_error"]=None
-                any_progress=True;wave_summary.append({"frame":item["frame"],"status":"generated","elapsed_seconds":((res.get("payload") or {}).get("elapsed_seconds"))})
+                scout=res.get("scout") or {}
+                decision=scout.get("decision")
+                item["output_path"]=repo_rel(Path(res["output"]));item["log_path"]=repo_rel(Path(res["log"]));item["completed_at"]=now();item["last_error"]=None
+                item["scout"]={"decision":decision,"risk_level":scout.get("risk_level"),"asset_sha256":scout.get("asset_sha256")} if scout else None
+                if decision=="REPAIR_NOW":
+                    review=run([sys.executable,SYSTEM/"production_ledger.py","review",ep,"--frame",f"{int(item['frame']):02d}","--decision","repair","--notes","Phase7 Fast Scout obvious defect"])
+                    if review.returncode==0:
+                        item["status"]="scout_repair"
+                    else:
+                        item["status"]="blocked";item["last_error"]="scout repair handoff failed: "+review.stdout[-1200:]
+                    wave_summary.append({"frame":item["frame"],"status":item["status"],"scout":"REPAIR_NOW"})
+                else:
+                    item["status"]="generated";any_progress=True
+                    wave_summary.append({"frame":item["frame"],"status":"generated","scout":decision or "DISABLED","elapsed_seconds":((res.get("payload") or {}).get("elapsed_seconds"))})
             else:
                 failures+=1;code=classify_error(msg)
                 ledger_tech_fail(ep,item,code,msg or "image backend failed")
@@ -338,12 +354,16 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     tech=[x for x in q.get("items") or [] if x.get("status")=="tech_failed"]
     queued=[x for x in q.get("items") or [] if x.get("status")=="queued"]
     hard_blocked=[x for x in q.get("items") or [] if x.get("status")=="blocked"]
+    scout_repair=[x for x in q.get("items") or [] if x.get("status")=="scout_repair"]
     generated=[x for x in q.get("items") or [] if x.get("status")=="generated"]
-    summary={"generated":len(generated),"tech_failed":len(tech),"dependency_blocked":len(blocked),"hard_blocked":len(hard_blocked),"queued":len(queued),"adaptive_parallel":q.get("adaptive_parallel"),"waves":q.get("waves") or [],"reported_at":now()}
+    scout_errors=frame_scout.audit(ep,write_summary=True) if frame_scout.required(ep) else []
+    summary={"generated":len(generated),"tech_failed":len(tech),"dependency_blocked":len(blocked),"hard_blocked":len(hard_blocked),"scout_repair":len(scout_repair),"scout_audit_errors":scout_errors,"queued":len(queued),"adaptive_parallel":q.get("adaptive_parallel"),"waves":q.get("waves") or [],"reported_at":now()}
     write_json(ep/"meta/image-scheduler-performance.json",summary)
     print(json.dumps(summary,ensure_ascii=False,indent=2))
     if tech or queued or hard_blocked:
         return 4
+    if scout_repair or scout_errors:
+        return 5
     return 0 if any_progress or generated else 0
 
 

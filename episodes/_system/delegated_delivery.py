@@ -18,6 +18,7 @@ from frame_semantic_review import (
     version_tuple,
 )
 from machine_gate import validate as validate_machine_gate
+import final_candidate_snapshot as final_snapshot
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT_REL = Path('meta/delegated-release.json')
@@ -59,6 +60,9 @@ def machine_gate_required_for_delivery(ep: Path) -> bool:
 
 
 def preflight(ep: Path) -> None:
+    if final_snapshot.required(ep) or (ep/final_snapshot.SNAPSHOT_REL).is_file():
+        errors=final_snapshot.verify(ep)
+        if errors: raise SystemExit('final candidate snapshot preflight failed: ' + '; '.join(errors))
     if frame_semantic_required(ep):
         errors = verify_frame_semantic_episode(ep, metadata_only=False, write_audit=True)
         if errors:
@@ -69,7 +73,27 @@ def preflight(ep: Path) -> None:
         if failures:
             raise SystemExit('PRODUCTION_PASSED machine gate failed before delivery: ' + '; '.join(failures))
 
+def gather_from_snapshot(ep: Path) -> tuple[list[dict], dict]:
+    errors=final_snapshot.verify(ep)
+    if errors: raise SystemExit('final candidate snapshot failed before delivery: ' + '; '.join(errors))
+    snap=read_json(ep/final_snapshot.SNAPSHOT_REL)
+    lock=snap.get('lock') or {}
+    files=[]
+    for item in lock.get('delivery_files') or []:
+        if not isinstance(item,dict): continue
+        p=resolve_repo(item.get('path'),'snapshot.delivery_file')
+        current=row(p,str(item.get('role') or 'snapshot_file'),str(item.get('archive_path') or ('evidence/'+p.name)))
+        if current['sha256'].lower()!=str(item.get('sha256') or '').lower():
+            raise SystemExit(f"snapshot delivery SHA drift: {item.get('path')}")
+        files.append(current)
+    snapshot_path=ep/final_snapshot.SNAPSHOT_REL
+    files.append(row(snapshot_path,'final_candidate_snapshot','evidence/final-candidate-snapshot.json'))
+    manifest=read_json(ep/'meta/release-manifest.json')
+    return files,manifest
+
 def gather(ep: Path) -> tuple[list[dict], dict]:
+    if final_snapshot.required(ep) or (ep/final_snapshot.SNAPSHOT_REL).is_file():
+        return gather_from_snapshot(ep)
     manifest_path=ep/'meta/release-manifest.json'; manifest=read_json(manifest_path)
     release=manifest.get('release') or {}; artifacts=manifest.get('artifacts') or {}
     pub_raw=release.get('publish_dir')

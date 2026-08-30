@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "package": "Story OS V2.1 Phase 7 + Phase 8",
+  "package_version": "2.1.0-phase7-phase8",
+  "installed_at": "2026-08-31T00:19:28.852064+08:00",
+  "actual_git": {
+    "available": true,
+    "branch": "story",
+    "head": "3ae9e3d0548f1be55a162e6fd65ff101eb3631c2"
+  },
+  "backup": ".storyos_backups\\v21_phase78_20260831_001928",
+  "encoding": "utf-8",
+  "tests": "PASS",
+  "files": [
+    {
+      "path": "story_os_manifest.json",
+      "sha256": "b5b09f2b1cff4f938702fa085c1e2e48b16238b13f6cbffb1ca43a8c8e298de8",
+      "bytes": 3732
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "sha256": "c798fdcf30b7aa7c1d737d287518001589c7a306f352e555b85b65516cd1bed0",
+      "bytes": 5601
+    },
+    {
+      "path": "START_HERE.md",
+      "sha256": "e0f89e89265cbfe388ea1c2bc7c24393cb9043dc35fe5ce2951f972de6c1fbe5",
+      "bytes": 11957
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "ad2b0c918123d0a3f821e3da7b6fcbc9656ea0552ce6405f24580eed0ec1975c",
+      "bytes": 19395
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "752b3b42e8d076b9e48ce5796149ba362d4a7802e7e16b5163b1f7d904e2321f",
+      "bytes": 9961
+    },
+    {
+      "path": "standards/AUTHORITY_INDEX.json",
+      "sha256": "df804251cd8d3e6608a5f89c1d13aec4dec562553521b9c87b6c39cf5c4af058",
+      "bytes": 14296
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "a69758d9be5e08188b36352159a18aea6a2c988a927ec6389eae3c98de4f2990",
+      "bytes": 61299
+    },
+    {
+      "path": "standards/templates/story-gates.template.json",
+      "sha256": "559f012cf939734276fd6584f72cab3effa09d773923a16c6e97f7a548fe0ee6",
+      "bytes": 4254
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "sha256": "f2e5473afd6a288100a48346c6e30eec1925ff3acd185236e001db5eeeb39c40",
+      "bytes": 11271
+    },
+    {
+      "path": "episodes/_system/codex_auto_orchestrator.py",
+      "sha256": "5ac1cb5a20b62a2d6571d5e9384f0971674fb91dc18481a44c97be4862b2f5ee",
+      "bytes": 20093
+    },
+    {
+      "path": "episodes/_system/validate_episode.py",
+      "sha256": "1c7e9cb7276f3b5101538b1d349547520690f99f5c1a3b05d39a50efa4775871",
+      "bytes": 34205
+    },
+    {
+      "path": "episodes/_system/image_scheduler.py",
+      "sha256": "5dd44fe4618b436bf029e1f1150d1e48ffa5684d0d70679877eadee79865595e",
+      "bytes": 20597
+    },
+    {
+      "path": "episodes/_system/frame_semantic_review.py",
+      "sha256": "b3ba7eb315a5c7fd0dad6d5dd85b4e7e3af678068d7674f22eb405ae97875aa5",
+      "bytes": 33681
+    },
+    {
+      "path": "episodes/_system/delegated_delivery.py",
+      "sha256": "e2e9faa9cef35bd9eaa72ce3adfa70904535162e6fd0604cf4ab8cdd33f98e31",
+      "bytes": 11775
+    },
+    {
+      "path": "episodes/_system/release_package.py",
+      "sha256": "1e48241ed70cac4ad98f31c45b90c242098a0964bca14c56db4441b8f493465e",
+      "bytes": 10579
+    },
+    {
+      "path": "episodes/_system/final_checklist.py",
+      "sha256": "e8854641155fa3b36162844703d2f8e7baf0eb6756c9b523f3bdf82484364524",
+      "bytes": 7559
+    },
+    {
+      "path": "episodes/_system/workflow_runner.py",
+      "sha256": "fc438021c047c6491693437670cbd1c57ed30c49b224f5580c466b5ea6b8e492",
+      "bytes": 6022
+    },
+    {
+      "path": "episodes/_system/fast_frame_scout.py",
+      "sha256": "d75f39a3c3f9aeb129f2670e3e9085f847bf0304514a6647efdcbb584a149e97",
+      "bytes": 15006
+    },
+    {
+      "path": "episodes/_system/final_candidate_snapshot.py",
+      "sha256": "edb2ff8e79d75b8202720a4bf0ccbc087927ed538f53a739916897ef006bd589",
+      "bytes": 13062
+    },
+    {
+      "path": "standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md",
+      "sha256": "cc8053886ae8eca0499f94107dec657cedb9e376c0098b84715cced3d4c2d933",
+      "bytes": 1772
+    }
+  ]
+}

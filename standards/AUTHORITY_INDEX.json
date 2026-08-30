@@ -192,6 +192,13 @@
       "scope": "visual_lock_and_bounded_concurrent_production",
       "active": true,
       "note": "Four-admission Visual Lock plus max-3 single-writer fail-soft image scheduling."
+    },
+    {
+      "path": "standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "fast_scout_and_final_snapshot",
+      "active": true,
+      "note": "Scout is triage only; snapshot is derived release evidence."
     }
   ],
   "rules": {
@@ -350,6 +357,17 @@
       "adaptive": true,
       "ledger_writer": "scheduler_main_thread_only",
       "fail_soft": true
+    },
+    "fast_frame_scout": {
+      "tool": "episodes/_system/fast_frame_scout.py",
+      "summary": "meta/frame-scout-summary.json",
+      "final_pass_authority": false
+    },
+    "final_candidate_snapshot": {
+      "tool": "episodes/_system/final_candidate_snapshot.py",
+      "path": "meta/final-candidate-snapshot.json",
+      "snapshot_is_authority": false,
+      "delivery_must_consume": true
     }
   }
 }

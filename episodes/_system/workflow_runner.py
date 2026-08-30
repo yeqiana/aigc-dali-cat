@@ -114,7 +114,11 @@ def main() -> int:
         assert data["rules"].get("max_parallel_image_workers") == 3
         assert data["rules"].get("production_ledger_single_writer") is True
         assert "IMAGE_WAVES" in data["steps"]
-        print("WORKFLOW RUNNER V2.1 SELF-TEST PASS | IMAGE_SCHEDULER V2.1 PHASE6")
+        assert data["rules"].get("fast_scout_never_final_pass") is True
+        assert data["rules"].get("delivery_consumes_verified_snapshot") is True
+        assert "FAST_FRAME_SCOUT" in data["steps"]
+        assert "FINAL_CANDIDATE_SNAPSHOT" in data["steps"]
+        print("WORKFLOW RUNNER V2.1 SELF-TEST PASS | PHASE78")
         return 0
     ep = resolve_episode(args.episode_dir)
     if args.cmd == "plan":

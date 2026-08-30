@@ -62,6 +62,12 @@ Environment / Impact Contract 通过后先编译全部 Frame Contracts，再进�
 Visual Lock 不再只看三张“风格图”：先 baseline，随后 worst condition / first anomaly / high-impact admission 三张可并行，最后统一 Critic。正式 Batch 不允许手工连续调用 image backend 形成隐式串行，应建立 production queue 并由 `image_scheduler.py run --max-workers 3` 执行。Scheduler 返回 PARTIAL 时先处理/重试技术失败，不得把缺帧当 PASS。
 <!-- STORY_OS_V2_1_PHASE56_AGENTS_END -->
 
+<!-- STORY_OS_V2_1_PHASE78_AGENTS_BEGIN -->
+## V2.1 Phase 7/8 Execution
+
+在 Visual Lock 前启用 Fast Scout，使 Scheduler 对高风险生成结果并行做早期像素 triage；REPAIR_NOW 只影响该帧与依赖链。不要把 PASS_FAST 写成正式通过。Release 完成 release_preflight 后必须 build+verify Final Candidate Snapshot，再记录 release_lock/推进 PUBLISH_READY。Delivery 只能消费 verified Snapshot。
+<!-- STORY_OS_V2_1_PHASE78_AGENTS_END -->
+
 ## Episodes 机器状态与发布清单
 
 > 当前 Story OS：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。

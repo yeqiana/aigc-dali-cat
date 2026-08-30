@@ -103,6 +103,7 @@ For V2.1+ episodes, AFTER Phase 3 Environment/Impact PASS and BEFORE generating 
 - After Visual Lock PASS, run `python episodes/_system/frame_contract.py verify \"{rel}\"` again before Batch. If it is stale, do not patch the cache by hand: recompile and regenerate/review any calibration frame whose generation contract no longer matches.
 VISUAL LOCK:
 For the current V2.1 Phase5 flow, activate the four-admission policy:
+0. Run `python episodes/_system/fast_frame_scout.py enable "{rel}"`. This activates Phase7 triage without changing final review authority.
 1. Run `python episodes/_system/visual_lock_v21.py prepare "{rel}"`. This chooses four DISTINCT real episode frames and writes `meta/visual-lock-plan.json`: ordinary_baseline first, then worst_capture_condition / first_major_anomaly / high_impact_admission.
 2. Create concise scene prompt files at `{rel}/prompts/production/NN.txt` for those frames. Do not duplicate the full rules into scene prompts; Resolved Frame Contract carries the locked context.
 3. Initialize/import the scheduler:
@@ -134,12 +135,16 @@ The scheduler uses high-risk/critical-path priority, `escalation_from` dependenc
   Then run frame review attempt 2.
 - Before leaving production:
   python episodes/_system/incremental_frame_review.py audit "{rel}"
-Fast Frame Scout is NOT installed yet; do not skip or replace the final Frame Semantic Critic.
+Phase7 Fast Frame Scout is active inside image_scheduler for high-risk frames. PASS_FAST is triage only; do not skip or replace the final Frame Semantic Critic.
 
 SUBTITLES / RELEASE:
 Create canonical caption source and PASS text audit. Render publish captions only with subtitle_layout.py render-all, then audit.
 Create publish copy, propagation card and actual publish assets. Do not use approved-base fallback as publish substitute.
-
+Run release_preflight prepare-auto / verify. Then Phase8 MUST freeze the final candidate before release_lock:
+  python episodes/_system/final_candidate_snapshot.py enable "{rel}"
+  python episodes/_system/final_candidate_snapshot.py build "{rel}"
+  python episodes/_system/final_candidate_snapshot.py verify "{rel}"
+If Snapshot is STALE, stop and resolve the drift; never hand-edit snapshot SHAs.
 Use delegated approval provenance honestly. Never fabricate --user-approved.
 Update runtime-checkpoint continuously. Do not build a ZIP in CODEX. Do not claim completion yourself; the parent performs deterministic postflight and stops at PUBLISH_READY + evidence PASS.
 """
@@ -173,6 +178,12 @@ def postflight(ep):
     if r.returncode!=0:return 'PAUSED','PRODUCTION_PASSED machine gate failed:\n'+r.stdout[-2500:]
     r=run_cmd([sys.executable,SYSTEM/'release_preflight.py','prepare-auto',ep])
     if r.returncode!=0:return 'PAUSED','semantic release preflight failed:\n'+r.stdout[-3000:]
+    r=run_cmd([sys.executable,SYSTEM/'final_candidate_snapshot.py','enable',ep])
+    if r.returncode!=0:return 'PAUSED','cannot enable final candidate snapshot:\n'+r.stdout[-1500:]
+    r=run_cmd([sys.executable,SYSTEM/'final_candidate_snapshot.py','build',ep])
+    if r.returncode!=0:return 'PAUSED','final candidate snapshot build failed:\n'+r.stdout[-2500:]
+    r=run_cmd([sys.executable,SYSTEM/'final_candidate_snapshot.py','verify',ep])
+    if r.returncode!=0:return 'PAUSED','final candidate snapshot verify failed:\n'+r.stdout[-2500:]
     # Release Lock must bind final release evidence before state transition.
     r=run_cmd([sys.executable,SYSTEM/'delegated_approval.py','record',ep,'release_lock','--note',f'Deterministic V{STORY_OS_VERSION} CODEX release evidence verified; ZIP delivery not required'])
     if r.returncode!=0:return 'BLOCKED','cannot record delegated release approval: '+r.stdout[-1500:]

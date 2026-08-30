@@ -50,6 +50,19 @@
 - Repair 继续遵守每帧普通内容返修最多一次。
 <!-- STORY_OS_V2_1_PHASE56_END -->
 
+<!-- STORY_OS_V2_1_PHASE78_BEGIN -->
+## V2.1 Phase 7 + 8
+
+- Fast Scout 三结果：PASS_FAST / REPAIR_NOW / DEFER_TO_FINAL。
+- Scout 永远不调用 Production PASS；Final Frame Semantic Critic 不删除。
+- high risk 包括 identity / key prop / first anomaly / amplified / climax / payoff / ending / POV / impact3-4。
+- low risk 不额外花模型调用，直接 DEFER_TO_FINAL。
+- Scout 技术失败同样 DEFER，不阻断生产。
+- PUBLISH_READY 前构建并 verify `final-candidate-snapshot.json`。
+- V2.1 Delivery 只能读取 Snapshot 中锁定的 delivery_files + SHA。
+- Snapshot 漂移时 Delivery 必须 BLOCK。
+<!-- STORY_OS_V2_1_PHASE78_END -->
+
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
 ## Story OS V2.0.3.6 Golden Path
 

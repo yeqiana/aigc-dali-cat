@@ -17,6 +17,7 @@ from PIL import Image
 from story_os_contract import story_os_version
 import environment_contract as phase3_env
 import frame_contract as phase4_contract
+import fast_frame_scout as phase7_scout
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_DIR = Path("meta/frame-reviews")
@@ -520,6 +521,8 @@ Read these locked sources before judging:
 - standards/制作规范_正式版.md
 - standards/生产帧语义强制规范_V1.0.md
 - standards/Resolved_Frame_Contract规范_V1.0.md
+- standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md
+Fast Scout evidence is triage only. Do NOT trust PASS_FAST as a final pass; independently judge every supplied actual frame.
 Resolved Frame Contracts: {rel_ep}/meta/runtime/contracts/frames/NN.json. The frame review must honor the SAME contract SHA used by the generation attempt.
 
 Attached images are in numeric order and map as follows:

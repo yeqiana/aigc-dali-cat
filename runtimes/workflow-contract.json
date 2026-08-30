@@ -25,7 +25,13 @@
     "production_ledger_single_writer": true,
     "technical_failure_does_not_consume_content_repair": true,
     "scheduler_fail_soft": true,
-    "adaptive_parallel_3_to_2_to_1": true
+    "adaptive_parallel_3_to_2_to_1": true,
+    "fast_scout_never_final_pass": true,
+    "low_risk_scout_defers_without_model_call": true,
+    "scout_technical_failure_defers_to_final": true,
+    "final_candidate_snapshot_before_publish_ready": true,
+    "delivery_consumes_verified_snapshot": true,
+    "snapshot_is_evidence_not_authority": true
   },
   "steps": {
     "RESTORE": {
@@ -116,7 +122,7 @@
     },
     "FRAME_REVIEW": {
       "depends_on": [
-        "PRODUCTION"
+        "FAST_FRAME_SCOUT"
       ],
       "cost": "EXPENSIVE",
       "parallelizable": false
@@ -130,7 +136,7 @@
     },
     "PUBLISH_READY_GATE": {
       "depends_on": [
-        "TEXT_RELEASE"
+        "FINAL_CANDIDATE_SNAPSHOT"
       ],
       "cost": "CHEAP",
       "parallelizable": false
@@ -141,7 +147,8 @@
       ],
       "cost": "MEDIUM",
       "parallelizable": false,
-      "runtime_optional": true
+      "runtime_optional": true,
+      "snapshot_driven": true
     },
     "ENVIRONMENT_IMPACT_CONTRACT": {
       "depends_on": [
@@ -171,6 +178,27 @@
       "adaptive_parallel": true,
       "fail_soft": true,
       "scheduler": "episodes/_system/image_scheduler.py"
+    },
+    "FAST_FRAME_SCOUT": {
+      "depends_on": [
+        "IMAGE_WAVES"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": true,
+      "risk_based": true,
+      "final_pass_authority": false,
+      "evidence": "meta/frame-scout-summary.json",
+      "tool": "episodes/_system/fast_frame_scout.py"
+    },
+    "FINAL_CANDIDATE_SNAPSHOT": {
+      "depends_on": [
+        "TEXT_RELEASE"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false,
+      "derived_evidence": true,
+      "evidence": "meta/final-candidate-snapshot.json",
+      "tool": "episodes/_system/final_candidate_snapshot.py"
     }
   }
 }

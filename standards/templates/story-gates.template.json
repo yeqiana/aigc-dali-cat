@@ -97,7 +97,14 @@
       "segments": [],
       "frame_overrides": {}
     },
-    "frame_directives": {}
+    "frame_directives": {},
+    "fast_frame_scout": {
+      "schema_version": 1,
+      "enabled": true,
+      "policy": "risk_based_v21",
+      "final_critic_still_required": true,
+      "high_risk_required": true
+    }
   },
   "subtitles": {
     "required": true,
@@ -139,6 +146,16 @@
     "visual_lock_schema_version": 2,
     "visual_lock_calibration_count": 4,
     "image_scheduler_max_parallel": 3,
-    "production_ledger_single_writer": true
+    "production_ledger_single_writer": true,
+    "fast_frame_scout_summary": "meta/frame-scout-summary.json",
+    "final_candidate_snapshot": "meta/final-candidate-snapshot.json"
+  },
+  "release": {
+    "final_candidate_snapshot": {
+      "schema_version": 1,
+      "enabled": true,
+      "delivery_must_consume_snapshot": true,
+      "snapshot_is_authority": false
+    }
   }
 }

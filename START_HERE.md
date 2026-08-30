@@ -45,6 +45,14 @@ Visual Lock 固定为四层准入：
 baseline 先生成，后三张允许有界并发。统一 Visual Lock Critic PASS 后，Batch 统一使用 `image_scheduler.py`，默认最多 3 个 image worker；技术失败只阻塞依赖帧，无关帧继续。
 <!-- STORY_OS_V2_1_PHASE56_END -->
 
+<!-- STORY_OS_V2_1_PHASE78_BEGIN -->
+## V2.1 Phase 7 + 8：Fast Scout / Final Snapshot
+
+Phase 7：高风险帧生成后做 Fast Scout；`PASS_FAST` 不是 Production PASS，`REPAIR_NOW` 才提前返修，低风险/不确定统一交给 Final Critic。
+
+Phase 8：Release/Compliance/Text/Frame 全部 PASS 后冻结 `meta/final-candidate-snapshot.json`。PUBLISH_READY 和 Delivery Adapter 都必须验证该 Snapshot；ZIP 不再重新扫描“当前最新文件”。
+<!-- STORY_OS_V2_1_PHASE78_END -->
+
 ## 0. 黄金路径（Golden Path）
 
 ```text
