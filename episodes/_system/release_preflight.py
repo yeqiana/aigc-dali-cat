@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Story OS V2.0.3.5 release-preflight hard gates.
+"""Story OS V2.0.3.5.1 release-preflight hard gates.
 
 Adds four P0 controls without adding an episode stage:
 1) recent-5 evidence binding
@@ -44,6 +44,7 @@ RELEASE_REVIEW_REL = Path("meta/release-semantic-review.json")
 RELEASE_CANDIDATE_REL = Path("meta/.release-semantic-review.candidate.json")
 COMPLIANCE_REL = Path("meta/publish-compliance.json")
 REGISTRY_REL = Path("reports/account-pattern-registry.json")
+SERIES_CONTINUITY_NAME = "series-continuity.json"
 
 RELEASE_CHECKS = (
     "cover_title_match",
@@ -322,13 +323,66 @@ def series_meta(ep: Path) -> Path:
 def series_lock_path(ep: Path) -> Path:
     return series_meta(ep) / "series-lock.json"
 
+def series_continuity_path(ep: Path) -> Path:
+    return series_meta(ep) / SERIES_CONTINUITY_NAME
+
+def series_continuity_status(ep: Path) -> tuple[bool, list[str]]:
+    """Return whether continuity is explicitly enabled plus declaration errors.
+
+    Directory sibling count is intentionally NOT a signal. A content category may
+    contain many unrelated episodes. Continuous-world semantics must be explicit.
+    """
+    p = series_continuity_path(ep)
+    if not p.is_file():
+        return False, []
+    try:
+        data = read_json(p)
+    except Exception as exc:
+        return True, [f"invalid series continuity declaration: {exc}"]
+    enabled = data.get("enabled")
+    if enabled is False:
+        return False, []
+    if enabled is not True:
+        return True, ["series-continuity.json enabled must be true or false"]
+    errors = []
+    if not str(data.get("series_id") or "").strip():
+        errors.append("series-continuity.json series_id required when enabled=true")
+    return True, errors
+
 def series_lock_required(ep: Path) -> bool:
     if not guard_required(ep):
         return False
     if series_lock_path(ep).is_file():
         return True
-    episode_count = len(list(ep.parent.glob("*/meta/episode-state.json")))
-    return episode_count >= 2
+    enabled, _ = series_continuity_status(ep)
+    return enabled
+
+def write_series_continuity(series_dir: Path, series_id: str, source: str) -> Path:
+    out = series_dir / "meta" / SERIES_CONTINUITY_NAME
+    write_json(out, {
+        "schema_version": 1,
+        "story_os_version": story_os_version(),
+        "enabled": True,
+        "series_id": series_id.strip(),
+        "declared_at": now(),
+        "source": source,
+    })
+    return out
+
+def cmd_declare_series(args: argparse.Namespace) -> int:
+    series_dir = Path(args.series_dir).resolve()
+    try:
+        series_dir.relative_to((ROOT / "episodes").resolve())
+    except ValueError:
+        raise SystemExit("series_dir must be inside repository episodes/")
+    if not series_dir.is_dir():
+        raise SystemExit(f"series directory not found: {series_dir}")
+    series_id = str(args.series_id or series_dir.name).strip()
+    if not series_id:
+        raise SystemExit("series_id must not be empty")
+    out = write_series_continuity(series_dir, series_id, "explicit_declare_series")
+    print(f"SERIES CONTINUITY: ENABLED {out.relative_to(ROOT)}")
+    return 0
 
 def cmd_init_series_lock(args: argparse.Namespace) -> int:
     series_dir = Path(args.series_dir).resolve()
@@ -348,6 +402,8 @@ def cmd_init_series_lock(args: argparse.Namespace) -> int:
     data["story_os_version"] = story_os_version()
     data["approved"] = True
     data["locked_at"] = now()
+    series_id = str(data.get("series_id") or series_dir.name).strip()
+    write_series_continuity(series_dir, series_id, "init_series_lock")
     out = series_dir / "meta/series-lock.json"
     write_json(out, data)
     print(f"SERIES LOCK: {out.relative_to(ROOT)} sha256={sha256_file(out)}")
@@ -370,12 +426,17 @@ def cmd_bind_series(args: argparse.Namespace) -> int:
     return 0
 
 def verify_series_lock(ep: Path) -> list[str]:
-    if not series_lock_required(ep):
+    if not guard_required(ep):
         return []
+    declared, declaration_errors = series_continuity_status(ep)
     lock = series_lock_path(ep)
+    if not lock.is_file() and not declared:
+        return []
+    errors = list(declaration_errors)
     binding = ep / "meta/series-lock-binding.json"
     if not lock.is_file():
-        return ["multi-episode series requires <series>/meta/series-lock.json"]
+        errors.append("explicit continuous series requires <series>/meta/series-lock.json")
+        return errors
     if not binding.is_file():
         return ["meta/series-lock-binding.json missing; run bind-series"]
     try:
@@ -383,7 +444,6 @@ def verify_series_lock(ep: Path) -> list[str]:
         bd = read_json(binding)
     except Exception as exc:
         return [str(exc)]
-    errors = []
     if ld.get("approved") is not True:
         errors.append("series lock must be approved=true")
     if not isinstance(ld.get("world_rules"), list) or not ld.get("world_rules"):
@@ -698,7 +758,7 @@ def cmd_verify(args: argparse.Namespace) -> int:
 def cmd_prepare_auto(args: argparse.Namespace) -> int:
     ep = ep_path(args.episode_dir)
     if not guard_required(ep):
-        cmd_enable(argparse.Namespace(episode_dir=str(ep), reason="full-auto postflight on V2.0.3.5 upgrade"))
+        cmd_enable(argparse.Namespace(episode_dir=str(ep), reason=f"full-auto postflight on V{story_os_version()}"))
     try:
         data = build_recent5(ep)
         write_json(ep / RECENT5_REL, data)
@@ -726,12 +786,31 @@ def cmd_prepare_auto(args: argparse.Namespace) -> int:
     return cmd_verify(argparse.Namespace(episode_dir=str(ep)))
 
 def self_test() -> int:
+    import tempfile
+
     score, veto, _ = similarity(
         {"dimensions": {k: "x" for k in FINGERPRINT_KEYS}},
         {"dimensions": {k: "x" for k in FINGERPRINT_KEYS}},
     )
     assert score == 100 and veto
-    assert version_tuple("2.0.3.5") >= MIN_CONTRACT
+    assert version_tuple("2.0.3.5.1") >= MIN_CONTRACT
+
+    # Regression: sibling episode count must never imply shared continuity.
+    with tempfile.TemporaryDirectory() as raw:
+        parent = Path(raw) / "category"
+        ep1 = parent / "01"
+        ep2 = parent / "02"
+        for ep in (ep1, ep2):
+            (ep / "meta").mkdir(parents=True, exist_ok=True)
+            write_json(ep / "meta/episode-state.json", {"tool_version": "2.0.3.5.1"})
+        assert series_lock_required(ep1) is False
+        write_json(parent / "meta/series-continuity.json", {
+            "schema_version": 1,
+            "enabled": True,
+            "series_id": "self-test-series",
+        })
+        assert series_lock_required(ep1) is True
+
     print("RELEASE PREFLIGHT SELF-TEST PASS")
     return 0
 
@@ -754,6 +833,10 @@ def main() -> int:
 
     p = sub.add_parser("build-recent5")
     p.add_argument("episode_dir")
+
+    p = sub.add_parser("declare-series")
+    p.add_argument("series_dir")
+    p.add_argument("--series-id")
 
     p = sub.add_parser("init-series-lock")
     p.add_argument("series_dir")
@@ -788,6 +871,8 @@ def main() -> int:
         return cmd_enable(args)
     if args.cmd == "build-recent5":
         return cmd_build_recent5(args)
+    if args.cmd == "declare-series":
+        return cmd_declare_series(args)
     if args.cmd == "init-series-lock":
         return cmd_init_series_lock(args)
     if args.cmd == "bind-series":

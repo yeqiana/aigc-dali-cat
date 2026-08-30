@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "2.0.3.5",
+  "story_os_version": "2.0.3.5.1",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -249,7 +249,10 @@
       "series_binding": "meta/series-lock-binding.json",
       "release_semantic_review": "meta/release-semantic-review.json",
       "publish_compliance": "meta/publish-compliance.json",
-      "new_state_forbidden": true
+      "new_state_forbidden": true,
+      "series_continuity": "<series>/meta/series-continuity.json",
+      "series_detection_mode": "explicit_marker_or_existing_lock_only",
+      "sibling_episode_count_is_continuity_signal": false
     }
   }
 }

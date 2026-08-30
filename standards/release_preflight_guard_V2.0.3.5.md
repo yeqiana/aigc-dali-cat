@@ -17,6 +17,31 @@ V2.0.3.5 新篇或显式启用 Release Guard 的剧集，在 Story Lock 前必�
 
 ## 2. 连续系列增加 Series Lock SHA
 
+### V2.0.3.5.1 Series Detection Hotfix
+
+**目录结构不得推断连续世界观。** 同一个栏目/题材目录下存在多个 episode，只代表内容归类，不代表这些故事共享人物、地点、道具或世界规则。
+
+Series Lock 只在以下任一条件成立时启用：
+
+1. `<series>/meta/series-lock.json` 已存在；
+2. `<series>/meta/series-continuity.json` 显式声明 `enabled=true`。
+
+推荐显式声明：
+
+```json
+{
+  "schema_version": 1,
+  "enabled": true,
+  "series_id": "彼此的天上"
+}
+```
+
+可执行：
+
+`python episodes/_system/release_preflight.py declare-series <series_dir> --series-id <series_id>`
+
+`init-series-lock` 会自动写入该连续性声明。没有声明、也没有 series lock 的普通栏目默认 **不触发** Series Lock。
+
 连续世界观系列必须建立：
 
 `<series>/meta/series-lock.json`
@@ -63,6 +88,7 @@ V2.0.3.4 及更早 episode 不因安装自动失效。V2.0.3.5 新篇或显式 `
 python episodes/_system/release_preflight.py bootstrap-registry
 python episodes/_system/release_preflight.py enable <episode>
 python episodes/_system/release_preflight.py build-recent5 <episode>
+python episodes/_system/release_preflight.py declare-series <series_dir> --series-id <series_id>
 python episodes/_system/release_preflight.py init-series-lock <series_dir> --source <series-lock-source.json>
 python episodes/_system/release_preflight.py bind-series <episode>
 python episodes/_system/release_preflight.py init-compliance <episode>

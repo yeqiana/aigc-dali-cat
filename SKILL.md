@@ -1,11 +1,11 @@
-# Dali Cat Story OS — Repository Execution Contract V2.0.3.5
+# Dali Cat Story OS — Repository Execution Contract V2.0.3.5.1.1
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
-## Story OS V2.0.3.5 Golden Path
+## Story OS V2.0.3.5.1 Golden Path
 
 **第一入口：先读 `START_HERE.md`。** 该文件只负责路由，不建立第二套创作规范。
 
@@ -335,3 +335,12 @@ Full-auto pipeline: `worker → deterministic postflight → COMPLETE|PAUSED|BLO
 
 旧 V2.0.3.4 episode 默认兼容；V2.0.3.5 新篇或显式 `release_preflight.py enable` 的剧集启用。
 <!-- STORY_OS_V2_0_3_5_RELEASE_GUARD_END -->
+
+
+<!-- STORY_OS_V2_0_3_5_1_SERIES_DETECTION_HOTFIX -->
+## V2.0.3.5.1 Series Detection Hotfix
+
+- **禁止通过目录兄弟 episode 数量推断连续世界观。**
+- 栏目/题材分类默认不是连续系列。
+- 只有 `<series>/meta/series-lock.json` 已存在，或 `<series>/meta/series-continuity.json` 显式 `enabled=true`，才启用 Series Lock。
+- 连续系列可先执行 `release_preflight.py declare-series`；`init-series-lock` 会自动写入声明。
