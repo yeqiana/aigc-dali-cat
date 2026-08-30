@@ -33,6 +33,9 @@ __pycache__/
 .story-os-media-inventory.json
 .storyos_backups/
 
+# Episode meta intermediate review candidates (formal evidence lives in final files)
+episodes/**/meta/.*.candidate.json
+
 # Story OS local virtualenv / upgrade packages
 .story-os-venv/
 Story_OS_V2.0_OneClick_FullAuto_Upgrade_UTF8_FINAL/

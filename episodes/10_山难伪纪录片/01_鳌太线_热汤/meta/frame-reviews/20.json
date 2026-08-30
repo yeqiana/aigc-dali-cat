@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "20",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/20.png",
-  "asset_sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+  "asset_sha256": "bdda66221188307cb61490b10e793cf5d391490f5581cf6229720ebbceefa84d",
   "story_sha256": "91f1c9d7eb0f139a259183f01251bbc481f66a16e4a7c135e2c1ec695ed14ae5",
   "storyboard_sha256": "d9374c2579e5940a8d4400d8f7996ef596ba3615fc18d8ad0e3c759d97c5c0f1",
   "visual_contract_sha256": "a1d42c2aa2784a38bad24b548f51cf5272266e48eb5a9776e23b7594bf8db34f",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -21,19 +22,15 @@
     "key_prop_fidelity": true,
     "character_identity": true,
     "wardrobe_continuity": true,
-    "pov_photographer_legality": false,
-    "spatial_continuity": false,
-    "temporal_continuity": false,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
     "anomaly_readability": true,
     "caption_image_support": true,
     "actual_information_gain": true
   },
-  "issue_codes": [
-    "POV_ILLEGAL",
-    "UNEXPLAINED_THIRD_PERSON",
-    "SPATIAL_CONTINUITY_BROKEN",
-    "TEMPORAL_CONTRADICTION"
-  ],
-  "notes": "高位第三人称画面同时完整拍到黄衣摄影者和蓝灰外套同伴，未在像素中建立新的合法摄影者或固定机位；同时 19 已进入带墙体、门洞和桌椅的固定避难空间，20 却无过渡地返回陡峭高山岩雪坡，构成空间与时间顺序断裂。",
-  "decision": "fail"
+  "issue_codes": [],
+  "notes": "The repaired outside-phone frame visibly has a black-gloved passerby's phone in foreground, a yellow-jacketed person still seated beside black rocks, orange blanket, silver flask and metal cup in snow, and red rope running to the nearby blue-gray teammate. No tent, diners, food or warm lights remain, completing the physical payoff.",
+  "decision": "pass",
+  "caption_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 }

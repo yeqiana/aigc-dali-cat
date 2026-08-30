@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "11",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/11.png",
   "asset_sha256": "29795e280f58cbce56ca97b3a5f24e924e8c9f4ff25835387c465ea96b88c54d",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "同伴头灯和红绳继续维持方向关系，右侧岩体后出现数个暖色微光；相较 10 新增了可能落脚点的视觉线索，而非简单重复。",
-  "decision": "pass"
+  "notes": "The red rope and A-Chuan remain leftward while several restrained orange points appear behind black rocks to the right; the points read as physical reflections rather than a supernatural portal.",
+  "decision": "pass",
+  "caption_sha256": "34f4431a69b25a67a1922268b28269f371af1d3e5f310bb9a4af8d985185c0b1"
 }

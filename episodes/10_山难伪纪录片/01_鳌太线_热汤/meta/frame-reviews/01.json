@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "01",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png",
   "asset_sha256": "39be65ad9f5e0b889d0567a9568f277d4b33fdc6fdcf4a09004425077808ebd5",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "第一人称黄衣摄影者位于前景，蓝灰外套、红手套同伴在雪坡巨石旁整理装备；人物、雪坡环境和背包建立清楚。",
-  "decision": "pass"
+  "notes": "Chest-height wide-angle view visibly carries the yellow jacket edge, A-Chuan's blue-gray outer layer, two packs, rocky snow slope and outgoing boot prints; this is a normal departure baseline.",
+  "decision": "pass",
+  "caption_sha256": "9c278a23b30996c82b91b02c4a0e289a70c5955e94fc290a683f944c1003bcc7"
 }

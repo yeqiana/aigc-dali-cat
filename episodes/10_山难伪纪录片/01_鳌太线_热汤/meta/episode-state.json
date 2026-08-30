@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "tool_version": "2.0.3.4",
+  "tool_version": "2.0.3.6",
   "episode_id": "10-01",
   "series": "10_山难伪纪录片",
   "title": "鳌太线·热汤",
-  "current_state": "VISUAL_CALIBRATED",
-  "updated_at": "2026-08-29T23:18:28+08:00",
+  "current_state": "PUBLISH_READY",
+  "updated_at": "2026-08-30T14:00:42+08:00",
   "history": [
     {
       "state": "IDEA_LOCKED",
@@ -23,6 +23,18 @@
       "at": "2026-08-29T23:18:28+08:00",
       "mode": "advance",
       "note": "M00+CP06 calibrations passed fresh isolated Visual Critic attempt 1; CP01 frame20 visual admission passed; delegated visual lock recorded."
+    },
+    {
+      "state": "PRODUCTION_PASSED",
+      "at": "2026-08-30T13:24:00+08:00",
+      "mode": "advance",
+      "note": "20帧锁图、SHA-bound incremental full-frame review attempt 2、字幕布局与 text audit 均通过；生产验收记录已归档。"
+    },
+    {
+      "state": "PUBLISH_READY",
+      "at": "2026-08-30T14:00:42+08:00",
+      "mode": "advance",
+      "note": "Release Guard四项、20张真实发布资产、最终SHA交付ZIP及 delegated_auto_review Release Lock均通过。"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "story_sha256": "91f1c9d7eb0f139a259183f01251bbc481f66a16e4a7c135e2c1ec695ed14ae5",
   "storyboard_sha256": "d9374c2579e5940a8d4400d8f7996ef596ba3615fc18d8ad0e3c759d97c5c0f1",
   "visual_contract_sha256": "a1d42c2aa2784a38bad24b548f51cf5272266e48eb5a9776e23b7594bf8db34f",
@@ -8,9 +8,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "frames": [
     {
@@ -47,7 +48,7 @@
     },
     {
       "frame": "09",
-      "asset_sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a"
+      "asset_sha256": "0f0d9f08d58a6f4d72ec7100570a165b378761266f68199b37ef5f821bb8c882"
     },
     {
       "frame": "10",
@@ -59,7 +60,7 @@
     },
     {
       "frame": "12",
-      "asset_sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b"
+      "asset_sha256": "dd5194c65abac8425d2f6ca880b61851973160b6cb0d652e6117e290579c2b6d"
     },
     {
       "frame": "13",
@@ -91,7 +92,7 @@
     },
     {
       "frame": "20",
-      "asset_sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6"
+      "asset_sha256": "bdda66221188307cb61490b10e793cf5d391490f5581cf6229720ebbceefa84d"
     }
   ],
   "perceptual_hashes": [
@@ -145,9 +146,9 @@
     },
     {
       "frame": "09",
-      "asset_sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a",
-      "dhash256": "01f823e2e3e2f9c68dc0c4c90e06ca92178a37267f03fd17f997f29fe18d619c",
-      "ahash256": "ff83ff0ffe0ff21fff1f819f001c002f003f000f000f003e00380038003a0110"
+      "asset_sha256": "0f0d9f08d58a6f4d72ec7100570a165b378761266f68199b37ef5f821bb8c882",
+      "dhash256": "17872f2f0f3b0e761c640c7b3e66f276ccc3c8f3e0d9e6dcceec9ccc2f3d6713",
+      "ahash256": "fc38fc78f87ffcfff8f9f8fef848c000808081e081b08df11df819b82870c024"
     },
     {
       "frame": "10",
@@ -163,9 +164,9 @@
     },
     {
       "frame": "12",
-      "asset_sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b",
-      "dhash256": "002f00bf807fc077c04fc03f003f003f203fc06f903f205f40bf400f802f8027",
-      "ahash256": "03f007fc07fc07fc07fc0ffe7ffe7fffffff1fff1ffe2ffe0ffe07f800000000"
+      "asset_sha256": "dd5194c65abac8425d2f6ca880b61851973160b6cb0d652e6117e290579c2b6d",
+      "dhash256": "01ff01fe00f701da01f80264104f00ff207f407f807f009f006303f1e648ce66",
+      "ahash256": "fffefffcfffcfff0ffc0ffc1ffff7fff3fffffffffff3fff3fc77f8300000000"
     },
     {
       "frame": "13",
@@ -211,26 +212,47 @@
     },
     {
       "frame": "20",
-      "asset_sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
-      "dhash256": "197850e263134f32ec383b686e78ccb08d260d2d6c3a683b591b9e8e5c4c8c86",
-      "ahash256": "fff7ffffff26fe61f9c1fac1fcc1ffe33fff187800f001f01030103f001f801f"
+      "asset_sha256": "bdda66221188307cb61490b10e793cf5d391490f5581cf6229720ebbceefa84d",
+      "dhash256": "91a78b0ec0d981978fce7e5ff171137072f133d393cf938fc7b98f7c4fcf864f",
+      "ahash256": "ffffffffffbfffbffff8fff8ffffffc1e08007003e101e000e001c000e000400"
     }
   ],
   "near_duplicate_pairs": [],
-  "issue_codes": [
-    "IDENTITY_DRIFT",
-    "WARDROBE_DRIFT",
-    "POV_ILLEGAL",
-    "UNPLANNED_RECORDER",
-    "UNEXPLAINED_THIRD_PERSON",
-    "SPATIAL_CONTINUITY_BROKEN",
-    "TEMPORAL_CONTRADICTION"
-  ],
+  "issue_codes": [],
   "critic_summary": {
-    "passed": false,
-    "notes": "20 帧整体形成雪坡受困、绳索下撤、白障寻光、热饮避险的连续主线，但 09 与 12 的摄影者身份和服装锚点发生未解释切换，20 又同时出现非法第三人称全景及从固定避难空间返回高山坡面的时空倒退，因此完整帧集不能通过生产语义门禁。"
+    "passed": true,
+    "notes": "Independent full-frame actual-pixel review PASS. The 01-14 CP06 first-person record establishes injury and perception reversal; 15-19 intentionally show the same cold lee as a hypothermia reconstruction but retain bound foil, lamp, metal, snow, rocks and bodily contradictions; repaired 09, 12 and 20 correct the previously flagged identity/POV/payoff risks. Frame 20's registered CP01 external view reassembles all material anchors in snow and provides a non-supernatural final recontextualization."
   },
   "summary": {
-    "passed": false
+    "passed": true
+  },
+  "caption_source": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/subtitles.yaml",
+  "caption_source_sha256": "d0ff46d5f25488e6a0ca3a6523c8ce6fdcc3a49ee6bc33d92f1784af0b27a238",
+  "caption_mode": "per_frame",
+  "caption_frame_sha256": {
+    "01": "9c278a23b30996c82b91b02c4a0e289a70c5955e94fc290a683f944c1003bcc7",
+    "02": "8b7e25d4f4aa84b9c951e90352cb19df8eb738d960c4134f8e06daff1c2260ef",
+    "03": "9af946a1f90b93e8ffcbc2dd92ff32a4aec115864c3ef7efc4b349a24a8f6abb",
+    "04": "6ae9f31f06f18cd8fa0d6234994e2aeabd2be159a1f7bb16a652ea9156c8ea9a",
+    "05": "b8ba5654cf54e7585304cde235e7be4807281a0ac05ba6542339e215818bb2a4",
+    "06": "3747f56f81de9f695da9608e605f9788f86b700e263eb9dfa527bf02055a0c38",
+    "07": "b5f951b9bcd3672dfe17d4f833a3875908e61ff9532743caab3d44acd163b359",
+    "08": "ba98cfa12fe8e1b5ae345cc8730fb2d6601d0fe018714aa514f368c66790d40c",
+    "09": "9fffe1e117e44c727b084f35c45044591e655b494944d08728f3917fc5b7ba57",
+    "10": "ccac45dd7d668782384d180a5ea477d3360db4c86112021311b5fbca9e1912e3",
+    "11": "34f4431a69b25a67a1922268b28269f371af1d3e5f310bb9a4af8d985185c0b1",
+    "12": "5d67376f56caacad798dbaf4e3971240da409a9c588dcbb2236dffae2c43dea4",
+    "13": "d9363eb873017294b591585972cc0ae3ae41b194f030efb5d17646a7b85b7c04",
+    "14": "d317f79d47f81626c550a127c23f33739962d3be66e0c4a34fde5b4beb58bda5",
+    "15": "f4ba8c88cdf5dd4b4de6ac5ce231b7b977ad1d0e483b489a6e5aa7abb81d80c8",
+    "16": "ff922b01639d0e4cffd64448e9394ba9ad8f4e69d897d5dfc7b47a4f24523554",
+    "17": "1aedd3137d26ac2411162d94c157b349805897c8e4a5978bff7221cb9bd8cf81",
+    "18": "df88fcbf3591a1f3c21809d547831a0f92ce8e1d88c0396f6a635af7d88598fe",
+    "19": "55fb11509471f70dbe23d68103e36ef84a8d9f8069ee6db2cfda3e43acdc07b3",
+    "20": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "incremental_contract": {
+    "version": 1,
+    "mode": "full_baseline"
   }
 }

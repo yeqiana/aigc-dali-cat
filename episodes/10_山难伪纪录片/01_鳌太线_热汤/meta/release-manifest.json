@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "tool_version": "2.0.3.4",
+  "tool_version": "2.0.3.6",
   "episode": {
     "id": "10-01",
     "series": "10_山难伪纪录片",
@@ -9,36 +9,36 @@
     "aspect_ratio": "4:5"
   },
   "release": {
-    "version": null,
+    "version": "v1.0",
     "body_frame_count": 20,
-    "publish_dir": null,
+    "publish_dir": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish",
     "body_glob": "[0-9][0-9].png",
-    "cover_path": null,
-    "contact_sheet_path": null
+    "cover_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/16.png",
+    "contact_sheet_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/calibration/calibration-contact-sheet.png"
   },
   "artifacts": {
     "story": "episodes/10_山难伪纪录片/01_鳌太线_热汤/story/01_鳌太线_热汤_StoryLock_V2.0.md",
     "storyboard": "episodes/10_山难伪纪录片/01_鳌太线_热汤/story/02_鳌太线_热汤_20张正式分镜_V2.0.md",
     "visual_spec": "episodes/10_山难伪纪录片/01_鳌太线_热汤/story/03_鳌太线_热汤_视觉规范_V2.0.md",
-    "captions": null,
-    "publish_copy": null,
-    "production_review": null,
-    "propagation_card": null
+    "captions": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/subtitles.yaml",
+    "publish_copy": "episodes/10_山难伪纪录片/01_鳌太线_热汤/release/publish-copy.md",
+    "production_review": "episodes/10_山难伪纪录片/01_鳌太线_热汤/release/production-review.md",
+    "propagation_card": "episodes/10_山难伪纪录片/01_鳌太线_热汤/release/propagation-card.md"
   },
   "quality": {
-    "production_gate": "pending",
-    "propagation_score": null,
-    "s_min_score": null,
-    "propagation_decision": "pending",
-    "publish_decision": "hold",
-    "decision_note": null
+    "production_gate": "pass",
+    "propagation_score": 9.2,
+    "s_min_score": 8.6,
+    "propagation_decision": "strong",
+    "publish_decision": "go",
+    "decision_note": "全量锁图、实际像素审查、字幕与文本审计通过；发布时必须保留 AI 生成与虚构背景提示。"
   },
   "publication": {
     "platform": "douyin",
-    "actual_title": null,
-    "description": null,
-    "topics": [],
-    "pinned_comment": null,
+    "actual_title": "鳌太线下撤时，我看见了热汤热菜；可袖口的冰一粒都没化",
+    "description": "虚构高寒徒步伪纪录片：我以为下到了有灯、有热汤热菜的地方，可手指合不上、左脚还是歪的，袖口的冰也没化。后来路过的人拍到我时，我仍坐在雪地里。AI 生成剧情内容；故事为虚构创作，真实地点仅作背景，不对应真实事故。高寒徒步遇险请立即停止前进、保温并求援。",
+    "topics": ["山野安全", "徒步安全", "高寒徒步", "悬疑故事", "伪纪录片"],
+    "pinned_comment": "本篇为 AI 生成的虚构故事，不是鳌太线真实事故记录。高寒徒步风险很高，请遵守当地管理要求与专业安全建议，避免模仿挑战。",
     "published_at": null,
     "timing_window": null,
     "post_url": null

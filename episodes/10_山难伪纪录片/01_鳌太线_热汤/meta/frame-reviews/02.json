@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "02",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/02.png",
   "asset_sha256": "21c3044e8f63ca49deb5af4c6d0107fd710dcf18a793fcb600b454423df7d095",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "同一雪坡和同一蓝灰外套同伴继续操作装备，背包外侧红绳与金属保温瓶清晰可见；相较 01 增加了绳索准备信息。",
-  "decision": "pass"
+  "notes": "Low first-person equipment check visibly shows A-Chuan's red gloves handling the chest strap beside the silver flask, coiled red rope and orange emergency blanket.",
+  "decision": "pass",
+  "caption_sha256": "8b7e25d4f4aa84b9c951e90352cb19df8eb738d960c4134f8e06daff1c2260ef"
 }

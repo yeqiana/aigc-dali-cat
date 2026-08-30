@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "03",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/03.png",
   "asset_sha256": "7e876da6a9f734079f51e57af29b7fbb61a0294636aa4963bba0142931d5acce",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "黄衣摄影者的单手拉住衣襟，蓝灰外套同伴在前方岩雪坡呼出白气；第一人称机位和天气恶化均由像素直接支持。",
-  "decision": "pass"
+  "notes": "The partially opened yellow zipper and bare hand are visibly rimmed with frost while the blue-gray teammate is bundled up and exhales white vapor, making the reversed warmth claim legible.",
+  "decision": "pass",
+  "caption_sha256": "9af946a1f90b93e8ffcbc2dd92ff32a4aec115864c3ef7efc4b349a24a8f6abb"
 }

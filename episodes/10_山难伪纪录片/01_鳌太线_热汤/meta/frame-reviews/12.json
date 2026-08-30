@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "12",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/12.png",
-  "asset_sha256": "42cc0b3b47116eeed17de5f541a83dfee5a13e983534b68ed665f908349a7c6b",
+  "asset_sha256": "dd5194c65abac8425d2f6ca880b61851973160b6cb0d652e6117e290579c2b6d",
   "story_sha256": "91f1c9d7eb0f139a259183f01251bbc481f66a16e4a7c135e2c1ec695ed14ae5",
   "storyboard_sha256": "d9374c2579e5940a8d4400d8f7996ef596ba3615fc18d8ad0e3c759d97c5c0f1",
   "visual_contract_sha256": "a1d42c2aa2784a38bad24b548f51cf5272266e48eb5a9776e23b7594bf8db34f",
@@ -11,29 +11,26 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
     "story_beat_fidelity": true,
     "key_prop_fidelity": true,
-    "character_identity": false,
-    "wardrobe_continuity": false,
-    "pov_photographer_legality": false,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
     "spatial_continuity": true,
     "temporal_continuity": true,
     "anomaly_readability": true,
     "caption_image_support": true,
     "actual_information_gain": true
   },
-  "issue_codes": [
-    "IDENTITY_DRIFT",
-    "WARDROBE_DRIFT",
-    "POV_ILLEGAL",
-    "UNPLANNED_RECORDER"
-  ],
-  "notes": "指向远处暖光的是蓝灰袖口与红手套，属于此前被摄同伴的稳定服装锚点；此前摄影者稳定为黄衣、黑手套，画面没有交代摄影设备或摄影者转移，因此摄影身份和服装连续性同时断裂。",
-  "decision": "fail"
+  "issue_codes": [],
+  "notes": "The repaired view visibly presents an unbroken snow field between the orange points and camera, while A-Chuan's red glove/blue-gray sleeve points down the red rope; the bottom yellow jacket and black glove retain legal first-person capture.",
+  "decision": "pass",
+  "caption_sha256": "5d67376f56caacad798dbaf4e3971240da409a9c588dcbb2236dffae2c43dea4"
 }

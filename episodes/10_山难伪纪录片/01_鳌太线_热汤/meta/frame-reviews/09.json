@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "09",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/09.png",
-  "asset_sha256": "2494c586df703048d58bd975992d95f9e2c342b01810fbba76b23b1fc623784a",
+  "asset_sha256": "0f0d9f08d58a6f4d72ec7100570a165b378761266f68199b37ef5f821bb8c882",
   "story_sha256": "91f1c9d7eb0f139a259183f01251bbc481f66a16e4a7c135e2c1ec695ed14ae5",
   "storyboard_sha256": "d9374c2579e5940a8d4400d8f7996ef596ba3615fc18d8ad0e3c759d97c5c0f1",
   "visual_contract_sha256": "a1d42c2aa2784a38bad24b548f51cf5272266e48eb5a9776e23b7594bf8db34f",
@@ -11,29 +11,26 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
     "story_beat_fidelity": true,
     "key_prop_fidelity": true,
-    "character_identity": false,
-    "wardrobe_continuity": false,
-    "pov_photographer_legality": false,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
     "spatial_continuity": true,
     "temporal_continuity": true,
     "anomaly_readability": true,
     "caption_image_support": true,
     "actual_information_gain": true
   },
-  "issue_codes": [
-    "IDENTITY_DRIFT",
-    "WARDROBE_DRIFT",
-    "POV_ILLEGAL",
-    "UNPLANNED_RECORDER"
-  ],
-  "notes": "画面前景同时出现蓝灰袖口的黑手套、蓝灰袖口的裸手以及上方红手套，形成至少三只参与操作的手；此前稳定的黄衣摄影者袖口消失，而蓝灰衣着者似乎同时占据摄影者和被摄者位置，无法由已建立的两人第一人称关系解释。",
-  "decision": "fail"
+  "issue_codes": [],
+  "notes": "The repaired close view clearly separates the protagonist's yellow jacket, one black-gray gloved hand and one exposed reddened stiff hand from A-Chuan's blue-gray sleeve and red glove; the exposed hand visibly misses the red carabiner while A-Chuan completes the connection.",
+  "decision": "pass",
+  "caption_sha256": "9fffe1e117e44c727b084f35c45044591e655b494944d08728f3917fc5b7ba57"
 }

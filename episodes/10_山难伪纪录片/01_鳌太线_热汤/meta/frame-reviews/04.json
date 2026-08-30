@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "04",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/04.png",
   "asset_sha256": "3f8a67373787826fea25c87b6ae62f7f1246cc65b64f2ea195db913e78d63158",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "蓝灰外套同伴坐姿控绳，红绳从其手中延伸至黄衣摄影者方向；陡峭岩雪坡和增强的降雪使技术下降动作可读。",
-  "decision": "pass"
+  "notes": "Snow intensifies; the protagonist's frosted yellow sleeve and black-gray glove are foregrounded while A-Chuan in blue-gray and a red glove holds the rope downslope, extending the cold-versus-subjective-warmth contradiction.",
+  "decision": "pass",
+  "caption_sha256": "6ae9f31f06f18cd8fa0d6234994e2aeabd2be159a1f7bb16a652ea9156c8ea9a"
 }

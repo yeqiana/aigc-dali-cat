@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "07",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/07.png",
   "asset_sha256": "8969655d61dba3c55850c71d5167864726e46b2af76ce01df9229d7f5494305f",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "黄衣摄影者右手握登山杖并通过红绳连接前方蓝灰外套同伴；宽景明确展示下撤路线、坡度和两人间距。",
-  "decision": "pass"
+  "notes": "The yellow-sleeved gloved hand turns a trekking pole downhill while A-Chuan leads with the red rope; the view is a physically plausible chest-mounted turn, not an external shot.",
+  "decision": "pass",
+  "caption_sha256": "b5f951b9bcd3672dfe17d4f833a3875908e61ff9532743caab3d44acd163b359"
 }

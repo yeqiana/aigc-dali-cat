@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0.3.6",
+  "episode_id": "10-01",
+  "title": "鳌太线·热汤",
+  "dimensions": {
+    "core_anomaly_mechanism": "失温下由同一组装备与地形触发的错误感知重组",
+    "story_engine": "为完成上次退线遗憾而在脚崴后硬撑，最终下撤判断失真",
+    "entry_mode": "当代鳌太高寒雪坡的第一人称胸前运动相机记录",
+    "anomaly_carrier": "橙色保温毯、头灯、金属杯、保温杯、背包、黑石和红绳",
+    "primary_visual_space": "风雪中的同一处黑石背风点与下撤雪坡",
+    "middle_escalation": "红绳在左而灯在右，无脚印的灯逐渐被误认成温暖饭棚",
+    "climax_form": "阿川伸手接应时主角推开他并坐回虚构热汤前",
+    "relationship": "受伤主角与持续接应、劝其下撤的队友阿川",
+    "reality_residue": "路过者视角显示黄色羽绒服仍坐雪地，所有暖棚物回到现实装备"
+  }
+}

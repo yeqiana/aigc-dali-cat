@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "05",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/05.png",
   "asset_sha256": "496153f51ffd72b88994c50fc0bfb754be79902bf15cba108a8c95fbf69ea367",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "第一人称腿部卡在巨石间，蓝灰袖口的同伴用红手套抓住黄衣前臂；受困与拉拽救援均在画面中直接发生。",
-  "decision": "pass"
+  "notes": "A skewed chest-camera fall shows the left boot trapped between black rocks and A-Chuan's red glove holding the yellow sleeve; there is no gore or illegal third-person view.",
+  "decision": "pass",
+  "caption_sha256": "b8ba5654cf54e7585304cde235e7be4807281a0ac05ba6542339e215818bb2a4"
 }

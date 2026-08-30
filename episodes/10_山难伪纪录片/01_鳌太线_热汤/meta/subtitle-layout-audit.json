@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "story_os_version": "2.0.3.5",
+  "story_os_version": "2.0.3.6",
   "engine": "story_os_subtitle_layout_v1",
   "canonical_renderer": true,
   "source": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/subtitles.yaml",

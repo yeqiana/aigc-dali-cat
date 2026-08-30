@@ -1,0 +1,76 @@
+{
+  "release_checks": {
+    "cover_title_match": true,
+    "cover_frame01_handoff": true,
+    "first3_coherence": true,
+    "climax_upgrade": true,
+    "payoff_honesty": true,
+    "description_consistency": true,
+    "no_caption_invented_core_evidence": true
+  },
+  "governance_checks": {
+    "ai_generated_declared": true,
+    "platform_ai_label_planned": true,
+    "fiction_context_not_misrepresented_as_official_fact": true,
+    "no_unverifiable_real_group_accusation": true,
+    "real_location_handled_as_fictional_story_context": true
+  },
+  "issue_codes": [],
+  "notes": [
+    "封面图16的金属热汤容器、结霜黄袖与未融雪粒，直接兑现实际标题的热汤与冰不化矛盾；图20以现实雪坡收束该承诺。",
+    "图01动机、图02受伤即下撤约定及橙银红关键物、图03结霜却主观发热形成可理解的前三帧接力，且像素与字幕互相支持。",
+    "图19可见阿川红手套伸援、主角黄袖推开、红绳与汤碗并存，完成主动拒绝现实接应的高潮选择；图20的路过者手机视角回收黄衣、红绳、橙毯、金属杯和黑石雪坡，不夸大医疗结局。",
+    "发布文案、置顶评论和传播卡均声明 AI 生成、虚构创作、真实地点仅作背景且不对应真实事故；传播卡明确发布页需开启抖音 AI 生成声明。"
+  ],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.0.3.6",
+  "artifacts": {
+    "cover": {
+      "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/16.png",
+      "sha256": "8bf15cccbfe2949d01baef32d9a8dda4bcc3c5e2858e340d82d219f11031e4bc"
+    },
+    "body01": {
+      "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/01.png",
+      "sha256": "1cb4cb31e0faf3862ace62e6ec8686486dd96ac9398fc12a216ee007997e9fea"
+    },
+    "body02": {
+      "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/02.png",
+      "sha256": "d077fac2d1f7b274e971761ce060c112ad4de4802a5879b995828b94d6513d95"
+    },
+    "body03": {
+      "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/03.png",
+      "sha256": "47ee8da79befe39a9e1c3fa31343c2b81f96b766ec02a6643ad0ff5e248c3c0f"
+    },
+    "climax": {
+      "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/19.png",
+      "sha256": "9293235c269a2b1fe28c1d177714b4300235939245be52d546ac0579bb7679fa"
+    },
+    "payoff": {
+      "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/20.png",
+      "sha256": "3a74608c90bf24a3378752231f771bc73f38f6a074482bfdbee045394a2ac032"
+    },
+    "captions": {
+      "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/subtitles.yaml",
+      "sha256": "d0ff46d5f25488e6a0ca3a6523c8ce6fdcc3a49ee6bc33d92f1784af0b27a238"
+    },
+    "publish_copy": {
+      "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/release/publish-copy.md",
+      "sha256": "4eacb096c3f1ae1d5334f8c4289271af4118942549c21980b84a38099a3b3edd"
+    },
+    "propagation_card": {
+      "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/release/propagation-card.md",
+      "sha256": "5b966e00ffdd513130ce850e2827b85e8c7f18acb6840e816cf527f322126043"
+    }
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "reviewed_at": "2026-08-30T13:57:43+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.release-semantic-review.candidate.json",
+    "log_sha256": "8451bc98390ed3e0e7edde3bdf74d0ed15659dd499862fd622a1b3557507afcc",
+    "reviewer_mode": "delegated_auto_review_recovery"
+  }
+}

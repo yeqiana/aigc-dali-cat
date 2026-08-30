@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.0.3.6",
+  "episode_id": "10-01",
+  "reviewed_at": "2026-08-30T13:47:55+08:00",
+  "candidate_fingerprint_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "59c50c78c8e5399db1a6bf0f213690ae3b2ceda7ff4d84b5e5a51503d587f102",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "history_episode_ids": [
+    "09-04"
+  ],
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.recent5-semantic-review.candidate.json",
+    "log_sha256": "4e4d56b463b11b350f137ff1bc96b64dd4319cafcc7cd9cfe09ed9038c449f76",
+    "reviewed_at": "2026-08-30T13:47:55+08:00",
+    "reviewer_mode": "delegated_auto_review_recovery"
+  },
+  "comparisons": [
+    {
+      "episode_id": "09-04",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    }
+  ]
+}

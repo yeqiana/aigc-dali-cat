@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "15",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/15.png",
   "asset_sha256": "7bc706f0da930ed2f0ec7c25599c0331bdaec6e827e3c3d914bd0b74a40a1885",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "镜头扩大到橙色应急遮蔽物内部，热杯、食物盘、多人避风姿态与顶部光源同时出现；相较 14 增加了落脚环境和补给事实。",
-  "decision": "pass"
+  "notes": "The subjective shelter view escalates to an orange foil canopy, single lamp, metal soup bowl and plain hot food, but it retains snow and black-rock/backpack-like dark seated forms, preserving the stipulated hypothermia reconstruction rather than introducing a separate entity.",
+  "decision": "pass",
+  "caption_sha256": "f4ba8c88cdf5dd4b4de6ac5ce231b7b977ad1d0e483b489a6e5aa7abb81d80c8"
 }

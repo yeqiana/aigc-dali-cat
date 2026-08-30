@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "08",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/08.png",
   "asset_sha256": "925dbf6712f7fb4c8592dae1e2da45161e7ba3bb2db9c598568f22aee2734eaf",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "俯视第一人称画面同时显示黄衣下摆、双腿、冰爪、红绳和雪上足迹；行走装备与受绳保护状态可读。",
-  "decision": "pass"
+  "notes": "Downward movement view shows the left boot visibly splayed outward with a smeared asymmetric track, red rope and yellow torso edge, so the pain-free claim is not mistaken for recovery.",
+  "decision": "pass",
+  "caption_sha256": "ba98cfa12fe8e1b5ae345cc8730fb2d6601d0fe018714aa514f368c66790d40c"
 }

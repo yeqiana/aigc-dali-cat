@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "19",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/19.png",
   "asset_sha256": "b361fbe6213ca82084a857952dae0aabf67862108b7a57f77aa9ef581ed1d170",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "黄衣摄影者裸手伸向蓝灰外套同伴的红手套，画面位于有墙体、门洞、桌椅和容器的避难空间入口；相互搀扶和进入固定落脚点的动作可见。",
-  "decision": "pass"
+  "notes": "The final action is now visually unambiguous: A-Chuan's red-gloved reaching hand and taut red rope enter from the snowy opening, while the protagonist's open bare hand with yellow sleeve holds it away and the low metal soup bowl anchors the turn back to the subjective warm scene.",
+  "decision": "pass",
+  "caption_sha256": "55fb11509471f70dbe23d68103e36ef84a8d9f8069ee6db2cfda3e43acdc07b3"
 }

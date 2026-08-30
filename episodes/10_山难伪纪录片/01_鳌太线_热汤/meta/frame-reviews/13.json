@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "13",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/13.png",
   "asset_sha256": "de1251b7197f21ebb2626704e2c9ef6eee93c4c6a08b355e97c84988ed6cec54",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "黄衣摄影者被橙色保温毯包裹，蓝灰外套、红手套同伴从金属保温瓶向金属杯倒入液体；热饮救援动作和关键容器均清楚。",
-  "decision": "pass"
+  "notes": "At the black-rock lee, A-Chuan's headlamp and red glove are visibly pouring from the silver flask into the metal cup while the orange emergency blanket, packs and rope are all present in one reality-layer composition.",
+  "decision": "pass",
+  "caption_sha256": "d9363eb873017294b591585972cc0ae3ae41b194f030efb5d17646a7b85b7c04"
 }

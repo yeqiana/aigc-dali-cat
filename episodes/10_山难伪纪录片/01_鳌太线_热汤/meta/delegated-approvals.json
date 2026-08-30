@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "approvals": {
     "story_lock": {
       "approved": true,
@@ -8,7 +8,7 @@
       "delegated_auto_review": true,
       "approval_basis": "delegated_auto_review",
       "kind": "story_lock",
-      "approved_at": "2026-08-29T15:14:06+08:00",
+      "approved_at": "2026-08-30T14:00:18+08:00",
       "artifacts": [
         {
           "role": "story",
@@ -23,10 +23,10 @@
         {
           "role": "story_semantic_review",
           "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/story-semantic-review.json",
-          "sha256": "69ca74e91770497e0ec19ba80cccf13c3b9c26cc5907219dd367c00a97298d02"
+          "sha256": "4ee9dad5aa92fef9db65491b99ef207095fbdb175319e26b0d4eb880d5a341f5"
         }
       ],
-      "note": "Attempt 1 fresh isolated Story Critic PASS; continuous full-auto delegated review."
+      "note": "仅契约版本 2.0.3.6 重绑定；Story Lock 与 storyboard SHA、独立审查结论均未漂移。"
     },
     "visual_lock": {
       "approved": true,
@@ -34,7 +34,7 @@
       "delegated_auto_review": true,
       "approval_basis": "delegated_auto_review",
       "kind": "visual_lock",
-      "approved_at": "2026-08-29T23:18:25+08:00",
+      "approved_at": "2026-08-30T14:00:19+08:00",
       "artifacts": [
         {
           "role": "visual_spec",
@@ -54,10 +54,10 @@
         {
           "role": "visual_profile_review",
           "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/visual-profile-review.json",
-          "sha256": "2e3c5c0a6cccd821cba816f89f16f4ed6fb1217b6d13887137f33f970c661949"
+          "sha256": "65178bab2bc84f5102d348ea4f3eb5c37dbdcd9813b8ad9e783b5e0614139853"
         }
       ],
-      "note": "Three calibration frames passed fresh Visual Critic attempt 1; fourth visual admission frame 20 passed normal pixel review; delegated continuous execution.",
+      "note": "仅契约版本 2.0.3.6 重绑定；视觉规范、校准资产 SHA 与独立审查结论均未漂移。",
       "resolved_visual_profile": {
         "selection": "default",
         "profile_id": "M00",
@@ -67,6 +67,414 @@
         "override_reason": null,
         "rule": "默认视觉母风格只约束视觉语言；具体年代/设备物理表现优先。"
       }
+    },
+    "release_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "release_lock",
+      "approved_at": "2026-08-30T14:01:21+08:00",
+      "artifacts": [
+        {
+          "role": "body:01",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/01.png",
+          "archive_path": "publish/01.png",
+          "sha256": "1cb4cb31e0faf3862ace62e6ec8686486dd96ac9398fc12a216ee007997e9fea",
+          "bytes": 2064371
+        },
+        {
+          "role": "body:02",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/02.png",
+          "archive_path": "publish/02.png",
+          "sha256": "d077fac2d1f7b274e971761ce060c112ad4de4802a5879b995828b94d6513d95",
+          "bytes": 2139277
+        },
+        {
+          "role": "body:03",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/03.png",
+          "archive_path": "publish/03.png",
+          "sha256": "47ee8da79befe39a9e1c3fa31343c2b81f96b766ec02a6643ad0ff5e248c3c0f",
+          "bytes": 2021185
+        },
+        {
+          "role": "body:04",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/04.png",
+          "archive_path": "publish/04.png",
+          "sha256": "62a942894bdedcf634ec6cbd7150d9aa3116491cf35129b5906df1e371276a3d",
+          "bytes": 2524567
+        },
+        {
+          "role": "body:05",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/05.png",
+          "archive_path": "publish/05.png",
+          "sha256": "e262806b1f515f01184cf55418c11132f3de4fff166870811743d06fa0909fea",
+          "bytes": 2119033
+        },
+        {
+          "role": "body:06",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/06.png",
+          "archive_path": "publish/06.png",
+          "sha256": "fa62c44580872e08cb00d62f64ba2132e3f9bdf6c7f0de216a2478838faf9c1d",
+          "bytes": 1889369
+        },
+        {
+          "role": "body:07",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/07.png",
+          "archive_path": "publish/07.png",
+          "sha256": "31abe34dd61901605b65b4f8a41452e2b3e3de825faf0318af231929130245ec",
+          "bytes": 2088984
+        },
+        {
+          "role": "body:08",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/08.png",
+          "archive_path": "publish/08.png",
+          "sha256": "8e639854db6a5ef57ee8feb0ce441dbb55b6a272ae9a43e2e5838c22dbc149d5",
+          "bytes": 1944107
+        },
+        {
+          "role": "body:09",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/09.png",
+          "archive_path": "publish/09.png",
+          "sha256": "55ee5dde2ea87759c60b23c69fb93314a13b56a69f5e10bf1dafec21b0617187",
+          "bytes": 2245162
+        },
+        {
+          "role": "body:10",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/10.png",
+          "archive_path": "publish/10.png",
+          "sha256": "c2a6dd6a3ce93305deb11f4a5d3213cafeb34ababda4a3a52ddf693c7a8a0aea",
+          "bytes": 1502262
+        },
+        {
+          "role": "body:11",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/11.png",
+          "archive_path": "publish/11.png",
+          "sha256": "4aa6f9cabbd016ac2ffee7fd12010bc92c546586703fc2a238d4f45d434dfa1a",
+          "bytes": 1688172
+        },
+        {
+          "role": "body:12",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/12.png",
+          "archive_path": "publish/12.png",
+          "sha256": "6321a7a6131b3fc2404de7b683fbfb5cc9db7ea3716a45929d7c00218dba3948",
+          "bytes": 1639837
+        },
+        {
+          "role": "body:13",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/13.png",
+          "archive_path": "publish/13.png",
+          "sha256": "ae315554f82aecd45edaeeddfabe9cc7f98e9413682711bcf51d87254ea6ecb8",
+          "bytes": 1999832
+        },
+        {
+          "role": "body:14",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/14.png",
+          "archive_path": "publish/14.png",
+          "sha256": "525b5d01ee63ade128cbef361c0f7f08fc250fbadccd6fefe6f1c4e2f4a9aeea",
+          "bytes": 1926173
+        },
+        {
+          "role": "body:15",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/15.png",
+          "archive_path": "publish/15.png",
+          "sha256": "02918ddd49e684cd754e320db723ddf49abf96630b364ea0cfe1bcc84df1078b",
+          "bytes": 2027253
+        },
+        {
+          "role": "body:16",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/16.png",
+          "archive_path": "publish/16.png",
+          "sha256": "8bf15cccbfe2949d01baef32d9a8dda4bcc3c5e2858e340d82d219f11031e4bc",
+          "bytes": 1962571
+        },
+        {
+          "role": "body:17",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/17.png",
+          "archive_path": "publish/17.png",
+          "sha256": "6d9f3fcce7369f88654659acf418c2eab20aa679d758b5d60917f3642778b44b",
+          "bytes": 2052786
+        },
+        {
+          "role": "body:18",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/18.png",
+          "archive_path": "publish/18.png",
+          "sha256": "d70a6283b9fda4b52ffef24dcc17be03d168014929d2071f00b0ff277ac90656",
+          "bytes": 2161306
+        },
+        {
+          "role": "body:19",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/19.png",
+          "archive_path": "publish/19.png",
+          "sha256": "9293235c269a2b1fe28c1d177714b4300235939245be52d546ac0579bb7679fa",
+          "bytes": 2049950
+        },
+        {
+          "role": "body:20",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/20.png",
+          "archive_path": "publish/20.png",
+          "sha256": "3a74608c90bf24a3378752231f771bc73f38f6a074482bfdbee045394a2ac032",
+          "bytes": 2194314
+        },
+        {
+          "role": "cover",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/production/publish/16.png",
+          "archive_path": "cover.png",
+          "sha256": "8bf15cccbfe2949d01baef32d9a8dda4bcc3c5e2858e340d82d219f11031e4bc",
+          "bytes": 1962571
+        },
+        {
+          "role": "captions",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/subtitles.yaml",
+          "archive_path": "text/subtitles.yaml",
+          "sha256": "d0ff46d5f25488e6a0ca3a6523c8ce6fdcc3a49ee6bc33d92f1784af0b27a238",
+          "bytes": 2175
+        },
+        {
+          "role": "publish_copy",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/release/publish-copy.md",
+          "archive_path": "text/publish-copy.md",
+          "sha256": "4eacb096c3f1ae1d5334f8c4289271af4118942549c21980b84a38099a3b3edd",
+          "bytes": 1000
+        },
+        {
+          "role": "propagation_card",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/release/propagation-card.md",
+          "archive_path": "text/propagation-card.md",
+          "sha256": "5b966e00ffdd513130ce850e2827b85e8c7f18acb6840e816cf527f322126043",
+          "bytes": 1914
+        },
+        {
+          "role": "production_review",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/release/production-review.md",
+          "archive_path": "qa/production-review.md",
+          "sha256": "09ed609c09984784dc1f295633b2712c86acff08ea0fb20dda18e9fc5210d407",
+          "bytes": 1436
+        },
+        {
+          "role": "text_audit",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/text-audit.json",
+          "archive_path": "qa/text-audit.json",
+          "sha256": "75b3fa00c5a423fee1992aaff991171d4bf4481c8bd78a0a18f8cacbdff52f1f",
+          "bytes": 505
+        },
+        {
+          "role": "release_manifest",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/release-manifest.json",
+          "archive_path": "release-manifest.json",
+          "sha256": "139de1481e7de1dc244b5c1c9bc013683f8644b419a8bb53d25fdc2dd14d067c",
+          "bytes": 3126
+        },
+        {
+          "role": "runtime_checkpoint",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/runtime-checkpoint.json",
+          "archive_path": "evidence/runtime-checkpoint.json",
+          "sha256": "2f27418f57bad4a8ed1e7eeffc8b9d20563b0f25e2b5d2e7b2cbf37485124ef4",
+          "bytes": 727
+        },
+        {
+          "role": "production_ledger",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/production-ledger.json",
+          "archive_path": "evidence/production-ledger.json",
+          "sha256": "05e1488f86e9dbcf21d047fbf385f0e5bdab0676d3d284ae4264685a1a0f25b7",
+          "bytes": 103610
+        },
+        {
+          "role": "episode_state",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/episode-state.json",
+          "archive_path": "evidence/episode-state.json",
+          "sha256": "1c61a026538fb12a7fa93beb447eb9f31a37b3e558569024d34b8da47a788670",
+          "bytes": 1477
+        },
+        {
+          "role": "story_gates",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/story-gates.json",
+          "archive_path": "evidence/story-gates.json",
+          "sha256": "9ed69feee1c5c938fb5bd11901260260252b125c68426c22bde8cce366a6c188",
+          "bytes": 6006
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/story-semantic-review.json",
+          "archive_path": "qa/story-semantic-review.json",
+          "sha256": "4ee9dad5aa92fef9db65491b99ef207095fbdb175319e26b0d4eb880d5a341f5",
+          "bytes": 6425
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/visual-profile-review.json",
+          "archive_path": "qa/visual-profile-review.json",
+          "sha256": "65178bab2bc84f5102d348ea4f3eb5c37dbdcd9813b8ad9e783b5e0614139853",
+          "bytes": 3090
+        },
+        {
+          "role": "subtitle_layout_audit",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/subtitle-layout-audit.json",
+          "archive_path": "qa/subtitle-layout-audit.json",
+          "sha256": "3d9720b702c49ec609b85cb74f668f29698dfcee1471198c1cfef6ca6c486c5a",
+          "bytes": 16127
+        },
+        {
+          "role": "frame_semantic_review",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-review.json",
+          "archive_path": "qa/frame-semantic-review.json",
+          "sha256": "1b0c33d0df050e15611bffc5cf9b5fc3a01834f1c1ac1c642e657c22e2536f0e",
+          "bytes": 11641
+        },
+        {
+          "role": "frame_semantic_audit",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-audit.json",
+          "archive_path": "qa/frame-semantic-audit.json",
+          "sha256": "5a50a445a3a11f847314205f4e28080248b1b7bf7bd2e62735ba574c1d572d90",
+          "bytes": 6165
+        },
+        {
+          "role": "frame_review:01",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/01.json",
+          "archive_path": "qa/frame-reviews/01.json",
+          "sha256": "60fb6d95b76747f5b6a7d47cf90bdf2a4e19ffa020d169e971b193d164717292",
+          "bytes": 1619
+        },
+        {
+          "role": "frame_review:02",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/02.json",
+          "archive_path": "qa/frame-reviews/02.json",
+          "sha256": "0af3844d560e42c3c7fdcff6fa0d44c1dbdd2520edff3c938768af696727d962",
+          "bytes": 1590
+        },
+        {
+          "role": "frame_review:03",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/03.json",
+          "archive_path": "qa/frame-reviews/03.json",
+          "sha256": "b456d8fccb57467cd062c3b73ddefe45c0d8af5c923657667b7c634f1926a65d",
+          "bytes": 1615
+        },
+        {
+          "role": "frame_review:04",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/04.json",
+          "archive_path": "qa/frame-reviews/04.json",
+          "sha256": "829afbb5523fb61c5232c9a5c78994449697f26227a47fd6722e515852dd038a",
+          "bytes": 1650
+        },
+        {
+          "role": "frame_review:05",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/05.json",
+          "archive_path": "qa/frame-reviews/05.json",
+          "sha256": "c92bcb6a88a4b9609f046aaa9dd3a56ff3de3450a1806e0c0095d7c5c07a141b",
+          "bytes": 1599
+        },
+        {
+          "role": "frame_review:06",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/06.json",
+          "archive_path": "qa/frame-reviews/06.json",
+          "sha256": "c37e00d8ba5b2ef4b390b26f3c3cc007e3c01ce8efd0c81b59de5fea4981d56a",
+          "bytes": 1596
+        },
+        {
+          "role": "frame_review:07",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/07.json",
+          "archive_path": "qa/frame-reviews/07.json",
+          "sha256": "f99a5e6a4ba51bf2f283af0bcb91f146d4d43895d20e407922df91daf114fda6",
+          "bytes": 1604
+        },
+        {
+          "role": "frame_review:08",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/08.json",
+          "archive_path": "qa/frame-reviews/08.json",
+          "sha256": "ffc64eea1743378ee997c9573c5af6166d0bc0aa7217f76fe194fe64e9d86b61",
+          "bytes": 1611
+        },
+        {
+          "role": "frame_review:09",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/09.json",
+          "archive_path": "qa/frame-reviews/09.json",
+          "sha256": "4f1e47ad6a88c18bce261eac3fd4005e36153139b2854b321b4fb29752b10d3b",
+          "bytes": 1701
+        },
+        {
+          "role": "frame_review:10",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/10.json",
+          "archive_path": "qa/frame-reviews/10.json",
+          "sha256": "62d5a4e3dbee7637fa2b96be50abf46fe0c1e9a6b8568186bde4b4b2621c9f25",
+          "bytes": 1613
+        },
+        {
+          "role": "frame_review:11",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/11.json",
+          "archive_path": "qa/frame-reviews/11.json",
+          "sha256": "c48cd6ce842e0579bfc6c675b6858e45ee03188cd8551148673b0525a88b7d6d",
+          "bytes": 1621
+        },
+        {
+          "role": "frame_review:12",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/12.json",
+          "archive_path": "qa/frame-reviews/12.json",
+          "sha256": "3c86ad9c32a603db585cf291f66790a002126808c912ef0b0c45c494d7f21e89",
+          "bytes": 1667
+        },
+        {
+          "role": "frame_review:13",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/13.json",
+          "archive_path": "qa/frame-reviews/13.json",
+          "sha256": "453a05d3b83f3711d8df3762bcbf0c0ff6d5420bf8701c5a2dc57990681b59f5",
+          "bytes": 1644
+        },
+        {
+          "role": "frame_review:14",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/14.json",
+          "archive_path": "qa/frame-reviews/14.json",
+          "sha256": "90122d4fcff83fcef36c42b18efa7c0b2b250bebd11e88bc5e77dfca210083f9",
+          "bytes": 1645
+        },
+        {
+          "role": "frame_review:15",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/15.json",
+          "archive_path": "qa/frame-reviews/15.json",
+          "sha256": "5090c807faa1b6714d4463ac08c29a7e21abe0c21893848b0e1a0e6fd3ebe2a4",
+          "bytes": 1703
+        },
+        {
+          "role": "frame_review:16",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/16.json",
+          "archive_path": "qa/frame-reviews/16.json",
+          "sha256": "db18c6493f19b5208e86cb2cb33874d3423334f291aa185d12f0a5527124ffd8",
+          "bytes": 1621
+        },
+        {
+          "role": "frame_review:17",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/17.json",
+          "archive_path": "qa/frame-reviews/17.json",
+          "sha256": "6fde3cf4bc84766e8f8216a9752a8176188c9b16d3327a7694cc4832cf3ef446",
+          "bytes": 1660
+        },
+        {
+          "role": "frame_review:18",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/18.json",
+          "archive_path": "qa/frame-reviews/18.json",
+          "sha256": "a2e06310d719823d3e4d3184535e2bee93f0ee62ca67f42db3dae319477c7c27",
+          "bytes": 1647
+        },
+        {
+          "role": "frame_review:19",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/19.json",
+          "archive_path": "qa/frame-reviews/19.json",
+          "sha256": "2815e984f6f236f162208c397f3cee6bd9177b1d826e2c802222f24b9fb98ff0",
+          "bytes": 1707
+        },
+        {
+          "role": "frame_review:20",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-reviews/20.json",
+          "archive_path": "qa/frame-reviews/20.json",
+          "sha256": "dd45974ee7fef9bc52720a002c82fcad2e494552c024c383adff48475019249b",
+          "bytes": 1760
+        },
+        {
+          "role": "delegated_zip",
+          "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/deliveries/01_鳌太线_热汤_DELEGATED_AUTO.zip",
+          "sha256": "f1aab2e3337f3596d4df637832cc006001bd98d6aeb23d2df422f2b7119aae8f"
+        }
+      ],
+      "note": "Deterministic V2.0.3.6 delegated delivery verified"
     }
   }
 }

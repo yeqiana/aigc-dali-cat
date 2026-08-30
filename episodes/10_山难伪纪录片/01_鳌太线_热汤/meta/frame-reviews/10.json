@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "10",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/10.png",
   "asset_sha256": "d7d5547e3ed445e81c1b07f94ef8e735c23871c0be26a822fbc0350c98fbbfe7",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "红绳从第一人称近端延伸到白障中的头灯同伴，能见度骤降和靠绳跟随的危险状态均直接可见。",
-  "decision": "pass"
+  "notes": "In whiteout the blue-gray teammate, headlamp and red rope remain individually readable; sparse water/snow blur is physically motivated and the rope supplies real directional information.",
+  "decision": "pass",
+  "caption_sha256": "ccac45dd7d668782384d180a5ea477d3360db4c86112021311b5fbca9e1912e3"
 }

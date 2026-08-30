@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "18",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/18.png",
   "asset_sha256": "76a27e12e427aa331ef2fa8a910d43335cef0706a24b388a42367fb0bfa53d5f",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "黄袖黑手套托住已接近空杯，橙色应急棚位于左侧，红绳向外延伸至暴雪山坳；从棚内转向外部环境的关系清楚。",
-  "decision": "pass"
+  "notes": "The frosted glove cannot close around the tilted metal cup; the left boot remains splayed, and the red rope leads away from the foil shelter across the snow. The three physical counter-evidences are concurrently visible.",
+  "decision": "pass",
+  "caption_sha256": "df88fcbf3591a1f3c21809d547831a0f92ce8e1d88c0396f6a635af7d88598fe"
 }

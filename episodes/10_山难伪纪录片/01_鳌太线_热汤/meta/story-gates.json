@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "tool_version": "2.0.3.4",
+  "tool_version": "2.0.3.6",
   "episode_id": "10-01",
   "visual_profile": {
     "mode": "default",
@@ -134,10 +134,10 @@
     "authenticity": "passed",
     "continuity": "passed",
     "visual_admission": "passed",
-    "subtitle": "pending",
-    "production": "pending",
-    "recommendation_fit": "pending",
-    "publish": "pending"
+    "subtitle": "passed",
+    "production": "passed",
+    "recommendation_fit": "passed",
+    "publish": "passed"
   },
   "machine_contract": {
     "version": 1,

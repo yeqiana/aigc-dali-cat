@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "14",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
   "asset_sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "黄衣黑手套从第一人称举起装有浅色热液的金属杯，蓝灰外套同伴仍坐在橙色保温毯旁；饮用前的近景证据明确。",
-  "decision": "pass"
+  "notes": "Orange foil, one headlamp, metal cup, snowy black rocks and the yellow frosted sleeve coexist in a constrained chest view; it visibly supplies the first partial warm-shelter misreading without erasing the cold reality.",
+  "decision": "pass",
+  "caption_sha256": "d317f79d47f81626c550a127c23f33739962d3be66e0c4a34fde5b4beb58bda5"
 }

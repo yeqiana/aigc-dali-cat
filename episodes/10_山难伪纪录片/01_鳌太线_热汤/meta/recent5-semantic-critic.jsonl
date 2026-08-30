@@ -1,0 +1,25 @@
+2026-08-30T05:29:51.738228Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path must not contain '..'
+2026-08-30T05:29:51.738367Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path must not contain '..'
+2026-08-30T05:29:51.763946Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path must not contain '..'
+2026-08-30T05:29:51.763999Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path must not contain '..'
+2026-08-30T05:29:52.199988Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path must not contain '..'
+2026-08-30T05:29:52.200171Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path must not contain '..'
+2026-08-30T05:29:52.222724Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path must not contain '..'
+2026-08-30T05:29:52.222762Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path must not contain '..'
+2026-08-30T05:29:52.236764Z ERROR codex_core::session: failed to load skill D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\.codex\skills\dali-cat-story\SKILL.md: missing YAML frontmatter delimited by ---
+2026-08-30T05:29:52.236800Z ERROR codex_core::session: failed to load skill C:\Users\79873\.codex\skills\douyin-ai-horror\SKILL.md: missing YAML frontmatter delimited by ---
+2026-08-30T05:29:52.236808Z ERROR codex_core::session: failed to load skill D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\.agents\skills\dali-cat-story\SKILL.md: missing YAML frontmatter delimited by ---
+2026-08-30T05:29:52.243995Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell
+{"type":"thread.started","thread_id":"01a05125-4571-7f83-b12d-342212d94971"}
+{"type":"turn.started"}
+2026-08-30T05:30:09.311635Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=C:\Users\79873\.codex\.tmp\plugins\plugins\ngs-analysis\.codex-plugin/plugin.json
+2026-08-30T05:30:09.315859Z  WARN codex_core_plugins::loader: skipping remote curated plugin source during cache refresh plugin="crowdstrike-falcon-foundry" marketplace="openai-curated"
+2026-08-30T05:30:09.315883Z  WARN codex_core_plugins::loader: skipping remote curated plugin source during cache refresh plugin="crowdstrike-falcon-fusion" marketplace="openai-curated"
+2026-08-30T05:30:09.330382Z  WARN codex_core_plugins::manager: failed to refresh curated plugin cache after sync: failed to refresh curated plugin cache for github@openai-curated: failed to back up plugin cache entry: 拒绝访问。 (os error 5)
+2026-08-30T05:30:37.839806Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path must not contain '..'
+2026-08-30T05:30:37.839842Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path must not contain '..'
+2026-08-30T05:30:37.866797Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path must not contain '..'
+2026-08-30T05:30:37.866850Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path must not contain '..'
+2026-08-30T05:30:37.905127Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=C:\Users\79873\.codex\.tmp\plugins\plugins\ngs-analysis\.codex-plugin/plugin.json
+2026-08-30T05:30:38.359625Z ERROR codex_api::endpoint::responses_websocket: failed to connect to websocket: HTTP error: 426 Upgrade Required, url: ws://127.0.0.1:10100/v1/responses
+2026-08-30T05:30:38.359833Z  WARN codex_core::client: falling back to HTTP

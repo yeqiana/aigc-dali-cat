@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "06",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/06.png",
   "asset_sha256": "922d51db132ac1c145ef519be8272fa460b1d46a4989dba5490809d3cc323294",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "蓝灰外套、红手套同伴跪在雪地处理黄衣摄影者的登山鞋或踝部；受伤后的处置动作和近距离第一人称关系清楚。",
-  "decision": "pass"
+  "notes": "Seated first-person framing shows the extended injured left leg while the same blue-gray, red-gloved teammate checks the boot; this visibly grounds the descent decision.",
+  "decision": "pass",
+  "caption_sha256": "3747f56f81de9f695da9608e605f9788f86b700e263eb9dfa527bf02055a0c38"
 }

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "17",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/17.png",
   "asset_sha256": "3043f8504340af65671e529aaaa798d3bf792db3f2cff56d805373c09e80c3c2",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "低位第一人称视角展示橙色应急棚下至少三名避险者、桌板、多个金属杯和食物；临时避难点的人员规模与补给布置可读。",
-  "decision": "pass"
+  "notes": "The seated dark silhouettes neither acknowledge the camera nor show faces; their hard snow-dusted edges, straps, packs and rocks remain visible beneath the orange foil and single lamp, supporting the non-creature recontextualization.",
+  "decision": "pass",
+  "caption_sha256": "1aedd3137d26ac2411162d94c157b349805897c8e4a5978bff7221cb9bd8cf81"
 }

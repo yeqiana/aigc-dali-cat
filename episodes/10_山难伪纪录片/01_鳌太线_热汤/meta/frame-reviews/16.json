@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.0.3.4",
+  "story_os_version": "2.0.3.6",
   "frame": "16",
   "asset_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/16.png",
   "asset_sha256": "085c894e0ccb67f810e7c49e6cb95b6fbcd3f95c438281e517b14280f4bda6b7",
@@ -11,9 +11,10 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "review_scope": "FULL_FRAME_SET",
-    "attempt": 1,
-    "reviewed_at": "2026-08-30T05:13:39+08:00",
-    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-critic-attempt-1.jsonl"
+    "attempt": 2,
+    "reviewed_at": "2026-08-30T13:58:48+08:00",
+    "log": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/.frame-semantic-review.candidate.json",
+    "reviewer_mode": "delegated_auto_review_recovery"
   },
   "checks": {
     "scene_storyboard_fidelity": true,
@@ -29,6 +30,7 @@
     "actual_information_gain": true
   },
   "issue_codes": [],
-  "notes": "与 14 同一人物关系下，杯沿新增一圈清晰冰霜、黄袖和黑手套也明显积雪；杯体状态变化提供了实际信息增量。",
-  "decision": "pass"
+  "notes": "A frosted metal cup with apparent steam is held by a fully frosted black glove and yellow cuff; the orange foil and exposed snowy rock slope make the unmelted-ice contradiction directly visible.",
+  "decision": "pass",
+  "caption_sha256": "ff922b01639d0e4cffd64448e9394ba9ad8f4e69d897d5dfc7b47a4f24523554"
 }
