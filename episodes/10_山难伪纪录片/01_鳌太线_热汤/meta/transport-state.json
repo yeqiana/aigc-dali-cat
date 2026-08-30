@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "created_at": "2026-08-29T22:41:20+08:00",
-  "updated_at": "2026-08-30T11:50:57+08:00",
+  "updated_at": "2026-08-30T11:55:25+08:00",
   "note": "Transport reliability evidence only. This is NOT an episode stage source.",
   "policy": {
     "circuit_threshold": 3,
@@ -102,7 +102,7 @@
     "20": {
       "consecutive_technical_failures": 0,
       "circuit": "CLOSED",
-      "locked_request_fingerprint": "e0c2abf684f911243dd8dfe0414187924f2c5ae8b0e3f2f53e4a7613292e4e8f",
+      "locked_request_fingerprint": "aa11c88f13bd5ad93808da2aae2c4ba6654c260252bd553cf4edfb4f59069354",
       "events": [
         {
           "at": "2026-08-29T23:08:43+08:00",
@@ -115,10 +115,16 @@
           "event": "transport_success",
           "fingerprint": "e0c2abf684f911243dd8dfe0414187924f2c5ae8b0e3f2f53e4a7613292e4e8f",
           "candidate": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/candidates/originals/20.png"
+        },
+        {
+          "at": "2026-08-30T11:55:25+08:00",
+          "event": "preflight_passed",
+          "attempt_id": "4082a52faeb4",
+          "fingerprint": "aa11c88f13bd5ad93808da2aae2c4ba6654c260252bd553cf4edfb4f59069354"
         }
       ],
-      "active_attempt_id": "1ecf048a91f9",
-      "last_preflight_at": "2026-08-29T23:08:43+08:00",
+      "active_attempt_id": "4082a52faeb4",
+      "last_preflight_at": "2026-08-30T11:55:25+08:00",
       "last_success_at": "2026-08-29T23:11:38+08:00"
     },
     "02": {

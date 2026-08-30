@@ -2,7 +2,7 @@
   "schema_version": 1,
   "engine_version": "1.2",
   "created_at": "2026-08-29T22:40:52+08:00",
-  "updated_at": "2026-08-30T11:50:58+08:00",
+  "updated_at": "2026-08-30T11:55:24+08:00",
   "note": "Per-frame production transaction ledger. This is NOT an episode stage source.",
   "canvas": {
     "aspect_ratio": "4:5",
@@ -2208,8 +2208,8 @@
     },
     "20": {
       "number": 20,
-      "status": "LOCKED",
-      "content_repairs_used": 0,
+      "status": "REPAIRING",
+      "content_repairs_used": 1,
       "technical_failures": [],
       "attempts": [
         {
@@ -2257,6 +2257,43 @@
             "kind": "original",
             "attempt_id": "1ecf048a91f9"
           }
+        },
+        {
+          "attempt_id": "4082a52faeb4",
+          "started_at": "2026-08-30T11:55:24+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "20",
+            "kind": "repair",
+            "prompt_sha256": "e5c73d5cabbd27c5c0e23f2b85e9ccf2fe382399112ec0250a30626999e08a06",
+            "prompt_chars": 183,
+            "prompt_bytes": 543,
+            "capture_id": "CP01",
+            "model": "codex_subscription_image",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/14.png",
+                "role": "calibration-14",
+                "kind": "capture_style",
+                "sha256": "595d5ed8548b6d957403578fc9ff473fbcc0c65f42cb2fd626e5d4d65591cae1",
+                "source_kind": "approved_calibration"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "capture_profile": "CP06"
+            }
+          },
+          "request_fingerprint": "aa11c88f13bd5ad93808da2aae2c4ba6654c260252bd553cf4edfb4f59069354",
+          "notes": "Direct-user locked-frame ordinary repair: explicit passerby phone and reality payoff.",
+          "result": "pending"
         }
       ],
       "current_candidate": {
@@ -2287,7 +2324,33 @@
           "decision": "pass",
           "notes": "Fourth visual admission normal pixel review PASS: CP01 secondary capture, full prop and reality recontextualization"
         }
-      ]
+      ],
+      "superseded_locks": [
+        {
+          "at": "2026-08-30T11:55:24+08:00",
+          "lock": {
+            "at": "2026-08-29T23:17:58+08:00",
+            "sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+            "reason": "Fourth visual admission normal pixel review PASS"
+          },
+          "approved_asset": {
+            "path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/20.png",
+            "sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6",
+            "width": 1080,
+            "height": 1350,
+            "promoted_at": "2026-08-29T23:17:58+08:00",
+            "source_sha256": "1e412cdab194a9ba36254dfe93912ff4eefcec85c2aa46789477a499c268d9b6"
+          }
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-08-30T11:55:24+08:00",
+        "note": "用户授权：修复第20帧路过者手机物理在场与饭棚错觉回收过渡。",
+        "user_approved": true,
+        "delegated_auto_review": false,
+        "approval_basis": "direct_user_review_locked_repair",
+        "approval_text": "特批第09帧额外返修一次，并授权重做第12、20帧以修复第一视角和终局物理过渡；不改其他已锁帧、故事、字幕或发布结构。"
+      }
     }
   },
   "batches": [
