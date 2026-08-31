@@ -75,7 +75,7 @@ def compile_capsule(ep,step,write=True):
     evidence=[]
     evidence_paths=list(STEP_EVIDENCE[step])
     if "meta/runtime-execution.json" not in evidence_paths: evidence_paths.insert(1,"meta/runtime-execution.json")
-    quality_evidence={"CREATIVE_STORY":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json"],"PREIMAGE_COMPILE":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/capture-event-contract.json","meta/world-state.json"],"VISUAL_LOCK":["meta/directing-quality.json","meta/capture-event-contract.json","meta/world-state.json"],"PRODUCTION":["meta/capture-event-contract.json","meta/world-state.json","meta/asset-lineage.json"],"RELEASE":["meta/voice-contract.json","meta/text-audit.json","meta/subtitle-voice-review.json","meta/asset-lineage.json"]}.get(step,[])
+    quality_evidence={"CREATIVE_STORY":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json"],"PREIMAGE_COMPILE":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/capture-event-contract.json","meta/world-state.json"],"VISUAL_LOCK":["meta/directing-quality.json","meta/capture-event-contract.json","meta/world-state.json"],"PRODUCTION":["meta/capture-event-contract.json","meta/world-state.json","meta/asset-lineage.json"],"RELEASE":["meta/voice-contract.json","meta/text-audit.json","meta/subtitle-voice-review.json","meta/asset-lineage.json"]}.get(step,[])
     for qrel in quality_evidence:
         if qrel not in evidence_paths:evidence_paths.append(qrel)
     for rel in evidence_paths:

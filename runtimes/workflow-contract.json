@@ -103,7 +103,19 @@
     "asset_lineage_append_only": true,
     "golden_episode_regression_enabled": true,
     "directing_quality_does_not_create_episode_stage": true,
-    "legacy_directing_quality_auto_migration": false
+    "legacy_directing_quality_auto_migration": false,
+    "opening_social_anchor_enabled": true,
+    "opening_social_anchor_preferred_frames": [
+      1,
+      2
+    ],
+    "opening_social_anchor_preferred_contexts": [
+      "vehicle_selfie",
+      "destination_checkin_selfie"
+    ],
+    "opening_social_anchor_multi_person_default": true,
+    "opening_social_anchor_exception_requires_reason": true,
+    "opening_social_anchor_strong_anomaly_forbidden": true
   },
   "steps": {
     "RESTORE": {

@@ -8,7 +8,7 @@ legacy locked Episodes stay compatible until explicitly enabled.
 from __future__ import annotations
 import argparse, datetime as dt, json
 from pathlib import Path
-import voice_contract, storyboard_density_gate, capture_event_contract, world_state
+import voice_contract, storyboard_density_gate, capture_event_contract, world_state, opening_social_anchor
 
 REL=Path("meta/directing-quality.json")
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -30,7 +30,7 @@ def enable(ep):
     d={"schema_version":1,"enabled":True,"enabled_at":now(),
        "not_episode_stage":True,"legacy_auto_migration":False,
        "requirements":{
-         "story":["voice_contract","storyboard_density_delete_test"],
+         "story":["voice_contract","storyboard_density_delete_test","opening_social_anchor"],
          "preimage":["capture_event_contract","persistent_world_state"],
          "production":["asset_version_lineage"],
          "release":["text_audit","semantic_voice_review"],
@@ -41,7 +41,8 @@ def enable(ep):
 def verify_story(ep):
     if not enabled(ep):return []
     return ["VOICE:"+x for x in voice_contract.validate(ep,True)] + \
-           ["DENSITY:"+x for x in storyboard_density_gate.validate(ep,True)]
+           ["DENSITY:"+x for x in storyboard_density_gate.validate(ep,True)] + \
+           ["OPENING:"+x for x in opening_social_anchor.validate(ep,True)]
 def verify_preimage(ep):
     if not enabled(ep):return []
     return ["CAPTURE:"+x for x in capture_event_contract.validate(ep,True)] + \

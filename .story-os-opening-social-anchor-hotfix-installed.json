@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "package": "Story_OS_V2.1_Opening_Social_Anchor_UTF8_Hotfix",
+  "installed_at": "2026-08-31T16:36:16+08:00",
+  "verified_baseline": "abf2910794b5041ddeff495dde82112f93a06c49",
+  "actual_head_before_install": "abf2910794b5041ddeff495dde82112f93a06c49",
+  "branch": "story",
+  "utf8": true,
+  "backup_dir": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.story-os-upgrade-backups\\20260831_163616_Story_OS_V2.1_Opening_Social_Anchor_UTF8_Hotfix",
+  "feature": "Opening Social Anchor"
+}

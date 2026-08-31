@@ -28,6 +28,7 @@ TARGET: reach STORYBOARD_LOCKED and stop there.
 - locked_story: only logic/polish repairs.
 - run Story critics/verifiers and honest delegated approval evidence.
 - Directing Quality: author and LOCK meta/voice-contract.json; author and LOCK meta/storyboard-density-review.json; run voice_contract.py validate and storyboard_density_gate.py validate. Every frame must pass the delete-frame test and 5-frame progress window.
+- Opening Social Anchor: for multi-person travel / return-home / outing stories, strongly prefer Frame 01-02 to show the group in realistic selfie perspective: either vehicle/departure/transit selfie or destination/scenic check-in selfie. Use at least 2 visible people (prefer 3-4), establish relationship/clothing anchors, keep capture casual and imperfect rather than commercial/staged, and keep anomaly absent or only micro-background. Author+LOCK meta/opening-social-anchor.json and run opening_social_anchor.py validate. Solo or structurally incompatible stories may set applicable=false only with a concrete exception_reason.
 - advance only to STORYBOARD_LOCKED.
 DO NOT create Environment/Impact Contract, Visual Lock images, Batch, subtitles or Release.
 """,
