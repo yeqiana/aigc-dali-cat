@@ -24,6 +24,8 @@ AUTHORITY_FILES=[
     "library/catalog.json",
     "library/copy/intro-openers.json",
     "standards/AIGC_Directing_Quality_V1.0.md",
+    "standards/Character_Visual_And_Wardrobe_V1.0.md",
+    "standards/wardrobe-scenario-profiles.json",
 ]
 STEP_EVIDENCE={
     "CREATIVE_STORY":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/resource-selection.json","meta/story-gates.json","reports/account-learning-index.json"],
@@ -75,7 +77,7 @@ def compile_capsule(ep,step,write=True):
     evidence=[]
     evidence_paths=list(STEP_EVIDENCE[step])
     if "meta/runtime-execution.json" not in evidence_paths: evidence_paths.insert(1,"meta/runtime-execution.json")
-    quality_evidence={"CREATIVE_STORY":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json"],"PREIMAGE_COMPILE":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/capture-event-contract.json","meta/world-state.json"],"VISUAL_LOCK":["meta/directing-quality.json","meta/capture-event-contract.json","meta/world-state.json"],"PRODUCTION":["meta/capture-event-contract.json","meta/world-state.json","meta/asset-lineage.json"],"RELEASE":["meta/voice-contract.json","meta/text-audit.json","meta/subtitle-voice-review.json","meta/asset-lineage.json"]}.get(step,[])
+    quality_evidence={"CREATIVE_STORY":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/character-visual-contract.json","meta/shot-progression-review.json"],"PREIMAGE_COMPILE":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/character-visual-contract.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json"],"VISUAL_LOCK":["meta/directing-quality.json","meta/character-visual-contract.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json"],"PRODUCTION":["meta/character-visual-contract.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json","meta/asset-lineage.json"],"RELEASE":["meta/voice-contract.json","meta/text-audit.json","meta/subtitle-voice-review.json","meta/asset-lineage.json"]}.get(step,[])
     for qrel in quality_evidence:
         if qrel not in evidence_paths:evidence_paths.append(qrel)
     for rel in evidence_paths:

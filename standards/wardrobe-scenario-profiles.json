@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "profiles": {
+    "sichuan_tibet_high_altitude_cold": {
+      "scene_context": "sichuan_tibet_route",
+      "temperature": [
+        "cool",
+        "cold",
+        "very_cold"
+      ],
+      "female_options": [
+        [
+          "冲锋衣",
+          "抓绒",
+          "徒步长裤",
+          "保暖帽"
+        ],
+        [
+          "冲锋衣",
+          "保暖内搭",
+          "裙子",
+          "厚裤袜",
+          "漂亮保暖帽"
+        ]
+      ],
+      "male_options": [
+        [
+          "冲锋衣",
+          "抓绒",
+          "徒步长裤"
+        ],
+        [
+          "软壳",
+          "保暖中层",
+          "长裤"
+        ]
+      ],
+      "rule": "裙装只用于短时打卡且必须厚裤袜+保暖外层；强风雨雪优先长裤。"
+    },
+    "sichuan_tibet_low_altitude_warm": {
+      "scene_context": "sichuan_tibet_route",
+      "temperature": [
+        "warm",
+        "mild"
+      ],
+      "female_options": [
+        [
+          "漂亮吊带",
+          "薄外搭",
+          "半身裙"
+        ],
+        [
+          "轻薄上衣",
+          "裙子"
+        ],
+        [
+          "T恤",
+          "轻薄长裤"
+        ]
+      ],
+      "male_options": [
+        [
+          "T恤",
+          "薄外套",
+          "休闲长裤"
+        ],
+        [
+          "轻薄户外衬衫",
+          "长裤"
+        ]
+      ],
+      "rule": "适合车内、民宿、县城和低海拔晴热停留。"
+    },
+    "rainy_road_trip": {
+      "temperature": [
+        "mild",
+        "cool",
+        "cold"
+      ],
+      "female_options": [
+        [
+          "防水冲锋衣",
+          "快干裤"
+        ],
+        [
+          "冲锋衣",
+          "厚裤袜",
+          "裙子",
+          "防水鞋"
+        ]
+      ],
+      "male_options": [
+        [
+          "防水冲锋衣",
+          "快干裤"
+        ]
+      ],
+      "rule": "镜头和服装都要体现潮湿/防雨物理。"
+    },
+    "summer_city_or_scenic": {
+      "temperature": [
+        "hot",
+        "warm"
+      ],
+      "female_options": [
+        [
+          "漂亮吊带",
+          "裙子"
+        ],
+        [
+          "短袖上衣",
+          "半身裙"
+        ],
+        [
+          "薄衬衫",
+          "裙子"
+        ]
+      ],
+      "male_options": [
+        [
+          "T恤",
+          "休闲长裤"
+        ],
+        [
+          "短袖衬衫",
+          "长裤"
+        ]
+      ],
+      "rule": "漂亮但日常，不做商业时尚大片。"
+    }
+  }
+}

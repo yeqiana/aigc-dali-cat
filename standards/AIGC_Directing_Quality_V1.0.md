@@ -33,6 +33,17 @@
 
 这是一条“强默认 + 可解释豁免”的导演规则，不是所有故事无条件硬塞合照。
 
+## 1.2 Director V2 Additions
+新增约束由 `Character_Visual_And_Wardrobe_V1.0.md` 定义：
+- Camera-Friendly Ordinary Cast：主角略高于普通路人颜值，但必须真实；
+- Anti-Likeness：参考真人只做风格参考，不复制身份；
+- Capture Setup Diversity：同摄影方式不得反复刷屏；
+- Anomaly Logic Escalation：异常必须从“变多/变大”升级为“空间/因果不可能”；
+- Human Action Ladder：人物不能一直站着看，必须进入确认、讨论、移动、行动、失败、适应；
+- Temporal Continuity：昼夜、天气、环境光跳变必须有时间和剧情解释；
+- Scene-Aware Wardrobe：服装按海拔、温度、天气、活动切换，且每次换装有理由；
+- 多人故事 Visual Lock `ordinary_baseline` 优先图 01/02 自拍群像。
+
 ## 2. Storyboard Information Density
 逐图执行删图测试。删除后若对因果、证据、悬念、空间理解、人物状态均无损失，则该帧为 REDUNDANT_FRAME。
 连续 5 帧必须至少有一次强进展；连续 BRIDGE 不超过 2 帧；同构图/同动作且无新信息不超过 2 帧。

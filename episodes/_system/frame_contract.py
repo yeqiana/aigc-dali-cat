@@ -21,6 +21,10 @@ import environment_contract
 import character_contract
 import capture_event_contract
 import world_state
+import character_visual_contract
+import shot_progression_gate
+import temporal_continuity_gate
+import wardrobe_contract
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
@@ -280,6 +284,10 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     directive = env.get("directive") or {}
     capture_event = capture_event_contract.resolve_frame(ep,n) if (ep/capture_event_contract.REL).is_file() else {"capture_event":{},"capture_event_sha256":None}
     world = world_state.resolve_frame(ep,n) if (ep/world_state.REL).is_file() else {"world_state":{},"world_state_sha256":None}
+    character_visual = read_json(ep/character_visual_contract.REL) if (ep/character_visual_contract.REL).is_file() else {}
+    progression = shot_progression_gate.resolve_frame(ep,n) if (ep/shot_progression_gate.REL).is_file() else {"shot_progression":{}}
+    temporal = temporal_continuity_gate.resolve_frame(ep,n) if (ep/temporal_continuity_gate.REL).is_file() else {"temporal_state":{}}
+    wardrobe = wardrobe_contract.resolve_frame(ep,n) if (ep/wardrobe_contract.REL).is_file() else {"wardrobe":{}}
     excerpt = extract_frame_excerpt(storyboard_path, n)
     refs = resolved_references(ep, n)
 
@@ -297,6 +305,10 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         },
         "capture_event_contract": {"path":capture_event_contract.REL.as_posix(),"sha256":sha256_file(ep/capture_event_contract.REL) if (ep/capture_event_contract.REL).is_file() else None},
         "world_state": {"path":world_state.REL.as_posix(),"sha256":sha256_file(ep/world_state.REL) if (ep/world_state.REL).is_file() else None},
+        "character_visual_contract": {"path":character_visual_contract.REL.as_posix(),"sha256":sha256_file(ep/character_visual_contract.REL) if (ep/character_visual_contract.REL).is_file() else None},
+        "shot_progression": {"path":shot_progression_gate.REL.as_posix(),"sha256":sha256_file(ep/shot_progression_gate.REL) if (ep/shot_progression_gate.REL).is_file() else None},
+        "temporal_continuity": {"path":temporal_continuity_gate.REL.as_posix(),"sha256":sha256_file(ep/temporal_continuity_gate.REL) if (ep/temporal_continuity_gate.REL).is_file() else None},
+        "wardrobe_contract": {"path":wardrobe_contract.REL.as_posix(),"sha256":sha256_file(ep/wardrobe_contract.REL) if (ep/wardrobe_contract.REL).is_file() else None},
     }
 
     # Hash material is deliberately per-frame where possible.
@@ -325,6 +337,10 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "capture_event_sha256": capture_event.get("capture_event_sha256"),
         "world_state": world.get("world_state") or {},
         "world_state_sha256": world.get("world_state_sha256"),
+        "character_visual_contract": character_visual,
+        "shot_progression": progression.get("shot_progression") or {},
+        "temporal_state": temporal.get("temporal_state") or {},
+        "wardrobe": wardrobe.get("wardrobe") or {},
         "references": refs,
     }
     contract_sha = sha256_json(hash_material)
@@ -357,6 +373,18 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "[PERSISTENT WORLD STATE]",
         _compact_json(world.get("world_state") or {}, 2600),
         "",
+        "[CHARACTER VISUAL / ORIGINAL IDENTITY]",
+        _compact_json(character_visual, 2600),
+        "",
+        "[SHOT PROGRESSION / ACTION / ANOMALY LOGIC]",
+        _compact_json(progression.get("shot_progression") or {}, 1800),
+        "",
+        "[TEMPORAL CONTINUITY]",
+        _compact_json(temporal.get("temporal_state") or {}, 1600),
+        "",
+        "[SCENE-AWARE WARDROBE]",
+        _compact_json(wardrobe.get("wardrobe") or {}, 2400),
+        "",
         "[FRAME DIRECTIVE]",
         _compact_json(directive),
         "",
@@ -372,7 +400,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "story_os_version": episode_version(ep),
         "frame": key,
         "derived_cache": True,
-        "authority": "Story + Storyboard + Character Contract + Capture Event + World State + story-gates + Visual Profile",
+        "authority": "Story + Storyboard + Character Contract + Character Visual + Shot Progression + Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile",
         "generated_at": now(),
         "source_trace": source_trace,
         "storyboard_frame": excerpt,

@@ -25,7 +25,7 @@ def stage(ep):
 def authority_files(ep):
     rows=[]
     # Only hash assets that should stay immutable after the handoff.
-    for rel in ("meta/runtime-request.json","meta/character-contract.json","meta/resource-selection.json","meta/intro-policy.json","meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/capture-event-contract.json","meta/world-state.json"):
+    for rel in ("meta/runtime-request.json","meta/character-contract.json","meta/resource-selection.json","meta/intro-policy.json","meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/character-visual-contract.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json"):
         p=ep/rel
         if p.is_file():rows.append(p)
     story=ep/"story"

@@ -115,7 +115,26 @@
     ],
     "opening_social_anchor_multi_person_default": true,
     "opening_social_anchor_exception_requires_reason": true,
-    "opening_social_anchor_strong_anomaly_forbidden": true
+    "opening_social_anchor_strong_anomaly_forbidden": true,
+    "director_profile_v2_enabled": true,
+    "director_profile_v2_legacy_locked_episode_auto_migration": false,
+    "camera_friendly_ordinary_cast": true,
+    "primary_cast_attractiveness": "moderately_above_average_but_real",
+    "female_lead_default_body_build": "slim_proportionate_natural",
+    "character_reference_exact_likeness_forbidden": true,
+    "character_reference_is_style_not_identity": true,
+    "capture_setup_max_identical_consecutive": 2,
+    "capture_setup_min_unique_in_5_frames": 3,
+    "anomaly_logic_escalation_required": true,
+    "anomaly_scale_only_escalation_insufficient": true,
+    "human_action_ladder_required": true,
+    "frame10_requires_new_question_or_evidence": true,
+    "temporal_continuity_bound_to_world_state": true,
+    "scene_aware_wardrobe_enabled": true,
+    "wardrobe_change_requires_reason": true,
+    "cold_skirt_requires_thick_tights_and_warm_layer": true,
+    "cold_high_altitude_camisole_requires_warm_outer_layer": true,
+    "visual_lock_ordinary_baseline_prefers_opening_group_selfie": true
   },
   "steps": {
     "RESTORE": {

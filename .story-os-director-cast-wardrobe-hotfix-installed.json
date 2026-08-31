@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "package": "Story_OS_V2.1_Director_Cast_Wardrobe_Progression_UTF8_Hotfix",
+  "installed_at": "2026-08-31T17:48:14+08:00",
+  "verified_baseline": "cd34ed4c261e075cd3a3dc58fe14c9279335453c",
+  "actual_head_before_install": "cd34ed4c261e075cd3a3dc58fe14c9279335453c",
+  "branch": "story",
+  "encoding": "UTF-8",
+  "backup_dir": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.story-os-upgrade-backups\\20260831_174814_Story_OS_V2.1_Director_Cast_Wardrobe_Progression_UTF8_Hotfix",
+  "features": [
+    "camera_friendly_ordinary_cast",
+    "anti_likeness_original_character",
+    "capture_setup_diversity",
+    "anomaly_logic_escalation",
+    "human_action_ladder",
+    "temporal_continuity",
+    "scene_aware_wardrobe",
+    "visual_lock_opening_group_selfie_baseline_priority"
+  ]
+}

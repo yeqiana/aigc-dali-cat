@@ -8,7 +8,7 @@ legacy locked Episodes stay compatible until explicitly enabled.
 from __future__ import annotations
 import argparse, datetime as dt, json
 from pathlib import Path
-import voice_contract, storyboard_density_gate, capture_event_contract, world_state, opening_social_anchor
+import voice_contract, storyboard_density_gate, capture_event_contract, world_state, opening_social_anchor, character_visual_contract, shot_progression_gate, wardrobe_contract, temporal_continuity_gate
 
 REL=Path("meta/directing-quality.json")
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -24,14 +24,35 @@ def enabled(ep):
     p=Path(ep).resolve()/REL
     return p.is_file() and (read_json(p).get("enabled") is True)
 
+def _episode_state(ep):
+    p=Path(ep).resolve()/"meta/episode-state.json"
+    return str((read_json(p).get("current_state") if p.is_file() else "") or "")
+
+def advanced_enabled(ep):
+    p=Path(ep).resolve()/REL
+    if not p.is_file():return False
+    d=read_json(p)
+    return int(d.get("profile_version") or 1)>=2 or d.get("director_upgrade_v2") is True
+
 def enable(ep):
     ep=Path(ep).resolve();p=ep/REL
-    if p.is_file():return read_json(p)
-    d={"schema_version":1,"enabled":True,"enabled_at":now(),
-       "not_episode_stage":True,"legacy_auto_migration":False,
+    if p.is_file():
+        d=read_json(p)
+        if advanced_enabled(ep):return d
+        # Compatibility: only upgrade while pre-Story-Lock.
+        if _episode_state(ep) in {"","IDEA_LOCKED"}:
+            d["profile_version"]=2
+            d["director_upgrade_v2"]=True
+            req=d.setdefault("requirements",{})
+            req["story"]=["voice_contract","storyboard_density_delete_test","opening_social_anchor","character_visual_contract","shot_progression_gate"]
+            req["preimage"]=["capture_event_contract","persistent_world_state","temporal_continuity","scene_aware_wardrobe"]
+            write_json(p,d)
+        return d
+    d={"schema_version":1,"profile_version":2,"director_upgrade_v2":True,
+       "enabled":True,"enabled_at":now(),"not_episode_stage":True,"legacy_auto_migration":False,
        "requirements":{
-         "story":["voice_contract","storyboard_density_delete_test","opening_social_anchor"],
-         "preimage":["capture_event_contract","persistent_world_state"],
+         "story":["voice_contract","storyboard_density_delete_test","opening_social_anchor","character_visual_contract","shot_progression_gate"],
+         "preimage":["capture_event_contract","persistent_world_state","temporal_continuity","scene_aware_wardrobe"],
          "production":["asset_version_lineage"],
          "release":["text_audit","semantic_voice_review"],
          "regression":["curated_golden_episode_registry"]
@@ -40,13 +61,21 @@ def enable(ep):
 
 def verify_story(ep):
     if not enabled(ep):return []
-    return ["VOICE:"+x for x in voice_contract.validate(ep,True)] + \
-           ["DENSITY:"+x for x in storyboard_density_gate.validate(ep,True)] + \
-           ["OPENING:"+x for x in opening_social_anchor.validate(ep,True)]
+    base=["VOICE:"+x for x in voice_contract.validate(ep,True)] + \
+         ["DENSITY:"+x for x in storyboard_density_gate.validate(ep,True)] + \
+         ["OPENING:"+x for x in opening_social_anchor.validate(ep,True)]
+    if not advanced_enabled(ep):return base
+    return base + \
+           ["CAST_VISUAL:"+x for x in character_visual_contract.validate(ep,True)] + \
+           ["SHOT_PROGRESS:"+x for x in shot_progression_gate.validate(ep,True)]
 def verify_preimage(ep):
     if not enabled(ep):return []
-    return ["CAPTURE:"+x for x in capture_event_contract.validate(ep,True)] + \
-           ["WORLD:"+x for x in world_state.validate(ep,True)]
+    base=["CAPTURE:"+x for x in capture_event_contract.validate(ep,True)] + \
+         ["WORLD:"+x for x in world_state.validate(ep,True)]
+    if not advanced_enabled(ep):return base
+    return base + \
+           ["TEMPORAL:"+x for x in temporal_continuity_gate.validate(ep,True)] + \
+           ["WARDROBE:"+x for x in wardrobe_contract.validate(ep,True)]
 def verify_release(ep):
     if not enabled(ep):return []
     return ["VOICE_RELEASE:"+x for x in voice_contract.validate_release_review(ep)]
