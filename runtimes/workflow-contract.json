@@ -134,7 +134,14 @@
     "wardrobe_change_requires_reason": true,
     "cold_skirt_requires_thick_tights_and_warm_layer": true,
     "cold_high_altitude_camisole_requires_warm_outer_layer": true,
-    "visual_lock_ordinary_baseline_prefers_opening_group_selfie": true
+    "visual_lock_ordinary_baseline_prefers_opening_group_selfie": true,
+    "character_identity_spec_locked_before_images": true,
+    "character_pixel_master_separate_artifact": true,
+    "character_pixel_master_path": "meta/character-pixel-master.json",
+    "character_pixel_master_created_after_visual_lock_pass": true,
+    "preproduction_forbids_fake_pixel_master": true,
+    "visual_lock_baseline_machine_prefers_opening_social_anchor": true,
+    "production_prefers_character_pixel_master_identity_reference": true
   },
   "steps": {
     "RESTORE": {

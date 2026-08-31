@@ -24,6 +24,7 @@ import image_model_policy
 import image_worker_pool
 import rolling_frame_review
 import asset_lineage
+import character_visual_contract
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -119,6 +120,8 @@ def directive_dependency(ep:Path,frame:int)->list[int]:
 def contract_references(ep:Path,frame:int)->list[dict]:
     c=frame_contract.compile_frame(ep,frame,write_cache=True)
     out=[]
+    master=character_visual_contract.pixel_master_reference(ep)
+    if master:out.append({"path":master["path"],"role":master["role"],"kind":"identity"})
     for row in c["hash_material"].get("references") or []:
         if not isinstance(row,dict):
             continue
@@ -131,7 +134,8 @@ def contract_references(ep:Path,frame:int)->list[dict]:
             p=repo_file(str(raw))
         except Exception:
             continue
-        out.append({"path":repo_rel(p),"role":str(role),"kind":str(kind)})
+        candidate={"path":repo_rel(p),"role":str(role),"kind":str(kind)}
+        if not any(x.get("path")==candidate["path"] for x in out):out.append(candidate)
         if len(out)>=2:
             break
     return out

@@ -40,5 +40,8 @@ Character Visual Contract LOCK 后，脸型身份、haircut、hair length 锁定
 任何 `look_id` 变化都要记录 `change_reason`。
 
 ## Visual Lock
-多人旅行故事的 ordinary_baseline 优先图 01/02 车内自拍或景区打卡合照，同时锁脸、发型、身材区间、初始穿搭和关系。
-普通世界合照可成为 Group Identity Master；真人参考仍然只能承担 Style Reference。
+多人旅行故事的 ordinary_baseline 由机器优先读取 `meta/opening-social-anchor.json` 中合法的图 01/02 自拍关系锚点；不存在合法锚点时才回退旧的普通低异常选帧逻辑。
+
+Story/Preimage 阶段只允许锁 `identity_spec_locked=true`，不得伪造图片母版。FOUR-admission Visual Lock 全部 PASS 后，ordinary_baseline 才生成独立的 `meta/character-pixel-master.json`，记录真实图片路径、图片 SHA、Frame Contract SHA 与 Character Visual Spec SHA。Production 优先把该像素母版作为 identity reference。
+
+真人参考始终只能承担 Style Reference，不能成为 Identity Master。

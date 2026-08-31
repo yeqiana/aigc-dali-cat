@@ -26,6 +26,7 @@ from story_os_contract import story_os_version
 from visual_profile import compile_prompt_contract
 import environment_contract
 import frame_contract
+import character_visual_contract
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path("meta/story-gates.json")
@@ -176,6 +177,32 @@ def _rows(ep: Path) -> list[dict]:
         })
     return rows
 
+def _opening_social_baseline(ep: Path, rows: list[dict]) -> dict | None:
+    p=ep/"meta/opening-social-anchor.json"
+    if not p.is_file():return None
+    try:d=read_json(p)
+    except Exception:return None
+    if d.get("applicable") is not True:return None
+    preferred=[]
+    for x in d.get("opening_frames") or []:
+        if not isinstance(x,dict) or x.get("selfie") is not True:continue
+        try:n=int(x.get("frame"))
+        except Exception:continue
+        if n not in {1,2}:continue
+        if int(x.get("people_visible") or 0)<2:continue
+        if x.get("relationship_anchor") is not True:continue
+        preferred.append(n)
+    by_frame={int(r["frame"]):r for r in rows}
+    for n in preferred:
+        row=by_frame.get(n)
+        if row and row.get("mode")=="normal_record" and int(row.get("impact") or 0)<=1:return row
+    return None
+
+def _pixel_master_expected(assets: list[dict]) -> dict | None:
+    row=next((x for x in assets if x.get("role")=="ordinary_baseline"),None)
+    if not row:return None
+    return {"frame":f"{int(row['frame']):02d}","asset_path":row["asset_path"],"sha256":row["sha256"],"frame_contract_sha256":row["frame_contract_sha256"]}
+
 
 def choose_plan(ep: Path) -> dict:
     if not required(ep):
@@ -196,10 +223,12 @@ def choose_plan(ep: Path) -> dict:
                 return row
         raise ValueError("cannot select four distinct Visual Lock admission frames")
 
-    baseline = take(sorted(
+    preferred_baseline = _opening_social_baseline(ep, rows)
+    baseline = take([preferred_baseline] if preferred_baseline else sorted(
         [r for r in rows if r["mode"] == "normal_record" and r["impact"] <= 1] or rows,
         key=lambda r: (r["impact"], r["frame"])
     ))
+    baseline_selection = "opening_social_anchor" if preferred_baseline else "ordinary_fallback"
     worst = take(sorted(
         [r for r in rows if r["frame"] != baseline["frame"]],
         key=lambda r: (-r["environment_severity"], -r["impact"], r["frame"])
@@ -227,6 +256,9 @@ def choose_plan(ep: Path) -> dict:
             "baseline_first": True,
             "remaining_three_parallelizable": True,
             "calibration_count": 4,
+            "baseline_selection": baseline_selection,
+            "baseline_frame": baseline["frame"],
+            "opening_social_anchor_machine_priority": True,
         },
         "items": plan_rows,
     }
@@ -408,7 +440,11 @@ def verify(ep: Path) -> list[str]:
         contract = compile_prompt_contract(ep)
         assets = calibration_assets(ep)
         data = read_json(path)
-        return validate_payload(data, contract=contract, assets=assets, version=episode_version(ep))
+        errors = validate_payload(data, contract=contract, assets=assets, version=episode_version(ep))
+        if not errors and character_visual_contract.pixel_master_required(ep):
+            expected=_pixel_master_expected(assets)
+            errors.extend(character_visual_contract.validate_pixel_master(ep,expected))
+        return errors
     except Exception as exc:
         return [str(exc)]
 
@@ -596,6 +632,10 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
         for error in errors:
             print("FAIL:", error)
         return 2
+    if character_visual_contract.pixel_master_required(ep):
+        expected=_pixel_master_expected(current)
+        if expected is None:raise RuntimeError("ordinary_baseline asset missing for character pixel master")
+        character_visual_contract.lock_pixel_master(ep,frame=expected["frame"],asset_path=expected["asset_path"],asset_sha256=expected["sha256"],frame_contract_sha256=expected["frame_contract_sha256"])
     print("VISUAL LOCK V2.1 REVIEW PASS")
     return 0
 

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "package": "Story_OS_V2.1_Director_Profile_V2_Closure_UTF8_Hotfix",
+  "installed_at": "2026-08-31T18:02:21+08:00",
+  "verified_baseline": "533eee33dc0a9b264695dc991855f7f19a1fd2bd",
+  "actual_head_before_install": "533eee33dc0a9b264695dc991855f7f19a1fd2bd",
+  "branch": "story",
+  "encoding": "UTF-8",
+  "backup_dir": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.story-os-upgrade-backups\\20260831_180221_Story_OS_V2.1_Director_Profile_V2_Closure_UTF8_Hotfix",
+  "fixes": [
+    "identity_spec_vs_pixel_master",
+    "opening_anchor_machine_baseline",
+    "pixel_master_sha_lock",
+    "production_pixel_master_reference"
+  ]
+}
