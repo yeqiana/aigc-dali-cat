@@ -27,6 +27,7 @@ from visual_profile import compile_prompt_contract
 import environment_contract
 import frame_contract
 import character_visual_contract
+import visual_lock_baseline_gate
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path("meta/story-gates.json")
@@ -441,6 +442,8 @@ def verify(ep: Path) -> list[str]:
         assets = calibration_assets(ep)
         data = read_json(path)
         errors = validate_payload(data, contract=contract, assets=assets, version=episode_version(ep))
+        if not errors:
+            errors.extend("BASELINE_GATE:"+x for x in visual_lock_baseline_gate.validate_final_requirement(ep))
         if not errors and character_visual_contract.pixel_master_required(ep):
             expected=_pixel_master_expected(assets)
             errors.extend(character_visual_contract.validate_pixel_master(ep,expected))
@@ -568,6 +571,8 @@ def _record_failed_calibration_frames(ep: Path, data: dict) -> None:
 def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
     if attempt not in {1, 2}:
         raise RuntimeError("attempt must be 1 or 2")
+    baseline_errors=visual_lock_baseline_gate.validate_review(ep)
+    if baseline_errors:raise RuntimeError("ordinary_baseline separate review must PASS before final Visual Lock critic: "+"; ".join(baseline_errors[:8]))
     contract = compile_prompt_contract(ep)
     assets = calibration_assets(ep)
     candidate = ep / CANDIDATE_REL

@@ -56,8 +56,11 @@ TARGET: reach VISUAL_CALIBRATED and stop there.
 - Temporal Continuity: after world-state is authored, author+LOCK meta/temporal-continuity.json bound to world-state SHA. Track elapsed minutes/daypart/weather/precipitation/ambient light. Night↔day or major weather/light jumps require explicit elapsed time + transition_reason. Run temporal_continuity_gate.py validate.
 - Scene-Aware Wardrobe: then author+LOCK meta/wardrobe-contract.json bound to temporal continuity. Clothing must follow altitude/temperature/weather/daypart/activity. Sichuan-Tibet/high-altitude cool-cold outdoor defaults shell/fleece/warm trousers/hat; low-altitude warm, vehicle, lodging or county-town scenes may use attractive camisoles/skirts/light layers. Cold outdoor skirt requires thick/thermal tights + warm outer layer; cold high-altitude camisole without warm outer layer is FAIL. Every look_id change needs a believable change_reason. Run wardrobe_contract.py validate.
 - use exactly four current V2.1 Visual Lock admissions: ordinary_baseline, worst_capture_condition, first_major_anomaly, high_impact_admission.
-- For multi-person travel/return-home/outing stories, the Visual Lock planner machine-prioritizes the valid Frame 01/02 selfie declared by meta/opening-social-anchor.json as ordinary_baseline, with legacy ordinary-frame fallback only when no valid anchor exists. After the FOUR-admission Visual Lock PASS, write SHA-bound meta/character-pixel-master.json from ordinary_baseline; Production must prefer this pixel master as the identity reference. Real-person style references must never become identity masters.
-- execute Visual Lock as 1+3: ordinary_baseline must PASS first; then worst_capture_condition / first_major_anomaly / high_impact_admission may run in parallel and all must bind the approved baseline reference.
+- For multi-person travel/return-home/outing stories, the Visual Lock planner machine-prioritizes the valid Frame 01/02 selfie declared by meta/opening-social-anchor.json as ordinary_baseline, with legacy ordinary-frame fallback only when no valid anchor exists.
+- execute Visual Lock as a REAL 1+3 barrier: import the four admissions, run the scheduler once so ONLY ordinary_baseline can generate, then inspect that actual baseline image before any other admission is allowed to start.
+- After baseline generation, run visual_lock_baseline_gate.py prepare-review. Inspect actual pixels and honestly fill meta/visual-lock-baseline-review.json: all required checks plus normalized primary-character face_boxes. Run visual_lock_baseline_gate.py approve. A PASS creates a PROVISIONAL SHA-bound character pixel master and deterministic individual crops; a FAIL must repair/review baseline and MUST NOT release the parallel three.
+- Re-run the scheduler only after baseline approval. The scheduler re-arbitrates references at execution time, and worst_capture_condition / first_major_anomaly / high_impact_admission may then run in parallel with the approved PROVISIONAL baseline identity reference.
+- After all four admissions exist, run the normal bind/critic/final Visual Lock review. FOUR-admission PASS promotes the same baseline image from PROVISIONAL to LOCKED pixel master. Real-person style references never become identity masters.
 - generate/review/repair only those admissions as required.
 - use image model policy from meta/runtime-request.json; default gpt-image-2.
 - record honest delegated visual approval only after evidence passes.
@@ -67,7 +70,7 @@ DO NOT run full Batch or release.
 "PRODUCTION":"""
 TARGET: reach PRODUCTION_PASSED and stop there.
 - author concise per-frame prompts for remaining frames.
-- import/run bounded image scheduler, max 3 image jobs.
+- import/run bounded image scheduler, max 3 image jobs. Reference arbitration remains max 2 refs: use locked identity only on character frames, then choose prop/location/capture_style by frame function; individual derived crop is preferred for an explicit single-character subject.
 - reuse clean SHA-bound PASS evidence.
 - technical failures are retryable and do not consume content repair.
 - Fast Scout is triage only; run final incremental semantic review/audit.
@@ -83,7 +86,7 @@ TARGET: reach PUBLISH_READY and stop there.
 - create/audit captions and publish copy/assets from PASS production frames.
 - Use meta/voice-contract.json as narrator authority. Run text_audit.py, then write meta/subtitle-voice-review.json bound to Voice Contract SHA and caption source SHA. continuous-three-frame, read-aloud, delete-subtitle, knowledge-boundary and clue-payoff tests must all PASS.
 - complete release/compliance checks.
-- build+verify Final Candidate Snapshot.
+- build+verify Final Candidate Snapshot. When character master evidence exists, Snapshot must lock master metadata, master image, crop manifest and every derived crop SHA.
 - record honest delegated release approval.
 - transition only to PUBLISH_READY.
 - ZIP is a delivery adapter, not CODEX completion.

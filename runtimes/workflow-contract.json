@@ -141,7 +141,23 @@
     "character_pixel_master_created_after_visual_lock_pass": true,
     "preproduction_forbids_fake_pixel_master": true,
     "visual_lock_baseline_machine_prefers_opening_social_anchor": true,
-    "production_prefers_character_pixel_master_identity_reference": true
+    "production_prefers_character_pixel_master_identity_reference": true,
+    "visual_lock_real_1_plus_3_barrier": true,
+    "visual_lock_dependents_require_baseline_review_pass": true,
+    "visual_lock_dependents_refresh_references_after_baseline_pass": true,
+    "character_pixel_master_lifecycle": [
+      "PROVISIONAL_AFTER_BASELINE_PASS",
+      "LOCKED_AFTER_FOUR_ADMISSION_PASS"
+    ],
+    "character_individual_crops_are_deterministic_derivatives": true,
+    "reference_arbitration_max_refs": 2,
+    "reference_arbitration_context_sensitive": true,
+    "final_snapshot_locks_character_master_assets": true,
+    "legacy_character_master_backfill_safe_states": [
+      "VISUAL_CALIBRATED",
+      "PRODUCTION_PASSED"
+    ],
+    "published_episode_master_backfill_forbidden": true
   },
   "steps": {
     "RESTORE": {

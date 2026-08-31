@@ -15,6 +15,7 @@ from pathlib import Path
 
 import frame_semantic_review
 import fast_frame_scout
+import character_visual_contract
 
 ROOT=Path(__file__).resolve().parents[2]
 SNAPSHOT_REL=Path("meta/final-candidate-snapshot.json")
@@ -137,6 +138,16 @@ def preflight(ep:Path)->None:
     for required_rel in ("meta/release-semantic-review.json","meta/publish-compliance.json"):
         p=ep/required_rel
         if not p.is_file():raise ValueError(f"{required_rel} missing; run release_preflight prepare-auto first")
+    master_path=ep/character_visual_contract.PIXEL_MASTER_REL
+    if master_path.is_file():
+        master_errors=character_visual_contract.validate_pixel_master(ep)
+        crop_errors=character_visual_contract.validate_crops(ep)
+        if master_errors or crop_errors:raise ValueError("character master snapshot preflight failed: "+"; ".join((master_errors+crop_errors)[:8]))
+    elif character_visual_contract.pixel_master_required(ep):
+        state_path=ep/"meta/episode-state.json"
+        state=str(read_json(state_path).get("current_state") or "") if state_path.is_file() else ""
+        if state not in {"PUBLISH_READY","PUBLISHED","DATA_REVIEWED"}:
+            raise ValueError("character pixel master required before Final Candidate Snapshot")
 
 
 def build_lock(ep:Path)->dict:
@@ -172,6 +183,9 @@ def build_lock(ep:Path)->dict:
         ("meta/frame-scout-summary.json","frame_scout_summary","qa/frame-scout-summary.json"),
         ("meta/image-scheduler-performance.json","image_scheduler_performance","evidence/image-scheduler-performance.json"),
         ("meta/runtime/contracts/frame-contract-index.json","frame_contract_index","evidence/frame-contract-index.json"),
+        ("meta/visual-lock-baseline-review.json","visual_lock_baseline_review","qa/visual-lock-baseline-review.json"),
+        ("meta/character-pixel-master.json","character_pixel_master_metadata","evidence/character-pixel-master.json"),
+        ("meta/character-master-crops.json","character_master_crops_metadata","evidence/character-master-crops.json"),
     ]
     for rp,role,arc in specs:
         row=_optional(ep,rp,role,arc)
@@ -179,6 +193,16 @@ def build_lock(ep:Path)->dict:
     review_dir=ep/"meta/frame-reviews"
     if review_dir.is_dir():
         for p in sorted(review_dir.glob("[0-9][0-9].json")):evidence.append(file_row(p,f"frame_review:{p.stem}",f"qa/frame-reviews/{p.name}"))
+    master_meta=ep/character_visual_contract.PIXEL_MASTER_REL
+    if master_meta.is_file():
+        md=read_json(master_meta);mp=repo_file(md.get("asset_path"),"character_pixel_master.asset_path")
+        evidence.append(file_row(mp,"character_pixel_master_asset",f"evidence/character-master/{mp.name}"))
+        crops_meta=ep/character_visual_contract.CROPS_REL
+        if crops_meta.is_file():
+            cd=read_json(crops_meta)
+            for cid,row in sorted((cd.get("items") or {}).items()):
+                cp=repo_file((row or {}).get("path"),f"character crop {cid}")
+                evidence.append(file_row(cp,f"character_crop:{cid}",f"evidence/character-master/crops/{cp.name}"))
 
     delivery=[
         file_row(manifest_path,"release_manifest","release-manifest.json"),

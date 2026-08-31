@@ -25,6 +25,8 @@ import image_worker_pool
 import rolling_frame_review
 import asset_lineage
 import character_visual_contract
+import reference_arbitrator
+import visual_lock_baseline_gate
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -117,28 +119,9 @@ def directive_dependency(ep:Path,frame:int)->list[int]:
         return []
 
 
-def contract_references(ep:Path,frame:int)->list[dict]:
-    c=frame_contract.compile_frame(ep,frame,write_cache=True)
-    out=[]
-    master=character_visual_contract.pixel_master_reference(ep)
-    if master:out.append({"path":master["path"],"role":master["role"],"kind":"identity"})
-    for row in c["hash_material"].get("references") or []:
-        if not isinstance(row,dict):
-            continue
-        raw=row.get("path");kind=row.get("kind");role=row.get("role") or "continuity"
-        if not raw or kind not in {"identity","prop","location","capture_style"}:
-            continue
-        if row.get("decision") not in {None,"pass","passed"}:
-            continue
-        try:
-            p=repo_file(str(raw))
-        except Exception:
-            continue
-        candidate={"path":repo_rel(p),"role":str(role),"kind":str(kind)}
-        if not any(x.get("path")==candidate["path"] for x in out):out.append(candidate)
-        if len(out)>=2:
-            break
-    return out
+def contract_references(ep:Path,frame:int,scope:str="batch")->list[dict]:
+    refs,_=reference_arbitrator.select(ep,frame,scope=scope)
+    return refs
 
 
 def init_queue(ep:Path,force:bool=False)->dict:
@@ -195,7 +178,7 @@ def import_visual_lock(ep:Path,prompt_dir:Path)->dict:
     for row in plan.get("items") or []:
         frame=int(row["frame"]);prompt=prompt_dir/f"{frame:02d}.txt"
         if not prompt.is_file():raise ValueError(f"Visual Lock prompt missing: {prompt}")
-        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="visual_lock",references=contract_references(ep,frame),capture_id=f"visual-lock-{frame:02d}",model=image_model_policy.for_episode(ep)["model"],depends_on=[int(x) for x in row.get("depends_on") or []],replace=False))
+        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="visual_lock",references=contract_references(ep,frame,scope="visual_lock"),capture_id=f"visual-lock-{frame:02d}",model=image_model_policy.for_episode(ep)["model"],depends_on=[int(x) for x in row.get("depends_on") or []],replace=False))
     return {"added":[x["id"] for x in added]}
 
 
@@ -209,11 +192,13 @@ def import_batch(ep:Path,prompt_dir:Path)->dict:
             skipped.append(frame);continue
         prompt=prompt_dir/f"{frame:02d}.txt"
         if not prompt.is_file():raise ValueError(f"batch prompt missing: {prompt}")
-        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="batch",references=contract_references(ep,frame),capture_id=f"batch-{frame:02d}",model=image_model_policy.for_episode(ep)["model"],depends_on=directive_dependency(ep,frame),replace=False))
+        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="batch",references=contract_references(ep,frame,scope="batch"),capture_id=f"batch-{frame:02d}",model=image_model_policy.for_episode(ep)["model"],depends_on=directive_dependency(ep,frame),replace=False))
     return {"added":[x["frame"] for x in added],"skipped":skipped}
 
 
-def dependency_satisfied(ep:Path,q:dict,dep:int)->bool:
+def dependency_satisfied(ep:Path,q:dict,dep:int,scope:str="batch")->bool:
+    if scope=="visual_lock" and visual_lock_baseline_gate.is_baseline_dependency(ep,dep):
+        return visual_lock_baseline_gate.approved(ep)
     state=ledger_state(ep,dep)
     if state in READY_LEDGER_STATES:return True
     rows=[x for x in q.get("items") or [] if int(x.get("frame"))==dep and x.get("status")=="generated"]
@@ -225,7 +210,7 @@ def ready_items(ep:Path,q:dict)->tuple[list[dict],list[dict]]:
     for item in q.get("items") or []:
         if item.get("status")!="queued":continue
         deps=[int(x) for x in item.get("depends_on") or []]
-        if all(dependency_satisfied(ep,q,x) for x in deps):ready.append(item)
+        if all(dependency_satisfied(ep,q,x,str(item.get("scope") or "batch")) for x in deps):ready.append(item)
         else:blocked.append(item)
     ready.sort(key=lambda x:(-int(x.get("priority") or 0),int(x["frame"])))
     return ready,blocked
@@ -318,6 +303,14 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
 
             while ready and len(inflight)<cap:
                 item=ready.pop(0)
+                q=load_queue(ep)
+                byid={x["id"]:x for x in q.get("items") or []}
+                current=byid[item["id"]]
+                refs,arb=reference_arbitrator.select(ep,int(current["frame"]),scope=str(current.get("scope") or "batch"))
+                current["references"]=refs
+                current["reference_arbitration"]=arb
+                save_queue(ep,q)
+                item=current
                 ok,msg=ledger_begin(ep,item)
                 q=load_queue(ep)
                 byid={x["id"]:x for x in q.get("items") or []}
@@ -406,14 +399,19 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     hard_blocked=[x for x in q.get("items") or [] if x.get("status")=="blocked"]
     scout_repair=[x for x in q.get("items") or [] if x.get("status")=="scout_repair"]
     generated=[x for x in q.get("items") or [] if x.get("status")=="generated"]
+    awaiting_baseline_review=visual_lock_baseline_gate.awaiting_review(ep,q)
     scout_errors=frame_scout.audit(ep,write_summary=True) if frame_scout.required(ep) else []
-    summary={"scheduler_mode":"continuous_first_completed","generated":len(generated),"tech_failed":len(tech),"dependency_blocked":len(blocked),"hard_blocked":len(hard_blocked),"scout_repair":len(scout_repair),"scout_audit_errors":scout_errors,"queued":len(queued),"adaptive_parallel":q.get("adaptive_parallel"),"events":q.get("waves") or [],"reported_at":now()}
+    summary={"scheduler_mode":"continuous_first_completed","generated":len(generated),"tech_failed":len(tech),"dependency_blocked":len(blocked),"hard_blocked":len(hard_blocked),"scout_repair":len(scout_repair),"scout_audit_errors":scout_errors,"queued":len(queued),"awaiting_visual_lock_baseline_review":awaiting_baseline_review,"next_action":"REVIEW_ORDINARY_BASELINE" if awaiting_baseline_review else None,"adaptive_parallel":q.get("adaptive_parallel"),"events":q.get("waves") or [],"reported_at":now()}
     write_json(ep/"meta/image-scheduler-performance.json",summary)
     print(json.dumps(summary,ensure_ascii=False,indent=2))
-    if tech or queued or hard_blocked:
+    if tech or hard_blocked:
         return 4
     if scout_repair or scout_errors:
         return 5
+    if queued and not awaiting_baseline_review:
+        return 4
+    if awaiting_baseline_review:
+        return 0
     return 0
 
 

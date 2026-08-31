@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "package": "Story_OS_V2.1_Director_Profile_V2_Final_Closure_Patch_UTF8",
+  "installed_at": "2026-08-31T18:26:21+08:00",
+  "verified_baseline": "60a2f557b33e1483c2b23a725de83b91a70409f3",
+  "actual_head_before_install": "60a2f557b33e1483c2b23a725de83b91a70409f3",
+  "branch": "story",
+  "encoding": "UTF-8",
+  "backup_dir": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.story-os-upgrade-backups\\20260831_182620_Story_OS_V2.1_Director_Profile_V2_Final_Closure_Patch_UTF8",
+  "safe_backfill_executed": true,
+  "fixes": [
+    "real_visual_lock_1_plus_3",
+    "provisional_then_locked_master",
+    "individual_derived_crops",
+    "max2_reference_arbitration",
+    "legacy_safe_backfill",
+    "final_snapshot_master_lock"
+  ]
+}

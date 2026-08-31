@@ -25,6 +25,7 @@ AUTHORITY_FILES=[
     "library/copy/intro-openers.json",
     "standards/AIGC_Directing_Quality_V1.0.md",
     "standards/Character_Visual_And_Wardrobe_V1.0.md",
+    "standards/Character_Master_Final_Closure_V1.0.md",
     "standards/wardrobe-scenario-profiles.json",
 ]
 STEP_EVIDENCE={
@@ -46,6 +47,10 @@ RULE_KEYS=[
     "auto_create_story_when_missing","user_seed_requires_strengthen_and_rewrite",
     "default_image_model","explicit_image_model_no_silent_fallback",
     "current_visual_lock_calibration_count",
+    "visual_lock_real_1_plus_3_barrier",
+    "visual_lock_dependents_require_baseline_review_pass",
+    "reference_arbitration_max_refs",
+    "final_snapshot_locks_character_master_assets",
 ]
 
 def now():
@@ -77,7 +82,7 @@ def compile_capsule(ep,step,write=True):
     evidence=[]
     evidence_paths=list(STEP_EVIDENCE[step])
     if "meta/runtime-execution.json" not in evidence_paths: evidence_paths.insert(1,"meta/runtime-execution.json")
-    quality_evidence={"CREATIVE_STORY":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/character-visual-contract.json","meta/shot-progression-review.json"],"PREIMAGE_COMPILE":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/character-visual-contract.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json"],"VISUAL_LOCK":["meta/directing-quality.json","meta/character-visual-contract.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json"],"PRODUCTION":["meta/character-visual-contract.json","meta/character-pixel-master.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json","meta/asset-lineage.json"],"RELEASE":["meta/voice-contract.json","meta/text-audit.json","meta/subtitle-voice-review.json","meta/asset-lineage.json"]}.get(step,[])
+    quality_evidence={"CREATIVE_STORY":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/character-visual-contract.json","meta/shot-progression-review.json"],"PREIMAGE_COMPILE":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/character-visual-contract.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json"],"VISUAL_LOCK":["meta/directing-quality.json","meta/character-visual-contract.json","meta/visual-lock-baseline-review.json","meta/character-pixel-master.json","meta/character-master-crops.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json"],"PRODUCTION":["meta/character-visual-contract.json","meta/visual-lock-baseline-review.json","meta/character-pixel-master.json","meta/character-master-crops.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json","meta/asset-lineage.json"],"RELEASE":["meta/voice-contract.json","meta/text-audit.json","meta/subtitle-voice-review.json","meta/visual-lock-baseline-review.json","meta/character-pixel-master.json","meta/character-master-crops.json","meta/asset-lineage.json"]}.get(step,[])
     for qrel in quality_evidence:
         if qrel not in evidence_paths:evidence_paths.append(qrel)
     for rel in evidence_paths:
