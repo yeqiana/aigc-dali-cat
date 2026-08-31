@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.1.0",
+  "episode_id": "11-01",
+  "generated_at": "2026-08-31T14:20:00+08:00",
+  "candidate_fingerprint_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/episode-fingerprint.json",
+  "registry_path": "reports/account-pattern-registry.json",
+  "comparison_count": 2,
+  "history_policy": {
+    "requested_recent_count": 5,
+    "available_real_fingerprints": 2,
+    "invent_missing_history": false
+  },
+  "compared": [
+    {
+      "episode_id": "10-01",
+      "title": "鳌太线·热汤",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 8,
+      "similarity_score": 8,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "matched_dimensions": [],
+      "note": "仅共享第一人称异常记录这一账号品牌层特征；机制/空间/升级/高潮均不同。"
+    },
+    {
+      "episode_id": "09-04",
+      "title": "瓶中世界",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 12,
+      "similarity_score": 12,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "matched_dimensions": [],
+      "note": "均有县城尺度高潮，但一个是容器控制现实，一个是城市表层物理蜕壳；核心机制、中段和高潮兑现不同。"
+    }
+  ],
+  "max_similarity_score": 12,
+  "mechanism_veto": false,
+  "decision": "pass",
+  "scoring_policy": "effective=max(exact_string,semantic_equivalence); no invented history"
+}

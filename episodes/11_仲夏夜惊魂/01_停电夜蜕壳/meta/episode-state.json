@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.1.0",
+  "episode_id": "11-01",
+  "series": "11_仲夏夜惊魂",
+  "title": "仲夏夜惊魂｜停电夜蜕壳",
+  "current_state": "STORYBOARD_LOCKED",
+  "updated_at": "2026-08-31T14:20:00+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-08-31T14:20:00+08:00",
+      "note": "Concept Ambition + Character Contract + Recent-5 + NO-ANOMALY delegated preproduction review PASS"
+    },
+    {
+      "state": "STORYBOARD_LOCKED",
+      "at": "2026-08-31T14:20:00+08:00",
+      "mode": "advance",
+      "note": "Story/Storyboard/Environment/Impact/Resolved Frame Contracts preproduction complete; no image generation"
+    }
+  ]
+}

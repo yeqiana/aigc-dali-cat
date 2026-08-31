@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "reviewed_at": "2026-08-31T14:20:00+08:00",
+  "provenance": {
+    "runtime": "CHATGPT_PREPRODUCTION_DELEGATED",
+    "fresh_review": true
+  },
+  "candidate_episode_id": "11-01",
+  "comparisons": [
+    {
+      "episode_id": "09-04",
+      "semantic_similarity_score": 12,
+      "semantic_mechanism_veto": false,
+      "reason": "县城尺度相似不等于机制相同；物理表层蜕壳与玻璃瓶重力映射不同。"
+    },
+    {
+      "episode_id": "10-01",
+      "semantic_similarity_score": 8,
+      "semantic_mechanism_veto": false,
+      "reason": "城市物理异常与高寒失温感知重组完全不同。"
+    }
+  ],
+  "decision": "pass"
+}

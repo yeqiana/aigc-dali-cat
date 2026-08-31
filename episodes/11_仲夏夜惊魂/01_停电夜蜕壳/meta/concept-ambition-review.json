@@ -1,0 +1,272 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "candidates_sha256": "eff1a95bf630c0fed2ff96d1f7d4811ebb825bb8ab535f790e24d2cd9827301c",
+  "critic_provenance": {
+    "runtime": "CHATGPT_PREPRODUCTION_DELEGATED",
+    "isolated_session": false,
+    "attempt": 1,
+    "reviewed_at": "2026-08-31T14:20:00+08:00",
+    "note": "未伪造 CODEX_ISOLATED；由当前 preproduction runtime 做独立二次自评。"
+  },
+  "candidates": [
+    {
+      "id": "C01",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 20,
+        "hero_frame": 20,
+        "escalation_ceiling": 20,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 96,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "异常可在单帧无字读懂",
+        "Cover/Mid/Climax具有明确级差"
+      ],
+      "risks": [
+        "必须用真实县城尺度参照压住“概念海报感”"
+      ]
+    },
+    {
+      "id": "C02",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 13,
+        "discussion_space": 8
+      },
+      "concept_voltage": 86,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "异常可在单帧无字读懂",
+        "Cover/Mid/Climax具有明确级差"
+      ],
+      "risks": [
+        "必须用真实县城尺度参照压住“概念海报感”"
+      ]
+    },
+    {
+      "id": "C03",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 20,
+        "escalation_ceiling": 20,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 93,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "异常可在单帧无字读懂",
+        "Cover/Mid/Climax具有明确级差"
+      ],
+      "risks": [
+        "必须用真实县城尺度参照压住“概念海报感”"
+      ]
+    },
+    {
+      "id": "C04",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 17,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 82,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "异常可在单帧无字读懂",
+        "Cover/Mid/Climax具有明确级差"
+      ],
+      "risks": [
+        "必须用真实县城尺度参照压住“概念海报感”"
+      ]
+    },
+    {
+      "id": "C05",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 14,
+        "discussion_space": 8
+      },
+      "concept_voltage": 88,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "异常可在单帧无字读懂",
+        "Cover/Mid/Climax具有明确级差"
+      ],
+      "risks": [
+        "必须用真实县城尺度参照压住“概念海报感”"
+      ]
+    },
+    {
+      "id": "C06",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 19,
+        "escalation_ceiling": 19,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 91,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "异常可在单帧无字读懂",
+        "Cover/Mid/Climax具有明确级差"
+      ],
+      "risks": [
+        "必须用真实县城尺度参照压住“概念海报感”"
+      ]
+    },
+    {
+      "id": "C07",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 16,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 80,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "异常可在单帧无字读懂",
+        "Cover/Mid/Climax具有明确级差"
+      ],
+      "risks": [
+        "必须用真实县城尺度参照压住“概念海报感”"
+      ]
+    },
+    {
+      "id": "C08",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 85,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "异常可在单帧无字读懂",
+        "Cover/Mid/Climax具有明确级差"
+      ],
+      "risks": [
+        "必须用真实县城尺度参照压住“概念海报感”"
+      ]
+    },
+    {
+      "id": "C09",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 19,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 90,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "异常可在单帧无字读懂",
+        "Cover/Mid/Climax具有明确级差"
+      ],
+      "risks": [
+        "必须用真实县城尺度参照压住“概念海报感”"
+      ]
+    },
+    {
+      "id": "C10",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 20,
+        "escalation_ceiling": 19,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 92,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "异常可在单帧无字读懂",
+        "Cover/Mid/Climax具有明确级差"
+      ],
+      "risks": [
+        "必须用真实县城尺度参照压住“概念海报感”"
+      ]
+    }
+  ],
+  "selected_id": "C01",
+  "selection_reason": "C01 的异常从墙皮/路面微观起皱自然升级到整座县城表层被抬离，视觉级差最完整；同时不依赖职业主角或文字谜题，并与当前真实 Recent-5 登记机制差异最大。",
+  "issue_codes": [],
+  "summary": {
+    "passed": true,
+    "semantic_gate": "PASS",
+    "machine_provenance_compatibility": "CHATGPT_R2_HANDOFF"
+  }
+}

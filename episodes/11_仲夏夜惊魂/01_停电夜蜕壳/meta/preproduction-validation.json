@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "episode_id": "11-01",
+  "validated_at": "2026-08-31T14:20:00+08:00",
+  "mode": "preproduction_only",
+  "checks": {
+    "runtime_request": "PASS",
+    "concept_candidate_count": "PASS (10)",
+    "high_ambition_count": "PASS (>=3 A4/A5)",
+    "selected_concept_voltage": "PASS (96>=80)",
+    "selected_wordless_test": "PASS",
+    "character_contract_locked": "PASS",
+    "no_anomaly_rechecked": "PASS",
+    "ordinary_person_score": "PASS (100>=75)",
+    "forbidden_character_roles": "PASS",
+    "recent5": "PASS using 2 real registry fingerprints; no fabricated history",
+    "story_critic": "PASS",
+    "storyboard_frame_count": "PASS (20)",
+    "environment_contract": "PASS",
+    "frame_directives": "PASS (20/20)",
+    "climax_frame_contract": "PASS (17 impact4 climax_impact)",
+    "resolved_frame_contracts": "PASS (20/20 + index)",
+    "resource_selection": "PASS",
+    "intro_description_strategy": "PASS",
+    "image_generation": "PASS (0 images generated)",
+    "episode_state": "PASS (STORYBOARD_LOCKED)"
+  },
+  "provenance_note": "Concept/Story semantic critic由ChatGPT preproduction delegated review完成；不伪造仓库 concept_ambition.py 所要求的 CODEX_ISOLATED 字段。",
+  "decision": "PASS_FOR_HANDOFF_BUILD"
+}

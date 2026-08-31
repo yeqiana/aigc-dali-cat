@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "episode_id": "11-01",
+  "reviewed_at": "2026-08-31T14:20:00+08:00",
+  "basis": "delegated_auto_review",
+  "reviewer_runtime": "GPT-5.6 Sol / ChatGPT preproduction",
+  "checks": {
+    "character_entry_pool": "pass",
+    "no_anomaly_test": "pass",
+    "ordinary_person_score": "100",
+    "recent5": "pass",
+    "concept_ambition_semantics": "pass",
+    "four_locks": "pass",
+    "task_closure": "pass",
+    "competing_explanations": "pass",
+    "hook": "pass",
+    "climax": "pass",
+    "payoff": "pass",
+    "character_continuity": "pass",
+    "era_authenticity": "pass",
+    "wordless_visual_chain": "pass"
+  },
+  "scores": {
+    "story_logic": 9.4,
+    "visual_escalation": 9.7,
+    "continuity": 9.5,
+    "novelty": 9.4,
+    "album_realism_preproduction": 9.3
+  },
+  "decision": "passed",
+  "issues": [],
+  "note": "不冒充 direct_user_review；未生成像素，因此不写 Visual Lock/Production PASS。"
+}

@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "source_tags": [
+    "county_town",
+    "modern_2020s",
+    "return_home",
+    "中国西北虚构县城“槐川县”的客运站—老商业街—步行天桥—普通住宅小区",
+    "夏天",
+    "夜",
+    "炎热"
+  ],
+  "selected": [
+    {
+      "id": "LOC_NORTHWEST_VILLAGE",
+      "type": "location_descriptor",
+      "path": "library/locations/scene-presets.json",
+      "tags": [
+        "village_home",
+        "西北农村",
+        "return_home",
+        "county_town"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0,
+      "match_score": 2
+    },
+    {
+      "id": "ENV_HOT_SUMMER",
+      "type": "environment_descriptor",
+      "path": "library/environment/environment-presets.json",
+      "tags": [
+        "炎热",
+        "夏天",
+        "hot_summer",
+        "heat_shimmer"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.1,
+      "match_score": 2
+    },
+    {
+      "id": "CAPTURE_PHONE_REALISM",
+      "type": "capture_descriptor",
+      "path": "library/capture/capture-presets.json",
+      "tags": [
+        "modern_2020s",
+        "phone",
+        "first_person",
+        "realistic"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.2,
+      "match_score": 1
+    },
+    {
+      "id": "ERA_MODERN_2020S_YOUTH",
+      "type": "character_era_descriptor",
+      "path": "library/characters/era-presets.json",
+      "tags": [
+        "modern_2020s",
+        "young_people",
+        "ordinary",
+        "smartphone"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0,
+      "match_score": 1
+    }
+  ],
+  "policy": {
+    "reference_only": true,
+    "reuse_final_episode_images": false
+  },
+  "cache_hit": false
+}

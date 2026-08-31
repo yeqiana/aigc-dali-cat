@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.1.0",
+  "episode": {
+    "id": "11-01",
+    "series": "11_仲夏夜惊魂",
+    "title": "仲夏夜惊魂｜停电夜蜕壳",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "4:5"
+  },
+  "release": {
+    "version": "V2.1-preproduction",
+    "body_frame_count": 20,
+    "publish_dir": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish",
+    "body_glob": "[0-9][0-9].png",
+    "cover_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/cover/cover.png",
+    "contact_sheet_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/contact-sheets/publish-final.jpg"
+  },
+  "artifacts": {
+    "story": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/01_StoryLock.md",
+    "storyboard": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/02_Storyboard.md",
+    "visual_spec": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/03_Visual_Preproduction.md",
+    "captions": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/04_Caption_Plan.md",
+    "publish_copy": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/05_Intro_Description_Strategy.md",
+    "production_review": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/06_Preproduction_QA.md"
+  },
+  "quality": {
+    "production_gate": "not_started",
+    "propagation_score": null,
+    "publish_decision": "not_ready_preproduction_only",
+    "decision_note": "preproduction_only：已完成 Story/Storyboard/Contracts/Handoff；未生成图片。"
+  },
+  "publication": {
+    "platform": "douyin",
+    "actual_title": null,
+    "description": null,
+    "topics": [],
+    "pinned_comment": null,
+    "published_at": null,
+    "timing_window": null,
+    "post_url": null
+  },
+  "data_review": {
+    "completed_checkpoints": []
+  }
+}
