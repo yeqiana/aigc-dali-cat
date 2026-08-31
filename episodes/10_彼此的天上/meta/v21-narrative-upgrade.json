@@ -1,0 +1,15 @@
+{
+  "installed_at": "2026-08-31T15:26:05",
+  "package": "彼此的天上 V2.1 叙事优化一键升级包",
+  "branch": "story",
+  "backup_root": "_upgrade_backup\\彼此的天上_v21_narrative_20260831_152605",
+  "writes": [
+    "episodes/10_彼此的天上/series/07_V2.1_Narrative_Baseline.md",
+    "episodes/10_彼此的天上/01_不存在的夜行路/docs/02_不存在的夜行路_StoryLock_DRAFT_V1.0.md",
+    "episodes/10_彼此的天上/02_玻璃另一边的手/docs/02_玻璃另一边的手_StoryLock_DRAFT_V1.0.md",
+    "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+    "episodes/10_彼此的天上/04_一步之外的另一条路/docs/02_一步之外的另一条路_StoryLock_DRAFT_V1.0.md",
+    "episodes/10_彼此的天上/05_无人机里的旧记录/docs/02_无人机里的旧记录_StoryLock_DRAFT_V1.0.md"
+  ],
+  "note": "仅升级叙事基线；未伪造 Story OS V2.1 机器级 Contracts / episode-state / preproduction-handoff。"
+}
