@@ -44,7 +44,14 @@
       "7d"
     ],
     "data_reviewed_requires_48h": true,
-    "learning_packet_not_creative_authority": true
+    "learning_packet_not_creative_authority": true,
+    "runtime_request_immutable_after_bind": true,
+    "auto_create_story_when_missing": true,
+    "user_seed_requires_strengthen_and_rewrite": true,
+    "default_image_model": "gpt-image-2",
+    "explicit_image_model_no_silent_fallback": true,
+    "current_visual_lock_calibration_count": 4,
+    "legacy_three_image_calibration_is_not_current_v21": true
   },
   "steps": {
     "RESTORE": {
@@ -294,5 +301,20 @@
     "regression": "episodes/_system/regression_matrix_v21.py",
     "observability": "episodes/_system/workflow_observability.py",
     "legacy_no_evidence_backfill": true
+  },
+  "runtime_request_contract": {
+    "schema_version": 1,
+    "compiler": "episodes/_system/runtime_request.py",
+    "episode_binding": "<episode>/meta/runtime-request.json",
+    "request_archive": "runtime/requests/<request_id>.json",
+    "immutable_after_bind": true,
+    "creative_authority": false,
+    "story_input_modes": [
+      "auto_create",
+      "user_seed",
+      "core_constraints",
+      "locked_story"
+    ],
+    "default_image_model": "gpt-image-2"
   }
 }

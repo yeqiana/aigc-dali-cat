@@ -26,6 +26,24 @@
 这些从属细则均不建立第二权威；冲突时以 `standards/制作规范_正式版.md` 为准。V1.8 起 M00「MP4 × 网吧 × 流水席旧数码质感校准版」在用户未指定时默认启用；显式视觉体系可覆盖，且年代/采集设备物理真实性永远高于母风格质感。
 
 
+<!-- STORY_OS_RUNTIME_REQUEST_P0_AGENTS_BEGIN -->
+## Runtime Request P0｜一句话入口
+
+涉及新篇全自动任务时，Codex 必须先把用户自然语言编译/记录为 Runtime Request，再进入 Story OS 创作流程。Runtime Request 只表示“用户要什么、怎么执行”，不得提前决定高潮帧、impact、天气或 Visual Lock 帧。
+
+标准规则：
+
+- 用户不传剧情：`auto_create`。不得反问用户补剧情；必须由 Story OS 自己发散候选、通过 Concept Ambition、写完整 Story。
+- 用户说“剧情大概是…”：`user_seed`。必须强化和重写，禁止把用户原文直接拆成 20 张。
+- 用户说“必须保留/结尾必须”：`core_constraints`。硬约束必须保留，其他结构允许优化。
+- 只有用户明确说“剧情已经定了/不要改剧情”才使用 `locked_story`。
+- 用户不写 image：默认 `gpt-image-2`。
+- 用户显式指定 image：强绑定，禁止静默替换。
+- 当前 V2.1 Visual Lock 永远按 4 张口径执行；“3 张校准”只允许出现在明确 legacy-only 的兼容代码/历史说明中。
+
+请求可先写入 `runtime/requests/<request_id>.json`，Episode 创建后绑定到 `<episode>/meta/runtime-request.json`。绑定后的请求默认不可变；执行状态写 checkpoint/observability，不回写 Request。
+<!-- STORY_OS_RUNTIME_REQUEST_P0_AGENTS_END -->
+
 ## V2.0 Multi-Runtime 执行路由
 
 涉及 story 分支任务时，先读 `START_HERE.md`，再按 `runtimes/runtime-contract.json` 自动路由，不让用户手工选 runtime。
@@ -36,7 +54,7 @@
 
 Codex 不再被全局限制为“只能生成网页交接单”。当前 Codex 原生工具能生成/编辑图片和保存文件时，应直接按 CODEX runtime 执行；缺媒体能力时才降级 checkpoint/handoff。
 
-全自动授权后：先三张校准，再四张视觉准入，再 Batch；每帧最多一次内容返修；已通过且 SHA 未漂移资产必须复用；自动审查不得冒充用户亲眼审核。
+全自动授权后：当前 V2.1 统一先完成 4 张 Visual Lock（ordinary baseline / worst condition / first anomaly / high-impact admission），再进入 Batch；每帧最多一次内容返修；已通过且 SHA 未漂移资产必须复用；自动审查不得冒充用户亲眼审核。
 
 <!-- STORY_OS_V2_1_AGENTS_BEGIN -->
 ## V2.1 Concept Ambition / Image-first

@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "package": "Story OS V2.1 Runtime Request P0",
+  "package_version": "2.1.0-runtime-request-p0",
+  "installed_at": "2026-08-31T11:00:24.317991+08:00",
+  "actual_git": {
+    "available": true,
+    "branch": "story",
+    "head": "aa56a9de83f3478240585ca4bad0bffe2f5624eb"
+  },
+  "backup": ".storyos_backups\\v21_runtime_request_p0_20260831_110023",
+  "encoding": "utf-8",
+  "tests": "PASS",
+  "default_image_model": "gpt-image-2",
+  "current_visual_lock_count": 4,
+  "files": [
+    {
+      "path": "story_os_manifest.json",
+      "sha256": "e9b1a6af14791a99e57e7ac9e1d6bae6e8a09c2df87c833d6ec2200f9c40186e",
+      "bytes": 5348
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "sha256": "e7c01b2adb0af08d1c247ad6682e7bb4bda9e182c033a17b4c0492671b22efe2",
+      "bytes": 8965
+    },
+    {
+      "path": "README.md",
+      "sha256": "e00b6f5d541e2aa902a63ddf3d7d43667f41a8d6a9b4263a5bf63f25025f0a54",
+      "bytes": 6588
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "a280d63f7835fe3ec30382a3050cfb12e6904b205065949bbc3f3628e1ecc4c9",
+      "bytes": 11915
+    },
+    {
+      "path": "START_HERE.md",
+      "sha256": "579a71f3bf4500df72c5e121e8b9fdf76c60f224a723b2fa2ff0433ae0a273bb",
+      "bytes": 13003
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "55b26b928dda092ec1477ae70bdaaa45de5aa886d7348d0e34b1c84aba26983d",
+      "bytes": 20544
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "sha256": "37c8b1e23d912f24d2f779af89fed1517420f59c8a628f63175d1e497fad10e2",
+      "bytes": 13350
+    },
+    {
+      "path": "episodes/_system/workflow_runner.py",
+      "sha256": "2a74101010972c0dc5b8eadd11f560eaff809cae11aefeee75ce0f3350fe19b4",
+      "bytes": 7387
+    },
+    {
+      "path": "episodes/_system/codex_auto_orchestrator.py",
+      "sha256": "8eed9de64e747731ced546f46d9c6176a605d75c95100604cc7ce5d390e55459",
+      "bytes": 22134
+    },
+    {
+      "path": "episodes/_system/image_scheduler.py",
+      "sha256": "43944249a508df6910b6bbebdf74e0d64573fb98e0569af9089180c3150f1105",
+      "bytes": 20856
+    },
+    {
+      "path": "episodes/_system/codex_subscription_image.py",
+      "sha256": "08b43f2f741271b6fbb3a4301183e1ea75c66bbad9e90ab8ee06721f7c93941e",
+      "bytes": 11743
+    },
+    {
+      "path": "episodes/_system/runtime_request.py",
+      "sha256": "4502df5bc2486049da5fef87e5b51085da388772530e3972c0471ab6ed828b20",
+      "bytes": 12497
+    },
+    {
+      "path": "episodes/_system/image_model_policy.py",
+      "sha256": "dedfa5f93c87d0ba33394c55ece2bd65c922cb8c13c0ca12b5a6c13729146825",
+      "bytes": 2328
+    },
+    {
+      "path": "standards/Runtime_Request_Contract_V1.0.md",
+      "sha256": "a822ccdf8a5c4591d57a292208d509c6dc225f35a87d7afa301267436a7fd1a3",
+      "bytes": 3138
+    },
+    {
+      "path": "standards/templates/runtime-request.template.json",
+      "sha256": "3274cb471c1294f85437b461c9ed44918b0e1ddf10f507966f4abbcd1c73b129",
+      "bytes": 1207
+    },
+    {
+      "path": "standards/schemas/runtime-request.schema.json",
+      "sha256": "f5b669063709697f4d47fd7984d713b8e51be4557ea21b1e781812b129a13e41",
+      "bytes": 2164
+    }
+  ]
+}

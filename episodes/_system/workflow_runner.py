@@ -19,6 +19,8 @@ from runtime_router import detect
 from story_os_contract import story_os_version
 import workflow_performance as perf
 import workflow_observability as obs
+import runtime_request as runtime_request_contract
+import image_model_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -61,10 +63,17 @@ def record_checkpoint_step(ep: Path, step: str, status: str, elapsed: float, not
     run([sys.executable, SYSTEM / "runtime_checkpoint.py", "record-step", ep, "--step", step, "--status", status, "--finished-at", perf.now(), "--note", f"{note} elapsed={elapsed:.3f}s"])
 
 
-def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeout: int) -> int:
+def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeout: int, request_file: str | None = None) -> int:
     if not full_auto:
         raise SystemExit("run/resume requires explicit --full-auto")
     started = time.monotonic()
+    request_data = None
+    if request_file:
+        runtime_request_contract.bind_request(Path(request_file), ep, force=False)
+    request_data = runtime_request_contract.effective_for_episode(ep)
+    if request_data:
+        errors = runtime_request_contract.validate_request(request_data)
+        if errors: raise SystemExit("invalid runtime request: " + "; ".join(errors))
     runtime, reason = detect()
     if runtime != "CODEX":
         raise SystemExit(f"local workflow_runner only executes CODEX adapter; detected {runtime}. WORK/WEB are product runtime adapters.")
@@ -81,6 +90,8 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         cmd = [sys.executable, SYSTEM / "codex_auto_orchestrator.py", "resume" if resume else "run", ep, "--full-auto", "--timeout", str(timeout)]
         if codex:
             cmd += ["--codex", codex]
+        if request_data:
+            cmd += ["--runtime-request", str(ep / runtime_request_contract.EPISODE_REL)]
         t1 = time.monotonic()
         child = subprocess.run([str(x) for x in cmd], cwd=ROOT, check=False)
         child_elapsed = time.monotonic() - t1
@@ -112,7 +123,7 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("plan"); p.add_argument("episode_dir")
     for name in ("run", "resume"):
-        p = sub.add_parser(name); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=7200)
+        p = sub.add_parser(name); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=7200); p.add_argument("--request-file")
     p = sub.add_parser("performance"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
     args = ap.parse_args()
@@ -132,6 +143,8 @@ def main() -> int:
         assert data["rules"].get("data_reviewed_requires_48h") is True
         assert "PUBLISH_RECORD" in data["steps"]
         assert "DATA_REVIEWED_GATE" in data["steps"]
+        assert image_model_policy.DEFAULT_MODEL == "gpt-image-2"
+        assert data["rules"].get("current_visual_lock_calibration_count") == 4
         print("WORKFLOW RUNNER V2.1 SELF-TEST PASS | PHASE910")
         return 0
     ep = resolve_episode(args.episode_dir)
@@ -139,7 +152,7 @@ def main() -> int:
         print(json.dumps(plan(ep), ensure_ascii=False, indent=2)); return 0
     if args.cmd == "performance":
         print(json.dumps(perf.read(ep), ensure_ascii=False, indent=2)); return 0
-    return execute(ep, resume=args.cmd == "resume", full_auto=args.full_auto, codex=args.codex, timeout=args.timeout)
+    return execute(ep, resume=args.cmd == "resume", full_auto=args.full_auto, codex=args.codex, timeout=args.timeout, request_file=args.request_file)
 
 
 if __name__ == "__main__":

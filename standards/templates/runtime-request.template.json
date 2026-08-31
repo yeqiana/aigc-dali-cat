@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "request_id": "YYYYMMDD_HHMMSS_xxxxxxxx",
+  "created_at": "ISO-8601",
+  "mode": "full_auto",
+  "repository": {
+    "branch": "story",
+    "source": "system_default"
+  },
+  "topic": {
+    "title": "仲夏夜惊魂",
+    "raw": "仲夏夜惊魂"
+  },
+  "story_input": {
+    "mode": "auto_create",
+    "raw": null,
+    "constraints": [],
+    "rewrite_policy": "auto_create",
+    "preserve_core_intent": true,
+    "allow_structure_rewrite": true
+  },
+  "creative_hints": [],
+  "image": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "source": "system_default",
+    "strict_model": false
+  },
+  "runtime": {
+    "execution_mode": "dag",
+    "continuous_execution": true,
+    "resume": true,
+    "max_image_workers": 3,
+    "fail_soft": true,
+    "incremental_reuse": true
+  },
+  "delivery": {
+    "mode": "auto",
+    "zip_required_for_completion": false
+  },
+  "user_intent": {
+    "full_auto_authorized": true,
+    "allow_story_strengthening": true,
+    "allow_story_rewrite": true,
+    "ask_before_each_step": false
+  },
+  "provenance": {
+    "source": "natural_language",
+    "original_request": "读取 story 分支。全自动做一篇「仲夏夜惊魂」。"
+  }
+}

@@ -20,6 +20,7 @@ from pathlib import Path
 import frame_contract
 import environment_contract
 import fast_frame_scout as frame_scout
+import image_model_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -187,7 +188,7 @@ def import_visual_lock(ep:Path,prompt_dir:Path)->dict:
     for row in plan.get("items") or []:
         frame=int(row["frame"]);prompt=prompt_dir/f"{frame:02d}.txt"
         if not prompt.is_file():raise ValueError(f"Visual Lock prompt missing: {prompt}")
-        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="visual_lock",references=contract_references(ep,frame),capture_id=f"visual-lock-{frame:02d}",model="default",depends_on=[int(x) for x in row.get("depends_on") or []],replace=False))
+        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="visual_lock",references=contract_references(ep,frame),capture_id=f"visual-lock-{frame:02d}",model=image_model_policy.for_episode(ep)["model"],depends_on=[int(x) for x in row.get("depends_on") or []],replace=False))
     return {"added":[x["id"] for x in added]}
 
 
@@ -201,7 +202,7 @@ def import_batch(ep:Path,prompt_dir:Path)->dict:
             skipped.append(frame);continue
         prompt=prompt_dir/f"{frame:02d}.txt"
         if not prompt.is_file():raise ValueError(f"batch prompt missing: {prompt}")
-        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="batch",references=contract_references(ep,frame),capture_id=f"batch-{frame:02d}",model="default",depends_on=directive_dependency(ep,frame),replace=False))
+        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="batch",references=contract_references(ep,frame),capture_id=f"batch-{frame:02d}",model=image_model_policy.for_episode(ep)["model"],depends_on=directive_dependency(ep,frame),replace=False))
     return {"added":[x["frame"] for x in added],"skipped":skipped}
 
 
@@ -246,6 +247,8 @@ def backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->dict:
     prompt=repo_file(item["prompt_file"])
     cmd=[sys.executable,SYSTEM/"codex_subscription_image.py","generate-for-frame",ep,"--frame",f"{frame:02d}","--prompt-file",prompt,"--output",out,"--log",log,"--timeout",str(timeout)]
     if codex:cmd += ["--codex",codex]
+    requested_model=str(item.get("model") or image_model_policy.for_episode(ep)["model"])
+    cmd += ["--image-model", requested_model]
     for ref in item.get("references") or []:cmd += ["--reference",ROOT/ref["path"]]
     cp=run(cmd)
     payload=None
@@ -385,7 +388,7 @@ def self_test()->None:
 def main()->int:
     ap=argparse.ArgumentParser(description=__doc__);sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("init");p.add_argument("episode_dir");p.add_argument("--force",action="store_true")
-    p=sub.add_parser("add");p.add_argument("episode_dir");p.add_argument("--frame",type=int,required=True);p.add_argument("--kind",choices=["original","repair"],default="original");p.add_argument("--scope",choices=["visual_lock","batch","repair"],default="batch");p.add_argument("--prompt-file",required=True);p.add_argument("--reference",action="append",default=[]);p.add_argument("--capture-id");p.add_argument("--model",default="default");p.add_argument("--depends-on",action="append",default=[]);p.add_argument("--replace",action="store_true")
+    p=sub.add_parser("add");p.add_argument("episode_dir");p.add_argument("--frame",type=int,required=True);p.add_argument("--kind",choices=["original","repair"],default="original");p.add_argument("--scope",choices=["visual_lock","batch","repair"],default="batch");p.add_argument("--prompt-file",required=True);p.add_argument("--reference",action="append",default=[]);p.add_argument("--capture-id");p.add_argument("--model");p.add_argument("--depends-on",action="append",default=[]);p.add_argument("--replace",action="store_true")
     p=sub.add_parser("import-visual-lock");p.add_argument("episode_dir");p.add_argument("--prompt-dir",required=True)
     p=sub.add_parser("import-batch");p.add_argument("episode_dir");p.add_argument("--prompt-dir",required=True)
     p=sub.add_parser("plan");p.add_argument("episode_dir")
@@ -403,7 +406,7 @@ def main()->int:
             for raw in a.depends_on:
                 deps.extend(int(x) for x in str(raw).split(",") if x.strip())
             prompt=repo_file(a.prompt_file)
-            row=add_item(ep,frame=a.frame,kind=a.kind,prompt_file=prompt,scope=a.scope,references=refs,capture_id=a.capture_id or f"scheduler-{a.frame:02d}",model=a.model,depends_on=deps,replace=a.replace)
+            row=add_item(ep,frame=a.frame,kind=a.kind,prompt_file=prompt,scope=a.scope,references=refs,capture_id=a.capture_id or f"scheduler-{a.frame:02d}",model=a.model or image_model_policy.for_episode(ep)["model"],depends_on=deps,replace=a.replace)
             print(json.dumps(row,ensure_ascii=False,indent=2));return 0
         if a.cmd=="import-visual-lock":print(json.dumps(import_visual_lock(ep,Path(a.prompt_dir).resolve()),ensure_ascii=False,indent=2));return 0
         if a.cmd=="import-batch":print(json.dumps(import_batch(ep,Path(a.prompt_dir).resolve()),ensure_ascii=False,indent=2));return 0

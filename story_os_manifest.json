@@ -1,7 +1,7 @@
 {
   "story_os_version": "2.1.0",
   "contract_schema": 1,
-  "release_name": "Full Workflow Closure",
+  "release_name": "Full Workflow Closure + Runtime Request P0",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -89,7 +89,17 @@
     "data_review_6h_24h_48h_7d",
     "account_learning_index",
     "next_story_learning_packet",
-    "immutable_release_manifest_after_snapshot"
+    "immutable_release_manifest_after_snapshot",
+    "runtime_request_contract",
+    "natural_language_request_compiler",
+    "auto_story_when_missing",
+    "user_seed_strengthen_rewrite",
+    "core_constraint_story_input",
+    "locked_story_input",
+    "default_gpt_image_2",
+    "runtime_request_image_model_binding",
+    "explicit_image_model_no_silent_fallback",
+    "four_visual_lock_single_current_contract"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -111,7 +121,13 @@
     "Legacy episodes are never upgraded by fabricating V2.1 PASS evidence.",
     "Post-publish facts and metrics must not mutate the frozen release manifest.",
     "Post-publish learning is evidence for the next story, never direct creative authority.",
-    "DATA_REVIEWED uses the canonical episode-state.json stage; no second stage system exists."
+    "DATA_REVIEWED uses the canonical episode-state.json stage; no second stage system exists.",
+    "Runtime Request captures user intent/execution parameters and never becomes creative authority.",
+    "Missing user plot means auto_create; Story OS must author the story instead of asking for a plot.",
+    "A rough user plot is a seed to strengthen and rewrite, not an automatic Story Lock.",
+    "Image model defaults to gpt-image-2 when the user does not specify one.",
+    "An explicitly requested image model must not be silently substituted.",
+    "Current V2.1 Visual Lock is exactly four admission images; three-image wording is legacy-only."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

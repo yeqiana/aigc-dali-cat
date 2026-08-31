@@ -61,6 +61,12 @@ Phase 9：`migrate_v21.py` 默认只读；旧 Episode 保持 LEGACY_COMPAT，不
 Phase 10：真实发布后记录 `meta/publish-event.json`，不要修改已被 Final Snapshot 冻结的 release-manifest。6h/24h/48h/7d 数据写入 post-publish evidence；48h 达标后推进唯一 Stage `DATA_REVIEWED`，并生成下一篇 `learning packet`。
 <!-- STORY_OS_V2_1_PHASE910_END -->
 
+<!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_BEGIN -->
+## Runtime Request P0
+
+新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `gpt-image-2`；显式 image 禁止静默替换。当前 V2.1 Visual Lock 统一为 4 张，不再使用“3+4”双口径。
+<!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_END -->
+
 ## 0. 黄金路径（Golden Path）
 
 ```text

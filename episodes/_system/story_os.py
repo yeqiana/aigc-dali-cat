@@ -80,6 +80,8 @@ def main():
     p = sub.add_parser("approval"); p.add_argument("episode_dir"); p.add_argument("approval_cmd", choices=["story", "visual", "verify", "status"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("release-package"); p.add_argument("episode_dir"); p.add_argument("release_cmd", choices=["build", "verify", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("runtime"); p.add_argument("runtime_cmd", choices=["detect", "capabilities", "contract", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("request"); p.add_argument("request_cmd", choices=["compile", "validate", "bind", "show", "show-episode"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("image-model"); p.add_argument("image_model_cmd", choices=["resolve"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("checkpoint"); p.add_argument("episode_dir"); p.add_argument("checkpoint_cmd", choices=["init", "show", "set", "record-step"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("capture-profile"); p.add_argument("profile_cmd", choices=["validate", "list", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("regression"); p.add_argument("regression_cmd", choices=["run", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
@@ -96,7 +98,7 @@ def main():
     p = sub.add_parser("post-publish"); p.add_argument("post_publish_cmd", choices=["enable", "mark-published", "record", "review", "complete", "verify", "show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("learning-index"); p.add_argument("learning_cmd", choices=["rebuild", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("fingerprint"); p.add_argument("fingerprint_cmd", choices=["init", "compare", "register"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
-    p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--resume", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=7200)
+    p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--resume", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=7200); p.add_argument("--request-file")
     p = sub.add_parser("image-backend"); p.add_argument("backend_cmd", choices=["generate", "generate-for-frame", "self-test"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("delegated-delivery"); p.add_argument("episode_dir"); p.add_argument("delivery_cmd", choices=["build", "verify", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("delegated-approval"); p.add_argument("episode_dir"); p.add_argument("approval_cmd", choices=["record", "verify", "show"]); p.add_argument("kind", nargs="?", choices=["story_lock", "visual_lock", "release_lock"]); p.add_argument("extra", nargs=argparse.REMAINDER)
@@ -104,6 +106,8 @@ def main():
 
     if args.cmd == "doctor": return forward("story_os_doctor.py", [])
     if args.cmd == "runtime": return forward("runtime_router.py", [args.runtime_cmd, *args.extra])
+    if args.cmd == "request": return forward("runtime_request.py", [args.request_cmd, *args.extra])
+    if args.cmd == "image-model": return forward("image_model_policy.py", [args.image_model_cmd, *args.extra])
     if args.cmd == "capture-profile": return forward("capture_profile.py", [args.profile_cmd, *args.extra])
     if args.cmd == "regression": return forward("story_regression.py", [args.regression_cmd, *args.extra])
     if args.cmd == "migrate-v21": return forward("migrate_v21.py", [args.migration_cmd, *args.extra])
@@ -117,6 +121,7 @@ def main():
         if args.full_auto: extra.append("--full-auto")
         if args.codex: extra += ["--codex", args.codex]
         extra += ["--timeout", str(args.timeout)]
+        if args.request_file: extra += ["--request-file", args.request_file]
         return forward("workflow_runner.py", extra)
     if args.cmd == "plan": return forward("workflow_runner.py", ["plan", str(ep)])
     if args.cmd == "performance": return forward("workflow_runner.py", ["performance", str(ep)])

@@ -40,9 +40,26 @@ def update_checkpoint(ep,state,next_action,error=None,completion=None):
     else:d.pop('last_error',None)
     if completion:d['completion']=completion
     write_json(p,d)
-def worker_instruction(ep,resume):
+def runtime_request_block(ep, request_path=None):
+    path = Path(request_path).resolve() if request_path else (ep / "meta/runtime-request.json")
+    if not path.is_file(): return ""
+    data = read_json(path)
+    story = data.get("story_input") or {}
+    image = data.get("image") or {}
+    mode = story.get("mode")
+    directives = {
+        "auto_create": "No plot was supplied. You MUST author the complete story yourself: diverge concepts first, pass Concept Ambition, then Story Build. Do not ask the user for a plot.",
+        "user_seed": "The user supplied a rough story seed. Preserve core intent but strengthen and rewrite mechanism, logic, escalation, climax and ending. Never mechanically split the raw seed into frames.",
+        "core_constraints": "The user supplied hard story constraints. Preserve every constraint, but optimize the remaining structure and escalation.",
+        "locked_story": "The user explicitly locked the story. Only logic/polish repairs are allowed; do not structurally rewrite it.",
+    }
+    return "\n<RUNTIME_REQUEST>\n" + json.dumps(data, ensure_ascii=False, indent=2) + "\n</RUNTIME_REQUEST>\nRUNTIME REQUEST DIRECTIVE: " + directives.get(mode, "") + f"\nIMAGE MODEL CONTRACT: requested={image.get('model') or 'gpt-image-2'} source={image.get('source')} strict={bool(image.get('strict_model'))}. Never silently substitute an explicitly requested image model.\n"
+
+def worker_instruction(ep,resume,request_path=None):
     rel=ep.relative_to(ROOT).as_posix(); mode='resume from checkpoint' if resume else 'start from real current repository state'
+    request_block = runtime_request_block(ep, request_path)
     return f"""You are the Story OS V{STORY_OS_VERSION} autonomous CODEX writer/producer for exactly {rel}. The user authorized continuous full-auto execution; {mode}.
+{request_block}
 Read START_HERE.md, SKILL.md, AGENTS.md, runtimes/CODEX.md, AUTHORITY_INDEX, standards/创作执行强制规范_V2.0.3.2.md, standards/生产帧语义强制规范_V1.0.md, episode state/gates/ledger/reviews/checkpoint.
 Do not spawn another full-auto supervisor.
 
@@ -211,7 +228,7 @@ def run_worker(args,resume):
     update_checkpoint(ep,'ORCHESTRATOR_STARTED','CODEX_WORKER_RUNNING')
     cmd=prefix(codex)+['exec','--skip-git-repo-check','--ephemeral','-s','workspace-write','-C',str(ROOT),'--json','-']
     with log.open('a',encoding='utf-8',newline='\n') as h:
-        try: completed=subprocess.run(cmd,input=worker_instruction(ep,resume),text=True,stdout=h,stderr=subprocess.STDOUT,timeout=args.timeout,check=False)
+        try: completed=subprocess.run(cmd,input=worker_instruction(ep,resume,args.runtime_request),text=True,stdout=h,stderr=subprocess.STDOUT,timeout=args.timeout,check=False)
         except subprocess.TimeoutExpired:
             update_checkpoint(ep,'ORCHESTRATOR_BLOCKED','RESUME_FULL_AUTO','worker timeout'); print('FULL-AUTO BLOCKED: worker timeout'); return 3
     if completed.returncode!=0:
@@ -225,7 +242,7 @@ def run_worker(args,resume):
 def main():
     ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest='cmd',required=True)
     for name in ('run','resume'):
-        p=sub.add_parser(name); p.add_argument('episode_dir'); p.add_argument('--full-auto',action='store_true'); p.add_argument('--codex'); p.add_argument('--timeout',type=int,default=7200)
+        p=sub.add_parser(name); p.add_argument('episode_dir'); p.add_argument('--full-auto',action='store_true'); p.add_argument('--codex'); p.add_argument('--timeout',type=int,default=7200); p.add_argument('--runtime-request')
     p=sub.add_parser('status'); p.add_argument('episode_dir'); p=sub.add_parser('postflight'); p.add_argument('episode_dir'); sub.add_parser('self-test')
     a=ap.parse_args()
     if a.cmd=='self-test':

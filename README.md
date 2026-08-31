@@ -3,6 +3,61 @@
 账号：啾啾脑洞故事。第一人称怪谈 / 规则怪谈图文，对标「鼠鼠脑洞批发」与「Zayn」，
 目标 108 篇系列化世界观（108 道班 = 108 把锁 = 108 个守夜人）。
 
+<!-- STORY_OS_RUNTIME_REQUEST_P0_BEGIN -->
+## Story OS V2.1｜一句话全自动入口
+
+当前 Story OS 支持先把自然语言编译为 `runtime-request`，再进入正式执行链。
+
+最简单的调用：
+
+```text
+读取 story 分支。
+全自动做一篇「仲夏夜惊魂」。
+```
+
+**不传剧情也可以。** 此时自动进入 `story_input.mode=auto_create`：Story OS 自己做 Recent-5 / Concept Ambition、发散 8–12 个方向、选最强候选、编写完整故事，再进入 Story Lock。
+
+如果给粗剧情：
+
+```text
+读取 story 分支。
+全自动做一篇「仲夏夜惊魂」。
+
+剧情大概是：
+……
+```
+
+粗剧情会被识别为 `user_seed`：保留核心意图，但必须强化机制、补逻辑、重写节奏/高潮，禁止直接机械拆成分镜。
+
+如果写“必须保留 / 结尾必须”，进入 `core_constraints`；只有明确说“剧情已经定了 / 不要改剧情”才进入 `locked_story`。
+
+### 图像模型
+
+- 未指定：默认 `gpt-image-2`
+- 显式 `image=gpt-image-2`：记为用户强绑定，Story OS 不允许静默换模型
+- 可复现回归可使用固定快照 `gpt-image-2-2026-04-21`
+
+### 当前 Visual Lock
+
+V2.1 当前流程统一为 **4 张 Visual Lock**：
+
+1. ordinary baseline
+2. worst capture condition
+3. first major anomaly
+4. high-impact admission
+
+不存在当前流程里的“3 张校准 + 4 张准入”双重口径；三图只属于 legacy compatibility。
+
+规范：[`standards/Runtime_Request_Contract_V1.0.md`](standards/Runtime_Request_Contract_V1.0.md)
+
+机器入口：
+
+```bat
+python -X utf8 episodes/_system/runtime_request.py compile --text-file request.txt
+python -X utf8 episodes/_system/story_os.py request compile --text-file request.txt
+```
+<!-- STORY_OS_RUNTIME_REQUEST_P0_END -->
+
 ## 剧集索引
 
 | 剧集 | 目录 | 状态 |

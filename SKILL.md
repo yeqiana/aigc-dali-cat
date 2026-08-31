@@ -76,6 +76,12 @@
 - `reports/account-learning-index.json` 供下一篇 Concept Ambition 前读取，但不能覆盖 Concept/Story/Visual gate。
 <!-- STORY_OS_V2_1_PHASE910_END -->
 
+<!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_BEGIN -->
+## Runtime Request P0
+
+新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `gpt-image-2`；显式 image 禁止静默替换。当前 V2.1 Visual Lock 统一为 4 张，不再使用“3+4”双口径。
+<!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_END -->
+
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
 ## Story OS V2.0.3.6 Golden Path
 

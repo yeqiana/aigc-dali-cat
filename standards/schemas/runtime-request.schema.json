@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Story OS Runtime Request",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "request_id",
+    "mode",
+    "repository",
+    "topic",
+    "story_input",
+    "image",
+    "runtime",
+    "delivery",
+    "user_intent",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "mode": {
+      "enum": [
+        "full_auto",
+        "resume",
+        "repair_only",
+        "release_only",
+        "data_review"
+      ]
+    },
+    "repository": {
+      "type": "object",
+      "required": [
+        "branch"
+      ],
+      "properties": {
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "topic": {
+      "type": "object",
+      "required": [
+        "title"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "story_input": {
+      "type": "object",
+      "required": [
+        "mode",
+        "constraints",
+        "rewrite_policy"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "auto_create",
+            "user_seed",
+            "core_constraints",
+            "locked_story"
+          ]
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "image": {
+      "type": "object",
+      "required": [
+        "provider",
+        "model",
+        "source",
+        "strict_model"
+      ],
+      "properties": {
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "strict_model": {
+          "type": "boolean"
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "required": [
+        "max_image_workers"
+      ],
+      "properties": {
+        "max_image_workers": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        }
+      }
+    },
+    "delivery": {
+      "type": "object"
+    },
+    "user_intent": {
+      "type": "object"
+    },
+    "provenance": {
+      "type": "object"
+    }
+  }
+}
