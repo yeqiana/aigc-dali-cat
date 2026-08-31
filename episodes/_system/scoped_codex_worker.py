@@ -6,6 +6,7 @@ import execution_capsule
 import character_contract
 import resource_library
 import intro_policy
+import directing_quality
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -26,6 +27,7 @@ TARGET: reach STORYBOARD_LOCKED and stop there.
 - core_constraints: preserve every hard constraint.
 - locked_story: only logic/polish repairs.
 - run Story critics/verifiers and honest delegated approval evidence.
+- Directing Quality: author and LOCK meta/voice-contract.json; author and LOCK meta/storyboard-density-review.json; run voice_contract.py validate and storyboard_density_gate.py validate. Every frame must pass the delete-frame test and 5-frame progress window.
 - advance only to STORYBOARD_LOCKED.
 DO NOT create Environment/Impact Contract, Visual Lock images, Batch, subtitles or Release.
 """,
@@ -35,6 +37,7 @@ TARGET: keep STORYBOARD_LOCKED and finish every non-image asset required for a c
 - resolve shared Resource Library references into meta/resource-selection.json.
 - create/verify Environment + Impact Contract and all frame directives.
 - compile/verify all Resolved Frame Contracts.
+- Directing Quality: before Frame Contract compile, author+LOCK meta/capture-event-contract.json and meta/world-state.json. Every frame must explain why it is captured now; sensitive identity/recorder state changes need a story_event. Run capture_event_contract.py validate and world_state.py validate.
 - author concise per-frame production prompt source files required by the existing image scheduler / prompt-package compiler.
 - resolve intro policy and allow provisional text-only release drafts.
 - DO NOT invoke image_generation, DO NOT create Visual Lock images, DO NOT advance the Episode stage.
@@ -44,6 +47,7 @@ Stop only when environment/frame contracts are machine-verifiable and image prod
 TARGET: reach VISUAL_CALIBRATED and stop there.
 - create/verify Environment + Impact Contract.
 - compile/verify Resolved Frame Contracts.
+- Directing Quality: before Frame Contract compile, author+LOCK meta/capture-event-contract.json and meta/world-state.json. Every frame must explain why it is captured now; sensitive identity/recorder state changes need a story_event. Run capture_event_contract.py validate and world_state.py validate.
 - use exactly four current V2.1 Visual Lock admissions: ordinary_baseline, worst_capture_condition, first_major_anomaly, high_impact_admission.
 - execute Visual Lock as 1+3: ordinary_baseline must PASS first; then worst_capture_condition / first_major_anomaly / high_impact_admission may run in parallel and all must bind the approved baseline reference.
 - generate/review/repair only those admissions as required.
@@ -60,6 +64,7 @@ TARGET: reach PRODUCTION_PASSED and stop there.
 - technical failures are retryable and do not consume content repair.
 - Fast Scout is triage only; run final incremental semantic review/audit.
 - repair only failed dirty frames.
+- If Execution Capsule effective_execution_mode=repair_only: override the normal target; process ONLY Repair Queue / dirty / failed frames, never generate untouched originals, never rewrite Story/Storyboard, and do not require state advancement when unrelated originals are still pending.
 - advance only to PRODUCTION_PASSED.
 DO NOT do subtitles or Release.
 """,
@@ -68,6 +73,7 @@ TARGET: reach PUBLISH_READY and stop there.
 - resolve meta/intro-policy.json before final copy. The intro opening must use one of the four approved reference families but be naturally rewritten for the actual Story; never mechanically substitute XXX.
 - generate exactly one title as an internal candidate only. Title is not required for PUBLISH_READY and is not included in final delivery by default.
 - create/audit captions and publish copy/assets from PASS production frames.
+- Use meta/voice-contract.json as narrator authority. Run text_audit.py, then write meta/subtitle-voice-review.json bound to Voice Contract SHA and caption source SHA. continuous-three-frame, read-aloud, delete-subtitle, knowledge-boundary and clue-payoff tests must all PASS.
 - complete release/compliance checks.
 - build+verify Final Candidate Snapshot.
 - record honest delegated release approval.
@@ -97,6 +103,7 @@ def request_block(ep):
 def prompt(ep,step):
     rel=ep.relative_to(ROOT).as_posix()
     if step=="CREATIVE_STORY":
+        directing_quality.enable(ep)
         character_contract.prepare(ep,force=False)
         resource_library.resolve(ep,write=True)
     if step in {"PREIMAGE_COMPILE","VISUAL_LOCK"}:

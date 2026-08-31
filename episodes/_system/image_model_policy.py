@@ -12,6 +12,13 @@ import runtime_request
 
 DEFAULT_MODEL="gpt-image-2"
 REPRODUCIBLE_SNAPSHOT="gpt-image-2-2026-04-21"
+MODEL_UNAVAILABLE="MODEL_UNAVAILABLE"
+MODEL_UNAVAILABLE_PATTERNS=("model_unavailable","model unavailable","model is not available","requested model is not available","unknown model","unsupported model","model not found","does not exist","cannot honor the requested model")
+
+def classify_backend_error(text):
+    low=str(text or "").lower()
+    if any(x in low for x in MODEL_UNAVAILABLE_PATTERNS): return MODEL_UNAVAILABLE
+    return None
 
 def resolve_model(*,request=None,explicit=None,reproducible=False):
     if explicit:
@@ -30,6 +37,7 @@ def self_test():
     assert resolve_model()["model"]=="gpt-image-2"
     assert resolve_model(reproducible=True)["model"]=="gpt-image-2-2026-04-21"
     assert resolve_model(explicit="gpt-image-2")["strict_model"] is True
+    assert classify_backend_error("unknown model")=="MODEL_UNAVAILABLE"
     print("IMAGE MODEL POLICY V2.1 SELF-TEST PASS")
 
 def main():

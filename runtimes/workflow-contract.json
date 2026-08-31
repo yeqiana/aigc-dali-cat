@@ -91,7 +91,19 @@
     "intro_opener_library_enabled": true,
     "title_generate_count": 1,
     "title_required_for_publish_ready": false,
-    "title_default_include_in_delivery": false
+    "title_default_include_in_delivery": false,
+    "runtime_resume_natural_language_supported": true,
+    "runtime_special_modes_have_explicit_guards": true,
+    "execution_capsule_includes_effective_mode": true,
+    "model_unavailable_machine_code": "MODEL_UNAVAILABLE",
+    "capture_event_contract_enabled": true,
+    "storyboard_information_density_gate_enabled": true,
+    "voice_contract_enabled": true,
+    "persistent_world_state_enabled": true,
+    "asset_lineage_append_only": true,
+    "golden_episode_regression_enabled": true,
+    "directing_quality_does_not_create_episode_stage": true,
+    "legacy_directing_quality_auto_migration": false
   },
   "steps": {
     "RESTORE": {

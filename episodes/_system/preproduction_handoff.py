@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse, hashlib, json
 from pathlib import Path
 import character_contract, environment_contract, frame_contract, resource_library, runtime_execution
+import directing_quality
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/preproduction-handoff.json")
@@ -24,7 +25,7 @@ def stage(ep):
 def authority_files(ep):
     rows=[]
     # Only hash assets that should stay immutable after the handoff.
-    for rel in ("meta/runtime-request.json","meta/character-contract.json","meta/resource-selection.json","meta/intro-policy.json"):
+    for rel in ("meta/runtime-request.json","meta/character-contract.json","meta/resource-selection.json","meta/intro-policy.json","meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/capture-event-contract.json","meta/world-state.json"):
         p=ep/rel
         if p.is_file():rows.append(p)
     story=ep/"story"
@@ -61,11 +62,15 @@ def build(ep,source_runtime="chatgpt"):
     if env:raise ValueError("environment contract invalid: "+"; ".join(env[:8]))
     fc=frame_contract.verify_all(ep)
     if fc:raise ValueError("frame contract invalid: "+"; ".join(fc[:8]))
+    if directing_quality.enabled(ep):
+        qerrors=directing_quality.verify_story(ep)+directing_quality.verify_preimage(ep)
+        if qerrors:raise ValueError("directing quality invalid: "+"; ".join(qerrors[:12]))
     resource_library.resolve(ep,True)
     files=authority_files(ep)
     assets=[{"kind":"file","path":p.relative_to(ep).as_posix(),"sha256":sha(p),"bytes":p.stat().st_size} for p in files]
     subsets=[{"kind":"json_subset","path":"meta/story-gates.json","name":"stable_preproduction_subset","sha256":json_sha(stable_story_gate_subset(ep))}]
-    data={"schema_version":1,"handoff_type":"preproduction_to_image","source_runtime":source_runtime,"created_at_stage":"STORYBOARD_LOCKED","authority_assets":assets,"authority_subsets":subsets,"derived_rebuildable":["meta/runtime/execution-capsules","meta/frame-contracts","meta/runtime/prompt-packages"],"story_rewrite_allowed":False,"next_mode":"image_continue","handoff_ready":True}
+    q_enabled=directing_quality.enabled(ep)
+    data={"schema_version":2 if q_enabled else 1,"handoff_type":"preproduction_to_image","source_runtime":source_runtime,"created_at_stage":"STORYBOARD_LOCKED","authority_assets":assets,"authority_subsets":subsets,"derived_rebuildable":["meta/runtime/execution-capsules","meta/runtime/contracts","meta/runtime/prompt-packages"],"quality_contracts_enabled":q_enabled,"story_rewrite_allowed":False,"next_mode":"image_continue","handoff_ready":True}
     material=json.dumps(data,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
     data["manifest_sha256"]=hashlib.sha256(material).hexdigest()
     write_json(ep/REL,data);return data
@@ -87,6 +92,8 @@ def verify(ep):
             errors.append("HANDOFF_SHA_MISMATCH:meta/story-gates.json#stable_preproduction_subset")
     ce=character_contract.validate(ep,require_locked=True)
     if ce:errors.extend("HANDOFF_CHARACTER:"+x for x in ce)
+    if int(d.get("schema_version") or 1)>=2 and d.get("quality_contracts_enabled") is True:
+        errors.extend("HANDOFF_QUALITY:"+x for x in (directing_quality.verify_story(ep)+directing_quality.verify_preimage(ep)))
     return errors
 
 def activate(ep):

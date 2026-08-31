@@ -23,6 +23,7 @@ import fast_frame_scout as frame_scout
 import image_model_policy
 import image_worker_pool
 import rolling_frame_review
+import asset_lineage
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -260,6 +261,8 @@ def ledger_tech_fail(ep:Path,item:dict,code:str,message:str)->None:
 
 
 def classify_error(text:str)->str:
+    model_code=image_model_policy.classify_backend_error(text)
+    if model_code:return model_code
     low=text.lower()
     if "429" in low:return "RATE_LIMIT_429"
     if "timeout" in low:return "TIMEOUT"
@@ -352,6 +355,10 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                     scout=res.get("scout") or {}
                     decision=scout.get("decision")
                     item["output_path"]=repo_rel(Path(res["output"]))
+                    try:
+                        item["lineage"]=asset_lineage.record(ep,int(item["frame"]),Path(res["output"]),kind=str(item.get("kind") or "original"),reason=f"scheduler:{item.get('scope')}",source_item_id=item.get("id"),frame_contract_sha256=current_contract_sha(ep,int(item["frame"])))
+                    except Exception as exc:
+                        item["lineage_warning"]=str(exc)
                     item["log_path"]=repo_rel(Path(res["log"]))
                     item["completed_at"]=now()
                     item["last_error"]=None
@@ -418,6 +425,7 @@ def self_test()->None:
     assert MAX_SUPPORTED_WORKERS==3
     assert classify_error("429 Too Many Requests")=="RATE_LIMIT_429"
     assert classify_error("worker timeout")=="TIMEOUT"
+    assert classify_error("unknown model")=="MODEL_UNAVAILABLE"
     assert image_worker_pool.CODEX_SESSION_REUSE is False
     assert rolling_frame_review.VALID == {"PASS_PREVIEW","REPAIR_NOW","UNCERTAIN"}
     print("IMAGE SCHEDULER V2.1 PHASE6 SELF-TEST PASS")

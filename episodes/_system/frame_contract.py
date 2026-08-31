@@ -19,6 +19,8 @@ from story_os_contract import story_os_version
 from visual_profile import compile_prompt_contract
 import environment_contract
 import character_contract
+import capture_event_contract
+import world_state
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
@@ -276,6 +278,8 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     visual_profile = compile_prompt_contract(ep)
     env = environment_contract.resolve_frame(ep, n)
     directive = env.get("directive") or {}
+    capture_event = capture_event_contract.resolve_frame(ep,n) if (ep/capture_event_contract.REL).is_file() else {"capture_event":{},"capture_event_sha256":None}
+    world = world_state.resolve_frame(ep,n) if (ep/world_state.REL).is_file() else {"world_state":{},"world_state_sha256":None}
     excerpt = extract_frame_excerpt(storyboard_path, n)
     refs = resolved_references(ep, n)
 
@@ -291,6 +295,8 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
             "path": character_contract.REL.as_posix(),
             "sha256": sha256_file(ep / character_contract.REL) if (ep / character_contract.REL).is_file() else None,
         },
+        "capture_event_contract": {"path":capture_event_contract.REL.as_posix(),"sha256":sha256_file(ep/capture_event_contract.REL) if (ep/capture_event_contract.REL).is_file() else None},
+        "world_state": {"path":world_state.REL.as_posix(),"sha256":sha256_file(ep/world_state.REL) if (ep/world_state.REL).is_file() else None},
     }
 
     # Hash material is deliberately per-frame where possible.
@@ -315,6 +321,10 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "environment_frame_sha256": env["environment_frame_sha256"],
         "frame_directive": directive,
         "frame_directive_sha256": env["frame_directive_sha256"],
+        "capture_event": capture_event.get("capture_event") or {},
+        "capture_event_sha256": capture_event.get("capture_event_sha256"),
+        "world_state": world.get("world_state") or {},
+        "world_state_sha256": world.get("world_state_sha256"),
         "references": refs,
     }
     contract_sha = sha256_json(hash_material)
@@ -341,6 +351,12 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "[ENVIRONMENT PHYSICS]",
         _compact_json(env.get("environment") or {}),
         "",
+        "[CAPTURE EVENT]",
+        _compact_json(capture_event.get("capture_event") or {}),
+        "",
+        "[PERSISTENT WORLD STATE]",
+        _compact_json(world.get("world_state") or {}, 2600),
+        "",
         "[FRAME DIRECTIVE]",
         _compact_json(directive),
         "",
@@ -356,7 +372,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "story_os_version": episode_version(ep),
         "frame": key,
         "derived_cache": True,
-        "authority": "Story + Storyboard + Character Contract + story-gates + Visual Profile",
+        "authority": "Story + Storyboard + Character Contract + Capture Event + World State + story-gates + Visual Profile",
         "generated_at": now(),
         "source_trace": source_trace,
         "storyboard_frame": excerpt,

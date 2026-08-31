@@ -201,7 +201,17 @@ def main() -> int:
         data = parse_simple_subtitles_yaml(source)
     else:
         data = captions_from_text(source)
+    # voice_contract_authority: external Story Authority outranks inline helper fields.
+    voice_contract_sha=None
+    if ep is not None:
+        vp=ep/'meta/voice-contract.json'
+        if vp.is_file():
+            vd=json.loads(vp.read_text(encoding='utf-8-sig'))
+            authoritative=(vd.get('voice_card') or {}) if isinstance(vd,dict) else {}
+            merged=dict(data.get('voice_card') or {}); merged.update(authoritative); data['voice_card']=merged
+            voice_contract_sha=hashlib.sha256(vp.read_bytes()).hexdigest()
     report = audit(data, source)
+    report['voice_contract_sha256']=voice_contract_sha
     report['source_sha256'] = hashlib.sha256(source.read_bytes()).hexdigest()
 
     if args.report:

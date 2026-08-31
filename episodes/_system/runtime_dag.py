@@ -14,6 +14,8 @@ import intro_policy
 import multi_level_cache
 import runtime_execution
 import scoped_codex_worker
+import runtime_mode_router
+import directing_quality
 import workflow_performance as perf
 import workflow_step_protocol as proto
 
@@ -74,6 +76,13 @@ def plan(ep):
 def execute(ep,codex=None,timeout=7200,run_id=None):
     dag=load_dag(); specs=spec_rows(); total_start=time.monotonic()
     mode=request_mode(ep)
+    mode_errors=runtime_mode_router.guard(ep,mode)
+    if mode_errors:
+        print("RUNTIME_MODE_GUARD_FAIL")
+        for err in mode_errors: print(err)
+        return 8
+    special_rc=runtime_mode_router.dispatch_special(ep,mode,codex,timeout)
+    if special_rc is not None: return special_rc
     if mode=="image_continue":
         handoff_errors=preproduction_handoff.verify(ep)
         if handoff_errors:
@@ -86,6 +95,7 @@ def execute(ep,codex=None,timeout=7200,run_id=None):
     for s in specs:
         cur=state(ep)
         if s.step_id=="CREATIVE_STORY" and not stage_at_least(cur,"STORYBOARD_LOCKED"):
+            directing_quality.before_step(ep,s.step_id)
             character_contract.prepare(ep,force=False)
         prior=(proto.load_state(ep).get("steps") or {}).get(s.step_id) or {}
         attempt=int(prior.get("attempt") or 0)+1
@@ -119,6 +129,11 @@ def execute(ep,codex=None,timeout=7200,run_id=None):
             if character_errors:
                 rc=4
                 note=(note+"\nCHARACTER CONTRACT FAIL\n"+"\n".join(character_errors))[-5000:]
+        if rc==0:
+            quality_errors=directing_quality.after_step(ep,s.step_id)
+            if quality_errors:
+                rc=4
+                note=(note+"\nDIRECTING QUALITY FAIL\n"+"\n".join(quality_errors))[-5000:]
         if rc==0 and s.target_state:
             ok,msg=validate_target(ep,s.target_state)
             if not ok: rc=4; note=(note+"\nPOSTCONDITION FAIL\n"+msg)[-5000:]
@@ -143,6 +158,12 @@ def execute(ep,codex=None,timeout=7200,run_id=None):
             if pre_rc!=0:
                 background.shutdown(wait=False,cancel_futures=True)
                 return pre_rc
+            quality_errors=directing_quality.verify_preimage(ep)
+            if quality_errors:
+                print("PREIMAGE DIRECTING QUALITY FAIL")
+                for err in quality_errors: print(err)
+                background.shutdown(wait=False,cancel_futures=True)
+                return 4
             try:
                 provisional_release.build(ep,codex,900)
             except Exception as exc:

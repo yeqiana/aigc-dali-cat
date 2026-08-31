@@ -117,6 +117,13 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             if alternatives:
                 candidate = max(alternatives, key=lambda p: p.stat().st_mtime)
         if completed.returncode != 0 or not valid_image(candidate):
+            try:
+                tail=log.read_text(encoding='utf-8',errors='replace')[-6000:]
+            except Exception:
+                tail=''
+            machine_code=image_model_policy.classify_backend_error(tail)
+            if machine_code:
+                raise BackendError(f'{machine_code}: requested={image_model}; log={log}')
             raise BackendError(f'Codex image worker failed rc={completed.returncode}; log={log}')
         raw_output.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(candidate, raw_output)

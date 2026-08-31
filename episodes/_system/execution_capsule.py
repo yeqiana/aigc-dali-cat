@@ -7,6 +7,7 @@ Codex worker reread the whole repository policy stack before doing bounded work.
 """
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json
+import runtime_execution
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -22,6 +23,7 @@ AUTHORITY_FILES=[
     "runtimes/runtime-mode-contract-r2.json",
     "library/catalog.json",
     "library/copy/intro-openers.json",
+    "standards/AIGC_Directing_Quality_V1.0.md",
 ]
 STEP_EVIDENCE={
     "CREATIVE_STORY":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/resource-selection.json","meta/story-gates.json","reports/account-learning-index.json"],
@@ -67,15 +69,24 @@ def compile_capsule(ep,step,write=True):
     wf=read_json(ROOT/"runtimes/workflow-contract.json") or {}
     rules=wf.get("rules") or {}
     request=read_json(ep/"meta/runtime-request.json")
+    execution=read_json(ep/"meta/runtime-execution.json")
+    effective_mode=runtime_execution.effective_mode(ep)
     authority=[file_row(ROOT/x,ROOT) for x in AUTHORITY_FILES]
     evidence=[]
-    for rel in STEP_EVIDENCE[step]:
+    evidence_paths=list(STEP_EVIDENCE[step])
+    if "meta/runtime-execution.json" not in evidence_paths: evidence_paths.insert(1,"meta/runtime-execution.json")
+    quality_evidence={"CREATIVE_STORY":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json"],"PREIMAGE_COMPILE":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/capture-event-contract.json","meta/world-state.json"],"VISUAL_LOCK":["meta/directing-quality.json","meta/capture-event-contract.json","meta/world-state.json"],"PRODUCTION":["meta/capture-event-contract.json","meta/world-state.json","meta/asset-lineage.json"],"RELEASE":["meta/voice-contract.json","meta/text-audit.json","meta/subtitle-voice-review.json","meta/asset-lineage.json"]}.get(step,[])
+    for qrel in quality_evidence:
+        if qrel not in evidence_paths:evidence_paths.append(qrel)
+    for rel in evidence_paths:
         p=(ROOT/rel) if rel.startswith("reports/") else (ep/rel)
         base=ROOT if rel.startswith("reports/") else ep
         evidence.append(file_row(p,base))
     material={
       "schema_version":1,"story_os":"2.1","step":step,"current_state":current_state(ep),
       "runtime_request":request,
+      "runtime_execution":execution,
+      "effective_execution_mode":effective_mode,
       "character_contract":read_json(ep/"meta/character-contract.json"),
       "invariants":{k:rules.get(k) for k in RULE_KEYS if k in rules},
       "authority_files":authority,
