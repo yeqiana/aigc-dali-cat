@@ -24,6 +24,8 @@ FULL_AUTO_SIGNALS = ("全自动","做到最终交付","不要每一步问","不�
 REPAIR_ONLY_SIGNALS = ("只修","只返修","repair only","repair_only")
 RELEASE_ONLY_SIGNALS = ("只做发布","只做release","release only","release_only")
 DATA_REVIEW_SIGNALS = ("只做复盘","数据复盘","data review","data_review")
+PREPRODUCTION_SIGNALS = ("只做前期资产","只做前期","不要生成图片","不生图","做到可以正式生图的交接状态","做到生图交接状态","preproduction only","preproduction_only")
+IMAGE_CONTINUE_SIGNALS = ("从生图开始","从图片开始","接管前期资产","接管已经完成的前期资产","不要重写剧情","image continue","image_continue")
 
 def now():
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -95,6 +97,8 @@ def story_input(text):
     return {"mode":"auto_create","raw":None,"constraints":[],"rewrite_policy":"auto_create","preserve_core_intent":True,"allow_structure_rewrite":True}
 
 def parse_mode(text):
+    if contains_any(text,IMAGE_CONTINUE_SIGNALS):return "image_continue"
+    if contains_any(text,PREPRODUCTION_SIGNALS):return "preproduction_only"
     if contains_any(text,REPAIR_ONLY_SIGNALS):return "repair_only"
     if contains_any(text,RELEASE_ONLY_SIGNALS):return "release_only"
     if contains_any(text,DATA_REVIEW_SIGNALS):return "data_review"
@@ -109,14 +113,16 @@ def creative_hints(text):
 
 def compile_request(text):
     if not isinstance(text,str) or not text.strip():raise ValueError("EMPTY_REQUEST")
-    title,raw_topic=parse_topic(text); story=story_input(text)
+    title,raw_topic=parse_topic(text); story=story_input(text); mode=parse_mode(text)
+    if mode=="image_continue" and story.get("mode")=="auto_create":
+        story={"mode":"locked_story","raw":None,"constraints":[],"rewrite_policy":"logic_polish_only","preserve_core_intent":True,"allow_structure_rewrite":False}
     if not title:
         if story["mode"]=="auto_create":raise ValueError("EMPTY_REQUEST: no topic/title/story seed found")
         title="AUTO_TITLE"; raw_topic=None
     branch,branch_source=parse_branch(text)
-    full_auto=contains_any(text,FULL_AUTO_SIGNALS) or parse_mode(text)=="full_auto"
+    full_auto=contains_any(text,FULL_AUTO_SIGNALS) or mode in {"full_auto","preproduction_only","image_continue"}
     data={
-        "schema_version":1,"request_id":request_id(text),"created_at":now(),"mode":parse_mode(text),
+        "schema_version":1,"request_id":request_id(text),"created_at":now(),"mode":mode,
         "repository":{"branch":branch,"source":branch_source},
         "topic":{"title":title,"raw":raw_topic},
         "story_input":story,
@@ -134,7 +140,7 @@ def compile_request(text):
 def validate_request(data):
     errors=[]
     if data.get("schema_version")!=1:errors.append("schema_version must be 1")
-    if data.get("mode") not in {"full_auto","resume","repair_only","release_only","data_review"}:errors.append("invalid mode")
+    if data.get("mode") not in {"full_auto","preproduction_only","image_continue","resume","repair_only","release_only","data_review"}:errors.append("invalid mode")
     story=data.get("story_input") or {}
     if story.get("mode") not in STORY_MODES:errors.append("invalid story_input.mode")
     if story.get("mode")=="user_seed" and not str(story.get("raw") or "").strip():errors.append("user_seed requires raw story seed")
@@ -178,6 +184,10 @@ def self_test():
     assert c["story_input"]["mode"]=="core_constraints" and c["image"]["strict_model"] is True
     d=compile_request("全自动做一篇「仲夏夜惊魂」。剧情已经定了，不要改剧情：主角最后回家。")
     assert d["story_input"]["mode"]=="locked_story" and d["story_input"]["allow_structure_rewrite"] is False
+    e=compile_request("读取 story 分支。制作「仲夏夜惊魂」的全部前期资产，做到可以正式生图的交接状态，不要生成图片。")
+    assert e["mode"]=="preproduction_only"
+    f=compile_request("读取 story 分支。接管「仲夏夜惊魂」已经完成的前期资产，不要重写剧情，从生图开始继续做到最终交付。")
+    assert f["mode"]=="image_continue" and f["story_input"]["allow_structure_rewrite"] is False
     print("RUNTIME REQUEST V2.1 SELF-TEST PASS")
 
 def main():

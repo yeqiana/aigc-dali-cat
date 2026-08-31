@@ -19,12 +19,16 @@ AUTHORITY_FILES=[
     "standards/entry-motivation-pools.json",
     "standards/scene-pools.json",
     "standards/forbidden-character-roles.json",
+    "runtimes/runtime-mode-contract-r2.json",
+    "library/catalog.json",
+    "library/copy/intro-openers.json",
 ]
 STEP_EVIDENCE={
-    "CREATIVE_STORY":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/story-gates.json","reports/account-learning-index.json"],
+    "CREATIVE_STORY":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/resource-selection.json","meta/story-gates.json","reports/account-learning-index.json"],
+    "PREIMAGE_COMPILE":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/resource-selection.json","meta/story-gates.json","meta/intro-policy.json"],
     "VISUAL_LOCK":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/story-gates.json","meta/concept-ambition-review.json"],
     "PRODUCTION":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/story-gates.json","meta/visual-lock-plan.json","meta/production-ledger.json"],
-    "RELEASE":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/story-gates.json","meta/production-ledger.json","meta/runtime/provisional-release.json"],
+    "RELEASE":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/resource-selection.json","meta/intro-policy.json","meta/story-gates.json","meta/production-ledger.json","meta/runtime/provisional-release.json"],
 }
 RULE_KEYS=[
     "zip_is_delivery_adapter_not_stage_gate","codex_production_complete_at_publish_ready",

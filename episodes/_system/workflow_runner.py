@@ -22,6 +22,7 @@ import workflow_observability as obs
 import runtime_request as runtime_request_contract
 import image_model_policy
 import runtime_dag
+import runtime_execution
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -70,7 +71,14 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
     started = time.monotonic()
     request_data = None
     if request_file:
-        runtime_request_contract.bind_request(Path(request_file), ep, force=False)
+        incoming=runtime_request_contract.read_json(Path(request_file).resolve())
+        incoming_errors=runtime_request_contract.validate_request(incoming)
+        if incoming_errors: raise SystemExit("invalid runtime request: " + "; ".join(incoming_errors))
+        existing=runtime_request_contract.effective_for_episode(ep)
+        if existing and incoming.get("mode")=="image_continue":
+            runtime_execution.set_mode(ep,"image_continue","request_file_execution_override")
+        else:
+            runtime_request_contract.bind_request(Path(request_file), ep, force=False)
     request_data = runtime_request_contract.effective_for_episode(ep)
     if request_data:
         errors = runtime_request_contract.validate_request(request_data)

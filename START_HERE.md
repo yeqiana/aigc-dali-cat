@@ -346,3 +346,8 @@ python episodes/_system/media_workspace.py ensure <episode_dir>
 ## Character / Entry Pool
 新篇 Concept 前先准备 Character Contract：优先普通二十来岁青年/朋友团，以旅行、返乡、聚会、挑战、废弃场所、户外、生活化工作/科考等日常理由进入异常；默认禁用抢修/维修/警察/记者/调查员等功能型主角。第一人称也锁人物锚点。Story Lock 前 NO-ANOMALY TEST 必须 PASS，随后 Character Contract 绑定进 Frame Contract。
 <!-- STORY_OS_CHARACTER_ENTRY_POOL_CORE_END -->
+
+<!-- STORY_OS_RUNTIME_OPTIMIZATION_R2_CORE_BEGIN -->
+## Runtime Optimization R2
+支持 `preproduction_only`（只做生图前资产并写 Handoff）和 `image_continue`（校验 Handoff 后从 Visual/Image 继续，禁止重写 Story）。启用 `.storyos_cache/` 多级缓存、`library/` 共享参考资源库、Visual Lock 1+3、简介四类开头策略和“标题仅1个内部候选”规则。正式 Story/Visual/Production/Release Gate 均不删除。
+<!-- STORY_OS_RUNTIME_OPTIMIZATION_R2_CORE_END -->

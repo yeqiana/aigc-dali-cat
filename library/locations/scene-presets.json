@@ -1,0 +1,14 @@
+{
+  "abandoned_amusement_park": {
+    "ordinary_reason": "几个朋友拍照、挑战、怀旧或起哄进去看看。",
+    "visual": "褪色设施、杂草、积灰、自然损坏；不要一上来就是恐怖乐园海报感。"
+  },
+  "northwest_village": {
+    "ordinary_reason": "回老家/去朋友老家/短途旅行。",
+    "visual": "干燥土路、普通村屋、真实生活痕迹；按具体年代控制车辆和设备。"
+  },
+  "mountain_homestay": {
+    "ordinary_reason": "周末短途旅行、朋友聚会、项目短住。",
+    "visual": "真实民宿/农家乐，不做电影置景。"
+  }
+}

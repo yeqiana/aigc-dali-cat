@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse, json, os, shutil, subprocess, sys, tempfile
 from pathlib import Path
 import execution_capsule
+import intro_policy
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/provisional-release.json")
@@ -20,12 +21,16 @@ def prefix(p):
     if os.name=="nt" and p.suffix.lower() in {".cmd",".bat"}: return ["cmd.exe","/d","/c",str(p)]
     return [str(p)]
 def build(ep,codex_raw=None,timeout=900):
+    intro=intro_policy.resolve(ep,write=True)
     capsule=execution_capsule.compile_capsule(ep,"RELEASE",write=True)
     out=ep/REL; out.parent.mkdir(parents=True,exist_ok=True)
     prompt=f"""You are preparing PROVISIONAL text-only release material for a Story OS episode.
 This runs before Production PASS to overlap work. Do NOT alter any story, images, release-manifest, final snapshot or episode state.
 Use the locked Story/Storyboard and this derived execution capsule:
 {json.dumps(capsule,ensure_ascii=False,indent=2)}
+Intro opening policy:
+{json.dumps(intro,ensure_ascii=False,indent=2)}
+The intro family is a structural reference. Rewrite naturally for the actual story. Generate only one internal title candidate.
 Read only the Story/Storyboard files you need.
 Write UTF-8 JSON to exactly: {out}
 Schema:

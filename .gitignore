@@ -76,3 +76,6 @@ episodes/**/*.zip
 !episodes/**/assets/characters/**
 
 # research/competitors/** and research/account/** are intentionally not ignored.
+
+# Story OS R2 runtime cache
+.storyos_cache/

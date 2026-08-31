@@ -1,7 +1,7 @@
 {
   "story_os_version": "2.1.0",
   "contract_schema": 1,
-  "release_name": "Full Workflow Closure + Runtime Performance + Character/Entry Pools",
+  "release_name": "Full Workflow Closure + Runtime R2 + Character/Entry Pools",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -120,7 +120,16 @@
     "ordinary_person_score",
     "first_person_character_anchor",
     "group_cast_anchor",
-    "frame_contract_character_binding"
+    "frame_contract_character_binding",
+    "runtime_preproduction_only",
+    "runtime_image_continue",
+    "preproduction_handoff_sha",
+    "multi_level_cache_r2",
+    "shared_resource_library",
+    "resource_resolver",
+    "intro_opener_policy",
+    "internal_title_only",
+    "visual_lock_1_plus_3_documented"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -161,7 +170,12 @@
     "First-person POV still requires a stable Character Contract.",
     "Character Contract is a Story Build input and never a second Episode stage.",
     "New Story runs must pass NO-ANOMALY TEST and Character Contract validation before STORYBOARD_LOCKED.",
-    "Resolved Frame Contract binds Character Contract so character drift invalidates downstream cache."
+    "Resolved Frame Contract binds Character Contract so character drift invalidates downstream cache.",
+    "preproduction_only never invokes image generation.",
+    "image_continue must verify handoff authority hashes and must not rewrite locked Story.",
+    "shared resource library reuses references/descriptors, never prior final episode images by default.",
+    "intro templates are structural references and must be naturally rewritten.",
+    "title is one internal candidate and is not a PUBLISH_READY requirement."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

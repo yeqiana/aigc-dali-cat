@@ -8,6 +8,11 @@ import quota_observability
 import execution_capsule
 import character_contract
 import provisional_release
+import preproduction_handoff
+import resource_library
+import intro_policy
+import multi_level_cache
+import runtime_execution
 import scoped_codex_worker
 import workflow_performance as perf
 import workflow_step_protocol as proto
@@ -29,6 +34,8 @@ def state(ep):
     return json.loads(p.read_text(encoding="utf-8-sig")).get("current_state")
 def stage_at_least(cur,target):
     return cur in STAGES and target in STAGES and STAGES.index(cur)>=STAGES.index(target)
+def request_mode(ep):
+    return runtime_execution.effective_mode(ep)
 def validate_target(ep,target):
     outputs=[]
     for script in ("validate_episode.py","machine_gate.py","evidence_gate.py"):
@@ -66,6 +73,14 @@ def plan(ep):
 
 def execute(ep,codex=None,timeout=7200,run_id=None):
     dag=load_dag(); specs=spec_rows(); total_start=time.monotonic()
+    mode=request_mode(ep)
+    if mode=="image_continue":
+        handoff_errors=preproduction_handoff.verify(ep)
+        if handoff_errors:
+            print("HANDOFF VERIFY FAIL")
+            for err in handoff_errors:print(err)
+            return 6
+        resource_library.resolve(ep,write=True)
     provisional_future=None
     background=cf.ThreadPoolExecutor(max_workers=1,thread_name_prefix="story-os-release-prep")
     for s in specs:
@@ -117,6 +132,31 @@ def execute(ep,codex=None,timeout=7200,run_id=None):
         if rc!=0:
             background.shutdown(wait=False,cancel_futures=True)
             return rc
+        if mode=="preproduction_only" and s.step_id=="CREATIVE_STORY":
+            resource_library.resolve(ep,write=True)
+            intro_policy.resolve(ep,write=True)
+            pre_started=time.monotonic()
+            pre_rc,pre_log=scoped_codex_worker.run_step(ep,"PREIMAGE_COMPILE",codex_raw=codex,timeout=min(timeout,int(dag.get("scoped_worker_timeout_seconds") or 3600)))
+            pre_elapsed=time.monotonic()-pre_started
+            checkpoint(ep,"PREIMAGE_COMPILE","PASS" if pre_rc==0 else "FAILED",pre_elapsed,f"log={pre_log}")
+            if run_id:perf.record_step(ep,run_id,"PREIMAGE_COMPILE","PASS" if pre_rc==0 else "FAILED",pre_elapsed,f"log={pre_log}")
+            if pre_rc!=0:
+                background.shutdown(wait=False,cancel_futures=True)
+                return pre_rc
+            try:
+                provisional_release.build(ep,codex,900)
+            except Exception as exc:
+                print("PROVISIONAL RELEASE NONBLOCKING:",exc)
+            try:
+                handoff=preproduction_handoff.build(ep,source_runtime="chatgpt_or_codex")
+                checkpoint(ep,"PREPRODUCTION_HANDOFF","PASS",0.0,handoff.get("manifest_sha256",""))
+                if run_id:perf.record_step(ep,run_id,"PREPRODUCTION_HANDOFF","PASS",0.0,handoff.get("manifest_sha256",""))
+            except Exception as exc:
+                print("PREPRODUCTION HANDOFF FAIL:",exc)
+                background.shutdown(wait=False,cancel_futures=True)
+                return 7
+            background.shutdown(wait=False,cancel_futures=True)
+            return 0
         if s.step_id=="CREATIVE_STORY" and provisional_future is None and bool(dag.get("provisional_release_parallel",True)):
             provisional_future=background.submit(provisional_release.build,ep,codex,900)
     background.shutdown(wait=False)

@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "package": "Story OS V2.1 Runtime Optimization R2",
+  "package_version": "2.1.0-runtime-optimization-r2",
+  "installed_at": "2026-08-31T14:16:14.502357+08:00",
+  "baseline_expected_head": "d3396453a834cb7a550a48f5465155e64ff6948f",
+  "actual_git": {
+    "available": true,
+    "branch": "story",
+    "head": "d3396453a834cb7a550a48f5465155e64ff6948f"
+  },
+  "backup": ".storyos_backups\\v21_runtime_r2_20260831_141613",
+  "encoding": "utf-8",
+  "tests": "PASS",
+  "preproduction_only": true,
+  "image_continue": true,
+  "handoff_sha_required": true,
+  "multi_level_cache": true,
+  "shared_resource_library": true,
+  "visual_lock_strategy": "1+3",
+  "intro_families": 4,
+  "title_required_for_publish_ready": false,
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "23ae53d6188c2fb403d3898826ba7b3b3720d45aab461b65efd3f3f49708fe0c",
+      "bytes": 1712
+    },
+    {
+      "path": "story_os_manifest.json",
+      "sha256": "200f3e4d69bbffaae1e9a2b690a47f0d6739f811ea1196720eae891b4dccfe9f",
+      "bytes": 8070
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "sha256": "84d6915d64f753a568d026b0ba5c7fc8a8cdfd5df9434cd6849e3065caf2de0d",
+      "bytes": 12661
+    },
+    {
+      "path": "README.md",
+      "sha256": "2d5817ee2ef4ea1021c4a8af1fc4cd197a43fc4b9e09da13d57357a5ed8670c8",
+      "bytes": 13151
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "fad4ff64b8a13d36884813b3ba0eada65e57c01889e3938f55e0bab7498e554d",
+      "bytes": 15432
+    },
+    {
+      "path": "START_HERE.md",
+      "sha256": "5471f58ee3ee44f1e55f8a5ba515266ab32dbb2dce3a33e928f2c2bcc4a0384e",
+      "bytes": 14639
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "f633cf44b81bb6164013fcecab852b32dae0562ebda1dee54a82b50cb1c7ad8c",
+      "bytes": 22180
+    },
+    {
+      "path": "episodes/_system/runtime_request.py",
+      "sha256": "55c896aab1e21563eb55725b774f39082da5ae214d04c1171f5fc401686ff686",
+      "bytes": 13806
+    },
+    {
+      "path": "episodes/_system/runtime_dag.py",
+      "sha256": "74f101ad7d8c615e4b23b7e6287a3dfb18cdc56d7d71f6f9f1e8891cd008ae03",
+      "bytes": 9852
+    },
+    {
+      "path": "episodes/_system/scoped_codex_worker.py",
+      "sha256": "893c3dc9e8d3c515f729b5b70e349263e9ae06c1253212395a553332ec58eb05",
+      "bytes": 8584
+    },
+    {
+      "path": "episodes/_system/execution_capsule.py",
+      "sha256": "5c9dfdb4c96b17e69999b1748aadc250bc1f0d5800219598ff933e62a8ef6cb8",
+      "bytes": 5900
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "sha256": "4c21e67398454c86a98caffa438b17e3beacbd281a4c302bdd8fccd2585d2dc6",
+      "bytes": 15968
+    },
+    {
+      "path": "episodes/_system/provisional_release.py",
+      "sha256": "09bfd65ff02e2d9fabdfa08d0177be4b179c7d1f938d15d60b00ccfd356aab5e",
+      "bytes": 3802
+    },
+    {
+      "path": "episodes/_system/workflow_runner.py",
+      "sha256": "6b5ca81b2e297aeae8d4a2e1248d1cb26016eda7f0bf1f9618bc397adda94572",
+      "bytes": 8512
+    },
+    {
+      "path": "episodes/_system/multi_level_cache.py",
+      "sha256": "298b5a394c36ff90b9a1a972b7f969829ad4b83e9d1cd0610d4277d13f654ec3",
+      "bytes": 4055
+    },
+    {
+      "path": "episodes/_system/resource_library.py",
+      "sha256": "2478f9c1f32749da30b0ab341e90f909522e0c6ddf242f4a049948961d95f268",
+      "bytes": 4606
+    },
+    {
+      "path": "episodes/_system/intro_policy.py",
+      "sha256": "fc5fb31c838e4989f449568c9acebb602ed0e823060911d2c25ab0da2f28d77d",
+      "bytes": 2688
+    },
+    {
+      "path": "episodes/_system/preproduction_handoff.py",
+      "sha256": "f6a030fa4924b9d2fbd10ae4fbc2aae50891e710eb18f0466f6c93d9aa7b2879",
+      "bytes": 6222
+    },
+    {
+      "path": "episodes/_system/runtime_execution.py",
+      "sha256": "b9305b493c5ec5fb923b2a04cd004f1443c5902a568a7a92177d378f74c83133",
+      "bytes": 2703
+    },
+    {
+      "path": "runtimes/runtime-mode-contract-r2.json",
+      "sha256": "0e14ce9d20a177fafafc2b76c146f31022793278560005376ddbfdfa8c5c47af",
+      "bytes": 1249
+    },
+    {
+      "path": "standards/Runtime_Optimization_R2_V1.0.md",
+      "sha256": "00a23ba4c317a856bbb439efa7836cca989f909af2856ad7da5058276de54023",
+      "bytes": 1941
+    },
+    {
+      "path": "library/README.md",
+      "sha256": "229aa3c930569e2cac8bb2cdf5ea21fb83bb44df5df4b6d07c784ea2eb649400",
+      "bytes": 574
+    },
+    {
+      "path": "library/catalog.json",
+      "sha256": "20ecd1817b3dc4f9ffb01873307f32aa5c354b21831d463764473d588e8d3dc4",
+      "bytes": 3167
+    },
+    {
+      "path": "library/copy/intro-openers.json",
+      "sha256": "b5b2b0bbc16329c0369f75040fe4fdde4a8d0d304b513ebcd7ab9463f9347f3f",
+      "bytes": 2572
+    },
+    {
+      "path": "library/characters/era-presets.json",
+      "sha256": "81abda5a70f50d0946400a7c4962d29272a9776382bb48407e6a452e6ca75a87",
+      "bytes": 576
+    },
+    {
+      "path": "library/locations/scene-presets.json",
+      "sha256": "e4cf34ceee577522f12565659bd6621567ff1d63c4974f200f87aad357601a1d",
+      "bytes": 613
+    },
+    {
+      "path": "library/props/prop-presets.json",
+      "sha256": "4d305beb8dc94ade6695fcac6ae34430ce9ead60ef72ac1d351e40dae0196a6f",
+      "bytes": 281
+    },
+    {
+      "path": "library/capture/capture-presets.json",
+      "sha256": "e8690cddbdeb1167e1d8d3ad63b16cde339abe3bd738f09c078c92f15502d630",
+      "bytes": 379
+    },
+    {
+      "path": "library/environment/environment-presets.json",
+      "sha256": "9d4cf658dba84cb964ef584bc358d3e24e8061f8824352224eaac06ec2e07dcf",
+      "bytes": 510
+    },
+    {
+      "path": "library/anti_patterns/anti-patterns.json",
+      "sha256": "fc80a168a65a93079ab7a762a6ef4ff9e2bb99b4666f2ac244206fc0fb6dc7e7",
+      "bytes": 287
+    }
+  ]
+}

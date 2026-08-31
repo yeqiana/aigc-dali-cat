@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "name": "Story OS Intro Openers V1.0",
+  "title_policy": {
+    "generate": true,
+    "count": 1,
+    "usage": "internal_candidate_only",
+    "required_for_publish_ready": false,
+    "default_include_in_delivery": false,
+    "default_include_in_intro": false
+  },
+  "families": [
+    {
+      "id": "year_action",
+      "label": "年份 + 行动式",
+      "best_for": [
+        "2004_2010",
+        "travel",
+        "return_home",
+        "challenge",
+        "abandoned_place"
+      ],
+      "reference": "2008年，我和几个朋友去了XXX。",
+      "rule": "年份可具体也可由 Story 决定；后半句必须结合真实人物关系和地点自然改写。"
+    },
+    {
+      "id": "state_occasion_trip",
+      "label": "状态 + 时机 + 出行式",
+      "best_for": [
+        "modern_2020s",
+        "travel",
+        "outdoor",
+        "friends_hangout",
+        "casual_work"
+      ],
+      "reference": "最近上班有些疲惫，刚好趁着周末，我和几个朋友去了XXX。",
+      "variants": [
+        "最近上学有些倦怠，刚好趁着周末，我和几个朋友去了XXX。",
+        "最近生活有点闷，刚好快到XXX节，我和几个朋友去了XXX。",
+        "最近工作有些累，刚好趁着休假，我和几个朋友去了XXX。"
+      ],
+      "rule": "状态词、生活场景和时机必须跟人物真实身份匹配，不能机械替换。"
+    },
+    {
+      "id": "identity_discovery",
+      "label": "人物身份 + 发现式",
+      "best_for": [
+        "third_person",
+        "research_trip",
+        "graduate_student",
+        "casual_work"
+      ],
+      "reference": "XXX是XXX大学的研二学生，最近他发现了……",
+      "rule": "“不老泉|”等题名不属于简介固定前缀；只保留身份→最近发现的叙事结构。"
+    },
+    {
+      "id": "approaching_event",
+      "label": "临近节点 + 决定式",
+      "best_for": [
+        "festival",
+        "holiday",
+        "friends_hangout",
+        "travel",
+        "return_home"
+      ],
+      "reference": "临近XXX，我和几个朋友决定去XXX。",
+      "variants": [
+        "临近国庆，我和几个朋友决定去XXX玩几天。",
+        "快到暑假，我和几个朋友决定去XXX。",
+        "临近毕业，我们几个决定去XXX待两天。"
+      ],
+      "rule": "时间节点必须在 Story 时间线上真实存在。"
+    }
+  ],
+  "anti_repetition": {
+    "recent5_track_family": true,
+    "soft_penalty_if_used_in_last_2": true,
+    "hard_ban": false
+  }
+}

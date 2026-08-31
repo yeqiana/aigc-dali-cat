@@ -77,6 +77,18 @@
 - Character Contract 绑定 Resolved Frame Contract；后续生图不得随意漂移人物。
 <!-- STORY_OS_CHARACTER_ENTRY_POOL_AGENTS_END -->
 
+<!-- STORY_OS_RUNTIME_OPTIMIZATION_R2_AGENTS_BEGIN -->
+## Runtime Optimization R2
+
+- `preproduction_only`：完成全部非图片前期资产并生成 `meta/preproduction-handoff.json`；禁止调用 image_generation。
+- `image_continue`：先校验 Handoff Authority SHA；Story/Storyboard/Character 为冻结权威，禁止重写；Derived Cache 可重建。切换模式写 `meta/runtime-execution.json`，不得覆盖 immutable runtime-request。
+- Shared Resource Library 只复用参考/描述，不默认复用旧集最终成片。
+- Visual Lock 使用 1+3：baseline PASS 后，worst/first anomaly/high-impact 才可并行。
+- RELEASE 必须先 resolve intro policy；四类开头是结构参考，不是机械模板。
+- 标题只生成 1 个内部候选；不作为 PUBLISH_READY 必填项。
+- `.storyos_cache/` 为本地全局缓存，不入 Git，不是权威资产。
+<!-- STORY_OS_RUNTIME_OPTIMIZATION_R2_AGENTS_END -->
+
 ## V2.0 Multi-Runtime 执行路由
 
 涉及 story 分支任务时，先读 `START_HERE.md`，再按 `runtimes/runtime-contract.json` 自动路由，不让用户手工选 runtime。

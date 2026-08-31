@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "name": "Story OS Shared Resource Library",
+  "policy": {
+    "reuse_final_episode_images": false,
+    "reference_only_by_default": true,
+    "resource_selection_is_derived_cache": true,
+    "recent5_diversity_applies": true
+  },
+  "resources": [
+    {
+      "id": "ERA_2004_2010_YOUTH",
+      "type": "character_era_descriptor",
+      "path": "library/characters/era-presets.json",
+      "tags": [
+        "2004_2010",
+        "young_people",
+        "ordinary",
+        "digicam",
+        "feature_phone"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0
+    },
+    {
+      "id": "ERA_MODERN_2020S_YOUTH",
+      "type": "character_era_descriptor",
+      "path": "library/characters/era-presets.json",
+      "tags": [
+        "modern_2020s",
+        "young_people",
+        "ordinary",
+        "smartphone"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0
+    },
+    {
+      "id": "LOC_ABANDONED_AMUSEMENT",
+      "type": "location_descriptor",
+      "path": "library/locations/scene-presets.json",
+      "tags": [
+        "abandoned_place",
+        "abandoned_building",
+        "游乐园",
+        "challenge"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0
+    },
+    {
+      "id": "LOC_NORTHWEST_VILLAGE",
+      "type": "location_descriptor",
+      "path": "library/locations/scene-presets.json",
+      "tags": [
+        "village_home",
+        "西北农村",
+        "return_home",
+        "county_town"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0
+    },
+    {
+      "id": "PROP_2008_DIGICAM",
+      "type": "prop_descriptor",
+      "path": "library/props/prop-presets.json",
+      "tags": [
+        "2004_2010",
+        "digicam",
+        "数码相机"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0
+    },
+    {
+      "id": "CAPTURE_PHONE_REALISM",
+      "type": "capture_descriptor",
+      "path": "library/capture/capture-presets.json",
+      "tags": [
+        "modern_2020s",
+        "phone",
+        "first_person",
+        "realistic"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.2
+    },
+    {
+      "id": "CAPTURE_DIGICAM_2008",
+      "type": "capture_descriptor",
+      "path": "library/capture/capture-presets.json",
+      "tags": [
+        "2004_2010",
+        "digicam",
+        "first_person",
+        "realistic"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.2
+    },
+    {
+      "id": "ENV_HOT_SUMMER",
+      "type": "environment_descriptor",
+      "path": "library/environment/environment-presets.json",
+      "tags": [
+        "炎热",
+        "夏天",
+        "hot_summer",
+        "heat_shimmer"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.1
+    },
+    {
+      "id": "ENV_HUMID_RAIN",
+      "type": "environment_descriptor",
+      "path": "library/environment/environment-presets.json",
+      "tags": [
+        "下雨",
+        "雨天",
+        "humid_rain",
+        "wet_surface"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.1
+    }
+  ]
+}

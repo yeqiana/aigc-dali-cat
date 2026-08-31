@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "name": "Story OS Runtime Modes R2",
+  "execution_modes": [
+    "full_auto",
+    "preproduction_only",
+    "image_continue",
+    "resume",
+    "repair_only",
+    "release_only",
+    "data_review"
+  ],
+  "semantics": {
+    "full_auto": "from request to PUBLISH_READY",
+    "preproduction_only": "create all non-image preproduction assets, build handoff, stop before image generation",
+    "image_continue": "verify handoff and continue from image/visual production without rewriting story",
+    "resume": "resume from verified checkpoint",
+    "repair_only": "repair dirty/failed assets only",
+    "release_only": "finalize release from already-passed production",
+    "data_review": "post-publish review"
+  },
+  "story_input_modes": [
+    "auto_create",
+    "user_seed",
+    "core_constraints",
+    "locked_story"
+  ],
+  "invariant": "execution mode and story input mode are independent dimensions",
+  "execution_overlay": {
+    "path": "<episode>/meta/runtime-execution.json",
+    "mutable": true,
+    "runtime_request_remains_immutable": true,
+    "precedence": "active runtime-execution override > immutable runtime-request.mode",
+    "handoff_activation": "verified preproduction handoff may set image_continue"
+  }
+}

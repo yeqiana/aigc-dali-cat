@@ -4,6 +4,8 @@ from __future__ import annotations
 import argparse, json, os, shutil, subprocess, sys
 import execution_capsule
 import character_contract
+import resource_library
+import intro_policy
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -27,11 +29,23 @@ TARGET: reach STORYBOARD_LOCKED and stop there.
 - advance only to STORYBOARD_LOCKED.
 DO NOT create Environment/Impact Contract, Visual Lock images, Batch, subtitles or Release.
 """,
+"PREIMAGE_COMPILE":"""
+TARGET: keep STORYBOARD_LOCKED and finish every non-image asset required for a clean image handoff.
+- Story/Storyboard/Character Contract are already locked authority. DO NOT rewrite them.
+- resolve shared Resource Library references into meta/resource-selection.json.
+- create/verify Environment + Impact Contract and all frame directives.
+- compile/verify all Resolved Frame Contracts.
+- author concise per-frame production prompt source files required by the existing image scheduler / prompt-package compiler.
+- resolve intro policy and allow provisional text-only release drafts.
+- DO NOT invoke image_generation, DO NOT create Visual Lock images, DO NOT advance the Episode stage.
+Stop only when environment/frame contracts are machine-verifiable and image production can start without story work.
+""",
 "VISUAL_LOCK":"""
 TARGET: reach VISUAL_CALIBRATED and stop there.
 - create/verify Environment + Impact Contract.
 - compile/verify Resolved Frame Contracts.
 - use exactly four current V2.1 Visual Lock admissions: ordinary_baseline, worst_capture_condition, first_major_anomaly, high_impact_admission.
+- execute Visual Lock as 1+3: ordinary_baseline must PASS first; then worst_capture_condition / first_major_anomaly / high_impact_admission may run in parallel and all must bind the approved baseline reference.
 - generate/review/repair only those admissions as required.
 - use image model policy from meta/runtime-request.json; default gpt-image-2.
 - record honest delegated visual approval only after evidence passes.
@@ -51,6 +65,8 @@ DO NOT do subtitles or Release.
 """,
 "RELEASE":"""
 TARGET: reach PUBLISH_READY and stop there.
+- resolve meta/intro-policy.json before final copy. The intro opening must use one of the four approved reference families but be naturally rewritten for the actual Story; never mechanically substitute XXX.
+- generate exactly one title as an internal candidate only. Title is not required for PUBLISH_READY and is not included in final delivery by default.
 - create/audit captions and publish copy/assets from PASS production frames.
 - complete release/compliance checks.
 - build+verify Final Candidate Snapshot.
@@ -82,6 +98,11 @@ def prompt(ep,step):
     rel=ep.relative_to(ROOT).as_posix()
     if step=="CREATIVE_STORY":
         character_contract.prepare(ep,force=False)
+        resource_library.resolve(ep,write=True)
+    if step in {"PREIMAGE_COMPILE","VISUAL_LOCK"}:
+        resource_library.resolve(ep,write=True)
+    if step=="RELEASE":
+        intro_policy.resolve(ep,write=True)
     capsule=execution_capsule.compile_capsule(ep,step,write=True)
     return f"""You are a bounded Story OS V2.1 scoped worker for exactly {rel}.
 Use the derived Execution Capsule first; do NOT reread the entire repository policy stack by default.
@@ -116,7 +137,7 @@ def run_step(ep,step,codex_raw=None,timeout=3600):
             return 124,str(log)
 
 def self_test():
-    assert set(STEP_DIRECTIVES)=={"CREATIVE_STORY","VISUAL_LOCK","PRODUCTION","RELEASE"}
+    assert set(STEP_DIRECTIVES)=={"CREATIVE_STORY","PREIMAGE_COMPILE","VISUAL_LOCK","PRODUCTION","RELEASE"}
     print("SCOPED CODEX WORKER SELF-TEST PASS")
 
 def main():

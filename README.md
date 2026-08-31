@@ -113,6 +113,92 @@ python -X utf8 episodes/_system/story_os.py quota report <episode>
 第一人称也必须锁 POV 年龄/性别/衣着/设备与同伴成员锚点。Story Lock 前 NO-ANOMALY TEST 必须 PASS；Character Contract 随后绑定进 Resolved Frame Contract SHA。
 <!-- STORY_OS_CHARACTER_ENTRY_POOL_END -->
 
+<!-- STORY_OS_RUNTIME_OPTIMIZATION_R2_BEGIN -->
+## Runtime Optimization R2｜缓存 / 资源库 / ChatGPT→Codex 接力
+
+### 执行模式
+
+| 模式 | 用途 | 改剧情 | 生图 |
+|---|---|---:|---:|
+| `full_auto` | 一句话做到 PUBLISH_READY | 按 Story Input Policy | 是 |
+| `preproduction_only` | ChatGPT/Work 只做全部生图前资产 | 是 | **否** |
+| `image_continue` | Codex 接管已提交到 GitHub 的前期资产 | **否** | 是 |
+| `resume` | 从验证过的断点继续 | 否 | 按断点 |
+| `repair_only` | 只修失败/Dirty 资产 | 否 | 必要时 |
+| `release_only` | 已完成图片，只做发布资产 | 否 | 否 |
+| `data_review` | 发布后数据复盘 | 否 | 否 |
+
+Story Input Mode 仍然独立：`auto_create / user_seed / core_constraints / locked_story`。
+
+### ChatGPT 只做前期资产
+
+```text
+读取 story 分支。
+制作《仲夏夜惊魂》的全部前期资产，
+做到可以正式生图的交接状态，
+不要生成图片。
+```
+
+对应 `preproduction_only`。应产出并提交 Runtime Request、Character Contract、Concept/Story/Storyboard、Environment/Impact、Resolved Frame Contracts、Resource Selection、Intro Policy、provisional text draft 和 `meta/preproduction-handoff.json`。此模式禁止 image_generation。
+
+### Codex 从生图继续
+
+```text
+读取 story 分支。
+接管《仲夏夜惊魂》已经完成的前期资产，
+不要重写剧情，
+从生图开始继续制作，
+做到最终交付。
+```
+
+对应 `image_continue`。Codex 必须先验证 Handoff Authority SHA；不一致报 `HANDOFF_SHA_MISMATCH`。Derived Cache 可重建，Story/Character/稳定前期权威不得重写。
+
+如果 Episode 原始 Runtime Request 仍是 `preproduction_only`，不要覆盖它。先执行：
+
+```bat
+python -X utf8 episodes/_system/story_os.py handoff activate episodes\你的故事
+```
+
+该命令只写 `meta/runtime-execution.json`，把当前执行覆盖为 `image_continue`；原始 `runtime-request.json` 保持不可变。
+
+### 多级缓存
+
+- L0：同进程 JSON/text parse cache
+- L1：Episode 内 Execution Capsule / Frame Contract / Prompt Package
+- L2：`.storyos_cache/` 全局 content-addressed 资源选择缓存
+- L3：显式负缓存 API，只用于安全 provider/model 故障指纹，不能吞内容返修
+
+`.storyos_cache/` 不入 Git。
+
+### Shared Resource Library
+
+跨集资源放 `library/`：人物年代、地点、道具、Capture DNA、天气物理、简介开头模板和后续注册的参考图。默认只做 reference；禁止默认复用上一集最终成片。
+
+```bat
+python -X utf8 episodes/_system/story_os.py resource resolve episodes\你的故事
+python -X utf8 episodes/_system/story_os.py cache-r2 stats
+```
+
+### Visual Lock 1+3
+
+四张仍为 ordinary baseline / worst capture / first major anomaly / high-impact。baseline 先 PASS，后三张再并行并引用 baseline。审核一个都不删。
+
+### 简介开头
+
+最终简介优先参考：
+
+```text
+2008年，我和几个朋友去了XXX。
+最近上班有些疲惫，刚好趁着周末，我和几个朋友去了XXX。
+XXX是XXX大学的研二学生，最近他发现了……
+临近XXX，我和几个朋友决定去XXX。
+```
+
+模板只是结构锚点，最终必须自然口语化，禁止机械替换 XXX。
+
+标题仍默认生成 **1 个内部候选**，但不作为 PUBLISH_READY 必填，不默认进入最终交付，也不要求发布时使用。
+<!-- STORY_OS_RUNTIME_OPTIMIZATION_R2_END -->
+
 ## 剧集索引
 
 | 剧集 | 目录 | 状态 |

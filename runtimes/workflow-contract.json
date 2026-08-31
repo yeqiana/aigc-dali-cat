@@ -77,7 +77,21 @@
     "ordinary_person_score_min": 75,
     "career_explains_arrival_not_anomaly_solution": true,
     "forbidden_functional_protagonist_roles": true,
-    "character_contract_bound_into_frame_contract": true
+    "character_contract_bound_into_frame_contract": true,
+    "runtime_modes_r2": true,
+    "preproduction_only_supported": true,
+    "image_continue_supported": true,
+    "image_continue_forbids_story_rewrite": true,
+    "handoff_authority_sha_required": true,
+    "derived_cache_may_rebuild_after_handoff": true,
+    "multi_level_cache_enabled": true,
+    "shared_resource_library_enabled": true,
+    "shared_resource_library_final_images_not_reused": true,
+    "visual_lock_strategy": "baseline_then_parallel_three",
+    "intro_opener_library_enabled": true,
+    "title_generate_count": 1,
+    "title_required_for_publish_ready": false,
+    "title_default_include_in_delivery": false
   },
   "steps": {
     "RESTORE": {
@@ -371,5 +385,21 @@
     "new_episode_stage": false,
     "required_before_storyboard_locked_for_new_runs": true,
     "frame_contract_binding": true
+  },
+  "runtime_modes_r2": {
+    "contract": "runtimes/runtime-mode-contract-r2.json",
+    "preproduction_handoff": "meta/preproduction-handoff.json",
+    "preproduction_only_target": "STORYBOARD_LOCKED_PLUS_PREIMAGE_ASSETS",
+    "image_continue_start": "VERIFIED_HANDOFF_TO_VISUAL_LOCK"
+  },
+  "resource_library": {
+    "catalog": "library/catalog.json",
+    "selection": "<episode>/meta/resource-selection.json",
+    "policy": "reference_only_by_default",
+    "global_cache": ".storyos_cache/"
+  },
+  "copy_policy_r2": {
+    "intro_openers": "library/copy/intro-openers.json",
+    "title_usage": "internal_candidate_only"
   }
 }
