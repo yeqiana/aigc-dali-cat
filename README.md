@@ -101,6 +101,18 @@ python -X utf8 episodes/_system/story_os.py quota report <episode>
 这些都是执行优化，Story / Visual / Production / Release 的正式 Gate 一个都不删。
 <!-- STORY_OS_RUNTIME_PERFORMANCE_PACK_README_END -->
 
+<!-- STORY_OS_CHARACTER_ENTRY_POOL_BEGIN -->
+## Character / Entry Pool｜普通年轻人先于异常
+
+新篇在 Concept 前建立 `meta/character-contract.json`。默认主角优先为 2004–2010 或 2020 年代的二十来岁普通青年，可为单人、两人或 4–5 人同龄朋友团。
+
+优先进入方式：旅行、回老家、朋友聚会、打游戏/喝酒、挑战、废弃场所、露营、自驾、生活化出差、课题/科考、偶然绕路。
+
+默认禁用主角：抢修员、电工、维修工、警察、记者、调查员、专业探灵人等“为解决异常而制造的职业工具人”。工作/科考只解释为什么来到这里。
+
+第一人称也必须锁 POV 年龄/性别/衣着/设备与同伴成员锚点。Story Lock 前 NO-ANOMALY TEST 必须 PASS；Character Contract 随后绑定进 Resolved Frame Contract SHA。
+<!-- STORY_OS_CHARACTER_ENTRY_POOL_END -->
+
 ## 剧集索引
 
 | 剧集 | 目录 | 状态 |

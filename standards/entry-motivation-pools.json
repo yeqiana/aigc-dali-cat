@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "name": "Story OS Entry Motivation Pools V1.0",
+  "default_weights": {
+    "travel": 0.2,
+    "return_home": 0.15,
+    "friends_hangout": 0.15,
+    "challenge": 0.15,
+    "abandoned_place": 0.1,
+    "outdoor": 0.08,
+    "casual_work": 0.07,
+    "research_trip": 0.05,
+    "accidental_detour": 0.05
+  },
+  "entries": {
+    "travel": {
+      "label": "旅行/出游",
+      "examples": [
+        "周末自驾",
+        "暑假旅行",
+        "毕业旅行",
+        "临时短途游",
+        "山里/县城/古镇旅行",
+        "中巴/火车出行"
+      ],
+      "no_anomaly_plan": "原本只是正常旅行、吃饭、住宿、拍照后返回"
+    },
+    "return_home": {
+      "label": "回家/回老家",
+      "examples": [
+        "暑假回家",
+        "国庆返乡",
+        "去亲戚家",
+        "跟朋友回他老家",
+        "回去拿东西/办事"
+      ],
+      "no_anomaly_plan": "原本只是返乡、探亲或办完事后回去"
+    },
+    "friends_hangout": {
+      "label": "朋友聚会",
+      "examples": [
+        "在家打游戏",
+        "喝酒",
+        "打牌",
+        "聊天",
+        "桌游",
+        "真心话大冒险"
+      ],
+      "no_anomaly_plan": "原本只是几个朋友聚会、打游戏、喝酒聊天"
+    },
+    "challenge": {
+      "label": "挑战/起哄",
+      "examples": [
+        "喝酒后起哄",
+        "输游戏做惩罚",
+        "凌晨挑战都市传说",
+        "比胆量"
+      ],
+      "no_anomaly_plan": "原本只是年轻人为了好玩做一次挑战然后回家"
+    },
+    "abandoned_place": {
+      "label": "废弃场所游玩",
+      "examples": [
+        "废旧游乐园",
+        "旧学校",
+        "废弃宾馆",
+        "老厂区",
+        "烂尾楼",
+        "已关闭景区"
+      ],
+      "no_anomaly_plan": "原本只是拍照、怀旧、探险或朋友带路去看看"
+    },
+    "outdoor": {
+      "label": "露营/户外",
+      "examples": [
+        "露营",
+        "徒步",
+        "骑行",
+        "钓鱼",
+        "烧烤",
+        "看日出/流星/星空"
+      ],
+      "no_anomaly_plan": "原本只是一次正常户外活动"
+    },
+    "casual_work": {
+      "label": "生活化工作",
+      "examples": [
+        "跟领导出差",
+        "同事去外地办事",
+        "项目驻场",
+        "培训",
+        "实习",
+        "采风",
+        "外拍"
+      ],
+      "no_anomaly_plan": "原本只是完成普通工作任务后返程",
+      "hard_rule": "职业只解释为什么来到这里，不得把主角变成负责解决异常的专业功能角色"
+    },
+    "research_trip": {
+      "label": "课题/科考/调研",
+      "examples": [
+        "研究生跟课题组",
+        "青年科考成员",
+        "实习生",
+        "调研小组"
+      ],
+      "no_anomaly_plan": "原本只是按普通课题/科考计划完成记录与返程",
+      "hard_rule": "允许年轻科考/课题成员，不允许秘密异常研究所、官方特殊调查组"
+    },
+    "accidental_detour": {
+      "label": "偶然路过/绕路",
+      "examples": [
+        "下错站",
+        "错过末班车",
+        "导航走错",
+        "大雨绕路",
+        "临时住宿",
+        "当地人指路"
+      ],
+      "no_anomaly_plan": "原本只是解决交通或住宿问题后继续正常行程"
+    }
+  },
+  "keyword_map": {
+    "旅游": "travel",
+    "旅行": "travel",
+    "自驾": "travel",
+    "回老家": "return_home",
+    "回家": "return_home",
+    "返乡": "return_home",
+    "喝酒": "friends_hangout",
+    "打游戏": "friends_hangout",
+    "聚会": "friends_hangout",
+    "挑战": "challenge",
+    "起哄": "challenge",
+    "大冒险": "challenge",
+    "废弃": "abandoned_place",
+    "游乐园": "abandoned_place",
+    "烂尾楼": "abandoned_place",
+    "露营": "outdoor",
+    "徒步": "outdoor",
+    "钓鱼": "outdoor",
+    "出差": "casual_work",
+    "工作": "casual_work",
+    "驻场": "casual_work",
+    "科考": "research_trip",
+    "课题组": "research_trip",
+    "调研": "research_trip",
+    "绕路": "accidental_detour",
+    "导航": "accidental_detour",
+    "下错站": "accidental_detour"
+  }
+}

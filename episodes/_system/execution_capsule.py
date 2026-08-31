@@ -14,12 +14,17 @@ REL=Path("meta/runtime/execution-capsules")
 AUTHORITY_FILES=[
     "START_HERE.md","SKILL.md","AGENTS.md","standards/制作规范_正式版.md",
     "runtimes/workflow-contract.json",
+    "standards/Character_And_Entry_Pool_V1.0.md",
+    "standards/character-pools.json",
+    "standards/entry-motivation-pools.json",
+    "standards/scene-pools.json",
+    "standards/forbidden-character-roles.json",
 ]
 STEP_EVIDENCE={
-    "CREATIVE_STORY":["meta/runtime-request.json","meta/episode-state.json","meta/story-gates.json","reports/account-learning-index.json"],
-    "VISUAL_LOCK":["meta/runtime-request.json","meta/episode-state.json","meta/story-gates.json","meta/concept-ambition-review.json"],
-    "PRODUCTION":["meta/runtime-request.json","meta/episode-state.json","meta/story-gates.json","meta/visual-lock-plan.json","meta/production-ledger.json"],
-    "RELEASE":["meta/runtime-request.json","meta/episode-state.json","meta/story-gates.json","meta/production-ledger.json","meta/runtime/provisional-release.json"],
+    "CREATIVE_STORY":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/story-gates.json","reports/account-learning-index.json"],
+    "VISUAL_LOCK":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/story-gates.json","meta/concept-ambition-review.json"],
+    "PRODUCTION":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/story-gates.json","meta/visual-lock-plan.json","meta/production-ledger.json"],
+    "RELEASE":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/story-gates.json","meta/production-ledger.json","meta/runtime/provisional-release.json"],
 }
 RULE_KEYS=[
     "zip_is_delivery_adapter_not_stage_gate","codex_production_complete_at_publish_ready",
@@ -67,6 +72,7 @@ def compile_capsule(ep,step,write=True):
     material={
       "schema_version":1,"story_os":"2.1","step":step,"current_state":current_state(ep),
       "runtime_request":request,
+      "character_contract":read_json(ep/"meta/character-contract.json"),
       "invariants":{k:rules.get(k) for k in RULE_KEYS if k in rules},
       "authority_files":authority,
       "evidence_files":evidence,

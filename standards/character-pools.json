@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "name": "Story OS Character Pools V1.0",
+  "policy": {
+    "ordinary_young_people_first": true,
+    "default_age_range": [
+      19,
+      28
+    ],
+    "core_age_range": [
+      21,
+      26
+    ],
+    "first_person_still_requires_character_anchor": true,
+    "group_cast_requires_member_anchors": true,
+    "career_explains_arrival_not_anomaly_solution": true,
+    "recent5_era_diversity": true
+  },
+  "era_weights_when_unspecified": {
+    "modern_2020s": 0.6,
+    "2004_2010": 0.4
+  },
+  "cast_size_weights": {
+    "single": 0.3,
+    "pair": 0.2,
+    "small_group_4_5": 0.5
+  },
+  "eras": {
+    "2004_2010": {
+      "year_range": [
+        2004,
+        2010
+      ],
+      "default_years": [
+        2006,
+        2007,
+        2008,
+        2009,
+        2010
+      ],
+      "age_range": [
+        19,
+        25
+      ],
+      "core_age_range": [
+        20,
+        23
+      ],
+      "devices": [
+        "2000年代消费级数码相机",
+        "功能机/翻盖手机/滑盖手机",
+        "MP3/MP4"
+      ],
+      "wardrobe_male": [
+        "灰色短袖T恤+深蓝牛仔裤+普通运动鞋",
+        "白色短袖+卡其休闲裤+帆布鞋",
+        "深色短袖+旧牛仔裤+运动鞋"
+      ],
+      "wardrobe_female": [
+        "浅色短袖+牛仔裤+帆布鞋",
+        "普通印花短袖+过膝裙+运动鞋",
+        "浅色上衣+深色长裤+帆布鞋"
+      ]
+    },
+    "modern_2020s": {
+      "year_range": [
+        2019,
+        2026
+      ],
+      "default_years": [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "age_range": [
+        22,
+        28
+      ],
+      "core_age_range": [
+        24,
+        25
+      ],
+      "devices": [
+        "普通智能手机",
+        "手机手持拍摄",
+        "消费级微单/运动相机（仅剧情需要时）"
+      ],
+      "wardrobe_male": [
+        "黑色短袖+深灰工装裤+运动鞋",
+        "白色短袖+牛仔裤+运动鞋",
+        "灰色卫衣/短袖+休闲长裤+运动鞋"
+      ],
+      "wardrobe_female": [
+        "浅色短袖+牛仔裤+运动鞋",
+        "灰色卫衣+短裤/长裤+运动鞋",
+        "普通短袖+长裙+平底鞋"
+      ]
+    }
+  },
+  "group_gender_patterns": {
+    "4": [
+      [
+        "male",
+        "male",
+        "female",
+        "female"
+      ]
+    ],
+    "5": [
+      [
+        "male",
+        "male",
+        "male",
+        "female",
+        "female"
+      ],
+      [
+        "male",
+        "male",
+        "female",
+        "female",
+        "female"
+      ]
+    ]
+  },
+  "relationship_pool": [
+    "大学同学",
+    "高中同学/发小",
+    "朋友带朋友的小圈子",
+    "年轻同事",
+    "同学和同学的朋友"
+  ]
+}

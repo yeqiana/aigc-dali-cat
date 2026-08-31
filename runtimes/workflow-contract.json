@@ -67,7 +67,17 @@
     "rolling_pre_final_review_high_risk_only": true,
     "rolling_review_never_final_pass": true,
     "provisional_release_parallel": true,
-    "provisional_release_never_final_authority": true
+    "provisional_release_never_final_authority": true,
+    "character_pool_before_concept": true,
+    "character_contract_is_story_build_input_not_stage": true,
+    "ordinary_young_people_default_protagonists": true,
+    "first_person_requires_character_anchor": true,
+    "group_cast_requires_stable_member_anchors": true,
+    "no_anomaly_test_before_story_lock": true,
+    "ordinary_person_score_min": 75,
+    "career_explains_arrival_not_anomaly_solution": true,
+    "forbidden_functional_protagonist_roles": true,
+    "character_contract_bound_into_frame_contract": true
   },
   "steps": {
     "RESTORE": {
@@ -346,5 +356,20 @@
     "prompt_package": "episodes/_system/prompt_package.py",
     "provisional_release": "episodes/_system/provisional_release.py",
     "rolling_review": "episodes/_system/rolling_frame_review.py"
+  },
+  "character_contract": {
+    "schema_version": 1,
+    "path": "<episode>/meta/character-contract.json",
+    "tool": "episodes/_system/character_contract.py",
+    "pools": [
+      "standards/character-pools.json",
+      "standards/entry-motivation-pools.json",
+      "standards/scene-pools.json",
+      "standards/forbidden-character-roles.json"
+    ],
+    "story_build_input": true,
+    "new_episode_stage": false,
+    "required_before_storyboard_locked_for_new_runs": true,
+    "frame_contract_binding": true
   }
 }

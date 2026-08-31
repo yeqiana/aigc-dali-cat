@@ -18,6 +18,7 @@ from typing import Any
 from story_os_contract import story_os_version
 from visual_profile import compile_prompt_contract
 import environment_contract
+import character_contract
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
@@ -271,6 +272,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     story_path, storyboard_path = artifact_paths(ep)
     g = gates(ep)
     visual = g.get("visual") or {}
+    character = read_json(ep / character_contract.REL) if (ep / character_contract.REL).is_file() else {}
     visual_profile = compile_prompt_contract(ep)
     env = environment_contract.resolve_frame(ep, n)
     directive = env.get("directive") or {}
@@ -284,6 +286,10 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "visual_profile": {
             "path": visual_profile["profile_path"],
             "sha256": visual_profile["profile_sha256"],
+        },
+        "character_contract": {
+            "path": character_contract.REL.as_posix(),
+            "sha256": sha256_file(ep / character_contract.REL) if (ep / character_contract.REL).is_file() else None,
         },
     }
 
@@ -302,6 +308,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
             "capture_profile": visual_profile["capture_profile"],
         },
         "authenticity_card": visual.get("authenticity_card") or {},
+        "character_contract": character,
         "continuity": visual.get("continuity") or {},
         "environment": env.get("environment") or {},
         "active_environment_segments": env.get("active_segments") or [],
@@ -325,6 +332,9 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "[CAPTURE / AUTHENTICITY]",
         _compact_json(visual.get("authenticity_card") or {}),
         "",
+        "[CHARACTER / POV CONTRACT]",
+        _compact_json(character, 2800),
+        "",
         "[CONTINUITY]",
         _compact_json(visual.get("continuity") or {}),
         "",
@@ -346,7 +356,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "story_os_version": episode_version(ep),
         "frame": key,
         "derived_cache": True,
-        "authority": "Story + Storyboard + story-gates + Visual Profile",
+        "authority": "Story + Storyboard + Character Contract + story-gates + Visual Profile",
         "generated_at": now(),
         "source_trace": source_trace,
         "storyboard_frame": excerpt,

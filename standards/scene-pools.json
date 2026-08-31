@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "name": "Story OS Scene Pools V1.0",
+  "scenes": {
+    "county_town": [
+      "老街",
+      "小旅馆",
+      "网吧",
+      "台球厅",
+      "小饭馆",
+      "KTV",
+      "旧小区",
+      "汽车站",
+      "城郊"
+    ],
+    "village_home": [
+      "西北农村",
+      "山村",
+      "小镇",
+      "老屋",
+      "村口",
+      "庙会",
+      "土路",
+      "农田",
+      "河滩"
+    ],
+    "travel_road": [
+      "国道",
+      "省道",
+      "山路",
+      "服务区",
+      "隧道",
+      "盘山公路",
+      "客运中巴",
+      "火车小站",
+      "加油站"
+    ],
+    "abandoned_building": [
+      "废旧游乐园",
+      "废弃学校",
+      "废弃宾馆",
+      "旧工厂",
+      "旧商场",
+      "旧电影院",
+      "废弃度假村"
+    ],
+    "modern_indoor": [
+      "出租屋",
+      "朋友家",
+      "民宿",
+      "酒店",
+      "公寓",
+      "游戏房"
+    ],
+    "outdoor_nature": [
+      "山",
+      "森林",
+      "河边",
+      "水库",
+      "戈壁",
+      "荒漠",
+      "湖边",
+      "草原",
+      "雪山",
+      "峡谷"
+    ],
+    "casual_work_site": [
+      "普通办公室",
+      "项目驻地",
+      "宿舍",
+      "临时工作点",
+      "科考营地",
+      "小型测站",
+      "学校实验室"
+    ]
+  },
+  "entry_to_scene_preferences": {
+    "travel": [
+      "travel_road",
+      "county_town",
+      "village_home",
+      "outdoor_nature"
+    ],
+    "return_home": [
+      "village_home",
+      "county_town",
+      "travel_road"
+    ],
+    "friends_hangout": [
+      "modern_indoor",
+      "county_town"
+    ],
+    "challenge": [
+      "abandoned_building",
+      "county_town",
+      "outdoor_nature"
+    ],
+    "abandoned_place": [
+      "abandoned_building"
+    ],
+    "outdoor": [
+      "outdoor_nature",
+      "travel_road"
+    ],
+    "casual_work": [
+      "casual_work_site",
+      "county_town",
+      "travel_road"
+    ],
+    "research_trip": [
+      "casual_work_site",
+      "outdoor_nature",
+      "travel_road"
+    ],
+    "accidental_detour": [
+      "travel_road",
+      "county_town",
+      "village_home"
+    ]
+  }
+}

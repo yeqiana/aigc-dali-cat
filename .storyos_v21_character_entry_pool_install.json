@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "package": "Story OS V2.1 Character + Entry Pool",
+  "package_version": "2.1.0-character-entry-pool-v1",
+  "installed_at": "2026-08-31T13:52:47.943444+08:00",
+  "baseline_expected_head": "d649e9f6aa7f08d36e3180010547a8fae5a16eeb",
+  "actual_git": {
+    "available": true,
+    "branch": "story",
+    "head": "d649e9f6aa7f08d36e3180010547a8fae5a16eeb"
+  },
+  "backup": ".storyos_backups\\v21_character_entry_20260831_135247",
+  "encoding": "utf-8",
+  "tests": "PASS",
+  "new_episode_stage": false,
+  "character_contract_story_input": true,
+  "no_anomaly_test": true,
+  "ordinary_person_score_min": 75,
+  "frame_contract_character_binding": true,
+  "files": [
+    {
+      "path": "story_os_manifest.json",
+      "sha256": "cb9e3eff0801761902e92a00525f0d8970d69c2813c3c1bd5d146a7bcec667ab",
+      "bytes": 7385
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "sha256": "84e97915d574b208c5fd14d51b0f9a171359e1041d20feb89d431b7ab360a072",
+      "bytes": 11407
+    },
+    {
+      "path": "README.md",
+      "sha256": "27548efd6a20c21f1cc65d058202240db84b596c0df11dc5b06570b9367fff47",
+      "bytes": 9682
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "4cf7521fed0ce442180da1672434027fa677f4332b94bb0d3e69b140cb80d6b8",
+      "bytes": 14495
+    },
+    {
+      "path": "START_HERE.md",
+      "sha256": "ab867950b0ac8fcb7e0af16029cbcacda185d49450dd54f91ea7e76756d32907",
+      "bytes": 14128
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "a80b89af3446dca721350dcd472e3cbc1ff294055e992403ea281d93f09fd588",
+      "bytes": 21669
+    },
+    {
+      "path": "episodes/_system/scoped_codex_worker.py",
+      "sha256": "b743b16b8d57069633a10232d17ddd78c8b88ecf98843bd157787f7cc47541c1",
+      "bytes": 6906
+    },
+    {
+      "path": "episodes/_system/runtime_dag.py",
+      "sha256": "7dae38d4c197039ac41e6527b0b923f79b9f071a7dc2cc5cf7868c15533a3499",
+      "bytes": 7786
+    },
+    {
+      "path": "episodes/_system/execution_capsule.py",
+      "sha256": "25a6cc32bf610b2ade8af0ba8975f7cd49dea158b5fbb2fbe8adec870e33a364",
+      "bytes": 5509
+    },
+    {
+      "path": "episodes/_system/frame_contract.py",
+      "sha256": "119a0e9d31f1c28701b0e7050aea6e813e9a914b964cd201a81a3e97bd7eb795",
+      "bytes": 21808
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "sha256": "3b5960ab7a8f5eea57305b319a1c3aee6e87356d3ce3b274c050f713aa129750",
+      "bytes": 14454
+    },
+    {
+      "path": "episodes/_system/character_contract.py",
+      "sha256": "fd933a4599e38314e9e842f9fc5a1ee6bf83cce2031f1ec0d187ef79bbcc6773",
+      "bytes": 12412
+    },
+    {
+      "path": "standards/Character_And_Entry_Pool_V1.0.md",
+      "sha256": "c5288a7c1d2037216e53946f6b6ebca29125dc30cbbfcfa340b20f584d6612e7",
+      "bytes": 2054
+    },
+    {
+      "path": "standards/character-pools.json",
+      "sha256": "e4a13a6579cd286d71124d985ddb21a4ac281a66851223811b6f988a2ec9c061",
+      "bytes": 2769
+    },
+    {
+      "path": "standards/entry-motivation-pools.json",
+      "sha256": "e968f2c0068f1c698426a566424374d47f524269e379a3e0fd704b066ec2939e",
+      "bytes": 4210
+    },
+    {
+      "path": "standards/scene-pools.json",
+      "sha256": "31b8aeb7b2c368b82cdb30c27b906b1e5c3a3a15964cc36d657d012658767185",
+      "bytes": 2168
+    },
+    {
+      "path": "standards/forbidden-character-roles.json",
+      "sha256": "c0b18e39cd4141f999a4b30bc190fa0bb59c5eb84bfe8b67828cde6ad2eb5459",
+      "bytes": 1179
+    }
+  ]
+}

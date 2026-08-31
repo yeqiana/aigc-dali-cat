@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse, json, os, shutil, subprocess, sys
 import execution_capsule
+import character_contract
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -11,6 +12,13 @@ STEP_DIRECTIVES={
 "CREATIVE_STORY":"""
 TARGET: reach STORYBOARD_LOCKED and stop there.
 - honor meta/runtime-request.json when present.
+- BEFORE concept/story work, read meta/character-contract.json as the Character/Entry/Scene Story Build Input Contract.
+- default protagonists are ordinary young people from the 2004-2010 or modern-2020s pools; first-person POV still requires a stable character anchor.
+- default 4-5 person groups must keep stable member IDs, ages, genders and clothing anchors.
+- prefer life-like entry motives: travel, return home, friends hangout, games/drinking, challenge, abandoned place, outdoor trip, casual work, research/expedition, accidental detour.
+- NEVER replace the protagonist with a repair worker, electrician, police officer, journalist, investigator, professional ghost hunter or another occupational tool invented to solve the anomaly.
+- casual work / research / expedition may explain why the young people arrived, but professional skill must not become the shortcut that solves the anomaly.
+- BEFORE STORYBOARD_LOCKED, update meta/character-contract.json to match the final Story, set status=LOCKED, recheck NO-ANOMALY TEST, and run character_contract.py validate --require-locked. Do not advance if it fails.
 - auto_create: author the complete story yourself via recent5/account evidence -> 8-12 concepts -> Concept Ambition -> image-first propagation -> Story/Storyboard.
 - user_seed: preserve core intent but strengthen/rewrite mechanism, logic, escalation, climax and ending; never mechanically split the seed.
 - core_constraints: preserve every hard constraint.
@@ -72,6 +80,8 @@ def request_block(ep):
 
 def prompt(ep,step):
     rel=ep.relative_to(ROOT).as_posix()
+    if step=="CREATIVE_STORY":
+        character_contract.prepare(ep,force=False)
     capsule=execution_capsule.compile_capsule(ep,step,write=True)
     return f"""You are a bounded Story OS V2.1 scoped worker for exactly {rel}.
 Use the derived Execution Capsule first; do NOT reread the entire repository policy stack by default.

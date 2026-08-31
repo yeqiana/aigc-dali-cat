@@ -64,6 +64,19 @@
 - Provisional Release 只能写 runtime 临时草稿，不得改 release-manifest / snapshot / stage。
 <!-- STORY_OS_RUNTIME_PERFORMANCE_PACK_AGENTS_END -->
 
+<!-- STORY_OS_CHARACTER_ENTRY_POOL_AGENTS_BEGIN -->
+## Character / Entry Pool
+
+- CREATIVE_STORY 前准备 `meta/character-contract.json`；它是 Story Build Input Contract，不是新 Stage。
+- 默认主角从 2004–2010 或 2020年代二十来岁普通青年池选择，可单人、两人、4–5人朋友团。
+- 第一人称 POV 也必须固定人物锚点；小团体固定 P01/P02...、年龄、性别、衣着。
+- 进入异常优先旅行、返乡、聚会、喝酒/游戏、挑战、废弃场所、户外、自驾、生活化工作/课题/科考、偶然绕路。
+- 抢修员、电工、维修工、警察、记者、调查员、专业探灵人、秘密异常研究人员不得作为默认主角发动机。
+- 工作/科考只能解释“为什么来到这里”，不能让专业技能成为解决异常的剧情捷径。
+- Story Lock 前 Character Contract 必须 LOCKED，NO-ANOMALY TEST PASS，ORDINARY_PERSON_SCORE >= 75。
+- Character Contract 绑定 Resolved Frame Contract；后续生图不得随意漂移人物。
+<!-- STORY_OS_CHARACTER_ENTRY_POOL_AGENTS_END -->
+
 ## V2.0 Multi-Runtime 执行路由
 
 涉及 story 分支任务时，先读 `START_HERE.md`，再按 `runtimes/runtime-contract.json` 自动路由，不让用户手工选 runtime。

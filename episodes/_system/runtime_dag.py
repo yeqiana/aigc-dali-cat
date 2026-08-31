@@ -6,6 +6,7 @@ from pathlib import Path
 
 import quota_observability
 import execution_capsule
+import character_contract
 import provisional_release
 import scoped_codex_worker
 import workflow_performance as perf
@@ -69,6 +70,8 @@ def execute(ep,codex=None,timeout=7200,run_id=None):
     background=cf.ThreadPoolExecutor(max_workers=1,thread_name_prefix="story-os-release-prep")
     for s in specs:
         cur=state(ep)
+        if s.step_id=="CREATIVE_STORY" and not stage_at_least(cur,"STORYBOARD_LOCKED"):
+            character_contract.prepare(ep,force=False)
         prior=(proto.load_state(ep).get("steps") or {}).get(s.step_id) or {}
         attempt=int(prior.get("attempt") or 0)+1
         input_hash=proto.evidence_hash(ep,["meta/runtime-request.json","meta/episode-state.json",*s.evidence_paths])
@@ -96,6 +99,11 @@ def execute(ep,codex=None,timeout=7200,run_id=None):
         else:
             rc=2; note=f"unknown executor {s.executor}"
         elapsed=time.monotonic()-t0
+        if rc==0 and s.step_id=="CREATIVE_STORY":
+            character_errors=character_contract.validate(ep,require_locked=True)
+            if character_errors:
+                rc=4
+                note=(note+"\nCHARACTER CONTRACT FAIL\n"+"\n".join(character_errors))[-5000:]
         if rc==0 and s.target_state:
             ok,msg=validate_target(ep,s.target_state)
             if not ok: rc=4; note=(note+"\nPOSTCONDITION FAIL\n"+msg)[-5000:]

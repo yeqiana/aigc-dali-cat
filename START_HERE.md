@@ -341,3 +341,8 @@ python episodes/_system/media_workspace.py ensure <episode_dir>
 ## Runtime DAG Refactor
 绑定 Runtime Request 的新篇默认使用 Runtime DAG：Creative Story → Visual Lock → Production → Release。每步完成立即落 checkpoint；恢复时验证后复用。DAG 不建立第二 stage。图片采用 continuous max3 调度；Scoped Worker 优先用 Execution Capsule；Prompt Package / Rolling Review / Provisional Release 都是派生执行优化，不替代正式 Gate。图片 pool 只复用 Python worker，不复用 Codex 跨帧上下文。
 <!-- STORY_OS_RUNTIME_DAG_REFACTOR_CORE_END -->
+
+<!-- STORY_OS_CHARACTER_ENTRY_POOL_CORE_BEGIN -->
+## Character / Entry Pool
+新篇 Concept 前先准备 Character Contract：优先普通二十来岁青年/朋友团，以旅行、返乡、聚会、挑战、废弃场所、户外、生活化工作/科考等日常理由进入异常；默认禁用抢修/维修/警察/记者/调查员等功能型主角。第一人称也锁人物锚点。Story Lock 前 NO-ANOMALY TEST 必须 PASS，随后 Character Contract 绑定进 Frame Contract。
+<!-- STORY_OS_CHARACTER_ENTRY_POOL_CORE_END -->

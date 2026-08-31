@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "name": "Story OS Forbidden Default Character Roles V1.0",
+  "policy": {
+    "professional_roles_may_appear_as_background_supporting_characters": true,
+    "default_protagonist_must_not_be_functionally_created_to_solve_anomaly": true
+  },
+  "forbidden_ids": [
+    "repair_worker",
+    "electrician",
+    "maintenance_worker",
+    "police",
+    "detective",
+    "journalist",
+    "investigator",
+    "paranormal_investigator",
+    "professional_ghost_hunter",
+    "special_agent",
+    "rescue_specialist",
+    "military_special_unit",
+    "secret_researcher",
+    "official_anomaly_team"
+  ],
+  "forbidden_cn": [
+    "抢修员",
+    "抢修人员",
+    "电工",
+    "维修工",
+    "检修员",
+    "警察",
+    "刑警",
+    "记者",
+    "调查员",
+    "侦探",
+    "专业探灵人",
+    "探灵主播",
+    "特工",
+    "特殊行动人员",
+    "秘密异常研究员",
+    "官方异常调查组"
+  ],
+  "forbidden_entry_patterns_cn": [
+    "接到抢修任务",
+    "奉命抢修",
+    "前往抢修设备",
+    "专业排查故障",
+    "接到调查异常的任务",
+    "作为记者调查失踪",
+    "作为警察调查异常"
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "story_os_version": "2.1.0",
   "contract_schema": 1,
-  "release_name": "Full Workflow Closure + Runtime Request + Runtime DAG + Performance Pack",
+  "release_name": "Full Workflow Closure + Runtime Performance + Character/Entry Pools",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -110,7 +110,17 @@
     "execution_capsule",
     "prompt_package_cache",
     "rolling_pre_final_review",
-    "provisional_release_pipeline"
+    "provisional_release_pipeline",
+    "character_pool_contract",
+    "entry_motivation_pool",
+    "scene_pool",
+    "forbidden_character_role_pool",
+    "character_contract_story_input",
+    "no_anomaly_test",
+    "ordinary_person_score",
+    "first_person_character_anchor",
+    "group_cast_anchor",
+    "frame_contract_character_binding"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -145,7 +155,13 @@
     "Plus/Codex quota percentages are never guessed; automatic telemetry records only observable counters.",
     "Continuous image scheduling removes wave barriers but preserves max3 image workers and single-writer ledger semantics.",
     "Rolling pre-final review can trigger early repair but can never grant final frame PASS.",
-    "Provisional release material is runtime-only and can never mutate frozen release authority."
+    "Provisional release material is runtime-only and can never mutate frozen release authority.",
+    "Default protagonists are ordinary young people, not occupational tools invented to solve the anomaly.",
+    "Casual work/research/expedition may explain arrival but must not turn the protagonist into an anomaly-solving professional.",
+    "First-person POV still requires a stable Character Contract.",
+    "Character Contract is a Story Build input and never a second Episode stage.",
+    "New Story runs must pass NO-ANOMALY TEST and Character Contract validation before STORYBOARD_LOCKED.",
+    "Resolved Frame Contract binds Character Contract so character drift invalidates downstream cache."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }
