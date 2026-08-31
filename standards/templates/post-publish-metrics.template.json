@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "checkpoint": "6h",
+  "source": "manual",
+  "metrics": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "shares": 0,
+    "saves": 0,
+    "followers_gained": 0,
+    "profile_visits": 0,
+    "completion_rate": 0.0,
+    "avg_view_duration_seconds": 0.0
+  },
+  "note": "Delete unavailable fields instead of inventing zeros. Record only actual platform observations."
+}

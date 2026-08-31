@@ -31,7 +31,20 @@
     "scout_technical_failure_defers_to_final": true,
     "final_candidate_snapshot_before_publish_ready": true,
     "delivery_consumes_verified_snapshot": true,
-    "snapshot_is_evidence_not_authority": true
+    "snapshot_is_evidence_not_authority": true,
+    "legacy_no_evidence_fabrication": true,
+    "migration_default_read_only": true,
+    "observability_diagnostic_only": true,
+    "post_publish_manifest_immutable": true,
+    "publish_event_external_to_snapshot": true,
+    "data_review_windows": [
+      "6h",
+      "24h",
+      "48h",
+      "7d"
+    ],
+    "data_reviewed_requires_48h": true,
+    "learning_packet_not_creative_authority": true
   },
   "steps": {
     "RESTORE": {
@@ -199,6 +212,87 @@
       "derived_evidence": true,
       "evidence": "meta/final-candidate-snapshot.json",
       "tool": "episodes/_system/final_candidate_snapshot.py"
+    },
+    "OBSERVABILITY": {
+      "depends_on": [
+        "PUBLISH_READY_GATE"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false,
+      "runtime_optional": true,
+      "diagnostic_only": true,
+      "tool": "episodes/_system/workflow_observability.py"
+    },
+    "PUBLISH_RECORD": {
+      "depends_on": [
+        "PUBLISH_READY_GATE"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false,
+      "runtime_optional": true,
+      "post_publish": true,
+      "state_target": "PUBLISHED",
+      "evidence": "meta/publish-event.json",
+      "tool": "episodes/_system/post_publish_review.py"
+    },
+    "DATA_REVIEW_6H": {
+      "depends_on": [
+        "PUBLISH_RECORD"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true
+    },
+    "DATA_REVIEW_24H": {
+      "depends_on": [
+        "DATA_REVIEW_6H"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true
+    },
+    "DATA_REVIEW_48H": {
+      "depends_on": [
+        "PUBLISH_RECORD"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true,
+      "required_for_data_reviewed": true
+    },
+    "DATA_REVIEWED_GATE": {
+      "depends_on": [
+        "DATA_REVIEW_48H"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true,
+      "state_target": "DATA_REVIEWED",
+      "evidence": "meta/data-review-state.json"
+    },
+    "DATA_REVIEW_7D": {
+      "depends_on": [
+        "DATA_REVIEWED_GATE"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true
+    },
+    "ACCOUNT_LEARNING_INDEX": {
+      "depends_on": [
+        "DATA_REVIEWED_GATE"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true,
+      "evidence": "reports/account-learning-index.json",
+      "tool": "episodes/_system/account_learning_index.py"
     }
+  },
+  "system_assurance": {
+    "migration": "episodes/_system/migrate_v21.py",
+    "regression": "episodes/_system/regression_matrix_v21.py",
+    "observability": "episodes/_system/workflow_observability.py",
+    "legacy_no_evidence_backfill": true
   }
 }

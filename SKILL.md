@@ -63,6 +63,19 @@
 - Snapshot 漂移时 Delivery 必须 BLOCK。
 <!-- STORY_OS_V2_1_PHASE78_END -->
 
+<!-- STORY_OS_V2_1_PHASE910_BEGIN -->
+## V2.1 Phase 9 + 10
+
+- Migration 默认 READ-ONLY；Legacy 不伪造新 Evidence。
+- `regression_matrix_v21.py run` 是 V2.1 Closure 回归入口。
+- `workflow-observability.json` 只诊断，不推进 stage。
+- Final Snapshot 后不得为了 published_at / post_id / metrics 修改 release-manifest。
+- 实际发布事实写 `meta/publish-event.json`。
+- 数据窗口：6h / 24h / 48h / 7d；DATA_REVIEWED 最低要求 48h。
+- 数据复盘写 `meta/post-publish-review.json` 与 `meta/next-story-learning.json`。
+- `reports/account-learning-index.json` 供下一篇 Concept Ambition 前读取，但不能覆盖 Concept/Story/Visual gate。
+<!-- STORY_OS_V2_1_PHASE910_END -->
+
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
 ## Story OS V2.0.3.6 Golden Path
 

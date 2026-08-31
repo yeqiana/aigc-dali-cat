@@ -68,6 +68,12 @@ Visual Lock 不再只看三张“风格图”：先 baseline，随后 worst cond
 在 Visual Lock 前启用 Fast Scout，使 Scheduler 对高风险生成结果并行做早期像素 triage；REPAIR_NOW 只影响该帧与依赖链。不要把 PASS_FAST 写成正式通过。Release 完成 release_preflight 后必须 build+verify Final Candidate Snapshot，再记录 release_lock/推进 PUBLISH_READY。Delivery 只能消费 verified Snapshot。
 <!-- STORY_OS_V2_1_PHASE78_AGENTS_END -->
 
+<!-- STORY_OS_V2_1_PHASE910_AGENTS_BEGIN -->
+## V2.1 Phase 9/10 Closure
+
+新故事开题前先 `account_learning_index.py rebuild --limit 5`，只把账号历史数据当 evidence。真实发布后用 `post_publish_review.py mark-published` 推进 PUBLISHED；之后按实际后台数据 record 6h/24h/48h/7d。48h 后 `complete` 才可推进 DATA_REVIEWED。不要改冻结的 release-manifest，也不要手写假数据。
+<!-- STORY_OS_V2_1_PHASE910_AGENTS_END -->
+
 ## Episodes 机器状态与发布清单
 
 > 当前 Story OS：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。

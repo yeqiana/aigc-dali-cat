@@ -60,6 +60,11 @@ Before returning from RELEASE work, initialize compliance and run the final rele
   python episodes/_system/release_preflight.py run-release-critic \"{rel}\"
   python episodes/_system/release_preflight.py verify \"{rel}\"
 
+PHASE 10 ACCOUNT LEARNING INPUT:
+Before V2.1 concept divergence, run:
+  python episodes/_system/account_learning_index.py rebuild --limit 5
+If reports/account-learning-index.json has sample_size > 0, read it as account-relative evidence. Use it to understand which mechanisms/hooks produced observable engagement, but DO NOT mechanically repeat winners, DO NOT treat one weak post as proof that high-ambition concepts are bad, and DO NOT override Concept Ambition with metrics.
+
 PHASE 2 CONCEPT AMBITION GATE:
 For V2.1+ episodes only, BEFORE writing the final Story/Storyboard:
 - Read recent account mechanism context, but do not shrink every idea into a light anomaly.

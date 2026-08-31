@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "package": "Story OS V2.1 Phase 9 + Phase 10",
+  "package_version": "2.1.0-phase9-phase10",
+  "installed_at": "2026-08-31T09:43:15.696305+08:00",
+  "actual_git": {
+    "available": true,
+    "branch": "story",
+    "head": "203771aa658718dca022be5e52f3fea8d2d8ba9a"
+  },
+  "backup": ".storyos_backups\\v21_phase910_20260831_094314",
+  "encoding": "utf-8",
+  "tests": "PASS",
+  "full_v21_closure": true,
+  "files": [
+    {
+      "path": "story_os_manifest.json",
+      "sha256": "15b3353b65904349ead9dc25b1ea6d2f860d64440d87d11069952b3ef8e1be4d",
+      "bytes": 4404
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "sha256": "c34a346c71fc010fbe8c546ad159913dff21dade2294d9bca91c2efb73639bc6",
+      "bytes": 8141
+    },
+    {
+      "path": "START_HERE.md",
+      "sha256": "9a5a0f0b0285e24d140fea3bd0d70135d5e0926dde0d06d43c04e55c33f01cbb",
+      "bytes": 12578
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "c4d24e388baa557a467b62fd560546145eb8a61d4c4064cba3f279b89ead4e3a",
+      "bytes": 20119
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "df261ad4232b029bff6fafed83e6b604263479ee57e37983531bc8cf990f9df5",
+      "bytes": 10430
+    },
+    {
+      "path": "standards/AUTHORITY_INDEX.json",
+      "sha256": "1fefdf1482dd92304e97275a49ba57b1b25a549c86b1174971f0498e3d99ecdd",
+      "bytes": 15729
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "c322dc40febc42b7f03d9b28d53abd9adab2b1236c77b44db298b5b33e754e8f",
+      "bytes": 61897
+    },
+    {
+      "path": "standards/templates/story-gates.template.json",
+      "sha256": "2c71a4b3e6874265038ba6981de0d57558d4a23e9ab722cbab5e4f421bf02c03",
+      "bytes": 4780
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "sha256": "bc54b7835bbae09b4bbfb1dd8977688d5bfd3bad8befb0cfafa2145f610e8ba0",
+      "bytes": 12702
+    },
+    {
+      "path": "episodes/_system/codex_auto_orchestrator.py",
+      "sha256": "55f10ced1bdeec3900fe535473e8da6a560d5c379506a931dd8430e14af59157",
+      "bytes": 20572
+    },
+    {
+      "path": "episodes/_system/validate_episode.py",
+      "sha256": "d97807ee4478ed988cab3c800dd55010762813649b8d9144d58e64ac2cc69b9f",
+      "bytes": 35255
+    },
+    {
+      "path": "episodes/_system/workflow_runner.py",
+      "sha256": "ebab356dc8b79622c4f9525a9496d4b06bd01d0a0fbcadf66ae8f0c88a1452b9",
+      "bytes": 6576
+    },
+    {
+      "path": "episodes/_system/migrate_v21.py",
+      "sha256": "459a8006224836dca7596695709ff24f478c71ff7951add3a06ed310d5ecd577",
+      "bytes": 10513
+    },
+    {
+      "path": "episodes/_system/workflow_observability.py",
+      "sha256": "a1842019bfbdb9c41377dd3cb2396d3fc47d110d9c168d91a681dadd67f4e618",
+      "bytes": 5716
+    },
+    {
+      "path": "episodes/_system/regression_matrix_v21.py",
+      "sha256": "6deeb026126cab295587c9bf94b2b85f424cfe72ec48ecd8f3064ce4722481ee",
+      "bytes": 6986
+    },
+    {
+      "path": "episodes/_system/post_publish_review.py",
+      "sha256": "4d02ad048a544b0f787d5dca84940b5235ccecceb38c482cf99a5a3b0da355d4",
+      "bytes": 20648
+    },
+    {
+      "path": "episodes/_system/account_learning_index.py",
+      "sha256": "bb3ec57be2ba4c1076ab14f30d27234f2b2f7f5857a9935efe4b90ae9bd63746",
+      "bytes": 5955
+    },
+    {
+      "path": "standards/Story_OS_V2.1_Phase9_10_闭环规范_V1.0.md",
+      "sha256": "ab786bdd3b4f94e0d35ace1cfae0ed52b0acc1e7be6043af1d1ce8a8c405f759",
+      "bytes": 3484
+    },
+    {
+      "path": "standards/templates/post-publish-metrics.template.json",
+      "sha256": "ff8c18a62471f6f5ebe90bcb0b7d407d7072e208f1bf673987d2b6fba4daa798",
+      "bytes": 400
+    },
+    {
+      "path": "reports/story-os-v21-migration-report.json",
+      "sha256": "3a8272ea6f7a6d6093431d65c5250053120d01738d0318a8683cd233aaa92e14",
+      "bytes": 2487
+    },
+    {
+      "path": "reports/story-os-v21-regression-matrix.json",
+      "sha256": "9843ec9bd901f703e58e86f2dd55d4054fffedd5193d2ca7f758da0b6536d35e",
+      "bytes": 2595
+    }
+  ]
+}

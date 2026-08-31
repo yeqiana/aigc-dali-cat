@@ -199,6 +199,13 @@
       "scope": "fast_scout_and_final_snapshot",
       "active": true,
       "note": "Scout is triage only; snapshot is derived release evidence."
+    },
+    {
+      "path": "standards/Story_OS_V2.1_Phase9_10_闭环规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "migration_regression_observability_post_publish_learning",
+      "active": true,
+      "note": "Legacy no-backfill; post-publish evidence remains non-creative authority."
     }
   ],
   "rules": {
@@ -368,6 +375,35 @@
       "path": "meta/final-candidate-snapshot.json",
       "snapshot_is_authority": false,
       "delivery_must_consume": true
+    },
+    "v21_migration": {
+      "tool": "episodes/_system/migrate_v21.py",
+      "default": "read_only",
+      "legacy_evidence_backfill": false
+    },
+    "v21_regression": {
+      "tool": "episodes/_system/regression_matrix_v21.py",
+      "report": "reports/story-os-v21-regression-matrix.json"
+    },
+    "workflow_observability": {
+      "tool": "episodes/_system/workflow_observability.py",
+      "path": "meta/workflow-observability.json",
+      "stage_authority": false
+    },
+    "post_publish": {
+      "tool": "episodes/_system/post_publish_review.py",
+      "publish_event": "meta/publish-event.json",
+      "metrics": "meta/post-publish-metrics.json",
+      "review": "meta/post-publish-review.json",
+      "data_review_state": "meta/data-review-state.json",
+      "learning": "meta/next-story-learning.json",
+      "required_checkpoint_for_data_reviewed": "48h",
+      "mutate_release_manifest_after_snapshot": false
+    },
+    "account_learning_index": {
+      "tool": "episodes/_system/account_learning_index.py",
+      "path": "reports/account-learning-index.json",
+      "creative_authority": false
     }
   }
 }

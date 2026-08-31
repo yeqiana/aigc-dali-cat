@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-31T09:43:22+08:00",
+  "story_os_version": "2.1.0",
+  "summary": {
+    "passed": true,
+    "case_count": 14,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": "R01_immutable_seven_stage_contract",
+      "status": "PASS",
+      "detail": "IDEA_LOCKED > STORYBOARD_LOCKED > VISUAL_CALIBRATED > PRODUCTION_PASSED > PUBLISH_READY > PUBLISHED > DATA_REVIEWED"
+    },
+    {
+      "id": "R02_codex_complete_without_zip",
+      "status": "PASS",
+      "detail": "PUBLISH_READY remains CODEX completion; ZIP optional"
+    },
+    {
+      "id": "R03_single_stage_source",
+      "status": "PASS",
+      "detail": "episode-state remains sole stage source"
+    },
+    {
+      "id": "R04_max3_single_writer_failsoft",
+      "status": "PASS",
+      "detail": "image concurrency max3 + ledger single-writer + fail-soft"
+    },
+    {
+      "id": "R05_fast_scout_never_final_pass",
+      "status": "PASS",
+      "detail": "Fast Scout is triage only"
+    },
+    {
+      "id": "R06_snapshot_before_publish_ready_and_delivery_strict",
+      "status": "PASS",
+      "detail": "snapshot freezes candidate before PUBLISH_READY; Delivery consumes it"
+    },
+    {
+      "id": "R07_legacy_no_evidence_backfill",
+      "status": "PASS",
+      "detail": "legacy 2.0.x classified below V2.1 and migration default is read-only"
+    },
+    {
+      "id": "R08_template_has_current_v21_policies",
+      "status": "PASS",
+      "detail": "new episode template carries Phase5-8 policies"
+    },
+    {
+      "id": "R09_post_publish_does_not_mutate_frozen_manifest",
+      "status": "PASS",
+      "detail": "published facts/data review live outside release-manifest"
+    },
+    {
+      "id": "R10_data_review_windows_and_48h_gate",
+      "status": "PASS",
+      "detail": "6h/24h/48h/7d supported; 48h minimum for DATA_REVIEWED"
+    },
+    {
+      "id": "R11_story_regression_suite",
+      "status": "PASS",
+      "detail": "STORY REGRESSION PASS"
+    },
+    {
+      "id": "R12_workflow_runner_self_test",
+      "status": "PASS",
+      "detail": "WORKFLOW RUNNER V2.1 SELF-TEST PASS | PHASE910"
+    },
+    {
+      "id": "R13_phase_modules_self_tests",
+      "status": "PASS",
+      "detail": "MIGRATE V2.1 PHASE9 SELF-TEST PASS | WORKFLOW OBSERVABILITY V2.1 PHASE9 SELF-TEST PASS | POST PUBLISH REVIEW V2.1 PHASE10 SELF-TEST PASS | ACCOUNT LEARNING INDEX V2.1 PHASE10 SELF-TEST PASS"
+    },
+    {
+      "id": "R14_product_stages_include_publish_loop",
+      "status": "PASS",
+      "detail": "product contract closes publish/data-review loop without new stage system"
+    }
+  ]
+}

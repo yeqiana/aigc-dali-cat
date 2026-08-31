@@ -18,6 +18,7 @@ from pathlib import Path
 from runtime_router import detect
 from story_os_contract import story_os_version
 import workflow_performance as perf
+import workflow_observability as obs
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -88,11 +89,19 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         record_checkpoint_step(ep, "CODEX_COMPAT_ADAPTER", child_status, child_elapsed, f"rc={child.returncode}")
         total = time.monotonic() - started
         perf.finish_run(ep, run_id, "COMPLETE" if child.returncode == 0 else "FAILED", total)
+        try:
+            obs.collect(ep, write=True)
+        except Exception:
+            pass
         return child.returncode
     except BaseException:
         total = time.monotonic() - started
         try:
             perf.finish_run(ep, run_id, "BLOCKED", total)
+        except Exception:
+            pass
+        try:
+            obs.collect(ep, write=True)
         except Exception:
             pass
         raise
@@ -118,7 +127,12 @@ def main() -> int:
         assert data["rules"].get("delivery_consumes_verified_snapshot") is True
         assert "FAST_FRAME_SCOUT" in data["steps"]
         assert "FINAL_CANDIDATE_SNAPSHOT" in data["steps"]
-        print("WORKFLOW RUNNER V2.1 SELF-TEST PASS | PHASE78")
+        assert data["rules"].get("legacy_no_evidence_fabrication") is True
+        assert data["rules"].get("post_publish_manifest_immutable") is True
+        assert data["rules"].get("data_reviewed_requires_48h") is True
+        assert "PUBLISH_RECORD" in data["steps"]
+        assert "DATA_REVIEWED_GATE" in data["steps"]
+        print("WORKFLOW RUNNER V2.1 SELF-TEST PASS | PHASE910")
         return 0
     ep = resolve_episode(args.episode_dir)
     if args.cmd == "plan":

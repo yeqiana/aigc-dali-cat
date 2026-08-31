@@ -1,7 +1,7 @@
 {
   "story_os_version": "2.1.0",
   "contract_schema": 1,
-  "release_name": "Workflow Engine + Concept Ambition",
+  "release_name": "Full Workflow Closure",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -79,7 +79,17 @@
     "final_candidate_snapshot",
     "snapshot_sha_lock",
     "snapshot_reuse_status",
-    "snapshot_driven_delivery_adapter"
+    "snapshot_driven_delivery_adapter",
+    "v21_migration_inspector",
+    "legacy_no_evidence_backfill",
+    "full_regression_matrix",
+    "workflow_observability",
+    "publish_event_evidence",
+    "post_publish_data_review",
+    "data_review_6h_24h_48h_7d",
+    "account_learning_index",
+    "next_story_learning_packet",
+    "immutable_release_manifest_after_snapshot"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -97,7 +107,11 @@
     "Maximum supported formal image concurrency is 3.",
     "Fast Frame Scout may request repair but never authorizes final Production PASS.",
     "Final Candidate Snapshot is evidence, not a second creative authority.",
-    "V2.1 Delivery Adapter must consume a verified snapshot instead of rescanning mutable publish files."
+    "V2.1 Delivery Adapter must consume a verified snapshot instead of rescanning mutable publish files.",
+    "Legacy episodes are never upgraded by fabricating V2.1 PASS evidence.",
+    "Post-publish facts and metrics must not mutate the frozen release manifest.",
+    "Post-publish learning is evidence for the next story, never direct creative authority.",
+    "DATA_REVIEWED uses the canonical episode-state.json stage; no second stage system exists."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

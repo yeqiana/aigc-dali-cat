@@ -53,6 +53,14 @@ Phase 7：高风险帧生成后做 Fast Scout；`PASS_FAST` 不是 Production PA
 Phase 8：Release/Compliance/Text/Frame 全部 PASS 后冻结 `meta/final-candidate-snapshot.json`。PUBLISH_READY 和 Delivery Adapter 都必须验证该 Snapshot；ZIP 不再重新扫描“当前最新文件”。
 <!-- STORY_OS_V2_1_PHASE78_END -->
 
+<!-- STORY_OS_V2_1_PHASE910_BEGIN -->
+## V2.1 Phase 9 + 10：系统闭环
+
+Phase 9：`migrate_v21.py` 默认只读；旧 Episode 保持 LEGACY_COMPAT，不补造 V2.1 PASS evidence。安装时运行完整 regression matrix，并用 `workflow_observability.py` 汇总慢步骤、并发、失败类型和证据状态。
+
+Phase 10：真实发布后记录 `meta/publish-event.json`，不要修改已被 Final Snapshot 冻结的 release-manifest。6h/24h/48h/7d 数据写入 post-publish evidence；48h 达标后推进唯一 Stage `DATA_REVIEWED`，并生成下一篇 `learning packet`。
+<!-- STORY_OS_V2_1_PHASE910_END -->
+
 ## 0. 黄金路径（Golden Path）
 
 ```text

@@ -18,6 +18,7 @@ from frame_contract import required as frame_contract_required, verify_all as ve
 from visual_lock_v21 import required as visual_lock_v21_required, verify as verify_visual_lock_v21
 from fast_frame_scout import required as fast_scout_required, audit as audit_fast_scout
 from final_candidate_snapshot import required as final_snapshot_required, verify as verify_final_snapshot
+from post_publish_review import required as post_publish_required, verify as verify_post_publish
 
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 PRODUCTION_DECISIONS = {"pending", "pass", "fail"}
@@ -498,10 +499,19 @@ def check_stage(repo_root: Path, episode_dir: Path, manifest: dict, current: str
             findings.append(Finding("FAIL", "topics", "publication.topics must be a non-empty string array"))
         check_publish_images(publish_dir, body_glob, release.get("body_frame_count"), (manifest.get("episode") or {}).get("aspect_ratio"), findings, metadata_only=metadata_only)
     if idx >= STATE_MIN["PUBLISHED"]:
-        require_string(publication, "published_at", findings, "manifest.publication")
+        publish_event = load_json(episode_dir / "meta/publish-event.json", findings, required=False)
+        if isinstance(publish_event, dict) and isinstance(publish_event.get("published_at"), str) and publish_event.get("published_at", "").strip():
+            pass
+        else:
+            require_string(publication, "published_at", findings, "manifest.publication")
     if idx >= STATE_MIN["DATA_REVIEWED"]:
-        require_repo_path(repo_root, data_review, "report_path", findings, "manifest.data_review", metadata_only=metadata_only)
-        completed = data_review.get("completed_checkpoints")
+        data_state = load_json(episode_dir / "meta/data-review-state.json", findings, required=False)
+        if isinstance(data_state, dict):
+            require_repo_path(repo_root, data_state, "report_path", findings, "meta.data-review-state", metadata_only=metadata_only)
+            completed = data_state.get("completed_checkpoints")
+        else:
+            require_repo_path(repo_root, data_review, "report_path", findings, "manifest.data_review", metadata_only=metadata_only)
+            completed = data_review.get("completed_checkpoints")
         if not isinstance(completed, list) or "48h" not in completed:
             findings.append(Finding("FAIL", "missing_48h_review", "DATA_REVIEWED requires completed_checkpoints to include '48h'"))
 
@@ -597,6 +607,10 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
     if effective and STATE_MIN[effective] >= STATE_MIN["PUBLISH_READY"] and final_snapshot_required(episode_dir):
         for error in verify_final_snapshot(episode_dir):
             findings.append(Finding("FAIL", "final_candidate_snapshot_gate", error))
+
+    if effective and STATE_MIN[effective] >= STATE_MIN["PUBLISHED"] and post_publish_required(episode_dir):
+        for error in verify_post_publish(episode_dir, require_48h=STATE_MIN[effective] >= STATE_MIN["DATA_REVIEWED"]):
+            findings.append(Finding("FAIL", "post_publish_data_gate", error))
     return findings
 
 

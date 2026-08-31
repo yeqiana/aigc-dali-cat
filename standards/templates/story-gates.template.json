@@ -148,7 +148,10 @@
     "image_scheduler_max_parallel": 3,
     "production_ledger_single_writer": true,
     "fast_frame_scout_summary": "meta/frame-scout-summary.json",
-    "final_candidate_snapshot": "meta/final-candidate-snapshot.json"
+    "final_candidate_snapshot": "meta/final-candidate-snapshot.json",
+    "post_publish_event": "meta/publish-event.json",
+    "post_publish_review": "meta/post-publish-review.json",
+    "next_story_learning": "meta/next-story-learning.json"
   },
   "release": {
     "final_candidate_snapshot": {
@@ -156,6 +159,23 @@
       "enabled": true,
       "delivery_must_consume_snapshot": true,
       "snapshot_is_authority": false
+    }
+  },
+  "post_publish": {
+    "data_review": {
+      "schema_version": 1,
+      "enabled": true,
+      "checkpoints": [
+        "6h",
+        "24h",
+        "48h",
+        "7d"
+      ],
+      "required_for_data_reviewed": [
+        "48h"
+      ],
+      "learning_packet_is_authority": false,
+      "release_manifest_mutation_after_snapshot": false
     }
   }
 }

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "generated_at": "2026-08-31T09:43:21+08:00",
+  "policy": {
+    "legacy_no_evidence_fabrication": true,
+    "migration_default_read_only": true,
+    "episode_stage_source_unchanged": "meta/episode-state.json"
+  },
+  "summary": {
+    "episodes": 2,
+    "legacy_compat": 2,
+    "unversioned_compat": 0,
+    "v21_active": 0,
+    "v21_missing_policy": 0
+  },
+  "episodes": [
+    {
+      "episode": "episodes/09_旧物怪谈/04_瓶中世界",
+      "detected_version": "2.0.3.2",
+      "current_state": "PUBLISH_READY",
+      "compatibility_status": "LEGACY_COMPAT",
+      "current_v21_policy_required": false,
+      "automatic_evidence_backfill_allowed": false,
+      "active_policies": {
+        "concept_ambition_versioned": false,
+        "environment_contract_present": false,
+        "frame_directives_present": false,
+        "four_admission_visual_lock": false,
+        "fast_frame_scout": false,
+        "final_candidate_snapshot": false
+      },
+      "missing_current_policy": [],
+      "evidence_presence": {
+        "concept_ambition": false,
+        "environment_contract": true,
+        "frame_contract_index": false,
+        "visual_lock_v21": true,
+        "production_queue": false,
+        "fast_scout": false,
+        "final_snapshot": false,
+        "publish_event": false,
+        "post_publish_review": false
+      },
+      "recommendation": "KEEP_LEGACY_NO_BACKFILL"
+    },
+    {
+      "episode": "episodes/10_山难伪纪录片/01_鳌太线_热汤",
+      "detected_version": "2.0.3.6",
+      "current_state": "PUBLISH_READY",
+      "compatibility_status": "LEGACY_COMPAT",
+      "current_v21_policy_required": false,
+      "automatic_evidence_backfill_allowed": false,
+      "active_policies": {
+        "concept_ambition_versioned": false,
+        "environment_contract_present": false,
+        "frame_directives_present": false,
+        "four_admission_visual_lock": false,
+        "fast_frame_scout": false,
+        "final_candidate_snapshot": false
+      },
+      "missing_current_policy": [],
+      "evidence_presence": {
+        "concept_ambition": false,
+        "environment_contract": true,
+        "frame_contract_index": false,
+        "visual_lock_v21": true,
+        "production_queue": false,
+        "fast_scout": false,
+        "final_snapshot": false,
+        "publish_event": false,
+        "post_publish_review": false
+      },
+      "recommendation": "KEEP_LEGACY_NO_BACKFILL"
+    }
+  ]
+}
