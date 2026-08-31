@@ -44,6 +44,26 @@
 请求可先写入 `runtime/requests/<request_id>.json`，Episode 创建后绑定到 `<episode>/meta/runtime-request.json`。绑定后的请求默认不可变；执行状态写 checkpoint/observability，不回写 Request。
 <!-- STORY_OS_RUNTIME_REQUEST_P0_AGENTS_END -->
 
+<!-- STORY_OS_RUNTIME_DAG_REFACTOR_AGENTS_BEGIN -->
+## Runtime DAG / Resume / Quota
+
+- 新篇有 `meta/runtime-request.json` 且 `runtime.execution_mode=dag` 时，优先由 `runtime_dag.py` 分段调度，不再默认启动单个全程大 Codex supervisor。
+- Runtime DAG 不是第二状态机；每个 Step 最终仍必须通过 canonical `episode-state.json` + validate/machine/evidence gates。
+- 中断恢复先验证已经到达的目标阶段；证据有效则 REUSED，不为“保险”重做昂贵 Step。
+- 图片 worker pool 只复用 Python 进程/模块，不复用跨帧 Codex 对话上下文。
+- Quota observability 仅记录真实日志计数或用户明确提供的 `/status` 百分比，不允许推测 Plus 剩余额度。
+<!-- STORY_OS_RUNTIME_DAG_REFACTOR_AGENTS_END -->
+
+<!-- STORY_OS_RUNTIME_PERFORMANCE_PACK_AGENTS_BEGIN -->
+## Runtime Performance Pack
+
+- Image Scheduler 使用 continuous first-completed 调度，但 image max workers 仍是 3，Ledger 仍单写。
+- Scoped Codex 优先使用 `meta/runtime/execution-capsules/*.json`；Capsule 是 derived cache，冲突时源规范优先。
+- 高风险 rolling review 只能输出 PASS_PREVIEW / REPAIR_NOW / UNCERTAIN；PASS_PREVIEW 永远不是最终通过。
+- Prompt Package 是 derived cache，Frame Contract/scene SHA 漂移时必须重新编译。
+- Provisional Release 只能写 runtime 临时草稿，不得改 release-manifest / snapshot / stage。
+<!-- STORY_OS_RUNTIME_PERFORMANCE_PACK_AGENTS_END -->
+
 ## V2.0 Multi-Runtime 执行路由
 
 涉及 story 分支任务时，先读 `START_HERE.md`，再按 `runtimes/runtime-contract.json` 自动路由，不让用户手工选 runtime。

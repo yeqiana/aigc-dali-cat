@@ -58,6 +58,49 @@ python -X utf8 episodes/_system/story_os.py request compile --text-file request.
 ```
 <!-- STORY_OS_RUNTIME_REQUEST_P0_END -->
 
+<!-- STORY_OS_RUNTIME_DAG_REFACTOR_BEGIN -->
+## Runtime DAG Refactor｜更快、更能断点续跑
+
+新篇绑定 `runtime-request` 且 `runtime.execution_mode=dag` 时，`workflow_runner` 不再把整篇直接交给一个超长 Codex supervisor，而由 Runtime DAG 分段执行：
+
+```text
+INCREMENTAL_PLAN
+→ CREATIVE_STORY
+→ VISUAL_LOCK
+→ PRODUCTION
+→ RELEASE
+→ PUBLISH_READY
+```
+
+每个昂贵步骤结束后立即写入 `meta/runtime-dag-state.json` + `runtime-checkpoint.json`。中断后先验证已完成目标；证据仍有效就 `REUSED`，不会整篇重跑。
+
+图片侧启用 warm Python worker pool：复用 Scheduler Python 进程与模块加载，减少每帧 Python 子进程开销；**Codex 图像会话仍保持隔离/ephemeral**，避免跨帧污染。等 CLI 有可靠持久 transport 再升级会话复用。
+
+额度观测：
+
+```bat
+python -X utf8 episodes/_system/story_os.py quota auto <episode>
+python -X utf8 episodes/_system/story_os.py quota snapshot <episode> --five-hour-remaining 80 --weekly-remaining 92
+python -X utf8 episodes/_system/story_os.py quota report <episode>
+```
+
+自动模式只统计本地日志实际暴露的 token counters；5h/weekly 百分比只有用户从 `/status` 等可信 UI 提供时才记录，系统不会猜。
+<!-- STORY_OS_RUNTIME_DAG_REFACTOR_END -->
+
+<!-- STORY_OS_RUNTIME_PERFORMANCE_PACK_README_BEGIN -->
+## Runtime Performance Pack P0.7–P1.2
+
+在 Runtime DAG 之上继续启用：
+
+- Continuous Image Scheduler：一个 image worker 完成后立即领取下一张，不再整波等待最慢帧。
+- Execution Capsule：Scoped Codex 先消费 SHA 绑定的派生上下文，完整权威文档只在缺信息/冲突时读取。
+- Prompt Package Cache：逐帧绑定 scene SHA + Frame Contract SHA + image model。
+- Rolling Pre-Final Review：仅高风险帧提前 actual-pixel 预审；PASS_PREVIEW 绝不是 final PASS。
+- Provisional Release Pipeline：Story Lock 后后台做文字草稿，Production PASS 后仍必须结合最终图片正式 Finalize。
+
+这些都是执行优化，Story / Visual / Production / Release 的正式 Gate 一个都不删。
+<!-- STORY_OS_RUNTIME_PERFORMANCE_PACK_README_END -->
+
 ## 剧集索引
 
 | 剧集 | 目录 | 状态 |

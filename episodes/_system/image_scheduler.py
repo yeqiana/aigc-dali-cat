@@ -21,6 +21,8 @@ import frame_contract
 import environment_contract
 import fast_frame_scout as frame_scout
 import image_model_policy
+import image_worker_pool
+import rolling_frame_review
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -240,25 +242,8 @@ def ledger_begin(ep:Path,item:dict)->tuple[bool,str]:
 
 
 def backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->dict:
-    frame=int(item["frame"]);attempt=max(1,int(item.get("attempts") or 1))
-    out=ep/"media/candidates/scheduled"/f"{frame:02d}-{item['id']}-a{attempt}.png"
-    log=ep/"meta/image-workers"/f"{frame:02d}-{item['id']}-a{attempt}.jsonl"
-    out.parent.mkdir(parents=True,exist_ok=True);log.parent.mkdir(parents=True,exist_ok=True)
-    prompt=repo_file(item["prompt_file"])
-    cmd=[sys.executable,SYSTEM/"codex_subscription_image.py","generate-for-frame",ep,"--frame",f"{frame:02d}","--prompt-file",prompt,"--output",out,"--log",log,"--timeout",str(timeout)]
-    if codex:cmd += ["--codex",codex]
-    requested_model=str(item.get("model") or image_model_policy.for_episode(ep)["model"])
-    cmd += ["--image-model", requested_model]
-    for ref in item.get("references") or []:cmd += ["--reference",ROOT/ref["path"]]
-    cp=run(cmd)
-    payload=None
-    if cp.stdout.strip():
-        try:payload=json.loads(cp.stdout)
-        except Exception:pass
-    scout=None
-    if cp.returncode==0 and out.is_file() and frame_scout.required(ep):
-        scout=frame_scout.evaluate_candidate(ep,frame,out,codex_raw=codex,timeout=min(240,max(60,timeout)))
-    return {"returncode":cp.returncode,"stdout":cp.stdout,"payload":payload,"output":out,"log":log,"attempt":attempt,"scout":scout}
+    # Warm Python pool: reuse scheduler/module state, never cross-frame Codex conversation state.
+    return image_worker_pool.execute(ep,item,timeout,codex)
 
 
 def ledger_success(ep:Path,item:dict,result:dict)->tuple[bool,str]:
@@ -288,86 +273,137 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     q=load_queue(ep)
     cap=max(1,min(requested,int(q.get("adaptive_parallel") or requested)))
     stable=int(q.get("stable_waves") or 0)
-    wave_no=len(q.get("waves") or [])
-    any_progress=False
+    event_no=len(q.get("waves") or [])
+    inflight={}
+    review_futures={}
+    review_pool=cf.ThreadPoolExecutor(max_workers=1,thread_name_prefix="story-os-rolling-review")
 
-    while True:
-        q=load_queue(ep);ready,blocked=ready_items(ep,q)
-        if not ready:break
-        wave=ready[:cap];wave_no+=1;begun=[]
-        # Ledger mutation is strictly sequential before parallel workers start.
-        for item in wave:
-            ok,msg=ledger_begin(ep,item)
-            if not ok:
-                item["status"]="blocked"
-                item["last_error"]="ledger begin failed: "+msg[-1200:]
-                continue
-            item["status"]="running";item["attempts"]=int(item.get("attempts") or 0)+1
-            item["started_at"]=now();begun.append(item)
-        save_queue(ep,q)
-        if not begun:continue
-
-        results={}
-        with cf.ThreadPoolExecutor(max_workers=len(begun),thread_name_prefix="story-os-image") as pool:
-            futures={pool.submit(backend_worker,ep,item,timeout,codex):item for item in begun}
-            for fut,item in futures.items():
-                try:results[item["id"]]=fut.result()
-                except Exception as exc:
-                    results[item["id"]]={"returncode":99,"stdout":str(exc),"payload":None,"output":None,"log":None,"attempt":item["attempts"]}
-
-        # Ledger mutation is strictly sequential after workers complete.
-        failures=0
-        q=load_queue(ep);byid={x["id"]:x for x in q.get("items") or []}
-        wave_summary=[]
-        for begun_item in begun:
-            item=byid[begun_item["id"]];res=results[item["id"]]
-            ok=False;msg=res.get("stdout") or ""
-            if res.get("returncode")==0 and res.get("output") and Path(res["output"]).is_file():
-                ok,msg=ledger_success(ep,item,res)
-            if ok:
-                scout=res.get("scout") or {}
-                decision=scout.get("decision")
-                item["output_path"]=repo_rel(Path(res["output"]));item["log_path"]=repo_rel(Path(res["log"]));item["completed_at"]=now();item["last_error"]=None
-                item["scout"]={"decision":decision,"risk_level":scout.get("risk_level"),"asset_sha256":scout.get("asset_sha256")} if scout else None
-                if decision=="REPAIR_NOW":
-                    review=run([sys.executable,SYSTEM/"production_ledger.py","review",ep,"--frame",f"{int(item['frame']):02d}","--decision","repair","--notes","Phase7 Fast Scout obvious defect"])
-                    if review.returncode==0:
-                        item["status"]="scout_repair"
-                    else:
-                        item["status"]="blocked";item["last_error"]="scout repair handoff failed: "+review.stdout[-1200:]
-                    wave_summary.append({"frame":item["frame"],"status":item["status"],"scout":"REPAIR_NOW"})
-                else:
-                    item["status"]="generated";any_progress=True
-                    wave_summary.append({"frame":item["frame"],"status":"generated","scout":decision or "DISABLED","elapsed_seconds":((res.get("payload") or {}).get("elapsed_seconds"))})
+    def commit_review(fut,item_id):
+        try:
+            review=fut.result()
+        except Exception as exc:
+            review={"decision":"UNCERTAIN","reason":str(exc)}
+        qq=load_queue(ep)
+        byid={x["id"]:x for x in qq.get("items") or []}
+        item=byid.get(item_id)
+        if not item:
+            return
+        item["rolling_review"]=review
+        if review.get("decision")=="REPAIR_NOW" and item.get("status")=="generated":
+            cp=run([sys.executable,SYSTEM/"production_ledger.py","review",ep,"--frame",f"{int(item['frame']):02d}","--decision","repair","--notes","rolling pre-final obvious defect"])
+            if cp.returncode==0:
+                item["status"]="scout_repair"
             else:
-                failures+=1;code=classify_error(msg)
-                ledger_tech_fail(ep,item,code,msg or "image backend failed")
-                item["status"]="tech_failed";item["completed_at"]=now();item["last_error"]=msg[-1600:];wave_summary.append({"frame":item["frame"],"status":"tech_failed","code":code})
-        if failures:
-            cap=max(1,cap-1);stable=0
-        else:
-            stable+=1
-            if stable>=2 and cap<requested:
-                cap+=1;stable=0
-        q["adaptive_parallel"]=cap;q["stable_waves"]=stable
-        q.setdefault("waves",[]).append({"wave":wave_no,"at":now(),"parallel":len(begun),"next_parallel":cap,"results":wave_summary})
-        save_queue(ep,q)
+                item["last_error"]="rolling review repair handoff failed: "+cp.stdout[-1000:]
+        save_queue(ep,qq)
 
-    q=load_queue(ep);ready,blocked=ready_items(ep,q)
+    with cf.ThreadPoolExecutor(max_workers=requested,thread_name_prefix="story-os-image") as pool:
+        while True:
+            for fut,item_id in list(review_futures.items()):
+                if fut.done():
+                    commit_review(fut,item_id)
+                    review_futures.pop(fut,None)
+
+            q=load_queue(ep)
+            ready,blocked=ready_items(ep,q)
+            running_ids={x["id"] for x in inflight.values()}
+            ready=[x for x in ready if x["id"] not in running_ids]
+
+            while ready and len(inflight)<cap:
+                item=ready.pop(0)
+                ok,msg=ledger_begin(ep,item)
+                q=load_queue(ep)
+                byid={x["id"]:x for x in q.get("items") or []}
+                current=byid[item["id"]]
+                if not ok:
+                    current["status"]="blocked"
+                    current["last_error"]="ledger begin failed: "+msg[-1200:]
+                    save_queue(ep,q)
+                    continue
+                current["status"]="running"
+                current["attempts"]=int(current.get("attempts") or 0)+1
+                current["started_at"]=now()
+                save_queue(ep,q)
+                fut=pool.submit(backend_worker,ep,current,timeout,codex)
+                inflight[fut]=current
+                q=load_queue(ep)
+                ready,_=ready_items(ep,q)
+                ready=[x for x in ready if x["id"] not in {y["id"] for y in inflight.values()}]
+
+            if not inflight:
+                break
+
+            done,_=cf.wait(set(inflight),return_when=cf.FIRST_COMPLETED)
+            for fut in done:
+                begun=inflight.pop(fut)
+                try:
+                    res=fut.result()
+                except Exception as exc:
+                    res={"returncode":99,"stdout":str(exc),"payload":None,"output":None,"log":None,"attempt":begun.get("attempts",1),"scout":None}
+                q=load_queue(ep)
+                byid={x["id"]:x for x in q.get("items") or []}
+                item=byid[begun["id"]]
+                ok=False
+                msg=res.get("stdout") or ""
+                if res.get("returncode")==0 and res.get("output") and Path(res["output"]).is_file():
+                    ok,msg=ledger_success(ep,item,res)
+                event_no+=1
+                if ok:
+                    scout=res.get("scout") or {}
+                    decision=scout.get("decision")
+                    item["output_path"]=repo_rel(Path(res["output"]))
+                    item["log_path"]=repo_rel(Path(res["log"]))
+                    item["completed_at"]=now()
+                    item["last_error"]=None
+                    item["prompt_package"]=res.get("prompt_package")
+                    item["scout"]={"decision":decision,"risk_level":scout.get("risk_level"),"asset_sha256":scout.get("asset_sha256")} if scout else None
+                    if decision=="REPAIR_NOW":
+                        cp=run([sys.executable,SYSTEM/"production_ledger.py","review",ep,"--frame",f"{int(item['frame']):02d}","--decision","repair","--notes","Phase7 Fast Scout obvious defect"])
+                        item["status"]="scout_repair" if cp.returncode==0 else "blocked"
+                        if cp.returncode!=0:
+                            item["last_error"]="scout repair handoff failed: "+cp.stdout[-1200:]
+                    else:
+                        item["status"]="generated"
+                        if int(item.get("priority") or 0)>=90 and res.get("output"):
+                            rf=review_pool.submit(rolling_frame_review.review,ep,int(item["frame"]),Path(res["output"]),codex,min(240,max(60,timeout)))
+                            review_futures[rf]=item["id"]
+                    stable+=1
+                    if stable>=2 and cap<requested:
+                        cap+=1
+                        stable=0
+                else:
+                    code=classify_error(msg)
+                    ledger_tech_fail(ep,item,code,msg or "image backend failed")
+                    item["status"]="tech_failed"
+                    item["completed_at"]=now()
+                    item["last_error"]=msg[-1600:]
+                    cap=max(1,cap-1)
+                    stable=0
+                q["adaptive_parallel"]=cap
+                q["stable_waves"]=stable
+                q.setdefault("waves",[]).append({"event":event_no,"mode":"continuous_first_completed","at":now(),"frame":item["frame"],"status":item["status"],"inflight_after":len(inflight),"next_parallel":cap,"elapsed_seconds":((res.get("payload") or {}).get("elapsed_seconds"))})
+                save_queue(ep,q)
+
+    for fut,item_id in list(review_futures.items()):
+        commit_review(fut,item_id)
+    review_pool.shutdown(wait=True)
+
+    q=load_queue(ep)
+    ready,blocked=ready_items(ep,q)
     tech=[x for x in q.get("items") or [] if x.get("status")=="tech_failed"]
     queued=[x for x in q.get("items") or [] if x.get("status")=="queued"]
     hard_blocked=[x for x in q.get("items") or [] if x.get("status")=="blocked"]
     scout_repair=[x for x in q.get("items") or [] if x.get("status")=="scout_repair"]
     generated=[x for x in q.get("items") or [] if x.get("status")=="generated"]
     scout_errors=frame_scout.audit(ep,write_summary=True) if frame_scout.required(ep) else []
-    summary={"generated":len(generated),"tech_failed":len(tech),"dependency_blocked":len(blocked),"hard_blocked":len(hard_blocked),"scout_repair":len(scout_repair),"scout_audit_errors":scout_errors,"queued":len(queued),"adaptive_parallel":q.get("adaptive_parallel"),"waves":q.get("waves") or [],"reported_at":now()}
+    summary={"scheduler_mode":"continuous_first_completed","generated":len(generated),"tech_failed":len(tech),"dependency_blocked":len(blocked),"hard_blocked":len(hard_blocked),"scout_repair":len(scout_repair),"scout_audit_errors":scout_errors,"queued":len(queued),"adaptive_parallel":q.get("adaptive_parallel"),"events":q.get("waves") or [],"reported_at":now()}
     write_json(ep/"meta/image-scheduler-performance.json",summary)
     print(json.dumps(summary,ensure_ascii=False,indent=2))
     if tech or queued or hard_blocked:
         return 4
     if scout_repair or scout_errors:
         return 5
-    return 0 if any_progress or generated else 0
+    return 0
 
 
 def retry_tech(ep:Path)->dict:
@@ -382,6 +418,8 @@ def self_test()->None:
     assert MAX_SUPPORTED_WORKERS==3
     assert classify_error("429 Too Many Requests")=="RATE_LIMIT_429"
     assert classify_error("worker timeout")=="TIMEOUT"
+    assert image_worker_pool.CODEX_SESSION_REUSE is False
+    assert rolling_frame_review.VALID == {"PASS_PREVIEW","REPAIR_NOW","UNCERTAIN"}
     print("IMAGE SCHEDULER V2.1 PHASE6 SELF-TEST PASS")
 
 

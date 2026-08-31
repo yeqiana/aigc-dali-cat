@@ -433,3 +433,8 @@ Full-auto pipeline: `worker → deterministic postflight → COMPLETE|PAUSED|BLO
 - Python 固定计算 `effective=max(exact, semantic)`，veto 固定为 exact OR semantic。
 - semantic evidence 绑定 fingerprint SHA、registry SHA、历史 episode IDs、critic log SHA。
 - V2.0.3.5.1 及更早 episode 保持兼容。
+
+<!-- STORY_OS_RUNTIME_DAG_REFACTOR_CORE_BEGIN -->
+## Runtime DAG Refactor
+绑定 Runtime Request 的新篇默认使用 Runtime DAG：Creative Story → Visual Lock → Production → Release。每步完成立即落 checkpoint；恢复时验证后复用。DAG 不建立第二 stage。图片采用 continuous max3 调度；Scoped Worker 优先用 Execution Capsule；Prompt Package / Rolling Review / Provisional Release 都是派生执行优化，不替代正式 Gate。图片 pool 只复用 Python worker，不复用 Codex 跨帧上下文。
+<!-- STORY_OS_RUNTIME_DAG_REFACTOR_CORE_END -->

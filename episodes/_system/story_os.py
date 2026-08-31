@@ -72,6 +72,8 @@ def main():
     p = sub.add_parser("next"); p.add_argument("episode_dir")
     p = sub.add_parser("plan"); p.add_argument("episode_dir")
     p = sub.add_parser("performance"); p.add_argument("episode_dir")
+    p = sub.add_parser("dag"); p.add_argument("dag_cmd", choices=["plan", "run", "resume", "show"]); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=7200)
+    p = sub.add_parser("quota"); p.add_argument("quota_cmd", choices=["auto", "snapshot", "report"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("checklist"); p.add_argument("episode_dir"); p.add_argument("--no-validators", action="store_true")
     p = sub.add_parser("audit-text"); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("transport"); p.add_argument("episode_dir"); p.add_argument("transport_cmd", choices=["preflight", "failure", "success", "status"]); p.add_argument("extra", nargs=argparse.REMAINDER)
@@ -114,7 +116,13 @@ def main():
     if args.cmd == "regression-v21": return forward("regression_matrix_v21.py", [args.regression_v21_cmd, *args.extra])
     if args.cmd == "learning-index": return forward("account_learning_index.py", [args.learning_cmd, *args.extra])
     if args.cmd == "image-backend": return forward("codex_subscription_image.py", [args.backend_cmd, *args.extra])
+    if args.cmd == "quota": return forward("quota_observability.py", [args.quota_cmd, str(Path(args.episode_dir).resolve()), *args.extra])
     ep = Path(args.episode_dir).resolve()
+    if args.cmd == "dag":
+        extra=[args.dag_cmd, str(ep)]
+        if args.codex: extra += ["--codex", args.codex]
+        if args.dag_cmd in {"run","resume"}: extra += ["--timeout", str(args.timeout)]
+        return forward("runtime_dag.py", extra)
     if args.cmd == "run":
         mode = "resume" if args.resume else "run"
         extra = [mode, str(ep)]

@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "package": "Story OS V2.1 Runtime Refactor + Performance P0.5-P1.2",
+  "package_version": "2.1.0-runtime-refactor-performance-p05-p12",
+  "installed_at": "2026-08-31T11:37:25.998751+08:00",
+  "baseline_expected_head": "18fd8031fbce7e62675c92a82b617571acb05610",
+  "actual_git": {
+    "available": true,
+    "branch": "story",
+    "head": "18fd8031fbce7e62675c92a82b617571acb05610"
+  },
+  "backup": ".storyos_backups\\v21_runtime_refactor_20260831_113724",
+  "encoding": "utf-8",
+  "tests": "PASS",
+  "runtime_dag": true,
+  "step_level_resume": true,
+  "warm_python_image_worker_pool": true,
+  "codex_image_session_reuse": false,
+  "quota_observability": "diagnostic_no_guessing",
+  "continuous_scheduler": true,
+  "execution_capsule": true,
+  "rolling_review_final_authority": false,
+  "provisional_release_final_authority": false,
+  "files": [
+    {
+      "path": "story_os_manifest.json",
+      "sha256": "2988681b78ccee734c78c88c4bdac3ca3e8937bef0990f1b420448a5a03ff3a8",
+      "bytes": 6479
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "sha256": "5c1f990ae43db0ed77147d7b43d64952e3a59cf5fc7d04f092bbcbebf8b2015b",
+      "bytes": 10370
+    },
+    {
+      "path": "README.md",
+      "sha256": "6785dcb6b3b5058d3e3cdd3900307d63544ddf8abb1e393225ab5883d578deda",
+      "bytes": 8781
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "31561ff9cfa291960315d859e44c2b41969d912bd23517e57c8957c25dd2687f",
+      "bytes": 13410
+    },
+    {
+      "path": "START_HERE.md",
+      "sha256": "4f2a38dc6fcde23867c1c4e90454291425f07b0b440246fdcd9a565f2e310290",
+      "bytes": 13594
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "e8a3d14d96f86aec2ba4445c69e84b8de3369a2d5869510d59522cae1e5f4cd9",
+      "bytes": 21135
+    },
+    {
+      "path": "episodes/_system/workflow_runner.py",
+      "sha256": "77f7f41276c241ee6a26797a2711d9513c170705008a62a20174a95e8701546a",
+      "bytes": 7982
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "sha256": "e182062c9e98f5d8523dc9998a8fb241376a2f957ea2a8a2d67549ad8aa0aa75",
+      "bytes": 14138
+    },
+    {
+      "path": "episodes/_system/image_scheduler.py",
+      "sha256": "08ae753c379718f967a7a216d275772d6415936cc5c1e64a4b8f7ef23d0363c9",
+      "bytes": 22015
+    },
+    {
+      "path": "episodes/_system/workflow_step_protocol.py",
+      "sha256": "de126ea4297a743271bf5f13306dd355c6feed1aafc213f9c2199d00a785d3a3",
+      "bytes": 2493
+    },
+    {
+      "path": "episodes/_system/scoped_codex_worker.py",
+      "sha256": "18a01c4e8eb197f7ba2a86aad412a00dfc3ccc446c7a71e36234aa8611187c2b",
+      "bytes": 5681
+    },
+    {
+      "path": "episodes/_system/runtime_dag.py",
+      "sha256": "026ba8f0b1318fa3ab4a291a6a716bffca17d51f35632f7eeaace53f6fc508ee",
+      "bytes": 7338
+    },
+    {
+      "path": "episodes/_system/image_worker_pool.py",
+      "sha256": "9dc8c0cebdca4319fbe7e9bc3c6de738f92cc1bbdd987dc1f8569b3ebba2035c",
+      "bytes": 2413
+    },
+    {
+      "path": "episodes/_system/quota_observability.py",
+      "sha256": "fba521386e0ef9f62398eae100fff31da82a2d12853f5c8a930a91f2567d71f5",
+      "bytes": 4469
+    },
+    {
+      "path": "episodes/_system/execution_capsule.py",
+      "sha256": "2c43cbe002cee9faee6913c75d9918773443a57b30e78b6530c273299cf439f5",
+      "bytes": 5097
+    },
+    {
+      "path": "episodes/_system/prompt_package.py",
+      "sha256": "dcd7e2a764e94b4b3a1f7c65a9bc89c60ece22a84fc1935d037b4552c6bc403e",
+      "bytes": 2064
+    },
+    {
+      "path": "episodes/_system/provisional_release.py",
+      "sha256": "e98c56fe757023210ff50a1a29dd48b47e79c955ef55bfb562e06ce9417e93a3",
+      "bytes": 3538
+    },
+    {
+      "path": "episodes/_system/rolling_frame_review.py",
+      "sha256": "0f2f58b10bea0cfab71e0c90f09284733c8f109599ce60f6c49c7cad1f4ed5ea",
+      "bytes": 2875
+    },
+    {
+      "path": "runtimes/runtime-dag.json",
+      "sha256": "19857e6780bf568711b0db209c6d37e48c4fe2383c6f231445a4e6b6465af537",
+      "bytes": 3115
+    },
+    {
+      "path": "standards/Runtime_Refactor_P0.5_P0.6_V1.0.md",
+      "sha256": "4dea1a12c405e602ce108c7dba644d79e482a342263048659a92f2ba48ee77d7",
+      "bytes": 3045
+    },
+    {
+      "path": "standards/Runtime_Performance_P0.7_P1.2_V1.0.md",
+      "sha256": "f241675ddd660a9d4a625fed4d2049d9056aaf465a2a24ec2ee23bdd6747ecbb",
+      "bytes": 2330
+    }
+  ]
+}

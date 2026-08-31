@@ -21,6 +21,7 @@ import workflow_performance as perf
 import workflow_observability as obs
 import runtime_request as runtime_request_contract
 import image_model_policy
+import runtime_dag
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -80,6 +81,16 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
     run([sys.executable, SYSTEM / "runtime_checkpoint.py", "init", ep, "--runtime", runtime, "--full-auto"])
     run_id = perf.start_run(ep, runtime, "resume" if resume else "run")
     try:
+        execution_mode = str(((request_data or {}).get("runtime") or {}).get("execution_mode") or "compat")
+        if execution_mode == "dag":
+            rc = runtime_dag.execute(ep, codex=codex, timeout=timeout, run_id=run_id)
+            total = time.monotonic() - started
+            perf.finish_run(ep, run_id, "COMPLETE" if rc == 0 else "BLOCKED", total)
+            try:
+                obs.collect(ep, write=True)
+            except Exception:
+                pass
+            return rc  # RUNTIME_DAG_V1
         t0 = time.monotonic()
         p = plan(ep)
         elapsed = time.monotonic() - t0
@@ -145,6 +156,7 @@ def main() -> int:
         assert "DATA_REVIEWED_GATE" in data["steps"]
         assert image_model_policy.DEFAULT_MODEL == "gpt-image-2"
         assert data["rules"].get("current_visual_lock_calibration_count") == 4
+        assert (ROOT / "runtimes/runtime-dag.json").is_file()
         print("WORKFLOW RUNNER V2.1 SELF-TEST PASS | PHASE910")
         return 0
     ep = resolve_episode(args.episode_dir)

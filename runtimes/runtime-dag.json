@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "name": "Story OS V2.1 Runtime DAG V1",
+  "canonical_episode_stage_source": "meta/episode-state.json",
+  "note": "Runtime execution DAG only; does not create a second episode stage system.",
+  "scoped_worker_timeout_seconds": 3600,
+  "steps": [
+    {
+      "id": "INCREMENTAL_PLAN",
+      "executor": "machine_incremental_plan",
+      "depends_on": [],
+      "covers": [
+        "RESTORE",
+        "INCREMENTAL_PLAN"
+      ],
+      "target_state": null,
+      "evidence_paths": [
+        "meta/runtime-checkpoint.json"
+      ],
+      "expensive": false
+    },
+    {
+      "id": "CREATIVE_STORY",
+      "executor": "scoped_codex",
+      "depends_on": [
+        "INCREMENTAL_PLAN"
+      ],
+      "covers": [
+        "TOPIC_GUARD",
+        "CONCEPT_DIVERGENCE",
+        "CONCEPT_AMBITION",
+        "IMAGE_FIRST_PROPAGATION",
+        "STORY_BUILD",
+        "STORY_CRITIC",
+        "RECENT5_SEMANTIC"
+      ],
+      "target_state": "STORYBOARD_LOCKED",
+      "evidence_paths": [
+        "meta/story-gates.json",
+        "meta/concept-candidates.json",
+        "meta/story-semantic-review.json"
+      ],
+      "expensive": true
+    },
+    {
+      "id": "VISUAL_LOCK",
+      "executor": "scoped_codex",
+      "depends_on": [
+        "CREATIVE_STORY"
+      ],
+      "covers": [
+        "ENVIRONMENT_IMPACT_CONTRACT",
+        "RESOLVED_FRAME_CONTRACT",
+        "VISUAL_LOCK"
+      ],
+      "target_state": "VISUAL_CALIBRATED",
+      "evidence_paths": [
+        "meta/story-gates.json",
+        "meta/visual-lock-plan.json",
+        "meta/production-ledger.json"
+      ],
+      "expensive": true
+    },
+    {
+      "id": "PRODUCTION",
+      "executor": "scoped_codex",
+      "depends_on": [
+        "VISUAL_LOCK"
+      ],
+      "covers": [
+        "IMAGE_WAVES",
+        "FAST_FRAME_SCOUT",
+        "FRAME_REVIEW",
+        "PRODUCTION"
+      ],
+      "target_state": "PRODUCTION_PASSED",
+      "evidence_paths": [
+        "meta/production-ledger.json",
+        "meta/frame-scout-summary.json",
+        "meta/frame-reviews"
+      ],
+      "expensive": true
+    },
+    {
+      "id": "RELEASE",
+      "executor": "scoped_codex",
+      "depends_on": [
+        "PRODUCTION"
+      ],
+      "covers": [
+        "TEXT_RELEASE",
+        "FINAL_CANDIDATE_SNAPSHOT",
+        "PUBLISH_READY_GATE"
+      ],
+      "target_state": "PUBLISH_READY",
+      "evidence_paths": [
+        "meta/release-manifest.json",
+        "meta/final-candidate-snapshot.json"
+      ],
+      "expensive": true
+    }
+  ],
+  "provisional_release_parallel": true,
+  "parallel_groups": {
+    "release_prep_lane": {
+      "starts_after": "CREATIVE_STORY",
+      "runs_alongside": [
+        "VISUAL_LOCK",
+        "PRODUCTION"
+      ],
+      "task": "provisional_release",
+      "blocking": false,
+      "final_authority": false
+    }
+  },
+  "performance_policy": {
+    "image_scheduler": "continuous_first_completed",
+    "execution_capsule": true,
+    "prompt_package_cache": true,
+    "rolling_pre_final_review": "high_risk_only",
+    "rolling_review_final_pass_authority": false,
+    "provisional_release_final_authority": false
+  }
+}

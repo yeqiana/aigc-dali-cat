@@ -51,7 +51,23 @@
     "default_image_model": "gpt-image-2",
     "explicit_image_model_no_silent_fallback": true,
     "current_visual_lock_calibration_count": 4,
-    "legacy_three_image_calibration_is_not_current_v21": true
+    "legacy_three_image_calibration_is_not_current_v21": true,
+    "runtime_dag_v1_enabled": true,
+    "runtime_dag_is_execution_only_not_stage_source": true,
+    "step_level_resume": true,
+    "scoped_codex_workers": true,
+    "warm_python_image_worker_pool": true,
+    "codex_image_session_reuse": false,
+    "quota_observability_diagnostic_only": true,
+    "quota_percentages_never_guessed": true,
+    "continuous_image_scheduler": true,
+    "image_scheduler_no_wave_barrier": true,
+    "execution_capsule_derived_cache": true,
+    "prompt_package_cache": true,
+    "rolling_pre_final_review_high_risk_only": true,
+    "rolling_review_never_final_pass": true,
+    "provisional_release_parallel": true,
+    "provisional_release_never_final_authority": true
   },
   "steps": {
     "RESTORE": {
@@ -316,5 +332,19 @@
       "locked_story"
     ],
     "default_image_model": "gpt-image-2"
+  },
+  "runtime_dag": {
+    "schema_version": 1,
+    "path": "runtimes/runtime-dag.json",
+    "runner": "episodes/_system/runtime_dag.py",
+    "step_protocol": "episodes/_system/workflow_step_protocol.py",
+    "scoped_worker": "episodes/_system/scoped_codex_worker.py",
+    "canonical_stage_source": "meta/episode-state.json",
+    "completion_target": "PUBLISH_READY",
+    "compat_adapter_fallback": "episodes/_system/codex_auto_orchestrator.py",
+    "execution_capsule": "episodes/_system/execution_capsule.py",
+    "prompt_package": "episodes/_system/prompt_package.py",
+    "provisional_release": "episodes/_system/provisional_release.py",
+    "rolling_review": "episodes/_system/rolling_frame_review.py"
   }
 }

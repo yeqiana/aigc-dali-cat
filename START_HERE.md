@@ -336,3 +336,8 @@ python episodes/_system/media_workspace.py ensure <episode_dir>
 
 历史未纳管 episode 不自动搬图；重新进入制作时再迁移。
 <!-- STORY_OS_V2_0_3_4_INCREMENTAL_WORKSPACE_END -->
+
+<!-- STORY_OS_RUNTIME_DAG_REFACTOR_CORE_BEGIN -->
+## Runtime DAG Refactor
+绑定 Runtime Request 的新篇默认使用 Runtime DAG：Creative Story → Visual Lock → Production → Release。每步完成立即落 checkpoint；恢复时验证后复用。DAG 不建立第二 stage。图片采用 continuous max3 调度；Scoped Worker 优先用 Execution Capsule；Prompt Package / Rolling Review / Provisional Release 都是派生执行优化，不替代正式 Gate。图片 pool 只复用 Python worker，不复用 Codex 跨帧上下文。
+<!-- STORY_OS_RUNTIME_DAG_REFACTOR_CORE_END -->

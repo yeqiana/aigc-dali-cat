@@ -1,7 +1,7 @@
 {
   "story_os_version": "2.1.0",
   "contract_schema": 1,
-  "release_name": "Full Workflow Closure + Runtime Request P0",
+  "release_name": "Full Workflow Closure + Runtime Request + Runtime DAG + Performance Pack",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -99,7 +99,18 @@
     "default_gpt_image_2",
     "runtime_request_image_model_binding",
     "explicit_image_model_no_silent_fallback",
-    "four_visual_lock_single_current_contract"
+    "four_visual_lock_single_current_contract",
+    "runtime_dag_v1",
+    "step_level_resume",
+    "scoped_codex_workers",
+    "warm_python_image_worker_pool",
+    "quota_observability",
+    "runtime_dag_evidence",
+    "continuous_image_scheduler",
+    "execution_capsule",
+    "prompt_package_cache",
+    "rolling_pre_final_review",
+    "provisional_release_pipeline"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -127,7 +138,14 @@
     "A rough user plot is a seed to strengthen and rewrite, not an automatic Story Lock.",
     "Image model defaults to gpt-image-2 when the user does not specify one.",
     "An explicitly requested image model must not be silently substituted.",
-    "Current V2.1 Visual Lock is exactly four admission images; three-image wording is legacy-only."
+    "Current V2.1 Visual Lock is exactly four admission images; three-image wording is legacy-only.",
+    "Runtime DAG is execution evidence only and never a second episode state machine.",
+    "Completed valid stage targets are reused on resume instead of rerunning the whole Codex supervisor.",
+    "Warm image worker pool reuses Python process/module state only; Codex conversation state remains isolated until a safe persistent transport exists.",
+    "Plus/Codex quota percentages are never guessed; automatic telemetry records only observable counters.",
+    "Continuous image scheduling removes wave barriers but preserves max3 image workers and single-writer ledger semantics.",
+    "Rolling pre-final review can trigger early repair but can never grant final frame PASS.",
+    "Provisional release material is runtime-only and can never mutate frozen release authority."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }
