@@ -37,6 +37,13 @@ def is_v21(ep: Path) -> bool:
         return False
 
 
+def review_required(ep: Path) -> bool:
+    if is_v21(ep):
+        return True
+    import visual_review_legacy as legacy
+    return legacy.review_required(ep)
+
+
 def verify(ep: Path) -> list[str]:
     if is_v21(ep):
         from visual_lock_v21 import verify as v

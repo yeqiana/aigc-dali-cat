@@ -26,6 +26,7 @@ AUTHORITY_FILES=[
     "standards/AIGC_Directing_Quality_V1.0.md",
     "standards/Character_Visual_And_Wardrobe_V1.0.md",
     "standards/Character_Master_Final_Closure_V1.0.md",
+    "standards/Human_Response_Interaction_V1.0.md",
     "standards/wardrobe-scenario-profiles.json",
 ]
 STEP_EVIDENCE={
@@ -51,6 +52,10 @@ RULE_KEYS=[
     "visual_lock_dependents_require_baseline_review_pass",
     "reference_arbitration_max_refs",
     "final_snapshot_locks_character_master_assets",
+    "human_response_interaction_enabled",
+    "emotion_intensity_max",
+    "interaction_density_min_one_per_5_human_frames",
+    "performance_telemetry_fail_soft",
 ]
 
 def now():

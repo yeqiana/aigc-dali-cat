@@ -7,6 +7,7 @@ import character_contract
 import resource_library
 import intro_policy
 import directing_quality
+import episode_performance
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -30,7 +31,7 @@ TARGET: reach STORYBOARD_LOCKED and stop there.
 - Directing Quality: author and LOCK meta/voice-contract.json; author and LOCK meta/storyboard-density-review.json; run voice_contract.py validate and storyboard_density_gate.py validate. Every frame must pass the delete-frame test and 5-frame progress window.
 - Opening Social Anchor: for multi-person travel / return-home / outing stories, strongly prefer Frame 01-02 to show the group in realistic selfie perspective: either vehicle/departure/transit selfie or destination/scenic check-in selfie. Use at least 2 visible people (prefer 3-4), establish relationship/clothing anchors, keep capture casual and imperfect rather than commercial/staged, and keep anomaly absent or only micro-background. Author+LOCK meta/opening-social-anchor.json and run opening_social_anchor.py validate. Solo or structurally incompatible stories may set applicable=false only with a concrete exception_reason.
 - Camera-Friendly Ordinary Cast + Anti-Likeness: author+LOCK meta/character-visual-contract.json as IDENTITY SPEC only. Set each locked member face_identity.identity_spec_locked=true; preproduction_only must NOT claim a pixel/image master. Primary leads should be moderately-above-average but believable real young adults; female lead defaults slim/proportionate/natural unless Story requires another build. Keep natural skin texture/asymmetry and explicit original haircut anchors. Real-person references may guide age vibe, attractiveness range, realism, capture style and clothing direction ONLY; never copy exact face geometry, feature combination, personal markers or exact hairstyle. Run character_visual_contract.py validate.
-- Capture Setup Diversity + Anomaly Logic + Human Action: author+LOCK meta/shot-progression-review.json and run shot_progression_gate.py validate. Same capture setup max 2 consecutive; every 5-frame window needs >=3 setup signatures; anomaly escalation must gain spatial/causal contradiction, human consequence or reversal rather than only more/bigger lights; after confirmation people must progress from observing into verify/discuss/move/act/fail/adapt; Frame 10 must open new evidence/question rather than recap.
+- Capture Setup Diversity + Anomaly Logic + Human Action + Human Response/Interaction: author+LOCK meta/shot-progression-review.json schema_version=2 for new/unlocked episodes and run shot_progression_gate.py validate. Same capture setup max 2 consecutive; every 5-frame window needs >=3 setup signatures; anomaly escalation must gain spatial/causal contradiction, human consequence or reversal rather than only more/bigger lights; after confirmation people must progress from observing into verify/discuss/move/act/fail/adapt; Frame 10 must open new evidence/question rather than recap. For every human-present frame, author restrained emotion state/intensity 0..4/causal trigger/response_sync plus interaction type/actor/target/action/meaningful. intensity>=2 needs a real trigger. Multi-person reactions should normally be asynchronous or shared-but-unsynchronized, never theatrical synchronized screaming. For multi-person stories, each run of 5 human-present frames needs at least one meaningful interaction, but interactions must not dominate the whole story. Opening Frame 01/02 social anchor needs at least one natural interaction (selfie, someone talking, adjusting seatbelt/bag/hat, showing a phone, etc.). Wardrobe may participate in causal actions such as pulling a shell zipper, holding a hat in wind, adjusting a backpack or handing a wet jacket.
 - advance only to STORYBOARD_LOCKED.
 DO NOT create Environment/Impact Contract, Visual Lock images, Batch, subtitles or Release.
 """,
@@ -144,15 +145,21 @@ Stop when the bounded target is reached. The parent runtime independently verifi
 
 def run_step(ep,step,codex_raw=None,timeout=3600):
     if step not in STEP_DIRECTIVES: raise ValueError(f"unknown scoped step: {step}")
-    codex=resolve_codex(codex_raw)
-    log=ep/"meta/scoped-workers"/f"{step.lower()}.jsonl"; log.parent.mkdir(parents=True,exist_ok=True)
-    cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"--json","-"]
-    with log.open("a",encoding="utf-8",newline="\n") as h:
-        try:
-            cp=subprocess.run(cmd,input=prompt(ep,step),text=True,stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
-            return cp.returncode,str(log)
-        except subprocess.TimeoutExpired:
-            return 124,str(log)
+    perf_run=episode_performance.safe_begin_stage(ep,step,source="scoped_codex_worker")
+    rc=99;log=ep/"meta/scoped-workers"/f"{step.lower()}.jsonl";log.parent.mkdir(parents=True,exist_ok=True)
+    try:
+        codex=resolve_codex(codex_raw)
+        cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"--json","-"]
+        with log.open("a",encoding="utf-8",newline="\n") as h:
+            try:
+                cp=subprocess.run(cmd,input=prompt(ep,step),text=True,stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+                rc=cp.returncode
+            except subprocess.TimeoutExpired:
+                rc=124
+        return rc,str(log)
+    finally:
+        episode_performance.safe_end_stage(ep,step,perf_run,status="PASS" if rc==0 else f"RC_{rc}",
+                                           metadata={"timeout_seconds":timeout,"log":str(log)})
 
 def self_test():
     assert set(STEP_DIRECTIVES)=={"CREATIVE_STORY","PREIMAGE_COMPILE","VISUAL_LOCK","PRODUCTION","RELEASE"}

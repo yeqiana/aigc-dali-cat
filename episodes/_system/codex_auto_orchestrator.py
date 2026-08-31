@@ -11,6 +11,7 @@ import argparse, datetime as dt, json, os, shutil, subprocess, sys
 from pathlib import Path
 
 from story_os_contract import canonical_stages, story_os_version
+import episode_performance
 
 ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=Path('meta/runtime-checkpoint.json')
 STORY_OS_VERSION=story_os_version(); STATES=canonical_stages()
@@ -40,6 +41,7 @@ def update_checkpoint(ep,state,next_action,error=None,completion=None):
     else:d.pop('last_error',None)
     if completion:d['completion']=completion
     write_json(p,d)
+    episode_performance.observe_checkpoint(ep,state)
 def runtime_request_block(ep, request_path=None):
     path = Path(request_path).resolve() if request_path else (ep / "meta/runtime-request.json")
     if not path.is_file(): return ""

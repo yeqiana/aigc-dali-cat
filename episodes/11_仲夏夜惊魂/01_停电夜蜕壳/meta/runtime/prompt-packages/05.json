@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "frame": "05",
+  "scene_prompt": "停电后的低照夜街，第一人称手机手电只扫到路沿、广告牌背面和关门商铺；高温、汗意、轻微运动模糊成立，普通县城街道，无超自然异常，画面主体仍可读，像真实手机在暗夜里边走边拍。",
+  "scene_prompt_sha256": "c216db04875463c8b685140bec5e4f820e26ce577f25b006fabb4369b636fac3",
+  "frame_contract_sha256": "9d6e590ca2f4900ced0b9ba74c7ff982b712610b6144492cecebb2525ba9e3c2",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\05.txt",
+  "package_sha256": "03e2a0f41cd08efa34147451a01ef297845765982b4d7154c2f235cefb743304",
+  "compiled_at": "2026-08-31T19:59:09+08:00"
+}

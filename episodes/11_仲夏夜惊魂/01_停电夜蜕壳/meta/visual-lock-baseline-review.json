@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "decision": "PASS",
+  "created_at": "2026-08-31T19:51:53+08:00",
+  "role": "ordinary_baseline",
+  "frame": 1,
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/01-dfd5b186d094-a2.png",
+  "sha256": "47094e63e36261cad748855c2d1e0e4b1be7b14e34cffa778b33329bfa0f05b0",
+  "frame_contract_sha256": "fe0418fc08a4ddaec153fe795a28f9af0be1ffac5bddd3b0b1eed3da1086cf87",
+  "queue_item_id": "dfd5b186d094",
+  "reviewer_scope": "delegated_pixel_review",
+  "checks": {
+    "visual_profile_match": "PASS",
+    "reality_first": "PASS",
+    "ordinary_life_density": "PASS",
+    "unposed_capture": "PASS",
+    "not_cinematic": "PASS",
+    "capture_credibility": "PASS",
+    "identity_usable": "PASS",
+    "group_members_distinct": "PASS"
+  },
+  "face_boxes": [
+    {
+      "character_id": "P01",
+      "x": null,
+      "y": null,
+      "w": null,
+      "h": null
+    }
+  ],
+  "note": "Inspect actual pixels. Face boxes are normalized 0..1 and derive crops only.",
+  "notes": "visual_profile_match：竖幅4:5夜间手机记录观感成立，低到中饱和，综合色温来自客运站窗灯、便利店灯箱和街面现场光，无人像虚化、复古噪点或商业HDR。reality_first：县城客运站外立面、湿旧路面、普通出租车、便利店与婚庆门店均呈现真实生活材质和自然照明；车辆字样与远处招牌因夜拍距离略糊，符合手机采集条件，未见超自然异常。ordinary_life_density：拖行李的下客乘客、散排行人、门口等候人群、两辆出租车、便利店货架及未拆红色婚庆充气拱门共同形成高密度普通县城夏夜生活证据。unposed_capture：前景拉箱行人背对镜头并被画面边缘自然截取，中景人物姿态与朝向分散，车辆停放不整齐，构图略偏且留有大片暗部，符合随手手持拍摄而非摆拍。not_cinematic：仅有现场混合光，暗部保留且高亮灯箱轻微溢出，没有轮廓光、戏剧性雾效、英雄机位、电影调色或宣传级精修。capture_credibility：透视、景深、夜间动态清晰度、轻微高光压缩和路面反光均符合2026年前后普通智能手机手持竖拍；夏装与夜间闷热环境相符，下客行李支持夜班客车刚离站的时间点。identity_usable：P01为第一人称拍摄者，画面未出现其正脸，也没有合同外主角、异常换装或身份冲突；未见可归属于P01的清晰脸，face box置空。group_members_distinct：合同为单人POV，画面中的其他人均表现为普通站前路人和乘客，没有被塑造成固定团体成员，也无多人身份矛盾。",
+  "issue_codes": [],
+  "critic_route": "codex_ephemeral_vision",
+  "critic_log": "meta/image-workers/baseline-review-critic.jsonl",
+  "approved_at": "2026-08-31T19:56:42+08:00",
+  "provisional_master_created": false
+}

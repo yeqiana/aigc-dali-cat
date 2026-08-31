@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "frame": "17",
+  "scene_prompt": "天桥最高处抓拍高潮一瞬：主角小跑在桥面，右手松握的手机被膜缘整只卷走腾空，左手紧攥包带只被边缘划过留下一道细红痕；县城中心整片半透明“城市表皮”被热风托到楼顶上方30-50米，像巨大空心蝉蜕，膜上能辨出道路标线、窗面反光和招牌色块，下方是黑暗错位的里层县城；六层住宅、公交车、路灯、天桥栏杆必须明确给出尺度。",
+  "scene_prompt_sha256": "23dabdc0d497ac9904b7797fd3d2a07338928eee815fe31f673b6efe9e1b5651",
+  "frame_contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\17.txt",
+  "package_sha256": "20515c1902ad287922637238ccc4cbb1a36b9f93eedca2feeeaf02515e73ec04",
+  "compiled_at": "2026-08-31T19:56:47+08:00"
+}

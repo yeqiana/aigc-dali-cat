@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "evidence_updated_at": "2026-08-31T19:59:11+08:00",
+  "policy": "risk_based_v21",
+  "rows": [
+    {
+      "frame": "01",
+      "risk": "LOW",
+      "decision": "DEFER_TO_FINAL",
+      "asset_sha256": "47094e63e36261cad748855c2d1e0e4b1be7b14e34cffa778b33329bfa0f05b0"
+    },
+    {
+      "frame": "05",
+      "risk": "LOW",
+      "decision": "DEFER_TO_FINAL",
+      "asset_sha256": "35fa368606253ae6e160dc1253a14172dffb745d54b1eb3432653acb6db1ebbb"
+    },
+    {
+      "frame": "08",
+      "risk": "HIGH",
+      "decision": "PASS_FAST",
+      "asset_sha256": "c787a854bce8f1b7777c2e146871d090b208045f03ac289af3f43c3ad3058509"
+    },
+    {
+      "frame": "17",
+      "risk": "HIGH",
+      "decision": "REPAIR_NOW",
+      "asset_sha256": "a9b2e80da3c2abe7ad8d9c6245889b3a86dd9082aeae0c6d2521a0e467a6483b"
+    }
+  ],
+  "errors": [
+    "frame 17 unresolved REPAIR_NOW"
+  ],
+  "summary": {
+    "passed": false,
+    "final_critic_still_required": true
+  }
+}

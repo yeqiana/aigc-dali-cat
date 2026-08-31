@@ -10,6 +10,7 @@ from pathlib import Path
 
 from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
 from story_os_contract import canonical_stages, story_os_version
+import episode_performance
 
 STATES = canonical_stages()
 STATE_FILE = Path("meta/episode-state.json")
@@ -264,6 +265,7 @@ def init_cmd(args: argparse.Namespace) -> None:
     save_json(state_path, state)
     save_json(manifest_path, manifest)
     save_json(gates_path, new_gates(args.id, aspect_ratio=canvas.aspect_ratio, strict=True))
+    episode_performance.safe_start_episode(episode_dir,source="episode_state.init")
     print(f"initialized: {episode_dir}")
     print(f"state   : {state_path}")
     print(f"manifest: {manifest_path}")
@@ -370,6 +372,7 @@ def transition_cmd(args: argparse.Namespace) -> None:
         {"state": target, "at": at, "mode": mode, "note": args.note}
     )
     save_json(state_path, data)
+    episode_performance.safe_record_state_transition(episode_dir,current,target,at)
     print(f"{current} -> {target}")
 
 

@@ -19,8 +19,8 @@
     {
       "kind": "file",
       "path": "meta/resource-selection.json",
-      "sha256": "599f0a28ec7e0b25c35548c10b70fed5c8eadd4c399fb9e445e6777acf088ae3",
-      "bytes": 1773
+      "sha256": "02ae3335c2637ce281161b7a0002c88594b271ff252058fe2903e8e5933629ba",
+      "bytes": 1402
     },
     {
       "kind": "file",
@@ -31,38 +31,38 @@
     {
       "kind": "file",
       "path": "story/01_StoryLock.md",
-      "sha256": "ea2d81f85e5fb795cad9c4fd653cae42951ef8e789e6d8367aee551cfe1a8fd0",
-      "bytes": 6404
+      "sha256": "a0f7bb5ab9ad3931950a3d11ffc2b32e2d9b010f74f18ac2df838d84cfd97ba9",
+      "bytes": 9895
     },
     {
       "kind": "file",
       "path": "story/02_Storyboard.md",
-      "sha256": "3c53b6fad4408ccd5c2cbb0f32e2dc34a75e7ed061dc0f0278383e37d06646ee",
-      "bytes": 10587
+      "sha256": "4677990eec404afa2b097201bb9aff253b104624c5eaf61e705792566d6919dd",
+      "bytes": 12874
     },
     {
       "kind": "file",
       "path": "story/03_Visual_Preproduction.md",
-      "sha256": "69c572cc1a0b38e26702eccd69d901bc799e68aa20d128408879f2bcce4e3d1e",
-      "bytes": 1780
+      "sha256": "b01a2f1e4d2c50b816be340066ca98d1f9da8448199fa9f3f76413d7f5280faa",
+      "bytes": 2724
     },
     {
       "kind": "file",
       "path": "story/04_Caption_Plan.md",
-      "sha256": "c60a86a2738e53f1a5ec663592230f8397ee4c4fe366ae9b738dcf4c056b3abe",
-      "bytes": 1225
+      "sha256": "d34993f0ede93f78f90a8895ebeb4222500e0328b4bc3cd6ea767f6df8520b57",
+      "bytes": 1435
     },
     {
       "kind": "file",
       "path": "story/05_Intro_Description_Strategy.md",
-      "sha256": "023d8d0af2ce0881bab304cbc66daea4b42a9480f4d8b5e36473de8a876ad1ea",
-      "bytes": 1252
+      "sha256": "e6d306f20738162b15a50b3a8ffa0af92ee9461b55d68a80f12ba78d8b596462",
+      "bytes": 1357
     },
     {
       "kind": "file",
       "path": "story/06_Preproduction_QA.md",
-      "sha256": "d7607d4a72570020bbcd9ef57a299ca50b4ba4c8083424649de49631ed290b7e",
-      "bytes": 1801
+      "sha256": "579d060811181acbdc542fc31f89f72ea6aebeed8fdbf47a6067cb51a072e1ef",
+      "bytes": 3649
     }
   ],
   "authority_subsets": [
@@ -70,16 +70,17 @@
       "kind": "json_subset",
       "path": "meta/story-gates.json",
       "name": "stable_preproduction_subset",
-      "sha256": "261fa9a285991ff1722f27eb8d89e2a1efcdcb3d698d8ebc23acd446a16043ed"
+      "sha256": "7a4ad947a20a9de1207df5aab6905447e12d13d1cce6ab462111f9d645f1ce6f"
     }
   ],
   "derived_rebuildable": [
     "meta/runtime/execution-capsules",
-    "meta/frame-contracts",
+    "meta/runtime/contracts",
     "meta/runtime/prompt-packages"
   ],
+  "quality_contracts_enabled": false,
   "story_rewrite_allowed": false,
   "next_mode": "image_continue",
   "handoff_ready": true,
-  "manifest_sha256": "6a1d05808a4f030a1ea4a1ea9acf39c6e0ced107f01f66b19f6959aae55700e8"
+  "manifest_sha256": "fa8e4460e937b4c76617f8773771d96584508079482d06efdd3ec1e77f49e30c"
 }

@@ -1,25 +1,63 @@
 {
   "schema_version": 1,
   "story_os_version": "2.1.0",
-  "reviewed_at": "2026-08-31T14:20:00+08:00",
-  "provenance": {
-    "runtime": "CHATGPT_PREPRODUCTION_DELEGATED",
-    "fresh_review": true
+  "episode_id": "11-01",
+  "reviewed_at": "2026-08-31T19:05:26+08:00",
+  "candidate_fingerprint_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "9e2794e7ce9671bdfd92a55c31a63516f0fc56e4b5f57689c94214b38eb5e344",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "history_episode_ids": [
+    "09-04",
+    "10-01"
+  ],
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/recent5-semantic-critic.jsonl",
+    "log_sha256": "c7c17530e022e7dfa7ada529352d6372306c7a3be6de2639f0e7749b4a6fa646",
+    "reviewed_at": "2026-08-31T19:05:26+08:00"
   },
-  "candidate_episode_id": "11-01",
   "comparisons": [
     {
       "episode_id": "09-04",
-      "semantic_similarity_score": 12,
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": true
+      },
+      "match_reasons": {
+        "reality_residue": "次日照常后都在县城边缘天空留下巨大弧状残留（白弧/近透明弧膜反光），以天空尺度弧线作为异常真实性的持久证据"
+      },
+      "semantic_similarity_score": 5,
       "semantic_mechanism_veto": false,
-      "reason": "县城尺度相似不等于机制相同；物理表层蜕壳与玻璃瓶重力映射不同。"
+      "semantic_matched_dimensions": [
+        "reality_residue"
+      ]
     },
     {
       "episode_id": "10-01",
-      "semantic_similarity_score": 8,
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
       "semantic_mechanism_veto": false,
-      "reason": "城市物理异常与高寒失温感知重组完全不同。"
+      "semantic_matched_dimensions": []
     }
-  ],
-  "decision": "pass"
+  ]
 }

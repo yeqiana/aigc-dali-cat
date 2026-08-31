@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "frame": "08",
+  "risk_level": "HIGH",
+  "risk_score": 78,
+  "risk_tags": [
+    "first_anomaly",
+    "impact_2",
+    "reveal"
+  ],
+  "frame_contract_sha256": "f6b951f42e960d9a9e0318501a5cc146482d7606f3f561250b980bc8cfd5acdc",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-4ca7730ef4a9-a1.png",
+  "asset_sha256": "c787a854bce8f1b7777c2e146871d090b208045f03ac289af3f43c3ad3058509",
+  "scouted_at": "2026-08-31T19:56:48+08:00",
+  "final_critic_still_required": true,
+  "decision": "PASS_FAST",
+  "issue_codes": [],
+  "notes": "实际像素中左侧药房墙膜、橱窗透明反光层与右下黄色路沿漆三处彼此分离的表层均明显翘起并沿街纵深同向卷动；异常无需字幕即可读。第一人称竖拍合法，手机近处硬光、远处掉黑及普通县城停电夜街景符合合同，未见立即返修级硬伤。",
+  "confidence": 0.94,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scouts/08.jsonl"
+}

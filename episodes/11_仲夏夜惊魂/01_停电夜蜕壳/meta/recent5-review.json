@@ -2,43 +2,49 @@
   "schema_version": 2,
   "story_os_version": "2.1.0",
   "episode_id": "11-01",
-  "generated_at": "2026-08-31T14:20:00+08:00",
+  "generated_at": "2026-08-31T19:05:26+08:00",
   "candidate_fingerprint_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "9e2794e7ce9671bdfd92a55c31a63516f0fc56e4b5f57689c94214b38eb5e344",
   "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
   "comparison_count": 2,
-  "history_policy": {
-    "requested_recent_count": 5,
-    "available_real_fingerprints": 2,
-    "invent_missing_history": false
-  },
   "compared": [
     {
       "episode_id": "10-01",
       "title": "鳌太线·热汤",
       "exact_similarity_score": 0,
-      "semantic_similarity_score": 8,
-      "similarity_score": 8,
+      "semantic_similarity_score": 0,
+      "similarity_score": 0,
       "exact_mechanism_veto": false,
       "semantic_mechanism_veto": false,
       "mechanism_veto": false,
-      "matched_dimensions": [],
-      "note": "仅共享第一人称异常记录这一账号品牌层特征；机制/空间/升级/高潮均不同。"
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [],
+      "matched_dimensions": []
     },
     {
       "episode_id": "09-04",
       "title": "瓶中世界",
       "exact_similarity_score": 0,
-      "semantic_similarity_score": 12,
-      "similarity_score": 12,
+      "semantic_similarity_score": 5,
+      "similarity_score": 5,
       "exact_mechanism_veto": false,
       "semantic_mechanism_veto": false,
       "mechanism_veto": false,
-      "matched_dimensions": [],
-      "note": "均有县城尺度高潮，但一个是容器控制现实，一个是城市表层物理蜕壳；核心机制、中段和高潮兑现不同。"
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [
+        "reality_residue"
+      ],
+      "matched_dimensions": [
+        "reality_residue"
+      ]
     }
   ],
-  "max_similarity_score": 12,
+  "max_similarity_score": 5,
   "mechanism_veto": false,
   "decision": "pass",
-  "scoring_policy": "effective=max(exact_string,semantic_equivalence); no invented history"
+  "scoring_policy": "effective=max(exact_string,semantic_equivalence); veto=exact_veto OR semantic_veto",
+  "note": "V2.0.3.6 uses a fresh isolated semantic equivalence matrix so paraphrased/skin-swapped fingerprints cannot bypass Recent-5 by changing wording. Python, not the critic, computes scores.",
+  "semantic_review_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/recent5-semantic-review.json",
+  "semantic_review_sha256": "0532dfec68089e2b2087920d990260ce29fa3f2451f85ab861e437e105a3b2ce"
 }

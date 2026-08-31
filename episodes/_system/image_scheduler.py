@@ -27,6 +27,7 @@ import asset_lineage
 import character_visual_contract
 import reference_arbitrator
 import visual_lock_baseline_gate
+import episode_performance
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -386,6 +387,15 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                 q["adaptive_parallel"]=cap
                 q["stable_waves"]=stable
                 q.setdefault("waves",[]).append({"event":event_no,"mode":"continuous_first_completed","at":now(),"frame":item["frame"],"status":item["status"],"inflight_after":len(inflight),"next_parallel":cap,"elapsed_seconds":((res.get("payload") or {}).get("elapsed_seconds"))})
+                episode_performance.safe_record_image_attempt(
+                    ep,frame=int(item["frame"]),scope=str(item.get("scope") or "unknown"),
+                    kind=str(item.get("kind") or "original"),status=str(item.get("status") or "unknown"),
+                    model=item.get("model"),attempt=int(item.get("attempts") or 1),
+                    started_at=item.get("started_at"),ended_at=item.get("completed_at") or now(),
+                    elapsed_seconds=((res.get("payload") or {}).get("elapsed_seconds")),
+                    queue_item_id=item.get("id"),
+                    error_code=classify_error(msg) if str(item.get("status") or "") in {"tech_failed","blocked"} else None
+                )
                 save_queue(ep,q)
 
     for fut,item_id in list(review_futures.items()):

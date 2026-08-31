@@ -157,7 +157,25 @@
       "VISUAL_CALIBRATED",
       "PRODUCTION_PASSED"
     ],
-    "published_episode_master_backfill_forbidden": true
+    "published_episode_master_backfill_forbidden": true,
+    "episode_performance_ledger_enabled": true,
+    "episode_performance_ledger_path": "meta/episode-performance-ledger.json",
+    "episode_performance_summary_path": "reports/story-os-performance-summary.json",
+    "performance_telemetry_fail_soft": true,
+    "performance_telemetry_is_not_stage_gate": true,
+    "performance_records_scoped_stage_wall_time": true,
+    "performance_records_image_backend_attempt_time": true,
+    "performance_records_repair_and_technical_attempts": true,
+    "performance_reports_p50_p90": true,
+    "human_response_interaction_enabled": true,
+    "emotion_intensity_min": 0,
+    "emotion_intensity_max": 4,
+    "emotion_trigger_required_at_intensity_gte": 2,
+    "synchronized_theatrical_reaction_forbidden": true,
+    "interaction_density_min_one_per_5_human_frames": true,
+    "interaction_max_ratio": 0.75,
+    "opening_social_natural_interaction_required": true,
+    "wardrobe_can_drive_causal_human_interaction": true
   },
   "steps": {
     "RESTORE": {

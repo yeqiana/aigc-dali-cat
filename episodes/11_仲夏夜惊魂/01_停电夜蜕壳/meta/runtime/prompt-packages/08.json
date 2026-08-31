@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "frame": "08",
+  "scene_prompt": "一张画面同时看到三种不同材质同向翘起：药房外墙米黄色饰面薄膜、隔壁橱窗最外反光层、路沿黄色漆都朝同一方向卷起，彼此隔开但动作一致；手机夜景低照，普通街区，无字即可看出不是普通墙皮。",
+  "scene_prompt_sha256": "acdbb30604aaf7e7eb5b0131acad07e074706de78f7566dcd614273854e929bf",
+  "frame_contract_sha256": "f6b951f42e960d9a9e0318501a5cc146482d7606f3f561250b980bc8cfd5acdc",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\08.txt",
+  "package_sha256": "34ba38c5a9eb76525486c7cc1ae27c24b82adad49a42fe4eab0c1e4e8ba43deb",
+  "compiled_at": "2026-08-31T19:56:47+08:00"
+}

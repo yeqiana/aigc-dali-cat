@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "package": "Story_OS_V2.1_Performance_Human_Interaction_UTF8_Hotfix",
+  "installed_at": "2026-08-31T20:04:14+08:00",
+  "verified_baseline": "a4037ec0353e087eb801b45863f0440627f66258",
+  "actual_head_before_install": "a4037ec0353e087eb801b45863f0440627f66258",
+  "branch": "story",
+  "encoding": "UTF-8",
+  "backup_dir": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.story-os-upgrade-backups\\20260831_200414_Story_OS_V2.1_Performance_Human_Interaction_UTF8_Hotfix",
+  "features": [
+    "episode_performance_telemetry",
+    "stage_wall_timing",
+    "image_attempt_timing",
+    "repair_and_technical_attempt_metrics",
+    "p50_p90_summary",
+    "emotion_causality",
+    "asynchronous_multi_person_response",
+    "meaningful_interaction_density",
+    "opening_social_interaction",
+    "wardrobe_driven_interaction"
+  ]
+}

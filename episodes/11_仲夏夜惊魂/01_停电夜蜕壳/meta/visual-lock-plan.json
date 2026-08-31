@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "generated_at": "2026-08-31T19:39:04+08:00",
+  "policy": {
+    "baseline_first": true,
+    "remaining_three_parallelizable": true,
+    "calibration_count": 4,
+    "baseline_selection": "ordinary_fallback",
+    "baseline_frame": 1,
+    "opening_social_anchor_machine_priority": true
+  },
+  "items": [
+    {
+      "id": "V-B",
+      "role": "ordinary_baseline",
+      "frame": 1,
+      "mode": "normal_record",
+      "impact": 0,
+      "scale_reference": "",
+      "environment_severity": 7,
+      "contract_sha256": "45e010341422a65f41d847e561ab8cfa46859bf9be923537a0ef90ad58184983",
+      "depends_on": []
+    },
+    {
+      "id": "V-W",
+      "role": "worst_capture_condition",
+      "frame": 5,
+      "mode": "normal_record",
+      "impact": 1,
+      "scale_reference": "",
+      "environment_severity": 6,
+      "contract_sha256": "9727a207de1eaa36361cb508f7f210a58465c71526dd7dfa5215c4e70741d489",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-A",
+      "role": "first_major_anomaly",
+      "frame": 8,
+      "mode": "anomaly_reveal",
+      "impact": 2,
+      "scale_reference": "",
+      "environment_severity": 6,
+      "contract_sha256": "451f0b98dc813c87ed6a94965b41a6a2da36f80ec7f9f047521251ed2f4c046c",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-H",
+      "role": "high_impact_admission",
+      "frame": 17,
+      "mode": "climax_impact",
+      "impact": 4,
+      "scale_reference": "六层住宅、公交车、路灯、天桥栏杆",
+      "environment_severity": 6,
+      "contract_sha256": "26780d5a6f880b0fe927ff796cfb0c02e4bfd04056eb131a3e19effa538f4429",
+      "depends_on": [
+        1
+      ]
+    }
+  ]
+}

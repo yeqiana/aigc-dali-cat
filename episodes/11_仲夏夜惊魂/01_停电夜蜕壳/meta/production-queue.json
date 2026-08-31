@@ -1,0 +1,328 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-31T19:40:10+08:00",
+  "updated_at": "2026-08-31T20:04:12+08:00",
+  "max_parallel": 3,
+  "adaptive_parallel": 3,
+  "stable_waves": 2,
+  "items": [
+    {
+      "id": "dfd5b186d094",
+      "frame": 1,
+      "kind": "original",
+      "scope": "visual_lock",
+      "status": "generated",
+      "prompt_file": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/prompts/production/01.txt",
+      "references": [],
+      "capture_id": "visual-lock-01",
+      "model": "gpt-image-2",
+      "depends_on": [],
+      "priority": 50,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/01.json",
+        "contract_sha256": "fe0418fc08a4ddaec153fe795a28f9af0be1ffac5bddd3b0b1eed3da1086cf87"
+      },
+      "attempts": 2,
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/01-dfd5b186d094-a2.png",
+      "log_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/image-workers/01-dfd5b186d094-a2.jsonl",
+      "last_error": null,
+      "queued_at": "2026-08-31T19:40:22+08:00",
+      "reference_arbitration": {
+        "frame": "01",
+        "scope": "visual_lock",
+        "max_refs": 2,
+        "identity_needed": false,
+        "identity_reason": "no_human_identity_signal",
+        "selected": [],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      },
+      "started_at": "2026-08-31T19:51:46+08:00",
+      "completed_at": "2026-08-31T19:51:48+08:00",
+      "lineage": {
+        "version": 1,
+        "created_at": "2026-08-31T19:51:48+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/01-dfd5b186d094-a2.png",
+        "sha256": "47094e63e36261cad748855c2d1e0e4b1be7b14e34cffa778b33329bfa0f05b0",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": null,
+        "source_item_id": "dfd5b186d094",
+        "frame_contract_sha256": "fe0418fc08a4ddaec153fe795a28f9af0be1ffac5bddd3b0b1eed3da1086cf87"
+      },
+      "prompt_package": {
+        "package_sha256": "d8e9134d150c1016df078b839f1f9f34625876d5fc1e16583c3ed55d7d2fb7b1",
+        "frame_contract_sha256": "fe0418fc08a4ddaec153fe795a28f9af0be1ffac5bddd3b0b1eed3da1086cf87"
+      },
+      "scout": {
+        "decision": "DEFER_TO_FINAL",
+        "risk_level": "LOW",
+        "asset_sha256": "47094e63e36261cad748855c2d1e0e4b1be7b14e34cffa778b33329bfa0f05b0"
+      }
+    },
+    {
+      "id": "91211334ca50",
+      "frame": 5,
+      "kind": "original",
+      "scope": "visual_lock",
+      "status": "generated",
+      "prompt_file": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/prompts/production/05.txt",
+      "references": [],
+      "capture_id": "visual-lock-05",
+      "model": "gpt-image-2",
+      "depends_on": [
+        1
+      ],
+      "priority": 78,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/05.json",
+        "contract_sha256": "9d6e590ca2f4900ced0b9ba74c7ff982b712610b6144492cecebb2525ba9e3c2"
+      },
+      "attempts": 1,
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/05-91211334ca50-a1.png",
+      "log_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/image-workers/05-91211334ca50-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-08-31T19:40:22+08:00",
+      "reference_arbitration": {
+        "frame": "05",
+        "scope": "visual_lock",
+        "max_refs": 2,
+        "identity_needed": false,
+        "identity_reason": "no_human_identity_signal",
+        "selected": [],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      },
+      "started_at": "2026-08-31T19:59:09+08:00",
+      "lineage": {
+        "version": 1,
+        "created_at": "2026-08-31T19:59:11+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/05-91211334ca50-a1.png",
+        "sha256": "35fa368606253ae6e160dc1253a14172dffb745d54b1eb3432653acb6db1ebbb",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": null,
+        "source_item_id": "91211334ca50",
+        "frame_contract_sha256": "9d6e590ca2f4900ced0b9ba74c7ff982b712610b6144492cecebb2525ba9e3c2"
+      },
+      "completed_at": "2026-08-31T19:59:11+08:00",
+      "prompt_package": {
+        "package_sha256": "03e2a0f41cd08efa34147451a01ef297845765982b4d7154c2f235cefb743304",
+        "frame_contract_sha256": "9d6e590ca2f4900ced0b9ba74c7ff982b712610b6144492cecebb2525ba9e3c2"
+      },
+      "scout": {
+        "decision": "DEFER_TO_FINAL",
+        "risk_level": "LOW",
+        "asset_sha256": "35fa368606253ae6e160dc1253a14172dffb745d54b1eb3432653acb6db1ebbb"
+      }
+    },
+    {
+      "id": "4ca7730ef4a9",
+      "frame": 8,
+      "kind": "original",
+      "scope": "visual_lock",
+      "status": "scout_repair",
+      "prompt_file": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/prompts/production/08.txt",
+      "references": [],
+      "capture_id": "visual-lock-08",
+      "model": "gpt-image-2",
+      "depends_on": [
+        1
+      ],
+      "priority": 133,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/08.json",
+        "contract_sha256": "f6b951f42e960d9a9e0318501a5cc146482d7606f3f561250b980bc8cfd5acdc"
+      },
+      "attempts": 1,
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-4ca7730ef4a9-a1.png",
+      "log_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/image-workers/08-4ca7730ef4a9-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-08-31T19:40:22+08:00",
+      "reference_arbitration": {
+        "frame": "08",
+        "scope": "visual_lock",
+        "max_refs": 2,
+        "identity_needed": false,
+        "identity_reason": "no_human_identity_signal",
+        "selected": [],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      },
+      "started_at": "2026-08-31T19:56:47+08:00",
+      "lineage": {
+        "version": 1,
+        "created_at": "2026-08-31T19:59:09+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-4ca7730ef4a9-a1.png",
+        "sha256": "c787a854bce8f1b7777c2e146871d090b208045f03ac289af3f43c3ad3058509",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": null,
+        "source_item_id": "4ca7730ef4a9",
+        "frame_contract_sha256": "f6b951f42e960d9a9e0318501a5cc146482d7606f3f561250b980bc8cfd5acdc"
+      },
+      "completed_at": "2026-08-31T19:59:09+08:00",
+      "prompt_package": {
+        "package_sha256": "34ba38c5a9eb76525486c7cc1ae27c24b82adad49a42fe4eab0c1e4e8ba43deb",
+        "frame_contract_sha256": "f6b951f42e960d9a9e0318501a5cc146482d7606f3f561250b980bc8cfd5acdc"
+      },
+      "scout": {
+        "decision": "PASS_FAST",
+        "risk_level": "HIGH",
+        "asset_sha256": "c787a854bce8f1b7777c2e146871d090b208045f03ac289af3f43c3ad3058509"
+      },
+      "rolling_review": {
+        "frame": "08",
+        "decision": "REPAIR_NOW",
+        "reasons": [
+          "三种表面虽均有翘起，但卷曲朝向在实际像素中不一致且空间指向不清：左侧墙膜主要向画面右下/外侧掀开，橱窗反光层向下垂卷，路沿黄漆则向右上翘起，无法无字读出它们共同朝县城中心运动。",
+          "当前构图更像三处彼此独立的老化、破损或脱层；合同要求的首次重大异常因果——不同材质、彼此隔开却同步同向——没有在像素中成立，属于核心 required_visual_cues 的明确缺失。"
+        ],
+        "confidence": 0.97,
+        "final_pass_authority": false
+      }
+    },
+    {
+      "id": "d03e5dd8fe1f",
+      "frame": 17,
+      "kind": "original",
+      "scope": "visual_lock",
+      "status": "scout_repair",
+      "prompt_file": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/prompts/production/17.txt",
+      "references": [],
+      "capture_id": "visual-lock-17",
+      "model": "gpt-image-2",
+      "depends_on": [
+        1
+      ],
+      "priority": 200,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/17.json",
+        "contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9"
+      },
+      "attempts": 1,
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-d03e5dd8fe1f-a1.png",
+      "log_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/image-workers/17-d03e5dd8fe1f-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-08-31T19:40:22+08:00",
+      "reference_arbitration": {
+        "frame": "17",
+        "scope": "visual_lock",
+        "max_refs": 2,
+        "identity_needed": false,
+        "identity_reason": "no_human_identity_signal",
+        "selected": [],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      },
+      "started_at": "2026-08-31T19:56:47+08:00",
+      "lineage": {
+        "version": 1,
+        "created_at": "2026-08-31T19:59:11+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-d03e5dd8fe1f-a1.png",
+        "sha256": "a9b2e80da3c2abe7ad8d9c6245889b3a86dd9082aeae0c6d2521a0e467a6483b",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": null,
+        "source_item_id": "d03e5dd8fe1f",
+        "frame_contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9"
+      },
+      "completed_at": "2026-08-31T19:59:11+08:00",
+      "prompt_package": {
+        "package_sha256": "20515c1902ad287922637238ccc4cbb1a36b9f93eedca2feeeaf02515e73ec04",
+        "frame_contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9"
+      },
+      "scout": {
+        "decision": "REPAIR_NOW",
+        "risk_level": "HIGH",
+        "asset_sha256": "a9b2e80da3c2abe7ad8d9c6245889b3a86dd9082aeae0c6d2521a0e467a6483b"
+      }
+    },
+    {
+      "id": "949d4f874c45",
+      "frame": 17,
+      "kind": "repair",
+      "scope": "visual_lock",
+      "status": "blocked",
+      "prompt_file": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/prompts/production/17_repair.txt",
+      "references": [],
+      "capture_id": "visual-lock-17-r1",
+      "model": "gpt-image-2",
+      "depends_on": [
+        1
+      ],
+      "priority": 200,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/17.json",
+        "contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9"
+      },
+      "attempts": 0,
+      "output_path": null,
+      "log_path": null,
+      "last_error": "ledger begin failed: prompt budget exceeded: 288 chars/838 bytes; limit=260 chars/900 bytes. Shorten the per-frame prompt or use --allow-long-prompt with an explicit reason in notes.\n",
+      "queued_at": "2026-08-31T20:04:08+08:00",
+      "reference_arbitration": {
+        "frame": "17",
+        "scope": "visual_lock",
+        "max_refs": 2,
+        "identity_needed": false,
+        "identity_reason": "no_human_identity_signal",
+        "selected": [],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      }
+    }
+  ],
+  "waves": [
+    {
+      "event": 1,
+      "mode": "continuous_first_completed",
+      "at": "2026-08-31T19:41:45+08:00",
+      "frame": 1,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 2,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 2,
+      "mode": "continuous_first_completed",
+      "at": "2026-08-31T19:51:48+08:00",
+      "frame": 1,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 2,
+      "elapsed_seconds": 0.0
+    },
+    {
+      "event": 3,
+      "mode": "continuous_first_completed",
+      "at": "2026-08-31T19:59:09+08:00",
+      "frame": 8,
+      "status": "generated",
+      "inflight_after": 1,
+      "next_parallel": 3,
+      "elapsed_seconds": 0.0
+    },
+    {
+      "event": 4,
+      "mode": "continuous_first_completed",
+      "at": "2026-08-31T19:59:11+08:00",
+      "frame": 17,
+      "status": "scout_repair",
+      "inflight_after": 1,
+      "next_parallel": 3,
+      "elapsed_seconds": 0.0
+    },
+    {
+      "event": 5,
+      "mode": "continuous_first_completed",
+      "at": "2026-08-31T19:59:11+08:00",
+      "frame": 5,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 3,
+      "elapsed_seconds": 0.0
+    }
+  ]
+}

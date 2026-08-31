@@ -1,0 +1,14 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.0",
+  "last_completed": "RUNTIME_INITIALIZED",
+  "next_action": "READ_EPISODE_STATE",
+  "locked_frames": [],
+  "failed_frames": [],
+  "step_runs": [],
+  "note": "Recovery evidence only; NOT a stage source.",
+  "runtime": "CODEX",
+  "continuous_execution_authorized": true,
+  "approval_basis": "delegated_continuous_execution",
+  "updated_at": "2026-08-31T18:53:19+08:00"
+}

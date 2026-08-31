@@ -29,7 +29,6 @@
       8,
       9,
       10,
-      12,
       13,
       15,
       16
@@ -203,7 +202,8 @@
         "impact_level": 1,
         "required_visual_cues": [
           "停电前完整人工照明",
-          "轻微热扭曲"
+          "轻微热扭曲",
+          "记录载体给出首处可辨认异常证据（远景药房外墙角卷边）"
         ],
         "scale_reference": "",
         "escalation_from": null
@@ -290,22 +290,24 @@
         "frame_mode": "normal_record",
         "impact_level": 1,
         "required_visual_cues": [
-          "河渠步道与小区后门保持普通",
-          "主角主动远离主街"
+          "河渠步行道入口悬垂低垂膜层贴路面",
+          "身后近路被卷起表层封住",
+          "手机时间23:26可见"
         ],
         "scale_reference": "",
         "escalation_from": null
       },
       "12": {
-        "narrative_role": "escalation",
-        "frame_mode": "anomaly_amplified",
-        "impact_level": 3,
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
         "required_visual_cues": [
-          "对岸多栋楼表层同向卷起",
-          "外围到中心方向一致"
+          "侧身挤过膜层旅行包蹭下碎片粘包",
+          "身后入口表层合拢封死退路",
+          "手电光照处卷边加速后关灯"
         ],
-        "scale_reference": "河渠宽度、4-6层住宅",
-        "escalation_from": 10
+        "scale_reference": "",
+        "escalation_from": null
       },
       "13": {
         "narrative_role": "reveal",
@@ -313,7 +315,8 @@
         "impact_level": 3,
         "required_visual_cues": [
           "整街表层离地2-3米",
-          "下方实体门洞错位"
+          "下方实体门洞错位",
+          "对岸楼角同向卷起（外围向中心）"
         ],
         "scale_reference": "步行天桥、街灯、店面层高",
         "escalation_from": 10
@@ -358,29 +361,33 @@
         "required_visual_cues": [
           "连续城市表皮悬在楼顶上方30-50米",
           "膜上可辨道路标线/窗面反光/招牌色块",
-          "下方黑暗错位县城"
+          "下方黑暗错位县城",
+          "松握手机被膜缘整只卷走，紧攥包带仅被划过（代价选择性）"
         ],
         "scale_reference": "六层住宅、公交车、路灯、天桥栏杆",
         "escalation_from": 16
       },
       "18": {
         "narrative_role": "payoff",
-        "frame_mode": "anomaly_amplified",
+        "frame_mode": "payoff",
         "impact_level": 3,
         "required_visual_cues": [
-          "主角沿围墙撤离",
-          "远处巨大薄膜仍悬在楼群上"
+          "窗外居民楼逐层复电县城表面看似正常",
+          "前臂被膜缘划过的细红痕",
+          "包上粘着图12同一块浅黄碎片",
+          "手机充电线空着手机不在"
         ],
-        "scale_reference": "住宅围墙与远处六层楼",
-        "escalation_from": 17
+        "scale_reference": "",
+        "escalation_from": null
       },
       "19": {
         "narrative_role": "payoff",
         "frame_mode": "payoff",
-        "impact_level": 1,
+        "impact_level": 2,
         "required_visual_cues": [
-          "住宅逐层复电",
-          "室内旅行包和矿泉水生活锚点"
+          "药房外墙缺口与包上碎片同一视觉身份（颜色/尺寸/轮廓互认）",
+          "缺口边缘卷边残余与膜缘纹理相同",
+          "窗框旧孔位与现实窗户错位约半米"
         ],
         "scale_reference": "",
         "escalation_from": null
@@ -398,7 +405,7 @@
       }
     },
     "calibration": {
-      "policy": "four_admission_v21_1_plus_3",
+      "policy": "four_admission_v21",
       "status": "PLANNED_NOT_RENDERED",
       "baseline": {
         "frame": 1,
@@ -416,12 +423,67 @@
         "frame": 17,
         "decision": "planned"
       },
-      "dependency_rule": "01 baseline PASS 后，05/08/17 才允许并行进入 Visual Lock"
+      "dependency_rule": "01 baseline PASS 后，05/08/17 才允许并行进入 Visual Lock",
+      "schema_version": 2,
+      "items": [
+        {
+          "id": "V-B",
+          "role": "ordinary_baseline",
+          "frame": 1,
+          "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/01-dfd5b186d094-a2.png",
+          "sha256": "47094e63e36261cad748855c2d1e0e4b1be7b14e34cffa778b33329bfa0f05b0",
+          "decision": "passed",
+          "frame_contract_sha256": "fe0418fc08a4ddaec153fe795a28f9af0be1ffac5bddd3b0b1eed3da1086cf87",
+          "note": "baseline separately PASS; parallel-three may start"
+        },
+        {
+          "id": "V-W",
+          "role": "worst_capture_condition",
+          "frame": 5,
+          "asset_path": null,
+          "sha256": null,
+          "decision": "pending",
+          "frame_contract_sha256": "9727a207de1eaa36361cb508f7f210a58465c71526dd7dfa5215c4e70741d489",
+          "note": ""
+        },
+        {
+          "id": "V-A",
+          "role": "first_major_anomaly",
+          "frame": 8,
+          "asset_path": null,
+          "sha256": null,
+          "decision": "pending",
+          "frame_contract_sha256": "451f0b98dc813c87ed6a94965b41a6a2da36f80ec7f9f047521251ed2f4c046c",
+          "note": ""
+        },
+        {
+          "id": "V-H",
+          "role": "high_impact_admission",
+          "frame": 17,
+          "asset_path": null,
+          "sha256": null,
+          "decision": "pending",
+          "frame_contract_sha256": "26780d5a6f880b0fe927ff796cfb0c02e4bfd04056eb131a3e19effa538f4429",
+          "note": ""
+        }
+      ]
     },
     "references": {
       "required": false,
       "required_anchors": [],
       "items": []
+    },
+    "fast_frame_scout": {
+      "schema_version": 1,
+      "enabled": true,
+      "policy": "risk_based_v21",
+      "final_critic_still_required": true,
+      "decisions": [
+        "PASS_FAST",
+        "REPAIR_NOW",
+        "DEFER_TO_FINAL"
+      ],
+      "high_risk_required": true
     }
   },
   "subtitles": {
@@ -435,13 +497,13 @@
   },
   "reviews": {
     "story": "passed",
-    "authenticity": "passed_preproduction",
-    "continuity": "passed_preproduction",
-    "visual_admission": "pending_image",
-    "subtitle": "planned",
-    "production": "not_started",
-    "recommendation_fit": "planned",
-    "publish": "not_started"
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "pending",
+    "subtitle": "pending",
+    "production": "pending",
+    "recommendation_fit": "pending",
+    "publish": "pending"
   },
   "machine_contract": {
     "version": 1,

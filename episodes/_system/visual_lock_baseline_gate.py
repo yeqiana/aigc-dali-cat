@@ -6,6 +6,7 @@ import argparse, datetime as dt, hashlib, json, subprocess, sys
 from pathlib import Path
 import character_visual_contract
 import frame_contract
+import episode_performance
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -53,7 +54,10 @@ def prepare_review(ep,force=False):
        "reviewer_scope":"delegated_pixel_review","checks":{k:"PENDING" for k in CHECKS},
        "face_boxes":[{"character_id":cid,"x":None,"y":None,"w":None,"h":None} for cid in primary],
        "note":"Inspect actual pixels. Face boxes are normalized 0..1 and derive crops only."}
-    write_json(p,d);return d
+    write_json(p,d)
+    episode_performance.safe_begin_named_span(ep,"VISUAL_LOCK_BASELINE_REVIEW",source="visual_lock_baseline_gate",
+                                              metadata={"frame":src.get("frame"),"asset_path":src.get("asset_path")})
+    return d
 
 def _box_errors(ep,review):
     if not character_visual_contract.pixel_master_required(ep):return []
@@ -110,6 +114,8 @@ def approve(ep):
         if Path(review["asset_path"]).suffix.lower()==".png":
             primary=set(str(x) for x in (read_json(ep/character_visual_contract.REL).get("primary_cast_ids") or []));made=set(((read_json(ep/character_visual_contract.CROPS_REL).get("items") or {}).keys())) if (ep/character_visual_contract.CROPS_REL).is_file() else set();missing=primary-made
             if missing:raise ValueError("primary derived crops missing: "+",".join(sorted(missing)))
+    episode_performance.safe_end_named_span(ep,"VISUAL_LOCK_BASELINE_REVIEW",status="PASS",
+                                            metadata={"frame":review["frame"],"pixel_master_status":(master or {}).get("status")})
     return {"baseline_review":"PASS","frame":review["frame"],"baseline_review_sha256":review_sha,"pixel_master_status":(master or {}).get("status"),"crop_result":(master or {}).get("crop_result")}
 
 def approved(ep):

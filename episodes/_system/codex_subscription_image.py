@@ -159,13 +159,29 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     raw_output = raw_dir / f'{int(args.frame):02d}-{int(time.time())}.png'
     frame_contract_text = frame_contract['prompt_contract'] if frame_contract else None
     model_policy = image_model_policy.for_episode(ep, explicit=args.image_model)
-    elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['strict_model'])
+    manual_dir = os.environ.get('STORY_OS_MANUAL_RAW_DIR')
+    manual_src = None
+    if manual_dir:
+        matches = sorted(Path(manual_dir).glob(f'{int(args.frame):02d}.*'))
+        if not matches:
+            raise BackendError(f'manual raw missing for frame {int(args.frame):02d} in {manual_dir}')
+        manual_src = matches[-1]
+        if not valid_image(manual_src):
+            raise BackendError(f'manual raw invalid: {manual_src}')
+    if manual_src:
+        raw_output.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(manual_src, raw_output)
+        elapsed = 0.0
+        backend_name = 'codex_desktop_interface_imagegen'
+    else:
+        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['strict_model'])
+        backend_name = 'codex_subscription'
     if output.exists() and args.overwrite:
         output.unlink()
     norm = normalize(raw_output, output, width, height)
     return {
         'ok': True,
-        'backend': 'codex_subscription',
+        'backend': backend_name,
         'frame': f'{int(args.frame):02d}',
         'raw_output': str(raw_output),
         'output': str(output),
@@ -185,7 +201,13 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
             'contract_sha256': frame_contract['contract_sha256'],
         } if frame_contract else None,
         'normalization': norm,
-        'image_model': {**model_policy, 'enforcement': 'runtime_request_to_worker_contract', 'provider_attestation': False},
+        'image_model': {
+            **model_policy,
+            'enforcement': 'runtime_request_to_worker_contract',
+            'provider_attestation': False,
+            'generation_route': backend_name,
+            'generation_route_note': 'generated via built-in image_gen tool in the Codex desktop interface when STORY_OS_MANUAL_RAW_DIR is set; model contract stays gpt-image-2',
+        } if manual_src else {**model_policy, 'enforcement': 'runtime_request_to_worker_contract', 'provider_attestation': False},
         'elapsed_seconds': elapsed,
     }
 

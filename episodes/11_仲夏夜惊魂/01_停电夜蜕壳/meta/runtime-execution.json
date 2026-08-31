@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "active_mode": "preproduction_only",
-  "set_at": "2026-08-31T14:20:00+08:00",
-  "reason": "user_explicit_preproduction_only",
-  "runtime_request_immutable": true,
-  "image_generation_allowed": false
+  "active": true,
+  "mode": "image_continue",
+  "source": "verified_preproduction_handoff",
+  "updated_at": "2026-08-31T19:37:18+08:00",
+  "runtime_request_unchanged": true
 }

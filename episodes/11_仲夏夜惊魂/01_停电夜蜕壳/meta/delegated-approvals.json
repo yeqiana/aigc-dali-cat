@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "approvals": {
+    "story_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "story_lock",
+      "approved_at": "2026-08-31T19:37:31+08:00",
+      "artifacts": [
+        {
+          "role": "story",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/01_StoryLock.md",
+          "sha256": "a0f7bb5ab9ad3931950a3d11ffc2b32e2d9b010f74f18ac2df838d84cfd97ba9"
+        },
+        {
+          "role": "storyboard",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/02_Storyboard.md",
+          "sha256": "4677990eec404afa2b097201bb9aff253b104624c5eaf61e705792566d6919dd"
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/story-semantic-review.json",
+          "sha256": "74790e9d26cf20cc3b0ec1816d5a6ef78c02c6be6f3837c7a68f438c78894d60"
+        }
+      ],
+      "note": "Story/Storyboard 按用户授权 B 强化后经 CODEX_ISOLATED 语义评审 PASS（10/10 硬检查）；handoff 已按新 SHA 重建并 verify/activate"
+    }
+  }
+}

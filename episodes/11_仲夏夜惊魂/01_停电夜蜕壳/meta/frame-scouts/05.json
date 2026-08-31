@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "frame": "05",
+  "risk_level": "LOW",
+  "risk_score": 0,
+  "risk_tags": [],
+  "frame_contract_sha256": "9d6e590ca2f4900ced0b9ba74c7ff982b712610b6144492cecebb2525ba9e3c2",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/05-91211334ca50-a1.png",
+  "asset_sha256": "35fa368606253ae6e160dc1253a14172dffb745d54b1eb3432653acb6db1ebbb",
+  "scouted_at": "2026-08-31T19:59:11+08:00",
+  "final_critic_still_required": true,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "Low-risk frame: skip extra critic call; final critic remains authoritative.",
+  "model_called": false,
+  "scout_status": "low_risk_defer"
+}
