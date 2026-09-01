@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.6",
+  "episode_id": "12-01",
+  "manifest_status": "BOOTSTRAPPED",
+  "authority_scope": "current_story_branch",
+  "authority_assets": [
+    {
+      "path": "episodes/12_千寻/千寻.md",
+      "kind": "source_story",
+      "sha256": "6A5F0CB9473000B09DF8394C585BC6AF44615908FDD543DADD407F98454CA3A3",
+      "git_branch": "story",
+      "git_commit": "ee2151302c4b8904d1cf672b782e5f0d6b27f2ac"
+    },
+    {
+      "path": "standards/visual_profiles/SPIRITED_AWAY_LIVE_ACTION_V1.json",
+      "kind": "canonical_visual_profile",
+      "profile_id": "SPIRITED_AWAY_LIVE_ACTION_V1",
+      "sha256": "8D54454ED4DF74445548FA6EC5CE8A4F6C624FD7180C6ED4EB4B6B8F69392722"
+    },
+    {
+      "path": "standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json",
+      "kind": "canonical_capture_grammar",
+      "grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+      "sha256": "0523D1BE9614ED058AF21C13C90B45872DB3549DF84145D9BEDE1B5C0F1A9CE9"
+    }
+  ],
+  "bootstrap_assets": [
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/episode-blueprint.json",
+      "kind": "episode_blueprint",
+      "status": "locked",
+      "sha256": "5685FAE1DF0FAF9119E764D6947855BF6B04A29870DFD49BFAC96479819A8FA7"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/chapter-lock.json",
+      "kind": "chapter_lock",
+      "status": "locked",
+      "sha256": "BBAC76181C89E0A590B36814D38DDFEA202A73D24703926963B5D6712E840353"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/visual-profile.json",
+      "kind": "visual_profile_lock",
+      "status": "locked",
+      "profile_id": "SPIRITED_AWAY_LIVE_ACTION_V1",
+      "capture_grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+      "sha256": "CE363AA2D1B23B1AE3F5669D63DE461EA8D389979C281477DBDE0E3901E6940D"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/asset-manifest.json",
+      "kind": "asset_manifest",
+      "status": "locked",
+      "self_hash_policy": "not_self_hashed"
+    }
+  ],
+  "deferred_assets": [
+    {
+      "kind": "full_preproduction",
+      "status": "not_created"
+    },
+    {
+      "kind": "character_master",
+      "status": "not_created"
+    },
+    {
+      "kind": "location_master",
+      "status": "not_created"
+    },
+    {
+      "kind": "prop_master",
+      "status": "not_created"
+    },
+    {
+      "kind": "full_storyboard",
+      "status": "not_created"
+    },
+    {
+      "kind": "resolved_frame_contracts",
+      "status": "not_created"
+    },
+    {
+      "kind": "image_generation",
+      "status": "not_created"
+    }
+  ],
+  "execution_stop": "BOOTSTRAPPED",
+  "created_at": "2026-09-01T22:01:58+08:00"
+}

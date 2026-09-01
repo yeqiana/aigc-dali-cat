@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.6",
+  "episode_id": "12-01",
+  "lock_status": "locked",
+  "profile_id": "SPIRITED_AWAY_LIVE_ACTION_V1",
+  "profile_path": "standards/visual_profiles/SPIRITED_AWAY_LIVE_ACTION_V1.json",
+  "profile_sha256": "8D54454ED4DF74445548FA6EC5CE8A4F6C624FD7180C6ED4EB4B6B8F69392722",
+  "profile_name": "1990年代日本真人奇幻电影（35mm胶片质感）",
+  "mode": "explicit_user_locked",
+  "override_reason": "EP01 明确指定 SPIRITED_AWAY_LIVE_ACTION_V1；显式 Episode Profile 覆盖默认 M00，禁止替换。",
+  "default_m00_applicable": false,
+  "substitution_allowed": false,
+  "visual_profile_role": [
+    "era",
+    "color",
+    "lighting",
+    "texture",
+    "skin_and_materials",
+    "35mm_film_look"
+  ],
+  "capture_grammar": {
+    "grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "grammar_path": "standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json",
+    "grammar_sha256": "0523D1BE9614ED058AF21C13C90B45872DB3549DF84145D9BEDE1B5C0F1A9CE9",
+    "selection": "global_default_explicitly_pinned",
+    "operator": "participant_or_companion_inside_event",
+    "viewpoint": "first_person_or_companion_eye",
+    "framing": "private_casual_snapshot_unposed_imperfect",
+    "selfie_default": false,
+    "precedence": "Capture Grammar 对摄影者身份、视点、人物站位和构图行为的约束高于 Visual Profile；35mm/真人电影只提供视觉质感，不授权第三人称电影剧照。"
+  },
+  "must_keep": [
+    "真人演员",
+    "1990年代日本生活环境",
+    "自然服装",
+    "写实实景",
+    "潮湿夏季空气感",
+    "35mm胶片物理质感",
+    "第一人称或同行者在场的私人随手拍"
+  ],
+  "forbidden": [
+    "动画脸",
+    "二次元",
+    "cosplay",
+    "游戏CG",
+    "3D渲染",
+    "塑料皮肤",
+    "过度锐化",
+    "HDR感",
+    "AI油腻感",
+    "概念设计图",
+    "商业棚拍",
+    "AI插画",
+    "omniscient_third_person_camera",
+    "director_blocking",
+    "staged_group_lineup",
+    "symmetrical_hero_framing",
+    "poster_composition",
+    "commercial_promo_composition",
+    "characters_arranged_for_camera",
+    "floating_camera_outside_human_position"
+  ],
+  "conflict_resolution": {
+    "visual_profile_composition_hint": "NON_AUTHORITY",
+    "camera_authorship_authority": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "rule": "不得因真人电影、35mm、胶片或 profile 内的 film_framing 提示自动切换为全知第三人称电影剧照。"
+  },
+  "authority_scope": "current_story_branch",
+  "authority_sources": [
+    "episodes/12_千寻/千寻.md",
+    "standards/visual_profiles/SPIRITED_AWAY_LIVE_ACTION_V1.json",
+    "standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json"
+  ],
+  "locked_at": "2026-09-01T22:01:58+08:00"
+}

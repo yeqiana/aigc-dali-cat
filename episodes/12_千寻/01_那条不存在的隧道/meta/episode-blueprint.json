@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.6",
+  "bootstrap_status": "BOOTSTRAPPED",
+  "episode": {
+    "id": "12-01",
+    "chapter_id": "EP01",
+    "series": "12_千寻",
+    "series_title": "神隐记录",
+    "title": "那条不存在的隧道",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "4:5",
+    "frame_count": 22
+  },
+  "source_story": {
+    "path": "episodes/12_千寻/千寻.md",
+    "sha256": "6A5F0CB9473000B09DF8394C585BC6AF44615908FDD543DADD407F98454CA3A3",
+    "git_branch": "story",
+    "git_commit": "ee2151302c4b8904d1cf672b782e5f0d6b27f2ac",
+    "type": "series_adaptation_plan",
+    "section": "EP01《那条不存在的隧道》",
+    "note": "本集严格锁定当前 story 分支源故事中的 EP01，四个 chapter，共 22 帧。"
+  },
+  "chapter_scope": {
+    "scope_statement": "搬家途中 → 发现废弃隧道 → 进入不存在的小镇 → 父母变成猪 → 女孩被迫留下。",
+    "chapters": [
+      {
+        "id": "C01",
+        "title": "现实铺垫",
+        "frames": "01-05"
+      },
+      {
+        "id": "C02",
+        "title": "异常出现",
+        "frames": "06-12"
+      },
+      {
+        "id": "C03",
+        "title": "世界规则",
+        "frames": "13-18"
+      },
+      {
+        "id": "C04",
+        "title": "高潮",
+        "frames": "19-22"
+      }
+    ],
+    "chapter_lock_path": "episodes/12_千寻/01_那条不存在的隧道/meta/chapter-lock.json"
+  },
+  "visual_profile": {
+    "profile_id": "SPIRITED_AWAY_LIVE_ACTION_V1",
+    "episode_lock_path": "episodes/12_千寻/01_那条不存在的隧道/meta/visual-profile.json",
+    "canonical_profile_path": "standards/visual_profiles/SPIRITED_AWAY_LIVE_ACTION_V1.json",
+    "canonical_profile_sha256": "8D54454ED4DF74445548FA6EC5CE8A4F6C624FD7180C6ED4EB4B6B8F69392722",
+    "mode": "explicit_user_locked",
+    "default_m00_applicable": false,
+    "substitution_allowed": false
+  },
+  "capture_grammar": {
+    "grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "canonical_grammar_path": "standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json",
+    "canonical_grammar_sha256": "0523D1BE9614ED058AF21C13C90B45872DB3549DF84145D9BEDE1B5C0F1A9CE9",
+    "selection": "global_default_explicitly_pinned",
+    "camera_authorship": "participant_or_companion_inside_event",
+    "viewpoint": "first_person_or_companion_eye",
+    "composition_precedence": "capture_grammar_overrides_visual_profile_composition_and_camera_authorship"
+  },
+  "asset_manifest_path": "episodes/12_千寻/01_那条不存在的隧道/meta/asset-manifest.json",
+  "authority_scope": "current_story_branch",
+  "execution_stop": "BOOTSTRAPPED",
+  "next_allowed_action": "bootstrap_validate",
+  "out_of_scope": [
+    "full_preproduction",
+    "character_master",
+    "location_master",
+    "prop_master",
+    "full_storyboard",
+    "resolved_frame_contracts",
+    "image_generation"
+  ],
+  "created_at": "2026-09-01T22:01:58+08:00"
+}

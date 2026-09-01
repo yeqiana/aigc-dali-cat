@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.6",
+  "episode_id": "12-01",
+  "chapter_id": "EP01",
+  "title": "那条不存在的隧道",
+  "lock_status": "locked",
+  "source_story": {
+    "path": "episodes/12_千寻/千寻.md",
+    "sha256": "6A5F0CB9473000B09DF8394C585BC6AF44615908FDD543DADD407F98454CA3A3",
+    "section": "EP01《那条不存在的隧道》"
+  },
+  "chapter_scope": "C01-C04，frames 01-22",
+  "logline": "搬家途中误入废弃隧道，女孩走进一座不存在的小镇，眼睁睁看着父母变成猪；入夜后她的身体开始透明，只能跟随陌生少年逃进一座巨大的浴场。",
+  "story_range": [
+    "搬家途中",
+    "发现废弃隧道",
+    "进入不存在的小镇",
+    "父母变成猪",
+    "女孩被迫留下"
+  ],
+  "chapters": [
+    {
+      "id": "C01",
+      "title": "现实铺垫",
+      "frames": "01-05",
+      "narrative_role": "setup",
+      "story_scope": "搬家途中，从陌生城市驶向偏僻山路，直到发现废弃隧道入口。",
+      "beats": [
+        "女孩坐在搬家车后排，看着陌生城市逐渐远离",
+        "路边荒废山路",
+        "父亲照着纸质地图，开进了一条未知道路",
+        "车辆驶入偏僻路线",
+        "发现废弃隧道入口"
+      ]
+    },
+    {
+      "id": "C02",
+      "title": "异常出现",
+      "frames": "06-12",
+      "narrative_role": "escalation",
+      "story_scope": "隧道另一端出现陌生街区，父母在无人餐馆异常进食后变成猪，夜里女孩在猪群中认出父母。",
+      "beats": [
+        "隧道另一端出现陌生街区",
+        "街道空无一人，安静得不正常",
+        "父母发现无人餐馆",
+        "餐馆桌上摆满热气腾腾的食物，却看不到任何人",
+        "父母开始异常进食",
+        "女孩返回餐馆，发现父母已经变成了猪",
+        "夜里，猪群被驱赶着关进猪圈，女孩在猪群里认出了父母"
+      ]
+    },
+    {
+      "id": "C03",
+      "title": "世界规则",
+      "frames": "13-18",
+      "narrative_role": "world_rule",
+      "story_scope": "入夜后小镇改变，女孩身体开始透明，陌生少年给她药丸并带她进入建筑区域。",
+      "beats": [
+        "夜晚降临，小镇完全改变",
+        "对岸亮起一座巨大的建筑群",
+        "女孩身体开始透明",
+        "陌生少年出现",
+        "少年给了她一颗药丸，她的身体不再透明",
+        "女孩被带入建筑区域"
+      ]
+    },
+    {
+      "id": "C04",
+      "title": "高潮",
+      "frames": "19-22",
+      "narrative_role": "climax_payoff",
+      "story_scope": "巨大浴场现身，女孩呼喊父母无果，被迫进入陌生世界，结尾完成神隐入口闭合。",
+      "beats": [
+        "女孩看到巨大浴场建筑",
+        "女孩在猪圈外呼喊，父母已经认不出她",
+        "女孩被迫进入陌生世界",
+        "结尾：那天以后，我再也找不到回家的路"
+      ]
+    }
+  ],
+  "capture_grammar_binding": {
+    "grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "rule": "章节锁只确定事件范围，不授权全知镜头、导演式人物站位、整齐排队或海报式构图。"
+  },
+  "lock_rules": {
+    "scope_immutable": true,
+    "full_storyboard_created": false,
+    "chapter_change_requires": "用户批准后重新 Bootstrap",
+    "authority_scope": "current_story_branch"
+  },
+  "locked_at": "2026-09-01T22:01:58+08:00"
+}
