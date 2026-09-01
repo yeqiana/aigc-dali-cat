@@ -200,6 +200,54 @@ def _run_total(bucket):
         if isinstance(v,(int,float)):vals.append(float(v))
     return round(sum(vals),3)
 
+# STORY_OS_V211_RUNTIME_CLOSURE_R3: overlap-aware end-to-end critical-path telemetry.
+def _interval_union_seconds(intervals):
+    rows=[]
+    for a,b in intervals:
+        aa=parse_ts(a);bb=parse_ts(b)
+        if aa and bb and bb>=aa:rows.append((aa,bb))
+    if not rows:return 0.0
+    rows.sort(key=lambda x:x[0]);start,end=rows[0];total=0.0
+    for a,b in rows[1:]:
+        if a<=end:
+            if b>end:end=b
+        else:
+            total+=(end-start).total_seconds();start,end=a,b
+    total+=(end-start).total_seconds()
+    return round(max(0.0,total),3)
+
+def _critical_path_summary(d):
+    started=parse_ts(d.get("started_at"));finalized=parse_ts(d.get("finalized_at"))
+    observed=[]
+    chain=[]
+    for stage,bucket in (d.get("stages") or {}).items():
+        for row in (bucket or {}).get("runs") or []:
+            a=row.get("started_at");b=row.get("ended_at")
+            if a and b:observed.append((a,b))
+            chain.append({"stage":stage,"run_id":row.get("run_id"),"status":row.get("status"),
+                          "started_at":a,"ended_at":b,"duration_seconds":row.get("duration_seconds")})
+    image_intervals=[]
+    image_resource=0.0
+    for row in d.get("image_attempts") or []:
+        a=row.get("started_at");b=row.get("ended_at")
+        if a and b:image_intervals.append((a,b));observed.append((a,b))
+        if isinstance(row.get("elapsed_seconds"),(int,float)):image_resource+=float(row["elapsed_seconds"])
+    if not finalized:
+        ends=[parse_ts(b) for _,b in observed if parse_ts(b)]
+        finalized=max(ends) if ends else None
+    critical=max(0.0,(finalized-started).total_seconds()) if started and finalized else None
+    image_union=_interval_union_seconds(image_intervals)
+    chain.sort(key=lambda x:str(x.get("started_at") or ""))
+    return {
+      "kind":"observed_end_to_end_wall",
+      "critical_path_seconds":round(critical,3) if critical is not None else None,
+      "image_backend_union_wall_seconds":image_union,
+      "image_backend_resource_seconds":round(image_resource,3),
+      "parallel_saved_seconds":round(max(0.0,image_resource-image_union),3),
+      "dependency_chain":chain,
+      "note":"End-to-end wall is the user-visible critical path; image resource time is overlap-aware and is not added to stage wall."
+    }
+
 def _refresh_summary(d):
     stages={k:{"wall_seconds":_run_total(v),"runs":len(v.get("runs") or [])} for k,v in (d.get("stages") or {}).items()}
     spans={k:{"wall_seconds":_run_total(v),"runs":len(v.get("runs") or [])} for k,v in (d.get("named_spans") or {}).items()}
@@ -209,9 +257,11 @@ def _refresh_summary(d):
     tech=[x for x in imgs if "tech" in str(x.get("status") or "").lower() or x.get("error_code")]
     vals=[float(x["elapsed_seconds"]) for x in imgs if isinstance(x.get("elapsed_seconds"),(int,float))]
     image_backend=sum(vals)
+    critical_path=_critical_path_summary(d)  # STORY_OS_V211_RUNTIME_CLOSURE_R3
     d["summary"]={
       "stage_wall":stages,
       "named_span_wall":spans,
+      "critical_path":critical_path,
       "images":{
         "attempts":len(imgs),"successful_attempts":len(completed),"repair_attempts":len(repair),
         "technical_failures_or_retries":len(tech),
@@ -261,7 +311,8 @@ def rebuild_report(root=ROOT):
 def self_test():
     assert abs(percentile([10,20,30],0.5)-20)<0.001
     assert REL.as_posix()=="meta/episode-performance-ledger.json"
-    print("EPISODE PERFORMANCE SELF-TEST PASS")
+    assert _interval_union_seconds([])==0.0
+    print("EPISODE PERFORMANCE + R3 CRITICAL PATH SELF-TEST PASS")
 
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)
@@ -275,3 +326,5 @@ def main():
     if a.cmd=="finalize":print(json.dumps(finalize(ep,a.status),ensure_ascii=False,indent=2));return 0
     print(json.dumps(episode_summary(ep),ensure_ascii=False,indent=2));return 0
 if __name__=="__main__":raise SystemExit(main())
+
+# STORY_OS_V211_RUNTIME_CLOSURE_R31

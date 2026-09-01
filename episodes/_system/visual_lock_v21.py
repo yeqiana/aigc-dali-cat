@@ -29,6 +29,7 @@ import environment_contract
 import frame_contract
 import character_visual_contract
 import visual_lock_baseline_gate
+import critic_runtime_v211  # STORY_OS_V211_PERF_RECOVERY
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path("meta/story-gates.json")
@@ -635,9 +636,19 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
     finally:
         shutil.rmtree(staging, ignore_errors=True)
     if done.returncode != 0:
-        raise RuntimeError(f"Visual Lock critic failed rc={done.returncode}; log={log}")
+        log_text = log.read_text(encoding="utf-8-sig", errors="replace") if log.is_file() else ""
+        codes = critic_runtime_v211.classify_log_text(log_text) or ["CRITIC_PROCESS_ERROR"]
+        health = critic_runtime_v211.record_technical_failure(
+            ep, issue_codes=codes, attempt=attempt,
+            log=log.relative_to(ROOT).as_posix(), source="visual_lock_critic_process")
+        print("VISUAL LOCK CRITIC TECHNICAL FAIL:", ",".join(codes), "status="+health["status"])
+        return 11
     if not candidate.is_file():
-        raise RuntimeError("Visual Lock critic did not produce candidate JSON")
+        health = critic_runtime_v211.record_technical_failure(
+            ep, issue_codes=["CRITIC_OUTPUT_MISSING"], attempt=attempt,
+            log=log.relative_to(ROOT).as_posix(), source="visual_lock_critic_output")
+        print("VISUAL LOCK CRITIC TECHNICAL FAIL: CRITIC_OUTPUT_MISSING status="+health["status"])
+        return 11
     current = calibration_assets(ep)
     if {r["id"]: r["sha256"] for r in current} != before:
         raise RuntimeError("Visual Lock critic modified calibration images")
@@ -662,11 +673,25 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
             row["frame_contract_sha256"] = by_id[rid]["frame_contract_sha256"]
             row["frame"] = by_id[rid]["frame"]
             row["role"] = by_id[rid]["role"]
+    # STORY_OS_V211_PERF_RECOVERY: infrastructure failure is not content failure.
+    technical_codes = critic_runtime_v211.classify_issue_codes(data.get("issue_codes") or [])
+    if technical_codes:
+        write_json(ep / REVIEW_REL, data)
+        candidate.unlink(missing_ok=True)
+        health = critic_runtime_v211.record_technical_failure(
+            ep, issue_codes=technical_codes, attempt=attempt,
+            log=log.relative_to(ROOT).as_posix(), source="visual_lock_critic_payload")
+        print("VISUAL LOCK CRITIC TECHNICAL FAIL:", ",".join(technical_codes), "status="+health["status"])
+        return 11
+
     errors = validate_payload(data, contract=contract, assets=current, version=episode_version(ep))
     if errors:
         _record_failed_calibration_frames(ep, data)
     write_json(ep / REVIEW_REL, data)
     candidate.unlink(missing_ok=True)
+    critic_runtime_v211.record_content_result(
+        ep, passed=not errors, attempt=attempt,
+        issue_codes=data.get("issue_codes") or [], log=log.relative_to(ROOT).as_posix())
     _mark_decisions(ep, not errors)
     if errors:
         print("VISUAL LOCK V2.1 REVIEW FAIL")
@@ -729,3 +754,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# STORY_OS_V211_RUNTIME_CLOSURE_R31

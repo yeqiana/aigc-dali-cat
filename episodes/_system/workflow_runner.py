@@ -23,6 +23,7 @@ import runtime_request as runtime_request_contract
 import image_model_policy
 import runtime_dag
 import runtime_execution
+import performance_guard_v211  # STORY_OS_V211_PERF_RECOVERY
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -94,6 +95,8 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
             rc = runtime_dag.execute(ep, codex=codex, timeout=timeout, run_id=run_id)
             total = time.monotonic() - started
             perf.finish_run(ep, run_id, "COMPLETE" if rc == 0 else "BLOCKED", total)
+            try: performance_guard_v211.observe(ep, run_id, context="DAG_FINISH")
+            except Exception: pass
             try:
                 obs.collect(ep, write=True)
             except Exception:
@@ -119,6 +122,8 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         record_checkpoint_step(ep, "CODEX_COMPAT_ADAPTER", child_status, child_elapsed, f"rc={child.returncode}")
         total = time.monotonic() - started
         perf.finish_run(ep, run_id, "COMPLETE" if child.returncode == 0 else "FAILED", total)
+        try: performance_guard_v211.observe(ep, run_id, context="COMPAT_FINISH")
+        except Exception: pass
         try:
             obs.collect(ep, write=True)
         except Exception:
@@ -128,6 +133,8 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         total = time.monotonic() - started
         try:
             perf.finish_run(ep, run_id, "BLOCKED", total)
+            try: performance_guard_v211.observe(ep, run_id, context="EXCEPTION_FINISH")
+            except Exception: pass
         except Exception:
             pass
         try:
@@ -177,3 +184,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# STORY_OS_V211_RUNTIME_CLOSURE_R31

@@ -1,0 +1,97 @@
+{
+  "schema_version": 2,
+  "generated_at": "2026-09-01T14:34:47+08:00",
+  "replay_id": "PERF-REPLAY-V2.1.1-20260831-停电夜蜕壳",
+  "baseline_id": "PERF-BASELINE-V2.1-20260831-停电夜蜕壳",
+  "fault_path_executed": true,
+  "image_backend_invoked": false,
+  "baseline_image_continue_seconds": 13980.0,
+  "baseline_image_continue_minutes": 233.0,
+  "target_budget_seconds": 5700.0,
+  "target_budget_minutes": 95.0,
+  "target_budget_parts_seconds": {
+    "handoff_runtime_activation": 300,
+    "visual_lock": 900,
+    "production_batch": 2100,
+    "rolling_review_and_repair": 1200,
+    "final_review_and_release": 1200
+  },
+  "target_budget_reduction_ratio_vs_baseline": 0.5923,
+  "target_budget_is_not_simulated_wall_clock": true,
+  "checks": {
+    "handoff_runtime_state_not_authority": {
+      "passed": true,
+      "runtime_calibration_excluded": true
+    },
+    "narrative_vs_generation_dependency": {
+      "passed": true,
+      "generation_depends_on_explicit": true,
+      "escalation_from_removed_from_generation_dependency": true
+    },
+    "formal_visual_lock_validator_for_speculative": {
+      "passed": true,
+      "formal_visual_lock_validator_reused": true
+    },
+    "critical_path_telemetry_present": {
+      "passed": true,
+      "overlap_aware": true
+    },
+    "fault_path_replay": {
+      "passed": true,
+      "fault_injected": [
+        "INPUT_IMAGES_UNAVAILABLE",
+        "REPEATED_CRITIC_TECHNICAL_FAILURE"
+      ],
+      "state_path": [
+        "TECHNICAL_BLOCKED",
+        "CIRCUIT_OPEN",
+        "SPECULATIVE_ELIGIBLE"
+      ],
+      "technical_failure_content_isolation": true,
+      "circuit_opened": true,
+      "speculative_current_attempt_allowed": true,
+      "speculative_current_attempt_reason": "eligible",
+      "selected_frames": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "speculative_bound_respected": true,
+      "stale_previous_attempt_allowed": false,
+      "stale_previous_attempt_reason": "stale_critic_technical_state",
+      "global_stop": false,
+      "image_backend_invoked": false,
+      "simulation_scope": "runtime state transitions + eligibility + dependency-safe selection"
+    },
+    "technical_failure_content_isolation": {
+      "passed": true,
+      "derived_from_fault_replay": true
+    },
+    "critic_attempt_freshness": {
+      "passed": true,
+      "derived_from_fault_replay": true
+    },
+    "bounded_speculative_production": {
+      "passed": true,
+      "max_frames": 6
+    },
+    "global_blocking": {
+      "passed": true,
+      "expected": false,
+      "derived_from_fault_replay": true
+    },
+    "target_budget_closure": {
+      "passed": true,
+      "target_budget_seconds": 5700.0,
+      "is_measurement": false
+    }
+  },
+  "summary": {
+    "passed": true,
+    "check_count": 10
+  },
+  "note": "Fault-path checks execute runtime state/eligibility logic. The target budget is a release objective, not a measured or simulated real production duration."
+}

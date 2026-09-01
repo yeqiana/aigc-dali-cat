@@ -9,6 +9,7 @@ import directing_quality
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/preproduction-handoff.json")
+BOUNDARY_MIGRATION_REL=Path("meta/preproduction-handoff-boundary-migration.json")  # STORY_OS_V211_PERF_RECOVERY
 
 def read_json(p):
     d=json.loads(p.read_text(encoding="utf-8-sig"))
@@ -42,12 +43,13 @@ def stable_story_gate_subset(ep):
     p=ep/"meta/story-gates.json"
     if not p.is_file():return {}
     g=read_json(p);v=g.get("visual") or {}
+    # STORY_OS_V211_PERF_RECOVERY: calibration is Production Runtime State,
+    # not immutable preproduction authority.
     return {
         "story":g.get("story") or {},
         "visual":{
             "environment_contract":v.get("environment_contract") or {},
-            "frame_directives":v.get("frame_directives") or {},
-            "calibration":v.get("calibration") or {}
+            "frame_directives":v.get("frame_directives") or {}
         }
     }
 def json_sha(data):
@@ -70,10 +72,74 @@ def build(ep,source_runtime="chatgpt"):
     assets=[{"kind":"file","path":p.relative_to(ep).as_posix(),"sha256":sha(p),"bytes":p.stat().st_size} for p in files]
     subsets=[{"kind":"json_subset","path":"meta/story-gates.json","name":"stable_preproduction_subset","sha256":json_sha(stable_story_gate_subset(ep))}]
     q_enabled=directing_quality.enabled(ep)
-    data={"schema_version":2 if q_enabled else 1,"handoff_type":"preproduction_to_image","source_runtime":source_runtime,"created_at_stage":"STORYBOARD_LOCKED","authority_assets":assets,"authority_subsets":subsets,"derived_rebuildable":["meta/runtime/execution-capsules","meta/runtime/contracts","meta/runtime/prompt-packages"],"quality_contracts_enabled":q_enabled,"story_rewrite_allowed":False,"next_mode":"image_continue","handoff_ready":True}
+    data={"schema_version":2 if q_enabled else 1,"handoff_type":"preproduction_to_image","source_runtime":source_runtime,"authority_boundary_version":2,"created_at_stage":"STORYBOARD_LOCKED","authority_assets":assets,"authority_subsets":subsets,"derived_rebuildable":["meta/runtime/execution-capsules","meta/runtime/contracts","meta/runtime/prompt-packages"],"quality_contracts_enabled":q_enabled,"story_rewrite_allowed":False,"next_mode":"image_continue","handoff_ready":True}
     material=json.dumps(data,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
     data["manifest_sha256"]=hashlib.sha256(material).hexdigest()
     write_json(ep/REL,data);return data
+def migrate_legacy_boundary(ep):
+    # STORY_OS_V211_PERF_RECOVERY: one-time, auditable compatibility bridge.
+    # The original handoff remains immutable. This sidecar is only created when
+    # every file authority SHA still matches and stable contracts verify.
+    ep=Path(ep).resolve();p=ep/REL
+    if not p.is_file():return None
+    d=read_json(p)
+    if int(d.get("authority_boundary_version") or 1)>=2:return None
+    old_subset=next((x for x in d.get("authority_subsets") or [] if x.get("name")=="stable_preproduction_subset"),None)
+    if not old_subset:return None
+    gates=read_json(ep/"meta/story-gates.json") if (ep/"meta/story-gates.json").is_file() else {}
+    visual=gates.get("visual") or {}
+    current_old={
+        "story":gates.get("story") or {},
+        "visual":{
+            "environment_contract":visual.get("environment_contract") or {},
+            "frame_directives":visual.get("frame_directives") or {},
+            "calibration":visual.get("calibration") or {}
+        }
+    }
+    if json_sha(current_old)==old_subset.get("sha256"):
+        return None
+    errors=[]
+    for row in d.get("authority_assets") or []:
+        f=ep/row["path"]
+        if not f.is_file():errors.append("HANDOFF_FILE_MISSING:"+row["path"]);continue
+        if sha(f)!=row.get("sha256"):errors.append("HANDOFF_SHA_MISMATCH:"+row["path"])
+    if errors:raise ValueError("; ".join(errors))
+    ce=character_contract.validate(ep,require_locked=True)
+    if ce:raise ValueError("legacy boundary migration character invalid: "+"; ".join(ce[:8]))
+    env=environment_contract.verify(ep)
+    if env:raise ValueError("legacy boundary migration environment invalid: "+"; ".join(env[:8]))
+    fc=frame_contract.verify_all(ep)
+    if fc:raise ValueError("legacy boundary migration frame contract invalid: "+"; ".join(fc[:8]))
+    if directing_quality.enabled(ep):
+        qe=directing_quality.verify_story(ep)+directing_quality.verify_preimage(ep)
+        if qe:raise ValueError("legacy boundary migration quality invalid: "+"; ".join(qe[:8]))
+    side={
+        "schema_version":1,
+        "migration":"legacy_calibration_contaminated_subset_to_boundary_v2",
+        "original_handoff_manifest_sha256":d.get("manifest_sha256"),
+        "original_subset_sha256":old_subset.get("sha256"),
+        "stable_subset_sha256":json_sha(stable_story_gate_subset(ep)),
+        "authority_assets_verified":True,
+        "story_rewrite_allowed":False,
+        "created_at_stage":stage(ep)
+    }
+    write_json(ep/BOUNDARY_MIGRATION_REL,side)
+    return side
+
+def _legacy_boundary_migration_valid(ep,d,row):
+    p=ep/BOUNDARY_MIGRATION_REL
+    if not p.is_file():return False
+    try:m=read_json(p)
+    except Exception:return False
+    return (
+        m.get("migration")=="legacy_calibration_contaminated_subset_to_boundary_v2" and
+        m.get("authority_assets_verified") is True and
+        m.get("story_rewrite_allowed") is False and
+        m.get("original_handoff_manifest_sha256")==d.get("manifest_sha256") and
+        m.get("original_subset_sha256")==row.get("sha256") and
+        m.get("stable_subset_sha256")==json_sha(stable_story_gate_subset(ep))
+    )
+
 def verify(ep):
     ep=Path(ep).resolve();p=ep/REL
     if not p.is_file():return ["HANDOFF_MISSING"]
@@ -88,8 +154,23 @@ def verify(ep):
         if not f.is_file():errors.append("HANDOFF_FILE_MISSING:"+row["path"]);continue
         if sha(f)!=row.get("sha256"):errors.append("HANDOFF_SHA_MISMATCH:"+row["path"])
     for row in d.get("authority_subsets") or []:
-        if row.get("name")=="stable_preproduction_subset" and json_sha(stable_story_gate_subset(ep))!=row.get("sha256"):
-            errors.append("HANDOFF_SHA_MISMATCH:meta/story-gates.json#stable_preproduction_subset")
+        if row.get("name")!="stable_preproduction_subset":continue
+        if int(d.get("authority_boundary_version") or 1)>=2:
+            if json_sha(stable_story_gate_subset(ep))!=row.get("sha256"):
+                errors.append("HANDOFF_SHA_MISMATCH:meta/story-gates.json#stable_preproduction_subset")
+        else:
+            gates=read_json(ep/"meta/story-gates.json") if (ep/"meta/story-gates.json").is_file() else {}
+            visual=gates.get("visual") or {}
+            old_current={
+                "story":gates.get("story") or {},
+                "visual":{
+                    "environment_contract":visual.get("environment_contract") or {},
+                    "frame_directives":visual.get("frame_directives") or {},
+                    "calibration":visual.get("calibration") or {}
+                }
+            }
+            if json_sha(old_current)!=row.get("sha256") and not _legacy_boundary_migration_valid(ep,d,row):
+                errors.append("HANDOFF_LEGACY_BOUNDARY_MIGRATION_REQUIRED")
     ce=character_contract.validate(ep,require_locked=True)
     if ce:errors.extend("HANDOFF_CHARACTER:"+x for x in ce)
     if int(d.get("schema_version") or 1)>=2 and d.get("quality_contracts_enabled") is True:
@@ -97,6 +178,7 @@ def verify(ep):
     return errors
 
 def activate(ep):
+    migrate_legacy_boundary(ep)  # STORY_OS_V211_PERF_RECOVERY
     errors=verify(ep)
     if errors:raise ValueError("; ".join(errors))
     return runtime_execution.set_mode(ep,"image_continue","verified_preproduction_handoff")
@@ -109,6 +191,7 @@ def main():
     p=sub.add_parser("verify");p.add_argument("episode_dir")
     p=sub.add_parser("show");p.add_argument("episode_dir")
     p=sub.add_parser("activate");p.add_argument("episode_dir")
+    p=sub.add_parser("migrate-legacy-boundary");p.add_argument("episode_dir")
     sub.add_parser("self-test");a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0
     ep=Path(a.episode_dir).resolve()
@@ -119,5 +202,9 @@ def main():
         print("PREPRODUCTION HANDOFF VERIFIED");return 0
     if a.cmd=="activate":
         print(json.dumps(activate(ep),ensure_ascii=False,indent=2));return 0
+    if a.cmd=="migrate-legacy-boundary":
+        print(json.dumps(migrate_legacy_boundary(ep) or {"status":"NOT_REQUIRED"},ensure_ascii=False,indent=2));return 0
     p=ep/REL;print(p.read_text(encoding="utf-8-sig") if p.is_file() else "{}");return 0
 if __name__=="__main__":raise SystemExit(main())
+
+# STORY_OS_V211_RUNTIME_CLOSURE_R31

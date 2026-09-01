@@ -1,0 +1,28 @@
+{
+  "schema_version": 2,
+  "replay_id": "PERF-REPLAY-V2.1.1-20260831-停电夜蜕壳",
+  "baseline_id": "PERF-BASELINE-V2.1-20260831-停电夜蜕壳",
+  "simulation_not_wall_clock_measurement": true,
+  "faults": [
+    "HANDOFF_RUNTIME_SHA_BOUNDARY",
+    "INPUT_IMAGES_UNAVAILABLE",
+    "WINDOWS_SANDBOX_1385",
+    "ONE_FRAME_REPAIR_BLOCKING"
+  ],
+  "acceptance": {
+    "critical_path_max_seconds": 7200,
+    "speculative_max_frames": 6,
+    "narrative_escalation_is_generation_dependency": false,
+    "stale_critic_state_can_trigger_speculative": false,
+    "technical_critic_failure_is_content_failure": false,
+    "global_production_blocking_on_critic_infra_failure": false
+  },
+  "target_budget_seconds": {
+    "handoff_runtime_activation": 300,
+    "visual_lock": 900,
+    "production_batch": 2100,
+    "rolling_review_and_repair": 1200,
+    "final_review_and_release": 1200
+  },
+  "target_budget_is_not_simulated_wall_clock": true
+}

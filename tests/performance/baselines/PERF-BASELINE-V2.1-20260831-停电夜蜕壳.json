@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "baseline_id": "PERF-BASELINE-V2.1-20260831-停电夜蜕壳",
+  "episode": "11_仲夏夜惊魂/01_停电夜蜕壳",
+  "timezone": "Asia/Shanghai",
+  "preproduction_started_at": "2026-08-31T17:30:00+08:00",
+  "image_continue_started_at": "2026-08-31T18:37:00+08:00",
+  "snapshot_at": "2026-08-31T22:30:00+08:00",
+  "preproduction_minutes": 67,
+  "image_continue_wall_minutes": 233,
+  "image_continue_wall_seconds": 13980,
+  "image_backend_attempt_seconds": 1001,
+  "generation_utilization_upper_bound": 0.0716,
+  "current_candidate_frames": 4,
+  "approved_frames": 0,
+  "pending_frames": 16,
+  "machine_stage": "STORYBOARD_LOCKED",
+  "known_bottlenecks": [
+    "HANDOFF_RUNTIME_SHA_BOUNDARY",
+    "VISUAL_CRITIC_INPUT_UNAVAILABLE",
+    "WINDOWS_SANDBOX_1385",
+    "TECHNICAL_FAILURE_CONTENT_STATE_CONTAMINATION",
+    "GLOBAL_PRODUCTION_BLOCKING"
+  ],
+  "regression_targets": {
+    "phase_1_max_minutes": 120,
+    "phase_2_max_minutes": 90,
+    "mature_target_minutes": [60, 80],
+    "unknown_wall_time_ratio_max": 0.05,
+    "technical_failure_must_not_be_content_failure": true,
+    "speculative_max_frames": 6
+  },
+  "source_note": "User-confirmed 17:30 preproduction start and 18:37 formal image_continue start; snapshot 22:30."
+}

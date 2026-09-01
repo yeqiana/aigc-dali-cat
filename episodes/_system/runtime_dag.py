@@ -18,6 +18,8 @@ import runtime_mode_router
 import directing_quality
 import workflow_performance as perf
 import workflow_step_protocol as proto
+import speculative_production  # STORY_OS_V211_PERF_RECOVERY
+import performance_guard_v211
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -84,6 +86,7 @@ def execute(ep,codex=None,timeout=7200,run_id=None):
     special_rc=runtime_mode_router.dispatch_special(ep,mode,codex,timeout)
     if special_rc is not None: return special_rc
     if mode=="image_continue":
+        preproduction_handoff.migrate_legacy_boundary(ep)  # STORY_OS_V211_PERF_RECOVERY
         handoff_errors=preproduction_handoff.verify(ep)
         if handoff_errors:
             print("HANDOFF VERIFY FAIL")
@@ -144,7 +147,19 @@ def execute(ep,codex=None,timeout=7200,run_id=None):
         if run_id: perf.record_step(ep,run_id,s.step_id,status,elapsed,note[-500:])
         try: quota_observability.snapshot(ep,note=f"after {s.step_id}")
         except Exception: pass
+        try: performance_guard_v211.observe(ep,run_id,context=s.step_id)
+        except Exception: pass
         if rc!=0:
+            # STORY_OS_V211_PERF_RECOVERY: on Visual Lock infrastructure failure,
+            # generate at most six non-approvable candidates instead of idling.
+            if s.step_id=="VISUAL_LOCK" and mode=="image_continue":
+                try:
+                    spec=speculative_production.run(ep,codex=codex,timeout=min(600,max(60,int(timeout))),max_frames=6)
+                    spec_elapsed=float(spec.get("elapsed_seconds") or 0.0)
+                    if run_id: perf.record_step(ep,run_id,"SPECULATIVE_PRODUCTION","PASS" if spec.get("status")=="GENERATED_CANDIDATES" else "SKIPPED",spec_elapsed,json.dumps(spec,ensure_ascii=False)[:500])
+                    checkpoint(ep,"SPECULATIVE_PRODUCTION","PASS" if spec.get("status")=="GENERATED_CANDIDATES" else "SKIPPED",spec_elapsed,json.dumps(spec,ensure_ascii=False)[:1000])
+                except Exception as exc:
+                    if run_id: perf.record_step(ep,run_id,"SPECULATIVE_PRODUCTION","FAILED",0.0,str(exc)[:500])
             background.shutdown(wait=False,cancel_futures=True)
             return rc
         if mode=="preproduction_only" and s.step_id=="CREATIVE_STORY":
@@ -203,3 +218,5 @@ def main():
     return execute(ep,codex=a.codex,timeout=a.timeout)
 
 if __name__=="__main__": raise SystemExit(main())
+
+# STORY_OS_V211_RUNTIME_CLOSURE_R31

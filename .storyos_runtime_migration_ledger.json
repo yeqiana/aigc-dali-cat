@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "schema_version": 1,
+      "transaction_id": "r31-20260901_143444",
+      "from_profile": "story-current-1343de59",
+      "source_story_commit": "1343de59f0968ae193361f70b663e510b287f86b",
+      "source_core_blob_sha1": {
+        "episodes/_system/preproduction_handoff.py": "db6cf4767d141c8beae97cf4cd9db988b5b67417",
+        "episodes/_system/visual_lock_v21.py": "c4053b63c6199850629c8c1f818ee82daa326329",
+        "episodes/_system/runtime_dag.py": "22a7aabc4a6060c012e6ac49fef5e514c7cbeae3",
+        "episodes/_system/workflow_runner.py": "6fb07a295983ef9d70d40c416318b17f7cfa87a8",
+        "episodes/_system/scoped_codex_worker.py": "3127949614963031826e1014b5b147dddcb44fca",
+        "episodes/_system/image_scheduler.py": "7099e5513eb8e3043b6437400b4e73ced81dc94e",
+        "episodes/_system/episode_performance.py": "124cb77855f89bd3fc40648b813d163c8792daf5"
+      },
+      "to_version": "2.1.1-runtime-closure-r3.1-full",
+      "installed_at": "2026-09-01T14:34:44+08:00",
+      "backup": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.storyos_backups\\v211_runtime_closure_r31_20260901_143444",
+      "post_install_sha256": {
+        "episodes/_system/preproduction_handoff.py": "efbc2300e56bb3fd0a21483f475d28517b7bcbd31cfe13ab91de6f8dd1bcfe5a",
+        "episodes/_system/visual_lock_v21.py": "5f8a9434ef286ca9bf108a034688616075b43874af2c32f40eaadedad04bee1b",
+        "episodes/_system/runtime_dag.py": "117fb9be20254eaa098e9fa3a9974a58d55df71445e7311ede09ad12c4f1953b",
+        "episodes/_system/workflow_runner.py": "18cda7ffb304bc1c4daa99f082621ca6ac3dc0d2ce95ac3935ee3494ec021e3a",
+        "episodes/_system/scoped_codex_worker.py": "5844f7f1d8d495ffdda01e6382b995a928ba626ab99ddea9f7d520c7e4b9fa9c",
+        "episodes/_system/image_scheduler.py": "63268e544904ed7d9d079e092c824c9011a04a59343d71844cd2113f5ceebef8",
+        "episodes/_system/episode_performance.py": "077bc1d4c527b6f2f54dd1fc9ea67033f05ad7e0d2b15fd91e6bf76d5ee3d035"
+      },
+      "rollback_point": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.storyos_backups\\v211_runtime_closure_r31_20260901_143444\\BACKUP_MANIFEST.json"
+    }
+  ]
+}

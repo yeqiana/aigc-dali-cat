@@ -1,0 +1,253 @@
+{
+  "version": "2.1.1-runtime-closure-r3.1-full",
+  "installed_at": "2026-09-01T14:34:44+08:00",
+  "repo": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat",
+  "backup": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.storyos_backups\\v211_runtime_closure_r31_20260901_143444",
+  "patched": [
+    "episodes/_system/preproduction_handoff.py",
+    "episodes/_system/visual_lock_v21.py",
+    "episodes/_system/runtime_dag.py",
+    "episodes/_system/workflow_runner.py",
+    "episodes/_system/scoped_codex_worker.py",
+    "episodes/_system/image_scheduler.py",
+    "episodes/_system/episode_performance.py"
+  ],
+  "already_patched": [],
+  "payload_files": [
+    {
+      "path": "docs/Story_OS_V2.1.1_Production_Performance_Recovery.md",
+      "existed_before": false
+    },
+    {
+      "path": "episodes/_system/critic_runtime_v211.py",
+      "existed_before": false
+    },
+    {
+      "path": "episodes/_system/performance_guard_v211.py",
+      "existed_before": false
+    },
+    {
+      "path": "episodes/_system/performance_regression_v211.py",
+      "existed_before": false
+    },
+    {
+      "path": "episodes/_system/runtime_fault_replay_v211.py",
+      "existed_before": false
+    },
+    {
+      "path": "episodes/_system/speculative_production.py",
+      "existed_before": false
+    },
+    {
+      "path": "episodes/_system/test_v211_performance_regression.py",
+      "existed_before": false
+    },
+    {
+      "path": "tests/performance/baselines/PERF-BASELINE-V2.1-20260831-停电夜蜕壳.json",
+      "existed_before": false
+    },
+    {
+      "path": "tests/performance/replays/PERF-REPLAY-V2.1.1-20260831-停电夜蜕壳.json",
+      "existed_before": false
+    }
+  ],
+  "checks": [
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/preproduction_handoff.py",
+        "self-test"
+      ],
+      "rc": 0,
+      "output": "PREPRODUCTION HANDOFF SELF-TEST PASS\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/visual_lock_v21.py",
+        "self-test"
+      ],
+      "rc": 0,
+      "output": "VISUAL LOCK V2.1 PHASE5 SELF-TEST PASS\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/runtime_dag.py",
+        "self-test"
+      ],
+      "rc": 0,
+      "output": "RUNTIME DAG V1 SELF-TEST PASS\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/critic_runtime_v211.py"
+      ],
+      "rc": 0,
+      "output": "CRITIC RUNTIME V2.1.1 R2 SELF-TEST PASS\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/speculative_production.py",
+        "self-test"
+      ],
+      "rc": 0,
+      "output": "SPECULATIVE PRODUCTION V2.1.1 R3.1 STRICT INPUT SELF-TEST PASS\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/performance_guard_v211.py"
+      ],
+      "rc": 0,
+      "output": "PERFORMANCE GUARD V2.1.1 SELF-TEST PASS\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/image_scheduler.py",
+        "self-test"
+      ],
+      "rc": 0,
+      "output": "IMAGE SCHEDULER V2.1 PHASE6 + R2 DEPENDENCY SELF-TEST PASS\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/test_v211_performance_regression.py"
+      ],
+      "rc": 0,
+      "output": "V2.1.1 R3.1 RUNTIME CLOSURE REGRESSION PASS\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/runtime_fault_replay_v211.py",
+        "self-test"
+      ],
+      "rc": 0,
+      "output": "RUNTIME FAULT REPLAY V2.1.1 R3.1 PASS\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/performance_regression_v211.py",
+        "replay",
+        "PERF-REPLAY-V2.1.1-20260831-停电夜蜕壳"
+      ],
+      "rc": 0,
+      "output": "{\n  \"schema_version\": 2,\n  \"generated_at\": \"2026-09-01T14:34:47+08:00\",\n  \"replay_id\": \"PERF-REPLAY-V2.1.1-20260831-停电夜蜕壳\",\n  \"baseline_id\": \"PERF-BASELINE-V2.1-20260831-停电夜蜕壳\",\n  \"fault_path_executed\": true,\n  \"image_backend_invoked\": false,\n  \"baseline_image_continue_seconds\": 13980.0,\n  \"baseline_image_continue_minutes\": 233.0,\n  \"target_budget_seconds\": 5700.0,\n  \"target_budget_minutes\": 95.0,\n  \"target_budget_parts_seconds\": {\n    \"handoff_runtime_activation\": 300,\n    \"visual_lock\": 900,\n    \"production_batch\": 2100,\n    \"rolling_review_and_repair\": 1200,\n    \"final_review_and_release\": 1200\n  },\n  \"target_budget_reduction_ratio_vs_baseline\": 0.5923,\n  \"target_budget_is_not_simulated_wall_clock\": true,\n  \"checks\": {\n    \"handoff_runtime_state_not_authority\": {\n      \"passed\": true,\n      \"runtime_calibration_excluded\": true\n    },\n    \"narrative_vs_generation_dependency\": {\n      \"passed\": true,\n      \"generation_depends_on_explicit\": true,\n      \"escalation_from_removed_from_generation_dependency\": true\n    },\n    \"formal_visual_lock_validator_for_speculative\": {\n      \"passed\": true,\n      \"formal_visual_lock_validator_reused\": true\n    },\n    \"critical_path_telemetry_present\": {\n      \"passed\": true,\n      \"overlap_aware\": true\n    },\n    \"fault_path_replay\": {\n      \"passed\": true,\n      \"fault_injected\": [\n        \"INPUT_IMAGES_UNAVAILABLE\",\n        \"REPEATED_CRITIC_TECHNICAL_FAILURE\"\n      ],\n      \"state_path\": [\n        \"TECHNICAL_BLOCKED\",\n        \"CIRCUIT_OPEN\",\n        \"SPECULATIVE_ELIGIBLE\"\n      ],\n      \"technical_failure_content_isolation\": true,\n      \"circuit_opened\": true,\n      \"speculative_current_attempt_allowed\": true,\n      \"speculative_current_attempt_reason\": \"eligible\",\n      \"selected_frames\": [\n        1,\n        2,\n        3,\n        4,\n        5,\n        6\n      ],\n      \"speculative_bound_respected\": true,\n      \"stale_previous_attempt_allowed\": false,\n      \"stale_previous_attempt_reason\": \"stale_critic_technical_state\",\n      \"global_stop\": false,\n      \"image_backend_invoked\": false,\n      \"simulation_scope\": \"runtime state transitions + eligibility + dependency-safe selection\"\n    },\n    \"technical_failure_content_isolation\": {\n      \"passed\": true,\n      \"derived_from_fault_replay\": true\n    },\n    \"critic_attempt_freshness\": {\n      \"passed\": true,\n      \"derived_from_fault_replay\": true\n    },\n    \"bounded_speculative_production\": {\n      \"passed\": true,\n      \"max_frames\": 6\n    },\n    \"global_blocking\": {\n      \"passed\": true,\n      \"expected\": false,\n      \"derived_from_fault_replay\": true\n    },\n    \"target_budget_closure\": {\n      \"passed\": true,\n      \"target_budget_seconds\": 5700.0,\n      \"is_measurement\": false\n    }\n  },\n  \"summary\": {\n    \"passed\": true,\n    \"check_count\": 10\n  },\n  \"note\": \"Fault-path checks execute runtime state/eligibility logic. The target budget is a release objective, not a measured or simulated real production duration.\"\n}\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/episode_performance.py",
+        "self-test"
+      ],
+      "rc": 0,
+      "output": "EPISODE PERFORMANCE + R3 CRITICAL PATH SELF-TEST PASS\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/test_machine_gate.py"
+      ],
+      "rc": 0,
+      "output": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.347s\n\nOK\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/test_production_engine.py"
+      ],
+      "rc": 0,
+      "output": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.099s\n\nOK\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/test_production_reliability.py"
+      ],
+      "rc": 0,
+      "output": ".....\n----------------------------------------------------------------------\nRan 5 tests in 1.520s\n\nOK\n"
+    },
+    {
+      "cmd": [
+        "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-X",
+        "utf8",
+        "episodes/_system/regression_matrix_v21.py",
+        "run"
+      ],
+      "rc": 0,
+      "output": "[PASS] R01_immutable_seven_stage_contract: IDEA_LOCKED > STORYBOARD_LOCKED > VISUAL_CALIBRATED > PRODUCTION_PASSED > PUBLISH_READY > PUBLISHED > DATA_REVIEWED\n[PASS] R02_codex_complete_without_zip: PUBLISH_READY remains CODEX completion; ZIP optional\n[PASS] R03_single_stage_source: episode-state remains sole stage source\n[PASS] R04_max3_single_writer_failsoft: image concurrency max3 + ledger single-writer + fail-soft\n[PASS] R05_fast_scout_never_final_pass: Fast Scout is triage only\n[PASS] R06_snapshot_before_publish_ready_and_delivery_strict: snapshot freezes candidate before PUBLISH_READY; Delivery consumes it\n[PASS] R07_legacy_no_evidence_backfill: legacy 2.0.x classified below V2.1 and migration default is read-only\n[PASS] R08_template_has_current_v21_policies: new episode template carries Phase5-8 policies\n[PASS] R09_post_publish_does_not_mutate_frozen_manifest: published facts/data review live outside release-manifest\n[PASS] R10_data_review_windows_and_48h_gate: 6h/24h/48h/7d supported; 48h minimum for DATA_REVIEWED\n[PASS] R11_story_regression_suite: STORY REGRESSION PASS\n[PASS] R12_workflow_runner_self_test: WORKFLOW RUNNER V2.1 SELF-TEST PASS | PHASE910\n[PASS] R13_phase_modules_self_tests: MIGRATE V2.1 PHASE9 SELF-TEST PASS | WORKFLOW OBSERVABILITY V2.1 PHASE9 SELF-TEST PASS | POST PUBLISH REVIEW V2.1 PHASE10 SELF-TEST PASS | ACCOUNT LEARNING INDEX V2.1 PHASE10 SELF-TEST PASS\n[PASS] R14_product_stages_include_publish_loop: product contract closes publish/data-review loop without new stage system\n"
+    }
+  ],
+  "status": "PASS",
+  "transaction_id": "r31-20260901_143444",
+  "source_profile": "story-current-1343de59",
+  "source_story_commit": "1343de59f0968ae193361f70b663e510b287f86b",
+  "source_core_blob_sha1": {
+    "episodes/_system/preproduction_handoff.py": "db6cf4767d141c8beae97cf4cd9db988b5b67417",
+    "episodes/_system/visual_lock_v21.py": "c4053b63c6199850629c8c1f818ee82daa326329",
+    "episodes/_system/runtime_dag.py": "22a7aabc4a6060c012e6ac49fef5e514c7cbeae3",
+    "episodes/_system/workflow_runner.py": "6fb07a295983ef9d70d40c416318b17f7cfa87a8",
+    "episodes/_system/scoped_codex_worker.py": "3127949614963031826e1014b5b147dddcb44fca",
+    "episodes/_system/image_scheduler.py": "7099e5513eb8e3043b6437400b4e73ced81dc94e",
+    "episodes/_system/episode_performance.py": "124cb77855f89bd3fc40648b813d163c8792daf5"
+  },
+  "package_integrity": "PASS",
+  "marker_existed_before": false,
+  "report_existed_before": false,
+  "migration_ledger_existed_before": false,
+  "post_install_sha256": {
+    "episodes/_system/preproduction_handoff.py": "efbc2300e56bb3fd0a21483f475d28517b7bcbd31cfe13ab91de6f8dd1bcfe5a",
+    "episodes/_system/visual_lock_v21.py": "5f8a9434ef286ca9bf108a034688616075b43874af2c32f40eaadedad04bee1b",
+    "episodes/_system/runtime_dag.py": "117fb9be20254eaa098e9fa3a9974a58d55df71445e7311ede09ad12c4f1953b",
+    "episodes/_system/workflow_runner.py": "18cda7ffb304bc1c4daa99f082621ca6ac3dc0d2ce95ac3935ee3494ec021e3a",
+    "episodes/_system/scoped_codex_worker.py": "5844f7f1d8d495ffdda01e6382b995a928ba626ab99ddea9f7d520c7e4b9fa9c",
+    "episodes/_system/image_scheduler.py": "63268e544904ed7d9d079e092c824c9011a04a59343d71844cd2113f5ceebef8",
+    "episodes/_system/episode_performance.py": "077bc1d4c527b6f2f54dd1fc9ea67033f05ad7e0d2b15fd91e6bf76d5ee3d035"
+  },
+  "payload_sha256": {
+    "docs/Story_OS_V2.1.1_Production_Performance_Recovery.md": "4ecd46b232685799b34d54bc1b11f5e9e467e95bb20ee2618fc9ce26151b89e5",
+    "episodes/_system/critic_runtime_v211.py": "251a356e6dbec7459eeec87dddcbbe7f7da285c31be6a23a37ad05bf81dbd892",
+    "episodes/_system/performance_guard_v211.py": "8622efb1fa312758937eddd664865cad961dcfe3e2f5b4cd46278f58f28ac763",
+    "episodes/_system/performance_regression_v211.py": "5ec26bbb5b4d4b406fe6ef5b28ec274fe7ef504959f36f7078c5dcea1329c1b6",
+    "episodes/_system/runtime_fault_replay_v211.py": "465d0c8eb0634d87e29ed6f4de509d8a730a0113039b18555ce2b745caf0ff87",
+    "episodes/_system/speculative_production.py": "d1fc8685ac2fd361838501c83d6a96fce5c97da989f54f676d27e5b26bc08bdd",
+    "episodes/_system/test_v211_performance_regression.py": "08af4876295b6145b0838388b69dbb77a9e4e34aea8972f5d6dc717d8d483ffe",
+    "tests/performance/baselines/PERF-BASELINE-V2.1-20260831-停电夜蜕壳.json": "1875ea4caf545dbdcecd3a8a1239dd810d17323809fb920f645aa50d2c65d716",
+    "tests/performance/replays/PERF-REPLAY-V2.1.1-20260831-停电夜蜕壳.json": "ca31f989b1acf25bf2a74eccfcec2c842ff1f50d48271a73e88c1482b82d4527"
+  }
+}

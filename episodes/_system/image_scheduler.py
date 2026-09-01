@@ -111,13 +111,26 @@ def risk_priority(ep:Path,frame:int,scope:str)->int:
 
 
 def directive_dependency(ep:Path,frame:int)->list[int]:
+    # STORY_OS_V211_PERF_FINAL_R2: narrative escalation never implies PNG serialization.
+    # Only an explicit generation_depends_on declares a true pixel prerequisite.
     d=frame_contract.compile_frame(ep,frame,write_cache=True)["hash_material"]["frame_directive"]
-    raw=d.get("escalation_from")
+    raw=d.get("generation_depends_on")
+    if raw in (None,"",[]):return []
+    values=raw if isinstance(raw,list) else str(raw).replace(";",",").split(",")
+    out=[]
+    for value in values:
+        try:n=int(value)
+        except Exception:continue
+        if 1<=n<frame and n not in out:out.append(n)
+    return sorted(out)
+
+
+def narrative_escalation_from(ep:Path,frame:int)->int|None:
+    d=frame_contract.compile_frame(ep,frame,write_cache=True)["hash_material"]["frame_directive"]
     try:
-        n=int(raw)
-        return [n] if 1<=n<frame else []
-    except Exception:
-        return []
+        n=int(d.get("escalation_from"))
+        return n if 1<=n<frame else None
+    except Exception:return None
 
 
 def contract_references(ep:Path,frame:int,scope:str="batch")->list[dict]:
@@ -152,6 +165,7 @@ def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:
         "capture_id":capture_id,
         "model":model,
         "depends_on":sorted(set(int(x) for x in depends_on if int(x)!=frame)),
+        "narrative_escalation_from":narrative_escalation_from(ep,frame),
         "priority":risk_priority(ep,frame,scope),
         "frame_contract":contract,
         "attempts":0,
@@ -440,7 +454,10 @@ def self_test()->None:
     assert classify_error("unknown model")=="MODEL_UNAVAILABLE"
     assert image_worker_pool.CODEX_SESSION_REUSE is False
     assert rolling_frame_review.VALID == {"PASS_PREVIEW","REPAIR_NOW","UNCERTAIN"}
-    print("IMAGE SCHEDULER V2.1 PHASE6 SELF-TEST PASS")
+    src=Path(__file__).read_text(encoding="utf-8-sig")
+    body=src[src.index("def directive_dependency"):src.index("def narrative_escalation_from")]
+    assert "generation_depends_on" in body and "escalation_from" not in body
+    print("IMAGE SCHEDULER V2.1 PHASE6 + R2 DEPENDENCY SELF-TEST PASS")
 
 
 def main()->int:
@@ -479,3 +496,5 @@ def main()->int:
 
 
 if __name__=="__main__":raise SystemExit(main())
+
+# STORY_OS_V211_RUNTIME_CLOSURE_R31

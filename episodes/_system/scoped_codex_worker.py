@@ -44,6 +44,7 @@ TARGET: keep STORYBOARD_LOCKED and finish every non-image asset required for a c
 - Directing Quality: before Frame Contract compile, author+LOCK meta/capture-event-contract.json and meta/world-state.json. Every frame must explain why it is captured now; sensitive identity/recorder state changes need a story_event. Run capture_event_contract.py validate and world_state.py validate.
 - Temporal Continuity: after world-state is authored, author+LOCK meta/temporal-continuity.json bound to world-state SHA. Track elapsed minutes/daypart/weather/precipitation/ambient light. Night↔day or major weather/light jumps require explicit elapsed time + transition_reason. Run temporal_continuity_gate.py validate.
 - Scene-Aware Wardrobe: then author+LOCK meta/wardrobe-contract.json bound to temporal continuity. Clothing must follow altitude/temperature/weather/daypart/activity. Sichuan-Tibet/high-altitude cool-cold outdoor defaults shell/fleece/warm trousers/hat; low-altitude warm, vehicle, lodging or county-town scenes may use attractive camisoles/skirts/light layers. Cold outdoor skirt requires thick/thermal tights + warm outer layer; cold high-altitude camisole without warm outer layer is FAIL. Every look_id change needs a believable change_reason. Run wardrobe_contract.py validate.
+- STORY_OS_V211_PERF_FINAL_R2: when authoring frame directives, keep `escalation_from` as narrative continuity only. Add `generation_depends_on` only when the current image literally requires a prior generated pixel asset; otherwise use an empty list.
 - author concise per-frame production prompt source files required by the existing image scheduler / prompt-package compiler.
 - resolve intro policy and allow provisional text-only release drafts.
 - DO NOT invoke image_generation, DO NOT create Visual Lock images, DO NOT advance the Episode stage.
@@ -62,6 +63,7 @@ TARGET: reach VISUAL_CALIBRATED and stop there.
 - After baseline generation, run visual_lock_baseline_gate.py prepare-review. Inspect actual pixels and honestly fill meta/visual-lock-baseline-review.json: all required checks plus normalized primary-character face_boxes. Run visual_lock_baseline_gate.py approve. A PASS creates a PROVISIONAL SHA-bound character pixel master and deterministic individual crops; a FAIL must repair/review baseline and MUST NOT release the parallel three.
 - Re-run the scheduler only after baseline approval. The scheduler re-arbitrates references at execution time, and worst_capture_condition / first_major_anomaly / high_impact_admission may then run in parallel with the approved PROVISIONAL baseline identity reference.
 - After all four admissions exist, run the normal bind/critic/final Visual Lock review. FOUR-admission PASS promotes the same baseline image from PROVISIONAL to LOCKED pixel master. Real-person style references never become identity masters.
+- STORY_OS_V211_PERF_RECOVERY: if the unified critic reports technical infrastructure failure (for example INPUT_IMAGES_UNAVAILABLE / Windows sandbox 1385 / critic return code 11), DO NOT convert that into content failure, DO NOT loop content repairs, and DO NOT mutate candidate decisions to failed. Stop this bounded step promptly and preserve meta/visual-critic-runtime.json; the parent DAG may run bounded speculative production.
 - generate/review/repair only those admissions as required.
 - use image model policy from meta/runtime-request.json; default gpt-image-2.
 - record honest delegated visual approval only after evidence passes.
@@ -71,6 +73,7 @@ DO NOT run full Batch or release.
 "PRODUCTION":"""
 TARGET: reach PRODUCTION_PASSED and stop there.
 - author concise per-frame prompts for remaining frames.
+- STORY_OS_V211_PERF_FINAL_R2: `escalation_from` is narrative-only and MUST NOT serialize image generation. Use `generation_depends_on` only for a true pixel prerequisite (image edit, required prior generated asset, or an explicit locked visual state that cannot be represented by contracts); default it to empty.
 - import/run bounded image scheduler, max 3 image jobs. Reference arbitration remains max 2 refs: use locked identity only on character frames, then choose prop/location/capture_style by frame function; individual derived crop is preferred for an explicit single-character subject.
 - reuse clean SHA-bound PASS evidence.
 - technical failures are retryable and do not consume content repair.
@@ -174,3 +177,5 @@ def main():
     print(json.dumps({"step":a.step,"returncode":rc,"log":log},ensure_ascii=False)); return rc
 
 if __name__=="__main__": raise SystemExit(main())
+
+# STORY_OS_V211_RUNTIME_CLOSURE_R31
