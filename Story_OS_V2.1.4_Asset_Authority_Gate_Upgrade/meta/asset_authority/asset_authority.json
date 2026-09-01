@@ -1,8 +1,0 @@
-{
-  "version": "2.1.4",
-  "authority_scope": "current_story_branch",
-  "allow_external_asset_repo": false,
-  "external_search": false,
-  "missing_asset_action": "STOP",
-  "error_code": "ASSET_LOCK_MISSING"
-}
