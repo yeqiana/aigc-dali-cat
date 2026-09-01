@@ -1,0 +1,35 @@
+{
+  "version": "2.2.7",
+  "feature": "visual_test_append_only_runs",
+  "history_policy": "AUDIT_ONLY_NEVER_EXECUTION_INPUT",
+  "rules": {
+    "every_visual_test_request_creates_new_run": true,
+    "always_generate_new_image": true,
+    "reuse_old_image": false,
+    "reuse_old_report": false,
+    "skip_if_old_pass": false,
+    "cache_hit_allowed": false,
+    "old_runs_can_block_new_run": false,
+    "latest_pointer_is_gate": false
+  },
+  "run_layout": {
+    "metadata": "meta/tests/visual/<run_id>/",
+    "media": "media/tests/visual/<run_id>/",
+    "latest_pointer": "meta/tests/visual/latest.json"
+  },
+  "latest_pointer": {
+    "authority": false,
+    "gate": false,
+    "reuse_source": false,
+    "purpose": "manual_navigation_only"
+  },
+  "statuses": [
+    "VISUAL_TEST_NATIVE_IMAGE_REQUIRED",
+    "GENERATION_BLOCKED",
+    "GENERATION_FAILED",
+    "GENERATION_CANCELLED",
+    "VISUAL_TEST_GENERATED_PENDING_REVIEW",
+    "VISUAL_TEST_REVIEW_PASS",
+    "VISUAL_TEST_REVIEW_FAIL"
+  ]
+}
