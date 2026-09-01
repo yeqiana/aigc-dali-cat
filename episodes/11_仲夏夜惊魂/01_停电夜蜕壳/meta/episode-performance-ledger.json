@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "telemetry_only": true,
+  "not_stage_gate": true,
+  "fail_soft": true,
+  "episode_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳",
+  "started_at": "2026-08-31T20:10:56.405+08:00",
+  "updated_at": "2026-08-31T21:11:21.120+08:00",
+  "finalized_at": null,
+  "final_status": null,
+  "total_wall_seconds": null,
+  "stages": {},
+  "named_spans": {},
+  "state_transitions": [],
+  "image_attempts": [
+    {
+      "event_id": "5251b7eb95f8",
+      "frame": "08",
+      "scope": "visual_lock",
+      "kind": "repair",
+      "status": "scout_repair",
+      "model": "gpt-image-2",
+      "attempt": 1,
+      "started_at": "2026-08-31T20:09:00+08:00",
+      "ended_at": "2026-08-31T20:10:56+08:00",
+      "elapsed_seconds": 0.0,
+      "queue_item_id": "e019a2abfebf",
+      "error_code": null
+    },
+    {
+      "event_id": "729756f7679b",
+      "frame": "17",
+      "scope": "visual_lock",
+      "kind": "repair",
+      "status": "scout_repair",
+      "model": "gpt-image-2",
+      "attempt": 1,
+      "started_at": "2026-08-31T20:09:00+08:00",
+      "ended_at": "2026-08-31T20:11:05+08:00",
+      "elapsed_seconds": 0.0,
+      "queue_item_id": "e3ba1116d948",
+      "error_code": null
+    },
+    {
+      "event_id": "e28a3fe00e41",
+      "frame": "17",
+      "scope": "visual_lock",
+      "kind": "repair",
+      "status": "scout_repair",
+      "model": "gpt-image-2",
+      "attempt": 1,
+      "started_at": "2026-08-31T21:07:58+08:00",
+      "ended_at": "2026-08-31T21:11:10+08:00",
+      "elapsed_seconds": 0.0,
+      "queue_item_id": "de025622f8b1",
+      "error_code": null
+    },
+    {
+      "event_id": "b1ef171e129b",
+      "frame": "08",
+      "scope": "visual_lock",
+      "kind": "repair",
+      "status": "scout_repair",
+      "model": "gpt-image-2",
+      "attempt": 1,
+      "started_at": "2026-08-31T21:07:58+08:00",
+      "ended_at": "2026-08-31T21:11:20+08:00",
+      "elapsed_seconds": 0.0,
+      "queue_item_id": "8da147d882bb",
+      "error_code": null
+    }
+  ],
+  "summary": {
+    "stage_wall": {},
+    "named_span_wall": {},
+    "images": {
+      "attempts": 4,
+      "successful_attempts": 0,
+      "repair_attempts": 4,
+      "technical_failures_or_retries": 0,
+      "image_backend_seconds": 0.0,
+      "average_attempt_seconds": 0.0,
+      "max_attempt_seconds": 0.0
+    },
+    "note": "stage wall time and image backend resource time can overlap; do not add them together."
+  }
+}

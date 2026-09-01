@@ -1,0 +1,127 @@
+{
+  "calibration": [
+    {
+      "id": "V-B",
+      "checks": {
+        "visual_profile_match": false,
+        "reality_first": false,
+        "ordinary_life_density": false,
+        "available_light": false,
+        "unposed_capture": false,
+        "not_cinematic": false,
+        "causal_imperfection": false,
+        "environment_physics_fidelity": false,
+        "capture_credibility": false,
+        "anomaly_scale_delivery": false,
+        "scale_reference_fidelity": false
+      },
+      "issues": [
+        "无法读取校准图像，本次会话视觉输入不可用，未能基于实际像素判定"
+      ],
+      "notes": "IMAGES_UNAVAILABLE - 未对不可见图像给出任何通过结论",
+      "sha256": "47094e63e36261cad748855c2d1e0e4b1be7b14e34cffa778b33329bfa0f05b0",
+      "frame_contract_sha256": "fe0418fc08a4ddaec153fe795a28f9af0be1ffac5bddd3b0b1eed3da1086cf87",
+      "frame": 1,
+      "role": "ordinary_baseline",
+      "ledger_review_warnings": [
+        "review requires ready candidate, got PASSED\n"
+      ]
+    },
+    {
+      "id": "V-W",
+      "checks": {
+        "visual_profile_match": false,
+        "reality_first": false,
+        "ordinary_life_density": false,
+        "available_light": false,
+        "unposed_capture": false,
+        "not_cinematic": false,
+        "causal_imperfection": false,
+        "environment_physics_fidelity": false,
+        "capture_credibility": false,
+        "anomaly_scale_delivery": false,
+        "scale_reference_fidelity": false
+      },
+      "issues": [
+        "无法读取校准图像，本次会话视觉输入不可用，未能基于实际像素判定"
+      ],
+      "notes": "IMAGES_UNAVAILABLE - 未对不可见图像给出任何通过结论",
+      "sha256": "35fa368606253ae6e160dc1253a14172dffb745d54b1eb3432653acb6db1ebbb",
+      "frame_contract_sha256": "9d6e590ca2f4900ced0b9ba74c7ff982b712610b6144492cecebb2525ba9e3c2",
+      "frame": 5,
+      "role": "worst_capture_condition"
+    },
+    {
+      "id": "V-A",
+      "checks": {
+        "visual_profile_match": false,
+        "reality_first": false,
+        "ordinary_life_density": false,
+        "available_light": false,
+        "unposed_capture": false,
+        "not_cinematic": false,
+        "causal_imperfection": false,
+        "environment_physics_fidelity": false,
+        "capture_credibility": false,
+        "anomaly_scale_delivery": false,
+        "scale_reference_fidelity": false
+      },
+      "issues": [
+        "无法读取校准图像，本次会话视觉输入不可用，未能基于实际像素判定"
+      ],
+      "notes": "IMAGES_UNAVAILABLE - 未对不可见图像给出任何通过结论",
+      "sha256": "bfc07c8769a23497900d27de57c5dd8fbff8b2bee15756c615093068709d8ace",
+      "frame_contract_sha256": "f6b951f42e960d9a9e0318501a5cc146482d7606f3f561250b980bc8cfd5acdc",
+      "frame": 8,
+      "role": "first_major_anomaly",
+      "ledger_review_warnings": [
+        "review requires ready candidate, got PASSED\n"
+      ]
+    },
+    {
+      "id": "V-H",
+      "checks": {
+        "visual_profile_match": false,
+        "reality_first": false,
+        "ordinary_life_density": false,
+        "available_light": false,
+        "unposed_capture": false,
+        "not_cinematic": false,
+        "causal_imperfection": false,
+        "environment_physics_fidelity": false,
+        "capture_credibility": false,
+        "anomaly_scale_delivery": false,
+        "scale_reference_fidelity": false
+      },
+      "issues": [
+        "无法读取校准图像，本次会话视觉输入不可用，未能基于实际像素判定"
+      ],
+      "notes": "IMAGES_UNAVAILABLE - 未对不可见图像给出任何通过结论",
+      "sha256": "581132d3be653e37bbf0762735ae1ad7d482b680967b17c89d9528fd0a386244",
+      "frame_contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9",
+      "frame": 17,
+      "role": "high_impact_admission",
+      "ledger_review_warnings": [
+        "review requires ready candidate, got PASSED\n"
+      ]
+    }
+  ],
+  "issue_codes": [
+    "INPUT_IMAGES_UNAVAILABLE"
+  ],
+  "summary": {
+    "passed": false
+  },
+  "schema_version": 2,
+  "story_os_version": "2.1.0",
+  "profile_id": "M00",
+  "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+  "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "attempt": 1,
+    "reviewed_at": "2026-08-31T22:28:39+08:00",
+    "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/visual-lock-critic-attempt-1.jsonl"
+  }
+}

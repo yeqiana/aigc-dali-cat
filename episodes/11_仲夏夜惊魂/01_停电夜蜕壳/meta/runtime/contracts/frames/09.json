@@ -4,7 +4,7 @@
   "frame": "09",
   "derived_cache": true,
   "authority": "Story + Storyboard + Character Contract + Character Visual + Shot Progression + Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile",
-  "generated_at": "2026-08-31T19:39:24+08:00",
+  "generated_at": "2026-08-31T22:00:10+08:00",
   "source_trace": {
     "story": {
       "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/01_StoryLock.md",
@@ -16,7 +16,7 @@
     },
     "story_gates": {
       "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/story-gates.json",
-      "sha256": "2aff4c714c3f488f2cdca7c93037ea42033886c84eb2b287836c7f9dc546971a"
+      "sha256": "b4ba0a35893eccd81df1a1afcbef388fb038953d4a9ec06c039c8cfa1b466d04"
     },
     "visual_profile": {
       "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
@@ -36,7 +36,7 @@
     },
     "character_visual_contract": {
       "path": "meta/character-visual-contract.json",
-      "sha256": null
+      "sha256": "04645bd75fe8dd974ea3e1222334ee4440323bae576e47f7170bf4ab5ec41e8d"
     },
     "shot_progression": {
       "path": "meta/shot-progression-review.json",
@@ -218,12 +218,94 @@
     "capture_event_sha256": null,
     "world_state": {},
     "world_state_sha256": null,
-    "character_visual_contract": {},
+    "character_visual_contract": {
+      "schema_version": 2,
+      "status": "DRAFT",
+      "created_at": "2026-08-31T19:40:19+08:00",
+      "lock_model": "identity_spec__provisional_baseline_master__final_visual_lock_master",
+      "primary_cast_ids": [
+        "P01"
+      ],
+      "members": {
+        "P01": {
+          "visual_priority": "primary",
+          "attractiveness": "moderately_above_average_but_real",
+          "body_build": "lean_proportionate_natural",
+          "body_build_story_override_reason": "",
+          "face_identity": {
+            "original_character": true,
+            "independently_distinct_face": true,
+            "celebrity_likeness": false,
+            "influencer_face": false,
+            "fashion_model_styling": false,
+            "reference_similarity_target": "low",
+            "skin_texture": "natural_visible_texture",
+            "slight_asymmetry": true,
+            "identity_spec_locked": false
+          },
+          "hair": {
+            "haircut_anchor": "",
+            "hair_length_anchor": "",
+            "allowed_state_variation": [
+              "wet",
+              "windblown",
+              "messy",
+              "hood_up",
+              "tied_or_untied_with_story_reason"
+            ],
+            "exact_reference_hairstyle_copy": false
+          },
+          "presentation": {
+            "heavy_makeup": false,
+            "porcelain_skin": false,
+            "excessive_face_symmetry": false,
+            "ai_beauty_face": false,
+            "camera_friendly_but_believable": true
+          }
+        }
+      },
+      "reference_policy": {
+        "allowed_reference_roles": [
+          "age_vibe",
+          "attractiveness_range",
+          "realism",
+          "capture_style",
+          "clothing_direction",
+          "color_mood"
+        ],
+        "must_not_copy": [
+          "exact_face_geometry",
+          "exact_eye_nose_mouth_combination",
+          "exact_hairstyle",
+          "distinctive_personal_markers",
+          "celebrity_identity"
+        ],
+        "reference_is_not_identity_master": true,
+        "real_person_exact_likeness_forbidden": true
+      },
+      "master_policy": {
+        "preferred_identity_source": [
+          "character_individual_crop",
+          "character_pixel_master",
+          "ordinary_baseline_group_selfie",
+          "original_character_library_asset"
+        ],
+        "preproduction_only_must_not_generate_master_images": true,
+        "ordinary_baseline_can_become_group_identity_master": true,
+        "pixel_master_artifact": "meta/character-pixel-master.json",
+        "crop_manifest_artifact": "meta/character-master-crops.json",
+        "provisional_master_after_baseline_review_pass": true,
+        "final_master_after_four_admission_pass": true,
+        "derived_crops_are_not_new_identity_generation": true
+      },
+      "realism_priority": true,
+      "note": "Story Lock 只锁规格；baseline 单独 PASS 后建立临时像素母版，四项 Visual Lock 全 PASS 后升级为正式母版。"
+    },
     "shot_progression": {},
     "temporal_state": {},
     "wardrobe": {},
     "references": []
   },
-  "contract_sha256": "950eb862de820f13d15b595bd76c216f29d6a173d57cc9423ba61d87e43d30a4",
-  "prompt_contract": "RESOLVED FRAME CONTRACT | frame=09 | sha256=950eb862de820f13d15b595bd76c216f29d6a173d57cc9423ba61d87e43d30a4\nThis derived contract is mandatory. Locked sources outrank ad-hoc prompt wording.\n\n[STORYBOARD FRAME]\n## 图 09｜路面第二层\n- **场景**：井盖与车道线错位\n- **Story Beat**：reveal\n- **画面合同**：十字路口，沥青最上层从井盖边缘卷起像极薄黑色皮，下面露出另一套更窄旧车道线和偏位井盖；一辆普通轿车经过提供比例。\n- **字幕草案**：连路面都有一层。\n- **硬约束**：真实手机相册感；第一人称；不摆拍；不增加专业角色；异常必须在像素中可读。\n\n[VISUAL DNA]\nprofile=M00 | MP4 × 网吧 × 流水席旧数码质感校准版\nreality first; the image must still feel like a plausible personal/work record without the anomaly\nordinary Chinese life density=high; retain causal incidental clutter\navailable light only=True; no invented cinematic key/rim lighting\ncomposition=unposed_imperfect_personal_record\npeople=ordinary_unprepared_not_actor_like\ncolor=low_to_medium_saturation_environment_driven_no_global_retro_LUT\ntexture=controlled_imperfection_causal_to_capture_device_and_scene\nanomaly=embedded_in_reality_before_spectacle\nforbid commercial HDR, promo polish, default portrait bokeh, heroic framing and causeless retro/noise effects\ncapture physics and story era override texture; never fake an old device when the story uses a modern phone\n\n[CAPTURE / AUTHENTICITY]\n{\"aspect_ratio\":\"4:5\",\"camera_rules\":{\"current_device_may_be_fully_visible\":false,\"current_device_visibility_explanation\":\"当前拍摄手机不完整入镜\",\"photographer_may_be_fully_visible\":false,\"photographer_visibility_explanation\":\"第一人称，仅自然露肢体局部，不出现无来源第三人称正脸\"},\"capture_states\":{\"lost_control\":\"图15-18热风与快速撤离时手持更不稳，但关键尺度参照与异常边缘仍必须清楚\",\"restricted\":\"停电后依靠车灯/手机手电，背景掉黑、高ISO与轻运动模糊只在物理需要时出现\",\"stable\":\"停电前普通手机夜景；可读、轻微手持偏斜、无商业HDR\"},\"location\":\"中国西北虚构普通县城槐川县；不影射真实灾害或政府事件\",\"photographer\":\"24岁男性主角 P01，第一人称记录\",\"primary_capture\":{\"device\":\"2026年前后普通智能手机，手持竖拍，默认4:5裁切/构图\",\"id\":\"CP01\"},\"secondary_captures\":[],\"secondary_source_explanation\":\"无第二拍摄源\",\"shooting_reason\":\"返乡途中手机随手记录极端高温、突然停电和随后出现的异常\",\"story_era\":\"2026年仲夏\"}\n\n[CHARACTER / POV CONTRACT]\n{\"cast\":{\"members\":[{\"age\":24,\"build\":\"普通年轻人体型\",\"clothing_anchor\":\"黑色短袖+深灰工装裤+普通运动鞋\",\"device_anchor\":\"普通智能手机\",\"gender\":\"male\",\"hair\":\"普通黑色短发，略被汗打湿\",\"id\":\"P01\",\"pov\":true}],\"relationship\":\"单人\",\"size\":1,\"type\":\"single_male\"},\"continuity_policy\":{\"clothing_and_device_anchors_propagate_to_frame_contract\":true,\"member_count_changes_require_story_event\":true,\"pov_character_id_stable\":true},\"created_at\":\"2026-08-31T14:20:00+08:00\",\"derived_from_pools\":true,\"entry\":{\"label\":\"回家/回老家\",\"reason\":\"在外地工作的普通年轻人请了两天假，夜里返乡参加第二天发小的婚礼；停电后从县城客运站步行回家\",\"source\":\"story_os_selection\",\"type\":\"return_home\"},\"era\":{\"bucket\":\"modern_2020s\",\"source\":\"story_os_selection\",\"year\":2026},\"forbidden_role_check\":{\"hits\":[],\"pass\":true},\"locked_at\":\"2026-08-31T14:20:00+08:00\",\"no_anomaly_test\":{\"must_be_rechecked_before_story_lock\":true,\"ordinary_day_plan\":\"夜班客车到县城后步行或打车回家，洗澡睡觉，第二天参加发小婚礼；高温和临时停电只会让返家更麻烦。\",\"pass\":true,\"question\":\"如果删掉所有异常，这一天是否仍像真实生活？\",\"rechecked_against_final_story\":true},\"not_episode_stage\":true,\"ordinary_person_score\":100,\"pov\":{\"character_id\":\"P01\",\"first_person\":true},\"role_policy\":{\"career_function\":\"none\",\"protagonist_role\":\"普通年轻人\",\"solves_anomaly_professionally\":false},\"scene\":{\"primary_category\":\"county_town\",\"primary_place\":\"中国西北虚构县城“槐川县”的客运站—老商业街—步行天桥—普通住宅小区\"},\"schema_version\":1,\"selection_seed\":202608311101,\"status\":\"LOCKED\",\"story_build_note\":\"Story Lock 已复核：主角没有专业异常处理职能；返乡动机在删除全部异常后仍成立。\"}\n\n[CONTINUITY]\n{\"anchors\":{\"anomaly_material\":\"县城表层极薄、半透明，携带颜色/反光/标线等表面信息；里层暗灰粗糙且门窗接口错位\",\"location\":\"槐川县空间链：客运站→老商业街→十字路口→河渠步道→步行天桥→普通住宅小区\",\"protagonist\":\"P01 周启明，24岁男性第一人称；黑短发；黑短袖+深灰工装裤+普通运动鞋；只自然露手臂/裤腿/鞋等局部\",\"weather_time\":\"仲夏极热夜，22:42抵达，23:03停电，23:51高潮，00:06复电，次日上午残留\"},\"required\":[\"protagonist\",\"location\",\"weather_time\",\"anomaly_material\"]}\n\n[ENVIRONMENT PHYSICS]\n{\"condition\":\"全县停电后的低照极热街区\",\"conditional_effects\":[{\"effect\":\"手机手电照近处时背景迅速掉黑\",\"when\":[\"frame 5-9\",\"近距离观察\"]}],\"ground_state\":\"干燥沥青与水泥路面，白天积热未散\",\"physical_cues\":[\"大面积人工照明消失\",\"汽车灯和手机手电形成局部硬光\",\"高ISO噪点/轻运动模糊只在物理需要时出现\"],\"precipitation\":\"无\",\"temperature_feel\":\"白天约40℃后的积热仍明显，夜间体感约31℃，空气干热闷滞\",\"time_of_day\":\"22:42-00:10 夜间\",\"visibility\":\"停电前普通县城夜景；停电后依靠车灯、手机和极少应急光\",\"wind\":\"前段弱风，后段出现间歇性热风\"}\n\n[CAPTURE EVENT]\n{}\n\n[PERSISTENT WORLD STATE]\n{}\n\n[CHARACTER VISUAL / ORIGINAL IDENTITY]\n{}\n\n[SHOT PROGRESSION / ACTION / ANOMALY LOGIC]\n{}\n\n[TEMPORAL CONTINUITY]\n{}\n\n[SCENE-AWARE WARDROBE]\n{}\n\n[FRAME DIRECTIVE]\n{\"escalation_from\":null,\"frame_mode\":\"anomaly_reveal\",\"impact_level\":2,\"narrative_role\":\"escalation\",\"required_visual_cues\":[\"沥青最上层卷起\",\"第二套车道线与井盖位置错位\",\"轿车提供比例\"],\"scale_reference\":\"\"}\n\n[REFERENCES CONTRACT]\n[]\n\nHard rule: reality constrains capture physics, not anomaly scale. Do not weaken impact_level or remove required scale references to make the scene easier."
+  "contract_sha256": "ac78a2df3ec197d889bde3cc1421bf6b500ea466a57cf5a3dbbb5e587ee8fbe9",
+  "prompt_contract": "RESOLVED FRAME CONTRACT | frame=09 | sha256=ac78a2df3ec197d889bde3cc1421bf6b500ea466a57cf5a3dbbb5e587ee8fbe9\nThis derived contract is mandatory. Locked sources outrank ad-hoc prompt wording.\n\n[STORYBOARD FRAME]\n## 图 09｜路面第二层\n- **场景**：井盖与车道线错位\n- **Story Beat**：reveal\n- **画面合同**：十字路口，沥青最上层从井盖边缘卷起像极薄黑色皮，下面露出另一套更窄旧车道线和偏位井盖；一辆普通轿车经过提供比例。\n- **字幕草案**：连路面都有一层。\n- **硬约束**：真实手机相册感；第一人称；不摆拍；不增加专业角色；异常必须在像素中可读。\n\n[VISUAL DNA]\nprofile=M00 | MP4 × 网吧 × 流水席旧数码质感校准版\nreality first; the image must still feel like a plausible personal/work record without the anomaly\nordinary Chinese life density=high; retain causal incidental clutter\navailable light only=True; no invented cinematic key/rim lighting\ncomposition=unposed_imperfect_personal_record\npeople=ordinary_unprepared_not_actor_like\ncolor=low_to_medium_saturation_environment_driven_no_global_retro_LUT\ntexture=controlled_imperfection_causal_to_capture_device_and_scene\nanomaly=embedded_in_reality_before_spectacle\nforbid commercial HDR, promo polish, default portrait bokeh, heroic framing and causeless retro/noise effects\ncapture physics and story era override texture; never fake an old device when the story uses a modern phone\n\n[CAPTURE / AUTHENTICITY]\n{\"aspect_ratio\":\"4:5\",\"camera_rules\":{\"current_device_may_be_fully_visible\":false,\"current_device_visibility_explanation\":\"当前拍摄手机不完整入镜\",\"photographer_may_be_fully_visible\":false,\"photographer_visibility_explanation\":\"第一人称，仅自然露肢体局部，不出现无来源第三人称正脸\"},\"capture_states\":{\"lost_control\":\"图15-18热风与快速撤离时手持更不稳，但关键尺度参照与异常边缘仍必须清楚\",\"restricted\":\"停电后依靠车灯/手机手电，背景掉黑、高ISO与轻运动模糊只在物理需要时出现\",\"stable\":\"停电前普通手机夜景；可读、轻微手持偏斜、无商业HDR\"},\"location\":\"中国西北虚构普通县城槐川县；不影射真实灾害或政府事件\",\"photographer\":\"24岁男性主角 P01，第一人称记录\",\"primary_capture\":{\"device\":\"2026年前后普通智能手机，手持竖拍，默认4:5裁切/构图\",\"id\":\"CP01\"},\"secondary_captures\":[],\"secondary_source_explanation\":\"无第二拍摄源\",\"shooting_reason\":\"返乡途中手机随手记录极端高温、突然停电和随后出现的异常\",\"story_era\":\"2026年仲夏\"}\n\n[CHARACTER / POV CONTRACT]\n{\"cast\":{\"members\":[{\"age\":24,\"build\":\"普通年轻人体型\",\"clothing_anchor\":\"黑色短袖+深灰工装裤+普通运动鞋\",\"device_anchor\":\"普通智能手机\",\"gender\":\"male\",\"hair\":\"普通黑色短发，略被汗打湿\",\"id\":\"P01\",\"pov\":true}],\"relationship\":\"单人\",\"size\":1,\"type\":\"single_male\"},\"continuity_policy\":{\"clothing_and_device_anchors_propagate_to_frame_contract\":true,\"member_count_changes_require_story_event\":true,\"pov_character_id_stable\":true},\"created_at\":\"2026-08-31T14:20:00+08:00\",\"derived_from_pools\":true,\"entry\":{\"label\":\"回家/回老家\",\"reason\":\"在外地工作的普通年轻人请了两天假，夜里返乡参加第二天发小的婚礼；停电后从县城客运站步行回家\",\"source\":\"story_os_selection\",\"type\":\"return_home\"},\"era\":{\"bucket\":\"modern_2020s\",\"source\":\"story_os_selection\",\"year\":2026},\"forbidden_role_check\":{\"hits\":[],\"pass\":true},\"locked_at\":\"2026-08-31T14:20:00+08:00\",\"no_anomaly_test\":{\"must_be_rechecked_before_story_lock\":true,\"ordinary_day_plan\":\"夜班客车到县城后步行或打车回家，洗澡睡觉，第二天参加发小婚礼；高温和临时停电只会让返家更麻烦。\",\"pass\":true,\"question\":\"如果删掉所有异常，这一天是否仍像真实生活？\",\"rechecked_against_final_story\":true},\"not_episode_stage\":true,\"ordinary_person_score\":100,\"pov\":{\"character_id\":\"P01\",\"first_person\":true},\"role_policy\":{\"career_function\":\"none\",\"protagonist_role\":\"普通年轻人\",\"solves_anomaly_professionally\":false},\"scene\":{\"primary_category\":\"county_town\",\"primary_place\":\"中国西北虚构县城“槐川县”的客运站—老商业街—步行天桥—普通住宅小区\"},\"schema_version\":1,\"selection_seed\":202608311101,\"status\":\"LOCKED\",\"story_build_note\":\"Story Lock 已复核：主角没有专业异常处理职能；返乡动机在删除全部异常后仍成立。\"}\n\n[CONTINUITY]\n{\"anchors\":{\"anomaly_material\":\"县城表层极薄、半透明，携带颜色/反光/标线等表面信息；里层暗灰粗糙且门窗接口错位\",\"location\":\"槐川县空间链：客运站→老商业街→十字路口→河渠步道→步行天桥→普通住宅小区\",\"protagonist\":\"P01 周启明，24岁男性第一人称；黑短发；黑短袖+深灰工装裤+普通运动鞋；只自然露手臂/裤腿/鞋等局部\",\"weather_time\":\"仲夏极热夜，22:42抵达，23:03停电，23:51高潮，00:06复电，次日上午残留\"},\"required\":[\"protagonist\",\"location\",\"weather_time\",\"anomaly_material\"]}\n\n[ENVIRONMENT PHYSICS]\n{\"condition\":\"全县停电后的低照极热街区\",\"conditional_effects\":[{\"effect\":\"手机手电照近处时背景迅速掉黑\",\"when\":[\"frame 5-9\",\"近距离观察\"]}],\"ground_state\":\"干燥沥青与水泥路面，白天积热未散\",\"physical_cues\":[\"大面积人工照明消失\",\"汽车灯和手机手电形成局部硬光\",\"高ISO噪点/轻运动模糊只在物理需要时出现\"],\"precipitation\":\"无\",\"temperature_feel\":\"白天约40℃后的积热仍明显，夜间体感约31℃，空气干热闷滞\",\"time_of_day\":\"22:42-00:10 夜间\",\"visibility\":\"停电前普通县城夜景；停电后依靠车灯、手机和极少应急光\",\"wind\":\"前段弱风，后段出现间歇性热风\"}\n\n[CAPTURE EVENT]\n{}\n\n[PERSISTENT WORLD STATE]\n{}\n\n[CHARACTER VISUAL / ORIGINAL IDENTITY]\n{\"created_at\":\"2026-08-31T19:40:19+08:00\",\"lock_model\":\"identity_spec__provisional_baseline_master__final_visual_lock_master\",\"master_policy\":{\"crop_manifest_artifact\":\"meta/character-master-crops.json\",\"derived_crops_are_not_new_identity_generation\":true,\"final_master_after_four_admission_pass\":true,\"ordinary_baseline_can_become_group_identity_master\":true,\"pixel_master_artifact\":\"meta/character-pixel-master.json\",\"preferred_identity_source\":[\"character_individual_crop\",\"character_pixel_master\",\"ordinary_baseline_group_selfie\",\"original_character_library_asset\"],\"preproduction_only_must_not_generate_master_images\":true,\"provisional_master_after_baseline_review_pass\":true},\"members\":{\"P01\":{\"attractiveness\":\"moderately_above_average_but_real\",\"body_build\":\"lean_proportionate_natural\",\"body_build_story_override_reason\":\"\",\"face_identity\":{\"celebrity_likeness\":false,\"fashion_model_styling\":false,\"identity_spec_locked\":false,\"independently_distinct_face\":true,\"influencer_face\":false,\"original_character\":true,\"reference_similarity_target\":\"low\",\"skin_texture\":\"natural_visible_texture\",\"slight_asymmetry\":true},\"hair\":{\"allowed_state_variation\":[\"wet\",\"windblown\",\"messy\",\"hood_up\",\"tied_or_untied_with_story_reason\"],\"exact_reference_hairstyle_copy\":false,\"hair_length_anchor\":\"\",\"haircut_anchor\":\"\"},\"presentation\":{\"ai_beauty_face\":false,\"camera_friendly_but_believable\":true,\"excessive_face_symmetry\":false,\"heavy_makeup\":false,\"porcelain_skin\":false},\"visual_priority\":\"primary\"}},\"note\":\"Story Lock 只锁规格；baseline 单独 PASS 后建立临时像素母版，四项 Visual Lock 全 PASS 后升级为正式母版。\",\"primary_cast_ids\":[\"P01\"],\"realism_priority\":true,\"reference_policy\":{\"allowed_reference_roles\":[\"age_vibe\",\"attractiveness_range\",\"realism\",\"capture_style\",\"clothing_direction\",\"color_mood\"],\"must_not_copy\":[\"exact_face_geometry\",\"exact_eye_nose_mouth_combination\",\"exact_hairstyle\",\"distinctive_personal_markers\",\"celebrity_identity\"],\"real_person_exact_likeness_forbidden\":true,\"reference_is_not_identity_master\":true},\"schema_version\":2,\"status\":\"DRAFT\"}\n\n[SHOT PROGRESSION / ACTION / ANOMALY LOGIC]\n{}\n\n[TEMPORAL CONTINUITY]\n{}\n\n[SCENE-AWARE WARDROBE]\n{}\n\n[FRAME DIRECTIVE]\n{\"escalation_from\":null,\"frame_mode\":\"anomaly_reveal\",\"impact_level\":2,\"narrative_role\":\"escalation\",\"required_visual_cues\":[\"沥青最上层卷起\",\"第二套车道线与井盖位置错位\",\"轿车提供比例\"],\"scale_reference\":\"\"}\n\n[REFERENCES CONTRACT]\n[]\n\nHard rule: reality constrains capture physics, not anomaly scale. Do not weaken impact_level or remove required scale references to make the scene easier."
 }

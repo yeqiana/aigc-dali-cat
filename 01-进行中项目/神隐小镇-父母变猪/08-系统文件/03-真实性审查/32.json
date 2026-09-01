@@ -1,0 +1,5 @@
+{
+  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"pass","identity_match":"na","key_prop_match":"pass","continuity_match":"fail","defects_are_causal":"pass"},
+  "red_flags": [],
+  "notes": "实际查看：实体屏幕和“林家食堂”招牌文字可读，屏幕反光符合翻拍；但画面没有图31所述陌生女孩，无法证明“她身后的招牌换成了林家食堂”，最终回放证据链不完整，需重生成。"
+}

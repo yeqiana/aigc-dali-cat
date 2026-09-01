@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "image_number": 4,
+  "created_at": "2026-08-31T15:04:29.410614+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "竖版4:5，旧卡片机从前排拍车内后视镜，镜中是一家三口的自然片段，林岚抱白花不看镜头。直闪近处略亮、深景深。Scene-native text: none required。禁止合照摆拍、商业人像、品牌、字幕。\nCapture realism: ordinary device recording, no cinematic lighting, shallow depth of field, rim light, teal-orange grading, hero angle, commercial HDR, game-render finish, or polished concept-art composition.\nReference safety: use inputs only for their declared identity, prop, location, or capture artifact role; never copy source composition, unrelated people, scenery, text, panels, or UI.\n",
+  "prompt_sha256": "af1f7ed0960facc37a16f5e38645e4ce6631ec02f1392288c48f22977725c7af",
+  "prompt_summary": {
+    "bytes": 638,
+    "characters": 498,
+    "nonempty_lines": 3,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [
+    {
+      "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\lin-lan-v1.png",
+      "sha256": "e07f86b4cf6b88bbde59ec07c83a8035d34d42c1073d3eb5e1d1c9238f01188f",
+      "format": "PNG",
+      "width": 1122,
+      "height": 1402,
+      "mode": "RGB",
+      "bytes": 2136850
+    }
+  ],
+  "reference_roles": [
+    "林岚身份、灰蓝外套与白花连续性"
+  ],
+  "reference_kinds": [
+    "identity"
+  ],
+  "capture_id": "cam-mother",
+  "device_visibility": "不可见",
+  "authored_prompt": "竖版4:5，旧卡片机从前排拍车内后视镜，镜中是一家三口的自然片段，林岚抱白花不看镜头。直闪近处略亮、深景深。Scene-native text: none required。禁止合照摆拍、商业人像、品牌、字幕。\n"
+}

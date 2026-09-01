@@ -634,6 +634,87 @@ def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     print(f"{key}: EXCEPTION_REPAIR_AUTHORIZED (direct user exception recorded)")
 
 
+def cmd_accept_user_exception_candidate(args: argparse.Namespace) -> None:
+    """Accept an already-generated exception candidate with direct user review.
+
+    The ordinary repair and one direct-user exception remain fully recorded;
+    this command only accepts that existing candidate and never resets either
+    repair counter.
+    """
+    ep = episode_dir(args.episode_dir)
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, args.frame)
+    if frame["status"] != "NEEDS_USER":
+        raise SystemExit(f"exception acceptance requires NEEDS_USER, got {frame['status']}")
+    if frame.get("content_repairs_used", 0) != 1 or frame.get("user_exception_repairs_used", 0) != 1:
+        raise SystemExit("exception acceptance requires one ordinary and one user-exception repair")
+    approval = args.approval_text.strip()
+    if not approval:
+        raise SystemExit("direct user approval text is required")
+    candidate = frame.get("current_candidate") or {}
+    raw_path = candidate.get("path")
+    if not raw_path:
+        raise SystemExit("current exception candidate missing")
+    candidate_path = (repo_root() / raw_path).resolve() if not Path(raw_path).is_absolute() else Path(raw_path)
+    if not candidate_path.is_file() or sha256_file(candidate_path) != str(candidate.get("sha256") or "").lower():
+        raise SystemExit("current exception candidate missing or hash drifted")
+    matching_attempt = None
+    for attempt in reversed(frame.get("attempts") or []):
+        if (attempt.get("candidate") or {}).get("sha256") == candidate.get("sha256"):
+            matching_attempt = attempt
+            break
+    if not isinstance(matching_attempt, dict):
+        raise SystemExit("current exception candidate has no matching generation attempt")
+    verify_attempt_frame_contract_provenance(ep, key, matching_attempt)
+    verify_attempt_visual_provenance(ep, matching_attempt)
+    acceptance = {
+        "at": now_iso(),
+        "approval_text": approval,
+        "reason": args.reason,
+        "user_approved": True,
+        "delegated_auto_review": False,
+        "approval_basis": "direct_user_review_exception_acceptance",
+        "candidate_sha256": candidate["sha256"],
+    }
+    frame.setdefault("user_exception_acceptances", []).append(acceptance)
+    frame.setdefault("reviews", []).append({
+        "at": acceptance["at"], "decision": "pass", "notes": "Direct user accepted existing exception candidate: " + args.reason,
+        "approval_basis": acceptance["approval_basis"], "candidate_sha256": candidate["sha256"],
+    })
+    frame["status"] = "PASSED"
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    print(f"{key}: PASSED (direct-user exception candidate acceptance recorded)")
+
+
+def cmd_restore_evidence_gap_review(args: argparse.Namespace) -> None:
+    """Restore a ready candidate when a review failed only from missing inputs."""
+    ep = episode_dir(args.episode_dir)
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, args.frame)
+    if frame["status"] != "CONTENT_FAILED" or frame.get("content_repairs_used", 0) != 0:
+        raise SystemExit("evidence-gap restore requires an un-repaired CONTENT_FAILED frame")
+    reviews = frame.get("reviews") or []
+    if not reviews or reviews[-1].get("notes") != "Phase5 Visual Lock critic failed actual-pixel admission":
+        raise SystemExit("evidence-gap restore requires the Visual Lock critic review marker")
+    candidate = frame.get("current_candidate") or {}
+    raw_path = candidate.get("path")
+    candidate_path = (repo_root() / raw_path).resolve() if raw_path and not Path(raw_path).is_absolute() else Path(raw_path or "")
+    if not candidate_path.is_file() or sha256_file(candidate_path) != str(candidate.get("sha256") or "").lower():
+        raise SystemExit("current candidate missing or hash drifted")
+    kind = str(candidate.get("kind") or "")
+    if kind not in {"original", "repair"}:
+        raise SystemExit("candidate kind is not restorable")
+    frame.setdefault("review_evidence_gaps", []).append({
+        "at": now_iso(), "reason": args.reason, "restored_from": "CONTENT_FAILED",
+        "review_marker": reviews[-1].get("notes"),
+    })
+    frame["status"] = "ORIGINAL_READY" if kind == "original" else "REPAIR_READY"
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    print(f"{key}: {frame['status']} (restored after input-evidence gap)")
+
+
 def safe_ext(path: Path) -> str:
     ext = path.suffix.lower()
     return ext if ext in {".png", ".jpg", ".jpeg"} else ".png"
@@ -872,6 +953,19 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--approval-text", required=True)
     s.add_argument("--reason", required=True)
     s.set_defaults(func=cmd_authorize_user_exception_repair)
+
+    s = sub.add_parser("accept-user-exception-candidate", help="accept an existing NEEDS_USER exception candidate with direct user approval")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--approval-text", required=True)
+    s.add_argument("--reason", required=True)
+    s.set_defaults(func=cmd_accept_user_exception_candidate)
+
+    s = sub.add_parser("restore-evidence-gap-review", help="restore a candidate incorrectly failed solely by an unavailable-input review")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--reason", required=True)
+    s.set_defaults(func=cmd_restore_evidence_gap_review)
 
     s = sub.add_parser("promote", help="copy current passed candidate into production/approved without overwriting source")
     s.add_argument("episode_dir")

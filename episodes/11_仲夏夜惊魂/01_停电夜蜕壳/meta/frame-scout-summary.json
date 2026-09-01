@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "evidence_updated_at": "2026-08-31T19:59:11+08:00",
+  "evidence_updated_at": "2026-08-31T21:07:59+08:00",
   "policy": "risk_based_v21",
   "rows": [
     {
@@ -18,17 +18,18 @@
     {
       "frame": "08",
       "risk": "HIGH",
-      "decision": "PASS_FAST",
-      "asset_sha256": "c787a854bce8f1b7777c2e146871d090b208045f03ac289af3f43c3ad3058509"
+      "decision": "REPAIR_NOW",
+      "asset_sha256": "bfc07c8769a23497900d27de57c5dd8fbff8b2bee15756c615093068709d8ace"
     },
     {
       "frame": "17",
       "risk": "HIGH",
       "decision": "REPAIR_NOW",
-      "asset_sha256": "a9b2e80da3c2abe7ad8d9c6245889b3a86dd9082aeae0c6d2521a0e467a6483b"
+      "asset_sha256": "581132d3be653e37bbf0762735ae1ad7d482b680967b17c89d9528fd0a386244"
     }
   ],
   "errors": [
+    "frame 08 unresolved REPAIR_NOW",
     "frame 17 unresolved REPAIR_NOW"
   ],
   "summary": {

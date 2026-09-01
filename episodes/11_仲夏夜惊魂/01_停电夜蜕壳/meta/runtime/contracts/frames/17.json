@@ -4,7 +4,7 @@
   "frame": "17",
   "derived_cache": true,
   "authority": "Story + Storyboard + Character Contract + Character Visual + Shot Progression + Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile",
-  "generated_at": "2026-08-31T20:04:12+08:00",
+  "generated_at": "2026-08-31T22:29:15+08:00",
   "source_trace": {
     "story": {
       "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/01_StoryLock.md",
@@ -16,7 +16,7 @@
     },
     "story_gates": {
       "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/story-gates.json",
-      "sha256": "b4ba0a35893eccd81df1a1afcbef388fb038953d4a9ec06c039c8cfa1b466d04"
+      "sha256": "c8b64e36b98fd04ace84e19d08b86f179eb01c520809daa5f8acabca46f44e53"
     },
     "visual_profile": {
       "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",

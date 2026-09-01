@@ -36,11 +36,22 @@ Write JSON to exactly {out}:
 REPAIR_NOW only for clear visible defects. UNCERTAIN if evidence is ambiguous.
 """
     codex=resolve_codex(codex_raw)
-    cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"-i",str(image),"--json","-"]
+    # Codex's image sidecar can fail to resolve Windows paths containing Chinese
+    # characters. Stage a byte-identical ASCII-only temporary attachment.
+    staging=Path(tempfile.mkdtemp(prefix="story-os-rolling-"))
+    staged_image=staging/("frame-"+f"{int(frame):02d}"+image.suffix.lower())
+    shutil.copy2(image,staged_image)
+    cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"-i",str(staged_image),"--json","-"]
     log=ep/"meta/rolling-review-workers"/f"{int(frame):02d}-{int(time.time())}.jsonl"; log.parent.mkdir(parents=True,exist_ok=True)
-    with log.open("w",encoding="utf-8",newline="\n") as h:
-        try: cp=subprocess.run(cmd,input=prompt,text=True,stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
-        except subprocess.TimeoutExpired: return {"decision":"UNCERTAIN","reason":"timeout","returncode":124}
+    try:
+        with log.open("w",encoding="utf-8",newline="\n") as h:
+            try:
+                # On Windows, text=True encodes stdin through the active console code page.
+                # Codex expects UTF-8, and frame contracts routinely contain Chinese text.
+                cp=subprocess.run(cmd,input=prompt.encode("utf-8"),stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+            except subprocess.TimeoutExpired: return {"decision":"UNCERTAIN","reason":"timeout","returncode":124}
+    finally:
+        shutil.rmtree(staging,ignore_errors=True)
     if cp.returncode!=0 or not out.is_file(): return {"decision":"UNCERTAIN","reason":"worker_failed","returncode":cp.returncode}
     try: data=json.loads(out.read_text(encoding="utf-8-sig"))
     except Exception: return {"decision":"UNCERTAIN","reason":"invalid_json","returncode":cp.returncode}

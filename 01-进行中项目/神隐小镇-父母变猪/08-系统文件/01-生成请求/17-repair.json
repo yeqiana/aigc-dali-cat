@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "image_number": 17,
+  "created_at": "2026-09-01T02:26:28.683235+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "竖版4:5，固定在食堂木桌上的DV斜拍，林岚穿灰蓝连帽外套拖着穿米色针织开衫的母亲和穿深灰夹克的父亲向门口跑；只有这三人，三人不看镜头，轻微方向偏斜，动作慌乱。Scene-native text: none required。不要新增人物、电影动作、字幕或水印。\nCapture realism: ordinary device recording, no cinematic lighting, shallow depth of field, rim light, teal-orange grading, hero angle, commercial HDR, game-render finish, or polished concept-art composition.\nReference safety: use inputs only for their declared identity, prop, location, or capture artifact role; never copy source composition, unrelated people, scenery, text, panels, or UI.\n",
+  "prompt_sha256": "1e86185b8c2e790567a70a8557e3052fed32781bb6a373d905051051a6644398",
+  "prompt_summary": {
+    "bytes": 712,
+    "characters": 524,
+    "nonempty_lines": 3,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [
+    {
+      "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+      "sha256": "42b0e82b9786a54d083854fb460ca058848a9d0dae95a4a32ba94268d1e80b76",
+      "format": "PNG",
+      "width": 1122,
+      "height": 1402,
+      "mode": "RGB",
+      "bytes": 2047145
+    }
+  ],
+  "reference_roles": [
+    "父母身份与服装连续性（固定机位全景）"
+  ],
+  "reference_kinds": [
+    "identity"
+  ],
+  "capture_id": "dv-lan",
+  "device_visibility": "仅自然边缘/固定支架",
+  "authored_prompt": "竖版4:5，固定在食堂木桌上的DV斜拍，林岚穿灰蓝连帽外套拖着穿米色针织开衫的母亲和穿深灰夹克的父亲向门口跑；只有这三人，三人不看镜头，轻微方向偏斜，动作慌乱。Scene-native text: none required。不要新增人物、电影动作、字幕或水印。\n"
+}

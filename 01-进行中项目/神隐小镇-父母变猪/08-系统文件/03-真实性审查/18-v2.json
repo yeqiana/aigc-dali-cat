@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "viewpoint_physics": "pass",
+    "unplanned_recorder_absent": "pass",
+    "capture_profile_match": "pass",
+    "not_cinematic": "pass",
+    "identity_match": "pass",
+    "key_prop_match": "na",
+    "continuity_match": "fail",
+    "defects_are_causal": "fail"
+  },
+  "red_flags": [],
+  "notes": "返修复审实际查看仍未通过：水坑倒影虽更弯曲，但仍接近普通弯腰人形，未形成可辨认的非人背部轮廓；关键异常证据仍不足，已达到单图一次内容返修上限，进入needs_user。"
+}

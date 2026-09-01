@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "image_number": 25,
+  "created_at": "2026-08-31T15:39:09.831948+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "竖版4:5，手电边缘照亮地址牌背面刻字，准确写“别把白花带进槐影”，白花在画面角落。低照轻噪点。Scene-native text: 刻字“别把白花带进槐影”，中文，关键证据。禁止乱码、电影光、HUD、字幕。\nCapture realism: ordinary device recording, no cinematic lighting, shallow depth of field, rim light, teal-orange grading, hero angle, commercial HDR, game-render finish, or polished concept-art composition.\nReference safety: use inputs only for their declared identity, prop, location, or capture artifact role; never copy source composition, unrelated people, scenery, text, panels, or UI.\n",
+  "prompt_sha256": "4cf101ae236e6b6dc9ee5cc5e7eab3c22a57835dd1dcf9496bf4827195efaa20",
+  "prompt_summary": {
+    "bytes": 655,
+    "characters": 497,
+    "nonempty_lines": 3,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [
+    {
+      "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\02-地点母版\\huaiying-road-v1.png",
+      "sha256": "c9add11f3d2bc18ce5cc968234cca3f23cdc3627231b5ac26ea5d234cd551990",
+      "format": "PNG",
+      "width": 1122,
+      "height": 1402,
+      "mode": "RGB",
+      "bytes": 2916343
+    }
+  ],
+  "reference_roles": [
+    "槐影镇地址牌、雨路与白花道具连续性"
+  ],
+  "reference_kinds": [
+    "location"
+  ],
+  "capture_id": "dv-lan",
+  "device_visibility": "不可见",
+  "authored_prompt": "竖版4:5，手电边缘照亮地址牌背面刻字，准确写“别把白花带进槐影”，白花在画面角落。低照轻噪点。Scene-native text: 刻字“别把白花带进槐影”，中文，关键证据。禁止乱码、电影光、HUD、字幕。\n"
+}

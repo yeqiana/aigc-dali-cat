@@ -1,0 +1,2214 @@
+{
+  "schema_version": 5,
+  "project_dir": "..",
+  "phase": "calibration_self_review",
+  "planned_count": 32,
+  "max_repairs_per_item": 1,
+  "repair_policy": {
+    "mode": "deferred_user_approved",
+    "approved_numbers": []
+  },
+  "artifacts": {
+    "story": "01-故事脚本.md",
+    "storyboard": "02-专业分镜表.md",
+    "publication": "03-发布文件说明.md",
+    "release_dir": "04-最终发布版-32图",
+    "references_dir": "05-参考素材",
+    "character_references": "05-参考素材/01-角色参考",
+    "location_masters": "05-参考素材/02-地点母版",
+    "prop_references": "05-参考素材/03-物件与设备参考",
+    "process_dir": "06-生成过程",
+    "originals_dir": "06-生成过程/01-原始生成图",
+    "repairs_dir": "06-生成过程/02-返修记录",
+    "overview_dir": "06-生成过程/03-当前总览",
+    "production_dir": "07-制作资料",
+    "creative_plan": "07-制作资料/01-创作方案.md",
+    "ai_storyboard": "07-制作资料/02-AI生成分镜.md",
+    "visual_settings": "07-制作资料/03-角色与视觉设定.md",
+    "prompts": "07-制作资料/04-出图提示词.md",
+    "reference_notes": "07-制作资料/05-参考图说明.md",
+    "reports_dir": "07-制作资料/06-审查报告",
+    "self_review": "07-制作资料/06-审查报告/01-自审记录.md",
+    "repair_report": "07-制作资料/06-审查报告/02-返修报告.md",
+    "blocked_report": "07-制作资料/06-审查报告/03-生成阻塞报告.md",
+    "acceptance": "07-制作资料/06-审查报告/04-验收记录.md",
+    "system_dir": "08-系统文件",
+    "release_manifest": "08-系统文件/release-manifest.json",
+    "requests_dir": "08-系统文件/01-生成请求",
+    "backups_dir": "08-系统文件/02-状态备份",
+    "realism_plan": "00-真实性方案.md",
+    "calibration_dir": "06-生成过程/00-真实性校准",
+    "calibration_contact_sheet": "06-生成过程/00-真实性校准/真实性校准联系表.jpg",
+    "authenticity_reviews_dir": "08-系统文件/03-真实性审查"
+  },
+  "approvals": {
+    "realism": {
+      "path": "00-真实性方案.md",
+      "sha256": "34f24908519d79ace4f65d8f509ff41db9f76a0923a34dc6a7b8134d01591983",
+      "approved_at": "2026-08-31T13:37:43.517783+00:00"
+    },
+    "story": {
+      "path": "01-故事脚本.md",
+      "sha256": "d45c9dfa75a09ee6737f48de3f0910aec34658d3410ab5aade90f263fcf97359",
+      "approved_at": "2026-08-31T13:41:22.358081+00:00"
+    },
+    "storyboard": {
+      "public": {
+        "path": "02-专业分镜表.md",
+        "sha256": "41ab78267361a388a1fa9e8ff5d8c1b62feb7de13081cd899f415f227f95b002",
+        "approved_at": "2026-08-31T13:47:40.666970+00:00"
+      },
+      "production": {
+        "path": "07-制作资料\\02-AI生成分镜.md",
+        "sha256": "4292426f8cbf35f45d5fe85785aaab06e3900e199d921b908c09a7d550e44167",
+        "approved_at": "2026-08-31T13:47:40.668476+00:00"
+      }
+    },
+    "references": {
+      "approved_at": "2026-08-31T14:29:24.631567+00:00",
+      "assets": [
+        {
+          "path": "05-参考素材\\01-角色参考\\lin-lan-v1.png",
+          "sha256": "e07f86b4cf6b88bbde59ec07c83a8035d34d42c1073d3eb5e1d1c9238f01188f",
+          "approved_at": "2026-08-31T14:29:24.615911+00:00",
+          "reference_id": "lin-lan"
+        },
+        {
+          "path": "05-参考素材\\01-角色参考\\parents-duo-v1.png",
+          "sha256": "42b0e82b9786a54d083854fb460ca058848a9d0dae95a4a32ba94268d1e80b76",
+          "approved_at": "2026-08-31T14:29:24.620058+00:00",
+          "reference_id": "parents-duo"
+        },
+        {
+          "path": "05-参考素材\\02-地点母版\\tongfu-diner-v1.png",
+          "sha256": "a886d6711736e845ac55d6e1774c92bdc90cf1680d6c7a0a9b31f4779120e225",
+          "approved_at": "2026-08-31T14:29:24.623060+00:00",
+          "reference_id": "tongfu-diner"
+        },
+        {
+          "path": "05-参考素材\\02-地点母版\\huaiying-road-v1.png",
+          "sha256": "c9add11f3d2bc18ce5cc968234cca3f23cdc3627231b5ac26ea5d234cd551990",
+          "approved_at": "2026-08-31T14:29:24.627568+00:00",
+          "reference_id": "huaiying-road"
+        },
+        {
+          "path": "05-参考素材\\03-物件与设备参考\\prop-kit-v1.png",
+          "sha256": "b5a85b455b440c1efb16af8d457fda4b6dce411e7637e764d730a6221adf769f",
+          "approved_at": "2026-08-31T14:29:24.630567+00:00",
+          "reference_id": "prop-kit"
+        }
+      ]
+    }
+  },
+  "images": [
+    {
+      "number": 1,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 2,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 3,
+      "status": "pass",
+      "candidate": "06-生成过程\\01-原始生成图\\03.png",
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": "06-生成过程\\01-原始生成图\\03.png",
+      "notes": "实际查看候选：车内隔窗拍摄成立，DV本体未入镜；雨滴、偏冷白平衡和高光受限均由雨天及消费级DV成立；路牌准确为槐影镇，无人物或关键道具，普通记录感通过。",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": "chatgpt.com/backend-api/codex/images",
+        "attempts_total": 1,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": "8674e4187438fe988a8e2d4613808a1025c594e66decc4cb04562d98bae4893b",
+        "reference_sha256": [
+          {
+            "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\02-地点母版\\huaiying-road-v1.png",
+            "sha256": "c9add11f3d2bc18ce5cc968234cca3f23cdc3627231b5ac26ea5d234cd551990"
+          }
+        ],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [
+          {
+            "attempt_id": "72655f9592b844a4aa107864aa92a4cb",
+            "started_at": "2026-08-31T14:30:17.519841+00:00",
+            "ended_at": "2026-08-31T14:34:03.811970+00:00",
+            "outcome": "success",
+            "error_type": null,
+            "message": null,
+            "elapsed_seconds": 226.292129,
+            "probe": false,
+            "request_fingerprint": "9b8b29e66f1c552b13361db9397ddbf0772ec754a9ec10932655fc4d401040a8",
+            "candidate": "06-生成过程\\01-原始生成图\\03.png"
+          }
+        ],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 1,
+          "physical_attachment_count": 1,
+          "logical_source_count": 1,
+          "contains_reference_board": false,
+          "reference_kind": "natural_reference",
+          "total_bytes": 2916343,
+          "latency_risk": "normal",
+          "images": [
+            {
+              "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\02-地点母版\\huaiying-road-v1.png",
+              "width": 1122,
+              "height": 1402,
+              "bytes": 2916343,
+              "reference_kind": "natural",
+              "logical_source_count": 1
+            }
+          ]
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        },
+        "request_file": "08-系统文件\\01-生成请求\\03.json",
+        "model": null,
+        "input_differences": {
+          "prompt_changed": false,
+          "references_changed": false,
+          "metadata_changed": false,
+          "base_prompt_sha256": "8674e4187438fe988a8e2d4613808a1025c594e66decc4cb04562d98bae4893b",
+          "current_prompt_sha256": "8674e4187438fe988a8e2d4613808a1025c594e66decc4cb04562d98bae4893b",
+          "base_reference_sha256": [
+            {
+              "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\02-地点母版\\huaiying-road-v1.png",
+              "sha256": "c9add11f3d2bc18ce5cc968234cca3f23cdc3627231b5ac26ea5d234cd551990"
+            }
+          ],
+          "current_reference_sha256": [
+            {
+              "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\02-地点母版\\huaiying-road-v1.png",
+              "sha256": "c9add11f3d2bc18ce5cc968234cca3f23cdc3627231b5ac26ea5d234cd551990"
+            }
+          ]
+        },
+        "prompt_summary": {
+          "bytes": 667,
+          "characters": 499,
+          "nonempty_lines": 3,
+          "latency_risk": "normal",
+          "soft_budget_bytes": 2200
+        },
+        "last_success_at": "2026-08-31T14:34:03.811970+00:00"
+      },
+      "candidate_versions": [
+        {
+          "version": 1,
+          "candidate": "06-生成过程\\01-原始生成图\\03.png",
+          "kind": "calibration",
+          "request_file": "08-系统文件\\01-生成请求\\03.json",
+          "review": {
+            "checks": {
+              "viewpoint_physics": "pass",
+              "unplanned_recorder_absent": "pass",
+              "capture_profile_match": "pass",
+              "not_cinematic": "pass",
+              "identity_match": "na",
+              "key_prop_match": "na",
+              "continuity_match": "pass",
+              "defects_are_causal": "pass"
+            },
+            "red_flags": [],
+            "notes": "实际查看候选：车内隔窗拍摄成立，DV本体未入镜；雨滴、偏冷白平衡和高光受限均由雨天及消费级DV成立；路牌准确为槐影镇，无人物或关键道具，普通记录感通过。"
+          },
+          "review_record": {
+            "path": "08-系统文件\\03-真实性审查\\03.json",
+            "sha256": "e50780be26d86bddececabad8fb4533029c54c67a43fbd2d990dea821f0af5b6",
+            "approved_at": "2026-08-31T14:34:04.143981+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 5,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 6,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 7,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 8,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 9,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 10,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 11,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 12,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 13,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 14,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 15,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 16,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 17,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 18,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 19,
+      "status": "pass",
+      "candidate": "06-生成过程\\01-原始生成图\\19.png",
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": "06-生成过程\\01-原始生成图\\19.png",
+      "notes": "逐项查看实际候选图后填写；人物或关键道具确实不在本镜时才可使用na。",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": "chatgpt.com/backend-api/codex/images",
+        "attempts_total": 1,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": "7abaf902c8eb2765f2cc6d5de160ed3a15d791be416acafb23e297182e290081",
+        "reference_sha256": [
+          {
+            "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+            "sha256": "42b0e82b9786a54d083854fb460ca058848a9d0dae95a4a32ba94268d1e80b76"
+          }
+        ],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [
+          {
+            "attempt_id": "9c65b22d1241495097f6107d5060b022",
+            "started_at": "2026-08-31T14:34:27.934242+00:00",
+            "ended_at": "2026-08-31T14:36:13.414556+00:00",
+            "outcome": "success",
+            "error_type": null,
+            "message": null,
+            "elapsed_seconds": 105.480314,
+            "probe": false,
+            "request_fingerprint": "baf2747b6af7ad614fc258c39fdba22228cce4e3e7a63a733eb5a4a5f4ce0cb8",
+            "candidate": "06-生成过程\\01-原始生成图\\19.png"
+          }
+        ],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 1,
+          "physical_attachment_count": 1,
+          "logical_source_count": 1,
+          "contains_reference_board": false,
+          "reference_kind": "natural_reference",
+          "total_bytes": 2047145,
+          "latency_risk": "normal",
+          "images": [
+            {
+              "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+              "width": 1122,
+              "height": 1402,
+              "bytes": 2047145,
+              "reference_kind": "natural",
+              "logical_source_count": 1
+            }
+          ]
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        },
+        "request_file": "08-系统文件\\01-生成请求\\19.json",
+        "model": null,
+        "input_differences": {
+          "prompt_changed": false,
+          "references_changed": false,
+          "metadata_changed": false,
+          "base_prompt_sha256": "7abaf902c8eb2765f2cc6d5de160ed3a15d791be416acafb23e297182e290081",
+          "current_prompt_sha256": "7abaf902c8eb2765f2cc6d5de160ed3a15d791be416acafb23e297182e290081",
+          "base_reference_sha256": [
+            {
+              "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+              "sha256": "42b0e82b9786a54d083854fb460ca058848a9d0dae95a4a32ba94268d1e80b76"
+            }
+          ],
+          "current_reference_sha256": [
+            {
+              "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+              "sha256": "42b0e82b9786a54d083854fb460ca058848a9d0dae95a4a32ba94268d1e80b76"
+            }
+          ]
+        },
+        "prompt_summary": {
+          "bytes": 601,
+          "characters": 487,
+          "nonempty_lines": 3,
+          "latency_risk": "normal",
+          "soft_budget_bytes": 2200
+        },
+        "last_success_at": "2026-08-31T14:36:13.414556+00:00"
+      },
+      "candidate_versions": [
+        {
+          "version": 1,
+          "candidate": "06-生成过程\\01-原始生成图\\19.png",
+          "kind": "calibration",
+          "request_file": "08-系统文件\\01-生成请求\\19.json",
+          "review": {
+            "checks": {
+              "viewpoint_physics": "pass",
+              "unplanned_recorder_absent": "pass",
+              "capture_profile_match": "pass",
+              "not_cinematic": "pass",
+              "identity_match": "na",
+              "key_prop_match": "na",
+              "continuity_match": "pass",
+              "defects_are_causal": "pass"
+            },
+            "red_flags": [],
+            "notes": "逐项查看实际候选图后填写；人物或关键道具确实不在本镜时才可使用na。"
+          },
+          "review_record": {
+            "path": "08-系统文件\\03-真实性审查\\19.json",
+            "sha256": "907ec237a6fd76dbc59906564dea2268491c317bee674b7d4cea80eed28827ae",
+            "approved_at": "2026-08-31T14:36:13.693028+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "status": "review_pending",
+      "candidate": "06-生成过程\\01-原始生成图\\20.png",
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": "chatgpt.com/backend-api/codex/images",
+        "attempts_total": 1,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": "907356482f1eedcad1f695fae7fbcb5e6a6305c097d9698f3673ff0731ee34d1",
+        "reference_sha256": [
+          {
+            "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+            "sha256": "42b0e82b9786a54d083854fb460ca058848a9d0dae95a4a32ba94268d1e80b76"
+          }
+        ],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [
+          {
+            "attempt_id": "c9baed925c0f483e8b1e4e2c41748318",
+            "started_at": "2026-08-31T14:36:37.428477+00:00",
+            "ended_at": "2026-08-31T14:38:30.551238+00:00",
+            "outcome": "success",
+            "error_type": null,
+            "message": null,
+            "elapsed_seconds": 113.122761,
+            "probe": false,
+            "request_fingerprint": "f90a647bff6315297c4eaeab7ad1e47c4d3a7e286a74807f5ae510f59a3b1ca2",
+            "candidate": "06-生成过程\\01-原始生成图\\20.png"
+          }
+        ],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 1,
+          "physical_attachment_count": 1,
+          "logical_source_count": 1,
+          "contains_reference_board": false,
+          "reference_kind": "natural_reference",
+          "total_bytes": 2047145,
+          "latency_risk": "normal",
+          "images": [
+            {
+              "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+              "width": 1122,
+              "height": 1402,
+              "bytes": 2047145,
+              "reference_kind": "natural",
+              "logical_source_count": 1
+            }
+          ]
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        },
+        "request_file": "08-系统文件\\01-生成请求\\20.json",
+        "model": null,
+        "input_differences": {
+          "prompt_changed": false,
+          "references_changed": false,
+          "metadata_changed": false,
+          "base_prompt_sha256": "907356482f1eedcad1f695fae7fbcb5e6a6305c097d9698f3673ff0731ee34d1",
+          "current_prompt_sha256": "907356482f1eedcad1f695fae7fbcb5e6a6305c097d9698f3673ff0731ee34d1",
+          "base_reference_sha256": [
+            {
+              "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+              "sha256": "42b0e82b9786a54d083854fb460ca058848a9d0dae95a4a32ba94268d1e80b76"
+            }
+          ],
+          "current_reference_sha256": [
+            {
+              "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+              "sha256": "42b0e82b9786a54d083854fb460ca058848a9d0dae95a4a32ba94268d1e80b76"
+            }
+          ]
+        },
+        "prompt_summary": {
+          "bytes": 593,
+          "characters": 483,
+          "nonempty_lines": 3,
+          "latency_risk": "normal",
+          "soft_budget_bytes": 2200
+        },
+        "last_success_at": "2026-08-31T14:38:30.551238+00:00"
+      },
+      "candidate_versions": [
+        {
+          "version": 1,
+          "candidate": "06-生成过程\\01-原始生成图\\20.png",
+          "kind": "calibration",
+          "request_file": "08-系统文件\\01-生成请求\\20.json",
+          "review": null,
+          "review_record": null
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 22,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 23,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 24,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 25,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 26,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 27,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 28,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 29,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 30,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 31,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    },
+    {
+      "number": 32,
+      "status": "pending",
+      "candidate": null,
+      "hard_failures": [],
+      "photo_red_flags": [],
+      "repair_count": 0,
+      "repair_mode": null,
+      "repair_file": null,
+      "final_source": null,
+      "notes": "",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": null,
+        "attempts_total": 0,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": null,
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "total_bytes": 0,
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        }
+      },
+      "candidate_versions": []
+    }
+  ],
+  "reference_jobs": [
+    {
+      "id": "lin-lan",
+      "kind": "character",
+      "output_dir": "05-参考素材\\01-角色参考",
+      "status": "pass",
+      "candidate": "05-参考素材\\01-角色参考\\lin-lan-v1.png",
+      "notes": "实际查看：年龄、发型、灰蓝连帽外套、白花和DV腕带均符合；无文字、Logo、额外人物或电影化。",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": "chatgpt.com/backend-api/codex/images",
+        "attempts_total": 1,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": "88bb30c69e454f0d7757f0a93df9b2da99cedd48a0ba10915d3357833008ef00",
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [
+          {
+            "attempt_id": "14b3dcffb9094918b4a49fafb6d560d3",
+            "started_at": "2026-08-31T13:48:24.579153+00:00",
+            "ended_at": "2026-08-31T13:53:10.245405+00:00",
+            "outcome": "success",
+            "candidate": "05-参考素材\\01-角色参考\\lin-lan-v1.png",
+            "probe": false,
+            "request_fingerprint": "733695793717fcc8a03264d031c2449665a859428d5502e0915c9b558fc3774c"
+          }
+        ],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "physical_attachment_count": 0,
+          "logical_source_count": 0,
+          "contains_reference_board": false,
+          "reference_kind": "none",
+          "total_bytes": 0,
+          "latency_risk": "normal",
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        },
+        "request_file": "08-系统文件\\01-生成请求\\reference-lin-lan.json",
+        "prompt_summary": {
+          "bytes": 753,
+          "characters": 753,
+          "nonempty_lines": 8,
+          "latency_risk": "normal",
+          "soft_budget_bytes": 2200
+        }
+      },
+      "candidate_versions": [
+        {
+          "version": 1,
+          "candidate": "05-参考素材\\01-角色参考\\lin-lan-v1.png",
+          "review": "pass",
+          "recorded_at": "2026-08-31T13:53:10.245405+00:00",
+          "issues": [],
+          "notes": "实际查看：年龄、发型、灰蓝连帽外套、白花和DV腕带均符合；无文字、Logo、额外人物或电影化。",
+          "reviewed_at": "2026-08-31T13:53:10.505264+00:00"
+        }
+      ],
+      "content_repair_count": 0,
+      "review_issues": [],
+      "approved_candidate": "05-参考素材\\01-角色参考\\lin-lan-v1.png"
+    },
+    {
+      "id": "parents-duo",
+      "kind": "character",
+      "output_dir": "05-参考素材\\01-角色参考",
+      "status": "pass",
+      "candidate": "05-参考素材\\01-角色参考\\parents-duo-v1.png",
+      "notes": "实际查看：父母年龄、发型、米色开衫、深绿包、深灰夹克、卡其裤和车钥匙均符合；无人看镜头、无文字和品牌。",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": "chatgpt.com/backend-api/codex/images",
+        "attempts_total": 1,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": "d412c16c188764b10ce0914fdd6bc936637e60db493bb04dd2363bd347a874ca",
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [
+          {
+            "attempt_id": "cf8b6a57c1cc4a8aa85b5f9853251b20",
+            "started_at": "2026-08-31T13:53:46.383505+00:00",
+            "ended_at": "2026-08-31T13:57:45.652995+00:00",
+            "outcome": "success",
+            "candidate": "05-参考素材\\01-角色参考\\parents-duo-v1.png",
+            "probe": false,
+            "request_fingerprint": "a95518d61123f977e3e58c7d1a8e9e4c76e76008de5a640f0ef96b976973656b"
+          }
+        ],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "physical_attachment_count": 0,
+          "logical_source_count": 0,
+          "contains_reference_board": false,
+          "reference_kind": "none",
+          "total_bytes": 0,
+          "latency_risk": "normal",
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        },
+        "request_file": "08-系统文件\\01-生成请求\\reference-parents-duo.json",
+        "prompt_summary": {
+          "bytes": 743,
+          "characters": 743,
+          "nonempty_lines": 7,
+          "latency_risk": "normal",
+          "soft_budget_bytes": 2200
+        }
+      },
+      "candidate_versions": [
+        {
+          "version": 1,
+          "candidate": "05-参考素材\\01-角色参考\\parents-duo-v1.png",
+          "review": "pass",
+          "recorded_at": "2026-08-31T13:57:45.652995+00:00",
+          "issues": [],
+          "notes": "实际查看：父母年龄、发型、米色开衫、深绿包、深灰夹克、卡其裤和车钥匙均符合；无人看镜头、无文字和品牌。",
+          "reviewed_at": "2026-08-31T13:57:45.925025+00:00"
+        }
+      ],
+      "content_repair_count": 0,
+      "review_issues": [],
+      "approved_candidate": "05-参考素材\\01-角色参考\\parents-duo-v1.png"
+    },
+    {
+      "id": "tongfu-diner",
+      "kind": "location",
+      "output_dir": "05-参考素材\\02-地点母版",
+      "status": "pass",
+      "candidate": "05-参考素材\\02-地点母版\\tongfu-diner-v1.png",
+      "notes": "实际查看：白搪瓷招牌清晰写同福食堂，木门、暖灯、木桌和瓷碗符合；无人、无真实品牌及错误建筑元素。",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": "chatgpt.com/backend-api/codex/images",
+        "attempts_total": 1,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": "128d51a070ac6b97b668dcdef2298f114eea11305e542045564f4d78b95af0a9",
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [
+          {
+            "attempt_id": "4fbf36ba73b340caac41458692fd0b2e",
+            "started_at": "2026-08-31T13:58:25.387285+00:00",
+            "ended_at": "2026-08-31T14:01:52.129715+00:00",
+            "outcome": "success",
+            "candidate": "05-参考素材\\02-地点母版\\tongfu-diner-v1.png",
+            "probe": false,
+            "request_fingerprint": "45d9e060a63200681bdcfa18d116261ff9ec16a702ff6e7c4bce9b288529aa17"
+          }
+        ],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "physical_attachment_count": 0,
+          "logical_source_count": 0,
+          "contains_reference_board": false,
+          "reference_kind": "none",
+          "total_bytes": 0,
+          "latency_risk": "normal",
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        },
+        "request_file": "08-系统文件\\01-生成请求\\reference-tongfu-diner.json",
+        "prompt_summary": {
+          "bytes": 692,
+          "characters": 680,
+          "nonempty_lines": 7,
+          "latency_risk": "normal",
+          "soft_budget_bytes": 2200
+        }
+      },
+      "candidate_versions": [
+        {
+          "version": 1,
+          "candidate": "05-参考素材\\02-地点母版\\tongfu-diner-v1.png",
+          "review": "pass",
+          "recorded_at": "2026-08-31T14:01:52.129715+00:00",
+          "issues": [],
+          "notes": "实际查看：白搪瓷招牌清晰写同福食堂，木门、暖灯、木桌和瓷碗符合；无人、无真实品牌及错误建筑元素。",
+          "reviewed_at": "2026-08-31T14:01:52.401069+00:00"
+        }
+      ],
+      "content_repair_count": 0,
+      "review_issues": [],
+      "approved_candidate": "05-参考素材\\02-地点母版\\tongfu-diner-v1.png"
+    },
+    {
+      "id": "huaiying-road",
+      "kind": "location",
+      "output_dir": "05-参考素材\\02-地点母版",
+      "status": "pass",
+      "candidate": "05-参考素材\\02-地点母版\\huaiying-road-v1.png",
+      "notes": "实际查看：槐影镇路牌文字准确，雨后旧省道、低矮关门店铺与水沟结构符合；无人、无品牌、无奇幻建筑。",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": "chatgpt.com/backend-api/codex/images",
+        "attempts_total": 1,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": "ad609f877de7fbada30ea5f4fe04d60b94eb9fd256da2d6b4b558ff6b38ecbf5",
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [
+          {
+            "attempt_id": "66c79d409e114e65a92dc92d9d813497",
+            "started_at": "2026-08-31T14:02:37.936911+00:00",
+            "ended_at": "2026-08-31T14:06:15.656721+00:00",
+            "outcome": "success",
+            "candidate": "05-参考素材\\02-地点母版\\huaiying-road-v1.png",
+            "probe": false,
+            "request_fingerprint": "096288a25e886b5229914731c902bd80615f8571c33017005672ff093c7c8ff4"
+          }
+        ],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "physical_attachment_count": 0,
+          "logical_source_count": 0,
+          "contains_reference_board": false,
+          "reference_kind": "none",
+          "total_bytes": 0,
+          "latency_risk": "normal",
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        },
+        "request_file": "08-系统文件\\01-生成请求\\reference-huaiying-road.json",
+        "prompt_summary": {
+          "bytes": 645,
+          "characters": 635,
+          "nonempty_lines": 6,
+          "latency_risk": "normal",
+          "soft_budget_bytes": 2200
+        }
+      },
+      "candidate_versions": [
+        {
+          "version": 1,
+          "candidate": "05-参考素材\\02-地点母版\\huaiying-road-v1.png",
+          "review": "pass",
+          "recorded_at": "2026-08-31T14:06:15.656721+00:00",
+          "issues": [],
+          "notes": "实际查看：槐影镇路牌文字准确，雨后旧省道、低矮关门店铺与水沟结构符合；无人、无品牌、无奇幻建筑。",
+          "reviewed_at": "2026-08-31T14:06:15.935507+00:00"
+        }
+      ],
+      "content_repair_count": 0,
+      "review_issues": [],
+      "approved_candidate": "05-参考素材\\02-地点母版\\huaiying-road-v1.png"
+    },
+    {
+      "id": "prop-kit",
+      "kind": "prop",
+      "output_dir": "05-参考素材\\03-物件与设备参考",
+      "status": "pass",
+      "candidate": "05-参考素材\\03-物件与设备参考\\prop-kit-v1.png",
+      "notes": "实际查看：白色桔梗、无品牌DV腕带、旧铁皮盒和红线串三颗槐豆均齐全；无文字、Logo、额外物件或幻想光效。",
+      "transport": {
+        "backend": "built_in_imagegen",
+        "route": "chatgpt.com/backend-api/codex/images",
+        "attempts_total": 1,
+        "consecutive_failures": 0,
+        "last_error": null,
+        "last_error_type": null,
+        "error_fingerprint": null,
+        "backend_error_key": null,
+        "prompt_sha256": "5f8cea739f48913805b803cd80089c512508c75581ddd3a9ca4835c27961fd53",
+        "reference_sha256": [],
+        "circuit_open": false,
+        "probe_granted": false,
+        "probe_in_flight": false,
+        "active_attempt": null,
+        "attempt_history": [
+          {
+            "attempt_id": "50b6f2f7ce9c4c7097df9707aa639d4f",
+            "started_at": "2026-08-31T14:07:08.518694+00:00",
+            "ended_at": "2026-08-31T14:14:08.461437+00:00",
+            "outcome": "success",
+            "candidate": "05-参考素材\\03-物件与设备参考\\prop-kit-v1.png",
+            "probe": false,
+            "request_fingerprint": "4504cb1abf0cfc3da83fe3f8cc881eaa19db4bd4537b80ef458158ed23d19db1"
+          }
+        ],
+        "next_eligible_at": null,
+        "reference_summary": {
+          "count": 0,
+          "physical_attachment_count": 0,
+          "logical_source_count": 0,
+          "contains_reference_board": false,
+          "reference_kind": "none",
+          "total_bytes": 0,
+          "latency_risk": "normal",
+          "images": []
+        },
+        "auto_recovery_level": 0,
+        "auto_recovery_history": [],
+        "backend_health_warning": false,
+        "recovery": {
+          "level": 0,
+          "state": "idle",
+          "transaction": null,
+          "last_error": null
+        },
+        "request_file": "08-系统文件\\01-生成请求\\reference-prop-kit.json",
+        "prompt_summary": {
+          "bytes": 704,
+          "characters": 704,
+          "nonempty_lines": 7,
+          "latency_risk": "normal",
+          "soft_budget_bytes": 2200
+        }
+      },
+      "candidate_versions": [
+        {
+          "version": 1,
+          "candidate": "05-参考素材\\03-物件与设备参考\\prop-kit-v1.png",
+          "review": "pass",
+          "recorded_at": "2026-08-31T14:14:08.461437+00:00",
+          "issues": [],
+          "notes": "实际查看：白色桔梗、无品牌DV腕带、旧铁皮盒和红线串三颗槐豆均齐全；无文字、Logo、额外物件或幻想光效。",
+          "reviewed_at": "2026-08-31T14:14:08.712641+00:00"
+        }
+      ],
+      "content_repair_count": 0,
+      "review_issues": [],
+      "approved_candidate": "05-参考素材\\03-物件与设备参考\\prop-kit-v1.png"
+    }
+  ],
+  "transport_backends": {
+    "built_in_imagegen": {
+      "circuit_open": false,
+      "reason": null,
+      "error_key": null,
+      "affected_images": [],
+      "opened_at": null,
+      "failure_window": [],
+      "last_success_at": "2026-08-31T14:38:30.551238+00:00",
+      "health_warning": false,
+      "affected_jobs": []
+    }
+  },
+  "transport_batch": {
+    "batch_id": "6423b4ebdf3841359a529ad23c79428c",
+    "status": "stopped",
+    "started_at": "2026-08-31T14:30:17.489200+00:00",
+    "ended_at": "2026-08-31T14:38:30.551238+00:00",
+    "success_limit": 3,
+    "runtime_limit_seconds": 900,
+    "success_count": 3,
+    "attempt_count": 3,
+    "stopped_reason": "success_limit",
+    "last_attempt_id": "c9baed925c0f483e8b1e4e2c41748318",
+    "previous_batch_id": "8b0bd4b0ec9b45e8b1603e4c0b53cc83",
+    "previous_stopped_reason": "time_limit"
+  },
+  "fallback_authorizations": {},
+  "reference_board_policy": null,
+  "reference_board_fallbacks": [],
+  "calibration_numbers": [
+    3,
+    19,
+    20
+  ],
+  "calibration_round": 0,
+  "calibration_submission": null,
+  "blocking_reasons": []
+}

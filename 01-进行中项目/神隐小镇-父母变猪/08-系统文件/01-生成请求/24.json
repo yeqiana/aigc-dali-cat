@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "image_number": 24,
+  "created_at": "2026-08-31T15:36:54.889549+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "竖版4:5，废弃加油站旁低角度拍旧地址牌，牌上准确写“外婆旧宅 17号”，雨路背景。偏冷阴天。Scene-native text: 地址牌“外婆旧宅 17号”，中文，关键证据。禁止真实品牌、乱码、海报、字幕。\nCapture realism: ordinary device recording, no cinematic lighting, shallow depth of field, rim light, teal-orange grading, hero angle, commercial HDR, game-render finish, or polished concept-art composition.\nReference safety: use inputs only for their declared identity, prop, location, or capture artifact role; never copy source composition, unrelated people, scenery, text, panels, or UI.\n",
+  "prompt_sha256": "1a1b9121123fe9644dc1a8c359f5aa619a7c98de27739d82c032cbef8c3454f5",
+  "prompt_summary": {
+    "bytes": 649,
+    "characters": 497,
+    "nonempty_lines": 3,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [
+    {
+      "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\02-地点母版\\huaiying-road-v1.png",
+      "sha256": "c9add11f3d2bc18ce5cc968234cca3f23cdc3627231b5ac26ea5d234cd551990",
+      "format": "PNG",
+      "width": 1122,
+      "height": 1402,
+      "mode": "RGB",
+      "bytes": 2916343
+    }
+  ],
+  "reference_roles": [
+    "槐影镇旧省道、加油站与雨路结构连续性"
+  ],
+  "reference_kinds": [
+    "location"
+  ],
+  "capture_id": "dv-lan",
+  "device_visibility": "不可见",
+  "authored_prompt": "竖版4:5，废弃加油站旁低角度拍旧地址牌，牌上准确写“外婆旧宅 17号”，雨路背景。偏冷阴天。Scene-native text: 地址牌“外婆旧宅 17号”，中文，关键证据。禁止真实品牌、乱码、海报、字幕。\n"
+}

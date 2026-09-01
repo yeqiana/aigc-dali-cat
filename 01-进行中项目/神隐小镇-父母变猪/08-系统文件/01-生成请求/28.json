@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "image_number": 28,
+  "created_at": "2026-08-31T15:44:25.164960+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "竖版4:5，从前排回拍后座，林岚伸手递红线槐豆，父母低头无法接物。低照轻拖影。Scene-native text: none required。禁止正面怪物、完整DV、电影镜头、字幕。\nCapture realism: ordinary device recording, no cinematic lighting, shallow depth of field, rim light, teal-orange grading, hero angle, commercial HDR, game-render finish, or polished concept-art composition.\nReference safety: use inputs only for their declared identity, prop, location, or capture artifact role; never copy source composition, unrelated people, scenery, text, panels, or UI.\n",
+  "prompt_sha256": "3baae931da3ac084b39db297c1570f9b029a071818b1e347e005f0a80041c257",
+  "prompt_summary": {
+    "bytes": 595,
+    "characters": 485,
+    "nonempty_lines": 3,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [
+    {
+      "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+      "sha256": "42b0e82b9786a54d083854fb460ca058848a9d0dae95a4a32ba94268d1e80b76",
+      "format": "PNG",
+      "width": 1122,
+      "height": 1402,
+      "mode": "RGB",
+      "bytes": 2047145
+    }
+  ],
+  "reference_roles": [
+    "父母身份、服装与后座姿态连续性"
+  ],
+  "reference_kinds": [
+    "identity"
+  ],
+  "capture_id": "dv-lan",
+  "device_visibility": "不可见",
+  "authored_prompt": "竖版4:5，从前排回拍后座，林岚伸手递红线槐豆，父母低头无法接物。低照轻拖影。Scene-native text: none required。禁止正面怪物、完整DV、电影镜头、字幕。\n"
+}

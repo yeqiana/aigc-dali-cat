@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "image_number": 11,
+  "created_at": "2026-08-31T15:22:45.231600+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "竖版4:5，从桌角低机位记录深灰夹克父亲趴着嗅木桌，椅背遮掉半个画面。低照轻拖影。Scene-native text: none required。禁止恐怖海报、正脸摆拍、完整DV、字幕。\nCapture realism: ordinary device recording, no cinematic lighting, shallow depth of field, rim light, teal-orange grading, hero angle, commercial HDR, game-render finish, or polished concept-art composition.\nReference safety: use inputs only for their declared identity, prop, location, or capture artifact role; never copy source composition, unrelated people, scenery, text, panels, or UI.\n",
+  "prompt_sha256": "ff283c7fabb4bdcb30cd2e8d288e39d32818394c4189e58030adc7815094c497",
+  "prompt_summary": {
+    "bytes": 601,
+    "characters": 487,
+    "nonempty_lines": 3,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [
+    {
+      "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+      "sha256": "42b0e82b9786a54d083854fb460ca058848a9d0dae95a4a32ba94268d1e80b76",
+      "format": "PNG",
+      "width": 1122,
+      "height": 1402,
+      "mode": "RGB",
+      "bytes": 2047145
+    }
+  ],
+  "reference_roles": [
+    "父亲身份、深灰夹克与动作连续性"
+  ],
+  "reference_kinds": [
+    "identity"
+  ],
+  "capture_id": "dv-lan",
+  "device_visibility": "不可见",
+  "authored_prompt": "竖版4:5，从桌角低机位记录深灰夹克父亲趴着嗅木桌，椅背遮掉半个画面。低照轻拖影。Scene-native text: none required。禁止恐怖海报、正脸摆拍、完整DV、字幕。\n"
+}

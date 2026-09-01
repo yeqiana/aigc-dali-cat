@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "viewpoint_physics": "pass",
+    "unplanned_recorder_absent": "pass",
+    "capture_profile_match": "pass",
+    "not_cinematic": "pass",
+    "identity_match": "pass",
+    "key_prop_match": "na",
+    "continuity_match": "pass",
+    "defects_are_causal": "pass"
+  },
+  "red_flags": [],
+  "notes": "返修复审实际查看通过：固定桌面DV斜拍中仅有林岚、周琴、林建国三人；林岚灰蓝外套、父母服装和撤离动作连续，轻微方向偏斜由慌乱移动造成。"
+}

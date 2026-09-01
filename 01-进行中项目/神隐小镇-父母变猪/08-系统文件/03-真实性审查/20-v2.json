@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "viewpoint_physics": "pass",
+    "unplanned_recorder_absent": "pass",
+    "capture_profile_match": "pass",
+    "not_cinematic": "pass",
+    "identity_match": "na",
+    "key_prop_match": "na",
+    "continuity_match": "pass",
+    "defects_are_causal": "pass"
+  },
+  "red_flags": [],
+  "notes": "实际查看候选：父亲身份和深灰夹克连续，母亲未入镜；停车场侧后受限机位成立，画面仅以轻微、局部鼻口前突和方向性拖影表现首次异变，未出现完整怪物、电影特效或设备穿帮。"
+}

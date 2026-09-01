@@ -55,5 +55,5 @@
     "reference_only": true,
     "reuse_final_episode_images": false
   },
-  "cache_hit": false
+  "cache_hit": true
 }

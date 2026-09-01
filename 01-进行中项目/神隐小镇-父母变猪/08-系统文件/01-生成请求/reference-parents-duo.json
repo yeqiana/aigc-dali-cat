@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-31T13:53:46.382509+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "Use case: photorealistic-natural\nAsset type: character continuity reference for an original fictional photo-story\nPrimary request: clean two-person reference of a fictional East Asian couple: Zhou Qin, 42, low ponytail, beige knit cardigan, dark green canvas shoulder bag; Lin Jianguo, 45, short black hair, dark grey jacket, khaki trousers, holding plain car keys. They stand naturally beside a modest family sedan and do not look at camera.\nScene/backdrop: ordinary covered residential parking area, overcast daylight.\nStyle/medium: neutral photorealistic reference, no cinematic styling.\nComposition/framing: vertical 4:5, candid medium full shot.\nConstraints: no text, logos, watermarks, fantasy elements, extra people, or visible camera.\n",
+  "prompt_sha256": "d412c16c188764b10ce0914fdd6bc936637e60db493bb04dd2363bd347a874ca",
+  "prompt_summary": {
+    "bytes": 743,
+    "characters": 743,
+    "nonempty_lines": 7,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [],
+  "reference_roles": [],
+  "reference_kinds": [],
+  "capture_id": null,
+  "device_visibility": null,
+  "authored_prompt": null,
+  "reference_id": "parents-duo",
+  "job_type": "reference"
+}

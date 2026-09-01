@@ -1,0 +1,5 @@
+{
+  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"pass","identity_match":"pass","key_prop_match":"na","continuity_match":"fail","defects_are_causal":"pass"},
+  "red_flags": [],
+  "notes": "实际查看：水坑和父母倒影的拍摄事件成立，但倒影仍是普通人形，未能辨认“背已经不像人的背”这一关键异常；证据不足，需重生成，保留原候选。"
+}

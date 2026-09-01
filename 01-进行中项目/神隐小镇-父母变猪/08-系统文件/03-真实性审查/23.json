@@ -1,0 +1,5 @@
+{
+  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"pass","identity_match":"pass","key_prop_match":"na","continuity_match":"fail","defects_are_causal":"pass"},
+  "red_flags": [],
+  "notes": "实际查看：后视镜、父母低头和车内机位成立，但画面没有可辨认的异形影子变化，无法支撑发布字幕“影子也变了”；关键验证证据缺失，需重生成。"
+}

@@ -1,0 +1,6 @@
+Use case: photorealistic-natural
+Asset type: repeatable fictional location master for an original photo-story
+Primary request: rainy early-autumn old provincial road leading into a quiet fictional Chinese town, a faded blue-and-white roadside sign reading exactly “槐影镇”, wet asphalt, shuttered low shops, a shallow roadside drainage ditch.
+Style/medium: ordinary consumer DV location reference, muted overcast light, no cinematic styling.
+Composition/framing: vertical 4:5, from a stopped car roadside position, no people.
+Constraints: no other readable text, no logos, no watermarks, no fantasy architecture, no shrine, no bathhouse.

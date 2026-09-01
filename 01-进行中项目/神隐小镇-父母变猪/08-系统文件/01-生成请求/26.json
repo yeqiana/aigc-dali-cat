@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "image_number": 26,
+  "created_at": "2026-08-31T15:41:11.277539+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "竖版4:5，从后备箱内向外拍无品牌铁皮饼干盒，箱盖遮住画面上缘，林岚手臂伸入。Scene-native text: none required。禁止产品广告、完整设备、电影布光、字幕。\nCapture realism: ordinary device recording, no cinematic lighting, shallow depth of field, rim light, teal-orange grading, hero angle, commercial HDR, game-render finish, or polished concept-art composition.\nReference safety: use inputs only for their declared identity, prop, location, or capture artifact role; never copy source composition, unrelated people, scenery, text, panels, or UI.\n",
+  "prompt_sha256": "7c39436c38675b8a06f2b2a3f745e42a67867fd0eaaf75f75ea719a8d13ce004",
+  "prompt_summary": {
+    "bytes": 599,
+    "characters": 485,
+    "nonempty_lines": 3,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [
+    {
+      "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\03-物件与设备参考\\prop-kit-v1.png",
+      "sha256": "b5a85b455b440c1efb16af8d457fda4b6dce411e7637e764d730a6221adf769f",
+      "format": "PNG",
+      "width": 1122,
+      "height": 1402,
+      "mode": "RGB",
+      "bytes": 2541112
+    }
+  ],
+  "reference_roles": [
+    "林岚手臂与铁皮盒物件连续性"
+  ],
+  "reference_kinds": [
+    "prop"
+  ],
+  "capture_id": "dv-lan",
+  "device_visibility": "不可见",
+  "authored_prompt": "竖版4:5，从后备箱内向外拍无品牌铁皮饼干盒，箱盖遮住画面上缘，林岚手臂伸入。Scene-native text: none required。禁止产品广告、完整设备、电影布光、字幕。\n"
+}

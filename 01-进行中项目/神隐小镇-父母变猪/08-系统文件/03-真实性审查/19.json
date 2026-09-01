@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "viewpoint_physics": "pass",
+    "unplanned_recorder_absent": "pass",
+    "capture_profile_match": "pass",
+    "not_cinematic": "pass",
+    "identity_match": "na",
+    "key_prop_match": "na",
+    "continuity_match": "pass",
+    "defects_are_causal": "pass"
+  },
+  "red_flags": [],
+  "notes": "实际查看候选：周琴身份、低马尾、米色开衫、深绿包与银色卡片机连续；车旁侧后机位成立，人物未看镜头，暗部受到低照限制且没有额外设备、文字或电影化特效。"
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-31T13:48:24.578153+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "Use case: photorealistic-natural\nAsset type: character continuity reference for an original fictional photo-story\nPrimary request: clean full-body reference of Lin Lan, a fictional 17-year-old East Asian girl with straight shoulder-length black hair, grey-blue hoodie, dark jeans, canvas shoes, holding a small bundle of white lisianthus and a black old DV wrist strap.\nScene/backdrop: ordinary covered residential parking area on an overcast rainy day.\nStyle/medium: neutral photorealistic reference sheet style, not cinematic.\nComposition/framing: vertical 4:5, candid three-quarter standing pose, not looking at camera.\nLighting/mood: flat natural daylight.\nConstraints: no text, logos, watermarks, fantasy elements, extra people, or camera visible.\n",
+  "prompt_sha256": "88bb30c69e454f0d7757f0a93df9b2da99cedd48a0ba10915d3357833008ef00",
+  "prompt_summary": {
+    "bytes": 753,
+    "characters": 753,
+    "nonempty_lines": 8,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [],
+  "reference_roles": [],
+  "reference_kinds": [],
+  "capture_id": null,
+  "device_visibility": null,
+  "authored_prompt": null,
+  "reference_id": "lin-lan",
+  "job_type": "reference"
+}

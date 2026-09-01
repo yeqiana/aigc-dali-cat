@@ -1,0 +1,5 @@
+{
+  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"pass","identity_match":"fail","key_prop_match":"pass","continuity_match":"fail","defects_are_causal":"pass"},
+  "red_flags": [],
+  "notes": "实际查看：白花插入镇口水沟的动作清楚，雨水和水沟连续；但出镜主角穿黑色防水服、湿发，明显偏离林岚固定灰蓝外套与既定身份，需重生成。"
+}

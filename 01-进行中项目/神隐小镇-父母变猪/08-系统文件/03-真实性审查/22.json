@@ -1,0 +1,5 @@
+{
+  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"pass","identity_match":"na","key_prop_match":"fail","continuity_match":"fail","defects_are_causal":"pass"},
+  "red_flags": [],
+  "notes": "实际查看：卡片机屏幕虽有实体屏幕和摩尔纹，但屏幕内容是白花、铁盒、槐豆等物件组合，没有分镜要求的空碗及碗边两只猪蹄；关键交叉证据错误，需重生成。"
+}

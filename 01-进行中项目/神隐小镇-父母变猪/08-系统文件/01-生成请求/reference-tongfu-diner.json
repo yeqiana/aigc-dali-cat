@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-31T13:58:25.386287+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "Use case: photorealistic-natural\nAsset type: repeatable fictional location master for an original photo-story\nPrimary request: a plain small-town roadside diner exterior and interior threshold, white enamel sign reading exactly “同福食堂”, aged wooden door, warm yellow indoor lamps, simple wooden tables and beige ceramic bowls.\nScene/backdrop: rainy early-autumn Chinese small town, wet asphalt, low buildings.\nStyle/medium: neutral location reference, ordinary consumer-camera realism, not cinematic.\nComposition/framing: vertical 4:5, eye level, no people.\nConstraints: no other readable text, no logos, no watermarks, no fantasy, no shrine, no bathhouse, no ornate architecture.\n",
+  "prompt_sha256": "128d51a070ac6b97b668dcdef2298f114eea11305e542045564f4d78b95af0a9",
+  "prompt_summary": {
+    "bytes": 692,
+    "characters": 680,
+    "nonempty_lines": 7,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [],
+  "reference_roles": [],
+  "reference_kinds": [],
+  "capture_id": null,
+  "device_visibility": null,
+  "authored_prompt": null,
+  "reference_id": "tongfu-diner",
+  "job_type": "reference"
+}

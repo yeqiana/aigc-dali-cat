@@ -1,0 +1,5 @@
+{
+  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"pass","identity_match":"pass","key_prop_match":"pass","continuity_match":"pass","defects_are_causal":"pass"},
+  "red_flags": [],
+  "notes": "实际查看：母亲卡片机从车内向外拍到林岚在车旁整理包，林岚灰蓝外套和黑色头发与母版连续；前亮后暗、车内遮挡符合卡片机直闪，不是摆拍。"
+}

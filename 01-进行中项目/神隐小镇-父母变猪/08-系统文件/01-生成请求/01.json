@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "image_number": 1,
+  "created_at": "2026-08-31T14:55:08.955976+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "竖版4:5，车后座低机位随手记录，白色桔梗压在黑色旧DV包上，灰蓝袖口切入边缘。普通车内阴天光，轻微高光截断。Scene-native text: none required。禁止摆拍肖像、完整设备入镜、商业锐利、字幕水印。\nCapture realism: ordinary device recording, no cinematic lighting, shallow depth of field, rim light, teal-orange grading, hero angle, commercial HDR, game-render finish, or polished concept-art composition.\n",
+  "prompt_sha256": "ead0512f2c9938756852d5005d2125db8eebee4b07d95eca5b0360875b8eaa09",
+  "prompt_summary": {
+    "bytes": 471,
+    "characters": 321,
+    "nonempty_lines": 2,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [],
+  "reference_roles": [],
+  "reference_kinds": [],
+  "capture_id": "dv-lan",
+  "device_visibility": "不可见",
+  "authored_prompt": "竖版4:5，车后座低机位随手记录，白色桔梗压在黑色旧DV包上，灰蓝袖口切入边缘。普通车内阴天光，轻微高光截断。Scene-native text: none required。禁止摆拍肖像、完整设备入镜、商业锐利、字幕水印。\n"
+}

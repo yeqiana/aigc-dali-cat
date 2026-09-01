@@ -20,6 +20,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from story_os_contract import story_os_version
@@ -360,10 +361,31 @@ def bind_from_queue(ep: Path) -> dict:
     if not qpath.is_file():
         raise ValueError("meta/production-queue.json missing")
     q = read_json(qpath)
+    ledger_path = ep / "meta/production-ledger.json"
+    ledger = read_json(ledger_path) if ledger_path.is_file() else {"frames": {}}
     generated = {}
     for item in q.get("items") or []:
-        if item.get("scope") in {"visual_lock", "repair"} and item.get("status") == "generated":
-            generated[f"{int(item['frame']):02d}"] = item
+        if item.get("scope") not in {"visual_lock", "repair"}:
+            continue
+        key = f"{int(item['frame']):02d}"
+        if item.get("status") == "generated":
+            generated[key] = item
+            continue
+        # A Fast Scout result is triage only. It may enter Visual Lock solely
+        # after a direct-user exception acceptance of the identical candidate.
+        if item.get("status") != "scout_repair":
+            continue
+        frame = (ledger.get("frames") or {}).get(key) or {}
+        candidate = frame.get("current_candidate") or {}
+        acceptance = (frame.get("user_exception_acceptances") or [])[-1:]
+        if (
+            frame.get("status") == "PASSED"
+            and candidate.get("sha256") == ((item.get("lineage") or {}).get("sha256"))
+            and acceptance
+            and acceptance[0].get("approval_basis") == "direct_user_review_exception_acceptance"
+            and acceptance[0].get("candidate_sha256") == candidate.get("sha256")
+        ):
+            generated[key] = item
     gates_path = ep / GATES_REL
     g = read_json(gates_path)
     items = (((g.get("visual") or {}).get("calibration") or {}).get("items") or [])
@@ -547,6 +569,10 @@ def _mark_decisions(ep: Path, passed: bool) -> None:
 
 
 def _record_failed_calibration_frames(ep: Path, data: dict) -> None:
+    # A critic that could not access its image inputs has no content finding to
+    # propagate into the production ledger.
+    if "INPUT_IMAGES_UNAVAILABLE" in (data.get("issue_codes") or []):
+        return
     for row in data.get("calibration") or []:
         checks = row.get("checks") or {}
         failed = row.get("issues") not in ([], None) or any(checks.get(k) is not True for k in CHECKS)
@@ -579,25 +605,35 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
     candidate.unlink(missing_ok=True)
     before = {r["id"]: r["sha256"] for r in assets}
     codex = resolve_codex(codex_raw)
+    # Codex's Windows image sidecar may not resolve Chinese workspace paths.
+    # Supply byte-identical ASCII-only temporary attachments for this review.
+    staging = Path(tempfile.mkdtemp(prefix="story-os-visual-lock-"))
+    staged_assets = []
+    for row in assets:
+        staged = staging / f"{row['id']}-{int(row['frame']):02d}{Path(row['path']).suffix.lower()}"
+        shutil.copy2(row["path"], staged)
+        staged_assets.append(staged)
     cmd = prefix(codex) + [
         "exec", "--skip-git-repo-check", "--ephemeral",
         "-c", 'model_reasoning_effort="high"',
         "-s", "workspace-write", "-C", str(ROOT), "--json"
     ]
-    for row in assets:
-        cmd += ["-i", str(row["path"])]
+    for staged in staged_assets:
+        cmd += ["-i", str(staged)]
     cmd += ["-"]
     log = ep / "meta" / f"visual-lock-critic-attempt-{attempt}.jsonl"
-    with log.open("w", encoding="utf-8", newline="\n") as handle:
-        done = subprocess.run(
-            cmd,
-            input=critic_prompt(ep, contract, assets, candidate, attempt),
-            text=True,
-            stdout=handle,
-            stderr=subprocess.STDOUT,
-            timeout=timeout,
-            check=False,
-        )
+    try:
+        with log.open("w", encoding="utf-8", newline="\n") as handle:
+            done = subprocess.run(
+                cmd,
+                input=critic_prompt(ep, contract, assets, candidate, attempt).encode("utf-8"),
+                stdout=handle,
+                stderr=subprocess.STDOUT,
+                timeout=timeout,
+                check=False,
+            )
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
     if done.returncode != 0:
         raise RuntimeError(f"Visual Lock critic failed rc={done.returncode}; log={log}")
     if not candidate.is_file():

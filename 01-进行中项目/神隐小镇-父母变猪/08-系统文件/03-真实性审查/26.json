@@ -1,0 +1,5 @@
+{
+  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"pass","identity_match":"fail","key_prop_match":"pass","continuity_match":"fail","defects_are_causal":"pass"},
+  "red_flags": [],
+  "notes": "实际查看：铁皮盒和后备箱事件成立，但出镜女性为米色上衣成年女性，不是批准设定中灰蓝连帽外套的17岁林岚；主角身份与服装连续性硬失败，需重生成。"
+}

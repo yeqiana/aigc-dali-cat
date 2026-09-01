@@ -1,0 +1,5 @@
+{
+  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"pass","identity_match":"pass","key_prop_match":"na","continuity_match":"pass","defects_are_causal":"pass"},
+  "red_flags": [],
+  "notes": "实际查看：老板被门帘和门框切断，只呈现从后厨出来的局部身体，符合不展示完整老板的设定；低照、伞和食堂空间连续，无恐怖脸。"
+}

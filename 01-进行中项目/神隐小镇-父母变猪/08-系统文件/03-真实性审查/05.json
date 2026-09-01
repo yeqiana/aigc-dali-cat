@@ -1,0 +1,5 @@
+{
+  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"pass","identity_match":"na","key_prop_match":"na","continuity_match":"pass","defects_are_causal":"pass"},
+  "red_flags": [],
+  "notes": "实际查看：车内隔窗拍摄雨后关门街道成立，雨滴、湿路、高光受限和车内边缘符合消费级DV记录；无计划外人物、设备或文字，不像宣传照。"
+}

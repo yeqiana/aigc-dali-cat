@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "image_number": 13,
+  "created_at": "2026-09-01T02:22:18.595406+00:00",
+  "backend": "built_in_imagegen",
+  "route": "chatgpt.com/backend-api/codex/images",
+  "model": null,
+  "prompt": "竖版4:5，普通DV木桌近景，穿深灰夹克的父亲把黑色车钥匙放进嘴里轻咬，钥匙和嘴部边缘同时清楚但不露完整脸；桌面自然裁切，低照轻拖影。Scene-native text: none required。不要血、品牌、字幕或水印。\nCapture realism: ordinary device recording, no cinematic lighting, shallow depth of field, rim light, teal-orange grading, hero angle, commercial HDR, game-render finish, or polished concept-art composition.\nReference safety: use inputs only for their declared identity, prop, location, or capture artifact role; never copy source composition, unrelated people, scenery, text, panels, or UI.\n",
+  "prompt_sha256": "7259c7c970471a866a235249ace82b1a4ee87043b576d312766f9b24e91a7503",
+  "prompt_summary": {
+    "bytes": 658,
+    "characters": 506,
+    "nonempty_lines": 3,
+    "latency_risk": "normal",
+    "soft_budget_bytes": 2200
+  },
+  "references": [
+    {
+      "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\01-进行中项目\\神隐小镇-父母变猪\\05-参考素材\\01-角色参考\\parents-duo-v1.png",
+      "sha256": "42b0e82b9786a54d083854fb460ca058848a9d0dae95a4a32ba94268d1e80b76",
+      "format": "PNG",
+      "width": 1122,
+      "height": 1402,
+      "mode": "RGB",
+      "bytes": 2047145
+    }
+  ],
+  "reference_roles": [
+    "父亲身份、深灰夹克与车钥匙连续性"
+  ],
+  "reference_kinds": [
+    "identity"
+  ],
+  "capture_id": "dv-lan",
+  "device_visibility": "不可见",
+  "authored_prompt": "竖版4:5，普通DV木桌近景，穿深灰夹克的父亲把黑色车钥匙放进嘴里轻咬，钥匙和嘴部边缘同时清楚但不露完整脸；桌面自然裁切，低照轻拖影。Scene-native text: none required。不要血、品牌、字幕或水印。\n"
+}
