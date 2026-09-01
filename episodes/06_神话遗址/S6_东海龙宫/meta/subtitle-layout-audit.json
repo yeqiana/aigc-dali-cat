@@ -4,7 +4,7 @@
   "engine": "story_os_subtitle_layout_v1",
   "canonical_renderer": true,
   "source": "episodes/06_神话遗址/S6_东海龙宫/meta/subtitles.yaml",
-  "source_sha256": "0a5e43b95c733af1a83a9248bb0b9d3982fa4525782ed0d3eb49346c1bf598e6",
+  "source_sha256": "205d85d554fe28a8c83e44f7c455b0b2013238c6a4a021f36d0f096b86f3d05a",
   "policy": {
     "punctuation_only_second_line": "drop_entire_second_line",
     "max_lines": 2,
@@ -15,10 +15,10 @@
   },
   "frames": {
     "01": {
-      "caption": "我陪阿叔出最后一趟海。\n灯扫过去，海底立着一片发光的建筑。",
+      "caption": "我叫林澈，2021年8月，随科考队去东海。\n结果灯一照过去，底下立着一片发光的建筑。",
       "lines": [
-        "我陪阿叔出最后一趟海。",
-        "灯扫过去，海底立着一片发光的建筑。"
+        "我叫林澈，2021年8月，随科考队去东海。",
+        "结果灯一照过去，底下立着一片发光的建筑。"
       ],
       "dropped_punctuation_only_second_line": false,
       "x": 72,
@@ -31,7 +31,7 @@
       "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图01_海底亮起的鳞纹.png",
       "base_sha256": "ecc7a03ca21d9c62abdf1a3f20b165deca26d9fd1c214d4c0656296a4474b957",
       "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/01.png",
-      "output_sha256": "f1406e9b47954d49d785e745dbdc4de9b27bbd9945d38ea214aaa100049a0660"
+      "output_sha256": "1f8ecc85c26452c01c2266e4eea9a46e44dd051287fc2b91b89b505dfb53524d"
     },
     "02": {
       "caption": "阿叔要退休了。\n手机里，存着他三十年前拍过的东西。",

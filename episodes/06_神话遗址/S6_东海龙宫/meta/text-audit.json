@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "audited_at": "2026-09-01T21:11:06+08:00",
+  "audited_at": "2026-09-01T21:50:22+08:00",
   "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\06_神话遗址\\S6_东海龙宫\\meta\\subtitles.yaml",
   "caption_count": 20,
   "silent_frames": [],
@@ -12,5 +12,5 @@
     "passed": true
   },
   "voice_contract_sha256": null,
-  "source_sha256": "0a5e43b95c733af1a83a9248bb0b9d3982fa4525782ed0d3eb49346c1bf598e6"
+  "source_sha256": "205d85d554fe28a8c83e44f7c455b0b2013238c6a4a021f36d0f096b86f3d05a"
 }
