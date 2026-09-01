@@ -1,0 +1,11 @@
+{
+  "version": "V2.1.1-R3",
+  "changes": [
+    "performance replay fault-path model",
+    "runtime sha chain",
+    "speculative production validation binding",
+    "transaction rollback metadata",
+    "package integrity verification",
+    "critical path telemetry"
+  ]
+}
