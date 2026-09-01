@@ -1,0 +1,31 @@
+{
+  "version": "Story_OS_V2.2.5_Visual_Test_Fast_Path",
+  "status": "PASS",
+  "base_commit": "3f3368899dafcfd178c7b4e8eaa6012feb22fd77",
+  "installed_at": "2026-09-01T19:03:46.248696",
+  "backup_dir": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.storyos_backups\\v225_visual_test_fast_path_20260901_190345",
+  "installed_files": [
+    {
+      "path": "episodes/_system/test_stage_v225.py",
+      "sha256": "23887bd5e3ab4e1a7b84af9258b8171894353df2bbb447cd6df10c84094e5c0f"
+    },
+    {
+      "path": "episodes/_system/test_test_stage_v225.py",
+      "sha256": "03b1377fac1a9e6eb4f3bcdc078261b8e28eb617c1da647efd998b503c1e179d"
+    },
+    {
+      "path": "scripts/story_test.py",
+      "sha256": "063ab92e7d161c44d742f7910526c7d71572f188be63c7dddd9fef14247052cb"
+    },
+    {
+      "path": "meta/test_layer/visual_test_fast_path_v225.json",
+      "sha256": "1c7a9dd5fb13b4ee2ee311377508562207228791c3d14a448289e34f244cdb28"
+    },
+    {
+      "path": "docs/Story_OS_V2.2.5_Visual_Test_Fast_Path.md",
+      "sha256": "b3a698a93f3873943930f0ba4a96d17a277eb72107cd746796248bce99942bde"
+    }
+  ],
+  "self_test": "STORY OS V2.2.5 VISUAL TEST FAST PATH SELF-TEST PASS\nSTORY OS V2.2.4 TEST STAGE SELF-TEST PASS\nCODEX SUBSCRIPTION IMAGE BACKEND SELF-TEST PASS\nSTORY OS V2.2.5 FAST PATH INTEGRATION SELF-TEST PASS",
+  "visual_test_default_route": "MAIN_SESSION_NATIVE_IMAGE"
+}

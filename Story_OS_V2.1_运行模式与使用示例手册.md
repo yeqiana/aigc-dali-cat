@@ -1,63 +1,46 @@
-# Story OS V2.2.3｜最简完整生产使用手册
+# Story OS V2.2.4｜Codex 最简完整生产手册
 
-## 总流程
-
-只记住这 7 步：
+## 一句话流程
 
 ```text
-① 准备故事 MD
-      ↓
-② Bootstrap
-      ↓
-③ Bootstrap Validate
-      ↓
-④ Preproduction
-      ↓
-⑤ Preproduction Validate
-      ↓
-⑥ Smoke Test
-      ↓
-⑦ Visual Lock → Production → Release
+故事 MD
+↓
+Bootstrap
+↓
+Bootstrap Validate
+↓
+Visual Test 1张
+↓
+Preproduction
+↓
+Preproduction Validate
+↓
+Production Smoke Test 1张
+↓
+Visual Lock 1+3
+↓
+Full Production
+↓
+PUBLISH_READY
 ```
 
 ---
 
-# ① 准备故事 MD
+# 1. 准备故事 MD
 
-最开始只需要一个 Markdown。
-
-例如：
+最开始可以只有：
 
 ```text
 episodes/12_千寻/千寻.md
 ```
 
-MD 里面写清：
-
-* 做什么故事
-* 本集范围
-* 大概剧情
-* 特殊要求
-
-不需要自己写 JSON。
+不用自己创建 JSON。
 
 ---
 
-# ② Bootstrap：生成入口资产
+# 2. Bootstrap：生成入口资产
 
-### 目的
-
-把：
-
-```text
-故事.md
-```
-
-变成机器可以继续执行的入口。
-
-这一阶段应该很快，不做完整前期，不生图。
-
-### 给 Codex
+直接给 Codex：
 
 ```text
 读取 aigc-dali-cat 当前 story 分支。
@@ -66,502 +49,499 @@ MD 里面写清：
 
 episodes/12_千寻/千寻.md
 
-为这篇故事执行轻量 Episode Bootstrap。
+为 EP01 执行轻量 Bootstrap。
 
-要求：
-
-1. 读取源 MD；
-2. 确定 Episode ID；
-3. 确定本集 Chapter Scope；
-4. 创建 Episode Blueprint；
-5. 创建 Chapter Lock；
-6. 创建 Visual Profile；
-7. 创建 Asset Manifest；
-
-本阶段只创建生产入口资产。
-
-不要：
-- 做完整人物母版
-- 做地点母版
-- 做道具母版
-- 做 Storyboard
-- 做 Resolved Frame Contracts
-- 生图
-- 进入 Preproduction
-- 进入 Smoke Test
-
-完成状态：
-
-BOOTSTRAPPED
-
-然后停止。
-```
-
----
-
-# 怎么指定画风 / 质感
-
-## 最简单的方法
-
-直接在 Bootstrap 指令里增加一个：
-
-```text
-【画风锁定】
-```
-
-例如：
-
-```text
-【画风锁定】
-
-Visual Profile ID：
-SPIRITED_AWAY_LIVE_ACTION_V1
-
-画风：
-1990年代日本真人奇幻电影。
-
-质感：
-35mm胶片，
-低饱和，
-轻微胶片颗粒，
-真实皮肤和真实布景，
-自然光，
-夏季潮湿空气，
-轻微高光溢出，
-真实摄影机曝光。
-
-摄影：
-真实电影摄影，
-不是概念设计图，
-不是商业棚拍，
-不是AI插画。
-
-世界原则：
-real-world-first，
-supernatural-second。
-
-必须保留：
-- 真人演员
-- 日本90年代生活环境
-- 自然服装
-- 写实实景
-- 潮湿夏季空气感
-
-禁止：
-- 动画脸
-- 二次元
-- cosplay
-- 游戏CG
-- 3D渲染
-- 塑料皮肤
-- 过度锐化
-- HDR感
-- AI油腻感
-```
-
-Codex 应该把这些内容正式写入：
-
-```text
-Visual Profile
-```
-
-而不是只记在聊天上下文里。
-
----
-
-## 如果没有现成 Visual Profile
-
-不要写：
-
-```text
-使用 SPIRITED_AWAY_LIVE_ACTION_V1
-```
-
-然后假设仓库里已经有。
-
-应该写：
-
-```text
-如果当前 story 分支不存在
-SPIRITED_AWAY_LIVE_ACTION_V1：
-
-根据下面的画风定义，
-在当前 Episode / story 分支正式创建该 Visual Profile，
-然后写入 Episode Blueprint。
-
-禁止搜索其他仓库寻找同名 Profile。
-```
-
-这样不会再发生：
-
-```text
-Profile 不存在
-→ Validate Failed
-```
-
----
-
-## 如果是普通原创故事
-
-例如你平时的真实手机相册风：
-
-```text
-【画风锁定】
-
-使用 Story OS 默认真实手机纪录 Visual Profile。
-
-核心质感：
-
-- 2020年代真实中国手机相册
-- iPhone / 国产旗舰手机随手拍
-- 私人照片而非电影剧照
-- 自然曝光
-- 真实手机HDR但不过度
-- 轻微噪点
-- 构图不完美
-- 人物动作自然
-- 天气物理明显
-- 真实材质
-- 异常可以巨大，但拍摄物理必须可信
-
-禁止：
-
-- AI插画
-- 概念艺术
-- 电影海报
-- 过度电影灯光
-- 塑料皮肤
-- 3D游戏CG
-- 过度锐化
-```
-
----
-
-# ③ Bootstrap Validate
-
-Bootstrap 完成后，直接执行仓库真实命令：
-
-```bat
-python -X utf8 scripts/story_validate.py bootstrap "你的Episode目录"
-```
-
-例如：
-
-```bat
-python -X utf8 scripts/story_validate.py bootstrap "episodes/12_千寻/01_那条不存在的隧道"
-```
-
-应该得到：
-
-```text
-BOOTSTRAP_VALIDATE_PASS
-```
-
-代表：
-
-```text
-READY_FOR_PREPRODUCTION
-```
-
-这一阶段只检查：
-
-```text
-✓ Episode Blueprint
-✓ Chapter Lock
-✓ Visual Profile
-✓ Asset Manifest
-```
-
-不检查人物母版等重资产。
-
-如果失败：
-
-不要进入下一步。
-
-让 Codex只修 Bootstrap 缺失项。
-
----
-
-# ④ Preproduction：完整前期生产
-
-Bootstrap Validate PASS 后，再给 Codex：
-
-```text
-读取当前 story 分支。
-
-Episode：
-
-[你的 Episode 目录 / Episode ID]
-
-Bootstrap Validate 已通过。
-
-现在执行完整 Preproduction。
-
-严格继承：
+本阶段只负责创建生产入口：
 
 - Episode Blueprint
 - Chapter Lock
-- Visual Profile
+- Visual Profile Lock
 - Asset Manifest
 
-不要重新改本集范围。
-不要偷偷更换画风。
+不要：
 
-完成：
+- 做完整 Preproduction
+- 做 Character Master
+- 做 Location Master
+- 做 Prop Master
+- 做完整 Storyboard
+- 做 Resolved Frame Contracts
+- 生图
 
-1. Character Contract
-2. Character Master
-3. Location / Environment Contract
-4. Location Master
-5. Device / Prop Contract
-6. 必要 Device / Prop Master
-7. Storyboard / Frame Plan
-8. Resolved Frame Contracts
-9. Asset SHA / Digest
-10. Contract Binding
-11. Authority
-12. Preproduction Handoff
+画风锁定：
 
-Authority Scope：
+Visual Profile：
+SPIRITED_AWAY_LIVE_ACTION_V1
 
-current_story_branch
+必须严格使用仓库：
+standards/visual_profiles/SPIRITED_AWAY_LIVE_ACTION_V1.json
 
-所有资产只能在当前 aigc-dali-cat/story 内创建。
+不得使用默认 M00。
+不得重新解释成手机伪纪录片。
+不得自行更换 Profile。
+Authority 只能来自当前 story 分支。
 
-禁止：
-- 搜索其他仓库
-- 搜索旧项目
-- 使用 ohmyphoto
-- 使用历史废弃资产
-- 进入正式剧情生图
+完成后停在：
 
-画风必须严格继承已经锁定的 Visual Profile。
-
-做到：
-
-READY_FOR_PREPRODUCTION_VALIDATE
-
-后停止。
+BOOTSTRAPPED
 ```
 
 ---
 
-# ⑤ Preproduction Validate
+# 3. 怎么指定画风 / 质感
 
-前期完成后执行：
+## 最简单方式：直接指定已有 Visual Profile
 
-```bat
-python -X utf8 scripts/story_validate.py preproduction "你的Episode目录"
+《千与千寻真人电影版》直接写：
+
+```text
+画风锁定：
+
+Visual Profile：
+SPIRITED_AWAY_LIVE_ACTION_V1
+
+必须严格使用仓库：
+standards/visual_profiles/SPIRITED_AWAY_LIVE_ACTION_V1.json
+
+不得使用默认 M00。
+不得重新解释成手机伪纪录片。
+不得自行更换 Profile。
 ```
+
+就够了。
+
+这个 Profile 当前已经定义：
+
+```text
+1990年代日本真人奇幻电影
+35mm胶片
+低饱和
+轻微胶片颗粒
+自然光
+真实皮肤
+真实实景布景
+日本90年代生活环境
+自然年代服饰
+夏季潮湿空气
+真人电影摄影
+```
+
+并且禁止：
+
+```text
+动画脸
+二次元
+cosplay
+游戏CG
+3D渲染
+塑料皮肤
+过度锐化
+HDR感
+AI油腻感
+概念设计图
+商业棚拍
+AI插画
+```
+
+所以以后不需要再把几十条画风提示词全部重复给 Codex。
+
+只写：
+
+```text
+Visual Profile：
+SPIRITED_AWAY_LIVE_ACTION_V1
+```
+
+即可。
+
+---
+
+## 如果以后想指定一种全新的画风
 
 例如：
 
-```bat
-python -X utf8 scripts/story_validate.py preproduction "episodes/12_千寻/01_那条不存在的隧道"
+```text
+画风要求：
+
+1980年代中国西北电影，
+16mm纪录片，
+偏黄灰，
+真实胶片颗粒，
+冬季干燥空气，
+自然光，
+不要现代数码HDR。
 ```
 
-应该得到：
+这时候告诉 Codex：
 
 ```text
-PREPRODUCTION_VALIDATE_PASS
+当前没有现成 Visual Profile。
+
+根据上述要求：
+
+1. 新建一个正式 Visual Profile；
+2. 写入 standards/visual_profiles/；
+3. 分配唯一 profile_id；
+4. Episode meta/visual-profile.json 锁定该 Profile；
+5. Episode Blueprint 绑定同一个 Profile；
+6. 然后再执行 Bootstrap Validate。
+
+不得只把画风保留在聊天提示词里。
 ```
 
-代表：
+也就是说：
+
+**画风一定要资产化。**
+
+不是：
 
 ```text
-READY_FOR_SMOKE_TEST
+聊天里说过
 ```
 
-这一关检查完整生产资产：
+而是：
 
 ```text
-✓ Bootstrap 已通过
-✓ Character Contract
-✓ Location Contract
-✓ Device / Prop Contract
-✓ Asset Manifest
-✓ Resolved Frame Contracts
-✓ Authority / Binding
-✓ SHA / Digest
-✓ current_story_branch Authority
+Visual Profile JSON
+↓
+Episode Lock
+↓
+后续所有生图自动继承
 ```
-
-不 PASS：
-
-禁止 Smoke Test。
 
 ---
 
-# ⑥ Smoke Test：开发者单图测试
+# 4. Bootstrap Validate
 
-Preproduction Validate PASS 后：
+Bootstrap 完成后，让 Codex 执行：
 
-给 Codex：
+```text
+执行：
+
+python -X utf8 scripts/story_validate.py bootstrap "episodes/12_千寻/01_那条不存在的隧道"
+
+只进行 Bootstrap Validate。
+
+如果 PASS，告诉我：
+
+BOOTSTRAP_VALIDATE_PASS
+
+否则停止并报告缺失项。
+```
+
+这一关只验证：
+
+```text
+Episode Blueprint
+Chapter Lock
+Visual Profile
+Asset Manifest
+```
+
+通过后：
+
+```text
+READY_FOR_VISUAL_TEST
+```
+
+---
+
+# 5. Visual Test：先看一张画风
+
+这个阶段：
+
+**不需要完整 Preproduction。**
+
+直接给 Codex：
 
 ```text
 读取当前 story 分支。
 
 对：
 
-[Episode ID]
+episodes/12_千寻/01_那条不存在的隧道
 
-执行 Developer Smoke Test。
+执行 Visual Test。
 
 前提：
 
-PREPRODUCTION_VALIDATE_PASS。
+BOOTSTRAP_VALIDATE_PASS
+
+严格使用：
+
+SPIRITED_AWAY_LIVE_ACTION_V1
+
+测试场景：
+
+1990年代日本乡间，
+搬家车停在废弃隧道入口，
+千寻一家站在隧道外。
+
+只生成 1 张。
+
+图片模型：
+
+gpt-image-2
 
 要求：
 
-1. 只选择 1 张具有代表性的正式 Frame；
-2. 严格读取已经锁定的：
-   - Chapter Lock
-   - Visual Profile
-   - Character Master
-   - Location Master
-   - Device / Prop Master
-   - Resolved Frame Contract
+- 真人演员
+- 35mm胶片
+- 低饱和
+- 夏季潮湿空气
+- 真实自然光
+- 日本90年代生活环境
+- 写实实景
 
-3. 调用正式生产使用的图片模型；
-4. 只生成 1 张；
-5. 不重新做任何前期资产；
-6. 不搜索外部资产；
-7. 不进入 Full Production。
+禁止：
 
-重点检查：
+- 动画
+- 二次元
+- cosplay
+- CG
+- AI插画
+- 塑料皮肤
+- HDR
 
-- 画风是否真正生效
-- 质感是否正确
-- 人物母版是否生效
-- 地点母版是否生效
-- 道具连续性
-- Prompt / 模型调用链
-- 输出路径
+本图身份必须是：
 
-最后输出：
+NON_AUTHORITY_TEST_ONLY
 
-SMOKE_TEST_PASS
+不得成为：
+- Character Master
+- Location Master
+- Production Frame
 
-或者：
+完成后告诉我：
 
-SMOKE_TEST_FAILED
-
-并告诉我：
-
-- 测试图路径
-- Visual Profile 是否生效
-- Character 是否生效
-- Location 是否生效
+- Visual Profile 是否正确加载
+- 图片路径
+- 图片模型
+- 生图耗时
 - 总耗时
-- 图片模型调用耗时
 
-完成后停止。
+然后停止。
+```
+
+Codex 实际可以执行：
+
+```bat
+python -X utf8 scripts/story_test.py visual "episodes/12_千寻/01_那条不存在的隧道" --scene "1990年代日本乡间，搬家车停在废弃隧道入口，千寻一家站在隧道外" --image-model gpt-image-2 --strict-model
 ```
 
 ---
 
-# Smoke Test 看什么
+# 6. 你只需要看 Visual Test 这一张
 
-你实际上只需要看这张图片。
-
-### 第一：画风对不对
-
-例如你指定：
+重点看四件事：
 
 ```text
-35mm真人电影
+① 真人感对不对
+
+② 35mm胶片质感对不对
+
+③ 日本90年代感觉对不对
+
+④ 有没有动画 / CG / AI味
 ```
 
-出来是不是：
+如果不满意：
+
+现在修改：
 
 ```text
-真人电影照片
+Visual Profile
 ```
 
-而不是：
+然后重新 Visual Test。
 
-```text
-动画 / CG / AI插画
-```
-
-### 第二：质感对不对
-
-看：
-
-* 光线
-* 颗粒
-* 曝光
-* 色彩
-* 材质
-* 天气
-* 摄影机感觉
-
-### 第三：人物对不对
-
-看：
-
-* 脸
-* 年龄
-* 服装
-* 身材
-* 发型
-
-### 第四：场景对不对
-
-看：
-
-* 建筑
-* 空间
-* 年代
-* 地理
-* 天气
-
-如果不对：
-
-**现在改。**
-
-不要等 20 张全生完再改。
+不要进入完整前期。
 
 ---
 
-# ⑦ Visual Lock + 正式生产
+# 7. Preproduction：正式制作前期资产
 
-Smoke Test PASS 后给 Codex：
+Visual Test 满意以后给 Codex：
 
 ```text
 读取当前 story 分支。
 
-继续生产：
+继续当前 Episode。
 
-[Episode ID]
+Visual Test 已确认画风正确。
 
-当前状态：
+现在执行完整 Preproduction。
 
-PREPRODUCTION_VALIDATE_PASS
-SMOKE_TEST_PASS
-
-严格继承已经冻结的：
+严格继承：
 
 - Story / Chapter Lock
-- Visual Profile
+- SPIRITED_AWAY_LIVE_ACTION_V1
+- Asset Manifest
+
+完成：
+
+- Character Contract
 - Character Master
+- Location / Environment Contract
 - Location Master
-- Device / Prop Master
+- Device / Prop Contract
+- 必要 Prop Master
+- Storyboard
+- Frame Plan
 - Resolved Frame Contracts
+- Asset SHA / Digest
+- Contract Binding
+- Authority
+- Preproduction Handoff
+
+所有 Authority：
+
+current_story_branch
 
 禁止：
 
-- 重写剧情
-- 改本集范围
-- 更换画风
-- 重做已批准母版
-- 搜索外部仓库资产
+- 搜索其他仓库
+- 搜索旧项目
+- 使用 ohmyphoto
+- 偷偷更换画风
+- 进入 Full Production
 
-现在开始正式流程：
+完成后停在：
+
+READY_FOR_PREPRODUCTION_VALIDATE
+```
+
+---
+
+# 8. Preproduction Validate
+
+让 Codex执行：
+
+```text
+执行：
+
+python -X utf8 scripts/story_validate.py preproduction "episodes/12_千寻/01_那条不存在的隧道"
+
+如果通过：
+
+PREPRODUCTION_VALIDATE_PASS
+
+否则立即停止并报告缺失项。
+```
+
+这一关才检查：
+
+```text
+Character Contract
+Location Contract
+Prop Contract
+Resolved Frame Contracts
+SHA
+Binding
+Authority
+```
+
+通过后：
+
+```text
+READY_FOR_PRODUCTION_SMOKE_TEST
+```
+
+---
+
+# 9. Production Smoke Test
+
+这个测试和 Visual Test 不一样。
+
+Visual Test：
+
+```text
+只看画风
+```
+
+Production Smoke Test：
+
+```text
+验证真实正式生产链
+```
+
+让 Codex：
+
+```text
+对当前 Episode 执行 Production Smoke Test。
+
+前提：
+
+PREPRODUCTION_VALIDATE_PASS
+
+选择 1 个正式 Frame。
+
+必须使用：
+
+- Character Master
+- Location Master
+- Prop Master
+- Visual Profile
+- Resolved Frame Contract
+- 正式图片生成后端
+
+只生成 1 张。
+
+不得进入完整 Production。
+
+完成后告诉我：
+
+PRODUCTION_SMOKE_TEST_PASS / FAILED
+
+以及：
+
+- Frame
+- 图片路径
+- Character Master 是否生效
+- Location Master 是否生效
+- Visual Profile 是否生效
+- Frame Contract 是否生效
+- 图片模型
+- 生图耗时
+```
+
+---
+
+# 10. 正式生产
+
+Production Smoke Test 通过以后：
+
+```text
+读取当前 story 分支。
+
+继续当前 Episode。
+
+当前已经通过：
+
+BOOTSTRAP_VALIDATE_PASS
+VISUAL_TEST
+PREPRODUCTION_VALIDATE_PASS
+PRODUCTION_SMOKE_TEST
+
+严格继承：
+
+- Story Lock
+- Chapter Lock
+- Visual Profile
+- Character Master
+- Location Master
+- Prop Master
+- Resolved Frame Contracts
+
+不得重新决定画风。
+不得重写剧情。
+不得搜索外部资产。
+
+现在执行：
 
 Visual Lock 1+3
 ↓
-Production
+Full Production
 ↓
 Rolling Review
 ↓
@@ -583,128 +563,78 @@ Final Candidate Snapshot
 
 PUBLISH_READY
 
-除非出现 Authority SHA 不一致、
-必要资产缺失、
-或无法安全继续的 Runtime 故障，
+除非发生：
 
-否则不要每一步询问我。
+- Authority SHA 不一致
+- 必要资产缺失
+- Runtime 无法安全继续
+
+否则不要中途询问我。
 ```
 
 ---
 
-# 最终只需要记这几个入口
-
-## 新故事
+# 最后只记这一套
 
 ```text
-故事.md
-```
-
-↓
-
-### 1
-
-给 Codex：
-
-```text
-Bootstrap
-```
-
-↓
-
-### 2
-
-本地运行：
-
-```bat
-python -X utf8 scripts/story_validate.py bootstrap "Episode目录"
-```
-
-↓
-
-### 3
-
-给 Codex：
-
-```text
-Preproduction
-```
-
-↓
-
-### 4
-
-本地运行：
-
-```bat
-python -X utf8 scripts/story_validate.py preproduction "Episode目录"
-```
-
-↓
-
-### 5
-
-给 Codex：
-
-```text
-Smoke Test，只生1张
-```
-
-↓
-
-### 6
-
-你看测试图。
-
-画风正确：
-
-```text
-PASS
-```
-
-↓
-
-### 7
-
-给 Codex：
-
-```text
-Visual Lock + Full Production，做到 PUBLISH_READY
+① MD
+   ↓
+② Bootstrap
+   ↓
+③ Bootstrap Validate
+   ↓
+④ Visual Test 1张
+   ↓
+   看画风
+   ↓
+⑤ Preproduction
+   ↓
+⑥ Preproduction Validate
+   ↓
+⑦ Production Smoke Test 1张
+   ↓
+⑧ Visual Lock 1+3
+   ↓
+⑨ Full Production
+   ↓
+⑩ PUBLISH_READY
 ```
 
 ---
 
-# 一句话版本
+# 画风怎么指定，最终口诀
 
-以后生产任何故事：
-
-```text
-MD
-→ Bootstrap
-→ 验入口
-→ Preproduction
-→ 验前期
-→ Smoke Test 1张
-→ 看画风
-→ 正式生产
-```
-
-## 画风在哪指定？
-
-**第一次就在 Bootstrap 阶段指定。**
-
-之后：
+已有画风：
 
 ```text
-Bootstrap
-      ↓
-Visual Profile Lock
-      ↓
-Preproduction继承
-      ↓
-Smoke Test验证
-      ↓
-Production冻结
+Visual Profile：
+SPIRITED_AWAY_LIVE_ACTION_V1
 ```
 
-后面的阶段只能继承，不应该偷偷重新决定画风。
+就够了。
+
+新画风：
+
+```text
+用自然语言描述
+↓
+让 Codex 创建 Visual Profile JSON
+↓
+Episode 锁定 Profile ID
+↓
+Bootstrap Validate
+↓
+Visual Test
+```
+
+**不要把画风只存在提示词里。**
+
+正式原则：
+
+```text
+画风描述
+→ Visual Profile
+→ Episode Lock
+→ Visual Test
+→ 全生产继承
+```

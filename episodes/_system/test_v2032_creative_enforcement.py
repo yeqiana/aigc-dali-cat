@@ -56,24 +56,31 @@ class CreativeEnforcementTests(unittest.TestCase):
         self.assertTrue(story_review.validate_payload(data, story_sha=h, storyboard_sha=h, version="2.0.3.2"))
 
     def test_visual_review_requires_actual_profile_checks(self):
+        import visual_lock_v21
         h = "b" * 64
-        assets = [{"id": x, "sha256": h} for x in ("1", "2", "3")]
+        fh = "c" * 64
+        assets = [
+            {"id": x, "sha256": h, "frame_contract_sha256": fh}
+            for x in ("1", "2", "3", "4")
+        ]
+        contract = {"profile_id": "M00", "profile_sha256": h}
         data = {
-            "schema_version": 1,
-            "story_os_version": "2.0.3.2",
+            "schema_version": 2,
+            "story_os_version": "2.1.0",
             "profile_id": "M00",
             "profile_sha256": h,
             "critic_provenance": {"runtime": "CODEX_ISOLATED", "isolated_session": True, "attempt": 1},
             "calibration": [
-                {"id": x, "sha256": h, "checks": {k: True for k in visual_review.CHECKS}, "issues": []}
-                for x in ("1", "2", "3")
+                {"id": x["id"], "sha256": h, "frame_contract_sha256": fh,
+                 "checks": {k: True for k in visual_lock_v21.CHECKS}, "issues": []}
+                for x in assets
             ],
             "issue_codes": [],
             "summary": {"passed": True},
         }
-        self.assertEqual(visual_review.validate_payload(data, profile_id="M00", profile_sha=h, assets=assets, version="2.0.3.2"), [])
+        self.assertEqual(visual_lock_v21.validate_payload(data, contract=contract, assets=assets, version="2.1.0"), [])
         data["calibration"][1]["checks"]["unposed_capture"] = False
-        self.assertTrue(visual_review.validate_payload(data, profile_id="M00", profile_sha=h, assets=assets, version="2.0.3.2"))
+        self.assertTrue(visual_lock_v21.validate_payload(data, contract=contract, assets=assets, version="2.1.0"))
 
     def test_punctuation_only_second_line_is_dropped(self):
         lines, dropped = subtitle_layout.sanitize_wrapped_lines(["第一行文字", "。！？……”）"])

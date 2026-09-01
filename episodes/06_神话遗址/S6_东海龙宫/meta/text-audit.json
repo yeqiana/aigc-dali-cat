@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "audited_at": "2026-09-01T21:06:54+08:00",
+  "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\06_神话遗址\\S6_东海龙宫\\meta\\subtitles.yaml",
+  "caption_count": 20,
+  "silent_frames": [],
+  "hard_errors": [],
+  "warnings": [
+    {
+      "code": "UNIFORM_LENGTH_3",
+      "frames": [
+        15,
+        16,
+        17
+      ],
+      "message": "连续三帧句长过于整齐，像批量生成"
+    }
+  ],
+  "summary": {
+    "hard_error_count": 0,
+    "warning_count": 1,
+    "passed": true
+  },
+  "voice_contract_sha256": null,
+  "source_sha256": "7d3cca8042623923b86b32690ba68eed837569416b101739d591dac26e5448a2"
+}

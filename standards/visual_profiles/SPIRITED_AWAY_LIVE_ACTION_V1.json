@@ -2,7 +2,7 @@
   "schema_version": 1,
   "story_os_version": "2.2",
   "profile_id": "SPIRITED_AWAY_LIVE_ACTION_V1",
-  "profile_version": "1.0",
+  "profile_version": "1.1",
   "profile_name": "1990年代日本真人奇幻电影（35mm胶片质感）",
   "default_when_unspecified": false,
   "scope": "episode_explicit_locked_visual_profile",
@@ -33,7 +33,12 @@
       "slight_highlight_rolloff",
       "real_exposure",
       "summer_humidity_haze",
-      "natural_skin_texture"
+      "natural_skin_texture",
+      "soft_micro_contrast",
+      "subtle_organic_grain",
+      "gentle_highlight_halation",
+      "natural_shadow_density",
+      "no_modern_digital_crispness"
     ]
   },
   "must_keep": [

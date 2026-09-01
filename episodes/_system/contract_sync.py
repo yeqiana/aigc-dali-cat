@@ -235,7 +235,7 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "profile_sha256",
         ],
         "codex_subscription_image.py": [
-            "from visual_profile import compile_prompt_contract",
+            "from visual_profile_bridge_v224 import compile_prompt_contract",
             "<visual_contract>",
         ],
         "approval_lock.py": [
@@ -254,8 +254,8 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "MECHANISM_CONTRADICTION",
         ],
         "visual_review.py": [
-            "CODEX_ISOLATED",
-            "visual_profile_match",
+            "four_admission_v21",
+            "visual_lock_v21",
         ],
         "frame_semantic_review.py": [
             "CODEX_ISOLATED",

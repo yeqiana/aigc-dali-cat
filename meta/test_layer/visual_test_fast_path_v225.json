@@ -1,0 +1,19 @@
+{
+  "version": "2.2.5",
+  "visual_test": {
+    "default_route": "MAIN_SESSION_NATIVE_IMAGE",
+    "isolated_worker_default": false,
+    "requires": "BOOTSTRAP_VALIDATE_PASS",
+    "requires_preproduction": false,
+    "authority": "NON_AUTHORITY_TEST_ONLY",
+    "hard_gates": [
+      "real_image_file_required",
+      "profile_sha_must_match_plan",
+      "promotion_allowed=false"
+    ]
+  },
+  "production_smoke_test": {
+    "unchanged_from": "2.2.4",
+    "requires": "PREPRODUCTION_VALIDATE_PASS"
+  }
+}

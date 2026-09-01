@@ -1,0 +1,389 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "engine": "story_os_subtitle_layout_v1",
+  "canonical_renderer": true,
+  "source": "episodes/06_神话遗址/S6_东海龙宫/meta/subtitles.yaml",
+  "source_sha256": "36af050f85a694c2c6f0c5221638b7e1a82cbb35f7029a1c6651bb244e805c8f",
+  "policy": {
+    "punctuation_only_second_line": "drop_entire_second_line",
+    "max_lines": 2,
+    "font": "Microsoft YaHei Bold",
+    "font_size": 42,
+    "stroke_width": 4,
+    "left_margin": 72
+  },
+  "frames": {
+    "01": {
+      "caption": "阿叔退休前最后一趟海，我跟着下潜。\n灯一扫，海底亮起一片老建筑。",
+      "lines": [
+        "阿叔退休前最后一趟海，我跟着下潜。",
+        "灯一扫，海底亮起一片老建筑。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 405,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图01_海底亮起的鳞纹.png",
+      "base_sha256": "ecc7a03ca21d9c62abdf1a3f20b165deca26d9fd1c214d4c0656296a4474b957",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/01.png",
+      "output_sha256": "6a7f4b592cde46700b75140d129089f5db4a2c54ed56cd2ed1fa3599be491243"
+    },
+    "02": {
+      "caption": "手机里那张旧照片，是阿叔三十年前拍的。\n他说，就是这片海。",
+      "lines": [
+        "手机里那张旧照片，是阿叔三十年前拍的。",
+        "他说，就是这片海。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 405,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图02_最后一次任务.png",
+      "base_sha256": "afb6945045322091275b73b118bb2a7372f4c9f50a44465c0df0cdb1145158a9",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/02.png",
+      "output_sha256": "7fcc4138311ce5a1cf4b690ccb8fae363f23a03cd9df2534fcff16d5c6063d94"
+    },
+    "03": {
+      "caption": "阿叔说，看一眼就走。\n声呐下面排得太整齐，我没忍住，把灯调亮了。",
+      "lines": [
+        "阿叔说，看一眼就走。",
+        "声呐下面排得太整齐，我没忍住，把灯调亮了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 405,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图03_声呐上的规整.png",
+      "base_sha256": "6e61575ae708d4145d2891d66ce5baf29801ddfcc1142ab76ed459f8b1a32972",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/03.png",
+      "output_sha256": "390d29ff7d4f287b337ec156107a828e9304cc38fe505e156b941ef2044494a8"
+    },
+    "04": {
+      "caption": "柱子上全是鳞纹，越近越亮，像长在石头里。",
+      "lines": [
+        "柱子上全是鳞纹，越近越亮，像长在石头里。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图04_石柱上的鳞纹.png",
+      "base_sha256": "d19fc6dba5d0bae31a006ce0c7929e041388cc13448968103b18fd948fb333af",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/04.png",
+      "output_sha256": "6b4da9f526999023c18f2b4700e680277ecdef761fb8afcf6f0e884663980aea"
+    },
+    "05": {
+      "caption": "阿叔按住我手腕：看到发光的别靠近，也别开强光。",
+      "lines": [
+        "阿叔按住我手腕：看到发光的别靠近，也别开强光"
+      ],
+      "dropped_punctuation_only_second_line": true,
+      "x": 72,
+      "y": 405,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图05_阿叔的警告.png",
+      "base_sha256": "270062e623059b2e6754821afa20c1e65e20381bed8aff2f1d7227ad0935dc00",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/05.png",
+      "output_sha256": "15e6fef1fafb2ebe73fa7598510f92d75f885e8b84086d3f3e28ad041f5b0062"
+    },
+    "06": {
+      "caption": "建筑群到头了，立着一扇门。\n门缝里透出暖光，这深度不该有。",
+      "lines": [
+        "建筑群到头了，立着一扇门。",
+        "门缝里透出暖光，这深度不该有。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图06_宫门轮廓.png",
+      "base_sha256": "c9460de4111936728093094c15d9f096a9bc13cfcbe5c0ff2e6b8ac518f7bfc8",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/06.png",
+      "output_sha256": "e98a8b933725299aff08cb07bff249110c0186a65e60115c15cea99948d5c56d"
+    },
+    "07": {
+      "caption": "我以为只是片遗址。门开了，里面盘着一条龙。",
+      "lines": [
+        "我以为只是片遗址。门开了，里面盘着一条龙。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图07_宫门里的龙.png",
+      "base_sha256": "123666e6ff98be027e3b1cc0d4bf4d8261694417d0b552754a8913aeffe7dfe8",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/07.png",
+      "output_sha256": "f1259d17315666ab2bea3e9e452ee04533485f909fb00c9ded1cf88fcf7fa60c"
+    },
+    "08": {
+      "caption": "水流突然改了方向，把潜航器往门里推。\n舵掰不回来。",
+      "lines": [
+        "水流突然改了方向，把潜航器往门里推。",
+        "舵掰不回来。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 405,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图08_水流把我们推过去.png",
+      "base_sha256": "8a4310ece573d2f7e4804cf3f3e3cb7454eeb4b642d2ef523cf4c4ce16896b1e",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/08.png",
+      "output_sha256": "221818565249f06c7b7ce0244079c520cdad5e73c9670b6047170125ef81d9f2"
+    },
+    "09": {
+      "caption": "它睁开眼，瞳孔慢慢转过来，正对着观察窗。",
+      "lines": [
+        "它睁开眼，瞳孔慢慢转过来，正对着观察窗。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图09_它睁开了眼.png",
+      "base_sha256": "8582fd7c726f44344d52c975968b57c10b01019f6d8f87ad1187049777064b93",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/09.png",
+      "output_sha256": "f28fc3a89ca46e8502c05aaef52da688a24b5dc1b7620718ad42307f0c5b154f"
+    },
+    "10": {
+      "caption": "它发现我们了。水流开始往回顶，潜航器抖得厉害。",
+      "lines": [
+        "它发现我们了。水流开始往回顶，潜航器抖得厉害"
+      ],
+      "dropped_punctuation_only_second_line": true,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图10_被发现了.png",
+      "base_sha256": "93f20c787255a7f0294dd67d0a3ad56dfdfe6630aeba8c3ba1f1688ffcf8c67e",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/10.png",
+      "output_sha256": "ef64e7b9e68dc4274ccf36160eb3f73131874d3bfb479b7cddc8296df2813ce4"
+    },
+    "11": {
+      "caption": "它靠过来了。一只瞳孔，比整扇观察窗还大。",
+      "lines": [
+        "它靠过来了。一只瞳孔，比整扇观察窗还大。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图11_瞳孔大过观察窗.png",
+      "base_sha256": "bfb7251bd3f342342bfa729b765f396f71f12934868c0f4a85e1c6e75df7374c",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/11.png",
+      "output_sha256": "41db4fa4905e8dfda65a2c8d24db5a16342719a4de1e17f6fb79a43424febe79"
+    },
+    "12": {
+      "caption": "它没攻击，只是慢慢摆了一下尾。\n水流开始把我们往外送。",
+      "lines": [
+        "它没攻击，只是慢慢摆了一下尾。",
+        "水流开始把我们往外送。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图12_一次摆尾.png",
+      "base_sha256": "efcbb5ff9c2dbe82c5e018574ce7c40a35c9646ad54cad9b984ab3f49d6bb7f6",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/12.png",
+      "output_sha256": "578e20a7a55eae43689c82937a304822a6cd30aa7d696dbc83763610effe728d"
+    },
+    "13": {
+      "caption": "我把灯关了。黑暗里，只有它身上还有光。",
+      "lines": [
+        "我把灯关了。黑暗里，只有它身上还有光。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图13_灯光熄灭.png",
+      "base_sha256": "f7bfcbcef56cfaedbad5dfe8b8b89d3c47f3da21ef82ceb4242fdbad8c277c14",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/13.png",
+      "output_sha256": "387d9e1eaf0658a47c0bf20bea345374bb936f491f009d14c87cdde9ee2cd9d4"
+    },
+    "14": {
+      "caption": "我们退到门外，门在后面合拢。它还在看着我们。",
+      "lines": [
+        "我们退到门外，门在后面合拢。它还在看着我们。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图14_宫门合拢.png",
+      "base_sha256": "a162888a7813f7aa7e0b38a6424c8c61ada7b56a6cdc06c86c9afc774b4cc846",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/14.png",
+      "output_sha256": "f1185fae0e65cce80e4f39c224c29eca9fa0a8b75b1c55838007c949fc2a98c2"
+    },
+    "15": {
+      "caption": "阿叔的手一直在抖。\n他说那张照片是真的，当年上报，被压下来了。",
+      "lines": [
+        "阿叔的手一直在抖。",
+        "他说那张照片是真的，当年上报，被压下来了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 405,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图15_阿叔的手在抖.png",
+      "base_sha256": "fbf0162345f52455c0cfc6bc03cd9b17e722f48d72a7b5d513ea084d205b8271",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/15.png",
+      "output_sha256": "260881727a95e088fa7c916902c10a95de1190111b24f30b0e0af637f4b99cef"
+    },
+    "16": {
+      "caption": "我记下坐标，备注封存。这里的事，不上报了。",
+      "lines": [
+        "我记下坐标，备注封存。这里的事，不上报了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 405,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图16_坐标封存.png",
+      "base_sha256": "719de66142335fd8cef466aaa41c7408074e51b71d45e8de7970699ccffdc280",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/16.png",
+      "output_sha256": "d3e46d2abea2ef414aa07e4fdcf2bc992e824fccb181d2bbe1ca774083789e20"
+    },
+    "17": {
+      "caption": "船开远了，海面很平，像什么都没发生过。",
+      "lines": [
+        "船开远了，海面很平，像什么都没发生过。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 405,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图17_返航.png",
+      "base_sha256": "d76ec168fb7f989a9bd9cc65c2c2104faf0adcb86f5e7250b4dcf3a2abe34122",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/17.png",
+      "output_sha256": "3c1a79ce8344bf79971f05eeefcb3a81631944c95f020eb2c343681726cd9162"
+    },
+    "18": {
+      "caption": "下船的时候，甲板上多了一道潮痕，形状像一片鳞。",
+      "lines": [
+        "下船的时候，甲板上多了一道潮痕，形状像一片鳞"
+      ],
+      "dropped_punctuation_only_second_line": true,
+      "x": 72,
+      "y": 405,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图18_甲板上的潮痕.png",
+      "base_sha256": "a68f8188db07911d801cf1d2ff79dc18cc4269dd0fac76ce523de181dec0d074",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/18.png",
+      "output_sha256": "6a0b6aef1690d371ab39c63e4a1a6f0d5d004af96f5f50604bf62b3a51c24f6b"
+    },
+    "19": {
+      "caption": "我把海底鳞纹的截图和它一比，一模一样。",
+      "lines": [
+        "我把海底鳞纹的截图和它一比，一模一样。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 405,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图19_潮痕与鳞纹.png",
+      "base_sha256": "7cab49c2d24c16cfeaebeafbff15844b0204200dbaec925680ecc7ded0f22d13",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/19.png",
+      "output_sha256": "dcc7215267332996e1074229a16c758d45b4a1cf63328a333ed3339c2fc8f7bb"
+    },
+    "20": {
+      "caption": "潮痕还在发着微光，像在呼吸。那条龙，还在下面。",
+      "lines": [
+        "潮痕还在发着微光，像在呼吸。那条龙，还在下面"
+      ],
+      "dropped_punctuation_only_second_line": true,
+      "x": 72,
+      "y": 405,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/06_神话遗址/S6_东海龙宫/images/s6_final/图20_它还在下面.png",
+      "base_sha256": "55cc9f34c55c5fdbc9797ebdb75d211c621181491036ccaf92cf3cb278d8572e",
+      "output_path": "episodes/06_神话遗址/S6_东海龙宫/production/publish/20.png",
+      "output_sha256": "dd66a82324463320036e0060d82d503f83fae1086b106ba85f2512071d107fbb"
+    }
+  },
+  "summary": {
+    "passed": true,
+    "frame_count": 20
+  }
+}
