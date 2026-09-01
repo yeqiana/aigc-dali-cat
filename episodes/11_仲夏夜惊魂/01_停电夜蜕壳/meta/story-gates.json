@@ -15,6 +15,12 @@
     "concept_selected_id": "C01",
     "concept_ambition_review_path": "meta/concept-ambition-review.json",
     "concept_voltage": 96,
+    "user_directed_rewrite": {
+      "core": "县城随着时间慢慢死去；异常本体是一只显形巨物，县城是它的身体/生命力象征；越奇幻越好",
+      "basis": "user_explicit_choice",
+      "visual_ceiling": "显形生物完整可辨：山脊=卧兽背脊、河谷=肋缝、路灯杆=须、楼群=鳞甲",
+      "applied_at": "2026-09-01T00:00:00+08:00"
+    },
     "four_locks_diff_count": 4,
     "mechanism_skin_swap_veto": false,
     "task_closed": true,
@@ -56,14 +62,14 @@
         "protagonist": "P01 周启明，24岁男性第一人称；黑短发；黑短袖+深灰工装裤+普通运动鞋；只自然露手臂/裤腿/鞋等局部",
         "location": "槐川县空间链：客运站→老商业街→十字路口→河渠步道→步行天桥→普通住宅小区",
         "weather_time": "仲夏极热夜，22:42抵达，23:03停电，23:51高潮，00:06复电，次日上午残留",
-        "anomaly_material": "县城表层极薄、半透明，携带颜色/反光/标线等表面信息；里层暗灰粗糙且门窗接口错位"
+        "anomaly_material": "县城本身是垂死巨物：表皮极薄半透明且边缘甲片分层，携带颜色/反光/标线等表面信息；表皮下是暗灰粗糙带浅骨板纹理的躯体表面，门窗接口错位；山脊=卧兽背脊，路灯杆=须，楼群=鳞甲"
       }
     },
     "authenticity_card": {
       "story_era": "2026年仲夏",
       "location": "中国西北虚构普通县城槐川县；不影射真实灾害或政府事件",
       "photographer": "24岁男性主角 P01，第一人称记录",
-      "shooting_reason": "返乡途中手机随手记录极端高温、突然停电和随后出现的异常",
+      "shooting_reason": "返乡途中手机随手记录极端高温、突然停电和随后出现的县城显形异常",
       "primary_capture": {
         "id": "CP01",
         "device": "2026年前后普通智能手机，手持竖拍，默认4:5裁切/构图"
@@ -74,7 +80,7 @@
       "capture_states": {
         "stable": "停电前普通手机夜景；可读、轻微手持偏斜、无商业HDR",
         "restricted": "停电后依靠车灯/手机手电，背景掉黑、高ISO与轻运动模糊只在物理需要时出现",
-        "lost_control": "图15-18热风与快速撤离时手持更不稳，但关键尺度参照与异常边缘仍必须清楚"
+        "lost_control": "图15-18热风与快速撤离时手持更不稳，但关键尺度参照与巨物轮廓仍必须清楚"
       },
       "camera_rules": {
         "current_device_may_be_fully_visible": false,
@@ -87,7 +93,7 @@
       "schema_version": 1,
       "season": "仲夏",
       "baseline": {
-        "condition": "仲夏极热后的干燥闷夜，停电前县城正常",
+        "condition": "仲夏极热后的干燥闷夜，停电前县城正常但可见近年凋敝（关店/撤招牌/暗灯管）",
         "time_of_day": "22:42-00:10 夜间",
         "temperature_feel": "白天约40℃后的积热仍明显，夜间体感约31℃，空气干热闷滞",
         "ground_state": "干燥沥青与水泥路面，白天积热未散",
@@ -97,7 +103,8 @@
         "physical_cues": [
           "远处灯牌和车灯上方轻微热扭曲",
           "行人夏装、汗湿衣领、手臂汗光",
-          "沥青与墙体仍有白天积热感"
+          "沥青与墙体仍有白天积热感",
+          "空置店铺、撤掉一半的招牌、暗掉的灯管（县城变旧的日常证据）"
         ]
       },
       "segments": [
@@ -137,11 +144,12 @@
           "id": "E3_shell_lift",
           "start_frame": 10,
           "end_frame": 18,
-          "condition": "停电持续，间歇热风增强，县城表层大范围剥离",
+          "condition": "停电持续，间歇热风增强，巨物显形、县城表皮大范围被顶起",
           "physical_cues": [
             "热风让悬空薄层出现方向一致的张力和褶皱",
             "车辆/楼层/路灯提供稳定尺度",
-            "手机夜拍高光不过度扩展"
+            "手机夜拍高光不过度扩展",
+            "山脊卧兽轮廓逐级隆起（03/10/13/16/17）"
           ],
           "conditional_effects": [
             {
@@ -159,14 +167,14 @@
           "condition": "00:06复电后至次日上午晴热",
           "physical_cues": [
             "19居民楼灯光恢复但室内仍普通",
-            "20上午强自然光、干燥空气、县城外观正常"
+            "20上午强自然光、干燥空气、县城外观正常，山脊卧兽轮廓仍可辨"
           ],
           "conditional_effects": []
         }
       ],
       "frame_overrides": {
         "17": {
-          "wind": "较强间歇热风，薄层被向上托起但楼体/车辆本身不漂浮"
+          "wind": "较强间歇热风，巨物表皮被向上托起但楼体/车辆本身不漂浮"
         },
         "20": {
           "time_of_day": "次日上午约09:00",
@@ -180,7 +188,8 @@
         "frame_mode": "normal_record",
         "impact_level": 0,
         "required_visual_cues": [
-          "普通客运站返乡基线"
+          "普通客运站返乡基线",
+          "县城变旧的日常证据（关店/撤招牌）但不构成异常"
         ],
         "scale_reference": "",
         "escalation_from": null
@@ -191,7 +200,8 @@
         "impact_level": 0,
         "required_visual_cues": [
           "旅行包局部",
-          "普通夏夜生活密度"
+          "普通夏夜生活密度",
+          "空置店铺/暗灯管（县城变旧）"
         ],
         "scale_reference": "",
         "escalation_from": null
@@ -203,7 +213,7 @@
         "required_visual_cues": [
           "停电前完整人工照明",
           "轻微热扭曲",
-          "记录载体给出首处可辨认异常证据（远景药房外墙角卷边）"
+          "记录载体给出首处可辨认异常证据：远处山脊剪影像卧兽背脊"
         ],
         "scale_reference": "",
         "escalation_from": null
@@ -214,7 +224,8 @@
         "impact_level": 1,
         "required_visual_cues": [
           "同街区大面积熄灯",
-          "仅车辆与手机局部光源"
+          "仅车辆与手机局部光源",
+          "远景山脊只剩卧兽剪影"
         ],
         "scale_reference": "",
         "escalation_from": null
@@ -235,7 +246,7 @@
         "frame_mode": "anomaly_reveal",
         "impact_level": 1,
         "required_visual_cues": [
-          "墙面饰层薄膜式卷边",
+          "墙面饰层甲片状分层卷边",
           "乍看仍可解释为热损伤"
         ],
         "scale_reference": "",
@@ -246,7 +257,7 @@
         "frame_mode": "anomaly_reveal",
         "impact_level": 2,
         "required_visual_cues": [
-          "卷边后的蓝灰墙",
+          "卷边后的暗灰浅骨板纹理躯体表面",
           "现窗洞与旧孔位错开约半米"
         ],
         "scale_reference": "",
@@ -257,7 +268,8 @@
         "frame_mode": "anomaly_reveal",
         "impact_level": 2,
         "required_visual_cues": [
-          "墙层/橱窗反光层/路沿漆三种表面同向翘起"
+          "墙层/橱窗反光层/路沿漆三种表面同向翘起",
+          "卷边甲片分层可辨"
         ],
         "scale_reference": "",
         "escalation_from": null
@@ -269,6 +281,7 @@
         "required_visual_cues": [
           "沥青最上层卷起",
           "第二套车道线与井盖位置错位",
+          "露出暗灰浅骨板纹理躯体表面",
           "轿车提供比例"
         ],
         "scale_reference": "",
@@ -280,7 +293,8 @@
         "impact_level": 3,
         "required_visual_cues": [
           "多材质表层被同一连续薄膜连接",
-          "薄膜离地约一米"
+          "薄膜离地约一米",
+          "远景山脊卧兽剪影隆起"
         ],
         "scale_reference": "一层店面、路沿、轿车",
         "escalation_from": 8
@@ -302,7 +316,7 @@
         "frame_mode": "payoff",
         "impact_level": 2,
         "required_visual_cues": [
-          "侧身挤过膜层旅行包蹭下碎片粘包",
+          "侧身挤过膜层旅行包蹭下甲片碎片粘包",
           "身后入口表层合拢封死退路",
           "手电光照处卷边加速后关灯"
         ],
@@ -314,8 +328,7 @@
         "frame_mode": "anomaly_amplified",
         "impact_level": 3,
         "required_visual_cues": [
-          "整街表层离地2-3米",
-          "下方实体门洞错位",
+          "山脊线隆起成卧兽背脊，鳞片叠压层次",
           "对岸楼角同向卷起（外围向中心）"
         ],
         "scale_reference": "步行天桥、街灯、店面层高",
@@ -326,8 +339,9 @@
         "frame_mode": "anomaly_amplified",
         "impact_level": 3,
         "required_visual_cues": [
-          "表层门口位置后方变实墙",
-          "真实入口偏移一米以上"
+          "表层门口位置后方变暗灰躯体表面",
+          "真实入口偏移一米以上",
+          "浅骨板纹理"
         ],
         "scale_reference": "楼梯栏杆、门洞标准高度",
         "escalation_from": 13
@@ -338,7 +352,8 @@
         "impact_level": 4,
         "required_visual_cues": [
           "整街表层抬升至二楼以上",
-          "招牌色块与斑马线信息仍在薄层上"
+          "招牌色块与斑马线信息仍在薄层上",
+          "边缘甲片分层"
         ],
         "scale_reference": "公交站棚、六层住宅、街灯",
         "escalation_from": 13
@@ -349,7 +364,8 @@
         "impact_level": 4,
         "required_visual_cues": [
           "三个街区表层互相连成巨大半透明壳",
-          "裸露建筑暗灰且开口错位"
+          "裸露建筑暗灰且开口错位",
+          "山脊卧兽轮廓完整"
         ],
         "scale_reference": "三个街区、六层楼群、天桥",
         "escalation_from": 15
@@ -359,9 +375,10 @@
         "frame_mode": "climax_impact",
         "impact_level": 4,
         "required_visual_cues": [
+          "巨物完整显形：背脊/肋缝/路灯须/鳞甲楼群可辨",
           "连续城市表皮悬在楼顶上方30-50米",
           "膜上可辨道路标线/窗面反光/招牌色块",
-          "下方黑暗错位县城",
+          "下方暗灰粗糙躯体表面",
           "松握手机被膜缘整只卷走，紧攥包带仅被划过（代价选择性）"
         ],
         "scale_reference": "六层住宅、公交车、路灯、天桥栏杆",
@@ -374,7 +391,7 @@
         "required_visual_cues": [
           "窗外居民楼逐层复电县城表面看似正常",
           "前臂被膜缘划过的细红痕",
-          "包上粘着图12同一块浅黄碎片",
+          "包上粘着图12同一块甲片碎片",
           "手机充电线空着手机不在"
         ],
         "scale_reference": "",
@@ -387,6 +404,7 @@
         "required_visual_cues": [
           "药房外墙缺口与包上碎片同一视觉身份（颜色/尺寸/轮廓互认）",
           "缺口边缘卷边残余与膜缘纹理相同",
+          "露出暗灰浅骨板纹理底面",
           "窗框旧孔位与现实窗户错位约半米"
         ],
         "scale_reference": "",
@@ -398,7 +416,8 @@
         "impact_level": 2,
         "required_visual_cues": [
           "白天城市正常",
-          "县城边缘至山口上空近透明巨大弧膜反光"
+          "县城边缘山脊仍呈卧兽轮廓",
+          "脊线上极薄空气热扭曲缓慢起伏"
         ],
         "scale_reference": "",
         "escalation_from": null
@@ -425,48 +444,8 @@
       },
       "dependency_rule": "01 baseline PASS 后，05/08/17 才允许并行进入 Visual Lock",
       "schema_version": 2,
-      "items": [
-        {
-          "id": "V-B",
-          "role": "ordinary_baseline",
-          "frame": 1,
-          "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/01-dfd5b186d094-a2.png",
-          "sha256": "47094e63e36261cad748855c2d1e0e4b1be7b14e34cffa778b33329bfa0f05b0",
-          "decision": "failed",
-          "frame_contract_sha256": "fe0418fc08a4ddaec153fe795a28f9af0be1ffac5bddd3b0b1eed3da1086cf87",
-          "note": "baseline separately PASS; parallel-three may start"
-        },
-        {
-          "id": "V-W",
-          "role": "worst_capture_condition",
-          "frame": 5,
-          "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/05-91211334ca50-a1.png",
-          "sha256": "35fa368606253ae6e160dc1253a14172dffb745d54b1eb3432653acb6db1ebbb",
-          "decision": "failed",
-          "frame_contract_sha256": "9d6e590ca2f4900ced0b9ba74c7ff982b712610b6144492cecebb2525ba9e3c2",
-          "note": ""
-        },
-        {
-          "id": "V-A",
-          "role": "first_major_anomaly",
-          "frame": 8,
-          "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-8da147d882bb-a1.png",
-          "sha256": "bfc07c8769a23497900d27de57c5dd8fbff8b2bee15756c615093068709d8ace",
-          "decision": "failed",
-          "frame_contract_sha256": "f6b951f42e960d9a9e0318501a5cc146482d7606f3f561250b980bc8cfd5acdc",
-          "note": ""
-        },
-        {
-          "id": "V-H",
-          "role": "high_impact_admission",
-          "frame": 17,
-          "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-de025622f8b1-a1.png",
-          "sha256": "581132d3be653e37bbf0762735ae1ad7d482b680967b17c89d9528fd0a386244",
-          "decision": "failed",
-          "frame_contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9",
-          "note": ""
-        }
-      ]
+      "items": [],
+      "note": "故事按用户指定方向重写（显形生物），旧 Visual Lock 候选全部基于旧合同，作废重出。"
     },
     "references": {
       "required": false,
@@ -496,10 +475,10 @@
     "assets": []
   },
   "reviews": {
-    "story": "passed",
+    "story": "pending",
     "authenticity": "passed",
     "continuity": "passed",
-    "visual_admission": "failed",
+    "visual_admission": "pending",
     "subtitle": "pending",
     "production": "pending",
     "recommendation_fit": "pending",

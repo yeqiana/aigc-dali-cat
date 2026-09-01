@@ -1,0 +1,30 @@
+{
+  "version": "V2.1.2",
+  "assets": [
+    {
+      "type": "character_master",
+      "required": [
+        "front",
+        "side",
+        "back",
+        "outfit"
+      ]
+    },
+    {
+      "type": "location_master",
+      "required": [
+        "overview",
+        "day",
+        "night"
+      ]
+    },
+    {
+      "type": "device_master",
+      "required": [
+        "front",
+        "back",
+        "detail"
+      ]
+    }
+  ]
+}
