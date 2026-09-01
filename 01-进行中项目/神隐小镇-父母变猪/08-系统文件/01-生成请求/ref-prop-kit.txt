@@ -1,7 +1,0 @@
-Use case: photorealistic-natural
-Asset type: prop continuity reference for an original fictional photo-story
-Primary request: clean tabletop reference of four fictional props: a small bundle of white lisianthus, a plain unbranded black old consumer DV wrist strap, a dented unbranded tin biscuit box, and three dry locust beans on one red thread. No labels or readable writing.
-Scene/backdrop: ordinary wooden table in soft overcast window light.
-Style/medium: neutral documentary prop reference, not commercial product photography.
-Composition/framing: vertical 4:5 overhead-close but imperfect casual framing.
-Constraints: no text, logos, watermarks, fantasy glow, extra objects, or dramatic lighting.

@@ -1,5 +1,0 @@
-{
-  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"fail","identity_match":"na","key_prop_match":"pass","continuity_match":"pass","defects_are_causal":"pass"},
-  "red_flags": ["强手电聚光使告示牌像被布置展示","主体牌面居中且几乎完整展示","背景与花束被整齐安排"],
-  "notes": "实际查看：背面警告文字虽然准确，但强手电光束、竖直牌面主体化和整齐背景使画面像海报/地点展示，不像普通DV临场查验；需改变拍摄行为后重生成。"
-}

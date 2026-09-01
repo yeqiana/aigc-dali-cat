@@ -1,5 +1,0 @@
-{
-  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"pass","identity_match":"fail","key_prop_match":"pass","continuity_match":"fail","defects_are_causal":"pass"},
-  "red_flags": [],
-  "notes": "实际查看：递槐豆动作和三颗槐豆可见，但递出者穿米色针织上衣、外观为成年女性，不是林岚的灰蓝外套；身份、服装和一家三口连续性硬失败，需重生成。"
-}

@@ -1,5 +1,0 @@
-{
-  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"fail","identity_match":"fail","key_prop_match":"na","continuity_match":"fail","defects_are_causal":"fail"},
-  "red_flags": ["三人被完整摆在开阔停车场中","画面像安排好的远景剧照","异常液体被强化为血色"],
-  "notes": "实际查看：父母倒地和林岚在场可见，但主角外观仍不是灰蓝外套；地面出现大面积血样深红液体，偏离“吐出黑汤”，并形成摆拍式停车场远景，身份、非电影化和缺陷因果均失败，需重生成。"
-}

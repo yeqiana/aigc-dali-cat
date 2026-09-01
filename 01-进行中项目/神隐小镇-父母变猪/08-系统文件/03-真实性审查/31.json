@@ -1,5 +1,0 @@
-{
-  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"fail","identity_match":"na","key_prop_match":"pass","continuity_match":"fail","defects_are_causal":"pass"},
-  "red_flags": ["屏幕叠加假相机HUD","时间码和PLAY覆盖画面","回放人物正面微笑摆拍"],
-  "notes": "实际查看：DV屏幕中的林家食堂和陌生女孩证据可见，但画面加入了方案明确禁止的电量图标、12bit、PLAY及2009时间码假HUD；回放女孩还呈正面挥手摆拍，需按同一屏幕证据重生成或定向编辑并移除全部叠加。"
-}

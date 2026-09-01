@@ -1,5 +1,0 @@
-{
-  "checks": {"viewpoint_physics":"pass","unplanned_recorder_absent":"pass","capture_profile_match":"pass","not_cinematic":"pass","identity_match":"na","key_prop_match":"fail","continuity_match":"pass","defects_are_causal":"pass"},
-  "red_flags": [],
-  "notes": "实际查看：画面只有桌上的车钥匙和伸手动作，钥匙没有进入父亲嘴里，未兑现本图唯一关键证据及发布字幕；需重生成，保留原候选。"
-}

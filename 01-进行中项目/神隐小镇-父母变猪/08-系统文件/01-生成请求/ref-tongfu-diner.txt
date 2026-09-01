@@ -1,7 +1,0 @@
-Use case: photorealistic-natural
-Asset type: repeatable fictional location master for an original photo-story
-Primary request: a plain small-town roadside diner exterior and interior threshold, white enamel sign reading exactly “同福食堂”, aged wooden door, warm yellow indoor lamps, simple wooden tables and beige ceramic bowls.
-Scene/backdrop: rainy early-autumn Chinese small town, wet asphalt, low buildings.
-Style/medium: neutral location reference, ordinary consumer-camera realism, not cinematic.
-Composition/framing: vertical 4:5, eye level, no people.
-Constraints: no other readable text, no logos, no watermarks, no fantasy, no shrine, no bathhouse, no ornate architecture.
