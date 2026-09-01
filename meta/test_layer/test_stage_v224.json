@@ -1,0 +1,27 @@
+{
+  "version": "2.2.4",
+  "developer_tests": {
+    "visual_test": {
+      "requires": "BOOTSTRAP_VALIDATE_PASS",
+      "requires_preproduction": false,
+      "image_count": 1,
+      "authority": "NON_AUTHORITY_TEST_ONLY"
+    },
+    "production_smoke_test": {
+      "requires": "PREPRODUCTION_VALIDATE_PASS",
+      "requires_preproduction": true,
+      "image_count": 1,
+      "authority": "NON_AUTHORITY_TEST_ONLY"
+    }
+  },
+  "lifecycle": [
+    "BOOTSTRAP",
+    "BOOTSTRAP_VALIDATE",
+    "VISUAL_TEST",
+    "PREPRODUCTION",
+    "PREPRODUCTION_VALIDATE",
+    "PRODUCTION_SMOKE_TEST",
+    "VISUAL_LOCK",
+    "PRODUCTION"
+  ]
+}

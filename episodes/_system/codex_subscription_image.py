@@ -13,7 +13,7 @@ import time
 from pathlib import Path
 
 from canvas_normalize import normalize, read_canvas
-from visual_profile import compile_prompt_contract
+from visual_profile_bridge_v224 import compile_prompt_contract
 import frame_contract as resolved_frame_contract
 import image_model_policy
 

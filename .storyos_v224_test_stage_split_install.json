@@ -1,0 +1,45 @@
+{
+  "version": "Story_OS_V2.2.4_Test_Stage_Split",
+  "status": "PASS",
+  "installed_at": "2026-09-01T17:56:48.700375",
+  "base_guard": {
+    "path": "episodes/_system/codex_subscription_image.py",
+    "expected_blob": "d3934e4fd50643e29eedd0215fe45b4073a608c0"
+  },
+  "backup_dir": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.storyos_backups\\v224_test_stage_split_20260901_175648",
+  "files": [
+    {
+      "path": "episodes/_system/codex_subscription_image.py",
+      "sha256": "289fc1275f61ff5004cba5c12498eec9df451247ff96356327a264cae4995ebb"
+    },
+    {
+      "path": "episodes/_system/visual_profile_bridge_v224.py",
+      "sha256": "a668f9adb0e09ade3bc8c27153848fee0927f9630f62a1dee4da7ebf0aae6ee3"
+    },
+    {
+      "path": "episodes/_system/test_stage_v224.py",
+      "sha256": "09baf4aecd3cac8f57e1edfb6513caf23ea9ce56bcbe89428ff66662a7bd481b"
+    },
+    {
+      "path": "episodes/_system/test_test_stage_v224.py",
+      "sha256": "887e6d829d17832df557344b4a4944d84a1179365b1f769e45e22d7d469e037b"
+    },
+    {
+      "path": "scripts/story_test.py",
+      "sha256": "07d299588f99f7313dd8d90333a63e421eb308156edf833ccfe13c1d40ee025a"
+    },
+    {
+      "path": "scripts/story_visual_authority.py",
+      "sha256": "dcbc6ca44429ce5f7a37409df4414fff6525b9c78b21c156ac85b29cb2296f12"
+    },
+    {
+      "path": "meta/test_layer/test_stage_v224.json",
+      "sha256": "8e26179d6e2c84f4b32434b0255602e71aafd1f8120bf84e74bc5b1696315179"
+    },
+    {
+      "path": "docs/Story_OS_V2.2.4_Test_Stage_Split.md",
+      "sha256": "17de9425f7bc7da2011aad51134d4169ebe24b659a3a97e6f11e893915da31bd"
+    }
+  ],
+  "self_test": "VISUAL PROFILE BRIDGE V2.2.4 SELF-TEST PASS\nSTORY OS V2.2.4 TEST STAGE SELF-TEST PASS\nCODEX SUBSCRIPTION IMAGE BACKEND SELF-TEST PASS\nSTORY OS V2.2.4 INTEGRATION SELF-TEST PASS"
+}

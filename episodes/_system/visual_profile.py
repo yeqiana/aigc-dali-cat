@@ -50,6 +50,26 @@ def default_profile() -> dict:
     }
 
 
+def list_registered_profiles() -> list[dict]:
+    """Enumerate visual profiles registered under standards/visual_profiles."""
+    profiles = []
+    profile_dir = ROOT / "standards" / "visual_profiles"
+    if profile_dir.is_dir():
+        for p in sorted(profile_dir.glob("*.json")):
+            try:
+                data = load_json(p)
+            except SystemExit:
+                continue
+            pid = str(data.get("profile_id") or "").strip()
+            if pid:
+                profiles.append({
+                    "profile_id": pid,
+                    "profile_name": str(data.get("profile_name") or "").strip() or p.stem,
+                    "profile_path": p.relative_to(ROOT).as_posix(),
+                })
+    return profiles
+
+
 def resolve_profile(ep: Path) -> dict:
     resolved = default_profile()
     gates_path = ep / GATES_REL
@@ -139,6 +159,16 @@ def cmd_show(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_list(args: argparse.Namespace) -> int:
+    profiles = list_registered_profiles()
+    if args.json:
+        print(json.dumps(profiles, ensure_ascii=False, indent=2))
+    else:
+        for p in profiles:
+            print(f"{p['profile_id']} | {p['profile_name']} | {p['profile_path']}")
+    return 0
+
+
 def cmd_set_default(args: argparse.Namespace) -> int:
     ep = resolve_episode(args.episode_dir)
     path = ep / GATES_REL
@@ -159,14 +189,23 @@ def cmd_set_override(args: argparse.Namespace) -> int:
     ep = resolve_episode(args.episode_dir)
     if not args.reason.strip():
         raise SystemExit('--reason is required for visual profile override')
-    profile_path = Path(args.profile_path)
-    if profile_path.is_absolute():
-        try:
-            rel = profile_path.resolve().relative_to(ROOT.resolve())
-        except ValueError:
-            raise SystemExit('override profile must be inside repository')
+    if args.profile_path:
+        profile_path = Path(args.profile_path)
+        if profile_path.is_absolute():
+            try:
+                rel = profile_path.resolve().relative_to(ROOT.resolve())
+            except ValueError:
+                raise SystemExit('override profile must be inside repository')
+        else:
+            rel = profile_path
     else:
-        rel = profile_path
+        rel = Path('standards/visual_profiles') / f'{args.profile_id}.json'
+        if not (ROOT / rel).is_file():
+            registered = [p['profile_id'] for p in list_registered_profiles()]
+            raise SystemExit(
+                f'profile file missing for profile_id={args.profile_id!r}: {rel.as_posix()} '
+                f'(registered profiles: {", ".join(registered) or "none"})'
+            )
     p = ROOT / rel
     if not p.is_file():
         raise SystemExit(f'profile file missing: {rel.as_posix()}')
@@ -188,8 +227,9 @@ def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description='Story OS V1.8 visual profile resolver')
     sub = ap.add_subparsers(dest='cmd', required=True)
     p = sub.add_parser('show'); p.add_argument('episode_dir'); p.add_argument('--json', action='store_true'); p.set_defaults(func=cmd_show)
+    p = sub.add_parser('list'); p.add_argument('--json', action='store_true'); p.set_defaults(func=cmd_list)
     p = sub.add_parser('set-default'); p.add_argument('episode_dir'); p.add_argument('--capture-profile'); p.set_defaults(func=cmd_set_default)
-    p = sub.add_parser('set-override'); p.add_argument('episode_dir'); p.add_argument('--profile-id', required=True); p.add_argument('--profile-path', required=True); p.add_argument('--reason', required=True); p.add_argument('--capture-profile'); p.set_defaults(func=cmd_set_override)
+    p = sub.add_parser('set-override'); p.add_argument('episode_dir'); p.add_argument('--profile-id', required=True); p.add_argument('--profile-path'); p.add_argument('--reason', required=True); p.add_argument('--capture-profile'); p.set_defaults(func=cmd_set_override)
     return ap
 
 
