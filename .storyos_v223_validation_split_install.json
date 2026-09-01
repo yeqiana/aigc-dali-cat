@@ -1,0 +1,30 @@
+{
+  "version": "Story_OS_V2.2.3_Validation_Stage_Split",
+  "status": "PASS",
+  "installed_at": "2026-09-01T16:54:55.486506",
+  "backup_dir": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.storyos_backups\\v223_validation_split_20260901_165455",
+  "copied_files": [
+    {
+      "path": "episodes/_system/validation_stage_v223.py",
+      "sha256": "935648c4b35f39a55f9ddbbf123cdce22d44bb0475d2f163c791e32f135136ef"
+    },
+    {
+      "path": "episodes/_system/test_validation_stage_v223.py",
+      "sha256": "cb0a5abac7847a2421a9e375aefa9e21966f56abb70a6669d21c76f52e76df9e"
+    },
+    {
+      "path": "scripts/story_validate.py",
+      "sha256": "7b96d442e9815f7279b4ddde694ae47b8bedc567f00a7cc67fea1c5b3cff8ea0"
+    },
+    {
+      "path": "meta/validation/validation_stage_v223.json",
+      "sha256": "7d8c7c92c4ef29349214b21ac77c3daa71131efa6f2ce81d88ffad8f5d7aa92f"
+    },
+    {
+      "path": "docs/Story_OS_V2.2.3_Validation_Stage_Split.md",
+      "sha256": "0f36f499884f397a5ec271eac621969e19f73b83417b6eed292cabf3749ed48e"
+    }
+  ],
+  "backed_up_files": [],
+  "self_test": "STORY OS V2.2.3 VALIDATION STAGE SPLIT SELF TEST PASS"
+}

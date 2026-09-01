@@ -1,0 +1,37 @@
+{
+  "version": "2.2.3",
+  "states": [
+    "IDEA",
+    "BOOTSTRAPPED",
+    "READY_FOR_PREPRODUCTION",
+    "PREPRODUCTION_READY",
+    "READY_FOR_SMOKE_TEST"
+  ],
+  "validators": {
+    "bootstrap": {
+      "pass_status": "BOOTSTRAP_VALIDATE_PASS",
+      "next_state": "READY_FOR_PREPRODUCTION",
+      "requires": [
+        "episode_blueprint",
+        "chapter_lock",
+        "visual_profile",
+        "asset_manifest"
+      ]
+    },
+    "preproduction": {
+      "pass_status": "PREPRODUCTION_VALIDATE_PASS",
+      "next_state": "READY_FOR_SMOKE_TEST",
+      "requires": [
+        "bootstrap_dependency",
+        "character_contract",
+        "location_contract",
+        "device_or_prop_contract",
+        "asset_manifest",
+        "resolved_frame_contracts",
+        "authority_or_binding",
+        "asset_sha_or_digest",
+        "authority_scope=current_story_branch"
+      ]
+    }
+  }
+}
