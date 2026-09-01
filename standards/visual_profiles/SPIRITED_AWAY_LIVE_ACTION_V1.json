@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.2",
+  "profile_id": "SPIRITED_AWAY_LIVE_ACTION_V1",
+  "profile_version": "1.0",
+  "profile_name": "1990年代日本真人奇幻电影（35mm胶片质感）",
+  "default_when_unspecified": false,
+  "scope": "episode_explicit_locked_visual_profile",
+  "principle": "统一为1990年代日本真人奇幻电影质感：写实实景、真人演员、真实摄影机曝光；具体场景与年代生活物理优先。",
+  "precedence": [
+    "explicit_episode_or_series_visual_profile",
+    "film_era_and_camera_physics",
+    "SPIRITED_AWAY_LIVE_ACTION_V1_visual_language"
+  ],
+  "visual_dna": {
+    "reality_first": true,
+    "film_medium": "35mm_film",
+    "color": "low_saturation_environment_driven",
+    "texture": "light_film_grain_slight_highlight_rolloff_summer_humidity",
+    "lighting": "natural_light_only",
+    "skin": "real_skin_no_plastic",
+    "sets": "real_practical_sets",
+    "era": "1990s_japanese_living_environment",
+    "wardrobe": "natural_era_appropriate",
+    "photography": "real_cinematography_not_concept_art_not_studio_not_ai_illustration",
+    "composition": "film_framing",
+    "anomaly": "real_world_first_supernatural_second"
+  },
+  "texture_translation": {
+    "35mm_film": [
+      "film_grain",
+      "low_saturation",
+      "slight_highlight_rolloff",
+      "real_exposure",
+      "summer_humidity_haze",
+      "natural_skin_texture"
+    ]
+  },
+  "must_keep": [
+    "真人演员",
+    "日本90年代生活环境",
+    "自然服装",
+    "写实实景",
+    "潮湿夏季空气感"
+  ],
+  "forbidden": [
+    "动画脸",
+    "二次元",
+    "cosplay",
+    "游戏CG",
+    "3D渲染",
+    "塑料皮肤",
+    "过度锐化",
+    "HDR感",
+    "AI油腻感",
+    "概念设计图",
+    "商业棚拍",
+    "AI插画"
+  ],
+  "anti_homogeneity": {
+    "lock_texture_not_scene": true,
+    "rule": "统一90年代日本真人电影质感、写实实景与胶片物理；不统一剧情空间、异常载体和关键道具。"
+  }
+}

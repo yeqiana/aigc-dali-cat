@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.3",
+  "bootstrap_status": "BOOTSTRAPPED",
+  "episode": {
+    "id": "12-01",
+    "series": "12_千寻",
+    "series_title": "神隐记录",
+    "title": "那条不存在的隧道",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "4:5",
+    "frame_count": 22
+  },
+  "source_story": {
+    "path": "episodes/12_千寻/千寻.md",
+    "sha256": "8EC5B988865EAF172B5E69082F5A0C2FAF857DBAF47E5EE97B71113BFFA549D3",
+    "type": "series_adaptation_plan",
+    "note": "《神隐记录》系列规划方案 V1.2；本集取 EP01《那条不存在的隧道》，共 22 帧"
+  },
+  "chapter_scope": {
+    "scope_statement": "本集覆盖 EP01 全部叙事：搬家途中 → 发现废弃隧道 → 进入不存在的小镇 → 父母变成猪 → 女孩被迫留下；共 4 个 chapter、22 帧。",
+    "chapters": [
+      {
+        "id": "C01",
+        "title": "现实铺垫",
+        "frames": "01-05"
+      },
+      {
+        "id": "C02",
+        "title": "异常出现",
+        "frames": "06-12"
+      },
+      {
+        "id": "C03",
+        "title": "世界规则",
+        "frames": "13-18"
+      },
+      {
+        "id": "C04",
+        "title": "高潮",
+        "frames": "19-22"
+      }
+    ],
+    "chapter_lock_path": "episodes/12_千寻/01_那条不存在的隧道/meta/chapter-lock.json"
+  },
+  "visual_profile": {
+    "profile_id": "QIANXUN_MOBILE_RECORD_V1",
+    "path": "episodes/12_千寻/01_那条不存在的隧道/meta/visual-profile.json",
+    "mode": "explicit_from_source",
+    "override_reason": "源 MD 统一视觉规范显式定义伪纪录片手机记录视觉体系，显式视觉体系覆盖默认 M00"
+  },
+  "asset_manifest_path": "episodes/12_千寻/01_那条不存在的隧道/meta/asset-manifest.json",
+  "authority_scope": "current_story_branch",
+  "next_steps": [
+    {
+      "step": "bootstrap_validate",
+      "command": "python -X utf8 scripts/story_validate.py bootstrap episodes/12_千寻/01_那条不存在的隧道"
+    },
+    {
+      "step": "preproduction"
+    },
+    {
+      "step": "preproduction_validate"
+    },
+    {
+      "step": "smoke_test"
+    },
+    {
+      "step": "visual_lock_and_production"
+    }
+  ],
+  "out_of_scope": [
+    "character_master",
+    "location_master",
+    "prop_master",
+    "storyboard",
+    "resolved_frame_contracts",
+    "image_generation",
+    "preproduction",
+    "smoke_test"
+  ],
+  "created_at": "2026-09-01T17:33:35+08:00"
+}

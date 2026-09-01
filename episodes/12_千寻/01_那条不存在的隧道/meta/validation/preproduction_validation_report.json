@@ -1,0 +1,63 @@
+{
+  "story_os_validation_version": "2.2.3",
+  "stage": "preproduction",
+  "episode_dir": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\12_千寻\\01_那条不存在的隧道",
+  "status": "PREPRODUCTION_VALIDATE_FAILED",
+  "checks": [
+    {
+      "name": "bootstrap_dependency",
+      "status": "PASS",
+      "path": null,
+      "detail": "BOOTSTRAP_VALIDATE_PASS"
+    },
+    {
+      "name": "character_contract",
+      "status": "FAIL",
+      "path": null,
+      "detail": "MISSING"
+    },
+    {
+      "name": "location_contract",
+      "status": "FAIL",
+      "path": null,
+      "detail": "MISSING"
+    },
+    {
+      "name": "device_or_prop_contract",
+      "status": "FAIL",
+      "path": null,
+      "detail": "MISSING"
+    },
+    {
+      "name": "asset_manifest",
+      "status": "PASS",
+      "path": "meta\\asset-manifest.json",
+      "detail": null
+    },
+    {
+      "name": "resolved_frame_contracts",
+      "status": "FAIL",
+      "path": null,
+      "detail": "MISSING"
+    },
+    {
+      "name": "authority_or_binding",
+      "status": "FAIL",
+      "path": null,
+      "detail": "MISSING"
+    },
+    {
+      "name": "asset_sha_or_digest",
+      "status": "PASS",
+      "path": null,
+      "detail": "5 SHA/digest value(s)"
+    },
+    {
+      "name": "authority_scope",
+      "status": "PASS",
+      "path": null,
+      "detail": "Authority is explicitly scoped to the current story branch."
+    }
+  ],
+  "next_state": "PREPRODUCTION_INCOMPLETE"
+}

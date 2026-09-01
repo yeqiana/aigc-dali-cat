@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.3",
+  "episode_id": "12-01",
+  "authority_scope": "current_story_branch",
+  "existing_assets": [
+    {
+      "path": "episodes/12_千寻/千寻.md",
+      "kind": "source_story",
+      "sha256": "8EC5B988865EAF172B5E69082F5A0C2FAF857DBAF47E5EE97B71113BFFA549D3"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/episode-blueprint.json",
+      "kind": "bootstrap_asset",
+      "sha256": "878DF1A962BD08946707575C5F1BE58B6D3F9C95471657D483171C284C72B061"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/chapter-lock.json",
+      "kind": "bootstrap_asset",
+      "sha256": "DE20958F4079FBB433E981070108893DA491F9167D0BF9F36A3DEFB6D678BE0C"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/visual-profile.json",
+      "kind": "bootstrap_asset",
+      "sha256": "538414964A15024D2B22BB6623696F308A3CC969687484FDD7A20B367C98E179"
+    }
+  ],
+  "planned_assets": [
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/character-contract.json",
+      "kind": "character_contract",
+      "status": "planned"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/character-master.json",
+      "kind": "character_master",
+      "status": "planned"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/location-contract.json",
+      "kind": "location_contract",
+      "status": "planned"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/location-master.json",
+      "kind": "location_master",
+      "status": "planned"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/device-or-prop-contract.json",
+      "kind": "device_or_prop_contract",
+      "status": "planned"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/storyboard.json",
+      "kind": "storyboard",
+      "status": "planned"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/runtime/contracts",
+      "kind": "resolved_frame_contracts",
+      "status": "planned"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/meta/subtitles.yaml",
+      "kind": "subtitles",
+      "status": "planned"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/media/calibration",
+      "kind": "visual_lock_calibration",
+      "status": "planned"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/media/candidates",
+      "kind": "production_frames",
+      "status": "planned"
+    },
+    {
+      "path": "episodes/12_千寻/01_那条不存在的隧道/release",
+      "kind": "release_package",
+      "status": "planned"
+    }
+  ],
+  "created_at": "2026-09-01T17:33:35+08:00"
+}
