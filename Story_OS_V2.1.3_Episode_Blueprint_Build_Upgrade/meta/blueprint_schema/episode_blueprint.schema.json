@@ -1,0 +1,17 @@
+{
+  "version": "2.1.3",
+  "required": [
+    "episode_id",
+    "chapter_lock",
+    "visual_profile_id",
+    "asset_lock"
+  ],
+  "pipeline": [
+    "STORY_LOCK",
+    "ASSET_LOCK",
+    "VISUAL_LOCK",
+    "PRODUCTION",
+    "REVIEW",
+    "RELEASE"
+  ]
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "path": "README.md",
+    "sha256": "2eb3db3369280a1312b2c6a91812f2feffe2bee8005e2635f0001d0ff7d690a1"
+  },
+  {
+    "path": "install.py",
+    "sha256": "7edb049cb4a372237e65df7f86c3f5ed9e647b4ac6146c02f6ec2a8a03e06d64"
+  },
+  {
+    "path": "docs/Codex_One_Command_Build.md",
+    "sha256": "969f68e481bcca8ae9c63dee18e58e0614f703c582fe481f0a029574da34d3ff"
+  },
+  {
+    "path": "meta/blueprint_schema/episode_blueprint.schema.json",
+    "sha256": "1ecfe0873ceca568d6a35fd7acda239dfcf57b5fc3f27fb3e3f2bd8f09bfe538"
+  },
+  {
+    "path": "episodes/_system/episode_blueprint_v213.py",
+    "sha256": "2c6a4c1519a5304d43c5935d2273bc996e0f7b7aae5af648da3fb9d067f56c8f"
+  }
+]
