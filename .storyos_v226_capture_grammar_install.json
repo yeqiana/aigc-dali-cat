@@ -1,0 +1,39 @@
+{
+  "version": "Story_OS_V2.2.6_Global_First_Person_Capture_Grammar",
+  "status": "PASS",
+  "base_commit": "3f3368899dafcfd178c7b4e8eaa6012feb22fd77",
+  "installed_at": "2026-09-01T21:33:00.554715",
+  "backup_dir": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.storyos_backups\\v226_capture_grammar_20260901_213300",
+  "default_capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "installed_files": [
+    {
+      "path": "episodes/_system/capture_grammar_v226.py",
+      "sha256": "db8296e594a238f54c7307a3180a8e607e5570a3dbba3208e290d77a1eb0e4da"
+    },
+    {
+      "path": "episodes/_system/visual_profile_bridge_v224.py",
+      "sha256": "aed78c84e12ead22795d99f847c85dc9f844d62727ee89e6543a67279a999926"
+    },
+    {
+      "path": "episodes/_system/test_capture_grammar_v226.py",
+      "sha256": "a7a415bd68142a3d045459fa2b23304a2caf63504e8d5823fe83c740de489f59"
+    },
+    {
+      "path": "standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json",
+      "sha256": "0523d1be9614ed058af21c13c90b45872db3549df84145d9bede1b5c0f1a9ce9"
+    },
+    {
+      "path": "scripts/story_capture_grammar.py",
+      "sha256": "3774a63ad18db078cbd65ee2826f2b674ebdc38ac42a9a95842596c3ae874e2b"
+    },
+    {
+      "path": "meta/capture_grammar/default_capture_grammar_v226.json",
+      "sha256": "3020facab1085e1153a237ae0cbb289f3c55b2901dfacbb0409aa6317bb5848c"
+    },
+    {
+      "path": "docs/Story_OS_V2.2.6_Global_First_Person_Capture_Grammar.md",
+      "sha256": "ac93eb9c6c51e13e2e632065639b282cb373fbb567450a46774347702a0e8fe8"
+    }
+  ],
+  "self_test": "CAPTURE GRAMMAR V2.2.6 SELF-TEST PASS\nVISUAL PROFILE BRIDGE V2.2.6 SELF-TEST PASS\nCODEX SUBSCRIPTION IMAGE BACKEND SELF-TEST PASS\nSTORY OS V2.2.6 GLOBAL FIRST-PERSON CAPTURE GRAMMAR INTEGRATION SELF-TEST PASS"
+}

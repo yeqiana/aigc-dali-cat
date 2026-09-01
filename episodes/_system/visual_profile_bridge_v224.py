@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib, json
 from pathlib import Path
 import visual_profile as base
+import capture_grammar_v226
 
 ROOT = base.ROOT
 META_REL = Path("meta/visual-profile.json")
@@ -51,7 +52,7 @@ def episode_meta(ep: Path):
         "capture_profile": str((data.get("capture") or {}).get("device") or data.get("capture_profile") or "auto"),
         "override_reason": str(data.get("override_reason") or "episode meta visual profile lock"),
         "authority_source": p.relative_to(ep).as_posix(),
-        "rule": "Episode explicit Visual Profile is authoritative for image generation.",
+        "rule": "Episode explicit Visual Profile is authoritative for visual texture; global Capture Grammar owns camera authorship/framing unless explicitly overridden.",
     }
 
 def resolve_profile(ep: Path) -> dict:
@@ -83,6 +84,8 @@ def compile_prompt_contract(ep: Path) -> dict:
     p = (ROOT / profile["profile_path"]).resolve()
     data = load(p)
     dna = data.get("visual_dna") or {}
+
+    # Visual Profile is the texture/era layer. Capture Grammar is the camera-behavior layer.
     lines = [
         f"profile={profile['profile_id']} | {profile.get('profile_name') or ''}",
         f"authority={profile.get('authority_source') or profile.get('selection')}",
@@ -90,23 +93,44 @@ def compile_prompt_contract(ep: Path) -> dict:
     ]
     for k in [
         "reality_first","film_medium","color","texture","lighting","skin","sets",
-        "era","wardrobe","photography","composition","people",
-        "ordinary_chinese_life_density","available_light_only","anomaly"
+        "era","wardrobe","people","ordinary_chinese_life_density",
+        "available_light_only","anomaly"
     ]:
-        if k in dna: lines.append(f"{k}={_fmt(dna[k])}")
-    if data.get("must_keep"): lines.append("must_keep=" + _fmt(data["must_keep"]))
-    if data.get("forbidden"): lines.append("forbidden=" + _fmt(data["forbidden"]))
+        if k in dna:
+            lines.append(f"{k}={_fmt(dna[k])}")
+
+    # Keep photography only as medium/style context; it cannot control camera authorship or staging.
+    if "photography" in dna:
+        lines.append(f"visual_medium_photography={_fmt(dna['photography'])}")
+    if "composition" in dna:
+        lines.append(f"visual_profile_composition_hint_NON_AUTHORITY={_fmt(dna['composition'])}")
+
+    if data.get("must_keep"):
+        lines.append("must_keep=" + _fmt(data["must_keep"]))
+    if data.get("forbidden"):
+        lines.append("forbidden=" + _fmt(data["forbidden"]))
+
+    capture = capture_grammar_v226.compile_capture_contract(ep)
     lines += [
+        "----- GLOBAL CAPTURE GRAMMAR -----",
+        capture["text"],
+        "----- END GLOBAL CAPTURE GRAMMAR -----",
         "capture physics and story era override decorative texture",
-        "do not silently substitute another visual profile",
+        "do not silently substitute another visual profile or capture grammar",
     ]
     return {
         **profile,
         "profile_sha256": sha256_file(p),
+        "capture_grammar": {
+            "grammar_id": capture["grammar_id"],
+            "grammar_path": capture["grammar_path"],
+            "selection": capture["selection"],
+            "authority_source": capture["authority_source"],
+        },
         "text": "\n".join(lines),
     }
 
 if __name__ == "__main__":
     d = base.default_profile()
     assert d.get("profile_id")
-    print("VISUAL PROFILE BRIDGE V2.2.4 SELF-TEST PASS")
+    print("VISUAL PROFILE BRIDGE V2.2.6 SELF-TEST PASS")

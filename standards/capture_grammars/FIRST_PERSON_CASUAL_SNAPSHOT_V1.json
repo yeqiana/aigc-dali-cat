@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.2.6",
+  "grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "grammar_version": "1.0",
+  "name": "全局默认：第一人称/同行者在场的私人随手拍",
+  "default": true,
+  "principle": "摄影者必须属于事件现场，而不是全知导演镜头。默认采用第一人称或同行者持机的私人记录语法，人物非摆拍、构图有生活性缺陷。",
+  "precedence": [
+    "explicit_episode_capture_grammar_override",
+    "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "visual_profile_texture_and_era"
+  ],
+  "camera_authorship": {
+    "operator": "participant_or_companion_inside_event",
+    "viewpoint": "first_person_or_companion_eye",
+    "distance": "physically_plausible_human_position",
+    "floating_omniscient_camera": false
+  },
+  "snapshot_language": {
+    "handheld": true,
+    "unposed": true,
+    "imperfect_framing": true,
+    "slight_horizon_or_centering_error_allowed": true,
+    "partial_occlusion_allowed": true,
+    "foreground_body_hand_doorframe_vehicle_edge_allowed": true,
+    "caught_between_actions": true,
+    "subjects_need_not_face_camera": true
+  },
+  "subject_visibility_rule": "若核心主角必须出现在画面中，默认由同行者/现场另一人持机记录；仍禁止全知第三人称和导演式机位。",
+  "selfie_rule": "自拍不是默认。只有剧情/Frame Contract明确要求自拍时才使用自拍构图。",
+  "forbidden": [
+    "omniscient_third_person_camera",
+    "director_blocking",
+    "staged_group_lineup",
+    "symmetrical_hero_framing",
+    "poster_composition",
+    "commercial_promo_composition",
+    "characters_arranged_for_camera",
+    "floating_camera_outside_human_position"
+  ],
+  "visual_profile_interop": {
+    "rule": "Visual Profile负责年代、材质、色彩、光线、胶片/数码质感；Capture Grammar负责谁在拍、从哪里拍、是否摆拍、构图行为。",
+    "capture_grammar_overrides_profile_composition": true,
+    "capture_grammar_overrides_profile_camera_authorship": true,
+    "keep_profile_texture": true
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "version": "2.2.6",
+  "default_capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "applies_to": "all_episodes_and_all_visual_profiles_by_default",
+  "precedence_rule": "capture_grammar_overrides_visual_profile_composition_and_camera_authorship",
+  "visual_profile_role": [
+    "texture",
+    "era",
+    "color",
+    "lighting",
+    "material",
+    "film_or_device_look"
+  ],
+  "capture_grammar_role": [
+    "camera_authorship",
+    "viewpoint",
+    "framing_behavior",
+    "posed_vs_unposed"
+  ],
+  "selfie_default": false,
+  "episode_override": {
+    "path": "meta/capture-grammar.json",
+    "mode": "override",
+    "requires": [
+      "grammar_id",
+      "grammar_path",
+      "override_reason"
+    ]
+  }
+}
