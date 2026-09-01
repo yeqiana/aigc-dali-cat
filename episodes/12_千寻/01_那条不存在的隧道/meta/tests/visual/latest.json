@@ -1,0 +1,9 @@
+{
+  "version": "2.2.7",
+  "pointer_type": "NON_AUTHORITY_NON_GATE_NON_REUSE",
+  "history_policy": "AUDIT_ONLY_NEVER_EXECUTION_INPUT",
+  "run_id": "VT_20260901_223002_134_6ff3",
+  "status": "VISUAL_TEST_GENERATED_PENDING_REVIEW",
+  "report": "meta\\tests\\visual\\VT_20260901_223002_134_6ff3\\report.json",
+  "updated_at": "2026-09-01T22:36:39+08:00"
+}
