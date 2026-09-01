@@ -2,6 +2,7 @@
   "schema_version": 1,
   "handoff_type": "preproduction_to_image",
   "source_runtime": "codex",
+  "authority_boundary_version": 2,
   "created_at_stage": "STORYBOARD_LOCKED",
   "authority_assets": [
     {
@@ -37,38 +38,38 @@
     {
       "kind": "file",
       "path": "story/01_StoryLock.md",
-      "sha256": "a0f7bb5ab9ad3931950a3d11ffc2b32e2d9b010f74f18ac2df838d84cfd97ba9",
-      "bytes": 9895
+      "sha256": "1036636614fc8208f3831078635a860b484927c133ac2eb497d9c2601c5b69b3",
+      "bytes": 12226
     },
     {
       "kind": "file",
       "path": "story/02_Storyboard.md",
-      "sha256": "4677990eec404afa2b097201bb9aff253b104624c5eaf61e705792566d6919dd",
-      "bytes": 12874
+      "sha256": "a6147f70d2de6e06c6f4fba6e48ae5dfc36a1634a2117bd9ea22b47fba75d9fd",
+      "bytes": 14385
     },
     {
       "kind": "file",
       "path": "story/03_Visual_Preproduction.md",
-      "sha256": "b01a2f1e4d2c50b816be340066ca98d1f9da8448199fa9f3f76413d7f5280faa",
-      "bytes": 2724
+      "sha256": "3f206b2b0b294b2d0ef2d8d2429dfdd7583a261df6baa4982cebe130428147ac",
+      "bytes": 3387
     },
     {
       "kind": "file",
       "path": "story/04_Caption_Plan.md",
-      "sha256": "d34993f0ede93f78f90a8895ebeb4222500e0328b4bc3cd6ea767f6df8520b57",
+      "sha256": "cb2b5f368fffdb8c631b152d253344ac660004e6298f0ebc1f196efaa70cecf2",
       "bytes": 1435
     },
     {
       "kind": "file",
       "path": "story/05_Intro_Description_Strategy.md",
-      "sha256": "e6d306f20738162b15a50b3a8ffa0af92ee9461b55d68a80f12ba78d8b596462",
-      "bytes": 1357
+      "sha256": "b249b787db19f9b6026721353632d9ce49541210d00b50285f99c6b918358c1d",
+      "bytes": 1573
     },
     {
       "kind": "file",
       "path": "story/06_Preproduction_QA.md",
-      "sha256": "579d060811181acbdc542fc31f89f72ea6aebeed8fdbf47a6067cb51a072e1ef",
-      "bytes": 3649
+      "sha256": "cb0fdb6b590d3877c097b08cef930a6d3fb316b6e90a301a14474aac3db51ba4",
+      "bytes": 3314
     }
   ],
   "authority_subsets": [
@@ -76,7 +77,7 @@
       "kind": "json_subset",
       "path": "meta/story-gates.json",
       "name": "stable_preproduction_subset",
-      "sha256": "80f8aea522217d89a3f4d9a3f0cbf3d4d4d2c22323507f2361a6804dbce5149e"
+      "sha256": "e80a23fcc1d642459d60d28fc5c4576e2ebcde89c40f138166a036c0290fba5a"
     }
   ],
   "derived_rebuildable": [
@@ -88,5 +89,5 @@
   "story_rewrite_allowed": false,
   "next_mode": "image_continue",
   "handoff_ready": true,
-  "manifest_sha256": "65e6db5c5a8aa8800e2c6c951b646835f41982c772aad0126abc377922fc0671"
+  "manifest_sha256": "4b2a4d501c6f7a72758a89b2d6b5581f944a9bd96bc988bab6b0994a97513ffe"
 }
