@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "review_status": "DRAFT_READY_FOR_VERIFY",
+  "note": "由当前会话按选题野心规范评审；未伪造 concept_ambition.py 本地 verify 结果。Story Lock 前仍需仓库运行时执行 verify。",
+  "candidates": [
+    {"id":"C01","ambition_band":"A5","scores":{"one_line_hook":20,"hero_frame":20,"escalation_ceiling":19,"climax_visual_payoff":15,"mechanism_novelty":14,"discussion_space":9},"concept_voltage":97,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"risk":"高潮必须用真实看台、跳台、瓷砖和泳道做尺度参照，不能拍成概念剖面图。"},
+    {"id":"C02","ambition_band":"A4","scores":{"one_line_hook":19,"hero_frame":18,"escalation_ceiling":18,"climax_visual_payoff":14,"mechanism_novelty":14,"discussion_space":10},"concept_voltage":93,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"risk":"画中画和7秒差需要极高生成稳定性，Visual Lock风险高于C01。"},
+    {"id":"C03","ambition_band":"A5","scores":{"one_line_hook":18,"hero_frame":17,"escalation_ceiling":19,"climax_visual_payoff":15,"mechanism_novelty":13,"discussion_space":8},"concept_voltage":90,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"risk":"无限楼层接近常见Backrooms空间增殖，需要更多差异化。"},
+    {"id":"C04","ambition_band":"A4","scores":{"one_line_hook":18,"hero_frame":19,"escalation_ceiling":16,"climax_visual_payoff":13,"mechanism_novelty":13,"discussion_space":9},"concept_voltage":88,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"risk":"季节门容易变成多个漂亮场景拼贴，动作后果链不如C01短。"},
+    {"id":"C05","ambition_band":"A4","scores":{"one_line_hook":17,"hero_frame":17,"escalation_ceiling":17,"climax_visual_payoff":13,"mechanism_novelty":15,"discussion_space":8},"concept_voltage":87,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"risk":"档案空间偏暗且重复，单张图传播力略弱。"},
+    {"id":"C06","ambition_band":"A4","scores":{"one_line_hook":18,"hero_frame":18,"escalation_ceiling":18,"climax_visual_payoff":14,"mechanism_novelty":13,"discussion_space":8},"concept_voltage":89,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"risk":"沉没旧城/水下街道属于成熟怪谈母题，原创识别度低于C01。"},
+    {"id":"C07","ambition_band":"A4","scores":{"one_line_hook":17,"hero_frame":15,"escalation_ceiling":17,"climax_visual_payoff":13,"mechanism_novelty":14,"discussion_space":8},"concept_voltage":84,"wordless_test":{"stop_scroll":false,"escalation_readable":true,"curiosity_gap":true},"risk":"首图很难让普通用户一眼看出400米变短。"},
+    {"id":"C08","ambition_band":"A4","scores":{"one_line_hook":17,"hero_frame":17,"escalation_ceiling":16,"climax_visual_payoff":13,"mechanism_novelty":12,"discussion_space":8},"concept_voltage":83,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"risk":"镜子异常过于常见，且生成镜像一致性成本高。"},
+    {"id":"C09","ambition_band":"A4","scores":{"one_line_hook":18,"hero_frame":17,"escalation_ceiling":17,"climax_visual_payoff":13,"mechanism_novelty":14,"discussion_space":8},"concept_voltage":87,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"risk":"未来车辆需要车牌/时间等文本证据才能快速证明。"},
+    {"id":"C10","ambition_band":"A4","scores":{"one_line_hook":17,"hero_frame":18,"escalation_ceiling":17,"climax_visual_payoff":14,"mechanism_novelty":14,"discussion_space":8},"concept_voltage":88,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"risk":"多天气同屏容易像AI特效图，真实拍摄物理难度较高。"}
+  ],
+  "selected": {
+    "id": "C01",
+    "concept_voltage": 97,
+    "why": [
+      "标题一句话即可转述：水抽干了，池底还有人在游",
+      "Cover/Mid/Climax三张均不依赖文字成立",
+      "第7-8张可以用红色浮板形成不可逆动作后果证据",
+      "A5高潮不是单纯放大同一人影，而是揭示垂直叠层世界规则",
+      "评论问题天然是二选一：机械活动池底 vs 现实层切换"
+    ],
+    "wordless_test": {"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true}
+  },
+  "recent_context_manual_review": {
+    "published_reference": ["QQ网友面基","中元节前夜·纸扎铺","瓶中世界","鳌太线·热汤","神话遗址S6·东海龙宫"],
+    "planned_reference": ["仲夏夜惊魂｜停电夜蜕壳","千寻EP01｜那条不存在的隧道"],
+    "selected_candidate_risk": "LOW_TO_LIGHT",
+    "reason": "与东海龙宫共享水元素但不共享水下探索/遗址机制；与瓶中世界都存在现实规则异常，但C01没有可操控缩微载体，发动机、载体、中段证据和高潮兑现均不同；与千寻不走隧道穿越、无人小镇或浴场入口。",
+    "mechanism_skin_swap_veto": false
+  }
+}
