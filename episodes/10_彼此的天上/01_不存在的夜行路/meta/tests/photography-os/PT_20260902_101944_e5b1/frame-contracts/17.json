@@ -1,0 +1,22 @@
+{
+  "frame": "17",
+  "story_os_version": "2.2.8-photography-os-r3",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "两人离开，车内低光出发瞬间，失控与后怕",
+  "narrative_segment": "17-18 失控感明显上升，允许更慌乱、更差的拍摄质量，但必须符合摄影物理",
+  "photographer": {
+    "who_took_it": "P01（男友），驾驶座持机，用自己的手机",
+    "why_capture_now": "灯全灭了，两人在车里坐了一会儿，P01 决定走；起步前拍下副驾女友系安全带、两人都没说话的样子",
+    "photographer_position": "驾驶座，手机朝副驾，低角度歪拍",
+    "why_camera_in_this_hand": "P01 是主摄影者；车还未起步（静止），持机成立",
+    "ghost_camera": false
+  },
+  "what_is_happening": "车内暗，仪表盘光；女友低头系安全带，又看向窗外黑山的方向；P01 举起手机拍下这沉默",
+  "why_saved": "相册里需要一张“我们离开那里”的收尾",
+  "shot_grammar": "IN_CAR_LOWLIGHT_DEPARTURE",
+  "defect_physics": ["车内暗、仪表盘光", "系安全带动作轻微模糊", "构图歪、拍得急（手抖余震）"],
+  "continuity_chain": "vs 16：同一夜同一停车带，灯已全灭；P01 回到驾驶座、P02 坐回副驾；同一车内饰；P02 浅灰大衣、长深棕发；时间继续推进",
+  "screen_content": "中控屏暗屏/待机，无内容文字；挡风玻璃外是黑的山路",
+  "time_of_day": "同一夜约 00:05",
+  "emotion_level": 8
+}

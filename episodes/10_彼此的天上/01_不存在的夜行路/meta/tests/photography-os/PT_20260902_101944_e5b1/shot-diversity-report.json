@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.2.8-photography-os-r3",
+  "round": 3,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "rule": "第一人称是摄影逻辑，不是固定的手+手机+远山构图；11-20 至少覆盖 4 类明显不同的摄影机位；同一种镜头语法不连续超过 2 张；手机本体不要求每张入镜",
+  "families_per_frame": {
+    "11": "IN_CAR_CONVERSATION_CLOSEUP（驾驶座机位，车内对话近景，导航屏/方向盘前景）",
+    "12": "SECOND_SEAT_HAND_ACTION（副驾机位，手部+拨杆前景，全暗屏，窗外仅灯线）",
+    "13": "ROADSIDE_LONG_TELE_EVIDENCE（车外护栏边，手持长焦证据）",
+    "14": "OVER_SHOULDER（P02 肩后机位，P01 背影+灯队）",
+    "15": "THROUGH_WINDOW_TELE（驾驶座隔侧窗玻璃长焦，玻璃反光/雾气）",
+    "16": "PHOTOGRAPHER_IN_FRAME（P02 拍 P01 拍最后一盏灯，双机位互证）",
+    "17": "IN_CAR_LOWLIGHT_DEPARTURE（车内低光出发瞬间，歪构图）",
+    "18": "DAYTIME_SAME_SPOT_WIDE（第二天白天同位置全景）",
+    "19": "SCREEN_PLAYBACK（屏幕回看，P02 拍 P01 手机视频）",
+    "20": "CASUAL_SELFIE（双人自拍收尾）"
+  },
+  "distinct_family_count": 10,
+  "consecutive_same_family_max": 1,
+  "required_min_families": 4,
+  "repeated_hand_phone_distant_anomaly_template": "NOT_REPEATED",
+  "notes": [
+    "10 张全部为不同机位族，无连续重复，显著超过 4 类下限",
+    "13/15 虽同为夜间长焦观察灯队，但机位（车外护栏 vs 车内隔窗）与前景物（护栏 vs 玻璃反光）明显不同",
+    "16 采用拍摄者入镜双机位，解决“P01 入镜时相机来源”并符合 14-16 拍人应对的目标",
+    "20 自拍为真实来源，符合 Camera Roster 无幽灵摄影机要求",
+    "手机本体未强制入镜：仅 14/16/19 出现手机，11/13/15/17 无手机入画"
+  ],
+  "verdict": "PASS"
+}

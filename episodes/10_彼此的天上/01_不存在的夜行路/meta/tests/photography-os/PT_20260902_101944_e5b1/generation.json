@@ -1,0 +1,105 @@
+{
+  "version": "2.2.8-photography-os-r3",
+  "run_id": "PT_20260902_101944_e5b1",
+  "round": 3,
+  "status": "IMAGE_GENERATED",
+  "route": "MAIN_SESSION_NATIVE_IMAGE",
+  "reuse_previous_image": false,
+  "frames": {
+    "11": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "d58752bf20717b1da65826b95c7396ef71dd9f21a775db79a463dfacb9732c20",
+      "output_sha256": "d5bc8e55dadbd4eaabefcb926e1d4816f7e72453e4c17b50ed7453aff2b4da32",
+      "generation_elapsed_seconds_estimated": 120,
+      "generation_attempts": 1
+    },
+    "12": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "203eb03790a20cb0fee26ff2527057e1a2b390df8deff6b134f01e041536cd7c",
+      "output_sha256": "37d74bed7b4f99713b614c66666386b6f8ae2f489a5cc841752ea0722699d711",
+      "generation_elapsed_seconds_estimated": 600,
+      "generation_attempts": 4,
+      "attempt_notes": [
+        "attempt1 远光照向泥路且风挡脏，返修",
+        "attempt2 仍被画成照向雪/土路，返修",
+        "attempt3 改手部+拨杆特写但 POV 漂到驾驶座且出现可读仪表文字，返修",
+        "attempt4 副驾机位手拨拨杆、全暗屏无文字、窗外仅远处灯线，通过（内容返修 3 次，超出每帧 1 次上限，测试专用并如实记录）"
+      ]
+    },
+    "13": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "81323125ceb35faadfae25061a66c911dbd25bc32a4711dd98a3e5de591c1ada",
+      "output_sha256": "38c2a6a28eed08fcba698444dce50cdf23fcfc1aa92d320088b003cfca58cd2f",
+      "generation_elapsed_seconds_estimated": 320,
+      "generation_attempts": 2,
+      "attempt_notes": [
+        "attempt1 雪坡+缆车/索道感，返修",
+        "attempt2 岩石山坡+灯队沿径移动，通过（内容返修 1 次）"
+      ]
+    },
+    "14": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "2c3f5ce03964f956b3468c2cbfbf8697810df9446c47956b9308ca5d9582076a",
+      "output_sha256": "3501a61a3b651f7fad87613dbbc6252adddd312e66209a2ecc5cf3591355aa1d",
+      "generation_elapsed_seconds_estimated": 120,
+      "generation_attempts": 1
+    },
+    "15": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "d9c6a81ec4fb5b8666cff8c527afc14e0c1cf135f56eaf5f6c674448c6bd7243",
+      "output_sha256": "d1f40f232748bef8f5b3f34acede08e2716b778ed80db78ba912ac05731a8f7a",
+      "generation_elapsed_seconds_estimated": 110,
+      "generation_attempts": 1
+    },
+    "16": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "80d32db527a3b71a2562590eab14985c82705f716a5d2c77a5f1bea9c3d3bbc6",
+      "output_sha256": "3d58392e3ad141ebbf5e54432fc42b2cc633001387bb98cd637fcf1028bc7cc7",
+      "generation_elapsed_seconds_estimated": 120,
+      "generation_attempts": 1
+    },
+    "17": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "3bef15f3ffa5e62a0b76659c82b23f712530ff661739abe48e62ca934bae5f6f",
+      "output_sha256": "78846f7703fcb64ad439f628c48e450c23604460685154dafef1ff759db61e1a",
+      "generation_elapsed_seconds_estimated": 150,
+      "generation_attempts": 1
+    },
+    "18": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "4fd71229aeb10fbe4bbb16e711ae8134350671c533f29ca1d212578d2e9b8a07",
+      "output_sha256": "3b3e5d8cfd2266cbf1be4c3a91cc82dfa3eead1d2fe5f21e456345401097708d",
+      "generation_elapsed_seconds_estimated": 500,
+      "generation_attempts": 3,
+      "attempt_notes": [
+        "attempt1 502 Bad Gateway 技术失败（无图）",
+        "attempt2 502 Bad Gateway 技术失败（无图）",
+        "attempt3 生成成功，通过（技术失败 2 次不计内容返修）"
+      ]
+    },
+    "19": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "4ada26a1a9add62c340839d668b2667cb6704354b24d8675e206a7c385992070",
+      "output_sha256": "e0cad1221525c944ce44ef3152fdf7e0a76252c2735c12927e879cc60effad0d",
+      "generation_elapsed_seconds_estimated": 130,
+      "generation_attempts": 1
+    },
+    "20": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "59a7c3fa33b6ae73e2763d958f9baadd4ebf18d3f4e317b3b827308a9db164ae",
+      "output_sha256": "51bf28af2e25d3456a9020fa50b071f254dbfe1cb734a34450cc60bdbef330b0",
+      "generation_elapsed_seconds_estimated": 160,
+      "generation_attempts": 1
+    }
+  },
+  "timing_method": "相邻文件写入时间差估算（含会话与工具往返开销、并行批次与失败重试），非逐帧插桩计时",
+  "wall_clock": {
+    "first_completion": "2026-09-02T10:23:09+08:00",
+    "last_completion": "2026-09-02T11:01:15+08:00",
+    "total_wall_seconds_estimated": 2280,
+    "technical_failures": 2,
+    "content_repairs": 4,
+    "content_repair_breakdown": { "12": 3, "13": 1 }
+  },
+  "recorded_at": "2026-09-02T11:05:00+08:00"
+}

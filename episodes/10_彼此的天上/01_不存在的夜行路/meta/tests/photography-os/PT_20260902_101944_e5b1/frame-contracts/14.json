@@ -1,0 +1,22 @@
+{
+  "frame": "14",
+  "story_os_version": "2.2.8-photography-os-r3",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "消息传开，肩后机位拍人正在应对",
+  "narrative_segment": "14-16 异常进入近距离，但优先拍“人正在怎么应对”，不单纯展示异常主体",
+  "photographer": {
+    "who_took_it": "P02（女友），站在 P01 身后用自己手机拍",
+    "why_capture_now": "前面的停顿像在往后传，她拍下“整个队伍都在停下”的过程，也拍下 P01 举着手机的背影",
+    "photographer_position": "P01 身后约两步，肩后/侧后方机位",
+    "why_camera_in_this_hand": "P01 入镜（背影），需要第二拍摄源；P02 用自己的手机（第二拍摄源，分镜明确）",
+    "ghost_camera": false
+  },
+  "what_is_happening": "画面主体是 P01 深色外套背影、举手机对准山坡；背景灯队前端已停、中后段在走或开始停",
+  "why_saved": "“我们和他们对上了”的第一张人与异常同框",
+  "shot_grammar": "OVER_SHOULDER",
+  "defect_physics": ["前景人物虚化", "夜间噪点", "构图轻微歪"],
+  "continuity_chain": "vs 13：同一护栏边同一时刻延续；P01 深色外套背影与 03 一致；灯队响应从“第一个人停”蔓延到“停成一截”；P02 视角从 P01 身后",
+  "screen_content": "无屏幕",
+  "time_of_day": "同一夜约 23:53",
+  "emotion_level": 10
+}

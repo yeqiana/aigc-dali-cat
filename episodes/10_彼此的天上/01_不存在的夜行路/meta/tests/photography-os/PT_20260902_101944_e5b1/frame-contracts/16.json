@@ -1,0 +1,22 @@
+{
+  "frame": "16",
+  "story_os_version": "2.2.8-photography-os-r3",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "最后一盏灯，拍摄者入镜，阶段高潮",
+  "narrative_segment": "14-16 异常进入近距离，但优先拍“人正在怎么应对”",
+  "photographer": {
+    "who_took_it": "P02（女友），站在车旁/护栏边用自己的手机拍",
+    "why_capture_now": "只剩最后一盏灯，P01 下车举手机要抓住它熄灭前的瞬间；P02 拍下 P01 拍最后一盏灯",
+    "photographer_position": "车旁护栏边，P02 站在 P01 侧后方几米",
+    "why_camera_in_this_hand": "P01 需双手举稳手机对准最后一盏灯，且 P01 入镜需要第二拍摄源；P02 用自己的手机（第二拍摄源，分镜明确）",
+    "ghost_camera": false
+  },
+  "what_is_happening": "P01 深色外套背影站在护栏边，双手举手机对准远处最后一盏暖灯；画面大部分是黑的山谷与一点灯",
+  "why_saved": "“最后一盏灯”本身，也是两个人共同见证的定格",
+  "shot_grammar": "PHOTOGRAPHER_IN_FRAME",
+  "defect_physics": ["曝光不足（只剩一盏灯）", "P01 剪影", "夜间噪点"],
+  "continuity_chain": "vs 15：同一夜同一停车带；P01 从车内再下车到护栏边（要抓最后一盏）；灯队只剩一盏；P01 手机背面朝向灯队（黑色方形镜头模组与 04 一致）；P02 持机站在他侧后方",
+  "screen_content": "无屏幕；P01 手机背面朝向灯队，看不到屏幕",
+  "time_of_day": "同一夜约 23:55",
+  "emotion_level": 10
+}

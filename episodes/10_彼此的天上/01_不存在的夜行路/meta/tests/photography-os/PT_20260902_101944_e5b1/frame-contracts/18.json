@@ -1,0 +1,22 @@
+{
+  "frame": "18",
+  "story_os_version": "2.2.8-photography-os-r3",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "第二天同山坡，白天无路强证据",
+  "narrative_segment": "17-18 失控感明显上升，允许更慌乱、更差的拍摄质量，但必须符合摄影物理",
+  "photographer": {
+    "who_took_it": "P01（男友），站在同一停车带，用自己的手机",
+    "why_capture_now": "第二天上午两人专门回到同一停车带，想确认白天这里到底有没有路；P01 拍下 P02 站在护栏边回望山坡",
+    "photographer_position": "停车带车旁/护栏边，离 P02 几米，机位偏低且略急",
+    "why_camera_in_this_hand": "P01 是主摄影者；白天车旁持机，物理成立",
+    "ghost_camera": false
+  },
+  "what_is_happening": "白天多云，P02 站在绿色护栏边看着对面山坡（浅色裸岩+山脊缺口，完全没有横向道路），风吹头发；P01 拍她",
+  "why_saved": "白天证据：同一片山坡什么都没有；也是旅行照",
+  "shot_grammar": "DAYTIME_SAME_SPOT_WIDE",
+  "defect_physics": ["构图急、轻微脱焦（前一夜紧张未退）", "手抖余震", "风吹头发"],
+  "continuity_chain": "vs 17：时间跳到第二天上午（明确时间推进）；同一停车带、同一绿色护栏、同一浅色裸岩+山脊缺口（与 02 同地形）；P02 浅灰大衣/浅灰针织开衫、浅蓝牛仔裤、白鞋；同车在场（画面边缘可入画）",
+  "screen_content": "无屏幕",
+  "time_of_day": "第二天上午，多云到晴",
+  "emotion_level": 7
+}

@@ -1,0 +1,318 @@
+{
+  "version": "2.2.8-photography-os-r3",
+  "run_id": "PT_20260902_101944_e5b1",
+  "round": 3,
+  "round_prev": "PT_20260901_233900_7622",
+  "test_type": "PHOTOGRAPHY_OS_REGRESSION_TEST",
+  "status": "PT_TEST_GENERATED_PENDING_REVIEW",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "production_state_untouched": true,
+  "history_policy": "AUDIT_ONLY_NEVER_EXECUTION_INPUT",
+  "reuse_previous_image": false,
+  "scope": "Frame 11-20 only; 01-10 continuity prehistory only; NOT full production",
+  "route": "MAIN_SESSION_NATIVE_IMAGE",
+  "image_model": { "requested": "gpt-image-2", "strict": true },
+  "target_size": [1080, 1350],
+  "camera_roster": {
+    "primary": "P01（男友）",
+    "secondary": "P02（女友）",
+    "primary_frames": ["11", "13", "15", "17", "18", "20"],
+    "secondary_frames": ["12", "14", "16", "19"],
+    "primary_share": "60%",
+    "switch_reason_all_recorded": true,
+    "ghost_camera": "NONE_DETECTED"
+  },
+  "frames": {
+    "11": {
+      "frame": "11",
+      "story_beat": "女友提议闪灯，车内近景，建立主动选择",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P01",
+      "shot_grammar": "IN_CAR_CONVERSATION_CLOSEUP",
+      "six_answers": {
+        "who_took_it": "P01（男友），驾驶座持机",
+        "why_this_moment": "灯队快走出视野，女友回头说“闪一下远光试试”，拍下她提议的瞬间",
+        "photographer_position": "驾驶座，手机朝副驾",
+        "action_happening": "车停着怠速，女友回头说话并比划，窗外灯队隐约可见",
+        "character_emotion": "兴奋压过害怕",
+        "why_saved_in_phone": "记录“是我们先主动的”"
+      },
+      "album_like_rank": 3,
+      "review_note": "车内对话近景，关系与现场同框；导航屏暗地图不可读，无相机UI",
+      "causal_defects": ["车内暗、仪表/屏幕光", "转头轻微动作模糊"]
+    },
+    "12": {
+      "frame": "12",
+      "story_beat": "远光一次，副驾机位记录灯光拨杆",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P02",
+      "shot_grammar": "SECOND_SEAT_HAND_ACTION",
+      "six_answers": {
+        "who_took_it": "P02（女友），副驾用自己手机拍",
+        "why_this_moment": "P01 双手要操作灯光拨杆，她拍下拨杆动作",
+        "photographer_position": "副驾座，侧身朝驾驶座",
+        "action_happening": "P01 手握住转向柱远光拨杆；窗外黑暗与远处微弱灯线",
+        "character_emotion": "紧张、屏息",
+        "why_saved_in_phone": "留“我们真的闪了它一下”的证据"
+      },
+      "album_like_rank": 9,
+      "review_note": "最终版为副驾机位手部+拨杆特写，全暗屏无文字；本帧内容返修 3 次（见 findings，超限原因如实记录）",
+      "causal_defects": ["夜间弱光", "手部动作轻微模糊", "轻微抖动"]
+    },
+    "13": {
+      "frame": "13",
+      "story_beat": "灯队第一个人停，车外长焦记录人类响应",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P01",
+      "shot_grammar": "ROADSIDE_LONG_TELE_EVIDENCE",
+      "six_answers": {
+        "who_took_it": "P01（男友），车外护栏边",
+        "why_this_moment": "远光后最前面一个人停住，拍下这个“响应”",
+        "photographer_position": "停车带边沿护栏旁",
+        "action_happening": "灯队前端一盏灯停住，后面仍移动；夜间长焦",
+        "character_emotion": "震动、喉咙发紧",
+        "why_saved_in_phone": "对方停下来——互相看见的证据"
+      },
+      "album_like_rank": 6,
+      "review_note": "灯队读作持灯赶路人（非缆车/索道，返修后）；裸岩在夜间仍有被读成雪的歧义",
+      "causal_defects": ["夜间长焦噪点", "手抖", "构图匆忙"]
+    },
+    "14": {
+      "frame": "14",
+      "story_beat": "消息传开，肩后机位拍人正在应对",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P02",
+      "shot_grammar": "OVER_SHOULDER",
+      "six_answers": {
+        "who_took_it": "P02（女友），站在 P01 身后",
+        "why_this_moment": "停顿像消息一样传开，拍下队伍停下与 P01 的背影",
+        "photographer_position": "P01 身后两步，肩后机位",
+        "action_happening": "P01 举手机对准山坡，灯队前端已停、中后段在走/开始停",
+        "character_emotion": "压迫，两个人并肩面对",
+        "why_saved_in_phone": "“我们和他们对上了”的人与异常同框"
+      },
+      "album_like_rank": 2,
+      "review_note": "人对异常的应对为主，异常退居背景；P01 手机背面朝向镜头无UI",
+      "causal_defects": ["前景人物虚化", "夜间噪点", "轻微歪"]
+    },
+    "15": {
+      "frame": "15",
+      "story_beat": "灯一盏盏灭，隔车窗长焦",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P01",
+      "shot_grammar": "THROUGH_WINDOW_TELE",
+      "six_answers": {
+        "who_took_it": "P01（男友），回驾驶座",
+        "why_this_moment": "夜里冷，把手机抵在侧窗玻璃上拍灯一盏盏灭",
+        "photographer_position": "驾驶座，手机抵侧窗玻璃",
+        "action_happening": "远处灯队数量减少；玻璃反光与雾气",
+        "character_emotion": "看不懂的沉默",
+        "why_saved_in_phone": "灯在灭——不是熟悉的光，是避让"
+      },
+      "album_like_rank": 5,
+      "review_note": "隔窗反光/雾气物理成立；“数量减少缺口”读感偏弱",
+      "causal_defects": ["玻璃反光", "玻璃雾气", "长焦噪点"]
+    },
+    "16": {
+      "frame": "16",
+      "story_beat": "最后一盏灯，拍摄者入镜，阶段高潮",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P02",
+      "shot_grammar": "PHOTOGRAPHER_IN_FRAME",
+      "six_answers": {
+        "who_took_it": "P02（女友），车旁护栏边",
+        "why_this_moment": "只剩最后一盏灯，拍下 P01 拍最后一盏灯",
+        "photographer_position": "P01 侧后方几米",
+        "action_happening": "P01 双手举手机对准远处最后一盏暖灯；画面大部分黑",
+        "character_emotion": "阶段高潮、屏息、沉默",
+        "why_saved_in_phone": "最后一盏灯与两人共同见证的定格"
+      },
+      "album_like_rank": 1,
+      "review_note": "本轮最像私人相册的一张：人在拍、灯将灭、大部分画面是黑；P01 手机背面朝镜头无UI",
+      "causal_defects": ["曝光不足", "剪影", "夜间噪点"]
+    },
+    "17": {
+      "frame": "17",
+      "story_beat": "两人离开，车内低光出发瞬间",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P01",
+      "shot_grammar": "IN_CAR_LOWLIGHT_DEPARTURE",
+      "six_answers": {
+        "who_took_it": "P01（男友），驾驶座持机",
+        "why_this_moment": "灯全灭，决定走；起步前拍下女友系安全带、没人说话",
+        "photographer_position": "驾驶座，低角度歪拍",
+        "action_happening": "女友系安全带、看窗外黑山；车内暗、仪表盘光",
+        "character_emotion": "压抑、逃离、后怕",
+        "why_saved_in_phone": "相册里需要一张“我们离开那里”的收尾"
+      },
+      "album_like_rank": 4,
+      "review_note": "低光歪构图与沉默情绪成立；中控屏暗屏无文字",
+      "causal_defects": ["车内暗", "动作轻微模糊", "构图歪"]
+    },
+    "18": {
+      "frame": "18",
+      "story_beat": "第二天同山坡，白天无路强证据",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P01",
+      "shot_grammar": "DAYTIME_SAME_SPOT_WIDE",
+      "six_answers": {
+        "who_took_it": "P01（男友），同一停车带",
+        "why_this_moment": "第二天上午回到同一地点确认白天没有路，拍下女友回望山坡",
+        "photographer_position": "车旁护栏边，离女友几米",
+        "action_happening": "女友站护栏边看浅色裸岩+山脊缺口，完全无路；SUV 前角入画",
+        "character_emotion": "失重：证据确凿却说不清",
+        "why_saved_in_phone": "白天证据与旅行照"
+      },
+      "album_like_rank": 7,
+      "review_note": "白天裸岩/缺口/护栏/车型全部与 02 地形对照成立；轻微手抖余震读感",
+      "causal_defects": ["构图略急", "轻微脱焦", "风吹头发"]
+    },
+    "19": {
+      "frame": "19",
+      "story_beat": "昨晚视频还在，屏幕回看，证据残留",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P02",
+      "shot_grammar": "SCREEN_PLAYBACK",
+      "six_answers": {
+        "who_took_it": "P02（女友），用自己手机拍 P01 手机屏幕",
+        "why_this_moment": "上午回看昨晚视频，拍下“视频真的在”",
+        "photographer_position": "车内，近距拍屏幕",
+        "action_happening": "P01 手机全屏播放昨晚灯队视频；屏幕反光；周围白天",
+        "character_emotion": "证据确凿却宁愿没有",
+        "why_saved_in_phone": "昨晚不是幻觉——最后一张证明"
+      },
+      "album_like_rank": 8,
+      "review_note": "屏幕内容=昨晚视频本体，无UI无文字；同机自拍悖论已规避；反光/摩尔纹物理成立",
+      "causal_defects": ["屏幕反光", "摩尔纹", "边缘虚化"]
+    },
+    "20": {
+      "frame": "20",
+      "story_beat": "普通山坡收尾，双人自拍，私人相册最后一张",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P01（自拍）",
+      "shot_grammar": "CASUAL_SELFIE",
+      "six_answers": {
+        "who_took_it": "P01（男友），举手机自拍",
+        "why_this_moment": "要走了，说“合个影吧”",
+        "photographer_position": "护栏边，两人并肩",
+        "action_happening": "白天普通山坡背景；女友侧头看山坡没看镜头；手指/手机边缘入画",
+        "character_emotion": "平静、释然、余震",
+        "why_saved_in_phone": "旅行最后一张：看起来什么也没发生的那天"
+      },
+      "album_like_rank": 10,
+      "review_note": "自拍来源成立，无幽灵摄影机；非摆拍、无海报感；P01 内搭漂移见 findings",
+      "causal_defects": ["前置广角边缘畸变", "构图歪", "风吹头发"]
+    }
+  },
+  "contract_checks": {
+    "camera_roster": {
+      "status": "PASS",
+      "note": "Primary P01（11/13/15/17/18/20），Secondary P02（12/14/16/19）全部有动作/物理理由；P01 入镜帧（14/16/19/20）均由第二摄影者或自拍解释来源；无幽灵摄影机"
+    },
+    "ghost_camera_gate": {
+      "status": "PASS",
+      "note": "10 张全部可解释相机为何在此人手里；20 双人同框为自拍来源"
+    },
+    "moment_contract": {
+      "status": "PASS",
+      "note": "每帧六问成立且与图片一致；12 返修过程如实记录"
+    },
+    "shot_diversity": {
+      "status": "PASS",
+      "note": "10 张 10 个不同机位族，无连续重复；远超过 4 类下限；未重复手+手机+远山模板"
+    },
+    "camera_defect_physics": {
+      "status": "PASS",
+      "note": "所有缺陷均有物理原因（玻璃反光/雾气/长焦噪点/曝光不足/动作模糊/手抖）；未把夜景统一做糊"
+    },
+    "visual_memory_continuity": {
+      "status": "PASS_WITH_LOW_RISK_NOTES",
+      "note": "人物/衣物/车辆/随身物/路线/天气/时间/异常证据全程连续；11/13 存在裸岩被读成雪的歧义，20 P01 内搭小幅漂移，15 灭灯缺口读感偏弱"
+    },
+    "time_of_day_continuity": {
+      "status": "PASS",
+      "note": "同一夜 23:50-00:05 → 第二天上午，自然推进无倒退"
+    },
+    "screen_content_physics": {
+      "status": "PASS",
+      "note": "11 导航屏暗地图不可读；12/17 暗屏无文字；19 屏幕为昨晚视频本体无UI；无相机自指画面"
+    },
+    "emotion_curve": {
+      "status": "PASS",
+      "note": "11-16 高压区 9-10，17-18 失控后怕回落，19-20 证据复杂到平静，曲线合理"
+    }
+  },
+  "final_judgments": {
+    "PRIVATE_ALBUM_FEEL": "PASS",
+    "CAMERA_AUTHORSHIP": "PASS",
+    "SHOT_DIVERSITY": "PASS",
+    "CAMERA_DEFECT_PHYSICS": "PASS",
+    "VISUAL_MEMORY": "PASS",
+    "SCREEN_CONTENT_PHYSICS": "PASS"
+  },
+  "recommendation": {
+    "enter_01_20_final_photography_review": "YES",
+    "note": "建议进入 01-20 Final Photography Review，但先完成三项人工终审：11/13 裸岩非雪景确认；15 灭灯缺口读感；12 三次返修后的最终帧可读性。本轮测试产出不推进任何 episode stage。"
+  },
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "frame": "12",
+      "finding": "内容返修 3 次，超出每帧最多一次返修的正式生产规则（测试专用；原因：前两次 prompt 设计使模型反复画成照向泥路/雪路的车灯，第三次 POV 漂移+可读仪表文字，第四次才通过）",
+      "suggested_fix": "正式生产时该帧直接采用“手部+拨杆特写、禁光束/禁路面”的最终构图方案并写入 Frame Contract；如仍漂移可考虑把该动作改为车外拍摄"
+    },
+    {
+      "severity": "LOW",
+      "frame": "11/13",
+      "finding": "夜间浅色裸岩被模型读成雪坡/积雪的风险（白天帧 18 可确认实为灰色岩层）",
+      "suggested_fix": "夜间帧 prompt 显式 no snow + pale bare rock slope；人工终审确认非雪景"
+    },
+    {
+      "severity": "LOW",
+      "frame": "15",
+      "finding": "“灯一盏盏灭”的数量减少缺口读感偏弱",
+      "suggested_fix": "人工终审；必要时改为更近机位或强化灭灯缺口"
+    },
+    {
+      "severity": "LOW",
+      "frame": "20",
+      "finding": "P01 内搭米白卫衣+黑色斜挎背带，与前面帧深色外套读感小幅漂移",
+      "suggested_fix": "正式生产自拍帧锁定深色外套、无斜挎背带"
+    },
+    {
+      "severity": "LOW",
+      "frame": "18",
+      "finding": "18 首次与第二次生成均遇 502 技术失败（无图），第三次成功；技术失败未计内容返修",
+      "suggested_fix": "无需修复；记录在案"
+    }
+  ],
+  "diff_vs_round2": {
+    "round_2_run_id": "PT_20260901_233900_7622",
+    "differences": [
+      "范围：01-10 → 11-20；01-10 仅作为连续性前史，未复用任何图片",
+      "规则版本：V2.1.5 → V2.2.8 Photography Continuity Rules（Camera Roster / Ghost Camera Gate / Shot Diversity / Screen Content Physics 全部启用）",
+      "摄影者：Round 2 固定 P01 无切换 → Round 3 明确 Primary P01 + Secondary P02（12/14/16/19 有理由切换）",
+      "机位多样性：11-20 达到 10 个不同机位族，超过 4 类下限，无连续重复",
+      "新增屏幕物理审计：19 屏幕回放视频本体，无 UI 无文字；12/17 暗屏处理",
+      "12 三次返修成为本轮唯一中危发现，其余为低危连续性歧义"
+    ],
+    "conclusion": "V2.2.8 规则在异常强度继续升高（主动试探→对方响应→灯灭→白天无路→证据残留）后仍保持私人相册质感；摄影来源与机位多样性规则有效"
+  },
+  "most_album_like": ["16", "14", "11", "17"],
+  "still_display_like": [],
+  "timing_summary": {
+    "method": "相邻文件写入时间差估算，含会话与工具往返、并行批次与失败重试；非逐帧插桩计时",
+    "per_frame_seconds_estimated": {
+      "11": 120, "12": 600, "13": 320, "14": 120, "15": 110,
+      "16": 120, "17": 150, "18": 500, "19": 130, "20": 160
+    },
+    "total_wall_seconds_estimated": 2280,
+    "technical_failures": 2,
+    "content_repairs": 4,
+    "notes": "12 三次内容返修；13 一次内容返修；18 两次 502 技术失败后成功"
+  },
+  "review_required": true,
+  "review_rule": "NON_AUTHORITY_TEST_ONLY. 本测试不推进任何 episode stage，媒体不入 Git，契约与报告仅作回归证据；不得升级为 Character/Location/Production 资产。",
+  "finalized_at": "2026-09-02T11:20:00+08:00"
+}

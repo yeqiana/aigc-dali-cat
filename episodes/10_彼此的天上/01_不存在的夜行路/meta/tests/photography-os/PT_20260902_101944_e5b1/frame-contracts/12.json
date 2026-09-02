@@ -1,0 +1,22 @@
+{
+  "frame": "12",
+  "story_os_version": "2.2.8-photography-os-r3",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "远光一次，副驾机位记录灯光拨杆与挡风玻璃外",
+  "narrative_segment": "11-13 从远距离观察转为更主动的确认/靠近",
+  "photographer": {
+    "who_took_it": "P02（女友），副驾用自己的手机拍",
+    "why_capture_now": "P01 双手要操作灯光拨杆，她举起手机拍下远光射向山坡的那一下",
+    "photographer_position": "副驾座，侧身，机位近驾驶座手部，挡风玻璃在背景",
+    "why_camera_in_this_hand": "P01 驾驶座双手需操作方向盘与远光拨杆，不适合持机；P02 在副驾用自己的手机（第二拍摄源，分镜明确）",
+    "ghost_camera": false
+  },
+  "what_is_happening": "P01 手拨动远光拨杆，挡风玻璃外一道远光射向对面山坡，山体被照亮一角；画面大部分暗，局部过曝光晕",
+  "why_saved": "留“我们真的闪了它一下”的证据",
+  "shot_grammar": "SECOND_SEAT_HAND_ACTION",
+  "defect_physics": ["夜间弱光大部分暗", "远光局部过曝光晕", "持机轻微抖动"],
+  "continuity_chain": "vs 11：同一车内同一秒级；P01 深色外套袖口与手部入画，拨杆为黑内饰；窗外同一山坡；时间继续推进",
+  "screen_content": "中控屏处于暗屏/待机（避免远光下的挡风玻璃反光污染），无内容文字；无相机 UI",
+  "time_of_day": "同一夜约 23:51",
+  "emotion_level": 9
+}

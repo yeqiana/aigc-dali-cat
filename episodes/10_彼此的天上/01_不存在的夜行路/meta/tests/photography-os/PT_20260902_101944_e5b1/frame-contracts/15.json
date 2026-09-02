@@ -1,0 +1,22 @@
+{
+  "frame": "15",
+  "story_os_version": "2.2.8-photography-os-r3",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "灯一盏盏灭，隔车窗长焦，文化避让成立",
+  "narrative_segment": "14-16 异常进入近距离，但优先拍“人正在怎么应对”",
+  "photographer": {
+    "who_took_it": "P01（男友），回到驾驶座，用自己的手机",
+    "why_capture_now": "夜里冷，P01 回车里把手机抵在侧窗玻璃上拍“灯一盏盏灭掉”的过程（抵窗更稳）",
+    "photographer_position": "驾驶座，手机抵住左前侧窗玻璃",
+    "why_camera_in_this_hand": "P01 是主摄影者；回车内隔窗持机，物理成立",
+    "ghost_camera": false
+  },
+  "what_is_happening": "远处灯队里几盏灯正在灭，数量减少、留下黑缺口；玻璃上有车内灯光倒影与雾气；P02 已坐回副驾",
+  "why_saved": "灯在灭——这不是他们熟悉的光，是避让",
+  "shot_grammar": "THROUGH_WINDOW_TELE",
+  "defect_physics": ["玻璃反光（车内光倒影）", "玻璃雾气", "长焦噪点"],
+  "continuity_chain": "vs 14：同一夜同一停车带；P01 从护栏边回到驾驶座（理由：冷+抵窗更稳）；灯队从“停”到“灭”，一盏盏减少；P02 回到副驾（同车在场）",
+  "screen_content": "侧窗玻璃上的车内灯光倒影（物理反光），非屏幕内容；无文字",
+  "time_of_day": "同一夜约 23:54",
+  "emotion_level": 9
+}

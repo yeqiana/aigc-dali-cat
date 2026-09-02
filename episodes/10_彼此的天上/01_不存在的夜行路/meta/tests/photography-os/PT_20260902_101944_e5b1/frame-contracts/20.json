@@ -1,0 +1,22 @@
+{
+  "frame": "20",
+  "story_os_version": "2.2.8-photography-os-r3",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "普通山坡收尾，双人自拍，私人相册最后一张",
+  "narrative_segment": "20 阶段性最终照片，允许冲击强，但仍必须像私人相册最后留下的一张，不得做成封面海报",
+  "photographer": {
+    "who_took_it": "P01（男友），举手机自拍（前置摄像头）",
+    "why_capture_now": "要走了，P01 说“合个影吧”；两人站到护栏边，背景是白天普通得不能再普通的山坡",
+    "photographer_position": "停车带护栏边，P01 举手机，两人并肩/前后",
+    "why_camera_in_this_hand": "自拍=真实来源（P01 持机自拍，两人同框由自拍成立，无幽灵摄影机）",
+    "ghost_camera": false
+  },
+  "what_is_happening": "白天多云，P02 侧头看山坡、风吹头发、没看镜头；P01 举手机自拍，手臂入画、构图随意、边缘裁切",
+  "why_saved": "旅行最后一张：看起来什么也没发生的那天",
+  "shot_grammar": "CASUAL_SELFIE",
+  "defect_physics": ["前置广角边缘畸变", "构图歪", "风吹头发/轻微动作模糊"],
+  "continuity_chain": "vs 19：第二天上午同一停车带；两人同框由自拍来源成立；同一浅色裸岩+山脊缺口背景；P02 浅灰大衣、长深棕发；P01 深色外套；时间继续推进到离开前",
+  "screen_content": "自拍时屏幕朝向拍摄者，照片画面内不出现取景 UI；无屏幕内容问题",
+  "time_of_day": "第二天上午，多云到晴",
+  "emotion_level": 5
+}

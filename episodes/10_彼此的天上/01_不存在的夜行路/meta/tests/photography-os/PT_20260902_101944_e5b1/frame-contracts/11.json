@@ -1,0 +1,22 @@
+{
+  "frame": "11",
+  "story_os_version": "2.2.8-photography-os-r3",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "女友提议闪灯，车内近景，建立主动选择",
+  "narrative_segment": "11-13 从远距离观察转为更主动的确认/靠近，人物开始出现分歧或压力",
+  "photographer": {
+    "who_took_it": "P01（男友），驾驶座持机，用自己的手机",
+    "why_capture_now": "灯队快走出视野，女友回头说“闪一下远光试试”，P01 举手机拍下她说这句话的瞬间",
+    "photographer_position": "驾驶座，手机朝副驾方向，前景方向盘与中控台边缘",
+    "why_camera_in_this_hand": "P01 是主摄影者；车停着、他不需要操作车辆，自己持机成立",
+    "ghost_camera": false
+  },
+  "what_is_happening": "车停在停车带、引擎怠速；副驾女友回头朝驾驶座说话并比划“闪一下”，窗外对面山坡灯队隐约可见；P01 举手机拍她",
+  "why_saved": "记录“是我们先主动的”这个瞬间",
+  "shot_grammar": "IN_CAR_CONVERSATION_CLOSEUP",
+  "defect_physics": ["车内暗、仪表盘与中控屏幕光", "P02 转头轻微动作模糊"],
+  "continuity_chain": "vs 10：同一夜同一停车带，同一深灰紧凑SUV内饰（黑方向盘、中控导航屏、杯架矿泉水）；P02 浅灰大衣、长深棕发；P01 深色外套；灯队仍在同一山坡位置",
+  "screen_content": "中控导航屏亮着（夜间地图界面），小字不可读，无相机 UI；不承载关键文字",
+  "time_of_day": "同一夜约 23:50，晴冷无雾",
+  "emotion_level": 9
+}

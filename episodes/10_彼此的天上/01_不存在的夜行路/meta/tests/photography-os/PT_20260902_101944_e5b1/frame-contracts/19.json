@@ -1,0 +1,22 @@
+{
+  "frame": "19",
+  "story_os_version": "2.2.8-photography-os-r3",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "昨晚视频还在，屏幕回看，证据残留",
+  "narrative_segment": "19 最强证据之一，应像当事人真正会留下来的关键照片",
+  "photographer": {
+    "who_took_it": "P02（女友），用自己手机近距拍 P01 手机屏幕",
+    "why_capture_now": "上午在停车带车里，P01 打开相册回放昨晚拍的夜行队视频，P02 用自己手机拍下“视频真的在”",
+    "photographer_position": "车内/车旁，P02 站在 P01 身侧，近距拍屏幕",
+    "why_camera_in_this_hand": "P01 无法拍摄自己手机屏幕（同机自拍悖论）；P02 用自己的手机（第二拍摄源，分镜明确）",
+    "ghost_camera": false
+  },
+  "what_is_happening": "P01 的黑色手机屏幕播放昨晚夜间视频（暗山坡+移动灯队）；屏幕反光，周围是白天环境；P02 镜头里可见屏幕画面与 P01 的手",
+  "why_saved": "昨晚不是幻觉——这是最后一张“证明”",
+  "shot_grammar": "SCREEN_PLAYBACK",
+  "defect_physics": ["屏幕反光（天光）", "摩尔纹/像素颗粒", "边缘虚化"],
+  "continuity_chain": "vs 18：第二天上午同一停车带；P01 黑色手机（与 04 同一台，镜头模组在背面，正面屏幕此刻可见）；视频内容=昨晚灯队（与 05/07 一致的暗山坡+暖黄灯队沿山腰左低右高）；P02 手机为第二拍摄源",
+  "screen_content": "屏幕内容=昨晚夜拍视频回放（暗山坡+暖黄灯队），全屏播放无播放器文字、无相机 UI、无导航；屏幕反光物理成立；关键文字不承载",
+  "time_of_day": "第二天上午，多云到晴",
+  "emotion_level": 6
+}

@@ -1,0 +1,22 @@
+{
+  "frame": "13",
+  "story_os_version": "2.2.8-photography-os-r3",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "灯队第一个人停，车外长焦记录人类响应",
+  "narrative_segment": "11-13 从远距离观察转为更主动的确认/靠近",
+  "photographer": {
+    "who_took_it": "P01（男友），车外护栏边持机，用自己的手机",
+    "why_capture_now": "远光之后灯队最前面一个人停住，P01 下车到护栏边拍下这个“响应”",
+    "photographer_position": "停车带边沿护栏旁（同 04-10 位置），手持长焦朝山坡",
+    "why_camera_in_this_hand": "P01 是主摄影者，已下车；车停着，物理成立",
+    "ghost_camera": false
+  },
+  "what_is_happening": "灯队最前端一盏灯停住、能看出人影轮廓，后面的人还在走；夜间长焦噪点，护栏前景",
+  "why_saved": "对方“停下来了”——互相看见的证据",
+  "shot_grammar": "ROADSIDE_LONG_TELE_EVIDENCE",
+  "defect_physics": ["夜间长焦噪点涂抹", "手抖（冷+紧张）", "构图匆忙"],
+  "continuity_chain": "vs 12：同夜同停车带；P01 从车内到护栏边（位置=04-10 同一持机点）；灯队仍在浅色裸岩下方；P02 同车在场但不在画面",
+  "screen_content": "无屏幕",
+  "time_of_day": "同一夜约 23:52",
+  "emotion_level": 10
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.2.8-photography-os-r3",
+  "round": 3,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "rule": "若出现手机、导航、地图、时间、聊天、仪表盘或相机 UI，必须检查内容、方向、透视、时间和现场逻辑；不允许物理不可能的屏幕画面",
+  "frames_with_screens": ["11", "19"],
+  "audit": {
+    "11": {
+      "screen_type": "车内中控导航屏",
+      "content": "夜间深色地图界面，彩色路线与图标，小字不可读",
+      "orientation": "竖向/中控固定，透视与驾驶座 P01 视角一致",
+      "scene_logic": "与 01/08 同一导航屏；深夜行车导航亮屏合理",
+      "reflection": "屏光在暗车内形成正常环境光，无自指",
+      "camera_ui": "无（非相机界面）",
+      "verdict": "PASS"
+    },
+    "12": {
+      "screen_type": "中控屏（暗屏/待机）",
+      "content": "无内容、无文字",
+      "orientation": "中控固定",
+      "scene_logic": "远光操作前将屏幕调暗避免反光，物理合理",
+      "reflection": "无",
+      "camera_ui": "无",
+      "verdict": "PASS"
+    },
+    "17": {
+      "screen_type": "中控屏（暗屏/待机）+ 仪表盘",
+      "content": "无内容、无文字；仪表盘仅有微光",
+      "orientation": "中控固定",
+      "scene_logic": "出发前车内低光，物理合理",
+      "reflection": "无",
+      "camera_ui": "无",
+      "verdict": "PASS"
+    },
+    "19": {
+      "screen_type": "P01 黑色手机屏幕（全屏视频回放）",
+      "content": "昨晚夜拍视频：暗山坡+沿山腰移动的暖黄灯队（与 05/07 一致）；无播放器按钮、无菜单、无相机 UI、无文字",
+      "orientation": "竖屏手持，屏幕面向 P02 机位；屏幕反光含持机者倒影与车内环境",
+      "scene_logic": "白天车内回看昨晚视频，P02 用自己的手机拍 P01 手机屏幕（同机自拍悖论已规避）",
+      "reflection": "屏幕反光+轻微摩尔纹，物理成立",
+      "camera_ui": "无",
+      "verdict": "PASS"
+    },
+    "20": {
+      "screen_type": "自拍手机（拍摄侧屏幕）",
+      "content": "自拍照片画面内不出现取景 UI；照片本身无屏幕内容",
+      "orientation": "P01 前置自拍，两人同框由自拍来源成立",
+      "scene_logic": "无幽灵摄影机；手机边缘/手指入画为正常自拍",
+      "reflection": "无",
+      "camera_ui": "无",
+      "verdict": "PASS"
+    }
+  },
+  "notes": [
+    "19 的屏幕回放内容为昨晚视频本体（暗山坡+灯队），不是相机 UI 也不是新场景，物理与叙事均成立",
+    "11 导航屏小字不可读，未承载关键文字，避免 AI 乱码文字进入关键信息位",
+    "12/17 中控屏均处理为暗屏/待机，规避远光下挡风玻璃反光污染与可读仪表文字"
+  ],
+  "verdict": "PASS"
+}

@@ -1,11 +1,11 @@
 {
-  "version": "2.1.5-photography-os-r2",
+  "version": "2.2.8-photography-os-r3",
   "pointer_type": "NON_AUTHORITY_NON_GATE_NON_REUSE",
   "history_policy": "AUDIT_ONLY_NEVER_EXECUTION_INPUT",
-  "run_id": "PT_20260901_233900_7622",
-  "round": 2,
-  "round_prev": "PT_20260901_230730_7946",
+  "run_id": "PT_20260902_101944_e5b1",
+  "round": 3,
+  "round_prev": "PT_20260901_233900_7622",
   "status": "PT_TEST_GENERATED_PENDING_REVIEW",
-  "report": "meta/tests/photography-os/PT_20260901_233900_7622/report.json",
-  "updated_at": "2026-09-02T00:10:00+08:00"
+  "report": "meta/tests/photography-os/PT_20260902_101944_e5b1/report.json",
+  "updated_at": "2026-09-02T11:08:00+08:00"
 }
