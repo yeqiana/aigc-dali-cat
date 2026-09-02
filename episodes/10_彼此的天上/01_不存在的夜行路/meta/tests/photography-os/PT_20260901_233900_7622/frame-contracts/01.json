@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "01",
+  "story_beat": "普通自驾开场，建立出行关系",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "photographer_id": "P01",
+  "six_answers": {
+    "who_took_it": "P01（男友），驾驶座持机",
+    "why_this_moment": "两人终于兑现拖了很久的川西自驾，出发路上第一次停车，随手记录真的出发了",
+    "photographer_position": "驾驶座，手机举在方向盘上方，透过挡风玻璃",
+    "action_happening": "SUV停在盘山公路休息区；副驾女友回头说话、举手机拍窗外，手/饮料/导航屏幕入画",
+    "character_emotion": "轻松、期待",
+    "why_saved_in_phone": "旅行第一张，兑现约定的证明，翻相册会一直看到"
+  },
+  "emotion_label": "轻松期待",
+  "emotion_curve_ref": "emotion-curve.json#points.01",
+  "moment_contract_ref": "moment-contract.json#frames.01",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/01.txt",
+  "scene_prompt_sha256": "8fa041e39eca255095a4c8f95115c8a6ab8a0a0a384b7ae543b8d3d3ef2aaa43",
+  "forbidden": ["omniscient_third_person_camera", "poster_composition", "camera_capture_ui"]
+}

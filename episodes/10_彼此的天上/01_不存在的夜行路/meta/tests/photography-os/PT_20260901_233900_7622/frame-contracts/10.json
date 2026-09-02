@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "10",
+  "story_beat": "普通赶路动作，阶段性高潮",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "photographer_id": "P01",
+  "six_answers": {
+    "who_took_it": "P01（男友）",
+    "why_this_moment": "车架似乎卡住，几个人停下来推——真实生活动作，不是仪式；这是P01决定放下手机前的临界点",
+    "photographer_position": "同一停车带，长焦，最后一张",
+    "action_happening": "人影聚拢推木制车架，火把/油灯晃动；画面抖、糊、曝光不足，但能读出“卡住-推车”动作",
+    "character_emotion": "被真实感击中，说不出话",
+    "why_saved_in_phone": "这张让他确认那不是幻觉，也是他收手机前最后一张"
+  },
+  "emotion_label": "被真实感击中、沉默",
+  "emotion_curve_ref": "emotion-curve.json#points.10",
+  "moment_contract_ref": "moment-contract.json#frames.10",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/10.txt",
+  "scene_prompt_sha256": "19abb8d36548c93916a16719d6afd371ce071623c8f7045fac39f798b0a94190",
+  "forbidden": ["omniscient_third_person_camera", "poster_composition", "camera_capture_ui", "modern_vehicle", "ritualized_lineup"]
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "06",
+  "story_beat": "长焦裁切，异常明确但仍是现场顺手记录",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "photographer_id": "P01",
+  "six_answers": {
+    "who_took_it": "P01（男友）",
+    "why_this_moment": "灯队太远看不清，继续拉近裁切，想确认是什么",
+    "photographer_position": "同一停车带，最大数码变焦",
+    "action_happening": "画面极度裁切、模糊：能读出矮小人形、驮畜轮廓与车架轮廓，灯挂在人/畜附近；噪点颗粒大",
+    "character_emotion": "不安加深",
+    "why_saved_in_phone": "拍清楚一点好判断是当地人还是什么"
+  },
+  "emotion_label": "不安加深",
+  "emotion_curve_ref": "emotion-curve.json#points.06",
+  "moment_contract_ref": "moment-contract.json#frames.06",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/06.txt",
+  "scene_prompt_sha256": "d93a940e7124a96320df9f9b4188bea09235e4e40a509eb1f75d573ba9677f49",
+  "forbidden": ["omniscient_third_person_camera", "poster_composition", "camera_capture_ui", "clear_closeup"]
+}

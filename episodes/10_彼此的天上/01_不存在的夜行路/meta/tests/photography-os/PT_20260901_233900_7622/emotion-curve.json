@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "points": {
+    "01": { "label": "轻松期待", "level": 2 },
+    "02": { "label": "放松、同行", "level": 2 },
+    "03": { "label": "担心心疼（日常）", "level": 3 },
+    "04": { "label": "疑惑好奇", "level": 4 },
+    "05": { "label": "警觉、想留证据", "level": 5 },
+    "06": { "label": "不安加深", "level": 6 },
+    "07": { "label": "两人发慌", "level": 7 },
+    "08": { "label": "理性硬撑、关系受压", "level": 7 },
+    "09": { "label": "恐惧开始、手发抖", "level": 8 },
+    "10": { "label": "被真实感击中、沉默", "level": 9 }
+  },
+  "curve_shape": "平静基线(01-02) → 生活波动(03) → 异常触发(04) → 留证据(05) → 明确不安(06) → 两人共同发慌(07) → 理性解释与关系压力(08) → 恐惧升级(09) → 阶段高潮(10)",
+  "note": "前3张维持普通生活基线，符合 Opening Memory Contract；异常自04进入；07起人物受异常影响，09-10情绪与异常明显升级，全程保持手机记录现场感。"
+}

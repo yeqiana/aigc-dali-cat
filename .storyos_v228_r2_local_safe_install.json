@@ -1,0 +1,21 @@
+{
+  "version": "Story_OS_V2.2.8_Photography_Continuity_Rules_R2_LocalSafe",
+  "status": "PASS",
+  "installed_at": "2026-09-02T10:07:45.220459",
+  "branch": "story",
+  "backup_dir": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\.storyos_backups\\v228_r2_local_safe_20260902_100744",
+  "dependency_policy": {
+    "codex_subscription_image.py": "semantic_check_only_no_overwrite"
+  },
+  "changed_files": [
+    "standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json",
+    "rules/photography_os_default_rules.md",
+    "episodes/_system/capture_grammar_v228.py",
+    "episodes/_system/visual_profile_bridge_v224.py",
+    "episodes/_system/test_capture_grammar_v228.py",
+    "scripts/story_photography_contract.py",
+    "meta/capture_grammar/photography_continuity_v228.json",
+    "docs/Story_OS_V2.2.8_Photography_Continuity_Rules_R2_LocalSafe.md"
+  ],
+  "self_test": "CAPTURE GRAMMAR V2.2.8 SELF-TEST PASS\nSTORY OS V2.2.8 R2 LOCAL-SAFE INTEGRATION SELF-TEST PASS"
+}

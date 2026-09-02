@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib, json
 from pathlib import Path
 import visual_profile as base
-import capture_grammar_v226
+import capture_grammar_v228
 
 ROOT = base.ROOT
 META_REL = Path("meta/visual-profile.json")
@@ -110,7 +110,7 @@ def compile_prompt_contract(ep: Path) -> dict:
     if data.get("forbidden"):
         lines.append("forbidden=" + _fmt(data["forbidden"]))
 
-    capture = capture_grammar_v226.compile_capture_contract(ep)
+    capture = capture_grammar_v228.compile_capture_contract(ep)
     lines += [
         "----- GLOBAL CAPTURE GRAMMAR -----",
         capture["text"],

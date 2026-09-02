@@ -1,0 +1,291 @@
+{
+  "version": "2.1.5-photography-os-r2",
+  "run_id": "PT_20260901_233900_7622",
+  "round": 2,
+  "round_prev": "PT_20260901_230730_7946",
+  "test_type": "PHOTOGRAPHY_OS_REGRESSION_TEST",
+  "status": "PT_TEST_GENERATED_PENDING_REVIEW",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "production_state_untouched": true,
+  "history_policy": "AUDIT_ONLY_NEVER_EXECUTION_INPUT",
+  "reuse_previous_image": false,
+  "reuse_previous_visual_test": false,
+  "reuse_previous_frame_output": false,
+  "route": "MAIN_SESSION_NATIVE_IMAGE",
+  "image_model": {
+    "requested": "gpt-image-2",
+    "strict": true
+  },
+  "target_size": [1080, 1350],
+  "fixed_photographer": {
+    "photographer_id": "P01",
+    "identity": "男友，第一人称叙述者，20多岁后段普通上班族，理性、爱找现实解释",
+    "device": "普通智能手机（2020年代前半段，数码长焦裁切）",
+    "frames_by_primary": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"],
+    "switch_frames": [],
+    "switch_reason": "无切换。所有帧的剧情理由都由 P01 现场持机物理成立；08 中被拍摄的亮屏手机为同行者第二拍摄源（女友手机），持机者仍是 P01。"
+  },
+  "frames": {
+    "01": {
+      "frame": "01",
+      "story_beat": "普通自驾开场，建立出行关系",
+      "status": "IMAGE_GENERATED",
+      "six_answers": {
+        "who_took_it": "P01（男友），驾驶座持机",
+        "why_this_moment": "两人终于兑现拖了很久的川西自驾，出发路上第一次停车，随手记录真的出发了",
+        "photographer_position": "驾驶座，手机举在方向盘上方，透过挡风玻璃",
+        "action_happening": "SUV停在盘山公路休息区；副驾女友回头说话、举手机拍窗外，手/饮料/导航屏幕入画",
+        "character_emotion": "轻松、期待",
+        "why_saved_in_phone": "旅行第一张，兑现约定的证明，翻相册会一直看到"
+      },
+      "first_person_casual_snapshot": "PASS",
+      "snapshot_note": "驾驶座随手拍，构图轻微偏斜、挡风玻璃反光、副驾人物轻微动作模糊；无相机UI，无海报感。",
+      "album_like_rank": 1,
+      "review_note": "10帧中最像真实手机相册的一张：车内生活杂讯密度高，关系感强。"
+    },
+    "02": {
+      "frame": "02",
+      "story_beat": "白天山坡证据，继续建立同行感",
+      "status": "IMAGE_GENERATED",
+      "six_answers": {
+        "who_took_it": "P01（男友），车旁持机",
+        "why_this_moment": "停车休息，女友先下车说“那边连路都没有”；拍下她回头指远方的瞬间，白天山坡基线顺带进画",
+        "photographer_position": "停车带车旁两步，手机朝女友与山坡方向",
+        "action_happening": "女友站在绿色护栏边回头指对面浅色裸岩与山脊缺口；车头/车门入画，风吹头发",
+        "character_emotion": "放松、同行",
+        "why_saved_in_phone": "旅行纪念照，也是白天山坡无路的证据基线"
+      },
+      "first_person_casual_snapshot": "PASS",
+      "snapshot_note": "中距离随手拍，逆光轻微过曝、轻微偏构图、肩包/车头边缘入画；人物不看镜头。",
+      "album_like_rank": 6,
+      "review_note": "同行感与白天证据同时成立；相对最接近“摆好再按”的一张，但仍是车边现场记录，不构成展示图。"
+    },
+    "03": {
+      "frame": "03",
+      "story_beat": "晕车停车，日常成立但开始多看一眼环境",
+      "status": "IMAGE_GENERATED",
+      "six_answers": {
+        "who_took_it": "P01（男友），副驾门外持机",
+        "why_this_moment": "女友晕车，停车让她靠着车门吹风；递矿泉水时顺手拍，两人都朝对面山坡多看了一眼",
+        "photographer_position": "副驾车门旁两步，站立低角度",
+        "action_happening": "女友蹲靠在车门边吹风、接过矿泉水，发丝被风吹；背景山谷与远处山坡，天色开始偏晚",
+        "character_emotion": "担心、心疼，仍是日常",
+        "why_saved_in_phone": "旅行里照顾对方的日常瞬间"
+      },
+      "first_person_casual_snapshot": "PASS",
+      "snapshot_note": "前景车门遮挡、低角度、轻微动作模糊；递水动作使人物之间有明确行动联系。",
+      "album_like_rank": 3,
+      "review_note": "照顾动作与“多看一眼环境”并存，日常感强。车辆读感偏三厢轿车，见 findings。"
+    },
+    "04": {
+      "frame": "04",
+      "story_beat": "第一盏灯，第一次轻微不对劲",
+      "status": "IMAGE_GENERATED",
+      "six_answers": {
+        "who_took_it": "P01（男友）",
+        "why_this_moment": "黄昏最后一点天光里，对面山坡出现一个暖黄光点，本能举起手机拉近拍",
+        "photographer_position": "停车带边沿，背靠车头，朝对面山坡",
+        "action_happening": "手机举到眼前对准远处光点，画面偏暗、手持抖动、暗部噪点",
+        "character_emotion": "疑惑、好奇",
+        "why_saved_in_phone": "觉得奇怪的灯，先存下来看"
+      },
+      "first_person_casual_snapshot": "PASS",
+      "snapshot_note": "手机背面朝向镜头、仅见摄像头模组与手部，无相机UI（首版屏幕入画已重生成修复）。",
+      "album_like_rank": 2,
+      "review_note": "第一人称持机感最强的一张；单个暖黄光点清晰，暗部噪点与护栏前景真实。"
+    },
+    "05": {
+      "frame": "05",
+      "story_beat": "灯变多，开始出现留证据动机",
+      "status": "IMAGE_GENERATED",
+      "six_answers": {
+        "who_took_it": "P01（男友）",
+        "why_this_moment": "光点变成一串沿山腰缓慢移动的灯队，开始“拍下来留证据”",
+        "photographer_position": "同一位置，背靠车头，数码长焦朝山坡",
+        "action_happening": "一串暖灯沿山腰移动、前后保持距离，像一队人赶夜路；夜间长焦噪点涂抹、手抖",
+        "character_emotion": "警觉、不安，想留证据",
+        "why_saved_in_phone": "要留证据，回去放大看是不是看错了"
+      },
+      "first_person_casual_snapshot": "PASS",
+      "snapshot_note": "灯队呈松散斜线、间距不一，非整齐列队；前景树影/护栏入画，长焦涂抹明显。",
+      "album_like_rank": 4,
+      "review_note": "“移动灯队”读感成立，未做成发光特效。"
+    },
+    "06": {
+      "frame": "06",
+      "story_beat": "长焦裁切，异常明确但仍是现场顺手记录",
+      "status": "IMAGE_GENERATED",
+      "six_answers": {
+        "who_took_it": "P01（男友）",
+        "why_this_moment": "灯队太远看不清，继续拉近裁切，想确认是什么",
+        "photographer_position": "同一停车带，最大数码变焦",
+        "action_happening": "画面极度裁切、模糊：能读出矮小人形、驮畜轮廓与车架轮廓，灯挂在人/畜附近；噪点颗粒大",
+        "character_emotion": "不安加深",
+        "why_saved_in_phone": "拍清楚一点好判断是当地人还是什么"
+      },
+      "first_person_casual_snapshot": "PASS",
+      "snapshot_note": "过度裁切、强噪点、轻微运动模糊；可读内容恰好是“人形+驮畜+车架”，未做成清晰特写。",
+      "album_like_rank": 7,
+      "review_note": "异常明确但保持现场记录感；暗部细节依赖人工确认。"
+    },
+    "07": {
+      "frame": "07",
+      "story_beat": "对照地形，人物开始被异常影响",
+      "status": "IMAGE_GENERATED",
+      "six_answers": {
+        "who_took_it": "P01（男友）",
+        "why_this_moment": "夜视里仍能认出白天那面浅色裸岩和山脊缺口，但灯队沿裸岩下方横向移动——那里白天没有路",
+        "photographer_position": "同一停车带，手持长焦；女友站到身边一起看",
+        "action_happening": "女友出现在画面边缘一起看，攥着外套；焦点在山坡裸岩与灯队",
+        "character_emotion": "两个人开始发慌",
+        "why_saved_in_phone": "想证明灯队位置和白天没路的位置重叠"
+      },
+      "first_person_casual_snapshot": "PASS",
+      "snapshot_note": "边缘人物虚化入画、夜间噪点、构图轻微歪；裸岩受光与灯队横向位置构成“不存在之路”的像素对照。",
+      "album_like_rank": 5,
+      "review_note": "本帧承载异常成立的核心证据：白天裸岩 + 灯队在其下移动。"
+    },
+    "08": {
+      "frame": "08",
+      "story_beat": "现实解释，异常持续推进且关系受压",
+      "status": "IMAGE_GENERATED",
+      "six_answers": {
+        "who_took_it": "P01（男友）",
+        "why_this_moment": "他开始找现实解释：拍下亮屏的导航地图，想证明那里不该有路、不该有灯",
+        "photographer_position": "车旁/驾驶座车门边，近距拍手机屏幕",
+        "action_happening": "左手举着显示导航地图的手机屏幕（地图App界面，非相机UI），右手持机拍下；背景黑色山路与远山灯光",
+        "character_emotion": "理性硬撑、压力开始显现",
+        "why_saved_in_phone": "现实解释的证据：地图上那里没有路"
+      },
+      "first_person_casual_snapshot": "PASS",
+      "snapshot_note": "拍另一部手机的屏幕：持机者P01、被拍屏幕为同行者第二拍摄源（女友手机），物理成立；屏幕反光、周围虚化。",
+      "album_like_rank": 8,
+      "review_note": "竞争解释（地图上无路）以人物判断呈现，不靠字幕证明；关系压力由“他还在拍”暗示。"
+    },
+    "09": {
+      "frame": "09",
+      "story_beat": "浅色盖布，情绪明显升级",
+      "status": "IMAGE_GENERATED",
+      "six_answers": {
+        "who_took_it": "P01（男友）",
+        "why_this_moment": "拉近后看见驮畜货物上有一大片浅色盖布，看不清织纹但形状让人发毛",
+        "photographer_position": "同一停车带，最大长焦",
+        "action_happening": "模糊人影、驮畜、浅色盖布、晃动的灯；镜头抖得厉害",
+        "character_emotion": "恐惧开始、手发抖",
+        "why_saved_in_phone": "已经在“取证”，自己也不确定为什么还在拍"
+      },
+      "first_person_casual_snapshot": "PASS",
+      "snapshot_note": "严重抖动模糊、构图歪斜、噪点重；浅色盖布可读但织纹不可辨，符合“远距不能看清小纹理”的硬要求。",
+      "album_like_rank": 9,
+      "review_note": "取证口吻成立，未做成清晰特写或发光效果。"
+    },
+    "10": {
+      "frame": "10",
+      "story_beat": "普通赶路动作，阶段性高潮",
+      "status": "IMAGE_GENERATED",
+      "six_answers": {
+        "who_took_it": "P01（男友）",
+        "why_this_moment": "车架似乎卡住，几个人停下来推——真实生活动作，不是仪式；这是P01决定放下手机前的临界点",
+        "photographer_position": "同一停车带，长焦，最后一张",
+        "action_happening": "人影聚拢推木制车架，火把/油灯晃动；画面抖、糊、曝光不足，但能读出“卡住-推车”动作",
+        "character_emotion": "被真实感击中，说不出话",
+        "why_saved_in_phone": "这张让他确认那不是幻觉，也是他收手机前最后一张"
+      },
+      "first_person_casual_snapshot": "PASS",
+      "snapshot_note": "木制驮货板车+火把照明+推车动作（首版误画现代SUV已重生成）；画质极差但动作可读。",
+      "album_like_rank": 10,
+      "review_note": "暗部可读性对自动化目检不稳定，需人工确认“推车动作”成立；见 findings。"
+    }
+  },
+  "contract_checks": {
+    "photographer_contract": {
+      "status": "PASS",
+      "note": "01-10 全部由固定主摄影者 P01 持机；无切换帧。08 被拍屏幕手机为女友手机（同行者第二拍摄源，分镜明确），持机者仍为 P01。"
+    },
+    "moment_contract": {
+      "status": "PASS",
+      "note": "每帧六问（谁拍/为何此刻/位置/动作/情绪/为何保存）与图片一致；04 首版出现未预登记的相机 UI，已重生成修复；10 暗部可读性待人工确认。"
+    },
+    "opening_memory_contract": {
+      "status": "PASS",
+      "note": "01-03 建立人物关系与正常生活（车内同行、车边指认、晕车递水），NO-ANOMALY 01-03 全 PASS；前三张均非纯风景。"
+    },
+    "emotion_curve": {
+      "status": "PASS",
+      "note": "情绪等级 01-10 = 2,2,3,4,5,6,7,7,8,9 单调爬升；平静基线 → 生活波动 → 异常触发 → 留证据 → 共同发慌 → 关系压力 → 恐惧升级 → 阶段高潮。"
+    },
+    "capture_grammar_forbidden": {
+      "status": "PASS",
+      "note": "10 张均无 omniscient_third_person_camera / poster_composition / staged_group_lineup / director_blocking / commercial_promo_composition / camera_capture_ui（04 返修后）。"
+    }
+  },
+  "findings": [
+    {
+      "severity": "LOW",
+      "frame": "04",
+      "finding": "首版生成时手机屏幕再次入画（同机拍摄无法包含自身屏幕），说明仅文字约束不足以完全压制；已重生成修复。",
+      "suggested_fix": "正式生产 prompt 继续显式要求手机背面朝向镜头；必要时把该约束写入 Frame Contract 硬禁项。"
+    },
+    {
+      "severity": "LOW",
+      "frame": "10",
+      "finding": "画面极暗、长焦噪点重，自动化目检对“推车动作”的判读不稳定（人工放大裁切可确认木制车架、火把与人影）。",
+      "suggested_fix": "进入 11-20 前对该帧做一次人工终审；如不可读，可轻微提升现场亮度（如篝火/火把更多）后再测。"
+    },
+    {
+      "severity": "LOW",
+      "frame": "03",
+      "finding": "车辆读感在 01/02（SUV）与 03（偏三厢轿车）之间有小幅漂移。",
+      "suggested_fix": "后续帧 prompt 统一写明“灰色紧凑型SUV/两厢车身”，减少车型歧义。"
+    },
+    {
+      "severity": "LOW",
+      "frame": "08",
+      "finding": "画面出现第二部手机（地图屏幕）；需确认持机者 P01 + 被拍手机为女友手机的人物分工，避免被误读为“P01 用两部手机”。",
+      "suggested_fix": "正式生产时在 Storyboard 明确该帧的第二拍摄源归属。"
+    }
+  ],
+  "diff_vs_round1": {
+    "round_1_run_id": "PT_20260901_230730_7946",
+    "round_1_scope": "Frame 01-05",
+    "round_2_scope": "Frame 01-10",
+    "differences": [
+      "范围：01-05 → 01-10；01-05 为同剧情重新生成（禁止复用旧图/旧输出）。",
+      "固定摄影者规则显式化：Round 2 在 Photographer Contract 中锁定 P01 贯穿 01-10，并声明无切换帧。",
+      "五问 → 六问：新增“这张图为什么会被保存在手机里”。",
+      "04 相机 UI 缺陷：Round 1 残留，Round 2 首版仍复现、经重生成修复，物理错误清零。",
+      "01-03 关系强度提升：Round 2 前三张全部包含人物互动（副驾回头/指认/递水），不再是“风景+偶尔人物”混合。",
+      "新增 06-10 异常推进段：长焦裁切、地形对照、地图现实解释、浅色盖布、推车高潮，连续线索不断裂。",
+      "新增硬约束：禁止相机 UI 入画；10 首版现代SUV误画已返修为木制板车。"
+    ],
+    "conclusion": "Round 2 相对 Round 1 在物理缺陷压制、开头关系建立、01-10 连续叙事三方面提升；无新增高危问题。"
+  },
+  "most_album_like": ["01", "04", "03", "05"],
+  "still_display_like": [],
+  "physical_or_logic_issues": [
+    "04 首版相机UI（已重生成修复，不计入最终产物）",
+    "10 暗部可读性依赖人工确认（非物理错误）",
+    "03 车型读感小幅漂移（低危连续性项）"
+  ],
+  "improvement_vs_round1": {
+    "verdict": "IMPROVED",
+    "note": "Round 1 的 04 相机UI 缺陷在 Round 2 已修复；开头人物关系更强；01-10 时间线、车辆、人物、异常线索连续。"
+  },
+  "recommendation": {
+    "extend_to_01_20": "CONDITIONAL_YES",
+    "note": "建议进入 01-20 扩展测试，但先完成两件事：人工终审 10 的推车动作可读性；把 08 第二拍摄源归属写进 Storyboard。之后 11-20 沿用固定 P01 + 六问 + 禁相机UI 约束继续测试。"
+  },
+  "timing_summary": {
+    "method": "相邻文件写入时间差估算，含会话与工具往返开销；非逐帧插桩计时",
+    "per_frame_seconds_estimated": {
+      "01": 90, "02": 60, "03": 135, "04": 160, "05": 60,
+      "06": 60, "07": 75, "08": 90, "09": 75, "10": 175
+    },
+    "total_seconds_estimated": 980,
+    "notes": "04 与 10 各含一次内容返修；04 返修原因相机UI，10 返修原因现代SUV误画。"
+  },
+  "review_required": true,
+  "review_rule": "NON_AUTHORITY_TEST_ONLY. 本测试不推进任何 episode stage，媒体不入 Git，契约与报告仅作回归证据；不得升级为 Character/Location/Production 资产。",
+  "finalized_at": "2026-09-02T00:10:00+08:00"
+}

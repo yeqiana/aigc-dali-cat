@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "photographer": {
+    "id": "P01",
+    "identity": "男友，第一人称叙述者，20多岁后段普通上班族",
+    "device": "普通智能手机（2020年代前半段，数码长焦裁切）",
+    "operator_role": "participant_or_companion_inside_event",
+    "viewpoint": "first_person_or_companion_eye",
+    "position_rule": "physically_plausible_human_position",
+    "default_source": "他的手机",
+    "second_sources_allowed": [
+      "女友手机（同行者记录，仅分镜明确时）",
+      "无人机（仅旅行拍风景，不用于寻找异常）"
+    ],
+    "visible_in_frame": "正文大多数不出现清晰正脸；可自然出现手、袖口、车门、车窗、倒影",
+    "selfie": false,
+    "selfie_rule": "自拍不是默认；本测试 01-05 不使用自拍构图"
+  },
+  "per_frame_photographer": {
+    "01": "P01",
+    "02": "P01",
+    "03": "P01",
+    "04": "P01",
+    "05": "P01"
+  },
+  "test_note": "Frame 01-05 全部由 P01 主拍；01 为驾驶座停车时随手拍，02-05 为停车带车旁/边沿站立拍摄。无全知第三人称机位。"
+}

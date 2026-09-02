@@ -1,0 +1,81 @@
+{
+  "version": "2.1.5-photography-os-r2",
+  "run_id": "PT_20260901_233900_7622",
+  "round": 2,
+  "round_prev": "PT_20260901_230730_7946",
+  "test_type": "PHOTOGRAPHY_OS_REGRESSION_TEST",
+  "status": "PT_TEST_GENERATED_PENDING_REVIEW",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "production_state_untouched": true,
+  "history_policy": "AUDIT_ONLY_NEVER_EXECUTION_INPUT",
+  "reuse_previous_image": false,
+  "reuse_previous_visual_test": false,
+  "reuse_previous_frame_output": false,
+  "skip_if_previous_pass": false,
+  "cache_hit_allowed": false,
+  "route": "MAIN_SESSION_NATIVE_IMAGE",
+  "episode": "episodes/10_彼此的天上/01_不存在的夜行路",
+  "episode_title": "不存在的夜行路",
+  "series": "10_彼此的天上",
+  "story_os_target": "Story OS V2.1.5 Photography OS",
+  "scope": "Frame 01-10 only; NOT full production",
+  "enabled_contracts": [
+    "FIRST_PERSON_CASUAL_SNAPSHOT",
+    "Photographer Contract",
+    "Moment Contract",
+    "Opening Memory Contract",
+    "Emotion Curve"
+  ],
+  "photographer_rule": "fixed_primary_photographer_P01_for_all_frames",
+  "target_size": [1080, 1350],
+  "provider_size": "1024x1280",
+  "image_model": {
+    "requested": "gpt-image-2",
+    "strict": true
+  },
+  "visual_profile": {
+    "profile_id": "M-ROAD-2020",
+    "profile_name": "2020s 川西自驾手机相册纪实",
+    "profile_path": "episodes/10_彼此的天上/series/04_M-ROAD-2020_视觉Profile草案_V1.0.md",
+    "selection": "series_draft_profile_test_authority",
+    "authority_source": "episodes/10_彼此的天上/01_不存在的夜行路/docs/04_不存在的夜行路_视觉规范_DRAFT_V1.0.md",
+    "status": "DRAFT_TEST_AUTHORITY",
+    "visual_dna": {
+      "reality_first": true,
+      "era": "2020s_first_half",
+      "device": "ordinary_smartphone",
+      "digital_telephoto_crop": true,
+      "consumer_drone_only_for_travel_landscape": true,
+      "ordinary_life_density": "high",
+      "available_light_only": true,
+      "unposed_capture": true,
+      "causal_imperfection": true,
+      "not_cinematic": true,
+      "aspect_ratio": "4:5 1080x1350",
+      "color": "environment-driven low/medium saturation, no teal-orange, no excessive HDR",
+      "texture": "phone album grain, low-light digital noise, telephoto smear, causal motion blur only",
+      "anomaly": "same terrain before/after difference; real life appearing where it should not be"
+    }
+  },
+  "capture_grammar": {
+    "grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "grammar_path": "standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json",
+    "selection": "global_default",
+    "authority_source": "global_default_capture_grammar",
+    "text": "capture_grammar=FIRST_PERSON_CASUAL_SNAPSHOT_V1\nprinciple=摄影者必须属于事件现场。默认第一人称或同行者持机私人记录，非摆拍，构图有生活性缺陷。\noperator=participant_or_companion_inside_event\nhandheld=true\nunposed=true\nimperfect_framing=true\nforbidden=omniscient_third_person_camera; director_blocking; staged_group_lineup; symmetrical_hero_framing; poster_composition; commercial_promo_composition; characters_arranged_for_camera; floating_camera_outside_human_position; camera_capture_ui_on_phone_screen"
+  },
+  "frames": [
+    { "frame": "01", "story_beat": "普通自驾开场，建立出行关系" },
+    { "frame": "02", "story_beat": "白天山坡证据，继续建立同行感" },
+    { "frame": "03", "story_beat": "晕车停车，日常成立但开始多看一眼环境" },
+    { "frame": "04", "story_beat": "第一盏灯，第一次轻微不对劲" },
+    { "frame": "05", "story_beat": "灯变多，开始出现留证据动机" },
+    { "frame": "06", "story_beat": "长焦裁切，异常明确但仍是现场顺手记录" },
+    { "frame": "07", "story_beat": "对照地形，人物开始被异常影响" },
+    { "frame": "08", "story_beat": "现实解释，异常持续推进且关系受压" },
+    { "frame": "09", "story_beat": "浅色盖布，情绪明显升级" },
+    { "frame": "10", "story_beat": "普通赶路动作，阶段性高潮" }
+  ],
+  "created_at": "2026-09-01T23:39:00+08:00"
+}

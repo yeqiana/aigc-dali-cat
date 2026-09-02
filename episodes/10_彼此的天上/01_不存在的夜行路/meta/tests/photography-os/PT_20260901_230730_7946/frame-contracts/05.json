@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "05",
+  "story_beat": "灯变多",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "five_answers": {
+    "who_took_it": "P01（男友）",
+    "why_this_moment": "光点变成一串沿山腰缓慢移动的灯队，他继续拉近拍想看清是什么",
+    "photographer_position": "同一位置，背靠车头，数码长焦朝山坡",
+    "action_happening": "多个灯点缓慢移动、前后保持距离，像一队人赶夜路；夜间长焦噪点涂抹、手抖",
+    "character_emotion": "从好奇转向警觉不安，意识到那不是村子的灯"
+  },
+  "emotion_label": "警觉不安",
+  "emotion_curve_ref": "emotion-curve.json#points.05",
+  "moment_contract_ref": "moment-contract.json#frames.05",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/05.txt",
+  "contract_sha256": "02fffae5f7775110cbf0afe632c453bf42de5687088f2ec6b9e68c37d073ff47"
+}

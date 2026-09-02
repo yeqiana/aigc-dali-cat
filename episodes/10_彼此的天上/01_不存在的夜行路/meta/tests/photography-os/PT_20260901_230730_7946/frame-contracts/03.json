@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "03",
+  "story_beat": "晕车停车",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "five_answers": {
+    "who_took_it": "P01（男友），站在女友侧前方两步",
+    "why_this_moment": "女友晕车不舒服，他停下车让她吹风；拍下她靠着车门缓一缓的日常瞬间",
+    "photographer_position": "停车带，副驾车门旁两步，站立低角度",
+    "action_happening": "副驾门开着，女友蹲靠在车门边吹风休息，他站在旁边拿着水",
+    "character_emotion": "担心、心疼，陪着她"
+  },
+  "emotion_label": "担心心疼",
+  "emotion_curve_ref": "emotion-curve.json#points.03",
+  "moment_contract_ref": "moment-contract.json#frames.03",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/03.txt",
+  "contract_sha256": "78e9d7158d74361b60961d0d125a1d65ddf1bebd0461400afa0fe74ba98d9f31"
+}

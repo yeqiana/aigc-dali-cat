@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "07",
+  "story_beat": "对照地形，人物开始被异常影响",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "photographer_id": "P01",
+  "six_answers": {
+    "who_took_it": "P01（男友）",
+    "why_this_moment": "夜视里仍能认出白天那面浅色裸岩和山脊缺口，但灯队沿裸岩下方横向移动——那里白天没有路",
+    "photographer_position": "同一停车带，手持长焦；女友站到身边一起看",
+    "action_happening": "女友出现在画面边缘一起看，攥着外套；焦点在山坡裸岩与灯队",
+    "character_emotion": "两个人开始发慌",
+    "why_saved_in_phone": "想证明灯队位置和白天没路的位置重叠"
+  },
+  "emotion_label": "两人发慌",
+  "emotion_curve_ref": "emotion-curve.json#points.07",
+  "moment_contract_ref": "moment-contract.json#frames.07",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/07.txt",
+  "scene_prompt_sha256": "bb9d61eec4e0d8c4b17d6118baf55ee2ffcd96bbd92a30cfaa8589d0dd960e20",
+  "forbidden": ["omniscient_third_person_camera", "poster_composition", "camera_capture_ui"]
+}

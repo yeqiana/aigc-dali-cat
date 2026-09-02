@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "points": {
+    "01": {
+      "label": "轻松期待",
+      "level": 2
+    },
+    "02": {
+      "label": "放松平淡",
+      "level": 2
+    },
+    "03": {
+      "label": "担心心疼",
+      "level": 3
+    },
+    "04": {
+      "label": "疑惑好奇",
+      "level": 4
+    },
+    "05": {
+      "label": "警觉不安",
+      "level": 5
+    }
+  },
+  "curve_shape": "平静基线(01-02) → 生活波动(03) → 异常触发(04) → 警觉加速(05)",
+  "note": "前3张维持在普通生活基线，符合 Photography OS 前3张建立人物关系和正常生活；异常从第4张才进入画面，情绪随之爬升。"
+}

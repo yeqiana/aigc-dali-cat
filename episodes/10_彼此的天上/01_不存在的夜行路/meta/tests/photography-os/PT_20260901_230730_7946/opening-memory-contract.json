@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "rule": "Photography OS 默认开头：前3张建立人物关系和正常生活",
+  "frames": {
+    "01": {
+      "memory": "两人终于兑现拖了很久的川西自驾，出发路上第一次停车，随手拍下前方山路",
+      "normal_life_signal": "共同旅行开始、兑现约定",
+      "relationship_signal": "情侣同行的开端"
+    },
+    "02": {
+      "memory": "停车休息时拍对面山坡，浅色裸岩和山脊缺口，没有路",
+      "normal_life_signal": "旅行中停车看风景",
+      "relationship_signal": "一起旅行、互相分享所见"
+    },
+    "03": {
+      "memory": "女友晕车，停下车让她靠着车门吹风休息",
+      "normal_life_signal": "晕车停车、照顾彼此",
+      "relationship_signal": "生活中的互相照顾"
+    }
+  },
+  "no_anomaly_test": {
+    "frame_01": "PASS",
+    "frame_02": "PASS",
+    "frame_03": "PASS"
+  },
+  "normal_life_established": true,
+  "relationship_established": true,
+  "anomaly_first_appears_at": "04"
+}

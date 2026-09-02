@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "rule": "Photography OS 默认开头：前3张优先建立“彼此”关系；前三张不能做成连续纯风景照；让观众感到这些人是一起出行、一起经历、彼此有关联。",
+  "opening_requirements_covered": [
+    "车内同行感",
+    "同伴回头/说话/观察",
+    "手、包、衣服、手机、车内局部",
+    "某人在拍，某人在看",
+    "某人下车、等人、招呼、观察、停顿",
+    "同行者之间有行动联系"
+  ],
+  "frames": {
+    "01": {
+      "memory": "终于兑现拖了很久的川西自驾，车开上盘山公路，女友坐在副驾举着手机拍窗外，回头和P01说话",
+      "normal_life_signal": "共同旅行开始、兑现约定",
+      "relationship_signal": "车内同行感：副驾回头说话、一起看窗外，手/导航/饮料入画",
+      "anomaly_hint": "无"
+    },
+    "02": {
+      "memory": "停车休息，女友先下车走到护栏边回头看山坡说“那边连路都没有”，P01在车旁拍下她回头指远方的瞬间，白天山坡基线顺带进画",
+      "normal_life_signal": "旅行中停车看风景、互相分享所见",
+      "relationship_signal": "行动联系：某人下车、回头、招呼、观察，车头/车门/包入画",
+      "anomaly_hint": "无"
+    },
+    "03": {
+      "memory": "女友晕车，停车让她靠着车门吹风，P01递矿泉水；两人都朝对面山坡多看了一眼（只是多看一眼，无异常可见）",
+      "normal_life_signal": "晕车停车、照顾彼此",
+      "relationship_signal": "生活中的互相照顾：递水、蹲靠车门、发丝被风吹",
+      "anomaly_hint": "无（仅对环境的注意力增加）"
+    }
+  },
+  "no_anomaly_test": {
+    "frame_01": "PASS",
+    "frame_02": "PASS",
+    "frame_03": "PASS"
+  },
+  "normal_life_established": true,
+  "relationship_established": true,
+  "anomaly_first_appears_at": "04"
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "fixed_photographer_rule": {
+    "rule": "本轮 01-10 固定唯一主要摄影者 P01，不频繁切换。除非单帧有明确剧情理由，否则不切换；本 10 帧全部由 P01 持机，无切换帧。",
+    "switch_frames": [],
+    "switch_reason": "无。所有帧的剧情理由都能由 P01 现场持机物理成立（驾驶、车旁、停车带边沿、长焦记录、拍手机屏幕）。"
+  },
+  "photographer": {
+    "id": "P01",
+    "identity": "男友，第一人称叙述者，20多岁后段普通上班族，理性、爱找现实解释",
+    "appearance": "深色（藏青/黑）外套，袖口与手部是主要可见元素，正文不出现清晰正脸",
+    "device": "普通智能手机（2020年代前半段，数码长焦裁切）",
+    "operator_role": "participant_or_companion_inside_event",
+    "viewpoint": "first_person_or_companion_eye",
+    "position_rule": "physically_plausible_human_position",
+    "default_source": "他的手机",
+    "second_sources_allowed": [
+      "女友手机（同行者记录，仅分镜明确时）",
+      "无人机（仅旅行拍风景，不用于寻找异常）"
+    ],
+    "visible_in_frame": "手、袖口、车门、车窗、倒影可自然出现；不出现相机取景 UI",
+    "selfie": false,
+    "selfie_rule": "自拍不是默认；本测试 01-10 不使用自拍构图"
+  },
+  "per_frame_photographer": {
+    "01": "P01", "02": "P01", "03": "P01", "04": "P01", "05": "P01",
+    "06": "P01", "07": "P01", "08": "P01", "09": "P01", "10": "P01"
+  },
+  "continuity_anchors": {
+    "vehicle": "灰色紧凑型SUV，深色内饰、黑色方向盘，副驾深色座椅",
+    "girlfriend": "年轻女性，长深棕发，浅灰色大衣/开衫，浅蓝牛仔裤，米色运动鞋",
+    "p01_jacket": "深色外套，袖口可见",
+    "parking_spot": "盘山公路普通停车带，绿色金属护栏、混凝土路肩",
+    "slope": "对面山坡：浅色裸岩 + 山脊缺口，白天无路；夜间灯队沿其下方横向移动",
+    "time_progression": "白天(01-03) → 黄昏(04) → 夜(05-10)"
+  },
+  "test_note": "Frame 01-10 全部由 P01 主拍；01-03 为车内/车边/照顾日常，04 起进入黄昏与夜间长焦记录。无全知第三人称机位，无相机 UI 入画。"
+}

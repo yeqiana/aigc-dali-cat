@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "01",
+  "story_beat": "普通自驾开场",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "five_answers": {
+    "who_took_it": "P01（男友），在驾驶座停车时把手机举过方向盘拍下前方山路",
+    "why_this_moment": "两人终于兑现拖了很久的川西自驾，出发后第一次停车，随手记录真的出发了",
+    "photographer_position": "驾驶座，手机举在方向盘上方，透过挡风玻璃",
+    "action_happening": "SUV 停在盘山公路休息区，前方山脊、云层与盘山路；后视镜和遮阳板边缘自然入画",
+    "character_emotion": "轻松、期待，终于出发的踏实感"
+  },
+  "emotion_label": "轻松期待",
+  "emotion_curve_ref": "emotion-curve.json#points.01",
+  "moment_contract_ref": "moment-contract.json#frames.01",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/01.txt",
+  "contract_sha256": "d166748bf16f76e1219c7ba6c0bb10ff567426cb685cef25e5a9d73729f93a71"
+}

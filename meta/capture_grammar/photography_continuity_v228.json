@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.2.8",
+  "upgrade": "Photography Continuity Rules R2 LocalSafe",
+  "history": "derived from 彼此的天上 Photography OS 01-10 regression",
+  "rules": [
+    "camera_roster_and_photographer_ownership",
+    "ghost_camera_forbidden",
+    "shot_grammar_diversity",
+    "first_person_is_logic_not_fixed_composition",
+    "physical_cause_for_camera_defects",
+    "opening_memory_relationship_density",
+    "time_of_day_and_visual_memory_continuity",
+    "screen_content_physics"
+  ],
+  "installer_strategy": {
+    "overwrite_codex_subscription_image": false,
+    "codex_subscription_image_guard": "semantic_contract_only",
+    "visual_profile_bridge": "minimal_token_patch_only",
+    "capture_grammar_json": "deep_merge_preserve_unknown_keys",
+    "photography_rules_md": "managed_marker_block",
+    "dirty_worktree_allowed": true,
+    "backup_before_change": true
+  }
+}

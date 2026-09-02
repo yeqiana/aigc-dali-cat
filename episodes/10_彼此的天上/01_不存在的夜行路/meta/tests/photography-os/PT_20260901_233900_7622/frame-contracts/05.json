@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "05",
+  "story_beat": "灯变多，开始出现留证据动机",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "photographer_id": "P01",
+  "six_answers": {
+    "who_took_it": "P01（男友）",
+    "why_this_moment": "光点变成一串沿山腰缓慢移动的灯队，开始“拍下来留证据”",
+    "photographer_position": "同一位置，背靠车头，数码长焦朝山坡",
+    "action_happening": "一串暖灯沿山腰移动、前后保持距离，像一队人赶夜路；夜间长焦噪点涂抹、手抖",
+    "character_emotion": "警觉、不安，想留证据",
+    "why_saved_in_phone": "要留证据，回去放大看是不是看错了"
+  },
+  "emotion_label": "警觉、想留证据",
+  "emotion_curve_ref": "emotion-curve.json#points.05",
+  "moment_contract_ref": "moment-contract.json#frames.05",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/05.txt",
+  "scene_prompt_sha256": "06c44871c873c6be81fd3f2de29af13dda15d8ab9b9ab330740b265727a966da",
+  "forbidden": ["omniscient_third_person_camera", "poster_composition", "camera_capture_ui", "staged_lineup"]
+}

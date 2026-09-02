@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os",
+  "status": "TEST_LOCKED",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "principle": "A frame must first be a credible capture event, then a narrative image.",
+  "max_causal_defects_per_frame": 2,
+  "frame_count": 20,
+  "frames": {
+    "01": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "两人终于兑现拖了很久的川西自驾，出发后第一次停车，随手记录真的出发了",
+      "device_position": "驾驶座，手机举在方向盘上方，透过挡风玻璃",
+      "subject_awareness": "not_applicable",
+      "operator_state": "放松",
+      "framing_constraint": "车内挡风玻璃前景，构图轻微偏斜",
+      "retained_reason": "刚兑现旅行，出发路上拍的第一张",
+      "causal_defects": [
+        "挡风玻璃反光",
+        "遮阳板边缘入画"
+      ]
+    },
+    "02": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "停车休息时看到对面山坡浅色裸岩和山脊缺口，顺手拍下白天基线，山坡上没有路",
+      "device_position": "停车带车旁两步，手机朝向对面山坡",
+      "subject_awareness": "unaware",
+      "operator_state": "平淡",
+      "framing_constraint": "中距离全景，轻微偏构图",
+      "retained_reason": "拍完确认过那里没有路，白天证据",
+      "causal_defects": [
+        "轻微偏构图",
+        "车头边缘入画"
+      ]
+    },
+    "03": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "女友晕车不舒服，停下车让她吹风；拍下她靠着车门缓一缓的日常瞬间",
+      "device_position": "副驾车门旁两步，站立低角度",
+      "subject_awareness": "unaware",
+      "operator_state": "担心",
+      "framing_constraint": "前景车门遮挡，轻微动作模糊",
+      "retained_reason": "旅行里的生活瞬间，后来翻相册会看到",
+      "causal_defects": [
+        "前景车门遮挡",
+        "轻微动作模糊"
+      ]
+    },
+    "04": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机（数码拉近）",
+      "why_capture_now": "黄昏远山突然出现一个暖黄光点，本能举起手机拉近拍",
+      "device_position": "停车带边沿，背靠车头，朝对面山坡",
+      "subject_awareness": "unaware",
+      "operator_state": "疑惑",
+      "framing_constraint": "手持长焦，暗部抖动，构图未完全对准",
+      "retained_reason": "当时觉得奇怪的灯，想存下来看",
+      "causal_defects": [
+        "手抖暗部噪点",
+        "构图未对准"
+      ]
+    },
+    "05": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机（数码长焦裁切）",
+      "why_capture_now": "光点变成一串沿山腰缓慢移动的灯队，继续拉近拍想看清是什么",
+      "device_position": "同一位置，背靠车头，数码长焦朝山坡",
+      "subject_awareness": "unaware",
+      "operator_state": "警觉",
+      "framing_constraint": "夜间数码长焦，噪点涂抹，轻微手抖",
+      "retained_reason": "灯队在移动，想拍清楚到底是谁",
+      "causal_defects": [
+        "长焦涂抹",
+        "抖动模糊"
+      ]
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "version": "2.1.5-photography-os",
+  "run_id": "PT_20260901_230730_7946",
+  "status": "IMAGE_GENERATED",
+  "route": "MAIN_SESSION_NATIVE_IMAGE",
+  "reuse_previous_image": false,
+  "frames": {
+    "01": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "f89768601638105a1588a1b8473ce7aa3ecb327f6a390ea6ea8da581d3a5a753",
+      "output_sha256": "d8c42d8d9f79b54580ec1327d247dafdd243fb094f57eeac83eeaf2b74dd558a",
+      "generation_elapsed_seconds_estimated": 60
+    },
+    "02": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "4f579ce022d15f6debfeb6fbdd3bdc94550b52e21f7d6d0f657b93f391ff8b1b",
+      "output_sha256": "e8877deb5a14cbc44c6e79791dc25fadf852c0a74a6dd7d67ee4eb66e2ca89d7",
+      "generation_elapsed_seconds_estimated": 113
+    },
+    "03": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "85a9e023b981239b3af62d0a3ac7ee1d518decff5dfd0312594459f320446111",
+      "output_sha256": "1bffec5315cec09d2a4fb92bd0f136db37541b5b506c73f29f214273f3d728a1",
+      "generation_elapsed_seconds_estimated": 70
+    },
+    "04": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "1255ce7d76d6552e76d09027ce80e21119e66adbb3202657a784014403f53a01",
+      "output_sha256": "5b1a34b8934ce67998145a575406f386677d2481d7940b27b41944e0c77bc1df",
+      "generation_elapsed_seconds_estimated": 60
+    },
+    "05": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "d22681113c2556192e4f0939c6c866d1a0d6152dcfd2030312da5ce4512f6a02",
+      "output_sha256": "1e8712d014262ad59d4c1de85a7228bb908b7800e560e4bd0e365f87d1853224",
+      "generation_elapsed_seconds_estimated": 50
+    }
+  },
+  "recorded_at": "2026-09-01T23:18:07+08:00"
+}

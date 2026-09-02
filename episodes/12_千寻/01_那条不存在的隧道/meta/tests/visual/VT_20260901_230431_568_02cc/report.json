@@ -1,0 +1,35 @@
+{
+  "version": "2.2.7",
+  "run_id": "VT_20260901_230431_568_02cc",
+  "test_type": "VISUAL_TEST",
+  "status": "GENERATION_FAILED",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "history_policy": "AUDIT_ONLY_NEVER_EXECUTION_INPUT",
+  "scene": "竖幅4:5 Visual Test，1990年代日本乡间，搬家途中一家人的旧式家庭轿车刚驶到废弃隧道入口。真人演员，日本90年代生活环境，35mm胶片，低饱和，夏季潮湿空气，真实自然光，写实实景。第一人称或同行者在场视角，摄影者位于真实可站立位置，私人相册随手拍，人物自然活动，不要站好给镜头拍，构图允许不完整，允许人物部分裁切，允许车门、肩膀、手、门框等自然前景，不要求所有人物完整入镜。禁止全知第三人称、三个人整齐站一排、导演式人物调度、电影海报构图、对称英雄镜头、动画、二次元、cosplay、CG、AI插画、塑料皮肤、HDR。图片身份：NON_AUTHORITY_TEST_ONLY。",
+  "visual_profile": {
+    "profile_id": "SPIRITED_AWAY_LIVE_ACTION_V1",
+    "profile_path": "standards/visual_profiles/SPIRITED_AWAY_LIVE_ACTION_V1.json",
+    "profile_sha256": "8d54454ed4df74445548fa6ec5ce8a4f6c624fd7180c6ed4eb4b6b8f69392722",
+    "authority_source": "meta/visual-profile.json",
+    "capture_grammar": {
+      "grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+      "grammar_path": "standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json",
+      "selection": "global_default",
+      "authority_source": "global_default_capture_grammar"
+    },
+    "prompt_contract": "profile=SPIRITED_AWAY_LIVE_ACTION_V1 | 1990年代日本真人奇幻电影（35mm胶片质感）\nauthority=meta/visual-profile.json\nprinciple=统一为1990年代日本真人奇幻电影质感：写实实景、真人演员、真实摄影机曝光；具体场景与年代生活物理优先。\nreality_first=true\nfilm_medium=35mm_film\ncolor=low_saturation_environment_driven\ntexture=light_film_grain_slight_highlight_rolloff_summer_humidity\nlighting=natural_light_only\nskin=real_skin_no_plastic\nsets=real_practical_sets\nera=1990s_japanese_living_environment\nwardrobe=natural_era_appropriate\nanomaly=real_world_first_supernatural_second\nvisual_medium_photography=real_cinematography_not_concept_art_not_studio_not_ai_illustration\nvisual_profile_composition_hint_NON_AUTHORITY=film_framing\nmust_keep=真人演员; 日本90年代生活环境; 自然服装; 写实实景; 潮湿夏季空气感\nforbidden=动画脸; 二次元; cosplay; 游戏CG; 3D渲染; 塑料皮肤; 过度锐化; HDR感; AI油腻感; 概念设计图; 商业棚拍; AI插画\n----- GLOBAL CAPTURE GRAMMAR -----\ncapture_grammar=FIRST_PERSON_CASUAL_SNAPSHOT_V1\nCAPTURE GRAMMAR HAS HIGHER PRIORITY THAN VISUAL PROFILE composition/photography when they conflict.\nprinciple=摄影者必须属于事件现场，而不是全知导演镜头。默认采用第一人称或同行者持机的私人记录语法，人物非摆拍、构图有生活性缺陷。\ncamera_operator=participant_or_companion_inside_event\nviewpoint=first_person_or_companion_eye\ncamera_position=physically_plausible_human_position\nfloating_omniscient_camera=false\nhandheld=true\nunposed=true\nimperfect_framing=true\nsubjects do not need to face camera; avoid arranging people for the image\nallow partial occlusion and foreground body/hand/doorframe/vehicle edge when physically natural\nsubject_visibility_rule=若核心主角必须出现在画面中，默认由同行者/现场另一人持机记录；仍禁止全知第三人称和导演式机位。\nselfie_rule=自拍不是默认。只有剧情/Frame Contract明确要求自拍时才使用自拍构图。\nvisual profile supplies texture/era/color/light; capture grammar supplies camera authorship and framing behavior\ndo not convert film/cinematic texture into staged movie-still blocking\ncapture_forbidden=omniscient_third_person_camera; director_blocking; staged_group_lineup; symmetrical_hero_framing; poster_composition; commercial_promo_composition; characters_arranged_for_camera; floating_camera_outside_human_position\n----- END GLOBAL CAPTURE GRAMMAR -----\ncapture physics and story era override decorative texture\ndo not silently substitute another visual profile or capture grammar"
+  },
+  "image_model": {
+    "requested": "gpt-image-2",
+    "strict": true
+  },
+  "reason": "image_gen upstream 502 Bad Gateway: socket connection was closed unexpectedly",
+  "generation_elapsed_seconds": 160.7,
+  "created_at": "2026-09-01T23:04:31+08:00",
+  "failed_at": "2026-09-01T23:13:20+08:00",
+  "raw_target": "media\\tests\\visual\\VT_20260901_230431_568_02cc\\raw.png",
+  "output_target": "media\\tests\\visual\\VT_20260901_230431_568_02cc\\output.png",
+  "real_image_created": false,
+  "review_required": false
+}

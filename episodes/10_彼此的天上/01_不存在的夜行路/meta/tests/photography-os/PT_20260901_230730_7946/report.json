@@ -1,0 +1,208 @@
+{
+  "version": "2.1.5-photography-os",
+  "run_id": "PT_20260901_230730_7946",
+  "test_type": "PHOTOGRAPHY_OS_REGRESSION_TEST",
+  "status": "PT_TEST_GENERATED_PENDING_REVIEW",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "production_state_untouched": true,
+  "history_policy": "AUDIT_ONLY_NEVER_EXECUTION_INPUT",
+  "reuse_previous_image": false,
+  "reuse_previous_visual_test": false,
+  "reuse_previous_frame_output": false,
+  "route": "MAIN_SESSION_NATIVE_IMAGE",
+  "image_model": {
+    "requested": "gpt-image-2",
+    "strict": true
+  },
+  "target_size": [
+    1080,
+    1350
+  ],
+  "frames": [
+    {
+      "frame": "01",
+      "story_beat": "普通自驾开场",
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "f89768601638105a1588a1b8473ce7aa3ecb327f6a390ea6ea8da581d3a5a753",
+      "output_sha256": "d8c42d8d9f79b54580ec1327d247dafdd243fb094f57eeac83eeaf2b74dd558a",
+      "normalization": {
+        "source_size": [
+          1086,
+          1448
+        ],
+        "target_size": [
+          1080,
+          1350
+        ],
+        "ratio_delta": 0.0625
+      },
+      "five_answers": {
+        "who_took_it": "PASS",
+        "why_this_moment": "PASS",
+        "photographer_position": "PASS",
+        "action_happening": "PASS",
+        "character_emotion": "PASS"
+      },
+      "generation_elapsed_seconds_estimated": 60,
+      "review_note": "车内驾驶座随手拍：方向盘、手、挡风玻璃、后视镜、遮阳板、海拔牌与导航文字入画，路人背影为生活杂讯；轻松期待成立。"
+    },
+    {
+      "frame": "02",
+      "story_beat": "白天山坡证据",
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "4f579ce022d15f6debfeb6fbdd3bdc94550b52e21f7d6d0f657b93f391ff8b1b",
+      "output_sha256": "e8877deb5a14cbc44c6e79791dc25fadf852c0a74a6dd7d67ee4eb66e2ca89d7",
+      "normalization": {
+        "source_size": [
+          1122,
+          1402
+        ],
+        "target_size": [
+          1080,
+          1350
+        ],
+        "ratio_delta": 0.000357
+      },
+      "five_answers": {
+        "who_took_it": "PASS",
+        "why_this_moment": "PASS",
+        "photographer_position": "PASS",
+        "action_happening": "PASS",
+        "character_emotion": "PASS"
+      },
+      "generation_elapsed_seconds_estimated": 113,
+      "review_note": "白天山坡基线成立：浅色裸岩、山脊缺口、无道路；车头边缘入画。02 首次生成为横构图，归一化拒绝后重生成竖构图，耗时含重试。"
+    },
+    {
+      "frame": "03",
+      "story_beat": "晕车停车",
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "85a9e023b981239b3af62d0a3ac7ee1d518decff5dfd0312594459f320446111",
+      "output_sha256": "1bffec5315cec09d2a4fb92bd0f136db37541b5b506c73f29f214273f3d728a1",
+      "normalization": {
+        "source_size": [
+          1122,
+          1402
+        ],
+        "target_size": [
+          1080,
+          1350
+        ],
+        "ratio_delta": 0.000357
+      },
+      "five_answers": {
+        "who_took_it": "PASS",
+        "why_this_moment": "PASS",
+        "photographer_position": "PASS",
+        "action_happening": "PASS",
+        "character_emotion": "PASS"
+      },
+      "generation_elapsed_seconds_estimated": 70,
+      "review_note": "副驾门开着、女友蹲靠车门吹风、发丝被风吹动、前景车门遮挡；没有看镜头，非摆拍。担心心疼成立。"
+    },
+    {
+      "frame": "04",
+      "story_beat": "第一盏灯",
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "1255ce7d76d6552e76d09027ce80e21119e66adbb3202657a784014403f53a01",
+      "output_sha256": "5b1a34b8934ce67998145a575406f386677d2481d7940b27b41944e0c77bc1df",
+      "normalization": {
+        "source_size": [
+          1122,
+          1402
+        ],
+        "target_size": [
+          1080,
+          1350
+        ],
+        "ratio_delta": 0.000357
+      },
+      "five_answers": {
+        "who_took_it": "PASS",
+        "why_this_moment": "PASS",
+        "photographer_position": "PASS",
+        "action_happening": "PASS",
+        "character_emotion": "PASS"
+      },
+      "generation_elapsed_seconds_estimated": 60,
+      "review_note": "黄昏远山单个暖黄光点、暗部噪点、护栏前景、手持入画成立。发现缺陷：画面中手机屏幕显示相机界面，物理上不可能由该手机拍出，属于残余 AI 痕迹。"
+    },
+    {
+      "frame": "05",
+      "story_beat": "灯变多",
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "d22681113c2556192e4f0939c6c866d1a0d6152dcfd2030312da5ce4512f6a02",
+      "output_sha256": "1e8712d014262ad59d4c1de85a7228bb908b7800e560e4bd0e365f87d1853224",
+      "normalization": {
+        "source_size": [
+          1122,
+          1402
+        ],
+        "target_size": [
+          1080,
+          1350
+        ],
+        "ratio_delta": 0.000357
+      },
+      "five_answers": {
+        "who_took_it": "PASS",
+        "why_this_moment": "PASS",
+        "photographer_position": "PASS",
+        "action_happening": "PASS",
+        "character_emotion": "PASS"
+      },
+      "generation_elapsed_seconds_estimated": 50,
+      "review_note": "夜间一串暖灯沿山腰移动、前后距离、前景树影、长焦噪点涂抹成立；没有把灯队拍成整齐列队，没有发光特效。警觉不安成立。"
+    }
+  ],
+  "contract_checks": {
+    "photographer_contract": {
+      "status": "PASS",
+      "note": "01-05 全部由 P01 持机，位置物理可行（驾驶座/车旁/停车带边沿）；无自拍、无全知第三人称。"
+    },
+    "moment_contract": {
+      "status": "PASS_WITH_FINDING",
+      "note": "每帧 who/why_now/position/action/awareness/defects 与图片一致；04 出现 moment contract 未预登记的相机界面缺陷。"
+    },
+    "opening_memory_contract": {
+      "status": "PASS",
+      "note": "01-03 建立人物关系与正常生活（兑现旅行、停车看风景、晕车照顾），NO-ANOMALY 01-03 全 PASS，异常首现于 04。"
+    },
+    "emotion_curve": {
+      "status": "PASS",
+      "note": "情绪等级 01-05 = 2,2,3,4,5 单调爬升，符合契约：平静基线 → 生活波动 → 异常触发 → 警觉加速。"
+    },
+    "capture_grammar_forbidden": {
+      "status": "PASS",
+      "note": "5 张均无 omniscient_third_person_camera / poster_composition / staged_group_lineup / director_blocking / commercial_promo_composition。"
+    }
+  },
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "frame": "04",
+      "finding": "画面内手机屏幕显示相机拍摄界面，同机自拍无法包含自身取景界面，物理不可能。",
+      "suggested_fix": "正式生产时 prompt 显式禁止相机 UI 入画，手部入画时手机背面朝向镜头。"
+    },
+    {
+      "severity": "LOW",
+      "frame": "02",
+      "finding": "首次生成为横构图，归一化按 4:5 拒绝后重生成竖构图；测试计时应含重试。",
+      "suggested_fix": "正式 prompt 统一加竖拍竖构图 4:5 约束，减少无效生成。"
+    }
+  ],
+  "diff_vs_old": {
+    "old_baseline": "本集为 docs-only 预生产包，从未生成过旧图/旧 Frame 输出/旧 Visual Test；对照口径为启用 Photography OS 前的既有视觉惯例与千寻首轮 VT（仅单帧质感，无摄影者/时刻契约）。",
+    "differences": [
+      "旧：Visual Test 只验证单帧质感与构图；新：Photography OS 逐帧强制 5 问（谁拍/为何此刻/位置/动作/情绪），并绑定 Photographer Contract 与 Moment Contract。",
+      "旧：前 3 张无开头规则；新：Opening Memory Contract 强制 01-03 建立人物关系和正常生活，NO-ANOMALY 全 PASS。",
+      "旧：构图可漂移为电影感/海报式；新：FIRST_PERSON_CASUAL_SNAPSHOT_V1 全局默认，禁全知第三人称、海报构图、整齐列队。",
+      "旧：无情绪曲线；新：Emotion Curve 01-05 从平静基线单调爬升至警觉不安。",
+      "实测：01/02/03/05 真实手机相册感明显增强（反光、遮挡、手部、噪点、树影、生活杂讯）；04 仍有相机 UI 入画的残余 AI 痕迹，是 Photography OS 未能完全压制的一点。"
+    ]
+  },
+  "review_required": true,
+  "review_rule": "NON_AUTHORITY_TEST_ONLY. 本测试不推进任何 episode stage，媒体不入 Git，契约与报告仅作回归证据。",
+  "finalized_at": "2026-09-01T23:18:07+08:00"
+}

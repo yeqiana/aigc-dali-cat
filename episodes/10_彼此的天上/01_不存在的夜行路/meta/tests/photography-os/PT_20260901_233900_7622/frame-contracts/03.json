@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "03",
+  "story_beat": "晕车停车，日常成立但开始多看一眼环境",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "photographer_id": "P01",
+  "six_answers": {
+    "who_took_it": "P01（男友），副驾门外持机",
+    "why_this_moment": "女友晕车，停车让她靠着车门吹风；递矿泉水时顺手拍，两人都朝对面山坡多看了一眼",
+    "photographer_position": "副驾车门旁两步，站立低角度",
+    "action_happening": "女友蹲靠在车门边吹风、接过矿泉水，发丝被风吹；背景山谷与远处山坡，天色开始偏晚",
+    "character_emotion": "担心、心疼，仍是日常",
+    "why_saved_in_phone": "旅行里照顾对方的日常瞬间"
+  },
+  "emotion_label": "担心心疼（日常）",
+  "emotion_curve_ref": "emotion-curve.json#points.03",
+  "moment_contract_ref": "moment-contract.json#frames.03",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/03.txt",
+  "scene_prompt_sha256": "f02d6c2ea23026900d663b39af49cd2fc0d77c81045bc4886febde898c83fb66",
+  "forbidden": ["omniscient_third_person_camera", "poster_composition", "camera_capture_ui"]
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "09",
+  "story_beat": "浅色盖布，情绪明显升级",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "photographer_id": "P01",
+  "six_answers": {
+    "who_took_it": "P01（男友）",
+    "why_this_moment": "拉近后看见驮畜货物上有一大片浅色盖布，看不清织纹但形状让人发毛",
+    "photographer_position": "同一停车带，最大长焦",
+    "action_happening": "模糊人影、驮畜、浅色盖布、晃动的灯；镜头抖得厉害",
+    "character_emotion": "恐惧开始、手发抖",
+    "why_saved_in_phone": "已经在“取证”，自己也不确定为什么还在拍"
+  },
+  "emotion_label": "恐惧开始、手发抖",
+  "emotion_curve_ref": "emotion-curve.json#points.09",
+  "moment_contract_ref": "moment-contract.json#frames.09",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/09.txt",
+  "scene_prompt_sha256": "643c4748b3d6c75de67fc908514de3713c76b422e031b099c1d1ffbf603694c6",
+  "forbidden": ["omniscient_third_person_camera", "poster_composition", "camera_capture_ui", "clear_weave_detail"]
+}

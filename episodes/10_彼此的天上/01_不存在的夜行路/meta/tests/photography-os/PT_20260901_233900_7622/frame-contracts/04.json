@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "04",
+  "story_beat": "第一盏灯，第一次轻微不对劲",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "photographer_id": "P01",
+  "six_answers": {
+    "who_took_it": "P01（男友）",
+    "why_this_moment": "黄昏最后一点天光里，对面山坡出现一个暖黄光点，本能举起手机拉近拍",
+    "photographer_position": "停车带边沿，背靠车头，朝对面山坡",
+    "action_happening": "手机举到眼前对准远处光点，画面偏暗、手持抖动、暗部噪点",
+    "character_emotion": "疑惑、好奇",
+    "why_saved_in_phone": "觉得奇怪的灯，先存下来看"
+  },
+  "emotion_label": "疑惑好奇",
+  "emotion_curve_ref": "emotion-curve.json#points.04",
+  "moment_contract_ref": "moment-contract.json#frames.04",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/04.txt",
+  "scene_prompt_sha256": "ebeb8b43981bb00aa59f7cbfd9881eadff9d2a2bc02799689007772f948601f5",
+  "forbidden": ["omniscient_third_person_camera", "poster_composition", "camera_capture_ui", "phone_screen_visible_to_viewer"]
+}

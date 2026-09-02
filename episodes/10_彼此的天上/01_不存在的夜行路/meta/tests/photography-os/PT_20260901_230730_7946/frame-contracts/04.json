@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "04",
+  "story_beat": "第一盏灯",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "five_answers": {
+    "who_took_it": "P01（男友）",
+    "why_this_moment": "黄昏远山突然出现一个暖黄光点，他本能举起手机拉近拍",
+    "photographer_position": "停车带边沿，背靠车头，朝对面山坡",
+    "action_happening": "天快黑，他举着手机对准远处光点，画面偏暗、手持轻微抖动",
+    "character_emotion": "疑惑好奇，那边怎么会有一盏灯"
+  },
+  "emotion_label": "疑惑好奇",
+  "emotion_curve_ref": "emotion-curve.json#points.04",
+  "moment_contract_ref": "moment-contract.json#frames.04",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/04.txt",
+  "contract_sha256": "97ec002ed1cecec2911e0b93a29524e220418c0de5669d860c6fa11f545f57b1"
+}

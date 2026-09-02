@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "08",
+  "story_beat": "现实解释，异常持续推进且关系受压",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "photographer_id": "P01",
+  "second_source": {
+    "device": "女友手机（导航地图屏幕）",
+    "operator": "P01 持机拍摄屏幕，被拍手机为同行者第二拍摄源",
+    "physical_note": "画面中亮屏手机不是持机手机，不存在同机自拍悖论"
+  },
+  "six_answers": {
+    "who_took_it": "P01（男友）",
+    "why_this_moment": "他开始找现实解释：拍下亮屏的导航地图，想证明那里不该有路、不该有灯",
+    "photographer_position": "车旁/驾驶座车门边，近距拍手机屏幕",
+    "action_happening": "左手举着显示导航地图的手机屏幕（地图App界面，非相机UI），右手持机拍下；背景黑色山路与远山灯光",
+    "character_emotion": "理性硬撑、压力开始显现",
+    "why_saved_in_phone": "现实解释的证据：地图上那里没有路"
+  },
+  "emotion_label": "理性硬撑、关系受压",
+  "emotion_curve_ref": "emotion-curve.json#points.08",
+  "moment_contract_ref": "moment-contract.json#frames.08",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/08.txt",
+  "scene_prompt_sha256": "98769849fe8ca5e20269db5cb16c9db52aecf4ca541d596e3939a29942052edf",
+  "forbidden": ["omniscient_third_person_camera", "poster_composition", "camera_capture_ui_on_subject_phone"]
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os-r2",
+  "round": 2,
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "02",
+  "story_beat": "白天山坡证据，继续建立同行感",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "photographer_id": "P01",
+  "six_answers": {
+    "who_took_it": "P01（男友），车旁持机",
+    "why_this_moment": "停车休息，女友先下车说“那边连路都没有”；拍下她回头指远方的瞬间，白天山坡基线顺带进画",
+    "photographer_position": "停车带车旁两步，手机朝女友与山坡方向",
+    "action_happening": "女友站在绿色护栏边回头指对面浅色裸岩与山脊缺口；车头/车门入画，风吹头发",
+    "character_emotion": "放松、同行",
+    "why_saved_in_phone": "旅行纪念照，也是白天山坡无路的证据基线"
+  },
+  "emotion_label": "放松、同行",
+  "emotion_curve_ref": "emotion-curve.json#points.02",
+  "moment_contract_ref": "moment-contract.json#frames.02",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/02.txt",
+  "scene_prompt_sha256": "b0e6fcb12fc6793acd3745af0cbab7f003949bd211122d57dfa8463c91db6298",
+  "forbidden": ["omniscient_third_person_camera", "poster_composition", "camera_capture_ui"]
+}

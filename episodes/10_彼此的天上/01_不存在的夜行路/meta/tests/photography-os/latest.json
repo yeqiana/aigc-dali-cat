@@ -1,0 +1,11 @@
+{
+  "version": "2.1.5-photography-os-r2",
+  "pointer_type": "NON_AUTHORITY_NON_GATE_NON_REUSE",
+  "history_policy": "AUDIT_ONLY_NEVER_EXECUTION_INPUT",
+  "run_id": "PT_20260901_233900_7622",
+  "round": 2,
+  "round_prev": "PT_20260901_230730_7946",
+  "status": "PT_TEST_GENERATED_PENDING_REVIEW",
+  "report": "meta/tests/photography-os/PT_20260901_233900_7622/report.json",
+  "updated_at": "2026-09-02T00:10:00+08:00"
+}

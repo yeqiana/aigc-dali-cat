@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.5-photography-os",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "frame": "02",
+  "story_beat": "白天山坡证据",
+  "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+  "five_answers": {
+    "who_took_it": "P01（男友），站在车旁拍对面山坡",
+    "why_this_moment": "停车休息时看到浅色裸岩和山脊缺口，顺手拍下白天基线，山坡上没有路",
+    "photographer_position": "停车带车旁两步，手机朝向对面山坡",
+    "action_happening": "下午有云，女友还在车上休息，他站在路边拍对面山坡全景",
+    "character_emotion": "放松平淡，只是随手拍一张风景"
+  },
+  "emotion_label": "放松平淡",
+  "emotion_curve_ref": "emotion-curve.json#points.02",
+  "moment_contract_ref": "moment-contract.json#frames.02",
+  "visual_dna_ref": "M-ROAD-2020",
+  "scene_prompt_ref": "prompts/02.txt",
+  "contract_sha256": "58c3ca2d5f61d2b4910750abfeb2e90ed312c0f49e9e78f316d4872c5efbf7f9"
+}

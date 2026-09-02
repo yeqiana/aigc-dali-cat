@@ -1,8 +1,8 @@
 {
-  "schema_version": 1,
-  "story_os_version": "2.2.6",
+  "schema_version": 2,
+  "story_os_version": "2.2.8",
   "grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
-  "grammar_version": "1.0",
+  "grammar_version": "1.1",
   "name": "全局默认：第一人称/同行者在场的私人随手拍",
   "default": true,
   "principle": "摄影者必须属于事件现场，而不是全知导演镜头。默认采用第一人称或同行者持机的私人记录语法，人物非摆拍、构图有生活性缺陷。",
@@ -15,7 +15,9 @@
     "operator": "participant_or_companion_inside_event",
     "viewpoint": "first_person_or_companion_eye",
     "distance": "physically_plausible_human_position",
-    "floating_omniscient_camera": false
+    "floating_omniscient_camera": false,
+    "ghost_camera_forbidden": true,
+    "each_frame_must_resolve_camera_owner": true
   },
   "snapshot_language": {
     "handheld": true,
@@ -25,7 +27,9 @@
     "partial_occlusion_allowed": true,
     "foreground_body_hand_doorframe_vehicle_edge_allowed": true,
     "caught_between_actions": true,
-    "subjects_need_not_face_camera": true
+    "subjects_need_not_face_camera": true,
+    "first_person_is_logic_not_fixed_composition": true,
+    "phone_in_frame_not_required": true
   },
   "subject_visibility_rule": "若核心主角必须出现在画面中，默认由同行者/现场另一人持机记录；仍禁止全知第三人称和导演式机位。",
   "selfie_rule": "自拍不是默认。只有剧情/Frame Contract明确要求自拍时才使用自拍构图。",
@@ -44,5 +48,62 @@
     "capture_grammar_overrides_profile_composition": true,
     "capture_grammar_overrides_profile_camera_authorship": true,
     "keep_profile_texture": true
+  },
+  "camera_roster": {
+    "primary_photographer_required": true,
+    "primary_photographer_preferred_share": "70-80%",
+    "secondary_photographer_allowed": true,
+    "secondary_requires_reason": true,
+    "allowed_handoffs": [
+      "phone_handed_to_companion",
+      "companion_records_primary",
+      "selfie_when_story_requires",
+      "timer_or_fixed_mount_when_explicit",
+      "third_companion_when_present_in_story"
+    ],
+    "all_known_participants_visible_rule": "若所有已知同行者都完整入镜，必须能解释相机来源；否则视为幽灵摄影机。"
+  },
+  "moment_contract": {
+    "must_express_ongoing_action": true,
+    "must_have_save_reason": true,
+    "avoid_result_only_showcase": true
+  },
+  "opening_memory": {
+    "first_frames_default": 3,
+    "goal": "先建立关系、同行状态、正常生活和情感资产，再让异常侵入。",
+    "large_group_photo_rule": "优先非正式广角自拍、定时、同行者随手拍或反射；允许不看镜头、裁切和正在动作中。"
+  },
+  "shot_grammar_diversity": {
+    "rule": "第一人称是摄影逻辑，不是固定的手+手机+远景模板。",
+    "avoid_same_shot_family_more_than_consecutive": 2,
+    "ten_frame_window_recommended_distinct_families_min": 4,
+    "repeated_hand_phone_distant_anomaly_template_forbidden": true
+  },
+  "camera_defect_physics": {
+    "defects_must_have_physical_cause": true,
+    "forbid_decorative_fake_damage": true,
+    "forbid_every_night_frame_equally_blurred": true
+  },
+  "visual_memory_continuity": {
+    "time_of_day_must_progress_plausibly": true,
+    "time_reversal_requires_explicit_flashback_or_jump": true,
+    "persist": [
+      "character_appearance",
+      "wardrobe",
+      "vehicle",
+      "carried_props",
+      "route_and_location",
+      "weather",
+      "lighting_direction_when_same_scene",
+      "anomaly_evidence"
+    ],
+    "no_independent_beauty_time_selection_per_frame": true
+  },
+  "screen_content_physics": {
+    "must_be_internally_consistent": true,
+    "must_match_scene_time_route_and_action_when_story_critical": true,
+    "screen_reflection_and_orientation_must_be_physical": true,
+    "forbid_fake_impossible_camera_ui": true,
+    "critical_text_should_be_verified_or_added_in_post": true
   }
 }

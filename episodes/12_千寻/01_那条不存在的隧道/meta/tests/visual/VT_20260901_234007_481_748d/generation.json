@@ -1,0 +1,8 @@
+{
+  "version": "2.2.7",
+  "run_id": "VT_20260901_234007_481_748d",
+  "status": "GENERATION_FAILED",
+  "reason": "image_gen upstream 502 Bad Gateway: socket connection was closed unexpectedly; the single request failed before run binding was persisted; no image was produced and no retry was attempted",
+  "generation_elapsed_seconds": 236.8,
+  "recorded_at": "2026-09-01T23:41:27+08:00"
+}
