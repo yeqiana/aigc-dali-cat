@@ -25,6 +25,7 @@ import character_visual_contract
 import shot_progression_gate
 import temporal_continuity_gate
 import wardrobe_contract
+import visual_narrative_core_v22  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
@@ -288,6 +289,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     progression = shot_progression_gate.resolve_frame(ep,n) if (ep/shot_progression_gate.REL).is_file() else {"shot_progression":{}}
     temporal = temporal_continuity_gate.resolve_frame(ep,n) if (ep/temporal_continuity_gate.REL).is_file() else {"temporal_state":{}}
     wardrobe = wardrobe_contract.resolve_frame(ep,n) if (ep/wardrobe_contract.REL).is_file() else {"wardrobe":{}}
+    visual_narrative = visual_narrative_core_v22.resolve_frame(ep,n) if visual_narrative_core_v22.required(ep) else {"visual_narrative":{},"visual_narrative_sha256":None}
     excerpt = extract_frame_excerpt(storyboard_path, n)
     refs = resolved_references(ep, n)
 
@@ -341,6 +343,8 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "shot_progression": progression.get("shot_progression") or {},
         "temporal_state": temporal.get("temporal_state") or {},
         "wardrobe": wardrobe.get("wardrobe") or {},
+        "visual_narrative": visual_narrative.get("visual_narrative") or {},
+        "visual_narrative_sha256": visual_narrative.get("visual_narrative_sha256"),
         "references": refs,
     }
     contract_sha = sha256_json(hash_material)
@@ -385,6 +389,9 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "[SCENE-AWARE WARDROBE]",
         _compact_json(wardrobe.get("wardrobe") or {}, 2400),
         "",
+        "[VISUAL NARRATIVE CORE V2.2]",
+        _compact_json(visual_narrative.get("visual_narrative") or {}, 3600),
+        "",
         "[FRAME DIRECTIVE]",
         _compact_json(directive),
         "",
@@ -400,7 +407,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "story_os_version": episode_version(ep),
         "frame": key,
         "derived_cache": True,
-        "authority": "Story + Storyboard + Character Contract + Character Visual + Shot Progression + Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile",
+        "authority": "Story + Storyboard + Character Contract + Character Visual + Shot Progression + Visual Narrative Core V2.2 + Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile",
         "generated_at": now(),
         "source_trace": source_trace,
         "storyboard_frame": excerpt,
@@ -419,6 +426,9 @@ def compile_all(ep: Path) -> dict:
         errors = environment_contract.verify(ep)
         if errors:
             raise ValueError("Phase 3 Environment Contract must PASS before Frame Contract compile: " + "; ".join(errors[:8]))
+        vn_errors = visual_narrative_core_v22.verify_all(ep)
+        if vn_errors:
+            raise ValueError("V2.2 Visual Narrative Core must PASS before Frame Contract compile: " + "; ".join(vn_errors[:12]))
     rows = []
     for n in range(1, frame_count(ep) + 1):
         row = compile_frame(ep, n, write_cache=True)

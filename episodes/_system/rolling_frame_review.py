@@ -9,6 +9,7 @@ from __future__ import annotations
 import json, os, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
 import frame_contract
+# STORY_OS_V22_VISUAL_NARRATIVE_CORE
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/rolling-reviews")
@@ -30,6 +31,7 @@ def review(ep,frame,image,codex_raw=None,timeout=240):
 Frame contract:
 {contract["prompt_contract"]}
 Only detect obvious semantic/continuity/capture failures that are useful to catch while later images are still generating.
+Also catch Visual Narrative Core failures visible in pixels: ghost/impossible camera authorship, staged/result-only moments, lack of new narrative evidence versus the previous beat, repeated shot-template behavior, camera blur/noise/reflection with no physical cause, and impossible phone/map/dashboard/camera-UI physics.
 This review NEVER grants final PASS.
 Write JSON to exactly {out}:
 {{"frame":"{int(frame):02d}","decision":"PASS_PREVIEW|REPAIR_NOW|UNCERTAIN","reasons":["..."],"confidence":0.0}}

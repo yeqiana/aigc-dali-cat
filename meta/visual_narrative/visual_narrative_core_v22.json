@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "feature": "Story OS V2.2 Visual Narrative Core",
+  "core_id": "VISUAL_NARRATIVE_CORE_V2.2",
+  "base_remote_commit": "a2ed11502387650669a6fc4d1b55159ea89063e7",
+  "integration": {
+    "frame_contract": true,
+    "visual_lock": true,
+    "production_via_frame_contract": true,
+    "rolling_review": true,
+    "final_frame_review": true,
+    "incremental_final_review": true
+  },
+  "hard_rules": [
+    "camera_authorship_must_be_physical",
+    "ghost_camera_forbidden",
+    "moment_and_save_reason_required",
+    "new_information_required_after_frame_01_unless_explicit_exception",
+    "narrative_redundancy_forbidden",
+    "shot_grammar_diversity",
+    "camera_defect_requires_physical_cause",
+    "screen_content_physics",
+    "visual_memory_continuity"
+  ]
+}

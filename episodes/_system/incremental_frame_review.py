@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 import frame_semantic_review as base
+# STORY_OS_V22_VISUAL_NARRATIVE_CORE
 from story_os_contract import story_os_version
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -307,12 +308,12 @@ Attached mapping:
 
 Attempt {attempt}. Judge ACTUAL pixels. Every supplied frame must pass all checks:
 {', '.join(base.checks_for_version(base.episode_contract_version(ep)))}
-Hard failures include wrong scene/beat/prop/person/wardrobe, illegal POV, broken space/time continuity, unreadable anomaly, caption inventing missing evidence, or missing actual information gain.
+Hard failures include wrong scene/beat/prop/person/wardrobe, illegal POV, ghost camera, broken space/time continuity, unreadable anomaly, caption inventing missing evidence, missing actual information gain, narrative redundancy, repeated shot grammar, unmotivated camera defects, impossible screen/UI physics, or broken visual memory.
 Return one row for EVERY supplied context frame, not only dirty roots.
 Use issue codes only from: {', '.join(sorted(base.ISSUE_CODES))}
 
 Write ONLY JSON to {candidate.relative_to(ROOT).as_posix()} with shape:
-{{"frames":[{{"frame":"01","checks":{{"scene_storyboard_fidelity":true,"story_beat_fidelity":true,"key_prop_fidelity":true,"character_identity":true,"wardrobe_continuity":true,"pov_photographer_legality":true,"spatial_continuity":true,"temporal_continuity":true,"anomaly_readability":true,"caption_image_support":true,"actual_information_gain":true,"environment_physics_fidelity":true,"anomaly_escalation_fidelity":true,"scale_reference_fidelity":true}},"issue_codes":[],"notes":"pixel-level evidence","decision":"pass"}}],"issue_codes":[],"summary":{{"passed":true,"notes":"incremental context judgment"}}}}
+{{"frames":[{{"frame":"01","checks":{{"scene_storyboard_fidelity":true,"story_beat_fidelity":true,"key_prop_fidelity":true,"character_identity":true,"wardrobe_continuity":true,"pov_photographer_legality":true,"spatial_continuity":true,"temporal_continuity":true,"anomaly_readability":true,"caption_image_support":true,"actual_information_gain":true,"environment_physics_fidelity":true,"anomaly_escalation_fidelity":true,"scale_reference_fidelity":true,"camera_authorship_physical":true,"moment_capture_credibility":true,"narrative_evidence_gain":true,"shot_grammar_diversity":true,"camera_defect_physics":true,"screen_content_physics":true,"visual_memory_continuity":true}},"issue_codes":[],"notes":"pixel-level evidence","decision":"pass"}}],"issue_codes":[],"summary":{{"passed":true,"notes":"incremental context judgment"}}}}
 If any supplied frame fails, summary.passed=false.
 """
 

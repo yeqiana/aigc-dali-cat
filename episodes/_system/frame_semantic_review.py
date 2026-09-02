@@ -39,7 +39,14 @@ CHECKS = [
     "anomaly_readability",
     "caption_image_support",
     "actual_information_gain",
-]
+    "camera_authorship_physical",
+    "moment_capture_credibility",
+    "narrative_evidence_gain",
+    "shot_grammar_diversity",
+    "camera_defect_physics",
+    "screen_content_physics",
+    "visual_memory_continuity",
+]  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 
 V21_PHASE3_CHECKS = [
     "environment_physics_fidelity",
@@ -69,6 +76,14 @@ ISSUE_CODES = {
     "WEATHER_CONTINUITY_BROKEN",
     "ANOMALY_SCALE_UNDERDELIVERED",
     "SCALE_REFERENCE_MISSING",
+    "GHOST_CAMERA",
+    "CAMERA_OWNER_UNRESOLVED",
+    "MOMENT_RESULT_ONLY",
+    "NARRATIVE_REDUNDANCY",
+    "SHOT_GRAMMAR_REPEAT",
+    "CAMERA_DEFECT_UNMOTIVATED",
+    "SCREEN_CONTENT_PHYSICS_BROKEN",
+    "VISUAL_MEMORY_BROKEN",
 }
 
 
@@ -544,7 +559,14 @@ Hard rules for EVERY frame:
 10. environment_physics_fidelity: V2.1 weather/environment must obey the resolved physical conditions; weather is not a blanket filter.
 11. anomaly_escalation_fidelity: impact 3-4 / anomaly_amplified / climax_impact must visibly exceed escalation_from; caption-only escalation fails.
 12. scale_reference_fidelity: high-impact frames must visibly use the locked real-world scale reference so abnormal size is readable.
-13. PASS only if all required checks are true, issue_codes is empty and decision=pass.
+13. camera_authorship_physical: photographer/camera source must exist physically; ghost/floating/omniscient coverage is a hard failure.
+14. moment_capture_credibility: frame must feel captured during an action with a plausible save reason, not posed after the event.
+15. narrative_evidence_gain: each frame after the opening must add real story/evidence information; another angle of the same unchanged fact is NARRATIVE_REDUNDANCY.
+16. shot_grammar_diversity: first-person is diegetic camera logic, not a repeated hand+phone+distant-anomaly template.
+17. camera_defect_physics: blur/noise/reflection/underexposure must have a plausible physical cause.
+18. screen_content_physics: phone/map/dashboard/time/camera UI must be internally, perspectivally and narratively coherent.
+19. visual_memory_continuity: character/wardrobe/vehicle/props/route/weather/light/anomaly evidence must persist unless explicitly changed.
+20. PASS only if all required checks are true, issue_codes is empty and decision=pass.
 
 Use issue codes only from this set:
 {', '.join(sorted(ISSUE_CODES))}
@@ -569,7 +591,14 @@ Required shape:
         "actual_information_gain": true,
         "environment_physics_fidelity": true,
         "anomaly_escalation_fidelity": true,
-        "scale_reference_fidelity": true
+        "scale_reference_fidelity": true,
+        "camera_authorship_physical": true,
+        "moment_capture_credibility": true,
+        "narrative_evidence_gain": true,
+        "shot_grammar_diversity": true,
+        "camera_defect_physics": true,
+        "screen_content_physics": true,
+        "visual_memory_continuity": true
       }},
       "issue_codes": [],
       "notes": "specific pixel-level evidence",

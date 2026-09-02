@@ -29,6 +29,7 @@ import environment_contract
 import frame_contract
 import character_visual_contract
 import visual_lock_baseline_gate
+import visual_narrative_core_v22  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 import critic_runtime_v211  # STORY_OS_V211_PERF_RECOVERY
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -55,6 +56,10 @@ CHECKS = (
     "capture_credibility",
     "anomaly_scale_delivery",
     "scale_reference_fidelity",
+    "camera_authorship_physical",
+    "moment_capture_credibility",
+    "camera_defect_physics",
+    "screen_content_physics",
 )
 
 
@@ -213,6 +218,9 @@ def choose_plan(ep: Path) -> dict:
     env_errors = environment_contract.verify(ep)
     if env_errors:
         raise ValueError("Environment Contract must PASS first: " + "; ".join(env_errors[:8]))
+    vn_errors = visual_narrative_core_v22.verify_all(ep)
+    if vn_errors:
+        raise ValueError("V2.2 Visual Narrative Core must PASS first: " + "; ".join(vn_errors[:12]))
     fc_errors = frame_contract.verify_all(ep)
     if fc_errors:
         raise ValueError("Resolved Frame Contract must PASS first: " + "; ".join(fc_errors[:8]))
@@ -523,7 +531,9 @@ Role expectations:
 
 For every image judge ALL checks:
 visual_profile_match, reality_first, ordinary_life_density, available_light, unposed_capture, not_cinematic, causal_imperfection,
-environment_physics_fidelity, capture_credibility, anomaly_scale_delivery, scale_reference_fidelity.
+environment_physics_fidelity, capture_credibility, anomaly_scale_delivery, scale_reference_fidelity,
+camera_authorship_physical, moment_capture_credibility, camera_defect_physics, screen_content_physics.
+Camera authorship must be physically explainable; reject ghost/floating coverage. Moment must feel caught during an action. Camera defects need a physical cause. Visible screens/UI must be physically coherent.
 
 Interpret anomaly_scale_delivery=true on ordinary/no-anomaly frames as "the frame correctly avoids unplanned spectacle and matches its locked impact level."
 Interpret scale_reference_fidelity=true on low-impact frames as "no false/contradictory scale cue"; for high impact it MUST be visibly useful.
@@ -544,7 +554,11 @@ Write ONLY valid JSON to {rel_out}:
         "environment_physics_fidelity": true,
         "capture_credibility": true,
         "anomaly_scale_delivery": true,
-        "scale_reference_fidelity": true
+        "scale_reference_fidelity": true,
+        "camera_authorship_physical": true,
+        "moment_capture_credibility": true,
+        "camera_defect_physics": true,
+        "screen_content_physics": true
       }},
       "issues": [],
       "notes": "specific actual-pixel evidence"
