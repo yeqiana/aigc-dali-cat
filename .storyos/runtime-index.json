@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.2.1",
+  "purpose": "Fast read index for bounded Codex workers. Avoid recursive repository scanning when declared inputs are sufficient.",
+  "rules": {
+    "read_index_first": true,
+    "recursive_repository_scan_default": false,
+    "open_only_declared_files_plus_execution_capsule": true,
+    "broaden_only_on_missing_dependency_or_conflict": true
+  },
+  "stage_read_sets": {
+    "CREATIVE_STORY": [
+      "story_os_manifest.json",
+      "meta/runtime-request.json",
+      "meta/character-contract.json",
+      "meta/world-identity.json (optional override)",
+      "config/story_os/world_identity.default.json",
+      "standards/character-pools.json",
+      "standards/entry-motivation-pools.json",
+      "standards/scene-pools.json",
+      "standards/forbidden-character-roles.json"
+    ],
+    "PREIMAGE_COMPILE": [
+      "meta/story-gates.json",
+      "meta/character-contract.json",
+      "meta/character-visual-contract.json",
+      "meta/world-identity.json (optional override)",
+      "meta/shot-progression-review.json",
+      "meta/capture-event-contract.json",
+      "meta/world-state.json",
+      "meta/temporal-continuity.json",
+      "meta/wardrobe-contract.json"
+    ],
+    "VISUAL_LOCK": [
+      "meta/visual-lock-plan.json",
+      "meta/runtime/contracts/frame-contract-index.json",
+      "meta/runtime/contracts/character-appearance-anchor.json",
+      "meta/world-identity.json (optional override)",
+      "meta/story-gates.json"
+    ],
+    "PRODUCTION": [
+      "meta/runtime/contracts/frame-contract-index.json",
+      "meta/runtime/contracts/character-appearance-anchor.json",
+      "meta/production-ledger.json",
+      "meta/production-queue.json",
+      "meta/story-gates.json"
+    ],
+    "RELEASE": [
+      "meta/production-ledger.json",
+      "meta/frame-semantic-review.json",
+      "meta/final-candidate-snapshot.json",
+      "meta/intro-policy.json"
+    ]
+  },
+  "canonical_engine_files": [
+    "episodes/_system/frame_contract.py",
+    "episodes/_system/world_identity_contract.py",
+    "episodes/_system/character_appearance_anchor.py",
+    "episodes/_system/visual_narrative_core_v22.py",
+    "episodes/_system/visual_lock_v21.py",
+    "episodes/_system/frame_semantic_review.py"
+  ]
+}

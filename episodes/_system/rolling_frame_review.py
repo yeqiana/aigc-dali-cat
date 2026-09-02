@@ -32,6 +32,7 @@ Frame contract:
 {contract["prompt_contract"]}
 Only detect obvious semantic/continuity/capture failures that are useful to catch while later images are still generating.
 Also catch Visual Narrative Core failures visible in pixels: ghost/impossible camera authorship, staged/result-only moments, lack of new narrative evidence versus the previous beat, repeated shot-template behavior, camera blur/noise/reflection with no physical cause, and impossible phone/map/dashboard/camera-UI physics.
+For Story OS >=2.2.1 also catch WORLD_IDENTITY_DRIFT and CHARACTER_APPEARANCE_DRIFT: default episodes must read as Mainland China with Chinese local young adults unless their World Identity Contract explicitly overrides it; character face/age/hair/body/national context must remain consistent with the Character Appearance Anchor.
 This review NEVER grants final PASS.
 Write JSON to exactly {out}:
 {{"frame":"{int(frame):02d}","decision":"PASS_PREVIEW|REPAIR_NOW|UNCERTAIN","reasons":["..."],"confidence":0.0}}

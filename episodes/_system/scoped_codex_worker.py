@@ -4,6 +4,8 @@ from __future__ import annotations
 import argparse, json, os, shutil, subprocess, sys
 import execution_capsule
 import character_contract
+import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
+import character_appearance_anchor  # STORY_OS_V221_CHARACTER_CONTINUITY
 import resource_library
 import intro_policy
 import directing_quality
@@ -11,12 +13,25 @@ import episode_performance
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
+RUNTIME_INDEX=ROOT/".storyos/runtime-index.json"
+
+def runtime_index_block(step):
+    if not RUNTIME_INDEX.is_file(): return "{}"
+    try:
+        data=json.loads(RUNTIME_INDEX.read_text(encoding="utf-8-sig"))
+        return json.dumps({
+            "rules":data.get("rules") or {},
+            "required_read":((data.get("stage_read_sets") or {}).get(step) or []),
+            "canonical_engine_files":data.get("canonical_engine_files") or []
+        },ensure_ascii=False,indent=2)
+    except Exception:return "{}"
 
 STEP_DIRECTIVES={
 "CREATIVE_STORY":"""
 TARGET: reach STORYBOARD_LOCKED and stop there.
 - honor meta/runtime-request.json when present.
 - BEFORE concept/story work, read meta/character-contract.json as the Character/Entry/Scene Story Build Input Contract.
+- Story OS 2.2.1 World Identity: read the effective default/override through `python episodes/_system/world_identity_contract.py show "<episode>"`. Default is Mainland China + ordinary Chinese young adults. Do not randomly introduce foreign characters/architecture/cultural context. If the Story explicitly specifies another country/culture, author meta/world-identity.json as an explicit override instead of fighting the default.
 - default protagonists are ordinary young people from the 2004-2010 or modern-2020s pools; first-person POV still requires a stable character anchor.
 - default 4-5 person groups must keep stable member IDs, ages, genders and clothing anchors.
 - prefer life-like entry motives: travel, return home, friends hangout, games/drinking, challenge, abandoned place, outdoor trip, casual work, research/expedition, accidental detour.
@@ -31,6 +46,7 @@ TARGET: reach STORYBOARD_LOCKED and stop there.
 - Directing Quality: author and LOCK meta/voice-contract.json; author and LOCK meta/storyboard-density-review.json; run voice_contract.py validate and storyboard_density_gate.py validate. Every frame must pass the delete-frame test and 5-frame progress window.
 - Opening Social Anchor: for multi-person travel / return-home / outing stories, strongly prefer Frame 01-02 to show the group in realistic selfie perspective: either vehicle/departure/transit selfie or destination/scenic check-in selfie. Use at least 2 visible people (prefer 3-4), establish relationship/clothing anchors, keep capture casual and imperfect rather than commercial/staged, and keep anomaly absent or only micro-background. Author+LOCK meta/opening-social-anchor.json and run opening_social_anchor.py validate. Solo or structurally incompatible stories may set applicable=false only with a concrete exception_reason.
 - Camera-Friendly Ordinary Cast + Anti-Likeness: author+LOCK meta/character-visual-contract.json as IDENTITY SPEC only. Set each locked member face_identity.identity_spec_locked=true; preproduction_only must NOT claim a pixel/image master. Primary leads should be moderately-above-average but believable real young adults; female lead defaults slim/proportionate/natural unless Story requires another build. Keep natural skin texture/asymmetry and explicit original haircut anchors. Real-person references may guide age vibe, attractiveness range, realism, capture style and clothing direction ONLY; never copy exact face geometry, feature combination, personal markers or exact hairstyle. Run character_visual_contract.py validate.
+- After Character Visual Contract is LOCKED, build+verify `meta/runtime/contracts/character-appearance-anchor.json` with character_appearance_anchor.py. This is a derived textual identity anchor; it does not replace the later Visual Lock pixel master.
 - Capture Setup Diversity + Anomaly Logic + Human Action + Human Response/Interaction: author+LOCK meta/shot-progression-review.json schema_version=2 for new/unlocked episodes and run shot_progression_gate.py validate. Same capture setup max 2 consecutive; every 5-frame window needs >=3 setup signatures; anomaly escalation must gain spatial/causal contradiction, human consequence or reversal rather than only more/bigger lights; after confirmation people must progress from observing into verify/discuss/move/act/fail/adapt; Frame 10 must open new evidence/question rather than recap. For every human-present frame, author restrained emotion state/intensity 0..4/causal trigger/response_sync plus interaction type/actor/target/action/meaningful. intensity>=2 needs a real trigger. Multi-person reactions should normally be asynchronous or shared-but-unsynchronized, never theatrical synchronized screaming. For multi-person stories, each run of 5 human-present frames needs at least one meaningful interaction, but interactions must not dominate the whole story. Opening Frame 01/02 social anchor needs at least one natural interaction (selfie, someone talking, adjusting seatbelt/bag/hat, showing a phone, etc.). Wardrobe may participate in causal actions such as pulling a shell zipper, holding a hat in wind, adjusting a backpack or handing a wet jacket.
 - advance only to STORYBOARD_LOCKED.
 DO NOT create Environment/Impact Contract, Visual Lock images, Batch, subtitles or Release.
@@ -41,6 +57,7 @@ TARGET: keep STORYBOARD_LOCKED and finish every non-image asset required for a c
 - resolve shared Resource Library references into meta/resource-selection.json.
 - create/verify Environment + Impact Contract and all frame directives.
 - compile/verify all Resolved Frame Contracts.
+- Before Frame Contract compile, run `python episodes/_system/production_readiness_v221.py "<episode>" --stage preimage` for V2.2.1+ Episodes. World Identity + Character Appearance Anchor must PASS; never weaken the default merely to make generation easier.
 - Directing Quality: before Frame Contract compile, author+LOCK meta/capture-event-contract.json and meta/world-state.json. Every frame must explain why it is captured now; sensitive identity/recorder state changes need a story_event. Run capture_event_contract.py validate and world_state.py validate.
 - Temporal Continuity: after world-state is authored, author+LOCK meta/temporal-continuity.json bound to world-state SHA. Track elapsed minutes/daypart/weather/precipitation/ambient light. Night↔day or major weather/light jumps require explicit elapsed time + transition_reason. Run temporal_continuity_gate.py validate.
 - Scene-Aware Wardrobe: then author+LOCK meta/wardrobe-contract.json bound to temporal continuity. Clothing must follow altitude/temperature/weather/daypart/activity. Sichuan-Tibet/high-altitude cool-cold outdoor defaults shell/fleece/warm trousers/hat; low-altitude warm, vehicle, lodging or county-town scenes may use attractive camisoles/skirts/light layers. Cold outdoor skirt requires thick/thermal tights + warm outer layer; cold high-altitude camisole without warm outer layer is FAIL. Every look_id change needs a believable change_reason. Run wardrobe_contract.py validate.
@@ -132,6 +149,11 @@ Open authoritative source files listed by the capsule only when details are miss
 Do not spawn another full-auto supervisor. Do not perform downstream work beyond this step.
 Reuse valid SHA-bound evidence. Never fabricate PASS/review/user approval.
 Reality constrains capture behavior, not concept ambition.
+Read the embedded FAST_RUNTIME_INDEX first. Do NOT recursively scan the repository while its declared read set + Execution Capsule are sufficient. Broaden only for a missing dependency or real conflict.
+
+<FAST_RUNTIME_INDEX>
+{runtime_index_block(step)}
+</FAST_RUNTIME_INDEX>
 
 <EXECUTION_CAPSULE>
 {json.dumps(capsule,ensure_ascii=False,indent=2)}

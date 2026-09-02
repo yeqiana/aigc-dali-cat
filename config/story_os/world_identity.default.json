@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+  "description": "Story OS default real-world identity profile. Episodes may explicitly override it.",
+  "inheritance_policy": {
+    "episode_override_path": "meta/world-identity.json",
+    "override_supported": true,
+    "default_applies_when_override_missing": true
+  },
+  "world": {
+    "country": "China",
+    "region": "Mainland China",
+    "culture_context": "contemporary_mainland_chinese_daily_life",
+    "language_context": "Simplified Chinese / Mandarin-context daily life",
+    "architecture_context": "location-appropriate mainland Chinese residential/commercial/rural/urban built environment",
+    "traffic_context": "mainland China road, vehicle and plate conventions when visible",
+    "consumer_goods_context": "ordinary mainland Chinese daily-life objects appropriate to era and location"
+  },
+  "population": {
+    "nationality_context": "Chinese",
+    "resident_context": "mainland Chinese local residents",
+    "default_protagonist_age_range": [
+      19,
+      30
+    ],
+    "default_protagonist_identity": "ordinary Chinese young adult",
+    "ethnicity_policy": "do_not_force_ethnicity; use natural Chinese diversity unless Story explicitly specifies",
+    "foreign_character_policy": "do_not_introduce foreign characters unless Story/episode override explicitly requires them"
+  },
+  "visual_rules": {
+    "visible_text_context": "Chinese context when environmental text is naturally visible; do not force readable text into images",
+    "do_not_import_foreign_architecture_by_default": true,
+    "do_not_import_foreign_population_by_default": true,
+    "do_not_import_foreign_cultural_props_by_default": true,
+    "preserve_location_specific_chinese_regional_detail": true
+  },
+  "override_examples": {
+    "japan": {
+      "inherit_default": false,
+      "world": {
+        "country": "Japan",
+        "region": "Japan",
+        "culture_context": "contemporary_japanese_daily_life",
+        "language_context": "Japanese",
+        "architecture_context": "location-appropriate Japanese built environment",
+        "traffic_context": "Japanese road/vehicle conventions",
+        "consumer_goods_context": "ordinary Japanese daily-life objects"
+      },
+      "population": {
+        "nationality_context": "Japanese",
+        "resident_context": "Japanese local residents",
+        "default_protagonist_age_range": [
+          19,
+          30
+        ],
+        "default_protagonist_identity": "ordinary Japanese young adult",
+        "ethnicity_policy": "story_defined",
+        "foreign_character_policy": "story_defined"
+      }
+    }
+  }
+}

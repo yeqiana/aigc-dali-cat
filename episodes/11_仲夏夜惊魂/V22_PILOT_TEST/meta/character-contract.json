@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "derived_from_pools": true,
+  "not_episode_stage": true,
+  "pilot": "V22_PRODUCTION_PILOT_TEST",
+  "created_at": "2026-09-02T13:05:00+08:00",
+  "selection_seed": 202609021305,
+  "era": {
+    "bucket": "modern_2020s",
+    "year": 2026,
+    "source": "story_os_pilot_selection"
+  },
+  "cast": {
+    "type": "pair",
+    "size": 2,
+    "relationship": "兄弟",
+    "members": [
+      {
+        "id": "P01",
+        "pov": true,
+        "gender": "male",
+        "age": 25,
+        "build": "普通年轻人身材",
+        "hair": "普通黑色短发，被汗打湿",
+        "clothing_anchor": "白色旧圆领T恤+深灰短裤+白色运动鞋+黑色斜挎小包",
+        "device_anchor": "深空灰色普通智能手机（主摄影设备）",
+        "career": "在省城做普通办公室工作，与异常解决无关",
+        "note": "第一人称主摄影者 P01"
+      },
+      {
+        "id": "P02",
+        "pov": false,
+        "gender": "male",
+        "age": 22,
+        "build": "普通年轻人身材",
+        "hair": "普通黑色短发",
+        "clothing_anchor": "黑色速干短袖+米白短裤+白色运动鞋",
+        "device_anchor": "浅蓝色普通智能手机（副摄影设备）",
+        "career": "放暑假在家",
+        "note": "同行者，夏至夜与 P01 一起骑车出门"
+      }
+    ]
+  },
+  "pov": {
+    "character_id": "P01",
+    "first_person": true,
+    "secondary_photographer": "P02",
+    "handoff_reasons": [
+      "P01 正举着自己手机看预警/录像/放大照片时，由 P02 用自己手机代拍",
+      "自拍帧由 P01 本人前置镜头完成"
+    ]
+  },
+  "entry": {
+    "type": "return_home",
+    "label": "回家/回老家",
+    "source": "user_constraint_and_story_os_selection",
+    "reason": "夏至日回老家吃晚饭并陪弟弟去镇区买冰西瓜，夜里太热睡不着又骑车出门，属于普通返乡生活"
+  },
+  "scene": {
+    "primary_category": "county_town_rural",
+    "primary_place": "虚构塘湾镇（杏河县下辖）：村口老屋—河堤公路—镇区老街—青石桥—老屋",
+    "note": "与现实地点无对应；独立于同系列 01_停电夜蜕壳 的县城设定"
+  },
+  "role_policy": {
+    "protagonist_role": "普通年轻人",
+    "career_function": "none",
+    "solves_anomaly_professionally": false
+  },
+  "no_anomaly_test": {
+    "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+    "ordinary_day_plan": "夏至夜回家吃晚饭，陪弟弟骑车去镇上买冰西瓜，回家睡觉；后半夜太热出门买冰水，第二天上午擦车晾衣后返程回省城。",
+    "pass": true,
+    "must_be_rechecked_before_story_lock": true,
+    "rechecked_against_final_story": true
+  },
+  "continuity_policy": {
+    "member_count_changes_require_story_event": true,
+    "pov_character_id_stable": true,
+    "clothing_and_device_anchors_propagate_to_frame_contract": true,
+    "vehicle_anchor": "黑色旧踏板电动车，后视镜断了一边，踏板处放西瓜"
+  },
+  "ordinary_person_score": 100,
+  "forbidden_role_check": {
+    "pass": true,
+    "hits": []
+  },
+  "story_build_note": "V2.2 Production Pilot：主角为普通返乡年轻人，职业不参与异常解决；删除全部异常后的一天仍是完整真实的夏至生活。"
+}

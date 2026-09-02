@@ -1,0 +1,553 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.0",
+  "episode_id": "11-V22P",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_profile": "auto",
+    "override_reason": null
+  },
+  "story": {
+    "pilot": "V22_PRODUCTION_PILOT_TEST",
+    "genre": "日常真实感为主的心理异常，非传统恐怖片",
+    "core_question": "一个人的手机相册里出现一张不是他拍的、却拍得像他拍的照片，会发生什么？",
+    "hook_frames": [
+      1,
+      9
+    ],
+    "escalation_frames": [
+      10,
+      13,
+      15,
+      16,
+      17
+    ],
+    "climax_frame": 17,
+    "payoff_frame": 18,
+    "residue_frames": [
+      19,
+      20
+    ],
+    "competing_explanations": 2,
+    "task_closed": true,
+    "four_locks_diff_count": 3,
+    "mechanism_skin_swap_veto": true,
+    "story_lock_basis": "story_os_auto_create"
+  },
+  "visual": {
+    "profile_review_path": null,
+    "admission_frames": [
+      1,
+      5,
+      9,
+      17
+    ],
+    "pilot_visual_lock_scope": {
+      "frames": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "note": "V22 Production Pilot 只测试 Frame 01-05；完整四门禁 Visual Lock 不在本测试范围"
+    },
+    "continuity": {
+      "required": [
+        "protagonist",
+        "companion",
+        "location",
+        "weather_time",
+        "vehicle",
+        "anomaly_evidence"
+      ],
+      "anchors": {
+        "protagonist": "P01 男25岁 黑短发汗湿 白色旧圆领T恤+深灰短裤+白鞋+黑色斜挎小包；深空灰普通智能手机；第一人称主摄影",
+        "companion": "P02 男22岁 黑色速干短袖+米白短裤+白鞋；浅蓝普通智能手机；仅在剧情有物理理由时持机",
+        "location": "杏河县塘湾镇（虚构）：村口老屋→河堤公路→镇区老街口→瓜摊→青石桥→河堤→老屋",
+        "weather_time": "2026夏至夜 21:10-次日01:45 体感约31℃ 闷热无雨 蝉声稠密；次日08:30 晴热",
+        "vehicle": "黑色旧踏板电动车：左边后视镜断掉只剩右边，踏板放西瓜袋——照片里同一位置的车后视镜完整（异常差异锚点）",
+        "anomaly_evidence": "相册里无拍摄记忆的照片：机位物理成立但当时无人/站不了人；时间戳与本人拍摄几乎重合；每次出现方圆几十米蝉声整片停；照片内细节可与现实相悖"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "2026年仲夏",
+      "location": "虚构杏河县塘湾镇；不影射真实灾害或政府事件",
+      "photographer": "25岁普通年轻人 P01，第一人称记录；P02 仅在剧情理由下持机",
+      "shooting_reason": "夏至夜回家、出门买瓜、发现相册异常后的核对与保留",
+      "primary_capture": {
+        "id": "CP01",
+        "device": "2026年前后普通智能手机，手持，竖拍 4:5"
+      },
+      "secondary_captures": [
+        {
+          "id": "CP02",
+          "device": "浅蓝色普通智能手机",
+          "owner": "P02 弟弟",
+          "usage": "05/10/12 三个画面：剧情明确要求 P01 腾不出手或需要第二视角核对时"
+        }
+      ],
+      "secondary_source_explanation": "第二持机者 P02 全程在场同行，所有副摄画面都能在剧情里给出物理理由",
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "门灯/路灯/摊灯下普通手机夜景：可读、轻微手持偏斜、无商业 HDR",
+        "restricted": "深夜老街与空街：曝光不足、高 ISO 噪点、路灯偏橙、暗部细节有限，只在物理需要时出现",
+        "screen": "屏幕反光、摩尔纹轻、玻璃反射物理成立；关键屏幕内容清晰可读"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": "拍摄手机不完整入镜；屏幕帧以屏摄/截屏呈现",
+        "photographer_may_be_fully_visible": true,
+        "photographer_visibility_explanation": "P01 完整入镜只发生在 P02 持机（05/10/12）或自拍（02/14）；无来源第三人称正脸禁止"
+      }
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "仲夏",
+      "baseline": {
+        "condition": "夏至热浪夜，闷热无风，蝉声稠密",
+        "time_of_day": "21:10 至次日 01:45 夜间为主，08:30 上午收尾",
+        "temperature_feel": "白天约39℃积热未散，夜间体感约31℃，闷热，人容易出汗",
+        "ground_state": "干燥水泥与沥青，白天积热晚上仍从地面冒出来",
+        "visibility": "门灯/路灯/摊灯下普通夜景；深夜灯光变少后手机曝光不足、高 ISO 噪点",
+        "wind": "基本无风；电动车行进与过桥时有热风感",
+        "precipitation": "无",
+        "physical_cues": [
+          "远景灯光与热浪上方轻微空气扭曲",
+          "汗湿的衣领与手臂汗光",
+          "路灯偏橙、灯下飞虫",
+          "蝉声稠密是当晚的听觉底色，后期出现整片停滞"
+        ]
+      },
+      "segments": [
+        {
+          "id": "E1_home_evening",
+          "start_frame": 1,
+          "end_frame": 3,
+          "condition": "老屋院门口/堂屋，门灯与饭桌灯，普通夏夜生活",
+          "physical_cues": [
+            "门灯暖光、汗、西瓜、切瓜盆反光",
+            "手机夜拍轻度噪点",
+            "蝉声在院外正常稠密"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "E2_night_road",
+          "start_frame": 4,
+          "end_frame": 5,
+          "condition": "河堤公路，路灯一段一段，远处镇区灯火",
+          "physical_cues": [
+            "路灯橙光与暗段交替",
+            "河面方向灯影",
+            "行进后停下时空气仍闷热"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "E3_town",
+          "start_frame": 6,
+          "end_frame": 8,
+          "condition": "镇区老街口/瓜摊/青石桥头，摊灯与人流",
+          "physical_cues": [
+            "摊灯与招牌灯混合色温",
+            "人流与电动车穿行",
+            "热浪使远景轻微扭曲"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "E4_first_anomaly",
+          "start_frame": 9,
+          "end_frame": 10,
+          "condition": "桥上灯下与河堤路边，两人停下核对相册",
+          "physical_cues": [
+            "路灯下两块手机屏幕的光",
+            "周围蝉声出现第一次整片停滞",
+            "深夜车辆变少，街变安静"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "手机屏幕在灯下反光、面部被屏光补亮",
+              "when": [
+                "frame 9-10",
+                "两人低头看屏幕"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "E5_home_recheck",
+          "start_frame": 11,
+          "end_frame": 13,
+          "condition": "回到老屋，堂屋灯与院里夜色",
+          "physical_cues": [
+            "堂屋白炽灯偏冷、门灯偏暖",
+            "院里飞虫绕灯",
+            "院子方向的蝉声在 frame13 起出现指向性停滞"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "手机夜景取景画面内树冠暗部细节少、噪点可见",
+              "when": [
+                "frame 13",
+                "仰拍老槐树"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "E6_solo_midnight",
+          "start_frame": 14,
+          "end_frame": 17,
+          "condition": "00:12-01:10 深夜独自外出：院门→河堤桥头→老街",
+          "physical_cues": [
+            "路灯为主，街面大部分掉进暗部",
+            "手机曝光不足、高 ISO 噪点、灯下飞虫",
+            "蝉声在 frame14 起整夜未恢复",
+            "空街纵深与路灯间隔成为尺度参照"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "手电与手机光形成局部亮区，周围背景迅速掉黑",
+              "when": [
+                "frame 15-16",
+                "近距离观察河滩与墙"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "E7_aftermath",
+          "start_frame": 18,
+          "end_frame": 19,
+          "condition": "01:20-01:45 回到老屋堂屋，只亮一盏灯",
+          "physical_cues": [
+            "堂屋灯暗、窗外全黑",
+            "手机屏幕是主要光源",
+            "屋里安静，听不到任何蝉声"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "屏幕玻璃反光与窗玻璃映像物理成立",
+              "when": [
+                "frame 18-19",
+                "俯拍/近拍屏幕"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "E8_morning",
+          "start_frame": 20,
+          "end_frame": 20,
+          "condition": "次日上午 08:30，晴热白天，蝉声恢复",
+          "physical_cues": [
+            "阳光晒白院子，树影硬边",
+            "白昼与手机屏内夜景形成明暗对比",
+            "蝉声恢复为正常底色"
+          ],
+          "conditional_effects": []
+        }
+      ],
+      "frame_overrides": {
+        "20": {
+          "time_of_day": "次日上午约08:30",
+          "visibility": "晴热白天，强自然光",
+          "condition": "夏至次日上午，蝉声恢复，院子被阳光晒白"
+        }
+      }
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "院门口门框与门灯",
+          "弟弟端切好的西瓜迎出来",
+          "白T/黑速干短袖人物锚点",
+          "普通手机夜景轻度噪点"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "前置自拍发家庭群",
+          "两人同框、构图随意有生活缺陷",
+          "饭桌灯与切好的瓜"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "03": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "门灯下绑袋子出门准备",
+          "黑色旧踏板车左后视镜断一边首次完整入画",
+          "汗湿背心与塑料袋反光"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "04": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "河堤路灯与远处镇区灯火",
+          "弟弟坐在后座仰头喝水",
+          "夜间普通手机记录感"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "05": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "弟弟坐后座用自己手机拍路沿边的哥哥",
+          "哥哥举手机朝向河面、回头方向偏",
+          "路灯把人影拉长、河面灯影",
+          "第二持机者与浅蓝手机入画成立"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "06": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "老街口整条夜市街",
+          "摊灯人流热浪、远景轻微扭曲",
+          "手机夜景记录"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "07": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "瓜摊前近拍手里的瓜与秤盘",
+          "摊主手臂入画",
+          "瓜摊灯下细节"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "08": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "青石桥头拍对岸夜景",
+          "水面灯影与远处灯",
+          "当晚正常底片最后一张"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "09": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "路灯下两人凑近看同一块手机屏幕",
+          "屏幕内容是瓜摊背影照片、机位像在案板后",
+          "表情从玩笑到安静"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "10": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "第二张无源照片：河滩仰拍桥上骑车视角",
+          "哥哥手机屏幕放大到河滩局部全屏",
+          "弟弟从右肩后持机拍屏幕留证",
+          "屏幕反光与物理成立"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "11": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "院门口提瓜进门",
+          "门灯与人影",
+          "试图把今晚翻篇的普通动作"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "12": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "堂屋两人对坐核对相册时间线",
+          "哥哥把屏幕转向弟弟",
+          "安静克制的不安"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "13": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "院里仰拍老槐树冠",
+          "手机夜景取景框内树冠暗部噪点",
+          "镜头指向即蝉声停滞的声音层异常",
+          "门灯余光与飞虫"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "14": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "院门口门灯下前置自拍留言",
+          "电动车在画面边缘、左后视镜断",
+          "脸上有汗、强压镇定"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "15": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "桥头护栏边用手电照桥下河滩",
+          "丰水期水位与芦苇封死河滩",
+          "机位物理不可能的实地证明"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "16": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "案板后实墙无门无窗",
+          "相册顶部实时刷出新照片",
+          "新照片机位在身后摊棚方向而身后空无一人",
+          "手机屏幕反光"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "17": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "空街中央转身拍身后",
+          "路灯把影子拉在脚下",
+          "镜头里街道空无一人而蝉声全停",
+          "克制不跑的普通反应"
+        ],
+        "scale_reference": "路灯高度、街道纵深、电动车与人的比例、远处桥",
+        "escalation_from": 16
+      },
+      "18": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "桌上手机屏幕呈现 01:05 第二视角照片",
+          "照片里背影举手机站在空街上、机位在身后约两米",
+          "屏幕玻璃反光、手指悬停未删"
+        ],
+        "scale_reference": "屏幕内照片：路灯、人与街道纵深比例",
+        "escalation_from": null
+      },
+      "19": {
+        "narrative_role": "reveal",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "屏幕放大到照片车头局部",
+          "照片里左后视镜完整与现实相悖",
+          "窗玻璃映像与只亮一盏灯的堂屋"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "20": {
+        "narrative_role": "residue",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "上午门槛上俯拍膝盖与手机",
+          "屏幕内夜景与白昼环境明暗对比",
+          "保留照片、照常生活的决定感",
+          "蝉声恢复"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      }
+    },
+  "calibration": {
+    "policy": "pilot_manual_01_05",
+    "status": "PILOT_RENDERED_REVIEWED",
+    "schema_version": 2,
+    "note": "V2.2 Production Pilot：Frame 01-05 测试图已生成并经人工像素评审（PASS）；formal 四门禁与 full batch 不在范围",
+    "test_render": {
+      "frames": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "out_dir": "media/v22-pilot/out",
+      "report": "meta/tests/v22-production-pilot/V22_PRODUCTION_PILOT_REPORT.md",
+      "authority": "V22_PRODUCTION_PILOT_TEST",
+      "review_result": "PASS",
+      "promotion_forbidden": true
+    }
+  },
+    "references": {
+      "required": false,
+      "items": []
+    }
+  },
+  "subtitles": {
+    "required": false,
+    "note": "Pilot 不进入字幕制作范围"
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "pending",
+    "production": "pending",
+    "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  }
+}

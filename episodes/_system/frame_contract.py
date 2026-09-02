@@ -26,6 +26,8 @@ import shot_progression_gate
 import temporal_continuity_gate
 import wardrobe_contract
 import visual_narrative_core_v22  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
+import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
+import character_appearance_anchor  # STORY_OS_V221_CHARACTER_CONTINUITY
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
@@ -291,6 +293,9 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     wardrobe = wardrobe_contract.resolve_frame(ep,n) if (ep/wardrobe_contract.REL).is_file() else {"wardrobe":{}}
     visual_narrative_active = visual_narrative_core_v22.required(ep)
     visual_narrative = visual_narrative_core_v22.resolve_frame(ep,n) if visual_narrative_active else None
+    world_identity_active = world_identity_contract.required(ep)
+    world_identity = world_identity_contract.effective(ep) if world_identity_active else None
+    character_anchor = character_appearance_anchor.build(ep, write=True) if world_identity_active else None
     excerpt = extract_frame_excerpt(storyboard_path, n)
     refs = resolved_references(ep, n)
 
@@ -312,6 +317,9 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "shot_progression": {"path":shot_progression_gate.REL.as_posix(),"sha256":sha256_file(ep/shot_progression_gate.REL) if (ep/shot_progression_gate.REL).is_file() else None},
         "temporal_continuity": {"path":temporal_continuity_gate.REL.as_posix(),"sha256":sha256_file(ep/temporal_continuity_gate.REL) if (ep/temporal_continuity_gate.REL).is_file() else None},
         "wardrobe_contract": {"path":wardrobe_contract.REL.as_posix(),"sha256":sha256_file(ep/wardrobe_contract.REL) if (ep/wardrobe_contract.REL).is_file() else None},
+        "world_identity_default": {"path":world_identity_contract.DEFAULT_REL.as_posix(),"sha256":sha256_file(ROOT/world_identity_contract.DEFAULT_REL) if world_identity_active else None},
+        "world_identity_override": {"path":world_identity_contract.OVERRIDE_REL.as_posix(),"sha256":sha256_file(ep/world_identity_contract.OVERRIDE_REL) if world_identity_active and (ep/world_identity_contract.OVERRIDE_REL).is_file() else None},
+        "character_appearance_anchor": {"path":character_appearance_anchor.REL.as_posix(),"sha256":sha256_file(ep/character_appearance_anchor.REL) if world_identity_active and (ep/character_appearance_anchor.REL).is_file() else None},
     }
 
     # Hash material is deliberately per-frame where possible.
@@ -349,6 +357,11 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     if visual_narrative_active:
         hash_material["visual_narrative"] = visual_narrative.get("visual_narrative") or {}
         hash_material["visual_narrative_sha256"] = visual_narrative.get("visual_narrative_sha256")
+    if world_identity_active:
+        hash_material["world_identity"] = world_identity
+        hash_material["world_identity_sha256"] = world_identity.get("effective_sha256")
+        hash_material["character_appearance_anchor"] = character_anchor
+        hash_material["character_appearance_anchor_sha256"] = character_anchor.get("anchor_sha256")
     contract_sha = sha256_json(hash_material)
 
     prompt_lines = [
@@ -366,6 +379,12 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "",
         "[CHARACTER / POV CONTRACT]",
         _compact_json(character, 2800),
+        "",
+        "[WORLD IDENTITY V2.2.1]" if world_identity_active else "[WORLD IDENTITY NOT APPLICABLE]",
+        world_identity_contract.prompt_block(ep) if world_identity_active else "",
+        "",
+        "[CHARACTER APPEARANCE ANCHOR V2.2.1]" if world_identity_active else "[CHARACTER APPEARANCE ANCHOR NOT APPLICABLE]",
+        character_appearance_anchor.prompt_block(ep) if world_identity_active else "",
         "",
         "[CONTINUITY]",
         _compact_json(visual.get("continuity") or {}),
@@ -416,6 +435,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "derived_cache": True,
         "authority": ("Story + Storyboard + Character Contract + Character Visual + Shot Progression + "
                       + ("Visual Narrative Core V2.2 + " if visual_narrative_active else "")
+                      + ("World Identity V2.2.1 + Character Appearance Anchor + " if world_identity_active else "")
                       + "Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile"),
         "generated_at": now(),
         "source_trace": source_trace,
@@ -438,6 +458,14 @@ def compile_all(ep: Path) -> dict:
         vn_errors = visual_narrative_core_v22.verify_all(ep)
         if vn_errors:
             raise ValueError("V2.2 Visual Narrative Core must PASS before Frame Contract compile: " + "; ".join(vn_errors[:12]))
+        if world_identity_contract.required(ep):
+            wi_errors = world_identity_contract.verify(ep)
+            if wi_errors:
+                raise ValueError("V2.2.1 World Identity must PASS before Frame Contract compile: " + "; ".join(wi_errors[:12]))
+            character_appearance_anchor.build(ep, write=True)
+            ca_errors = character_appearance_anchor.verify(ep)
+            if ca_errors:
+                raise ValueError("V2.2.1 Character Appearance Anchor must PASS before Frame Contract compile: " + "; ".join(ca_errors[:12]))
     rows = []
     for n in range(1, frame_count(ep) + 1):
         row = compile_frame(ep, n, write_cache=True)

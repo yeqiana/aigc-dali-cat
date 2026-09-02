@@ -1,0 +1,609 @@
+{
+  "schema_version": 2,
+  "status": "LOCKED",
+  "pilot": "V22_PRODUCTION_PILOT_TEST",
+  "created_at": "2026-09-02T13:30:00+08:00",
+  "anomaly_applicable": true,
+  "anomaly_exception_reason": "",
+  "interaction_applicable": true,
+  "interaction_exception_reason": "",
+  "rules": {
+    "max_identical_setup_consecutive": 2,
+    "min_unique_setups_in_5_frames": 3,
+    "frame10_requires_new_question_or_evidence": true,
+    "scale_only_escalation_is_not_enough": true,
+    "max_passive_human_frames_after_confirmation": 2,
+    "emotion_intensity_range": [
+      0,
+      4
+    ],
+    "emotion_trigger_required_at_intensity_gte": 2,
+    "synchronized_theatrical_reaction_forbidden": true,
+    "max_consecutive_urgent_frames": 2,
+    "min_meaningful_interaction_per_5_human_frames": 1,
+    "max_meaningful_interaction_ratio": 0.75,
+    "opening_social_natural_interaction_required": true
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "camera_position": "院门口门框边，站立拍摄 (doorway edge)",
+      "subject_distance": "medium 中景",
+      "primary_subject": "弟弟端西瓜从灶房出来",
+      "action": "弟弟端着一盆切好的冰西瓜从灶房门口出来，门灯下抬头喊哥哥吃瓜",
+      "visual_function": "establish_home_arrival",
+      "capture_purpose": "到家第一张，想发给爸妈证明到了、弟弟切了瓜",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋院门口 (doorway)",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P02",
+        "target": "P01",
+        "action": "端瓜迎出来喊哥哥先吃",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "02",
+      "camera_position": "饭桌边，弟弟拿哥哥手机举高前置自拍 (selfie)",
+      "subject_distance": "close 近距",
+      "primary_subject": "兄弟俩合影发家庭群",
+      "action": "弟弟举高哥哥的手机前置自拍，两人挤进画面，哥哥嘴里还咬着瓜",
+      "visual_function": "establish_brothers_relationship",
+      "capture_purpose": "拍一张哥回来了发家庭群，哥哥正啃瓜腾不出手",
+      "pov_mode": "selfie_companion_operator",
+      "location_zone": "老屋堂屋饭桌",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "group_selfie",
+        "actor": "P02",
+        "target": "P01",
+        "action": "拿哥哥手机给两人拍合影发家庭群",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "03",
+      "camera_position": "屋檐下门灯处，站定拍车边弯腰的人 (medium close reaction)",
+      "subject_distance": "medium close 中近景",
+      "primary_subject": "弟弟把冰水袋绑上电动车后座",
+      "action": "弟弟蹲在电动车后座旁绑袋子，门灯照着汗湿的背心，哥哥提醒绑稳点",
+      "visual_function": "establish_night_out_plan",
+      "capture_purpose": "拍给同事看回老家夏至夜还得出门买瓜，顺便记录出发",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋院子车棚边",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P01",
+        "target": "P02",
+        "action": "提醒弟弟把袋子绑稳",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "04",
+      "camera_position": "河堤路边，站定举起手机 (walking capture 停车后站定)",
+      "subject_distance": "medium 中景",
+      "primary_subject": "弟弟坐在后座仰头喝水",
+      "action": "车靠边停着，弟弟仰头灌水，远处镇区灯火一片",
+      "visual_function": "establish_route_night_scene",
+      "capture_purpose": "停车回消息，随手拍我们出来啦发给爸妈",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "河堤公路停车点",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "05",
+      "camera_position": "后座位置，弟弟坐车上举手机拍两三米外路沿的哥哥 (medium close)",
+      "subject_distance": "medium 中景",
+      "primary_subject": "哥哥站在路沿举手机朝河面",
+      "action": "哥哥举深灰手机朝河对岸拍，弟弟喊哥哥看那边灯，哥哥回头方向偏了",
+      "visual_function": "establish_companion_photographer_and_route",
+      "capture_purpose": "弟弟想拍下哥哥对着黑河面拍照的样子",
+      "pov_mode": "companion_secondary_p02_shot",
+      "location_zone": "河堤公路路灯段",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P01",
+        "target": "P02",
+        "action": "喊别拍我拍河",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "06",
+      "camera_position": "老街口人流边，边走边举起手机 (walking capture)",
+      "subject_distance": "medium 中景",
+      "primary_subject": "整条夜市街",
+      "action": "哥哥下车走到街口举起手机横扫夜市，弟弟推着车在后面等",
+      "visual_function": "establish_town_nightlife_baseline",
+      "capture_purpose": "拍给省城同事看老家镇上晚上还挺热闹",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "镇区老街口",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "07",
+      "camera_position": "瓜摊前，近拍手里西瓜与秤盘 (hand detail)",
+      "subject_distance": "close 特写近距",
+      "primary_subject": "手里挑的西瓜与摊主称瓜的手臂",
+      "action": "哥哥举着瓜让摊主称，弟弟在画外喊要沙瓤的",
+      "visual_function": "establish_watermelon_stand_detail",
+      "capture_purpose": "拍瓜价与沙瓤瓜给同事看",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "镇区瓜摊",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P02",
+        "target": "P01",
+        "action": "喊哥哥挑沙瓤的瓜",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "08",
+      "camera_position": "青石桥头，站定远拍对岸 (night tele 远摄)",
+      "subject_distance": "far 远景",
+      "primary_subject": "对岸镇区夜景与水面灯影",
+      "action": "哥哥站在桥头拍对岸，弟弟在旁边摊上买冰水没入镜",
+      "visual_function": "establish_album_baseline_night_view",
+      "capture_purpose": "回程前顺手留一张镇区夜景",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "镇区青石桥头",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": false,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "09",
+      "camera_position": "桥面灯下，低头看手机，弟弟从侧后凑近 (over_shoulder 肩侧)",
+      "subject_distance": "close 近距",
+      "primary_subject": "哥哥手机屏幕上多出的瓜摊照片",
+      "action": "哥哥翻相册看到 22:31 一张没拍过的瓜摊背影照，喊弟弟凑过来看，两人安静下来",
+      "visual_function": "anomaly_first_discovery",
+      "capture_purpose": "想弄清楚这张不是自己拍的照片哪来的",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "青石桥桥面灯下",
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "observe",
+      "human_present": true,
+      "emotion": {
+        "state": "curious",
+        "intensity": 2,
+        "trigger": "相册里 22:31 多出一张没有拍摄记忆的瓜摊照片，机位像在案板后",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "show_phone",
+        "actor": "P01",
+        "target": "P02",
+        "action": "把相册里多出的照片给弟弟看",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "10",
+      "camera_position": "弟弟站在哥哥右后方，举自己手机拍哥哥手里屏幕 (over_shoulder 肩后)",
+      "subject_distance": "close 近距",
+      "primary_subject": "哥哥手机屏幕上放大到全屏的河滩照片",
+      "action": "第二张无源照片：22:41 机位像站在桥下河滩仰拍桥上骑车的人；哥哥把河滩局部放大，弟弟从肩后拍屏幕留证",
+      "visual_function": "second_impossible_camera_evidence",
+      "capture_purpose": "让弟弟拍下屏幕作为核对证据",
+      "pov_mode": "companion_secondary_p02_shot",
+      "location_zone": "河堤路边灯下",
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "第二张照片机位在丰水期站不了人的河滩",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "show_phone",
+        "actor": "P02",
+        "target": "P01",
+        "action": "按哥哥要求拍下屏幕当作证据",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "11",
+      "camera_position": "院门口，站定拍弟弟提瓜进门 (doorway 门框)",
+      "subject_distance": "medium 中景",
+      "primary_subject": "弟弟提瓜进灶房",
+      "action": "到家，弟弟提着瓜袋进灶房，哥哥说放灶房就行，想把这晚翻篇",
+      "visual_function": "normal_resume_home_arrival",
+      "capture_purpose": "到家随手拍，记录回到老屋",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋院门口",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P01",
+        "target": "P02",
+        "action": "说放灶房就行",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "12",
+      "camera_position": "堂屋对坐，弟弟举自己手机拍哥哥举着的屏幕 (medium close reaction)",
+      "subject_distance": "medium close 中近景",
+      "primary_subject": "哥哥把相册时间线滑给弟弟核对",
+      "action": "两人把今晚照片逐张核对，确认只有那两张没有拍摄记忆；桌上瓜没动",
+      "visual_function": "album_timeline_systematic_check",
+      "capture_purpose": "把相册记录下来逐张核对，排除手机误触",
+      "pov_mode": "companion_secondary_p02_shot",
+      "location_zone": "老屋堂屋",
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "系统核对后仍只有那两张无法解释",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "show_phone",
+        "actor": "P01",
+        "target": "P02",
+        "action": "把相册时间线逐张滑给弟弟核对",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "13",
+      "camera_position": "院子里台阶上，举手机仰拍院角老槐树 (night 夜拍)",
+      "subject_distance": "medium 中景",
+      "primary_subject": "夜色中的老槐树冠与手机取景框",
+      "action": "哥哥想录蝉声压惊，镜头一对准树冠蝉声整片停，放下手机又响；他举着手机没有动",
+      "visual_function": "anomaly_sound_marker",
+      "capture_purpose": "录一段蝉声证明只是自己听错",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋院子",
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "notice",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "蝉声在镜头对准老树时整片停滞",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "14",
+      "camera_position": "院门口门灯下，前置自拍 (selfie)",
+      "subject_distance": "close 近距",
+      "primary_subject": "哥哥前置镜头里的自己与身后的院门",
+      "action": "哥哥给睡下的弟弟留微信睡不着出去转一圈别锁门，前置自拍一张发出",
+      "visual_function": "selfie_leave_note_to_brother",
+      "capture_purpose": "留一条带时间的报平安记录再出门",
+      "pov_mode": "selfie_primary_operator",
+      "location_zone": "老屋院门口",
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "决定独自骑车原路确认机位，留自拍报平安",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "15",
+      "camera_position": "桥头护栏边，俯拍桥下河滩 (night 夜拍，手电补光)",
+      "subject_distance": "medium 中景",
+      "primary_subject": "被丰水期河水与芦苇封死的河滩",
+      "action": "哥哥用手电扫桥下河滩，确认站不了人，拍下这段河滩作实地对照",
+      "visual_function": "verify_impossible_camera_position",
+      "capture_purpose": "实地证明第二张照片的机位物理上不存在",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "河堤青石桥头",
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "verify",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "河滩被淹且芦苇封死，机位不可能成立",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "16",
+      "camera_position": "瓜摊实墙前，低头看手机相册刷新 (screen reflection 屏幕反光)",
+      "subject_distance": "close 近距",
+      "primary_subject": "手机屏幕里相册顶部刚刷新的新照片",
+      "action": "哥哥拍完墙低头，相册顶部实时刷出一张 00:55 的照片：机位在身后摊棚方向拍他站在墙前举手机的背影，而他身后只有空街",
+      "visual_function": "anomaly_live_generation_reveal",
+      "capture_purpose": "确认案板后没有站人的空间，并截图留住相册实时刷新的瞬间",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "镇区老街瓜摊墙前",
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "act",
+      "human_present": false,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "相册在他拍墙后立刻刷出身后机位的照片，那里不可能有人",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "17",
+      "camera_position": "车边，转身举手机拍身后空街 (night 夜拍)",
+      "subject_distance": "medium 中景",
+      "primary_subject": "空无一人的老街与路灯",
+      "action": "蝉声整片停了，哥哥走到车边转身举起手机拍下身后街道；镜头里只有空街，他拍完骑车离开",
+      "visual_function": "empty_street_control_shot",
+      "capture_purpose": "拍下此刻这条街是空的作为对照证据",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "镇区老街空地",
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "act",
+      "human_present": false,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "蝉声全停，明知身后两米有什么正在记录却拍不到任何东西",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "18",
+      "camera_position": "堂屋桌边，俯拍桌上手机屏幕 (screen reflection 屏幕反光)",
+      "subject_distance": "close 近距",
+      "primary_subject": "手机屏幕上 01:05 第二视角的空街照片",
+      "action": "哥哥翻到 01:05 两张：一张他拍的空街，一张机位在身后两米人行道拍他举手机的背影；他拍下屏幕，手指悬停没有删",
+      "visual_function": "anomaly_payload_reveal",
+      "capture_purpose": "把它拍下正在拍照的我那张照片留存下来",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋堂屋",
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "consequence",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "异常照片机位就在他身后两米，拍到了他拍照的瞬间",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "19",
+      "camera_position": "窗边，近拍手里手机放大照片 (hand detail close)",
+      "subject_distance": "close 特写近距",
+      "primary_subject": "屏幕放大后照片里完整的左后视镜",
+      "action": "哥哥放大 01:05 那张照片的车头局部：照片里左后视镜完整，而他的车左边后视镜早就断了；屋外蝉声整夜没响",
+      "visual_function": "photo_detail_contradicts_reality",
+      "capture_purpose": "想从照片里找出能解释的物理细节，结果发现细节相悖",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋堂屋窗边",
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "verify",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "照片里的车后视镜完整，与现实车辆特征相悖，蝉声整夜未恢复",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "20",
+      "camera_position": "院门口门槛上，俯拍膝盖与手机 (doorway 门框近景)",
+      "subject_distance": "close 近距",
+      "primary_subject": "手机屏幕里那张夜景照片与白昼门槛的对比",
+      "action": "上午阳光晒白院子，蝉声恢复；哥哥坐在门槛上看了一会儿那张夜景照片，锁屏揣回兜里，弟弟在灶房喊他吃早饭",
+      "visual_function": "keep_the_photo_resume_life",
+      "capture_purpose": "不是证据，只是想把这张照片留着",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋院门口门槛",
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "adapt",
+      "human_present": false,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    }
+  ]
+}

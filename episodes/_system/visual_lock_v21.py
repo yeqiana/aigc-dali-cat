@@ -63,9 +63,17 @@ V22_CHECKS = (
     "camera_defect_physics",
     "screen_content_physics",
 )
+V221_CHECKS = (
+    "world_identity_fidelity",
+    "character_appearance_anchor_fidelity",
+    "cultural_environment_fidelity",
+)
 
 def checks_for_version(version: str) -> tuple[str, ...]:
-    return BASE_CHECKS + (V22_CHECKS if version_tuple(version) >= (2, 2, 0) else ())
+    checks = BASE_CHECKS + (V22_CHECKS if version_tuple(version) >= (2, 2, 0) else ())
+    if version_tuple(version) >= (2, 2, 1):
+        checks += V221_CHECKS
+    return checks
 
 
 def now() -> str:
@@ -537,6 +545,7 @@ Role expectations:
 For every image judge the checks required for Story OS contract version {episode_version(ep)}:
 {", ".join(checks_for_version(episode_version(ep)))}.
 V2.2-only checks (camera authorship / moment / camera defect / screen physics) apply only when episode contract version >= 2.2.0. Do not fail legacy V2.1 episodes on V2.2-only criteria.
+V2.2.1-only checks (world identity / character appearance anchor / cultural environment) apply only when episode contract version >= 2.2.1. For the default profile, visible primary/local characters should read as Chinese local residents in a believable Mainland China environment unless the Episode explicitly overrides world identity.
 
 Interpret anomaly_scale_delivery=true on ordinary/no-anomaly frames as "the frame correctly avoids unplanned spectacle and matches its locked impact level."
 Interpret scale_reference_fidelity=true on low-impact frames as "no false/contradictory scale cue"; for high impact it MUST be visibly useful.
@@ -561,7 +570,10 @@ Write ONLY valid JSON to {rel_out}:
         "camera_authorship_physical": true,
         "moment_capture_credibility": true,
         "camera_defect_physics": true,
-        "screen_content_physics": true
+        "screen_content_physics": true,
+        "world_identity_fidelity": true,
+        "character_appearance_anchor_fidelity": true,
+        "cultural_environment_fidelity": true
       }},
       "issues": [],
       "notes": "specific actual-pixel evidence"
@@ -570,7 +582,7 @@ Write ONLY valid JSON to {rel_out}:
   "issue_codes": [],
   "summary": {{"passed": true}}
 }}
-PASS only if all 11 checks are true on all 4 images. This is attempt {attempt}.
+PASS only if every check returned by checks_for_version for this Episode version is true on all 4 images. This is attempt {attempt}.
 """
 
 
@@ -593,7 +605,7 @@ def _record_failed_calibration_frames(ep: Path, data: dict) -> None:
         return
     for row in data.get("calibration") or []:
         checks = row.get("checks") or {}
-        failed = row.get("issues") not in ([], None) or any(checks.get(k) is not True for k in CHECKS)
+        failed = row.get("issues") not in ([], None) or any(checks.get(k) is not True for k in checks_for_version(episode_version(ep)))
         if not failed:
             continue
         try:
@@ -725,9 +737,12 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
 
 def self_test() -> None:
     assert len(ROLES) == 4
-    assert len(CHECKS) == 11
+    assert len(BASE_CHECKS) == 11
+    assert len(checks_for_version("2.1.0")) == 11
+    assert len(checks_for_version("2.2.0")) == 15
+    assert len(checks_for_version("2.2.1")) == 18
     assert version_tuple("2.1.0") >= MIN_VERSION
-    print("VISUAL LOCK V2.1 PHASE5 SELF-TEST PASS")
+    print("VISUAL LOCK V2.2.1 VERSIONED CHECK MATRIX SELF-TEST PASS")
 
 
 def main() -> int:

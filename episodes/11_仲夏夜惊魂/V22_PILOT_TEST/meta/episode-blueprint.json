@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.0",
+  "bootstrap_status": "V22_PRODUCTION_PILOT",
+  "episode": {
+    "id": "11-V22P",
+    "chapter_id": "PILOT",
+    "series": "11_仲夏夜惊魂",
+    "series_title": "仲夏夜惊魂",
+    "title": "仲夏夜惊魂｜蝉声停的夏至夜",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "4:5",
+    "frame_count": 20
+  },
+  "source_story": {
+    "type": "v22_production_pilot_original",
+    "note": "独立测试篇：与 01_停电夜蜕壳 并行存在，不覆盖旧版本。"
+  },
+  "pilot_scope": {
+    "objective": "验证 V2.2 从零生产是否生成比 V2.1 更强的真实摄影叙事效果",
+    "milestones": [
+      "story_lock",
+      "character_contract",
+      "environment_contract",
+      "visual_narrative_contract_20f",
+      "resolved_frame_contract_20f",
+      "visual_lock_frames_01_05",
+      "test_images_01_05"
+    ],
+    "excluded": [
+      "production_full_batch",
+      "release",
+      "publish"
+    ],
+    "machine_stage_advance": "none"
+  },
+  "visual_profile": {
+    "profile_id": "M00",
+    "mode": "default",
+    "canonical_profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_grammar": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "note": "2026年智能手机物理表现优先；M00 只约束可用光/不摆拍/生活密度等视觉语言，不得做旧。"
+  },
+  "capture_grammar": {
+    "grammar_id": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "canonical_grammar_path": "standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json",
+    "selection": "global_default",
+    "photography_os_enabled": true,
+    "camera_authorship": "participant_or_companion_inside_event",
+    "viewpoint": "first_person_or_companion_eye"
+  },
+  "created_at": "2026-09-02T13:00:00+08:00"
+}

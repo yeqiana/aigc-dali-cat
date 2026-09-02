@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Story OS Evidence Chain</title>
+<style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color:#222;line-height:1.7}
+.layout{display:flex}
+.side{width:250px;background:#fafafa;border-right:1px solid #ddd;padding:24px;min-height:100vh;position:sticky;top:0}
+.side a{display:block;color:#444;text-decoration:none;margin:8px 0}
+.main{padding:40px 50px;max-width:1200px}
+h1{border-bottom:2px solid #222;padding-bottom:12px}
+h2{border-left:4px solid #1677ff;padding-left:12px;margin-top:40px}
+.box{border:1px solid #aaa;padding:16px;text-align:center;margin:12px;background:#fff}
+.arrow{text-align:center;font-size:25px}
+.layer{border:1px solid #ccc;padding:18px;margin:15px;background:#fafafa}
+.green{border-left:5px solid #52c41a}
+.blue{border-left:5px solid #1677ff}
+.note{background:#f6f8fa;border-left:4px solid #888;padding:12px}
+pre{background:#f6f8fa;border:1px solid #ddd;padding:16px}
+</style>
+</head>
+<body>
+<div style="position:fixed;right:18px;top:16px;z-index:9999;font-family:-apple-system,BlinkMacSystemFont,'Microsoft YaHei',sans-serif;font-size:13px;">
+  <a href="index.html" style="display:inline-block;padding:6px 10px;border:1px solid #d0d7de;background:#fff;color:#0969da;text-decoration:none;border-radius:6px;">← 返回文档门户</a>
+</div>
+
+<div class="layout">
+<div class="side">
+<h3>目录</h3>
+<a href="#overview">1. 证据链总览</a>
+<a href="#sha">2. SHA冻结链</a>
+<a href="#gate">3. 门禁关系</a>
+<a href="#talk">4. 大白话</a>
+</div>
+
+<div class="main">
+<h1>Story OS Evidence Chain（证据链设计）</h1>
+
+<div class="note">
+核心思想：不是 AI 生成完成就算完成，而是每一步都有输入、输出和验证依据。
+</div>
+
+<h2 id="overview">1. 证据链总览</h2>
+
+<div class="box blue">Story（故事）<br>确定讲什么</div>
+<div class="arrow">↓ SHA</div>
+
+<div class="box">Storyboard（分镜）<br>确定每一张图怎么讲</div>
+<div class="arrow">↓ SHA</div>
+
+<div class="box">Contract（制作合同）<br>人物 / 环境 / 单帧要求</div>
+<div class="arrow">↓ SHA</div>
+
+<div class="box">Generation Request（生成请求）<br>提交给图片模型</div>
+<div class="arrow">↓ SHA</div>
+
+<div class="box green">Approved Asset（审核通过资产）</div>
+<div class="arrow">↓ SHA</div>
+
+<div class="box">Final Snapshot（最终冻结快照）</div>
+<div class="arrow">↓ SHA</div>
+
+<div class="box">Release Manifest（发布清单）</div>
+
+
+<h2 id="sha">2. SHA 冻结链</h2>
+
+<pre>
+故事版本
+  |
+  SHA
+  ↓
+分镜版本
+  |
+  SHA
+  ↓
+视觉合同
+  |
+  SHA
+  ↓
+生图请求
+  |
+  SHA
+  ↓
+最终图片
+  |
+  SHA
+  ↓
+发布快照
+</pre>
+
+<p>
+任何中间环节变化，都可以知道：
+谁改了、改了什么、为什么重新生成。
+</p>
+
+
+<h2 id="gate">3. 与 Gate 门禁关系</h2>
+
+<pre>
+Story Gate
+  |
+  | 验证：
+  | - 故事是否成立
+  | - 是否值得制作
+  |
+  ↓
+
+Visual Gate
+  |
+  | 验证：
+  | - 视觉是否统一
+  | - 人物是否连续
+  | - 镜头是否合理
+  |
+  ↓
+
+Production Gate
+  |
+  | 验证：
+  | - 图片是否通过审核
+  | - 资产是否完整
+  |
+  ↓
+
+Release Gate
+  |
+  | 验证：
+  | - 发布版本是否冻结
+</pre>
+
+
+<h2 id="talk">4. 大白话解释</h2>
+
+<p>
+把它理解成拍电影存档。
+</p>
+
+<ul>
+<li>故事：剧本。</li>
+<li>分镜：导演分镜表。</li>
+<li>合同：摄影要求。</li>
+<li>生成请求：拍摄任务单。</li>
+<li>审核记录：片审意见。</li>
+<li>最终快照：上映母版。</li>
+</ul>
+
+<p>
+普通 AI：
+生成图片 → 发出去。</p>
+
+<p>
+Story OS：
+为什么拍、怎么拍、谁审核、为什么通过，全部留下记录。
+</p>
+
+</div>
+</div>
+</body>
+</html>

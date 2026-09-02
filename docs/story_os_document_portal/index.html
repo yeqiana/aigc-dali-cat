@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Story OS 文档门户</title>
+<style>
+:root{
+  --text:#1f2328; --muted:#656d76; --border:#d0d7de;
+  --soft:#f6f8fa; --blue:#0969da; --green:#1a7f37; --orange:#9a6700;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:#fff;color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",Arial,sans-serif;
+  line-height:1.68;
+}
+.layout{display:flex;min-height:100vh}
+.sidebar{
+  width:250px;flex:0 0 250px;padding:28px 22px;
+  border-right:1px solid var(--border);background:#fafbfc;
+  position:sticky;top:0;height:100vh;overflow:auto;
+}
+.sidebar .brand{font-weight:700;font-size:18px;margin-bottom:4px}
+.sidebar .sub{color:var(--muted);font-size:12px;margin-bottom:22px}
+.sidebar a{display:block;color:#424a53;text-decoration:none;padding:6px 8px;border-radius:6px;font-size:14px}
+.sidebar a:hover{background:#eef1f4;color:var(--blue)}
+.sidebar .group{margin-top:18px;color:var(--muted);font-size:12px;font-weight:600;padding:0 8px 4px}
+.main{width:min(1120px,calc(100vw - 250px));padding:46px 54px 70px}
+h1{font-size:36px;line-height:1.25;margin:0 0 10px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+h2{font-size:24px;margin-top:46px;padding-bottom:8px;border-bottom:1px solid #eaeef2}
+h3{font-size:18px;margin:0 0 8px}
+p{margin:10px 0}
+code{background:var(--soft);border-radius:4px;padding:2px 5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 28px}
+.tag{border:1px solid var(--border);background:var(--soft);padding:4px 9px;border-radius:999px;font-size:12px;color:#444}
+.tag.blue{color:var(--blue);background:#f2f7ff;border-color:#bfd7f5}
+.tag.green{color:var(--green);background:#f1f8f3;border-color:#b7dfc2}
+.note{border-left:4px solid var(--blue);background:var(--soft);padding:13px 16px;margin:22px 0}
+.overview{border:1px solid var(--border);padding:26px;margin:18px 0;background:#fff}
+.flow{display:flex;align-items:stretch;gap:10px}
+.stage{
+  flex:1;border:1px solid var(--border);padding:15px 12px;text-align:center;background:#fff;min-width:0;
+}
+.stage b{display:block;margin-bottom:4px}
+.arrow{display:flex;align-items:center;color:#8c959f;font-size:24px}
+.kernel{margin-top:16px;border:1px solid var(--border);border-left:4px solid var(--green);background:var(--soft);padding:14px;text-align:center}
+.docs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.doc{
+  border:1px solid var(--border);padding:18px;background:#fff;
+}
+.doc .no{color:var(--muted);font-size:12px;font-weight:700}
+.doc p{color:var(--muted);font-size:14px}
+.doc a{color:var(--blue);font-weight:600;text-decoration:none}
+.doc a:hover{text-decoration:underline}
+.readorder{border:1px solid var(--border);background:var(--soft);padding:18px 22px}
+.plain{border:1px solid var(--border);padding:20px}
+.footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--border);color:var(--muted);font-size:13px}
+@media(max-width:900px){
+  .layout{display:block}.sidebar{width:auto;height:auto;position:relative;border-right:0;border-bottom:1px solid var(--border)}
+  .main{width:auto;padding:30px 22px}.docs{grid-template-columns:1fr}.flow{flex-direction:column}.arrow{justify-content:center;transform:rotate(90deg)}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">Story OS</div>
+  <div class="sub">技术设计文档门户</div>
+
+  <div class="group">总览</div>
+  <a href="#about">系统定位</a>
+  <a href="#overview">系统一览</a>
+  <a href="#docs">文档导航</a>
+
+  <div class="group">独立文档</div>
+  <a href="01_story_os_architecture.html">01 系统架构</a>
+  <a href="02_story_os_workflow.html">02 工作流程</a>
+  <a href="03_story_os_episode_lifecycle.html">03 单集生命周期</a>
+  <a href="04_story_os_evidence_chain.html">04 证据链</a>
+
+  <div class="group">阅读帮助</div>
+  <a href="#order">推荐阅读顺序</a>
+  <a href="#plain">大白话解释</a>
+</aside>
+
+<main class="main">
+<h1>Story OS 技术设计文档</h1>
+<p>AI 原生故事生产操作系统 / 从故事创意到视觉生产、发布与复盘的完整生产链。</p>
+
+<div class="meta">
+  <span class="tag blue">story 分支</span>
+  <span class="tag">Story OS V2.1 主平台</span>
+  <span class="tag green">V2.2 Visual Narrative Core R1 已进入主链</span>
+  <span class="tag">当前文档：架构 / 流程 / 生命周期 / 证据链</span>
+</div>
+
+<section id="about">
+<h2>系统定位</h2>
+<div class="note">
+<strong>一句话：</strong>Story OS 不是“让 AI 一次生成一套图”，而是把故事创作、镜头设计、图片生产、审核、发布和复盘组织成一个可验证、可恢复、可追溯的生产系统。
+</div>
+</section>
+
+<section id="overview">
+<h2>系统一览</h2>
+<div class="overview">
+  <div class="flow">
+    <div class="stage"><b>需求 / Runtime</b><span>解析这次任务怎么执行</span></div>
+    <div class="arrow">→</div>
+    <div class="stage"><b>故事创作</b><span>选题、故事、人物、分镜</span></div>
+    <div class="arrow">→</div>
+    <div class="stage"><b>视觉生产</b><span>合同、视觉准入、生图、审核</span></div>
+    <div class="arrow">→</div>
+    <div class="stage"><b>发布学习</b><span>快照、发布、数据复盘</span></div>
+  </div>
+  <div class="kernel">
+    <strong>系统内核 / OS Kernel</strong><br>
+    状态机（State Machine） / 任务依赖图（Runtime DAG） / 证据门禁（Evidence Gate） / SHA 追溯 / 缓存与恢复
+  </div>
+</div>
+</section>
+
+<section id="docs">
+<h2>核心文档</h2>
+<div class="docs">
+  <article class="doc">
+    <div class="no">01 / ARCHITECTURE</div>
+    <h3>系统架构设计</h3>
+    <p>回答“Story OS 有哪些能力、各层负责什么、代码和仓库目录在哪里”。</p>
+    <a href="01_story_os_architecture.html">打开系统架构 →</a>
+  </article>
+
+  <article class="doc">
+    <div class="no">02 / WORKFLOW</div>
+    <h3>工作流程设计</h3>
+    <p>回答“任务从哪里进入、有哪些模式分支、门禁失败怎么回退、图片失败怎么返修”。</p>
+    <a href="02_story_os_workflow.html">打开工作流程 →</a>
+  </article>
+
+  <article class="doc">
+    <div class="no">03 / EPISODE</div>
+    <h3>单集生命周期</h3>
+    <p>回答“一个具体故事进入仓库后，文件、状态和资产如何一步步变化”。</p>
+    <a href="03_story_os_episode_lifecycle.html">打开单集生命周期 →</a>
+  </article>
+
+  <article class="doc">
+    <div class="no">04 / EVIDENCE</div>
+    <h3>证据链设计</h3>
+    <p>回答“为什么这一步能通过、哪个版本生成了哪张图、最终发布版本如何冻结”。</p>
+    <a href="04_story_os_evidence_chain.html">打开证据链 →</a>
+  </article>
+</div>
+</section>
+
+<section id="order">
+<h2>推荐阅读顺序</h2>
+<div class="readorder">
+  <strong>第一次接触 Story OS：</strong>
+  <ol>
+    <li>先看 <b>01 系统架构</b>，知道系统有什么。</li>
+    <li>再看 <b>02 工作流程</b>，知道任务怎么跑、在哪里分支和回退。</li>
+    <li>然后看 <b>03 单集生命周期</b>，知道一个故事在仓库里怎么落地。</li>
+    <li>最后看 <b>04 证据链</b>，理解 Story OS 为什么不是“生成完就算完成”。</li>
+  </ol>
+</div>
+</section>
+
+<section id="plain">
+<h2>大白话解释</h2>
+<div class="plain">
+<p><strong>把 Story OS 想成一个 AI 剧组 + 制片管理系统。</strong></p>
+<p>用户给一个想法，相当于老板说“下一集拍这个”。Runtime 先判断这是新项目、接续项目，还是从中断位置继续。</p>
+<p>然后“编剧组”把故事和分镜定下来；“导演和摄影指导”把人物、环境、镜头要求变成合同；“摄影组”开始出图；“审核组”逐张检查，不合格只修该修的地方；“发行组”把最终版本冻结后才允许发布。</p>
+<p>最关键的是：<strong>每一步都留下状态、合同、SHA 和审核证据。</strong>所以以后你能知道一张图为什么生成、依据哪个版本、为什么通过，也能在中途失败后从正确位置继续，而不是整篇重新跑。</p>
+</div>
+</section>
+
+<div class="footer">
+当前门户用于解释 story 分支的 Story OS 设计。主平台版本仍为 V2.1，V2.2 Visual Narrative Core R1 已集成到视觉生产主链，因此文档中会同时出现 V2.1 平台与 V2.2 视觉核心。
+</div>
+</main>
+</div>
+</body>
+</html>

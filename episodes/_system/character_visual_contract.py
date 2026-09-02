@@ -11,6 +11,7 @@ Production uses LOCKED master; Visual Lock dependents may use PROVISIONAL master
 from __future__ import annotations
 import argparse, binascii, datetime as dt, hashlib, json, struct, zlib
 from pathlib import Path
+import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/character-visual-contract.json")
@@ -56,6 +57,7 @@ def prepare(ep,force=False):
     if target.is_file() and not force:return read_json(target)
     cp=read_json(ep/"meta/character-contract.json")
     members=((cp.get("cast") or {}).get("members") or [])
+    world_identity = world_identity_contract.effective(ep) if world_identity_contract.required(ep) else None
     primary=set(_primary_ids(cp));rows={}
     for m in members:
         cid=str(m.get("id") or "");g=str(m.get("gender") or "");is_primary=cid in primary
@@ -77,6 +79,12 @@ def prepare(ep,force=False):
             "haircut_anchor":"","hair_length_anchor":"",
             "allowed_state_variation":["wet","windblown","messy","hood_up","tied_or_untied_with_story_reason"],
             "exact_reference_hairstyle_copy":False
+          },
+          "world_identity":{
+            "profile_id": world_identity.get("profile_id") if world_identity else None,
+            "nationality_context": ((world_identity.get("population") or {}).get("nationality_context")) if world_identity else None,
+            "resident_context": ((world_identity.get("population") or {}).get("resident_context")) if world_identity else None,
+            "effective_sha256": world_identity.get("effective_sha256") if world_identity else None
           },
           "presentation":{
             "heavy_makeup":False,"porcelain_skin":False,
@@ -116,6 +124,9 @@ def validate(ep,require_locked=True):
     ep=Path(ep).resolve();p=ep/REL
     if not p.is_file():return ["meta/character-visual-contract.json missing"]
     d=read_json(p);e=[]
+    effective_world = world_identity_contract.effective(ep) if world_identity_contract.required(ep) else None
+    if effective_world is not None:
+        e.extend(world_identity_contract.verify(ep))
     if int(d.get("schema_version") or 1) not in {1,2}:e.append("unsupported character visual schema_version")
     if require_locked and d.get("status")!="LOCKED":e.append("character visual contract must be LOCKED")
     rp=d.get("reference_policy") or {}
@@ -125,6 +136,12 @@ def validate(ep,require_locked=True):
     if not members:e.append("character visual members missing")
     for cid,row in members.items():
         face=row.get("face_identity") or {};hair=row.get("hair") or {};pres=row.get("presentation") or {}
+        if effective_world is not None:
+            wrow=row.get("world_identity") or {}
+            if wrow.get("effective_sha256") != effective_world.get("effective_sha256"):
+                e.append(f"{cid} world_identity stale or missing")
+            if wrow.get("nationality_context") != ((effective_world.get("population") or {}).get("nationality_context")):
+                e.append(f"{cid} nationality_context must match world identity")
         if face.get("original_character") is not True:e.append(f"{cid} original_character must be true")
         if face.get("independently_distinct_face") is not True:e.append(f"{cid} independently_distinct_face must be true")
         if face.get("celebrity_likeness") is not False:e.append(f"{cid} celebrity_likeness must be false")

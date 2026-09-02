@@ -16,6 +16,8 @@ import runtime_execution
 import scoped_codex_worker
 import runtime_mode_router
 import directing_quality
+import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
+import character_appearance_anchor  # STORY_OS_V221_CHARACTER_CONTINUITY
 import workflow_performance as perf
 import workflow_step_protocol as proto
 import speculative_production  # STORY_OS_V211_PERF_RECOVERY
@@ -132,6 +134,20 @@ def execute(ep,codex=None,timeout=7200,run_id=None):
             if character_errors:
                 rc=4
                 note=(note+"\nCHARACTER CONTRACT FAIL\n"+"\n".join(character_errors))[-5000:]
+            elif world_identity_contract.required(ep):
+                world_errors=world_identity_contract.verify(ep)
+                if world_errors:
+                    rc=4
+                    note=(note+"\nWORLD IDENTITY FAIL\n"+"\n".join(world_errors))[-5000:]
+                else:
+                    try:
+                        character_appearance_anchor.build(ep,write=True)
+                        anchor_errors=character_appearance_anchor.verify(ep)
+                    except Exception as exc:
+                        anchor_errors=[str(exc)]
+                    if anchor_errors:
+                        rc=4
+                        note=(note+"\nCHARACTER APPEARANCE ANCHOR FAIL\n"+"\n".join(anchor_errors))[-5000:]
         if rc==0:
             quality_errors=directing_quality.after_step(ep,s.step_id)
             if quality_errors:

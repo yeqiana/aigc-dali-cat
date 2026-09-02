@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse, datetime as dt, hashlib, json, random, re
 from pathlib import Path
+import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
 
 ROOT = Path(__file__).resolve().parents[2]
 STD = ROOT / "standards"
@@ -141,6 +142,22 @@ def prepare(ep,force=False):
     scene_cat,scene_place=choose_scene(entry,rng,p)
     rel=rng.choice(p["characters"]["relationship_pool"]) if size>1 else "单人"
     members=member_rows(era,cast_type,size,rng,p)
+    world_identity = world_identity_contract.effective(ep) if world_identity_contract.required(ep) else None
+    if world_identity is not None:
+        population = world_identity.get("population") or {}
+        for member in members:
+            member["nationality_context"] = population.get("nationality_context")
+            member["resident_context"] = population.get("resident_context")
+        world_identity_summary = {
+            "profile_id": world_identity.get("profile_id"),
+            "country": (world_identity.get("world") or {}).get("country"),
+            "region": (world_identity.get("world") or {}).get("region"),
+            "nationality_context": population.get("nationality_context"),
+            "resident_context": population.get("resident_context"),
+            "effective_sha256": world_identity.get("effective_sha256"),
+        }
+    else:
+        world_identity_summary = None
     no_plan=p["entries"]["entries"][entry]["no_anomaly_plan"]
     data={
         "schema_version":1,
@@ -150,6 +167,7 @@ def prepare(ep,force=False):
         "created_at":now(),
         "selection_seed":seed_for(ep),
         "era":{"bucket":era,"year":year,"source":era_source},
+        "world_identity":world_identity_summary,
         "cast":{"type":cast_type,"size":size,"relationship":rel,"members":members},
         "pov":{"character_id":"P01","first_person":True},
         "entry":{"type":entry,"label":p["entries"]["entries"][entry]["label"],"source":entry_source,"reason":"由 Story Build 基于该生活化动机具体化"},
@@ -209,6 +227,16 @@ def validate(ep,require_locked=False):
     ep=Path(ep).resolve(); target=ep/REL
     if not target.is_file():return ["meta/character-contract.json missing; run prepare"]
     p=pools(); data=read_json(target); errors=[]
+    if world_identity_contract.required(ep):
+        errors.extend(world_identity_contract.verify(ep))
+        wi = world_identity_contract.effective(ep)
+        summary = data.get("world_identity") or {}
+        if summary.get("effective_sha256") != wi.get("effective_sha256"):
+            errors.append("character contract world_identity stale or missing")
+        expected_nat = (wi.get("population") or {}).get("nationality_context")
+        for member in ((data.get("cast") or {}).get("members") or []):
+            if member.get("nationality_context") != expected_nat:
+                errors.append(f"{member.get('id')} nationality_context must match world identity")
     if data.get("schema_version")!=1:errors.append("schema_version must be 1")
     if require_locked and data.get("status")!="LOCKED":errors.append("character contract status must be LOCKED before Story Lock")
     hits=forbidden_hits(data,p)

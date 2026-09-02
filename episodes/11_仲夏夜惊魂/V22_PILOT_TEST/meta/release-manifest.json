@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.0",
+  "episode": {
+    "id": "11-V22P",
+    "series": "11_仲夏夜惊魂",
+    "title": "仲夏夜惊魂｜蝉声停的夏至夜",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "4:5"
+  },
+  "release": {
+    "version": null,
+    "body_frame_count": 20,
+    "publish_dir": null,
+    "body_glob": "[0-9][0-9].png",
+    "cover_path": null,
+    "contact_sheet_path": null
+  },
+  "artifacts": {
+    "story": "episodes/11_仲夏夜惊魂/V22_PILOT_TEST/story/01_StoryLock.md",
+    "storyboard": "episodes/11_仲夏夜惊魂/V22_PILOT_TEST/story/02_Storyboard.md",
+    "visual_spec": null,
+    "captions": null,
+    "publish_copy": null,
+    "production_review": null,
+    "propagation_card": null
+  },
+  "quality": {
+    "production_gate": "pending",
+    "propagation_score": null,
+    "s_min_score": null,
+    "propagation_decision": "pending",
+    "publish_decision": "hold",
+    "decision_note": "V22 Production Pilot：不发布。"
+  },
+  "publication": {
+    "platform": "douyin",
+    "actual_title": null,
+    "description": null,
+    "topics": [],
+    "pinned_comment": null,
+    "published_at": null,
+    "timing_window": null,
+    "post_url": null
+  },
+  "data_review": {
+    "report_path": null,
+    "completed_checkpoints": [],
+    "first_hour_metrics": {}
+  }
+}

@@ -57,10 +57,18 @@ V21_PHASE3_CHECKS = [
     "scale_reference_fidelity",
 ]
 
+V221_WORLD_IDENTITY_CHECKS = [
+    "world_identity_fidelity",
+    "character_appearance_anchor_fidelity",
+    "cultural_environment_fidelity",
+]
+
 def checks_for_version(version: str) -> list[str]:
     checks = CHECKS + (V21_PHASE3_CHECKS if version_tuple(version) >= (2, 1, 0) else [])
     if version_tuple(version) >= (2, 2, 0):
         checks += V22_VISUAL_NARRATIVE_CHECKS
+    if version_tuple(version) >= (2, 2, 1):
+        checks += V221_WORLD_IDENTITY_CHECKS
     return checks
 
 ISSUE_CODES = {
@@ -90,6 +98,9 @@ ISSUE_CODES = {
     "CAMERA_DEFECT_UNMOTIVATED",
     "SCREEN_CONTENT_PHYSICS_BROKEN",
     "VISUAL_MEMORY_BROKEN",
+    "WORLD_IDENTITY_DRIFT",
+    "CHARACTER_APPEARANCE_DRIFT",
+    "CULTURAL_CONTEXT_DRIFT",
 }
 
 

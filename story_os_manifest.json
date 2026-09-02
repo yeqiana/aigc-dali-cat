@@ -1,7 +1,7 @@
 {
-  "story_os_version": "2.2.0",
+  "story_os_version": "2.2.1",
   "contract_schema": 1,
-  "release_name": "Visual Narrative Core + Activation / Legacy Compatibility R2",
+  "release_name": "World Identity + Character Continuity Patch",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -138,7 +138,19 @@
     "visual_narrative_legacy_review_compatibility",
     "narrative_evidence_diversity",
     "camera_authorship_contract",
-    "moment_save_reason_contract"
+    "moment_save_reason_contract",
+    "world_identity_default_profile",
+    "world_identity_episode_override",
+    "default_mainland_china_context",
+    "default_chinese_young_adult_context",
+    "character_appearance_anchor",
+    "world_identity_frame_contract_binding",
+    "character_appearance_frame_contract_binding",
+    "world_identity_visual_lock_gate",
+    "world_identity_final_review_gate",
+    "world_identity_rolling_review",
+    "production_readiness_v221",
+    "runtime_fast_read_index"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -188,7 +200,13 @@
     "V2.2 Visual Narrative Core formal production activation is based on Episode tool_version >= 2.2.0, never mere file presence.",
     "Legacy Episode regression inputs are NON_AUTHORITY_REGRESSION_ONLY and can never become production authority by implication.",
     "A missing or zero-frame V2.2 Visual Narrative input can never PASS verification.",
-    "Legacy Episode final or Visual Lock reviews must not inherit V2.2-only checks unless the Episode itself is formally V2.2+."
+    "Legacy Episode final or Visual Lock reviews must not inherit V2.2-only checks unless the Episode itself is formally V2.2+.",
+    "Story OS 2.2.1 defaults to Mainland China, Chinese local residents and ordinary Chinese young adults unless the Episode explicitly overrides World Identity.",
+    "Default Chinese context constrains national/cultural context, not a single ethnicity; natural Chinese regional and ethnic diversity remains valid.",
+    "Episode World Identity overrides are explicit and replace/inherit defaults deterministically.",
+    "Character Appearance Anchor is a derived cache and never replaces Character Contract, Character Visual Contract or Visual Lock pixel master.",
+    "World Identity and Character Appearance Anchor bind Resolved Frame Contract hashes for V2.2.1+ Episodes.",
+    "V2.2.0 and earlier Episodes do not inherit V2.2.1-only pixel review checks retroactively."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

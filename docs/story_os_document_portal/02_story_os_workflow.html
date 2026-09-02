@@ -1,0 +1,246 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Story OS Workflow V5</title>
+<style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color:#222;line-height:1.7;background:#fff}
+.layout{display:flex}
+.side{width:250px;background:#fafafa;border-right:1px solid #ddd;padding:24px;position:sticky;top:0;height:100vh}
+.side a{display:block;color:#444;text-decoration:none;margin:8px 0;font-size:14px}
+.main{padding:35px 45px;max-width:1400px}
+h1{border-bottom:2px solid #222;padding-bottom:12px}
+h2{border-left:4px solid #1677ff;padding-left:12px;margin-top:45px}
+.note{background:#f6f8fa;border-left:4px solid #888;padding:12px}
+.diagram{border:1px solid #ddd;padding:25px;margin:20px 0}
+.node{border:1px solid #999;padding:12px;text-align:center;background:#fff;margin:8px}
+.row{display:flex;gap:15px}
+.col{flex:1}
+.arrow{text-align:center;font-size:26px}
+.branch{border:1px solid #bbb;padding:15px;background:#fafafa}
+.pass{border-left:5px solid #52c41a}
+.fail{border-left:5px solid #ff4d4f}
+.warn{border-left:5px solid #fa8c16}
+pre{background:#f6f8fa;border:1px solid #ddd;padding:15px;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<div style="position:fixed;right:18px;top:16px;z-index:9999;font-family:-apple-system,BlinkMacSystemFont,'Microsoft YaHei',sans-serif;font-size:13px;">
+  <a href="index.html" style="display:inline-block;padding:6px 10px;border:1px solid #d0d7de;background:#fff;color:#0969da;text-decoration:none;border-radius:6px;">← 返回文档门户</a>
+</div>
+
+<div class="layout">
+<div class="side">
+<h3>目录</h3>
+<a href="#overview">1. 总览流程</a>
+<a href="#entry">2. Runtime入口分支</a>
+<a href="#main">3. 主生产流程</a>
+<a href="#repair">4. 审核返修路径</a>
+<a href="#publish">5. 发布闭环</a>
+<a href="#talk">6. 大白话</a>
+</div>
+
+<div class="main">
+<h1>Story OS Workflow V5</h1>
+
+<div class="note">
+这不是普通流水线，而是：入口分流 + 主生产链 + 门禁 + 返修 + 发布学习闭环。
+</div>
+
+<h2 id="overview">1. 一览流程</h2>
+<div class="diagram">
+<div class="node">用户需求 / 故事任务</div>
+<div class="arrow">↓</div>
+<div class="node">Runtime Request（任务解析）</div>
+<div class="arrow">↓</div>
+<div class="row">
+<div class="node col">新故事制作<br>full_auto</div>
+<div class="node col">已有资产接续<br>image_continue</div>
+<div class="node col">断点恢复<br>resume</div>
+</div>
+<div class="arrow">↓</div>
+<div class="node">Story Creation（故事生产）</div>
+<div class="arrow">↓</div>
+<div class="node">Visual Production（视觉生产）</div>
+<div class="arrow">↓</div>
+<div class="node">Release（发布）</div>
+</div>
+
+<h2 id="entry">2. Runtime 入口分支</h2>
+<pre>
+用户请求
+    |
+    ↓
+Runtime Request 编译
+    |
+    +-------------------+-------------------+
+    |                   |                   |
+    ↓                   ↓                   ↓
+
+full_auto          image_continue          resume
+
+新故事制作          接管已有前期资产        从检查点恢复
+
+    |                   |
+    ↓                   ↓
+
+Story Build       preproduction-handoff.json
+                  |
+                  ↓
+             Authority SHA 校验
+
+                  |
+            +-----+-----+
+            |           |
+          PASS        FAIL
+
+            |           |
+            ↓           ↓
+
+      Visual Lock   HANDOFF_SHA_MISMATCH
+</pre>
+
+<h2 id="main">3. 主生产流程</h2>
+
+<div class="branch">
+<b>阶段一：故事创作</b>
+<div class="row">
+<div class="node col">选题检查<br>Topic Guard</div>
+<div class="node col">候选发散<br>8-12个方案</div>
+<div class="node col">Concept Ambition<br>概念野心</div>
+</div>
+<div class="row">
+<div class="node col">Image First Test<br>图像传播测试</div>
+<div class="node col">Story Build<br>故事构建</div>
+<div class="node col">Story Critic<br>故事审核</div>
+</div>
+</div>
+
+<div class="arrow">↓</div>
+<div class="branch pass">
+STORY_GATE（故事门禁） PASS
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="branch">
+<b>阶段二：视觉生产</b>
+<div class="row">
+<div class="node col">环境合同<br>Environment Contract</div>
+<div class="node col">异常强度<br>Impact Contract</div>
+<div class="node col">单帧合同<br>Frame Contract</div>
+</div>
+<div class="node">
+Visual Lock（视觉准入）1+3
+<br>
+普通基准 / 最差条件 / 首次异常 / 高影响
+</div>
+</div>
+
+<div class="arrow">↓</div>
+<div class="branch pass">VISUAL_GATE PASS</div>
+
+<div class="arrow">↓</div>
+
+<div class="branch">
+<b>阶段三：图片生产</b>
+<div class="row">
+<div class="node col">图片调度器<br>Image Scheduler</div>
+<div class="node col">Worker 1/2/3<br>并发生产</div>
+<div class="node col">Production Ledger<br>生产记录</div>
+</div>
+<div class="node">
+Fast Scout（快速筛查）
+<br>
+Frame Review（逐帧审核）
+</div>
+</div>
+
+<h2 id="repair">4. 审核与返修路径</h2>
+<pre>
+Frame Review（逐帧审核）
+
+        |
+        +----------------+
+        |                |
+        ↓                ↓
+
+     PASS             FAIL
+
+        |                |
+        ↓                ↓
+
+ 下一阶段        repair_frame（单帧修复）
+
+                         |
+                         ↓
+
+                    再次审核
+
+
+规则：
+- 不允许无理由整篇重做
+- 优先最小范围修复
+- 保留历史 SHA 证据
+</pre>
+
+<h2 id="publish">5. 发布闭环</h2>
+<pre>
+PRODUCTION_PASSED
+
+      ↓
+
+字幕 / 文案 / Text Audit
+
+      ↓
+
+Final Candidate Snapshot
+（最终候选快照）
+
+      ↓
+
+Release Manifest
+（发布清单）
+
+      ↓
+
+PUBLISH_READY
+
+      ↓
+
+PUBLISHED
+
+      ↓
+
+6h / 24h / 48h / 7d 数据复盘
+
+      ↓
+
+下一篇故事学习
+</pre>
+
+<h2 id="talk">6. 大白话解释</h2>
+<p>
+把 Story OS 想象成一个 AI 电影团队：
+</p>
+<ul>
+<li>Runtime：项目经理，判断这次任务怎么走。</li>
+<li>Story：编剧团队，决定拍什么。</li>
+<li>Visual：导演和摄影指导，决定怎么拍。</li>
+<li>Production：摄影组，负责实际生成图片。</li>
+<li>Review：审核组，判断能不能交片。</li>
+<li>Release：发行团队，负责发布和复盘。</li>
+</ul>
+
+<p>
+最大的区别：
+普通 AI 工具是“生成 → 结束”。</p>
+
+<p>
+Story OS 是：
+“规划 → 生产 → 检查 → 修复 → 冻结 → 发布 → 学习”。</p>
+
+</div>
+</div>
+</body>
+</html>

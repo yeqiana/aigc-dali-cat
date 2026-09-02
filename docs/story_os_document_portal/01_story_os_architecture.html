@@ -1,0 +1,174 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Story OS Architecture V5</title><style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color:#222;line-height:1.7}
+.layout{display:flex}.side{width:250px;background:#fafafa;border-right:1px solid #ddd;padding:24px;position:sticky;top:0;height:100vh}
+.side a{display:block;color:#444;text-decoration:none;margin:8px 0;font-size:14px}
+.main{padding:35px 45px;max-width:1400px}
+h1{border-bottom:2px solid #222;padding-bottom:12px}
+h2{border-left:4px solid #1677ff;padding-left:12px;margin-top:45px}
+.box{border:1px solid #aaa;padding:14px;text-align:center;background:#fff;margin:8px}
+.row{display:flex;gap:15px}.col{flex:1}
+.arrow{text-align:center;font-size:26px}
+.layer{border:1px solid #bbb;padding:18px;margin:15px 0;background:#fafafa}
+.blue{border-left:5px solid #1677ff}.green{border-left:5px solid #52c41a}.orange{border-left:5px solid #fa8c16}
+.note{background:#f6f8fa;border-left:4px solid #888;padding:12px}
+pre{background:#f6f8fa;border:1px solid #ddd;padding:16px}
+</style></head>
+<body>
+<div style="position:fixed;right:18px;top:16px;z-index:9999;font-family:-apple-system,BlinkMacSystemFont,'Microsoft YaHei',sans-serif;font-size:13px;">
+  <a href="index.html" style="display:inline-block;padding:6px 10px;border:1px solid #d0d7de;background:#fff;color:#0969da;text-decoration:none;border-radius:6px;">← 返回文档门户</a>
+</div>
+<div class="layout">
+<div class="side">
+<h3>目录</h3>
+<a href="#overview">1. 架构总览</a>
+<a href="#layers">2. 能力分层</a>
+<a href="#repo">3. 仓库映射</a>
+<a href="#data">4. 数据流</a>
+<a href="#talk">5. 大白话</a>
+</div>
+
+<div class="main">
+<h1>Story OS 系统架构 V5</h1>
+
+<div class="note">
+目标：不是展示文件夹，而是说明 Story OS 如何组织能力、代码和数据。
+</div>
+
+<h2 id="overview">1. Story OS 架构总览</h2>
+<div class="box">Story OS（AI故事生产操作系统）</div>
+<div class="arrow">↓</div>
+
+<div class="row">
+<div class="box col">
+创作智能层<br>
+选题 / 故事 / 人物<br>
+(Creative)
+</div>
+<div class="box col">
+视觉生产层<br>
+镜头 / 图片 / 审核<br>
+(Visual)
+</div>
+<div class="box col">
+发布学习层<br>
+交付 / 发布 / 复盘<br>
+(Release)
+</div>
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="layer green">
+系统内核（OS Kernel）<br>
+状态机 / Runtime DAG / Evidence Gate / SHA / Cache
+</div>
+
+
+<h2 id="layers">2. 能力分层</h2>
+
+<div class="layer blue">
+<b>创作智能层</b><br>
+负责回答：做什么故事？
+<br><br>
+选题 → Concept → Story → Storyboard → Character Contract
+</div>
+
+<div class="layer blue">
+<b>视觉生产层</b><br>
+负责回答：这个故事怎么拍？
+<br><br>
+Environment Contract → Frame Contract → Visual Lock → Production
+</div>
+
+<div class="layer blue">
+<b>质量控制层</b><br>
+负责回答：为什么认为完成？
+<br><br>
+Frame Review → Evidence → Snapshot
+</div>
+
+
+<h2 id="repo">3. 仓库结构映射</h2>
+
+<pre>
+standards/
+  制作规则、真实性规则、生产规范
+  （系统宪法）
+
+episodes/
+  每一个故事实例
+
+episodes/_system/
+  状态机
+  Gate门禁
+  Runtime工具
+  审核工具
+
+runtimes/
+  工作流定义
+  DAG调度
+
+meta/
+  当前故事状态
+  合同
+  证据
+  SHA记录
+
+library/
+  公共资源库
+
+reports/
+  数据复盘
+</pre>
+
+
+<h2 id="data">4. 核心数据流</h2>
+
+<pre>
+用户需求
+ ↓
+Runtime Request
+ ↓
+Story Contract（故事合同）
+ ↓
+Frame Contract（单帧合同）
+ ↓
+Generation Request（生图请求）
+ ↓
+Approved Asset（通过资产）
+ ↓
+Final Snapshot（最终冻结）
+ ↓
+Release Manifest（发布清单）
+</pre>
+
+
+<h2 id="talk">5. 大白话解释</h2>
+
+<p>
+把 Story OS 想成一家 AI 影视公司。
+</p>
+
+<ul>
+<li>standards：公司的制作规范。</li>
+<li>Runtime：项目经理，安排任务怎么走。</li>
+<li>episodes：每一个正在制作的作品。</li>
+<li>Frame Contract：摄影指导给每个镜头的拍摄要求。</li>
+<li>Production Ledger：拍摄日志。</li>
+<li>Evidence：证明这个作品为什么可以交付。</li>
+</ul>
+
+<p>
+普通 AI：
+<br>
+输入一句话 → 出图片。
+</p>
+
+<p>
+Story OS：
+<br>
+输入一句话 → 经过编剧、导演、摄影、审核、发行流程 → 形成可追溯作品。
+</p>
+
+</div></div></body></html>

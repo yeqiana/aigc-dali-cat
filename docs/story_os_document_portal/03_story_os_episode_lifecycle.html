@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Story OS Episode 生命周期</title>
+<style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei","Segoe UI",sans-serif;color:#222;line-height:1.7}
+.layout{display:flex}
+.sidebar{width:250px;background:#fafafa;border-right:1px solid #ddd;padding:24px;min-height:100vh;position:sticky;top:0}
+.sidebar a{display:block;color:#444;text-decoration:none;margin:8px 0}
+.main{padding:40px 50px;max-width:1200px}
+h1{border-bottom:2px solid #222;padding-bottom:12px}
+h2{border-left:4px solid #1677ff;padding-left:12px;margin-top:40px}
+.box{border:1px solid #aaa;padding:16px;text-align:center;background:#fff;margin:10px}
+.arrow{text-align:center;font-size:26px}
+.layer{border:1px solid #ccc;padding:18px;margin:15px 0;background:#fafafa}
+.blue{border-left:5px solid #1677ff}
+.green{border-left:5px solid #52c41a}
+.orange{border-left:5px solid #fa8c16}
+pre{background:#f6f8fa;border:1px solid #ddd;padding:16px}
+.note{background:#f6f8fa;padding:12px;border-left:4px solid #999}
+</style>
+</head>
+<body>
+<div style="position:fixed;right:18px;top:16px;z-index:9999;font-family:-apple-system,BlinkMacSystemFont,'Microsoft YaHei',sans-serif;font-size:13px;">
+  <a href="index.html" style="display:inline-block;padding:6px 10px;border:1px solid #d0d7de;background:#fff;color:#0969da;text-decoration:none;border-radius:6px;">← 返回文档门户</a>
+</div>
+
+<div class="layout">
+<aside class="sidebar">
+<h3>目录</h3>
+<a href="#life">1. 单集生命周期</a>
+<a href="#files">2. 文件变化</a>
+<a href="#state">3. 状态变化</a>
+<a href="#talk">4. 大白话</a>
+</aside>
+
+<main class="main">
+<h1>Story OS Episode 生命周期</h1>
+
+<div class="note">
+解释：一篇故事进入 Story OS 后，如何从一个想法，变成最终发布资产。
+</div>
+
+<h2 id="life">1. 单集生命周期总览</h2>
+
+<div class="box blue">
+故事需求输入<br>
+用户想法 / 自动选题 / 已锁定故事
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="box">
+故事资产生成<br>
+Story（故事）<br>
+Storyboard（分镜）
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="box">
+制作合同生成<br>
+Character Contract（人物合同）<br>
+Environment Contract（环境合同）<br>
+Frame Contract（单帧合同）
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="box green">
+图片生产<br>
+Production Ledger（生产记录）<br>
+Approved Asset（审核通过图片）
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="box">
+发布准备<br>
+字幕 / 文案 / Final Snapshot（最终快照）
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="box orange">
+发布与学习<br>
+Release Manifest（发布清单）<br>
+Data Review（数据复盘）
+</div>
+
+
+<h2 id="files">2. 文件流转</h2>
+
+<pre>
+episodes/某个故事/
+
+输入
+ ↓
+story.json
+  故事核心
+
+ ↓
+
+storyboard.json
+  每张图讲什么
+
+ ↓
+
+meta/
+ ├── character-contract.json
+ │     人物连续性
+ │
+ ├── environment-contract.json
+ │     环境和天气
+ │
+ └── runtime/contracts/
+       frame-contracts/
+       每一张图的生产要求
+
+ ↓
+
+production/
+ ├── production-ledger.json
+ │     记录每次生产
+ │
+ └── frame-reviews/
+       每张图审核结果
+
+ ↓
+
+release/
+ ├── final-candidate-snapshot.json
+ │     最终冻结版本
+ │
+ └── release-manifest.json
+       发布资产
+</pre>
+
+
+<h2 id="state">3. 状态变化</h2>
+
+<pre>
+IDEA_LOCKED
+想法确定
+
+ ↓
+
+STORYBOARD_LOCKED
+故事和分镜完成
+
+ ↓
+
+VISUAL_CALIBRATED
+视觉标准确认
+
+ ↓
+
+PRODUCTION_PASSED
+图片生产通过
+
+ ↓
+
+PUBLISH_READY
+可以发布
+
+ ↓
+
+PUBLISHED
+已经发布
+
+ ↓
+
+DATA_REVIEWED
+数据复盘完成
+</pre>
+
+
+<h2 id="talk">4. 大白话解释</h2>
+
+<p>
+把一篇故事想象成拍一部短片。
+</p>
+
+<ul>
+<li>story.json：剧本</li>
+<li>storyboard.json：分镜表</li>
+<li>character-contract：演员档案</li>
+<li>frame-contract：摄影指导给每个镜头的要求</li>
+<li>production-ledger：拍摄日志</li>
+<li>frame-review：审核记录</li>
+<li>snapshot：最终母版</li>
+</ul>
+
+<p>
+以前：AI 生成完图片就结束。</p>
+
+<p>
+现在：每一步都有文件记录，任何时候都知道：
+这张图为什么生成、依据是什么、为什么通过。
+</p>
+
+</main>
+</div>
+</body>
+</html>
