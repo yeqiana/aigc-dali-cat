@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "enabled": true,
+  "mode": "regression",
+  "contract_version": "2.2.0",
+  "authority": "NON_AUTHORITY_REGRESSION_ONLY",
+  "input_path": "meta/tests/visual-narrative-regression/shot-progression-review.json",
+  "production_promotion_forbidden": true,
+  "note": "Regression-only migration. Never use this as Production Authority."
+}

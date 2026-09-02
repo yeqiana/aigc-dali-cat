@@ -1,0 +1,592 @@
+{
+  "schema_version": 2,
+  "status": "LOCKED",
+  "authority": "NON_AUTHORITY_REGRESSION_ONLY",
+  "created_at": "2026-09-02T15:10:36",
+  "anomaly_applicable": true,
+  "interaction_applicable": false,
+  "interaction_exception_reason": "single-person first-person POV; father appears only as an incidental secondary figure and no group-interaction contract applies",
+  "frames": [
+    {
+      "frame": "01",
+      "camera_position": "站立在办公室门框内，端起卡片相机朝旧木桌方向拍摄",
+      "subject_distance": "门框到桌面约3米的全景",
+      "primary_subject": "旧木桌上的高大玻璃瓶及其内的微缩县城，背景是搬纸箱的父亲与窗外红白烟囱",
+      "action": "刚进清厂办公室就举起相机记录桌面旧样品，视线落在瓶内微缩县城上",
+      "visual_function": "discover_bottle_contains_county_on_desk",
+      "capture_purpose": "给父亲的旧样品估价前先整体记录办公室与货品，顺手拍下这只奇怪的旧瓶子留档",
+      "pov_mode": "first_person_primary",
+      "location_zone": "县玻璃厂二楼旧办公室",
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "notice",
+      "human_present": true,
+      "emotion": {
+        "state": "curious",
+        "intensity": 1,
+        "trigger": "瓶内竟装着与窗外红烟囱对应的微缩县城",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "02",
+      "camera_position": "站在桌边，手持卡片相机贴近瓶壁中下部近摄",
+      "subject_distance": "贴近瓶壁约0.2米的特写",
+      "primary_subject": "瓶壁原有细裂、缺口榉木底座与水泥台上的褪色红刻线",
+      "action": "靠近瓶子检查旧样品的裂口与底座红刻线，把瓶内红烟囱朝向与刻线的对齐关系收进画面",
+      "visual_function": "crack_and_red_alignment_line_established",
+      "capture_purpose": "旧样品有裂会直接影响买家估价，先特写留证并记下底座刻线方位",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室旧木桌台边",
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "verify",
+      "human_present": false,
+      "emotion": {
+        "state": "curious",
+        "intensity": 1,
+        "trigger": "裂口与红线像是被人特意对齐过的旧货记号",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "03",
+      "camera_position": "站在桌边，右手举相机，左手把一张旧冲印照片贴向瓶壁侧面",
+      "subject_distance": "瓶与照片约0.3米的中近特写",
+      "primary_subject": "左手持的县城街景冲印照片与瓶内白校舍、河弯、红烟囱的同框对照",
+      "action": "把旧照片贴上瓶壁来回比对路口与地标是否一致",
+      "visual_function": "printed_photo_to_bottle_landmark_match",
+      "capture_purpose": "用家里旧照片验证瓶内是不是真县城，拍下对照结果作为证据",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室旧木桌旁",
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "旧照片里的白校舍、河弯、烟囱与瓶内几乎分毫不差",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "主角",
+        "target": "旧照片与瓶壁",
+        "action": "将旧照片贴向瓶壁逐点对照",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "04",
+      "camera_position": "站在窗边桌侧，把桌面的瓶与窗外同景深收进一帧",
+      "subject_distance": "桌到窗约2米的中景",
+      "primary_subject": "瓶内灰色小吊车与窗外现实拆迁吊车同角度，瓶内几名微小人影仰头",
+      "action": "发现窗外吊车一动瓶内吊车就同角度转臂，赶紧同框拍下",
+      "visual_function": "interior_exterior_crane_live_sync",
+      "capture_purpose": "实时同步是怪事核心，拍同框作为铁证并记录瓶内小人仰头的细节",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室窗边",
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "observe",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "瓶内吊车与窗外吊车完全同角度同步转动",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "05",
+      "camera_position": "站在桌后，拍父亲接电话后走向办公室门口的侧后身",
+      "subject_distance": "约1.5米的人物中景",
+      "primary_subject": "父亲接翻盖手机、拎起医院检查袋与外套走向门口的背影",
+      "action": "父亲接到医院电话边讲边走，我边记录边目送他离厂",
+      "visual_function": "father_heads_to_hospital_with_warning",
+      "capture_purpose": "清厂工作照；也记下父亲离开前那个反常提醒，为后面的判断留时间线",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室通向门口",
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "show_phone",
+        "actor": "父亲",
+        "target": "翻盖手机",
+        "action": "接听医院来电并拎起检查袋离厂",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "06",
+      "camera_position": "站在父亲身侧近处，拍他按住手腕并指向底座的手势",
+      "subject_distance": "约0.5米的人物近景",
+      "primary_subject": "父亲侧后身、按住主角手腕的手与指向底座红刻线的手指",
+      "action": "父亲按住我的手，另一只手指着木底座上的红刻线叮嘱",
+      "visual_function": "base_do_not_touch_warning_given",
+      "capture_purpose": "父亲从不解释只留一句怪话，拍下这一刻记住警告本身",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室旧木桌边",
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "discuss",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "父亲脸色认真只留下一句底座别动",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "point_out",
+        "actor": "父亲",
+        "target": "木底座红刻线",
+        "action": "按住主角手腕并指向刻线发出警告",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "07",
+      "camera_position": "坐在桌边伸手够向瓶颈，镜头越过指尖对准瓶身",
+      "subject_distance": "指尖到瓶颈约0.1米、瓶体约0.3米的近景",
+      "primary_subject": "伸向瓶颈却未触碰的右手，以及瓶内自行偏斜的河水线",
+      "action": "伸手准备把瓶子提起来拍照估价，指尖还差一点碰到，先看到瓶内水线自己歪了",
+      "visual_function": "water_line_tilts_before_contact",
+      "capture_purpose": "还没碰到瓶子它先动了，必须拍下来，否则没人会信",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室旧木桌边",
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "observe",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "指尖未触瓶体，瓶内河水线已自行向一侧偏斜",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "08",
+      "camera_position": "桌边半俯视角，双手在画面下方护住瓶身随转动下压",
+      "subject_distance": "瓶身约0.4米近景",
+      "primary_subject": "双手间被小幅转动的玻璃瓶与桌面搪瓷杯里斜出水平线的茶水",
+      "action": "为拍清瓶底编号把瓶子提起转了小小角度，桌杯里的茶水先于瓶身斜了",
+      "visual_function": "rotation_first_tilts_cup_water",
+      "capture_purpose": "记录旋转瞬间桌面水先斜的异常，为估价动作留下时间点证据",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室旧木桌边",
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "只转一点，搪瓷杯里的水先斜出水平线",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "主角",
+        "target": "瓶身",
+        "action": "双手小幅转动瓶子完成估价拍照",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "09",
+      "camera_position": "后退半步拍整张桌面与房间，机位随身体晃动",
+      "subject_distance": "桌到房间约2米的全景",
+      "primary_subject": "卷尺、铅笔、搪瓷杯同向滑动的桌面与窗外开始倾倒的自行车",
+      "action": "屋里所有东西朝同一方向滑动，慌乱中举起相机记录整个房间",
+      "visual_function": "indoor_objects_slide_together",
+      "capture_purpose": "异常已经从瓶子蔓延到整间屋子，记录室内整体倾斜的第一现场",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室全屋",
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "observe",
+      "human_present": false,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "室内物件与窗外自行车同时向一侧滑动",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "10",
+      "camera_position": "单手扶桌稳住身体，另一手持机向窗外街道抓拍",
+      "subject_distance": "窗内到街面约30米外的倾斜街景",
+      "primary_subject": "窗外整条街道、电线杆与车辆同方向倾斜",
+      "action": "县城整条街像被抬起来一样倾斜，扶桌抢拍窗外",
+      "visual_function": "outside_street_tilts_county_scale",
+      "capture_purpose": "最慌乱也最关键的室外证据：证明倾斜不止在屋里，整座县城都在动",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室窗侧向外街景",
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 4,
+        "trigger": "窗外道路车辆与电线杆整片倾斜",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "11",
+      "camera_position": "贴近瓶壁，以裂纹为前景透过玻璃拍瓶内道路裂口",
+      "subject_distance": "瓶壁约0.15米微距",
+      "primary_subject": "瓶壁细裂纹、裂纹内侧瓶内道路的裂口与窗外远处街面同走向裂缝",
+      "action": "凑近看瓶上裂纹，发现瓶裂到哪外面的路就断到哪，对准裂纹拍特写",
+      "visual_function": "crack_to_road_fracture_mapping",
+      "capture_purpose": "裂口与道路一一对应是机制核心证据，必须近摄留证",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室窗边",
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "verify",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "瓶壁裂纹与窗外街面裂缝同一走向同步延伸",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "12",
+      "camera_position": "站在桌边低头拍桌面翻盖手机与窗外路口",
+      "subject_distance": "桌面约0.5米、窗外约50米的双景深",
+      "primary_subject": "开着免提的翻盖手机、窗外停在倾斜路口的救护车与瓶内歪斜的县医院楼",
+      "action": "用免提打电话确认父亲情况，听到医院方向路已过不去，拍下窗外救护车与瓶内医院同框",
+      "visual_function": "father_trapped_road_cut_off",
+      "capture_purpose": "记录父亲被困与道路断裂的直接后果，给自己为什么必须复位留证据",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室桌边看窗外",
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "fail",
+      "human_present": false,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "父亲被困县医院，通往医院的路被裂缝阻断",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "13",
+      "camera_position": "蹲在台边，镜头随手持手电的光束照向木底座",
+      "subject_distance": "底座约0.25米近摄",
+      "primary_subject": "手电照亮下底座缺口、褪色红刻线与瓶内红烟囱形成的三点方向关系",
+      "action": "用手电照底座缺口和红刻线，确认红烟囱正好对准那道红线",
+      "visual_function": "base_red_line_aligns_to_chimney",
+      "capture_purpose": "确定把县城转回去的基准方向，拍下刻线对位以备复位时对照",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室台边地面视角",
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "缺口、红线与瓶内红烟囱三点正好在一条复位关系上",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "主角",
+        "target": "手电与木底座",
+        "action": "手持手电照向底座核对刻线方位",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "14",
+      "camera_position": "瓶前近景，拍帆布带与旧木楔固定瓶身的过程",
+      "subject_distance": "瓶身约0.4米近景",
+      "primary_subject": "被帆布带与旧木楔固定住的瓶身、贴着细裂的手指与窗外仍倾斜的背景",
+      "action": "用帆布带和木楔把瓶身固定好，手指贴着细裂准备让裂口再受一次力",
+      "visual_function": "deliberate_second_rotation_prepared",
+      "capture_purpose": "这是明知会裂还要做的选择，固定与风险动作都要留影",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室旧木桌边",
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "要让瓶身承受第二次受力才能把县城转回去",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "主角",
+        "target": "瓶身与帆布带",
+        "action": "固定瓶身并准备第二次旋转",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "15",
+      "camera_position": "瓶前特写，双手在画面中绷紧转动瓶身",
+      "subject_distance": "瓶身约0.3米近景特写",
+      "primary_subject": "绷紧的帆布带、缓慢转动的瓶身与右掌被细裂割出的少量血",
+      "action": "双手缓缓转瓶对准刻线，右掌被锋利细裂划开仍不敢松手",
+      "visual_function": "hand_cut_while_rotating_cost",
+      "capture_purpose": "受伤也不能停，记录自己为复位县城付出的具体代价",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室旧木桌边",
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 4,
+        "trigger": "右掌被裂口割伤出血，仍必须稳住瓶身完成复位",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "主角",
+        "target": "瓶身裂口",
+        "action": "忍痛持续转瓶对准刻线",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "16",
+      "camera_position": "桌侧拍瓶内红烟囱逐渐对准底座刻线，背景窗外的街景正在回正",
+      "subject_distance": "桌面到窗约2米中景",
+      "primary_subject": "瓶内红烟囱贴向红刻线，窗外电线杆与建筑缓慢回正，散落物仍在地上",
+      "action": "瓶内红烟囱对准刻线的瞬间，看窗外整条街开始回正，拍下复位的完成时刻",
+      "visual_function": "county_realigns_when_line_met",
+      "capture_purpose": "验证红烟囱对上线、现实就回来这条规则确实兑现",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室窗边",
+      "anomaly_logic_stage": "reversal",
+      "human_action_stage": "act",
+      "human_present": false,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 2,
+        "trigger": "红烟囱对上刻线，窗外街道与建筑开始回正",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "17",
+      "camera_position": "医院走廊中距，拍父亲术后坐在长椅上的侧后影",
+      "subject_distance": "约2米的人物中景",
+      "primary_subject": "手术后坐在走廊长椅上的父亲、手里的检查袋与主角手中的收据与退订信封",
+      "action": "父亲脱险后在走廊休息，我把旧机器售出收据和退掉的定金信封一并拍进画面",
+      "visual_function": "father_safe_deal_cancelled_closure",
+      "capture_purpose": "清厂筹款与父亲脱险都闭环，记录自己最终没卖那只瓶子",
+      "pov_mode": "first_person_primary",
+      "location_zone": "县医院走廊",
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "adapt",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 2,
+        "trigger": "父亲脱险、其他旧机器售出凑足手术费",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "18",
+      "camera_position": "桌前俯拍散落的冲印照片与相机回放屏",
+      "subject_distance": "桌面约0.3米近景",
+      "primary_subject": "桌上多张旧照片与相机回放画面中同一位置的巨大白色弧光，瓶已固定回底座",
+      "action": "翻看之前拍的照片，发现每一张瓶壁上都有同一条白弧，逐张摆开对照",
+      "visual_function": "white_arc_recurs_across_prints",
+      "capture_purpose": "白弧反复出现在多张照片里，说明不是偶然镜头反光，需要集结证据",
+      "pov_mode": "first_person_primary",
+      "location_zone": "办公室桌前",
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "verify",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "此前多张照片同一位置都出现同一道白弧",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "19",
+      "camera_position": "厂房楼顶仰拍县城天空全景",
+      "subject_distance": "仰角从楼顶到天际线的远景",
+      "primary_subject": "灰蓝天际线上极淡的巨大弧形玻璃反光与一滴凝结水",
+      "action": "站上楼顶抬头看县城天空，发现天穹多了一层弧形玻璃边界，仰拍留证",
+      "visual_function": "sky_arc_glass_boundary_seen",
+      "capture_purpose": "瓶壁那道白弧原来对应天上这层玻璃，记录递归边界的第一手证据",
+      "pov_mode": "first_person_primary",
+      "location_zone": "厂房楼顶",
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "notice",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "县城上空出现与瓶壁一致的弧形玻璃反光与水珠",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "20",
+      "camera_position": "楼顶边缘第一人称广角随手拍，把整片县城收入巨大弧面之下",
+      "subject_distance": "楼顶到县城约数百米的远景广角",
+      "primary_subject": "巨大透明弧面下的整座县城、弧面外隐约的旧木架与日光灯反射、县城里朝上看的微小人群",
+      "action": "举起相机把我们都在这层容器里的整幅景象拍下来，克制地收尾",
+      "visual_function": "recursive_container_reveal_everyone_looks_up",
+      "capture_purpose": "终局静默留证：县城上方还有一层容器，人群都仰头在看更外面",
+      "pov_mode": "first_person_primary",
+      "location_zone": "厂房楼顶边缘",
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "observe",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 4,
+        "trigger": "整座县城都位于更大玻璃弧面之下，微小人影全部仰头",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    }
+  ],
+  "locked_at": "2026-09-02T15:31:08"
+}

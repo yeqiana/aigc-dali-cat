@@ -309,6 +309,7 @@ Attached mapping:
 Attempt {attempt}. Judge ACTUAL pixels. Every supplied frame must pass all checks:
 {', '.join(base.checks_for_version(base.episode_contract_version(ep)))}
 Hard failures include wrong scene/beat/prop/person/wardrobe, illegal POV, ghost camera, broken space/time continuity, unreadable anomaly, caption inventing missing evidence, missing actual information gain, narrative redundancy, repeated shot grammar, unmotivated camera defects, impossible screen/UI physics, or broken visual memory.
+Episode contract version: {base.episode_contract_version(ep)}. V2.2-only Visual Narrative checks and issue codes apply ONLY when version >= 2.2.0; legacy episodes must not fail on V2.2-only criteria.
 Return one row for EVERY supplied context frame, not only dirty roots.
 Use issue codes only from: {', '.join(sorted(base.ISSUE_CODES))}
 

@@ -1,7 +1,7 @@
 {
-  "story_os_version": "2.1.0",
+  "story_os_version": "2.2.0",
   "contract_schema": 1,
-  "release_name": "Full Workflow Closure + Runtime R2 + Character/Entry Pools",
+  "release_name": "Visual Narrative Core + Activation / Legacy Compatibility R2",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -129,7 +129,16 @@
     "resource_resolver",
     "intro_opener_policy",
     "internal_title_only",
-    "visual_lock_1_plus_3_documented"
+    "visual_lock_1_plus_3_documented",
+    "visual_narrative_core_v22",
+    "visual_narrative_version_activation",
+    "visual_narrative_no_zero_frame_pass",
+    "visual_narrative_legacy_not_applicable",
+    "visual_narrative_non_authority_regression_mode",
+    "visual_narrative_legacy_review_compatibility",
+    "narrative_evidence_diversity",
+    "camera_authorship_contract",
+    "moment_save_reason_contract"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -175,7 +184,11 @@
     "image_continue must verify handoff authority hashes and must not rewrite locked Story.",
     "shared resource library reuses references/descriptors, never prior final episode images by default.",
     "intro templates are structural references and must be naturally rewritten.",
-    "title is one internal candidate and is not a PUBLISH_READY requirement."
+    "title is one internal candidate and is not a PUBLISH_READY requirement.",
+    "V2.2 Visual Narrative Core formal production activation is based on Episode tool_version >= 2.2.0, never mere file presence.",
+    "Legacy Episode regression inputs are NON_AUTHORITY_REGRESSION_ONLY and can never become production authority by implication.",
+    "A missing or zero-frame V2.2 Visual Narrative input can never PASS verification.",
+    "Legacy Episode final or Visual Lock reviews must not inherit V2.2-only checks unless the Episode itself is formally V2.2+."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

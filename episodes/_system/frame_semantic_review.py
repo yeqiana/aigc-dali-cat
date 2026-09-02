@@ -39,6 +39,9 @@ CHECKS = [
     "anomaly_readability",
     "caption_image_support",
     "actual_information_gain",
+]
+
+V22_VISUAL_NARRATIVE_CHECKS = [
     "camera_authorship_physical",
     "moment_capture_credibility",
     "narrative_evidence_gain",
@@ -46,7 +49,7 @@ CHECKS = [
     "camera_defect_physics",
     "screen_content_physics",
     "visual_memory_continuity",
-]  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
+]  # STORY_OS_V22_R2_VERSION_GATED
 
 V21_PHASE3_CHECKS = [
     "environment_physics_fidelity",
@@ -55,7 +58,10 @@ V21_PHASE3_CHECKS = [
 ]
 
 def checks_for_version(version: str) -> list[str]:
-    return CHECKS + (V21_PHASE3_CHECKS if version_tuple(version) >= (2, 1, 0) else [])
+    checks = CHECKS + (V21_PHASE3_CHECKS if version_tuple(version) >= (2, 1, 0) else [])
+    if version_tuple(version) >= (2, 2, 0):
+        checks += V22_VISUAL_NARRATIVE_CHECKS
+    return checks
 
 ISSUE_CODES = {
     "FRAME_SCENE_MISMATCH",
@@ -544,6 +550,7 @@ Attached images are in numeric order and map as follows:
 {mapping}
 
 This is critic attempt {attempt}. Judge the ACTUAL pixels against Story Lock + storyboard + authenticity/continuity anchors.
+Episode contract version: {episode_contract_version(ep)}. V2.2-only Visual Narrative checks and issue codes apply ONLY when version >= 2.2.0. Earlier episodes must not fail on V2.2-only criteria.
 The visual-profile critic is a different job. A frame can look perfectly M00 and STILL FAIL here if it depicts the wrong person, wrong wardrobe, wrong timeline, illegal camera viewpoint, wrong prop, unreadable anomaly, or merely lets the caption claim evidence that the pixels do not show.
 
 Hard rules for EVERY frame:

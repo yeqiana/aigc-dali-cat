@@ -44,7 +44,7 @@ ROLES = (
     "first_major_anomaly",
     "high_impact_admission",
 )
-CHECKS = (
+BASE_CHECKS = (
     "visual_profile_match",
     "reality_first",
     "ordinary_life_density",
@@ -56,11 +56,16 @@ CHECKS = (
     "capture_credibility",
     "anomaly_scale_delivery",
     "scale_reference_fidelity",
+)
+V22_CHECKS = (
     "camera_authorship_physical",
     "moment_capture_credibility",
     "camera_defect_physics",
     "screen_content_physics",
 )
+
+def checks_for_version(version: str) -> tuple[str, ...]:
+    return BASE_CHECKS + (V22_CHECKS if version_tuple(version) >= (2, 2, 0) else ())
 
 
 def now() -> str:
@@ -448,7 +453,7 @@ def validate_payload(data: dict, *, contract: dict, assets: list[dict], version:
         if str(row.get("frame_contract_sha256") or "").lower() != exp["frame_contract_sha256"].lower():
             errors.append(f"{rid} frame_contract_sha mismatch")
         checks = row.get("checks") or {}
-        for key in CHECKS:
+        for key in checks_for_version(version):
             if checks.get(key) is not True:
                 errors.append(f"{rid}.checks.{key} must be true")
         if row.get("issues") not in ([], None):
@@ -529,11 +534,9 @@ Role expectations:
 - first_major_anomaly: anomaly must be clearly readable yet embedded into believable reality rather than promo concept art.
 - high_impact_admission: impact 3-4 must visibly deliver its promised abnormal scale/consequence, include readable real-world scale reference, and STILL look like an accidental/working record rather than a cinematic poster.
 
-For every image judge ALL checks:
-visual_profile_match, reality_first, ordinary_life_density, available_light, unposed_capture, not_cinematic, causal_imperfection,
-environment_physics_fidelity, capture_credibility, anomaly_scale_delivery, scale_reference_fidelity,
-camera_authorship_physical, moment_capture_credibility, camera_defect_physics, screen_content_physics.
-Camera authorship must be physically explainable; reject ghost/floating coverage. Moment must feel caught during an action. Camera defects need a physical cause. Visible screens/UI must be physically coherent.
+For every image judge the checks required for Story OS contract version {episode_version(ep)}:
+{", ".join(checks_for_version(episode_version(ep)))}.
+V2.2-only checks (camera authorship / moment / camera defect / screen physics) apply only when episode contract version >= 2.2.0. Do not fail legacy V2.1 episodes on V2.2-only criteria.
 
 Interpret anomaly_scale_delivery=true on ordinary/no-anomaly frames as "the frame correctly avoids unplanned spectacle and matches its locked impact level."
 Interpret scale_reference_fidelity=true on low-impact frames as "no false/contradictory scale cue"; for high impact it MUST be visibly useful.

@@ -289,7 +289,8 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     progression = shot_progression_gate.resolve_frame(ep,n) if (ep/shot_progression_gate.REL).is_file() else {"shot_progression":{}}
     temporal = temporal_continuity_gate.resolve_frame(ep,n) if (ep/temporal_continuity_gate.REL).is_file() else {"temporal_state":{}}
     wardrobe = wardrobe_contract.resolve_frame(ep,n) if (ep/wardrobe_contract.REL).is_file() else {"wardrobe":{}}
-    visual_narrative = visual_narrative_core_v22.resolve_frame(ep,n) if visual_narrative_core_v22.required(ep) else {"visual_narrative":{},"visual_narrative_sha256":None}
+    visual_narrative_active = visual_narrative_core_v22.required(ep)
+    visual_narrative = visual_narrative_core_v22.resolve_frame(ep,n) if visual_narrative_active else None
     excerpt = extract_frame_excerpt(storyboard_path, n)
     refs = resolved_references(ep, n)
 
@@ -343,10 +344,11 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "shot_progression": progression.get("shot_progression") or {},
         "temporal_state": temporal.get("temporal_state") or {},
         "wardrobe": wardrobe.get("wardrobe") or {},
-        "visual_narrative": visual_narrative.get("visual_narrative") or {},
-        "visual_narrative_sha256": visual_narrative.get("visual_narrative_sha256"),
         "references": refs,
     }
+    if visual_narrative_active:
+        hash_material["visual_narrative"] = visual_narrative.get("visual_narrative") or {}
+        hash_material["visual_narrative_sha256"] = visual_narrative.get("visual_narrative_sha256")
     contract_sha = sha256_json(hash_material)
 
     prompt_lines = [
@@ -389,9 +391,6 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "[SCENE-AWARE WARDROBE]",
         _compact_json(wardrobe.get("wardrobe") or {}, 2400),
         "",
-        "[VISUAL NARRATIVE CORE V2.2]",
-        _compact_json(visual_narrative.get("visual_narrative") or {}, 3600),
-        "",
         "[FRAME DIRECTIVE]",
         _compact_json(directive),
         "",
@@ -402,12 +401,22 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "Do not weaken impact_level or remove required scale references to make the scene easier.",
     ]
 
+    if visual_narrative_active:
+        marker = prompt_lines.index("[FRAME DIRECTIVE]")
+        prompt_lines[marker:marker] = [
+            "[VISUAL NARRATIVE CORE V2.2]",
+            _compact_json(visual_narrative.get("visual_narrative") or {}, 3600),
+            "",
+        ]
+
     result = {
         "schema_version": SCHEMA_VERSION,
         "story_os_version": episode_version(ep),
         "frame": key,
         "derived_cache": True,
-        "authority": "Story + Storyboard + Character Contract + Character Visual + Shot Progression + Visual Narrative Core V2.2 + Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile",
+        "authority": ("Story + Storyboard + Character Contract + Character Visual + Shot Progression + "
+                      + ("Visual Narrative Core V2.2 + " if visual_narrative_active else "")
+                      + "Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile"),
         "generated_at": now(),
         "source_trace": source_trace,
         "storyboard_frame": excerpt,
