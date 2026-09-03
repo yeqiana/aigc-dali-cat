@@ -25,7 +25,6 @@ registries:
   capture_grammars: standards/capture_grammars
   sequence_grammars: standards/sequence_grammars
   provider_capabilities: config/providers/index.json
-  image_provider_runtime: config/providers/image-provider-runtime.json
   schemas: standards/schemas
   templates: standards/templates
   story_regressions: standards/story_regressions/cases.json
@@ -39,7 +38,6 @@ runtimes:
   intent: config/agent_runtime/intent.json
   request_router: config/agent_runtime/router.json
   batch: config/agent_runtime/batch.json
-  codex_subscription_batch: config/agent_runtime/codex-subscription-batch.json
 
 episode_layout:
   # authority 是输入权威；evidence 是机器审计结果；derived 可安全重建；
@@ -99,9 +97,7 @@ stage_read_sets:
   PRODUCTION:
     - config/storyos.yaml
     - config/providers/index.json
-    - config/providers/image-provider-runtime.json
     - config/agent_runtime/batch.json
-    - config/agent_runtime/codex-subscription-batch.json
     - meta/runtime/contracts/frame-contract-index.json
     - meta/production-ledger.json
     - meta/production-queue.json

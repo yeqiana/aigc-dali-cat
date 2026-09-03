@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "upgrade": "Story OS V2.4.1 Image Provider Runtime",
+  "installed_at": "2026-09-03T17:53:29+08:00",
+  "base_head": "0b6baa147544008b2c12a5955c354b1a2fc57101",
+  "head_after_install": "382f2e6c475a42f769e0ec9cee9bc52760525f19",
+  "backup_dir": ".storyos/backups/v241_image_provider_20260903_175324",
+  "git_commits_created": [
+    "8f6abd237bfa415bd9f0bc538fb1c7772d09736f",
+    "71abcc426b5101ad786cd17b3040b230307b02ce",
+    "418b9ea343b4333f53633bb5917deb33a4f466b6",
+    "382f2e6c475a42f769e0ec9cee9bc52760525f19"
+  ],
+  "tests": "PASS",
+  "api_key_detected": false,
+  "api_key_value_persisted": false,
+  "native_n_max": 10
+}

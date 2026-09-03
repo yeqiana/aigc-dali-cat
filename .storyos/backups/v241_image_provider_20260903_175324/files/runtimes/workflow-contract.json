@@ -1,0 +1,509 @@
+{
+  "schema_version": 1,
+  "workflow_version": "2.1",
+  "name": "Story OS V2.1 Workflow Engine Foundation",
+  "episode_stage_source": "meta/episode-state.json",
+  "checkpoint_source": "meta/runtime-checkpoint.json",
+  "rules": {
+    "do_not_create_second_episode_stage": true,
+    "cheap_checks_before_expensive_checks": true,
+    "reuse_clean_sha_bound_evidence": true,
+    "zip_is_delivery_adapter_not_stage_gate": true,
+    "codex_production_complete_at_publish_ready": true,
+    "concept_ambition_before_story_lock": true,
+    "image_first_propagation_gate": true,
+    "reality_limits_capture_not_concept": true,
+    "environment_is_physics_not_filter": true,
+    "anomaly_amplified_requires_scale_reference": true,
+    "environment_changes_use_per_frame_hashes": true,
+    "resolved_frame_contract_is_derived_cache": true,
+    "generation_and_review_bind_same_frame_contract_sha": true,
+    "storyboard_local_hash_when_extractable": true,
+    "visual_lock_four_admissions": true,
+    "high_impact_must_deliver_without_becoming_cinematic": true,
+    "max_parallel_image_workers": 3,
+    "production_ledger_single_writer": true,
+    "technical_failure_does_not_consume_content_repair": true,
+    "scheduler_fail_soft": true,
+    "adaptive_parallel_3_to_2_to_1": true,
+    "fast_scout_never_final_pass": true,
+    "low_risk_scout_defers_without_model_call": true,
+    "scout_technical_failure_defers_to_final": true,
+    "final_candidate_snapshot_before_publish_ready": true,
+    "delivery_consumes_verified_snapshot": true,
+    "snapshot_is_evidence_not_authority": true,
+    "legacy_no_evidence_fabrication": true,
+    "migration_default_read_only": true,
+    "observability_diagnostic_only": true,
+    "post_publish_manifest_immutable": true,
+    "publish_event_external_to_snapshot": true,
+    "data_review_windows": [
+      "6h",
+      "24h",
+      "48h",
+      "7d"
+    ],
+    "data_reviewed_requires_48h": true,
+    "learning_packet_not_creative_authority": true,
+    "runtime_request_immutable_after_bind": true,
+    "auto_create_story_when_missing": true,
+    "user_seed_requires_strengthen_and_rewrite": true,
+    "default_image_model": "gpt-image-2",
+    "default_image_quality": "high",
+    "explicit_image_model_no_silent_fallback": true,
+    "current_visual_lock_calibration_count": 4,
+    "legacy_three_image_calibration_is_not_current_v21": true,
+    "runtime_dag_v1_enabled": true,
+    "runtime_dag_is_execution_only_not_stage_source": true,
+    "step_level_resume": true,
+    "scoped_codex_workers": true,
+    "warm_python_image_worker_pool": true,
+    "codex_image_session_reuse": false,
+    "quota_observability_diagnostic_only": true,
+    "quota_percentages_never_guessed": true,
+    "continuous_image_scheduler": true,
+    "image_scheduler_no_wave_barrier": true,
+    "execution_capsule_derived_cache": true,
+    "prompt_package_cache": true,
+    "rolling_pre_final_review_high_risk_only": true,
+    "rolling_review_never_final_pass": true,
+    "provisional_release_parallel": true,
+    "provisional_release_never_final_authority": true,
+    "character_pool_before_concept": true,
+    "character_contract_is_story_build_input_not_stage": true,
+    "ordinary_young_people_default_protagonists": true,
+    "first_person_requires_character_anchor": true,
+    "group_cast_requires_stable_member_anchors": true,
+    "no_anomaly_test_before_story_lock": true,
+    "ordinary_person_score_min": 75,
+    "career_explains_arrival_not_anomaly_solution": true,
+    "forbidden_functional_protagonist_roles": true,
+    "character_contract_bound_into_frame_contract": true,
+    "runtime_modes_r2": true,
+    "preproduction_only_supported": true,
+    "image_continue_supported": true,
+    "image_continue_forbids_story_rewrite": true,
+    "handoff_authority_sha_required": true,
+    "derived_cache_may_rebuild_after_handoff": true,
+    "multi_level_cache_enabled": true,
+    "shared_resource_library_enabled": true,
+    "shared_resource_library_final_images_not_reused": true,
+    "visual_lock_strategy": "baseline_then_parallel_three",
+    "intro_opener_library_enabled": true,
+    "title_generate_count": 1,
+    "title_required_for_publish_ready": false,
+    "title_default_include_in_delivery": false,
+    "runtime_resume_natural_language_supported": true,
+    "runtime_special_modes_have_explicit_guards": true,
+    "execution_capsule_includes_effective_mode": true,
+    "model_unavailable_machine_code": "MODEL_UNAVAILABLE",
+    "capture_event_contract_enabled": true,
+    "storyboard_information_density_gate_enabled": true,
+    "voice_contract_enabled": true,
+    "persistent_world_state_enabled": true,
+    "asset_lineage_append_only": true,
+    "golden_episode_regression_enabled": true,
+    "directing_quality_does_not_create_episode_stage": true,
+    "legacy_directing_quality_auto_migration": false,
+    "opening_social_anchor_enabled": true,
+    "opening_social_anchor_preferred_frames": [
+      1,
+      2
+    ],
+    "opening_social_anchor_preferred_contexts": [
+      "vehicle_selfie",
+      "destination_checkin_selfie"
+    ],
+    "opening_social_anchor_multi_person_default": true,
+    "opening_social_anchor_exception_requires_reason": true,
+    "opening_social_anchor_strong_anomaly_forbidden": true,
+    "director_profile_v2_enabled": true,
+    "director_profile_v2_legacy_locked_episode_auto_migration": false,
+    "camera_friendly_ordinary_cast": true,
+    "primary_cast_attractiveness": "moderately_above_average_but_real",
+    "female_lead_default_body_build": "slim_proportionate_natural",
+    "character_reference_exact_likeness_forbidden": true,
+    "character_reference_is_style_not_identity": true,
+    "capture_setup_max_identical_consecutive": 2,
+    "capture_setup_min_unique_in_5_frames": 3,
+    "anomaly_logic_escalation_required": true,
+    "anomaly_scale_only_escalation_insufficient": true,
+    "human_action_ladder_required": true,
+    "frame10_requires_new_question_or_evidence": true,
+    "temporal_continuity_bound_to_world_state": true,
+    "scene_aware_wardrobe_enabled": true,
+    "wardrobe_change_requires_reason": true,
+    "cold_skirt_requires_thick_tights_and_warm_layer": true,
+    "cold_high_altitude_camisole_requires_warm_outer_layer": true,
+    "visual_lock_ordinary_baseline_prefers_opening_group_selfie": true,
+    "character_identity_spec_locked_before_images": true,
+    "character_pixel_master_separate_artifact": true,
+    "character_pixel_master_path": "meta/character-pixel-master.json",
+    "character_pixel_master_created_after_visual_lock_pass": true,
+    "preproduction_forbids_fake_pixel_master": true,
+    "visual_lock_baseline_machine_prefers_opening_social_anchor": true,
+    "production_prefers_character_pixel_master_identity_reference": true,
+    "visual_lock_real_1_plus_3_barrier": true,
+    "visual_lock_dependents_require_baseline_review_pass": true,
+    "visual_lock_dependents_refresh_references_after_baseline_pass": true,
+    "character_pixel_master_lifecycle": [
+      "PROVISIONAL_AFTER_BASELINE_PASS",
+      "LOCKED_AFTER_FOUR_ADMISSION_PASS"
+    ],
+    "character_individual_crops_are_deterministic_derivatives": true,
+    "reference_arbitration_max_refs": 2,
+    "reference_arbitration_context_sensitive": true,
+    "final_snapshot_locks_character_master_assets": true,
+    "legacy_character_master_backfill_safe_states": [
+      "VISUAL_CALIBRATED",
+      "PRODUCTION_PASSED"
+    ],
+    "published_episode_master_backfill_forbidden": true,
+    "episode_performance_ledger_enabled": true,
+    "episode_performance_ledger_path": "meta/episode-performance-ledger.json",
+    "episode_performance_summary_path": "reports/story-os-performance-summary.json",
+    "performance_telemetry_fail_soft": true,
+    "performance_telemetry_is_not_stage_gate": true,
+    "performance_records_scoped_stage_wall_time": true,
+    "performance_records_image_backend_attempt_time": true,
+    "performance_records_repair_and_technical_attempts": true,
+    "performance_reports_p50_p90": true,
+    "human_response_interaction_enabled": true,
+    "emotion_intensity_min": 0,
+    "emotion_intensity_max": 4,
+    "emotion_trigger_required_at_intensity_gte": 2,
+    "synchronized_theatrical_reaction_forbidden": true,
+    "interaction_density_min_one_per_5_human_frames": true,
+    "interaction_max_ratio": 0.75,
+    "opening_social_natural_interaction_required": true,
+    "wardrobe_can_drive_causal_human_interaction": true,
+    "provider_capability_contract_enabled": true,
+    "provider_raw_dimensions_measured": true,
+    "provider_exact_raw_canvas_not_assumed": true,
+    "runtime_trace_enabled": true,
+    "runtime_trace_never_stage_authority": true,
+    "request_intent_resolver_enabled": true,
+    "deterministic_request_router_enabled": true,
+    "route_decision_is_derived_evidence": true,
+    "batch_image_runtime_enabled": true,
+    "batch_images_per_request": 5,
+    "batch_visual_lock_disabled": true,
+    "batch_fallback_to_single_frame": true,
+    "five_image_single_request_batch": true,
+    "batch_result_mapping_required": true,
+    "batch_per_frame_receipt_required": true,
+    "batch_repair_barrier_enabled": true,
+    "high_high_early_single_repair_enabled": true,
+    "technical_batch_failure_does_not_consume_content_repair": true
+  },
+  "steps": {
+    "RESTORE": {
+      "depends_on": [],
+      "cost": "CHEAP",
+      "parallelizable": false
+    },
+    "INCREMENTAL_PLAN": {
+      "depends_on": [
+        "RESTORE"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false
+    },
+    "TOPIC_GUARD": {
+      "depends_on": [
+        "INCREMENTAL_PLAN"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false
+    },
+    "CONCEPT_DIVERGENCE": {
+      "depends_on": [
+        "TOPIC_GUARD"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false,
+      "contract": "8-12 candidates"
+    },
+    "CONCEPT_AMBITION": {
+      "depends_on": [
+        "CONCEPT_DIVERGENCE"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": false,
+      "evidence": "meta/concept-ambition-review.json"
+    },
+    "IMAGE_FIRST_PROPAGATION": {
+      "depends_on": [
+        "CONCEPT_AMBITION"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false,
+      "contract": "Cover + Mid + Climax + wordless test"
+    },
+    "STORY_BUILD": {
+      "depends_on": [
+        "IMAGE_FIRST_PROPAGATION"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": false
+    },
+    "STORY_CRITIC": {
+      "depends_on": [
+        "STORY_BUILD"
+      ],
+      "cost": "EXPENSIVE",
+      "parallel_group": "story_review"
+    },
+    "RECENT5_SEMANTIC": {
+      "depends_on": [
+        "STORY_BUILD"
+      ],
+      "cost": "EXPENSIVE",
+      "parallel_group": "story_review"
+    },
+    "VISUAL_LOCK": {
+      "depends_on": [
+        "RESOLVED_FRAME_CONTRACT"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": false,
+      "calibration_roles": [
+        "ordinary_baseline",
+        "worst_capture_condition",
+        "first_major_anomaly",
+        "high_impact_admission"
+      ],
+      "critic": "episodes/_system/visual_lock_v21.py",
+      "calibration_count": 4
+    },
+    "PRODUCTION": {
+      "depends_on": [
+        "IMAGE_WAVES"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": true
+    },
+    "FRAME_REVIEW": {
+      "depends_on": [
+        "FAST_FRAME_SCOUT"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": false
+    },
+    "TEXT_RELEASE": {
+      "depends_on": [
+        "FRAME_REVIEW"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": true
+    },
+    "PUBLISH_READY_GATE": {
+      "depends_on": [
+        "FINAL_CANDIDATE_SNAPSHOT"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false
+    },
+    "DELIVERY": {
+      "depends_on": [
+        "PUBLISH_READY_GATE"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false,
+      "runtime_optional": true,
+      "snapshot_driven": true
+    },
+    "ENVIRONMENT_IMPACT_CONTRACT": {
+      "depends_on": [
+        "STORY_CRITIC",
+        "RECENT5_SEMANTIC"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false,
+      "evidence": "meta/story-gates.json#visual.environment_contract+frame_directives"
+    },
+    "RESOLVED_FRAME_CONTRACT": {
+      "depends_on": [
+        "ENVIRONMENT_IMPACT_CONTRACT"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false,
+      "derived_cache": true,
+      "evidence": "meta/runtime/contracts/frame-contract-index.json"
+    },
+    "IMAGE_WAVES": {
+      "depends_on": [
+        "VISUAL_LOCK"
+      ],
+      "cost": "EXPENSIVE",
+      "parallelizable": true,
+      "max_parallel": 3,
+      "adaptive_parallel": true,
+      "fail_soft": true,
+      "scheduler": "episodes/_system/image_scheduler.py"
+    },
+    "FAST_FRAME_SCOUT": {
+      "depends_on": [
+        "IMAGE_WAVES"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": true,
+      "risk_based": true,
+      "final_pass_authority": false,
+      "evidence": "meta/frame-scout-summary.json",
+      "tool": "episodes/_system/fast_frame_scout.py"
+    },
+    "FINAL_CANDIDATE_SNAPSHOT": {
+      "depends_on": [
+        "TEXT_RELEASE"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false,
+      "derived_evidence": true,
+      "evidence": "meta/final-candidate-snapshot.json",
+      "tool": "episodes/_system/final_candidate_snapshot.py"
+    },
+    "OBSERVABILITY": {
+      "depends_on": [
+        "PUBLISH_READY_GATE"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false,
+      "runtime_optional": true,
+      "diagnostic_only": true,
+      "tool": "episodes/_system/workflow_observability.py"
+    },
+    "PUBLISH_RECORD": {
+      "depends_on": [
+        "PUBLISH_READY_GATE"
+      ],
+      "cost": "CHEAP",
+      "parallelizable": false,
+      "runtime_optional": true,
+      "post_publish": true,
+      "state_target": "PUBLISHED",
+      "evidence": "meta/publish-event.json",
+      "tool": "episodes/_system/post_publish_review.py"
+    },
+    "DATA_REVIEW_6H": {
+      "depends_on": [
+        "PUBLISH_RECORD"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true
+    },
+    "DATA_REVIEW_24H": {
+      "depends_on": [
+        "DATA_REVIEW_6H"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true
+    },
+    "DATA_REVIEW_48H": {
+      "depends_on": [
+        "PUBLISH_RECORD"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true,
+      "required_for_data_reviewed": true
+    },
+    "DATA_REVIEWED_GATE": {
+      "depends_on": [
+        "DATA_REVIEW_48H"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true,
+      "state_target": "DATA_REVIEWED",
+      "evidence": "meta/data-review-state.json"
+    },
+    "DATA_REVIEW_7D": {
+      "depends_on": [
+        "DATA_REVIEWED_GATE"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true
+    },
+    "ACCOUNT_LEARNING_INDEX": {
+      "depends_on": [
+        "DATA_REVIEWED_GATE"
+      ],
+      "cost": "CHEAP",
+      "runtime_optional": true,
+      "post_publish": true,
+      "evidence": "reports/account-learning-index.json",
+      "tool": "episodes/_system/account_learning_index.py"
+    }
+  },
+  "system_assurance": {
+    "migration": "episodes/_system/migrate_v21.py",
+    "regression": "episodes/_system/regression_matrix_v21.py",
+    "observability": "episodes/_system/workflow_observability.py",
+    "legacy_no_evidence_backfill": true
+  },
+  "runtime_request_contract": {
+    "schema_version": 1,
+    "compiler": "episodes/_system/runtime_request.py",
+    "episode_binding": "<episode>/meta/runtime-request.json",
+    "request_archive": "runtime/requests/<request_id>.json",
+    "immutable_after_bind": true,
+    "creative_authority": false,
+    "story_input_modes": [
+      "auto_create",
+      "user_seed",
+      "core_constraints",
+      "locked_story"
+    ],
+    "default_image_model": "gpt-image-2",
+    "default_image_quality": "high"
+  },
+  "runtime_dag": {
+    "schema_version": 1,
+    "path": "runtimes/runtime-dag.json",
+    "runner": "episodes/_system/runtime_dag.py",
+    "step_protocol": "episodes/_system/workflow_step_protocol.py",
+    "scoped_worker": "episodes/_system/scoped_codex_worker.py",
+    "canonical_stage_source": "meta/episode-state.json",
+    "completion_target": "PUBLISH_READY",
+    "compat_adapter_fallback": "episodes/_system/codex_auto_orchestrator.py",
+    "execution_capsule": "episodes/_system/execution_capsule.py",
+    "prompt_package": "episodes/_system/prompt_package.py",
+    "provisional_release": "episodes/_system/provisional_release.py",
+    "rolling_review": "episodes/_system/rolling_frame_review.py"
+  },
+  "character_contract": {
+    "schema_version": 1,
+    "path": "<episode>/meta/character-contract.json",
+    "tool": "episodes/_system/character_contract.py",
+    "pools": [
+      "standards/character-pools.json",
+      "standards/entry-motivation-pools.json",
+      "standards/scene-pools.json",
+      "standards/forbidden-character-roles.json"
+    ],
+    "story_build_input": true,
+    "new_episode_stage": false,
+    "required_before_storyboard_locked_for_new_runs": true,
+    "frame_contract_binding": true
+  },
+  "runtime_modes_r2": {
+    "contract": "runtimes/runtime-mode-contract-r2.json",
+    "preproduction_handoff": "meta/preproduction-handoff.json",
+    "preproduction_only_target": "STORYBOARD_LOCKED_PLUS_PREIMAGE_ASSETS",
+    "image_continue_start": "VERIFIED_HANDOFF_TO_VISUAL_LOCK"
+  },
+  "resource_library": {
+    "catalog": "library/catalog.json",
+    "selection": "<episode>/meta/resource-selection.json",
+    "policy": "reference_only_by_default",
+    "global_cache": ".storyos_cache/"
+  },
+  "copy_policy_r2": {
+    "intro_openers": "library/copy/intro-openers.json",
+    "title_usage": "internal_candidate_only"
+  }
+}

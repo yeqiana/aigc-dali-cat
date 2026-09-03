@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "module_version": "1.2",
-  "platform_min_version": "2.4.2",
+  "module_version": "1.0",
+  "platform_min_version": "2.4.0",
   "enabled": true,
   "production_only": true,
   "visual_lock_batch_enabled": false,
@@ -15,14 +15,7 @@
     "single_image_generation_call_required": true,
     "exact_output_count_required": true,
     "deterministic_output_mapping_required": true,
-    "fallback_to_single_frame": true,
-    "provider_runtime": "config/providers/image-provider-runtime.json",
-    "preferred_native_provider": "openai_images_api",
-    "native_n_range": [
-      1,
-      10
-    ],
-    "per_frame_review_required": true
+    "fallback_to_single_frame": true
   },
   "repair_gate": {
     "deviation_high_min": 80,
@@ -36,15 +29,5 @@
     "consumes_content_repair": false,
     "batch_retry_limit": 0,
     "fallback_to_single_frame": true
-  },
-  "codex_subscription_logical_batch": {
-    "config": "config/agent_runtime/codex-subscription-batch.json",
-    "logical_batch_size": 5,
-    "max_inflight_codex_images": 5,
-    "native_multi_image": false,
-    "single_http_request": false,
-    "api_key_required": false,
-    "partial_success_preserved": true,
-    "retry_failed_only": true
   }
 }

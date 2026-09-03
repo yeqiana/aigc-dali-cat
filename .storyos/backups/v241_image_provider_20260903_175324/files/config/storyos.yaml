@@ -43,8 +43,6 @@ image:
 provider:
   # Provider Capability 只描述真实后端能力，不创建第二套视觉权威。
   registry: config/providers/index.json
-  # V2.4.1 Provider Runtime 负责 API / Codex transport 选择；它只产生执行证据。
-  runtime: config/providers/image-provider-runtime.json
   exact_raw_canvas_required: false
   measure_raw_dimensions_locally: true
   provider_receipt_required: true
@@ -128,11 +126,6 @@ agent_runtime:
   batch:
     enabled: true
     config: config/agent_runtime/batch.json
-
-  # V2.4.2：没有 API Key 时，一批5帧拆成5个 Codex 单图 worker 并行。
-  codex_subscription_batch:
-    enabled: true
-    config: config/agent_runtime/codex-subscription-batch.json
 
 runtime:
   # 新篇默认走分段 DAG；它是执行器，不是第二状态机。

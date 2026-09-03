@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "transport_family": [
+    "codex_subscription",
+    "codex_desktop_interface_imagegen",
+    "codex_subscription_batch"
+  ],
+  "requested_canvas": {
+    "accepted_as_generation_intent": true,
+    "exact_raw_canvas_guaranteed": false,
+    "provider_dimension_attestation_available": false,
+    "raw_dimensions_must_be_measured_locally": true
+  },
+  "quality": {
+    "formal_required": "high",
+    "provider_attestation_available": false,
+    "runtime_contract_must_record_requested_quality": true
+  },
+  "normalize": {
+    "same_ratio_technical_resize_allowed": true,
+    "crop_forbidden_by_default": true,
+    "technical_failure_must_not_trigger_generation": true,
+    "threshold_source": "config/storyos.yaml#normalize"
+  },
+  "evidence": {
+    "receipt_dir": "meta/provider-receipts",
+    "ledger_binding_required": true,
+    "receipt_is_evidence_not_authority": true
+  },
+  "batch_generation": {
+    "support_state": "runtime_probe_required",
+    "single_tool_call_required": true,
+    "default_requested_count": 5,
+    "exact_count_required": true,
+    "deterministic_mapping_required": true,
+    "fallback_to_single_frame": true
+  }
+}

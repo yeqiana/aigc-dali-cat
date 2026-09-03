@@ -228,20 +228,6 @@
       "scope": "batch_image_runtime_execution",
       "active": true,
       "note": "Runtime execution optimization only; Frame Contract and episode-state remain authoritative."
-    },
-    {
-      "path": "standards/Image_Provider_Runtime_V1.0.md",
-      "authority": "active_subordinate",
-      "scope": "image_provider_runtime_execution",
-      "active": true,
-      "note": "Provider routing and capability evidence only; never Episode stage or creative authority."
-    },
-    {
-      "path": "standards/Codex_Subscription_Batch_Runtime_V1.0.md",
-      "authority": "active_subordinate",
-      "scope": "codex_subscription_logical_batch_execution",
-      "active": true,
-      "note": "Logical fan-out execution only; never Provider-native multi-image or Episode authority."
     }
   ],
   "rules": {
@@ -480,26 +466,6 @@
       "images_per_batch": 5,
       "stage_source": "meta/episode-state.json",
       "batch_contract_is_authority": false
-    },
-    "image_provider_runtime_v241": {
-      "config": "config/providers/image-provider-runtime.json",
-      "preferred_provider_when_api_key_present": "openai_images_api",
-      "native_n_max": 10,
-      "secret_persistence_forbidden": true,
-      "stage_source": "meta/episode-state.json"
-    },
-    "codex_subscription_batch_v242": {
-      "config": "config/agent_runtime/codex-subscription-batch.json",
-      "batch_size": 5,
-      "max_inflight_codex_images": 5,
-      "adaptive_steps": [
-        5,
-        3,
-        1
-      ],
-      "native_multi_image": false,
-      "api_key_required": false,
-      "stage_source": "meta/episode-state.json"
     }
   }
 }

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "base_head": "0b6baa147544008b2c12a5955c354b1a2fc57101",
+  "modified_backed_up": [
+    "config/storyos.yaml",
+    "config/index.yaml",
+    "config/providers/index.json",
+    "config/providers/gpt-image-2-desktop.json",
+    "config/agent_runtime/batch.json",
+    "episodes/_system/storyos_config.py",
+    "episodes/_system/batch_image_worker.py",
+    "episodes/_system/batch_scheduler.py",
+    "episodes/_system/batch_capability_probe.py",
+    "episodes/_system/codex_subscription_image.py",
+    "episodes/_system/batch_runtime_metrics.py",
+    "story_os_manifest.json",
+    "runtimes/runtime-contract.json",
+    "runtimes/workflow-contract.json",
+    "standards/AUTHORITY_INDEX.json",
+    "START_HERE.md",
+    "AGENTS.md",
+    "SKILL.md"
+  ],
+  "added_files": [
+    "config/providers/image-provider-runtime.json",
+    "config/providers/gpt-image-2-api.json",
+    "standards/Image_Provider_Runtime_V1.0.md",
+    "episodes/_system/image_provider_runtime.py",
+    "episodes/_system/image_provider_router.py",
+    "episodes/_system/image_artifact_collector.py",
+    "episodes/_system/openai_images_provider.py",
+    "episodes/_system/openai_batch_prompt_compiler.py",
+    "episodes/_system/image_provider_smoke.py",
+    "tests/system/test_image_provider_runtime_v241.py",
+    "docs/Story_OS_V2.4.1_Image_Provider_Runtime.md"
+  ],
+  "created_at": "2026-09-03T17:53:24+08:00"
+}

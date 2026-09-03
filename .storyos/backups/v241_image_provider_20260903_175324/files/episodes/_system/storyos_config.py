@@ -89,16 +89,12 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("agent_runtime.router.enabled must be true")
     if get_path(cfg, "agent_runtime.batch.enabled") is not True:
         errors.append("agent_runtime.batch.enabled must be true")
-    if get_path(cfg, "agent_runtime.codex_subscription_batch.enabled") is not True:
-        errors.append("agent_runtime.codex_subscription_batch.enabled must be true")
     for key in (
         "provider.registry",
-        "provider.runtime",
         "agent_runtime.trace.config",
         "agent_runtime.intent.config",
         "agent_runtime.router.config",
         "agent_runtime.batch.config",
-        "agent_runtime.codex_subscription_batch.config",
         "visual.default_profile_path",
         "visual.capture_profile_registry",
         "visual.capture_grammar_path",

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "module_version": "1.0",
+  "platform_min_version": "2.4.2",
+  "enabled": true,
+  "mode": "parallel_single_frame_fanout",
+  "logical_batch_size": 5,
+  "max_inflight_codex_images": 5,
+  "adaptive_concurrency_steps": [
+    5,
+    3,
+    1
+  ],
+  "first_completed_refill": true,
+  "native_multi_image": false,
+  "single_http_request": false,
+  "uses_chatgpt_codex_subscription": true,
+  "api_key_required": false,
+  "partial_success_preserved": true,
+  "retry_failed_only": true,
+  "technical_failure_consumes_content_repair": false,
+  "batch_barrier": {
+    "wait_for_original_terminal_count": true,
+    "planned_count_source": "batch_contract",
+    "content_repair_after_barrier": true
+  }
+}
