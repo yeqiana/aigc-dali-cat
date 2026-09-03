@@ -1,9 +1,9 @@
 {
   "schema_version": 4,
-  "module_version": "2.4.1",
-  "platform_min_version": "2.4.1",
+  "module_version": "2.4.2",
+  "platform_min_version": "2.4.2",
   "workflow_contract": "runtimes/workflow-contract.json",
-  "name": "Story OS V2.4.1 Multi-Runtime + Image Provider Runtime",
+  "name": "Story OS V2.4.2 Multi-Runtime + Codex Subscription Batch Runtime",
   "state_source": "meta/episode-state.json",
   "creative_authority": "standards/制作规范_正式版.md",
   "routing_order": [
@@ -98,6 +98,17 @@
     "openai_native_n_max": 10,
     "openai_api_key_source": "environment_only",
     "provider_route_is_stage_authority": false,
-    "distinct_frame_mapping_requires_review": true
+    "distinct_frame_mapping_requires_review": true,
+    "codex_subscription_logical_batch_config": "config/agent_runtime/codex-subscription-batch.json",
+    "codex_logical_batch_size": 5,
+    "codex_logical_batch_max_inflight_images": 5,
+    "codex_logical_batch_adaptive_steps": [
+      5,
+      3,
+      1
+    ],
+    "codex_logical_batch_requires_api_key": false,
+    "codex_logical_batch_native_multi_image": false,
+    "codex_logical_batch_single_http_request": false
   }
 }

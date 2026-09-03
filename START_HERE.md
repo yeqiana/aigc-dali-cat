@@ -398,3 +398,23 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 - `output_index -> Frame` 是 Story OS 映射约定，不是 Provider 创作权威，仍必须逐帧 Review。
 - 4:5 API 请求使用 1088×1360，9:16 使用 1152×2048，之后无裁切 Normalize 到正式 Release Canvas。
 <!-- STORY_OS_V241_IMAGE_PROVIDER_RUNTIME_END -->
+
+<!-- STORY_OS_V242_CODEX_SUBSCRIPTION_BATCH_BEGIN -->
+## Story OS V2.4.2 Codex Subscription Batch Runtime
+
+没有 `OPENAI_API_KEY` 时，Production Batch 正式走：
+
+`1 Story OS Batch -> 5 isolated Codex image workers in parallel`
+
+这是 Logical Batch，不是 Provider-native `n=5`：
+
+- `logical_batch=true`
+- `native_multi_image=false`
+- `single_http_request=false`
+- 不需要 API Key，使用本机 ChatGPT/Codex 登录态
+- 默认最多 5 个 Codex 图片 worker 同时在途
+- 无 API Key 时全局只允许 1 个 Logical Batch 在途，避免 2×5=10 个图片调用
+- 技术失败自适应 5→3→1，只重试失败帧
+- 成功帧永不因为同批其他帧技术失败而重生
+- Fast Scout 延迟到 5 帧原始生成 barrier terminal 后再执行
+<!-- STORY_OS_V242_CODEX_SUBSCRIPTION_BATCH_END -->

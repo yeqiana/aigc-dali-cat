@@ -199,7 +199,12 @@
     "openai_native_multi_image_enabled_when_key_present": true,
     "provider_secret_persistence_forbidden": true,
     "codex_artifact_recovery_enabled": true,
-    "provider_mapping_review_required": true
+    "provider_mapping_review_required": true,
+    "codex_subscription_logical_batch_v242": true,
+    "codex_logical_batch_partial_success_preserved": true,
+    "codex_logical_batch_failed_only_retry": true,
+    "codex_logical_batch_defer_scout_until_barrier": true,
+    "codex_logical_batch_max_one_batch_without_api_key": true
   },
   "steps": {
     "RESTORE": {
