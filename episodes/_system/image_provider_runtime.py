@@ -43,10 +43,13 @@ def select_batch_provider(requested_count: int) -> dict:
     if codex.get("enabled") is True:
         return {
             "provider": "codex_subscription",
-            "execution_mode": "legacy_bridge",
-            "native_multi_image": bool(codex.get("native_multi_output_supported")),
+            "execution_mode": "logical_parallel_fanout" if int(requested_count) > 1 else "legacy_bridge",
+            "native_multi_image": False,
+            "logical_batch": int(requested_count) > 1,
             "max_images": 1,
-            "reason": "OpenAI API unavailable; use subscription transport fallback",
+            "requested_logical_batch_size": int(requested_count),
+            "api_key_required": False,
+            "reason": "OpenAI API unavailable; use ChatGPT/Codex subscription logical batch fan-out",
         }
     raise RuntimeError("NO_IMAGE_PROVIDER_AVAILABLE")
 
@@ -67,6 +70,7 @@ def capability_snapshot() -> dict:
             "configured": codex.get("enabled") is True,
             "native_multi_output_supported": bool(codex.get("native_multi_output_supported")),
             "logical_parallel_fallback": bool(codex.get("logical_parallel_fallback")),
+            "logical_batch_api_key_required": False,
         },
         "secret_values_persisted": False,
     }

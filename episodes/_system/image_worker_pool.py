@@ -39,7 +39,7 @@ def execute(ep,item,timeout,codex):
     try:
         payload=backend.generate_for_frame(ns)
         scout=None
-        if out.is_file() and frame_scout.required(ep):
+        if out.is_file() and frame_scout.required(ep) and not bool(item.get("_defer_scout")):
             scout=frame_scout.evaluate_candidate(ep,frame,out,codex_raw=codex,timeout=min(240,max(60,timeout)))
         runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="PASS",started_monotonic=trace_started,attrs={"frame":frame,"backend":payload.get("backend")})
         return {"returncode":0,"stdout":"","payload":payload,"output":out,"log":log,"attempt":attempt,"scout":scout,"prompt_package":{"package_sha256":package["package_sha256"],"frame_contract_sha256":package["frame_contract_sha256"]},"worker_pool":{"mode":MODE,"codex_session_reuse":False}}

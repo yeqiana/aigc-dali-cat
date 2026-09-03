@@ -32,9 +32,24 @@ def valid_image(path: Path) -> bool:
     return header.startswith(PNG) or header.startswith(JPEG)
 
 def resolve_codex(raw: str | None) -> Path:
-    value = raw or shutil.which('codex') or shutil.which('codex.exe') or shutil.which('codex.cmd')
+    value = raw or os.environ.get("CODEX_EXE")
+    # On Windows prefer the newest ChatGPT Desktop bundled Codex CLI over PATH.
+    # The real V2.4 smoke found an older PATH codex that could not start while the
+    # desktop-bundled CLI was healthy and had the user's ChatGPT/Codex login.
+    if not value and os.name == "nt":
+        local = os.environ.get("LOCALAPPDATA")
+        if local:
+            root = Path(local) / "OpenAI" / "Codex" / "bin"
+            candidates = []
+            if root.is_dir():
+                candidates.extend(root.glob("*/codex.exe"))
+                candidates.extend(root.glob("codex.exe"))
+            candidates = [p for p in candidates if p.is_file()]
+            if candidates:
+                value = str(max(candidates, key=lambda p: p.stat().st_mtime_ns))
+    value = value or shutil.which('codex') or shutil.which('codex.exe') or shutil.which('codex.cmd')
     if not value:
-        raise BackendError('Codex CLI not found on PATH')
+        raise BackendError('Codex CLI not found; pass --codex or set CODEX_EXE')
     path = Path(value).expanduser().resolve()
     if not path.exists():
         raise BackendError(f'Codex CLI not found: {path}')

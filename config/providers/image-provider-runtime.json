@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "module_version": "1.0",
-  "platform_min_version": "2.4.1",
+  "module_version": "1.1",
+  "platform_min_version": "2.4.2",
   "selection": {
-    "strategy": "openai_api_if_key_else_codex",
+    "strategy": "openai_api_if_key_else_codex_logical_batch",
     "api_key_env": "OPENAI_API_KEY",
     "base_url_env": "OPENAI_BASE_URL",
     "default_base_url": "https://api.openai.com/v1",
@@ -28,7 +28,17 @@
     "enabled": true,
     "native_multi_output_supported": false,
     "logical_parallel_fallback": true,
-    "artifact_recovery_from_tool_log": true
+    "artifact_recovery_from_tool_log": true,
+    "logical_batch_size": 5,
+    "max_inflight_logical_images": 5,
+    "adaptive_concurrency_steps": [
+      5,
+      3,
+      1
+    ],
+    "partial_success_preserved": true,
+    "retry_failed_only": true,
+    "api_key_required": false
   },
   "security": {
     "never_persist_api_key": true,

@@ -8,6 +8,7 @@ import batch_prompt_compiler
 import batch_result_mapper
 import batch_runtime_config
 import codex_subscription_image as single_backend
+import codex_logical_batch_worker
 import frame_contract
 import image_model_policy
 import image_provider_router
@@ -107,6 +108,27 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
     width,height,aspect=read_canvas(ep)
     refs=_shared_refs(items)
     route=image_provider_router.select_for_batch(expected,has_references=bool(refs))
+    if route["provider"]=="codex_subscription" and route.get("logical_batch"):
+        logical=codex_logical_batch_worker.execute(ep,contract,items,timeout,codex)
+        logical["batch_id"]=contract["batch_id"]
+        logical["provider_evidence"]=logical.get("logical_batch_evidence") or {}
+        for result in (logical.get("results") or {}).values():
+            payload=result.get("payload")
+            if isinstance(payload,dict):
+                payload["batch_id"]=contract["batch_id"]
+                payload["provider_runtime"]={
+                    "provider":"codex_subscription",
+                    "transport":"codex_subscription_parallel_fanout",
+                    "logical_batch":True,
+                    "native_multi_image":False,
+                    "single_http_request":False,
+                    "requested_count":expected,
+                    "returned_count":int(logical.get("returned_count") or 0),
+                    "max_inflight_used":(logical.get("logical_batch_evidence") or {}).get("max_inflight_used"),
+                    "api_key_required":False,
+                }
+        return logical
+
     compiler = openai_batch_prompt_compiler if route["provider"]=="openai_images_api" else batch_prompt_compiler
     compiled=compiler.compile_batch(
         ep,contract,{x["id"]:x for x in items},model=model,quality=quality,size=f"{width}x{height}",
@@ -123,12 +145,6 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
                 ep,contract,compiled["text"],refs,timeout,model,quality,width,height)
             backend_name="openai_images_api_native_n"
         else:
-            if not bool(route.get("native_multi_image")):
-                raise BatchBackendError(
-                    "CODEX_NATIVE_MULTI_OUTPUT_UNSUPPORTED: current Codex image-generation bridge "
-                    "does not expose native n/count; enter scheduler single-frame fallback without "
-                    "wasting a doomed batch generation call"
-                )
             raw_rows,elapsed=_invoke_codex_once(ep,contract,compiled["text"],refs,timeout,codex,log)
             backend_name="codex_subscription_batch"
             provider_evidence={
@@ -212,6 +228,7 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
 
 def self_test():
     assert batch_runtime_config.images_per_batch()==5
-    print("BATCH IMAGE WORKER V2.4.1 PROVIDER ROUTER SELF-TEST PASS")
+    assert codex_logical_batch_worker is not None
+    print("BATCH IMAGE WORKER V2.4.2 CODEX LOGICAL BATCH SELF-TEST PASS")
 
 if __name__=="__main__": self_test()
