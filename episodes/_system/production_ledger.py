@@ -484,6 +484,7 @@ def cmd_begin(args: argparse.Namespace) -> None:
         "visual_profile": visual_provenance,
         "frame_contract": frame_contract_provenance,
         "frame_contract_sha256": (frame_contract_provenance or {}).get("contract_sha256"),
+        "batch_id": getattr(args, "batch_id", None),
     }
     attempt = {
         "attempt_id": uuid.uuid4().hex[:12],
@@ -954,6 +955,7 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--quality", choices=["high"], default=DEFAULT_IMAGE_QUALITY)
     s.add_argument("--reference", action="append", help="PATH::ROLE::KIND, KIND=identity|prop|location|capture_style")
     s.add_argument("--notes", default="")
+    s.add_argument("--batch-id", help="V2.4 Batch Runtime derived execution id")
     s.add_argument("--allow-long-prompt", action="store_true")
     s.set_defaults(func=cmd_begin)
 

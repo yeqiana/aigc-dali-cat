@@ -29,6 +29,7 @@ import reference_arbitrator
 import visual_lock_baseline_gate
 import episode_performance
 import storyos_config
+import batch_scheduler
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -514,7 +515,10 @@ def main()->int:
         if a.cmd=="plan":
             q=load_queue(ep);ready,blocked=ready_items(ep,q)
             print(json.dumps({"ready":[{"frame":x["frame"],"priority":x["priority"],"scope":x["scope"]} for x in ready],"blocked":[{"frame":x["frame"],"depends_on":x["depends_on"]} for x in blocked],"adaptive_parallel":q.get("adaptive_parallel",3)},ensure_ascii=False,indent=2));return 0
-        if a.cmd=="run":return run_scheduler(ep,a.max_workers,a.timeout,a.codex)
+        if a.cmd=="run":
+            if batch_scheduler.should_use(ep):
+                return batch_scheduler.run(ep,a.max_workers,a.timeout,a.codex)
+            return run_scheduler(ep,a.max_workers,a.timeout,a.codex)
         if a.cmd=="retry-tech":print(json.dumps(retry_tech(ep),ensure_ascii=False,indent=2));return 0
         print((ep/QUEUE_REL).read_text(encoding="utf-8") if (ep/QUEUE_REL).is_file() else "{}");return 0
     except (OSError,ValueError,RuntimeError,subprocess.TimeoutExpired) as exc:
