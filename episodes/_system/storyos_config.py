@@ -91,6 +91,7 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("agent_runtime.batch.enabled must be true")
     for key in (
         "provider.registry",
+        "provider.runtime",
         "agent_runtime.trace.config",
         "agent_runtime.intent.config",
         "agent_runtime.router.config",

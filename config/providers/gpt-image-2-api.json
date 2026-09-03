@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "capability_id": "OPENAI_GPT_IMAGE_2_API_V1",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "transport_family": [
+    "openai_images_api",
+    "openai_images_api_native_n"
+  ],
+  "native_multi_image": {
+    "supported": true,
+    "parameter": "n",
+    "min": 1,
+    "max": 10,
+    "single_http_request": true,
+    "note": "OpenAI Image API supports n=1..10. Story OS distinct-frame mapping remains a Story OS convention and requires per-frame review."
+  },
+  "reference_images": {
+    "supported": true,
+    "endpoint": "/v1/images/edits",
+    "max_inputs": 16
+  },
+  "requested_canvas": {
+    "accepted_as_generation_intent": true,
+    "exact_raw_canvas_guaranteed": false,
+    "raw_dimensions_must_be_measured_locally": true
+  },
+  "evidence": {
+    "receipt_dir": "meta/provider-receipts",
+    "ledger_binding_required": true,
+    "api_request_id_recorded_when_available": true
+  }
+}

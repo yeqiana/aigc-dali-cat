@@ -43,6 +43,8 @@ image:
 provider:
   # Provider Capability 只描述真实后端能力，不创建第二套视觉权威。
   registry: config/providers/index.json
+  # V2.4.1 Provider Runtime 负责 API / Codex transport 选择；它只产生执行证据。
+  runtime: config/providers/image-provider-runtime.json
   exact_raw_canvas_required: false
   measure_raw_dimensions_locally: true
   provider_receipt_required: true

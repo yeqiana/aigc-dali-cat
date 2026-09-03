@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "module_version": "1.0",
+  "platform_min_version": "2.4.1",
+  "selection": {
+    "strategy": "openai_api_if_key_else_codex",
+    "api_key_env": "OPENAI_API_KEY",
+    "base_url_env": "OPENAI_BASE_URL",
+    "default_base_url": "https://api.openai.com/v1",
+    "organization_env": "OPENAI_ORG_ID",
+    "project_env": "OPENAI_PROJECT_ID"
+  },
+  "openai_images_api": {
+    "enabled": true,
+    "model": "gpt-image-2",
+    "native_n_supported": true,
+    "native_n_min": 1,
+    "native_n_max": 10,
+    "story_batch_mode": "native_n_first",
+    "allow_distinct_frame_prompt_bundle": true,
+    "per_frame_review_required": true,
+    "reference_endpoint": "images/edits",
+    "text_endpoint": "images/generations",
+    "output_format": "png",
+    "fallback_on_transport_failure": true
+  },
+  "codex_subscription": {
+    "enabled": true,
+    "native_multi_output_supported": false,
+    "logical_parallel_fallback": true,
+    "artifact_recovery_from_tool_log": true
+  },
+  "security": {
+    "never_persist_api_key": true,
+    "never_log_authorization_header": true
+  }
+}
