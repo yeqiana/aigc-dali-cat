@@ -122,16 +122,10 @@ agent_runtime:
     config: config/agent_runtime/router.json
     decision_path: meta/runtime-route.json
 
-  # 请求解析默认规则优先，不默认使用 LLM 自由改写。
-  intent:
+  # V2.4 Batch Image Runtime：Production 执行策略，不是新的用户 Intent。
+  batch:
     enabled: true
-    config: config/agent_runtime/intent.json
-
-  # Router 只产生执行决策证据，不改变 episode-state.json。
-  router:
-    enabled: true
-    config: config/agent_runtime/router.json
-    decision_path: meta/runtime-route.json
+    config: config/agent_runtime/batch.json
 
 runtime:
   # 新篇默认走分段 DAG；它是执行器，不是第二状态机。

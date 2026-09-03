@@ -83,6 +83,10 @@
     "runtime_trace_stage_authority": false,
     "request_intent_resolver_enabled": true,
     "request_router_enabled": true,
-    "route_decision_stage_authority": false
+    "route_decision_stage_authority": false,
+    "batch_image_runtime_config": "config/agent_runtime/batch.json",
+    "batch_image_runtime_supported": true,
+    "batch_visual_lock_enabled": false,
+    "batch_contract_is_derived_execution_evidence": true
   }
 }

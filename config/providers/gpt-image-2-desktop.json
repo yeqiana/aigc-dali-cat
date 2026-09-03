@@ -5,7 +5,8 @@
   "model": "gpt-image-2",
   "transport_family": [
     "codex_subscription",
-    "codex_desktop_interface_imagegen"
+    "codex_desktop_interface_imagegen",
+    "codex_subscription_batch"
   ],
   "requested_canvas": {
     "accepted_as_generation_intent": true,
@@ -28,5 +29,13 @@
     "receipt_dir": "meta/provider-receipts",
     "ledger_binding_required": true,
     "receipt_is_evidence_not_authority": true
+  },
+  "batch_generation": {
+    "support_state": "runtime_probe_required",
+    "single_tool_call_required": true,
+    "default_requested_count": 5,
+    "exact_count_required": true,
+    "deterministic_mapping_required": true,
+    "fallback_to_single_frame": true
   }
 }

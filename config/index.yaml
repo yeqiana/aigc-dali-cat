@@ -37,8 +37,7 @@ runtimes:
   trace: config/agent_runtime/trace.json
   intent: config/agent_runtime/intent.json
   request_router: config/agent_runtime/router.json
-  intent: config/agent_runtime/intent.json
-  request_router: config/agent_runtime/router.json
+  batch: config/agent_runtime/batch.json
 
 episode_layout:
   # authority 是输入权威；evidence 是机器审计结果；derived 可安全重建；
@@ -98,6 +97,7 @@ stage_read_sets:
   PRODUCTION:
     - config/storyos.yaml
     - config/providers/index.json
+    - config/agent_runtime/batch.json
     - meta/runtime/contracts/frame-contract-index.json
     - meta/production-ledger.json
     - meta/production-queue.json

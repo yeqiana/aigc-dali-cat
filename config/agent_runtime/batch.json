@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "module_version": "1.0",
+  "platform_min_version": "2.4.0",
+  "enabled": true,
+  "production_only": true,
+  "visual_lock_batch_enabled": false,
+  "images_per_batch": 5,
+  "max_inflight_batches": 2,
+  "initial_inflight_until_probe": 1,
+  "continuity_first": true,
+  "final_partial_batch_allowed": true,
+  "provider_probe": {
+    "mode": "lazy_first_real_batch",
+    "single_image_generation_call_required": true,
+    "exact_output_count_required": true,
+    "deterministic_output_mapping_required": true,
+    "fallback_to_single_frame": true
+  },
+  "repair_gate": {
+    "deviation_high_min": 80,
+    "criticality_high_min": 80,
+    "requires_both_high": true,
+    "non_high_high_action_before_batch_complete": "WAIT_BATCH",
+    "automatic_whole_batch_content_regeneration": false,
+    "max_inflight_single_repairs": 1
+  },
+  "technical_failure": {
+    "consumes_content_repair": false,
+    "batch_retry_limit": 0,
+    "fallback_to_single_frame": true
+  }
+}

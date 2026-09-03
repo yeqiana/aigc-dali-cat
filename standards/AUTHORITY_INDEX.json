@@ -221,6 +221,13 @@
       "scope": "request_intent_routing_trace_runtime",
       "active": true,
       "note": "Agent runtime governance only; episode-state.json remains the sole stage source."
+    },
+    {
+      "path": "standards/Batch_Image_Runtime_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "batch_image_runtime_execution",
+      "active": true,
+      "note": "Runtime execution optimization only; Frame Contract and episode-state remain authoritative."
     }
   ],
   "rules": {
@@ -452,6 +459,13 @@
       "router_config": "config/agent_runtime/router.json",
       "route_decision": "meta/runtime-route.json",
       "stage_source": "meta/episode-state.json"
+    },
+    "batch_image_runtime_v240": {
+      "config": "config/agent_runtime/batch.json",
+      "visual_lock_batch_enabled": false,
+      "images_per_batch": 5,
+      "stage_source": "meta/episode-state.json",
+      "batch_contract_is_authority": false
     }
   }
 }
