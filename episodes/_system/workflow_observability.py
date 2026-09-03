@@ -13,6 +13,7 @@ from collections import Counter
 from pathlib import Path
 
 import runtime_trace
+import batch_runtime_metrics
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/workflow-observability.json")
@@ -120,6 +121,7 @@ def collect(ep: Path, *, write: bool = True) -> dict:
             "completed_checkpoints": post.get("completed_checkpoints") or [],
         },
         "runtime_trace": runtime_trace.summarize(ep, write=True),
+        "batch_runtime": batch_runtime_metrics.collect(ep),
         "failure_taxonomy": failure_taxonomy,
         "health": {
             "has_blockers": any(v for v in failure_taxonomy.values()),

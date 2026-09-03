@@ -1,9 +1,9 @@
 {
   "schema_version": 4,
-  "module_version": "2.3",
-  "platform_min_version": "2.3.0",
+  "module_version": "2.4",
+  "platform_min_version": "2.4.0",
   "workflow_contract": "runtimes/workflow-contract.json",
-  "name": "Story OS V2.3 Multi-Runtime Agent Runtime",
+  "name": "Story OS V2.4 Multi-Runtime + Batch Image Runtime",
   "state_source": "meta/episode-state.json",
   "creative_authority": "standards/制作规范_正式版.md",
   "routing_order": [
@@ -87,6 +87,12 @@
     "batch_image_runtime_config": "config/agent_runtime/batch.json",
     "batch_image_runtime_supported": true,
     "batch_visual_lock_enabled": false,
-    "batch_contract_is_derived_execution_evidence": true
+    "batch_contract_is_derived_execution_evidence": true,
+    "default_batch_images": 5,
+    "batch_provider_probe": "lazy_first_real_batch",
+    "batch_transport_failure_fallback": "single_frame",
+    "deviation_high_min": 80,
+    "criticality_high_min": 80,
+    "high_high_requires_both": true
   }
 }

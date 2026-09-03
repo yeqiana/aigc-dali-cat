@@ -188,7 +188,13 @@
     "batch_image_runtime_enabled": true,
     "batch_images_per_request": 5,
     "batch_visual_lock_disabled": true,
-    "batch_fallback_to_single_frame": true
+    "batch_fallback_to_single_frame": true,
+    "five_image_single_request_batch": true,
+    "batch_result_mapping_required": true,
+    "batch_per_frame_receipt_required": true,
+    "batch_repair_barrier_enabled": true,
+    "high_high_early_single_repair_enabled": true,
+    "technical_batch_failure_does_not_consume_content_repair": true
   },
   "steps": {
     "RESTORE": {

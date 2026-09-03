@@ -1,5 +1,5 @@
 {
-  "platform_version": "2.3.0",
+  "platform_version": "2.4.0",
   "version_semantics": {
     "platform_version": "Root product release identifier; the only platform version authority.",
     "schema_version": "Shape of this specific document.",
@@ -7,7 +7,7 @@
     "platform_min_version": "Lowest Story OS platform version that may consume a module."
   },
   "contract_schema": 1,
-  "release_name": "Agent Runtime Foundation: Provider Capability + Trace + Intent Router",
+  "release_name": "Batch Image Runtime: Five-Image Generation + Repair Barrier",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -164,7 +164,16 @@
     "trace_span_timeline",
     "request_intent_resolver",
     "deterministic_request_router",
-    "route_decision_evidence"
+    "route_decision_evidence",
+    "batch_image_runtime",
+    "five_image_single_request",
+    "batch_provider_capability_probe",
+    "batch_result_mapping",
+    "per_frame_batch_receipts",
+    "batch_single_frame_fallback",
+    "deviation_criticality_repair_gate",
+    "batch_repair_barrier",
+    "batch_runtime_observability"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -225,7 +234,13 @@
     "Provider RAW dimensions are measured and recorded before Normalize; safe Normalize never implies provider exact-canvas compliance.",
     "Runtime Trace is diagnostic evidence only and never becomes a second Episode Stage source.",
     "Route Decision explains execution choice but cannot mutate the canonical episode-state.json stage by itself.",
-    "Request Intent uses deterministic rules first; free-form LLM request rewriting is not the default execution path."
+    "Request Intent uses deterministic rules first; free-form LLM request rewriting is not the default execution path.",
+    "Batch Image Runtime is an execution optimization and never replaces per-frame creative authority.",
+    "Formal Production requests five images per Batch by default; Visual Lock remains outside Batch Runtime.",
+    "Every Batch output keeps an independent Frame Contract SHA, Provider Receipt, Normalize result, Ledger attempt and review.",
+    "Batch transport failure is technical and may fall back to the legacy single-frame worker without consuming content repair.",
+    "Only content failures with deviation_score >= 80 AND criticality_score >= 80 may use the High×High urgent single-frame repair path.",
+    "Other content failures wait until the current Batch original generation barrier is complete before repair arbitration."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

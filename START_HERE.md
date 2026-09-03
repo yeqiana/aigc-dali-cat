@@ -371,3 +371,18 @@ python episodes/_system/media_workspace.py ensure <episode_dir>
 - `meta/runtime/trace-events.jsonl` 只记录执行事实，不授予 PASS。
 - 当前 GPT-Image-2 桌面通道不假设 exact RAW canvas；记录真实 RAW 尺寸与 Provider Receipt，再由 NP01 安全 Normalize。
 <!-- STORY_OS_V230_AGENT_RUNTIME_END -->
+
+<!-- STORY_OS_V240_BATCH_RUNTIME_BEGIN -->
+## Story OS V2.4 Batch Image Runtime
+
+正式 Production 默认使用 5 图 Batch Runtime：
+
+`5 Frame Contracts → 1 image_generation call → 5 mapped images → per-frame Receipt/Normalize/Ledger/Review`
+
+- Visual Lock 继续保持 1+3，不走 Batch。
+- Provider 首个真实 Batch 同时作为 Capability Probe。
+- Batch Transport 失败自动回退现有 single-frame worker。
+- Deviation >= 80 且 Criticality >= 80 才允许 High×High 紧急单帧返修。
+- 其他内容失败等待 Batch 原始生成完成后进入 Repair Arbiter。
+- Batch / Trace / Receipt 都是 Evidence，不改变 `meta/episode-state.json` 唯一阶段权威。
+<!-- STORY_OS_V240_BATCH_RUNTIME_END -->

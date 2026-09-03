@@ -61,6 +61,9 @@ class TraceTests(unittest.TestCase):
 
 class PlatformTests(unittest.TestCase):
     def test_platform(self):
-        self.assertEqual(story_os_contract.story_os_version(),"2.3.0")
+        # V2.3 Agent Runtime regression must survive later platform releases.
+        manifest=json.loads((ROOT/"story_os_manifest.json").read_text(encoding="utf-8-sig"))
+        self.assertEqual(story_os_contract.story_os_version(),manifest["platform_version"])
+        self.assertGreaterEqual(tuple(int(x) for x in story_os_contract.story_os_version().split(".")),(2,3,0))
 
 if __name__=="__main__":unittest.main()
