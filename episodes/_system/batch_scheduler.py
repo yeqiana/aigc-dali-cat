@@ -8,7 +8,9 @@ import batch_contract
 import batch_image_worker
 import batch_runtime_config
 import frame_contract
+import fast_frame_scout as frame_scout
 import image_worker_pool
+import batch_repair_arbiter
 import provider_capability
 import storyos_config
 
@@ -154,16 +156,47 @@ def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                     cap=1
                 q=load_queue(ep);byid={x["id"]:x for x in q.get("items") or []}
                 if supported:
+                    generated_rows=[]
                     for original in items:
                         item=byid[original["id"]];res=result["results"][item["id"]]
                         ok,msg=ledger_success(ep,item,res)
                         if ok:
                             item["status"]="generated";item["output_path"]=Path(res["output"]).resolve().relative_to(ROOT).as_posix()
                             item["completed_at"]=now();item["last_error"]=None;item["prompt_package"]=res.get("prompt_package")
+                            generated_rows.append((item,res))
                         else:
                             item["status"]="blocked";item["last_error"]=msg[-1000:]
                     _update_batch_row(q,contract["batch_id"],status="generated",completed_at=now(),
                         returned_count=result.get("returned_count"),elapsed_seconds=result.get("elapsed_seconds"))
+                    save_queue(ep,q)
+
+                    # All original outputs in this request are now terminal, so the Batch Repair
+                    # Barrier is open. Assess frames independently; High×High remains explicitly
+                    # marked as EARLY_SINGLE_REPAIR by the gate, while ordinary failures only
+                    # become actionable after this barrier.
+                    decisions=[]
+                    for item,res in generated_rows:
+                        scout={}
+                        if frame_scout.required(ep):
+                            scout=frame_scout.evaluate_candidate(ep,int(item["frame"]),Path(res["output"]),
+                                codex_raw=codex,timeout=min(240,max(60,timeout)))
+                        assessment=batch_repair_arbiter.assess(
+                            ep,int(item["frame"]),scout,batch_complete=True,batch_id=contract["batch_id"])
+                        applied=batch_repair_arbiter.apply(ep,assessment)
+                        decisions.append(applied)
+                        qq=load_queue(ep);target={x["id"]:x for x in qq.get("items") or []}.get(item["id"])
+                        if target:
+                            target["scout"]={
+                                "decision":scout.get("decision"),
+                                "risk_level":scout.get("risk_level"),
+                                "asset_sha256":scout.get("asset_sha256"),
+                                "issue_codes":scout.get("issue_codes") or [],
+                            } if scout else None
+                            target["failure_assessment"]=applied
+                            if applied.get("ledger_repair_authorized"):
+                                target["status"]="scout_repair"
+                            save_queue(ep,qq)
+                    batch_repair_arbiter.write_batch_decision(ep,contract["batch_id"],decisions)
                 else:
                     # Batch transport failure is technical. Record it, then immediately fall back
                     # to the already-proven single-frame worker without consuming content repair.
@@ -200,5 +233,6 @@ def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
 
 def self_test():
     assert batch_runtime_config.images_per_batch()==5
-    print("BATCH SCHEDULER V2.4 PHASE2 SELF-TEST PASS")
+    assert batch_repair_arbiter is not None
+    print("BATCH SCHEDULER V2.4 PHASE3 SELF-TEST PASS")
 if __name__=="__main__":self_test()
