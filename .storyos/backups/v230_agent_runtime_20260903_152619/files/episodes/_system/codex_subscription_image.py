@@ -16,7 +16,6 @@ from canvas_normalize import NormalizeError, normalize, read_canvas
 from visual_profile_bridge_v224 import compile_prompt_contract
 import frame_contract as resolved_frame_contract
 import image_model_policy
-import provider_capability
 
 PNG = b'\x89PNG\r\n\x1a\n'
 JPEG = b'\xff\xd8\xff'
@@ -174,20 +173,12 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     else:
         elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'])
         backend_name = 'codex_subscription'
-    provider_receipt_info = provider_capability.write_receipt(
-        ep, int(args.frame),
-        provider_capability.inspect(raw_output, width, height, model=model_policy["model"], route=backend_name, frame=int(args.frame)),
-    )
     if output.exists() and args.overwrite:
         output.unlink()
     try:
         norm = normalize(raw_output, output, width, height)
     except NormalizeError as exc:
-        raise BackendError(f'{exc.code}: raw preserved at {raw_output}; provider_receipt={provider_receipt_info.get("path")}; {exc}') from exc
-    receipt_path = Path(provider_receipt_info["path"])
-    if not receipt_path.is_absolute():
-        receipt_path = ROOT / receipt_path
-    provider_receipt_info = provider_capability.finalize_receipt(receipt_path, norm, output)
+        raise BackendError(f'{exc.code}: raw preserved at {raw_output}; {exc}') from exc
     return {
         'ok': True,
         'backend': backend_name,
@@ -210,8 +201,6 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
             'contract_sha256': frame_contract['contract_sha256'],
         } if frame_contract else None,
         'normalization': norm,
-        'provider_receipt': {k: v for k, v in provider_receipt_info.items() if k != 'receipt'},
-        'provider_capability': provider_receipt_info.get('receipt'),
         'image_model': {
             **model_policy,
             'enforcement': 'runtime_request_to_worker_contract',

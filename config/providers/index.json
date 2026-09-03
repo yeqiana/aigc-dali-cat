@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "default_capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "profiles": {
+    "OPENAI_GPT_IMAGE_2_DESKTOP_V1": "config/providers/gpt-image-2-desktop.json"
+  }
+}

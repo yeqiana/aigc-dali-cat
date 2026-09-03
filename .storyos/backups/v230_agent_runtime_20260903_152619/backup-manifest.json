@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "base_head": "61be0c4c4e5a3b08e6ccecd025c2970b5f20ac5f",
+  "modified_backed_up": [
+    "config/storyos.yaml",
+    "config/index.yaml",
+    "episodes/_system/storyos_config.py",
+    "episodes/_system/codex_subscription_image.py",
+    "episodes/_system/production_ledger.py",
+    "episodes/_system/image_scheduler.py",
+    "episodes/_system/workflow_runner.py",
+    "episodes/_system/runtime_dag.py",
+    "episodes/_system/image_worker_pool.py",
+    "episodes/_system/workflow_observability.py",
+    "episodes/_system/runtime_request.py",
+    "story_os_manifest.json",
+    "runtimes/runtime-contract.json",
+    "runtimes/workflow-contract.json",
+    "standards/AUTHORITY_INDEX.json",
+    "START_HERE.md",
+    "AGENTS.md",
+    "SKILL.md"
+  ],
+  "added_files": [
+    "config/providers/index.json",
+    "config/providers/gpt-image-2-desktop.json",
+    "config/agent_runtime/trace.json",
+    "config/agent_runtime/intent.json",
+    "config/agent_runtime/router.json",
+    "episodes/_system/provider_capability.py",
+    "episodes/_system/runtime_trace.py",
+    "episodes/_system/request_intent.py",
+    "episodes/_system/request_router.py",
+    "standards/Provider_Capability_Contract_V1.0.md",
+    "standards/Story_Agent_Runtime_V1.0.md",
+    "docs/Story_OS_V2.3_Agent_Runtime_Upgrade.md",
+    "tests/system/test_agent_runtime_v230.py"
+  ]
+}

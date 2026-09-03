@@ -40,13 +40,6 @@ image:
   style_parameter: none
   seed: none
 
-provider:
-  # Provider Capability 只描述真实后端能力，不创建第二套视觉权威。
-  registry: config/providers/index.json
-  exact_raw_canvas_required: false
-  measure_raw_dimensions_locally: true
-  provider_receipt_required: true
-
 visual:
   # 用户未指定其他视觉体系时使用的母风格。
   default_profile_id: M00
@@ -123,7 +116,6 @@ paths:
   creative_authority: standards/制作规范_正式版.md
   authority_index: standards/AUTHORITY_INDEX.json
   runtime_contract: runtimes/runtime-contract.json
-  provider_registry: config/providers/index.json
   workflow_contract: runtimes/workflow-contract.json
   engine: episodes/_system
   episodes: episodes

@@ -272,13 +272,7 @@ def ledger_success(ep:Path,item:dict,result:dict)->tuple[bool,str]:
     current=current_contract_sha(ep,int(item["frame"]))
     if returned and str(returned).lower()!=current.lower():
         return False,f"backend frame contract drift returned={returned} current={current}"
-    command=[sys.executable,SYSTEM/"production_ledger.py","success",ep,"--frame",f"{int(item['frame']):02d}","--path",result["output"]]
-    receipt=((result.get("payload") or {}).get("provider_receipt") or {}).get("path")
-    if receipt:
-        receipt_path=Path(receipt)
-        if not receipt_path.is_absolute(): receipt_path=ROOT/receipt_path
-        command += ["--provider-receipt",receipt_path]
-    cp=run(command)
+    cp=run([sys.executable,SYSTEM/"production_ledger.py","success",ep,"--frame",f"{int(item['frame']):02d}","--path",result["output"]])
     return cp.returncode==0,cp.stdout
 
 

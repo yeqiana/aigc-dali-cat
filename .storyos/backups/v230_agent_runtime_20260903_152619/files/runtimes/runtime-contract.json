@@ -1,0 +1,80 @@
+{
+  "schema_version": 4,
+  "module_version": "2.1",
+  "platform_min_version": "2.1.0",
+  "workflow_contract": "runtimes/workflow-contract.json",
+  "name": "Story OS V2.1 Multi-Runtime Workflow",
+  "state_source": "meta/episode-state.json",
+  "creative_authority": "standards/制作规范_正式版.md",
+  "routing_order": [
+    "CODEX",
+    "WORK",
+    "WEB"
+  ],
+  "routing": {
+    "CODEX": {
+      "target": "deterministic_full_auto_file_pipeline",
+      "checkpoint": "repository",
+      "orchestrator": "episodes/_system/workflow_runner.py",
+      "compat_orchestrator": "episodes/_system/codex_auto_orchestrator.py",
+      "image_backend": "episodes/_system/codex_subscription_image.py",
+      "canvas_normalizer": "episodes/_system/canvas_normalize.py",
+      "postflight_required": true,
+      "production_complete_at": "PUBLISH_READY",
+      "delivery_package": false,
+      "final_zip": "not_required"
+    },
+    "WORK": {
+      "target": "full_auto_workspace_pipeline",
+      "checkpoint": "workspace_and_repository_when_writable",
+      "production_complete_at": "PUBLISH_READY",
+      "delivery_package": "when_capable",
+      "final_zip": "required_when_tools_allow"
+    },
+    "WEB": {
+      "target": "continuous_best_effort_with_resume",
+      "checkpoint": "conversation_and_repository_when_writable",
+      "production_complete_at": "PUBLISH_READY",
+      "delivery_package": "when_capable",
+      "final_zip": "best_effort_only_when_tools_allow"
+    }
+  },
+  "common_rules": {
+    "do_not_create_second_episode_stage": true,
+    "do_not_duplicate_creative_rules_per_runtime": true,
+    "explicit_full_auto_request_is_continuous_execution_authorization": true,
+    "do_not_claim_user_personally_reviewed_unseen_assets": true,
+    "delegated_auto_review_is_not_direct_user_review": true,
+    "delegated_approval_is_valid_when_continuous_execution_authorized": true,
+    "calibration_before_batch": true,
+    "visual_admission_before_batch": true,
+    "max_content_repair_per_frame": 1,
+    "reuse_locked_assets": true,
+    "minimal_edit_protocol": true,
+    "stable_evidence_gate": "episodes/_system/evidence_gate.py",
+    "worker_return_code_is_not_completion": true,
+    "completion_states": [
+      "COMPLETE",
+      "PAUSED",
+      "BLOCKED"
+    ],
+    "fresh_isolated_frame_semantic_critic": true,
+    "sha_bound_frame_review_required": true,
+    "release_must_include_frame_reviews": true,
+    "minimal_closure_default": true,
+    "incremental_closure": "episodes/_system/incremental_closure.py",
+    "incremental_frame_review": "episodes/_system/incremental_frame_review.py",
+    "local_media_workspace": "episodes/_system/media_workspace.py",
+    "full_review_escalation_dirty_ratio": 0.25,
+    "frozen_evidence_media_paths_immutable": true,
+    "zip_is_delivery_adapter": true,
+    "codex_zip_not_required_for_completion": true,
+    "workflow_performance_required": true,
+    "concept_ambition_gate_for_v21_new_episodes": true,
+    "reality_limits_capture_not_concept": true,
+    "default_image_model": "gpt-image-2",
+    "default_image_quality": "high",
+    "episode_ratio_applies_generation_through_release": true,
+    "normalize_technical_failure_triggers_generation": false
+  }
+}

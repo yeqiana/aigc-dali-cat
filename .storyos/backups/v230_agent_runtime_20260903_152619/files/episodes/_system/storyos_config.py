@@ -75,14 +75,7 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("production must use continuous_first_completed=true and wave_barrier=false")
     if get_path(cfg, "production.ledger_single_writer") is not True:
         errors.append("production.ledger_single_writer must be true")
-    if get_path(cfg, "provider.exact_raw_canvas_required") is not False:
-        errors.append("provider.exact_raw_canvas_required must be false for current desktop image transport")
-    if get_path(cfg, "provider.measure_raw_dimensions_locally") is not True:
-        errors.append("provider.measure_raw_dimensions_locally must be true")
-    if get_path(cfg, "provider.provider_receipt_required") is not True:
-        errors.append("provider.provider_receipt_required must be true")
     for key in (
-        "provider.registry",
         "visual.default_profile_path",
         "visual.capture_profile_registry",
         "visual.capture_grammar_path",

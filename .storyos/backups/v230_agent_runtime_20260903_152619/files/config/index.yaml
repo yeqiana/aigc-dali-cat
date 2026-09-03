@@ -24,7 +24,6 @@ registries:
   capture_profiles: standards/capture_profiles/index.json
   capture_grammars: standards/capture_grammars
   sequence_grammars: standards/sequence_grammars
-  provider_capabilities: config/providers/index.json
   schemas: standards/schemas
   templates: standards/templates
   story_regressions: standards/story_regressions/cases.json
@@ -89,7 +88,6 @@ stage_read_sets:
     - meta/story-gates.json
   PRODUCTION:
     - config/storyos.yaml
-    - config/providers/index.json
     - meta/runtime/contracts/frame-contract-index.json
     - meta/production-ledger.json
     - meta/production-queue.json

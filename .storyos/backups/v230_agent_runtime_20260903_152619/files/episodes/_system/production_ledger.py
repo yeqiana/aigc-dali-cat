@@ -526,29 +526,6 @@ def cmd_success(args: argparse.Namespace) -> None:
         "kind": attempt["kind"],
         "attempt_id": attempt["attempt_id"],
     }
-    provider_receipt = None
-    if getattr(args, "provider_receipt", None):
-        receipt_path = Path(args.provider_receipt).resolve()
-        if not receipt_path.is_file():
-            raise SystemExit(f"provider receipt not found: {receipt_path}")
-        receipt_data = json.loads(receipt_path.read_text(encoding="utf-8-sig"))
-        if not isinstance(receipt_data, dict):
-            raise SystemExit("provider receipt root must be object")
-        if str(receipt_data.get("frame") or "") not in {"", key}:
-            raise SystemExit(f"provider receipt frame mismatch: {receipt_data.get('frame')} != {key}")
-        release_canvas = receipt_data.get("release_canvas") or {}
-        if release_canvas and (release_canvas.get("width"), release_canvas.get("height")) != expected:
-            raise SystemExit("provider receipt release canvas mismatch")
-        provider_receipt = {
-            "path": repo_relative(receipt_path),
-            "sha256": sha256_file(receipt_path),
-            "capability_id": receipt_data.get("capability_id"),
-            "provider_raw_canvas": receipt_data.get("provider_raw_canvas"),
-            "ratio_delta": receipt_data.get("ratio_delta"),
-            "normalize_decision": receipt_data.get("normalize_decision"),
-            "provider_attestation": receipt_data.get("provider_attestation"),
-        }
-        attempt["provider_receipt"] = provider_receipt
     attempt["result"] = "success"
     attempt["completed_at"] = now_iso()
     attempt["candidate"] = candidate_info
@@ -961,7 +938,6 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("episode_dir")
     s.add_argument("--frame", required=True)
     s.add_argument("--path", required=True)
-    s.add_argument("--provider-receipt", help="provider RAW dimension receipt JSON")
     s.set_defaults(func=cmd_success)
 
     s = sub.add_parser("tech-fail", help="record network/timeout/no-candidate failure without consuming content repair")
