@@ -34,6 +34,7 @@ runtimes:
   workflow: runtimes/workflow-contract.json
   dag: runtimes/runtime-dag.json
   modes: runtimes/runtime-mode-contract-r2.json
+  trace: config/agent_runtime/trace.json
 
 episode_layout:
   # authority 是输入权威；evidence 是机器审计结果；derived 可安全重建；
@@ -51,6 +52,8 @@ episode_layout:
     - meta/runtime/contracts
     - meta/runtime/prompt-packages
     - meta/workflow-observability.json
+    - meta/runtime/trace-events.jsonl
+    - meta/runtime/trace-summary.json
   media:
     - media/raw
     - media/candidates

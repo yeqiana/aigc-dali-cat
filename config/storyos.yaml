@@ -105,6 +105,12 @@ production:
   max_content_repairs_per_frame: 1
   technical_retry_counts_as_content_repair: false
 
+agent_runtime:
+  # Trace 只记录执行事实，不是第二套 Episode State。
+  trace:
+    enabled: true
+    config: config/agent_runtime/trace.json
+
 runtime:
   # 新篇默认走分段 DAG；它是执行器，不是第二状态机。
   execution_mode: dag

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "module_version": "1.0",
+  "enabled": true,
+  "event_path": "meta/runtime/trace-events.jsonl",
+  "current_path": "meta/runtime/trace-current.json",
+  "summary_path": "meta/runtime/trace-summary.json",
+  "store_prompt_content": false,
+  "store_raw_user_request": false,
+  "store_sha_and_ids_only_by_default": true,
+  "max_attribute_chars": 800,
+  "trace_is_stage_authority": false
+}

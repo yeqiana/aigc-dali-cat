@@ -83,6 +83,7 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("provider.provider_receipt_required must be true")
     for key in (
         "provider.registry",
+        "agent_runtime.trace.config",
         "visual.default_profile_path",
         "visual.capture_profile_registry",
         "visual.capture_grammar_path",

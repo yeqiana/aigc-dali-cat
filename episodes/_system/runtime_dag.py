@@ -22,6 +22,7 @@ import workflow_performance as perf
 import workflow_step_protocol as proto
 import speculative_production  # STORY_OS_V211_PERF_RECOVERY
 import performance_guard_v211
+import runtime_trace
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -77,7 +78,7 @@ def plan(ep):
         out.append(row)
     return {"current_state":cur,"steps":out}
 
-def execute(ep,codex=None,timeout=7200,run_id=None):
+def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
     dag=load_dag(); specs=spec_rows(); total_start=time.monotonic()
     mode=request_mode(ep)
     mode_errors=runtime_mode_router.guard(ep,mode)
@@ -112,8 +113,12 @@ def execute(ep,codex=None,timeout=7200,run_id=None):
                 res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,"target already valid",0)
                 proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,"target already valid",attempt,input_hash,out_hash)
                 if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,"target already valid")
+                _t=time.monotonic()
+                _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"reused":True})
+                runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=run_id,attrs={"target_state":s.target_state})
                 continue
         started_at=proto.now(); t0=time.monotonic(); rc=0; note=""
+        trace_span=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"executor":s.executor,"target_state":s.target_state})
         if s.executor=="machine_incremental_plan":
             cp=run([sys.executable,SYSTEM/"incremental_closure.py","plan",ep,"--json"]); rc=cp.returncode; note=cp.stdout[-3000:]
         elif s.executor=="scoped_codex":
@@ -161,6 +166,7 @@ def execute(ep,codex=None,timeout=7200,run_id=None):
         res=proto.StepResult(s.step_id,status,attempt,started_at,proto.now(),elapsed,input_hash,out_hash,note,rc)
         proto.save_result(ep,res); checkpoint(ep,s.step_id,status,elapsed,note[-1200:],attempt,input_hash,out_hash)
         if run_id: perf.record_step(ep,run_id,s.step_id,status,elapsed,note[-500:])
+        runtime_trace.end_span(ep,trace_span,name=s.step_id,category="workflow_step",status=status,started_monotonic=t0,trace_id=trace_id,run_id=run_id,attrs={"rc":rc,"attempt":attempt})
         try: quota_observability.snapshot(ep,note=f"after {s.step_id}")
         except Exception: pass
         try: performance_guard_v211.observe(ep,run_id,context=s.step_id)
