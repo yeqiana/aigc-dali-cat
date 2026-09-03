@@ -146,16 +146,23 @@ def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                 contract,items=inflight.pop(fut)
                 try:result=fut.result()
                 except Exception as exc:result={"ok":False,"error":str(exc),"requested_count":len(items),"returned_count":0,"results":{}}
-                supported=bool(result.get("ok") and int(result.get("returned_count") or 0)==int(contract["planned_count"]))
-                batch_capability_probe.record(ep,supported=supported,requested=int(contract["planned_count"]),
-                    returned=int(result.get("returned_count") or 0),reason="real_batch_success" if supported else str(result.get("error") or "batch_failed"),
-                    batch_id=contract["batch_id"])
-                if supported:
+                batch_ok=bool(result.get("ok") and int(result.get("returned_count") or 0)==int(contract["planned_count"]))
+                native_supported=bool(batch_ok and result.get("native_multi_image") and result.get("single_http_request"))
+                batch_capability_probe.record(
+                    ep,supported=native_supported,requested=int(contract["planned_count"]),
+                    returned=int(result.get("returned_count") or 0),
+                    reason="native_multi_image_success" if native_supported else (
+                        "batch_runtime_success_non_native" if batch_ok else str(result.get("error") or "batch_failed")),
+                    batch_id=contract["batch_id"],provider=result.get("provider"),transport=result.get("transport"),
+                    runtime_succeeded=batch_ok,native_multi_image=bool(result.get("native_multi_image")),
+                    single_http_request=bool(result.get("single_http_request")),
+                    provider_evidence=result.get("provider_evidence") or {})
+                if batch_ok:
                     cap=pool_workers
                 else:
                     cap=1
                 q=load_queue(ep);byid={x["id"]:x for x in q.get("items") or []}
-                if supported:
+                if batch_ok:
                     generated_rows=[]
                     for original in items:
                         item=byid[original["id"]];res=result["results"][item["id"]]
@@ -221,8 +228,11 @@ def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                 save_queue(ep,q)
                 perf["batches"].append({
                     "batch_id":contract["batch_id"],"planned_count":contract["planned_count"],
-                    "returned_count":result.get("returned_count"),"ok":supported,
-                    "elapsed_seconds":result.get("elapsed_seconds"),"fallback":not supported
+                    "returned_count":result.get("returned_count"),"ok":batch_ok,
+                    "elapsed_seconds":result.get("elapsed_seconds"),"fallback":not batch_ok,
+                    "provider":result.get("provider"),"transport":result.get("transport"),
+                    "native_multi_image":bool(result.get("native_multi_image")),
+                    "single_http_request":bool(result.get("single_http_request"))
                 })
     perf["completed_at"]=now();perf["batch_count"]=len(perf["batches"])
     write_json(ep/"meta/batch-runtime-performance.json",perf)

@@ -17,6 +17,7 @@ from visual_profile_bridge_v224 import compile_prompt_contract
 import frame_contract as resolved_frame_contract
 import image_model_policy
 import provider_capability
+import image_artifact_collector
 
 PNG = b'\x89PNG\r\n\x1a\n'
 JPEG = b'\xff\xd8\xff'
@@ -114,6 +115,10 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             alternatives = [p for p in workdir.glob('*.png') if not p.name.startswith('reference-')]
             if alternatives:
                 candidate = max(alternatives, key=lambda p: p.stat().st_mtime)
+        if not valid_image(candidate):
+            recovered = image_artifact_collector.recover_codex_generated(log, workdir)
+            if recovered is not None:
+                candidate = recovered
         if completed.returncode != 0 or not valid_image(candidate):
             try:
                 tail=log.read_text(encoding='utf-8',errors='replace')[-6000:]
