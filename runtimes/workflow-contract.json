@@ -194,7 +194,12 @@
     "batch_per_frame_receipt_required": true,
     "batch_repair_barrier_enabled": true,
     "high_high_early_single_repair_enabled": true,
-    "technical_batch_failure_does_not_consume_content_repair": true
+    "technical_batch_failure_does_not_consume_content_repair": true,
+    "image_provider_runtime_v241": true,
+    "openai_native_multi_image_enabled_when_key_present": true,
+    "provider_secret_persistence_forbidden": true,
+    "codex_artifact_recovery_enabled": true,
+    "provider_mapping_review_required": true
   },
   "steps": {
     "RESTORE": {

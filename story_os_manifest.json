@@ -1,5 +1,5 @@
 {
-  "platform_version": "2.4.0",
+  "platform_version": "2.4.1",
   "version_semantics": {
     "platform_version": "Root product release identifier; the only platform version authority.",
     "schema_version": "Shape of this specific document.",
@@ -7,7 +7,7 @@
     "platform_min_version": "Lowest Story OS platform version that may consume a module."
   },
   "contract_schema": 1,
-  "release_name": "Batch Image Runtime: Five-Image Generation + Repair Barrier",
+  "release_name": "Image Provider Runtime: OpenAI native multi-image + Codex fallback",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -173,7 +173,16 @@
     "batch_single_frame_fallback",
     "deviation_criticality_repair_gate",
     "batch_repair_barrier",
-    "batch_runtime_observability"
+    "batch_runtime_observability",
+    "image_provider_runtime",
+    "image_provider_capability_router",
+    "openai_images_api_provider",
+    "openai_native_n_1_10",
+    "openai_api_reference_image_edits",
+    "provider_request_id_evidence",
+    "provider_secret_non_persistence",
+    "codex_generated_artifact_recovery",
+    "provider_aware_batch_observability"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -188,7 +197,7 @@
     "Resolved Frame Contracts are derived caches; Story, Storyboard, story-gates and Visual Profile remain authoritative.",
     "Large anomaly scale is not a Visual Lock failure by itself; capture credibility and promised impact are judged separately.",
     "Image workers may run concurrently, but Production Ledger mutations remain single-writer.",
-    "Maximum supported formal image concurrency is 3.",
+    "Legacy single-frame worker concurrency remains max3; Batch Runtime concurrency is governed separately by max_inflight_batches and provider request count.",
     "Fast Frame Scout may request repair but never authorizes final Production PASS.",
     "Final Candidate Snapshot is evidence, not a second creative authority.",
     "V2.1 Delivery Adapter must consume a verified snapshot instead of rescanning mutable publish files.",
@@ -240,7 +249,13 @@
     "Every Batch output keeps an independent Frame Contract SHA, Provider Receipt, Normalize result, Ledger attempt and review.",
     "Batch transport failure is technical and may fall back to the legacy single-frame worker without consuming content repair.",
     "Only content failures with deviation_score >= 80 AND criticality_score >= 80 may use the High×High urgent single-frame repair path.",
-    "Other content failures wait until the current Batch original generation barrier is complete before repair arbitration."
+    "Other content failures wait until the current Batch original generation barrier is complete before repair arbitration.",
+    "Image Provider Runtime is an execution adapter and never becomes creative authority or Episode stage authority.",
+    "OPENAI_API_KEY is read only from process environment and must never be persisted in config, Trace, Ledger or Provider Receipt.",
+    "GPT-Image-2 Image API native n may request 1..10 images in one HTTP request.",
+    "A native multi-image response count is Provider evidence; output-index to distinct Frame semantics remains a Story OS mapping convention and requires per-frame review.",
+    "OpenAI Image API custom request canvases use divisible-by-16 dimensions while preserving the locked Story OS aspect ratio, then Normalize to the exact release canvas without crop.",
+    "Codex subscription remains a fallback transport when API credentials are absent or the API transport fails."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

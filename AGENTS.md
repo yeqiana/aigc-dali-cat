@@ -222,3 +222,15 @@ Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / 现�
 - 其他内容失败等待 Batch 原始生成完成后进入 Repair Arbiter。
 - Batch / Trace / Receipt 都是 Evidence，不改变 `meta/episode-state.json` 唯一阶段权威。
 <!-- STORY_OS_V240_BATCH_RUNTIME_END -->
+
+<!-- STORY_OS_V241_IMAGE_PROVIDER_RUNTIME_BEGIN -->
+## Story OS V2.4.1 Image Provider Runtime
+
+Production Batch 先读取 `config/providers/image-provider-runtime.json`：
+
+- 存在 `OPENAI_API_KEY`：优先 OpenAI Image API，GPT-Image-2 可用 `n=5`（上限10）执行 native multi-image。
+- 无 API Key 或 API transport 失败：保持 Codex Subscription fallback。
+- API Key / Authorization Header 禁止写入任何仓库文件或 Episode Evidence。
+- `output_index -> Frame` 是 Story OS 映射约定，不是 Provider 创作权威，仍必须逐帧 Review。
+- 4:5 API 请求使用 1088×1360，9:16 使用 1152×2048，之后无裁切 Normalize 到正式 Release Canvas。
+<!-- STORY_OS_V241_IMAGE_PROVIDER_RUNTIME_END -->

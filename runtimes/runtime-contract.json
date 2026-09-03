@@ -1,9 +1,9 @@
 {
   "schema_version": 4,
-  "module_version": "2.4",
-  "platform_min_version": "2.4.0",
+  "module_version": "2.4.1",
+  "platform_min_version": "2.4.1",
   "workflow_contract": "runtimes/workflow-contract.json",
-  "name": "Story OS V2.4 Multi-Runtime + Batch Image Runtime",
+  "name": "Story OS V2.4.1 Multi-Runtime + Image Provider Runtime",
   "state_source": "meta/episode-state.json",
   "creative_authority": "standards/制作规范_正式版.md",
   "routing_order": [
@@ -93,6 +93,11 @@
     "batch_transport_failure_fallback": "single_frame",
     "deviation_high_min": 80,
     "criticality_high_min": 80,
-    "high_high_requires_both": true
+    "high_high_requires_both": true,
+    "image_provider_runtime": "config/providers/image-provider-runtime.json",
+    "openai_native_n_max": 10,
+    "openai_api_key_source": "environment_only",
+    "provider_route_is_stage_authority": false,
+    "distinct_frame_mapping_requires_review": true
   }
 }

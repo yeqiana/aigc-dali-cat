@@ -24,13 +24,22 @@ def collect(ep:Path)->dict:
     early=sum(1 for x in decisions if isinstance(x,dict) and x.get("action")=="EARLY_SINGLE_REPAIR")
     ordinary=sum(1 for x in decisions if isinstance(x,dict) and x.get("action")=="SINGLE_REPAIR")
     waits=sum(1 for x in decisions if isinstance(x,dict) and x.get("action")=="WAIT_BATCH")
+    providers={}
+    for row in batches:
+        if isinstance(row,dict):
+            name=str(row.get("provider") or "UNKNOWN")
+            providers[name]=providers.get(name,0)+1
     return {
         "enabled":bool(perf),
         "batch_count":len(batches),
         "images_requested":requested,
         "images_returned":returned,
         "fallback_single_frames":int(perf.get("fallback_single_frames") or 0),
-        "provider_batch_supported":cap.get("supported"),
+        "provider_counts":providers,
+        "native_multi_image_supported":cap.get("native_multi_image_supported",cap.get("supported")),
+        "single_http_request":cap.get("single_http_request"),
+        "provider":cap.get("provider"),
+        "transport":cap.get("transport"),
         "provider_requested_images":cap.get("requested_images"),
         "provider_returned_images":cap.get("returned_images"),
         "early_high_high_repairs":early,
@@ -39,5 +48,5 @@ def collect(ep:Path)->dict:
     }
 
 def self_test():
-    print("BATCH RUNTIME METRICS SELF-TEST PASS")
+    print("BATCH RUNTIME METRICS V2.4.1 SELF-TEST PASS")
 if __name__=="__main__":self_test()
