@@ -20,11 +20,14 @@
     "allow_structure_rewrite": true
   },
   "creative_hints": [],
+  "image_model": "gpt-image-2",
+  "image_quality": "high",
   "image": {
     "provider": "openai",
     "model": "gpt-image-2",
     "source": "system_default",
-    "strict_model": false
+    "strict_model": false,
+    "quality": "high"
   },
   "runtime": {
     "execution_mode": "dag",

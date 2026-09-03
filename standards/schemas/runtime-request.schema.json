@@ -22,6 +22,8 @@
     "mode": {
       "enum": [
         "full_auto",
+        "preproduction_only",
+        "image_continue",
         "resume",
         "repair_only",
         "release_only",
@@ -76,6 +78,15 @@
         }
       }
     },
+    "image_model": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Canonical image model lock for newly compiled requests."
+    },
+    "image_quality": {
+      "const": "high",
+      "description": "Formal production quality lock for newly compiled requests."
+    },
     "image": {
       "type": "object",
       "required": [
@@ -91,6 +102,9 @@
         },
         "strict_model": {
           "type": "boolean"
+        },
+        "quality": {
+          "const": "high"
         }
       }
     },

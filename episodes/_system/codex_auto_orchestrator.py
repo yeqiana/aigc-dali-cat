@@ -48,6 +48,8 @@ def runtime_request_block(ep, request_path=None):
     data = read_json(path)
     story = data.get("story_input") or {}
     image = data.get("image") or {}
+    image_model = data.get("image_model") or image.get("model") or "gpt-image-2"
+    image_quality = data.get("image_quality") or image.get("quality") or "high"
     mode = story.get("mode")
     directives = {
         "auto_create": "No plot was supplied. You MUST author the complete story yourself: diverge concepts first, pass Concept Ambition, then Story Build. Do not ask the user for a plot.",
@@ -55,7 +57,7 @@ def runtime_request_block(ep, request_path=None):
         "core_constraints": "The user supplied hard story constraints. Preserve every constraint, but optimize the remaining structure and escalation.",
         "locked_story": "The user explicitly locked the story. Only logic/polish repairs are allowed; do not structurally rewrite it.",
     }
-    return "\n<RUNTIME_REQUEST>\n" + json.dumps(data, ensure_ascii=False, indent=2) + "\n</RUNTIME_REQUEST>\nRUNTIME REQUEST DIRECTIVE: " + directives.get(mode, "") + f"\nIMAGE MODEL CONTRACT: requested={image.get('model') or 'gpt-image-2'} source={image.get('source')} strict={bool(image.get('strict_model'))}. Never silently substitute an explicitly requested image model.\n"
+    return "\n<RUNTIME_REQUEST>\n" + json.dumps(data, ensure_ascii=False, indent=2) + "\n</RUNTIME_REQUEST>\nRUNTIME REQUEST DIRECTIVE: " + directives.get(mode, "") + f"\nIMAGE MODEL CONTRACT: requested={image_model} quality={image_quality} source={image.get('source')} strict={bool(image.get('strict_model'))}. Never silently substitute an explicitly requested image model or quality.\n"
 
 def worker_instruction(ep,resume,request_path=None):
     rel=ep.relative_to(ROOT).as_posix(); mode='resume from checkpoint' if resume else 'start from real current repository state'

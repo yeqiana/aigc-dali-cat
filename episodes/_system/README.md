@@ -113,7 +113,7 @@ python episodes/_system/machine_gate.py --all --metadata-only
 <!-- STORY_OS_V1_8_SYSTEM_README_BEGIN -->
 ## Story OS V1.8 增量门禁
 
-- 未指定画风：默认 `M00｜MP4 × 网吧 × 流水席旧数码质感校准版`；实际年代/采集设备物理表现优先。
+- 未指定画风：默认 `M00｜现实生活纪实母版`；MP4、网吧、流水席、误入小镇只作为校准来源，实际年代/采集设备物理表现优先。
 - `STORYBOARD_LOCKED`：Story Lock 必须有可验证 approval provenance + story/storyboard SHA；允许 direct_user_review，连续执行授权下也允许 delegated_auto_review。
 - `VISUAL_CALIBRATED`：Visual Lock 必须有可验证 approval provenance + visual spec / 校准 / reference / resolved profile SHA；允许 direct 或已授权 delegated provenance。
 - `PUBLISH_READY`：`meta/text-audit.json` 必须 PASS 且 `source_sha256` 等于当前 captions。

@@ -79,7 +79,7 @@
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_BEGIN -->
 ## Runtime Request P0
 
-新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `gpt-image-2`；显式 image 禁止静默替换。当前 V2.1 Visual Lock 统一为 4 张，不再使用“3+4”双口径。
+新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `image_model=gpt-image-2`、`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 V2.1 Visual Lock 统一为 4 张，不再使用“3+4”双口径。
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_END -->
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
@@ -360,7 +360,7 @@ python episodes/_system/story_os.py text-revision <episode_dir> start --file <pa
 <!-- STORY_OS_V1_8_EVIDENCE_BEGIN -->
 ## Story OS V1.8 — Default Visual IP + Evidence Locks
 
-- 用户未指定画风/质感：默认 `M00｜MP4 × 网吧 × 流水席旧数码质感校准版`。
+- 用户未指定画风/质感：默认 `M00｜现实生活纪实母版`；MP4、网吧、流水席、误入小镇仅作为校准来源。
 - 显式单集/系列风格可覆盖默认 M00；年代/设备物理真实性永远高于母风格“复古感”。
 - Story Lock 必须保存 story + storyboard 的明确批准和 SHA-256。
 - Visual Lock 必须保存 visual spec、校准联系表、已通过 reference 与解析后 visual profile 的明确批准和 SHA-256。

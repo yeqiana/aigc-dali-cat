@@ -46,7 +46,7 @@ RULE_KEYS=[
     "fast_scout_never_final_pass","final_candidate_snapshot_before_publish_ready",
     "delivery_consumes_verified_snapshot","runtime_request_immutable_after_bind",
     "auto_create_story_when_missing","user_seed_requires_strengthen_and_rewrite",
-    "default_image_model","explicit_image_model_no_silent_fallback",
+    "default_image_model","default_image_quality","explicit_image_model_no_silent_fallback",
     "current_visual_lock_calibration_count",
     "visual_lock_real_1_plus_3_barrier",
     "visual_lock_dependents_require_baseline_review_pass",
@@ -114,6 +114,7 @@ def compile_capsule(ep,step,write=True):
     return data
 def self_test():
     assert "default_image_model" in RULE_KEYS
+    assert "default_image_quality" in RULE_KEYS
     print("EXECUTION CAPSULE SELF-TEST PASS")
 def main():
     ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True)

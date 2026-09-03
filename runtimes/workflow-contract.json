@@ -49,6 +49,7 @@
     "auto_create_story_when_missing": true,
     "user_seed_requires_strengthen_and_rewrite": true,
     "default_image_model": "gpt-image-2",
+    "default_image_quality": "high",
     "explicit_image_model_no_silent_fallback": true,
     "current_visual_lock_calibration_count": 4,
     "legacy_three_image_calibration_is_not_current_v21": true,
@@ -439,7 +440,8 @@
       "core_constraints",
       "locked_story"
     ],
-    "default_image_model": "gpt-image-2"
+    "default_image_model": "gpt-image-2",
+    "default_image_quality": "high"
   },
   "runtime_dag": {
     "schema_version": 1,

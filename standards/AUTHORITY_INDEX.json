@@ -215,12 +215,33 @@
     "state_source": "meta/episode-state.json",
     "default_visual_profile": {
       "id": "M00",
-      "name": "MP4 × 网吧 × 流水席旧数码质感校准版",
+      "name": "现实生活纪实母版",
       "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
       "standard_path": "standards/风格锚点_MP4_网吧_流水席_旧数码_V1.2.md",
       "use_when_unspecified": true,
       "explicit_override_wins": true,
       "capture_physics_and_story_era_win_over_texture": true
+    },
+    "image_runtime_defaults": {
+      "model": "gpt-image-2",
+      "quality": "high",
+      "aspect_ratio_source": "episode_locked",
+      "style_parameter": "none",
+      "seed": "none"
+    },
+    "normalize_policy": {
+      "id": "NP01",
+      "enabled": true,
+      "preserve_raw": true,
+      "final_format": "PNG",
+      "resize_algorithm": "Lanczos",
+      "default_crop": "forbidden",
+      "imageops_fit": "exception_only",
+      "automatic_ratio_delta_max": 0.03,
+      "review_ratio_delta_max": 0.05,
+      "reject_above": 0.05,
+      "noop_when_exact_match": true,
+      "technical_failure_triggers_generation": false
     },
     "runtime_routing": {
       "contract": "runtimes/runtime-contract.json",

@@ -123,13 +123,16 @@ def compile_request(text):
         title="AUTO_TITLE"; raw_topic=None
     branch,branch_source=parse_branch(text)
     full_auto=contains_any(text,FULL_AUTO_SIGNALS) or mode in {"full_auto","preproduction_only","image_continue","resume","repair_only","release_only","data_review"}
+    image=parse_image_model(text)
     data={
         "schema_version":1,"request_id":request_id(text),"created_at":now(),"mode":mode,
         "repository":{"branch":branch,"source":branch_source},
         "topic":{"title":title,"raw":raw_topic},
         "story_input":story,
         "creative_hints":creative_hints(text),
-        "image":parse_image_model(text),
+        "image_model":image["model"],
+        "image_quality":"high",
+        "image":{**image,"quality":"high"},
         "runtime":{"execution_mode":"dag","continuous_execution":bool(full_auto),"resume":True,"max_image_workers":3,"fail_soft":True,"incremental_reuse":True},
         "delivery":{"mode":"auto","zip_required_for_completion":False},
         "user_intent":{"full_auto_authorized":bool(full_auto),"allow_story_strengthening":story["mode"]!="locked_story","allow_story_rewrite":story["mode"] in {"auto_create","user_seed","core_constraints"},"ask_before_each_step":not bool(full_auto)},
@@ -148,7 +151,12 @@ def validate_request(data):
     if story.get("mode")=="user_seed" and not str(story.get("raw") or "").strip():errors.append("user_seed requires raw story seed")
     if story.get("mode")=="core_constraints" and not isinstance(story.get("constraints"),list):errors.append("core_constraints requires constraints list")
     image=data.get("image") or {}
-    if not str(image.get("model") or "").strip():errors.append("image.model missing")
+    model=str(data.get("image_model") or image.get("model") or "").strip()
+    quality=str(data.get("image_quality") or image.get("quality") or "high").strip().lower()
+    if not model:errors.append("image model missing")
+    if quality!="high":errors.append("image_quality must be high for formal production")
+    if data.get("image_model") is not None and image.get("model") is not None and str(data["image_model"])!=str(image["model"]):errors.append("image_model must match image.model")
+    if data.get("image_quality") is not None and image.get("quality") is not None and str(data["image_quality"]).lower()!=str(image["quality"]).lower():errors.append("image_quality must match image.quality")
     if image.get("source")=="user_explicit" and image.get("strict_model") is not True:errors.append("user_explicit image model requires strict_model=true")
     workers=(data.get("runtime") or {}).get("max_image_workers")
     if not isinstance(workers,int) or not 1<=workers<=3:errors.append("runtime.max_image_workers must be 1..3")
@@ -179,7 +187,7 @@ def effective_for_episode(episode_dir):
 
 def self_test():
     a=compile_request("读取 story 分支。全自动做一篇「仲夏夜惊魂」。")
-    assert a["story_input"]["mode"]=="auto_create" and a["image"]["model"]=="gpt-image-2"
+    assert a["story_input"]["mode"]=="auto_create" and a["image_model"]=="gpt-image-2" and a["image_quality"]=="high"
     b=compile_request("读取 story 分支。全自动做一篇「仲夏夜惊魂」。剧情大概是：几个人住进山里民宿。")
     assert b["story_input"]["mode"]=="user_seed" and "山里民宿" in b["story_input"]["raw"]
     c=compile_request("全自动做一篇「仲夏夜惊魂」，image=gpt-image-2。必须保留：\n1. 山里民宿\n2. 最后进入旧照片")

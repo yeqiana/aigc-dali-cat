@@ -27,10 +27,11 @@ def execute(ep,item,timeout,codex):
     prompt=(root/item["prompt_file"]).resolve()
     refs=[(root/x["path"]).resolve() for x in item.get("references") or []]
     model=str(item.get("model") or image_model_policy.for_episode(ep)["model"])
+    quality=str(item.get("quality") or image_model_policy.for_episode(ep)["quality"])
     package=prompt_package.compile_frame(ep,frame,prompt,write=True)
     ns=argparse.Namespace(
         episode_dir=ep,frame=f"{frame:02d}",prompt_file=prompt,output=out,log=log,
-        reference=refs,timeout=timeout,codex=codex,image_model=model,overwrite=False)
+        reference=refs,timeout=timeout,codex=codex,image_model=model,image_quality=quality,overwrite=False)
     try:
         payload=backend.generate_for_frame(ns)
         scout=None

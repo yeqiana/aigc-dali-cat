@@ -128,7 +128,7 @@ def compile_prompt_contract(ep: Path) -> dict:
         f"profile={profile['profile_id']} | {profile.get('profile_name') or ''}",
         "reality first; the image must still feel like a plausible personal/work record without the anomaly",
         f"ordinary Chinese life density={dna.get('ordinary_chinese_life_density', 'high')}; retain causal incidental clutter",
-        f"available light only={dna.get('available_light_only', True)}; no invented cinematic key/rim lighting",
+        f"practical available light={dna.get('practical_available_light', dna.get('available_light_only', True))}; no invented cinematic key/rim lighting",
         f"composition={dna.get('composition', 'unposed_imperfect_personal_record')}",
         f"people={dna.get('people', 'ordinary_unprepared_not_actor_like')}",
         f"color={dna.get('color', 'environment-driven low/medium saturation')}",

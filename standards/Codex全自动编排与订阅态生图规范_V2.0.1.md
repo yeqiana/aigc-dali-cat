@@ -4,7 +4,7 @@
 
 V2.0.1 把 CODEX runtime 从“协议要求”补成可执行入口：`story_os.py run <episode> --full-auto`。orchestrator 使用当前 Codex CLI 登录态启动隔离 worker，worker 继续 Golden Path，不建立第二状态机。
 
-`codex_subscription_image.py` 只负责一次图片生成：prompt/最多2张参考 → 临时 Codex worker → image_generation 一次 → 真实候选落盘。它不需要 OpenAI API Key、不模拟浏览器点击、不拿缓存图冒充。
+`codex_subscription_image.py` 只负责一次图片生成：prompt/最多2张参考 + Episode 锁定画幅 + `image_model=gpt-image-2` + `image_quality=high` → 临时 Codex worker → image_generation 一次 → RAW 永久落盘 → NP01 Normalize → 真实候选落盘。它不需要 OpenAI API Key、不模拟浏览器点击、不拿缓存图冒充。Normalize 失败只允许本地重试，不得自动再调用 image_generation。
 
 全自动授权是 `continuous_execution_authorized=true`，允许连续执行、自审和最多一次内容返修。自动审查统一记为 `delegated_auto_review`，不得伪造成 `direct_user_review` 或用户主动点击了 Story/Visual/Release Lock。
 

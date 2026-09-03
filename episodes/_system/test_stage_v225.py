@@ -49,7 +49,7 @@ def visual_finalize(a):
 def check(a):
  print(json.dumps({'version':VERSION,'default_visual_route':'MAIN_SESSION_NATIVE_IMAGE','isolated_worker_default':False},ensure_ascii=False,indent=2)); return v224.check(a)
 def selftest(a):
- assert NON_AUTHORITY=='NON_AUTHORITY_TEST_ONLY'; assert codex_subscription_image.provider_size(1080,1350)=='1024x1280'; assert not codex_subscription_image.valid_image(Path('__missing__')); print('STORY OS V2.2.5 VISUAL TEST FAST PATH SELF-TEST PASS'); return 0
+ assert NON_AUTHORITY=='NON_AUTHORITY_TEST_ONLY'; assert codex_subscription_image.provider_size(1080,1350)=='1080x1350'; assert not codex_subscription_image.valid_image(Path('__missing__')); print('STORY OS V2.2.5 VISUAL TEST FAST PATH SELF-TEST PASS'); return 0
 def main():
  ap=argparse.ArgumentParser(description='Story OS V2.2.5 Visual Test Fast Path'); sub=ap.add_subparsers(dest='cmd',required=True)
  p=sub.add_parser('check'); p.add_argument('episode_dir'); p.set_defaults(func=check)

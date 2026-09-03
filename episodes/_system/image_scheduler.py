@@ -33,6 +33,12 @@ ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
 QUEUE_REL = Path("meta/production-queue.json")
 MAX_SUPPORTED_WORKERS = 3
+DEFAULT_IMAGE_QUALITY = "high"
+NON_REGENERATING_FAILURE_CODES = {
+    "NORMALIZE_REVIEW", "ASPECT_RATIO_MISMATCH", "NORMALIZE_TECHNICAL_FAILURE",
+    "NORMALIZE_INPUT_MISSING", "NORMALIZE_OUTPUT_EXISTS", "NORMALIZE_OUTPUT_FORMAT",
+    "EPISODE_CANVAS_MISMATCH", "IMAGE_MODEL_CONTRACT_MISMATCH", "IMAGE_QUALITY_CONTRACT_MISMATCH",
+}
 READY_LEDGER_STATES = {"ORIGINAL_READY","REPAIR_READY","PASSED","LOCKED"}
 
 
@@ -145,7 +151,7 @@ def init_queue(ep:Path,force:bool=False)->dict:
     save_queue(ep,q);return q
 
 
-def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:list[dict],capture_id:str,model:str,depends_on:list[int],replace:bool=False)->dict:
+def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:list[dict],capture_id:str,model:str,depends_on:list[int],quality:str=DEFAULT_IMAGE_QUALITY,replace:bool=False)->dict:
     q=load_queue(ep)
     key=f"{frame:02d}"
     active=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed"}]
@@ -164,6 +170,7 @@ def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:
         "references":references,
         "capture_id":capture_id,
         "model":model,
+        "quality":quality,
         "depends_on":sorted(set(int(x) for x in depends_on if int(x)!=frame)),
         "narrative_escalation_from":narrative_escalation_from(ep,frame),
         "priority":risk_priority(ep,frame,scope),
@@ -193,7 +200,8 @@ def import_visual_lock(ep:Path,prompt_dir:Path)->dict:
     for row in plan.get("items") or []:
         frame=int(row["frame"]);prompt=prompt_dir/f"{frame:02d}.txt"
         if not prompt.is_file():raise ValueError(f"Visual Lock prompt missing: {prompt}")
-        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="visual_lock",references=contract_references(ep,frame,scope="visual_lock"),capture_id=f"visual-lock-{frame:02d}",model=image_model_policy.for_episode(ep)["model"],depends_on=[int(x) for x in row.get("depends_on") or []],replace=False))
+        policy=image_model_policy.for_episode(ep)
+        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="visual_lock",references=contract_references(ep,frame,scope="visual_lock"),capture_id=f"visual-lock-{frame:02d}",model=policy["model"],quality=policy["quality"],depends_on=[int(x) for x in row.get("depends_on") or []],replace=False))
     return {"added":[x["id"] for x in added]}
 
 
@@ -207,7 +215,8 @@ def import_batch(ep:Path,prompt_dir:Path)->dict:
             skipped.append(frame);continue
         prompt=prompt_dir/f"{frame:02d}.txt"
         if not prompt.is_file():raise ValueError(f"batch prompt missing: {prompt}")
-        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="batch",references=contract_references(ep,frame,scope="batch"),capture_id=f"batch-{frame:02d}",model=image_model_policy.for_episode(ep)["model"],depends_on=directive_dependency(ep,frame),replace=False))
+        policy=image_model_policy.for_episode(ep)
+        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="batch",references=contract_references(ep,frame,scope="batch"),capture_id=f"batch-{frame:02d}",model=policy["model"],quality=policy["quality"],depends_on=directive_dependency(ep,frame),replace=False))
     return {"added":[x["frame"] for x in added],"skipped":skipped}
 
 
@@ -239,7 +248,7 @@ def current_contract_sha(ep:Path,frame:int)->str:
 
 def ledger_begin(ep:Path,item:dict)->tuple[bool,str]:
     prompt=repo_file(item["prompt_file"])
-    cmd=[sys.executable,SYSTEM/"production_ledger.py","begin",ep,"--frame",f"{int(item['frame']):02d}","--kind",item["kind"],"--prompt-file",prompt,"--capture-id",item["capture_id"],"--model",item.get("model") or "default","--notes",f"phase6 scheduler item={item['id']} scope={item['scope']}"]
+    cmd=[sys.executable,SYSTEM/"production_ledger.py","begin",ep,"--frame",f"{int(item['frame']):02d}","--kind",item["kind"],"--prompt-file",prompt,"--capture-id",item["capture_id"],"--model",item.get("model") or "default","--quality",item.get("quality") or DEFAULT_IMAGE_QUALITY,"--notes",f"phase6 scheduler item={item['id']} scope={item['scope']}"]
     for ref in item.get("references") or []:
         cmd += ["--reference",f"{ROOT/ref['path']}::{ref['role']}::{ref['kind']}"]
     cp=run(cmd)
@@ -252,6 +261,11 @@ def backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->dict:
 
 
 def ledger_success(ep:Path,item:dict,result:dict)->tuple[bool,str]:
+    returned_policy=(result.get("payload") or {}).get("image_model") or {}
+    if str(returned_policy.get("model") or "") != str(item.get("model") or ""):
+        return False,f"IMAGE_MODEL_CONTRACT_MISMATCH: returned={returned_policy.get('model')} requested={item.get('model')}"
+    if str(returned_policy.get("quality") or "") != str(item.get("quality") or DEFAULT_IMAGE_QUALITY):
+        return False,f"IMAGE_QUALITY_CONTRACT_MISMATCH: returned={returned_policy.get('quality')} requested={item.get('quality') or DEFAULT_IMAGE_QUALITY}"
     returned=((result.get("payload") or {}).get("frame_contract") or {}).get("contract_sha256")
     current=current_contract_sha(ep,int(item["frame"]))
     if returned and str(returned).lower()!=current.lower():
@@ -265,6 +279,8 @@ def ledger_tech_fail(ep:Path,item:dict,code:str,message:str)->None:
 
 
 def classify_error(text:str)->str:
+    for code in NON_REGENERATING_FAILURE_CODES:
+        if code in text:return code
     model_code=image_model_policy.classify_backend_error(text)
     if model_code:return model_code
     low=text.lower()
@@ -393,7 +409,7 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                 else:
                     code=classify_error(msg)
                     ledger_tech_fail(ep,item,code,msg or "image backend failed")
-                    item["status"]="tech_failed"
+                    item["status"]="blocked" if code in NON_REGENERATING_FAILURE_CODES else "tech_failed"
                     item["completed_at"]=now()
                     item["last_error"]=msg[-1600:]
                     cap=max(1,cap-1)
@@ -452,6 +468,7 @@ def self_test()->None:
     assert classify_error("429 Too Many Requests")=="RATE_LIMIT_429"
     assert classify_error("worker timeout")=="TIMEOUT"
     assert classify_error("unknown model")=="MODEL_UNAVAILABLE"
+    assert classify_error("ASPECT_RATIO_MISMATCH: inspect Generation Request")=="ASPECT_RATIO_MISMATCH"
     assert image_worker_pool.CODEX_SESSION_REUSE is False
     assert rolling_frame_review.VALID == {"PASS_PREVIEW","REPAIR_NOW","UNCERTAIN"}
     src=Path(__file__).read_text(encoding="utf-8-sig")
@@ -463,7 +480,7 @@ def self_test()->None:
 def main()->int:
     ap=argparse.ArgumentParser(description=__doc__);sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("init");p.add_argument("episode_dir");p.add_argument("--force",action="store_true")
-    p=sub.add_parser("add");p.add_argument("episode_dir");p.add_argument("--frame",type=int,required=True);p.add_argument("--kind",choices=["original","repair"],default="original");p.add_argument("--scope",choices=["visual_lock","batch","repair"],default="batch");p.add_argument("--prompt-file",required=True);p.add_argument("--reference",action="append",default=[]);p.add_argument("--capture-id");p.add_argument("--model");p.add_argument("--depends-on",action="append",default=[]);p.add_argument("--replace",action="store_true")
+    p=sub.add_parser("add");p.add_argument("episode_dir");p.add_argument("--frame",type=int,required=True);p.add_argument("--kind",choices=["original","repair"],default="original");p.add_argument("--scope",choices=["visual_lock","batch","repair"],default="batch");p.add_argument("--prompt-file",required=True);p.add_argument("--reference",action="append",default=[]);p.add_argument("--capture-id");p.add_argument("--model");p.add_argument("--quality",choices=["high"]);p.add_argument("--depends-on",action="append",default=[]);p.add_argument("--replace",action="store_true")
     p=sub.add_parser("import-visual-lock");p.add_argument("episode_dir");p.add_argument("--prompt-dir",required=True)
     p=sub.add_parser("import-batch");p.add_argument("episode_dir");p.add_argument("--prompt-dir",required=True)
     p=sub.add_parser("plan");p.add_argument("episode_dir")
@@ -481,7 +498,8 @@ def main()->int:
             for raw in a.depends_on:
                 deps.extend(int(x) for x in str(raw).split(",") if x.strip())
             prompt=repo_file(a.prompt_file)
-            row=add_item(ep,frame=a.frame,kind=a.kind,prompt_file=prompt,scope=a.scope,references=refs,capture_id=a.capture_id or f"scheduler-{a.frame:02d}",model=a.model or image_model_policy.for_episode(ep)["model"],depends_on=deps,replace=a.replace)
+            policy=image_model_policy.for_episode(ep)
+            row=add_item(ep,frame=a.frame,kind=a.kind,prompt_file=prompt,scope=a.scope,references=refs,capture_id=a.capture_id or f"scheduler-{a.frame:02d}",model=a.model or policy["model"],quality=a.quality or policy["quality"],depends_on=deps,replace=a.replace)
             print(json.dumps(row,ensure_ascii=False,indent=2));return 0
         if a.cmd=="import-visual-lock":print(json.dumps(import_visual_lock(ep,Path(a.prompt_dir).resolve()),ensure_ascii=False,indent=2));return 0
         if a.cmd=="import-batch":print(json.dumps(import_batch(ep,Path(a.prompt_dir).resolve()),ensure_ascii=False,indent=2));return 0

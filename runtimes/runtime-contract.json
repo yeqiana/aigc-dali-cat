@@ -70,6 +70,10 @@
     "codex_zip_not_required_for_completion": true,
     "workflow_performance_required": true,
     "concept_ambition_gate_for_v21_new_episodes": true,
-    "reality_limits_capture_not_concept": true
+    "reality_limits_capture_not_concept": true,
+    "default_image_model": "gpt-image-2",
+    "default_image_quality": "high",
+    "episode_ratio_applies_generation_through_release": true,
+    "normalize_technical_failure_triggers_generation": false
   }
 }

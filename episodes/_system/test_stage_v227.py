@@ -406,7 +406,7 @@ def self_test(args):
     assert HISTORY_POLICY == "AUDIT_ONLY_NEVER_EXECUTION_INPUT"
     assert new_run_id().startswith("VT_")
     assert NON_AUTHORITY == "NON_AUTHORITY_TEST_ONLY"
-    assert codex_subscription_image.provider_size(1080, 1350) == "1024x1280"
+    assert codex_subscription_image.provider_size(1080, 1350) == "1080x1350"
     print("STORY OS V2.2.7 VISUAL TEST APPEND-ONLY RUNS SELF-TEST PASS")
     return 0
 

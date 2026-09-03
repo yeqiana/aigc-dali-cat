@@ -1,6 +1,7 @@
-# 风格锚点｜MP4 × 网吧 × 流水席旧数码质感校准版 V1.2
+# M00｜现实生活纪实母版 V2.0
 
-> Story OS V1.8 默认视觉母风格（M00）。
+> 英文辅助名：Reality-First Everyday Documentary Master。
+> Story OS 默认视觉母风格（M00）；MP4、网吧、流水席、误入小镇保留为校准来源，不再作为 M00 正式名称。
 > **用户未明确指定其他画风/质感时，默认使用本风格。**
 > 本文只统一视觉语言，不强制统一年代、设备、场景或剧情套路；具体采集设备和时代物理表现优先。
 
@@ -12,11 +13,62 @@
 
 **真实中国生活空间 + 私人相册/旧数码记录习惯 + 现场光 + 不完美抓拍 + 非电影化 + 异常从现实里长出来。**
 
+### 1.1 M00 机器参数
+
+机器权威文件：`standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json`。路径为兼容旧 Episode 保持不变，正式名称以文件内 `profile_name=现实生活纪实母版` 为准。
+
+| 参数 | 值 | 级别 |
+|---|---|---|
+| profile_id | M00 | 固定 |
+| profile_name | 现实生活纪实母版 | 固定 |
+| reality_first | true | 硬规则 |
+| ordinary_chinese_life_density | high | 硬规则 |
+| composition | unposed_imperfect_personal_record | 硬规则 |
+| people | ordinary_unprepared_not_actor_like | 硬规则 |
+| subject_awareness | mostly_unaware_or_natural | 默认 |
+| practical_available_light | true | 硬规则 |
+| cinematic_lighting | forbidden_by_default | 硬规则 |
+| commercial_hdr | forbidden | 硬规则 |
+| portrait_bokeh | not_default | 默认 |
+| camera_perfection | not_default | 默认 |
+| hero_shot | not_default | 默认 |
+| symmetrical_composition | not_default | 默认 |
+| beautification | forbidden | 硬规则 |
+| skin_rendering | natural | 硬规则 |
+| color | environment_driven_low_to_medium_saturation | 硬规则 |
+| global_vintage_lut | forbidden | 硬规则 |
+| cinematic_color_grading | forbidden_by_default | 硬规则 |
+| white_balance | environment_driven | 默认 |
+| contrast | natural_device_limited | 默认 |
+| dynamic_range | device_and_scene_driven | 默认 |
+| texture | causal_controlled_imperfection | 硬规则 |
+| noise | device_environment_driven | 默认 |
+| motion_blur | cause_required | 硬规则 |
+| lens_artifacts | cause_required | 硬规则 |
+| scene_cleaning | forbidden_by_default | 硬规则 |
+| life_clutter | preserve | 硬规则 |
+| environment_imperfection | preserve | 默认 |
+| visual_polish_ceiling | documentary_realism | 硬规则 |
+| anomaly | embedded_in_reality_before_spectacle | 硬规则 |
+| anomaly_environment_binding | required | 硬规则 |
+| spectacle_first | forbidden_by_default | 硬规则 |
+| scale_reference | required_for_large_anomaly | 硬规则 |
+| screen_ui_physics | required_when_present | 硬规则 |
+| camera_authorship | required | 硬规则 |
+| ghost_camera | forbidden | 硬规则 |
+| capture_reason | required | 硬规则 |
+| save_reason | required | 默认 |
+| narrative_information_gain | required_after_frame_01 | 硬规则 |
+| narrative_redundancy | forbidden_by_default | 硬规则 |
+| continuity | strict | 硬规则 |
+| reference_assets | preferred_when_identity_matters | 默认 |
+| seed_dependency | none | 固定 |
+
 ## 2. 默认路由
 
 当用户没有指定画风时：
 
-`M00｜MP4 × 网吧 × 流水席旧数码质感校准版`
+`M00｜现实生活纪实母版`
 
 优先级：
 

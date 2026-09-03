@@ -12,7 +12,7 @@ import tempfile
 import time
 from pathlib import Path
 
-from canvas_normalize import normalize, read_canvas
+from canvas_normalize import NormalizeError, normalize, read_canvas
 from visual_profile_bridge_v224 import compile_prompt_contract
 import frame_contract as resolved_frame_contract
 import image_model_policy
@@ -46,12 +46,9 @@ def command_prefix(codex: Path) -> list[str]:
     return [str(codex)]
 
 def provider_size(width: int, height: int) -> str:
-    ratio = width / height
-    if ratio < 0.66:
-        return '1024x1536'
-    return '1024x1280'
+    return f'{width}x{height}'
 
-def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = 'gpt-image-2', strict_model: bool = False) -> str:
+def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = 'gpt-image-2', image_quality: str = 'high', strict_model: bool = False) -> str:
     reference_lines = '\n'.join(f'- reference {i}: {p.name}' for i, p in enumerate(refs, 1)) or '- no references'
     visual_block = (
         f'<visual_contract>\n{visual_contract.strip()}\n</visual_contract>\n\n'
@@ -63,10 +60,10 @@ def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str 
     )
     return (
         'You are an isolated Story OS image worker. Use image_generation exactly once.\n'
-        f'IMAGE MODEL CONTRACT: request {image_model} exactly. strict={strict_model}. Never silently substitute a different image model. If the image tool cannot honor an explicitly strict model, fail instead of pretending success.\n'
+        f'IMAGE MODEL CONTRACT: request model={image_model}, quality={image_quality}, canvas={size} exactly. strict={strict_model}. Never silently substitute a different image model or quality. If the image tool cannot honor an explicitly strict model, fail instead of pretending success.\n'
         f'{reference_lines}\n'
         'Use attached images only as continuity references required by the scene. '
-        f'Do not invent a different story. Request {size}.\n\n'
+        f'Do not invent a different story. Generate in the locked Episode aspect ratio and request exact canvas {size}; do not request a different provider ratio for later cropping.\n\n'
         f'{visual_block}'
         f'{frame_block}'
         f'<scene>\n{scene}\n</scene>\n\n'
@@ -76,7 +73,7 @@ def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str 
     )
 
 
-def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = 'gpt-image-2', strict_model: bool = False) -> float:
+def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = 'gpt-image-2', image_quality: str = 'high', strict_model: bool = False) -> float:
     scene = prompt_path.read_text(encoding='utf-8').strip()
     if not scene:
         raise BackendError('prompt is empty')
@@ -102,7 +99,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             try:
                 completed = subprocess.run(
                     cmd,
-                    input=worker_prompt(scene, local_refs, size, visual_contract, frame_contract_text, image_model, strict_model),
+                    input=worker_prompt(scene, local_refs, size, visual_contract, frame_contract_text, image_model, image_quality, strict_model),
                     text=True,
                     stdout=log_handle,
                     stderr=subprocess.STDOUT,
@@ -158,7 +155,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     raw_dir.mkdir(parents=True, exist_ok=True)
     raw_output = raw_dir / f'{int(args.frame):02d}-{int(time.time())}.png'
     frame_contract_text = frame_contract['prompt_contract'] if frame_contract else None
-    model_policy = image_model_policy.for_episode(ep, explicit=args.image_model)
+    model_policy = image_model_policy.for_episode(ep, explicit=getattr(args, 'image_model', None), explicit_quality=getattr(args, 'image_quality', None))
     manual_dir = os.environ.get('STORY_OS_MANUAL_RAW_DIR')
     manual_src = None
     if manual_dir:
@@ -174,11 +171,14 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         elapsed = 0.0
         backend_name = 'codex_desktop_interface_imagegen'
     else:
-        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['strict_model'])
+        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'])
         backend_name = 'codex_subscription'
     if output.exists() and args.overwrite:
         output.unlink()
-    norm = normalize(raw_output, output, width, height)
+    try:
+        norm = normalize(raw_output, output, width, height)
+    except NormalizeError as exc:
+        raise BackendError(f'{exc.code}: raw preserved at {raw_output}; {exc}') from exc
     return {
         'ok': True,
         'backend': backend_name,
@@ -214,9 +214,9 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
 def generate_legacy(args: argparse.Namespace) -> dict:
     prompt_path, refs, output, log = common_validate(args)
     size = args.size
-    legacy_model_policy = image_model_policy.resolve_model(explicit=args.image_model)
+    legacy_model_policy = image_model_policy.resolve_model(explicit=args.image_model, explicit_quality=getattr(args, 'image_quality', None))
     tmp_raw = output.with_name('.' + output.name + '.raw.png')
-    elapsed = invoke_codex(prompt_path, refs, tmp_raw, log, size, args.timeout, args.codex, None, None, legacy_model_policy['model'], legacy_model_policy['strict_model'])
+    elapsed = invoke_codex(prompt_path, refs, tmp_raw, log, size, args.timeout, args.codex, None, None, legacy_model_policy['model'], legacy_model_policy['quality'], legacy_model_policy['strict_model'])
     if output.exists() and args.overwrite:
         output.unlink()
     os.replace(tmp_raw, output)
@@ -235,6 +235,7 @@ def main() -> int:
     p.add_argument('--timeout', type=int, default=600)
     p.add_argument('--codex')
     p.add_argument('--image-model')
+    p.add_argument('--image-quality', choices=['high'])
     p.add_argument('--overwrite', action='store_true')
     p = sub.add_parser('generate')
     p.add_argument('--prompt-file', required=True, type=Path)
@@ -245,6 +246,7 @@ def main() -> int:
     p.add_argument('--timeout', type=int, default=600)
     p.add_argument('--codex')
     p.add_argument('--image-model')
+    p.add_argument('--image-quality', choices=['high'])
     p.add_argument('--overwrite', action='store_true')
     sub.add_parser('self-test')
     args = ap.parse_args()
@@ -252,9 +254,10 @@ def main() -> int:
         assert worker_prompt('x', [], '1024x1280').count('image_generation') == 1
         assert 'gpt-image-2' in worker_prompt('x', [], '1024x1280')
         assert '<visual_contract>' in worker_prompt('x', [], '1024x1280', 'reality first')
-        assert '<frame_contract>' in worker_prompt('x', [], '1024x1280', 'reality first', 'frame-contract-test')
-        assert provider_size(1080, 1350) == '1024x1280'
-        assert provider_size(1080, 1920) == '1024x1536'
+        assert '<frame_contract>' in worker_prompt('x', [], '1080x1350', 'reality first', 'frame-contract-test')
+        assert 'quality=high' in worker_prompt('x', [], '1080x1350')
+        assert provider_size(1080, 1350) == '1080x1350'
+        assert provider_size(1080, 1920) == '1080x1920'
         assert not valid_image(Path('__missing__'))
         print('CODEX SUBSCRIPTION IMAGE BACKEND SELF-TEST PASS')
         return 0

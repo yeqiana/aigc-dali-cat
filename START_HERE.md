@@ -64,7 +64,7 @@ Phase 10：真实发布后记录 `meta/publish-event.json`，不要修改已被 
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_BEGIN -->
 ## Runtime Request P0
 
-新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `gpt-image-2`；显式 image 禁止静默替换。当前 V2.1 Visual Lock 统一为 4 张，不再使用“3+4”双口径。
+新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `image_model=gpt-image-2`、`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 V2.1 Visual Lock 统一为 4 张，不再使用“3+4”双口径。
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_END -->
 
 ## 0. 黄金路径（Golden Path）
@@ -241,7 +241,7 @@ Batch 生图请求
 
 用户没有明确指定画风/质感时，默认解析：
 
-`M00｜MP4 × 网吧 × 流水席旧数码质感校准版`
+`M00｜现实生活纪实母版`
 
 但它只统一视觉语言；**本集年代和实际采集设备的物理表现优先**，禁止把现代手机硬做成旧低清设备。
 

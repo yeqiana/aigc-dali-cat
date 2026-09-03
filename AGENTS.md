@@ -23,7 +23,7 @@
 - [standards/字幕人话化与声音卡规范_V1.1.md](standards/字幕人话化与声音卡规范_V1.1.md)
 - [standards/生产引擎与画幅规范_V1.2.md](standards/生产引擎与画幅规范_V1.2.md)
 
-这些从属细则均不建立第二权威；冲突时以 `standards/制作规范_正式版.md` 为准。V1.8 起 M00「MP4 × 网吧 × 流水席旧数码质感校准版」在用户未指定时默认启用；显式视觉体系可覆盖，且年代/采集设备物理真实性永远高于母风格质感。
+这些从属细则均不建立第二权威；冲突时以 `standards/制作规范_正式版.md` 为准。M00「现实生活纪实母版」在用户未指定时默认启用；MP4、网吧、流水席、误入小镇只作为校准来源。显式视觉体系可覆盖，且年代/采集设备物理真实性永远高于母风格质感。
 
 
 <!-- STORY_OS_RUNTIME_REQUEST_P0_AGENTS_BEGIN -->
@@ -37,7 +37,7 @@
 - 用户说“剧情大概是…”：`user_seed`。必须强化和重写，禁止把用户原文直接拆成 20 张。
 - 用户说“必须保留/结尾必须”：`core_constraints`。硬约束必须保留，其他结构允许优化。
 - 只有用户明确说“剧情已经定了/不要改剧情”才使用 `locked_story`。
-- 用户不写 image：默认 `gpt-image-2`。
+- 用户不写 image：默认 `image_model=gpt-image-2`、`image_quality=high`；正式生产不得静默降级 Quality。
 - 用户显式指定 image：强绑定，禁止静默替换。
 - 当前 V2.1 Visual Lock 永远按 4 张口径执行；“3 张校准”只允许出现在明确 legacy-only 的兼容代码/历史说明中。
 
@@ -164,7 +164,7 @@ Visual Lock 不再只看三张“风格图”：先 baseline，随后 worst cond
 <!-- STORY_OS_V1_8_AGENTS_BEGIN -->
 ## V1.8 默认视觉路由
 
-Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / MP4 × 网吧 × 流水席旧数码质感校准版`，再按本集真实性卡决定实际设备表现。不得把“默认 M00”误解成“所有作品都必须旧低清”。
+Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / 现实生活纪实母版`，再按本集真实性卡决定实际设备表现。MP4、网吧、流水席、误入小镇只是校准来源；不得把“默认 M00”误解成“所有作品都必须旧低清”。
 
 当前推进统一调用稳定外部名 `evidence_gate.py`；`v18_gate.py` 只保留为历史兼容实现。Story/Visual Approval provenance、最新 Text Audit 与 Release 证据都不得漂移。
 <!-- STORY_OS_V1_8_AGENTS_END -->

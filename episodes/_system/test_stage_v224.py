@@ -101,7 +101,7 @@ def visual(args):
     started=time.monotonic()
     backend=codex_subscription_image.invoke_codex(
         prompt,[],raw,log,codex_subscription_image.provider_size(w,h),
-        args.timeout,args.codex,vc["text"],None,args.image_model,args.strict_model
+        args.timeout,args.codex,vc["text"],None,args.image_model,"high",args.strict_model
     )
     normalize(raw,out,w,h)
     report={**plan,"status":"VISUAL_TEST_GENERATED_PENDING_REVIEW",

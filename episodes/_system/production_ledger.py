@@ -20,6 +20,7 @@ MANIFEST_FILE = Path("meta/release-manifest.json")
 ENGINE_VERSION = "1.2"
 PROMPT_CHAR_LIMIT = 260
 PROMPT_BYTE_LIMIT = 900
+DEFAULT_IMAGE_QUALITY = "high"
 FRAME_STATES = {
     "PENDING",
     "GENERATING",
@@ -136,13 +137,15 @@ def read_manifest(ep: Path) -> dict | None:
 
 
 def resolve_episode_canvas(ep: Path, override: str | None = None):
-    if override:
-        return resolve_canvas_spec(override), "override"
     manifest = read_manifest(ep)
-    if manifest:
-        ratio = ((manifest.get("episode") or {}).get("aspect_ratio"))
-        if ratio:
-            return resolve_canvas_spec(ratio), "manifest"
+    manifest_ratio = ((manifest.get("episode") or {}).get("aspect_ratio")) if manifest else None
+    if override:
+        override_spec = resolve_canvas_spec(override)
+        if manifest_ratio and resolve_canvas_spec(manifest_ratio).aspect_ratio != override_spec.aspect_ratio:
+            raise SystemExit(f"aspect-ratio override {override_spec.aspect_ratio} conflicts with Episode manifest lock {manifest_ratio}")
+        return override_spec, "override"
+    if manifest_ratio:
+        return resolve_canvas_spec(manifest_ratio), "manifest"
     return resolve_canvas_spec(DEFAULT_ASPECT_RATIO), "default"
 
 
@@ -197,8 +200,21 @@ def init_ledger(ep: Path, *, count: int | None = None, ratio: str | None = None,
             "prompt_byte_limit": PROMPT_BYTE_LIMIT,
             "max_content_repairs_per_frame": 1,
             "technical_failures_consume_content_repair": False,
+            "image_quality": DEFAULT_IMAGE_QUALITY,
+            "normalize_enabled": True,
+            "preserve_raw": True,
+            "final_format": "PNG",
+            "resize_algorithm": "Lanczos",
+            "default_crop": "forbidden",
+            "imageops_fit": "exception_only",
+            "automatic_ratio_delta_max": 0.03,
+            "review_ratio_delta_max": 0.05,
+            "reject_ratio_delta_above": 0.05,
+            "noop_when_exact_match": True,
+            "technical_failure_triggers_generation": False,
         },
         "asset_roots": {
+            "raw": "media/raw",
             "originals": "media/candidates/originals",
             "repairs": "media/candidates/repairs",
             "approved": "media/approved",
@@ -460,10 +476,12 @@ def cmd_begin(args: argparse.Namespace) -> None:
         "prompt_bytes": len(text.encode("utf-8")),
         "capture_id": args.capture_id,
         "model": args.model,
+        "quality": args.quality,
         "canvas": {"aspect_ratio": c["aspect_ratio"], "width": c["width"], "height": c["height"]},
         "references": refs,
         "visual_profile": visual_provenance,
         "frame_contract": frame_contract_provenance,
+        "frame_contract_sha256": (frame_contract_provenance or {}).get("contract_sha256"),
     }
     attempt = {
         "attempt_id": uuid.uuid4().hex[:12],
@@ -908,6 +926,7 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--prompt-file")
     s.add_argument("--capture-id", required=True)
     s.add_argument("--model", default="default")
+    s.add_argument("--quality", choices=["high"], default=DEFAULT_IMAGE_QUALITY)
     s.add_argument("--reference", action="append", help="PATH::ROLE::KIND, KIND=identity|prop|location|capture_style")
     s.add_argument("--notes", default="")
     s.add_argument("--allow-long-prompt", action="store_true")

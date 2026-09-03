@@ -94,17 +94,27 @@ def compile_prompt_contract(ep: Path) -> dict:
     for k in [
         "reality_first","film_medium","color","texture","lighting","skin","sets",
         "era","wardrobe","people","ordinary_chinese_life_density",
-        "available_light_only","anomaly"
+        "subject_awareness","practical_available_light","available_light_only",
+        "cinematic_lighting","commercial_hdr","portrait_bokeh","camera_perfection",
+        "hero_shot","symmetrical_composition","beautification","skin_rendering",
+        "global_vintage_lut","cinematic_color_grading","white_balance","contrast",
+        "dynamic_range","noise","motion_blur","lens_artifacts","scene_cleaning",
+        "life_clutter","environment_imperfection","visual_polish_ceiling","anomaly",
+        "anomaly_environment_binding","spectacle_first","scale_reference",
+        "screen_ui_physics","camera_authorship","ghost_camera","capture_reason",
+        "save_reason","narrative_information_gain","narrative_redundancy",
+        "continuity","reference_assets","seed_dependency"
     ]:
         if k in dna:
             lines.append(f"{k}={_fmt(dna[k])}")
 
+    if "composition" in dna:
+        key = "composition" if profile.get("profile_id") == "M00" else "visual_profile_composition_hint_NON_AUTHORITY"
+        lines.append(f"{key}={_fmt(dna['composition'])}")
+
     # Keep photography only as medium/style context; it cannot control camera authorship or staging.
     if "photography" in dna:
         lines.append(f"visual_medium_photography={_fmt(dna['photography'])}")
-    if "composition" in dna:
-        lines.append(f"visual_profile_composition_hint_NON_AUTHORITY={_fmt(dna['composition'])}")
-
     if data.get("must_keep"):
         lines.append("must_keep=" + _fmt(data["must_keep"]))
     if data.get("forbidden"):
