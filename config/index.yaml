@@ -23,6 +23,7 @@ registries:
   visual_profiles: standards/visual_profiles
   capture_profiles: standards/capture_profiles/index.json
   capture_grammars: standards/capture_grammars
+  sequence_grammars: standards/sequence_grammars
   schemas: standards/schemas
   templates: standards/templates
   story_regressions: standards/story_regressions/cases.json

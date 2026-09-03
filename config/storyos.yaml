@@ -49,10 +49,15 @@ visual:
   # 默认设备档案。具体年代和设备物理真实性高于母风格质感。
   default_capture_profile_id: CP01
   capture_profile_registry: standards/capture_profiles/index.json
-  # 当前仓库仍使用兼容文件名；后续可通过本字段切换新 Grammar，
-  # 不需要再修改生产脚本。
+  # CG01 只定义单帧的摄影者、站位、随手拍行为与设备瑕疵物理。
+  # 它不再承载开篇节奏、镜头族变化或跨帧连续性等序列规则。
   default_capture_grammar_id: FIRST_PERSON_CASUAL_SNAPSHOT_V1
   capture_grammar_path: standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json
+
+  # SG01 定义一整集的拍摄者分配、开篇记忆、镜头族节奏、连续性和
+  # 屏幕信息连续性。可在 Episode 的 meta/sequence-grammar.json 显式覆盖。
+  default_sequence_grammar_id: SG01_PERSONAL_EVIDENCE_SEQUENCE_V1
+  sequence_grammar_path: standards/sequence_grammars/SG01_personal_evidence_sequence.json
 
 normalize:
   # NP01 只做技术标准化，不负责重新构图。
@@ -70,9 +75,10 @@ normalize:
   noop_when_exact_match: true
 
   # 比例偏差采用相对误差：abs(source-target)/target。
-  # ≤0.03 自动 resize；0.03–0.05 暂停复核；>0.05 Reject。
-  automatic_ratio_delta_max: 0.03
-  review_ratio_delta_max: 0.05
+  # ≤0.01 才允许技术性 Lanczos resize；0.01–0.03 必须人工复核；
+  # >0.03 直接 Reject，先检查 Generation Request，禁止用拉伸掩盖错误。
+  automatic_ratio_delta_max: 0.01
+  review_ratio_delta_max: 0.03
 
   # Normalize I/O 失败只在本地重试。重试耗尽后保留 RAW 并阻断，
   # 禁止为了后处理失败再次调用图片生成。

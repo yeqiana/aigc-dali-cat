@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
-  "story_os_version": "2.0",
+  "profile_version": "1.0",
+  "platform_min_version": "2.0.0",
   "profile_id": "CP06",
   "name": "action_cam",
   "display_name": "运动相机",

@@ -27,7 +27,8 @@ class StoryOSConfigTests(unittest.TestCase):
         self.assertEqual(storyos_config.get_path(config, "image.model"), "gpt-image-2")
         self.assertEqual(storyos_config.get_path(config, "image.quality"), "high")
         self.assertEqual(storyos_config.get_path(config, "visual.default_profile_id"), "M00")
-        self.assertEqual(storyos_config.get_path(config, "normalize.automatic_ratio_delta_max"), 0.03)
+        self.assertEqual(storyos_config.get_path(config, "normalize.automatic_ratio_delta_max"), 0.01)
+        self.assertEqual(storyos_config.get_path(config, "normalize.review_ratio_delta_max"), 0.03)
         self.assertEqual(storyos_config.get_path(config, "production.max_inflight_images"), 3)
 
     def test_stage_read_sets_start_with_config(self):

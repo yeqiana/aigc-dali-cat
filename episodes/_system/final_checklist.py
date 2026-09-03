@@ -104,7 +104,7 @@ def build(ep: Path, target: str | None, run_validators: bool):
         "## B. Golden Path 锁点",
         "",
         f"- {mark(current in STATES[1:])} Story Lock：故事/专业分镜已锁",
-        f"- {mark(current in STATES[2:])} Visual Lock：三张校准 + 四张视觉准入已锁",
+        f"- {mark(current in STATES[2:])} Visual Lock：ordinary baseline / worst / first anomaly / high-impact 四张准入已锁",
         f"- {mark(current in STATES[3:])} Production Lock：批量生产与逐帧审核完成",
         f"- {mark(current in STATES[4:])} Release Lock：发布版本已锁",
         "",

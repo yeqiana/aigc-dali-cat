@@ -15,6 +15,12 @@ STATES = canonical_stages()
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 HEX64_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 CALIBRATION_ROLES = ("baseline", "worst_condition", "first_major_anomaly")
+FOUR_ADMISSION_ROLES = (
+    "ordinary_baseline",
+    "worst_capture_condition",
+    "first_major_anomaly",
+    "high_impact_admission",
+)
 HARD_REVIEW_FIELDS = (
     "viewpoint_physics",
     "capture_profile_match",
@@ -182,6 +188,9 @@ def check_calibration(repo_root: Path, gates: dict, manifest: dict, findings: li
     if not isinstance(calibration, dict):
         findings.append(Finding("FAIL", "calibration", "visual.calibration must be object"))
         return
+    if calibration.get("policy") == "four_admission_v21":
+        check_four_admission(repo_root, visual, manifest, findings, metadata_only=metadata_only)
+        return
     total = frame_total(manifest)
     admissions = visual.get("admission_frames") if isinstance(visual.get("admission_frames"), list) else []
     seen: list[int] = []
@@ -208,6 +217,46 @@ def check_calibration(repo_root: Path, gates: dict, manifest: dict, findings: li
         findings.append(Finding("FAIL", "calibration_sheet", "visual.calibration_contact_sheet must be object"))
     else:
         check_hashed_asset(repo_root, sheet, findings, "visual.calibration_contact_sheet", metadata_only=metadata_only)
+
+
+def check_four_admission(repo_root: Path, visual: dict, manifest: dict, findings: list[Finding], *, metadata_only: bool) -> None:
+    """Validate the current four-frame Visual Lock; legacy three-frame calibration is separate."""
+    calibration = visual.get("calibration") or {}
+    items = calibration.get("items")
+    if not isinstance(items, list) or len(items) != len(FOUR_ADMISSION_ROLES):
+        findings.append(Finding("FAIL", "visual_lock_items", "four_admission_v21 requires exactly four calibration items"))
+        return
+    total = frame_total(manifest)
+    by_role: dict[str, dict] = {}
+    seen_frames: set[int] = set()
+    for index, item in enumerate(items):
+        where = f"visual.calibration.items[{index}]"
+        if not isinstance(item, dict):
+            findings.append(Finding("FAIL", "visual_lock_item", f"{where} must be object"))
+            continue
+        role = str(item.get("role") or "")
+        if role not in FOUR_ADMISSION_ROLES or role in by_role:
+            findings.append(Finding("FAIL", "visual_lock_role", f"{where}.role must be one distinct current Visual Lock role"))
+            continue
+        by_role[role] = item
+        frame = item.get("frame")
+        if total is None or isinstance(frame, bool) or not isinstance(frame, int) or not 1 <= frame <= total:
+            findings.append(Finding("FAIL", "visual_lock_frame", f"{where}.frame must be within body frame range"))
+        elif frame in seen_frames:
+            findings.append(Finding("FAIL", "visual_lock_duplicate", "four Visual Lock frames must be distinct"))
+        else:
+            seen_frames.add(frame)
+        if item.get("decision") != "passed":
+            findings.append(Finding("FAIL", "visual_lock_not_passed", f"{where}.decision must be passed"))
+        if not nonempty(item.get("frame_contract_sha256")):
+            findings.append(Finding("FAIL", "visual_lock_contract", f"{where}.frame_contract_sha256 required"))
+        check_hashed_asset(repo_root, item, findings, where, metadata_only=metadata_only)
+    missing = set(FOUR_ADMISSION_ROLES) - set(by_role)
+    if missing:
+        findings.append(Finding("FAIL", "visual_lock_roles", "missing roles: " + ", ".join(sorted(missing))))
+    admissions = visual.get("admission_frames")
+    if isinstance(admissions, list) and admissions and set(admissions) != seen_frames:
+        findings.append(Finding("FAIL", "visual_lock_admission_frames", "admission_frames must equal the four locked Visual Lock frames"))
 
 
 def check_references(repo_root: Path, gates: dict, findings: list[Finding], *, metadata_only: bool) -> None:

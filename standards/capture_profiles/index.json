@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
-  "story_os_version": "2.0",
+  "registry_version": "1.0",
+  "platform_min_version": "2.0.0",
   "default_profile_id": "CP01",
   "reference_budget": {
     "normal": 1,

@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Normalize an image to the exact Story OS episode canvas without overwriting the raw source."""
+"""Normalize an image to the exact Story OS episode canvas without overwriting the raw source.
+
+Only a near-exact provider ratio may be resized.  This is technical standardization,
+not geometric correction: larger ratio drift is held for review or rejected.
+"""
 from __future__ import annotations
 import argparse
 import json

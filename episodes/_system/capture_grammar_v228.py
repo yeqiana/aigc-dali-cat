@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import storyos_config
+import sequence_grammar
 
 SYSTEM = Path(__file__).resolve().parent
 ROOT = SYSTEM.parents[1]
@@ -92,20 +93,23 @@ def compile_capture_contract(ep: Path) -> dict:
     data = resolved["data"]
 
     authorship = data.get("camera_authorship") or {}
-    roster = data.get("camera_roster") or {}
     snap = data.get("snapshot_language") or {}
     moment = data.get("moment_contract") or {}
-    opening = data.get("opening_memory") or {}
-    diversity = data.get("shot_grammar_diversity") or {}
     defects = data.get("camera_defect_physics") or {}
-    memory = data.get("visual_memory_continuity") or {}
-    screen = data.get("screen_content_physics") or {}
+    sequence = sequence_grammar.resolve_grammar(ep)
+    sequence_data = sequence["data"]
+    roster = sequence_data.get("camera_roster") or {}
+    opening = sequence_data.get("opening_memory") or {}
+    diversity = sequence_data.get("shot_grammar_diversity") or {}
+    memory = sequence_data.get("visual_memory_continuity") or {}
+    screen = sequence_data.get("screen_content_physics") or {}
     interop = data.get("visual_profile_interop") or {}
     forbidden = data.get("forbidden") or []
     review = data.get("review_questions") or []
 
     lines = [
         f"capture_grammar={resolved['grammar_id']}",
+        f"sequence_grammar={sequence['sequence_grammar_id']}",
         "CAPTURE GRAMMAR HAS HIGHER PRIORITY THAN VISUAL PROFILE composition/photography when they conflict.",
         f"principle={data.get('principle') or ''}",
 
@@ -117,7 +121,7 @@ def compile_capture_contract(ep: Path) -> dict:
         _b("ghost_camera_forbidden", authorship.get("ghost_camera_forbidden"), True),
         _b("each_frame_must_resolve_camera_owner", authorship.get("each_frame_must_resolve_camera_owner"), True),
 
-        "CAMERA ROSTER:",
+        "SEQUENCE CAMERA ROSTER:",
         _b("primary_photographer_required", roster.get("primary_photographer_required"), True),
         f"primary_photographer_preferred_share={roster.get('primary_photographer_preferred_share', '70-80%')}",
         _b("secondary_requires_reason", roster.get("secondary_requires_reason"), True),
@@ -137,11 +141,11 @@ def compile_capture_contract(ep: Path) -> dict:
         _b("must_have_save_reason", moment.get("must_have_save_reason"), True),
         _b("avoid_result_only_showcase", moment.get("avoid_result_only_showcase"), True),
 
-        "OPENING MEMORY:",
+        "SEQUENCE OPENING MEMORY:",
         f"opening_goal={opening.get('goal') or 'establish relationship, ordinary life and emotional asset before anomaly'}",
         f"large_group_photo_rule={opening.get('large_group_photo_rule') or 'casual, unposed, physically sourced'}",
 
-        "SHOT DIVERSITY:",
+        "SEQUENCE SHOT DIVERSITY:",
         f"shot_diversity_rule={diversity.get('rule') or 'first person is logic, not a repeated hand+phone template'}",
         f"avoid_same_shot_family_more_than_consecutive={diversity.get('avoid_same_shot_family_more_than_consecutive', 2)}",
         f"ten_frame_distinct_shot_families_min={diversity.get('ten_frame_window_recommended_distinct_families_min', 4)}",
@@ -152,7 +156,7 @@ def compile_capture_contract(ep: Path) -> dict:
         _b("forbid_decorative_fake_damage", defects.get("forbid_decorative_fake_damage"), True),
         _b("forbid_every_night_frame_equally_blurred", defects.get("forbid_every_night_frame_equally_blurred"), True),
 
-        "VISUAL MEMORY:",
+        "SEQUENCE VISUAL MEMORY:",
         _b("time_of_day_must_progress_plausibly", memory.get("time_of_day_must_progress_plausibly"), True),
         _b("time_reversal_requires_explicit_flashback_or_jump", memory.get("time_reversal_requires_explicit_flashback_or_jump"), True),
         _b("no_independent_beauty_time_selection_per_frame", memory.get("no_independent_beauty_time_selection_per_frame"), True),
@@ -161,7 +165,7 @@ def compile_capture_contract(ep: Path) -> dict:
             "route_and_location", "weather", "lighting", "anomaly_evidence"
         ])),
 
-        "SCREEN CONTENT PHYSICS:",
+        "SEQUENCE SCREEN CONTENT PHYSICS:",
         _b("screen_must_be_internally_consistent", screen.get("must_be_internally_consistent"), True),
         _b("screen_must_match_scene_when_story_critical", screen.get("must_match_scene_time_route_and_action_when_story_critical"), True),
         _b("screen_reflection_and_orientation_must_be_physical", screen.get("screen_reflection_and_orientation_must_be_physical"), True),
@@ -169,7 +173,7 @@ def compile_capture_contract(ep: Path) -> dict:
 
         f"subject_visibility_rule={data.get('subject_visibility_rule') or ''}",
         f"selfie_rule={data.get('selfie_rule') or ''}",
-        "visual profile supplies texture/era/color/light; capture grammar supplies camera authorship, moment, shot diversity and camera physics",
+        "visual profile supplies texture/era/color/light; capture grammar supplies per-frame camera authorship, moment and camera physics; sequence grammar supplies multi-frame pacing and continuity",
         "do not convert film/cinematic texture into staged movie-still blocking",
     ]
 
@@ -182,6 +186,9 @@ def compile_capture_contract(ep: Path) -> dict:
         **{k: v for k, v in resolved.items() if k != "data"},
         "text": "\n".join(lines),
         "interop": interop,
+        "sequence_grammar": {
+            key: value for key, value in sequence.items() if key != "data"
+        },
         "camera_roster": roster,
         "shot_grammar_diversity": diversity,
         "camera_defect_physics": defects,
@@ -196,4 +203,5 @@ if __name__ == "__main__":
     c = compile_capture_contract(ROOT)
     assert "ghost_camera_forbidden=true" in c["text"]
     assert "repeated_hand_phone_distant_anomaly_template_forbidden=true" in c["text"]
-    print("CAPTURE GRAMMAR V2.2.8 SELF-TEST PASS")
+    assert c["sequence_grammar"]["sequence_grammar_id"] == sequence_grammar.DEFAULT_ID
+    print("CAPTURE + SEQUENCE GRAMMAR SELF-TEST PASS")

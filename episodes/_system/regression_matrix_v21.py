@@ -122,7 +122,7 @@ def run_matrix() -> dict:
     report={
         "schema_version":1,
         "generated_at":now(),
-        "story_os_version":manifest.get("story_os_version"),
+        "story_os_version":manifest.get("platform_version"),
         "summary":{"passed":not failed,"case_count":len(cases),"failed":len(failed)},
         "cases":cases,
     }

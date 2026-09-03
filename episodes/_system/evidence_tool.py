@@ -221,7 +221,7 @@ def build_parser() -> argparse.ArgumentParser:
     x.add_argument("--file", required=True)
     x.set_defaults(func=cmd_import_authenticity)
 
-    x = sub.add_parser("record-calibration", help="lock one of the three realism calibration frames by SHA-256")
+    x = sub.add_parser("record-calibration", help="LEGACY_ONLY: lock one of the three realism calibration frames by SHA-256")
     x.add_argument("episode_dir")
     x.add_argument("--role", required=True, choices=sorted(CALIBRATION_ROLES))
     x.add_argument("--frame", required=True)

@@ -19,13 +19,18 @@ def main():
     grammar_path = ROOT / "standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json"
     g = json.loads(grammar_path.read_text(encoding="utf-8-sig"))
 
-    assert g["story_os_version"] == "2.2.8"
+    assert g["grammar_version"] == "1.2"
+    assert g["platform_min_version"] == "2.2.2"
     assert g["camera_authorship"]["ghost_camera_forbidden"] is True
-    assert g["camera_roster"]["primary_photographer_required"] is True
-    assert g["shot_grammar_diversity"]["repeated_hand_phone_distant_anomaly_template_forbidden"] is True
+    assert "camera_roster" not in g
+    assert "shot_grammar_diversity" not in g
     assert g["camera_defect_physics"]["defects_must_have_physical_cause"] is True
-    assert g["visual_memory_continuity"]["time_of_day_must_progress_plausibly"] is True
-    assert g["screen_content_physics"]["must_be_internally_consistent"] is True
+    sequence_path = ROOT / "standards/sequence_grammars/SG01_personal_evidence_sequence.json"
+    sequence = json.loads(sequence_path.read_text(encoding="utf-8-sig"))
+    assert sequence["camera_roster"]["primary_photographer_required"] is True
+    assert sequence["shot_grammar_diversity"]["repeated_hand_phone_distant_anomaly_template_forbidden"] is True
+    assert sequence["visual_memory_continuity"]["time_of_day_must_progress_plausibly"] is True
+    assert sequence["screen_content_physics"]["must_be_internally_consistent"] is True
 
     bridge = (SYSTEM / "visual_profile_bridge_v224.py").read_text(encoding="utf-8")
     assert "import capture_grammar_v228" in bridge
@@ -38,7 +43,7 @@ def main():
     rules = (ROOT / "rules/photography_os_default_rules.md").read_text(encoding="utf-8")
     assert "STORY_OS_V228_PHOTOGRAPHY_CONTINUITY_START" in rules
 
-    print("STORY OS V2.2.8 R2 LOCAL-SAFE INTEGRATION SELF-TEST PASS")
+    print("CAPTURE/SEQUENCE GRAMMAR LOCAL-SAFE INTEGRATION SELF-TEST PASS")
 
 if __name__ == "__main__":
     main()

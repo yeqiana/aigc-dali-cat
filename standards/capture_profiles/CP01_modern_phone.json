@@ -1,6 +1,7 @@
 {
-  "schema_version": 1,
-  "story_os_version": "2.0",
+  "schema_version": 2,
+  "profile_version": "1.1",
+  "platform_min_version": "2.2.2",
   "profile_id": "CP01",
   "name": "modern_phone",
   "display_name": "现代智能手机",
@@ -11,7 +12,13 @@
     "motion": "handheld_blur_or_rolling_shutter_when_causal",
     "focus": "fast_can_hunt",
     "white_balance": "device_dependent",
-    "compression": "modern_jpeg_heic",
+    "simulated_capture_encoding": "modern_jpeg_or_heic_source_characteristics",
+    "fake_vintage_noise": "forbidden",
+    "fake_low_resolution": "forbidden",
     "edge_behavior": "device_dependent"
+  },
+  "output_policy": {
+    "formal_delivery_format": "PNG",
+    "simulated_capture_encoding_is_not_delivery_format": true
   }
 }

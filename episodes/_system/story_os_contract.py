@@ -39,9 +39,12 @@ def load_contract(root: Path | None = None) -> dict:
 
 
 def story_os_version(root: Path | None = None) -> str:
-    value = load_contract(root).get("story_os_version")
+    # Keep the public helper name for existing Episode evidence. The root
+    # manifest deliberately calls this platform_version so static modules do
+    # not each pretend to define the Story OS release.
+    value = load_contract(root).get("platform_version")
     if not isinstance(value, str) or not re_version(value):
-        raise RuntimeError(f"story_os_manifest.json has invalid story_os_version: {value!r}")
+        raise RuntimeError(f"story_os_manifest.json has invalid platform_version: {value!r}")
     return value
 
 

@@ -41,7 +41,7 @@ class StoryOSContractHardeningTests(unittest.TestCase):
         self.assertEqual(data["stages"], list(contract.CANONICAL_STAGES))
 
     def test_product_version_drives_engine_and_runtime(self) -> None:
-        version = self.manifest()["story_os_version"]
+        version = self.manifest()["platform_version"]
         self.assertEqual(contract.story_os_version(ROOT), version)
         self.assertEqual(episode_state.SYSTEM_VERSION, version)
         self.assertEqual(episode_state.STATES, list(contract.CANONICAL_STAGES))
@@ -54,12 +54,13 @@ class StoryOSContractHardeningTests(unittest.TestCase):
         gates = episode_state.new_gates("TEST")
         self.assertEqual(gates["tool_version"], version)
 
-    def test_runtime_and_authority_versions_match_manifest(self) -> None:
-        version = self.manifest()["story_os_version"]
+    def test_runtime_and_authority_declare_module_and_minimum_platform_versions(self) -> None:
         runtime = json.loads((ROOT / "runtimes/runtime-contract.json").read_text(encoding="utf-8-sig"))
         authority = json.loads((ROOT / "standards/AUTHORITY_INDEX.json").read_text(encoding="utf-8-sig"))
-        self.assertEqual(runtime["story_os_version"], version)
-        self.assertEqual(authority["story_os_version"], version)
+        self.assertIn("module_version", runtime)
+        self.assertIn("platform_min_version", runtime)
+        self.assertIn("module_version", authority)
+        self.assertIn("platform_min_version", authority)
 
     def test_skill_does_not_duplicate_core_engine(self) -> None:
         scripts = ROOT / "skills/dali-cat-story/scripts"
@@ -72,12 +73,12 @@ class StoryOSContractHardeningTests(unittest.TestCase):
         primary = (ROOT / "skills/dali-cat-story/SKILL.md").read_text(encoding="utf-8-sig")
         agents = (ROOT / ".agents/skills/dali-cat-story/SKILL.md").read_text(encoding="utf-8-sig")
         self.assertEqual(primary, agents)
-        self.assertIn(self.manifest()["story_os_version"], primary)
+        self.assertIn(self.manifest()["platform_version"], primary)
         self.assertIn("Skill is an adapter, not a Story OS copy", primary)
 
     def test_story_gates_template_tracks_current_contract(self) -> None:
         template = json.loads((ROOT / "standards/templates/story-gates.template.json").read_text(encoding="utf-8-sig"))
-        self.assertEqual(template["tool_version"], self.manifest()["story_os_version"])
+        self.assertEqual(template["tool_version"], self.manifest()["platform_version"])
         self.assertTrue(template["machine_contract"]["strict"])
         self.assertIn("authenticity_card", template["visual"])
         self.assertIn("production_evidence", template)

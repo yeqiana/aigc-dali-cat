@@ -23,7 +23,9 @@ class EngineeringTests(unittest.TestCase):
     def test_version_contract(self):
         data = json.loads((ROOT / 'runtimes/runtime-contract.json').read_text(encoding='utf-8'))
         manifest = json.loads((ROOT / 'story_os_manifest.json').read_text(encoding='utf-8-sig'))
-        self.assertEqual(data['story_os_version'], manifest['story_os_version'])
+        self.assertIn('module_version', data)
+        self.assertIn('platform_min_version', data)
+        self.assertEqual(manifest['platform_version'], '2.2.2')
         self.assertEqual(data['common_rules']['stable_evidence_gate'], 'episodes/_system/evidence_gate.py')
 
     def test_runtime_override(self):

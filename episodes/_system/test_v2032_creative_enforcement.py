@@ -22,7 +22,7 @@ import visual_review  # noqa: E402
 class CreativeEnforcementTests(unittest.TestCase):
     def test_product_version(self):
         manifest = json.loads((ROOT / "story_os_manifest.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["story_os_version"], story_os_contract.story_os_version(ROOT))
+        self.assertEqual(manifest["platform_version"], story_os_contract.story_os_version(ROOT))
         self.assertEqual(manifest["stages"], [
             "IDEA_LOCKED", "STORYBOARD_LOCKED", "VISUAL_CALIBRATED",
             "PRODUCTION_PASSED", "PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED",
@@ -72,7 +72,7 @@ class CreativeEnforcementTests(unittest.TestCase):
             "critic_provenance": {"runtime": "CODEX_ISOLATED", "isolated_session": True, "attempt": 1},
             "calibration": [
                 {"id": x["id"], "sha256": h, "frame_contract_sha256": fh,
-                 "checks": {k: True for k in visual_lock_v21.CHECKS}, "issues": []}
+                 "checks": {k: True for k in visual_lock_v21.checks_for_version("2.1.0")}, "issues": []}
                 for x in assets
             ],
             "issue_codes": [],

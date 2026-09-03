@@ -119,9 +119,9 @@ def collect_errors(root: Path | None = None) -> list[str]:
     except Exception as exc:
         return [f"invalid story_os_manifest.json: {exc}"]
 
-    version = manifest.get("story_os_version")
+    version = manifest.get("platform_version")
     if not isinstance(version, str) or not version.strip():
-        errors.append("manifest story_os_version must be a non-empty string")
+        errors.append("manifest platform_version must be a non-empty string")
         version = "<invalid>"
     if manifest.get("contract_schema") != 1:
         errors.append("manifest contract_schema must remain 1")
@@ -160,8 +160,9 @@ def collect_errors(root: Path | None = None) -> list[str]:
             continue
         try:
             data = read_json(p)
-            if data.get("story_os_version") != version:
-                errors.append(f"{rel.as_posix()} story_os_version must equal manifest ({version})")
+            minimum = data.get("platform_min_version")
+            if not isinstance(minimum, str) or not minimum.strip():
+                errors.append(f"{rel.as_posix()} platform_min_version must be a non-empty string")
         except Exception as exc:
             errors.append(f"invalid {rel.as_posix()}: {exc}")
 
@@ -468,7 +469,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         for error in errors:
             print(f"  - {error}")
         return 1
-    version = load_contract(repo_root()).get("story_os_version")
+    version = load_contract(repo_root()).get("platform_version")
     print(f"[PASS] Story OS V{version} contract sync")
     print("       one product version -> one canonical engine -> thin adapters")
     return 0

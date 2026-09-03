@@ -75,7 +75,12 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("production must use continuous_first_completed=true and wave_barrier=false")
     if get_path(cfg, "production.ledger_single_writer") is not True:
         errors.append("production.ledger_single_writer must be true")
-    for key in ("visual.default_profile_path", "visual.capture_profile_registry", "visual.capture_grammar_path"):
+    for key in (
+        "visual.default_profile_path",
+        "visual.capture_profile_registry",
+        "visual.capture_grammar_path",
+        "visual.sequence_grammar_path",
+    ):
         raw = get_path(cfg, key)
         if not isinstance(raw, str) or not (ROOT / raw).is_file():
             errors.append(f"{key} points to a missing file: {raw}")

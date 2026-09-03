@@ -361,6 +361,7 @@ def resolve_frame(ep: Path, frame: int | str) -> dict:
             "interaction": row.get("interaction") or {},
         },
         "camera_roster_policy": capture.get("camera_roster") or {},
+        "sequence_grammar": capture.get("sequence_grammar") or {},
         "camera_defect_physics": capture.get("camera_defect_physics") or {},
         "visual_memory_continuity": (
             capture.get("visual_memory_continuity") or {}

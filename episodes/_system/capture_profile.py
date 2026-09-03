@@ -7,7 +7,8 @@ ROOT=Path(__file__).resolve().parents[2]
 _CONFIG=storyos_config.load_config()
 IDX=ROOT/str(storyos_config.get_path(_CONFIG,"visual.capture_profile_registry"))
 DEFAULT_PROFILE_ID=str(storyos_config.get_path(_CONFIG,"visual.default_capture_profile_id"))
-REQ={"dynamic_range","low_light","motion","focus","white_balance","compression","edge_behavior"}
+BASE_REQ={"dynamic_range","low_light","motion","focus","white_balance","compression","edge_behavior"}
+CP01_REQ={"dynamic_range","low_light","motion","focus","white_balance","simulated_capture_encoding","fake_vintage_noise","fake_low_resolution","edge_behavior"}
 def validate():
     d=json.loads(IDX.read_text(encoding="utf-8")); errors=[]; seen=set()
     for row in d.get("profiles",[]):
@@ -15,7 +16,7 @@ def validate():
         if not pid or pid in seen: errors.append("duplicate/missing profile id"); continue
         seen.add(pid); p=IDX.parent/row["file"]
         if not p.is_file(): errors.append(f"{pid}: file missing"); continue
-        x=json.loads(p.read_text(encoding="utf-8")); missing=REQ-set((x.get("physics") or {}).keys())
+        x=json.loads(p.read_text(encoding="utf-8")); required=CP01_REQ if pid=="CP01" else BASE_REQ; missing=required-set((x.get("physics") or {}).keys())
         if x.get("profile_id")!=pid: errors.append(f"{pid}: id mismatch")
         if missing: errors.append(f"{pid}: missing {sorted(missing)}")
     if DEFAULT_PROFILE_ID not in seen: errors.append("configured default missing")

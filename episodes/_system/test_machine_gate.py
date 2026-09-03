@@ -91,6 +91,20 @@ class MachineGateTest(unittest.TestCase):
         sheet = write_asset(self.root, "episodes/99_test/production/contact-sheets/calibration.jpg", b"sheet")
         gates["visual"]["calibration_contact_sheet"] = sheet
 
+    def populate_four_admission(self, gates: dict) -> None:
+        items = []
+        for n, role in enumerate(machine_gate.FOUR_ADMISSION_ROLES, 1):
+            asset = write_asset(self.root, f"episodes/99_test/production/visual-lock-{n}.png", f"visual-lock-{n}".encode())
+            items.append({
+                "id": f"V-{n}", "role": role, "frame": n,
+                "asset_path": asset["path"], "sha256": asset["sha256"],
+                "frame_contract_sha256": (str(n) * 64)[:64], "decision": "passed", "note": "ok",
+            })
+        gates["visual"]["admission_frames"] = [1, 2, 3, 4]
+        gates["visual"]["calibration"] = {
+            "schema_version": 2, "policy": "four_admission_v21", "items": items,
+        }
+
     def review(self, key: str, *, bad: bool = False) -> dict:
         return {
             "schema_version": 1,
@@ -144,6 +158,14 @@ class MachineGateTest(unittest.TestCase):
         gates = self.gates()
         self.populate_calibration(gates)
         write_json(self.ep / "meta/release-manifest.json", self.manifest())
+        write_json(self.ep / "meta/story-gates.json", gates)
+        findings = machine_gate.validate(self.ep, "VISUAL_CALIBRATED")
+        self.assertFalse(any(x.level == "FAIL" for x in findings), [str(x) for x in findings])
+
+    def test_visual_gate_passes_with_four_admission_contract(self) -> None:
+        gates = self.gates()
+        self.populate_four_admission(gates)
+        write_json(self.ep / "meta/release-manifest.json", self.manifest(total=4))
         write_json(self.ep / "meta/story-gates.json", gates)
         findings = machine_gate.validate(self.ep, "VISUAL_CALIBRATED")
         self.assertFalse(any(x.level == "FAIL" for x in findings), [str(x) for x in findings])

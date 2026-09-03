@@ -137,6 +137,7 @@ def compile_prompt_contract(ep: Path) -> dict:
             "selection": capture["selection"],
             "authority_source": capture["authority_source"],
         },
+        "sequence_grammar": capture["sequence_grammar"],
         "text": "\n".join(lines),
     }
 

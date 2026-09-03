@@ -1,6 +1,7 @@
 {
   "schema_version": "1.0",
-  "story_os_version": "2.1.0",
+  "module_version": "1.0",
+  "platform_min_version": "2.1.0",
   "purpose": "Routing only. This file does not create creative rules or a second authority.",
   "precedence": [
     "canonical",
@@ -237,9 +238,9 @@
       "resize_algorithm": "Lanczos",
       "default_crop": "forbidden",
       "imageops_fit": "exception_only",
-      "automatic_ratio_delta_max": 0.03,
-      "review_ratio_delta_max": 0.05,
-      "reject_above": 0.05,
+      "automatic_ratio_delta_max": 0.01,
+      "review_ratio_delta_max": 0.03,
+      "reject_above": 0.03,
       "noop_when_exact_match": true,
       "technical_failure_triggers_generation": false
     },

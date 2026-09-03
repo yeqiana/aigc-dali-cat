@@ -1,4 +1,4 @@
-# Story OS — START HERE V2.1.0
+# Story OS — START HERE V2.2.2
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
@@ -64,7 +64,7 @@ Phase 10：真实发布后记录 `meta/publish-event.json`，不要修改已被 
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_BEGIN -->
 ## Runtime Request P0
 
-新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `image_model=gpt-image-2`、`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 V2.1 Visual Lock 统一为 4 张，不再使用“3+4”双口径。
+新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `image_model=gpt-image-2`、`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 Visual Lock 固定为 4 张准入帧。
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_END -->
 
 ## 0. 黄金路径（Golden Path）
@@ -74,7 +74,7 @@ Phase 10：真实发布后记录 `meta/publish-event.json`，不要修改已被 
 → 选题 / 去同质化
 → 锁故事与专业分镜
 → 建真实性卡与连续性锚点
-→ 三张真实性校准 + 四张视觉准入
+→ 四张 Visual Lock 准入（baseline / worst / first anomaly / high-impact）
 → Visual Lock
 → 批量生产
 → 逐帧审核 / 必要返修
@@ -117,7 +117,7 @@ IDEA_LOCKED
 除非用户已经明确授权连续执行，否则以下节点必须显式确认后再继续：
 
 1. **Story Lock**：故事与专业分镜是否锁定。
-2. **Visual Lock**：三张真实性校准与四张视觉准入是否锁定。
+2. **Visual Lock**：四张准入帧是否完成统一 Critic 并锁定。
 3. **Repair Lock**：需要返修哪些图；未点名已通过帧不得连带重做。
 4. **Release Lock**：标题、封面、字幕、简介、话题、发布图是否为最终版。
 
@@ -129,11 +129,11 @@ IDEA_LOCKED
 
 ```text
 人物 / 场景 / 设备真实性基线
-→ 三张真实性校准
-   A. 普通相册基线
-   B. 最差但仍成立条件
-   C. 首次重大异常
-→ 四张视觉准入帧
+→ 四张 Visual Lock 准入帧
+   A. ordinary baseline
+   B. worst capture condition
+   C. first major anomaly
+   D. high-impact admission
 → VISUAL_CALIBRATED
 → 剩余图片批量生产
 ```

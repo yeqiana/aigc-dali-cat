@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "story_os_version": "2.2",
+  "platform_min_version": "2.2.0",
   "profile_id": "SPIRITED_AWAY_LIVE_ACTION_V1",
   "profile_version": "1.1",
   "profile_name": "1990年代日本真人奇幻电影（35mm胶片质感）",

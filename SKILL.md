@@ -1,4 +1,4 @@
-# Story OS — Repository Execution Contract V2.1.0
+# Story OS — Repository Execution Contract V2.2.2
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
@@ -79,7 +79,7 @@
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_BEGIN -->
 ## Runtime Request P0
 
-新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `image_model=gpt-image-2`、`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 V2.1 Visual Lock 统一为 4 张，不再使用“3+4”双口径。
+新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `image_model=gpt-image-2`、`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 Visual Lock 固定为 4 张准入帧。
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_END -->
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->
@@ -87,7 +87,7 @@
 
 **第一入口：先读 `START_HERE.md`。** 该文件只负责路由，不建立第二套创作规范。
 
-Golden Path：`选题/去同质化 → Story Lock → 真实性卡/连续性锚点 → 三张校准+四张视觉准入 → Visual Lock → Batch → 逐帧审核/必要返修 → Final Checklist → Release → 数据回填`。
+Golden Path：`选题/去同质化 → Story Lock → 真实性卡/连续性锚点 → 四张 Visual Lock 准入 → Batch → 逐帧审核/必要返修 → Final Checklist → Release → 数据回填`。
 
 - 创作规则唯一权威仍是 `standards/制作规范_正式版.md`。
 - 阶段唯一事实源仍是 `meta/episode-state.json`。
@@ -181,9 +181,8 @@ V1.5 严格机器门禁追加：
 - 项目级真实性卡完整：年代、地点、拍摄者、拍摄原因、主设备、稳定/受限/失控三种状态
 - 辅助采集设备最多 2 种且必须有剧情来源
 - 当前第一视角设备或拍摄者若完整入镜，必须登记物理解释
-- 三张校准必须分别为：普通相册基线 / 最差但成立条件 / 首次重大异常
-- 三张校准必须是三个不同图号，且属于四张视觉准入帧
-- 三张校准资产和联系表必须保存 SHA-256 并保持不变
+- 四张 Visual Lock 准入必须分别为：普通相册基线 / 最差但成立条件 / 首次重大异常 / 高冲击异常
+- 四张准入必须是四个不同图号，并保存 SHA-256 与统一 Review 证据
 - 若本集声明 `references.required=true`，所有 required anchors 都必须有已通过且 hash 锁定的 reference asset
 
 ### PRODUCTION_GATE → 进入 PRODUCTION_PASSED 前
@@ -259,13 +258,8 @@ python episodes/_system/evidence_tool.py init-reviews <episode_dir>
 # 把已完成的真实性卡写回 story-gates
 python episodes/_system/evidence_tool.py import-authenticity <episode_dir> --file <card.json>
 
-# 锁三张校准
-python episodes/_system/evidence_tool.py record-calibration <episode_dir> --role baseline --frame 01 --asset <01.png> --decision passed
-python episodes/_system/evidence_tool.py record-calibration <episode_dir> --role worst_condition --frame 10 --asset <10.png> --decision passed
-python episodes/_system/evidence_tool.py record-calibration <episode_dir> --role first_major_anomaly --frame 04 --asset <04.png> --decision passed
-
-# 生成三张校准联系表并写回 hash
-python episodes/_system/calibration_sheet.py <episode_dir>
+# V2.1+ 使用 visual_lock_v21.py 的四帧准入计划、队列与统一 Critic。
+# legacy 的三帧校准联系表仅用于历史 Episode 兼容，不能作为当前 Visual Lock 入口。
 
 # 连续性参考资产（仅需要时）
 python episodes/_system/evidence_tool.py reference-policy <episode_dir> --required --anchor protagonist --anchor location

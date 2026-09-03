@@ -11,6 +11,7 @@ try:
 except ImportError as exc:
     raise SystemExit("Pillow is required: python -m pip install Pillow") from exc
 
+# Legacy-only: current V2.1+ Visual Lock is validated by visual_lock_v21.py.
 ROLES = (
     ("baseline", "普通相册基线"),
     ("worst_condition", "最差但成立条件"),
@@ -64,7 +65,7 @@ def fit_crop(img: Image.Image, width: int, height: int) -> Image.Image:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="Build and hash the three-frame realism calibration sheet")
+    p = argparse.ArgumentParser(description="LEGACY_ONLY: build and hash the three-frame realism calibration sheet")
     p.add_argument("episode_dir")
     p.add_argument("--output")
     p.add_argument("--thumb-width", type=int, default=360)

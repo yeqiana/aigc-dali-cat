@@ -1,5 +1,11 @@
 {
-  "story_os_version": "2.2.1",
+  "platform_version": "2.2.2",
+  "version_semantics": {
+    "platform_version": "Root product release identifier; the only platform version authority.",
+    "schema_version": "Shape of this specific document.",
+    "module_version": "Version of an independently evolving contract or module.",
+    "platform_min_version": "Lowest Story OS platform version that may consume a module."
+  },
   "contract_schema": 1,
   "release_name": "World Identity + Character Continuity Patch",
   "canonical_engine": "episodes/_system",

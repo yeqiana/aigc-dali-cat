@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "story_os_version": "1.8",
   "profile_id": "M00",
   "profile_version": "2.0",
+  "platform_min_version": "1.8.0",
   "profile_name": "现实生活纪实母版",
   "profile_name_en": "Reality-First Everyday Documentary Master",
   "default_when_unspecified": true,

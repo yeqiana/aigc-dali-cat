@@ -70,8 +70,8 @@ class NormalizePolicyTests(unittest.TestCase):
             root = Path(td)
             review = root / "review.png"
             reject = root / "reject.png"
-            Image.new("RGB", (96, 125), (1, 2, 3)).save(review, "PNG")
-            Image.new("RGB", (90, 125), (1, 2, 3)).save(reject, "PNG")
+            Image.new("RGB", (98, 125), (1, 2, 3)).save(review, "PNG")
+            Image.new("RGB", (96, 125), (1, 2, 3)).save(reject, "PNG")
             with self.assertRaises(canvas_normalize.NormalizeError) as ctx:
                 canvas_normalize.normalize(review, root / "review-out.png", 100, 125)
             self.assertEqual(ctx.exception.code, "NORMALIZE_REVIEW")
