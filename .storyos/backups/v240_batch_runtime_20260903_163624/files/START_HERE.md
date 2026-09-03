@@ -1,0 +1,373 @@
+# Story OS — START HERE V2.2.2
+
+> 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
+>
+> 创作规则唯一权威：`standards/制作规范_正式版.md`  
+> 阶段状态唯一事实源：`<episode>/meta/episode-state.json`
+
+<!-- STORY_OS_V2_1_CONCEPT_BEGIN -->
+## V2.1 概念野心与图像传播入口
+
+新篇 Story Lock 前：最近机制上下文 → 8–12 候选放飞 → Concept Ambition → Cover/Mid/Climax 三传播图 → 无字测试 → 最终题 → Story/Storyboard → Story Critic + Recent-5 Semantic。
+
+核心原则：**概念不要克制，镜头必须真实。** 真实性限制采集表现，不限制异常尺度、虚构遗址、梦境空间或不存在的世界规则。
+<!-- STORY_OS_V2_1_CONCEPT_END -->
+
+<!-- STORY_OS_V2_1_PHASE3_BEGIN -->
+## V2.1 Phase 3：Environment / Impact
+
+Story Lock 通过后、Visual Lock 前必须完成：
+`Environment Contract → Frame Directive → environment_contract.py verify`。
+
+环境是物理条件，不是滤镜；异常可以很大，但高冲击帧必须有现实尺度参照、明确 escalation_from，并保持真实拍摄物理。
+<!-- STORY_OS_V2_1_PHASE3_END -->
+
+<!-- STORY_OS_V2_1_PHASE4_BEGIN -->
+## V2.1 Phase 4：Resolved Frame Contract
+
+Environment / Impact Contract PASS 后、Visual Lock 校准前：
+
+```text
+python episodes/_system/frame_contract.py compile-all <episode>
+python episodes/_system/frame_contract.py verify <episode>
+```
+
+每帧正式生成与最终审核必须绑定同一个 `frame_contract_sha256`。`meta/runtime/contracts/` 只是派生缓存，不是新权威源。
+<!-- STORY_OS_V2_1_PHASE4_END -->
+
+<!-- STORY_OS_V2_1_PHASE56_BEGIN -->
+## V2.1 Phase 5 + 6：Visual Lock / 并发生产
+
+Visual Lock 固定为四层准入：
+
+`ordinary baseline → worst condition → first anomaly → high-impact admission`
+
+baseline 先生成，后三张允许有界并发。统一 Visual Lock Critic PASS 后，Batch 统一使用 `image_scheduler.py`，默认最多 3 个 image worker；技术失败只阻塞依赖帧，无关帧继续。
+<!-- STORY_OS_V2_1_PHASE56_END -->
+
+<!-- STORY_OS_V2_1_PHASE78_BEGIN -->
+## V2.1 Phase 7 + 8：Fast Scout / Final Snapshot
+
+Phase 7：高风险帧生成后做 Fast Scout；`PASS_FAST` 不是 Production PASS，`REPAIR_NOW` 才提前返修，低风险/不确定统一交给 Final Critic。
+
+Phase 8：Release/Compliance/Text/Frame 全部 PASS 后冻结 `meta/final-candidate-snapshot.json`。PUBLISH_READY 和 Delivery Adapter 都必须验证该 Snapshot；ZIP 不再重新扫描“当前最新文件”。
+<!-- STORY_OS_V2_1_PHASE78_END -->
+
+<!-- STORY_OS_V2_1_PHASE910_BEGIN -->
+## V2.1 Phase 9 + 10：系统闭环
+
+Phase 9：`migrate_v21.py` 默认只读；旧 Episode 保持 LEGACY_COMPAT，不补造 V2.1 PASS evidence。安装时运行完整 regression matrix，并用 `workflow_observability.py` 汇总慢步骤、并发、失败类型和证据状态。
+
+Phase 10：真实发布后记录 `meta/publish-event.json`，不要修改已被 Final Snapshot 冻结的 release-manifest。6h/24h/48h/7d 数据写入 post-publish evidence；48h 达标后推进唯一 Stage `DATA_REVIEWED`，并生成下一篇 `learning packet`。
+<!-- STORY_OS_V2_1_PHASE910_END -->
+
+<!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_BEGIN -->
+## Runtime Request P0
+
+新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `image_model=gpt-image-2`、`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 Visual Lock 固定为 4 张准入帧。
+<!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_END -->
+
+## 0. 黄金路径（Golden Path）
+
+```text
+恢复上下文
+→ 选题 / 去同质化
+→ 锁故事与专业分镜
+→ 建真实性卡与连续性锚点
+→ 四张 Visual Lock 准入（baseline / worst / first anomaly / high-impact）
+→ Visual Lock
+→ 批量生产
+→ 逐帧审核 / 必要返修
+→ Final Checklist
+→ 发布
+→ 6h / 24h / 48h / 7d 数据回填
+```
+
+机器状态仍只使用仓库原生七阶段：
+
+```text
+IDEA_LOCKED
+→ STORYBOARD_LOCKED
+→ VISUAL_CALIBRATED
+→ PRODUCTION_PASSED
+→ PUBLISH_READY
+→ PUBLISHED
+→ DATA_REVIEWED
+```
+
+**不要新建第二套 stage / status / workflow 状态。**
+
+## 1. 每次任务只按这个顺序读
+
+1. `config/storyos.yaml`：当前生效生产配置，先校验
+2. `config/index.yaml`：仓库索引与当前阶段最小读取集
+3. 本文件 `START_HERE.md`
+4. 根目录 `SKILL.md`
+5. 根目录 `AGENTS.md`
+6. `standards/制作规范_正式版.md`
+7. `standards/AUTHORITY_INDEX.json` 中与当前任务匹配的 active 从属细则
+8. 目标剧集 README / docs / 锁定分镜
+9. 目标剧集 `meta/episode-state.json`
+10. 若 strict=true，再读索引声明的必要 evidence
+
+不要为了“更保险”把整个 `standards/` 全部读一遍。旧版本和 superseded 文件只用于历史追溯。
+
+## 2. 四个必须停下来的人工锁点
+
+除非用户已经明确授权连续执行，否则以下节点必须显式确认后再继续：
+
+1. **Story Lock**：故事与专业分镜是否锁定。
+2. **Visual Lock**：四张准入帧是否完成统一 Critic 并锁定。
+3. **Repair Lock**：需要返修哪些图；未点名已通过帧不得连带重做。
+4. **Release Lock**：标题、封面、字幕、简介、话题、发布图是否为最终版。
+
+这四个锁点不是新状态机，只是人工决策 Gate。
+
+## 3. Visual Baseline → Trial → Batch
+
+所有新篇统一使用：
+
+```text
+人物 / 场景 / 设备真实性基线
+→ 四张 Visual Lock 准入帧
+   A. ordinary baseline
+   B. worst capture condition
+   C. first major anomaly
+   D. high-impact admission
+→ VISUAL_CALIBRATED
+→ 剩余图片批量生产
+```
+
+禁止“先把 20 张都出完，再回头找画风”。
+
+## 4. 最小修改协议
+
+用户说：
+
+- “只改字幕 / 底图别动” → `subtitle_only`
+- “只裁切” → `crop_only`
+- “保持原画风重做这一张” → `regenerate_frame`
+- “整段重做” → `regenerate_sequence`
+
+未被点名的已通过帧默认锁定，不得顺手重做。
+
+## 5. 一条命令知道下一步
+
+```bash
+python episodes/_system/story_os.py next <episode_dir>
+```
+
+仓库健康检查：
+
+```bash
+python episodes/_system/story_os.py doctor
+```
+
+生成最终验收清单：
+
+```bash
+python episodes/_system/story_os.py checklist <episode_dir>
+```
+
+只看状态，不修改：
+
+```bash
+python episodes/_system/story_os.py status <episode_dir>
+```
+
+## 6. 文档权威规则
+
+`standards/AUTHORITY_INDEX.json` 只做路由，不创造规则：
+
+- `canonical`：唯一主规范。
+- `active_subordinate`：当前有效执行细则。
+- `series_overlay`：系列覆盖层，只能补充，不得反向覆盖主规范硬规则。
+- `reference`：参考材料，不是门禁。
+- `superseded`：历史版本，默认禁止作为当前规则引用。
+
+出现冲突：
+
+```text
+制作规范_正式版
+> active subordinate
+> series overlay
+> reference
+> superseded
+```
+
+## 7. Final QA 只生成，不再造第五套规范
+
+`final_checklist.py` 只从现有状态、门禁和 manifest 汇总一份：
+
+`<episode>/meta/FINAL_CHECKLIST.md`
+
+它不是规范源，也不得保存 stage。最终人工仍需回答：
+
+- 像不像真实手机相册 / 合理采集设备？
+- 人物、地点、关键道具是否连续？
+- 前 5 张有没有继续滑的欲望？
+- 高潮是否足够强，且不是近期作品的重复机制？
+- 结尾是否回收前文，并产生回看价值？
+- 字幕是否像人话、位置是否压住主体？
+- 封面 / 标题 / 简介 / 话题是否和成片一致？
+
+## 8. 一句话原则
+
+**规则可以很多，决策入口只能有一个。**
+
+当前配置自检：
+
+```bash
+python episodes/_system/story_os.py config validate
+```
+
+<!-- STORY_OS_V1_7_RELIABILITY_BEGIN -->
+## 9. V1.7 生产可靠性
+
+Golden Path 七阶段不变。V1.7 只在两个位置增加事务保护：
+
+```text
+Batch 生图请求
+→ production_ledger begin
+→ transport_guard preflight
+→ 调用生图
+→ success / technical failure
+
+已锁图片只修文字
+→ text_revision start
+→ 编辑
+→ diff + text_audit
+→ submit
+→ 用户明确批准 approve / 不满意 revert
+```
+
+技术失败不得消耗内容返修次数；技术重试不得改变请求指纹。文字专修不得触碰批准/发布图片、reference、release manifest、production ledger、episode state 或 story gates。
+<!-- STORY_OS_V1_7_RELIABILITY_END -->
+
+<!-- STORY_OS_V1_8_DEFAULT_STYLE_BEGIN -->
+## 10. V1.8 默认视觉 IP 与三道不可漂移锁
+
+用户没有明确指定画风/质感时，默认解析：
+
+`M00｜现实生活纪实母版`
+
+但它只统一视觉语言；**本集年代和实际采集设备的物理表现优先**，禁止把现代手机硬做成旧低清设备。
+
+V1.8 不新增 episode stage，只给现有 Golden Path 增加证据锁：
+
+```text
+Story Lock → story + storyboard approval SHA
+Visual Lock → visual spec + calibration + references + resolved profile SHA
+Batch → 现有 V1.7 production / transport
+Text Audit → text-audit.json 必须 PASS 且 captions SHA 不漂移
+Release → release-package.json 锁最终封面/正文/字幕/发布文案/传播卡 SHA
+```
+
+常用命令：
+
+```bash
+python episodes/_system/story_os.py visual-profile <episode_dir> show
+python episodes/_system/story_os.py approval <episode_dir> story --user-approved
+python episodes/_system/story_os.py approval <episode_dir> visual --user-approved
+python episodes/_system/story_os.py audit-text <episode_dir>
+python episodes/_system/story_os.py release-package <episode_dir> build --user-approved
+```
+<!-- STORY_OS_V1_8_DEFAULT_STYLE_END -->
+
+<!-- STORY_OS_V2_MULTI_RUNTIME_BEGIN -->
+## 11. V2.0 Multi-Runtime
+
+启动时按 `runtimes/runtime-contract.json` 自动判断执行环境，不询问用户选择模式：
+
+`可写仓库+terminal/code execution → CODEX；ChatGPT Work → WORK；其他普通 ChatGPT → WEB`
+
+三个 runtime 只改变执行方式，不改变创作权威和 episode stage。
+
+用户明确说“全自动执行 / 一次做完 / 做到最终交付 / 不要每步问我”时，视为连续执行授权。正常 Golden Path 不重复询问是否继续；自动审查必须标记为 delegated_auto_review，不得写成用户亲眼审核。
+
+统一恢复证据：`<episode>/meta/runtime-checkpoint.json`。它不是 stage。
+<!-- STORY_OS_V2_MULTI_RUNTIME_END -->
+
+<!-- STORY_OS_V2_0_1_ENGINEERING_BEGIN -->
+## 12. V2.0.1 工程补强
+
+CODEX runtime 新增一键入口：
+
+```bash
+python episodes/_system/story_os.py run <episode_dir> --full-auto
+```
+
+它使用当前 Codex CLI 登录态启动独立全自动 worker；正式图片可通过 `codex_subscription_image.py` 落成真实文件，不要求 API Key。全自动审查统一记为 `delegated_auto_review`，不得伪造 `direct_user_review` 或 Release Lock。
+
+证据门禁外部稳定名统一为 `evidence_gate.py`；`v18_gate.py` 只作为历史兼容实现保留。
+<!-- STORY_OS_V2_0_1_ENGINEERING_END -->
+
+<!-- STORY_OS_V2_0_2_CLOSURE_BEGIN -->
+## Story OS V2.0.2 Production Closure
+
+CODEX 全自动完成必须经过 deterministic postflight；worker 正常退出不等于完成。生图必须使用 `generate-for-frame` 走 raw→canvas normalize→ledger。全自动 Story/Visual/Release 使用 delegated approval 证据，不伪造用户亲审。最终 delegated ZIP 禁止 approved fallback，必须包含真实 publish 资产和完整文本/manifest/hash。
+<!-- STORY_OS_V2_0_2_CLOSURE_END -->
+
+
+## V2.0.3.3 Frame Semantic Enforcement
+
+Batch 完成后，`PRODUCTION_PASSED` 前必须运行 `episodes/_system/frame_semantic_review.py` 的 fresh isolated full-frame-set critic；实际图片必须与 Story Lock / Storyboard / Authenticity Card / Continuity Anchors 一致，并通过 SHA-bound review 与 near-duplicate audit。该证据不新增机器状态。
+<!-- STORY_OS_V2_0_3_4_INCREMENTAL_WORKSPACE_BEGIN -->
+## V2.0.3.4 最小闭环 + 本地媒体工作区
+
+默认先做增量计划，不再无条件重跑整篇：
+
+```bash
+python episodes/_system/incremental_closure.py plan <episode_dir> --json
+```
+
+帧审核统一入口：
+
+```bash
+python episodes/_system/incremental_frame_review.py review <episode_dir> --attempt 1
+```
+
+- CLEAN 的 Story / Visual / Frame 证据按 SHA 直接复用。
+- 只改 1~N 张图时默认审核 dirty frame ±1；终局高风险帧默认 ±2。
+- Story / Storyboard / Visual Contract 改变，或 dirty > 25%，自动升级 FULL_FRAME_SET。
+- 全局 SHA、尺寸、近重复仍执行廉价全量审计。
+
+新篇本地媒体统一放：`media/calibration|raw|candidates|approved|publish|review|archive`；交付放 `release/`；Git 只跟踪 `meta/media-index.json` 与文本/证据，不跟踪这些像素资产。
+
+媒体工具：
+
+```bash
+python episodes/_system/media_workspace.py inventory
+python episodes/_system/media_workspace.py migrate --dry-run
+python episodes/_system/media_workspace.py ensure <episode_dir>
+```
+
+历史未纳管 episode 不自动搬图；重新进入制作时再迁移。
+<!-- STORY_OS_V2_0_3_4_INCREMENTAL_WORKSPACE_END -->
+
+<!-- STORY_OS_RUNTIME_DAG_REFACTOR_CORE_BEGIN -->
+## Runtime DAG Refactor
+绑定 Runtime Request 的新篇默认使用 Runtime DAG：Creative Story → Visual Lock → Production → Release。每步完成立即落 checkpoint；恢复时验证后复用。DAG 不建立第二 stage。图片采用 continuous max3 调度；Scoped Worker 优先用 Execution Capsule；Prompt Package / Rolling Review / Provisional Release 都是派生执行优化，不替代正式 Gate。图片 pool 只复用 Python worker，不复用 Codex 跨帧上下文。
+<!-- STORY_OS_RUNTIME_DAG_REFACTOR_CORE_END -->
+
+<!-- STORY_OS_CHARACTER_ENTRY_POOL_CORE_BEGIN -->
+## Character / Entry Pool
+新篇 Concept 前先准备 Character Contract：优先普通二十来岁青年/朋友团，以旅行、返乡、聚会、挑战、废弃场所、户外、生活化工作/科考等日常理由进入异常；默认禁用抢修/维修/警察/记者/调查员等功能型主角。第一人称也锁人物锚点。Story Lock 前 NO-ANOMALY TEST 必须 PASS，随后 Character Contract 绑定进 Frame Contract。
+<!-- STORY_OS_CHARACTER_ENTRY_POOL_CORE_END -->
+
+<!-- STORY_OS_RUNTIME_OPTIMIZATION_R2_CORE_BEGIN -->
+## Runtime Optimization R2
+支持 `preproduction_only`（只做生图前资产并写 Handoff）和 `image_continue`（校验 Handoff 后从 Visual/Image 继续，禁止重写 Story）。启用 `.storyos_cache/` 多级缓存、`library/` 共享参考资源库、Visual Lock 1+3、简介四类开头策略和“标题仅1个内部候选”规则。正式 Story/Visual/Production/Release Gate 均不删除。
+<!-- STORY_OS_RUNTIME_OPTIMIZATION_R2_CORE_END -->
+
+<!-- STORY_OS_V230_AGENT_RUNTIME_BEGIN -->
+## Story OS V2.3 Agent Runtime
+
+执行链：
+`Raw Request → Intent Resolver → immutable Runtime Request → Request Router → Workflow DAG → Tool/Model Execution → Trace/Evidence`
+
+- `meta/episode-state.json` 仍是唯一阶段状态源。
+- `meta/runtime-route.json` 只记录路由决策，不是第二状态机。
+- `meta/runtime/trace-events.jsonl` 只记录执行事实，不授予 PASS。
+- 当前 GPT-Image-2 桌面通道不假设 exact RAW canvas；记录真实 RAW 尺寸与 Provider Receipt，再由 NP01 安全 Normalize。
+<!-- STORY_OS_V230_AGENT_RUNTIME_END -->

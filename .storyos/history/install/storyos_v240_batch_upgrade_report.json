@@ -1,0 +1,12 @@
+{
+  "package": "StoryOS_V2.4.0_BatchImageRuntime_Upgrade",
+  "time": "2026-09-03T16:18:55.660209",
+  "status": "DESIGN_READY_INSTALLER",
+  "commits": [
+    "feat: add batch runtime foundation and provider capability probe",
+    "feat: add five-image batch worker and result mapper",
+    "feat: add deviation-criticality repair gate and batch repair barrier",
+    "feat: add batch runtime observability and production integration"
+  ],
+  "repo": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS"
+}

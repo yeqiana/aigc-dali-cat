@@ -1,0 +1,115 @@
+# Story OS 仓库索引
+# ============================================================
+# 这是 Agent 和运行时的“先读地图”，不是创作规范，也不保存 Episode stage。
+# 目标是避免为了找配置递归扫描整个仓库。路径均相对仓库根目录。
+
+schema_version: 1
+config: config/storyos.yaml
+
+entrypoints:
+  human: START_HERE.md
+  agent_contract: SKILL.md
+  repository_rules: AGENTS.md
+  cli: episodes/_system/story_os.py
+  config_loader: episodes/_system/storyos_config.py
+
+authority:
+  creative: standards/制作规范_正式版.md
+  routing: standards/AUTHORITY_INDEX.json
+  product_manifest: story_os_manifest.json
+  episode_stage: <episode>/meta/episode-state.json
+
+registries:
+  visual_profiles: standards/visual_profiles
+  capture_profiles: standards/capture_profiles/index.json
+  capture_grammars: standards/capture_grammars
+  sequence_grammars: standards/sequence_grammars
+  provider_capabilities: config/providers/index.json
+  schemas: standards/schemas
+  templates: standards/templates
+  story_regressions: standards/story_regressions/cases.json
+
+runtimes:
+  routing: runtimes/runtime-contract.json
+  workflow: runtimes/workflow-contract.json
+  dag: runtimes/runtime-dag.json
+  modes: runtimes/runtime-mode-contract-r2.json
+  trace: config/agent_runtime/trace.json
+  intent: config/agent_runtime/intent.json
+  request_router: config/agent_runtime/router.json
+  intent: config/agent_runtime/intent.json
+  request_router: config/agent_runtime/router.json
+
+episode_layout:
+  # authority 是输入权威；evidence 是机器审计结果；derived 可安全重建；
+  # media 为本地像素资产，不默认提交 Git。
+  authority:
+    - meta/episode-state.json
+    - meta/release-manifest.json
+    - meta/story-gates.json
+    - meta/runtime-request.json
+  evidence:
+    - meta/production-ledger.json
+    - meta/frame-reviews
+    - meta/final-candidate-snapshot.json
+  derived:
+    - meta/runtime/contracts
+    - meta/runtime/prompt-packages
+    - meta/workflow-observability.json
+    - meta/runtime/trace-events.jsonl
+    - meta/runtime/trace-summary.json
+    - meta/runtime-route.json
+  media:
+    - media/raw
+    - media/candidates
+    - media/approved
+    - media/publish
+    - media/review
+    - media/archive
+
+stage_read_sets:
+  CREATIVE_STORY:
+    - config/storyos.yaml
+    - story_os_manifest.json
+    - meta/runtime-request.json
+    - meta/character-contract.json
+    - meta/world-identity.json (optional override)
+    - config/profiles/world_identity/default.json
+    - standards/character-pools.json
+    - standards/entry-motivation-pools.json
+    - standards/scene-pools.json
+    - standards/forbidden-character-roles.json
+  PREIMAGE_COMPILE:
+    - config/storyos.yaml
+    - meta/story-gates.json
+    - meta/character-contract.json
+    - meta/character-visual-contract.json
+    - meta/shot-progression-review.json
+    - meta/capture-event-contract.json
+    - meta/world-state.json
+    - meta/temporal-continuity.json
+    - meta/wardrobe-contract.json
+  VISUAL_LOCK:
+    - config/storyos.yaml
+    - meta/visual-lock-plan.json
+    - meta/runtime/contracts/frame-contract-index.json
+    - meta/runtime/contracts/character-appearance-anchor.json
+    - meta/story-gates.json
+  PRODUCTION:
+    - config/storyos.yaml
+    - config/providers/index.json
+    - meta/runtime/contracts/frame-contract-index.json
+    - meta/production-ledger.json
+    - meta/production-queue.json
+    - meta/story-gates.json
+  RELEASE:
+    - config/storyos.yaml
+    - meta/production-ledger.json
+    - meta/frame-semantic-review.json
+    - meta/final-candidate-snapshot.json
+    - meta/intro-policy.json
+
+internal:
+  install_history: .storyos/history/install
+  migration_history: .storyos/history/migrations
+  legacy_runtime_index: .storyos/history/legacy/runtime-index.json

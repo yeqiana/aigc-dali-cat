@@ -1,0 +1,165 @@
+# Story OS 当前生效配置
+# ============================================================
+# 这是人工查看和修改 Story OS 生产参数的唯一入口。
+# 后续流程必须先读取并校验本文件，再读取 Runtime Request、Episode
+# 合同和运行证据。Episode 的 meta/*.json 仍保存事实和证据，不是配置。
+#
+# 修改原则：
+# 1. 修改本文件只影响后续新请求或重新编译的派生合同。
+# 2. 不自动改写已经绑定的 meta/runtime-request.json。
+# 3. 不自动修改历史 Episode 的 stage、批准记录或资产 SHA。
+# 4. 字段写错时必须 fail-fast，禁止静默回落到散落在代码里的默认值。
+
+schema_version: 1
+config_version: "1.0"
+
+image:
+  # 正式生产默认模型。用户在 Runtime Request 显式指定时可覆盖，
+  # 但显式模型必须严格执行，禁止静默替换。
+  model: gpt-image-2
+
+  # 正式生产质量。当前只允许 high；Scheduler、Worker 和 Ledger
+  # 必须记录同一个值。
+  quality: high
+
+  # 新 Episode 未指定时采用的正文比例。
+  default_aspect_ratio: "4:5"
+
+  # 允许锁定的正文比例及最终标准画布。比例一旦进入正式分镜，
+  # Generation Request、RAW、Normalize、Approved、Release 全程一致。
+  canvases:
+    "4:5":
+      width: 1080
+      height: 1350
+    "9:16":
+      width: 1080
+      height: 1920
+
+  # Style 和 Seed 不作为独立生产参数；视觉与连续性分别由
+  # Visual Profile、Capture Grammar、Frame Contract 和 Reference 控制。
+  style_parameter: none
+  seed: none
+
+provider:
+  # Provider Capability 只描述真实后端能力，不创建第二套视觉权威。
+  registry: config/providers/index.json
+  exact_raw_canvas_required: false
+  measure_raw_dimensions_locally: true
+  provider_receipt_required: true
+
+visual:
+  # 用户未指定其他视觉体系时使用的母风格。
+  default_profile_id: M00
+  default_profile_name: 现实生活纪实母版
+  default_profile_path: standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json
+
+  # 默认设备档案。具体年代和设备物理真实性高于母风格质感。
+  default_capture_profile_id: CP01
+  capture_profile_registry: standards/capture_profiles/index.json
+  # CG01 只定义单帧的摄影者、站位、随手拍行为与设备瑕疵物理。
+  # 它不再承载开篇节奏、镜头族变化或跨帧连续性等序列规则。
+  default_capture_grammar_id: FIRST_PERSON_CASUAL_SNAPSHOT_V1
+  capture_grammar_path: standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json
+
+  # SG01 定义一整集的拍摄者分配、开篇记忆、镜头族节奏、连续性和
+  # 屏幕信息连续性。可在 Episode 的 meta/sequence-grammar.json 显式覆盖。
+  default_sequence_grammar_id: SG01_PERSONAL_EVIDENCE_SEQUENCE_V1
+  sequence_grammar_path: standards/sequence_grammars/SG01_personal_evidence_sequence.json
+
+normalize:
+  # NP01 只做技术标准化，不负责重新构图。
+  enabled: true
+  preserve_raw: true
+  final_format: PNG
+  resize_algorithm: Lanczos
+
+  # 正常生产禁止裁切。ImageOps.fit 只允许未来显式登记的异常兼容流程，
+  # 不能由默认链路自动启用。
+  default_crop: forbidden
+  imageops_fit: exception_only
+
+  # RAW 已是目标 PNG 且尺寸一致时仅复制文件，不重新编码。
+  noop_when_exact_match: true
+
+  # 比例偏差采用相对误差：abs(source-target)/target。
+  # ≤0.01 才允许技术性 Lanczos resize；0.01–0.03 必须人工复核；
+  # >0.03 直接 Reject，先检查 Generation Request，禁止用拉伸掩盖错误。
+  automatic_ratio_delta_max: 0.01
+  review_ratio_delta_max: 0.03
+
+  # Normalize I/O 失败只在本地重试。重试耗尽后保留 RAW 并阻断，
+  # 禁止为了后处理失败再次调用图片生成。
+  local_retries: 2
+  technical_failure_triggers_generation: false
+
+production:
+  # 同时在途图片上限，不是固定波次大小。任一任务完成即补下一张。
+  max_inflight_images: 3
+  continuous_first_completed: true
+  wave_barrier: false
+  ledger_single_writer: true
+  fail_soft: true
+  incremental_reuse: true
+
+  # 每帧最多一次内容返修；网络、超时、Normalize 等技术失败不计入。
+  max_content_repairs_per_frame: 1
+  technical_retry_counts_as_content_repair: false
+
+agent_runtime:
+  # Trace 只记录执行事实，不是第二套 Episode State。
+  trace:
+    enabled: true
+    config: config/agent_runtime/trace.json
+
+  # 请求解析默认规则优先，不默认使用 LLM 自由改写。
+  intent:
+    enabled: true
+    config: config/agent_runtime/intent.json
+
+  # Router 只产生执行决策证据，不改变 episode-state.json。
+  router:
+    enabled: true
+    config: config/agent_runtime/router.json
+    decision_path: meta/runtime-route.json
+
+  # 请求解析默认规则优先，不默认使用 LLM 自由改写。
+  intent:
+    enabled: true
+    config: config/agent_runtime/intent.json
+
+  # Router 只产生执行决策证据，不改变 episode-state.json。
+  router:
+    enabled: true
+    config: config/agent_runtime/router.json
+    decision_path: meta/runtime-route.json
+
+runtime:
+  # 新篇默认走分段 DAG；它是执行器，不是第二状态机。
+  execution_mode: dag
+  canonical_stage_source: meta/episode-state.json
+  runtime_request_path: meta/runtime-request.json
+
+  # 每个阶段只读取 config/index.yaml 声明的最小文件集合；
+  # 仅在缺依赖或发现冲突时扩大扫描。
+  read_index_first: true
+  recursive_repository_scan_default: false
+
+paths:
+  # 以下路径供 Loader 和 Agent 路由。不要在其他文档重复维护一套。
+  index: config/index.yaml
+  product_manifest: story_os_manifest.json
+  creative_authority: standards/制作规范_正式版.md
+  authority_index: standards/AUTHORITY_INDEX.json
+  runtime_contract: runtimes/runtime-contract.json
+  provider_registry: config/providers/index.json
+  workflow_contract: runtimes/workflow-contract.json
+  engine: episodes/_system
+  episodes: episodes
+  reports: reports
+  internal_history: .storyos/history
+
+compatibility:
+  # 历史 JSON 请求/证据继续可读，但新的人工配置只写本 YAML。
+  read_legacy_json: true
+  rewrite_bound_runtime_request: false
+  migrate_historical_episode_meta: false

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "base_head": "781e45a5ce681d5e53005c1d5740306a31071fa9",
+  "modified_backed_up": [
+    "config/storyos.yaml",
+    "config/index.yaml",
+    "config/providers/gpt-image-2-desktop.json",
+    "episodes/_system/storyos_config.py",
+    "episodes/_system/image_scheduler.py",
+    "episodes/_system/production_ledger.py",
+    "episodes/_system/workflow_observability.py",
+    "story_os_manifest.json",
+    "runtimes/runtime-contract.json",
+    "runtimes/workflow-contract.json",
+    "standards/AUTHORITY_INDEX.json",
+    "START_HERE.md",
+    "AGENTS.md",
+    "SKILL.md"
+  ],
+  "added_files": [
+    "config/agent_runtime/batch.json",
+    "standards/Batch_Image_Runtime_V1.0.md",
+    "episodes/_system/batch_runtime_config.py",
+    "episodes/_system/batch_contract.py",
+    "episodes/_system/batch_capability_probe.py",
+    "episodes/_system/batch_prompt_compiler.py",
+    "episodes/_system/batch_result_mapper.py",
+    "episodes/_system/batch_image_worker.py",
+    "episodes/_system/batch_scheduler.py",
+    "episodes/_system/frame_failure_assessment.py",
+    "episodes/_system/batch_repair_arbiter.py",
+    "episodes/_system/batch_runtime_metrics.py",
+    "docs/Story_OS_V2.4_Batch_Image_Runtime.md",
+    "tests/system/test_batch_runtime_v240.py"
+  ],
+  "created_at": "2026-09-03T16:36:24+08:00"
+}
