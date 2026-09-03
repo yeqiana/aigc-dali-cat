@@ -99,14 +99,16 @@ IDEA_LOCKED
 
 ## 1. 每次任务只按这个顺序读
 
-1. 本文件 `START_HERE.md`
-2. 根目录 `SKILL.md`
-3. 根目录 `AGENTS.md`
-4. `standards/制作规范_正式版.md`
-5. `standards/AUTHORITY_INDEX.json` 中与当前任务匹配的 active 从属细则
-6. 目标剧集 README / docs / 锁定分镜
-7. 目标剧集 `meta/episode-state.json`
-8. 若 strict=true，再读 `story-gates.json / production-ledger.json / frame-reviews/`
+1. `config/storyos.yaml`：当前生效生产配置，先校验
+2. `config/index.yaml`：仓库索引与当前阶段最小读取集
+3. 本文件 `START_HERE.md`
+4. 根目录 `SKILL.md`
+5. 根目录 `AGENTS.md`
+6. `standards/制作规范_正式版.md`
+7. `standards/AUTHORITY_INDEX.json` 中与当前任务匹配的 active 从属细则
+8. 目标剧集 README / docs / 锁定分镜
+9. 目标剧集 `meta/episode-state.json`
+10. 若 strict=true，再读索引声明的必要 evidence
 
 不要为了“更保险”把整个 `standards/` 全部读一遍。旧版本和 superseded 文件只用于历史追溯。
 
@@ -212,6 +214,12 @@ python episodes/_system/story_os.py status <episode_dir>
 ## 8. 一句话原则
 
 **规则可以很多，决策入口只能有一个。**
+
+当前配置自检：
+
+```bash
+python episodes/_system/story_os.py config validate
+```
 
 <!-- STORY_OS_V1_7_RELIABILITY_BEGIN -->
 ## 9. V1.7 生产可靠性

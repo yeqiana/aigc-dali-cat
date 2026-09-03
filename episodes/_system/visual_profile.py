@@ -5,12 +5,14 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import storyos_config
 
 SYSTEM_DIR = Path(__file__).resolve().parent
 ROOT = SYSTEM_DIR.parents[1]
 GATES_REL = Path('meta/story-gates.json')
-DEFAULT_PROFILE_ID = 'M00'
-DEFAULT_PROFILE_PATH = Path('standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json')
+_CONFIG = storyos_config.load_config()
+DEFAULT_PROFILE_ID = str(storyos_config.get_path(_CONFIG, 'visual.default_profile_id'))
+DEFAULT_PROFILE_PATH = Path(str(storyos_config.get_path(_CONFIG, 'visual.default_profile_path')))
 
 
 def load_json(path: Path) -> dict:

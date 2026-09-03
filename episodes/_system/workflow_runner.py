@@ -24,10 +24,12 @@ import image_model_policy
 import runtime_dag
 import runtime_execution
 import performance_guard_v211  # STORY_OS_V211_PERF_RECOVERY
+import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
-CONTRACT = ROOT / "runtimes" / "workflow-contract.json"
+_CONFIG = storyos_config.load_config()
+CONTRACT = ROOT / str(storyos_config.get_path(_CONFIG, "paths.workflow_contract"))
 
 
 def resolve_episode(raw: str) -> Path:
@@ -46,6 +48,8 @@ def run(args: list[object]) -> subprocess.CompletedProcess[str]:
 
 
 def load_contract() -> dict:
+    storyos_config.load_config()
+    storyos_config.load_index()
     data = json.loads(CONTRACT.read_text(encoding="utf-8-sig"))
     version = str(data.get("workflow_version") or "") if isinstance(data, dict) else ""
     if not isinstance(data, dict) or not version.startswith("2.1"):

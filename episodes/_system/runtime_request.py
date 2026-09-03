@@ -10,12 +10,17 @@ from __future__ import annotations
 
 import argparse, datetime as dt, hashlib, json, re
 from pathlib import Path
+import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUESTS_DIR = ROOT / "runtime" / "requests"
 EPISODE_REL = Path("meta/runtime-request.json")
 SCHEMA_VERSION = 1
 DEFAULT_BRANCH = "story"
+_CONFIG = storyos_config.load_config()
+DEFAULT_IMAGE_MODEL = str(storyos_config.get_path(_CONFIG, "image.model"))
+DEFAULT_IMAGE_QUALITY = str(storyos_config.get_path(_CONFIG, "image.quality"))
+DEFAULT_MAX_IMAGE_WORKERS = int(storyos_config.get_path(_CONFIG, "production.max_inflight_images"))
 STORY_MODES = {"auto_create", "user_seed", "core_constraints", "locked_story"}
 LOCKED_SIGNALS = ("不要改剧情","剧情已锁定","剧情已经定了","严格按这个剧情","严格按这个故事","只能润色","故事结构不要动","不要改故事")
 CONSTRAINT_SIGNALS = ("必须保留","不能改","一定要有","核心设定","结尾必须","必须有")
@@ -66,7 +71,7 @@ def parse_image_model(text):
     for pattern in patterns:
         m=re.search(pattern,text,flags=re.I)
         if m:return {"provider":"openai","model":m.group(1),"source":"user_explicit","strict_model":True}
-    return {"provider":"openai","model":"gpt-image-2","source":"system_default","strict_model":False}
+    return {"provider":"openai","model":DEFAULT_IMAGE_MODEL,"source":"system_default","strict_model":False}
 
 def split_after_marker(text,markers):
     low=text.lower()
@@ -131,9 +136,9 @@ def compile_request(text):
         "story_input":story,
         "creative_hints":creative_hints(text),
         "image_model":image["model"],
-        "image_quality":"high",
-        "image":{**image,"quality":"high"},
-        "runtime":{"execution_mode":"dag","continuous_execution":bool(full_auto),"resume":True,"max_image_workers":3,"fail_soft":True,"incremental_reuse":True},
+        "image_quality":DEFAULT_IMAGE_QUALITY,
+        "image":{**image,"quality":DEFAULT_IMAGE_QUALITY},
+        "runtime":{"execution_mode":str(storyos_config.get_path(_CONFIG,"runtime.execution_mode")),"continuous_execution":bool(full_auto),"resume":True,"max_image_workers":DEFAULT_MAX_IMAGE_WORKERS,"fail_soft":True,"incremental_reuse":True},
         "delivery":{"mode":"auto","zip_required_for_completion":False},
         "user_intent":{"full_auto_authorized":bool(full_auto),"allow_story_strengthening":story["mode"]!="locked_story","allow_story_rewrite":story["mode"] in {"auto_create","user_seed","core_constraints"},"ask_before_each_step":not bool(full_auto)},
         "provenance":{"source":"natural_language","original_request":text.strip()},
@@ -152,9 +157,9 @@ def validate_request(data):
     if story.get("mode")=="core_constraints" and not isinstance(story.get("constraints"),list):errors.append("core_constraints requires constraints list")
     image=data.get("image") or {}
     model=str(data.get("image_model") or image.get("model") or "").strip()
-    quality=str(data.get("image_quality") or image.get("quality") or "high").strip().lower()
+    quality=str(data.get("image_quality") or image.get("quality") or DEFAULT_IMAGE_QUALITY).strip().lower()
     if not model:errors.append("image model missing")
-    if quality!="high":errors.append("image_quality must be high for formal production")
+    if quality!=DEFAULT_IMAGE_QUALITY:errors.append(f"image_quality must be {DEFAULT_IMAGE_QUALITY} for formal production")
     if data.get("image_model") is not None and image.get("model") is not None and str(data["image_model"])!=str(image["model"]):errors.append("image_model must match image.model")
     if data.get("image_quality") is not None and image.get("quality") is not None and str(data["image_quality"]).lower()!=str(image["quality"]).lower():errors.append("image_quality must match image.quality")
     if image.get("source")=="user_explicit" and image.get("strict_model") is not True:errors.append("user_explicit image model requires strict_model=true")

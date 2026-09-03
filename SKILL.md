@@ -122,7 +122,7 @@ meta/
 
 ## 2. 任务开始前必须读取
 
-读取顺序只由 `START_HERE.md` 第 1 节维护，本文件不再复制第二份顺序。执行到本文件后，继续按 `AGENTS.md → standards/制作规范_正式版.md → AUTHORITY_INDEX.json active 细则 → 目标剧集` 路由。`README.md` 只做项目说明，不是执行入口。
+读取顺序只由 `START_HERE.md` 第 1 节维护，本文件不再复制第二份顺序。任何流程先校验 `config/storyos.yaml`，再使用 `config/index.yaml` 限定阶段读取集；执行到本文件后，继续按 `AGENTS.md → standards/制作规范_正式版.md → AUTHORITY_INDEX.json active 细则 → 目标剧集` 路由。`README.md` 只做项目说明，不是执行入口。
 
 ## 3. 唯一生产状态机
 

@@ -9,9 +9,11 @@ from __future__ import annotations
 import argparse, json
 from pathlib import Path
 import runtime_request
+import storyos_config
 
-DEFAULT_MODEL="gpt-image-2"
-DEFAULT_QUALITY="high"
+_CONFIG=storyos_config.load_config()
+DEFAULT_MODEL=str(storyos_config.get_path(_CONFIG,"image.model"))
+DEFAULT_QUALITY=str(storyos_config.get_path(_CONFIG,"image.quality"))
 REPRODUCIBLE_SNAPSHOT="gpt-image-2-2026-04-21"
 MODEL_UNAVAILABLE="MODEL_UNAVAILABLE"
 MODEL_UNAVAILABLE_PATTERNS=("model_unavailable","model unavailable","model is not available","requested model is not available","unknown model","unsupported model","model not found","does not exist","cannot honor the requested model")

@@ -14,13 +14,15 @@ from pathlib import Path
 from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
 from visual_profile import compile_prompt_contract
 import frame_contract as resolved_frame_contract
+import storyos_config
 
 LEDGER_FILE = Path("meta/production-ledger.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
 ENGINE_VERSION = "1.2"
 PROMPT_CHAR_LIMIT = 260
 PROMPT_BYTE_LIMIT = 900
-DEFAULT_IMAGE_QUALITY = "high"
+_CONFIG = storyos_config.load_config()
+DEFAULT_IMAGE_QUALITY = str(storyos_config.get_path(_CONFIG, "image.quality"))
 FRAME_STATES = {
     "PENDING",
     "GENERATING",
@@ -207,9 +209,9 @@ def init_ledger(ep: Path, *, count: int | None = None, ratio: str | None = None,
             "resize_algorithm": "Lanczos",
             "default_crop": "forbidden",
             "imageops_fit": "exception_only",
-            "automatic_ratio_delta_max": 0.03,
-            "review_ratio_delta_max": 0.05,
-            "reject_ratio_delta_above": 0.05,
+            "automatic_ratio_delta_max": float(storyos_config.get_path(_CONFIG, "normalize.automatic_ratio_delta_max")),
+            "review_ratio_delta_max": float(storyos_config.get_path(_CONFIG, "normalize.review_ratio_delta_max")),
+            "reject_ratio_delta_above": float(storyos_config.get_path(_CONFIG, "normalize.review_ratio_delta_max")),
             "noop_when_exact_match": True,
             "technical_failure_triggers_generation": False,
         },

@@ -8,10 +8,12 @@ import shutil
 import time
 from pathlib import Path
 from canvas_spec import resolve_canvas_spec
+import storyos_config
 
-AUTO_RATIO_DELTA_MAX = 0.03
-REVIEW_RATIO_DELTA_MAX = 0.05
-LOCAL_RETRIES = 2
+_CONFIG = storyos_config.load_config()
+AUTO_RATIO_DELTA_MAX = float(storyos_config.get_path(_CONFIG, 'normalize.automatic_ratio_delta_max'))
+REVIEW_RATIO_DELTA_MAX = float(storyos_config.get_path(_CONFIG, 'normalize.review_ratio_delta_max'))
+LOCAL_RETRIES = int(storyos_config.get_path(_CONFIG, 'normalize.local_retries'))
 
 
 class NormalizeError(RuntimeError):

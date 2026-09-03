@@ -8,9 +8,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
-MANIFEST = ROOT / "story_os_manifest.json"
+_CONFIG = storyos_config.load_config()
+MANIFEST_REL = Path(str(storyos_config.get_path(_CONFIG, "paths.product_manifest")))
+MANIFEST = ROOT / MANIFEST_REL
 CANONICAL_STAGES = (
     "IDEA_LOCKED",
     "STORYBOARD_LOCKED",
@@ -23,7 +26,7 @@ CANONICAL_STAGES = (
 
 
 def load_contract(root: Path | None = None) -> dict:
-    path = (root or ROOT) / "story_os_manifest.json"
+    path = (root or ROOT) / MANIFEST_REL
     try:
         data = json.loads(path.read_text(encoding="utf-8-sig"))
     except FileNotFoundError as exc:

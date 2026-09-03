@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,15 +11,17 @@ from unittest import mock
 
 from PIL import Image
 
+ROOT = Path(__file__).resolve().parents[2]
+SYSTEM = ROOT / "episodes/_system"
+if str(SYSTEM) not in sys.path:
+    sys.path.insert(0, str(SYSTEM))
+
 import canvas_normalize
 import codex_subscription_image
 import image_model_policy
 import image_scheduler
 import production_ledger
 import runtime_request
-
-
-ROOT = Path(__file__).resolve().parents[2]
 
 
 class RuntimeRequestQualityTests(unittest.TestCase):

@@ -8,9 +8,11 @@ import shutil
 from pathlib import Path
 
 from story_os_contract import story_os_version
+import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
-CONTRACT = ROOT / 'runtimes' / 'runtime-contract.json'
+_CONFIG = storyos_config.load_config()
+CONTRACT = ROOT / str(storyos_config.get_path(_CONFIG, 'paths.runtime_contract'))
 VALID = {'CODEX', 'WORK', 'WEB'}
 
 def capabilities() -> dict:

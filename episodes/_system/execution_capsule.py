@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/execution-capsules")
 AUTHORITY_FILES=[
-    "START_HERE.md","SKILL.md","AGENTS.md","standards/制作规范_正式版.md",
+    "config/storyos.yaml","config/index.yaml","START_HERE.md","SKILL.md","AGENTS.md","standards/制作规范_正式版.md",
     "runtimes/workflow-contract.json",
     "standards/Character_And_Entry_Pool_V1.0.md",
     "standards/character-pools.json",

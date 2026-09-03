@@ -101,7 +101,7 @@ Production 模式还会验证 Resolved Frame Contract 真的包含：
 
 新增：
 
-`.storyos/runtime-index.json`
+`config/index.yaml`（旧 `.storyos/runtime-index.json` 已归档到 `.storyos/history/legacy/`）
 
 Scoped Codex Worker 会把对应 stage 的快速读取索引直接嵌进 bounded prompt：
 

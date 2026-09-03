@@ -3,6 +3,19 @@
 账号：啾啾脑洞故事。第一人称怪谈 / 规则怪谈图文，对标「鼠鼠脑洞批发」与「Zayn」，
 目标 108 篇系列化世界观（108 道班 = 108 把锁 = 108 个守夜人）。
 
+## 配置与目录入口
+
+生产前先看 [`config/storyos.yaml`](config/storyos.yaml)：模型、Quality、画幅、M00、Normalize、并发和返修策略都集中在这里，并带有中文注释。
+
+Agent/脚本随后读取 [`config/index.yaml`](config/index.yaml)，只加载当前阶段声明的最小文件集，避免递归扫描整个仓库。
+
+```bash
+python episodes/_system/story_os.py config validate
+python episodes/_system/story_os.py config show
+```
+
+目录职责和兼容边界见 [`docs/architecture/仓库目录与配置治理.md`](docs/architecture/仓库目录与配置治理.md)。
+
 <!-- STORY_OS_RUNTIME_REQUEST_P0_BEGIN -->
 ## Story OS V2.1｜一句话全自动入口
 
@@ -33,7 +46,7 @@
 
 ### 图像模型
 
-- 未指定：默认 `gpt-image-2`
+- 未指定：默认 `gpt-image-2`，正式 Quality 固定为 `high`
 - 显式 `image=gpt-image-2`：记为用户强绑定，Story OS 不允许静默换模型
 - 可复现回归可使用固定快照 `gpt-image-2-2026-04-21`
 

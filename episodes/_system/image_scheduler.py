@@ -28,12 +28,14 @@ import character_visual_contract
 import reference_arbitrator
 import visual_lock_baseline_gate
 import episode_performance
+import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
 QUEUE_REL = Path("meta/production-queue.json")
-MAX_SUPPORTED_WORKERS = 3
-DEFAULT_IMAGE_QUALITY = "high"
+_CONFIG = storyos_config.load_config()
+MAX_SUPPORTED_WORKERS = int(storyos_config.get_path(_CONFIG, "production.max_inflight_images"))
+DEFAULT_IMAGE_QUALITY = str(storyos_config.get_path(_CONFIG, "image.quality"))
 NON_REGENERATING_FAILURE_CODES = {
     "NORMALIZE_REVIEW", "ASPECT_RATIO_MISMATCH", "NORMALIZE_TECHNICAL_FAILURE",
     "NORMALIZE_INPUT_MISSING", "NORMALIZE_OUTPUT_EXISTS", "NORMALIZE_OUTPUT_FORMAT",

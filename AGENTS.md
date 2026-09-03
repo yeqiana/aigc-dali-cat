@@ -4,7 +4,7 @@
 
 涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须先读取仓库根目录 `START_HERE.md`，再读取 `SKILL.md`。
 
-当前产品版本从 `story_os_manifest.json` 读取；不要在 Agent 入口另维护一份版本号。
+每次流程先读取并校验 `config/storyos.yaml`，再按 `config/index.yaml` 的最小读取集工作。当前产品版本仍从 `story_os_manifest.json` 读取；不要在 Agent 入口另维护一份版本号。
 
 - `AGENTS.md`：Codex 自动入口与仓库协作规则。
 - `SKILL.md`：Story OS 执行协议。
@@ -91,7 +91,7 @@
 
 ## V2.0 Multi-Runtime 执行路由
 
-涉及 story 分支任务时，先读 `START_HERE.md`，再按 `runtimes/runtime-contract.json` 自动路由，不让用户手工选 runtime。
+涉及 story 分支任务时，先读 `config/storyos.yaml` 和 `config/index.yaml`，再读 `START_HERE.md`，并按索引指向的 Runtime Contract 自动路由，不让用户手工选 runtime。
 
 - 可写仓库文件系统 + terminal/code execution：`runtimes/CODEX.md`
 - ChatGPT Work：`runtimes/WORK.md`

@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 import argparse, json
 from pathlib import Path
+import storyos_config
 ROOT=Path(__file__).resolve().parents[2]
-IDX=ROOT/"standards"/"capture_profiles"/"index.json"
+_CONFIG=storyos_config.load_config()
+IDX=ROOT/str(storyos_config.get_path(_CONFIG,"visual.capture_profile_registry"))
+DEFAULT_PROFILE_ID=str(storyos_config.get_path(_CONFIG,"visual.default_capture_profile_id"))
 REQ={"dynamic_range","low_light","motion","focus","white_balance","compression","edge_behavior"}
 def validate():
     d=json.loads(IDX.read_text(encoding="utf-8")); errors=[]; seen=set()
@@ -15,7 +18,7 @@ def validate():
         x=json.loads(p.read_text(encoding="utf-8")); missing=REQ-set((x.get("physics") or {}).keys())
         if x.get("profile_id")!=pid: errors.append(f"{pid}: id mismatch")
         if missing: errors.append(f"{pid}: missing {sorted(missing)}")
-    if d.get("default_profile_id") not in seen: errors.append("default missing")
+    if DEFAULT_PROFILE_ID not in seen: errors.append("configured default missing")
     return errors
 def main():
     ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True); sub.add_parser("validate"); sub.add_parser("list"); p=sub.add_parser("show"); p.add_argument("profile_id"); a=ap.parse_args()

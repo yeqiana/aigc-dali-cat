@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_REL = Path("config/story_os/world_identity.default.json")
+DEFAULT_REL = Path("config/profiles/world_identity/default.json")
 OVERRIDE_REL = Path("meta/world-identity.json")
 MIN_VERSION = (2, 2, 1)
 

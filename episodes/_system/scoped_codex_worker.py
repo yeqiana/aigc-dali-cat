@@ -10,19 +10,22 @@ import resource_library
 import intro_policy
 import directing_quality
 import episode_performance
+import storyos_config
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
-RUNTIME_INDEX=ROOT/".storyos/runtime-index.json"
 
 def runtime_index_block(step):
-    if not RUNTIME_INDEX.is_file(): return "{}"
     try:
-        data=json.loads(RUNTIME_INDEX.read_text(encoding="utf-8-sig"))
+        config=storyos_config.load_config()
+        data=storyos_config.load_index()
         return json.dumps({
-            "rules":data.get("rules") or {},
+            "rules":{
+                "read_index_first":storyos_config.get_path(config,"runtime.read_index_first"),
+                "recursive_repository_scan_default":storyos_config.get_path(config,"runtime.recursive_repository_scan_default"),
+            },
             "required_read":((data.get("stage_read_sets") or {}).get(step) or []),
-            "canonical_engine_files":data.get("canonical_engine_files") or []
+            "entrypoints":data.get("entrypoints") or {},
         },ensure_ascii=False,indent=2)
     except Exception:return "{}"
 

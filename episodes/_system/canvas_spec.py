@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import storyos_config
 
-DEFAULT_ASPECT_RATIO = "4:5"
+_CONFIG = storyos_config.load_config()
+DEFAULT_ASPECT_RATIO = str(storyos_config.get_path(_CONFIG, "image.default_aspect_ratio"))
 
 
 @dataclass(frozen=True)
@@ -18,8 +20,8 @@ class CanvasSpec:
 
 
 SPECS: dict[str, CanvasSpec] = {
-    "4:5": CanvasSpec("4:5", 1080, 1350),
-    "9:16": CanvasSpec("9:16", 1080, 1920),
+    ratio: CanvasSpec(ratio, int(row["width"]), int(row["height"]))
+    for ratio, row in storyos_config.get_path(_CONFIG, "image.canvases").items()
 }
 
 ALIASES = {

@@ -3,11 +3,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import storyos_config
 
 SYSTEM = Path(__file__).resolve().parent
 ROOT = SYSTEM.parents[1]
-DEFAULT_ID = "FIRST_PERSON_CASUAL_SNAPSHOT_V1"
-DEFAULT_PATH = Path("standards/capture_grammars/FIRST_PERSON_CASUAL_SNAPSHOT_V1.json")
+_CONFIG = storyos_config.load_config()
+DEFAULT_ID = str(storyos_config.get_path(_CONFIG, "visual.default_capture_grammar_id"))
+DEFAULT_PATH = Path(str(storyos_config.get_path(_CONFIG, "visual.capture_grammar_path")))
 EPISODE_REL = Path("meta/capture-grammar.json")
 
 

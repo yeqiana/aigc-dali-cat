@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from story_os_contract import canonical_stages, story_os_version
+import storyos_config
 
 SYSTEM_DIR = Path(__file__).resolve().parent
 ROOT = SYSTEM_DIR.parents[1]
@@ -65,8 +66,14 @@ def forward(script, args):
 
 
 def main():
+    try:
+        storyos_config.load_config()
+        storyos_config.load_index()
+    except ValueError as exc:
+        raise SystemExit(f"Story OS configuration invalid: {exc}") from exc
     ap = argparse.ArgumentParser(description=f"Story OS V{story_os_version()} Multi-Runtime CLI + V2.1 Workflow Foundation")
     sub = ap.add_subparsers(dest="cmd", required=True)
+    p = sub.add_parser("config"); p.add_argument("config_cmd", choices=["validate", "show", "index"])
     sub.add_parser("doctor")
     p = sub.add_parser("status"); p.add_argument("episode_dir")
     p = sub.add_parser("next"); p.add_argument("episode_dir")
@@ -115,6 +122,7 @@ def main():
     p = sub.add_parser("delegated-approval"); p.add_argument("episode_dir"); p.add_argument("approval_cmd", choices=["record", "verify", "show"]); p.add_argument("kind", nargs="?", choices=["story_lock", "visual_lock", "release_lock"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     args = ap.parse_args()
 
+    if args.cmd == "config": return forward("storyos_config.py", [args.config_cmd])
     if args.cmd == "doctor": return forward("story_os_doctor.py", [])
     if args.cmd == "runtime": return forward("runtime_router.py", [args.runtime_cmd, *args.extra])
     if args.cmd == "request": return forward("runtime_request.py", [args.request_cmd, *args.extra])

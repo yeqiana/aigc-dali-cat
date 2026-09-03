@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 from contract_sync import collect_errors
+import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -50,6 +51,8 @@ def run_doctor():
     issues = []
     required = [
         "story_os_manifest.json",
+        "config/storyos.yaml",
+        "config/index.yaml",
         "START_HERE.md",
         "SKILL.md",
         "AGENTS.md",
@@ -84,6 +87,15 @@ def run_doctor():
             "RUNTIME_DEPENDENCY",
             "缺少 Pillow；执行 python -m pip install -r episodes/_system/requirements.txt",
         )
+    if importlib.util.find_spec("yaml") is None:
+        issue(issues, "ERROR", "RUNTIME_DEPENDENCY", "缺少 PyYAML；执行 python -m pip install -r episodes/_system/requirements.txt")
+
+    try:
+        for error in storyos_config.validate():
+            issue(issues, "ERROR", "CONFIG_INVALID", error)
+        storyos_config.load_index()
+    except Exception as e:
+        issue(issues, "ERROR", "CONFIG_INVALID", str(e))
 
     for error in collect_errors(ROOT):
         issue(issues, "ERROR", "CONTRACT_SYNC", error)
