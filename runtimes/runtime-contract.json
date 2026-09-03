@@ -1,9 +1,9 @@
 {
   "schema_version": 4,
-  "module_version": "2.1",
-  "platform_min_version": "2.1.0",
+  "module_version": "2.3",
+  "platform_min_version": "2.3.0",
   "workflow_contract": "runtimes/workflow-contract.json",
-  "name": "Story OS V2.1 Multi-Runtime Workflow",
+  "name": "Story OS V2.3 Multi-Runtime Agent Runtime",
   "state_source": "meta/episode-state.json",
   "creative_authority": "standards/制作规范_正式版.md",
   "routing_order": [
@@ -75,6 +75,14 @@
     "default_image_model": "gpt-image-2",
     "default_image_quality": "high",
     "episode_ratio_applies_generation_through_release": true,
-    "normalize_technical_failure_triggers_generation": false
+    "normalize_technical_failure_triggers_generation": false,
+    "provider_capability_contract": "config/providers/index.json",
+    "provider_exact_raw_canvas_guaranteed": false,
+    "provider_receipt_required": true,
+    "runtime_trace_enabled": true,
+    "runtime_trace_stage_authority": false,
+    "request_intent_resolver_enabled": true,
+    "request_router_enabled": true,
+    "route_decision_stage_authority": false
   }
 }

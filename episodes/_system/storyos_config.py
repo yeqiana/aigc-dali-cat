@@ -81,9 +81,17 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("provider.measure_raw_dimensions_locally must be true")
     if get_path(cfg, "provider.provider_receipt_required") is not True:
         errors.append("provider.provider_receipt_required must be true")
+    if get_path(cfg, "agent_runtime.trace.enabled") is not True:
+        errors.append("agent_runtime.trace.enabled must be true")
+    if get_path(cfg, "agent_runtime.intent.enabled") is not True:
+        errors.append("agent_runtime.intent.enabled must be true")
+    if get_path(cfg, "agent_runtime.router.enabled") is not True:
+        errors.append("agent_runtime.router.enabled must be true")
     for key in (
         "provider.registry",
         "agent_runtime.trace.config",
+        "agent_runtime.intent.config",
+        "agent_runtime.router.config",
         "visual.default_profile_path",
         "visual.capture_profile_registry",
         "visual.capture_grammar_path",

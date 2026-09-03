@@ -1,5 +1,5 @@
 {
-  "platform_version": "2.2.2",
+  "platform_version": "2.3.0",
   "version_semantics": {
     "platform_version": "Root product release identifier; the only platform version authority.",
     "schema_version": "Shape of this specific document.",
@@ -7,7 +7,7 @@
     "platform_min_version": "Lowest Story OS platform version that may consume a module."
   },
   "contract_schema": 1,
-  "release_name": "World Identity + Character Continuity Patch",
+  "release_name": "Agent Runtime Foundation: Provider Capability + Trace + Intent Router",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -156,7 +156,15 @@
     "world_identity_final_review_gate",
     "world_identity_rolling_review",
     "production_readiness_v221",
-    "runtime_fast_read_index"
+    "runtime_fast_read_index",
+    "provider_capability_contract",
+    "provider_raw_dimension_receipt",
+    "provider_receipt_ledger_binding",
+    "agent_runtime_trace",
+    "trace_span_timeline",
+    "request_intent_resolver",
+    "deterministic_request_router",
+    "route_decision_evidence"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -212,7 +220,12 @@
     "Episode World Identity overrides are explicit and replace/inherit defaults deterministically.",
     "Character Appearance Anchor is a derived cache and never replaces Character Contract, Character Visual Contract or Visual Lock pixel master.",
     "World Identity and Character Appearance Anchor bind Resolved Frame Contract hashes for V2.2.1+ Episodes.",
-    "V2.2.0 and earlier Episodes do not inherit V2.2.1-only pixel review checks retroactively."
+    "V2.2.0 and earlier Episodes do not inherit V2.2.1-only pixel review checks retroactively.",
+    "Provider requested canvas is generation intent; current desktop image transport does not guarantee exact RAW pixel dimensions.",
+    "Provider RAW dimensions are measured and recorded before Normalize; safe Normalize never implies provider exact-canvas compliance.",
+    "Runtime Trace is diagnostic evidence only and never becomes a second Episode Stage source.",
+    "Route Decision explains execution choice but cannot mutate the canonical episode-state.json stage by itself.",
+    "Request Intent uses deterministic rules first; free-form LLM request rewriting is not the default execution path."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

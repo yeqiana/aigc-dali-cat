@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, re
 from pathlib import Path
 import storyos_config
+import request_intent
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUESTS_DIR = ROOT / "runtime" / "requests"
@@ -129,11 +130,16 @@ def compile_request(text):
     branch,branch_source=parse_branch(text)
     full_auto=contains_any(text,FULL_AUTO_SIGNALS) or mode in {"full_auto","preproduction_only","image_continue","resume","repair_only","release_only","data_review"}
     image=parse_image_model(text)
+    intent=request_intent.resolve(text)
+    expected_intent=request_intent.expected_intent_for_mode(mode)
+    if intent.get("intent") != expected_intent:
+        intent={**intent,"intent":expected_intent,"reason_codes":[*(intent.get("reason_codes") or []),f"MODE_OVERRIDE_{mode.upper()}"]}
     data={
         "schema_version":1,"request_id":request_id(text),"created_at":now(),"mode":mode,
         "repository":{"branch":branch,"source":branch_source},
         "topic":{"title":title,"raw":raw_topic},
         "story_input":story,
+        "intent":intent,
         "creative_hints":creative_hints(text),
         "image_model":image["model"],
         "image_quality":DEFAULT_IMAGE_QUALITY,
@@ -152,6 +158,11 @@ def validate_request(data):
     if data.get("schema_version")!=1:errors.append("schema_version must be 1")
     if data.get("mode") not in {"full_auto","preproduction_only","image_continue","resume","repair_only","release_only","data_review"}:errors.append("invalid mode")
     story=data.get("story_input") or {}
+    intent=data.get("intent") or {}
+    if intent:
+        expected_intent=request_intent.expected_intent_for_mode(str(data.get("mode")))
+        if intent.get("intent") != expected_intent: errors.append("intent.intent must match runtime mode")
+        if intent.get("source") != "deterministic_rules": errors.append("intent.source must be deterministic_rules")
     if story.get("mode") not in STORY_MODES:errors.append("invalid story_input.mode")
     if story.get("mode")=="user_seed" and not str(story.get("raw") or "").strip():errors.append("user_seed requires raw story seed")
     if story.get("mode")=="core_constraints" and not isinstance(story.get("constraints"),list):errors.append("core_constraints requires constraints list")
@@ -193,6 +204,7 @@ def effective_for_episode(episode_dir):
 def self_test():
     a=compile_request("读取 story 分支。全自动做一篇「仲夏夜惊魂」。")
     assert a["story_input"]["mode"]=="auto_create" and a["image_model"]=="gpt-image-2" and a["image_quality"]=="high"
+    assert a["intent"]["intent"]=="CREATE_EPISODE"
     b=compile_request("读取 story 分支。全自动做一篇「仲夏夜惊魂」。剧情大概是：几个人住进山里民宿。")
     assert b["story_input"]["mode"]=="user_seed" and "山里民宿" in b["story_input"]["raw"]
     c=compile_request("全自动做一篇「仲夏夜惊魂」，image=gpt-image-2。必须保留：\n1. 山里民宿\n2. 最后进入旧照片")

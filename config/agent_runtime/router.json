@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "module_version": "1.0",
+  "decision_path": "meta/runtime-route.json",
+  "route_is_stage_authority": false,
+  "source": "deterministic_rules",
+  "routes": {
+    "full_auto": {
+      "intent": "CREATE_EPISODE",
+      "entry_step": "INCREMENTAL_PLAN",
+      "target": "PUBLISH_READY",
+      "allow_image_generation": true
+    },
+    "resume": {
+      "intent": "RESUME",
+      "entry_step": "RESUME_FROM_CHECKPOINT",
+      "target": "PUBLISH_READY",
+      "allow_image_generation": true
+    },
+    "preproduction_only": {
+      "intent": "PREPRODUCTION",
+      "entry_step": "CREATIVE_STORY",
+      "target": "PREPRODUCTION_HANDOFF",
+      "allow_image_generation": false
+    },
+    "image_continue": {
+      "intent": "IMAGE_CONTINUE",
+      "entry_step": "VISUAL_LOCK",
+      "target": "PUBLISH_READY",
+      "allow_image_generation": true
+    },
+    "repair_only": {
+      "intent": "REPAIR",
+      "entry_step": "PRODUCTION_REPAIR",
+      "target": "PUBLISH_READY",
+      "allow_image_generation": true
+    },
+    "release_only": {
+      "intent": "RELEASE",
+      "entry_step": "RELEASE",
+      "target": "PUBLISH_READY",
+      "allow_image_generation": false
+    },
+    "data_review": {
+      "intent": "DATA_REVIEW",
+      "entry_step": "POST_PUBLISH_REVIEW",
+      "target": "DATA_REVIEWED",
+      "allow_image_generation": false
+    }
+  }
+}

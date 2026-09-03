@@ -26,6 +26,7 @@ import runtime_execution
 import performance_guard_v211  # STORY_OS_V211_PERF_RECOVERY
 import storyos_config
 import runtime_trace
+import request_router
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -94,7 +95,10 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         raise SystemExit(f"local workflow_runner only executes CODEX adapter; detected {runtime}. WORK/WEB are product runtime adapters.")
     run([sys.executable, SYSTEM / "runtime_checkpoint.py", "init", ep, "--runtime", runtime, "--full-auto"])
     run_id = perf.start_run(ep, runtime, "resume" if resume else "run")
-    trace_id = runtime_trace.start_run(ep, run_id, request_data, runtime, None)
+    route_decision = request_router.route_episode(ep, request_data, write=True) if request_data else None
+    trace_id = runtime_trace.start_run(ep, run_id, request_data, runtime, route_decision)
+    if route_decision:
+        runtime_trace.route_event(ep, route_decision)
     try:
         execution_mode = str(((request_data or {}).get("runtime") or {}).get("execution_mode") or "compat")
         if execution_mode == "dag":

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "module_version": "1.0",
+  "strategy": "deterministic_rules_first",
+  "llm_rewrite_default": false,
+  "preserve_original_request": true,
+  "intents": [
+    "CREATE_EPISODE",
+    "RESUME",
+    "PREPRODUCTION",
+    "IMAGE_CONTINUE",
+    "REPAIR",
+    "RELEASE",
+    "DATA_REVIEW"
+  ],
+  "normalization": {
+    "unicode": "NFKC",
+    "collapse_inline_whitespace": true,
+    "preserve_line_breaks": true
+  }
+}

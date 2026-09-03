@@ -207,6 +207,20 @@
       "scope": "migration_regression_observability_post_publish_learning",
       "active": true,
       "note": "Legacy no-backfill; post-publish evidence remains non-creative authority."
+    },
+    {
+      "path": "standards/Provider_Capability_Contract_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "provider_capability_and_raw_dimension_evidence",
+      "active": true,
+      "note": "Execution capability contract only; never creative authority or stage source."
+    },
+    {
+      "path": "standards/Story_Agent_Runtime_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "request_intent_routing_trace_runtime",
+      "active": true,
+      "note": "Agent runtime governance only; episode-state.json remains the sole stage source."
     }
   ],
   "rules": {
@@ -426,6 +440,18 @@
       "tool": "episodes/_system/account_learning_index.py",
       "path": "reports/account-learning-index.json",
       "creative_authority": false
+    },
+    "provider_capability_contract": {
+      "registry": "config/providers/index.json",
+      "receipt_dir": "meta/provider-receipts",
+      "receipt_is_authority": false
+    },
+    "agent_runtime_v230": {
+      "trace_config": "config/agent_runtime/trace.json",
+      "intent_config": "config/agent_runtime/intent.json",
+      "router_config": "config/agent_runtime/router.json",
+      "route_decision": "meta/runtime-route.json",
+      "stage_source": "meta/episode-state.json"
     }
   }
 }

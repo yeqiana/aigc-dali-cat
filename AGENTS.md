@@ -195,3 +195,15 @@ Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / 现�
 - 新生产媒体必须写入 `<episode>/media/`；交付写入 `<episode>/release/`。图片/视频/ZIP 保留本地，Git 只保存路径与 SHA 索引。
 - 不得删除被 `.gitignore` 忽略的旧媒体来“整理目录”；迁移必须通过 `media_workspace.py` 的 copy→SHA verify→reference rewrite→remove-old 流程。
 <!-- STORY_OS_V2_0_3_4_AGENTS_END -->
+
+<!-- STORY_OS_V230_AGENT_RUNTIME_BEGIN -->
+## Story OS V2.3 Agent Runtime
+
+执行链：
+`Raw Request → Intent Resolver → immutable Runtime Request → Request Router → Workflow DAG → Tool/Model Execution → Trace/Evidence`
+
+- `meta/episode-state.json` 仍是唯一阶段状态源。
+- `meta/runtime-route.json` 只记录路由决策，不是第二状态机。
+- `meta/runtime/trace-events.jsonl` 只记录执行事实，不授予 PASS。
+- 当前 GPT-Image-2 桌面通道不假设 exact RAW canvas；记录真实 RAW 尺寸与 Provider Receipt，再由 NP01 安全 Normalize。
+<!-- STORY_OS_V230_AGENT_RUNTIME_END -->

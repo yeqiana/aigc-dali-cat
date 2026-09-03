@@ -35,6 +35,10 @@ runtimes:
   dag: runtimes/runtime-dag.json
   modes: runtimes/runtime-mode-contract-r2.json
   trace: config/agent_runtime/trace.json
+  intent: config/agent_runtime/intent.json
+  request_router: config/agent_runtime/router.json
+  intent: config/agent_runtime/intent.json
+  request_router: config/agent_runtime/router.json
 
 episode_layout:
   # authority 是输入权威；evidence 是机器审计结果；derived 可安全重建；
@@ -54,6 +58,7 @@ episode_layout:
     - meta/workflow-observability.json
     - meta/runtime/trace-events.jsonl
     - meta/runtime/trace-summary.json
+    - meta/runtime-route.json
   media:
     - media/raw
     - media/candidates

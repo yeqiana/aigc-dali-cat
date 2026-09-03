@@ -359,3 +359,15 @@ python episodes/_system/media_workspace.py ensure <episode_dir>
 ## Runtime Optimization R2
 支持 `preproduction_only`（只做生图前资产并写 Handoff）和 `image_continue`（校验 Handoff 后从 Visual/Image 继续，禁止重写 Story）。启用 `.storyos_cache/` 多级缓存、`library/` 共享参考资源库、Visual Lock 1+3、简介四类开头策略和“标题仅1个内部候选”规则。正式 Story/Visual/Production/Release Gate 均不删除。
 <!-- STORY_OS_RUNTIME_OPTIMIZATION_R2_CORE_END -->
+
+<!-- STORY_OS_V230_AGENT_RUNTIME_BEGIN -->
+## Story OS V2.3 Agent Runtime
+
+执行链：
+`Raw Request → Intent Resolver → immutable Runtime Request → Request Router → Workflow DAG → Tool/Model Execution → Trace/Evidence`
+
+- `meta/episode-state.json` 仍是唯一阶段状态源。
+- `meta/runtime-route.json` 只记录路由决策，不是第二状态机。
+- `meta/runtime/trace-events.jsonl` 只记录执行事实，不授予 PASS。
+- 当前 GPT-Image-2 桌面通道不假设 exact RAW canvas；记录真实 RAW 尺寸与 Provider Receipt，再由 NP01 安全 Normalize。
+<!-- STORY_OS_V230_AGENT_RUNTIME_END -->
