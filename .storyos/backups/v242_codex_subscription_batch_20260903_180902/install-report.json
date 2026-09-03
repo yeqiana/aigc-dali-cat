@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "upgrade": "Story OS V2.4.2 Codex Subscription Batch Runtime",
+  "installed_at": "2026-09-03T18:09:07+08:00",
+  "base_head": "382f2e6c475a42f769e0ec9cee9bc52760525f19",
+  "head_after_install": "050de32cb41ebcb4f81cc5c40fe1b2099f883bca",
+  "backup_dir": ".storyos/backups/v242_codex_subscription_batch_20260903_180902",
+  "git_commits_created": [
+    "eddbec4c21566a4d3a1dcaa5d1db3da42bdbbbb8",
+    "097b39ffe37dc96df9e4ce7dd113eb3acb1a9218",
+    "050de32cb41ebcb4f81cc5c40fe1b2099f883bca"
+  ],
+  "tests": "PASS",
+  "api_key_required": false,
+  "logical_batch_size": 5,
+  "max_inflight_codex_images": 5,
+  "adaptive_concurrency_steps": [
+    5,
+    3,
+    1
+  ],
+  "native_multi_image": false,
+  "single_http_request": false
+}

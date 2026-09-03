@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "base_head": "382f2e6c475a42f769e0ec9cee9bc52760525f19",
+  "modified_backed_up": [
+    "config/storyos.yaml",
+    "config/index.yaml",
+    "config/agent_runtime/batch.json",
+    "config/providers/image-provider-runtime.json",
+    "episodes/_system/storyos_config.py",
+    "episodes/_system/image_provider_runtime.py",
+    "episodes/_system/batch_image_worker.py",
+    "episodes/_system/image_worker_pool.py",
+    "episodes/_system/codex_subscription_image.py",
+    "episodes/_system/batch_scheduler.py",
+    "episodes/_system/batch_runtime_metrics.py",
+    "story_os_manifest.json",
+    "runtimes/runtime-contract.json",
+    "runtimes/workflow-contract.json",
+    "standards/AUTHORITY_INDEX.json",
+    "START_HERE.md",
+    "AGENTS.md",
+    "SKILL.md"
+  ],
+  "added_files": [
+    "config/agent_runtime/codex-subscription-batch.json",
+    "standards/Codex_Subscription_Batch_Runtime_V1.0.md",
+    "episodes/_system/codex_subscription_batch_runtime.py",
+    "episodes/_system/codex_logical_batch_worker.py",
+    "tests/system/test_codex_subscription_batch_v242.py",
+    "docs/Story_OS_V2.4.2_Codex_Subscription_Batch_Runtime.md"
+  ],
+  "created_at": "2026-09-03T18:09:02+08:00"
+}
