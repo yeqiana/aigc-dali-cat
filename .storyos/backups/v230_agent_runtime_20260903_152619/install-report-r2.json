@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "upgrade": "Story OS V2.3.0 Agent Runtime R2",
+  "installed_at": "2026-09-03T15:30:25+08:00",
+  "package_base_head": "61be0c4c4e5a3b08e6ccecd025c2970b5f20ac5f",
+  "head_after_install": "87e90727e18ed11684232da12d7bcf25f1b6019c",
+  "backup_dir": ".storyos/backups/v230_agent_runtime_20260903_152619",
+  "git_commits_created_this_run": [
+    "87e90727e18ed11684232da12d7bcf25f1b6019c"
+  ],
+  "phase_state": {
+    "phase1_committed": true,
+    "phase2_committed": true,
+    "phase3_committed": true,
+    "phase1_present": true,
+    "phase2_present": true,
+    "phase3_present": true,
+    "partial_dirty": false
+  },
+  "tests": "PASS",
+  "historical_episode_evidence_mutated": false,
+  "canonical_stage_source": "meta/episode-state.json"
+}
