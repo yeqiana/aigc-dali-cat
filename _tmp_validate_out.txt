@@ -1,0 +1,20 @@
+
+=== FAIL D:\workspace\YeQianWorkSpace\yeqian\storyOS\episodes\11_仲夏夜惊魂\01_停电夜蜕壳 ===
+[WARN] tool_version: state.tool_version='2.1.0'; current tool is 2.4.2
+[WARN] tool_version: manifest.tool_version='2.1.0'; current tool is 2.4.2
+[FAIL] production_not_passed: quality.production_gate must be 'pass'
+[FAIL] review_not_passed: story-gates.reviews.production must be 'passed', got 'pending'
+[FAIL] sound_card: 正式字幕前必须完成声音卡
+[FAIL] review_not_passed: story-gates.reviews.subtitle must be 'passed', got 'pending'
+[FAIL] fast_frame_scout_gate: high-risk frame 07 scout stale for current asset
+[FAIL] fast_frame_scout_gate: frame 07 unresolved REPAIR_NOW
+[FAIL] fast_frame_scout_gate: high-risk frame 08 scout stale for current asset
+[FAIL] fast_frame_scout_gate: high-risk frame 10 scout stale for current asset
+[FAIL] fast_frame_scout_gate: high-risk frame 13 scout stale for current asset
+[FAIL] fast_frame_scout_gate: frame 13 unresolved REPAIR_NOW
+[FAIL] fast_frame_scout_gate: high-risk frame 14 scout stale for current asset
+[FAIL] fast_frame_scout_gate: frame 14 unresolved REPAIR_NOW
+[FAIL] fast_frame_scout_gate: high-risk frame 16 scout stale for current asset
+[FAIL] fast_frame_scout_gate: frame 16 unresolved REPAIR_NOW
+[FAIL] fast_frame_scout_gate: high-risk frame 20 scout stale for current asset
+[FAIL] fast_frame_scout_gate: frame 20 unresolved REPAIR_NOW
