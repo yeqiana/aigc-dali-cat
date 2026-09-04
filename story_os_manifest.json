@@ -1,5 +1,5 @@
 {
-  "platform_version": "2.5.0",
+  "platform_version": "2.5.1",
   "version_semantics": {
     "platform_version": "Root product release identifier; the only platform version authority.",
     "schema_version": "Shape of this specific document.",
@@ -7,7 +7,7 @@
     "platform_min_version": "Lowest Story OS platform version that may consume a module."
   },
   "contract_schema": 1,
-  "release_name": "Propagation Core: action-response shareability lock",
+  "release_name": "Runtime Fast Path: resume + capability cache + vision-safe rolling review",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -197,7 +197,14 @@
     "trigger_response_payoff_frame_binding",
     "l3a_l3b_post_publish_funnel",
     "absolute_increment_efficiency_triplets",
-    "structural_golden_episode_no_surface_clone"
+    "structural_golden_episode_no_surface_clone",
+    "runtime_fast_path_v251",
+    "runtime_capability_cache",
+    "runtime_resume_capsule",
+    "rolling_review_vision_guard",
+    "raw_candidate_attempt_budget",
+    "fast_path_prepare_before_run",
+    "performance_slo_advisory"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -279,7 +286,12 @@
     "V2.5+ Storyboard Lock requires a machine-verified Propagation Core inside the independent Story Semantic Review.",
     "Propagation Core learns causal structure from Golden Episodes and must not require surface cloning of location, prop, trigger action or climax image.",
     "Post-publish L3A recognition and L3B sharing are reported separately; real platform data remains evidence, never direct creative authority.",
-    "Post-publish headline metrics expose absolute count, stage delta and efficiency/rate together when the underlying data exists."
+    "Post-publish headline metrics expose absolute count, stage delta and efficiency/rate together when the underlying data exists.",
+    "Runtime capability probes are cached per Episode and are not repeated while fresh unless explicitly invalidated.",
+    "A Rolling Review worker without verified pixel vision may not emit REPAIR_NOW; it must defer to Final Review.",
+    "Context restore consumes a SHA-bound Resume Capsule before broad repository rescans; source authority still wins on drift.",
+    "Raw candidate attempts are budgeted separately from technical retries; technical failures never consume raw candidate budget.",
+    "Performance SLO is advisory telemetry and never a Story/Release gate."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

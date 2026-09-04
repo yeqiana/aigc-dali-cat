@@ -258,10 +258,18 @@ def _refresh_summary(d):
     vals=[float(x["elapsed_seconds"]) for x in imgs if isinstance(x.get("elapsed_seconds"),(int,float))]
     image_backend=sum(vals)
     critical_path=_critical_path_summary(d)  # STORY_OS_V211_RUNTIME_CLOSURE_R3
+    # STORY_OS_V2_5_1_RUNTIME_FAST_PATH: advisory active-wall SLO; never a gate.
+    active_wall=((d.get("run_wall") or {}).get("active_wall_seconds"))
+    if not isinstance(active_wall,(int,float)): active_wall=d.get("total_wall_seconds")
+    if isinstance(active_wall,(int,float)):
+        perf_health="GREEN" if active_wall<=5400 else ("YELLOW" if active_wall<=7200 else "RED")
+        performance_slo={"health":perf_health,"active_wall_seconds":round(float(active_wall),3),"green_max_seconds":5400,"yellow_max_seconds":7200,"gate":False}
+    else: performance_slo={"health":"UNKNOWN","active_wall_seconds":None,"gate":False}
     d["summary"]={
       "stage_wall":stages,
       "named_span_wall":spans,
       "critical_path":critical_path,
+      "performance_slo":performance_slo,
       "images":{
         "attempts":len(imgs),"successful_attempts":len(completed),"repair_attempts":len(repair),
         "technical_failures_or_retries":len(tech),

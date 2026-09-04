@@ -9,6 +9,7 @@ from __future__ import annotations
 import json, os, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
 import frame_contract
+import runtime_capability_cache  # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
 # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -25,6 +26,10 @@ def prefix(p):
     return [str(p)]
 def review(ep,frame,image,codex_raw=None,timeout=240):
     image=Path(image).resolve()
+    # STORY_OS_V2_5_1_RUNTIME_FAST_PATH: a reviewer without verified pixel vision cannot safely trigger a repair.
+    caps=runtime_capability_cache.load(ep,create=False)
+    if not runtime_capability_cache.vision_verified(caps):
+        return {"decision":"UNCERTAIN","reason":"vision_capability_not_verified","fast_path_deferred":True,"final_pass_authority":False,"returncode":0}
     contract=frame_contract.compile_frame(ep,int(frame),write_cache=True)
     out=ep/REL/f"{int(frame):02d}-{int(time.time())}.json"; out.parent.mkdir(parents=True,exist_ok=True)
     prompt=f"""Review the attached generated frame as an actual-pixel PRE-FINAL Story OS review.

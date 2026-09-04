@@ -21,6 +21,7 @@ AUTHORITY_FILES=[
     "standards/scene-pools.json",
     "standards/forbidden-character-roles.json",
     "runtimes/runtime-mode-contract-r2.json",
+    "runtimes/runtime-fast-path-v251.json",  # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
     "library/catalog.json",
     "library/copy/intro-openers.json",
     "standards/AIGC_Directing_Quality_V1.0.md",
@@ -83,6 +84,10 @@ def compile_capsule(ep,step,write=True):
     request=read_json(ep/"meta/runtime-request.json")
     execution=read_json(ep/"meta/runtime-execution.json")
     effective_mode=runtime_execution.effective_mode(ep)
+    # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
+    runtime_fast_path=read_json(ROOT/"runtimes/runtime-fast-path-v251.json")
+    runtime_capabilities=read_json(ep/"meta/runtime/runtime-capabilities.json")
+    resume_capsule=read_json(ep/"meta/runtime/resume-capsule.json")
     authority=[file_row(ROOT/x,ROOT) for x in AUTHORITY_FILES]
     evidence=[]
     evidence_paths=list(STEP_EVIDENCE[step])
@@ -99,12 +104,15 @@ def compile_capsule(ep,step,write=True):
       "runtime_request":request,
       "runtime_execution":execution,
       "effective_execution_mode":effective_mode,
+      "runtime_fast_path":runtime_fast_path,
+      "runtime_capabilities":runtime_capabilities,
+      "resume_capsule":resume_capsule,
       "character_contract":read_json(ep/"meta/character-contract.json"),
       "invariants":{k:rules.get(k) for k in RULE_KEYS if k in rules},
       "authority_files":authority,
       "evidence_files":evidence,
       "authority_policy":"Derived cache only. If capsule conflicts with source authority, source authority wins.",
-      "read_policy":"Use capsule first. Open full authority files only for missing details or conflict resolution.",
+      "read_policy":"Fast Path: consume resume_capsule + runtime_capabilities + this step capsule first. Do not broad-rescan repository files while source SHA is unchanged; open source authority only for missing details, SHA drift, or conflict resolution.",
     }
     raw=json.dumps(material,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
     data={**material,"source_sha256":sha_bytes(raw),"compiled_at":now()}

@@ -79,6 +79,8 @@ def main():
     p = sub.add_parser("next"); p.add_argument("episode_dir")
     p = sub.add_parser("plan"); p.add_argument("episode_dir")
     p = sub.add_parser("performance"); p.add_argument("episode_dir")
+    # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
+    p = sub.add_parser("fast-path"); p.add_argument("fast_cmd", choices=["prepare","resume","capabilities","candidate","slo"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("dag"); p.add_argument("dag_cmd", choices=["plan", "run", "resume", "show"]); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=7200)
     p = sub.add_parser("quota"); p.add_argument("quota_cmd", choices=["auto", "snapshot", "report"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("checklist"); p.add_argument("episode_dir"); p.add_argument("--no-validators", action="store_true")
@@ -135,9 +137,12 @@ def main():
     if args.cmd == "image-backend": return forward("codex_subscription_image.py", [args.backend_cmd, *args.extra])
     if args.cmd == "quota": return forward("quota_observability.py", [args.quota_cmd, str(Path(args.episode_dir).resolve()), *args.extra])
     if args.cmd == "cache-r2": return forward("multi_level_cache.py", [args.cache_cmd])
+    if args.cmd == "fast-path": return forward("runtime_fast_path.py", [args.fast_cmd, str(Path(args.episode_dir).resolve()), *args.extra])
     if args.cmd == "golden": return forward("golden_episode_regression.py", [args.golden_cmd, *args.extra])
     if args.cmd == "resource" and args.resource_cmd=="register": return forward("resource_library.py", ["register", *args.extra])
     ep = Path(args.episode_dir).resolve()
+    if args.cmd in {"run","plan"}:
+        subprocess.call([sys.executable, str(SYSTEM_DIR / "runtime_fast_path.py"), "prepare", str(ep)], cwd=ROOT)
     if args.cmd == "dag":
         extra=[args.dag_cmd, str(ep)]
         if args.codex: extra += ["--codex", args.codex]

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "module_version": "2.5.1",
+  "enabled": true,
+  "goal": "runtime_fast_path_without_creative_rule_changes",
+  "capability_cache_ttl_seconds": 21600,
+  "resume_capsule_required_on_context_restore": true,
+  "rolling_review_requires_verified_vision": true,
+  "raw_candidate_budget": {
+    "original": 2,
+    "repair": 2,
+    "exception": 2
+  },
+  "performance_slo": {
+    "green_seconds": 5400,
+    "yellow_seconds": 7200,
+    "red_above_seconds": 7200,
+    "gate": false
+  },
+  "policies": {
+    "no_broad_repository_rescan_when_resume_capsule_fresh": true,
+    "technical_failure_does_not_consume_raw_candidate_budget": true,
+    "rolling_review_without_verified_vision": "UNCERTAIN",
+    "rolling_review_without_verified_vision_may_emit_repair_now": false,
+    "fast_path_fail_soft": true,
+    "source_authority_wins_on_sha_mismatch": true
+  }
+}

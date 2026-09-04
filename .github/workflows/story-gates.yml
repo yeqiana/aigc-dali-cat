@@ -75,6 +75,13 @@ jobs:
           # STORY_OS_V2_5_PROPAGATION_CORE
           python episodes/_system/test_v250_propagation_core.py -v
           python episodes/_system/propagation_core_gate.py self-test
+          # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
+          python episodes/_system/test_v251_runtime_fast_path.py -v
+          python episodes/_system/runtime_capability_cache.py self-test
+          python episodes/_system/runtime_resume_capsule.py self-test
+          python episodes/_system/raw_candidate_budget.py self-test
+          python episodes/_system/runtime_fast_path.py self-test
+          python episodes/_system/rolling_frame_review.py self-test
           python episodes/_system/story_review.py self-test
           python episodes/_system/visual_review.py self-test
           python episodes/_system/frame_semantic_review.py self-test
