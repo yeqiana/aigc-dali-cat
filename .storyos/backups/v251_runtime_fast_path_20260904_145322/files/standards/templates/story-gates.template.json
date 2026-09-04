@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.5.0",
+  "episode_id": "__EPISODE_ID__",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_����_��ˮϯ_������.json",
+    "capture_profile": "auto",
+    "override_reason": null
+  },
+  "story": {
+    "recent5_checked": false,
+    "four_locks_diff_count": 0,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": false,
+    "competing_explanations": 0,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [],
+    "climax_frame": null,
+    "payoff_frame": null,
+    "semantic_review_path": "meta/story-semantic-review.json"
+  },
+  "visual": {
+    "admission_frames": [],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": null,
+        "location": null,
+        "key_prop": null,
+        "wardrobe": null,
+        "weather_time": null
+      }
+    },
+    "authenticity_card": {
+      "story_era": null,
+      "location": null,
+      "photographer": null,
+      "shooting_reason": null,
+      "primary_capture": {
+        "id": null,
+        "device": null
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": null,
+      "aspect_ratio": null,
+      "capture_states": {
+        "stable": null,
+        "restricted": null,
+        "lost_control": null
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": null,
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": null
+      }
+    },
+    "calibration": {
+      "schema_version": 2,
+      "policy": "four_admission_v21",
+      "items": [],
+      "note": "Frames are selected by visual_lock_v21.py prepare after Phase 3+4 contracts exist."
+    },
+    "calibration_contact_sheet": {
+      "path": null,
+      "sha256": null
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
+    },
+    "profile_review_path": "meta/visual-profile-review.json",
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "",
+      "baseline": {
+        "condition": "",
+        "time_of_day": "",
+        "temperature_feel": "",
+        "ground_state": "",
+        "visibility": "",
+        "wind": "",
+        "precipitation": "",
+        "physical_cues": []
+      },
+      "segments": [],
+      "frame_overrides": {}
+    },
+    "frame_directives": {},
+    "fast_frame_scout": {
+      "schema_version": 1,
+      "enabled": true,
+      "policy": "risk_based_v21",
+      "final_critic_still_required": true,
+      "high_risk_required": true
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": false,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "pending",
+    "authenticity": "pending",
+    "continuity": "pending",
+    "visual_admission": "pending",
+    "subtitle": "pending",
+    "production": "pending",
+    "recommendation_fit": "pending",
+    "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 2,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true,
+    "environment_frame_sha_bound": true,
+    "frame_directive_sha_bound": true,
+    "phase3_actual_pixel_checks": [
+      "environment_physics_fidelity",
+      "anomaly_escalation_fidelity",
+      "scale_reference_fidelity"
+    ],
+    "visual_lock_schema_version": 2,
+    "visual_lock_calibration_count": 4,
+    "image_scheduler_max_parallel": 3,
+    "production_ledger_single_writer": true,
+    "fast_frame_scout_summary": "meta/frame-scout-summary.json",
+    "final_candidate_snapshot": "meta/final-candidate-snapshot.json",
+    "post_publish_event": "meta/publish-event.json",
+    "post_publish_review": "meta/post-publish-review.json",
+    "next_story_learning": "meta/next-story-learning.json"
+  },
+  "release": {
+    "final_candidate_snapshot": {
+      "schema_version": 1,
+      "enabled": true,
+      "delivery_must_consume_snapshot": true,
+      "snapshot_is_authority": false
+    }
+  },
+  "post_publish": {
+    "data_review": {
+      "schema_version": 1,
+      "enabled": true,
+      "checkpoints": [
+        "6h",
+        "24h",
+        "48h",
+        "7d"
+      ],
+      "required_for_data_reviewed": [
+        "48h"
+      ],
+      "learning_packet_is_authority": false,
+      "release_manifest_mutation_after_snapshot": false
+    }
+  }
+}

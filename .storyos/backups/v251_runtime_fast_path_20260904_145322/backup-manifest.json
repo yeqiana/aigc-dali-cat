@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "path": "story_os_manifest.json",
+      "existed": true
+    },
+    {
+      "path": "START_HERE.md",
+      "existed": true
+    },
+    {
+      "path": "SKILL.md",
+      "existed": true
+    },
+    {
+      "path": "episodes/_system/README.md",
+      "existed": true
+    },
+    {
+      "path": "skills/dali-cat-story/SKILL.md",
+      "existed": true
+    },
+    {
+      "path": ".agents/skills/dali-cat-story/SKILL.md",
+      "existed": true
+    },
+    {
+      "path": "standards/templates/story-gates.template.json",
+      "existed": true
+    },
+    {
+      "path": "episodes/_system/story_os.py",
+      "existed": true
+    },
+    {
+      "path": "episodes/_system/execution_capsule.py",
+      "existed": true
+    },
+    {
+      "path": "episodes/_system/rolling_frame_review.py",
+      "existed": true
+    },
+    {
+      "path": "episodes/_system/episode_performance.py",
+      "existed": true
+    },
+    {
+      "path": ".github/workflows/story-gates.yml",
+      "existed": true
+    },
+    {
+      "path": "runtimes/runtime-fast-path-v251.json",
+      "existed": false
+    },
+    {
+      "path": "episodes/_system/runtime_capability_cache.py",
+      "existed": false
+    },
+    {
+      "path": "episodes/_system/runtime_resume_capsule.py",
+      "existed": false
+    },
+    {
+      "path": "episodes/_system/raw_candidate_budget.py",
+      "existed": false
+    },
+    {
+      "path": "episodes/_system/runtime_fast_path.py",
+      "existed": false
+    },
+    {
+      "path": "episodes/_system/test_v251_runtime_fast_path.py",
+      "existed": false
+    },
+    {
+      "path": "docs/Story_OS_V2.5.1_Runtime_Fast_Path.md",
+      "existed": false
+    }
+  ]
+}
