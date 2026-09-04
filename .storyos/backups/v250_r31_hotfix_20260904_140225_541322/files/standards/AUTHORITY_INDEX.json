@@ -1,0 +1,520 @@
+{
+  "schema_version": "1.0",
+  "module_version": "1.0",
+  "platform_min_version": "2.1.0",
+  "purpose": "Routing only. This file does not create creative rules or a second authority.",
+  "precedence": [
+    "canonical",
+    "active_subordinate",
+    "series_overlay",
+    "reference",
+    "superseded"
+  ],
+  "documents": [
+    {
+      "path": "standards/制作规范_正式版.md",
+      "authority": "canonical",
+      "scope": "global",
+      "active": true
+    },
+    {
+      "path": "standards/抖音推流评分与发布后漏斗规范_V1.4.md",
+      "authority": "active_subordinate",
+      "scope": "distribution_and_post_publish",
+      "active": true,
+      "supersedes": [
+        "standards/抖音推流评分与发布后漏斗规范_V1.2.md",
+        "standards/抖音推流评分与发布后漏斗规范_V1.3.md"
+      ]
+    },
+    {
+      "path": "standards/抖音推流评分与发布后漏斗规范_V1.2.md",
+      "authority": "superseded",
+      "scope": "distribution_and_post_publish",
+      "active": false,
+      "superseded_by": "standards/抖音推流评分与发布后漏斗规范_V1.4.md"
+    },
+    {
+      "path": "standards/抖音推流评分与发布后漏斗规范_V1.3.md",
+      "authority": "superseded",
+      "scope": "distribution_and_post_publish",
+      "active": false,
+      "superseded_by": "standards/抖音推流评分与发布后漏斗规范_V1.4.md"
+    },
+    {
+      "path": "standards/真实性与共享风格锚点规范_V1.1.md",
+      "authority": "active_subordinate",
+      "scope": "capture_authenticity_and_shared_style",
+      "active": true
+    },
+    {
+      "path": "standards/字幕人话化与声音卡规范_V1.1.md",
+      "authority": "active_subordinate",
+      "scope": "caption_voice",
+      "active": true
+    },
+    {
+      "path": "standards/最终字幕视觉规范_V1.1.md",
+      "authority": "superseded",
+      "scope": "caption_visual",
+      "active": false,
+      "supersedes": [
+        "standards/最终字幕视觉规范_V1.0.md"
+      ],
+      "superseded_by": "standards/最终字幕视觉规范_V1.2.md"
+    },
+    {
+      "path": "standards/最终字幕视觉规范_V1.0.md",
+      "authority": "superseded",
+      "scope": "caption_visual",
+      "active": false,
+      "superseded_by": "standards/最终字幕视觉规范_V1.1.md"
+    },
+    {
+      "path": "standards/生产引擎与画幅规范_V1.2.md",
+      "authority": "active_subordinate",
+      "scope": "production_engine_and_canvas",
+      "active": true
+    },
+    {
+      "path": "standards/生产可靠性与文本事务规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "production_reliability_and_text_transactions",
+      "active": true
+    },
+    {
+      "path": "standards/风格锚点_流水席_村子_误入小镇_V1.1.md",
+      "authority": "superseded",
+      "scope": "optional_visual_mother_style",
+      "active": false,
+      "note": "Optional M00 reference. Must not override an episode's independent capture system.",
+      "superseded_by": "standards/风格锚点_MP4_网吧_流水席_旧数码_V1.2.md"
+    },
+    {
+      "path": "standards/风格锚点_MP4_网吧_流水席_旧数码_V1.2.md",
+      "authority": "active_subordinate",
+      "scope": "default_visual_mother_style",
+      "active": true,
+      "supersedes": [
+        "standards/风格锚点_流水席_村子_误入小镇_V1.1.md"
+      ],
+      "note": "Story OS V1.8 account default when user does not specify another visual style. Capture physics/story era take precedence over texture."
+    },
+    {
+      "path": "standards/多运行时执行与断点规范_V2.0.md",
+      "authority": "active_subordinate",
+      "scope": "runtime_execution_and_checkpoint",
+      "active": true
+    },
+    {
+      "path": "standards/设备物理档案与参考预算规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "capture_physics_and_reference_budget",
+      "active": true
+    },
+    {
+      "path": "standards/Codex全自动编排与订阅态生图规范_V2.0.1.md",
+      "authority": "active_subordinate",
+      "scope": "codex_auto_orchestration_and_subscription_image",
+      "active": true
+    },
+    {
+      "path": "standards/生产闭环与委托批准规范_V2.0.2.md",
+      "authority": "active_subordinate",
+      "scope": "production_closure_delegated_approval",
+      "active": true
+    },
+    {
+      "path": "standards/最终字幕视觉规范_V1.2.md",
+      "authority": "active_subordinate",
+      "scope": "caption_visual",
+      "active": true,
+      "supersedes": [
+        "standards/最终字幕视觉规范_V1.1.md"
+      ]
+    },
+    {
+      "path": "standards/创作执行强制规范_V2.0.3.2.md",
+      "authority": "active_subordinate",
+      "scope": "creative_enforcement",
+      "active": true
+    },
+    {
+      "path": "standards/生产帧语义强制规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "production_frame_semantic_fidelity",
+      "active": true
+    },
+    {
+      "path": "standards/工作区与增量闭环规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "incremental_execution_and_local_media_workspace",
+      "active": true,
+      "note": "Defines minimal closure, dirty propagation, local media workspace, SHA index and safe migration. Does not create a second stage source."
+    },
+    {
+      "path": "standards/release_preflight_guard_V2.0.3.5.md",
+      "authority": "active_subordinate",
+      "scope": "release_preflight_recent5_series_semantic_governance",
+      "active": true,
+      "note": "Adds release-preflight evidence only; no second stage source."
+    },
+    {
+      "path": "standards/fingerprint_semantic_guard_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "recent5_semantic_deduplication",
+      "active": true,
+      "note": "Fresh isolated semantic equivalence matrix; Python computes scores and vetoes."
+    },
+    {
+      "path": "standards/选题野心与图像传播力规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "concept_ambition_and_image_first_propagation",
+      "active": true,
+      "note": "V2.1 pre-Story-Lock gate; no second creative authority."
+    },
+    {
+      "path": "standards/传播核与动作回应链规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "propagation_core_action_response_shareability",
+      "active": true,
+      "note": "V2.5 Story Critic/Storyboard shareability gate; evidence only, no second creative authority."
+    },
+    {
+      "path": "standards/环境物理与异常放大规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "environment_physics_and_anomaly_amplification",
+      "active": true,
+      "note": "Embedded story-gates environment/impact contract; no second authority."
+    },
+    {
+      "path": "standards/Resolved_Frame_Contract规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "resolved_frame_contract_compilation",
+      "active": true,
+      "note": "Engineering compilation standard; runtime frame-contract files are derived caches, not authority."
+    },
+    {
+      "path": "standards/Visual_Lock_V2.1_与有界并发生产规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "visual_lock_and_bounded_concurrent_production",
+      "active": true,
+      "note": "Four-admission Visual Lock plus max-3 single-writer fail-soft image scheduling."
+    },
+    {
+      "path": "standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "fast_scout_and_final_snapshot",
+      "active": true,
+      "note": "Scout is triage only; snapshot is derived release evidence."
+    },
+    {
+      "path": "standards/Story_OS_V2.1_Phase9_10_闭环规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "migration_regression_observability_post_publish_learning",
+      "active": true,
+      "note": "Legacy no-backfill; post-publish evidence remains non-creative authority."
+    },
+    {
+      "path": "standards/Provider_Capability_Contract_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "provider_capability_and_raw_dimension_evidence",
+      "active": true,
+      "note": "Execution capability contract only; never creative authority or stage source."
+    },
+    {
+      "path": "standards/Story_Agent_Runtime_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "request_intent_routing_trace_runtime",
+      "active": true,
+      "note": "Agent runtime governance only; episode-state.json remains the sole stage source."
+    },
+    {
+      "path": "standards/Batch_Image_Runtime_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "batch_image_runtime_execution",
+      "active": true,
+      "note": "Runtime execution optimization only; Frame Contract and episode-state remain authoritative."
+    },
+    {
+      "path": "standards/Image_Provider_Runtime_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "image_provider_runtime_execution",
+      "active": true,
+      "note": "Provider routing and capability evidence only; never Episode stage or creative authority."
+    },
+    {
+      "path": "standards/Codex_Subscription_Batch_Runtime_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "codex_subscription_logical_batch_execution",
+      "active": true,
+      "note": "Logical fan-out execution only; never Provider-native multi-image or Episode authority."
+    }
+  ],
+  "rules": {
+    "superseded_default_read": false,
+    "unknown_versioned_standard_is_warning": true,
+    "series_overlay_may_override_canonical": false,
+    "state_source": "meta/episode-state.json",
+    "default_visual_profile": {
+      "id": "M00",
+      "name": "现实生活纪实母版",
+      "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+      "standard_path": "standards/风格锚点_MP4_网吧_流水席_旧数码_V1.2.md",
+      "use_when_unspecified": true,
+      "explicit_override_wins": true,
+      "capture_physics_and_story_era_win_over_texture": true
+    },
+    "image_runtime_defaults": {
+      "model": "gpt-image-2",
+      "quality": "high",
+      "aspect_ratio_source": "episode_locked",
+      "style_parameter": "none",
+      "seed": "none"
+    },
+    "normalize_policy": {
+      "id": "NP01",
+      "enabled": true,
+      "preserve_raw": true,
+      "final_format": "PNG",
+      "resize_algorithm": "Lanczos",
+      "default_crop": "forbidden",
+      "imageops_fit": "exception_only",
+      "automatic_ratio_delta_max": 0.01,
+      "review_ratio_delta_max": 0.03,
+      "reject_above": 0.03,
+      "noop_when_exact_match": true,
+      "technical_failure_triggers_generation": false
+    },
+    "runtime_routing": {
+      "contract": "runtimes/runtime-contract.json",
+      "order": [
+        "CODEX",
+        "WORK",
+        "WEB"
+      ],
+      "ask_user_to_choose": false,
+      "second_stage_forbidden": true,
+      "stable_evidence_gate": "episodes/_system/evidence_gate.py"
+    },
+    "capture_profile_registry": {
+      "path": "standards/capture_profiles/index.json",
+      "default_profile_id": "CP01",
+      "capture_physics_over_texture": true
+    },
+    "story_regression_library": {
+      "path": "standards/story_regressions/cases.json"
+    },
+    "episode_fingerprint": {
+      "episode_path": "meta/episode-fingerprint.json",
+      "account_registry": "reports/account-pattern-registry.json",
+      "recent_compare_count": 5,
+      "mechanism_veto": true
+    },
+    "codex_auto_orchestrator": {
+      "path": "episodes/_system/codex_auto_orchestrator.py",
+      "image_backend": "episodes/_system/codex_subscription_image.py",
+      "approval_basis": "delegated_auto_review",
+      "may_fake_user_approval": false
+    },
+    "delegated_approval": {
+      "path": "episodes/_system/delegated_approval.py",
+      "requires_continuous_execution_authorized": true,
+      "may_fake_user_approval": false
+    },
+    "production_closure": {
+      "orchestrator": "episodes/_system/workflow_runner.py",
+      "canvas_normalizer": "episodes/_system/canvas_normalize.py",
+      "delivery": "episodes/_system/delegated_delivery.py",
+      "completion_states": [
+        "COMPLETE",
+        "PAUSED",
+        "BLOCKED"
+      ],
+      "frame_semantic_review": "episodes/_system/frame_semantic_review.py",
+      "compat_orchestrator": "episodes/_system/codex_auto_orchestrator.py"
+    },
+    "creative_enforcement": {
+      "story_review": "episodes/_system/story_review.py",
+      "story_review_evidence": "meta/story-semantic-review.json",
+      "visual_review": "episodes/_system/visual_review.py",
+      "visual_review_evidence": "meta/visual-profile-review.json",
+      "subtitle_renderer": "episodes/_system/subtitle_layout.py",
+      "subtitle_layout_evidence": "meta/subtitle-layout-audit.json",
+      "new_state_forbidden": true,
+      "frame_semantic_review": "episodes/_system/frame_semantic_review.py",
+      "frame_semantic_review_summary": "meta/frame-semantic-review.json",
+      "frame_semantic_review_dir": "meta/frame-reviews",
+      "frame_semantic_audit": "meta/frame-semantic-audit.json"
+    },
+    "incremental_workspace": {
+      "planner": "episodes/_system/incremental_closure.py",
+      "frame_reviewer": "episodes/_system/incremental_frame_review.py",
+      "media_workspace": "episodes/_system/media_workspace.py",
+      "media_index": "meta/media-index.json",
+      "dirty_ratio_full_escalation": 0.25,
+      "new_state_forbidden": true,
+      "frozen_evidence_media_paths_immutable": true
+    },
+    "release_preflight_guard": {
+      "path": "episodes/_system/release_preflight.py",
+      "recent5_evidence": "meta/recent5-review.json",
+      "series_lock": "<series>/meta/series-lock.json",
+      "series_binding": "meta/series-lock-binding.json",
+      "release_semantic_review": "meta/release-semantic-review.json",
+      "publish_compliance": "meta/publish-compliance.json",
+      "new_state_forbidden": true,
+      "series_continuity": "<series>/meta/series-continuity.json",
+      "series_detection_mode": "explicit_marker_or_existing_lock_only",
+      "sibling_episode_count_is_continuity_signal": false,
+      "semantic_recent5_review": "meta/recent5-semantic-review.json",
+      "semantic_recent5_critic_log": "meta/recent5-semantic-critic.jsonl",
+      "semantic_recent5_min_contract": "2.0.3.6",
+      "semantic_scoring_policy": "max(exact_string,semantic_equivalence)",
+      "critic_may_assign_numeric_similarity_score": false
+    },
+    "workflow_engine": {
+      "contract": "runtimes/workflow-contract.json",
+      "runner": "episodes/_system/workflow_runner.py",
+      "episode_stage_source": "meta/episode-state.json"
+    },
+    "concept_ambition": {
+      "standard": "standards/选题野心与图像传播力规范_V1.0.md",
+      "tool": "episodes/_system/concept_ambition.py",
+      "candidates": "meta/concept-candidates.json",
+      "review": "meta/concept-ambition-review.json",
+      "min_candidates": 8,
+      "max_candidates": 12,
+      "min_selected_voltage": 80,
+      "min_high_ambition_candidates": 3,
+      "required_for_contract_min": "2.1.0"
+    },
+    "environment_contract": {
+      "tool": "episodes/_system/environment_contract.py",
+      "authority_path": "meta/story-gates.json#visual.environment_contract",
+      "frame_directives_path": "meta/story-gates.json#visual.frame_directives",
+      "required_for_contract_min": "2.1.0",
+      "independent_weather_file_forbidden": true
+    },
+    "resolved_frame_contract": {
+      "tool": "episodes/_system/frame_contract.py",
+      "cache_root": "meta/runtime/contracts/frames",
+      "index": "meta/runtime/contracts/frame-contract-index.json",
+      "authority_sources": [
+        "Story",
+        "Storyboard",
+        "meta/story-gates.json",
+        "Visual Profile",
+        "approved references"
+      ],
+      "required_for_contract_min": "2.1.0",
+      "cache_is_authority": false
+    },
+    "visual_lock_v21": {
+      "tool": "episodes/_system/visual_lock_v21.py",
+      "review_compat_entry": "episodes/_system/visual_review.py",
+      "roles": [
+        "ordinary_baseline",
+        "worst_capture_condition",
+        "first_major_anomaly",
+        "high_impact_admission"
+      ],
+      "required_when_calibration_policy": "four_admission_v21"
+    },
+    "image_scheduler": {
+      "tool": "episodes/_system/image_scheduler.py",
+      "queue": "meta/production-queue.json",
+      "max_parallel": 3,
+      "adaptive": true,
+      "ledger_writer": "scheduler_main_thread_only",
+      "fail_soft": true
+    },
+    "fast_frame_scout": {
+      "tool": "episodes/_system/fast_frame_scout.py",
+      "summary": "meta/frame-scout-summary.json",
+      "final_pass_authority": false
+    },
+    "final_candidate_snapshot": {
+      "tool": "episodes/_system/final_candidate_snapshot.py",
+      "path": "meta/final-candidate-snapshot.json",
+      "snapshot_is_authority": false,
+      "delivery_must_consume": true
+    },
+    "v21_migration": {
+      "tool": "episodes/_system/migrate_v21.py",
+      "default": "read_only",
+      "legacy_evidence_backfill": false
+    },
+    "v21_regression": {
+      "tool": "episodes/_system/regression_matrix_v21.py",
+      "report": "reports/story-os-v21-regression-matrix.json"
+    },
+    "workflow_observability": {
+      "tool": "episodes/_system/workflow_observability.py",
+      "path": "meta/workflow-observability.json",
+      "stage_authority": false
+    },
+    "post_publish": {
+      "tool": "episodes/_system/post_publish_review.py",
+      "publish_event": "meta/publish-event.json",
+      "metrics": "meta/post-publish-metrics.json",
+      "review": "meta/post-publish-review.json",
+      "data_review_state": "meta/data-review-state.json",
+      "learning": "meta/next-story-learning.json",
+      "required_checkpoint_for_data_reviewed": "48h",
+      "mutate_release_manifest_after_snapshot": false
+    },
+    "account_learning_index": {
+      "tool": "episodes/_system/account_learning_index.py",
+      "path": "reports/account-learning-index.json",
+      "creative_authority": false
+    },
+    "provider_capability_contract": {
+      "registry": "config/providers/index.json",
+      "receipt_dir": "meta/provider-receipts",
+      "receipt_is_authority": false
+    },
+    "agent_runtime_v230": {
+      "trace_config": "config/agent_runtime/trace.json",
+      "intent_config": "config/agent_runtime/intent.json",
+      "router_config": "config/agent_runtime/router.json",
+      "route_decision": "meta/runtime-route.json",
+      "stage_source": "meta/episode-state.json"
+    },
+    "batch_image_runtime_v240": {
+      "config": "config/agent_runtime/batch.json",
+      "visual_lock_batch_enabled": false,
+      "images_per_batch": 5,
+      "stage_source": "meta/episode-state.json",
+      "batch_contract_is_authority": false
+    },
+    "image_provider_runtime_v241": {
+      "config": "config/providers/image-provider-runtime.json",
+      "preferred_provider_when_api_key_present": "openai_images_api",
+      "native_n_max": 10,
+      "secret_persistence_forbidden": true,
+      "stage_source": "meta/episode-state.json"
+    },
+    "codex_subscription_batch_v242": {
+      "config": "config/agent_runtime/codex-subscription-batch.json",
+      "batch_size": 5,
+      "max_inflight_codex_images": 5,
+      "adaptive_steps": [
+        5,
+        3,
+        1
+      ],
+      "native_multi_image": false,
+      "api_key_required": false,
+      "stage_source": "meta/episode-state.json"
+    },
+    "propagation_core": {
+      "standard": "standards/传播核与动作回应链规范_V1.0.md",
+      "schema": "standards/schemas/propagation-core.schema.json",
+      "evidence": "meta/story-semantic-review.json#propagation_core",
+      "gate": "episodes/_system/propagation_core_gate.py",
+      "formal_min_version": "2.5.0",
+      "second_authority_forbidden": true
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "installed_at": "2026-09-04T13:50:46+08:00",
+  "from_head": "60b074c45f50486bf6f8557bca6c94720601ac7b",
+  "branch": "story",
+  "target_version": "2.5.0",
+  "backup_dir": ".storyos\\backups\\v250_propagation_core_20260904_135045",
+  "changed_files": [
+    "story_os_manifest.json",
+    "config/index.yaml",
+    "standards/AUTHORITY_INDEX.json",
+    "standards/制作规范_正式版.md",
+    "standards/选题野心与图像传播力规范_V1.0.md",
+    "standards/Visual_Narrative_Core_V2.2.md",
+    "standards/抖音推流评分与发布后漏斗规范_V1.4.md",
+    "standards/golden-episode-regression.json",
+    "episodes/_system/story_review.py",
+    "episodes/_system/validate_episode.py",
+    "episodes/_system/post_publish_review.py",
+    "episodes/_system/golden_episode_regression.py",
+    ".github/workflows/story-gates.yml",
+    "standards/传播核与动作回应链规范_V1.0.md",
+    "standards/schemas/propagation-core.schema.json",
+    "episodes/_system/propagation_core_gate.py",
+    "episodes/_system/test_v250_propagation_core.py",
+    "docs/Story_OS_V2.5_Propagation_Core_Upgrade.md"
+  ],
+  "smoke_tests": [
+    {
+      "cmd": "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe -m py_compile episodes/_system/propagation_core_gate.py episodes/_system/test_v250_propagation_core.py episodes/_system/story_review.py episodes/_system/validate_episode.py episodes/_system/post_publish_review.py episodes/_system/golden_episode_regression.py",
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "cmd": "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe episodes/_system/propagation_core_gate.py self-test",
+      "returncode": 0,
+      "output": "PROPAGATION CORE V2.5 SELF-TEST PASS\n"
+    },
+    {
+      "cmd": "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe episodes/_system/test_v250_propagation_core.py -v",
+      "returncode": 0,
+      "output": "test_clone (__main__.T.test_clone) ... ok\ntest_late (__main__.T.test_late) ... ok\ntest_late_reason (__main__.T.test_late_reason) ... ok\ntest_valid (__main__.T.test_valid) ... ok\ntest_weak (__main__.T.test_weak) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.000s\n\nOK\n"
+    },
+    {
+      "cmd": "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe episodes/_system/post_publish_review.py self-test",
+      "returncode": 0,
+      "output": "POST PUBLISH REVIEW V2.1 PHASE10 SELF-TEST PASS\n"
+    },
+    {
+      "cmd": "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe episodes/_system/golden_episode_regression.py self-test",
+      "returncode": 0,
+      "output": "GOLDEN EPISODE REGRESSION SELF-TEST PASS\n"
+    }
+  ],
+  "full_tests": []
+}

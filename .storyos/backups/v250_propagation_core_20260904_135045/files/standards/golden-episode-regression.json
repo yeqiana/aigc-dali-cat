@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "name": "Story OS Golden Episode Regression Policy V1.0",
+  "recommended_minimum_episodes": 10,
+  "recommended_coverage": [
+    "2004_2010",
+    "modern_2020s",
+    "phone_pov",
+    "old_digital_camera_or_dv",
+    "northwest_rural",
+    "rain_or_wet",
+    "hot_summer_heat_shimmer",
+    "mountain_or_road",
+    "high_impact_large_anomaly",
+    "indoor_anomaly",
+    "group_4_5"
+  ],
+  "rule": "Golden Set must be curated. Machine regression never replaces pixel review."
+}
