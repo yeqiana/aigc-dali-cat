@@ -5,10 +5,27 @@
   "fail_soft": true,
   "episode_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳",
   "started_at": "2026-08-31T20:10:56.405+08:00",
-  "updated_at": "2026-09-04T12:18:17.365+08:00",
+  "updated_at": "2026-09-04T13:41:25+08:00",
   "finalized_at": "2026-09-04T12:18:17.365+08:00",
   "final_status": "PUBLISH_READY",
-  "total_wall_seconds": 317240.96,
+  "total_wall_seconds": 43385.7,
+  "lifecycle_wall_seconds": 317240.96,
+  "run_wall": {
+    "corrected_at": "2026-09-04T13:41:25+08:00",
+    "basis": "active run wall, telemetry-only, not a gate; replaced lifecycle span (ledger init 08-31 to finalize 09-04) which included 2.93d no-activity pre-run period and in-run waits; measured from local Codex session rollout and idle waits >= 600s excluded",
+    "session_rollout_span": {
+      "started_at": "2026-09-03T20:38:37.623+08:00",
+      "ended_at": "2026-09-04T12:53:53.030+08:00"
+    },
+    "first_project_activity_at": "2026-09-03T18:52:40+08:00",
+    "calendar_wall_seconds": 58515.4,
+    "idle_wait_seconds_excluded": 15129.7,
+    "idle_gaps_seconds": [
+      13587.2,
+      1542.5
+    ],
+    "active_wall_seconds": 43385.7
+  },
   "stages": {},
   "named_spans": {
     "VISUAL_LOCK_BASELINE_REVIEW": {
@@ -464,12 +481,12 @@
     },
     "critical_path": {
       "kind": "observed_end_to_end_wall",
-      "critical_path_seconds": 317240.96,
+      "critical_path_seconds": 43385.7,
       "image_backend_union_wall_seconds": 3465.0,
       "image_backend_resource_seconds": 2624.7,
       "parallel_saved_seconds": 0.0,
       "dependency_chain": [],
-      "note": "End-to-end wall is the user-visible critical path; image resource time is overlap-aware and is not added to stage wall."
+      "note": "End-to-end wall is the user-visible critical path; image resource time is overlap-aware and is not added to stage wall. critical_path_seconds corrected to active run wall (see run_wall) excluding pre-run dead days and idle waits."
     },
     "images": {
       "attempts": 29,

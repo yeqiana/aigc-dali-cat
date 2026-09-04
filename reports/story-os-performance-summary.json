@@ -1,14 +1,16 @@
 {
   "schema_version": 1,
   "generated_at": "2026-09-04T12:18:17.509+08:00",
+  "corrected_at": "2026-09-04T13:41:25+08:00",
   "sample_size": 1,
-  "p50_total_seconds": 317240.96,
-  "p90_total_seconds": 317240.96,
-  "average_total_seconds": 317240.96,
+  "p50_total_seconds": 43385.7,
+  "p90_total_seconds": 43385.7,
+  "average_total_seconds": 43385.7,
+  "total_wall_basis": "active run wall excluding idle waits >= 600s and pre-run no-activity days; see episode meta/episode-performance-ledger.json run_wall",
   "episodes": [
     {
       "episode": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳",
-      "total_wall_seconds": 317240.96,
+      "total_wall_seconds": 43385.7,
       "final_status": "PUBLISH_READY",
       "images": {
         "attempts": 29,
