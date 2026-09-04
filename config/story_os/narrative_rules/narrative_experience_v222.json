@@ -1,0 +1,10 @@
+{
+  "version": "2.2.2",
+  "rules": {
+    "PHOTO_EVIDENCE_ENDING_FORBIDDEN": true,
+    "IMMERSIVE_FIRST_PERSON_PRESENTATION": true,
+    "CN_YOUNG_FEMALE_ANCHOR_DEFAULT_V1": true,
+    "FEMALE_CHARACTER_NARRATIVE_ROLE_V1": true,
+    "NO_SILENT_TWIST_ENDING": true
+  }
+}

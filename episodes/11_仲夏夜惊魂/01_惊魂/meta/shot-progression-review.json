@@ -1,0 +1,607 @@
+{
+  "schema_version": 2,
+  "status": "LOCKED",
+  "anomaly_applicable": true,
+  "anomaly_exception_reason": "",
+  "interaction_applicable": true,
+  "interaction_exception_reason": "",
+  "rules": {
+    "max_identical_setup_consecutive": 2,
+    "min_unique_setups_in_5_frames": 3,
+    "frame10_requires_new_question_or_evidence": true,
+    "scale_only_escalation_is_not_enough": true,
+    "max_passive_human_frames_after_confirmation": 2,
+    "emotion_intensity_range": [
+      0,
+      4
+    ],
+    "emotion_trigger_required_at_intensity_gte": 2,
+    "synchronized_theatrical_reaction_forbidden": true,
+    "max_consecutive_urgent_frames": 2,
+    "min_meaningful_interaction_per_5_human_frames": 1,
+    "max_meaningful_interaction_ratio": 0.75,
+    "opening_social_natural_interaction_required": true
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "camera_position": "村口路灯下站定，手机平拍向前",
+      "subject_distance": "medium 中景",
+      "primary_subject": "车灯前等着的妹妹与黑色电动车",
+      "action": "到村口停车，妹妹从路灯下小跑过来上车；顺手拍了段村口夜路发家庭群报平安",
+      "visual_function": "establish_arrival_village_entrance",
+      "capture_purpose": "到家前报平安并记录在村口等着的妹妹",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "虚构南方丘陵村庄村口（机耕道与村道交会处）",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "闷热夏夜回到老家，见到在村口等的妹妹",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P02",
+        "target": "P01",
+        "action": "妹妹笑他这么晚才到，两人说了两句家常",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "02",
+      "camera_position": "骑行中手机朝前，越过车把拍夜路，画面轻微晃动",
+      "subject_distance": "wide 远景",
+      "primary_subject": "车灯照出的村道与两侧黑黢黢的稻田",
+      "action": "妹妹坐后座，P01 一手扶把一手拍前方夜路，灯下飞虫从镜头前掠过",
+      "visual_function": "establish_night_road_homeward",
+      "capture_purpose": "回老家的路上随手记录这截夜路",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "村口到老屋之间的村道",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "夏夜骑车回家，路是走惯的那条",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "03",
+      "camera_position": "老屋院门口站定，手机略向下拍门槛",
+      "subject_distance": "close-to-medium 近中景",
+      "primary_subject": "门灯下的自家门槛、停好的电动车与自己的鞋影",
+      "action": "停好车后随手拍：门灯亮着，门槛边没收的竹椅，画面下缘带到他自己的鞋与裤脚",
+      "visual_function": "establish_home_gate_arrival",
+      "capture_purpose": "到家了，随手拍一张生活记录",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋院门口",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": false,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "04",
+      "camera_position": "堂屋桌边坐着拍，白炽灯与电扇入画",
+      "subject_distance": "medium 中景",
+      "primary_subject": "妹妹切好端来的西瓜与转着的电扇",
+      "action": "妹妹切好西瓜端来，P01 坐着边吃边拍，桌上有冰绿豆汤与烧着的蚊香",
+      "visual_function": "establish_family_supper_summer",
+      "capture_purpose": "回家后的家常生活记录",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋堂屋",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "西瓜和冰绿豆汤，闷热里凉快下来的夏夜",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "P02",
+        "target": "P01",
+        "action": "妹妹递西瓜和冰绿豆汤过来",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "05",
+      "camera_position": "院门口竹椅旁平视，蒲扇与蚊香红光在画面边缘",
+      "subject_distance": "medium-close 近中景",
+      "primary_subject": "蒲扇赶蚊子的妹妹与院门口的红点蚊香",
+      "action": "两人在门口乘凉说话，妹妹扇蒲扇赶蚊子，P01 把这段拍下来",
+      "visual_function": "establish_porch_cooling_talk",
+      "capture_purpose": "夏夜乘凉的日常记录",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋院门口",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "门口乘凉，听妹妹说村里最近的事",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P02",
+        "target": "P01",
+        "action": "妹妹聊起村里最近的事，顺手提起巷口路灯坏很久没人修",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "06",
+      "camera_position": "巷口路灯下站定拍，灯下飞虫清晰可见",
+      "subject_distance": "medium 中景",
+      "primary_subject": "本应坏掉的巷口路灯却亮着，灯下一圈飞虫",
+      "action": "妹妹说巷口路灯早坏了没人修，P01 走去巷口，发现那盏灯亮着",
+      "visual_function": "first_anomaly_broken_lamp_lit",
+      "capture_purpose": "顺手拍一下她说的坏路灯",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "村道巷口",
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "notice",
+      "human_present": false,
+      "emotion": {
+        "state": "curious",
+        "intensity": 1,
+        "trigger": "她明明说这盏路灯坏了",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "07",
+      "camera_position": "巷子里往灯杆走近，手机贴近墙面低角度",
+      "subject_distance": "close 近景",
+      "primary_subject": "撞歪过的旧灯杆与记忆里不符的位置",
+      "action": "走近那根旧灯杆，发现它比记忆里更靠墙、歪的方向也不对，杆根地面却干干净净",
+      "visual_function": "verify_lamp_post_offset",
+      "capture_purpose": "再看清楚这根灯杆哪里不对",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "巷口旧灯杆旁",
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "observe",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "灯杆位置和歪的方向都跟记忆里不一样",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "08",
+      "camera_position": "自家院门口，妹妹从门里出来，门灯光线柔和",
+      "subject_distance": "medium-close 近中景",
+      "primary_subject": "门灯下闻声出来的妹妹",
+      "action": "妹妹出来找 P01，两人说起路灯的事，她确认那盏灯坏了大半年没人修，一起再往巷口看",
+      "visual_function": "companion_confirms_lamp_anomaly",
+      "capture_purpose": "她出来一起看看，随手拍下她说的话",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋院门口到巷口之间",
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "discuss",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "妹妹也确认那盏灯坏了大半年，没人会去修",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P02",
+        "target": "P01",
+        "action": "妹妹确认路灯坏很久了，两人决定再去看一眼",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "09",
+      "camera_position": "两人站在旧灯杆斜对面，低角度拍杆根",
+      "subject_distance": "medium 中景",
+      "primary_subject": "歪着的旧灯杆与干干净净的杆根地面",
+      "action": "再走近看：杆是歪的，杆根地面没有撞击痕迹也没有修补痕迹，两人都安静下来",
+      "visual_function": "confirm_lamp_root_contradiction",
+      "capture_purpose": "想看清杆为什么歪、地面为什么没痕迹",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "巷口旧灯杆旁",
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "灯杆歪着，地面却没有任何撞击或修补痕迹",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "point_out",
+        "actor": "P01",
+        "target": "P02",
+        "action": "P01 指给妹妹看杆根没有撞击痕迹",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "10",
+      "camera_position": "王叔家院墙外路边，两人站定，手机平拍院墙与树",
+      "subject_distance": "medium 中景",
+      "primary_subject": "王叔家院墙与歪脖子老槐树的相对位置",
+      "action": "回家路上妹妹突然停住：老槐树本该在院墙右边，现在树和树影都在墙的左边，方向整个反了",
+      "visual_function": "new_question_old_tree_side_swapped",
+      "capture_purpose": "妹妹说树好像换边了，拍下来跟记忆比对",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "王叔家院墙外村道",
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "歪脖子老槐树与院墙的相对位置和记忆里相反",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "point_out",
+        "actor": "P02",
+        "target": "P01",
+        "action": "妹妹指出槐树换边，两人来回比对院墙和树影",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "11",
+      "camera_position": "王婶小卖部门前，手机贴近卷帘门拍门缝",
+      "subject_distance": "close 近景",
+      "primary_subject": "拉下却透光的卷帘门与门缝光带",
+      "action": "到村口小卖部想买水，卷帘门拉着却从门缝透出光，拍门没人应，屋里像有收音机声",
+      "visual_function": "store_closed_but_lit_unanswered",
+      "capture_purpose": "买水时顺手拍下这扇不对劲的门",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "村口王婶小卖部门前",
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "discuss",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "关门的小卖部透光，拍门没人应",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P01",
+        "target": "P02",
+        "action": "P01 问要不要喊王婶，妹妹摇头说有点不对劲，先走",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "12",
+      "camera_position": "骑行中手机朝前拍路灯，车身随路轻微晃动",
+      "subject_distance": "wide 远景",
+      "primary_subject": "沿路一根接一根熄灭的路灯",
+      "action": "两人骑电动车沿村道走，头顶路灯一盏接一盏熄掉，最后整段路黑下来，只剩车灯一小片光",
+      "visual_function": "amplify_lights_going_out",
+      "capture_purpose": "路突然黑下来，本能地拍下来",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "村道路灯段",
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "路灯逐盏熄灭，整段路陷入黑暗",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "13",
+      "camera_position": "自家院门外停好车，手机平拍堂屋窗口",
+      "subject_distance": "medium 中景",
+      "primary_subject": "本该没人的堂屋却亮着的灯",
+      "action": "回到自家院门，发现出门前关掉的堂屋灯亮着，窗里挂钟像停摆，两人愣在门口不敢动",
+      "visual_function": "home_lit_while_unlocked",
+      "capture_purpose": "心里发毛，拍了发给家里人看",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋院门外",
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "observe",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "出门前明明关掉的堂屋灯亮着",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "touch_support",
+        "actor": "P02",
+        "target": "P01",
+        "action": "妹妹抓住 P01 的胳膊，两人没敢马上进去",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "14",
+      "camera_position": "门口低角度，手电光照着弯腰锁门的妹妹",
+      "subject_distance": "medium 中景",
+      "primary_subject": "手电光下锁门的妹妹与钥匙串",
+      "action": "两人决定连夜去镇上住一晚；妹妹弯腰锁院门，P01 拿手电帮她照着并拍下来",
+      "visual_function": "decision_leave_home_lock",
+      "capture_purpose": "离开前记一下家门的正常样子",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋院门口",
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "堂屋没人却亮灯，两人决定先离开",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "P02",
+        "target": "P01",
+        "action": "妹妹把家门钥匙交给 P01 收好",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "15",
+      "camera_position": "坡顶停住，手机越过车把朝下拍坡底",
+      "subject_distance": "wide 远景",
+      "primary_subject": "车灯照出的陌生长下坡与路边落灰三轮车",
+      "action": "按原路往镇上骑，却到了从没见过的下坡水泥路，路边并排停着落灰的三轮车，坡底看不到头",
+      "visual_function": "unknown_downhill_appears",
+      "capture_purpose": "不确定路对不对，拍下来辨认",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "陌生下坡机耕道",
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "走熟的路变成了没见过的下坡",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "16",
+      "camera_position": "掉头停车，手机扫过前方陌生路口",
+      "subject_distance": "medium 中景",
+      "primary_subject": "掉头后另一段陌生路口与成排电线杆",
+      "action": "掉头往回骑想回村，路口却也对不上，来时的村口灯火消失了，只剩成排延伸的电线杆",
+      "visual_function": "detour_into_unknown_crossing",
+      "capture_purpose": "看清路口到底哪里不对",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "陌生路口",
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "掉头往回骑，村口灯火消失，路越来越陌生",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "17",
+      "camera_position": "路中央急刹停住，手机越过车把拍向前方",
+      "subject_distance": "medium 中景",
+      "primary_subject": "第三次经过的歪脖子老槐树、树下的狗与墙上喷漆字",
+      "action": "前面又是那棵歪脖子老槐树，树下同一只狗趴着不动，这是第三次经过同一处；P01 急刹停住",
+      "visual_function": "climax_loop_third_same_tree",
+      "capture_purpose": "第三次见到同一棵树同一只狗，人已经不敢信自己的眼睛",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "循环出现的村口路段",
+      "anomaly_logic_stage": "reversal",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 4,
+        "trigger": "第三次经过同一棵老槐树和同一只趴着的狗",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "touch_support",
+        "actor": "P02",
+        "target": "P01",
+        "action": "妹妹在身后紧紧抓住 P01 的胳膊，两人不敢再往前",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": "故意重复：第三次经过同一参照物，是循环证据本身"
+    },
+    {
+      "frame": "18",
+      "camera_position": "推车步行，手机朝前低角度，画面随脚步晃动",
+      "subject_distance": "medium 中景",
+      "primary_subject": "手电光里一根接一根的电线杆",
+      "action": "两人下车推着电动车沿电线杆走，谁都没说话，只听脚步和电瓶车轻微的电流声",
+      "visual_function": "walk_through_dark_power_poles",
+      "capture_purpose": "不骑车了，慢慢走一段让自己定神",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "村道电线杆段",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "adapt",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "黑夜里推着车走，周围只剩脚步声",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "19",
+      "camera_position": "路肩让车，手机迎向拖拉机灯，强光里两人成剪影",
+      "subject_distance": "medium 中景",
+      "primary_subject": "迎面扫来的拖拉机灯与强光里的兄妹剪影",
+      "action": "远处传来拖拉机声，灯光直直扫过来，两人站到路肩让车；强光过后，路变得认得了",
+      "visual_function": "payoff_tractor_light_recalibrate",
+      "capture_purpose": "本能抬手挡光，顺手拍下这束让路回来的光",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "机耕道与村道交会处",
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 2,
+        "trigger": "认出是隔壁村拉货的拖拉机，路也终于对上了",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P02",
+        "target": "P01",
+        "action": "妹妹认出开拖拉机的熟人，松了口气",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "20",
+      "camera_position": "自家院门口站定，手机平视门灯收尾",
+      "subject_distance": "medium-close 近中景",
+      "primary_subject": "门灯下的自家门槛、蒙着纱罩的绿豆汤与探头笑的妹妹",
+      "action": "不知怎么就走回了自家院门口；门灯下妹妹回头笑了一下，两人进院坐下，堂屋灯正常亮着",
+      "visual_function": "payoff_back_home_daily_close",
+      "capture_purpose": "到家后随手拍下的收尾，像平时一样报个平安",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "老屋院门口",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 2,
+        "trigger": "回到门灯下，堂屋灯正常亮着，整个人松下来",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P01",
+        "target": "P02",
+        "action": "P01 说了句到家了，妹妹笑他腿都软了",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    }
+  ]
+}

@@ -1,0 +1,485 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.1",
+  "episode_id": "11-01",
+  "series": "11_仲夏夜惊魂",
+  "title": "仲夏夜惊魂 重制版",
+  "gates": {
+    "story_lock": "PASS",
+    "character_contract": "PASS",
+    "world_identity": "PASS",
+    "visual_narrative": "LOCKED",
+    "production": "NOT_READY"
+  },
+  "story": {
+    "pilot": "11-01 仲夏夜惊魂重制版",
+    "genre": "中国大陆夏夜返乡 × 生活化日常异常 × 第一人称伪纪录片",
+    "core_question": "普通中国年轻人闷热夏夜回老家，熟悉的环境为什么开始悄悄错位？",
+    "task_closed": true,
+    "climax_frame": 17,
+    "story_lock_basis": "docs/Story_Lock_V2.2.1_仲夏夜惊魂重制版.md",
+    "frame_outline": "docs/20_Frame_Outline.md",
+    "world_identity_profile": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+    "narrative_policy": {
+      "first_person_rule": "IMMERSIVE_FIRST_PERSON_PRESENTATION",
+      "first_person_meaning": "第一人称是观众沉浸视角，不是摄影取证任务；每帧都是自然生活记录，画面不承担解释异常的功能。",
+      "forbidden_endings": [
+        {
+          "id": "last_photo_reveal",
+          "rule": "禁止最后照片解释异常",
+          "note": "结尾不得由最后一张照片揭示异常真相；异常始终不解释。"
+        },
+        {
+          "id": "phone_replay_reveal",
+          "rule": "禁止手机回放揭示真相",
+          "note": "不得用拍摄回放或录像回看作为揭示真相的机制。"
+        },
+        {
+          "id": "album_reversal",
+          "rule": "禁止相册反转",
+          "note": "不得用相册/照片集翻转作为反转设计。"
+        },
+        {
+          "id": "silent_twist",
+          "rule": "禁止静默反转结尾",
+          "note": "结尾必须有事件高潮、人物行动与情绪释放，不能无声反转。"
+        }
+      ],
+      "photography_rules_source": "meta/Photography_Rules.md"
+    }
+  },
+  "visual": {
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "夏（三伏）",
+      "region_rule": "中国大陆南方丘陵村镇（虚构地名，不映射真实地点）",
+      "forbidden_environment_notes": [
+        "禁止欧美住宅/花园/西式独栋别墅环境",
+        "禁止日韩街景、日韩式店铺招牌与街面",
+        "禁止非中国生活符号（外国车牌、大面积外语招牌、异国日常物品）",
+        "保持村镇结合部真实的中国农村夏夜生活质感"
+      ],
+      "baseline": {
+        "condition": "三伏闷热夏夜，湿热无风，人易出汗；蝉鸣蛙叫与蚊虫明显",
+        "time_of_day": "夜间约21:00-23:40",
+        "temperature_feel": "白天积热未散，夜间体感约30-31℃，湿度大，闷得皮肤发黏",
+        "ground_state": "干燥水泥村道与砖石门槛，白天被晒热，夜里仍温热",
+        "visibility": "路灯/门灯/小卖部灯下的普通手机夜景；亮处偏橙，暗部多且高ISO轻度噪点，不用商业HDR",
+        "wind": "基本无风；骑车或拖拉机经过时才感到热风",
+        "precipitation": "无雨",
+        "physical_cues": [
+          "路灯偏橙、灯下飞虫绕着光",
+          "稻田与草丛里的蛙鸣蝉声",
+          "水泥路上的灯影与电线杆影子",
+          "卷帘门、砖墙、红砖院墙、老式门灯",
+          "闷热导致轻微汗意与手汗，画面偶尔糊",
+          "夏夜蚊香、电蚊香与蒲扇的生活气息"
+        ]
+      },
+      "segments": [
+        {
+          "id": "E1_home_arrival_summer_night",
+          "start_frame": 1,
+          "end_frame": 5,
+          "condition": "正常夏夜回家与家庭生活：村口接站、夜路回家、门灯、堂屋西瓜绿豆汤、门口乘凉",
+          "physical_cues": [
+            "村口路灯与电动车车灯",
+            "门灯下的门槛与停好的电动车",
+            "堂屋电扇、竹椅、西瓜与冰绿豆汤",
+            "院门口蚊香红光与蒲扇"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "E2_disorientation_begins",
+          "start_frame": 6,
+          "end_frame": 13,
+          "condition": "熟悉环境开始错位：坏路灯亮起、灯杆位置偏移、老槐树换边、小卖部无人应、路灯逐盏熄灭、自家堂屋灯异常",
+          "physical_cues": [
+            "本应坏着的路灯亮着，灯杆位置与记忆偏移",
+            "歪脖子老槐树与院墙的相对位置相反",
+            "关着却亮灯的小卖部卷帘门",
+            "路灯沿路逐盏熄灭"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "路灯逐盏熄灭制造长距离黑暗",
+              "when": ["frame 12"]
+            }
+          ]
+        },
+        {
+          "id": "E3_facing_together",
+          "start_frame": 14,
+          "end_frame": 20,
+          "condition": "两人共同面对：离开老屋、陌生机耕道、循环村道、拖拉机参照归位、回到门灯下收束",
+          "physical_cues": [
+            "手电光与钥匙串",
+            "陌生长下坡水泥路与落灰三轮车",
+            "循环重复的歪脖子老槐树与趴着的狗",
+            "拖拉机灯、机耕道与门灯"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "循环路段重复出现同一棵老槐树与同一只狗",
+              "when": ["frame 17"]
+            }
+          ]
+        }
+      ],
+      "frame_overrides": {
+        "12": {
+          "condition": "路灯沿路一盏接一盏熄灭，只剩电动车滑行声",
+          "visibility": "短暂车灯余辉后整段路黑下来，手机夜景完全依赖车前暗光",
+          "time_of_day": "约22:15"
+        },
+        "17": {
+          "condition": "第三次经过同一棵歪脖子老槐树与同一只趴着的狗，时间感扭曲",
+          "visibility": "路灯仍在但显得格外亮，循环参照物清晰",
+          "time_of_day": "约23:00（感知时间失真）"
+        },
+        "19": {
+          "condition": "拖拉机灯从对面扫过来，机耕道世界在强光中归位",
+          "visibility": "车灯强光与手电光混合，人物呈剪影",
+          "time_of_day": "约23:15"
+        },
+        "20": {
+          "condition": "回到自家门灯下，夏夜恢复日常闷热",
+          "visibility": "门灯暖光，堂屋灯光正常",
+          "time_of_day": "约23:30"
+        }
+      }
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "村口路灯下的黑色电动车",
+          "妹妹在车灯前的身影",
+          "水泥路边沿与远处村口灯点",
+          "普通手机夜景轻度噪点"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "越过肩头看到的车灯夜路",
+          "两侧黑黢黢的稻田",
+          "远处小卖部灯光与门口人影",
+          "手机夜景抖动"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "03": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "门灯下的自家门槛",
+          "停好的电动车",
+          "门槛边没收的竹椅",
+          "院子里透出的光"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "04": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "堂屋白炽灯与转着的电扇",
+          "竹椅上的妹妹与西瓜",
+          "桌脚烧着的蚊香",
+          "冰绿豆汤的碗"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "05": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "院门口的小凳与蚊香红光",
+          "蒲扇赶蚊子的妹妹",
+          "门槛与拖鞋",
+          "夏夜虫鸣的生活感"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "06": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "巷口亮着的路灯",
+          "撞歪过的旧灯杆",
+          "空无一人的巷子",
+          "灯下飞虫"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "07": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "低角度路灯与墙根的距离感",
+          "灯杆与记忆中位置的偏移",
+          "空巷与地面光影",
+          "画面边缘轻微手抖"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "08": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "门灯下闻声出来的妹妹",
+          "门口台阶",
+          "两人说路灯的事时她的表情",
+          "日常门灯光线"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "09": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "灭着的旧路灯与歪杆",
+          "地面上没有新撞击痕迹",
+          "两人站在灯杆斜对面的影子",
+          "两人同时愣住的安静"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "10": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "王叔家院墙与歪脖子老槐树的相对位置",
+          "树影落在墙后而不是门前",
+          "路灯下的地面参照",
+          "站在墙外的两人"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "11": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "拉下却透光的小卖部卷帘门",
+          "门缝光带",
+          "屋里的收音机声（声音线索）",
+          "门外没人应的安静"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "12": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "路灯沿路一盏接一盏熄灭",
+          "车灯熄灭前最后的余辉",
+          "整段路陷入黑暗",
+          "电动车行进中的轻微晃动"
+        ],
+        "scale_reference": "沿路一根接一根的路灯（距离与数量参照）",
+        "escalation_from": 9
+      },
+      "13": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "本该关灯的堂屋透出灯光",
+          "窗玻璃里停摆的挂钟",
+          "门槛前两人的剪影",
+          "门灯正常而屋里反常的对比"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "14": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "手电光",
+          "弯腰锁门的妹妹与钥匙串",
+          "掉头的电动车",
+          "门口台阶"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "15": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "车灯照出的陌生长下坡",
+          "路边并排停放的落灰三轮车",
+          "看不到头的坡底",
+          "停下来时的刹车感"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "16": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "掉头后另一段陌生路口",
+          "成排延伸的电线杆",
+          "来时的村口灯火消失",
+          "路肩与车辙"
+        ],
+        "scale_reference": "成排电线杆与陌生路口（参照物延伸感）",
+        "escalation_from": 10
+      },
+      "17": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 4,
+        "required_visual_cues": [
+          "第三次经过的同一棵歪脖子老槐树",
+          "树下同一只趴着不动的狗",
+          "墙上的村口喷漆字",
+          "停在路中央的电动车与抓胳膊的手"
+        ],
+        "scale_reference": "歪脖子老槐树+树下趴着的狗+墙上的村口喷漆（三次重复参照）",
+        "escalation_from": 16
+      },
+      "18": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "推车的身影与地上的影子",
+          "手电光晃过的路肩",
+          "一根接一根的电线杆",
+          "黑暗中的脚步"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "19": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "远处直直扫来的拖拉机灯",
+          "机耕道与尘土",
+          "灯影里认出熟人的轮廓",
+          "强光下剪影式的兄妹"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "20": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "门灯下的自家门槛",
+          "蒙着纱罩的绿豆汤碗",
+          "探头笑的妹妹",
+          "屋里正常亮着的堂屋灯"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      }
+    },
+    "narrative_contract": {
+      "status": "LOCKED",
+      "schema_version": 2,
+      "path": "meta/shot-progression-review.json"
+    },
+    "continuity": {
+      "required": [
+        "protagonist",
+        "sister",
+        "location",
+        "weather_time",
+        "vehicle",
+        "store"
+      ],
+      "anchors": {
+        "protagonist": "P01 男 25岁 白色短袖+浅色牛仔裤+深色运动鞋；黑色短发；普通智能手机；第一人称主摄",
+        "sister": "P02 女 20岁 老家妹妹；浅色短袖+牛仔短裤+平底凉鞋；黑色长发随意扎低马尾；年轻漂亮但真实普通",
+        "location": "虚构南方丘陵村庄的村口、村道、老屋与王婶小卖部；不与真实地点对应",
+        "weather_time": "三伏闷热夏夜约21:00-23:40，体感30-31℃，湿热无风",
+        "vehicle": "黑色普通踏板电动车，村口接人、夜路往返、离村与返家使用",
+        "store": "村口王婶小卖部：卷帘门、冰柜、门缝灯光"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "当代夏夜",
+      "location": "虚构南方丘陵村庄的村口与老屋周边；不影射真实地点",
+      "photographer": "P01，二十五岁普通年轻人，第一人称随手拍",
+      "shooting_reason": "返乡报平安、家庭生活记录与夏夜出门的随手记录；不是取证任务",
+      "primary_capture": {
+        "id": "CP01",
+        "device": "当代普通智能手机，手持竖拍 4:5"
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": "",
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "村口路灯、门灯与屋内灯下的普通手机夜景",
+        "restricted": "路灯逐盏熄灭后的暗部夜路",
+        "uncontrolled": "骑行、推车与强光扫过时的晃动画面"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": "拍摄手机不完整入镜",
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": "第一人称随手拍，画面最多带到自己的影子、鞋与裤脚局部"
+      }
+    },
+    "references": {
+      "required": false,
+      "items": []
+    }
+  },
+  "subtitles": {
+    "required": false,
+    "note": "PREPRODUCTION_ONLY：本阶段未进入字幕范围"
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_narrative": "passed",
+    "visual_admission": "pending",
+    "production": "pending",
+    "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "note": "PREPRODUCTION_ONLY 前期资产 Gate：Story Lock 已锁定，Character Contract/World Identity PASS，Visual Narrative LOCKED（meta/shot-progression-review.json），Production NOT_READY；本文件不保存 stage，不推进机器状态。"
+}

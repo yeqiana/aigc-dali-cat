@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "derived_from_pools": true,
+  "not_episode_stage": true,
+  "created_at": "2026-09-02T20:10:51+08:00",
+  "selection_seed": 18227760145331092417,
+  "era": {
+    "bucket": "modern_2020s",
+    "year": 2026,
+    "source": "explicit_hint_or_weighted",
+    "refined_by": "story_lock_deduction_v221"
+  },
+  "world_identity": {
+    "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+    "country": "China",
+    "region": "Mainland China",
+    "nationality_context": "Chinese",
+    "resident_context": "mainland Chinese local residents",
+    "effective_sha256": "98e4e6dfbf2f20eca3bc06cd15f2a8261316745cf22ef5d175de7b595607877f"
+  },
+  "cast": {
+    "type": "pair",
+    "size": 2,
+    "relationship": "亲兄妹：P01 哥哥与 P02 老家妹妹",
+    "members": [
+      {
+        "id": "P01",
+        "pov": true,
+        "gender": "male",
+        "age": 25,
+        "build": "普通年轻人体型",
+        "hair": "普通黑色短发",
+        "clothing_anchor": "白色短袖+浅色牛仔裤+深色运动鞋",
+        "device_anchor": "普通智能手机",
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents"
+      },
+      {
+        "id": "P02",
+        "pov": false,
+        "gender": "female",
+        "age": 20,
+        "build": "普通年轻女生体型（纤细自然）",
+        "hair": "黑色中长发，日常随意扎低马尾或披着",
+        "clothing_anchor": "浅色短袖+牛仔短裤+平底凉鞋",
+        "device_anchor": null,
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents"
+      }
+    ]
+  },
+  "pov": {
+    "character_id": "P01",
+    "first_person": true
+  },
+  "entry": {
+    "type": "return_home",
+    "label": "回家/回老家",
+    "source": "user_hint",
+    "reason": "由 Story Build 基于该生活化动机具体化"
+  },
+  "scene": {
+    "primary_category": "village_home",
+    "primary_place": "虚构南方丘陵村庄的老屋、村口、村道与王婶小卖部"
+  },
+  "role_policy": {
+    "protagonist_role": "普通年轻人/普通朋友小团体",
+    "career_function": "arrival_only",
+    "solves_anomaly_professionally": false
+  },
+  "no_anomaly_test": {
+    "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+    "ordinary_day_plan": "删掉所有异常后，这一天仍是完整真实的生活：闷热夏夜从县城骑电动车回老家，妹妹在村口等，一起回家吃西瓜喝冰绿豆汤、门口乘凉聊天，洗漱休息。",
+    "pass": true,
+    "must_be_rechecked_before_story_lock": true,
+    "rechecked_against_final_story": true,
+    "rechecked_by": "story_os_v221_preproduction_worker",
+    "recheck_note": "Story Lock 只锁定熟悉环境逐渐错位、兄妹共同面对、无职业化解释、无照片揭秘结尾的叙事方向；删掉异常后仍是普通兄妹夏夜返乡生活，NO-ANOMALY 复检通过。"
+  },
+  "continuity_policy": {
+    "member_count_changes_require_story_event": true,
+    "pov_character_id_stable": true,
+    "clothing_and_device_anchors_propagate_to_frame_contract": true
+  },
+  "ordinary_person_score": 100,
+  "forbidden_role_check": {
+    "pass": true,
+    "hits": []
+  },
+  "story_build_note": "Story Build Input Contract。P01 为 25 岁哥哥（主摄影视角），P02 为 20 岁老家妹妹（情感锚点与共同经历者）；两人均在角色池与返乡动机池边界内，职业功能仅到达型、不解决异常；世界身份继承 V2.2.1 默认中国大陆普通年轻人画像，未建 override。",
+  "locked_at": "2026-09-02T20:10:51+08:00"
+}

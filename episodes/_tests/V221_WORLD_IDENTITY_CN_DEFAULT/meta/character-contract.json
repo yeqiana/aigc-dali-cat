@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "derived_from_pools": true,
+  "not_episode_stage": true,
+  "created_at": "2026-09-02T18:29:14+08:00",
+  "selection_seed": 18300645146422101249,
+  "era": {
+    "bucket": "modern_2020s",
+    "year": 2026,
+    "source": "explicit_hint_or_weighted",
+    "refined_by": "acceptance_story_worker"
+  },
+  "world_identity": {
+    "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+    "country": "China",
+    "region": "Mainland China",
+    "nationality_context": "Chinese",
+    "resident_context": "mainland Chinese local residents",
+    "effective_sha256": "98e4e6dfbf2f20eca3bc06cd15f2a8261316745cf22ef5d175de7b595607877f"
+  },
+  "cast": {
+    "type": "single_male",
+    "size": 1,
+    "relationship": "单人",
+    "members": [
+      {
+        "id": "P01",
+        "pov": true,
+        "gender": "male",
+        "age": 25,
+        "build": "普通年轻人体型",
+        "hair": "普通黑色短发",
+        "clothing_anchor": "灰色卫衣/短袖+休闲长裤+运动鞋",
+        "device_anchor": "普通智能手机",
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents"
+      }
+    ]
+  },
+  "pov": {
+    "character_id": "P01",
+    "first_person": true
+  },
+  "entry": {
+    "type": "return_home",
+    "label": "回家/回老家",
+    "source": "user_hint",
+    "reason": "由 Story Build 基于该生活化动机具体化"
+  },
+  "scene": {
+    "primary_category": "travel_road",
+    "primary_place": "县城回老家的乡村公路与村口（虚构）"
+  },
+  "role_policy": {
+    "protagonist_role": "普通年轻人/普通朋友小团体",
+    "career_function": "arrival_only",
+    "solves_anomaly_professionally": false
+  },
+  "no_anomaly_test": {
+    "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+    "ordinary_day_plan": "删掉所有异常后，这一天仍是完整真实的生活：闷热夏夜从县城骑电动车回老家，村口停车拍张夜路，到家门口停好车再拍一张生活记录，进屋休息。",
+    "pass": true,
+    "must_be_rechecked_before_story_lock": true,
+    "rechecked_against_final_story": true,
+    "rechecked_by": "acceptance_story_worker",
+    "recheck_note": "验收测试篇本无异常；Story Lock 与 Storyboard 均无异常元素，NO-ANOMALY 复检通过。"
+  },
+  "continuity_policy": {
+    "member_count_changes_require_story_event": true,
+    "pov_character_id_stable": true,
+    "clothing_and_device_anchors_propagate_to_frame_contract": true
+  },
+  "ordinary_person_score": 100,
+  "forbidden_role_check": {
+    "pass": true,
+    "hits": []
+  },
+  "story_build_note": "Story Build Input Contract。官方 prepare 已从默认世界身份注入 nationality/resident 与 effective_sha256；验收 worker 仅在池边界内细化 year=2026、hair=普通黑色短发、场景命名并复检 NO-ANOMALY，未改动任何 world identity 字段。",
+  "locked_at": "2026-09-02T18:29:30+08:00"
+}

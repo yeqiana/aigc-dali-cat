@@ -1,0 +1,61 @@
+{
+  "version": "2.2.8-photography-os-r4-fix01420",
+  "run_id": "PT_20260903_154854_fix01420",
+  "test_type": "PHOTOGRAPHY_OS_REPAIR_ROUND",
+  "status": "PT_TEST_USER_APPROVED",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "production_state_untouched": true,
+  "scope": "Repair frames 01, 04, 20 only; all other frames locked; no full production; no stage change",
+  "execution_result": {
+    "route": "MAIN_SESSION_NATIVE_IMAGE",
+    "frames_generated": ["01", "04", "20"],
+    "frame01": {
+      "status": "IMAGE_GENERATED",
+      "attempts": 7,
+      "failures": [
+        "attempts2-3 edits-relay 502 upstream_server_error no image",
+        "attempt4 reference-route generation 502 upstream_server_error no image",
+        "attempt5 reference-based identity pass aborted by user after ~266s wait"
+      ],
+      "content_repair": "1 - user flagged P02 identity mismatch on the initial repair image; final image = text-only fallback variant B because the edits/ref channel was down",
+      "note": "initial image superseded; identity repair finalized 17:57 +08:00, raw/output replaced on disk",
+      "success_at": "2026-09-03T17:57:03+08:00"
+    },
+    "frame20": {
+      "status": "IMAGE_GENERATED",
+      "attempts": 6,
+      "failures": [
+        "attempt1 502 upstream_server_error no image",
+        "attempt2 502 upstream_server_error no image",
+        "attempt3 502 upstream_server_error no image",
+        "attempt4 502 upstream_server_error no image",
+        "attempt5 502 upstream_server_error no image"
+      ],
+      "note": "attempt 6 succeeded in follow-up session 16:28-16:33 +08:00; raw/output present. Five prior 502s documented as technical failures, not content repair.",
+      "success_at": "2026-09-03T16:33:34+08:00"
+    },
+    "technical_failures": 8,
+    "content_repairs": 1,
+    "timing_seconds": {
+      "01": "attempt1 ~76s; identity-repair pass (attempts2-7) in a later ~16:37-17:57 wall window incl. user review rounds, exact generation-call timing not retained; final writes 17:56/17:57",
+      "04": 79,
+      "20": "attempt6 ~287s wall from retry start to file copy (includes agent steps); five failed attempts added ~35 min relay wait before success"
+    },
+    "updated_at": "2026-09-03T18:04:00+08:00"
+  },
+  "user_directives": {
+    "01": "女生用手机自拍男女主（开场建立彼此）",
+    "04": "手机拿反了不要出现手机（无手机入画远摄画面）",
+    "20": "自拍节拍交给 01，20 不再自拍；改为离开瞬间进行时收尾",
+    "global": "手机画面少一点；增加正在进行时、互动与情绪递进；奇幻感增强（白天普通/夜晚奇异的反衬）"
+  },
+  "repair_note": "用户 Repair Lock 点名 01/04/20；未点名帧保持锁定，不连带重做",
+  "camera_roster_delta": "01 新增 P02 持机帧（开场自拍、P01 入镜来源=自拍成立）；04/20 仍 P01 持机；P01 固定主摄影者多数帧不变",
+  "user_approval": {
+    "status": "USER_DIRECT_PIXEL_APPROVED",
+    "frames": ["01", "04", "20"],
+    "evidence": "user direct message '图可以' 2026-09-03 after viewing repaired outputs and rebuilt contact sheets",
+    "recorded_at": "2026-09-03T18:09:00+08:00"
+  }
+}

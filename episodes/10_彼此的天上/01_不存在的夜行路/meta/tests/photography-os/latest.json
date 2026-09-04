@@ -1,11 +1,13 @@
 {
-  "version": "2.2.8-photography-os-r3",
+  "version": "2.2.8-photography-os-r4-fix01420",
   "pointer_type": "NON_AUTHORITY_NON_GATE_NON_REUSE",
   "history_policy": "AUDIT_ONLY_NEVER_EXECUTION_INPUT",
-  "run_id": "PT_20260902_101944_e5b1",
-  "round": 3,
-  "round_prev": "PT_20260901_233900_7622",
-  "status": "PT_TEST_GENERATED_PENDING_REVIEW",
-  "report": "meta/tests/photography-os/PT_20260902_101944_e5b1/report.json",
-  "updated_at": "2026-09-02T11:08:00+08:00"
+  "run_id": "PT_20260903_154854_fix01420",
+  "round": 4,
+  "round_prev": "PT_20260902_101944_e5b1",
+  "test_type": "PHOTOGRAPHY_OS_REPAIR_ROUND",
+  "status": "PT_TEST_USER_APPROVED",
+  "report": "meta/tests/photography-os/PT_20260903_154854_fix01420/report.json",
+  "scope_note": "Repair round 01/04/20; frames 02-19 locked; assembled 01-20 review hub remains FR_20260903_142040",
+  "updated_at": "2026-09-03T18:11:00+08:00"
 }

@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.1",
+  "contract": "VISUAL_NARRATIVE_CORE_V2.2",
+  "authority_note": "人读版 20 帧 Visual Narrative Contract。正式机器输入与权威为 meta/shot-progression-review.json（schema 2 + LOCKED）；本文件是同一叙事的镜像，不建立第二权威。",
+  "narrative_policy": {
+    "first_person_rule": "IMMERSIVE_FIRST_PERSON_PRESENTATION",
+    "first_person_meaning": "第一人称是观众沉浸视角，不是摄影取证任务；每帧都是自然生活记录，画面不承担解释异常的功能。",
+    "forbidden_ending_designs": [
+      "禁止最后照片解释异常（last_photo_reveal）",
+      "禁止手机回放揭示真相（phone_replay_reveal）",
+      "禁止相册反转（album_reversal）",
+      "禁止静默反转结尾（silent_twist）"
+    ],
+    "ending_requirement": "结尾必须有事件高潮、人物行动与情绪释放；异常始终不解释，回到日常门灯下收束。",
+    "no_silent_twist_designed": true,
+    "no_last_photo_reveal_designed": true
+  },
+  "camera_owner_policy": {
+    "primary_owner": "P01（哥哥）",
+    "pov_mode": "first_person_primary_shot",
+    "secondary_owner_note": "P02 不承担取证拍摄；整篇保持单一主摄影 P01 的观众沉浸逻辑",
+    "ghost_camera_forbidden": true
+  },
+  "frames": [
+    {
+      "frame_id": "01",
+      "camera_owner": "P01",
+      "shot_family": "村口接人：站定中景记录",
+      "moment": "闷热夏夜到村口，妹妹在路灯下等着，小跑过来上车",
+      "narrative_evidence": "村口夜路、黑色电动车、妹妹出场，普通返乡开始",
+      "memory_anchor": "村口路灯下的电动车与妹妹",
+      "new_information": true
+    },
+    {
+      "frame_id": "02",
+      "camera_owner": "P01",
+      "shot_family": "骑行夜路：车把前远景记录",
+      "moment": "载着妹妹沿村道回家，灯下飞虫掠过镜头",
+      "narrative_evidence": "走惯的夜路与两侧稻田，生活常态",
+      "memory_anchor": "车灯前那截回家夜路",
+      "new_information": true
+    },
+    {
+      "frame_id": "03",
+      "camera_owner": "P01",
+      "shot_family": "家门口：门槛近景收拍",
+      "moment": "到自家院门口停好车，拍门灯下的门槛",
+      "narrative_evidence": "门灯、竹椅、自己的鞋影，家的第一张",
+      "memory_anchor": "门灯下自家门槛",
+      "new_information": true
+    },
+    {
+      "frame_id": "04",
+      "camera_owner": "P01",
+      "shot_family": "堂屋生活：桌边中景记录",
+      "moment": "妹妹切西瓜端来，堂屋电扇与冰绿豆汤",
+      "narrative_evidence": "亲兄妹家常相处，妹妹是情感锚点不是工具",
+      "memory_anchor": "西瓜、冰绿豆汤与转着的电扇",
+      "new_information": true
+    },
+    {
+      "frame_id": "05",
+      "camera_owner": "P01",
+      "shot_family": "门口乘凉：平视记录对话",
+      "moment": "两人门口乘凉，妹妹扇蒲扇说起村里的事",
+      "narrative_evidence": "夏夜生活细节：蚊香红光、蒲扇；埋下巷口路灯线索",
+      "memory_anchor": "院门口乘凉与蒲扇",
+      "new_information": true
+    },
+    {
+      "frame_id": "06",
+      "camera_owner": "P01",
+      "shot_family": "巷口探看：灯下中景记录",
+      "moment": "妹妹说巷口路灯坏了很久，P01 去看，灯却亮着",
+      "narrative_evidence": "第一次异常：本应坏掉的路灯亮着",
+      "memory_anchor": "坏路灯亮着、灯下飞虫",
+      "new_information": true
+    },
+    {
+      "frame_id": "07",
+      "camera_owner": "P01",
+      "shot_family": "灯杆近察：低角度细节记录",
+      "moment": "走近旧灯杆，位置与歪向都和记忆不符，杆根地面干净",
+      "narrative_evidence": "异常加深：灯杆位置偏移且无撞击痕迹",
+      "memory_anchor": "歪着的旧灯杆与干净地面",
+      "new_information": true
+    },
+    {
+      "frame_id": "08",
+      "camera_owner": "P01",
+      "shot_family": "院门口：妹妹出来入镜",
+      "moment": "妹妹出来，两人确认路灯坏了大半年没人修，一起再看",
+      "narrative_evidence": "确认异常：共同验证，不解释原因",
+      "memory_anchor": "门灯下妹妹确认路灯的话",
+      "new_information": true
+    },
+    {
+      "frame_id": "09",
+      "camera_owner": "P01",
+      "shot_family": "灯杆斜对面：低角度共同查验",
+      "moment": "杆歪却没有撞击或修补痕迹，两人安静下来",
+      "narrative_evidence": "空间矛盾成立：地面干净与杆歪并存",
+      "memory_anchor": "歪杆与干净的杆根地面",
+      "new_information": true
+    },
+    {
+      "frame_id": "10",
+      "camera_owner": "P01",
+      "shot_family": "院墙外：对照记录",
+      "moment": "妹妹停住：歪脖子老槐树与院墙的相对位置反了",
+      "narrative_evidence": "新问题：熟悉参照物换边，疑问打开而非解释",
+      "memory_anchor": "老槐树换边、树影方向反了",
+      "new_information": true
+    },
+    {
+      "frame_id": "11",
+      "camera_owner": "P01",
+      "shot_family": "小卖部门前：门缝近景记录",
+      "moment": "卷帘门拉着却透光，拍门没人应，屋里像有收音机声",
+      "narrative_evidence": "又一异常：无人店铺透光",
+      "memory_anchor": "透光的卷帘门与门缝光带",
+      "new_information": true
+    },
+    {
+      "frame_id": "12",
+      "camera_owner": "P01",
+      "shot_family": "夜路骑行：路灯熄灭远景记录",
+      "moment": "路灯沿路一盏接一盏熄灭，整段路黑下来",
+      "narrative_evidence": "异常放大：空间里的光被逐盏拿走",
+      "memory_anchor": "逐盏熄灭的路灯与最后的车灯",
+      "new_information": true
+    },
+    {
+      "frame_id": "13",
+      "camera_owner": "P01",
+      "shot_family": "自家院门：窗口中景记录",
+      "moment": "出门前关掉的堂屋灯亮着，窗里挂钟像停摆，两人愣住",
+      "narrative_evidence": "异常进入自家：无人却亮灯的因果矛盾",
+      "memory_anchor": "没人却亮着的堂屋灯",
+      "new_information": true
+    },
+    {
+      "frame_id": "14",
+      "camera_owner": "P01",
+      "shot_family": "锁门离村：低角度手电记录",
+      "moment": "妹妹弯腰锁院门，两人决定连夜去镇上",
+      "narrative_evidence": "人物行动应对异常：离开是选择，不是解释",
+      "memory_anchor": "钥匙串与锁上的院门",
+      "new_information": true
+    },
+    {
+      "frame_id": "15",
+      "camera_owner": "P01",
+      "shot_family": "陌生下坡：坡顶远景记录",
+      "moment": "走熟的路变成没见过的下坡，路边停着落灰三轮车",
+      "narrative_evidence": "道路错位升级：熟悉空间消失",
+      "memory_anchor": "看不到头的陌生下坡",
+      "new_information": true
+    },
+    {
+      "frame_id": "16",
+      "camera_owner": "P01",
+      "shot_family": "路口掉头：中景扫描记录",
+      "moment": "掉头往回骑，路口也对不上，村口灯火消失",
+      "narrative_evidence": "方向悖论：往回走却回不到来处",
+      "memory_anchor": "成排电线杆与消失的村口灯火",
+      "new_information": true
+    },
+    {
+      "frame_id": "17",
+      "camera_owner": "P01",
+      "shot_family": "循环参照：路中央急刹记录",
+      "moment": "第三次经过同一棵歪脖子老槐树、同一只趴着的狗，P01 急刹",
+      "narrative_evidence": "高潮：循环证据在像素中成立（尺度参照与重复出现），异常仍不解释",
+      "memory_anchor": "第三次经过的老槐树、狗与喷漆字",
+      "new_information": true
+    },
+    {
+      "frame_id": "18",
+      "camera_owner": "P01",
+      "shot_family": "推车行进：低角度步行记录",
+      "moment": "两人下车推着电动车沿电线杆走，沉默",
+      "narrative_evidence": "人物在压力中的具体行动与喘息",
+      "memory_anchor": "手电光里的电线杆一根接一根",
+      "new_information": true
+    },
+    {
+      "frame_id": "19",
+      "camera_owner": "P01",
+      "shot_family": "拖拉机强光：路肩让车剪影记录",
+      "moment": "拖拉机灯直直扫来，强光后路变得认得了",
+      "narrative_evidence": "环境归位时刻：光与熟人参照，不做超自然解释",
+      "memory_anchor": "扫过来的拖拉机灯与熟人轮廓",
+      "new_information": true
+    },
+    {
+      "frame_id": "20",
+      "camera_owner": "P01",
+      "shot_family": "门灯收束：家门口平视收尾",
+      "moment": "走回自家院门口，妹妹回头笑，进院坐下，堂屋灯正常",
+      "narrative_evidence": "结尾有行动与情绪释放，异常留在未解释处，无照片揭秘、无静默反转",
+      "memory_anchor": "门灯下的门槛与蒙纱的绿豆汤",
+      "new_information": true
+    }
+  ]
+}

@@ -1,0 +1,209 @@
+{
+ "kind": "MANUAL_PUBLISH_ASSEMBLY_AUDIT",
+ "authority": "NON_AUTHORITY_TEST_ONLY_USER_DIRECT_PUBLISH",
+ "assembled_at": "2026-09-03T18:51:51+08:00",
+ "policy": "AUDIT_ONLY_NO_STORY_OS_STATE_CHANGED",
+ "frames": [
+  {
+   "frame": "01",
+   "source_run": "PT_20260903_154854_fix01420",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260903_154854_fix01420/output\\01.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c"
+  },
+  {
+   "frame": "02",
+   "source_run": "PT_20260901_233900_7622",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260901_233900_7622/output\\02.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "d21bd6c48380a615da6cb3dcbc268973b7bec5c5cc051b70c52e6ec3a042f7cf"
+  },
+  {
+   "frame": "03",
+   "source_run": "PT_20260901_233900_7622",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260901_233900_7622/output\\03.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "2c39410574bb15cc79247ee3a73bb798b3c4c2fd41ea45d2fab7095aa85afd4b"
+  },
+  {
+   "frame": "04",
+   "source_run": "PT_20260903_154854_fix01420",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260903_154854_fix01420/output\\04.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "a0e93f4a898c26b276caa843dec5435cf31cc6bf6f177ea48797814331a83842"
+  },
+  {
+   "frame": "05",
+   "source_run": "PT_20260901_233900_7622",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260901_233900_7622/output\\05.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "0fdf32345915db50493e1cf6ea8a28ce75331741c68e4b43a5746c2bee7c4955"
+  },
+  {
+   "frame": "06",
+   "source_run": "PT_20260901_233900_7622",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260901_233900_7622/output\\06.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "ee628a016819fecec89ef27705a2218f29cc6432161f475d6b2a0ab8d2e7c3a3"
+  },
+  {
+   "frame": "07",
+   "source_run": "PT_20260901_233900_7622",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260901_233900_7622/output\\07.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "50aa05141100292036e9bc8e90eed084dab83b6bfa7a9cc08e0dce0166137cb9"
+  },
+  {
+   "frame": "08",
+   "source_run": "PT_20260901_233900_7622",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260901_233900_7622/output\\08.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "a53e5a5a702537d8661602fbdc29372386c781616734f68ec34520735e039e5b"
+  },
+  {
+   "frame": "09",
+   "source_run": "PT_20260901_233900_7622",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260901_233900_7622/output\\09.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "340b894dc0d3abc8104686eb2425269d57c55deda864cba5af94265a6ff2cc19"
+  },
+  {
+   "frame": "10",
+   "source_run": "PT_20260901_233900_7622",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260901_233900_7622/output\\10.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "a21452362f6e9fa6df87314add5b804310f32d81d4ea8535da56dd67c6d52030"
+  },
+  {
+   "frame": "11",
+   "source_run": "PT_20260902_101944_e5b1",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260902_101944_e5b1/output\\11.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "d5bc8e55dadbd4eaabefcb926e1d4816f7e72453e4c17b50ed7453aff2b4da32"
+  },
+  {
+   "frame": "12",
+   "source_run": "PT_20260902_101944_e5b1",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260902_101944_e5b1/output\\12.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "37d74bed7b4f99713b614c66666386b6f8ae2f489a5cc841752ea0722699d711"
+  },
+  {
+   "frame": "13",
+   "source_run": "PT_20260902_101944_e5b1",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260902_101944_e5b1/output\\13.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "38c2a6a28eed08fcba698444dce50cdf23fcfc1aa92d320088b003cfca58cd2f"
+  },
+  {
+   "frame": "14",
+   "source_run": "PT_20260902_101944_e5b1",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260902_101944_e5b1/output\\14.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "3501a61a3b651f7fad87613dbbc6252adddd312e66209a2ecc5cf3591355aa1d"
+  },
+  {
+   "frame": "15",
+   "source_run": "PT_20260902_101944_e5b1",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260902_101944_e5b1/output\\15.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "d1f40f232748bef8f5b3f34acede08e2716b778ed80db78ba912ac05731a8f7a"
+  },
+  {
+   "frame": "16",
+   "source_run": "PT_20260902_101944_e5b1",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260902_101944_e5b1/output\\16.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "3d58392e3ad141ebbf5e54432fc42b2cc633001387bb98cd637fcf1028bc7cc7"
+  },
+  {
+   "frame": "17",
+   "source_run": "PT_20260902_101944_e5b1",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260902_101944_e5b1/output\\17.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "78846f7703fcb64ad439f628c48e450c23604460685154dafef1ff759db61e1a"
+  },
+  {
+   "frame": "18",
+   "source_run": "PT_20260902_101944_e5b1",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260902_101944_e5b1/output\\18.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "3b3e5d8cfd2266cbf1be4c3a91cc82dfa3eead1d2fe5f21e456345401097708d"
+  },
+  {
+   "frame": "19",
+   "source_run": "PT_20260902_101944_e5b1",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260902_101944_e5b1/output\\19.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "e0cad1221525c944ce44ef3152fdf7e0a76252c2735c12927e879cc60effad0d"
+  },
+  {
+   "frame": "20",
+   "source_run": "PT_20260903_154854_fix01420",
+   "source_path": "episodes/10_彼此的天上/01_不存在的夜行路\\media/tests/photography-os\\PT_20260903_154854_fix01420/output\\20.png",
+   "size": [
+    1080,
+    1350
+   ],
+   "sha256": "fea8f2cb83fc7364ae872d75bfa1d4f6e9865e04fab4ee688e1ff2c72ee64f83"
+  }
+ ],
+ "dims": "1080x1350"
+}

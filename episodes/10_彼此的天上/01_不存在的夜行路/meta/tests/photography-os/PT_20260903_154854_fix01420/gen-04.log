@@ -1,0 +1,1 @@
+Error: failed to parse model_catalog_json path `C:\Users\79873\.codex\opencodex-catalog.json` as JSON: unknown variant `max`, expected one of `none`, `minimal`, `low`, `medium`, `high`, `xhigh` at line 51 column 25

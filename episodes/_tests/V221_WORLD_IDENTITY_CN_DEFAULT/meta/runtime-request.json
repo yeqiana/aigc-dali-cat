@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "request_id": "V221_WORLD_IDENTITY_CN_DEFAULT-01",
+  "created_at": "2026-09-02T21:00:00+08:00",
+  "mode": "test",
+  "kind": "v221_world_identity_acceptance",
+  "repository": {
+    "branch": "story",
+    "source": "user_explicit"
+  },
+  "topic": {
+    "title": "夏夜回老家的两张随手拍",
+    "raw": "夏夜回老家的两张随手拍",
+    "series": "_tests"
+  },
+  "story_input": {
+    "mode": "user_seed",
+    "raw": "一个二十多岁的男生，2026年夏天晚上骑电动车从县城回老家，到村口路边短暂停车，随手拍下一张回家路上的照片；到家门口后，又随手拍了一张家门口与自己的生活记录。",
+    "constraints": [
+      "中国大陆普通县城/村镇结合部生活语境",
+      "当代普通年轻人",
+      "不设专业职业，不设明星脸，不设网红脸",
+      "不手动在 Story 文本里重复写中国人来作弊，必须依赖 World Identity 默认配置生效",
+      "不要刻意堆中国元素符号，要像私人手机相册里真实的一天"
+    ],
+    "rewrite_policy": "user_seed_strengthen",
+    "preserve_core_intent": true,
+    "allow_structure_rewrite": false
+  },
+  "creative_hints": [],
+  "image": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "source": "system_default",
+    "strict_model": false
+  },
+  "runtime": {
+    "execution_mode": "test_only",
+    "continuous_execution": false,
+    "max_image_workers": 1
+  },
+  "delivery": {
+    "mode": "manual",
+    "zip_required_for_completion": false
+  },
+  "user_intent": {
+    "full_auto_authorized": false,
+    "ask_before_each_step": false
+  },
+  "provenance": {
+    "source": "user_task",
+    "original_request": "V2.2.1 验收：验证默认中国大陆世界身份是否进入新 Episode 主链；只生成 Frame 01-02 最多两张测试图；不发布不推进正式 stage。"
+  },
+  "core_constraints": [
+    "主角为二十多岁普通年轻人，禁止抢修员/警察/记者/调查员等专业角色作为主角发动机",
+    "只做 2 帧普通生活随手拍，无异常",
+    "TEST_ONLY / NON_RELEASE / NON_AUTHORITY_PRODUCTION_TEST",
+    "禁止正式 Visual Lock / Production / Release / 提交 Git"
+  ],
+  "execution_scope": {
+    "stop_after": "v221_two_test_images_and_review",
+    "stage_advance": "none",
+    "authority": "NON_AUTHORITY_PRODUCTION_TEST",
+    "production_promotion_forbidden": true
+  }
+}

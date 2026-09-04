@@ -1,0 +1,140 @@
+{
+  "version": "2.2.8-photography-os-r4-fix01420",
+  "run_id": "PT_20260903_154854_fix01420",
+  "round": 4,
+  "round_prev": "PT_20260902_101944_e5b1",
+  "test_type": "PHOTOGRAPHY_OS_REPAIR_ROUND",
+  "status": "PT_TEST_USER_APPROVED",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "production_state_untouched": true,
+  "history_policy": "AUDIT_ONLY_NEVER_EXECUTION_INPUT",
+  "reuse_previous_image": false,
+  "scope": "User Repair Lock: frames 01, 04, 20. Frames 02-19 locked. 01/04/20 freshly regenerated; frame 20 required a follow-up retry session after five upstream 502s. Frame 01 additionally identity-repaired 17:57 +08:00 via text-only fallback (edits/ref relay 502), replacing the pre-identity image.",
+  "route": "MAIN_SESSION_NATIVE_IMAGE",
+  "image_model": { "requested": "gpt-image-2", "strict": true },
+  "target_size": [1080, 1350],
+  "camera_roster": {
+    "primary": "P01（男友，主摄影者，多数帧）",
+    "secondary": "P02（女友，selfie/second-source frames）",
+    "frame01": "P02（自拍发起者，自己的手机前置镜头；P01 入镜，来源=自拍成立，无幽灵摄影机）",
+    "frame04": "P01（自己手机数码变焦拍山坡；手机不入画）",
+    "frame20": "P01（站在车旁几步外拍 P02 上车瞬间；P01 不入画；新图 IMAGE_GENERATED，第六次重试成功）",
+    "switch_reason": "01 为 P02 发起的开场双人自拍；04/20 回归 P01 主摄影者；无 P01 入镜需第三方来源的帧",
+    "ghost_camera": "NONE_DETECTED"
+  },
+  "frames": {
+    "01": {
+      "frame": "01",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P02（女友，副驾持自己手机前置自拍）",
+      "shot_grammar": "FRONT_CAMERA_COUPLE_SELFIE_IN_CAR",
+      "six_answers": {
+        "who_took_it": "P02，副驾举手机前置自拍，P01 从驾驶座侧身入镜",
+        "why_this_moment": "出发日午后第一次停车，她说“先合个影”，兑现拖了很久的川西自驾",
+        "photographer_position": "副驾座，侧身举机；P01 驾驶座侧身靠近",
+        "camera_ownership": "P02 发起自拍；P01 在驾驶座，同框来源=自拍成立，无幽灵摄影机",
+        "action_happening": "车停盘山公路休息区；两人看镜头微笑，挡风玻璃外是山路与远处山坡",
+        "why_saved_in_phone": "旅行第一张双人合影：相册里“我们俩”的开头"
+      },
+      "defect_physics": ["前置广角边缘畸变", "车内暗 vs 挡风玻璃外亮", "举机瞬间轻微模糊"],
+      "screen_content": "自拍照片本体无取景 UI；中控导航屏暗屏不可读，无文字",
+      "album_like": "private_album_open_selfie",
+      "review_note": "像素终审 PENDING_USER；vision 描述层：P02 持机微笑、P01 橄榄绿外套、灰 SUV 黑内饰、山路护栏窗景，无可读文字；终稿=17:57 文本降级身份返修版（edits/ref 通道 502，未用参考图编辑；P02 按 02 帧外观锚定重出，镜头设计不变）",
+      "contract_ref": "frame-contracts/01.json"
+    },
+    "04": {
+      "frame": "04",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P01（自己手机，数码变焦拍对面山坡）",
+      "shot_grammar": "ZOOMED_FIRST_LIGHT_EVIDENCE_NO_DEVICE",
+      "six_answers": {
+        "who_took_it": "P01，停车带边沿背靠车头举起手机向远山拉近",
+        "why_this_moment": "天快黑时山坡上出现唯一一盏暖黄灯；那边不该有灯、不该有人",
+        "photographer_position": "车头旁护栏边，手机未入画，机位=手持变焦",
+        "camera_ownership": "P01 主摄影者，常规持机；画面刻意只留证据本身",
+        "action_happening": "傍晚暗下的裸岩 V 缺口山坡中央，一粒小而稳的暖黄灯点，无路无房无人",
+        "why_saved_in_phone": "第一次看到异常的第一手证据；山脊灯点的起点"
+      },
+      "defect_physics": ["手持数码变焦软化", "暗角", "低照噪点", "轻微动作模糊", "欠曝", "前景护栏虚化暗带"],
+      "screen_content": "无手机、无屏幕、无 UI、无文字",
+      "album_like": "grainy_evidence_frame",
+      "review_note": "像素终审 PENDING_USER；vision 描述层：V 缺口裸岩上一粒琥珀暖光，无手机无人；前景被读作蓝绿护栏暗带（可接受）",
+      "contract_ref": "frame-contracts/04.json"
+    },
+    "20": {
+      "frame": "20",
+      "status": "IMAGE_GENERATED",
+      "photographer": "P01（站在车旁几步外）",
+      "shot_grammar": "DEPARTURE_MOMENT_NO_DEVICE",
+      "six_answers": {
+        "who_took_it": "P01，车旁护栏边离 P02 几步，低机位随手拍",
+        "why_this_moment": "第二天上午确认完没有路，P02 拉开车门正要上车又回头看了山坡最后一眼",
+        "photographer_position": "车旁几步外，P01 不入画",
+        "camera_ownership": "P01 主摄影者；P01 不入画，P02 是被摄者，无幽灵摄影机",
+        "action_happening": "P02 一手拉后车门半转身回望普通得不能再普通的浅色裸岩缺口山坡；风把头发吹到脸上",
+        "why_saved_in_phone": "旅行最后一张：离开的瞬间，看起来什么也没发生的那天"
+      },
+      "defect_physics": ["构图急随手按", "转身动作轻微模糊", "侧逆光轻微过曝"],
+      "screen_content": "无手机、无屏幕、无 UI、无文字",
+      "album_like": "quiet_leaving_bookend",
+      "review_note": "像素终审 PENDING_USER；vision 描述层：P02 一手拉后车门半转身回望、浅灰大衣+浅蓝牛仔裤+白鞋、深灰 SUV 尾侧、绿护栏、阴天、V 缺口裸岩山坡；无手机无文字无 UI",
+      "contract_ref": "frame-contracts/20.json"
+    }
+  },
+  "contract_checks": {
+    "camera_roster": { "status": "PASS", "note": "01 作者切换为 P02 自拍并有发起理由；04/20 仍 P01；无幽灵摄影机" },
+    "ghost_camera_gate": { "status": "PASS", "note": "01 P01 入镜来源=自拍成立；04/20 P01 持机不入画" },
+    "moment_contract": { "status": "PASS", "note": "01 开场建立彼此；04 首见异常；20 离开瞬间收尾" },
+    "shot_diversity": { "status": "PASS", "note": "01 车内外前摄自拍族、04 无设备证据远摄族、20 离开瞬间族，均为新语法且不与 02-19 形成连续重复" },
+    "camera_defect_physics": { "status": "PASS", "note": "01 畸变/逆光/手持微糊=自拍物理；04 噪点暗角欠曝=黄昏手持变焦；无统一做糊" },
+    "visual_memory_continuity": { "status": "PASS", "note": "P02 浅灰大衣+深棕长发、P01 橄榄绿外套（旧 20 黑夹克漂移已在新 01 修正为橄榄绿）、灰 SUV、护栏停车带、V 缺口裸岩山坡、出发日午后/次日早晨时间线均与邻近帧一致" },
+    "time_of_day_continuity": { "status": "PASS", "note": "01 出发日午后多云；04 同日傍晚；20 次日早晨" },
+    "screen_content_physics": { "status": "PASS", "note": "01 中控导航暗屏不可读；04/20 无屏幕；无相机 UI 入画" },
+    "emotion_curve": { "status": "PASS", "note": "01 期待+甜蜜（情绪 2→3），04 疑惑（4），20 平静+失重（5）——替换后 01-10 曲线起点仍低于异常段，未破坏递进" }
+  },
+  "final_judgments": {
+    "PRIVATE_ALBUM_FEEL": "PASS (user direct pixel sign-off received 2026-09-03 for repaired 01/04/20)",
+    "CAMERA_AUTHORSHIP": "PASS",
+    "SHOT_DIVERSITY": "PASS (repair scope)",
+    "CAMERA_DEFECT_PHYSICS": "PASS",
+    "VISUAL_MEMORY": "PASS",
+    "SCREEN_CONTENT_PHYSICS": "PASS"
+  },
+  "user_approval": {
+    "status": "USER_DIRECT_PIXEL_APPROVED",
+    "frames": ["01", "04", "20"],
+    "evidence": "user direct message '图可以' 2026-09-03, immediately after viewing the repaired outputs (01/04/20) and the rebuilt contact sheets",
+    "recorded_at": "2026-09-03T18:09:00+08:00",
+    "scope": "direct approval covers the repaired trio only; frames 02-19 stay locked per Repair Lock scope; assembled 01-20 verdicts are recorded and finalized in FR_20260903_142040"
+  },
+  "recommendation": {
+    "retry_frame20": "DONE - attempt 6 succeeded after five upstream 502s",
+    "enter_01_20_final": "DONE - user pixel sign-off received; FR_20260903_142040 backfilled and finalized 2026-09-03 18:09 +08:00",
+    "note": "本轮是用户 Repair Lock 的定点返修，不推进任何 episode stage；01-10 其余帧与 11-19 未重做。已记录用户直接批准并回填 01-20 整组 Final Review 判定。"
+  },
+  "findings": [
+    { "severity": "LOW", "frame": "04", "finding": "前景护栏在暗光下被描述为蓝绿调，绿色金属护栏在黄昏低照下的正常色偏", "suggested_fix": "用户终审确认；如太像桥面可把前景裁成更薄的路肩+护栏暗带" },
+    { "severity": "INFO", "frame": "01", "finding": "初稿 P02 形象与后续帧不一致，用户点名重生成；edits/ref 通道 502，最终以文本降级变体 B 完成身份返修（raw 17:56 / output 17:57 落盘，镜头设计不变）", "suggested_fix": "用户像素终审确认 01 女生形象与 02/后续帧一致" },
+    { "severity": "INFO", "frame": "01", "finding": "P02 持机手臂与手机边缘入画，是自拍可读性所需的物理来源；符合‘手机画面少一点’的例外（自拍是唯一必须出现手机的机位）", "suggested_fix": "无；01 自拍为显式用户指令" },
+    { "severity": "INFO", "frame": "20", "finding": "前五次 502 属 relay 技术故障，非内容返修；第六次重试成功，工具返回附带 attachment 处理超时提示但 PNG 文件有效", "suggested_fix": "无；如用户最终改选方案 B（车内自拍呼应 01），按新合同再出一次即可" }
+  ],
+  "diff_vs_round2_3": {
+    "01": "旧=驾驶座第一人称挡风玻璃机位+双人举手机；新=副驾 P02 前置自拍双人同框，P01 橄榄绿外套回归契约",
+    "04": "旧=手机背板入画（被指拿反）；新=无手机无手的纯证据远摄",
+    "20": "旧=Round 3 护栏前 P01 自拍版（外套漂移黑夹克+斜挎带）；新=离开瞬间无手机收尾，P01 不入画，P02 上车回望普通山坡"
+  },
+  "most_album_like": "01（开场双人自拍）",
+  "still_display_like": "none in repaired frames",
+  "timing_summary": {
+    "method": "exec Get-Date wall segments around each native image call",
+    "per_frame_seconds_estimated": { "01": 76, "04": 79, "20": 287 },
+    "total_wall_seconds_estimated": 442,
+    "notes": "total_wall_seconds_estimated covers attempts with measured wall segments (frame01 attempt1 + 04 + 20 attempt6); the frame01 identity-repair pass (attempts2-7) fell in a later ~16:37-17:57 wall window incl. user review rounds and is not included in the 442s total.",
+    "technical_failures": 8,
+    "content_repairs": 1
+  },
+  "review_required": true,
+  "review_rule": "NON_AUTHORITY_TEST_ONLY. 测试产物不推进任何 episode stage；媒体不入 Git；01/04/20 用户直接像素终审已通过（2026-09-03）。01-10 其余帧与 11-19 未在 Repair Lock 内，不因本方向性意见默认重做。",
+  "finalized_at": "2026-09-03T18:09:00+08:00"
+}

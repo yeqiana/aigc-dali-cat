@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "contract_version": "2.2.1",
+  "derived_cache": true,
+  "world_identity_profile_id": "EPISODE_WORLD_IDENTITY_OVERRIDE",
+  "world_identity_effective_sha256": "7132d47759255fe050c50f518cc4f986cd2988a71cb5d1009456dc6a92ea24e9",
+  "character_contract_path": "meta/character-contract.json",
+  "character_contract_sha256": "2172c1252109c4c2e77ba29852b3317e02fb779a74abc85d5f21da9982df3a08",
+  "character_visual_contract_path": "meta/character-visual-contract.json",
+  "character_visual_contract_sha256": "f5ecf1f6cf27ebaac393b3ed1c436d7f2705877ad7f601187b689fb37a8e9884",
+  "members": {
+    "P01": {
+      "character_id": "P01",
+      "nationality_context": "Japanese",
+      "resident_context": "Japanese local residents",
+      "gender": "male",
+      "age": 24,
+      "build": "普通年轻人体型",
+      "body_build": "lean_proportionate_natural",
+      "hair": {
+        "character_contract_anchor": "普通黑色日常发型",
+        "haircut_anchor": "",
+        "hair_length_anchor": ""
+      },
+      "clothing_anchor": "白色短袖+牛仔裤+运动鞋",
+      "device_anchor": "普通智能手机",
+      "visual_priority": "primary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_visible_texture",
+        "allowed_variation": [
+          "wet",
+          "windblown",
+          "messy",
+          "hood_up",
+          "tied_or_untied_with_story_reason"
+        ],
+        "forbidden_unmotivated_drift": [
+          "nationality/cultural identity",
+          "apparent age",
+          "face identity",
+          "haircut or hair length",
+          "body build",
+          "character role",
+          "clothing anchor unless wardrobe contract changes it"
+        ]
+      }
+    }
+  },
+  "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+  "anchor_sha256": "55f306925c737d6dadd6c883436d3e79236e58002dfafcd7ab74552fcc71c316"
+}

@@ -1,0 +1,487 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.2.1",
+  "frame": "02",
+  "derived_cache": true,
+  "authority": "Story + Storyboard + Character Contract + Character Visual + Shot Progression + Visual Narrative Core V2.2 + World Identity V2.2.1 + Character Appearance Anchor + Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile",
+  "generated_at": "2026-09-02T18:29:49+08:00",
+  "source_trace": {
+    "story": {
+      "path": "episodes/_tests/V221_WORLD_IDENTITY_CN_DEFAULT/story/01_StoryLock.md",
+      "sha256": "d7c9f79951900e3161f9c1d898ce16c0da10486a0c42090664edcf8fde6edae1"
+    },
+    "storyboard": {
+      "path": "episodes/_tests/V221_WORLD_IDENTITY_CN_DEFAULT/story/02_Storyboard.md",
+      "sha256": "9364ab6330f045ab3ca2063dc58bfce7a374cac5abc4a91f7de11f0281b1d59a"
+    },
+    "story_gates": {
+      "path": "episodes/_tests/V221_WORLD_IDENTITY_CN_DEFAULT/meta/story-gates.json",
+      "sha256": "8c26ba84026ac91650a37da88eba6ed6abf11e7aa7ed404cbb385eb132f7bc5d"
+    },
+    "visual_profile": {
+      "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+      "sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c"
+    },
+    "character_contract": {
+      "path": "meta/character-contract.json",
+      "sha256": "6fdcf17f21a28e60d81ebb733f8892e55192de6c4d11f0795116447117892fe8"
+    },
+    "capture_event_contract": {
+      "path": "meta/capture-event-contract.json",
+      "sha256": null
+    },
+    "world_state": {
+      "path": "meta/world-state.json",
+      "sha256": null
+    },
+    "character_visual_contract": {
+      "path": "meta/character-visual-contract.json",
+      "sha256": "13cd797ea91a4d3da34fbb9f70709ae31aaddc606ab98be220e6cf93bbd0333e"
+    },
+    "shot_progression": {
+      "path": "meta/shot-progression-review.json",
+      "sha256": "eb4238a4721b513262f0dee99acbb1dc24699d26c2cc6f1a4e48f2c379dea8d6"
+    },
+    "temporal_continuity": {
+      "path": "meta/temporal-continuity.json",
+      "sha256": null
+    },
+    "wardrobe_contract": {
+      "path": "meta/wardrobe-contract.json",
+      "sha256": null
+    },
+    "world_identity_default": {
+      "path": "config/story_os/world_identity.default.json",
+      "sha256": "6abdb8eb90bc79fc983e3d045fb25eb8a894501d44d5576b9ce1d099cdfe01a9"
+    },
+    "world_identity_override": {
+      "path": "meta/world-identity.json",
+      "sha256": null
+    },
+    "character_appearance_anchor": {
+      "path": "meta/runtime/contracts/character-appearance-anchor.json",
+      "sha256": "3c07e4725d7b1fa55619c84b30b9a2994e2f5a3880e06e759f8556dcf602c3ac"
+    }
+  },
+  "storyboard_frame": {
+    "mode": "text_frame",
+    "text": "## 02 家门口，路灯下停好车随手拍\n\n谁拍的：P01，第一人称主摄，在自家门口停好电动车后站着俯拍。\n为什么拍：到了，随手拍一张\"到了\"的生活记录。\n在发生什么：门灯亮着，电动车停在门边，车头挂着一只袋子；镜头略朝下，画面下缘带到他自己的鞋和裤脚，地上有被门灯拉长的他自己的影子；门框与院子一角入画。\n人物状态：普通、热、到家了松一口气，脸上不露。\n新信息：到家、家门口与停好的车。\n视觉：门灯暖光、影子、鞋与裤脚局部、水泥门槛、普通手机夜拍；不是摆拍。",
+    "sha256": "250314c6d290863224b4bee80210d39d6786e0b14198c9a936c68695909591b6"
+  },
+  "hash_material": {
+    "schema_version": 1,
+    "frame": "02",
+    "story_sha256": "d7c9f79951900e3161f9c1d898ce16c0da10486a0c42090664edcf8fde6edae1",
+    "storyboard_frame_sha256": "250314c6d290863224b4bee80210d39d6786e0b14198c9a936c68695909591b6",
+    "storyboard_extraction_mode": "text_frame",
+    "visual_profile": {
+      "profile_id": "M00",
+      "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+      "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+      "capture_profile": "auto"
+    },
+    "authenticity_card": {
+      "story_era": "当代夏夜",
+      "location": "虚构的县城回老家村路与家门口；不影射真实地点",
+      "photographer": "二十多岁普通年轻人 P01，第一人称随手拍",
+      "shooting_reason": "回家路上报平安与到家的生活记录",
+      "primary_capture": {
+        "id": "CP01",
+        "device": "当代普通智能手机，手持，竖拍 4:5"
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": "",
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "村口路灯与门灯下的普通手机夜景：可读、轻微手持偏斜、无商业 HDR"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": "拍摄手机不完整入镜",
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": "第一人称随手拍，画面最多带到自己的影子、鞋与裤脚局部；不强行自拍"
+      }
+    },
+    "character_contract": {
+      "schema_version": 1,
+      "status": "LOCKED",
+      "derived_from_pools": true,
+      "not_episode_stage": true,
+      "created_at": "2026-09-02T18:29:14+08:00",
+      "selection_seed": 18300645146422101249,
+      "era": {
+        "bucket": "modern_2020s",
+        "year": 2026,
+        "source": "explicit_hint_or_weighted",
+        "refined_by": "acceptance_story_worker"
+      },
+      "world_identity": {
+        "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+        "country": "China",
+        "region": "Mainland China",
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents",
+        "effective_sha256": "98e4e6dfbf2f20eca3bc06cd15f2a8261316745cf22ef5d175de7b595607877f"
+      },
+      "cast": {
+        "type": "single_male",
+        "size": 1,
+        "relationship": "单人",
+        "members": [
+          {
+            "id": "P01",
+            "pov": true,
+            "gender": "male",
+            "age": 25,
+            "build": "普通年轻人体型",
+            "hair": "普通黑色短发",
+            "clothing_anchor": "灰色卫衣/短袖+休闲长裤+运动鞋",
+            "device_anchor": "普通智能手机",
+            "nationality_context": "Chinese",
+            "resident_context": "mainland Chinese local residents"
+          }
+        ]
+      },
+      "pov": {
+        "character_id": "P01",
+        "first_person": true
+      },
+      "entry": {
+        "type": "return_home",
+        "label": "回家/回老家",
+        "source": "user_hint",
+        "reason": "由 Story Build 基于该生活化动机具体化"
+      },
+      "scene": {
+        "primary_category": "travel_road",
+        "primary_place": "县城回老家的乡村公路与村口（虚构）"
+      },
+      "role_policy": {
+        "protagonist_role": "普通年轻人/普通朋友小团体",
+        "career_function": "arrival_only",
+        "solves_anomaly_professionally": false
+      },
+      "no_anomaly_test": {
+        "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+        "ordinary_day_plan": "删掉所有异常后，这一天仍是完整真实的生活：闷热夏夜从县城骑电动车回老家，村口停车拍张夜路，到家门口停好车再拍一张生活记录，进屋休息。",
+        "pass": true,
+        "must_be_rechecked_before_story_lock": true,
+        "rechecked_against_final_story": true,
+        "rechecked_by": "acceptance_story_worker",
+        "recheck_note": "验收测试篇本无异常；Story Lock 与 Storyboard 均无异常元素，NO-ANOMALY 复检通过。"
+      },
+      "continuity_policy": {
+        "member_count_changes_require_story_event": true,
+        "pov_character_id_stable": true,
+        "clothing_and_device_anchors_propagate_to_frame_contract": true
+      },
+      "ordinary_person_score": 100,
+      "forbidden_role_check": {
+        "pass": true,
+        "hits": []
+      },
+      "story_build_note": "Story Build Input Contract。官方 prepare 已从默认世界身份注入 nationality/resident 与 effective_sha256；验收 worker 仅在池边界内细化 year=2026、hair=普通黑色短发、场景命名并复检 NO-ANOMALY，未改动任何 world identity 字段。",
+      "locked_at": "2026-09-02T18:29:30+08:00"
+    },
+    "continuity": {
+      "required": [
+        "protagonist",
+        "location",
+        "weather_time",
+        "vehicle"
+      ],
+      "anchors": {
+        "protagonist": "P01 男 24-25岁 黑色短发 普通短袖+休闲裤+运动鞋；普通智能手机；第一人称主摄",
+        "location": "虚构县城与老家村口、家门口（村镇结合部）；与现实地点无对应",
+        "weather_time": "当代闷热夏夜约20:40-21:10，体感约30℃，无风，轻微出汗",
+        "vehicle": "黑色普通踏板电动车，停靠村口与家门口各一次"
+      }
+    },
+    "environment": {
+      "condition": "到家，门灯下停车随手拍",
+      "time_of_day": "夜间约21:10",
+      "temperature_feel": "白天积热未散，夜间体感约30℃，闷热",
+      "ground_state": "干燥水泥路与水泥门槛，白天积热晚上还在冒",
+      "visibility": "门灯暖光为主，门槛与门前小片地面被照亮",
+      "wind": "基本无风，骑车时有热风感",
+      "precipitation": "无",
+      "physical_cues": [
+        "路灯/门灯暖光",
+        "电动车与水泥路",
+        "夏夜飞虫",
+        "手机夜景噪点"
+      ],
+      "conditional_effects": []
+    },
+    "active_environment_segments": [
+      "E1_home_road_night"
+    ],
+    "environment_frame_sha256": "6ca05eafffcb8ad1adffb18268cdd4f41ff143fcb5fc0aa5b6c5052ce3c3f4b0",
+    "frame_directive": {
+      "narrative_role": "setup",
+      "frame_mode": "normal_record",
+      "impact_level": 0,
+      "required_visual_cues": [
+        "家门口门灯",
+        "停好的电动车与车头袋子",
+        "画面下缘自己的鞋与裤脚局部",
+        "被门灯拉长的自己的影子",
+        "普通手机夜拍生活感"
+      ],
+      "scale_reference": "",
+      "escalation_from": null
+    },
+    "frame_directive_sha256": "55470517f66d823e936f807e07d7757f04e90107771364a78e1b998230605f1e",
+    "capture_event": {},
+    "capture_event_sha256": null,
+    "world_state": {},
+    "world_state_sha256": null,
+    "character_visual_contract": {
+      "schema_version": 1,
+      "status": "LOCKED",
+      "members": {
+        "P01": {
+          "visual_priority": "primary",
+          "body_build": "lean_proportionate_natural",
+          "face_identity": {
+            "original_character": true,
+            "independently_distinct_face": true,
+            "reference_similarity_target": "low",
+            "skin_texture": "natural_skin_texture"
+          },
+          "hair": {
+            "haircut_anchor": "short black crop",
+            "hair_length_anchor": "short",
+            "allowed_state_variation": [
+              "wet",
+              "messy"
+            ]
+          },
+          "presentation": {
+            "camera_friendly_but_believable": true,
+            "celebrity_likeness": false
+          }
+        }
+      },
+      "note": "普通年轻人语境，无明星脸/网红脸/制服。world identity 字段由 Story OS 流程注入，不在此手写。"
+    },
+    "shot_progression": {
+      "frame": "02",
+      "camera_position": "家门口门槛前，停好车后站着俯拍 (doorway edge)",
+      "subject_distance": "close-to-medium 近中景",
+      "primary_subject": "门灯下的家门口、停好的电动车与自己的局部",
+      "action": "到家停好电动车，随手拍一张：门灯亮着，车停在门边，车头挂一只袋子；镜头略朝下，画面下缘带到他自己的鞋与裤脚，地上有被门灯拉长的自己的影子",
+      "visual_function": "establish_home_gate_arrival",
+      "capture_purpose": "到了，随手拍一张到家了的生活记录",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "虚构老家家门口门槛前",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": false,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    "temporal_state": {},
+    "wardrobe": {},
+    "references": [],
+    "visual_narrative": {
+      "core_id": "VISUAL_NARRATIVE_CORE_V2.2",
+      "activation_mode": "production",
+      "authority": "PREPRODUCTION_DERIVED_CONTRACT",
+      "frame": "02",
+      "camera_authorship": {
+        "owner_class": "primary_photographer",
+        "pov_mode": "first_person_primary_shot",
+        "camera_position": "家门口门槛前，停好车后站着俯拍 (doorway edge)",
+        "ghost_camera_forbidden": true,
+        "camera_owner_must_be_physically_explainable": true
+      },
+      "moment": {
+        "action_in_progress": "到家停好电动车，随手拍一张：门灯亮着，车停在门边，车头挂一只袋子；镜头略朝下，画面下缘带到他自己的鞋与裤脚，地上有被门灯拉长的自己的影子",
+        "save_reason": "到了，随手拍一张到家了的生活记录",
+        "must_not_be_result_only_showcase": true
+      },
+      "shot_grammar": {
+        "family": "doorway_edge",
+        "subject_distance": "close-to-medium 近中景",
+        "location_zone": "虚构老家家门口门槛前",
+        "first_person_is_logic_not_fixed_composition": true,
+        "repeated_hand_phone_distant_anomaly_template_forbidden": true
+      },
+      "narrative_evidence": {
+        "new_information": true,
+        "new_information_this_frame": "establish_home_gate_arrival",
+        "anomaly_logic_stage": "ordinary",
+        "human_action_stage": "ordinary",
+        "narrative_redundancy_forbidden": true,
+        "continuity_exception_reason": ""
+      },
+      "human_response": {
+        "human_present": false,
+        "emotion": {
+          "state": "ordinary",
+          "intensity": 0,
+          "trigger": "",
+          "response_sync": "not_applicable"
+        },
+        "interaction": {
+          "type": "none",
+          "actor": "",
+          "target": "",
+          "action": "",
+          "meaningful": false
+        }
+      },
+      "camera_roster_policy": {
+        "primary_photographer_required": true,
+        "primary_photographer_preferred_share": "70-80%",
+        "secondary_photographer_allowed": true,
+        "secondary_requires_reason": true,
+        "allowed_handoffs": [
+          "phone_handed_to_companion",
+          "companion_records_primary",
+          "selfie_when_story_requires",
+          "timer_or_fixed_mount_when_explicit",
+          "third_companion_when_present_in_story"
+        ],
+        "all_known_participants_visible_rule": "若所有已知同行者都完整入镜，必须能解释相机来源；否则视为幽灵摄影机。"
+      },
+      "camera_defect_physics": {
+        "defects_must_have_physical_cause": true,
+        "forbid_decorative_fake_damage": true,
+        "forbid_every_night_frame_equally_blurred": true
+      },
+      "visual_memory_continuity": {
+        "time_of_day_must_progress_plausibly": true,
+        "time_reversal_requires_explicit_flashback_or_jump": true,
+        "persist": [
+          "character_appearance",
+          "wardrobe",
+          "vehicle",
+          "carried_props",
+          "route_and_location",
+          "weather",
+          "lighting_direction_when_same_scene",
+          "anomaly_evidence"
+        ],
+        "no_independent_beauty_time_selection_per_frame": true
+      },
+      "screen_content_physics": {
+        "must_be_internally_consistent": true,
+        "must_match_scene_time_route_and_action_when_story_critical": true,
+        "screen_reflection_and_orientation_must_be_physical": true,
+        "forbid_fake_impossible_camera_ui": true,
+        "critical_text_should_be_verified_or_added_in_post": true
+      }
+    },
+    "visual_narrative_sha256": "6bce1adc310c69bbe537ab4abcac00576d8f3da2c0b87020aef1e6321caf082c",
+    "world_identity": {
+      "schema_version": 1,
+      "contract_version": "2.2.1",
+      "source": "GLOBAL_DEFAULT",
+      "inherit_default": true,
+      "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+      "world": {
+        "country": "China",
+        "region": "Mainland China",
+        "culture_context": "contemporary_mainland_chinese_daily_life",
+        "language_context": "Simplified Chinese / Mandarin-context daily life",
+        "architecture_context": "location-appropriate mainland Chinese residential/commercial/rural/urban built environment",
+        "traffic_context": "mainland China road, vehicle and plate conventions when visible",
+        "consumer_goods_context": "ordinary mainland Chinese daily-life objects appropriate to era and location"
+      },
+      "population": {
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents",
+        "default_protagonist_age_range": [
+          19,
+          30
+        ],
+        "default_protagonist_identity": "ordinary Chinese young adult",
+        "ethnicity_policy": "do_not_force_ethnicity; use natural Chinese diversity unless Story explicitly specifies",
+        "foreign_character_policy": "do_not_introduce foreign characters unless Story/episode override explicitly requires them"
+      },
+      "visual_rules": {
+        "visible_text_context": "Chinese context when environmental text is naturally visible; do not force readable text into images",
+        "do_not_import_foreign_architecture_by_default": true,
+        "do_not_import_foreign_population_by_default": true,
+        "do_not_import_foreign_cultural_props_by_default": true,
+        "preserve_location_specific_chinese_regional_detail": true
+      },
+      "default_config_path": "config/story_os/world_identity.default.json",
+      "default_config_sha256": "6abdb8eb90bc79fc983e3d045fb25eb8a894501d44d5576b9ce1d099cdfe01a9",
+      "override_path": null,
+      "override_sha256": null,
+      "effective_sha256": "98e4e6dfbf2f20eca3bc06cd15f2a8261316745cf22ef5d175de7b595607877f"
+    },
+    "world_identity_sha256": "98e4e6dfbf2f20eca3bc06cd15f2a8261316745cf22ef5d175de7b595607877f",
+    "character_appearance_anchor": {
+      "schema_version": 1,
+      "contract_version": "2.2.1",
+      "derived_cache": true,
+      "world_identity_profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+      "world_identity_effective_sha256": "98e4e6dfbf2f20eca3bc06cd15f2a8261316745cf22ef5d175de7b595607877f",
+      "character_contract_path": "meta/character-contract.json",
+      "character_contract_sha256": "6fdcf17f21a28e60d81ebb733f8892e55192de6c4d11f0795116447117892fe8",
+      "character_visual_contract_path": "meta/character-visual-contract.json",
+      "character_visual_contract_sha256": "13cd797ea91a4d3da34fbb9f70709ae31aaddc606ab98be220e6cf93bbd0333e",
+      "members": {
+        "P01": {
+          "character_id": "P01",
+          "nationality_context": "Chinese",
+          "resident_context": "mainland Chinese local residents",
+          "gender": "male",
+          "age": 25,
+          "build": "普通年轻人体型",
+          "body_build": "lean_proportionate_natural",
+          "hair": {
+            "character_contract_anchor": "普通黑色短发",
+            "haircut_anchor": "short black crop",
+            "hair_length_anchor": "short"
+          },
+          "clothing_anchor": "灰色卫衣/短袖+休闲长裤+运动鞋",
+          "device_anchor": "普通智能手机",
+          "visual_priority": "primary",
+          "identity_rules": {
+            "same_person_across_frames": true,
+            "original_character": true,
+            "independently_distinct_face": true,
+            "reference_similarity_target": "low",
+            "natural_skin_texture": "natural_skin_texture",
+            "allowed_variation": [
+              "wet",
+              "messy"
+            ],
+            "forbidden_unmotivated_drift": [
+              "nationality/cultural identity",
+              "apparent age",
+              "face identity",
+              "haircut or hair length",
+              "body build",
+              "character role",
+              "clothing anchor unless wardrobe contract changes it"
+            ]
+          }
+        }
+      },
+      "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+      "anchor_sha256": "b294cea6e666d400d5e66d85faafdadd63a16e7da86e4b314ac9e49f298de089"
+    },
+    "character_appearance_anchor_sha256": "b294cea6e666d400d5e66d85faafdadd63a16e7da86e4b314ac9e49f298de089"
+  },
+  "contract_sha256": "4a3380bdd7b53b4d0da4c9f994a2a3c6a0536d74caf01ae2be2e03b6fa432624",
+  "prompt_contract": "RESOLVED FRAME CONTRACT | frame=02 | sha256=4a3380bdd7b53b4d0da4c9f994a2a3c6a0536d74caf01ae2be2e03b6fa432624\nThis derived contract is mandatory. Locked sources outrank ad-hoc prompt wording.\n\n[STORYBOARD FRAME]\n## 02 家门口，路灯下停好车随手拍\n\n谁拍的：P01，第一人称主摄，在自家门口停好电动车后站着俯拍。\n为什么拍：到了，随手拍一张\"到了\"的生活记录。\n在发生什么：门灯亮着，电动车停在门边，车头挂着一只袋子；镜头略朝下，画面下缘带到他自己的鞋和裤脚，地上有被门灯拉长的他自己的影子；门框与院子一角入画。\n人物状态：普通、热、到家了松一口气，脸上不露。\n新信息：到家、家门口与停好的车。\n视觉：门灯暖光、影子、鞋与裤脚局部、水泥门槛、普通手机夜拍；不是摆拍。\n\n[VISUAL DNA]\nprofile=M00 | MP4 × 网吧 × 流水席旧数码质感校准版\nreality first; the image must still feel like a plausible personal/work record without the anomaly\nordinary Chinese life density=high; retain causal incidental clutter\navailable light only=True; no invented cinematic key/rim lighting\ncomposition=unposed_imperfect_personal_record\npeople=ordinary_unprepared_not_actor_like\ncolor=low_to_medium_saturation_environment_driven_no_global_retro_LUT\ntexture=controlled_imperfection_causal_to_capture_device_and_scene\nanomaly=embedded_in_reality_before_spectacle\nforbid commercial HDR, promo polish, default portrait bokeh, heroic framing and causeless retro/noise effects\ncapture physics and story era override texture; never fake an old device when the story uses a modern phone\n\n[CAPTURE / AUTHENTICITY]\n{\"aspect_ratio\":\"4:5\",\"camera_rules\":{\"current_device_may_be_fully_visible\":false,\"current_device_visibility_explanation\":\"拍摄手机不完整入镜\",\"photographer_may_be_fully_visible\":false,\"photographer_visibility_explanation\":\"第一人称随手拍，画面最多带到自己的影子、鞋与裤脚局部；不强行自拍\"},\"capture_states\":{\"stable\":\"村口路灯与门灯下的普通手机夜景：可读、轻微手持偏斜、无商业 HDR\"},\"location\":\"虚构的县城回老家村路与家门口；不影射真实地点\",\"photographer\":\"二十多岁普通年轻人 P01，第一人称随手拍\",\"primary_capture\":{\"device\":\"当代普通智能手机，手持，竖拍 4:5\",\"id\":\"CP01\"},\"secondary_captures\":[],\"secondary_source_explanation\":\"\",\"shooting_reason\":\"回家路上报平安与到家的生活记录\",\"story_era\":\"当代夏夜\"}\n\n[CHARACTER / POV CONTRACT]\n{\"cast\":{\"members\":[{\"age\":25,\"build\":\"普通年轻人体型\",\"clothing_anchor\":\"灰色卫衣/短袖+休闲长裤+运动鞋\",\"device_anchor\":\"普通智能手机\",\"gender\":\"male\",\"hair\":\"普通黑色短发\",\"id\":\"P01\",\"nationality_context\":\"Chinese\",\"pov\":true,\"resident_context\":\"mainland Chinese local residents\"}],\"relationship\":\"单人\",\"size\":1,\"type\":\"single_male\"},\"continuity_policy\":{\"clothing_and_device_anchors_propagate_to_frame_contract\":true,\"member_count_changes_require_story_event\":true,\"pov_character_id_stable\":true},\"created_at\":\"2026-09-02T18:29:14+08:00\",\"derived_from_pools\":true,\"entry\":{\"label\":\"回家/回老家\",\"reason\":\"由 Story Build 基于该生活化动机具体化\",\"source\":\"user_hint\",\"type\":\"return_home\"},\"era\":{\"bucket\":\"modern_2020s\",\"refined_by\":\"acceptance_story_worker\",\"source\":\"explicit_hint_or_weighted\",\"year\":2026},\"forbidden_role_check\":{\"hits\":[],\"pass\":true},\"locked_at\":\"2026-09-02T18:29:30+08:00\",\"no_anomaly_test\":{\"must_be_rechecked_before_story_lock\":true,\"ordinary_day_plan\":\"删掉所有异常后，这一天仍是完整真实的生活：闷热夏夜从县城骑电动车回老家，村口停车拍张夜路，到家门口停好车再拍一张生活记录，进屋休息。\",\"pass\":true,\"question\":\"如果删掉所有异常，这一天是否仍像真实生活？\",\"recheck_note\":\"验收测试篇本无异常；Story Lock 与 Storyboard 均无异常元素，NO-ANOMALY 复检通过。\",\"rechecked_against_final_story\":true,\"rechecked_by\":\"acceptance_story_worker\"},\"not_episode_stage\":true,\"ordinary_person_score\":100,\"pov\":{\"character_id\":\"P01\",\"first_person\":true},\"role_policy\":{\"career_function\":\"arrival_only\",\"protagonist_role\":\"普通年轻人/普通朋友小团体\",\"solves_anomaly_professionally\":false},\"scene\":{\"primary_category\":\"travel_road\",\"primary_place\":\"县城回老家的乡村公路与村口（虚构）\"},\"schema_version\":1,\"selection_seed\":18300645146422101249,\"status\":\"LOCKED\",\"story_build_note\":\"Story Build Input Contract。官方 prepare 已从默认世界身份注入 nationality/resident 与 effective_sha256；验收 worker 仅在池边界内细化 year=2026、hair=普通黑色短发、场景命名并复检 NO-ANOMALY，未改动任何 world identity 字段。\",\"world_identity\":{\"country\":\"China\",\"effective_sha256\":\"98e4e6dfbf2f20eca3bc06cd15f2a8261316745cf22ef5d175de7b595607877f\",\"nationality_context\":\"Chinese\",\"profile_id\":\"CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1\",\"region\":\"Mainland China\",\"resident_context\":\"mainland Chinese local residents\"}}\n\n[WORLD IDENTITY V2.2.1]\nWORLD_IDENTITY_PROFILE=CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1\ncountry=China\nregion=Mainland China\nculture_context=contemporary_mainland_chinese_daily_life\nlanguage_context=Simplified Chinese / Mandarin-context daily life\narchitecture_context=location-appropriate mainland Chinese residential/commercial/rural/urban built environment\npopulation=mainland Chinese local residents\ndefault_character=ordinary Chinese young adult\nnationality_context=Chinese\nDo not introduce a foreign population, foreign architecture, foreign traffic convention or foreign cultural props unless the Episode world identity explicitly overrides the default.\nDo not force ethnicity inside China; preserve natural Chinese regional/ethnic diversity unless Story explicitly specifies it.\n\n[CHARACTER APPEARANCE ANCHOR V2.2.1]\n{\"members\":{\"P01\":{\"age\":25,\"body_build\":\"lean_proportionate_natural\",\"build\":\"普通年轻人体型\",\"character_id\":\"P01\",\"clothing_anchor\":\"灰色卫衣/短袖+休闲长裤+运动鞋\",\"device_anchor\":\"普通智能手机\",\"gender\":\"male\",\"hair\":{\"character_contract_anchor\":\"普通黑色短发\",\"hair_length_anchor\":\"short\",\"haircut_anchor\":\"short black crop\"},\"identity_rules\":{\"allowed_variation\":[\"wet\",\"messy\"],\"forbidden_unmotivated_drift\":[\"nationality/cultural identity\",\"apparent age\",\"face identity\",\"haircut or hair length\",\"body build\",\"character role\",\"clothing anchor unless wardrobe contract changes it\"],\"independently_distinct_face\":true,\"natural_skin_texture\":\"natural_skin_texture\",\"original_character\":true,\"reference_similarity_target\":\"low\",\"same_person_across_frames\":true},\"nationality_context\":\"Chinese\",\"resident_context\":\"mainland Chinese local residents\",\"visual_priority\":\"primary\"}},\"rule\":\"Keep the same person across frames. Natural changes in expression, pose, sweat, wetness, lighting and story-motivated hair state are allowed; unmotivated face/age/nationality/haircut/body drift is forbidden.\",\"world_identity_profile_id\":\"CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1\"}\n\n[CONTINUITY]\n{\"anchors\":{\"location\":\"虚构县城与老家村口、家门口（村镇结合部）；与现实地点无对应\",\"protagonist\":\"P01 男 24-25岁 黑色短发 普通短袖+休闲裤+运动鞋；普通智能手机；第一人称主摄\",\"vehicle\":\"黑色普通踏板电动车，停靠村口与家门口各一次\",\"weather_time\":\"当代闷热夏夜约20:40-21:10，体感约30℃，无风，轻微出汗\"},\"required\":[\"protagonist\",\"location\",\"weather_time\",\"vehicle\"]}\n\n[ENVIRONMENT PHYSICS]\n{\"condition\":\"到家，门灯下停车随手拍\",\"conditional_effects\":[],\"ground_state\":\"干燥水泥路与水泥门槛，白天积热晚上还在冒\",\"physical_cues\":[\"路灯/门灯暖光\",\"电动车与水泥路\",\"夏夜飞虫\",\"手机夜景噪点\"],\"precipitation\":\"无\",\"temperature_feel\":\"白天积热未散，夜间体感约30℃，闷热\",\"time_of_day\":\"夜间约21:10\",\"visibility\":\"门灯暖光为主，门槛与门前小片地面被照亮\",\"wind\":\"基本无风，骑车时有热风感\"}\n\n[CAPTURE EVENT]\n{}\n\n[PERSISTENT WORLD STATE]\n{}\n\n[CHARACTER VISUAL / ORIGINAL IDENTITY]\n{\"members\":{\"P01\":{\"body_build\":\"lean_proportionate_natural\",\"face_identity\":{\"independently_distinct_face\":true,\"original_character\":true,\"reference_similarity_target\":\"low\",\"skin_texture\":\"natural_skin_texture\"},\"hair\":{\"allowed_state_variation\":[\"wet\",\"messy\"],\"hair_length_anchor\":\"short\",\"haircut_anchor\":\"short black crop\"},\"presentation\":{\"camera_friendly_but_believable\":true,\"celebrity_likeness\":false},\"visual_priority\":\"primary\"}},\"note\":\"普通年轻人语境，无明星脸/网红脸/制服。world identity 字段由 Story OS 流程注入，不在此手写。\",\"schema_version\":1,\"status\":\"LOCKED\"}\n\n[SHOT PROGRESSION / ACTION / ANOMALY LOGIC]\n{\"action\":\"到家停好电动车，随手拍一张：门灯亮着，车停在门边，车头挂一只袋子；镜头略朝下，画面下缘带到他自己的鞋与裤脚，地上有被门灯拉长的自己的影子\",\"anomaly_logic_stage\":\"ordinary\",\"camera_position\":\"家门口门槛前，停好车后站着俯拍 (doorway edge)\",\"capture_purpose\":\"到了，随手拍一张到家了的生活记录\",\"continuity_exception_reason\":\"\",\"emotion\":{\"intensity\":0,\"response_sync\":\"not_applicable\",\"state\":\"ordinary\",\"trigger\":\"\"},\"frame\":\"02\",\"human_action_stage\":\"ordinary\",\"human_present\":false,\"interaction\":{\"action\":\"\",\"actor\":\"\",\"meaningful\":false,\"target\":\"\",\"type\":\"none\"},\"location_zone\":\"虚构老家家门口门槛前\",\"new_information\":true,\"pov_mode\":\"first_person_primary_shot\",\"primary_subject\":\"门灯下的家门口、停好的电动车与自己的局部\",\"subject_distance\":\"close-to-medium 近中景\",\"visual_function\":\"establish_home_gate_arrival\"}\n\n[TEMPORAL CONTINUITY]\n{}\n\n[SCENE-AWARE WARDROBE]\n{}\n\n[VISUAL NARRATIVE CORE V2.2]\n{\"activation_mode\":\"production\",\"authority\":\"PREPRODUCTION_DERIVED_CONTRACT\",\"camera_authorship\":{\"camera_owner_must_be_physically_explainable\":true,\"camera_position\":\"家门口门槛前，停好车后站着俯拍 (doorway edge)\",\"ghost_camera_forbidden\":true,\"owner_class\":\"primary_photographer\",\"pov_mode\":\"first_person_primary_shot\"},\"camera_defect_physics\":{\"defects_must_have_physical_cause\":true,\"forbid_decorative_fake_damage\":true,\"forbid_every_night_frame_equally_blurred\":true},\"camera_roster_policy\":{\"all_known_participants_visible_rule\":\"若所有已知同行者都完整入镜，必须能解释相机来源；否则视为幽灵摄影机。\",\"allowed_handoffs\":[\"phone_handed_to_companion\",\"companion_records_primary\",\"selfie_when_story_requires\",\"timer_or_fixed_mount_when_explicit\",\"third_companion_when_present_in_story\"],\"primary_photographer_preferred_share\":\"70-80%\",\"primary_photographer_required\":true,\"secondary_photographer_allowed\":true,\"secondary_requires_reason\":true},\"core_id\":\"VISUAL_NARRATIVE_CORE_V2.2\",\"frame\":\"02\",\"human_response\":{\"emotion\":{\"intensity\":0,\"response_sync\":\"not_applicable\",\"state\":\"ordinary\",\"trigger\":\"\"},\"human_present\":false,\"interaction\":{\"action\":\"\",\"actor\":\"\",\"meaningful\":false,\"target\":\"\",\"type\":\"none\"}},\"moment\":{\"action_in_progress\":\"到家停好电动车，随手拍一张：门灯亮着，车停在门边，车头挂一只袋子；镜头略朝下，画面下缘带到他自己的鞋与裤脚，地上有被门灯拉长的自己的影子\",\"must_not_be_result_only_showcase\":true,\"save_reason\":\"到了，随手拍一张到家了的生活记录\"},\"narrative_evidence\":{\"anomaly_logic_stage\":\"ordinary\",\"continuity_exception_reason\":\"\",\"human_action_stage\":\"ordinary\",\"narrative_redundancy_forbidden\":true,\"new_information\":true,\"new_information_this_frame\":\"establish_home_gate_arrival\"},\"screen_content_physics\":{\"critical_text_should_be_verified_or_added_in_post\":true,\"forbid_fake_impossible_camera_ui\":true,\"must_be_internally_consistent\":true,\"must_match_scene_time_route_and_action_when_story_critical\":true,\"screen_reflection_and_orientation_must_be_physical\":true},\"shot_grammar\":{\"family\":\"doorway_edge\",\"first_person_is_logic_not_fixed_composition\":true,\"location_zone\":\"虚构老家家门口门槛前\",\"repeated_hand_phone_distant_anomaly_template_forbidden\":true,\"subject_distance\":\"close-to-medium 近中景\"},\"visual_memory_continuity\":{\"no_independent_beauty_time_selection_per_frame\":true,\"persist\":[\"character_appearance\",\"wardrobe\",\"vehicle\",\"carried_props\",\"route_and_location\",\"weather\",\"lighting_direction_when_same_scene\",\"anomaly_evidence\"],\"time_of_day_must_progress_plausibly\":true,\"time_reversal_requires_explicit_flashback_or_jump\":true}}\n\n[FRAME DIRECTIVE]\n{\"escalation_from\":null,\"frame_mode\":\"normal_record\",\"impact_level\":0,\"narrative_role\":\"setup\",\"required_visual_cues\":[\"家门口门灯\",\"停好的电动车与车头袋子\",\"画面下缘自己的鞋与裤脚局部\",\"被门灯拉长的自己的影子\",\"普通手机夜拍生活感\"],\"scale_reference\":\"\"}\n\n[REFERENCES CONTRACT]\n[]\n\nHard rule: reality constrains capture physics, not anomaly scale. Do not weaken impact_level or remove required scale references to make the scene easier."
+}

@@ -1,0 +1,69 @@
+{
+  "version": "2.2.8-photography-os-r4-fix01420",
+  "run_id": "PT_20260903_154854_fix01420",
+  "round": 4,
+  "round_prev": "PT_20260902_101944_e5b1",
+  "test_type": "PHOTOGRAPHY_OS_REPAIR_ROUND",
+  "status": "PT_TEST_USER_APPROVED",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "promotion_allowed": false,
+  "production_state_untouched": true,
+  "route": "MAIN_SESSION_NATIVE_IMAGE",
+  "image_model": { "requested": "gpt-image-2", "strict": true },
+  "reuse_previous_image": false,
+  "scope": "Repair frames 01, 04, 20 only",
+  "frames": {
+    "01": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "0770b135c2c12a9ba3477ffedff936039334bcb5bd21da60da250963f480ba17",
+      "output_sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c",
+      "generation_elapsed_seconds_estimated": 76,
+      "generation_attempts": 7,
+      "attempt_notes": [
+        "attempt1 initial repair image ~15:59 +08:00; superseded after user flagged P02 identity mismatch vs canonical look",
+        "attempts2-3 edits-relay 502 upstream_server_error, no image (identity edit route down)",
+        "attempt4 reference-route generation 502 upstream_server_error, no image",
+        "attempt5 reference-based identity pass started; long wait aborted by user (~266s), no output retained",
+        "attempt6 text-only fallback variant A produced an image, superseded after check",
+        "attempt7 text-only fallback variant B succeeded; final raw written 17:56 +08:00, normalized output 17:57 +08:00 (hashes 0770b135/4d6ff79d)"
+      ],
+      "note": "Identity repair used a text-only fallback because the edits relay and reference-route generation both returned 502; the final image keeps the frame's lens design and re-anchors P02 to the canonical look (long center-parted dark-brown hair, light gray coat, no glasses) from prompt wording, since reference-image editing was unavailable."
+    },
+    "04": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "4e49dee8a3801fb85b20752854a82cd6a5ccec8cd6e5df857cba449c0bd1ea13",
+      "output_sha256": "a0e93f4a898c26b276caa843dec5435cf31cc6bf6f177ea48797814331a83842",
+      "generation_elapsed_seconds_estimated": 79,
+      "generation_attempts": 1
+    },
+    "20": {
+      "status": "IMAGE_GENERATED",
+      "raw_sha256": "a9dfabc04fc220aea8ae6ad7e460bdc021d3a7dc232d828bd3b0382c7963e398",
+      "output_sha256": "fea8f2cb83fc7364ae872d75bfa1d4f6e9865e04fab4ee688e1ff2c72ee64f83",
+      "generation_elapsed_seconds_estimated": 287,
+      "generation_attempts": 6,
+      "attempt_notes": [
+        "attempt1 502 upstream_server_error, no image",
+        "attempt2 502 upstream_server_error, no image",
+        "attempt3 502 upstream_server_error, no image",
+        "attempt4 502 upstream_server_error, no image",
+        "attempt5 502 upstream_server_error, no image, retries stopped for this session",
+        "attempt6 succeeded 16:33 +08:00 in follow-up session; tool reported attachment-processing timeout but the generated PNG is valid (1122x1402)"
+      ],
+      "note": "five 502s were upstream relay failures, not prompt content; frames 01/04 on the same route succeeded earlier. Repaired frame 20 now replaces the old Round 3 selfie frame 20 in the assembled 01-20 set."
+    }
+  },
+  "technical_failures": 8,
+  "content_repairs": 1,
+  "timing_summary": {
+    "method": "exec Get-Date wall segments around each native image call; relay wait included for failed attempts",
+    "per_frame_seconds_estimated": { "01": 76, "04": 79, "20": 287 },
+    "notes": "no reuse of Round 2/3 images for repaired frames; 01/04/20 are all fresh generations. Frame 20 required a second session after five upstream 502s. Frame 01 attempt1 measured ~76s; the identity-repair pass (attempts2-7, edits/ref relay 502s + user-aborted reference wait + two text-only variants) ran in a later segment with final writes 17:56/17:57 +08:00, not separately wall-timed after compaction. technical_failures=8 (frame20 five 502s + frame01 identity pass two edits-relay 502s + one reference-route 502); the user-aborted reference attempt is not counted as a failure. content_repairs=1 (frame01 P02 identity mismatch)."
+  },
+  "user_approval": {
+    "status": "USER_DIRECT_PIXEL_APPROVED",
+    "frames": ["01", "04", "20"],
+    "evidence": "user direct message '图可以' 2026-09-03 after viewing repaired outputs and rebuilt contact sheets",
+    "recorded_at": "2026-09-03T18:09:00+08:00"
+  }
+}

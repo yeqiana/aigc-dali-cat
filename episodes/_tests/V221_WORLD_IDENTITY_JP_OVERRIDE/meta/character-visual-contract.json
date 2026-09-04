@@ -1,0 +1,89 @@
+{
+  "schema_version": 2,
+  "status": "LOCKED",
+  "created_at": "2026-09-02T18:38:51+08:00",
+  "lock_model": "identity_spec__provisional_baseline_master__final_visual_lock_master",
+  "primary_cast_ids": [
+    "P01"
+  ],
+  "members": {
+    "P01": {
+      "visual_priority": "primary",
+      "attractiveness": "moderately_above_average_but_real",
+      "body_build": "lean_proportionate_natural",
+      "body_build_story_override_reason": "",
+      "face_identity": {
+        "original_character": true,
+        "independently_distinct_face": true,
+        "celebrity_likeness": false,
+        "influencer_face": false,
+        "fashion_model_styling": false,
+        "reference_similarity_target": "low",
+        "skin_texture": "natural_visible_texture",
+        "slight_asymmetry": true,
+        "identity_spec_locked": false
+      },
+      "hair": {
+        "haircut_anchor": "",
+        "hair_length_anchor": "",
+        "allowed_state_variation": [
+          "wet",
+          "windblown",
+          "messy",
+          "hood_up",
+          "tied_or_untied_with_story_reason"
+        ],
+        "exact_reference_hairstyle_copy": false
+      },
+      "world_identity": {
+        "profile_id": "EPISODE_WORLD_IDENTITY_OVERRIDE",
+        "nationality_context": "Japanese",
+        "resident_context": "Japanese local residents",
+        "effective_sha256": "7132d47759255fe050c50f518cc4f986cd2988a71cb5d1009456dc6a92ea24e9"
+      },
+      "presentation": {
+        "heavy_makeup": false,
+        "porcelain_skin": false,
+        "excessive_face_symmetry": false,
+        "ai_beauty_face": false,
+        "camera_friendly_but_believable": true
+      }
+    }
+  },
+  "reference_policy": {
+    "allowed_reference_roles": [
+      "age_vibe",
+      "attractiveness_range",
+      "realism",
+      "capture_style",
+      "clothing_direction",
+      "color_mood"
+    ],
+    "must_not_copy": [
+      "exact_face_geometry",
+      "exact_eye_nose_mouth_combination",
+      "exact_hairstyle",
+      "distinctive_personal_markers",
+      "celebrity_identity"
+    ],
+    "reference_is_not_identity_master": true,
+    "real_person_exact_likeness_forbidden": true
+  },
+  "master_policy": {
+    "preferred_identity_source": [
+      "character_individual_crop",
+      "character_pixel_master",
+      "ordinary_baseline_group_selfie",
+      "original_character_library_asset"
+    ],
+    "preproduction_only_must_not_generate_master_images": true,
+    "ordinary_baseline_can_become_group_identity_master": true,
+    "pixel_master_artifact": "meta/character-pixel-master.json",
+    "crop_manifest_artifact": "meta/character-master-crops.json",
+    "provisional_master_after_baseline_review_pass": true,
+    "final_master_after_four_admission_pass": true,
+    "derived_crops_are_not_new_identity_generation": true
+  },
+  "realism_priority": true,
+  "note": "Story Lock 只锁规格；baseline 单独 PASS 后建立临时像素母版，四项 Visual Lock 全 PASS 后升级为正式母版。"
+}

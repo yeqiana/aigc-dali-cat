@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "request_id": "V221_WORLD_IDENTITY_JP_OVERRIDE-01",
+  "created_at": "2026-09-02T21:00:00+08:00",
+  "mode": "test",
+  "kind": "v221_world_identity_override_acceptance",
+  "repository": {
+    "branch": "story",
+    "source": "user_explicit"
+  },
+  "topic": {
+    "title": "初夏傍晚回家路上的一张随手拍",
+    "raw": "初夏傍晚回家路上的一张随手拍",
+    "series": "_tests"
+  },
+  "story_input": {
+    "mode": "user_seed",
+    "raw": "一个二十多岁的普通男生，初夏的傍晚回家路上，在住家附近的街角小店门口短暂停留，随手拍下一张傍晚街道的照片。",
+    "constraints": [
+      "纯合同测试：不写国籍身份文字，默认或 Override 的世界身份负责注入",
+      "普通年轻人，不设专业职业",
+      "TEST_ONLY / NON_RELEASE / NON_AUTHORITY_PRODUCTION_TEST"
+    ],
+    "rewrite_policy": "user_seed_strengthen",
+    "preserve_core_intent": true,
+    "allow_structure_rewrite": false
+  },
+  "creative_hints": [],
+  "image": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "source": "system_default",
+    "strict_model": false
+  },
+  "runtime": {
+    "execution_mode": "test_only",
+    "continuous_execution": false,
+    "max_image_workers": 1
+  },
+  "delivery": {
+    "mode": "manual",
+    "zip_required_for_completion": false
+  },
+  "user_intent": {
+    "full_auto_authorized": false,
+    "ask_before_each_step": false
+  },
+  "provenance": {
+    "source": "user_task",
+    "original_request": "V2.2.1 验收：验证 Episode World Identity Override 能正确替换默认中国配置并继承进 Character 派生合同；纯合同测试，不生成图片。"
+  },
+  "core_constraints": [
+    "主角为二十多岁普通年轻人",
+    "纯合同测试，不生成图片",
+    "TEST_ONLY / NON_RELEASE / NON_AUTHORITY_PRODUCTION_TEST",
+    "禁止正式 Visual Lock / Production / Release / 提交 Git"
+  ],
+  "execution_scope": {
+    "stop_after": "contract_propagation_check",
+    "stage_advance": "none",
+    "authority": "NON_AUTHORITY_PRODUCTION_TEST",
+    "production_promotion_forbidden": true
+  }
+}

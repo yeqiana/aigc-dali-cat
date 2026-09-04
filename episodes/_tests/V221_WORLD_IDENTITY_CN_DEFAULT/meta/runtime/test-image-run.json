@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-02T21:50:00+08:00",
+  "authority": "NON_AUTHORITY_PRODUCTION_TEST",
+  "episode": "episodes/_tests/V221_WORLD_IDENTITY_CN_DEFAULT",
+  "generation": {
+    "route": "codex_desktop_interface_imagegen",
+    "route_note": "Images produced by the built-in image_gen tool in the Codex desktop interface from the recorded test prompts, then normalized to the exact Story OS 4:5 canvas (1080x1350) with episodes/_system/canvas_normalize.py. No system source file was modified.",
+    "model_contract": {
+      "provider": "openai",
+      "model": "gpt-image-2",
+      "source": "system_default",
+      "enforcement": "runtime_request_to_worker_contract"
+    },
+    "prompts": [
+      "meta/runtime/test-prompts/frame-01.txt",
+      "meta/runtime/test-prompts/frame-02.txt"
+    ]
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "frame_contract_sha256": "eb24f924d730583e96d333aea0f5c69858609006f6b0fdb7565278c9d6874460",
+      "raw": "media/raw/01-1788345391.png",
+      "raw_sha256": "d8808cabcb6128832e8fdf90e6bdf8873f811a5041e57e6cf2d4dc5803202657",
+      "canvas": "media/canvas/frames/01.png",
+      "canvas_sha256": "a368622271cadc01fce152d25c4e52c7d92228606fff2a834e3836dff0c10792",
+      "canvas_size": [1080, 1350]
+    },
+    {
+      "frame": "02",
+      "frame_contract_sha256": "4a3380bdd7b53b4d0da4c9f994a2a3c6a0536d74caf01ae2be2e03b6fa432624",
+      "raw": "media/raw/02-1788345391.png",
+      "raw_sha256": "da5a0ebf01b890f963e8f629a19fa05b3251295b40e2957af5c5261a2e89ea2a",
+      "canvas": "media/canvas/frames/02.png",
+      "canvas_sha256": "f7c2287200f4a3997044fdcb96836cfbe77d925109fb5776a4e6fde166a89bb2",
+      "canvas_size": [1080, 1350]
+    }
+  ],
+  "pixel_review": {
+    "reviewer": "acceptance_worker_machine_vision",
+    "scope": "NON_AUTHORITY_PRODUCTION_TEST pixel readout; no human eyeball gate, no Visual Lock, no formal PASS evidence",
+    "unexpected_foreign_characters": "NO",
+    "character_continuity": "PASS",
+    "world_identity_drift_frames": "NONE",
+    "character_appearance_drift_frames": "NONE",
+    "cultural_context_drift_frames": "NONE"
+  }
+}

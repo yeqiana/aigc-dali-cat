@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "contract_version": "2.2.1",
+  "kind": "human_readable_character_appearance_anchor",
+  "authority_note": "机器派生权威为 meta/runtime/contracts/character-appearance-anchor.json（由 character_contract + character_visual_contract + world identity 编译）；本文件是人读规范，不建立第二权威。",
+  "same_person_across_frames": true,
+  "identity_rule": "同一人跨帧必须保持：脸型五官、发色发长、年龄观感、体型、服装基线；允许表情、汗湿、打湿、光影与剧情发型状态的自然变化，禁止无动机漂移。",
+  "members": {
+    "P01": {
+      "role": "哥哥 / 第一人称主摄影",
+      "face_identity": "普通中国年轻男性自然脸：中庭匀称、轻微不对称、自然皮肤纹理；无明星脸/网红脸/滤镜脸，reference_similarity_target=low",
+      "hair": "普通黑色短发，利落不夸张；短、可湿乱",
+      "age_appearance": "25岁左右，普通青年",
+      "body_build": "lean_proportionate_natural，普通年轻男性体型",
+      "clothing_baseline": "白色短袖+浅色牛仔裤+深色运动鞋（夏日基线，跨帧不漂移）"
+    },
+    "P02": {
+      "role": "妹妹（老家妹妹，共同经历者）",
+      "face_identity": "漂亮但真实的普通中国年轻女性自然脸：五官自然、轻微不对称、自然皮肤纹理；无网红/滤镜脸，reference_similarity_target=low",
+      "hairstyle": "黑色自然中长发，未烫染；日常扎低马尾或披着",
+      "age_appearance": "20岁左右，年轻但不幼态",
+      "body_build": "slim_proportionate_natural，普通年轻女生体型",
+      "summer_clothing_baseline": "浅色短袖+牛仔短裤+平底凉鞋（夏日基线，跨帧不漂移）"
+    }
+  },
+  "identity_rules": {
+    "same_person_across_frames": true,
+    "forbidden_unmotivated_drift": [
+      "nationality/cultural identity",
+      "apparent age",
+      "face identity",
+      "haircut or hair length",
+      "body build",
+      "character role",
+      "clothing anchor unless wardrobe contract changes it"
+    ],
+    "allowed_variation": [
+      "wet",
+      "windblown",
+      "messy",
+      "hood_up",
+      "story-motivated hair state",
+      "expression",
+      "lighting",
+      "sweat"
+    ]
+  }
+}

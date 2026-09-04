@@ -1,0 +1,26 @@
+[WORLD IDENTITY V2.2.1]
+WORLD_IDENTITY_PROFILE=CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1
+country=China
+region=Mainland China
+culture_context=contemporary_mainland_chinese_daily_life
+language_context=Simplified Chinese / Mandarin-context daily life
+architecture_context=location-appropriate mainland Chinese residential/commercial/rural/urban built environment
+population=mainland Chinese local residents
+default_character=ordinary Chinese young adult
+nationality_context=Chinese
+Do not introduce a foreign population, foreign architecture, foreign traffic convention or foreign cultural props.
+Do not force ethnicity inside China; preserve natural Chinese regional/ethnic diversity.
+
+[CHARACTER APPEARANCE ANCHOR V2.2.1]
+P01 is an ordinary Chinese young adult male, 23-27 years old (25). Chinese young adult male with natural East Asian facial features consistent with a young Chinese man: ordinary, believable, naturally textured face; no celebrity likeness, no influencer face, no fashion-model styling, no makeup polish. Short black hair with a short black crop haircut, same hairline across frames. Lean/proportionate ordinary young male build. Casual summer clothing anchor: plain short-sleeve t-shirt, casual long trousers, light sneakers.
+Rule: Keep the exact same person as the reference photo - same face, same apparent age, same hairline, same short black hair, same body build, same light-grey short-sleeve t-shirt, same loose beige/tan casual long trousers, same light sneakers. Natural changes in expression, pose, sweat, dampness, lighting are allowed. Unmotivated face / nationality / apparent age / haircut or hair length / body-build / clothing drift is forbidden.
+
+Vertical 4:5 phone photo, night, the exact same mainland Chinese home entrance, 2026 summer, a few minutes after the previous photo, still taken by the same traveling friend, NOT cinematic, NOT advertising.
+
+SCENE (Frame 04): The exact same young man as the reference photo - use the reference photo as the visual master for his face, age, hairline, short damp black hair, build and entire outfit. Keep the same light-grey short-sleeve t-shirt, the same loose beige/tan casual long trousers and the same light sneakers. It is a few minutes later at the same home gate, in the same warm gate-lamp light. He has taken a bottle of plain water from the bag on the scooter and just taken a sip; he now holds the bottle down at his side and looks over at the friend, slightly tired and relaxed after the muggy ride, light sweat still on his face and neck. Face clearly visible and readable, natural three-quarter or slightly angled view, head turned or lowered a moment ago and now looking up toward the photographer - he is NOT standing straight and posing for the camera. A living, in-progress moment, clearly a different pose and moment than the reference photo.
+
+ENVIRONMENT (Frame 04): The exact same home entrance as the reference photo: keep the same grey metal security door with its grid of metal bars, the same warm yellow wall lights, the same tiled doorstep and ground, the same raised planter with dark green foliage, the same black electric scooter and its translucent plastic bag. The scooter may be in a slightly different position or viewed from a slightly different angle because the friend moved, but it is still clearly the same home and the same scooter. No red lanterns, no flags, no exaggerated Chinese-character signage, no decorative "Chinese" symbols.
+
+CAMERA AUTHORSHIP: The same friend keeps photographing with an ordinary phone, this time from a slightly different distance or angle than the previous shot - clearly a different moment and framing, not a copy of the previous photo. Candid, casual handheld snapshot. Only the young man is in the frame.
+
+STYLE RULES: genuine private phone night photo from a casual album, warm gate-lamp light, mild noise in the shadows, low-to-medium saturation, slight handheld imperfection, imperfect composition. No cinematic key/rim lighting, no beauty-portrait shallow depth of field, no commercial portrait, no poster composition, no HDR polish, no glamour, no retouching-smooth skin, no model look, no text overlays, no watermark. Absolutely no US/European suburban house, no Japanese or Korean setting, no foreign-looking people, no foreign text, no foreign license plates. Do not change the person's face, age, hairline, haircut or body build - keep the exact same person as the reference photo.
