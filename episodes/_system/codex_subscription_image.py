@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import uuid
 from pathlib import Path
 
 from canvas_normalize import NormalizeError, normalize, read_canvas
@@ -18,6 +19,7 @@ import frame_contract as resolved_frame_contract
 import image_model_policy
 import provider_capability
 import image_artifact_collector
+import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -270,6 +272,7 @@ def main() -> int:
     p.add_argument('--image-model')
     p.add_argument('--image-quality', choices=['high'])
     p.add_argument('--overwrite', action='store_true')
+    p.add_argument('--candidate-kind', choices=['original','repair','exception'], default='original')
     p = sub.add_parser('generate')
     p.add_argument('--prompt-file', required=True, type=Path)
     p.add_argument('--output', required=True, type=Path)
@@ -296,9 +299,18 @@ def main() -> int:
         return 0
     if args.timeout < 60 or args.timeout > 1200:
         raise SystemExit('timeout must be 60..1200 seconds')
+    budget_token=None
+    budget_reserved=False
     try:
+        if args.cmd == 'generate-for-frame':
+            budget_token="direct-"+uuid.uuid4().hex
+            ok,budget_row=raw_candidate_budget.claim(args.episode_dir,int(args.frame),args.candidate_kind,reason="direct_generate_for_frame_cli",token=budget_token)
+            if not ok:
+                print(json.dumps({'ok':False,'error':'RAW_CANDIDATE_BUDGET_EXHAUSTED','budget':budget_row},ensure_ascii=False));return 3
+            budget_reserved=True
         result = generate_for_frame(args) if args.cmd == 'generate-for-frame' else generate_legacy(args)
     except (BackendError, OSError, UnicodeError, SystemExit) as exc:
+        if budget_reserved:raw_candidate_budget.release(args.episode_dir,budget_token,reason="direct_generate_for_frame_exception")
         print(json.dumps({'ok': False, 'error': str(exc)}, ensure_ascii=False))
         return 2
     print(json.dumps(result, ensure_ascii=False, indent=2))
@@ -306,3 +318,5 @@ def main() -> int:
 
 if __name__ == '__main__':
     raise SystemExit(main())
+
+# STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE

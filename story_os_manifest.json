@@ -1,5 +1,5 @@
 {
-  "platform_version": "2.5.1",
+  "platform_version": "2.5.1.1",
   "version_semantics": {
     "platform_version": "Root product release identifier; the only platform version authority.",
     "schema_version": "Shape of this specific document.",
@@ -7,7 +7,7 @@
     "platform_min_version": "Lowest Story OS platform version that may consume a module."
   },
   "contract_schema": 1,
-  "release_name": "Runtime Fast Path: resume + capability cache + vision-safe rolling review",
+  "release_name": "Runtime Fast Path + Forced Candidate Gate",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -204,7 +204,11 @@
     "rolling_review_vision_guard",
     "raw_candidate_attempt_budget",
     "fast_path_prepare_before_run",
-    "performance_slo_advisory"
+    "performance_slo_advisory",
+    "forced_raw_candidate_budget_gate",
+    "generation_entrypoint_candidate_guard",
+    "technical_retry_budget_neutral",
+    "queue_item_idempotent_candidate_token"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -291,7 +295,8 @@
     "A Rolling Review worker without verified pixel vision may not emit REPAIR_NOW; it must defer to Final Review.",
     "Context restore consumes a SHA-bound Resume Capsule before broad repository rescans; source authority still wins on drift.",
     "Raw candidate attempts are budgeted separately from technical retries; technical failures never consume raw candidate budget.",
-    "Performance SLO is advisory telemetry and never a Story/Release gate."
+    "Performance SLO is advisory telemetry and never a Story/Release gate.",
+    "Formal image-generation entrypoints must claim Raw Candidate Budget automatically; technical failures release the claim and do not consume candidate budget."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

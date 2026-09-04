@@ -16,6 +16,7 @@ import openai_images_provider
 import openai_batch_prompt_compiler
 import provider_capability
 import runtime_trace
+import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
 
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -139,7 +140,14 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
                "provider":route["provider"],"execution_mode":route["execution_mode"]})
     t0=time.monotonic()
     provider_evidence={}
+    budget_tokens=[]
     try:
+        for item in items:
+            budget_kind=raw_candidate_budget.kind_for_queue_item(item);token=str(item["id"])
+            ok,row=raw_candidate_budget.claim(ep,int(item["frame"]),budget_kind,reason=f"provider_batch batch={contract['batch_id']}",token=token)
+            if not ok:
+                raise BatchBackendError("RAW_CANDIDATE_BUDGET_EXHAUSTED: "+str(row))
+            budget_tokens.append(token)
         if route["provider"]=="openai_images_api":
             raw_rows,elapsed,provider_evidence=_invoke_openai_native_n(
                 ep,contract,compiled["text"],refs,timeout,model,quality,width,height)
@@ -216,6 +224,7 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
             "provider_evidence":provider_evidence,
         }
     except Exception as exc:
+        for token in budget_tokens:raw_candidate_budget.release(ep,token,reason="batch_generation_exception")
         runtime_trace.end_span(ep,span,name=f"batch.generate.{contract['batch_id']}",category="batch_generation",
             status="FAILED",started_monotonic=t0,
             attrs={"error":str(exc),"batch_id":contract["batch_id"],"provider":route["provider"]})
@@ -232,3 +241,5 @@ def self_test():
     print("BATCH IMAGE WORKER V2.4.2 CODEX LOGICAL BATCH SELF-TEST PASS")
 
 if __name__=="__main__": self_test()
+
+# STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE

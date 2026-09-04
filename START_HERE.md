@@ -1,4 +1,4 @@
-# Story OS — START HERE V2.5.1
+# Story OS — START HERE V2.5.1.1
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
@@ -424,3 +424,8 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 
 恢复/新上下文先执行：`python episodes/_system/story_os.py fast-path prepare <episode>`。优先读 `meta/runtime/resume-capsule.json` 与当前 step Execution Capsule；只在 source SHA 漂移、缺字段或 Gate 报 drift 时才广泛重读仓库。未显式验证像素视觉能力的 Rolling Reviewer 只能 `UNCERTAIN → Final Review`，不得 `REPAIR_NOW`。主会话每次再次生成原始候选前必须先 claim Raw Candidate Budget；默认同一 original/repair/exception 最多 2 次，技术失败不计。
 <!-- STORY_OS_V2_5_1_RUNTIME_FAST_PATH_END -->
+
+<!-- STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE_BEGIN -->
+## V2.5.1.1 Forced Candidate Gate
+正式生图入口自动执行 Raw Candidate Budget；技术失败释放预算；同一 Queue Item 技术重试复用 token；候选额度耗尽后硬停止内容生图循环。
+<!-- STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE_END -->

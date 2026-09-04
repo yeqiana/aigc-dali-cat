@@ -1,4 +1,4 @@
-# Episodes 状态机 + Story OS 门禁 V2.5.1
+# Episodes 状态机 + Story OS 门禁 V2.5.1.1
 
 本目录只建立一套机器阶段状态；V2.2.2 延续 V1.8 引入的证据 SHA 门禁，并增加稳定 evidence gate 与可执行 Codex runtime，不新增第二状态机。
 
@@ -137,3 +137,8 @@ V2.0.3.3 新剧集的 `meta/frame-reviews/NN.json` 使用 schema 2，绑定实�
 
 恢复/新上下文先执行：`python episodes/_system/story_os.py fast-path prepare <episode>`。优先读 `meta/runtime/resume-capsule.json` 与当前 step Execution Capsule；只在 source SHA 漂移、缺字段或 Gate 报 drift 时才广泛重读仓库。未显式验证像素视觉能力的 Rolling Reviewer 只能 `UNCERTAIN → Final Review`，不得 `REPAIR_NOW`。主会话每次再次生成原始候选前必须先 claim Raw Candidate Budget；默认同一 original/repair/exception 最多 2 次，技术失败不计。
 <!-- STORY_OS_V2_5_1_RUNTIME_FAST_PATH_END -->
+
+<!-- STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE_BEGIN -->
+## V2.5.1.1 Forced Candidate Gate
+正式生图入口自动执行 Raw Candidate Budget；技术失败释放预算；同一 Queue Item 技术重试复用 token；候选额度耗尽后硬停止内容生图循环。
+<!-- STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE_END -->

@@ -79,3 +79,7 @@ episodes/**/*.zip
 
 # Story OS R2 runtime cache
 .storyos_cache/
+
+# Story OS dot-directory local install evidence
+.storyos/backups/
+.storyos/history/

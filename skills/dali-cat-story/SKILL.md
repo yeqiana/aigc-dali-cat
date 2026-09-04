@@ -1,4 +1,4 @@
-# dali-cat-story — Story OS V2.5.1 Adapter Contract
+# dali-cat-story — Story OS V2.5.1.1 Adapter Contract
 
 > This Skill is a **thin execution adapter** for the repository's canonical Story OS.  
 > It does not own a state machine, does not duplicate engine logic, and must not become a second source of creative or release truth.
@@ -154,3 +154,8 @@ Canonical implementations remain under `episodes/_system`:
 
 Skill is an adapter, not a Story OS copy.
 <!-- STORY_OS_V2_0_3_4_INCREMENTAL_ADAPTER_END -->
+
+<!-- STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE_BEGIN -->
+## V2.5.1.1 Forced Candidate Gate
+正式生图入口自动执行 Raw Candidate Budget；技术失败释放预算；同一 Queue Item 技术重试复用 token；候选额度耗尽后硬停止内容生图循环。
+<!-- STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE_END -->
