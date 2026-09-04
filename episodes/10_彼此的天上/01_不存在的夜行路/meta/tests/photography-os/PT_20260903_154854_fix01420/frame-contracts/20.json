@@ -1,0 +1,22 @@
+{
+  "frame": "20",
+  "story_os_version": "2.2.8-photography-os-r4-fix01420",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "离开瞬间：上午要走了，她回头最后看一眼山坡",
+  "photographer": {
+    "who_took_it": "P01（男友），站在车旁几步外",
+    "why_capture_now": "上午确认完没有路，P02 拉开车门正要上车，回头又看了一眼山坡；P01 在几步外按下快门",
+    "photographer_position": "车旁护栏边，离 P02 几步，低机位随手拍",
+    "why_camera_in_this_hand": "P01 是主摄影者；P01 不入镜，P02 入镜为被摄者，无幽灵摄影机",
+    "ghost_camera": false
+  },
+  "what_is_happening": "第二天上午多云；P02 一只手拉着后车门正要上车，半转身回头望向对面山坡；背景是普通得不能再普通的浅色裸岩+山脊缺口山坡；车门、绿护栏、车尾入画；风吹头发",
+  "why_saved": "旅行最后一张：离开的瞬间，看起来什么也没发生的那天",
+  "shot_grammar": "DEPARTURE_MOMENT_NO_DEVICE",
+  "defect_physics": ["构图急、随手按", "动作瞬间轻微模糊", "侧逆光轻微过曝"],
+  "continuity_chain": "vs 19：同日上午同一停车带；P02 浅灰大衣+浅蓝牛仔裤+白鞋（同 02/18）；深灰 SUV 车门/车尾；裸岩+缺口山坡同 18；无手机入画",
+  "screen_content": "无屏幕、无手机",
+  "time_of_day": "第二天上午多云",
+  "emotion_level": 5,
+  "user_directive": "20 不自拍（自拍交给 01）；改离开瞬间进行时"
+}

@@ -1,0 +1,85 @@
+{
+  "schema_version": 2,
+  "status": "LOCKED",
+  "anomaly_applicable": false,
+  "anomaly_exception_reason": "两帧均为无异常的普通生活随手拍（村口夜路与家门口生活记录），不包含任何异常阶段。",
+  "interaction_applicable": false,
+  "interaction_exception_reason": "single-person or non-group story",
+  "rules": {
+    "max_identical_setup_consecutive": 2,
+    "min_unique_setups_in_5_frames": 3,
+    "frame10_requires_new_question_or_evidence": true,
+    "scale_only_escalation_is_not_enough": true,
+    "max_passive_human_frames_after_confirmation": 2,
+    "emotion_intensity_range": [
+      0,
+      4
+    ],
+    "emotion_trigger_required_at_intensity_gte": 2,
+    "synchronized_theatrical_reaction_forbidden": true,
+    "max_consecutive_urgent_frames": 2,
+    "min_meaningful_interaction_per_5_human_frames": 1,
+    "max_meaningful_interaction_ratio": 0.75,
+    "opening_social_natural_interaction_required": true
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "camera_position": "村口路边电动车旁，站定手持拍前方路面 (night walking capture)",
+      "subject_distance": "medium 中景",
+      "primary_subject": "路灯下的回家夜路与远处村口灯点",
+      "action": "车停稳后站着随手拍：路灯照着水泥路往前延伸，远处村口几盏灯亮，路边小卖部卷帘门半拉；车把与后视镜在画面下缘露出一点",
+      "visual_function": "establish_home_road_night",
+      "capture_purpose": "到家前给家里发一句快到了，顺手记录这截走惯了的夜路",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "虚构县城回老家的村口路边",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": false,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "02",
+      "camera_position": "家门口门槛前，停好车后站着俯拍 (doorway edge)",
+      "subject_distance": "close-to-medium 近中景",
+      "primary_subject": "门灯下的家门口、停好的电动车与自己的局部",
+      "action": "到家停好电动车，随手拍一张：门灯亮着，车停在门边，车头挂一只袋子；镜头略朝下，画面下缘带到他自己的鞋与裤脚，地上有被门灯拉长的自己的影子",
+      "visual_function": "establish_home_gate_arrival",
+      "capture_purpose": "到了，随手拍一张到家了的生活记录",
+      "pov_mode": "first_person_primary_shot",
+      "location_zone": "虚构老家家门口门槛前",
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": false,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    }
+  ]
+}

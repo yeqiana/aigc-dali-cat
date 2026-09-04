@@ -1,0 +1,292 @@
+{
+  "version": "2.2.8-photography-os-01-20-final-review",
+  "run_id": "FR_20260903_142040",
+  "scope": "Frame 01-20 assembled from Round2(01-10)+Round3(11-20); frames 01/04/20 replaced by Round 4 repair outputs (PT_20260903_154854_fix01420) after user Repair Lock and direct pixel approval 2026-09-03",
+  "source_runs": {
+    "01_10": "PT_20260901_233900_7622",
+    "11_20": "PT_20260902_101944_e5b1",
+    "repaired_01_04_20": "PT_20260903_154854_fix01420"
+  },
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "frames": [
+    {
+      "frame": "01",
+      "source_run": "PT_20260903_154854_fix01420",
+      "photographer": "P02",
+      "shot_family": "FRONT_CAMERA_COUPLE_SELFIE_IN_CAR（P02 副驾前置自拍，P01 驾驶座入镜）",
+      "story_beat": "女生自拍男女主：出发第一张合影，建立彼此",
+      "emotion_level": 2,
+      "album_like_rank": 1,
+      "why_saved": "旅行第一张合影：兑现约定的证明，也是“我们俩”在相册里的开头",
+      "defects": "前置广角轻微畸变、车内暗挡风玻璃外亮、举机瞬间轻微模糊；无相机UI，无海报感。",
+      "review_note": "P02 发起的开场自拍，P01 入镜来源=自拍成立，无幽灵摄影机；P02 身份按 02 帧外观锚定（R4 文本降级身份返修版）；中控导航暗屏不可读、杯架水瓶；与 02 同车同位置同服装连续。"
+    },
+    {
+      "frame": "02",
+      "source_run": "PT_20260901_233900_7622",
+      "photographer": "P01",
+      "shot_family": "ROADSIDE_PERSON_POINTING（车旁拍人指远方+地形基线）",
+      "story_beat": "白天山坡证据，继续建立同行感",
+      "emotion_level": 2,
+      "album_like_rank": 6,
+      "why_saved": "旅行纪念照，也是白天山坡无路的证据基线",
+      "defects": "中距离随手拍，逆光轻微过曝、轻微偏构图、肩包/车头边缘入画；人物不看镜头。",
+      "review_note": "同行感与白天证据同时成立；相对最接近“摆好再按”的一张，但仍是车边现场记录，不构成展示图。"
+    },
+    {
+      "frame": "03",
+      "source_run": "PT_20260901_233900_7622",
+      "photographer": "P01",
+      "shot_family": "CAR_SIDE_CARE_ACTION（副驾门外低角度日常）",
+      "story_beat": "晕车停车，日常成立但开始多看一眼环境",
+      "emotion_level": 3,
+      "album_like_rank": 3,
+      "why_saved": "旅行里照顾对方的日常瞬间",
+      "defects": "前景车门遮挡、低角度、轻微动作模糊；递水动作使人物之间有明确行动联系。",
+      "review_note": "照顾动作与“多看一眼环境”并存，日常感强。车辆读感偏三厢轿车，见 findings。"
+    },
+    {
+      "frame": "04",
+      "source_run": "PT_20260903_154854_fix01420",
+      "photographer": "P01",
+      "shot_family": "NO_DEVICE_TELE_CROP_FIRST_SIGHT（停车带护栏边手持数码变焦，手机不入画）",
+      "story_beat": "第一盏灯：无手机入画的第一手证据",
+      "emotion_level": 4,
+      "album_like_rank": 2,
+      "why_saved": "觉得奇怪的灯，先存下来看",
+      "defects": "黄昏弱光轻微欠曝、数码长焦裁切噪点、手持轻微抖动、前景护栏虚化暗带；无手无手机无屏幕。",
+      "review_note": "纯证据远摄成立：V 缺口裸岩中央一粒小而稳的暖黄灯点，无路无房无人；与 03 同日同山坡、天色入暮；手机拿反问题随手机入画一起消除。"
+    },
+    {
+      "frame": "05",
+      "source_run": "PT_20260901_233900_7622",
+      "photographer": "P01",
+      "shot_family": "HANDHELD_TELE_MOVING_LIGHTS（同一位置长焦灯队）",
+      "story_beat": "灯变多，开始出现留证据动机",
+      "emotion_level": 5,
+      "album_like_rank": 4,
+      "why_saved": "要留证据，回去放大看是不是看错了",
+      "defects": "灯队呈松散斜线、间距不一，非整齐列队；前景树影/护栏入画，长焦涂抹明显。",
+      "review_note": "“移动灯队”读感成立，未做成发光特效。"
+    },
+    {
+      "frame": "06",
+      "source_run": "PT_20260901_233900_7622",
+      "photographer": "P01",
+      "shot_family": "MAX_DIGITAL_ZOOM_CROP（最大数码变焦裁切）",
+      "story_beat": "长焦裁切，异常明确但仍是现场顺手记录",
+      "emotion_level": 6,
+      "album_like_rank": 7,
+      "why_saved": "拍清楚一点好判断是当地人还是什么",
+      "defects": "过度裁切、强噪点、轻微运动模糊；可读内容恰好是“人形+驮畜+车架”，未做成清晰特写。",
+      "review_note": "异常明确但保持现场记录感；暗部细节依赖人工确认。"
+    },
+    {
+      "frame": "07",
+      "source_run": "PT_20260901_233900_7622",
+      "photographer": "P01",
+      "shot_family": "TELE_TERRAIN_CROSSREF（手持长焦地形对照+人物边缘入画）",
+      "story_beat": "对照地形，人物开始被异常影响",
+      "emotion_level": 7,
+      "album_like_rank": 5,
+      "why_saved": "想证明灯队位置和白天没路的位置重叠",
+      "defects": "边缘人物虚化入画、夜间噪点、构图轻微歪；裸岩受光与灯队横向位置构成“不存在之路”的像素对照。",
+      "review_note": "本帧承载异常成立的核心证据：白天裸岩 + 灯队在其下移动。"
+    },
+    {
+      "frame": "08",
+      "source_run": "PT_20260901_233900_7622",
+      "photographer": "P01",
+      "shot_family": "SECOND_SCREEN_CAPTURE（拍另一部手机导航屏）",
+      "story_beat": "现实解释，异常持续推进且关系受压",
+      "emotion_level": 7,
+      "album_like_rank": 8,
+      "why_saved": "现实解释的证据：地图上那里没有路",
+      "defects": "拍另一部手机的屏幕：持机者P01、被拍屏幕为同行者第二拍摄源（女友手机），物理成立；屏幕反光、周围虚化。",
+      "review_note": "竞争解释（地图上无路）以人物判断呈现，不靠字幕证明；关系压力由“他还在拍”暗示。"
+    },
+    {
+      "frame": "09",
+      "source_run": "PT_20260901_233900_7622",
+      "photographer": "P01",
+      "shot_family": "MAX_ZOOM_SHAKY_EVIDENCE（最大长焦抖动取证）",
+      "story_beat": "浅色盖布，情绪明显升级",
+      "emotion_level": 8,
+      "album_like_rank": 9,
+      "why_saved": "已经在“取证”，自己也不确定为什么还在拍",
+      "defects": "严重抖动模糊、构图歪斜、噪点重；浅色盖布可读但织纹不可辨，符合“远距不能看清小纹理”的硬要求。",
+      "review_note": "取证口吻成立，未做成清晰特写或发光效果。"
+    },
+    {
+      "frame": "10",
+      "source_run": "PT_20260901_233900_7622",
+      "photographer": "P01",
+      "shot_family": "FAR_TELE_LAST_EVIDENCE（车旁长焦最后一张，收机前）",
+      "story_beat": "普通赶路动作，阶段性高潮",
+      "emotion_level": 9,
+      "album_like_rank": 10,
+      "why_saved": "这张让他确认那不是幻觉，也是他收手机前最后一张",
+      "defects": "木制驮货板车+火把照明+推车动作（首版误画现代SUV已重生成）；画质极差但动作可读。",
+      "review_note": "暗部可读性对自动化目检不稳定，需人工确认“推车动作”成立；见 findings。"
+    },
+    {
+      "frame": "11",
+      "source_run": "PT_20260902_101944_e5b1",
+      "photographer": "P01",
+      "shot_family": "IN_CAR_CONVERSATION_CLOSEUP（驾驶座机位，车内对话近景，导航屏/方向盘前景）",
+      "story_beat": "女友提议闪灯，车内近景，建立主动选择",
+      "emotion_level": 9,
+      "album_like_rank": 3,
+      "why_saved": "记录“是我们先主动的”",
+      "defects": [
+        "车内暗、仪表/屏幕光",
+        "转头轻微动作模糊"
+      ],
+      "review_note": "车内对话近景，关系与现场同框；导航屏暗地图不可读，无相机UI"
+    },
+    {
+      "frame": "12",
+      "source_run": "PT_20260902_101944_e5b1",
+      "photographer": "P02",
+      "shot_family": "SECOND_SEAT_HAND_ACTION（副驾机位，手部+拨杆前景，全暗屏，窗外仅灯线）",
+      "story_beat": "远光一次，副驾机位记录灯光拨杆",
+      "emotion_level": 9,
+      "album_like_rank": 9,
+      "why_saved": "留“我们真的闪了它一下”的证据",
+      "defects": [
+        "夜间弱光",
+        "手部动作轻微模糊",
+        "轻微抖动"
+      ],
+      "review_note": "最终版为副驾机位手部+拨杆特写，全暗屏无文字；本帧内容返修 3 次（见 findings，超限原因如实记录）"
+    },
+    {
+      "frame": "13",
+      "source_run": "PT_20260902_101944_e5b1",
+      "photographer": "P01",
+      "shot_family": "ROADSIDE_LONG_TELE_EVIDENCE（车外护栏边，手持长焦证据）",
+      "story_beat": "灯队第一个人停，车外长焦记录人类响应",
+      "emotion_level": 10,
+      "album_like_rank": 6,
+      "why_saved": "对方停下来——互相看见的证据",
+      "defects": [
+        "夜间长焦噪点",
+        "手抖",
+        "构图匆忙"
+      ],
+      "review_note": "灯队读作持灯赶路人（非缆车/索道，返修后）；裸岩在夜间仍有被读成雪的歧义"
+    },
+    {
+      "frame": "14",
+      "source_run": "PT_20260902_101944_e5b1",
+      "photographer": "P02",
+      "shot_family": "OVER_SHOULDER（P02 肩后机位，P01 背影+灯队）",
+      "story_beat": "消息传开，肩后机位拍人正在应对",
+      "emotion_level": 10,
+      "album_like_rank": 2,
+      "why_saved": "“我们和他们对上了”的人与异常同框",
+      "defects": [
+        "前景人物虚化",
+        "夜间噪点",
+        "轻微歪"
+      ],
+      "review_note": "人对异常的应对为主，异常退居背景；P01 手机背面朝向镜头无UI"
+    },
+    {
+      "frame": "15",
+      "source_run": "PT_20260902_101944_e5b1",
+      "photographer": "P01",
+      "shot_family": "THROUGH_WINDOW_TELE（驾驶座隔侧窗玻璃长焦，玻璃反光/雾气）",
+      "story_beat": "灯一盏盏灭，隔车窗长焦",
+      "emotion_level": 9,
+      "album_like_rank": 5,
+      "why_saved": "灯在灭——不是熟悉的光，是避让",
+      "defects": [
+        "玻璃反光",
+        "玻璃雾气",
+        "长焦噪点"
+      ],
+      "review_note": "隔窗反光/雾气物理成立；“数量减少缺口”读感偏弱"
+    },
+    {
+      "frame": "16",
+      "source_run": "PT_20260902_101944_e5b1",
+      "photographer": "P02",
+      "shot_family": "PHOTOGRAPHER_IN_FRAME（P02 拍 P01 拍最后一盏灯，双机位互证）",
+      "story_beat": "最后一盏灯，拍摄者入镜，阶段高潮",
+      "emotion_level": 10,
+      "album_like_rank": 1,
+      "why_saved": "最后一盏灯与两人共同见证的定格",
+      "defects": [
+        "曝光不足",
+        "剪影",
+        "夜间噪点"
+      ],
+      "review_note": "本轮最像私人相册的一张：人在拍、灯将灭、大部分画面是黑；P01 手机背面朝镜头无UI"
+    },
+    {
+      "frame": "17",
+      "source_run": "PT_20260902_101944_e5b1",
+      "photographer": "P01",
+      "shot_family": "IN_CAR_LOWLIGHT_DEPARTURE（车内低光出发瞬间，歪构图）",
+      "story_beat": "两人离开，车内低光出发瞬间",
+      "emotion_level": 8,
+      "album_like_rank": 4,
+      "why_saved": "相册里需要一张“我们离开那里”的收尾",
+      "defects": [
+        "车内暗",
+        "动作轻微模糊",
+        "构图歪"
+      ],
+      "review_note": "低光歪构图与沉默情绪成立；中控屏暗屏无文字"
+    },
+    {
+      "frame": "18",
+      "source_run": "PT_20260902_101944_e5b1",
+      "photographer": "P01",
+      "shot_family": "DAYTIME_SAME_SPOT_WIDE（第二天白天同位置全景）",
+      "story_beat": "第二天同山坡，白天无路强证据",
+      "emotion_level": 7,
+      "album_like_rank": 7,
+      "why_saved": "白天证据与旅行照",
+      "defects": [
+        "构图略急",
+        "轻微脱焦",
+        "风吹头发"
+      ],
+      "review_note": "白天裸岩/缺口/护栏/车型全部与 02 地形对照成立；轻微手抖余震读感"
+    },
+    {
+      "frame": "19",
+      "source_run": "PT_20260902_101944_e5b1",
+      "photographer": "P02",
+      "shot_family": "SCREEN_PLAYBACK（屏幕回看，P02 拍 P01 手机视频）",
+      "story_beat": "昨晚视频还在，屏幕回看，证据残留",
+      "emotion_level": 6,
+      "album_like_rank": 8,
+      "why_saved": "昨晚不是幻觉——最后一张证明",
+      "defects": [
+        "屏幕反光",
+        "摩尔纹",
+        "边缘虚化"
+      ],
+      "review_note": "屏幕内容=昨晚视频本体，无UI无文字；同机自拍悖论已规避；反光/摩尔纹物理成立"
+    },
+    {
+      "frame": "20",
+      "source_run": "PT_20260903_154854_fix01420",
+      "photographer": "P01（车旁几步外，拍 P02 上车瞬间）",
+      "shot_family": "DEPARTURE_MOMENT_NO_DEVICE（离开瞬间收尾，无手机入画）",
+      "story_beat": "第二天上午确认没有路，P02 拉开车门回头最后看一眼山坡",
+      "emotion_level": 5,
+      "album_like_rank": 10,
+      "why_saved": "旅行最后一张：看起来什么也没发生的那天",
+      "defects": [
+        "构图急、随手按",
+        "转身动作轻微模糊",
+        "侧逆光轻微过曝"
+      ],
+      "review_note": "离开瞬间进行时收尾：P02 半转身回望普通裸岩缺口山坡，浅灰大衣+浅蓝牛仔裤+白鞋（同 02/18），深灰 SUV 车门/车尾+绿护栏；不再自拍、无手机入画；原自拍版 P01 外套漂移随旧帧移除。"
+    }
+  ]
+}

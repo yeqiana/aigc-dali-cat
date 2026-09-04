@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "inherit_default": false,
+  "profile_id": "EPISODE_WORLD_IDENTITY_OVERRIDE",
+  "world": {
+    "country": "Japan",
+    "region": "Japan",
+    "culture_context": "contemporary_japanese_daily_life",
+    "language_context": "Japanese",
+    "architecture_context": "location-appropriate Japanese built environment",
+    "traffic_context": "story/location appropriate",
+    "consumer_goods_context": "story/location appropriate"
+  },
+  "population": {
+    "nationality_context": "Japanese",
+    "resident_context": "Japanese local residents",
+    "default_protagonist_age_range": [
+      19,
+      30
+    ],
+    "default_protagonist_identity": "ordinary Japanese young adult",
+    "ethnicity_policy": "story_defined",
+    "foreign_character_policy": "story_defined"
+  },
+  "visual_rules": {
+    "visible_text_context": "Japanese",
+    "do_not_import_foreign_architecture_by_default": false,
+    "do_not_import_foreign_population_by_default": false,
+    "do_not_import_foreign_cultural_props_by_default": false,
+    "preserve_location_specific_chinese_regional_detail": false
+  },
+  "note": "Explicit Episode override. This replaces the default Mainland China profile for this Episode."
+}

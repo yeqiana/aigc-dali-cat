@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.1",
+  "status": "LOCKED",
+  "kind": "human_readable_character_contract",
+  "authority_note": "机器权威为 meta/character-contract.json 与 meta/character-visual-contract.json；本文件是人读升级版，不建立第二权威。",
+  "world_identity_profile": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+  "cast": {
+    "type": "pair",
+    "size": 2,
+    "relationship": "亲兄妹：哥哥 P01 与老家妹妹 P02",
+    "entry": "return_home 夏天回老家",
+    "scene": "虚构南方丘陵村庄的村口、村道、老屋与王婶小卖部"
+  },
+  "characters": [
+    {
+      "id": "P01",
+      "role": "哥哥",
+      "gender": "male",
+      "age": "25",
+      "identity": "普通中国大陆年轻男性（ordinary mainland Chinese young adult male）",
+      "build": "普通年轻人体型，lean_proportionate_natural",
+      "hair": "普通黑色短发",
+      "clothing_baseline": "白色短袖+浅色牛仔裤+深色运动鞋（夏日基线）",
+      "device": "普通智能手机，第一人称主摄影",
+      "face_identity": "自然脸、轻微不对称、自然皮肤纹理；无明星脸/网红脸",
+      "pov": true,
+      "role_policy": "职业仅解释为什么返乡，不解决异常",
+      "note": "观众沉浸视角的持有者；画面最多带到自己的影子、鞋与裤脚局部"
+    },
+    {
+      "id": "P02",
+      "role": "妹妹",
+      "gender": "female",
+      "age": "20",
+      "identity": "普通中国大陆年轻女性（ordinary mainland Chinese young adult female）",
+      "build": "普通年轻女生体型，slim_proportionate_natural",
+      "hair": "黑色自然中长发，扎低马尾或披着",
+      "clothing_baseline": "浅色短袖+牛仔短裤+平底凉鞋（夏日基线）",
+      "device": "不使用取证设备",
+      "face_identity": "年轻漂亮但真实普通：自然脸、无网红/滤镜脸",
+      "pov": false,
+      "note": "老家妹妹，情感锚点与共同经历者"
+    }
+  ],
+  "sister_rule_checks": {
+    "is_hometown_sister": true,
+    "is_young_and_attractive_but_real": true,
+    "is_ordinary_real_person": true,
+    "is_not_explainer": true,
+    "is_not_plot_tool": true,
+    "natural_family_relationship": "从小在老家一起长大的亲兄妹：日常斗嘴、递西瓜、锁门、抓胳膊相互依靠"
+  },
+  "first_person_rule": {
+    "mode": "IMMERSIVE_FIRST_PERSON_PRESENTATION",
+    "meaning": "第一人称是观众沉浸视角，不是摄影取证任务；每帧都是自然生活记录，画面不承担解释异常的功能。"
+  },
+  "forbidden_ending_rules": [
+    "禁止最后照片解释异常",
+    "禁止手机回放揭示真相",
+    "禁止相册反转",
+    "禁止静默反转结尾"
+  ],
+  "same_person_across_frames": true,
+  "note": "PREPRODUCTION_ONLY：仅文字规格；Visual Lock 前不生成任何像素母版。"
+}

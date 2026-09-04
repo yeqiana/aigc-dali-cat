@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.1",
+  "kind": "human_readable_environment_contract",
+  "authority_note": "机器权威为 meta/story-gates.json 的 visual.environment_contract 与 visual.frame_directives；本文件是人读镜像，供后续 Visual Lock 与生产读取，不建立第二权威。",
+  "world_identity_profile": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+  "environment": {
+    "season": "夏（三伏）",
+    "setting": "中国大陆南方丘陵村镇（虚构地名，不映射真实地点）",
+    "night_temperature_feel": "白天积热未散，夜间体感约30-31℃，湿热无风，皮肤发黏，坐一会儿就出汗",
+    "humid_air": "湿度大，闷热；汗意与手汗明显，手机偶尔发糊；蚊香、电蚊香与蒲扇是常态",
+    "village_housing": "红砖/灰砖院墙、堂屋白炽灯、门灯、卷帘门小卖部、老式木门槛与竹椅",
+    "roads": "干燥水泥村道与机耕道，白天晒热夜里仍温热；电动车、三轮车、拖拉机是主要交通工具",
+    "lighting": "路灯偏橙、门灯暖光、小卖部日光灯；灯下飞虫绕着光，暗部多、高ISO轻度噪点",
+    "plants": "稻田、草丛、歪脖子老槐树、院墙上的爬藤与树影",
+    "weather_factors": "无雨无风；骑车或拖拉机经过时才感到热风；夜间蝉鸣蛙叫、虫鸣明显",
+    "time_of_day": "约21:00-23:40",
+    "precipitation": "无雨"
+  },
+  "forbidden_environments": [
+    "欧美住宅/花园/西式独栋别墅环境",
+    "日韩街景、日韩式店铺招牌与街面",
+    "非中国生活符号（外国车牌、大面积外语招牌、异国日常物品）"
+  ],
+  "segments": [
+    {
+      "id": "E1_home_arrival_summer_night",
+      "frames": "01-05",
+      "description": "正常夏夜回家与家庭生活：村口接人、回家夜路、门灯、堂屋西瓜绿豆汤、门口乘凉"
+    },
+    {
+      "id": "E2_disorientation_begins",
+      "frames": "06-13",
+      "description": "熟悉环境开始错位：坏路灯亮起、灯杆偏移、老槐树换边、小卖部无人应、路灯逐盏熄灭、自家堂屋灯异常"
+    },
+    {
+      "id": "E3_facing_together",
+      "frames": "14-20",
+      "description": "两人共同面对：锁门离村、陌生机耕道、循环村道、拖拉机参照归位、回到门灯下收束"
+    }
+  ],
+  "frame_overrides_reference": [
+    "12：路灯沿路逐盏熄灭，整段路黑下来，仅剩车灯余辉",
+    "17：第三次经过同一棵歪脖子老槐树与同一只趴着的狗，时间感失真",
+    "19：拖拉机强光扫过，机耕道世界在强光中归位，人物呈剪影",
+    "20：回到自家门灯下，夏夜恢复日常闷热"
+  ],
+  "note": "环境只做中国南方村镇夏夜的真实质感和逐帧错位变化，不引入任何异国或西式生活符号。"
+}

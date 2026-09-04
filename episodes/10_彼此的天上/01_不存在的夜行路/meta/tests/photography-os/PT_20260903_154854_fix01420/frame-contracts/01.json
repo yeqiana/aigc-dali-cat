@@ -1,0 +1,22 @@
+{
+  "frame": "01",
+  "story_os_version": "2.2.8-photography-os-r4-fix01420",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "女生自拍男女主：出发第一张合影，建立彼此",
+  "photographer": {
+    "who_took_it": "P02（女生），副驾举自己手机前置自拍",
+    "why_capture_now": "终于兑现拖了很久的川西自驾，出发后第一次停车，她说“先合个影”",
+    "photographer_position": "副驾座，侧身举手机，P01 从驾驶座侧身入镜",
+    "why_camera_in_this_hand": "P02 发起自拍；P01 在驾驶座，两人同框来源=自拍成立，无幽灵摄影机",
+    "ghost_camera": false
+  },
+  "what_is_happening": "车停在盘山公路休息区，引擎熄火；P02 举起手机前置镜头，P01 侧身靠近镜头；两人看镜头微笑，挡风玻璃外是山路与远处山坡",
+  "why_saved": "旅行第一张合影：兑现约定的证明，也是“我们俩”在相册里的开头",
+  "shot_grammar": "FRONT_CAMERA_COUPLE_SELFIE_IN_CAR",
+  "defect_physics": ["前置广角轻微畸变", "车内暗、挡风玻璃外过曝", "举机瞬间轻微模糊"],
+  "continuity_chain": "vs 旧01：同车同位置；P02 长深棕发+浅灰大衣（与 02 一致）；P01 深橄榄绿外套；灰/深灰 SUV 黑色内饰、中控导航屏、杯架水瓶；出发日午后",
+  "screen_content": "自拍照片本体不显示取景 UI；无相机界面入画",
+  "time_of_day": "出发日午后多云，山间光线",
+  "emotion_level": 2,
+  "user_directive": "女生用手机自拍男女主"
+}

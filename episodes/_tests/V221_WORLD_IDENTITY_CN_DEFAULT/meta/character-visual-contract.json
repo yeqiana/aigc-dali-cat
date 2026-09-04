@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "members": {
+    "P01": {
+      "visual_priority": "primary",
+      "body_build": "lean_proportionate_natural",
+      "face_identity": {
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "skin_texture": "natural_skin_texture"
+      },
+      "hair": {
+        "haircut_anchor": "short black crop",
+        "hair_length_anchor": "short",
+        "allowed_state_variation": [
+          "wet",
+          "messy"
+        ]
+      },
+      "presentation": {
+        "camera_friendly_but_believable": true,
+        "celebrity_likeness": false
+      }
+    }
+  },
+  "note": "普通年轻人语境，无明星脸/网红脸/制服。world identity 字段由 Story OS 流程注入，不在此手写。"
+}

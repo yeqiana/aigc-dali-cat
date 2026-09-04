@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.2.1",
+  "derived_cache": true,
+  "compiled_at": "2026-09-02T18:29:49+08:00",
+  "frame_count": 2,
+  "frames": [
+    {
+      "frame": "01",
+      "path": "meta/runtime/contracts/frames/01.json",
+      "contract_sha256": "eb24f924d730583e96d333aea0f5c69858609006f6b0fdb7565278c9d6874460",
+      "storyboard_frame_sha256": "fe39d591afd7fadbda4a46242ad537b2955c497c4d0b37875efd0db1b30fbf47",
+      "environment_frame_sha256": "8f57d3e9927ea769143697ff2cd75eb334f787fdc8b42da98b661dbda058067f",
+      "frame_directive_sha256": "43ddd97a549b534f43f73250bd1704588fc14771fb792b2a14242052c3083206"
+    },
+    {
+      "frame": "02",
+      "path": "meta/runtime/contracts/frames/02.json",
+      "contract_sha256": "4a3380bdd7b53b4d0da4c9f994a2a3c6a0536d74caf01ae2be2e03b6fa432624",
+      "storyboard_frame_sha256": "250314c6d290863224b4bee80210d39d6786e0b14198c9a936c68695909591b6",
+      "environment_frame_sha256": "6ca05eafffcb8ad1adffb18268cdd4f41ff143fcb5fc0aa5b6c5052ce3c3f4b0",
+      "frame_directive_sha256": "55470517f66d823e936f807e07d7757f04e90107771364a78e1b998230605f1e"
+    }
+  ],
+  "index_sha256": "15b2b3de5afa2d656d7950454441c2ad7f6547f0a8a16d6faf991c0019cbf078"
+}

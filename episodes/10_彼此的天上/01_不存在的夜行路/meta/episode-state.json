@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.1",
+  "episode_id": "10-01",
+  "series": "10_彼此的天上",
+  "title": "不存在的夜行路",
+  "current_state": "IDEA_LOCKED",
+  "updated_at": "2026-09-03T18:28:02+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-03T18:28:02+08:00",
+      "note": "系列包正式接入机器状态：docs DRAFT + 01-20 Photography Regression(非权威测试)已 PASS，本阶段仅定稿故事层，不生成正式图"
+    }
+  ]
+}

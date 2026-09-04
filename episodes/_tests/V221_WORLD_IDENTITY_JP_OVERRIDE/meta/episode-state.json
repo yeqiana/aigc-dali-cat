@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.1",
+  "episode_id": "TEST-V221-JP-OVERRIDE",
+  "series": "_tests",
+  "title": "V2.2.1 World Identity JP Override Acceptance",
+  "current_state": "IDEA_LOCKED",
+  "test_only": true,
+  "non_release": true,
+  "test_authority": "NON_AUTHORITY_PRODUCTION_TEST",
+  "promotion_forbidden": true,
+  "stage_advance": "none",
+  "note": "Story OS V2.2.1 acceptance contract test. Confirms GLOBAL_DEFAULT China first, then EPISODE_OVERRIDE Japan via scripts/story_world_identity.py set-override flows into Character Contract / Character Visual Contract / Character Appearance Anchor. No image generation. Never advances machine stage, never releases.",
+  "updated_at": "2026-09-02T21:00:00+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-02T21:00:00+08:00",
+      "note": "V2.2.1 override acceptance bootstrap: pure contract test episode, no story production."
+    }
+  ]
+}

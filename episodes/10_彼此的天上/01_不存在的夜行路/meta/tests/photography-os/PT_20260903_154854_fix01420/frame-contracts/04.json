@@ -1,0 +1,22 @@
+{
+  "frame": "04",
+  "story_os_version": "2.2.8-photography-os-r4-fix01420",
+  "authority": "NON_AUTHORITY_TEST_ONLY",
+  "story_beat": "第一盏灯：无手机入画的远摄画面",
+  "photographer": {
+    "who_took_it": "P01（男友），车旁护栏边手持拍摄",
+    "why_capture_now": "黄昏最后一点天光里，对面山坡出现一个暖黄光点，他本能拉近拍下、想确认是什么",
+    "photographer_position": "停车带边沿护栏旁，手持数码变焦对准山坡",
+    "why_camera_in_this_hand": "P01 是主摄影者；画面为照片本体，持机者不出现在画面内，无幽灵摄影机",
+    "ghost_camera": false
+  },
+  "what_is_happening": "黄昏远山山坡上一颗小小的暖黄灯点，位于白天那面浅色裸岩下方；画面被轻微数码裁切，有手持抖动痕迹、暗部噪点、欠曝；不出现手、不出现手机、不出现任何屏幕",
+  "why_saved": "觉得奇怪的灯，先存下来看；第一张“发现”证据",
+  "shot_grammar": "NO_DEVICE_TELE_CROP_FIRST_SIGHT",
+  "defect_physics": ["黄昏弱光、轻微欠曝", "数码长焦裁切噪点", "手持轻微抖动模糊"],
+  "continuity_chain": "vs 03：同日同山坡，天色从傍晚进入黄昏；灯点位置=后续灯队出现的裸岩下方；无前景手持物",
+  "screen_content": "无屏幕、无手机、无相机 UI",
+  "time_of_day": "同日黄昏，天光将尽",
+  "emotion_level": 4,
+  "user_directive": "不要出现手机（删掉手+手机构图）"
+}

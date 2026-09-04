@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "contract_version": "2.2.1",
+  "derived_cache": true,
+  "world_identity_profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+  "world_identity_effective_sha256": "98e4e6dfbf2f20eca3bc06cd15f2a8261316745cf22ef5d175de7b595607877f",
+  "character_contract_path": "meta/character-contract.json",
+  "character_contract_sha256": "6fdcf17f21a28e60d81ebb733f8892e55192de6c4d11f0795116447117892fe8",
+  "character_visual_contract_path": "meta/character-visual-contract.json",
+  "character_visual_contract_sha256": "13cd797ea91a4d3da34fbb9f70709ae31aaddc606ab98be220e6cf93bbd0333e",
+  "members": {
+    "P01": {
+      "character_id": "P01",
+      "nationality_context": "Chinese",
+      "resident_context": "mainland Chinese local residents",
+      "gender": "male",
+      "age": 25,
+      "build": "普通年轻人体型",
+      "body_build": "lean_proportionate_natural",
+      "hair": {
+        "character_contract_anchor": "普通黑色短发",
+        "haircut_anchor": "short black crop",
+        "hair_length_anchor": "short"
+      },
+      "clothing_anchor": "灰色卫衣/短袖+休闲长裤+运动鞋",
+      "device_anchor": "普通智能手机",
+      "visual_priority": "primary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_skin_texture",
+        "allowed_variation": [
+          "wet",
+          "messy"
+        ],
+        "forbidden_unmotivated_drift": [
+          "nationality/cultural identity",
+          "apparent age",
+          "face identity",
+          "haircut or hair length",
+          "body build",
+          "character role",
+          "clothing anchor unless wardrobe contract changes it"
+        ]
+      }
+    }
+  },
+  "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+  "anchor_sha256": "b294cea6e666d400d5e66d85faafdadd63a16e7da86e4b314ac9e49f298de089"
+}

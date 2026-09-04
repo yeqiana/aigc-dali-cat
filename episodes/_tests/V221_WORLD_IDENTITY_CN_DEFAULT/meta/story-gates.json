@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.1",
+  "episode_id": "TEST-V221-CN-DEFAULT",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_profile": "auto",
+    "override_reason": null
+  },
+  "story": {
+    "pilot": "V221_WORLD_IDENTITY_CN_DEFAULT",
+    "genre": "普通生活随手拍，无异常",
+    "core_question": "一个人晚上骑电动车回老家时随手拍的几张照片，会是什么样？",
+    "task_closed": true,
+    "story_lock_basis": "acceptance_test_user_seed"
+  },
+  "visual": {
+    "admission_frames": [],
+    "pilot_visual_lock_scope": {
+      "frames": [1, 2],
+      "note": "V2.2.1 acceptance: only Frame 01-02 test images; formal Visual Lock not in scope"
+    },
+    "continuity": {
+      "required": [
+        "protagonist",
+        "location",
+        "weather_time",
+        "vehicle"
+      ],
+      "anchors": {
+        "protagonist": "P01 男 24-25岁 黑色短发 普通短袖+休闲裤+运动鞋；普通智能手机；第一人称主摄",
+        "location": "虚构县城与老家村口、家门口（村镇结合部）；与现实地点无对应",
+        "weather_time": "当代闷热夏夜约20:40-21:10，体感约30℃，无风，轻微出汗",
+        "vehicle": "黑色普通踏板电动车，停靠村口与家门口各一次"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "当代夏夜",
+      "location": "虚构的县城回老家村路与家门口；不影射真实地点",
+      "photographer": "二十多岁普通年轻人 P01，第一人称随手拍",
+      "shooting_reason": "回家路上报平安与到家的生活记录",
+      "primary_capture": {
+        "id": "CP01",
+        "device": "当代普通智能手机，手持，竖拍 4:5"
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": "",
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "村口路灯与门灯下的普通手机夜景：可读、轻微手持偏斜、无商业 HDR"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": "拍摄手机不完整入镜",
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": "第一人称随手拍，画面最多带到自己的影子、鞋与裤脚局部；不强行自拍"
+      }
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "夏",
+      "baseline": {
+        "condition": "闷热夏夜，无风，人容易出汗",
+        "time_of_day": "夜间约20:40-21:10",
+        "temperature_feel": "白天积热未散，夜间体感约30℃，闷热",
+        "ground_state": "干燥水泥路与水泥门槛，白天积热晚上还在冒",
+        "visibility": "路灯与门灯下的普通手机夜景；灯点外暗部多，高 ISO 轻度噪点",
+        "wind": "基本无风，骑车时有热风感",
+        "precipitation": "无",
+        "physical_cues": [
+          "路灯偏橙、灯下飞虫",
+          "水泥路反光与灯点",
+          "轻微汗意与闷热空气",
+          "远处灯光的空气扰动不明显，保持手机夜景的真实感"
+        ]
+      },
+      "segments": [
+        {
+          "id": "E1_home_road_night",
+          "start_frame": 1,
+          "end_frame": 2,
+          "condition": "村口夜路与家门口门灯下的普通生活",
+          "physical_cues": [
+            "路灯/门灯暖光",
+            "电动车与水泥路",
+            "夏夜飞虫",
+            "手机夜景噪点"
+          ],
+          "conditional_effects": []
+        }
+      ],
+      "frame_overrides": {
+        "02": {
+          "time_of_day": "夜间约21:10",
+          "visibility": "门灯暖光为主，门槛与门前小片地面被照亮",
+          "condition": "到家，门灯下停车随手拍"
+        }
+      }
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "村口路灯下的水泥路",
+          "远处村口灯点",
+          "车把/后视镜在画面下缘的局部",
+          "普通手机夜景轻度噪点",
+          "无路人无摆拍"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "家门口门灯",
+          "停好的电动车与车头袋子",
+          "画面下缘自己的鞋与裤脚局部",
+          "被门灯拉长的自己的影子",
+          "普通手机夜拍生活感"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      }
+    },
+    "references": {
+      "required": false,
+      "items": []
+    }
+  },
+  "subtitles": {
+    "required": false,
+    "note": "acceptance test 不进入字幕范围"
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "pending",
+    "production": "pending",
+    "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  }
+}

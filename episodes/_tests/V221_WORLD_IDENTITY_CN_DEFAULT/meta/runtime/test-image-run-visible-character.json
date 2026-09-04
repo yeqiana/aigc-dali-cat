@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-02T23:40:00+08:00",
+  "authority": "NON_AUTHORITY_PRODUCTION_TEST",
+  "test": "V221_VISIBLE_CHARACTER_ACCEPTANCE",
+  "episode": "episodes/_tests/V221_WORLD_IDENTITY_CN_DEFAULT",
+  "world_identity_profile": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+  "generation": {
+    "route": "codex_desktop_interface_imagegen",
+    "route_note": "Images produced by the built-in image_gen tool in the Codex desktop interface (gpt-image-2, system default) from the recorded test prompts, then normalized to the exact Story OS 4:5 canvas (1080x1350) with episodes/_system/canvas_normalize.py. No system source file was modified.",
+    "model_contract": {
+      "provider": "openai",
+      "model": "gpt-image-2",
+      "source": "system_default"
+    },
+    "prompts": [
+      "meta/runtime/test-prompts/frame-03.txt",
+      "meta/runtime/test-prompts/frame-04.txt"
+    ],
+    "total_image_generation_calls": 3,
+    "repairs_used": 1,
+    "repair_notes": [
+      "Frame 03 regenerated once: attempt 1 used text-only scene description and produced a different door type (double ornamental door + roller awning + beige tile wall); repair referenced media/canvas/frames/02.png as location/vehicle/wardrobe pixel master and matched the grey grid-bar security door + warm wall lamp + planter + scooter of Frame 02."
+    ]
+  },
+  "frames": [
+    {
+      "frame": "03",
+      "raw": "media/raw/03-1788346498.png",
+      "raw_sha256": "556f50f8b57404364e7c239f8d8771f85a3100b73c0353b7f1e6d0a0a4dd3dee",
+      "canvas": "media/canvas/frames/03.png",
+      "canvas_sha256": "dcb6b9fae40d8b09bbeb432cff057e5e48c8cc0536e15b0db7cd67eedeb64967",
+      "canvas_size": [1080, 1350]
+    },
+    {
+      "frame": "04",
+      "raw": "media/raw/04-1788346850.png",
+      "raw_sha256": "1708caae5f47f55adb53517b0d69950819ad2740dd6c086a27c2921fe29ab36b",
+      "canvas": "media/canvas/frames/04.png",
+      "canvas_sha256": "19604f0a3130dc3b65920d8ed3337f5d756306c1f7ad6283e5982b9cd1240639",
+      "canvas_size": [1080, 1350]
+    }
+  ],
+  "pixel_review": {
+    "reviewer": "acceptance_worker_machine_vision",
+    "scope": "NON_AUTHORITY_PRODUCTION_TEST pixel readout; no human eyeball gate, no Visual Lock, no formal PASS evidence",
+    "frame_03": {
+      "VISIBLE_CHINESE_CHARACTER": "PASS",
+      "FACE_IDENTITY_READABLE": "PASS",
+      "WORLD_IDENTITY_FIDELITY": "PASS",
+      "PRIVATE_ALBUM_FEEL": 8.5,
+      "CAMERA_AUTHORSHIP": "PASS"
+    },
+    "frame_04": {
+      "VISIBLE_CHINESE_CHARACTER": "PASS",
+      "FACE_IDENTITY_READABLE": "PASS",
+      "WORLD_IDENTITY_FIDELITY": "PASS",
+      "PRIVATE_ALBUM_FEEL": 8.5,
+      "CAMERA_AUTHORSHIP": "PASS"
+    },
+    "cross_frame": {
+      "SAME_PERSON_FACE_CONTINUITY": "PASS",
+      "AGE_CONTINUITY": "PASS",
+      "HAIR_CONTINUITY": "PASS",
+      "BODY_BUILD_CONTINUITY": "PASS",
+      "CLOTHING_CONTINUITY": "PASS",
+      "CULTURAL_ENVIRONMENT_CONTINUITY": "PASS"
+    },
+    "unexpected_foreign_characters": "NO",
+    "world_identity_drift_frames": "NONE",
+    "character_appearance_drift_frames": "NONE"
+  }
+}

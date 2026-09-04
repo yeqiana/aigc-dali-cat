@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.1",
+  "episode_id": "11-01",
+  "series": "11_仲夏夜惊魂",
+  "title": "仲夏夜惊魂 重制版",
+  "current_state": "IDEA_LOCKED",
+  "updated_at": "2026-09-02T20:10:51+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-02T20:10:51+08:00",
+      "note": "V2.2.1 重制版前期资产重建：Story Lock 已锁定（PASS），Character Contract/World Identity PASS，Visual Narrative LOCKED，Production NOT_READY；PREPRODUCTION_ONLY，未进入生产。"
+    }
+  ],
+  "note": "唯一机器阶段事实源。当前只完成正式生产前资产，禁止生图与推进 stage。"
+}

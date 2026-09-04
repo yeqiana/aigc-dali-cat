@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.2.1",
+  "episode_id": "TEST-V221-CN-DEFAULT",
+  "series": "_tests",
+  "title": "V2.2.1 World Identity CN Default Acceptance",
+  "current_state": "IDEA_LOCKED",
+  "test_only": true,
+  "non_release": true,
+  "test_authority": "NON_AUTHORITY_PRODUCTION_TEST",
+  "promotion_forbidden": true,
+  "stage_advance": "none",
+  "note": "Story OS V2.2.1 acceptance test episode. Validates GLOBAL_DEFAULT Mainland China world identity flows into Character Contract / Appearance Anchor / Resolved Frame Contract and produces at most 2 test images. Never advances machine stage, never releases.",
+  "updated_at": "2026-09-02T21:00:00+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-02T21:00:00+08:00",
+      "note": "V2.2.1 acceptance bootstrap: minimal 2-frame non-anomaly everyday record, single ordinary young male returning home on a summer night."
+    }
+  ]
+}

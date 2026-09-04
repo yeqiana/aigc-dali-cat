@@ -1,0 +1,28 @@
+{
+  "version": "2.2.8-photography-os-r4-fix01420",
+  "run_id": "PT_20260903_154854_fix01420",
+  "canvas": [1080, 1350],
+  "aspect_ratio": "4:5",
+  "normalizer": "episodes/_system/canvas_normalize.py (ImageOps.fit LANCZOS center)",
+  "frames": {
+    "01": {
+      "raw_size": [1122, 1402],
+      "output_size": [1080, 1350],
+      "raw_sha256": "0770b135c2c12a9ba3477ffedff936039334bcb5bd21da60da250963f480ba17",
+      "output_sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c"
+    },
+    "04": {
+      "raw_size": [1122, 1402],
+      "output_size": [1080, 1350],
+      "raw_sha256": "4e49dee8a3801fb85b20752854a82cd6a5ccec8cd6e5df857cba449c0bd1ea13",
+      "output_sha256": "a0e93f4a898c26b276caa843dec5435cf31cc6bf6f177ea48797814331a83842"
+    },
+    "20": {
+      "raw_size": [1122, 1402],
+      "output_size": [1080, 1350],
+      "raw_sha256": "a9dfabc04fc220aea8ae6ad7e460bdc021d3a7dc232d828bd3b0382c7963e398",
+      "output_sha256": "fea8f2cb83fc7364ae872d75bfa1d4f6e9865e04fab4ee688e1ff2c72ee64f83"
+    }
+  },
+  "notes": "Frame 20 retried in a follow-up session after five consecutive 502 upstream_server_error; attempt 6 succeeded. Frame 01 regenerated once more (identity repair, text-only fallback) after the edits relay went down; raw+output replaced. All three repaired frames normalized to episode canvas."
+}
