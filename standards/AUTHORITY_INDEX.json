@@ -174,6 +174,13 @@
       "note": "V2.1 pre-Story-Lock gate; no second creative authority."
     },
     {
+      "path": "standards/传播核与动作回应链规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "propagation_core_action_response_shareability",
+      "active": true,
+      "note": "V2.5 Story Critic/Storyboard shareability gate; evidence only, no second creative authority."
+    },
+    {
       "path": "standards/环境物理与异常放大规范_V1.0.md",
       "authority": "active_subordinate",
       "scope": "environment_physics_and_anomaly_amplification",
@@ -242,6 +249,13 @@
       "scope": "codex_subscription_logical_batch_execution",
       "active": true,
       "note": "Logical fan-out execution only; never Provider-native multi-image or Episode authority."
+    },
+    {
+      "path": "standards/Visual_Narrative_Core_V2.2.md",
+      "authority": "active_subordinate",
+      "scope": "visual_narrative_capture_causality",
+      "active": true,
+      "note": "V2.2 Visual Narrative Core; V2.5 consumes Propagation Core trigger/response/payoff roles."
     }
   ],
   "rules": {
@@ -500,6 +514,14 @@
       "native_multi_image": false,
       "api_key_required": false,
       "stage_source": "meta/episode-state.json"
+    },
+    "propagation_core": {
+      "standard": "standards/传播核与动作回应链规范_V1.0.md",
+      "schema": "standards/schemas/propagation-core.schema.json",
+      "evidence": "meta/story-semantic-review.json#propagation_core",
+      "gate": "episodes/_system/propagation_core_gate.py",
+      "formal_min_version": "2.5.0",
+      "second_authority_forbidden": true
     }
   }
 }

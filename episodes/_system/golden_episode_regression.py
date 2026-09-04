@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse, datetime as dt, json
 from pathlib import Path
 import storyboard_density_gate, voice_contract, capture_event_contract, world_state, asset_lineage
+import propagation_core_gate  # STORY_OS_V2_5_PROPAGATION_CORE
 
 ROOT=Path(__file__).resolve().parents[2]
 REG=ROOT/"reports/golden-episode-registry.json"
@@ -40,6 +41,12 @@ def metrics(ep):
       "capture_event_error_count":len(capture_event_contract.validate(ep,True)) if (ep/capture_event_contract.REL).is_file() else None,
       "world_state_error_count":len(world_state.validate(ep,True)) if (ep/world_state.REL).is_file() else None,
       "lineage_error_count":len(asset_lineage.verify(ep)) if (ep/asset_lineage.REL).is_file() else None,
+      "propagation_core_error_count":(
+          len(propagation_core_gate.verify(ep, force=True))
+          if (ep/"meta/story-semantic-review.json").is_file()
+          and isinstance(read_json(ep/"meta/story-semantic-review.json").get("propagation_core"), dict)
+          else None
+      ),
       "text_hard_errors":((ta.get("summary") or {}).get("hard_error_count")),
       "text_warnings":((ta.get("summary") or {}).get("warning_count")),
       "repair_rate":round(repairs/max(1,attempts),6) if attempts else None,
@@ -60,7 +67,7 @@ def run_all():
     for item in d.get("episodes") or []:
         ep=ROOT/item["path"]
         cur=metrics(ep);base=item.get("baseline") or {};errs=[]
-        for k in ("density_error_count","voice_error_count","capture_event_error_count","world_state_error_count","lineage_error_count","text_hard_errors"):
+        for k in ("density_error_count","voice_error_count","capture_event_error_count","world_state_error_count","lineage_error_count","propagation_core_error_count","text_hard_errors"):
             if cur.get(k) is not None and int(cur.get(k) or 0)>0:errs.append(f"{k}={cur[k]}")
         if cur.get("repair_rate") is not None and base.get("repair_rate") is not None and cur["repair_rate"]>base["repair_rate"]+0.10:
             errs.append(f"repair_rate regression {base['repair_rate']} -> {cur['repair_rate']}")

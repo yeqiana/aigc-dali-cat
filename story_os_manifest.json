@@ -1,5 +1,5 @@
 {
-  "platform_version": "2.4.2",
+  "platform_version": "2.5.0",
   "version_semantics": {
     "platform_version": "Root product release identifier; the only platform version authority.",
     "schema_version": "Shape of this specific document.",
@@ -7,7 +7,7 @@
     "platform_min_version": "Lowest Story OS platform version that may consume a module."
   },
   "contract_schema": 1,
-  "release_name": "Codex Subscription Batch Runtime: five-frame logical fan-out",
+  "release_name": "Propagation Core: action-response shareability lock",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -189,7 +189,15 @@
     "codex_batch_partial_success_preservation",
     "codex_batch_failed_frame_only_retry",
     "codex_desktop_cli_preference",
-    "batch_barrier_deferred_scout"
+    "batch_barrier_deferred_scout",
+    "propagation_core_v250",
+    "shareability_lock",
+    "ten_second_retellability_gate",
+    "action_response_chain_gate",
+    "trigger_response_payoff_frame_binding",
+    "l3a_l3b_post_publish_funnel",
+    "absolute_increment_efficiency_triplets",
+    "structural_golden_episode_no_surface_clone"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -267,7 +275,11 @@
     "A five-frame Codex logical Batch may launch up to five isolated image-generation workers concurrently without requiring OPENAI_API_KEY.",
     "Logical Batch generation defers Fast Scout until the original Batch generation barrier is terminal.",
     "A technical failure in one logical Batch frame must not regenerate successful sibling frames.",
-    "Codex logical Batch technical retries use adaptive concurrency 5 to 3 to 1 and never consume content repair quota."
+    "Codex logical Batch technical retries use adaptive concurrency 5 to 3 to 1 and never consume content repair quota.",
+    "V2.5+ Storyboard Lock requires a machine-verified Propagation Core inside the independent Story Semantic Review.",
+    "Propagation Core learns causal structure from Golden Episodes and must not require surface cloning of location, prop, trigger action or climax image.",
+    "Post-publish L3A recognition and L3B sharing are reported separately; real platform data remains evidence, never direct creative authority.",
+    "Post-publish headline metrics expose absolute count, stage delta and efficiency/rate together when the underlying data exists."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

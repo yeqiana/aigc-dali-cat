@@ -128,13 +128,13 @@ def _optional(ep:Path,relpath:str,role:str,archive:str)->dict|None:
     return file_row(p,role,archive) if p.is_file() else None
 
 
-def preflight(ep:Path)->None:
-    semantic=frame_semantic_review.verify_episode(ep,metadata_only=False,write_audit=True)
+def preflight(ep:Path, *, write_evidence:bool=True)->None:  # STORY_OS_V2_5_R31_HOTFIX
+    semantic=frame_semantic_review.verify_episode(ep,metadata_only=False,write_audit=write_evidence)
     if semantic and acceptance_valid(ep) is None:
         raise ValueError("frame semantic preflight failed: "+"; ".join(semantic[:8]))
     elif semantic:
         print("FINAL SNAPSHOT WARN: frame semantic preflight accepted as known defects (meta/final-acceptance.json)")
-    scout=fast_frame_scout.audit(ep,write_summary=True)
+    scout=fast_frame_scout.audit(ep,write_summary=write_evidence)
     if scout and acceptance_valid(ep) is None:
         raise ValueError("Fast Scout unresolved: "+"; ".join(scout[:8]))
     elif scout:
@@ -157,8 +157,8 @@ def preflight(ep:Path)->None:
             raise ValueError("character pixel master required before Final Candidate Snapshot")
 
 
-def build_lock(ep:Path)->dict:
-    preflight(ep)
+def build_lock(ep:Path, *, write_evidence:bool=True)->dict:
+    preflight(ep, write_evidence=write_evidence)
     manifest_path=ep/"meta/release-manifest.json";manifest=read_json(manifest_path)
     release=manifest.get("release") or {};art=manifest.get("artifacts") or {};episode=manifest.get("episode") or {};publication=manifest.get("publication") or {}
     story=repo_file(art.get("story"),"manifest.artifacts.story")
@@ -265,7 +265,7 @@ def verify(ep:Path)->list[str]:
     p=ep/SNAPSHOT_REL
     if not p.is_file():return ["final-candidate-snapshot.json missing"]
     try:
-        saved=read_json(p);current=build_lock(ep);errors=[]
+        saved=read_json(p);current=build_lock(ep, write_evidence=False);errors=[]
         current_sha=sha256_json(current)
         if str(saved.get("snapshot_sha256") or "").lower()!=current_sha.lower():errors.append("final candidate snapshot drift")
         if saved.get("lock")!=current:errors.append("final candidate lock content drift")

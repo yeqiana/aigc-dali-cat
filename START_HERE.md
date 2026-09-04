@@ -1,4 +1,4 @@
-# Story OS — START HERE V2.2.2
+# Story OS — START HERE V2.5.0
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >

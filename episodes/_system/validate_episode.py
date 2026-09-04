@@ -13,6 +13,7 @@ from typing import Iterable
 from episode_state import MANIFEST_FILE, STATE_FILE, GATES_FILE, STATES, SYSTEM_VERSION
 from canvas_spec import resolve_canvas_spec
 from concept_ambition import required as concept_ambition_required, verify as verify_concept_ambition
+from propagation_core_gate import required as propagation_core_required, verify as verify_propagation_core  # STORY_OS_V2_5_PROPAGATION_CORE
 from environment_contract import required as environment_contract_required, verify as verify_environment_contract
 from frame_contract import required as frame_contract_required, verify_all as verify_frame_contracts
 from visual_lock_v21 import required as visual_lock_v21_required, verify as verify_visual_lock_v21

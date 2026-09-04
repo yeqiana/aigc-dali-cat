@@ -13,7 +13,34 @@
     "mountain_or_road",
     "high_impact_large_anomaly",
     "indoor_anomaly",
-    "group_4_5"
+    "group_4_5",
+    "propagation_core_action_response"
   ],
-  "rule": "Golden Set must be curated. Machine regression never replaces pixel review."
+  "rule": "Golden Set must be curated. Machine regression never replaces pixel review.",
+  "structural_golden_cases": [
+    {
+      "path": "episodes/10_彼此的天上/01_不存在的夜行路",
+      "role": "PROPAGATION_STRUCTURE_REFERENCE",
+      "learn_structure": [
+        "ordinary_relationship_entry",
+        "credible_daily_context",
+        "low_cognitive_load",
+        "active_human_trigger",
+        "immediate_abnormal_response",
+        "visually_readable_causality",
+        "ten_second_retellability",
+        "open_explanation",
+        "normal_person_exit",
+        "reality_recheck"
+      ],
+      "must_not_clone_surface": [
+        "川西山路",
+        "远处灯队",
+        "远光灯互动",
+        "同款情侣自驾开局",
+        "灯依次熄灭高潮"
+      ],
+      "note": "Structure reference only. Runtime baseline may be registered after explicit V2.5 propagation re-review."
+    }
+  ]
 }

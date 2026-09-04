@@ -1,4 +1,4 @@
-# Story OS — Repository Execution Contract V2.2.2
+# Story OS — Repository Execution Contract V2.5.0
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**

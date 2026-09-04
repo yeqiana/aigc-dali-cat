@@ -72,6 +72,9 @@ jobs:
           python episodes/_system/test_v203_contract_hardening.py -v
           python episodes/_system/test_v2032_creative_enforcement.py -v
           python episodes/_system/test_v2033_frame_semantic_enforcement.py -v
+          # STORY_OS_V2_5_PROPAGATION_CORE
+          python episodes/_system/test_v250_propagation_core.py -v
+          python episodes/_system/propagation_core_gate.py self-test
           python episodes/_system/story_review.py self-test
           python episodes/_system/visual_review.py self-test
           python episodes/_system/frame_semantic_review.py self-test

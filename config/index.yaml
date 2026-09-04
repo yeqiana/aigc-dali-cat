@@ -17,6 +17,8 @@ authority:
   creative: standards/制作规范_正式版.md
   routing: standards/AUTHORITY_INDEX.json
   product_manifest: story_os_manifest.json
+  # STORY_OS_V2_5_PROPAGATION_CORE
+  propagation_core: standards/传播核与动作回应链规范_V1.0.md
   episode_stage: <episode>/meta/episode-state.json
 
 registries:
@@ -80,9 +82,11 @@ stage_read_sets:
     - standards/entry-motivation-pools.json
     - standards/scene-pools.json
     - standards/forbidden-character-roles.json
+    - standards/传播核与动作回应链规范_V1.0.md
   PREIMAGE_COMPILE:
     - config/storyos.yaml
     - meta/story-gates.json
+    - meta/story-semantic-review.json
     - meta/character-contract.json
     - meta/character-visual-contract.json
     - meta/shot-progression-review.json

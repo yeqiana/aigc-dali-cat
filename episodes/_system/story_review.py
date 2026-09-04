@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 from story_os_contract import story_os_version
+import propagation_core_gate  # STORY_OS_V2_5_PROPAGATION_CORE
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_REL = Path("meta/story-semantic-review.json")
@@ -198,12 +199,15 @@ def verify(ep: Path) -> list[str]:
         data = read_json(path)
     except Exception as exc:
         return [str(exc)]
-    return validate_payload(
+    errors = validate_payload(
         data,
         story_sha=sha256_file(story),
         storyboard_sha=sha256_file(storyboard),
         version=episode_contract_version(ep),
     )
+    if version_tuple(episode_contract_version(ep)) >= (2, 5, 0):
+        errors.extend(propagation_core_gate.verify(ep, force=True))
+    return errors
 
 
 def resolve_codex(raw: str | None) -> Path:
@@ -237,6 +241,7 @@ Read:
 - standards/制作规范_正式版.md
 - standards/创作执行强制规范_V2.0.3.2.md
 - standards/story_regressions/cases.json
+- standards/传播核与动作回应链规范_V1.0.md
 
 This is critic attempt {attempt}. Ignore propagation scores and author self-evaluation.
 
@@ -249,6 +254,11 @@ Hard rules:
 6. In any run of 5 storyboard frames, at least one frame must add new evidence, causal turn or cognitive upgrade. Apply the delete-frame test.
 7. Perform a BLIND RETELL from your own understanding. If you need "maybe / perhaps / unclear" to explain the core mechanism or climax, clarity/mechanism_consistency must fail.
 8. PASS only when every hard check is true and issue_codes is empty.
+9. V2.5 PROPAGATION CORE: identify one ordinary protagonist action that causes a direct abnormal response and a visible consequence.
+10. Write a <=10-second retell sentence; avoid lore-heavy explanation.
+11. Bind trigger_frame, response_frame and payoff_frame to actual storyboard frames. Default trigger <=50%; if later, explain why.
+12. Golden examples are structural references only; do not copy location + prop + trigger action + climax surface together.
+<!-- STORY_OS_V2_5_PROPAGATION_CORE -->
 
 Write ONLY valid JSON to {rel_out}. Do not modify any other repository file.
 Required JSON shape:
@@ -264,6 +274,24 @@ Required JSON shape:
     "midpoint_reframe": "...",
     "climax_choice": "...",
     "ending_recontextualization": ["earlier fact 1", "earlier fact 2", "earlier fact 3"]
+  }},
+  "propagation_core": {{
+    "retell_sentence": "...",
+    "protagonist_action": "...",
+    "abnormal_response": "...",
+    "consequence": "...",
+    "response_latency": "immediate",
+    "visual_causality": "strong",
+    "retellable_in_10s": true,
+    "social_send_impulse": "strong",
+    "trigger_frame": 9,
+    "response_frame": 10,
+    "payoff_frame": 14,
+    "late_trigger_exception_reason": "",
+    "surface_copy_guard": {{
+      "structural_reference_only": true,
+      "copied_surface_elements": []
+    }}
   }},
   "blind_retell": {{
     "protagonist_and_reason": "...",
@@ -349,6 +377,8 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
     final = ep / REVIEW_REL
     write_json(final, data)
     candidate.unlink(missing_ok=True)
+    if version_tuple(episode_contract_version(ep)) >= (2, 5, 0):
+        errors.extend(propagation_core_gate.verify(ep, force=True))
     if errors:
         print("STORY SEMANTIC REVIEW FAIL")
         for error in errors:

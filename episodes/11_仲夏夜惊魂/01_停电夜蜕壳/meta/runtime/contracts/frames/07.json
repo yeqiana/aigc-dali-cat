@@ -4,7 +4,7 @@
   "frame": "07",
   "derived_cache": true,
   "authority": "Story + Storyboard + Character Contract + Character Visual + Shot Progression + Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile",
-  "generated_at": "2026-09-04T12:21:36+08:00",
+  "generated_at": "2026-09-04T14:03:25+08:00",
   "source_trace": {
     "story": {
       "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/01_StoryLock.md",

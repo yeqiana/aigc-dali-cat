@@ -23,6 +23,14 @@ Story / Storyboard
 8. 摄影缺陷是否有真实物理原因？
 9. 屏幕/UI 是否物理成立？
 10. 人物/衣服/车/道具/路线/天气/光线/异常证据是否连续？
+11. 本帧在传播核中是 `setup / trigger / response / payoff / none` 哪一种？
+12. 如果是 response，观众能否仅凭画面理解它在回应前面的 action？
+13. Trigger → Response → Payoff 的视觉因果是否被连续画面证明？
+
+<!-- STORY_OS_V2_5_PROPAGATION_CORE_BEGIN -->
+V2.5+ 传播核来自 `meta/story-semantic-review.json#propagation_core`。
+Visual Narrative 只消费该 Critic 证据，不另造剧情事实。
+<!-- STORY_OS_V2_5_PROPAGATION_CORE_END -->
 
 ## Narrative Evidence Diversity
 

@@ -29,7 +29,7 @@ REQUIRED_FOR_DATA_REVIEWED = ("48h",)
 MANIFEST_MUTATION_POLICY = "FORBIDDEN_AFTER_SNAPSHOT"
 CUMULATIVE_KEYS = {
     "views", "likes", "comments", "shares", "saves", "favorites",
-    "followers_gained", "profile_visits",
+    "followers_gained", "followers_lost", "profile_visits",
 }
 
 
@@ -311,6 +311,71 @@ def derive_rates(metrics: dict) -> dict:
     return out
 
 
+# STORY_OS_V2_5_PROPAGATION_CORE
+def metric_triplets(metrics: dict, previous_metrics: dict | None, rates: dict) -> dict:
+    # Absolute -> delta -> efficiency/rate. Missing facts stay missing.
+    out = {}
+    for key in ("views","likes","comments","saves","favorites","shares","followers_gained","followers_lost","profile_visits"):
+        if key not in metrics:
+            continue
+        row = {"absolute": metrics[key]}
+        if previous_metrics and key in previous_metrics:
+            row["delta_vs_previous"] = metrics[key] - previous_metrics[key]
+        rate_key = {
+            "likes":"like_rate",
+            "comments":"comment_rate",
+            "saves":"save_rate",
+            "favorites":"save_rate",
+            "shares":"share_rate",
+            "followers_gained":"follow_rate",
+            "profile_visits":"profile_visit_rate"
+        }.get(key)
+        if rate_key and rate_key in rates:
+            row["rate_per_view"] = rates[rate_key]
+            row["per_1000_views"] = round(rates[rate_key] * 1000, 3)
+        out[key] = row
+    return out
+
+
+def funnel_groups(metrics: dict, rates: dict) -> dict:
+    return {
+        "L1_entry": {
+            "views": metrics.get("views"),
+            "swipe_away_rate": metrics.get("swipe_away_rate"),
+            "cover_click_rate": metrics.get("cover_click_rate"),
+            "recommendation_traffic_rate": metrics.get("recommendation_traffic_rate"),
+        },
+        "L2_depth": {
+            "avg_browsed_images": metrics.get("avg_browsed_images"),
+            "completion_rate": metrics.get("completion_rate"),
+            "copy_expand_rate": metrics.get("copy_expand_rate"),
+        },
+        "L3A_recognition": {
+            "likes": metrics.get("likes"),
+            "comments": metrics.get("comments"),
+            "saves": metrics.get("saves", metrics.get("favorites")),
+            "like_rate": rates.get("like_rate"),
+            "comment_rate": rates.get("comment_rate"),
+            "save_rate": rates.get("save_rate"),
+        },
+        "L3B_propagation": {
+            "shares": metrics.get("shares"),
+            "share_rate": rates.get("share_rate"),
+            "shares_per_1000_views": (
+                round(rates["share_rate"] * 1000, 3)
+                if rates.get("share_rate") is not None else None
+            ),
+        },
+        "L4_author_chain": {
+            "profile_visits": metrics.get("profile_visits"),
+            "followers_gained": metrics.get("followers_gained"),
+            "followers_lost": metrics.get("followers_lost"),
+            "profile_visit_rate": rates.get("profile_visit_rate"),
+            "follow_rate": rates.get("follow_rate"),
+        },
+    }
+
+
 def concept_binding(ep: Path) -> dict:
     p = ep / "meta/concept-ambition-review.json"
     if not p.is_file():
@@ -348,12 +413,15 @@ def review(ep: Path) -> dict:
             for key, value in rates.items():
                 if key in prev_rates:
                     growth[f"{key}_delta"] = round(value - prev_rates[key], 6)
+        prev_metrics_for_triplet = previous[1] if previous else None
         rows.append({
             "checkpoint": cp,
             "captured_at": raw.get("captured_at"),
             "metrics": metrics,
             "rates": rates,
             "growth_vs_previous": growth,
+            "metric_triplets": metric_triplets(metrics, prev_metrics_for_triplet, rates),
+            "funnel": funnel_groups(metrics, rates),
             "counter_corrections": raw.get("counter_corrections") or [],
         })
         previous = (cp, metrics, rates)
@@ -475,6 +543,9 @@ def self_test() -> None:
     assert CHECKPOINTS == ("6h", "24h", "48h", "7d")
     assert REQUIRED_FOR_DATA_REVIEWED == ("48h",)
     assert derive_rates({"views": 100, "likes": 10, "comments": 2})["like_rate"] == 0.1
+    _rates = derive_rates({"views":1000,"shares":5,"followers_gained":2})
+    assert metric_triplets({"views":1000,"shares":5}, None, _rates)["shares"]["per_1000_views"] == 5.0
+    assert funnel_groups({"views":1000,"shares":5}, _rates)["L3B_propagation"]["shares"] == 5
     assert MANIFEST_MUTATION_POLICY == "FORBIDDEN_AFTER_SNAPSHOT"
     print("POST PUBLISH REVIEW V2.1 PHASE10 SELF-TEST PASS")
 
