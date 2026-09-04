@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "module_version": "2.6.0",
+  "authority": "runtime transport policy; not creative authority",
+  "rules": {
+    "never_use_shell_true": true,
+    "never_generate_repo_files_with_bash_heredoc": true,
+    "never_generate_repo_files_with_powershell_here_string": true,
+    "never_embed_large_json_in_powershell_command": true,
+    "never_manually_quote_paths_for_subprocess_argv": true,
+    "prefer_python_argv": true,
+    "prefer_utf8_files_or_stdin_for_multiline_payload": true,
+    "prefer_repository_file_edit_tools_over_shell_redirection": true
+  },
+  "forbidden_examples": [
+    "python - <<'PY'",
+    "cat <<EOF",
+    "powershell -Command \"...json...\"",
+    "@' multiline powershell here-string '@",
+    "subprocess.run(..., shell=True)"
+  ],
+  "safe_examples": [
+    [
+      "python",
+      "episodes/_system/tool.py",
+      "arg with spaces"
+    ],
+    "write JSON to a UTF-8 request file, then call runtime_command.py run-request request.json",
+    "pass multiline prompt through subprocess stdin_text"
+  ]
+}

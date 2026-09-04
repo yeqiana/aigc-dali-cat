@@ -1,4 +1,4 @@
-# Episodes 状态机 + Story OS 门禁 V2.5.1.1
+# Episodes 状态机 + Story OS 门禁 V2.6.0
 
 本目录只建立一套机器阶段状态；V2.2.2 延续 V1.8 引入的证据 SHA 门禁，并增加稳定 evidence gate 与可执行 Codex runtime，不新增第二状态机。
 
@@ -142,3 +142,12 @@ V2.0.3.3 新剧集的 `meta/frame-reviews/NN.json` 使用 schema 2，绑定实�
 ## V2.5.1.1 Forced Candidate Gate
 正式生图入口自动执行 Raw Candidate Budget；技术失败释放预算；同一 Queue Item 技术重试复用 token；候选额度耗尽后硬停止内容生图循环。
 <!-- STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE_END -->
+
+<!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_BEGIN -->
+## V2.6.0 Performance Runtime / Cross-Shell Contract
+
+性能优先，但不降低创作门禁。恢复优先使用 Resume Capsule；正式图片候选走原子 Candidate Lifecycle。
+禁止 Agent 使用 Bash heredoc、PowerShell here-string、嵌套 `powershell -Command`、`shell=True` 或把大段 JSON/多行 Python 塞进 shell。
+多行/结构化内容必须走 UTF-8 文件、stdin 或仓库 file edit/write API；路径作为 argv 元素传递，不手工拼引号。
+Final Visual Freeze 只绑定视觉 SHA，Caption 变化只触发 Caption ↔ Image Audit，不得重新拉起全量 Visual Critic。
+<!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_END -->

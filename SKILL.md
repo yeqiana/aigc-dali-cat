@@ -1,4 +1,4 @@
-# Story OS — Repository Execution Contract V2.5.1.1
+# Story OS — Repository Execution Contract V2.6.0
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
@@ -512,3 +512,12 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 ## V2.5.1.1 Forced Candidate Gate
 正式生图入口自动执行 Raw Candidate Budget；技术失败释放预算；同一 Queue Item 技术重试复用 token；候选额度耗尽后硬停止内容生图循环。
 <!-- STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE_END -->
+
+<!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_BEGIN -->
+## V2.6.0 Performance Runtime / Cross-Shell Contract
+
+性能优先，但不降低创作门禁。恢复优先使用 Resume Capsule；正式图片候选走原子 Candidate Lifecycle。
+禁止 Agent 使用 Bash heredoc、PowerShell here-string、嵌套 `powershell -Command`、`shell=True` 或把大段 JSON/多行 Python 塞进 shell。
+多行/结构化内容必须走 UTF-8 文件、stdin 或仓库 file edit/write API；路径作为 argv 元素传递，不手工拼引号。
+Final Visual Freeze 只绑定视觉 SHA，Caption 变化只触发 Caption ↔ Image Audit，不得重新拉起全量 Visual Critic。
+<!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_END -->

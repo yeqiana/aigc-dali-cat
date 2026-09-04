@@ -309,6 +309,10 @@ def main() -> int:
                 print(json.dumps({'ok':False,'error':'RAW_CANDIDATE_BUDGET_EXHAUSTED','budget':budget_row},ensure_ascii=False));return 3
             budget_reserved=True
         result = generate_for_frame(args) if args.cmd == 'generate-for-frame' else generate_legacy(args)
+        if budget_reserved:
+            commit_ok,commit_row=raw_candidate_budget.commit(args.episode_dir,budget_token,reason="direct_cli_normalized_candidate_exists")
+            if not commit_ok:
+                print(json.dumps({'ok':False,'error':'CANDIDATE_COMMIT_FAILED','budget':commit_row},ensure_ascii=False));return 4
     except (BackendError, OSError, UnicodeError, SystemExit) as exc:
         if budget_reserved:raw_candidate_budget.release(args.episode_dir,budget_token,reason="direct_generate_for_frame_exception")
         print(json.dumps({'ok': False, 'error': str(exc)}, ensure_ascii=False))
@@ -320,3 +324,5 @@ if __name__ == '__main__':
     raise SystemExit(main())
 
 # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
+
+# STORY_OS_V2_6_0_PERFORMANCE_RUNTIME

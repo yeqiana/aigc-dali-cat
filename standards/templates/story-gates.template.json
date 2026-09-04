@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "tool_version": "2.5.1.1",
+  "tool_version": "2.6.0",
   "episode_id": "__EPISODE_ID__",
   "visual_profile": {
     "mode": "default",
@@ -159,6 +159,18 @@
       "enabled": true,
       "delivery_must_consume_snapshot": true,
       "snapshot_is_authority": false
+    },
+    "visual_final_freeze": {
+      "schema_version": 1,
+      "enabled": true,
+      "caption_changes_invalidate": false,
+      "image_or_frame_contract_changes_invalidate": true
+    },
+    "caption_image_audit": {
+      "schema_version": 1,
+      "enabled": true,
+      "incremental": true,
+      "chunk_size": 5
     }
   },
   "post_publish": {

@@ -1,4 +1,4 @@
-# Story OS — START HERE V2.5.1.1
+# Story OS — START HERE V2.6.0
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
@@ -429,3 +429,12 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 ## V2.5.1.1 Forced Candidate Gate
 正式生图入口自动执行 Raw Candidate Budget；技术失败释放预算；同一 Queue Item 技术重试复用 token；候选额度耗尽后硬停止内容生图循环。
 <!-- STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE_END -->
+
+<!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_BEGIN -->
+## V2.6.0 Performance Runtime / Cross-Shell Contract
+
+性能优先，但不降低创作门禁。恢复优先使用 Resume Capsule；正式图片候选走原子 Candidate Lifecycle。
+禁止 Agent 使用 Bash heredoc、PowerShell here-string、嵌套 `powershell -Command`、`shell=True` 或把大段 JSON/多行 Python 塞进 shell。
+多行/结构化内容必须走 UTF-8 文件、stdin 或仓库 file edit/write API；路径作为 argv 元素传递，不手工拼引号。
+Final Visual Freeze 只绑定视觉 SHA，Caption 变化只触发 Caption ↔ Image Audit，不得重新拉起全量 Visual Critic。
+<!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_END -->

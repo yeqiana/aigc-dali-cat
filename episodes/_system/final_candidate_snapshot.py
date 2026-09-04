@@ -16,6 +16,8 @@ from pathlib import Path
 import frame_semantic_review
 import fast_frame_scout
 import character_visual_contract
+import caption_image_audit
+import visual_final_freeze
 from final_acceptance import valid as acceptance_valid
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -134,6 +136,12 @@ def preflight(ep:Path, *, write_evidence:bool=True)->None:  # STORY_OS_V2_5_R31_
         raise ValueError("frame semantic preflight failed: "+"; ".join(semantic[:8]))
     elif semantic:
         print("FINAL SNAPSHOT WARN: frame semantic preflight accepted as known defects (meta/final-acceptance.json)")
+    freeze_errors=visual_final_freeze.verify(ep)
+    if freeze_errors:
+        raise ValueError("visual final freeze preflight failed: "+"; ".join(freeze_errors[:8]))
+    caption_errors=caption_image_audit.verify(ep)
+    if caption_errors:
+        raise ValueError("caption image audit preflight failed: "+"; ".join(caption_errors[:8]))
     scout=fast_frame_scout.audit(ep,write_summary=write_evidence)
     if scout and acceptance_valid(ep) is None:
         raise ValueError("Fast Scout unresolved: "+"; ".join(scout[:8]))
@@ -191,6 +199,8 @@ def build_lock(ep:Path, *, write_evidence:bool=True)->dict:
         ("meta/image-scheduler-performance.json","image_scheduler_performance","evidence/image-scheduler-performance.json"),
         ("meta/runtime/contracts/frame-contract-index.json","frame_contract_index","evidence/frame-contract-index.json"),
         ("meta/visual-lock-baseline-review.json","visual_lock_baseline_review","qa/visual-lock-baseline-review.json"),
+        ("meta/visual-final-freeze.json","visual_final_freeze","qa/visual-final-freeze.json"),
+        ("meta/caption-image-audit.json","caption_image_audit","qa/caption-image-audit.json"),
         ("meta/character-pixel-master.json","character_pixel_master_metadata","evidence/character-pixel-master.json"),
         ("meta/character-master-crops.json","character_master_crops_metadata","evidence/character-master-crops.json"),
     ]
@@ -315,3 +325,5 @@ def main()->int:
 
 
 if __name__=="__main__":raise SystemExit(main())
+
+# STORY_OS_V2_6_0_PERFORMANCE_RUNTIME

@@ -193,6 +193,9 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
             receipt_path=Path(receipt["path"])
             if not receipt_path.is_absolute(): receipt_path=ROOT/receipt_path
             receipt=provider_capability.finalize_receipt(receipt_path,norm,out)
+            commit_ok,commit_row=raw_candidate_budget.commit(ep,str(item["id"]),reason="provider_batch_normalized_candidate_exists")
+            if not commit_ok:
+                raise BatchBackendError("CANDIDATE_COMMIT_FAILED: "+str(commit_row))
             fc=frame_contract.provenance(ep,frame)
             results[item["id"]]={
                 "returncode":0,"stdout":"","output":out,"log":log,
@@ -228,9 +231,10 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
         runtime_trace.end_span(ep,span,name=f"batch.generate.{contract['batch_id']}",category="batch_generation",
             status="FAILED",started_monotonic=t0,
             attrs={"error":str(exc),"batch_id":contract["batch_id"],"provider":route["provider"]})
+        partial=results if isinstance(locals().get("results"),dict) else {}
         return {
-            "ok":False,"batch_id":contract["batch_id"],"requested_count":expected,"returned_count":0,
-            "elapsed_seconds":round(time.monotonic()-t0,2),"results":{},"log":log,"error":str(exc),
+            "ok":False,"partial_success":bool(partial),"batch_id":contract["batch_id"],"requested_count":expected,"returned_count":len(partial),
+            "elapsed_seconds":round(time.monotonic()-t0,2),"results":partial,"log":log,"error":str(exc),
             "provider":route["provider"],"transport":route["execution_mode"],
             "native_multi_image":bool(route.get("native_multi_image")),"single_http_request":False,
         }
@@ -243,3 +247,5 @@ def self_test():
 if __name__=="__main__": self_test()
 
 # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
+
+# STORY_OS_V2_6_0_PERFORMANCE_RUNTIME

@@ -23,6 +23,8 @@ import sys
 from pathlib import Path
 
 from story_os_contract import story_os_version
+import caption_image_audit
+import visual_final_freeze
 from fingerprint_semantics import (
     REVIEW_REL as RECENT5_SEMANTIC_REL,
     comparison_index as semantic_comparison_index,
@@ -844,6 +846,8 @@ def cmd_verify(args: argparse.Namespace) -> int:
     groups = [
         ("recent5", verify_recent5_evidence(ep)),
         ("series_lock", verify_series_lock(ep)),
+        ("visual_final_freeze", visual_final_freeze.verify(ep)),
+        ("caption_image_audit", caption_image_audit.verify(ep)),
         ("release_semantic", verify_release_semantic(ep)),
         ("governance", verify_governance(ep)),
     ]
@@ -879,6 +883,19 @@ def cmd_prepare_auto(args: argparse.Namespace) -> int:
             return 3
 
     cmd_init_compliance(argparse.Namespace(episode_dir=str(ep), force=False))
+    try:
+        visual_final_freeze.ensure(ep)
+    except Exception as exc:
+        print("FAIL visual_final_freeze:", exc)
+        return 3
+    try:
+        caption_ok,_caption_data=caption_image_audit.ensure(ep,codex_raw=args.codex,timeout=min(args.timeout,900))
+        if not caption_ok:
+            print("FAIL caption_image_audit: unsupported caption/image pair")
+            return 3
+    except Exception as exc:
+        print("FAIL caption_image_audit:", exc)
+        return 3
     if verify_release_semantic(ep):
         rc = cmd_run_release_critic(argparse.Namespace(
             episode_dir=str(ep), codex=args.codex, timeout=args.timeout
@@ -993,3 +1010,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# STORY_OS_V2_6_0_PERFORMANCE_RUNTIME

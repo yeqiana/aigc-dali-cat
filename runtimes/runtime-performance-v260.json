@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "module_version": "2.6.0",
+  "enabled": true,
+  "goal": "reduce_controller_overhead_without_creative_quality_reduction",
+  "candidate_budget": {
+    "per_frame_per_kind": {
+      "original": 2,
+      "repair": 2,
+      "exception": 2
+    },
+    "episode_limit_formula": "min(60,max(20,frame_count+15))",
+    "atomic_lock": true,
+    "technical_failure_before_commit_releases": true,
+    "committed_candidate_never_released_by_review_failure": true
+  },
+  "visual_freeze": {
+    "enabled": true,
+    "caption_changes_invalidate": false,
+    "image_or_frame_contract_changes_invalidate": true
+  },
+  "caption_image_audit": {
+    "enabled": true,
+    "chunk_size": 5,
+    "incremental_by_caption_and_image_sha": true,
+    "visual_review_invalidated_by_caption_change": false
+  },
+  "cross_shell": {
+    "shell_true": false,
+    "bash_heredoc": false,
+    "powershell_here_string": false,
+    "powershell_inline_command_for_json": false,
+    "argv_first": true,
+    "stdin_or_file_for_structured_payload": true,
+    "utf8": true,
+    "spaces_and_chinese_paths_supported": true
+  },
+  "circuit_breaker": {
+    "hard_failure_threshold": 2,
+    "cooldown_seconds": 900,
+    "fail_fast": true
+  },
+  "performance_slo_seconds": {
+    "green": 5400,
+    "yellow": 7200,
+    "incident": 10800
+  }
+}

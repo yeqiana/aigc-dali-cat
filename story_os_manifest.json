@@ -1,5 +1,5 @@
 {
-  "platform_version": "2.5.1.1",
+  "platform_version": "2.6.0",
   "version_semantics": {
     "platform_version": "Root product release identifier; the only platform version authority.",
     "schema_version": "Shape of this specific document.",
@@ -7,7 +7,7 @@
     "platform_min_version": "Lowest Story OS platform version that may consume a module."
   },
   "contract_schema": 1,
-  "release_name": "Runtime Fast Path + Forced Candidate Gate",
+  "release_name": "Performance Runtime: atomic lifecycle + visual freeze + cross-shell hardening",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -208,7 +208,20 @@
     "forced_raw_candidate_budget_gate",
     "generation_entrypoint_candidate_guard",
     "technical_retry_budget_neutral",
-    "queue_item_idempotent_candidate_token"
+    "queue_item_idempotent_candidate_token",
+    "atomic_runtime_store",
+    "cross_process_candidate_lock",
+    "candidate_commit_lifecycle",
+    "candidate_commit_before_review",
+    "review_failure_never_regenerates_committed_candidate",
+    "episode_image_loop_guard",
+    "visual_final_freeze",
+    "caption_image_incremental_audit",
+    "caption_change_does_not_invalidate_visual_review",
+    "cross_shell_safe_runtime",
+    "argv_stdin_utf8_transport",
+    "heredoc_avoidance_contract",
+    "runtime_circuit_breaker"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -296,7 +309,10 @@
     "Context restore consumes a SHA-bound Resume Capsule before broad repository rescans; source authority still wins on drift.",
     "Raw candidate attempts are budgeted separately from technical retries; technical failures never consume raw candidate budget.",
     "Performance SLO is advisory telemetry and never a Story/Release gate.",
-    "Formal image-generation entrypoints must claim Raw Candidate Budget automatically; technical failures release the claim and do not consume candidate budget."
+    "Formal image-generation entrypoints must claim Raw Candidate Budget automatically; technical failures release the claim and do not consume candidate budget.",
+    "Caption/title/description edits must not invalidate a clean Final Visual Freeze unless visual inputs changed.",
+    "A successfully normalized image candidate is committed before Fast Scout or Rolling Review; review technical failure must not release or regenerate it.",
+    "Runtime commands must use argv/stdin/UTF-8 files; shell=True, Bash heredoc and PowerShell here-string are forbidden for canonical Story OS execution."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

@@ -78,6 +78,14 @@ jobs:
           # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
           python episodes/_system/test_v251_runtime_fast_path.py -v
           python episodes/_system/test_v2511_forced_candidate_gate.py -v
+          # STORY_OS_V2_6_0_PERFORMANCE_RUNTIME
+          python episodes/_system/test_v260_performance_runtime.py -v
+          python episodes/_system/runtime_atomic_store.py self-test
+          python episodes/_system/runtime_command.py self-test
+          python episodes/_system/raw_candidate_budget.py self-test
+          python episodes/_system/runtime_circuit_breaker.py self-test
+          python episodes/_system/visual_final_freeze.py self-test
+          python episodes/_system/caption_image_audit.py self-test
           python episodes/_system/runtime_capability_cache.py self-test
           python episodes/_system/runtime_resume_capsule.py self-test
           python episodes/_system/raw_candidate_budget.py self-test

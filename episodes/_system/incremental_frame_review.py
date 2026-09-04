@@ -211,8 +211,8 @@ def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, capt
         if str(data.get(field) or "").lower() != str(expected).lower():
             reasons.append("phase3_frame_context_changed")
             break
-    if version_tuple(version) >= TARGET and str(data.get("caption_sha256") or "").lower() != caption_hash.lower():
-        reasons.append("caption_changed_or_unbound")
+    # STORY_OS_V2_6_0_PERFORMANCE_RUNTIME:
+    # Caption changes are audited independently by caption_image_audit.py and MUST NOT dirty visual review.
     if not _scope_ok(data):
         reasons.append("review_scope_invalid")
     if data.get("decision") != "pass" or data.get("issue_codes") not in ([], None):

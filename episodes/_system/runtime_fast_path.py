@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Story OS V2.5.1 Runtime Fast Path entrypoint."""
+"""Story OS V2.6.0 Performance Runtime Fast Path entrypoint."""
 from __future__ import annotations
 import argparse, json
 from pathlib import Path
@@ -20,12 +20,12 @@ def prepare(ep):
     if step:
         try:capsule=execution_capsule.compile_capsule(ep,step,write=True)
         except Exception:capsule=None
-    state={"schema_version":1,"module_version":"2.5.1","resume_capsule":(ep/runtime_resume_capsule.REL).relative_to(ep).as_posix(),"runtime_step":step,"capability_cache_fresh":runtime_capability_cache.is_fresh(caps),"execution_capsule_compiled":bool(capsule),"performance_slo":slo(ep),"fast_path_policy":"resume capsule first; no broad rescan while source SHA is unchanged"}
+    state={"schema_version":1,"module_version":"2.6.0","resume_capsule":(ep/runtime_resume_capsule.REL).relative_to(ep).as_posix(),"runtime_step":step,"capability_cache_fresh":runtime_capability_cache.is_fresh(caps),"execution_capsule_compiled":bool(capsule),"performance_slo":slo(ep),"fast_path_policy":"resume capsule first; no broad rescan while source SHA is unchanged"}
     out=ep/"meta/runtime/fast-path-state.json";out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(state,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
-    episode_performance.safe_end_named_span(ep,"CONTEXT_RECOVERY",status="PASS",metadata={"fast_path":"2.5.1"})
+    episode_performance.safe_end_named_span(ep,"CONTEXT_RECOVERY",status="PASS",metadata={"fast_path":"2.6.0"})
     return {"state":state,"resume":resume,"capabilities":caps}
 def self_test():
-    assert slo(Path("/nonexistent"))["health"]=="UNKNOWN";print("RUNTIME FAST PATH V2.5.1 SELF-TEST PASS")
+    assert slo(Path("/nonexistent"))["health"]=="UNKNOWN";print("RUNTIME FAST PATH V2.6.0 SELF-TEST PASS")
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)
     for name in ("prepare","resume","slo"):
@@ -46,3 +46,5 @@ def main():
         print(json.dumps(d,ensure_ascii=False,indent=2));return 0
     ok,row=raw_candidate_budget.claim(a.episode_dir,a.frame,a.kind,a.reason);print(json.dumps(row,ensure_ascii=False,indent=2));return 0 if ok else 2
 if __name__=="__main__":raise SystemExit(main())
+
+# STORY_OS_V2_6_0_PERFORMANCE_RUNTIME
