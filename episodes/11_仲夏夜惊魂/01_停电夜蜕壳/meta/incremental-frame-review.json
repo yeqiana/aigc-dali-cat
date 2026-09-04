@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.4.2",
+  "planned_at": "2026-09-04T10:53:38+08:00",
+  "action": "FULL",
+  "dirty_frames": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20"
+  ],
+  "context_frames": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20"
+  ],
+  "reasons": {
+    "01": [
+      "caption_changed_or_unbound"
+    ],
+    "02": [
+      "caption_changed_or_unbound"
+    ],
+    "03": [
+      "asset_sha_changed",
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:story_beat_fidelity",
+      "check_failed:anomaly_readability"
+    ],
+    "04": [
+      "caption_changed_or_unbound"
+    ],
+    "05": [
+      "caption_changed_or_unbound"
+    ],
+    "06": [
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:key_prop_fidelity",
+      "check_failed:anomaly_readability"
+    ],
+    "07": [
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:key_prop_fidelity",
+      "check_failed:anomaly_readability",
+      "check_failed:caption_image_support"
+    ],
+    "08": [
+      "asset_sha_changed",
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:story_beat_fidelity",
+      "check_failed:anomaly_readability",
+      "check_failed:caption_image_support"
+    ],
+    "09": [
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:story_beat_fidelity",
+      "check_failed:key_prop_fidelity",
+      "check_failed:anomaly_readability"
+    ],
+    "10": [
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:story_beat_fidelity",
+      "check_failed:key_prop_fidelity",
+      "check_failed:anomaly_readability",
+      "check_failed:caption_image_support"
+    ],
+    "11": [
+      "caption_changed_or_unbound"
+    ],
+    "12": [
+      "caption_changed_or_unbound"
+    ],
+    "13": [
+      "caption_changed_or_unbound"
+    ],
+    "14": [
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:scene_storyboard_fidelity",
+      "check_failed:anomaly_readability"
+    ],
+    "15": [
+      "caption_changed_or_unbound"
+    ],
+    "16": [
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:story_beat_fidelity",
+      "check_failed:anomaly_readability",
+      "check_failed:anomaly_escalation_fidelity"
+    ],
+    "17": [
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:pov_photographer_legality"
+    ],
+    "18": [
+      "asset_sha_changed",
+      "caption_changed_or_unbound"
+    ],
+    "19": [
+      "caption_changed_or_unbound"
+    ],
+    "20": [
+      "caption_changed_or_unbound",
+      "review_not_pass",
+      "check_failed:story_beat_fidelity",
+      "check_failed:anomaly_readability",
+      "check_failed:scale_reference_fidelity"
+    ]
+  },
+  "dirty_ratio": 1.0,
+  "caption_mode": "per_frame"
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "frame": "20",
+  "risk_level": "HIGH",
+  "risk_score": 61,
+  "risk_tags": [
+    "ending",
+    "impact_2",
+    "residue"
+  ],
+  "frame_contract_sha256": "5f8416aee0d73d880ae9b264bd7714254fea1b3053daf391866e0b810326dd8a",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/20-380426b61de0-a1.png",
+  "asset_sha256": "e7bb7133e93e5f861997a23290e597aabfc63771341ae1904b8d20caeee10566",
+  "scouted_at": "2026-09-04T00:22:48+08:00",
+  "final_critic_still_required": true,
+  "decision": "REPAIR_NOW",
+  "issue_codes": [
+    "FRAME_CONTRACT_OBVIOUS_MISMATCH"
+  ],
+  "notes": "Bright-day balcony view with railing/trees foreground and normal county town + far mountains matches capture and daytime cue. But anomaly is delivered as a large faintly translucent dome/bubble with a thin bright rim arcing over the sky and city; the locked residue contract requires the county-edge mountain RIDGE itself to keep the smooth lying-beast back silhouette with only a very thin slow air-heat shimmer on the ridge line, and says the city must look normal and not like a sci-fi poster. A full visible dome over the sky is a different anomaly form and reads as spectacle, not the embedded beast-ridge residue. Based on vision-model description (direct image read failed at path '-').",
+  "confidence": 0.6,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scouts/20.jsonl"
+}

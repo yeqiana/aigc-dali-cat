@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "recorded_at_epoch": 1788443094,
+  "frame": "17",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "generation_route": "codex_desktop_interface_imagegen",
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "requested_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": 0.8
+  },
+  "provider_raw_canvas": {
+    "width": 1122,
+    "height": 1402,
+    "aspect_ratio": 0.800285307,
+    "exact_requested_canvas": false,
+    "resize_direction_to_release": "downscale"
+  },
+  "ratio_delta": 0.000356633,
+  "normalize_decision": "AUTO_NORMALIZE",
+  "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\media\\raw\\17-1788443094.png",
+  "raw_sha256": "8d9112c6996acef14f8dede4fe49e2d2aa6c3d6a991e6179ee3e39c43a04513b",
+  "provider_attestation": false,
+  "exact_raw_canvas_guaranteed": false,
+  "receipt_is_evidence_not_authority": true,
+  "normalization": {
+    "operation": "RESIZE_LANCZOS",
+    "ratio_delta": 0.000357,
+    "crop_applied": false,
+    "reencoded": true,
+    "local_attempts": 1
+  },
+  "release_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\media\\candidates\\scheduled\\17-7dda86926f4f-a1.png",
+    "sha256": "2f016ac97f1ee180b191c01a302f47911a6d92a1cb007ba41f4ab32e206e5526"
+  }
+}

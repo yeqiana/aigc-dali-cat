@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.1.0",
+  "frame": "20",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/20.png",
+  "asset_sha256": "6a33e4d52ce22dffbf66563743e8f4faa89bc16ad16a2da7e2381cf562e9081a",
+  "story_sha256": "1036636614fc8208f3831078635a860b484927c133ac2eb497d9c2601c5b69b3",
+  "storyboard_sha256": "a6147f70d2de6e06c6f4fba6e48ae5dfc36a1634a2117bd9ea22b47fba75d9fd",
+  "visual_contract_sha256": "4807f63cdd5d52981eb635b44547e1c320ab573c58c192713d341fa4fed34dad",
+  "environment_frame_sha256": "bc48ed2f1ee3bdbda56cf5460f3ea6ab4e6edf1e65c38b7746ade10a3b049204",
+  "frame_directive_sha256": "5ec8a772100ee3bb28ab14b3e4d35e1b3694be5a13f48c08c6fa3a2f20ff812e",
+  "frame_contract_sha256": "5f8416aee0d73d880ae9b264bd7714254fea1b3053daf391866e0b810326dd8a",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "review_scope": "FULL_FRAME_SET",
+    "attempt": 2,
+    "reviewed_at": "2026-09-04T04:32:25+08:00",
+    "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-critic-attempt-2.jsonl"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": false,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": false,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": false,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true
+  },
+  "issue_codes": [
+    "ANOMALY_UNREADABLE",
+    "ANOMALY_SCALE_UNDERDELIVERED",
+    "STORY_BEAT_NOT_VISIBLE"
+  ],
+  "notes": "白天县城全景正常、阳台取景成立；但远景山脊为多条褶皱的普通山地轮廓，无平滑连贯的伏兽背脊剪影，也未见脊线空气热扭曲的'呼吸'感；城市与山体尺度未支撑异常体量，与前夜帧13/16/17的巨物轮廓视觉记忆无法互认，终局重读beat未在像素中兑现。",
+  "decision": "fail"
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.1.0",
+  "frame": "17",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/17.png",
+  "asset_sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1",
+  "story_sha256": "1036636614fc8208f3831078635a860b484927c133ac2eb497d9c2601c5b69b3",
+  "storyboard_sha256": "a6147f70d2de6e06c6f4fba6e48ae5dfc36a1634a2117bd9ea22b47fba75d9fd",
+  "visual_contract_sha256": "4807f63cdd5d52981eb635b44547e1c320ab573c58c192713d341fa4fed34dad",
+  "environment_frame_sha256": "131172cdf4ba8f85ac935cab3509720c5d2aac532b1910f47e8b9220509eca51",
+  "frame_directive_sha256": "520e952eaff1a580c6993fc25276243fe75cc115074da69871cbe0a331ab387f",
+  "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "review_scope": "FULL_FRAME_SET",
+    "attempt": 2,
+    "reviewed_at": "2026-09-04T04:32:25+08:00",
+    "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-critic-attempt-2.jsonl"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": false,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": false,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true
+  },
+  "issue_codes": [
+    "GHOST_CAMERA",
+    "CAMERA_OWNER_UNRESOLVED"
+  ],
+  "notes": "高潮事件元素部分在场：左前臂细红痕、左手紧攥包带可辨，右上远处黑屏手机悬浮空中、右手空举；本剧无第二拍摄源，任何持机者都无法同帧拍下'自身双臂+手机腾空'，该画面机位无物理归属（attempt 1以'摄者即攥包带者'通过，逻辑不成立）；另巨物以暗色褶皱团块+扭曲路面呈现，背脊/肋缝/探出须/鳞甲解剖与'县城表皮被托起'的契约画面只部分兑现。",
+  "decision": "fail"
+}

@@ -47,8 +47,8 @@
     "profile_review_path": null,
     "admission_frames": [
       1,
-      5,
-      8,
+      15,
+      6,
       17
     ],
     "continuity": {
@@ -444,8 +444,53 @@
       },
       "dependency_rule": "01 baseline PASS 后，05/08/17 才允许并行进入 Visual Lock",
       "schema_version": 2,
-      "items": [],
+      "items": [
+        {
+          "id": "V-B",
+          "role": "ordinary_baseline",
+          "frame": 1,
+          "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/01-d3b4eb3ac2a7-a2.png",
+          "sha256": "f42261c0fe90ebdcc1e194c5806738fed9fdd198efbc43933e58db95e3313dc8",
+          "decision": "passed",
+          "frame_contract_sha256": "69df170a8ea94ab4666691380fd6ca53319c9e428522ea736004da260230cc3f",
+          "note": ""
+        },
+        {
+          "id": "V-W",
+          "role": "worst_capture_condition",
+          "frame": 15,
+          "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/15-d173ccd5da37-a1.png",
+          "sha256": "9d008a5b66aee376c65e4a145c241d7eb90504b53d548650708316e9745bfbce",
+          "decision": "passed",
+          "frame_contract_sha256": "2b21b127a163c64d68ae2c0a823dd1267dfef6d989f1b78504581dbdaf7711a2",
+          "note": ""
+        },
+        {
+          "id": "V-A",
+          "role": "first_major_anomaly",
+          "frame": 6,
+          "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/06-4771a4e705b8-a1.png",
+          "sha256": "e9f33870eb38c7ee39c6b6abdf79ae1598fac5f14a56f984d18bee6ad8da4055",
+          "decision": "passed",
+          "frame_contract_sha256": "16a97ce58ebab8b7244359208aeeb255923b876db3d832c44435879ef40c733f",
+          "note": ""
+        },
+        {
+          "id": "V-H",
+          "role": "high_impact_admission",
+          "frame": 17,
+          "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-966c9f8f2f9f-a3.png",
+          "sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1",
+          "decision": "passed",
+          "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a",
+          "note": ""
+        }
+      ],
       "note": "故事按用户指定方向重写（显形生物），旧 Visual Lock 候选全部基于旧合同，作废重出。"
+    },
+    "calibration_contact_sheet": {
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/calibration/calibration-contact-sheet.png",
+      "sha256": "6887342de72fada6a020e614232ac83460c2c37e118d607336fac826e9baa7d5"
     },
     "references": {
       "required": false,
@@ -467,8 +512,8 @@
   },
   "subtitles": {
     "required": true,
-    "sound_card_completed": false,
-    "layout_audit_path": null
+    "sound_card_completed": true,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
   },
   "locks": {
     "edit_mode": "none",
@@ -478,11 +523,11 @@
     "story": "passed",
     "authenticity": "passed",
     "continuity": "passed",
-    "visual_admission": "pending",
-    "subtitle": "pending",
-    "production": "pending",
-    "recommendation_fit": "pending",
-    "publish": "pending"
+    "visual_admission": "passed",
+    "subtitle": "waived",
+    "production": "waived",
+    "recommendation_fit": "passed",
+    "publish": "passed"
   },
   "machine_contract": {
     "version": 1,
@@ -492,5 +537,13 @@
     "frame_review_dir": "meta/frame-reviews",
     "review_schema_version": 2,
     "require_all_frames": true
+  },
+  "release": {
+    "final_candidate_snapshot": {
+      "schema_version": 1,
+      "enabled": true,
+      "delivery_must_consume_snapshot": true,
+      "snapshot_is_authority": false
+    }
   }
 }

@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.1.0",
+  "frame": "16",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/16.png",
+  "asset_sha256": "562a8c0122e267e7243de410b43bc5474689286ad91900afaec3d4a440b1b384",
+  "story_sha256": "1036636614fc8208f3831078635a860b484927c133ac2eb497d9c2601c5b69b3",
+  "storyboard_sha256": "a6147f70d2de6e06c6f4fba6e48ae5dfc36a1634a2117bd9ea22b47fba75d9fd",
+  "visual_contract_sha256": "4807f63cdd5d52981eb635b44547e1c320ab573c58c192713d341fa4fed34dad",
+  "environment_frame_sha256": "e63f0f69a42cc1b2c6cdd1edbe7d3a2360b5d2270f9c95c8acde3ecdfedb009a",
+  "frame_directive_sha256": "c34226c12742a1a0cca2469070c6cbe3caa52b92d710a954693bcdd6ddaf969f",
+  "frame_contract_sha256": "837046e2c8dac5e637e4f3d78be2b171254c22fa61367f3b93fb72236415bf97",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "review_scope": "FULL_FRAME_SET",
+    "attempt": 2,
+    "reviewed_at": "2026-09-04T04:32:25+08:00",
+    "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-critic-attempt-2.jsonl"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": false,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": false,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": false,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true
+  },
+  "issue_codes": [
+    "ANOMALY_UNREADABLE",
+    "ANOMALY_SCALE_UNDERDELIVERED"
+  ],
+  "notes": "天桥高处视角与成片暗楼群成立，无悬浮手机（attempt 1对该帧的GHOST_CAMERA描述实际对应帧17）；但主景为一栋未完工住宅楼与一座可作普通山体解释的暗色圆丘，契约要求的'三个街区表层连成半透明壳、裸露建筑开口错位、骨板纹理连片'在像素中不可读，且显形程度弱于已出现完整巨背的帧13，impact 4升级未兑现。",
+  "decision": "fail"
+}

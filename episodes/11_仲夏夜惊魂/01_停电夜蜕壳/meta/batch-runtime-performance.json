@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "mode": "batch_image_runtime_v240",
+  "started_at": "2026-09-04T00:03:42+08:00",
+  "batches": [
+    {
+      "batch_id": "BATCH_3e3c49d5e8b7",
+      "planned_count": 1,
+      "returned_count": 0,
+      "ok": false,
+      "elapsed_seconds": 109.59,
+      "fallback": true,
+      "partial_success": false,
+      "provider": "codex_subscription",
+      "transport": "legacy_bridge",
+      "native_multi_image": false,
+      "single_http_request": false,
+      "logical_batch": false,
+      "logical_batch_evidence": {}
+    },
+    {
+      "batch_id": "BATCH_b291ff166808",
+      "planned_count": 3,
+      "returned_count": 3,
+      "ok": true,
+      "elapsed_seconds": 1.44,
+      "fallback": false,
+      "partial_success": false,
+      "provider": "codex_subscription",
+      "transport": "codex_subscription_parallel_fanout",
+      "native_multi_image": false,
+      "single_http_request": false,
+      "logical_batch": true,
+      "logical_batch_evidence": {
+        "schema_version": 1,
+        "recorded_at": "2026-09-04T00:05:37+08:00",
+        "provider": "codex_subscription",
+        "transport": "codex_subscription_parallel_fanout",
+        "logical_batch": true,
+        "native_multi_image": false,
+        "single_http_request": false,
+        "api_key_required": false,
+        "requested_count": 3,
+        "successful_count": 3,
+        "failed_count": 0,
+        "initial_max_inflight": 3,
+        "recommended_concurrency": 5,
+        "adaptive_steps": [
+          5,
+          3,
+          1
+        ],
+        "rounds": [
+          {
+            "round": 1,
+            "concurrency": 3,
+            "requested": 3,
+            "succeeded": 3,
+            "failed": 0
+          }
+        ],
+        "completion_order": [
+          "19@3",
+          "18@3",
+          "20@3"
+        ],
+        "technical_retry_consumes_content_repair": false,
+        "partial_success_preserved": true,
+        "elapsed_seconds": 1.44,
+        "evidence_not_authority": true
+      }
+    }
+  ],
+  "fallback_single_frames": 1,
+  "completed_at": "2026-09-04T00:12:22+08:00",
+  "batch_count": 2
+}

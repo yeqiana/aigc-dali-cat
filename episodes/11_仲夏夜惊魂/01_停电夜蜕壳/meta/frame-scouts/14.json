@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "frame": "14",
+  "risk_level": "HIGH",
+  "risk_score": 97,
+  "risk_tags": [
+    "anomaly_amplified",
+    "impact_3_4",
+    "reveal"
+  ],
+  "frame_contract_sha256": "fd0eef5288d9fbe8e12f9e9a5d82b0a491047ff7542f8f98994f34c5297c8ed8",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/14-7e04fb8a8026-a1.png",
+  "asset_sha256": "7964dacc909ba0dbfe5014682eceacb58f300e97a3931b307576ba72d78b956c",
+  "scouted_at": "2026-09-04T01:28:23+08:00",
+  "final_critic_still_required": true,
+  "decision": "REPAIR_NOW",
+  "issue_codes": [
+    "ANOMALY_SCALE_OBVIOUSLY_WEAK"
+  ],
+  "notes": "Reads as ordinary derelict under-renovation courtyard: exposed brick, peeling plaster, dark doorway at expected position seen from stair landing. No evidence of thin lifted surface / layer separation at former door site, no offset real opening (doorway sits where the facade door should be), no dark-gray rough body surface with shallow bone-plate texture. Required reveal cues (REQUIRED_VISUAL_CUES, impact_level 3) are absent in pixels. Scale reference (staircase, full-height openings) and capture credibility fine; the anomaly itself is underdelivered.",
+  "confidence": 0.92,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scouts/14.jsonl"
+}

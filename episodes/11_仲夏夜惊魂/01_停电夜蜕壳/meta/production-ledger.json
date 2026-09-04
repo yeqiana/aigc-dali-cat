@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "engine_version": "1.2",
-  "created_at": "2026-08-31T19:40:28+08:00",
-  "updated_at": "2026-08-31T22:30:13+08:00",
+  "created_at": "2026-09-03T18:40:46+08:00",
+  "updated_at": "2026-09-04T10:46:26+08:00",
   "note": "Per-frame production transaction ledger. This is NOT an episode stage source.",
   "canvas": {
     "aspect_ratio": "4:5",
@@ -15,9 +15,22 @@
     "prompt_char_limit": 260,
     "prompt_byte_limit": 900,
     "max_content_repairs_per_frame": 1,
-    "technical_failures_consume_content_repair": false
+    "technical_failures_consume_content_repair": false,
+    "image_quality": "high",
+    "normalize_enabled": true,
+    "preserve_raw": true,
+    "final_format": "PNG",
+    "resize_algorithm": "Lanczos",
+    "default_crop": "forbidden",
+    "imageops_fit": "exception_only",
+    "automatic_ratio_delta_max": 0.01,
+    "review_ratio_delta_max": 0.03,
+    "reject_ratio_delta_above": 0.03,
+    "noop_when_exact_match": true,
+    "technical_failure_triggers_generation": false
   },
   "asset_roots": {
+    "raw": "media/raw",
     "originals": "media/candidates/originals",
     "repairs": "media/candidates/repairs",
     "approved": "media/approved",
@@ -27,20 +40,20 @@
   "frames": {
     "01": {
       "number": 1,
-      "status": "PASSED",
+      "status": "LOCKED",
       "content_repairs_used": 0,
       "technical_failures": [
         {
-          "at": "2026-08-31T19:41:45+08:00",
-          "attempt_id": "adeb7d96c67b",
+          "at": "2026-09-03T18:52:42+08:00",
+          "attempt_id": "637040c57d96",
           "code": "IMAGE_BACKEND_ERROR",
-          "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\01-dfd5b186d094-a1.jsonl"
+          "message": "name 'ROOT' is not defined"
         }
       ],
       "attempts": [
         {
-          "attempt_id": "adeb7d96c67b",
-          "started_at": "2026-08-31T19:40:28+08:00",
+          "attempt_id": "637040c57d96",
+          "started_at": "2026-09-03T18:52:40+08:00",
           "kind": "original",
           "request": {
             "frame": "01",
@@ -50,6 +63,7 @@
             "prompt_bytes": 285,
             "capture_id": "visual-lock-01",
             "model": "gpt-image-2",
+            "quality": "high",
             "canvas": {
               "aspect_ratio": "4:5",
               "width": 1080,
@@ -59,27 +73,29 @@
             "visual_profile": {
               "profile_id": "M00",
               "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
-              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
               "capture_profile": "CP01"
             },
             "frame_contract": {
               "schema_version": 1,
               "path": "meta/runtime/contracts/frames/01.json",
-              "contract_sha256": "fe0418fc08a4ddaec153fe795a28f9af0be1ffac5bddd3b0b1eed3da1086cf87"
-            }
+              "contract_sha256": "69df170a8ea94ab4666691380fd6ca53319c9e428522ea736004da260230cc3f"
+            },
+            "frame_contract_sha256": "69df170a8ea94ab4666691380fd6ca53319c9e428522ea736004da260230cc3f",
+            "batch_id": null
           },
-          "request_fingerprint": "264e93fd8a9968e09674fef43ca07373104a7ac5cffab792b1972aa2a425b66a",
-          "notes": "phase6 scheduler item=dfd5b186d094 scope=visual_lock",
+          "request_fingerprint": "885002582182a9744e5f58bdcacc32235b57151a7c83ce8589978ee1de9ba37b",
+          "notes": "phase6 scheduler item=d3b4eb3ac2a7 scope=visual_lock",
           "result": "technical_failure",
-          "completed_at": "2026-08-31T19:41:45+08:00",
+          "completed_at": "2026-09-03T18:52:42+08:00",
           "error": {
             "code": "IMAGE_BACKEND_ERROR",
-            "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\01-dfd5b186d094-a1.jsonl"
+            "message": "name 'ROOT' is not defined"
           }
         },
         {
-          "attempt_id": "c76babc2bc28",
-          "started_at": "2026-08-31T19:51:46+08:00",
+          "attempt_id": "c983b1cd78e3",
+          "started_at": "2026-09-03T18:52:59+08:00",
           "kind": "original",
           "request": {
             "frame": "01",
@@ -89,6 +105,7 @@
             "prompt_bytes": 285,
             "capture_id": "visual-lock-01",
             "model": "gpt-image-2",
+            "quality": "high",
             "canvas": {
               "aspect_ratio": "4:5",
               "width": 1080,
@@ -98,44 +115,72 @@
             "visual_profile": {
               "profile_id": "M00",
               "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
-              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
               "capture_profile": "CP01"
             },
             "frame_contract": {
               "schema_version": 1,
               "path": "meta/runtime/contracts/frames/01.json",
-              "contract_sha256": "fe0418fc08a4ddaec153fe795a28f9af0be1ffac5bddd3b0b1eed3da1086cf87"
-            }
+              "contract_sha256": "69df170a8ea94ab4666691380fd6ca53319c9e428522ea736004da260230cc3f"
+            },
+            "frame_contract_sha256": "69df170a8ea94ab4666691380fd6ca53319c9e428522ea736004da260230cc3f",
+            "batch_id": null
           },
-          "request_fingerprint": "264e93fd8a9968e09674fef43ca07373104a7ac5cffab792b1972aa2a425b66a",
-          "notes": "phase6 scheduler item=dfd5b186d094 scope=visual_lock",
+          "request_fingerprint": "885002582182a9744e5f58bdcacc32235b57151a7c83ce8589978ee1de9ba37b",
+          "notes": "phase6 scheduler item=d3b4eb3ac2a7 scope=visual_lock",
           "result": "success",
-          "completed_at": "2026-08-31T19:51:48+08:00",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/01-1788432779.json",
+            "sha256": "ded0fd20248147ffeb31d0e5da038ec8b8818173e33ca7f4cadc8d9ab977c280",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T18:53:01+08:00",
           "candidate": {
-            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/01-dfd5b186d094-a2.png",
-            "sha256": "47094e63e36261cad748855c2d1e0e4b1be7b14e34cffa778b33329bfa0f05b0",
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/01-d3b4eb3ac2a7-a2.png",
+            "sha256": "f42261c0fe90ebdcc1e194c5806738fed9fdd198efbc43933e58db95e3313dc8",
             "width": 1080,
             "height": 1350,
-            "recorded_at": "2026-08-31T19:51:48+08:00",
+            "recorded_at": "2026-09-03T18:53:01+08:00",
             "kind": "original",
-            "attempt_id": "c76babc2bc28"
+            "attempt_id": "c983b1cd78e3"
           }
         }
       ],
       "current_candidate": {
-        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/01-dfd5b186d094-a2.png",
-        "sha256": "47094e63e36261cad748855c2d1e0e4b1be7b14e34cffa778b33329bfa0f05b0",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/01-d3b4eb3ac2a7-a2.png",
+        "sha256": "f42261c0fe90ebdcc1e194c5806738fed9fdd198efbc43933e58db95e3313dc8",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-08-31T19:51:48+08:00",
+        "recorded_at": "2026-09-03T18:53:01+08:00",
         "kind": "original",
-        "attempt_id": "c76babc2bc28"
+        "attempt_id": "c983b1cd78e3"
       },
-      "approved_asset": null,
-      "lock": null,
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/01.png",
+        "sha256": "f42261c0fe90ebdcc1e194c5806738fed9fdd198efbc43933e58db95e3313dc8",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-03T21:57:35+08:00",
+        "source_sha256": "f42261c0fe90ebdcc1e194c5806738fed9fdd198efbc43933e58db95e3313dc8"
+      },
+      "lock": {
+        "at": "2026-09-03T21:57:35+08:00",
+        "sha256": "f42261c0fe90ebdcc1e194c5806738fed9fdd198efbc43933e58db95e3313dc8",
+        "reason": "visual-lock V-B delegated pixel review PASS"
+      },
       "reviews": [
         {
-          "at": "2026-08-31T19:56:42+08:00",
+          "at": "2026-09-03T20:53:57+08:00",
           "decision": "pass",
           "notes": "Visual Lock ordinary baseline separate PASS"
         }
@@ -143,46 +188,451 @@
     },
     "02": {
       "number": 2,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
-    },
-    "03": {
-      "number": 3,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
-    },
-    "04": {
-      "number": 4,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
-    },
-    "05": {
-      "number": 5,
-      "status": "ORIGINAL_READY",
+      "status": "PASSED",
       "content_repairs_used": 0,
       "technical_failures": [],
       "attempts": [
         {
-          "attempt_id": "27f78732c7da",
-          "started_at": "2026-08-31T19:59:09+08:00",
+          "attempt_id": "a8d4d404e0da",
+          "started_at": "2026-09-03T23:55:55+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "02",
+            "kind": "original",
+            "prompt_sha256": "4f75c790608a43f58ca7cad149be238051efc42caf91e6826f34539149d5fc85",
+            "prompt_chars": 71,
+            "prompt_bytes": 207,
+            "capture_id": "batch-02",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/02.json",
+              "contract_sha256": "11adda114b1fafd915cb37e1bf7629440e6212ef3a26f2b3167b8407620a4938"
+            },
+            "frame_contract_sha256": "11adda114b1fafd915cb37e1bf7629440e6212ef3a26f2b3167b8407620a4938",
+            "batch_id": "BATCH_ce5966478e9b"
+          },
+          "request_fingerprint": "134be875fa51fb7e1fb6f4953ca43fa65fa98a00a30540ad0edbb17f1b7f2f4a",
+          "notes": "V2.4 batch scheduler item=dcb41f22bca8",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/02-1788450956.json",
+            "sha256": "a838f800b7c79ff9d9f46a8fe9462e8f52528a7c36050539d55ed5252e1afae1",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:55:58+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/02-dcb41f22bca8-a1.png",
+            "sha256": "ee83a4ae884b00ac84d5b32c9d401a9a2aceff8023223f98b21ba63d1e12edde",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T23:55:58+08:00",
+            "kind": "original",
+            "attempt_id": "a8d4d404e0da"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/02-dcb41f22bca8-a1.png",
+        "sha256": "ee83a4ae884b00ac84d5b32c9d401a9a2aceff8023223f98b21ba63d1e12edde",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-03T23:55:58+08:00",
+        "kind": "original",
+        "attempt_id": "a8d4d404e0da"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/02.png",
+        "sha256": "ee83a4ae884b00ac84d5b32c9d401a9a2aceff8023223f98b21ba63d1e12edde",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:18+08:00",
+        "source_sha256": "ee83a4ae884b00ac84d5b32c9d401a9a2aceff8023223f98b21ba63d1e12edde"
+      },
+      "lock": null,
+      "reviews": [
+        {
+          "at": "2026-09-04T03:38:17+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/02.json 与 provider-receipts），promote 为 approved base"
+        }
+      ]
+    },
+    "03": {
+      "number": 3,
+      "status": "PASSED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "4cfe1930a1ee",
+          "started_at": "2026-09-03T23:55:55+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "03",
+            "kind": "original",
+            "prompt_sha256": "06c27522a82db532e7a174c3178c503c2f1d14ab35dc81f940d72bb27825dd49",
+            "prompt_chars": 79,
+            "prompt_bytes": 237,
+            "capture_id": "batch-03",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/03.json",
+              "contract_sha256": "270107e328b077b5b763e85259106dd7f5ca439a7ede58ae29e69e61b3b6f070"
+            },
+            "frame_contract_sha256": "270107e328b077b5b763e85259106dd7f5ca439a7ede58ae29e69e61b3b6f070",
+            "batch_id": "BATCH_ce5966478e9b"
+          },
+          "request_fingerprint": "5b019dfc1062ac745d7eb3f858d482ab9fd6249e32413f0e3adf6e8b6be2e466",
+          "notes": "V2.4 batch scheduler item=c41ca3fbadf4",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/03-1788450956.json",
+            "sha256": "f739981e50b1895c67acfd3099e12f7b1f698006c24e6da0de5a48fa3fb17a01",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:55:58+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/03-c41ca3fbadf4-a1.png",
+            "sha256": "ee743f0f72d25a032365ea0910845dea3d616cb13df47d3d1bfb0462b8a416dd",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T23:55:58+08:00",
+            "kind": "original",
+            "attempt_id": "4cfe1930a1ee"
+          }
+        },
+        {
+          "attempt_id": "183ee6a22b10",
+          "started_at": "2026-09-04T04:52:39+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "03",
+            "kind": "repair",
+            "prompt_sha256": "a6d6bbd7e2f55283432b174df9dee5bac4dfb80960b9836dcc6bb7d5088b72c9",
+            "prompt_chars": 235,
+            "prompt_bytes": 699,
+            "capture_id": "semantic-03-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/03.json",
+              "contract_sha256": "270107e328b077b5b763e85259106dd7f5ca439a7ede58ae29e69e61b3b6f070"
+            },
+            "frame_contract_sha256": "270107e328b077b5b763e85259106dd7f5ca439a7ede58ae29e69e61b3b6f070",
+            "batch_id": null
+          },
+          "request_fingerprint": "4c59860d7cd3d0df5c0f9acf259d412d76a8b55c75397d6b4e4697eb285fbdbe",
+          "notes": "phase6 scheduler item=02dfa5e4f4fc scope=repair",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/03-1788468878.json",
+            "sha256": "e1851911f4eb2672825f42c80a1ec75772809d8a5235ad3b6c3c95e0a7d53bf6",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T04:54:40+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/03-02dfa5e4f4fc-a1.png",
+            "sha256": "06f9314da7cefce0009fa332b2aeccc3843f5c58a2babbec2754378a3ca3f2c9",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T04:54:40+08:00",
+            "kind": "repair",
+            "attempt_id": "183ee6a22b10"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/03-02dfa5e4f4fc-a1.png",
+        "sha256": "06f9314da7cefce0009fa332b2aeccc3843f5c58a2babbec2754378a3ca3f2c9",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T04:54:40+08:00",
+        "kind": "repair",
+        "attempt_id": "183ee6a22b10"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/03.png",
+        "sha256": "06f9314da7cefce0009fa332b2aeccc3843f5c58a2babbec2754378a3ca3f2c9",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T09:50:20+08:00",
+        "source_sha256": "06f9314da7cefce0009fa332b2aeccc3843f5c58a2babbec2754378a3ca3f2c9"
+      },
+      "lock": null,
+      "reviews": [
+        {
+          "at": "2026-09-04T03:38:18+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/03.json 与 provider-receipts），promote 为 approved base"
+        },
+        {
+          "at": "2026-09-04T04:35:28+08:00",
+          "decision": "repair",
+          "notes": "delegated final-semantic repair: 帧语义评审 FAIL（证据 meta/frame-semantic-review.json + frame-reviews），按 critic 像素缺陷返修一次"
+        },
+        {
+          "at": "2026-09-04T09:48:54+08:00",
+          "decision": "pass",
+          "notes": "supervisor pixel check: 停电前商业街入口成立，红绿灯/商铺灯/居民窗亮；远端山脊剪影已在画面中部出现（对照旧approved无山脊），低照度下可作卧兽背脊的第一处异常证据读；impact-1 分寸符合。promote 后由 full-set semantic critic 终裁。"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-04T04:35:31+08:00",
+        "note": "delegated final-semantic repair: critic 像素缺陷（见 frame-semantic-review.json），单次普通内容返修",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "04": {
+      "number": 4,
+      "status": "PASSED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "dafafb7124bf",
+          "started_at": "2026-09-03T23:55:56+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "04",
+            "kind": "original",
+            "prompt_sha256": "4921f3db21849b23af91ff73965959eb8a2661f9f1cdcc9cc5043eefb5df8d63",
+            "prompt_chars": 60,
+            "prompt_bytes": 180,
+            "capture_id": "batch-04",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/04.json",
+              "contract_sha256": "b10854bb6bc3210328358a86924679ad71d18e114d8911913c74673e4a33bbdc"
+            },
+            "frame_contract_sha256": "b10854bb6bc3210328358a86924679ad71d18e114d8911913c74673e4a33bbdc",
+            "batch_id": "BATCH_ce5966478e9b"
+          },
+          "request_fingerprint": "5502eed121a822f038854dc05397d10c7b3579dbcc6e3183cc9b03b2ca683d1b",
+          "notes": "V2.4 batch scheduler item=5e474a2f0d40",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/04-1788450956.json",
+            "sha256": "f0798bd7b2ca2072f1ea700161215fc28abc2771bb6c3389e0ab5b8583fc8319",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:55:59+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/04-5e474a2f0d40-a1.png",
+            "sha256": "d8c817cf611a8eca2b45b1babf821aa65f22b1dd6da92a772c58d6c238cb38ea",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T23:55:59+08:00",
+            "kind": "original",
+            "attempt_id": "dafafb7124bf"
+          }
+        },
+        {
+          "attempt_id": "5be8f59a42a6",
+          "started_at": "2026-09-04T02:37:02+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "04",
+            "kind": "repair",
+            "prompt_sha256": "4c3e80aec175bd2189659b7c7c41d06df2bcd7c4fddd845ce588360af676c79b",
+            "prompt_chars": 148,
+            "prompt_bytes": 438,
+            "capture_id": "manual-04-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/04.json",
+              "contract_sha256": "b10854bb6bc3210328358a86924679ad71d18e114d8911913c74673e4a33bbdc"
+            },
+            "frame_contract_sha256": "b10854bb6bc3210328358a86924679ad71d18e114d8911913c74673e4a33bbdc",
+            "batch_id": null
+          },
+          "request_fingerprint": "2cd008cb5e38fcdcab1c3c55170bcd7ad7c882a8f81a1dbb540e7f5a26610e52",
+          "notes": "delegated content repair round 1: 去亮灯店面/强化全街黑+卧兽剪影",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/04-1788460666.json",
+            "sha256": "2c17dabe75a428d92b238259d50156848e84e18c8596cba6ce956273463facaf",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T02:37:48+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/04-manual-1788460666.png",
+            "sha256": "1b1ede78663220a4faad858ff1acd14967bf49db13db0c603676fa9f98a9eb1e",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T02:37:48+08:00",
+            "kind": "repair",
+            "attempt_id": "5be8f59a42a6"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/04-manual-1788460666.png",
+        "sha256": "1b1ede78663220a4faad858ff1acd14967bf49db13db0c603676fa9f98a9eb1e",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T02:37:48+08:00",
+        "kind": "repair",
+        "attempt_id": "5be8f59a42a6"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/04.png",
+        "sha256": "1b1ede78663220a4faad858ff1acd14967bf49db13db0c603676fa9f98a9eb1e",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:19+08:00",
+        "source_sha256": "1b1ede78663220a4faad858ff1acd14967bf49db13db0c603676fa9f98a9eb1e"
+      },
+      "lock": null,
+      "reviews": [
+        {
+          "at": "2026-09-04T02:36:48+08:00",
+          "decision": "repair",
+          "notes": "main-session pixel review: 白色亮灯店面与字幕'整条街一下全黑了'冲突，大面积熄灯读法被稀释; 授权普通内容返修"
+        },
+        {
+          "at": "2026-09-04T03:38:19+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/04.json 与 provider-receipts），promote 为 approved base"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-04T02:36:49+08:00",
+        "note": "04: 去除亮灯店面，突出全街熄灯+车辆/手机局部光源+远景卧兽剪影",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "05": {
+      "number": 5,
+      "status": "PASSED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "73c977585d04",
+          "started_at": "2026-09-03T23:55:56+08:00",
           "kind": "original",
           "request": {
             "frame": "05",
@@ -190,8 +640,9 @@
             "prompt_sha256": "c216db04875463c8b685140bec5e4f820e26ce577f25b006fabb4369b636fac3",
             "prompt_chars": 85,
             "prompt_bytes": 255,
-            "capture_id": "visual-lock-05",
+            "capture_id": "batch-05",
             "model": "gpt-image-2",
+            "quality": "high",
             "canvas": {
               "aspect_ratio": "4:5",
               "width": 1080,
@@ -201,88 +652,452 @@
             "visual_profile": {
               "profile_id": "M00",
               "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
-              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
               "capture_profile": "CP01"
             },
             "frame_contract": {
               "schema_version": 1,
               "path": "meta/runtime/contracts/frames/05.json",
-              "contract_sha256": "9d6e590ca2f4900ced0b9ba74c7ff982b712610b6144492cecebb2525ba9e3c2"
-            }
+              "contract_sha256": "4cc51f3e6b3be1c9f9d9c05a5880722a7688bd81d3b7c05bf61bb4d7890b21d3"
+            },
+            "frame_contract_sha256": "4cc51f3e6b3be1c9f9d9c05a5880722a7688bd81d3b7c05bf61bb4d7890b21d3",
+            "batch_id": "BATCH_ce5966478e9b"
           },
-          "request_fingerprint": "4150fd41a4d81935a7360cca81c65804abd32cfb0c8baf61ae376205ebd358ab",
-          "notes": "phase6 scheduler item=91211334ca50 scope=visual_lock",
+          "request_fingerprint": "5d6c2fe5f664dcac2fa4b9d816fabd05d911ac632e4f260ca03568bb2e339bc7",
+          "notes": "V2.4 batch scheduler item=9e8367722cf0",
           "result": "success",
-          "completed_at": "2026-08-31T19:59:11+08:00",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/05-1788450956.json",
+            "sha256": "2f3f68a909657c744298f13a1944ffdeb05639205ed8dea11b04fc43b2c2c291",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:55:59+08:00",
           "candidate": {
-            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/05-91211334ca50-a1.png",
-            "sha256": "35fa368606253ae6e160dc1253a14172dffb745d54b1eb3432653acb6db1ebbb",
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/05-9e8367722cf0-a1.png",
+            "sha256": "652ee6e0dadc93f62d29f0181d3bf38692a323c108d30ef1f92f4dc4615ba3f3",
             "width": 1080,
             "height": 1350,
-            "recorded_at": "2026-08-31T19:59:11+08:00",
+            "recorded_at": "2026-09-03T23:55:59+08:00",
             "kind": "original",
-            "attempt_id": "27f78732c7da"
+            "attempt_id": "73c977585d04"
           }
         }
       ],
       "current_candidate": {
-        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/05-91211334ca50-a1.png",
-        "sha256": "35fa368606253ae6e160dc1253a14172dffb745d54b1eb3432653acb6db1ebbb",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/05-9e8367722cf0-a1.png",
+        "sha256": "652ee6e0dadc93f62d29f0181d3bf38692a323c108d30ef1f92f4dc4615ba3f3",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-08-31T19:59:11+08:00",
+        "recorded_at": "2026-09-03T23:55:59+08:00",
         "kind": "original",
-        "attempt_id": "27f78732c7da"
+        "attempt_id": "73c977585d04"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/05.png",
+        "sha256": "652ee6e0dadc93f62d29f0181d3bf38692a323c108d30ef1f92f4dc4615ba3f3",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:19+08:00",
+        "source_sha256": "652ee6e0dadc93f62d29f0181d3bf38692a323c108d30ef1f92f4dc4615ba3f3"
+      },
       "lock": null,
       "reviews": [
         {
-          "at": "2026-08-31T22:28:40+08:00",
-          "decision": "repair",
-          "notes": "Phase5 Visual Lock critic failed actual-pixel admission"
-        }
-      ],
-      "review_evidence_gaps": [
-        {
-          "at": "2026-08-31T22:30:13+08:00",
-          "reason": "Visual Lock Critic attempt 1 recorded INPUT_IMAGES_UNAVAILABLE; no actual-pixel content finding exists",
-          "restored_from": "CONTENT_FAILED",
-          "review_marker": "Phase5 Visual Lock critic failed actual-pixel admission"
+          "at": "2026-09-04T03:38:19+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/05.json 与 provider-receipts），promote 为 approved base"
         }
       ]
     },
     "06": {
       "number": 6,
-      "status": "PENDING",
-      "content_repairs_used": 0,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
+      "attempts": [
+        {
+          "attempt_id": "9d8143006660",
+          "started_at": "2026-09-03T21:05:13+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "06",
+            "kind": "original",
+            "prompt_sha256": "7d6852c58ed0c692445ca3118402adf7efd5005c834cc62afb6a55173f526e66",
+            "prompt_chars": 58,
+            "prompt_bytes": 174,
+            "capture_id": "visual-lock-06",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/06.json",
+              "contract_sha256": "16a97ce58ebab8b7244359208aeeb255923b876db3d832c44435879ef40c733f"
+            },
+            "frame_contract_sha256": "16a97ce58ebab8b7244359208aeeb255923b876db3d832c44435879ef40c733f",
+            "batch_id": null
+          },
+          "request_fingerprint": "4f7bb2d061b65564a9b73a28be2d1c6b999afe16597b53378b3702766897c3c4",
+          "notes": "phase6 scheduler item=3f43bcee719f scope=visual_lock",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/06-1788440713.json",
+            "sha256": "16eaff430dc295eef7b572c1221f5b7b9834e32cab0c4d29f13bc655189cbea3",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T21:05:15+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/06-3f43bcee719f-a1.png",
+            "sha256": "4e1b7c9d12fff52408942deb3fe2874b394b7ae261f73e195e2e725fbbd3c1b9",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T21:05:15+08:00",
+            "kind": "original",
+            "attempt_id": "9d8143006660"
+          }
+        },
+        {
+          "attempt_id": "04f7e5926ce8",
+          "started_at": "2026-09-03T21:29:47+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "06",
+            "kind": "repair",
+            "prompt_sha256": "3f7afd6b1771feba870404a05cd342ee8b95ea578456a79c4883c00d8840eb14",
+            "prompt_chars": 211,
+            "prompt_bytes": 627,
+            "capture_id": "visual-lock-06-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/06.json",
+              "contract_sha256": "16a97ce58ebab8b7244359208aeeb255923b876db3d832c44435879ef40c733f"
+            },
+            "frame_contract_sha256": "16a97ce58ebab8b7244359208aeeb255923b876db3d832c44435879ef40c733f",
+            "batch_id": null
+          },
+          "request_fingerprint": "50a9abf13a63a68d30cdb88ea06215353e06e67d7c7415c7e96718fc7182cc3e",
+          "notes": "phase6 scheduler item=4771a4e705b8 scope=repair",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/06-1788442187.json",
+            "sha256": "d2c2fcde3a09d1a6359c46c271c0dafcd37784138b277aaffd335caa46ec9399",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T21:29:48+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/06-4771a4e705b8-a1.png",
+            "sha256": "e9f33870eb38c7ee39c6b6abdf79ae1598fac5f14a56f984d18bee6ad8da4055",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T21:29:48+08:00",
+            "kind": "repair",
+            "attempt_id": "04f7e5926ce8"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/06-4771a4e705b8-a1.png",
+        "sha256": "e9f33870eb38c7ee39c6b6abdf79ae1598fac5f14a56f984d18bee6ad8da4055",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-03T21:29:48+08:00",
+        "kind": "repair",
+        "attempt_id": "04f7e5926ce8"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/06.png",
+        "sha256": "e9f33870eb38c7ee39c6b6abdf79ae1598fac5f14a56f984d18bee6ad8da4055",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-03T21:57:35+08:00",
+        "source_sha256": "e9f33870eb38c7ee39c6b6abdf79ae1598fac5f14a56f984d18bee6ad8da4055"
+      },
+      "lock": {
+        "at": "2026-09-03T21:57:36+08:00",
+        "sha256": "e9f33870eb38c7ee39c6b6abdf79ae1598fac5f14a56f984d18bee6ad8da4055",
+        "reason": "visual-lock V-A repair candidate delegated pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-03T21:12:02+08:00",
+          "decision": "repair",
+          "notes": "rolling pre-final obvious defect"
+        },
+        {
+          "at": "2026-09-03T21:30:13+08:00",
+          "decision": "pass",
+          "notes": "delegated pixel review: 卷边细肋状多层叠层可读，乍看热损伤/近看甲片双读成立；impact=1 低调呈现可接受"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-03T21:29:42+08:00",
+        "note": "delegated pixel review: 卷边缺规整甲片状分层签名，双读失败；按滚动审查+桌面像素核验返修一次",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "07": {
       "number": 7,
-      "status": "PENDING",
-      "content_repairs_used": 0,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
+      "attempts": [
+        {
+          "attempt_id": "24f9a24eab41",
+          "started_at": "2026-09-03T23:56:00+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "07",
+            "kind": "original",
+            "prompt_sha256": "7270876f6dba2ce57e70433b6507bc36961c5954bf6ca3c97cf3f9bc4a95e78f",
+            "prompt_chars": 70,
+            "prompt_bytes": 210,
+            "capture_id": "batch-07",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/07.json",
+              "contract_sha256": "b8fdf66adcd6dcbe7fdf55f2fce9678d3be421e251611e386d65d5465e9c5fab"
+            },
+            "frame_contract_sha256": "b8fdf66adcd6dcbe7fdf55f2fce9678d3be421e251611e386d65d5465e9c5fab",
+            "batch_id": "BATCH_b89496cead19"
+          },
+          "request_fingerprint": "ccbe9d7f5a3ca9ec3adf8a21b6f4432dacde1ad3977f5d94b27539640918e9ea",
+          "notes": "V2.4 batch scheduler item=e1d0e585dd16",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/07-1788450961.json",
+            "sha256": "1fb13b24bc893732ee8fd11ccf8d13b340baa0a4be2f89218ebce6108760643d",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:56:03+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/07-e1d0e585dd16-a1.png",
+            "sha256": "e6e66403977cc41f94dc94fbf6975e056a45b6f97d3dd713473fb642af44bc83",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T23:56:03+08:00",
+            "kind": "original",
+            "attempt_id": "24f9a24eab41"
+          }
+        },
+        {
+          "attempt_id": "fa42554e26ff",
+          "started_at": "2026-09-04T04:43:24+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "07",
+            "kind": "repair",
+            "prompt_sha256": "a13cb3731183a1b136aa03bdd2ac3c1d2c64a812c6caf2342985a90b4733d469",
+            "prompt_chars": 214,
+            "prompt_bytes": 634,
+            "capture_id": "semantic-07-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/07.json",
+              "contract_sha256": "b8fdf66adcd6dcbe7fdf55f2fce9678d3be421e251611e386d65d5465e9c5fab"
+            },
+            "frame_contract_sha256": "b8fdf66adcd6dcbe7fdf55f2fce9678d3be421e251611e386d65d5465e9c5fab",
+            "batch_id": null
+          },
+          "request_fingerprint": "cae82f8a27f7eaf75cccf2ab9ce86470786a38d0dd548e99fdfacadd2af66c4a",
+          "notes": "phase6 scheduler item=196f9319c22f scope=repair",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/07-1788468385.json",
+            "sha256": "bd4196132528a64c9cea756c3bc4bc8a9fc1f090efed3d156454fc380f0d6427",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T04:47:59+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/07-196f9319c22f-a1.png",
+            "sha256": "8fe6ef101783510f22d4b3fd39459a1980461af8275e9545750addc44bbdff95",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T04:47:59+08:00",
+            "kind": "repair",
+            "attempt_id": "fa42554e26ff"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/07-196f9319c22f-a1.png",
+        "sha256": "8fe6ef101783510f22d4b3fd39459a1980461af8275e9545750addc44bbdff95",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T04:47:59+08:00",
+        "kind": "repair",
+        "attempt_id": "fa42554e26ff"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/07.png",
+        "sha256": "e6e66403977cc41f94dc94fbf6975e056a45b6f97d3dd713473fb642af44bc83",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:20+08:00",
+        "source_sha256": "e6e66403977cc41f94dc94fbf6975e056a45b6f97d3dd713473fb642af44bc83"
+      },
+      "lock": {
+        "at": "2026-09-04T10:46:25+08:00",
+        "sha256": "e6e66403977cc41f94dc94fbf6975e056a45b6f97d3dd713473fb642af44bc83",
+        "reason": "Direct user final-decision 2026-09-04: accept current approved asset as final and accept known defects on publish; no more content repair. Known: frame-semantic FAIL ANOMALY_UNREADABLE/KEY_PROP_DRIFT/CAPTION_DEPENDENCY carried into release."
+      },
+      "reviews": [
+        {
+          "at": "2026-09-04T03:38:20+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/07.json 与 provider-receipts），promote 为 approved base"
+        },
+        {
+          "at": "2026-09-04T04:35:28+08:00",
+          "decision": "repair",
+          "notes": "delegated final-semantic repair: 帧语义评审 FAIL（证据 meta/frame-semantic-review.json + frame-reviews），按 critic 像素缺陷返修一次"
+        },
+        {
+          "at": "2026-09-04T04:47:59+08:00",
+          "decision": "repair",
+          "notes": "Phase7 Fast Scout obvious defect"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-04T04:35:32+08:00",
+        "note": "delegated final-semantic repair: critic 像素缺陷（见 frame-semantic-review.json），单次普通内容返修",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "08": {
       "number": 8,
       "status": "PASSED",
       "content_repairs_used": 1,
-      "technical_failures": [],
+      "technical_failures": [
+        {
+          "at": "2026-09-04T04:50:41+08:00",
+          "attempt_id": "e9fb346344b8",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\08-1346498c0270-a1.jsonl"
+        },
+        {
+          "at": "2026-09-04T05:06:51+08:00",
+          "attempt_id": "20179377404d",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\08-a1d8768f2db8-a1.jsonl"
+        },
+        {
+          "at": "2026-09-04T05:16:49+08:00",
+          "attempt_id": "29c9b4e73e05",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\08-8322af2cc1e7-a1.jsonl"
+        }
+      ],
       "attempts": [
         {
-          "attempt_id": "572d541776c1",
-          "started_at": "2026-08-31T19:56:47+08:00",
+          "attempt_id": "05338bbab3ab",
+          "started_at": "2026-09-03T23:56:00+08:00",
           "kind": "original",
           "request": {
             "frame": "08",
@@ -290,8 +1105,9 @@
             "prompt_sha256": "acdbb30604aaf7e7eb5b0131acad07e074706de78f7566dcd614273854e929bf",
             "prompt_chars": 90,
             "prompt_bytes": 270,
-            "capture_id": "visual-lock-08",
+            "capture_id": "batch-08",
             "model": "gpt-image-2",
+            "quality": "high",
             "canvas": {
               "aspect_ratio": "4:5",
               "width": 1080,
@@ -301,41 +1117,59 @@
             "visual_profile": {
               "profile_id": "M00",
               "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
-              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
               "capture_profile": "CP01"
             },
             "frame_contract": {
               "schema_version": 1,
               "path": "meta/runtime/contracts/frames/08.json",
-              "contract_sha256": "f6b951f42e960d9a9e0318501a5cc146482d7606f3f561250b980bc8cfd5acdc"
-            }
+              "contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d"
+            },
+            "frame_contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d",
+            "batch_id": "BATCH_b89496cead19"
           },
-          "request_fingerprint": "2fdcb189e893fcf604cc2f4a09dcafa16f1ee374b9a67de1b5fcbc309217e2f7",
-          "notes": "phase6 scheduler item=4ca7730ef4a9 scope=visual_lock",
+          "request_fingerprint": "e304d5968c8d386d0a68a1ce7d5ca52322b46128b9b22f9cfaf79b2ae19c5eed",
+          "notes": "V2.4 batch scheduler item=60bc9c2e1e16",
           "result": "success",
-          "completed_at": "2026-08-31T19:59:09+08:00",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/08-1788450961.json",
+            "sha256": "2b8d1c858b90346398f19eba8e92bc7ab0c9caca418726a5e91dfd5152e1d1e4",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:56:03+08:00",
           "candidate": {
-            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-4ca7730ef4a9-a1.png",
-            "sha256": "c787a854bce8f1b7777c2e146871d090b208045f03ac289af3f43c3ad3058509",
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-60bc9c2e1e16-a1.png",
+            "sha256": "1929e3c795654aa7d71d674d57c4ae21127a49f259e7cc3043dd3c72e7f17dba",
             "width": 1080,
             "height": 1350,
-            "recorded_at": "2026-08-31T19:59:09+08:00",
+            "recorded_at": "2026-09-03T23:56:03+08:00",
             "kind": "original",
-            "attempt_id": "572d541776c1"
+            "attempt_id": "05338bbab3ab"
           }
         },
         {
-          "attempt_id": "467c95731abe",
-          "started_at": "2026-08-31T20:09:00+08:00",
+          "attempt_id": "e9fb346344b8",
+          "started_at": "2026-09-04T04:47:59+08:00",
           "kind": "repair",
           "request": {
             "frame": "08",
             "kind": "repair",
-            "prompt_sha256": "3705bcf9b3eed86661ae9e18caa4509b253e6a33017e5f23bf611e5032b5901a",
-            "prompt_chars": 149,
-            "prompt_bytes": 447,
-            "capture_id": "visual-lock-08-r1",
+            "prompt_sha256": "044d5638e2da1c0477aea43385e84712da52d3fc62dd63ad5337fdfda60824f6",
+            "prompt_chars": 189,
+            "prompt_bytes": 561,
+            "capture_id": "semantic-08-repair",
             "model": "gpt-image-2",
+            "quality": "high",
             "canvas": {
               "aspect_ratio": "4:5",
               "width": 1080,
@@ -345,41 +1179,39 @@
             "visual_profile": {
               "profile_id": "M00",
               "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
-              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
               "capture_profile": "CP01"
             },
             "frame_contract": {
               "schema_version": 1,
               "path": "meta/runtime/contracts/frames/08.json",
-              "contract_sha256": "f6b951f42e960d9a9e0318501a5cc146482d7606f3f561250b980bc8cfd5acdc"
-            }
+              "contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d"
+            },
+            "frame_contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d",
+            "batch_id": null
           },
-          "request_fingerprint": "b4fba41de2328401061d72dbf1991348077ff14e053435cd5429300f6a3ba180",
-          "notes": "phase6 scheduler item=e019a2abfebf scope=visual_lock",
-          "result": "success",
-          "completed_at": "2026-08-31T20:10:55+08:00",
-          "candidate": {
-            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-e019a2abfebf-a1.png",
-            "sha256": "0e04f45d184a938dd8a30c14486e3587e9ec9c70f5893b9d74be433c22d3944c",
-            "width": 1080,
-            "height": 1350,
-            "recorded_at": "2026-08-31T20:10:55+08:00",
-            "kind": "repair",
-            "attempt_id": "467c95731abe"
+          "request_fingerprint": "77e5109b5b5cfb8ba3218b5e80328c2e9857c87b0eb2c045a3242701936d9d14",
+          "notes": "phase6 scheduler item=1346498c0270 scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-04T04:50:41+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\08-1346498c0270-a1.jsonl"
           }
         },
         {
-          "attempt_id": "5281d9f52848",
-          "started_at": "2026-08-31T21:07:58+08:00",
+          "attempt_id": "20179377404d",
+          "started_at": "2026-09-04T05:05:01+08:00",
           "kind": "repair",
           "request": {
             "frame": "08",
             "kind": "repair",
-            "prompt_sha256": "aed709cceb256386f2bd52109ca595319304236c614afd5d26420dec8e1ec02b",
-            "prompt_chars": 129,
-            "prompt_bytes": 387,
-            "capture_id": "visual-lock-08-r2",
+            "prompt_sha256": "044d5638e2da1c0477aea43385e84712da52d3fc62dd63ad5337fdfda60824f6",
+            "prompt_chars": 189,
+            "prompt_bytes": 561,
+            "capture_id": "semantic-08-repair-r2",
             "model": "gpt-image-2",
+            "quality": "high",
             "canvas": {
               "aspect_ratio": "4:5",
               "width": 1080,
@@ -389,192 +1221,1729 @@
             "visual_profile": {
               "profile_id": "M00",
               "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
-              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
               "capture_profile": "CP01"
             },
             "frame_contract": {
               "schema_version": 1,
               "path": "meta/runtime/contracts/frames/08.json",
-              "contract_sha256": "f6b951f42e960d9a9e0318501a5cc146482d7606f3f561250b980bc8cfd5acdc"
-            }
+              "contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d"
+            },
+            "frame_contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d",
+            "batch_id": null
           },
-          "request_fingerprint": "ff6b2a1d7f917b534c3ec5fb5d0e5062a07e8990a2527ba471c4c77e7e8a85bc",
-          "notes": "phase6 scheduler item=8da147d882bb scope=visual_lock",
+          "request_fingerprint": "0c3bed0281de73e2178a7a8e669562f9fad2db5feb66de2eb5a12e37dbf48f32",
+          "notes": "phase6 scheduler item=a1d8768f2db8 scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-04T05:06:51+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\08-a1d8768f2db8-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "29c9b4e73e05",
+          "started_at": "2026-09-04T05:13:50+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "08",
+            "kind": "repair",
+            "prompt_sha256": "044d5638e2da1c0477aea43385e84712da52d3fc62dd63ad5337fdfda60824f6",
+            "prompt_chars": 189,
+            "prompt_bytes": 561,
+            "capture_id": "semantic-08-repair-r3",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/08.json",
+              "contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d"
+            },
+            "frame_contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d",
+            "batch_id": null
+          },
+          "request_fingerprint": "da867b11874a9662eb8794d4c1c9306a75cbd82333be1365ea4893faa3dd85be",
+          "notes": "phase6 scheduler item=8322af2cc1e7 scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-04T05:16:49+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\08-8322af2cc1e7-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "f8bc1d2a8bed",
+          "started_at": "2026-09-04T05:39:59+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "08",
+            "kind": "repair",
+            "prompt_sha256": "044d5638e2da1c0477aea43385e84712da52d3fc62dd63ad5337fdfda60824f6",
+            "prompt_chars": 189,
+            "prompt_bytes": 561,
+            "capture_id": "manual-08-repair-r4",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/08.json",
+              "contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d"
+            },
+            "frame_contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d",
+            "batch_id": null
+          },
+          "request_fingerprint": "e3348efa6ef1576ee9fa789c4e4662e9a60429e195030dbcc85f7e160230ae6c",
+          "notes": "manual-raw ingest retry after 3 scheduler tech failures; content repair not re-consumed",
           "result": "success",
-          "completed_at": "2026-08-31T21:11:20+08:00",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/08-1788471603.json",
+            "sha256": "14552951601874555c0e0b63cfc4ff88e61ce542b5fec3a11ee7e7a834e44a18",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T05:40:08+08:00",
           "candidate": {
-            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-8da147d882bb-a1.png",
-            "sha256": "bfc07c8769a23497900d27de57c5dd8fbff8b2bee15756c615093068709d8ace",
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-manual-1788471603.png",
+            "sha256": "f85048801d61a67f665652ed6617dfb98c37431b2c24d39b48b89244275b5514",
             "width": 1080,
             "height": 1350,
-            "recorded_at": "2026-08-31T21:11:20+08:00",
+            "recorded_at": "2026-09-04T05:40:08+08:00",
             "kind": "repair",
-            "attempt_id": "5281d9f52848"
+            "attempt_id": "f8bc1d2a8bed"
           }
         }
       ],
       "current_candidate": {
-        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-8da147d882bb-a1.png",
-        "sha256": "bfc07c8769a23497900d27de57c5dd8fbff8b2bee15756c615093068709d8ace",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-manual-1788471603.png",
+        "sha256": "f85048801d61a67f665652ed6617dfb98c37431b2c24d39b48b89244275b5514",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-08-31T21:11:20+08:00",
+        "recorded_at": "2026-09-04T05:40:08+08:00",
         "kind": "repair",
-        "attempt_id": "5281d9f52848"
+        "attempt_id": "f8bc1d2a8bed"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/08.png",
+        "sha256": "f85048801d61a67f665652ed6617dfb98c37431b2c24d39b48b89244275b5514",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T09:50:20+08:00",
+        "source_sha256": "f85048801d61a67f665652ed6617dfb98c37431b2c24d39b48b89244275b5514"
+      },
       "lock": null,
       "reviews": [
         {
-          "at": "2026-08-31T20:01:22+08:00",
-          "decision": "repair",
-          "notes": "rolling pre-final obvious defect"
-        },
-        {
-          "at": "2026-08-31T20:10:56+08:00",
-          "decision": "repair",
-          "notes": "Phase7 Fast Scout obvious defect"
-        },
-        {
-          "at": "2026-08-31T21:11:21+08:00",
-          "decision": "repair",
-          "notes": "Phase7 Fast Scout obvious defect"
-        },
-        {
-          "at": "2026-08-31T22:17:55+08:00",
+          "at": "2026-09-04T03:38:20+08:00",
           "decision": "pass",
-          "notes": "Direct user accepted existing exception candidate: 用户直接接受帧 08 r2 作为首次重大异常 Visual Lock 人工例外",
-          "approval_basis": "direct_user_review_exception_acceptance",
-          "candidate_sha256": "bfc07c8769a23497900d27de57c5dd8fbff8b2bee15756c615093068709d8ace"
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/08.json 与 provider-receipts），promote 为 approved base"
+        },
+        {
+          "at": "2026-09-04T04:35:28+08:00",
+          "decision": "repair",
+          "notes": "delegated final-semantic repair: 帧语义评审 FAIL（证据 meta/frame-semantic-review.json + frame-reviews），按 critic 像素缺陷返修一次"
+        },
+        {
+          "at": "2026-09-04T09:48:56+08:00",
+          "decision": "pass",
+          "notes": "supervisor pixel check: 米黄墙膜卷边(暗色层叠下缘)、黑色玻璃橱窗反光层整片揭卷、路沿黄漆处有分层卷曲薄条，三者同向卷向街面且带层状分层，跨材质联动无字可读。路沿黄漆卷边偏弱为残余风险，critic 终裁。"
         }
       ],
       "repair_authorization": {
-        "at": "2026-08-31T20:07:10+08:00",
-        "note": "Rolling review REPAIR_NOW: 三种表层卷向不统一，无法无字读出同向卷向县城中心；delegated content repair 1/1",
+        "at": "2026-09-04T04:35:32+08:00",
+        "note": "delegated final-semantic repair: critic 像素缺陷（见 frame-semantic-review.json），单次普通内容返修",
         "user_approved": false,
         "delegated_auto_review": true,
         "approval_basis": "delegated_auto_review"
-      },
-      "user_exception_authorizations": [
-        {
-          "at": "2026-08-31T21:07:32+08:00",
-          "approval_text": "同意对帧08和帧17进行用户例外返修",
-          "reason": "普通内容返修1/1后 scout 与独立像素复核仍 REPAIR_NOW：卷向不统一、海外街区漂移；用户明确批准例外返修",
-          "user_approved": true,
-          "delegated_auto_review": false,
-          "approval_basis": "direct_user_review_exception"
-        }
-      ],
-      "user_exception_repairs_used": 1,
-      "user_exception_acceptances": [
-        {
-          "at": "2026-08-31T22:17:55+08:00",
-          "approval_text": "对帧 08 作出直接接受",
-          "reason": "用户直接接受帧 08 r2 作为首次重大异常 Visual Lock 人工例外",
-          "user_approved": true,
-          "delegated_auto_review": false,
-          "approval_basis": "direct_user_review_exception_acceptance",
-          "candidate_sha256": "bfc07c8769a23497900d27de57c5dd8fbff8b2bee15756c615093068709d8ace"
-        }
-      ]
+      }
     },
     "09": {
       "number": 9,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-09-04T04:52:39+08:00",
+          "attempt_id": "ea98c55b380b",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\09-8d8d8d93b7ac-a1.jsonl"
+        },
+        {
+          "at": "2026-09-04T05:13:34+08:00",
+          "attempt_id": "3256ce9e9a34",
+          "code": "MODEL_UNAVAILABLE",
+          "message": "MODEL_UNAVAILABLE: requested=gpt-image-2; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\09-e885e6a8641a-a1.jsonl"
+        },
+        {
+          "at": "2026-09-04T05:19:31+08:00",
+          "attempt_id": "f34e32d5c09a",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\09-55ef92f750a8-a1.jsonl"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt_id": "91f88cf69d60",
+          "started_at": "2026-09-03T23:56:01+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "09",
+            "kind": "original",
+            "prompt_sha256": "27c3752b0d050e00a321148bf1976d9411bdc16d856b9e58628f093d85093aed",
+            "prompt_chars": 64,
+            "prompt_bytes": 192,
+            "capture_id": "batch-09",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/09.json",
+              "contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c"
+            },
+            "frame_contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c",
+            "batch_id": "BATCH_b89496cead19"
+          },
+          "request_fingerprint": "395c8fb9ced83655fee10ead555661699eb3152ce964edaebd3f85fa2a50c515",
+          "notes": "V2.4 batch scheduler item=025c025bf441",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/09-1788450961.json",
+            "sha256": "c6a17b5fa307bacce881cb22bcd75bf57bda4f9ed0bdf9824c1b6790cf1394e1",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:56:04+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/09-025c025bf441-a1.png",
+            "sha256": "1b7c89e980b6550bb52eaceca4fd6ed49ea4487aa2feb54c7e713daffbf264a0",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T23:56:04+08:00",
+            "kind": "original",
+            "attempt_id": "91f88cf69d60"
+          }
+        },
+        {
+          "attempt_id": "ea98c55b380b",
+          "started_at": "2026-09-04T04:50:41+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "09",
+            "kind": "repair",
+            "prompt_sha256": "8a72c168ea7cea0d6d7eb38bda8fb059c8a37b7d43afd618876e64bbe1aa9e9a",
+            "prompt_chars": 183,
+            "prompt_bytes": 543,
+            "capture_id": "semantic-09-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/09.json",
+              "contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c"
+            },
+            "frame_contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c",
+            "batch_id": null
+          },
+          "request_fingerprint": "066684f0dfff88583592274b62c967578d0180b039945829f5a2ac681bfc3d2e",
+          "notes": "phase6 scheduler item=8d8d8d93b7ac scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-04T04:52:39+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\09-8d8d8d93b7ac-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "3256ce9e9a34",
+          "started_at": "2026-09-04T05:05:02+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "09",
+            "kind": "repair",
+            "prompt_sha256": "8a72c168ea7cea0d6d7eb38bda8fb059c8a37b7d43afd618876e64bbe1aa9e9a",
+            "prompt_chars": 183,
+            "prompt_bytes": 543,
+            "capture_id": "semantic-09-repair-r2",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/09.json",
+              "contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c"
+            },
+            "frame_contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c",
+            "batch_id": null
+          },
+          "request_fingerprint": "62f9ccbd801393cfe77443ffce47f2444a8f97d24b95a9a164f700b986b80fd8",
+          "notes": "phase6 scheduler item=e885e6a8641a scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-04T05:13:34+08:00",
+          "error": {
+            "code": "MODEL_UNAVAILABLE",
+            "message": "MODEL_UNAVAILABLE: requested=gpt-image-2; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\09-e885e6a8641a-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "f34e32d5c09a",
+          "started_at": "2026-09-04T05:16:49+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "09",
+            "kind": "repair",
+            "prompt_sha256": "8a72c168ea7cea0d6d7eb38bda8fb059c8a37b7d43afd618876e64bbe1aa9e9a",
+            "prompt_chars": 183,
+            "prompt_bytes": 543,
+            "capture_id": "semantic-09-repair-r3",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/09.json",
+              "contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c"
+            },
+            "frame_contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c",
+            "batch_id": null
+          },
+          "request_fingerprint": "fa98ca93e567e86150b71e48f58564f36f3e0fc3db33cde83c0d240dd08aca65",
+          "notes": "phase6 scheduler item=55ef92f750a8 scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-04T05:19:31+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\09-55ef92f750a8-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "bad655757f77",
+          "started_at": "2026-09-04T05:40:12+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "09",
+            "kind": "repair",
+            "prompt_sha256": "8a72c168ea7cea0d6d7eb38bda8fb059c8a37b7d43afd618876e64bbe1aa9e9a",
+            "prompt_chars": 183,
+            "prompt_bytes": 543,
+            "capture_id": "manual-09-repair-r4",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/09.json",
+              "contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c"
+            },
+            "frame_contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c",
+            "batch_id": null
+          },
+          "request_fingerprint": "0f412c481fec51952832b8b1f36aa1b4c7d5d009d1fd8ffd4c4f33b9d0b86860",
+          "notes": "manual-raw ingest retry after 3 scheduler tech failures; content repair not re-consumed",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/09-1788471617.json",
+            "sha256": "4f3e5e25a55711a3325ff28a0abfbdce86f2e1cda559b190381b6699beb0f08c",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T05:40:21+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/09-manual-1788471616.png",
+            "sha256": "ad6a1f8068a38e6977d83a1a74ffccf2fbe9c6003f964cc43e1110042675512a",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T05:40:21+08:00",
+            "kind": "repair",
+            "attempt_id": "bad655757f77"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/09-manual-1788471616.png",
+        "sha256": "ad6a1f8068a38e6977d83a1a74ffccf2fbe9c6003f964cc43e1110042675512a",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T05:40:21+08:00",
+        "kind": "repair",
+        "attempt_id": "bad655757f77"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/09.png",
+        "sha256": "1b7c89e980b6550bb52eaceca4fd6ed49ea4487aa2feb54c7e713daffbf264a0",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:21+08:00",
+        "source_sha256": "1b7c89e980b6550bb52eaceca4fd6ed49ea4487aa2feb54c7e713daffbf264a0"
+      },
+      "lock": {
+        "at": "2026-09-04T10:46:25+08:00",
+        "sha256": "1b7c89e980b6550bb52eaceca4fd6ed49ea4487aa2feb54c7e713daffbf264a0",
+        "reason": "Direct user final-decision 2026-09-04: accept current approved asset as final and accept known defects on publish; no more content repair. Known: frame-semantic FAIL ANOMALY_UNREADABLE/KEY_PROP_DRIFT carried into release."
+      },
+      "reviews": [
+        {
+          "at": "2026-09-04T03:38:21+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/09.json 与 provider-receipts），promote 为 approved base"
+        },
+        {
+          "at": "2026-09-04T04:35:28+08:00",
+          "decision": "repair",
+          "notes": "delegated final-semantic repair: 帧语义评审 FAIL（证据 meta/frame-semantic-review.json + frame-reviews），按 critic 像素缺陷返修一次"
+        },
+        {
+          "at": "2026-09-04T09:49:20+08:00",
+          "decision": "repair",
+          "notes": "supervisor pixel check: 修复候选仍读作普通路面破损——断裂沥青板+碎石+嵌入井盖，未见极薄黑色表皮自井盖边缘整揭、第二套更窄旧车道线、偏位井盖与暗灰骨板躯体表面；路面分层异常契约未兑现。普通内容返修已用，转 NEEDS_USER 需用户例外。"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-04T04:35:32+08:00",
+        "note": "delegated final-semantic repair: critic 像素缺陷（见 frame-semantic-review.json），单次普通内容返修",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "10": {
       "number": 10,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
-    },
-    "11": {
-      "number": 11,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
-    },
-    "12": {
-      "number": 12,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
-    },
-    "13": {
-      "number": 13,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
-    },
-    "14": {
-      "number": 14,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
-    },
-    "15": {
-      "number": 15,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
-    },
-    "16": {
-      "number": 16,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
-      "lock": null,
-      "reviews": []
-    },
-    "17": {
-      "number": 17,
       "status": "PASSED",
       "content_repairs_used": 1,
       "technical_failures": [],
       "attempts": [
         {
-          "attempt_id": "158d9b4e65c5",
-          "started_at": "2026-08-31T19:56:47+08:00",
+          "attempt_id": "97be3af62e24",
+          "started_at": "2026-09-03T23:56:01+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "10",
+            "kind": "original",
+            "prompt_sha256": "c9beb20d4c4e98478ada2963d2a01d9d0845f465e8ed8a95c4c71764371dbe06",
+            "prompt_chars": 68,
+            "prompt_bytes": 204,
+            "capture_id": "batch-10",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/10.json",
+              "contract_sha256": "9b6560f33a9491b94a3091783f372bbd438ac81d149cdc597bf5f053d0f726ab"
+            },
+            "frame_contract_sha256": "9b6560f33a9491b94a3091783f372bbd438ac81d149cdc597bf5f053d0f726ab",
+            "batch_id": "BATCH_b89496cead19"
+          },
+          "request_fingerprint": "87463179643000f6e132a21c9c9a3a048ebda6075a390029f6f8496268d02673",
+          "notes": "V2.4 batch scheduler item=ff2a8432b2c3",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/10-1788450961.json",
+            "sha256": "1f9d9ff7933ce3b014afb7d104aa8d2ac14261841ae2ad30481e024df885b16d",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:56:04+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/10-ff2a8432b2c3-a1.png",
+            "sha256": "879c54f10a6ced916fe355ddb403868f4ee5c9008ff4d3047b5e308ac9b30da7",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T23:56:04+08:00",
+            "kind": "original",
+            "attempt_id": "97be3af62e24"
+          }
+        },
+        {
+          "attempt_id": "6d7e177439c2",
+          "started_at": "2026-09-04T02:37:52+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "10",
+            "kind": "repair",
+            "prompt_sha256": "2df7fee32f6309fdec2ada2e5fcd79d366ba2a6cd9a53f688b1dcc911ad86b76",
+            "prompt_chars": 171,
+            "prompt_bytes": 505,
+            "capture_id": "manual-10-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/10.json",
+              "contract_sha256": "9b6560f33a9491b94a3091783f372bbd438ac81d149cdc597bf5f053d0f726ab"
+            },
+            "frame_contract_sha256": "9b6560f33a9491b94a3091783f372bbd438ac81d149cdc597bf5f053d0f726ab",
+            "batch_id": null
+          },
+          "request_fingerprint": "3dfab0a91adec88b647c10d850e300167a26fec52241ef5806951436b0c5671d",
+          "notes": "delegated content repair round 1: 去工地罩布/海报, 膜层离地连接表面+远景卧兽",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/10-1788463617.json",
+            "sha256": "8ba085e4e45ab37af235a9b2da80fd9cd75006f58c6a42514a68a148f2f14dce",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T03:27:00+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/10-manual-1788463616.png",
+            "sha256": "b5d984e99d8493f9c07b688090707e0c2982b9fb21fadf19986dabbef41ae72e",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T03:27:00+08:00",
+            "kind": "repair",
+            "attempt_id": "6d7e177439c2"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/10-manual-1788463616.png",
+        "sha256": "b5d984e99d8493f9c07b688090707e0c2982b9fb21fadf19986dabbef41ae72e",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T03:27:00+08:00",
+        "kind": "repair",
+        "attempt_id": "6d7e177439c2"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/10.png",
+        "sha256": "b5d984e99d8493f9c07b688090707e0c2982b9fb21fadf19986dabbef41ae72e",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:22+08:00",
+        "source_sha256": "b5d984e99d8493f9c07b688090707e0c2982b9fb21fadf19986dabbef41ae72e"
+      },
+      "lock": null,
+      "reviews": [
+        {
+          "at": "2026-09-04T02:36:49+08:00",
+          "decision": "repair",
+          "notes": "main-session pixel review: 薄层读成工地塑料布+巨型广告海报人脸，缺少连续半透明膜连接多材质表面与远景卧兽剪影; 授权普通内容返修"
+        },
+        {
+          "at": "2026-09-04T03:38:22+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/10.json 与 provider-receipts），promote 为 approved base"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-04T02:36:49+08:00",
+        "note": "10: 移除工地围挡/海报，膜层离地约一米连接墙面/广告/玻璃/标线, 远景山脊卧兽更隆起",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "11": {
+      "number": 11,
+      "status": "PASSED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "ca8ef359767f",
+          "started_at": "2026-09-03T23:56:01+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "11",
+            "kind": "original",
+            "prompt_sha256": "388a2f967ecfb833495d9982582e70cbab6da813ca754c168708dd4ae9b29921",
+            "prompt_chars": 81,
+            "prompt_bytes": 233,
+            "capture_id": "batch-11",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/11.json",
+              "contract_sha256": "8b4fdc81db3edefd81d24946afe69b03ee4852c7bb43f62f1dc7fde909fa71e5"
+            },
+            "frame_contract_sha256": "8b4fdc81db3edefd81d24946afe69b03ee4852c7bb43f62f1dc7fde909fa71e5",
+            "batch_id": "BATCH_b89496cead19"
+          },
+          "request_fingerprint": "a62061ac35ee8b7032c30b28edce168977a16b534b04dd91d6d1a20b306c8b77",
+          "notes": "V2.4 batch scheduler item=e73dde258f18",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/11-1788450961.json",
+            "sha256": "573006206396e307ef3635391e56e2c3359e0c25e9b6887093af4bc2add14d9b",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:56:04+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/11-e73dde258f18-a1.png",
+            "sha256": "daf7dd708389b2521ac9988d1d9abd880f721981feda8619a57541143a71d7a1",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T23:56:04+08:00",
+            "kind": "original",
+            "attempt_id": "ca8ef359767f"
+          }
+        },
+        {
+          "attempt_id": "150b458628b6",
+          "started_at": "2026-09-04T02:46:03+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "11",
+            "kind": "repair",
+            "prompt_sha256": "f7664981cf92407d557c44ae2287688af5cb81006a794d63f026f6306906f385",
+            "prompt_chars": 149,
+            "prompt_bytes": 427,
+            "capture_id": "manual-11-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/11.json",
+              "contract_sha256": "8b4fdc81db3edefd81d24946afe69b03ee4852c7bb43f62f1dc7fde909fa71e5"
+            },
+            "frame_contract_sha256": "8b4fdc81db3edefd81d24946afe69b03ee4852c7bb43f62f1dc7fde909fa71e5",
+            "batch_id": null
+          },
+          "request_fingerprint": "629f00d4bacb5d8645ccffb52148fbc22c1563696b9f303e9418f8a6de7ea9a5",
+          "notes": "delegated content repair round 1: 去工地横布/改护栏内侧低垂膜+远景卷口封路",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/11-1788463530.json",
+            "sha256": "8ad00acc0fcf1a19ea25b9c0a361473a572a6e94145d6c77f5e1a1fd604bb6bf",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T03:25:35+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/11-manual-1788463530.png",
+            "sha256": "697f50777c39cc04ae24dbb3bac94262f45a6fc9cf70a7f863c0818eccc8a01e",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T03:25:35+08:00",
+            "kind": "repair",
+            "attempt_id": "150b458628b6"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/11-manual-1788463530.png",
+        "sha256": "697f50777c39cc04ae24dbb3bac94262f45a6fc9cf70a7f863c0818eccc8a01e",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T03:25:35+08:00",
+        "kind": "repair",
+        "attempt_id": "150b458628b6"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/11.png",
+        "sha256": "697f50777c39cc04ae24dbb3bac94262f45a6fc9cf70a7f863c0818eccc8a01e",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:23+08:00",
+        "source_sha256": "697f50777c39cc04ae24dbb3bac94262f45a6fc9cf70a7f863c0818eccc8a01e"
+      },
+      "lock": null,
+      "reviews": [
+        {
+          "at": "2026-09-04T02:36:50+08:00",
+          "decision": "repair",
+          "notes": "main-session pixel review: 膜层读成临时挡布横跨马路, 河渠入口/膜层贴地/身后卷边封街口读法弱; 授权普通内容返修"
+        },
+        {
+          "at": "2026-09-04T03:38:22+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/11.json 与 provider-receipts），promote 为 approved base"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-04T02:36:50+08:00",
+        "note": "11: 保持23:26时间可见; 河渠步行道入口护栏上方悬垂膜层几乎贴地+身后街口被卷起表层封住",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "12": {
+      "number": 12,
+      "status": "PASSED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "4736bac3da96",
+          "started_at": "2026-09-03T23:59:32+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "12",
+            "kind": "original",
+            "prompt_sha256": "9a952cb453178d895de5593b8ff45c598002823d3ce123ea38beca11dc368fbc",
+            "prompt_chars": 88,
+            "prompt_bytes": 264,
+            "capture_id": "batch-12",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/12.json",
+              "contract_sha256": "4a7ea3de939c477c1176d6dc4ee2be097880eb580f08cee5f3c2f77fcfc8781a"
+            },
+            "frame_contract_sha256": "4a7ea3de939c477c1176d6dc4ee2be097880eb580f08cee5f3c2f77fcfc8781a",
+            "batch_id": "BATCH_3c94b63ac8db"
+          },
+          "request_fingerprint": "4000d6648655f4d0cb857374194616cd1989198646294d85d737e0f8363cdbbc",
+          "notes": "V2.4 batch scheduler item=d42daf968d09",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/12-1788451173.json",
+            "sha256": "62cabe32c3ff9355c5a7678840904cb68d50fc15cb6776aa56e63ec5da276545",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:59:35+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/12-d42daf968d09-a1.png",
+            "sha256": "5e7548b115a75c25d04b0b37cf259db93b8bea8097a92a0ca4b2d6abcf1160ff",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T23:59:35+08:00",
+            "kind": "original",
+            "attempt_id": "4736bac3da96"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/12-d42daf968d09-a1.png",
+        "sha256": "5e7548b115a75c25d04b0b37cf259db93b8bea8097a92a0ca4b2d6abcf1160ff",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-03T23:59:35+08:00",
+        "kind": "original",
+        "attempt_id": "4736bac3da96"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/12.png",
+        "sha256": "5e7548b115a75c25d04b0b37cf259db93b8bea8097a92a0ca4b2d6abcf1160ff",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:23+08:00",
+        "source_sha256": "5e7548b115a75c25d04b0b37cf259db93b8bea8097a92a0ca4b2d6abcf1160ff"
+      },
+      "lock": null,
+      "reviews": [
+        {
+          "at": "2026-09-04T03:38:23+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/12.json 与 provider-receipts），promote 为 approved base"
+        }
+      ]
+    },
+    "13": {
+      "number": 13,
+      "status": "PASSED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-09-04T01:37:06+08:00",
+          "attempt_id": "ce4655adad85",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\13-773823bfbaf1-a1.jsonl"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt_id": "066dc4a0412e",
+          "started_at": "2026-09-03T23:59:32+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "13",
+            "kind": "original",
+            "prompt_sha256": "3c8af79fcf9569c9eab479bfc34acf8cb2dcd039f159dc5526416f7ff02d8bf4",
+            "prompt_chars": 87,
+            "prompt_bytes": 255,
+            "capture_id": "batch-13",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/13.json",
+              "contract_sha256": "cc82d2c3e949d0f748ae4ceb92b6f95956bc57c0d661db0621cb940978a3a3ba"
+            },
+            "frame_contract_sha256": "cc82d2c3e949d0f748ae4ceb92b6f95956bc57c0d661db0621cb940978a3a3ba",
+            "batch_id": "BATCH_3c94b63ac8db"
+          },
+          "request_fingerprint": "df5e3a29bc149c499ee73f6e9a36861d097b6d4fb34455108c88a2b55a6fb7d3",
+          "notes": "V2.4 batch scheduler item=441f9292be5c",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/13-1788451173.json",
+            "sha256": "16f73c6d63dbd68ebaeb083dfe63aacd65227d8ed79484b3420e3d9c55184cbe",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:59:35+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/13-441f9292be5c-a1.png",
+            "sha256": "7e2a9ea211ef69ec4f0c9c10ce5ba8a1ee13ebb7e5a64e809a4815a7bfee5aa0",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T23:59:35+08:00",
+            "kind": "original",
+            "attempt_id": "066dc4a0412e"
+          }
+        },
+        {
+          "attempt_id": "ce4655adad85",
+          "started_at": "2026-09-04T01:35:45+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "13",
+            "kind": "repair",
+            "prompt_sha256": "36b174e4405b8330bed35293efa3bf13826bc78b83576e190fb03545641337b6",
+            "prompt_chars": 190,
+            "prompt_bytes": 564,
+            "capture_id": "batch-13-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/13.json",
+              "contract_sha256": "cc82d2c3e949d0f748ae4ceb92b6f95956bc57c0d661db0621cb940978a3a3ba"
+            },
+            "frame_contract_sha256": "cc82d2c3e949d0f748ae4ceb92b6f95956bc57c0d661db0621cb940978a3a3ba",
+            "batch_id": null
+          },
+          "request_fingerprint": "66c92a3513a626a94286a41fa05a58fe94aca777dc5d0c0d62ac54374c7410cd",
+          "notes": "phase6 scheduler item=773823bfbaf1 scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-04T01:37:06+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\13-773823bfbaf1-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "b2666a0a5949",
+          "started_at": "2026-09-04T02:31:54+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "13",
+            "kind": "repair",
+            "prompt_sha256": "36b174e4405b8330bed35293efa3bf13826bc78b83576e190fb03545641337b6",
+            "prompt_chars": 190,
+            "prompt_bytes": 564,
+            "capture_id": "manual-13-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/13.json",
+              "contract_sha256": "cc82d2c3e949d0f748ae4ceb92b6f95956bc57c0d661db0621cb940978a3a3ba"
+            },
+            "frame_contract_sha256": "cc82d2c3e949d0f748ae4ceb92b6f95956bc57c0d661db0621cb940978a3a3ba",
+            "batch_id": null
+          },
+          "request_fingerprint": "97db87a736e8e41f1602f9a7abe8f3395bccdd28f7908c551c9d6fa900544b89",
+          "notes": "TECH_FAILED worker retry via manual raw ingest; content repair not consumed",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/13-1788460318.json",
+            "sha256": "897d4a4b775c46a62074709887cdf08653a36f5f645760ea4e8f0b23b3c3c673",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1123,
+              "height": 1401,
+              "aspect_ratio": 0.801570307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.001962884,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T02:32:07+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/13-manual-1788460318.png",
+            "sha256": "a067e0e83b6c06823766dc51579ec344c3800d27bd0ab64f50264ccabd8fdb9c",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T02:32:07+08:00",
+            "kind": "repair",
+            "attempt_id": "b2666a0a5949"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/13-manual-1788460318.png",
+        "sha256": "a067e0e83b6c06823766dc51579ec344c3800d27bd0ab64f50264ccabd8fdb9c",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T02:32:07+08:00",
+        "kind": "repair",
+        "attempt_id": "b2666a0a5949"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/13.png",
+        "sha256": "a067e0e83b6c06823766dc51579ec344c3800d27bd0ab64f50264ccabd8fdb9c",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:24+08:00",
+        "source_sha256": "a067e0e83b6c06823766dc51579ec344c3800d27bd0ab64f50264ccabd8fdb9c"
+      },
+      "lock": null,
+      "reviews": [
+        {
+          "at": "2026-09-04T01:33:29+08:00",
+          "decision": "repair",
+          "notes": "Phase7 Fast Scout REPAIR_NOW(FRAME_CONTRACT_OBVIOUS_MISMATCH,conf=0.8)+delegated pixel read: 道路上方塑料膜罩而非卧兽背脊/鳞片叠压/对岸卷角, 授权普通内容返修"
+        },
+        {
+          "at": "2026-09-04T03:38:24+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/13.json 与 provider-receipts），promote 为 approved base"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-04T01:33:30+08:00",
+        "note": "13: 膜罩误作主体, 需山脊卧兽背脊+鳞片叠压+对岸同向卷角",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "14": {
+      "number": 14,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-09-04T01:38:29+08:00",
+          "attempt_id": "a0e4ec072103",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\14-e2ea318289a5-a1.jsonl"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt_id": "ab69009c4a0c",
+          "started_at": "2026-09-03T23:59:33+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "14",
+            "kind": "original",
+            "prompt_sha256": "19d424e607bf0e48d53c65481549477411a2fe18b89ab2c0e0a51c622ab7e39e",
+            "prompt_chars": 72,
+            "prompt_bytes": 216,
+            "capture_id": "batch-14",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/14.json",
+              "contract_sha256": "fd0eef5288d9fbe8e12f9e9a5d82b0a491047ff7542f8f98994f34c5297c8ed8"
+            },
+            "frame_contract_sha256": "fd0eef5288d9fbe8e12f9e9a5d82b0a491047ff7542f8f98994f34c5297c8ed8",
+            "batch_id": "BATCH_3c94b63ac8db"
+          },
+          "request_fingerprint": "7f83d25c66766c4868835e698473788b570bac8f9a9450e15b8b3655dd6892bc",
+          "notes": "V2.4 batch scheduler item=7e04fb8a8026",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/14-1788451173.json",
+            "sha256": "0df81ec5d0de435d3caab77e1f81df87688edb3e42723a36c24821163cbf6328",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T23:59:35+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/14-7e04fb8a8026-a1.png",
+            "sha256": "7964dacc909ba0dbfe5014682eceacb58f300e97a3931b307576ba72d78b956c",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T23:59:35+08:00",
+            "kind": "original",
+            "attempt_id": "ab69009c4a0c"
+          }
+        },
+        {
+          "attempt_id": "a0e4ec072103",
+          "started_at": "2026-09-04T01:37:07+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "14",
+            "kind": "repair",
+            "prompt_sha256": "3d9ddde6aefb124d45dfebf6389c563eeca7057854d63ca0de5890b56b1f2b32",
+            "prompt_chars": 168,
+            "prompt_bytes": 498,
+            "capture_id": "batch-14-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/14.json",
+              "contract_sha256": "fd0eef5288d9fbe8e12f9e9a5d82b0a491047ff7542f8f98994f34c5297c8ed8"
+            },
+            "frame_contract_sha256": "fd0eef5288d9fbe8e12f9e9a5d82b0a491047ff7542f8f98994f34c5297c8ed8",
+            "batch_id": null
+          },
+          "request_fingerprint": "cca65bcdbd28b51c93002251b0f2402f857553ca83e5cefe71a75eb1c2f6b71b",
+          "notes": "phase6 scheduler item=e2ea318289a5 scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-04T01:38:29+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\14-e2ea318289a5-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "6e837fe344a1",
+          "started_at": "2026-09-04T02:32:11+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "14",
+            "kind": "repair",
+            "prompt_sha256": "3d9ddde6aefb124d45dfebf6389c563eeca7057854d63ca0de5890b56b1f2b32",
+            "prompt_chars": 168,
+            "prompt_bytes": 498,
+            "capture_id": "manual-14-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/14.json",
+              "contract_sha256": "fd0eef5288d9fbe8e12f9e9a5d82b0a491047ff7542f8f98994f34c5297c8ed8"
+            },
+            "frame_contract_sha256": "fd0eef5288d9fbe8e12f9e9a5d82b0a491047ff7542f8f98994f34c5297c8ed8",
+            "batch_id": null
+          },
+          "request_fingerprint": "b322fa1f9d8ea41babdd810ed2ab4d5048b56c9533fbd60f4833bfbd79d80a37",
+          "notes": "TECH_FAILED worker retry via manual raw ingest; content repair not consumed",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/14-1788460331.json",
+            "sha256": "7755f1cb1938c89b54e0df173ae524457203cc86369ada4c265e40506c9482a4",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T02:32:13+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/14-manual-1788460331.png",
+            "sha256": "3de374d91e72a47d6e351f00b6c6b09df276b62267bc212e3d06be15bef9707b",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T02:32:13+08:00",
+            "kind": "repair",
+            "attempt_id": "6e837fe344a1"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/14-manual-1788460331.png",
+        "sha256": "3de374d91e72a47d6e351f00b6c6b09df276b62267bc212e3d06be15bef9707b",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T02:32:13+08:00",
+        "kind": "repair",
+        "attempt_id": "6e837fe344a1"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/14.png",
+        "sha256": "3de374d91e72a47d6e351f00b6c6b09df276b62267bc212e3d06be15bef9707b",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:25+08:00",
+        "source_sha256": "3de374d91e72a47d6e351f00b6c6b09df276b62267bc212e3d06be15bef9707b"
+      },
+      "lock": {
+        "at": "2026-09-04T10:46:26+08:00",
+        "sha256": "3de374d91e72a47d6e351f00b6c6b09df276b62267bc212e3d06be15bef9707b",
+        "reason": "Direct user final-decision 2026-09-04: accept current approved asset as final and accept known defects on publish; no more content repair. Known: frame-semantic FAIL FRAME_SCENE_MISMATCH/ANOMALY_UNREADABLE carried into release."
+      },
+      "reviews": [
+        {
+          "at": "2026-09-04T01:33:30+08:00",
+          "decision": "repair",
+          "notes": "Phase7 Fast Scout REPAIR_NOW(ANOMALY_SCALE_OBVIOUSLY_WEAK,conf=0.92)+delegated pixel read: 普通烂尾墙/门口原位, 无薄层揭起错位与新开口, 授权普通内容返修"
+        },
+        {
+          "at": "2026-09-04T03:38:24+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/14.json 与 provider-receipts），promote 为 approved base"
+        },
+        {
+          "at": "2026-09-04T09:51:53+08:00",
+          "decision": "repair",
+          "notes": "final-semantic critic 证据（meta/frame-semantic-review.json + meta/frame-reviews/14.json，FRAME_SCENE_MISMATCH+ANOMALY_UNREADABLE）：approved 为室内走廊门厅墙+竖直黑裂口，非合同锁定的天桥楼梯中段斜拍建筑实体门窗错位场景。普通内容返修已用，状态置 NEEDS_USER 等待用户例外授权。"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-04T01:33:30+08:00",
+        "note": "14: 门口错位与暗灰浅骨板躯体表面未呈现",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "15": {
+      "number": 15,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "28d1f81c0a96",
+          "started_at": "2026-09-03T21:05:11+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "15",
+            "kind": "original",
+            "prompt_sha256": "6353a87d908c2ff67385106c94187346bf06a2652670ba7fded394697806f932",
+            "prompt_chars": 74,
+            "prompt_bytes": 216,
+            "capture_id": "visual-lock-15",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/15.json",
+              "contract_sha256": "2b21b127a163c64d68ae2c0a823dd1267dfef6d989f1b78504581dbdaf7711a2"
+            },
+            "frame_contract_sha256": "2b21b127a163c64d68ae2c0a823dd1267dfef6d989f1b78504581dbdaf7711a2",
+            "batch_id": null
+          },
+          "request_fingerprint": "a4447426f06b61b8c33e4aa7211e32f5d9db27ce1f3ef3d7d96d6d4330b70c51",
+          "notes": "phase6 scheduler item=d173ccd5da37 scope=visual_lock",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/15-1788440711.json",
+            "sha256": "19a6727a9f88eb4422fb8a38fdf9e296894f5333575e797bbf8d7a93358a908e",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T21:05:12+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/15-d173ccd5da37-a1.png",
+            "sha256": "9d008a5b66aee376c65e4a145c241d7eb90504b53d548650708316e9745bfbce",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-03T21:05:12+08:00",
+            "kind": "original",
+            "attempt_id": "28d1f81c0a96"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/15-d173ccd5da37-a1.png",
+        "sha256": "9d008a5b66aee376c65e4a145c241d7eb90504b53d548650708316e9745bfbce",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-03T21:05:12+08:00",
+        "kind": "original",
+        "attempt_id": "28d1f81c0a96"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/15.png",
+        "sha256": "9d008a5b66aee376c65e4a145c241d7eb90504b53d548650708316e9745bfbce",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-03T21:57:36+08:00",
+        "source_sha256": "9d008a5b66aee376c65e4a145c241d7eb90504b53d548650708316e9745bfbce"
+      },
+      "lock": {
+        "at": "2026-09-03T21:57:36+08:00",
+        "sha256": "9d008a5b66aee376c65e4a145c241d7eb90504b53d548650708316e9745bfbce",
+        "reason": "visual-lock V-W delegated pixel review PASS"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-03T21:57:29+08:00",
+          "decision": "pass",
+          "notes": "delegated pixel review: 实际像素目检——整条街路面薄层上鼓超过二层楼高，表皮保留斑马线碎片/广告色块/玻璃高光等视觉信息；公交站棚与六层住宅作尺度参照明确，异常尺度成立且无超出拍摄物理的科幻感；夜景手持高ISO噪点、路灯与站棚玻璃反光符合 CP01 手机实拍。POV 无自我入镜，符合契约。判定 PASS。"
+        }
+      ]
+    },
+    "16": {
+      "number": 16,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-09-04T00:05:32+08:00",
+          "attempt_id": "1ea7133843b9",
+          "code": "BATCH_TRANSPORT_FAILURE",
+          "message": "BATCH_RESULT_MAPPING_MISMATCH: missing or invalid out-01.png"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt_id": "1ea7133843b9",
+          "started_at": "2026-09-04T00:03:42+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "16",
+            "kind": "original",
+            "prompt_sha256": "c634982390d2a067613f13f1dea0cc75031151a2e195db9d65ee189409265448",
+            "prompt_chars": 69,
+            "prompt_bytes": 207,
+            "capture_id": "batch-16",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/16.json",
+              "contract_sha256": "837046e2c8dac5e637e4f3d78be2b171254c22fa61367f3b93fb72236415bf97"
+            },
+            "frame_contract_sha256": "837046e2c8dac5e637e4f3d78be2b171254c22fa61367f3b93fb72236415bf97",
+            "batch_id": "BATCH_3e3c49d5e8b7"
+          },
+          "request_fingerprint": "114a8920cc4d3ff37d42d63b811522bb6b39aac8bf62b48af37bb28a6c6fb6b1",
+          "notes": "V2.4 batch scheduler item=21f5f6a9b485",
+          "result": "technical_failure",
+          "completed_at": "2026-09-04T00:05:32+08:00",
+          "error": {
+            "code": "BATCH_TRANSPORT_FAILURE",
+            "message": "BATCH_RESULT_MAPPING_MISMATCH: missing or invalid out-01.png"
+          }
+        },
+        {
+          "attempt_id": "7b2f3beaab14",
+          "started_at": "2026-09-04T00:05:33+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "16",
+            "kind": "original",
+            "prompt_sha256": "c634982390d2a067613f13f1dea0cc75031151a2e195db9d65ee189409265448",
+            "prompt_chars": 69,
+            "prompt_bytes": 207,
+            "capture_id": "batch-16",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/16.json",
+              "contract_sha256": "837046e2c8dac5e637e4f3d78be2b171254c22fa61367f3b93fb72236415bf97"
+            },
+            "frame_contract_sha256": "837046e2c8dac5e637e4f3d78be2b171254c22fa61367f3b93fb72236415bf97",
+            "batch_id": "BATCH_3e3c49d5e8b7"
+          },
+          "request_fingerprint": "114a8920cc4d3ff37d42d63b811522bb6b39aac8bf62b48af37bb28a6c6fb6b1",
+          "notes": "V2.4 batch scheduler item=21f5f6a9b485",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/16-1788451533.json",
+            "sha256": "a5a2f08358bc6a68d4cc0f26a1dca36f591b2cb0fd0894de37f58997c3ba875c",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T00:05:35+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/16-21f5f6a9b485-a2.png",
+            "sha256": "562a8c0122e267e7243de410b43bc5474689286ad91900afaec3d4a440b1b384",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T00:05:35+08:00",
+            "kind": "original",
+            "attempt_id": "7b2f3beaab14"
+          }
+        },
+        {
+          "attempt_id": "f7d2f5ccbaf7",
+          "started_at": "2026-09-04T04:35:45+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "16",
+            "kind": "repair",
+            "prompt_sha256": "3798b5e49e8b7b901bf2bed9c78b593b1bf178ccc1bc254a571e672fe2f6fcd5",
+            "prompt_chars": 260,
+            "prompt_bytes": 772,
+            "capture_id": "semantic-16-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/16.json",
+              "contract_sha256": "837046e2c8dac5e637e4f3d78be2b171254c22fa61367f3b93fb72236415bf97"
+            },
+            "frame_contract_sha256": "837046e2c8dac5e637e4f3d78be2b171254c22fa61367f3b93fb72236415bf97",
+            "batch_id": null
+          },
+          "request_fingerprint": "f4e8cbb82ccd5913103117fa45e85cca0b456de4f49b7876b4b51e6109a3c6ee",
+          "notes": "phase6 scheduler item=55308763e8b7 scope=repair",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/16-1788467953.json",
+            "sha256": "01b75ea8aca2f5f0818c26bf431422a0858669e669dca956e907a09075cfa243",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T04:40:58+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/16-55308763e8b7-a1.png",
+            "sha256": "31bee8047defc91aa61995c995978278337b5ebc90710c0ef753da90ee72f7bf",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T04:40:58+08:00",
+            "kind": "repair",
+            "attempt_id": "f7d2f5ccbaf7"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/16-55308763e8b7-a1.png",
+        "sha256": "31bee8047defc91aa61995c995978278337b5ebc90710c0ef753da90ee72f7bf",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T04:40:58+08:00",
+        "kind": "repair",
+        "attempt_id": "f7d2f5ccbaf7"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/16.png",
+        "sha256": "562a8c0122e267e7243de410b43bc5474689286ad91900afaec3d4a440b1b384",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:25+08:00",
+        "source_sha256": "562a8c0122e267e7243de410b43bc5474689286ad91900afaec3d4a440b1b384"
+      },
+      "lock": {
+        "at": "2026-09-04T10:46:26+08:00",
+        "sha256": "562a8c0122e267e7243de410b43bc5474689286ad91900afaec3d4a440b1b384",
+        "reason": "Direct user final-decision 2026-09-04: accept current approved asset as final and accept known defects on publish; no more content repair. Known: frame-semantic FAIL ANOMALY_UNREADABLE/ANOMALY_SCALE_UNDERDELIVERED carried into release."
+      },
+      "reviews": [
+        {
+          "at": "2026-09-04T03:38:25+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/16.json 与 provider-receipts），promote 为 approved base"
+        },
+        {
+          "at": "2026-09-04T04:35:28+08:00",
+          "decision": "repair",
+          "notes": "delegated final-semantic repair: 帧语义评审 FAIL（证据 meta/frame-semantic-review.json + frame-reviews），按 critic 像素缺陷返修一次"
+        },
+        {
+          "at": "2026-09-04T04:40:59+08:00",
+          "decision": "repair",
+          "notes": "Phase7 Fast Scout obvious defect"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-04T04:35:33+08:00",
+        "note": "delegated final-semantic repair: critic 像素缺陷（见 frame-semantic-review.json），单次普通内容返修",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "17": {
+      "number": 17,
+      "status": "PASSED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-09-03T22:26:14+08:00",
+          "attempt_id": "08db36f9974f",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=1; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\17-966c9f8f2f9f-a1.jsonl"
+        },
+        {
+          "at": "2026-09-03T22:28:46+08:00",
+          "attempt_id": "5a72b5a7cb3b",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\17-966c9f8f2f9f-a2.jsonl"
+        },
+        {
+          "at": "2026-09-03T22:38:21+08:00",
+          "attempt_id": "5d2c275ac699",
+          "code": "ASPECT_RATIO_MISMATCH",
+          "message": "ASPECT_RATIO_MISMATCH: raw preserved at D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\media\\raw\\17-1788446301.png; provider_receipt=episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/17-1788446301.json; ASPECT_RATIO_MISMATCH: source=1086x1448, target=1080x1350, ratio_delta=0.062500; inspect Generation Request before deciding whether to regenerate"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt_id": "2221e3f4d0df",
+          "started_at": "2026-09-03T21:05:11+08:00",
           "kind": "original",
           "request": {
             "frame": "17",
@@ -584,6 +2953,7 @@
             "prompt_bytes": 452,
             "capture_id": "visual-lock-17",
             "model": "gpt-image-2",
+            "quality": "high",
             "canvas": {
               "aspect_ratio": "4:5",
               "width": 1080,
@@ -593,41 +2963,59 @@
             "visual_profile": {
               "profile_id": "M00",
               "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
-              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
               "capture_profile": "CP01"
             },
             "frame_contract": {
               "schema_version": 1,
               "path": "meta/runtime/contracts/frames/17.json",
-              "contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9"
-            }
+              "contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a"
+            },
+            "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a",
+            "batch_id": null
           },
-          "request_fingerprint": "3babfc34ccfbfc0975e9ae2f2053cda1da55bb7a10c56637046af5724b172530",
-          "notes": "phase6 scheduler item=d03e5dd8fe1f scope=visual_lock",
+          "request_fingerprint": "4051ddb4866f0c808812ff1106d742ed6eb13ed92bc88b0910b67cce0ef7671e",
+          "notes": "phase6 scheduler item=b34019f11ad6 scope=visual_lock",
           "result": "success",
-          "completed_at": "2026-08-31T19:59:11+08:00",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/17-1788440711.json",
+            "sha256": "3393fd426eea9849789904c61e48ad60bc265f8515c1aa9acb46e4508a728af5",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T21:05:13+08:00",
           "candidate": {
-            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-d03e5dd8fe1f-a1.png",
-            "sha256": "a9b2e80da3c2abe7ad8d9c6245889b3a86dd9082aeae0c6d2521a0e467a6483b",
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-b34019f11ad6-a1.png",
+            "sha256": "1aebf3f5ae88cec2ac8164124913174d5d9d11209259271bb6d90e52ce560a46",
             "width": 1080,
             "height": 1350,
-            "recorded_at": "2026-08-31T19:59:11+08:00",
+            "recorded_at": "2026-09-03T21:05:13+08:00",
             "kind": "original",
-            "attempt_id": "158d9b4e65c5"
+            "attempt_id": "2221e3f4d0df"
           }
         },
         {
-          "attempt_id": "be3d1cc36e9d",
-          "started_at": "2026-08-31T20:09:00+08:00",
+          "attempt_id": "b62fc565c100",
+          "started_at": "2026-09-03T21:44:54+08:00",
           "kind": "repair",
           "request": {
             "frame": "17",
             "kind": "repair",
-            "prompt_sha256": "8b1a888bacc4f4bed095711cc5e811a50a29f734051d0db68c3de8c5d2cdc65f",
-            "prompt_chars": 191,
-            "prompt_bytes": 551,
-            "capture_id": "visual-lock-17-r1b",
+            "prompt_sha256": "81f96b82bc7ea113762e8a882f31f0f1aff96e4eb1702b835fc44d1c81261a6e",
+            "prompt_chars": 141,
+            "prompt_bytes": 407,
+            "capture_id": "visual-lock-17-repair",
             "model": "gpt-image-2",
+            "quality": "high",
             "canvas": {
               "aspect_ratio": "4:5",
               "width": 1080,
@@ -637,41 +3025,59 @@
             "visual_profile": {
               "profile_id": "M00",
               "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
-              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
               "capture_profile": "CP01"
             },
             "frame_contract": {
               "schema_version": 1,
               "path": "meta/runtime/contracts/frames/17.json",
-              "contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9"
-            }
+              "contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a"
+            },
+            "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a",
+            "batch_id": null
           },
-          "request_fingerprint": "6b61fac194737eaef7d487af007e5a030a3ea6f07b6d9980943e3a7bb6e5ecc2",
-          "notes": "phase6 scheduler item=e3ba1116d948 scope=visual_lock",
+          "request_fingerprint": "b35731f2ab2a6d02d807efc5d7115697efd2f196aa08f38ee7b54f3fdb6e372c",
+          "notes": "phase6 scheduler item=7dda86926f4f scope=repair",
           "result": "success",
-          "completed_at": "2026-08-31T20:11:05+08:00",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/17-1788443094.json",
+            "sha256": "e3b76025121b7e27199bf386a9648f9e754cc2139eb0567d126890577c54b6cb",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T21:44:56+08:00",
           "candidate": {
-            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-e3ba1116d948-a1.png",
-            "sha256": "ae5559cdc81c0f5c0db2ac1aa50d7ac461dd7b4befa242d76ed79b2371b7032a",
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-7dda86926f4f-a1.png",
+            "sha256": "2f016ac97f1ee180b191c01a302f47911a6d92a1cb007ba41f4ab32e206e5526",
             "width": 1080,
             "height": 1350,
-            "recorded_at": "2026-08-31T20:11:05+08:00",
+            "recorded_at": "2026-09-03T21:44:56+08:00",
             "kind": "repair",
-            "attempt_id": "be3d1cc36e9d"
+            "attempt_id": "b62fc565c100"
           }
         },
         {
-          "attempt_id": "1bd1e180218e",
-          "started_at": "2026-08-31T21:07:58+08:00",
+          "attempt_id": "08db36f9974f",
+          "started_at": "2026-09-03T22:26:14+08:00",
           "kind": "repair",
           "request": {
             "frame": "17",
             "kind": "repair",
-            "prompt_sha256": "4981efd02311777329840e0954022b1468970d78d61b83bdf219d7f82d2c164e",
-            "prompt_chars": 181,
-            "prompt_bytes": 527,
-            "capture_id": "visual-lock-17-r2",
+            "prompt_sha256": "1dd99e18fa87720e17763987cfc0763a35d77aea40322845f8cd8823eeb27b21",
+            "prompt_chars": 220,
+            "prompt_bytes": 648,
+            "capture_id": "visual-lock-17-exception-repair",
             "model": "gpt-image-2",
+            "quality": "high",
             "canvas": {
               "aspect_ratio": "4:5",
               "width": 1080,
@@ -681,127 +3087,791 @@
             "visual_profile": {
               "profile_id": "M00",
               "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
-              "profile_sha256": "77869b155f67bc397f65cf31680f9a898fd724c33ca04ad817eb908171308f2c",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
               "capture_profile": "CP01"
             },
             "frame_contract": {
               "schema_version": 1,
               "path": "meta/runtime/contracts/frames/17.json",
-              "contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9"
-            }
+              "contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a"
+            },
+            "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a",
+            "batch_id": null
           },
-          "request_fingerprint": "9c8ac51bbefb990aa9c5b23a5472d2be727290f2d1d68f9afdc79dff698d8038",
-          "notes": "phase6 scheduler item=de025622f8b1 scope=visual_lock",
+          "request_fingerprint": "fd46df2cfa3f2f72ac408ac435b11bbdfa82e1de23e576a5a75612eab77462ef",
+          "notes": "phase6 scheduler item=966c9f8f2f9f scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-03T22:26:14+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=1; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\17-966c9f8f2f9f-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "5a72b5a7cb3b",
+          "started_at": "2026-09-03T22:26:56+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "17",
+            "kind": "repair",
+            "prompt_sha256": "1dd99e18fa87720e17763987cfc0763a35d77aea40322845f8cd8823eeb27b21",
+            "prompt_chars": 220,
+            "prompt_bytes": 648,
+            "capture_id": "visual-lock-17-exception-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/17.json",
+              "contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a"
+            },
+            "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a",
+            "batch_id": null
+          },
+          "request_fingerprint": "fd46df2cfa3f2f72ac408ac435b11bbdfa82e1de23e576a5a75612eab77462ef",
+          "notes": "phase6 scheduler item=966c9f8f2f9f scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-03T22:28:46+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\17-966c9f8f2f9f-a2.jsonl"
+          }
+        },
+        {
+          "attempt_id": "5d2c275ac699",
+          "started_at": "2026-09-03T22:38:21+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "17",
+            "kind": "repair",
+            "prompt_sha256": "1dd99e18fa87720e17763987cfc0763a35d77aea40322845f8cd8823eeb27b21",
+            "prompt_chars": 220,
+            "prompt_bytes": 648,
+            "capture_id": "visual-lock-17-exception-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/17.json",
+              "contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a"
+            },
+            "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a",
+            "batch_id": null
+          },
+          "request_fingerprint": "fd46df2cfa3f2f72ac408ac435b11bbdfa82e1de23e576a5a75612eab77462ef",
+          "notes": "phase6 scheduler item=966c9f8f2f9f scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-03T22:38:21+08:00",
+          "error": {
+            "code": "ASPECT_RATIO_MISMATCH",
+            "message": "ASPECT_RATIO_MISMATCH: raw preserved at D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\media\\raw\\17-1788446301.png; provider_receipt=episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/17-1788446301.json; ASPECT_RATIO_MISMATCH: source=1086x1448, target=1080x1350, ratio_delta=0.062500; inspect Generation Request before deciding whether to regenerate"
+          }
+        },
+        {
+          "attempt_id": "d8057e7d983e",
+          "started_at": "2026-09-03T22:47:31+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "17",
+            "kind": "repair",
+            "prompt_sha256": "1dd99e18fa87720e17763987cfc0763a35d77aea40322845f8cd8823eeb27b21",
+            "prompt_chars": 220,
+            "prompt_bytes": 648,
+            "capture_id": "visual-lock-17-exception-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/17.json",
+              "contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a"
+            },
+            "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a",
+            "batch_id": null
+          },
+          "request_fingerprint": "fd46df2cfa3f2f72ac408ac435b11bbdfa82e1de23e576a5a75612eab77462ef",
+          "notes": "phase6 scheduler item=966c9f8f2f9f scope=repair",
           "result": "success",
-          "completed_at": "2026-08-31T21:11:10+08:00",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/17-1788446851.json",
+            "sha256": "8cb6d935d71a007f73a3dd6dae9c2ffe805522439618d5e651ac0c248eb2a04b",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-03T22:49:42+08:00",
           "candidate": {
-            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-de025622f8b1-a1.png",
-            "sha256": "581132d3be653e37bbf0762735ae1ad7d482b680967b17c89d9528fd0a386244",
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-966c9f8f2f9f-a3.png",
+            "sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1",
             "width": 1080,
             "height": 1350,
-            "recorded_at": "2026-08-31T21:11:10+08:00",
+            "recorded_at": "2026-09-03T22:49:42+08:00",
             "kind": "repair",
-            "attempt_id": "1bd1e180218e"
+            "attempt_id": "d8057e7d983e"
           }
         }
       ],
       "current_candidate": {
-        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-de025622f8b1-a1.png",
-        "sha256": "581132d3be653e37bbf0762735ae1ad7d482b680967b17c89d9528fd0a386244",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-966c9f8f2f9f-a3.png",
+        "sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-08-31T21:11:10+08:00",
+        "recorded_at": "2026-09-03T22:49:42+08:00",
         "kind": "repair",
-        "attempt_id": "1bd1e180218e"
+        "attempt_id": "d8057e7d983e"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/17.png",
+        "sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:26+08:00",
+        "source_sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1"
+      },
       "lock": null,
       "reviews": [
         {
-          "at": "2026-08-31T19:59:11+08:00",
+          "at": "2026-09-03T21:09:04+08:00",
           "decision": "repair",
-          "notes": "Phase7 Fast Scout obvious defect"
+          "notes": "rolling pre-final obvious defect"
         },
         {
-          "at": "2026-08-31T20:11:06+08:00",
+          "at": "2026-09-03T21:47:35+08:00",
           "decision": "repair",
-          "notes": "Phase7 Fast Scout obvious defect"
+          "notes": "rolling pre-final obvious defect"
         },
         {
-          "at": "2026-08-31T21:11:10+08:00",
-          "decision": "repair",
-          "notes": "Phase7 Fast Scout obvious defect"
-        },
-        {
-          "at": "2026-08-31T22:11:26+08:00",
+          "at": "2026-09-04T03:38:26+08:00",
           "decision": "pass",
-          "notes": "Direct user accepted existing exception candidate: 用户在滚动像素复审因视觉 sidecar 不可用而 UNCERTAIN 后，直接接受 r2 作为高冲击 Visual Lock 人工例外",
-          "approval_basis": "direct_user_review_exception_acceptance",
-          "candidate_sha256": "581132d3be653e37bbf0762735ae1ad7d482b680967b17c89d9528fd0a386244"
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/17.json 与 provider-receipts），promote 为 approved base"
         }
       ],
       "repair_authorization": {
-        "at": "2026-08-31T20:04:06+08:00",
-        "note": "Fast Scout REPAIR_NOW: POV recorder paradox + 代价选择同帧兑现不足；delegated content repair 1/1",
+        "at": "2026-09-03T21:30:14+08:00",
+        "note": "delegated pixel review: 缺手机被膜缘卷走事件与攥包对照、巨物解剖弱；按滚动审查+桌面像素核验返修一次",
         "user_approved": false,
         "delegated_auto_review": true,
         "approval_basis": "delegated_auto_review"
       },
       "user_exception_authorizations": [
         {
-          "at": "2026-08-31T21:07:33+08:00",
-          "approval_text": "同意对帧08和帧17进行用户例外返修",
-          "reason": "普通内容返修1/1后 scout 与独立像素复核仍 REPAIR_NOW：POV 悖论未解决；用户明确批准例外返修",
+          "at": "2026-09-03T22:25:22+08:00",
+          "approval_text": "用户选择A：授权帧17第2次内容返修（用户明确例外），允许突破每帧1次普通内容返修上限",
+          "reason": "帧17高潮准入图普通返修后仍不满足硬性像素约束（巨物解剖不可辨、紧攥包带对照不可读）；用户已确认走用户例外通道重做一次",
           "user_approved": true,
           "delegated_auto_review": false,
           "approval_basis": "direct_user_review_exception"
         }
       ],
-      "user_exception_repairs_used": 1,
-      "user_exception_acceptances": [
-        {
-          "at": "2026-08-31T22:11:26+08:00",
-          "approval_text": "接受帧 17 r2 作为人工例外并进入绑定流",
-          "reason": "用户在滚动像素复审因视觉 sidecar 不可用而 UNCERTAIN 后，直接接受 r2 作为高冲击 Visual Lock 人工例外",
-          "user_approved": true,
-          "delegated_auto_review": false,
-          "approval_basis": "direct_user_review_exception_acceptance",
-          "candidate_sha256": "581132d3be653e37bbf0762735ae1ad7d482b680967b17c89d9528fd0a386244"
-        }
-      ]
+      "user_exception_repairs_used": 1
     },
     "18": {
       "number": 18,
-      "status": "PENDING",
-      "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
+      "status": "PASSED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-09-04T04:43:24+08:00",
+          "attempt_id": "cde56789c57a",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\18-f478434cff0a-a1.jsonl"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt_id": "3c5429a4356c",
+          "started_at": "2026-09-04T00:05:35+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "18",
+            "kind": "original",
+            "prompt_sha256": "8de22abcee09e098e0c9084655e6d78929574e3f618b2dc2edc42f8b9c771b98",
+            "prompt_chars": 76,
+            "prompt_bytes": 218,
+            "capture_id": "batch-18",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/18.json",
+              "contract_sha256": "b6468c6e10747366207d6a7d18506d0c46686d325ccfdeff002b43a2d4bacb28"
+            },
+            "frame_contract_sha256": "b6468c6e10747366207d6a7d18506d0c46686d325ccfdeff002b43a2d4bacb28",
+            "batch_id": "BATCH_b291ff166808"
+          },
+          "request_fingerprint": "45cafa250e53cd928af647d66c4243912bec05df6249a6b221200dc645280fd2",
+          "notes": "V2.4 batch scheduler item=dd713d132413",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/18-1788451536.json",
+            "sha256": "441339b935704785ac0403e6b4f99d1f938d84a747a4628fd16280d9fde803b7",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T00:05:37+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/18-dd713d132413-a1.png",
+            "sha256": "1bc500012fea59570b278f70a00271ac1e23d4c160fef128a94faa86d43e90d5",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T00:05:37+08:00",
+            "kind": "original",
+            "attempt_id": "3c5429a4356c"
+          }
+        },
+        {
+          "attempt_id": "cde56789c57a",
+          "started_at": "2026-09-04T04:40:59+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "18",
+            "kind": "repair",
+            "prompt_sha256": "11c758c14bdcdbc2cc579eafd33df28b3a2943f6c8a117e5701117358c894a3c",
+            "prompt_chars": 208,
+            "prompt_bytes": 618,
+            "capture_id": "semantic-18-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/18.json",
+              "contract_sha256": "b6468c6e10747366207d6a7d18506d0c46686d325ccfdeff002b43a2d4bacb28"
+            },
+            "frame_contract_sha256": "b6468c6e10747366207d6a7d18506d0c46686d325ccfdeff002b43a2d4bacb28",
+            "batch_id": null
+          },
+          "request_fingerprint": "f2583071e24edc47379d50f9fc51964fed25e2678a7dbc5d3b9acb096d8a6666",
+          "notes": "phase6 scheduler item=f478434cff0a scope=repair",
+          "result": "technical_failure",
+          "completed_at": "2026-09-04T04:43:24+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\image-workers\\18-f478434cff0a-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "256a1e467bd6",
+          "started_at": "2026-09-04T04:55:47+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "18",
+            "kind": "repair",
+            "prompt_sha256": "11c758c14bdcdbc2cc579eafd33df28b3a2943f6c8a117e5701117358c894a3c",
+            "prompt_chars": 208,
+            "prompt_bytes": 618,
+            "capture_id": "semantic-18-repair-r2",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/18.json",
+              "contract_sha256": "b6468c6e10747366207d6a7d18506d0c46686d325ccfdeff002b43a2d4bacb28"
+            },
+            "frame_contract_sha256": "b6468c6e10747366207d6a7d18506d0c46686d325ccfdeff002b43a2d4bacb28",
+            "batch_id": null
+          },
+          "request_fingerprint": "386f0dc373979e8b7a8c8866e6dfe5ba19f94b26d18b9930fc373b0a75566549",
+          "notes": "phase6 scheduler item=21a7f751ccdb scope=repair",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/18-1788469402.json",
+            "sha256": "3ffda149347e9b6c85aef7d88d1a41884b3a0063fc80a615242de80b09005d11",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T05:05:01+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/18-21a7f751ccdb-a1.png",
+            "sha256": "56aa7bc69892c58b561c01ff31d5fea3acf2f4b83a4e269462f9f1763e9951fa",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T05:05:01+08:00",
+            "kind": "repair",
+            "attempt_id": "256a1e467bd6"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/18-21a7f751ccdb-a1.png",
+        "sha256": "56aa7bc69892c58b561c01ff31d5fea3acf2f4b83a4e269462f9f1763e9951fa",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T05:05:01+08:00",
+        "kind": "repair",
+        "attempt_id": "256a1e467bd6"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/18.png",
+        "sha256": "56aa7bc69892c58b561c01ff31d5fea3acf2f4b83a4e269462f9f1763e9951fa",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T09:50:21+08:00",
+        "source_sha256": "56aa7bc69892c58b561c01ff31d5fea3acf2f4b83a4e269462f9f1763e9951fa"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-04T03:38:26+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/18.json 与 provider-receipts），promote 为 approved base"
+        },
+        {
+          "at": "2026-09-04T04:35:28+08:00",
+          "decision": "repair",
+          "notes": "delegated final-semantic repair: 帧语义评审 FAIL（证据 meta/frame-semantic-review.json + frame-reviews），按 critic 像素缺陷返修一次"
+        },
+        {
+          "at": "2026-09-04T09:49:19+08:00",
+          "decision": "pass",
+          "notes": "supervisor pixel check: 前臂细红痕清晰；包身附着的墙饰碎片为不规则撕裂片（外层面层+白色灰浆毛边），读作从墙表撕下的甲片而非行李纸签；充电线空置无手机、窗外复电亮灯成立。promote 后 critic 终裁。"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-04T04:35:33+08:00",
+        "note": "delegated final-semantic repair: critic 像素缺陷（见 frame-semantic-review.json），单次普通内容返修",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "19": {
       "number": 19,
-      "status": "PENDING",
+      "status": "PASSED",
       "content_repairs_used": 0,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
+      "attempts": [
+        {
+          "attempt_id": "14b0b3a2ceb9",
+          "started_at": "2026-09-04T00:05:35+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "19",
+            "kind": "original",
+            "prompt_sha256": "1e6c4a02b9ce5a1dd9a68a61238537b8b8e3f26dca3a8e39868c3a9202f068ab",
+            "prompt_chars": 80,
+            "prompt_bytes": 240,
+            "capture_id": "batch-19",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/19.json",
+              "contract_sha256": "b38cda1e149eaac156a06bf359db5ad3d8f170dc9e8d44ca87c4cbb192a1612a"
+            },
+            "frame_contract_sha256": "b38cda1e149eaac156a06bf359db5ad3d8f170dc9e8d44ca87c4cbb192a1612a",
+            "batch_id": "BATCH_b291ff166808"
+          },
+          "request_fingerprint": "2ab0a81592707ce3dd6da539f4381f47505aa1f53834b2baa786c30db748756a",
+          "notes": "V2.4 batch scheduler item=8b2a22d18b0e",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/19-1788451536.json",
+            "sha256": "e58eb3c8b9b1ff61b589adfc4cd9c8e091cd86e748263d3ac86c5cf358f1f314",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T00:05:38+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/19-8b2a22d18b0e-a1.png",
+            "sha256": "bc9af0af9fe39cf824652a377dcd64c4f0b17dcccab49d7a6b8c4f3c3ca4d488",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T00:05:38+08:00",
+            "kind": "original",
+            "attempt_id": "14b0b3a2ceb9"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/19-8b2a22d18b0e-a1.png",
+        "sha256": "bc9af0af9fe39cf824652a377dcd64c4f0b17dcccab49d7a6b8c4f3c3ca4d488",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T00:05:38+08:00",
+        "kind": "original",
+        "attempt_id": "14b0b3a2ceb9"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/19.png",
+        "sha256": "bc9af0af9fe39cf824652a377dcd64c4f0b17dcccab49d7a6b8c4f3c3ca4d488",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:27+08:00",
+        "source_sha256": "bc9af0af9fe39cf824652a377dcd64c4f0b17dcccab49d7a6b8c4f3c3ca4d488"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-04T03:38:27+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/19.json 与 provider-receipts），promote 为 approved base"
+        }
+      ]
     },
     "20": {
       "number": 20,
-      "status": "PENDING",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
-      "approved_asset": null,
+      "attempts": [
+        {
+          "attempt_id": "95e7781c24c4",
+          "started_at": "2026-09-04T00:05:36+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "20",
+            "kind": "original",
+            "prompt_sha256": "989646ab25fc3a074be9cf07f7ab9b8645e0c0259ad2afacd9ea9bd03dddf347",
+            "prompt_chars": 91,
+            "prompt_bytes": 273,
+            "capture_id": "batch-20",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/20.json",
+              "contract_sha256": "5f8416aee0d73d880ae9b264bd7714254fea1b3053daf391866e0b810326dd8a"
+            },
+            "frame_contract_sha256": "5f8416aee0d73d880ae9b264bd7714254fea1b3053daf391866e0b810326dd8a",
+            "batch_id": "BATCH_b291ff166808"
+          },
+          "request_fingerprint": "14d643e0890758cb705d52bbe46a5280ffe322fabeb36170a714e11e8982e752",
+          "notes": "V2.4 batch scheduler item=e9dfe05e4c07",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/20-1788451536.json",
+            "sha256": "32e9e30fd947a347198971fcbaed531ba27d94919a289922b6ea019eaa45e8f7",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T00:05:38+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/20-e9dfe05e4c07-a1.png",
+            "sha256": "95e6b5550130237bb753833e50df4b1676c07892e54a7142af029ca6273eb31a",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T00:05:38+08:00",
+            "kind": "original",
+            "attempt_id": "95e7781c24c4"
+          }
+        },
+        {
+          "attempt_id": "f8e1eeded9a1",
+          "started_at": "2026-09-04T00:22:46+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "20",
+            "kind": "repair",
+            "prompt_sha256": "16a4272885b8b465b5b6e242b4482c2d28ca4c967de2e93a3c8dab3cb8e2e47e",
+            "prompt_chars": 246,
+            "prompt_bytes": 732,
+            "capture_id": "batch-20-repair",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/20.json",
+              "contract_sha256": "5f8416aee0d73d880ae9b264bd7714254fea1b3053daf391866e0b810326dd8a"
+            },
+            "frame_contract_sha256": "5f8416aee0d73d880ae9b264bd7714254fea1b3053daf391866e0b810326dd8a",
+            "batch_id": null
+          },
+          "request_fingerprint": "dab9f5e1b017bdc6795d559d927b2ad4f841d978346cf8b6caebe7db1b789722",
+          "notes": "phase6 scheduler item=380426b61de0 scope=repair",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/20-1788452567.json",
+            "sha256": "f6f766e296c61708d95ff18c0cc52e918f91d48d212f82c728117d5455898a16",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T00:25:47+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/20-380426b61de0-a1.png",
+            "sha256": "e7bb7133e93e5f861997a23290e597aabfc63771341ae1904b8d20caeee10566",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T00:25:47+08:00",
+            "kind": "repair",
+            "attempt_id": "f8e1eeded9a1"
+          }
+        },
+        {
+          "attempt_id": "ed303a76bea7",
+          "started_at": "2026-09-04T03:29:13+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "20",
+            "kind": "repair",
+            "prompt_sha256": "16a4272885b8b465b5b6e242b4482c2d28ca4c967de2e93a3c8dab3cb8e2e47e",
+            "prompt_chars": 246,
+            "prompt_bytes": 732,
+            "capture_id": "manual-20-exception",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "CP01"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/20.json",
+              "contract_sha256": "5f8416aee0d73d880ae9b264bd7714254fea1b3053daf391866e0b810326dd8a"
+            },
+            "frame_contract_sha256": "5f8416aee0d73d880ae9b264bd7714254fea1b3053daf391866e0b810326dd8a",
+            "batch_id": null
+          },
+          "request_fingerprint": "b2651f947848017c74f2a8da674119ae9c7a6236b41a9b247036a2b1fbbe0e4a",
+          "notes": "user-exception round 1: 强化山脊卧兽轮廓+山口上方近透明残留壳以城市/山体尺度成立，避免飞机尾迹/光晕",
+          "result": "success",
+          "provider_receipt": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/provider-receipts/20-1788464049.json",
+            "sha256": "f4d734d5f300c369f705d15036dc69b9faedb9a5abef5aa6f3aa49e35618969b",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-04T03:34:14+08:00",
+          "candidate": {
+            "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/20-manual-1788464049.png",
+            "sha256": "6a33e4d52ce22dffbf66563743e8f4faa89bc16ad16a2da7e2381cf562e9081a",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-04T03:34:14+08:00",
+            "kind": "repair",
+            "attempt_id": "ed303a76bea7"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/20-manual-1788464049.png",
+        "sha256": "6a33e4d52ce22dffbf66563743e8f4faa89bc16ad16a2da7e2381cf562e9081a",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-04T03:34:14+08:00",
+        "kind": "repair",
+        "attempt_id": "ed303a76bea7"
+      },
+      "approved_asset": {
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/20.png",
+        "sha256": "6a33e4d52ce22dffbf66563743e8f4faa89bc16ad16a2da7e2381cf562e9081a",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-04T03:38:28+08:00",
+        "source_sha256": "6a33e4d52ce22dffbf66563743e8f4faa89bc16ad16a2da7e2381cf562e9081a"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-04T00:12:21+08:00",
+          "decision": "repair",
+          "notes": "V2.4 Batch Repair Gate batch=BATCH_b291ff166808 action=SINGLE_REPAIR deviation=60 criticality=43"
+        },
+        {
+          "at": "2026-09-04T00:25:48+08:00",
+          "decision": "repair",
+          "notes": "Phase7 Fast Scout obvious defect"
+        },
+        {
+          "at": "2026-09-04T03:38:27+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review: 候选像素与 Resolved Frame Contract 核对通过（frame-scout/rolling 证据在 meta/frame-scouts/20.json 与 provider-receipts），promote 为 approved base"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-04T00:16:40+08:00",
+        "note": "V2.4 Batch Repair Gate SINGLE_REPAIR deviation=60 criticality=43: 合同要求山口/山脊上空极薄巨大近透明残留壳与城市尺度, 生成仅为高空飞机尾迹; 授权普通内容返修一次",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      },
+      "user_exception_authorizations": [
+        {
+          "at": "2026-09-04T03:29:10+08:00",
+          "approval_text": "用户选择A：授权帧20第2次内容返修（用户明确例外）",
+          "reason": "帧20普通内容返修后仍被 Fast Scout 判为明显缺陷：合同要求山脊上方的极薄巨大近透明残留壳+城市/山体尺度可读，生成结果仍像高空飞机尾迹/虹状光晕，用户已按审计先例直接授权例外返修一次",
+          "user_approved": true,
+          "delegated_auto_review": false,
+          "approval_basis": "direct_user_review_exception"
+        }
+      ],
+      "user_exception_repairs_used": 1
     }
   },
   "batches": []

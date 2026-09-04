@@ -2,7 +2,7 @@
   "schema_version": 2,
   "story_os_version": "2.1.0",
   "episode_id": "11-01",
-  "generated_at": "2026-08-31T19:05:26+08:00",
+  "generated_at": "2026-09-04T11:41:43+08:00",
   "candidate_fingerprint_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/episode-fingerprint.json",
   "candidate_fingerprint_sha256": "9e2794e7ce9671bdfd92a55c31a63516f0fc56e4b5f57689c94214b38eb5e344",
   "registry_path": "reports/account-pattern-registry.json",
@@ -46,5 +46,5 @@
   "scoring_policy": "effective=max(exact_string,semantic_equivalence); veto=exact_veto OR semantic_veto",
   "note": "V2.0.3.6 uses a fresh isolated semantic equivalence matrix so paraphrased/skin-swapped fingerprints cannot bypass Recent-5 by changing wording. Python, not the critic, computes scores.",
   "semantic_review_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/recent5-semantic-review.json",
-  "semantic_review_sha256": "0532dfec68089e2b2087920d990260ce29fa3f2451f85ab861e437e105a3b2ce"
+  "semantic_review_sha256": "ee62deaa0306aa2da5c3d6e1ad8d53480fcf2479fc64aeb22c5bc3cce44c9e40"
 }

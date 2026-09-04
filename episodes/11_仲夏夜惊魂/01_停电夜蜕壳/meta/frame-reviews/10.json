@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.1.0",
+  "frame": "10",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/10.png",
+  "asset_sha256": "b5d984e99d8493f9c07b688090707e0c2982b9fb21fadf19986dabbef41ae72e",
+  "story_sha256": "1036636614fc8208f3831078635a860b484927c133ac2eb497d9c2601c5b69b3",
+  "storyboard_sha256": "a6147f70d2de6e06c6f4fba6e48ae5dfc36a1634a2117bd9ea22b47fba75d9fd",
+  "visual_contract_sha256": "4807f63cdd5d52981eb635b44547e1c320ab573c58c192713d341fa4fed34dad",
+  "environment_frame_sha256": "e63f0f69a42cc1b2c6cdd1edbe7d3a2360b5d2270f9c95c8acde3ecdfedb009a",
+  "frame_directive_sha256": "049a8a726cf6d387535b9a8a01a76798bd68156a70b80d24f208368691be06cf",
+  "frame_contract_sha256": "9b6560f33a9491b94a3091783f372bbd438ac81d149cdc597bf5f053d0f726ab",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "review_scope": "FULL_FRAME_SET",
+    "attempt": 2,
+    "reviewed_at": "2026-09-04T04:32:25+08:00",
+    "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-critic-attempt-2.jsonl"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": false,
+    "key_prop_fidelity": false,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": false,
+    "caption_image_support": false,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true
+  },
+  "issue_codes": [
+    "ANOMALY_UNREADABLE",
+    "KEY_PROP_DRIFT",
+    "CAPTION_DEPENDENCY"
+  ],
+  "notes": "连续半透明白色大幕横跨街角、车/楼作尺度，但幕面未现'墙面颜色、广告画面、玻璃倒影、路面标线'等表面信息连接碎片，读作一张巨大布/塑料膜而非街道表层的整体皮肤；'它们是同一张'的核心证据依赖字幕。",
+  "decision": "fail"
+}

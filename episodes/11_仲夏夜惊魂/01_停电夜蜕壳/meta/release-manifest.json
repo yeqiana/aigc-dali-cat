@@ -9,34 +9,36 @@
     "aspect_ratio": "4:5"
   },
   "release": {
-    "version": "V2.1-preproduction",
+    "version": "v1.0",
     "body_frame_count": 20,
     "publish_dir": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish",
     "body_glob": "[0-9][0-9].png",
-    "cover_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/cover/cover.png",
+    "cover_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/16.png",
     "contact_sheet_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/contact-sheets/publish-final.jpg"
   },
   "artifacts": {
     "story": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/01_StoryLock.md",
     "storyboard": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/02_Storyboard.md",
     "visual_spec": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/03_Visual_Preproduction.md",
-    "captions": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/04_Caption_Plan.md",
-    "publish_copy": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/05_Intro_Description_Strategy.md",
-    "production_review": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/06_Preproduction_QA.md"
+    "captions": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/subtitles.yaml",
+    "publish_copy": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/release/publish-copy.md",
+    "production_review": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/release/production-review.md",
+    "propagation_card": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/release/propagation-card.md"
   },
   "quality": {
     "production_gate": "pending",
-    "propagation_score": null,
-    "propagation_decision": "pending",
-    "publish_decision": "hold",
-    "decision_note": "image_continue：Story/Storyboard/Contracts/Handoff 已锁定；从 Visual Lock 开始推进，暂不发版。"
+    "propagation_score": 9.3,
+    "s_min_score": 9.0,
+    "propagation_decision": "strong",
+    "publish_decision": "go",
+    "decision_note": "直接用户终稿接受（meta/final-acceptance.json）受控例外放行：语义/scout FAIL 证据原样保留；production_gate 保持 pending 不冒充通过；详见 release/production-review.md。"
   },
   "publication": {
     "platform": "douyin",
-    "actual_title": null,
-    "description": null,
-    "topics": [],
-    "pinned_comment": null,
+    "actual_title": "2026年最热那晚，县城停电后蜕了一层壳",
+    "description": "临近发小婚礼，我请了两天假，坐最后一班车回了趟槐川县。县城一年比一年空，那天白天四十度，晚上十一点，整条街突然全黑了。\n\n我从客运站往家走，先以为只是墙皮被晒坏了；走远一点才发现，橱窗反光、路面标线，整条街的表面连成了同一张东西——底下像有一只巨大的活物，正把县城这块皮慢慢顶起来。\n\n天亮前我还要去当伴郎，只能从它底下穿过去。松握的手机被卷走了，攥紧包带的那只手只被划了一道红痕。\n\n第二天白天，县城看起来一切正常。只是那座山脊的轮廓，好像比昨天更像一只卧着的东西。\n\n人物、地点、情节均为虚构；内容由 AI 生成。",
+    "topics": ["都市怪谈", "伪纪录片", "第一视角", "县城惊魂", "停电夜", "细思极恐", "AI图文故事"],
+    "pinned_comment": "回头看图17：同一只手，松开的手机被卷走了，攥紧包带的那只手只被划了一道红痕——它不是随便抓的。虚构故事，AI 生成，晚安槐川。",
     "published_at": null,
     "timing_window": null,
     "post_url": null

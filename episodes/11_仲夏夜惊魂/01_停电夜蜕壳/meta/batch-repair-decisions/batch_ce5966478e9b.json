@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "batch_id": "BATCH_ce5966478e9b",
+  "decisions": [
+    {
+      "schema_version": 1,
+      "frame": "02",
+      "deviation_score": 0,
+      "criticality_score": 0,
+      "deviation_high_min": 80,
+      "criticality_high_min": 80,
+      "high_high": false,
+      "batch_complete": true,
+      "action": "KEEP_OR_DEFER_FINAL",
+      "issue_codes": [],
+      "scout_decision": "DEFER_TO_FINAL",
+      "batch_id": "BATCH_ce5966478e9b",
+      "ledger_repair_authorized": false
+    },
+    {
+      "schema_version": 1,
+      "frame": "03",
+      "deviation_score": 0,
+      "criticality_score": 13,
+      "deviation_high_min": 80,
+      "criticality_high_min": 80,
+      "high_high": false,
+      "batch_complete": true,
+      "action": "KEEP_OR_DEFER_FINAL",
+      "issue_codes": [],
+      "scout_decision": "DEFER_TO_FINAL",
+      "batch_id": "BATCH_ce5966478e9b",
+      "ledger_repair_authorized": false
+    },
+    {
+      "schema_version": 1,
+      "frame": "04",
+      "deviation_score": 0,
+      "criticality_score": 13,
+      "deviation_high_min": 80,
+      "criticality_high_min": 80,
+      "high_high": false,
+      "batch_complete": true,
+      "action": "KEEP_OR_DEFER_FINAL",
+      "issue_codes": [],
+      "scout_decision": "DEFER_TO_FINAL",
+      "batch_id": "BATCH_ce5966478e9b",
+      "ledger_repair_authorized": false
+    },
+    {
+      "schema_version": 1,
+      "frame": "05",
+      "deviation_score": 0,
+      "criticality_score": 19,
+      "deviation_high_min": 80,
+      "criticality_high_min": 80,
+      "high_high": false,
+      "batch_complete": true,
+      "action": "KEEP_OR_DEFER_FINAL",
+      "issue_codes": [],
+      "scout_decision": "DEFER_TO_FINAL",
+      "batch_id": "BATCH_ce5966478e9b",
+      "ledger_repair_authorized": false
+    }
+  ],
+  "evidence_not_authority": true
+}

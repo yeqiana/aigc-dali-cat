@@ -8,18 +8,15 @@
     "climax",
     "impact_3_4"
   ],
-  "frame_contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9",
-  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-de025622f8b1-a1.png",
-  "asset_sha256": "581132d3be653e37bbf0762735ae1ad7d482b680967b17c89d9528fd0a386244",
-  "scouted_at": "2026-08-31T21:07:59+08:00",
+  "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-966c9f8f2f9f-a3.png",
+  "asset_sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1",
+  "scouted_at": "2026-09-03T22:47:32+08:00",
   "final_critic_still_required": true,
-  "decision": "REPAIR_NOW",
-  "issue_codes": [
-    "FRAME_CONTRACT_OBVIOUS_MISMATCH",
-    "POV_RECORDER_OBVIOUSLY_ILLEGAL"
-  ],
-  "notes": "实际像素中只有一只前臂抓住包带并带有红痕，但没有呈现右手松握手机被膜缘整只卷走、腾空离手的关键高潮事件；画面底部反而出现一部近景手机，而合同仅允许单一普通智能手机作为第一人称拍摄源、无第二拍摄源，因此形成明显的可见录像设备矛盾。",
-  "confidence": 0.99,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "NO_ACTUAL_IMAGE: frame-17 image could not be reviewed. Attached image failed to load (vision sidecar HTTP 404, local path '-' unreadable), and shell is unavailable so no on-disk frame-17 render could be located. No pixel evidence exists for PASS_FAST or REPAIR_NOW. Do not treat as any pass; route to final critic with the render attached.",
+  "confidence": 0.0,
   "model_called": true,
   "scout_status": "model_complete",
   "critic_log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scouts/17.jsonl"

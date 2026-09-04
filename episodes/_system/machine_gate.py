@@ -10,6 +10,7 @@ from pathlib import Path
 
 from story_os_contract import canonical_stages
 from incremental_frame_review import review_required as semantic_frame_review_required, verify_episode as verify_frame_semantic_episode
+from final_acceptance import valid as acceptance_valid
 
 STATES = canonical_stages()
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
@@ -387,8 +388,13 @@ def check_production(repo_root: Path, episode_dir: Path, gates: dict, manifest: 
             check_frame_review(review_path(repo_root, episode_dir, gates, key), key, findings)
 
     if semantic_required:
-        for error in verify_frame_semantic_episode(episode_dir, metadata_only=metadata_only, write_audit=False):
-            findings.append(Finding("FAIL", "frame_semantic_review", error))
+        errors = verify_frame_semantic_episode(episode_dir, metadata_only=metadata_only, write_audit=False)
+        if errors:
+            if acceptance_valid(episode_dir) is not None:
+                findings.append(Finding("WARN", "frame_semantic_accepted", "direct user final-decision acceptance recorded; semantic FAIL accepted as known defects (meta/final-acceptance.json)"))
+            else:
+                for error in errors:
+                    findings.append(Finding("FAIL", "frame_semantic_review", error))
 
 
 def validate(episode_dir: Path, target: str, *, metadata_only: bool = False) -> list[Finding]:

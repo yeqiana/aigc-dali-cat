@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "frame": "09",
+  "risk_level": "HIGH",
+  "risk_score": 53,
+  "risk_tags": [
+    "first_anomaly",
+    "impact_2"
+  ],
+  "frame_contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/09-025c025bf441-a1.png",
+  "asset_sha256": "1b7c89e980b6550bb52eaceca4fd6ed49ea4487aa2feb54c7e713daffbf264a0",
+  "scouted_at": "2026-09-04T01:22:58+08:00",
+  "final_critic_still_required": true,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "Local image file could not be opened (os error 2) so triaged from the attached low-detail vision description only. Frame 09 is the impact-2 first_anomaly reveal whose mandatory cues are thin black asphalt peeling like skin, a second offset lane line/offset manhole underneath, and dark-grey shallow bone-plate body surface. Observed pixels read mostly as a very dark intersection with generic damaged/lifted asphalt edge and one normally seated patterned manhole, a passing sedan (scale present) and shopfronts/utility poles (environment OK). The core second-layer + bone-plate reveal is not clearly confirmed in the coarse dark description, but darkness makes a false REPAIR_NOW costly; needs full-resolution pixel check and nearby-frame continuity before deciding.",
+  "confidence": 0.5,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scouts/09.jsonl"
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "11",
+  "scene_prompt": "第一人称站在河渠步行道入口：前方护栏上方悬垂低低半透明膜层几乎贴路面，身后是普通街口，远处近路方向表层卷起封住街口；手机屏幕时间23:26可见，构图是往前走视角。",
+  "scene_prompt_sha256": "388a2f967ecfb833495d9982582e70cbab6da813ca754c168708dd4ae9b29921",
+  "frame_contract_sha256": "8b4fdc81db3edefd81d24946afe69b03ee4852c7bb43f62f1dc7fde909fa71e5",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\11.txt",
+  "package_sha256": "79e5ef8f6f592358794a360483381146db2c126da6c6be53ee38c3feae0f1e97",
+  "compiled_at": "2026-09-03T23:56:01+08:00"
+}

@@ -12,6 +12,17 @@
         "parent_sha256": null,
         "source_item_id": "dfd5b186d094",
         "frame_contract_sha256": "fe0418fc08a4ddaec153fe795a28f9af0be1ffac5bddd3b0b1eed3da1086cf87"
+      },
+      {
+        "version": 2,
+        "created_at": "2026-09-03T18:53:01+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/01-d3b4eb3ac2a7-a2.png",
+        "sha256": "f42261c0fe90ebdcc1e194c5806738fed9fdd198efbc43933e58db95e3313dc8",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": "47094e63e36261cad748855c2d1e0e4b1be7b14e34cffa778b33329bfa0f05b0",
+        "source_item_id": "d3b4eb3ac2a7",
+        "frame_contract_sha256": "69df170a8ea94ab4666691380fd6ca53319c9e428522ea736004da260230cc3f"
       }
     ],
     "08": [
@@ -82,6 +93,39 @@
         "parent_sha256": "ae5559cdc81c0f5c0db2ac1aa50d7ac461dd7b4befa242d76ed79b2371b7032a",
         "source_item_id": "de025622f8b1",
         "frame_contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9"
+      },
+      {
+        "version": 4,
+        "created_at": "2026-09-03T21:05:13+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-b34019f11ad6-a1.png",
+        "sha256": "1aebf3f5ae88cec2ac8164124913174d5d9d11209259271bb6d90e52ce560a46",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": "581132d3be653e37bbf0762735ae1ad7d482b680967b17c89d9528fd0a386244",
+        "source_item_id": "b34019f11ad6",
+        "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a"
+      },
+      {
+        "version": 5,
+        "created_at": "2026-09-03T21:44:56+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-7dda86926f4f-a1.png",
+        "sha256": "2f016ac97f1ee180b191c01a302f47911a6d92a1cb007ba41f4ab32e206e5526",
+        "kind": "repair",
+        "reason": "scheduler:repair",
+        "parent_sha256": "1aebf3f5ae88cec2ac8164124913174d5d9d11209259271bb6d90e52ce560a46",
+        "source_item_id": "7dda86926f4f",
+        "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a"
+      },
+      {
+        "version": 6,
+        "created_at": "2026-09-03T22:49:42+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/17-966c9f8f2f9f-a3.png",
+        "sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1",
+        "kind": "repair",
+        "reason": "scheduler:repair",
+        "parent_sha256": "2f016ac97f1ee180b191c01a302f47911a6d92a1cb007ba41f4ab32e206e5526",
+        "source_item_id": "966c9f8f2f9f",
+        "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a"
       }
     ],
     "05": [
@@ -95,6 +139,108 @@
         "parent_sha256": null,
         "source_item_id": "91211334ca50",
         "frame_contract_sha256": "9d6e590ca2f4900ced0b9ba74c7ff982b712610b6144492cecebb2525ba9e3c2"
+      }
+    ],
+    "15": [
+      {
+        "version": 1,
+        "created_at": "2026-09-03T21:05:12+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/15-d173ccd5da37-a1.png",
+        "sha256": "9d008a5b66aee376c65e4a145c241d7eb90504b53d548650708316e9745bfbce",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": null,
+        "source_item_id": "d173ccd5da37",
+        "frame_contract_sha256": "2b21b127a163c64d68ae2c0a823dd1267dfef6d989f1b78504581dbdaf7711a2"
+      }
+    ],
+    "06": [
+      {
+        "version": 1,
+        "created_at": "2026-09-03T21:05:15+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/06-3f43bcee719f-a1.png",
+        "sha256": "4e1b7c9d12fff52408942deb3fe2874b394b7ae261f73e195e2e725fbbd3c1b9",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": null,
+        "source_item_id": "3f43bcee719f",
+        "frame_contract_sha256": "16a97ce58ebab8b7244359208aeeb255923b876db3d832c44435879ef40c733f"
+      },
+      {
+        "version": 2,
+        "created_at": "2026-09-03T21:29:48+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/06-4771a4e705b8-a1.png",
+        "sha256": "e9f33870eb38c7ee39c6b6abdf79ae1598fac5f14a56f984d18bee6ad8da4055",
+        "kind": "repair",
+        "reason": "scheduler:repair",
+        "parent_sha256": "4e1b7c9d12fff52408942deb3fe2874b394b7ae261f73e195e2e725fbbd3c1b9",
+        "source_item_id": "4771a4e705b8",
+        "frame_contract_sha256": "16a97ce58ebab8b7244359208aeeb255923b876db3d832c44435879ef40c733f"
+      }
+    ],
+    "20": [
+      {
+        "version": 1,
+        "created_at": "2026-09-04T00:25:47+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/20-380426b61de0-a1.png",
+        "sha256": "e7bb7133e93e5f861997a23290e597aabfc63771341ae1904b8d20caeee10566",
+        "kind": "repair",
+        "reason": "scheduler:repair",
+        "parent_sha256": null,
+        "source_item_id": "380426b61de0",
+        "frame_contract_sha256": "5f8416aee0d73d880ae9b264bd7714254fea1b3053daf391866e0b810326dd8a"
+      }
+    ],
+    "16": [
+      {
+        "version": 1,
+        "created_at": "2026-09-04T04:40:58+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/16-55308763e8b7-a1.png",
+        "sha256": "31bee8047defc91aa61995c995978278337b5ebc90710c0ef753da90ee72f7bf",
+        "kind": "repair",
+        "reason": "scheduler:repair",
+        "parent_sha256": null,
+        "source_item_id": "55308763e8b7",
+        "frame_contract_sha256": "837046e2c8dac5e637e4f3d78be2b171254c22fa61367f3b93fb72236415bf97"
+      }
+    ],
+    "07": [
+      {
+        "version": 1,
+        "created_at": "2026-09-04T04:47:59+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/07-196f9319c22f-a1.png",
+        "sha256": "8fe6ef101783510f22d4b3fd39459a1980461af8275e9545750addc44bbdff95",
+        "kind": "repair",
+        "reason": "scheduler:repair",
+        "parent_sha256": null,
+        "source_item_id": "196f9319c22f",
+        "frame_contract_sha256": "b8fdf66adcd6dcbe7fdf55f2fce9678d3be421e251611e386d65d5465e9c5fab"
+      }
+    ],
+    "03": [
+      {
+        "version": 1,
+        "created_at": "2026-09-04T04:54:40+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/03-02dfa5e4f4fc-a1.png",
+        "sha256": "06f9314da7cefce0009fa332b2aeccc3843f5c58a2babbec2754378a3ca3f2c9",
+        "kind": "repair",
+        "reason": "scheduler:repair",
+        "parent_sha256": null,
+        "source_item_id": "02dfa5e4f4fc",
+        "frame_contract_sha256": "270107e328b077b5b763e85259106dd7f5ca439a7ede58ae29e69e61b3b6f070"
+      }
+    ],
+    "18": [
+      {
+        "version": 1,
+        "created_at": "2026-09-04T05:05:01+08:00",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/18-21a7f751ccdb-a1.png",
+        "sha256": "56aa7bc69892c58b561c01ff31d5fea3acf2f4b83a4e269462f9f1763e9951fa",
+        "kind": "repair",
+        "reason": "scheduler:repair",
+        "parent_sha256": null,
+        "source_item_id": "21a7f751ccdb",
+        "frame_contract_sha256": "b6468c6e10747366207d6a7d18506d0c46686d325ccfdeff002b43a2d4bacb28"
       }
     ]
   },

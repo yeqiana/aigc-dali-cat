@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "16",
+  "scene_prompt": "第一人称手机夜拍天桥最高处：画面主体是桥下县城三个街区连片被巨大半透明壳罩住，边缘从楼顶掠过，下方裸露建筑全部暗、粗糙、开口错位，表皮下骨板纹理连成一片，楼群像长在巨物背上的鳞甲，山脊卧兽轮廓完整。保持手机夜拍物理限制：暗部、噪点、轻微抖动。\n关键返修点（摄影者归属必须在像素中可读）：构图必须是明显手持手机从天桥栏杆边探出去拍的第一人称视角，画面左侧或下缘带出持机的手掌与手机机身一角，手机侧缘入画、只占画面边缘少量。禁止手机离开人手悬浮、禁止第二部手机、禁止第三人出现。真实手机高感光夜拍，无文字无水印，竖版4:5。",
+  "scene_prompt_sha256": "3798b5e49e8b7b901bf2bed9c78b593b1bf178ccc1bc254a571e672fe2f6fcd5",
+  "frame_contract_sha256": "837046e2c8dac5e637e4f3d78be2b171254c22fa61367f3b93fb72236415bf97",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\16_semantic_repair.txt",
+  "package_sha256": "61599efbe8b1b0e415a118a73bf26adae2a5dab0a4f8d3db85a586b4078382ae",
+  "compiled_at": "2026-09-04T04:35:45+08:00"
+}

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "story_os_version": "2.1.0",
   "episode_id": "11-01",
-  "reviewed_at": "2026-08-31T19:05:26+08:00",
+  "reviewed_at": "2026-09-04T11:41:43+08:00",
   "candidate_fingerprint_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/episode-fingerprint.json",
   "candidate_fingerprint_sha256": "9e2794e7ce9671bdfd92a55c31a63516f0fc56e4b5f57689c94214b38eb5e344",
   "registry_path": "reports/account-pattern-registry.json",
@@ -15,8 +15,8 @@
     "runtime": "CODEX_ISOLATED",
     "isolated_session": true,
     "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/recent5-semantic-critic.jsonl",
-    "log_sha256": "c7c17530e022e7dfa7ada529352d6372306c7a3be6de2639f0e7749b4a6fa646",
-    "reviewed_at": "2026-08-31T19:05:26+08:00"
+    "log_sha256": "09d24f6e0dd6ad930a36411533109035d0e2ebed3fb8c6efd424fc01e9999d4f",
+    "reviewed_at": "2026-09-04T11:41:43+08:00"
   },
   "comparisons": [
     {
@@ -33,7 +33,7 @@
         "reality_residue": true
       },
       "match_reasons": {
-        "reality_residue": "次日照常后都在县城边缘天空留下巨大弧状残留（白弧/近透明弧膜反光），以天空尺度弧线作为异常真实性的持久证据"
+        "reality_residue": "两者都以县城或天空上方的巨大弧形透明边界作为事后物证，暗示现实存在更大的外壳或容器。"
       },
       "semantic_similarity_score": 5,
       "semantic_mechanism_veto": false,

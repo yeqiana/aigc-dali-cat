@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "07",
+  "scene_prompt": "第一人称手机竖拍贴近墙面：米黄色外墙表层像薄膜一样垂下掀起，露出后面暗灰、粗糙、带浅骨板纹理的鳞甲表面，不是砖墙。关键返修点：掀起处必须露出一排旧的空调/安装孔位，与墙面现有窗洞明显错开约半米——旧孔排悬在窗框上方、与窗户不对齐，像整面建筑长在会缓慢移动的甲片上，窗只是甲片上开的洞，无字也能看出位置不对。用窗框、空调支架孔做尺度参照。墙皮卷边带规整甲片状分层，不能像普通鼓包脱落。真实手机夜拍相册感，无文字无水印，竖版4:5。",
+  "scene_prompt_sha256": "a13cb3731183a1b136aa03bdd2ac3c1d2c64a812c6caf2342985a90b4733d469",
+  "frame_contract_sha256": "b8fdf66adcd6dcbe7fdf55f2fce9678d3be421e251611e386d65d5465e9c5fab",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\07_semantic_repair.txt",
+  "package_sha256": "ee4f8c13dc56825580449eea170029924a1d505b64db715cb039945659ca2dca",
+  "compiled_at": "2026-09-04T04:43:24+08:00"
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "12",
+  "scene_prompt": "第一人称低机位侧身挤过低垂到腰部的悬垂膜层：旅行包一侧蹭到膜缘，一块巴掌大浅黄色饰面撕下粘在包上；手机手电照到膜面卷边加速，拇指按关灯屏幕熄灭；身后入口表层从两侧合拢封死退路。",
+  "scene_prompt_sha256": "9a952cb453178d895de5593b8ff45c598002823d3ce123ea38beca11dc368fbc",
+  "frame_contract_sha256": "4a7ea3de939c477c1176d6dc4ee2be097880eb580f08cee5f3c2f77fcfc8781a",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\12.txt",
+  "package_sha256": "31708520ce025b3bc2eed038d68b6e0049acf8087ede957697f8f3313365d297",
+  "compiled_at": "2026-09-03T23:59:33+08:00"
+}

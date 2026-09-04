@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "09",
+  "scene_prompt": "第一人称手机竖拍十字路口近地面：沥青路面最上层从井盖边缘像极薄黑色皮一样卷起揭开，露出路面之下的第二层——一套更窄更旧的旧车道线与新标线错开、偏位的旧井盖、以及暗灰粗糙带骨板纹理的躯体表面，像皮下的身体。一辆普通轿车经过提供比例，斑马线边缘也被同向揭起。禁止工地、挖掘机、施工围挡与警示墩，要像夜路随手拍到的异常而不是施工坑。真实手机夜拍，无文字无水印，竖版4:5。",
+  "scene_prompt_sha256": "8a72c168ea7cea0d6d7eb38bda8fb059c8a37b7d43afd618876e64bbe1aa9e9a",
+  "frame_contract_sha256": "ca5a6538e8e33710047afc49678208ee8bd338d4d1aca19a81cf6757881fa78c",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\09_semantic_repair.txt",
+  "package_sha256": "be161de14723790e132602ce7999e0c403f28064aea0d57a3a24ae853677c0ee",
+  "compiled_at": "2026-09-04T05:16:49+08:00"
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "frame": "16",
+  "risk_level": "HIGH",
+  "risk_score": 97,
+  "risk_tags": [
+    "anomaly_amplified",
+    "impact_3_4",
+    "reveal"
+  ],
+  "frame_contract_sha256": "837046e2c8dac5e637e4f3d78be2b171254c22fa61367f3b93fb72236415bf97",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/16-55308763e8b7-a1.png",
+  "asset_sha256": "31bee8047defc91aa61995c995978278337b5ebc90710c0ef753da90ee72f7bf",
+  "scouted_at": "2026-09-04T04:39:14+08:00",
+  "final_critic_still_required": true,
+  "decision": "REPAIR_NOW",
+  "issue_codes": [
+    "ANOMALY_SCALE_OBVIOUSLY_WEAK"
+  ],
+  "notes": "实拍像素=手持手机夜拍天桥最高处高视角，弧形金属护栏+握机手(第一人称自然局部)、停电后暗县城楼群与远山脊轮廓到位，地点/时间/POV无硬伤。但本帧为 impact4 anomaly_amplified reveal(帧16)核心必须可读的三街区连成巨大半透明壳+表皮下甲片纹理，在画面中不可读，呈现更像普通停电夜城景，异常尺度明显欠交付。整体严重欠曝、噪点多，右侧/低层细节不可辨，异常是否在画内仅凭此帧无法确证，故非PASS。建议REPAIR_NOW放大透明壳与尺度参照，避免直接进入final。",
+  "confidence": 0.6,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scouts/16.jsonl"
+}

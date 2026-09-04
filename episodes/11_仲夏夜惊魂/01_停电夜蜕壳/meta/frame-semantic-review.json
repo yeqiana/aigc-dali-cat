@@ -1,0 +1,237 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.1.0",
+  "story_sha256": "1036636614fc8208f3831078635a860b484927c133ac2eb497d9c2601c5b69b3",
+  "storyboard_sha256": "a6147f70d2de6e06c6f4fba6e48ae5dfc36a1634a2117bd9ea22b47fba75d9fd",
+  "visual_contract_sha256": "4807f63cdd5d52981eb635b44547e1c320ab573c58c192713d341fa4fed34dad",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "review_scope": "FULL_FRAME_SET",
+    "attempt": 2,
+    "reviewed_at": "2026-09-04T04:32:25+08:00",
+    "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-critic-attempt-2.jsonl"
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "asset_sha256": "f42261c0fe90ebdcc1e194c5806738fed9fdd198efbc43933e58db95e3313dc8"
+    },
+    {
+      "frame": "02",
+      "asset_sha256": "ee83a4ae884b00ac84d5b32c9d401a9a2aceff8023223f98b21ba63d1e12edde"
+    },
+    {
+      "frame": "03",
+      "asset_sha256": "ee743f0f72d25a032365ea0910845dea3d616cb13df47d3d1bfb0462b8a416dd"
+    },
+    {
+      "frame": "04",
+      "asset_sha256": "1b1ede78663220a4faad858ff1acd14967bf49db13db0c603676fa9f98a9eb1e"
+    },
+    {
+      "frame": "05",
+      "asset_sha256": "652ee6e0dadc93f62d29f0181d3bf38692a323c108d30ef1f92f4dc4615ba3f3"
+    },
+    {
+      "frame": "06",
+      "asset_sha256": "e9f33870eb38c7ee39c6b6abdf79ae1598fac5f14a56f984d18bee6ad8da4055"
+    },
+    {
+      "frame": "07",
+      "asset_sha256": "e6e66403977cc41f94dc94fbf6975e056a45b6f97d3dd713473fb642af44bc83"
+    },
+    {
+      "frame": "08",
+      "asset_sha256": "1929e3c795654aa7d71d674d57c4ae21127a49f259e7cc3043dd3c72e7f17dba"
+    },
+    {
+      "frame": "09",
+      "asset_sha256": "1b7c89e980b6550bb52eaceca4fd6ed49ea4487aa2feb54c7e713daffbf264a0"
+    },
+    {
+      "frame": "10",
+      "asset_sha256": "b5d984e99d8493f9c07b688090707e0c2982b9fb21fadf19986dabbef41ae72e"
+    },
+    {
+      "frame": "11",
+      "asset_sha256": "697f50777c39cc04ae24dbb3bac94262f45a6fc9cf70a7f863c0818eccc8a01e"
+    },
+    {
+      "frame": "12",
+      "asset_sha256": "5e7548b115a75c25d04b0b37cf259db93b8bea8097a92a0ca4b2d6abcf1160ff"
+    },
+    {
+      "frame": "13",
+      "asset_sha256": "a067e0e83b6c06823766dc51579ec344c3800d27bd0ab64f50264ccabd8fdb9c"
+    },
+    {
+      "frame": "14",
+      "asset_sha256": "3de374d91e72a47d6e351f00b6c6b09df276b62267bc212e3d06be15bef9707b"
+    },
+    {
+      "frame": "15",
+      "asset_sha256": "9d008a5b66aee376c65e4a145c241d7eb90504b53d548650708316e9745bfbce"
+    },
+    {
+      "frame": "16",
+      "asset_sha256": "562a8c0122e267e7243de410b43bc5474689286ad91900afaec3d4a440b1b384"
+    },
+    {
+      "frame": "17",
+      "asset_sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1"
+    },
+    {
+      "frame": "18",
+      "asset_sha256": "1bc500012fea59570b278f70a00271ac1e23d4c160fef128a94faa86d43e90d5"
+    },
+    {
+      "frame": "19",
+      "asset_sha256": "bc9af0af9fe39cf824652a377dcd64c4f0b17dcccab49d7a6b8c4f3c3ca4d488"
+    },
+    {
+      "frame": "20",
+      "asset_sha256": "6a33e4d52ce22dffbf66563743e8f4faa89bc16ad16a2da7e2381cf562e9081a"
+    }
+  ],
+  "perceptual_hashes": [
+    {
+      "frame": "01",
+      "asset_sha256": "f42261c0fe90ebdcc1e194c5806738fed9fdd198efbc43933e58db95e3313dc8",
+      "dhash256": "3000c240f8502f8041f8781faee197b99fbc8ebfee5bdb74df20e92be9f9ec7f",
+      "ahash256": "00000000e000fc00dfc0f3f8ffceffe2fff1fffeffc6fac3f040c040c000e000"
+    },
+    {
+      "frame": "02",
+      "asset_sha256": "ee83a4ae884b00ac84d5b32c9d401a9a2aceff8023223f98b21ba63d1e12edde",
+      "dhash256": "0004000030b03133c813d0bb944e140d128c0caf48efc4d4c385c353871106f1",
+      "ahash256": "000000030007004f01ff17fc37f83ff87ff8fffcffffffbffe0ffe06fe023c02"
+    },
+    {
+      "frame": "03",
+      "asset_sha256": "ee743f0f72d25a032365ea0910845dea3d616cb13df47d3d1bfb0462b8a416dd",
+      "dhash256": "aec4aec19ec49f2497cade9adda9ddba4cad4cac4e7c4fed4ff14fac4fb66f13",
+      "ahash256": "b800b800b800f801fc01fd31ff17ff7fdfffdff8dff0de00de00ff00fe00fc00"
+    },
+    {
+      "frame": "04",
+      "asset_sha256": "1b1ede78663220a4faad858ff1acd14967bf49db13db0c603676fa9f98a9eb1e",
+      "dhash256": "0008800400200a01080108000610cc0406d406d88d1c01d701b0038223910309",
+      "ahash256": "000000000000000000000000000098000f803fa01ff83fff1fe70f0000000000"
+    },
+    {
+      "frame": "05",
+      "asset_sha256": "652ee6e0dadc93f62d29f0181d3bf38692a323c108d30ef1f92f4dc4615ba3f3",
+      "dhash256": "8a4b4a430a571464086e1064e16c013f003f003f001f001f000f008f00970057",
+      "ahash256": "00000000008000c000c000c000c0017807fe0fff0fff1fff1fff0fff07ff03ff"
+    },
+    {
+      "frame": "06",
+      "asset_sha256": "e9f33870eb38c7ee39c6b6abdf79ae1598fac5f14a56f984d18bee6ad8da4055",
+      "dhash256": "ff91ff99ff99ffcbf7997bb97b927d926f98ed98fd8afd8ffdadffafff8ebf76",
+      "ahash256": "f800f800fc00fc00fe00fe00ff00ff00ff00ff00ff00fe00fc00fc00fc00f000"
+    },
+    {
+      "frame": "07",
+      "asset_sha256": "e6e66403977cc41f94dc94fbf6975e056a45b6f97d3dd713473fb642af44bc83",
+      "dhash256": "8000900094400c404c40044004400c4004404040004020c008804480e200c100",
+      "ahash256": "00ff00ff00ff00ff00ff00ff00ff00ff00ff01ff01ff01ff01ff00ff007f003f"
+    },
+    {
+      "frame": "08",
+      "asset_sha256": "1929e3c795654aa7d71d674d57c4ae21127a49f259e7cc3043dd3c72e7f17dba",
+      "dhash256": "d091989196998687d693dab1d81d1c032c2e963e4c3fa42f371f53c759e32cb9",
+      "ahash256": "003f003f003f003f007f10e700ff007f00ff00ff00ff00ff07ff07bf13cf09a7"
+    },
+    {
+      "frame": "09",
+      "asset_sha256": "1b7c89e980b6550bb52eaceca4fd6ed49ea4487aa2feb54c7e713daffbf264a0",
+      "dhash256": "70084a484cec74ed796c1cf30f98c9207670363f3b7725b72afead6b37e11774",
+      "ahash256": "000000000000000000001f803f018b0ffffffffffffeffe8ffc0ffd0ff00fe00"
+    },
+    {
+      "frame": "10",
+      "asset_sha256": "b5d984e99d8493f9c07b688090707e0c2982b9fb21fadf19986dabbef41ae72e",
+      "dhash256": "3ece3f573fb33ff33ff33bf92dfe25333b923f1e121f903f8f1f3e5f0f37203c",
+      "ahash256": "e000f000f000f000f800ff80ffe0fffc7f607c7837f823f83ff03ce000000000"
+    },
+    {
+      "frame": "11",
+      "asset_sha256": "697f50777c39cc04ae24dbb3bac94262f45a6fc9cf70a7f863c0818eccc8a01e",
+      "dhash256": "0018009301510ccf05e3a7c38a64caf520f608d609f309e109e80946014602c9",
+      "ahash256": "00000000000000003f000f001ec01fe07ffc1ffd1fce1b860300031802000000"
+    },
+    {
+      "frame": "12",
+      "asset_sha256": "5e7548b115a75c25d04b0b37cf259db93b8bea8097a92a0ca4b2d6abcf1160ff",
+      "dhash256": "061f061f031f0b1f0b0f018f218b33c713073033147306214de9cd69b1ac430a",
+      "ahash256": "0078007c007c007e027e0e3f063f001f007f03ef01e71c471800000000000000"
+    },
+    {
+      "frame": "13",
+      "asset_sha256": "a067e0e83b6c06823766dc51579ec344c3800d27bd0ab64f50264ccabd8fdb9c",
+      "dhash256": "003f003f0f037a40621c108e7293381339e707470c1bc8928126041f860f0a60",
+      "ahash256": "07e03ffcfffff001000000004007f1ff7fcf3ffe18ff0007005d00ff007f0000"
+    },
+    {
+      "frame": "14",
+      "asset_sha256": "3de374d91e72a47d6e351f00b6c6b09df276b62267bc212e3d06be15bef9707b",
+      "dhash256": "003f01ff01ff01ff03ff039f039f03970397039f039f03ff013f033f033f067f",
+      "ahash256": "0000000007803fe03ff07ff0fff0fff4fff4fff07ff03fc00200000000000000"
+    },
+    {
+      "frame": "15",
+      "asset_sha256": "9d008a5b66aee376c65e4a145c241d7eb90504b53d548650708316e9745bfbce",
+      "dhash256": "1000e0057a9a1927d9259885f00d1e4d301903f107f86cb9e1ff2797e723b347",
+      "ahash256": "00000000000000080018013880fc00fb43ff7ffffff3ffe00000000000000000"
+    },
+    {
+      "frame": "16",
+      "asset_sha256": "562a8c0122e267e7243de410b43bc5474689286ad91900afaec3d4a440b1b384",
+      "dhash256": "226b3cab83fd0fbf6dbbdfbc9aac89adc0e97a5bef83ceebb2ca61964b261666",
+      "ahash256": "0000000000003f00ffe0ffc0bff09ff0c3d240d6f80cffccffd4ff28fe487cc8"
+    },
+    {
+      "frame": "17",
+      "asset_sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1",
+      "dhash256": "c7a1a743b679b76fb07f933b91c7e0f0787f9e07db8648f3593998c4393371c8",
+      "ahash256": "00000c002c00240000c000200308c180f1f0fc1cff0cfbc6fbf3f9bff1eff3bb"
+    },
+    {
+      "frame": "18",
+      "asset_sha256": "1bc500012fea59570b278f70a00271ac1e23d4c160fef128a94faa86d43e90d5",
+      "dhash256": "c347c306c347c24fc187cd964946666624571d870fa76c3a185d70bd837a07e0",
+      "ahash256": "800080008000809080008008008000c00080380c7800f8f0fff0fff0ffe0ffc0"
+    },
+    {
+      "frame": "19",
+      "asset_sha256": "bc9af0af9fe39cf824652a377dcd64c4f0b17dcccab49d7a6b8c4f3c3ca4d488",
+      "dhash256": "732eb32ed3af636f736e0ba6323612763f369f33903290b49150922286a68f36",
+      "ahash256": "07f807d887fcc7fc07f837fc37fc00ecfc7cfc7c00fc03fb03ff000d00000000"
+    },
+    {
+      "frame": "20",
+      "asset_sha256": "6a33e4d52ce22dffbf66563743e8f4faa89bc16ad16a2da7e2381cf562e9081a",
+      "dhash256": "ffb0f751fc81fd10fd10fc00e8e8fe00fc4093298b664932c490e041a9a1da44",
+      "ahash256": "ffffffffffffffffffffffffffffffffc00f007f0bcc006d0007000000000000"
+    }
+  ],
+  "near_duplicate_pairs": [],
+  "issue_codes": [
+    "ANOMALY_UNREADABLE",
+    "STORY_BEAT_NOT_VISIBLE",
+    "KEY_PROP_DRIFT",
+    "CAPTION_DEPENDENCY",
+    "FRAME_SCENE_MISMATCH",
+    "ANOMALY_SCALE_UNDERDELIVERED",
+    "GHOST_CAMERA",
+    "CAMERA_OWNER_UNRESOLVED"
+  ],
+  "critic_summary": {
+    "passed": false,
+    "notes": "Fresh isolated attempt-2 逐像素判定：通过01/02/04/05/11/12/13/15/18/19；失败03/06/07/08/09/10/14/16/17/20。核心问题：早期异常链(06-10)读作普通墙面/路面损伤，跨材质'同一张皮'联动与'路面第二层'在像素中缺失；03首处卧兽山脊证据缺失；14场景漂移到室内走廊且'表里错位'不可读；16高冲击帧只呈现普通山丘+楼群，显形升级低于13；17高潮帧出现无物理归属的第三人称构图（双手可见+手机悬浮，无第二拍摄源）；20白天山脊为普通褶皱山体，与13/16/17巨物轮廓无法互认。attempt 1对16/17的机位归因有误：悬浮手机在17帧而非16帧，本review已按实际像素重新归因。"
+  },
+  "summary": {
+    "passed": false
+  }
+}

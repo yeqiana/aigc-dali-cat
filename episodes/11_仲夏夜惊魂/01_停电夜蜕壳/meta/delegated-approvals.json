@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "story_os_version": "2.1.0",
+  "story_os_version": "2.4.2",
   "approvals": {
     "story_lock": {
       "approved": true,
@@ -8,25 +8,65 @@
       "delegated_auto_review": true,
       "approval_basis": "delegated_auto_review",
       "kind": "story_lock",
-      "approved_at": "2026-08-31T19:37:31+08:00",
+      "approved_at": "2026-09-04T00:55:50+08:00",
       "artifacts": [
         {
           "role": "story",
           "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/01_StoryLock.md",
-          "sha256": "a0f7bb5ab9ad3931950a3d11ffc2b32e2d9b010f74f18ac2df838d84cfd97ba9"
+          "sha256": "1036636614fc8208f3831078635a860b484927c133ac2eb497d9c2601c5b69b3"
         },
         {
           "role": "storyboard",
           "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/02_Storyboard.md",
-          "sha256": "4677990eec404afa2b097201bb9aff253b104624c5eaf61e705792566d6919dd"
+          "sha256": "a6147f70d2de6e06c6f4fba6e48ae5dfc36a1634a2117bd9ea22b47fba75d9fd"
         },
         {
           "role": "story_semantic_review",
           "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/story-semantic-review.json",
-          "sha256": "74790e9d26cf20cc3b0ec1816d5a6ef78c02c6be6f3837c7a68f438c78894d60"
+          "sha256": "523aaf0ceb0f392a69269af01ab8b84cb431c8c9409dfa58d1954179a0273cb3"
         }
       ],
-      "note": "Story/Storyboard 按用户授权 B 强化后经 CODEX_ISOLATED 语义评审 PASS（10/10 硬检查）；handoff 已按新 SHA 重建并 verify/activate"
+      "note": "重写方向（县城显形巨物）后按当前 Story/Storyboard/Semantic SHA 重新锚定 delegated 批准"
+    },
+    "visual_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "visual_lock",
+      "approved_at": "2026-09-04T00:58:25+08:00",
+      "artifacts": [
+        {
+          "role": "visual_spec",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/03_Visual_Preproduction.md",
+          "sha256": "3f206b2b0b294b2d0ef2d8d2429dfdd7583a261df6baa4982cebe130428147ac"
+        },
+        {
+          "role": "calibration_contact_sheet",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/calibration/calibration-contact-sheet.png",
+          "sha256": "6887342de72fada6a020e614232ac83460c2c37e118d607336fac826e9baa7d5"
+        },
+        {
+          "role": "visual_profile:M00",
+          "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+          "sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/visual-profile-review.json",
+          "sha256": "55c55159ca8ad4d165cceac6bba1826bb81457237ce13cfa453ee7eee6d2e3b4"
+        }
+      ],
+      "note": "V2.1 四准入帧 1/15/6/17 统一 Critic AVAILABLE_PASS 后按当前 plan/profile/contact-sheet SHA 锚定 delegated 批准",
+      "resolved_visual_profile": {
+        "selection": "default",
+        "profile_id": "M00",
+        "profile_name": "现实生活纪实母版",
+        "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+        "capture_profile": "CP01",
+        "override_reason": null,
+        "rule": "默认视觉母风格只约束视觉语言；具体年代/设备物理表现优先。"
+      }
     }
   }
 }

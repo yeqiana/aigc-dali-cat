@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "10",
+  "scene_prompt": "手机手持广角：墙面颜色、广告画面、玻璃倒影、路面标线在街角被一张连续半透明薄层连接起来，薄层离地约一米；楼体和车辆清楚作尺度，夜拍真实。",
+  "scene_prompt_sha256": "c9beb20d4c4e98478ada2963d2a01d9d0845f465e8ed8a95c4c71764371dbe06",
+  "frame_contract_sha256": "9b6560f33a9491b94a3091783f372bbd438ac81d149cdc597bf5f053d0f726ab",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\10.txt",
+  "package_sha256": "3f636b95a5ea8da9005169598d2262b0f93fa2df92f62ee515a16395fcc9a9fb",
+  "compiled_at": "2026-09-03T23:56:01+08:00"
+}

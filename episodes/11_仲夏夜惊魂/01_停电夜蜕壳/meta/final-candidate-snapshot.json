@@ -1,0 +1,903 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "built_at": "2026-09-04T12:21:14+08:00",
+  "derived_evidence": true,
+  "authority": "locked source files listed by SHA",
+  "snapshot_is_authority": false,
+  "lock": {
+    "schema_version": 1,
+    "episode": {
+      "id": "11-01",
+      "series": "11_仲夏夜惊魂",
+      "title": "仲夏夜惊魂｜停电夜蜕壳",
+      "aspect_ratio": "4:5"
+    },
+    "release_version": "v1.0",
+    "publication": {
+      "platform": "douyin",
+      "actual_title": "2026年最热那晚，县城停电后蜕了一层壳",
+      "description": "临近发小婚礼，我请了两天假，坐最后一班车回了趟槐川县。县城一年比一年空，那天白天四十度，晚上十一点，整条街突然全黑了。\n\n我从客运站往家走，先以为只是墙皮被晒坏了；走远一点才发现，橱窗反光、路面标线，整条街的表面连成了同一张东西——底下像有一只巨大的活物，正把县城这块皮慢慢顶起来。\n\n天亮前我还要去当伴郎，只能从它底下穿过去。松握的手机被卷走了，攥紧包带的那只手只被划了一道红痕。\n\n第二天白天，县城看起来一切正常。只是那座山脊的轮廓，好像比昨天更像一只卧着的东西。\n\n人物、地点、情节均为虚构；内容由 AI 生成。",
+      "topics": [
+        "都市怪谈",
+        "伪纪录片",
+        "第一视角",
+        "县城惊魂",
+        "停电夜",
+        "细思极恐",
+        "AI图文故事"
+      ],
+      "pinned_comment": "回头看图17：同一只手，松开的手机被卷走了，攥紧包带的那只手只被划了一道红痕——它不是随便抓的。虚构故事，AI 生成，晚安槐川。",
+      "published_at": null,
+      "timing_window": null,
+      "post_url": null
+    },
+    "publication_sha256": "0981d1147b32eac9fd603919d90315f7fdde5a756ebaa15b46253b1fbf691e4c",
+    "story": {
+      "role": "story",
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/01_StoryLock.md",
+      "sha256": "1036636614fc8208f3831078635a860b484927c133ac2eb497d9c2601c5b69b3",
+      "bytes": 12226
+    },
+    "storyboard": {
+      "role": "storyboard",
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/story/02_Storyboard.md",
+      "sha256": "a6147f70d2de6e06c6f4fba6e48ae5dfc36a1634a2117bd9ea22b47fba75d9fd",
+      "bytes": 14385
+    },
+    "story_gates_contract_sha256": "9c8cc1080828350acc7abdeee91daa58a8b681594e7571ca50b70ef6aeb95bc8",
+    "release_manifest": {
+      "role": "release_manifest",
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/release-manifest.json",
+      "sha256": "d0a2f28a789ad0b766161835ffd6b2c654639ffd3e6e47813d0f484262be3397",
+      "bytes": 3113,
+      "archive_path": "release-manifest.json"
+    },
+    "cover": {
+      "role": "cover",
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/16.png",
+      "sha256": "117fd20ff14020ae5a23984a17c3c9be07eda0752bd6fc94d759231f2d9f7c38",
+      "bytes": 1625205,
+      "archive_path": "cover.png"
+    },
+    "body": [
+      {
+        "role": "body:01",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/01.png",
+        "sha256": "0453bd5833bdc089c8745953b8210ef6afda1701cc877f13196d731b2ae99ecf",
+        "bytes": 2101391,
+        "archive_path": "publish/01.png"
+      },
+      {
+        "role": "body:02",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/02.png",
+        "sha256": "96e18990f56742156158b453081669760a24a439f372c320360b4096c3e5e3a0",
+        "bytes": 2085713,
+        "archive_path": "publish/02.png"
+      },
+      {
+        "role": "body:03",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/03.png",
+        "sha256": "2c0f1b0a9ee6cad0b5da87019dc78243649cf872edac41a96950a84077de0572",
+        "bytes": 1729736,
+        "archive_path": "publish/03.png"
+      },
+      {
+        "role": "body:04",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/04.png",
+        "sha256": "047d6e0699ce2a1ddb7172a443ce3896f97cee487cf87e76d78ad02b18d051a4",
+        "bytes": 1498127,
+        "archive_path": "publish/04.png"
+      },
+      {
+        "role": "body:05",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/05.png",
+        "sha256": "0a50e1223c0e412f32ce8ebc4e7d57a26194964096d9e9ca665c8f875abd35b4",
+        "bytes": 1611267,
+        "archive_path": "publish/05.png"
+      },
+      {
+        "role": "body:06",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/06.png",
+        "sha256": "7ecaf56d05a9a07f5dc1b32f7662ee45ae8fc016438f62eb96f3cd4fbc1265fa",
+        "bytes": 1838621,
+        "archive_path": "publish/06.png"
+      },
+      {
+        "role": "body:07",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/07.png",
+        "sha256": "34b1107f848dc1b3c646a1b4d02f8ceda373e059155f3bd3c30931cc75936dd5",
+        "bytes": 1903780,
+        "archive_path": "publish/07.png"
+      },
+      {
+        "role": "body:08",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/08.png",
+        "sha256": "21f8a4796d7f2fbd03db05e5b4e9d6de188f818c2fe3da830438ebc90e0a09dd",
+        "bytes": 2258320,
+        "archive_path": "publish/08.png"
+      },
+      {
+        "role": "body:09",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/09.png",
+        "sha256": "42edf75dafe41517bb5be8c3f7a570a738f49fe62cbf7dc8e3abdb184304951d",
+        "bytes": 1938264,
+        "archive_path": "publish/09.png"
+      },
+      {
+        "role": "body:10",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/10.png",
+        "sha256": "737bb23cdd4ced2766cc8f35b5acd0ccc9de21afe35f557495e21f3de7fca5ae",
+        "bytes": 2289648,
+        "archive_path": "publish/10.png"
+      },
+      {
+        "role": "body:11",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/11.png",
+        "sha256": "feeccec781b7961364b1e6778b9e1401aebaa13be0fc950314974e9c972e4798",
+        "bytes": 1833984,
+        "archive_path": "publish/11.png"
+      },
+      {
+        "role": "body:12",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/12.png",
+        "sha256": "de9a75cfd7dfc69f5ec8dc5ba7633882f085a67d6fabe2ea7e4604f5bf133442",
+        "bytes": 1741276,
+        "archive_path": "publish/12.png"
+      },
+      {
+        "role": "body:13",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/13.png",
+        "sha256": "b34d7dc7e29d8835ace2caf0e177308548816346ac2f9db315a3d80a017ac2cc",
+        "bytes": 2030491,
+        "archive_path": "publish/13.png"
+      },
+      {
+        "role": "body:14",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/14.png",
+        "sha256": "aaae7426a54c0abfc0cb6c708ccbb951782a835a2c25a19aafd9a3712af86e4f",
+        "bytes": 1850843,
+        "archive_path": "publish/14.png"
+      },
+      {
+        "role": "body:15",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/15.png",
+        "sha256": "86b7955c02e52bda07260f1657eebe0b1d63fecb25d66f3b1a5978c44019fa44",
+        "bytes": 2111819,
+        "archive_path": "publish/15.png"
+      },
+      {
+        "role": "body:16",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/16.png",
+        "sha256": "117fd20ff14020ae5a23984a17c3c9be07eda0752bd6fc94d759231f2d9f7c38",
+        "bytes": 1625205,
+        "archive_path": "publish/16.png"
+      },
+      {
+        "role": "body:17",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/17.png",
+        "sha256": "7504b51ade4ca5978a73fcc1b78e2dde88dbfc8ea77f874671c41e665e5b5f54",
+        "bytes": 1884485,
+        "archive_path": "publish/17.png"
+      },
+      {
+        "role": "body:18",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/18.png",
+        "sha256": "70e260a65566538c8c95873145a521b00b965ad4b45e457571ec3a488374bb00",
+        "bytes": 2049839,
+        "archive_path": "publish/18.png"
+      },
+      {
+        "role": "body:19",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/19.png",
+        "sha256": "bb9682ee38beb87f46e0c2f6e2d0d854714b3b079bfa0e2cc191eacf566df2fe",
+        "bytes": 2438937,
+        "archive_path": "publish/19.png"
+      },
+      {
+        "role": "body:20",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/20.png",
+        "sha256": "02cd8336e02474f675fdba99ef0c7597f383ac5da447162abc264863194dad37",
+        "bytes": 2093913,
+        "archive_path": "publish/20.png"
+      }
+    ],
+    "text_artifacts": [
+      {
+        "role": "captions",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/subtitles.yaml",
+        "sha256": "be956a7f5d97b54c01bae828875aaf6f9869a9bab6db226928287618cc7b209e",
+        "bytes": 2158,
+        "archive_path": "text/subtitles.yaml"
+      },
+      {
+        "role": "publish_copy",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/release/publish-copy.md",
+        "sha256": "9ac467e9e2d843f2b4719316e35ac00c1bd67a88ac62e4c41403b0bcaeb11544",
+        "bytes": 1156,
+        "archive_path": "text/publish-copy.md"
+      },
+      {
+        "role": "propagation_card",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/release/propagation-card.md",
+        "sha256": "0562d50af112a888a0c4fcedde47903e6bf26dad7bfafff8cfc8167c21a20981",
+        "bytes": 1920,
+        "archive_path": "text/propagation-card.md"
+      }
+    ],
+    "evidence": [
+      {
+        "role": "production_ledger",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/production-ledger.json",
+        "sha256": "112e76875db1128a7ce160cdbf1d26d135982d167e5a63c28db9450c8985aed2",
+        "bytes": 173901,
+        "archive_path": "evidence/production-ledger.json"
+      },
+      {
+        "role": "frame_semantic_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-review.json",
+        "sha256": "4487ea3e5d547996fbf2e58cfa9c64ee824bc14da2a4d955986f289a2a79aa73",
+        "bytes": 10135,
+        "archive_path": "qa/frame-semantic-review.json"
+      },
+      {
+        "role": "frame_semantic_audit",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-audit.json",
+        "sha256": "217da93ee51050996e626e494a006febef2051d2f62376a6d9223ad4082f0f6a",
+        "bytes": 3605,
+        "archive_path": "qa/frame-semantic-audit.json"
+      },
+      {
+        "role": "story_semantic_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/story-semantic-review.json",
+        "sha256": "523aaf0ceb0f392a69269af01ab8b84cb431c8c9409dfa58d1954179a0273cb3",
+        "bytes": 7691,
+        "archive_path": "qa/story-semantic-review.json"
+      },
+      {
+        "role": "visual_profile_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/visual-profile-review.json",
+        "sha256": "55c55159ca8ad4d165cceac6bba1826bb81457237ce13cfa453ee7eee6d2e3b4",
+        "bytes": 4822,
+        "archive_path": "qa/visual-profile-review.json"
+      },
+      {
+        "role": "subtitle_layout_audit",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/subtitle-layout-audit.json",
+        "sha256": "703443eba85661083717a19fc0b53790af886aec09f84d4947c6c78de84178b4",
+        "bytes": 16183,
+        "archive_path": "qa/subtitle-layout-audit.json"
+      },
+      {
+        "role": "text_audit",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/text-audit.json",
+        "sha256": "9a192414ef84b1a54ad67a2c285bef63fd885fce613f1fd23a5a5a2be6ce089a",
+        "bytes": 1255,
+        "archive_path": "qa/text-audit.json"
+      },
+      {
+        "role": "release_semantic_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/release-semantic-review.json",
+        "sha256": "cf83c217b2f628ade5b5d1c0d2b7679d3b97e0dc493e65feb394ef2deab38a38",
+        "bytes": 3710,
+        "archive_path": "qa/release-semantic-review.json"
+      },
+      {
+        "role": "publish_compliance",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/publish-compliance.json",
+        "sha256": "37b011770fa30b2836dff2c395fc282719e9547daef7b6174386ec856b3f72b6",
+        "bytes": 435,
+        "archive_path": "qa/publish-compliance.json"
+      },
+      {
+        "role": "recent5_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/recent5-review.json",
+        "sha256": "00a447c758ddc97e5225650ebaaeddd4a356c62d1fa26091161e68da8381eeef",
+        "bytes": 1982,
+        "archive_path": "qa/recent5-review.json"
+      },
+      {
+        "role": "recent5_semantic_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/recent5-semantic-review.json",
+        "sha256": "ee62deaa0306aa2da5c3d6e1ad8d53480fcf2479fc64aeb22c5bc3cce44c9e40",
+        "bytes": 2154,
+        "archive_path": "qa/recent5-semantic-review.json"
+      },
+      {
+        "role": "frame_scout_summary",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scout-summary.json",
+        "sha256": "671e21133b723f99b3e57f4c8c5b7ccd77504c9cffaf541e5a22d4e3fbf728f7",
+        "bytes": 4402,
+        "archive_path": "qa/frame-scout-summary.json"
+      },
+      {
+        "role": "image_scheduler_performance",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/image-scheduler-performance.json",
+        "sha256": "424e507563209df1c56981a2c7ca81fe6dd8b18b17d7aad5426b2d2d1e885626",
+        "bytes": 7160,
+        "archive_path": "evidence/image-scheduler-performance.json"
+      },
+      {
+        "role": "frame_contract_index",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/runtime/contracts/frame-contract-index.json",
+        "sha256": "f2f2baf78049c398865490bdb885f869dbddd0b2e8582f02489aad399c389bf6",
+        "bytes": 9933,
+        "archive_path": "evidence/frame-contract-index.json"
+      },
+      {
+        "role": "visual_lock_baseline_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/visual-lock-baseline-review.json",
+        "sha256": "032b08e127f0c6d2a46a34a361c005c7f915e77f87963d362576a4d39d1ed802",
+        "bytes": 1582,
+        "archive_path": "qa/visual-lock-baseline-review.json"
+      },
+      {
+        "role": "frame_review:01",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/01.json",
+        "sha256": "c56b8fdb32ccd2594d377e54daf88c7bb68274d54956072dcbeeb2ee74215189",
+        "bytes": 2132,
+        "archive_path": "qa/frame-reviews/01.json"
+      },
+      {
+        "role": "frame_review:02",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/02.json",
+        "sha256": "4f7ea4c450433074e5c92a8375769377b29b95737e09ffb3a85dfc81b75487f2",
+        "bytes": 2138,
+        "archive_path": "qa/frame-reviews/02.json"
+      },
+      {
+        "role": "frame_review:03",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/03.json",
+        "sha256": "5b5ee15a7e7d7db1bac006d185bc0021ee7afb4e9d63780b00426da3f1d1278c",
+        "bytes": 2274,
+        "archive_path": "qa/frame-reviews/03.json"
+      },
+      {
+        "role": "frame_review:04",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/04.json",
+        "sha256": "1d11d8a6fcb5305f03262c1fa9d38d4fe563348c91368604eefebddb2a1ba40c",
+        "bytes": 2111,
+        "archive_path": "qa/frame-reviews/04.json"
+      },
+      {
+        "role": "frame_review:05",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/05.json",
+        "sha256": "6efd48ef29e2b88ab7061b9cb762f7d91d9cdb369cbe781664706e110962683b",
+        "bytes": 2096,
+        "archive_path": "qa/frame-reviews/05.json"
+      },
+      {
+        "role": "frame_review:06",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/06.json",
+        "sha256": "974eff7f59945d28ae7bb953e664d2d7a2d099cbba06c96d5a8b38da375eace5",
+        "bytes": 2230,
+        "archive_path": "qa/frame-reviews/06.json"
+      },
+      {
+        "role": "frame_review:07",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/07.json",
+        "sha256": "27d1b8305ff308742e91ef0f9dda25be4d102611e0ec56a0e1daeef7b2754f70",
+        "bytes": 2282,
+        "archive_path": "qa/frame-reviews/07.json"
+      },
+      {
+        "role": "frame_review:08",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/08.json",
+        "sha256": "8aaf4215562433a6eea5f506c95fbb0797be6cb51a423392ca6719af6cedad67",
+        "bytes": 2280,
+        "archive_path": "qa/frame-reviews/08.json"
+      },
+      {
+        "role": "frame_review:09",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/09.json",
+        "sha256": "e28ab4b4079e2b0a463013ca97f21e31d4593d41526144d5ebea6f4c596f8602",
+        "bytes": 2280,
+        "archive_path": "qa/frame-reviews/09.json"
+      },
+      {
+        "role": "frame_review:10",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/10.json",
+        "sha256": "82a8a0a82643b99e4380fab75636625c7bf82952eee849a687c5719bf236b4fb",
+        "bytes": 2308,
+        "archive_path": "qa/frame-reviews/10.json"
+      },
+      {
+        "role": "frame_review:11",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/11.json",
+        "sha256": "6c82a0bf822b9e450a54810ae2deed68873193c72c465b2491e4b7dd9d7b8c88",
+        "bytes": 2163,
+        "archive_path": "qa/frame-reviews/11.json"
+      },
+      {
+        "role": "frame_review:12",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/12.json",
+        "sha256": "3f04a492c5b50a72e7b9087190fdb6ed5a17c7253599bf2bc09aa56b6a674b2d",
+        "bytes": 2263,
+        "archive_path": "qa/frame-reviews/12.json"
+      },
+      {
+        "role": "frame_review:13",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/13.json",
+        "sha256": "2e8bff30b01a470f06701ad9a5beb00301c300b688631e9b374e46bfa8d8194a",
+        "bytes": 2237,
+        "archive_path": "qa/frame-reviews/13.json"
+      },
+      {
+        "role": "frame_review:14",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/14.json",
+        "sha256": "534fc70c92e764336ce56d1149a0af76cf11b341f5509f58c8bdb97bb6cd3d76",
+        "bytes": 2356,
+        "archive_path": "qa/frame-reviews/14.json"
+      },
+      {
+        "role": "frame_review:15",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/15.json",
+        "sha256": "ae8f5ab5b276a16a3d1c2dad4a436db8840ab69d4c5132e316b6af12cba0f553",
+        "bytes": 2169,
+        "archive_path": "qa/frame-reviews/15.json"
+      },
+      {
+        "role": "frame_review:16",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/16.json",
+        "sha256": "5eab0a996694a8be1b124e447841e153b1f569d3e68c943d95678703dd284a94",
+        "bytes": 2429,
+        "archive_path": "qa/frame-reviews/16.json"
+      },
+      {
+        "role": "frame_review:17",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/17.json",
+        "sha256": "16e3709b06d7518b9c069a36cf7c6f238ad4a57cba1abbaa78f54f5e4e553cc4",
+        "bytes": 2474,
+        "archive_path": "qa/frame-reviews/17.json"
+      },
+      {
+        "role": "frame_review:18",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/18.json",
+        "sha256": "6bdb44100354cdf09f6e94270d532a19d747e8c91e85e25e929ab7b51a68fdb8",
+        "bytes": 2365,
+        "archive_path": "qa/frame-reviews/18.json"
+      },
+      {
+        "role": "frame_review:19",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/19.json",
+        "sha256": "369e7a8bb0a640e051ad967d48eaa6f66957c665a76940dc678d03b7ae078499",
+        "bytes": 2315,
+        "archive_path": "qa/frame-reviews/19.json"
+      },
+      {
+        "role": "frame_review:20",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/20.json",
+        "sha256": "52987f0c2393dcfb28b8c8f7b2b08ef100af1137f638fbbb032e85d271bb0e73",
+        "bytes": 2378,
+        "archive_path": "qa/frame-reviews/20.json"
+      }
+    ],
+    "delivery_files": [
+      {
+        "role": "release_manifest",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/release-manifest.json",
+        "sha256": "d0a2f28a789ad0b766161835ffd6b2c654639ffd3e6e47813d0f484262be3397",
+        "bytes": 3113,
+        "archive_path": "release-manifest.json"
+      },
+      {
+        "role": "body:01",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/01.png",
+        "sha256": "0453bd5833bdc089c8745953b8210ef6afda1701cc877f13196d731b2ae99ecf",
+        "bytes": 2101391,
+        "archive_path": "publish/01.png"
+      },
+      {
+        "role": "body:02",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/02.png",
+        "sha256": "96e18990f56742156158b453081669760a24a439f372c320360b4096c3e5e3a0",
+        "bytes": 2085713,
+        "archive_path": "publish/02.png"
+      },
+      {
+        "role": "body:03",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/03.png",
+        "sha256": "2c0f1b0a9ee6cad0b5da87019dc78243649cf872edac41a96950a84077de0572",
+        "bytes": 1729736,
+        "archive_path": "publish/03.png"
+      },
+      {
+        "role": "body:04",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/04.png",
+        "sha256": "047d6e0699ce2a1ddb7172a443ce3896f97cee487cf87e76d78ad02b18d051a4",
+        "bytes": 1498127,
+        "archive_path": "publish/04.png"
+      },
+      {
+        "role": "body:05",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/05.png",
+        "sha256": "0a50e1223c0e412f32ce8ebc4e7d57a26194964096d9e9ca665c8f875abd35b4",
+        "bytes": 1611267,
+        "archive_path": "publish/05.png"
+      },
+      {
+        "role": "body:06",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/06.png",
+        "sha256": "7ecaf56d05a9a07f5dc1b32f7662ee45ae8fc016438f62eb96f3cd4fbc1265fa",
+        "bytes": 1838621,
+        "archive_path": "publish/06.png"
+      },
+      {
+        "role": "body:07",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/07.png",
+        "sha256": "34b1107f848dc1b3c646a1b4d02f8ceda373e059155f3bd3c30931cc75936dd5",
+        "bytes": 1903780,
+        "archive_path": "publish/07.png"
+      },
+      {
+        "role": "body:08",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/08.png",
+        "sha256": "21f8a4796d7f2fbd03db05e5b4e9d6de188f818c2fe3da830438ebc90e0a09dd",
+        "bytes": 2258320,
+        "archive_path": "publish/08.png"
+      },
+      {
+        "role": "body:09",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/09.png",
+        "sha256": "42edf75dafe41517bb5be8c3f7a570a738f49fe62cbf7dc8e3abdb184304951d",
+        "bytes": 1938264,
+        "archive_path": "publish/09.png"
+      },
+      {
+        "role": "body:10",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/10.png",
+        "sha256": "737bb23cdd4ced2766cc8f35b5acd0ccc9de21afe35f557495e21f3de7fca5ae",
+        "bytes": 2289648,
+        "archive_path": "publish/10.png"
+      },
+      {
+        "role": "body:11",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/11.png",
+        "sha256": "feeccec781b7961364b1e6778b9e1401aebaa13be0fc950314974e9c972e4798",
+        "bytes": 1833984,
+        "archive_path": "publish/11.png"
+      },
+      {
+        "role": "body:12",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/12.png",
+        "sha256": "de9a75cfd7dfc69f5ec8dc5ba7633882f085a67d6fabe2ea7e4604f5bf133442",
+        "bytes": 1741276,
+        "archive_path": "publish/12.png"
+      },
+      {
+        "role": "body:13",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/13.png",
+        "sha256": "b34d7dc7e29d8835ace2caf0e177308548816346ac2f9db315a3d80a017ac2cc",
+        "bytes": 2030491,
+        "archive_path": "publish/13.png"
+      },
+      {
+        "role": "body:14",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/14.png",
+        "sha256": "aaae7426a54c0abfc0cb6c708ccbb951782a835a2c25a19aafd9a3712af86e4f",
+        "bytes": 1850843,
+        "archive_path": "publish/14.png"
+      },
+      {
+        "role": "body:15",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/15.png",
+        "sha256": "86b7955c02e52bda07260f1657eebe0b1d63fecb25d66f3b1a5978c44019fa44",
+        "bytes": 2111819,
+        "archive_path": "publish/15.png"
+      },
+      {
+        "role": "body:16",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/16.png",
+        "sha256": "117fd20ff14020ae5a23984a17c3c9be07eda0752bd6fc94d759231f2d9f7c38",
+        "bytes": 1625205,
+        "archive_path": "publish/16.png"
+      },
+      {
+        "role": "body:17",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/17.png",
+        "sha256": "7504b51ade4ca5978a73fcc1b78e2dde88dbfc8ea77f874671c41e665e5b5f54",
+        "bytes": 1884485,
+        "archive_path": "publish/17.png"
+      },
+      {
+        "role": "body:18",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/18.png",
+        "sha256": "70e260a65566538c8c95873145a521b00b965ad4b45e457571ec3a488374bb00",
+        "bytes": 2049839,
+        "archive_path": "publish/18.png"
+      },
+      {
+        "role": "body:19",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/19.png",
+        "sha256": "bb9682ee38beb87f46e0c2f6e2d0d854714b3b079bfa0e2cc191eacf566df2fe",
+        "bytes": 2438937,
+        "archive_path": "publish/19.png"
+      },
+      {
+        "role": "body:20",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/20.png",
+        "sha256": "02cd8336e02474f675fdba99ef0c7597f383ac5da447162abc264863194dad37",
+        "bytes": 2093913,
+        "archive_path": "publish/20.png"
+      },
+      {
+        "role": "cover",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/16.png",
+        "sha256": "117fd20ff14020ae5a23984a17c3c9be07eda0752bd6fc94d759231f2d9f7c38",
+        "bytes": 1625205,
+        "archive_path": "cover.png"
+      },
+      {
+        "role": "captions",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/subtitles.yaml",
+        "sha256": "be956a7f5d97b54c01bae828875aaf6f9869a9bab6db226928287618cc7b209e",
+        "bytes": 2158,
+        "archive_path": "text/subtitles.yaml"
+      },
+      {
+        "role": "publish_copy",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/release/publish-copy.md",
+        "sha256": "9ac467e9e2d843f2b4719316e35ac00c1bd67a88ac62e4c41403b0bcaeb11544",
+        "bytes": 1156,
+        "archive_path": "text/publish-copy.md"
+      },
+      {
+        "role": "propagation_card",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/release/propagation-card.md",
+        "sha256": "0562d50af112a888a0c4fcedde47903e6bf26dad7bfafff8cfc8167c21a20981",
+        "bytes": 1920,
+        "archive_path": "text/propagation-card.md"
+      },
+      {
+        "role": "production_ledger",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/production-ledger.json",
+        "sha256": "112e76875db1128a7ce160cdbf1d26d135982d167e5a63c28db9450c8985aed2",
+        "bytes": 173901,
+        "archive_path": "evidence/production-ledger.json"
+      },
+      {
+        "role": "frame_semantic_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-review.json",
+        "sha256": "4487ea3e5d547996fbf2e58cfa9c64ee824bc14da2a4d955986f289a2a79aa73",
+        "bytes": 10135,
+        "archive_path": "qa/frame-semantic-review.json"
+      },
+      {
+        "role": "frame_semantic_audit",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-audit.json",
+        "sha256": "217da93ee51050996e626e494a006febef2051d2f62376a6d9223ad4082f0f6a",
+        "bytes": 3605,
+        "archive_path": "qa/frame-semantic-audit.json"
+      },
+      {
+        "role": "story_semantic_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/story-semantic-review.json",
+        "sha256": "523aaf0ceb0f392a69269af01ab8b84cb431c8c9409dfa58d1954179a0273cb3",
+        "bytes": 7691,
+        "archive_path": "qa/story-semantic-review.json"
+      },
+      {
+        "role": "visual_profile_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/visual-profile-review.json",
+        "sha256": "55c55159ca8ad4d165cceac6bba1826bb81457237ce13cfa453ee7eee6d2e3b4",
+        "bytes": 4822,
+        "archive_path": "qa/visual-profile-review.json"
+      },
+      {
+        "role": "subtitle_layout_audit",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/subtitle-layout-audit.json",
+        "sha256": "703443eba85661083717a19fc0b53790af886aec09f84d4947c6c78de84178b4",
+        "bytes": 16183,
+        "archive_path": "qa/subtitle-layout-audit.json"
+      },
+      {
+        "role": "text_audit",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/text-audit.json",
+        "sha256": "9a192414ef84b1a54ad67a2c285bef63fd885fce613f1fd23a5a5a2be6ce089a",
+        "bytes": 1255,
+        "archive_path": "qa/text-audit.json"
+      },
+      {
+        "role": "release_semantic_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/release-semantic-review.json",
+        "sha256": "cf83c217b2f628ade5b5d1c0d2b7679d3b97e0dc493e65feb394ef2deab38a38",
+        "bytes": 3710,
+        "archive_path": "qa/release-semantic-review.json"
+      },
+      {
+        "role": "publish_compliance",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/publish-compliance.json",
+        "sha256": "37b011770fa30b2836dff2c395fc282719e9547daef7b6174386ec856b3f72b6",
+        "bytes": 435,
+        "archive_path": "qa/publish-compliance.json"
+      },
+      {
+        "role": "recent5_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/recent5-review.json",
+        "sha256": "00a447c758ddc97e5225650ebaaeddd4a356c62d1fa26091161e68da8381eeef",
+        "bytes": 1982,
+        "archive_path": "qa/recent5-review.json"
+      },
+      {
+        "role": "recent5_semantic_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/recent5-semantic-review.json",
+        "sha256": "ee62deaa0306aa2da5c3d6e1ad8d53480fcf2479fc64aeb22c5bc3cce44c9e40",
+        "bytes": 2154,
+        "archive_path": "qa/recent5-semantic-review.json"
+      },
+      {
+        "role": "frame_scout_summary",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scout-summary.json",
+        "sha256": "671e21133b723f99b3e57f4c8c5b7ccd77504c9cffaf541e5a22d4e3fbf728f7",
+        "bytes": 4402,
+        "archive_path": "qa/frame-scout-summary.json"
+      },
+      {
+        "role": "image_scheduler_performance",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/image-scheduler-performance.json",
+        "sha256": "424e507563209df1c56981a2c7ca81fe6dd8b18b17d7aad5426b2d2d1e885626",
+        "bytes": 7160,
+        "archive_path": "evidence/image-scheduler-performance.json"
+      },
+      {
+        "role": "frame_contract_index",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/runtime/contracts/frame-contract-index.json",
+        "sha256": "f2f2baf78049c398865490bdb885f869dbddd0b2e8582f02489aad399c389bf6",
+        "bytes": 9933,
+        "archive_path": "evidence/frame-contract-index.json"
+      },
+      {
+        "role": "visual_lock_baseline_review",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/visual-lock-baseline-review.json",
+        "sha256": "032b08e127f0c6d2a46a34a361c005c7f915e77f87963d362576a4d39d1ed802",
+        "bytes": 1582,
+        "archive_path": "qa/visual-lock-baseline-review.json"
+      },
+      {
+        "role": "frame_review:01",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/01.json",
+        "sha256": "c56b8fdb32ccd2594d377e54daf88c7bb68274d54956072dcbeeb2ee74215189",
+        "bytes": 2132,
+        "archive_path": "qa/frame-reviews/01.json"
+      },
+      {
+        "role": "frame_review:02",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/02.json",
+        "sha256": "4f7ea4c450433074e5c92a8375769377b29b95737e09ffb3a85dfc81b75487f2",
+        "bytes": 2138,
+        "archive_path": "qa/frame-reviews/02.json"
+      },
+      {
+        "role": "frame_review:03",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/03.json",
+        "sha256": "5b5ee15a7e7d7db1bac006d185bc0021ee7afb4e9d63780b00426da3f1d1278c",
+        "bytes": 2274,
+        "archive_path": "qa/frame-reviews/03.json"
+      },
+      {
+        "role": "frame_review:04",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/04.json",
+        "sha256": "1d11d8a6fcb5305f03262c1fa9d38d4fe563348c91368604eefebddb2a1ba40c",
+        "bytes": 2111,
+        "archive_path": "qa/frame-reviews/04.json"
+      },
+      {
+        "role": "frame_review:05",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/05.json",
+        "sha256": "6efd48ef29e2b88ab7061b9cb762f7d91d9cdb369cbe781664706e110962683b",
+        "bytes": 2096,
+        "archive_path": "qa/frame-reviews/05.json"
+      },
+      {
+        "role": "frame_review:06",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/06.json",
+        "sha256": "974eff7f59945d28ae7bb953e664d2d7a2d099cbba06c96d5a8b38da375eace5",
+        "bytes": 2230,
+        "archive_path": "qa/frame-reviews/06.json"
+      },
+      {
+        "role": "frame_review:07",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/07.json",
+        "sha256": "27d1b8305ff308742e91ef0f9dda25be4d102611e0ec56a0e1daeef7b2754f70",
+        "bytes": 2282,
+        "archive_path": "qa/frame-reviews/07.json"
+      },
+      {
+        "role": "frame_review:08",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/08.json",
+        "sha256": "8aaf4215562433a6eea5f506c95fbb0797be6cb51a423392ca6719af6cedad67",
+        "bytes": 2280,
+        "archive_path": "qa/frame-reviews/08.json"
+      },
+      {
+        "role": "frame_review:09",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/09.json",
+        "sha256": "e28ab4b4079e2b0a463013ca97f21e31d4593d41526144d5ebea6f4c596f8602",
+        "bytes": 2280,
+        "archive_path": "qa/frame-reviews/09.json"
+      },
+      {
+        "role": "frame_review:10",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/10.json",
+        "sha256": "82a8a0a82643b99e4380fab75636625c7bf82952eee849a687c5719bf236b4fb",
+        "bytes": 2308,
+        "archive_path": "qa/frame-reviews/10.json"
+      },
+      {
+        "role": "frame_review:11",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/11.json",
+        "sha256": "6c82a0bf822b9e450a54810ae2deed68873193c72c465b2491e4b7dd9d7b8c88",
+        "bytes": 2163,
+        "archive_path": "qa/frame-reviews/11.json"
+      },
+      {
+        "role": "frame_review:12",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/12.json",
+        "sha256": "3f04a492c5b50a72e7b9087190fdb6ed5a17c7253599bf2bc09aa56b6a674b2d",
+        "bytes": 2263,
+        "archive_path": "qa/frame-reviews/12.json"
+      },
+      {
+        "role": "frame_review:13",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/13.json",
+        "sha256": "2e8bff30b01a470f06701ad9a5beb00301c300b688631e9b374e46bfa8d8194a",
+        "bytes": 2237,
+        "archive_path": "qa/frame-reviews/13.json"
+      },
+      {
+        "role": "frame_review:14",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/14.json",
+        "sha256": "534fc70c92e764336ce56d1149a0af76cf11b341f5509f58c8bdb97bb6cd3d76",
+        "bytes": 2356,
+        "archive_path": "qa/frame-reviews/14.json"
+      },
+      {
+        "role": "frame_review:15",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/15.json",
+        "sha256": "ae8f5ab5b276a16a3d1c2dad4a436db8840ab69d4c5132e316b6af12cba0f553",
+        "bytes": 2169,
+        "archive_path": "qa/frame-reviews/15.json"
+      },
+      {
+        "role": "frame_review:16",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/16.json",
+        "sha256": "5eab0a996694a8be1b124e447841e153b1f569d3e68c943d95678703dd284a94",
+        "bytes": 2429,
+        "archive_path": "qa/frame-reviews/16.json"
+      },
+      {
+        "role": "frame_review:17",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/17.json",
+        "sha256": "16e3709b06d7518b9c069a36cf7c6f238ad4a57cba1abbaa78f54f5e4e553cc4",
+        "bytes": 2474,
+        "archive_path": "qa/frame-reviews/17.json"
+      },
+      {
+        "role": "frame_review:18",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/18.json",
+        "sha256": "6bdb44100354cdf09f6e94270d532a19d747e8c91e85e25e929ab7b51a68fdb8",
+        "bytes": 2365,
+        "archive_path": "qa/frame-reviews/18.json"
+      },
+      {
+        "role": "frame_review:19",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/19.json",
+        "sha256": "369e7a8bb0a640e051ad967d48eaa6f66957c665a76940dc678d03b7ae078499",
+        "bytes": 2315,
+        "archive_path": "qa/frame-reviews/19.json"
+      },
+      {
+        "role": "frame_review:20",
+        "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-reviews/20.json",
+        "sha256": "52987f0c2393dcfb28b8c8f7b2b08ef100af1137f638fbbb032e85d271bb0e73",
+        "bytes": 2378,
+        "archive_path": "qa/frame-reviews/20.json"
+      }
+    ]
+  },
+  "snapshot_sha256": "e5f29671f207c279770ae9cbee3fdbfdd01699634e9a0871ada7ab8c8bc586f0",
+  "release_review_binding": {
+    "release_semantic_review_sha256": "cf83c217b2f628ade5b5d1c0d2b7679d3b97e0dc493e65feb394ef2deab38a38",
+    "reuse_status": "BOUND"
+  }
+}

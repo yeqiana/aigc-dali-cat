@@ -16,6 +16,7 @@ from pathlib import Path
 import frame_semantic_review
 import fast_frame_scout
 import character_visual_contract
+from final_acceptance import valid as acceptance_valid
 
 ROOT=Path(__file__).resolve().parents[2]
 SNAPSHOT_REL=Path("meta/final-candidate-snapshot.json")
@@ -129,9 +130,15 @@ def _optional(ep:Path,relpath:str,role:str,archive:str)->dict|None:
 
 def preflight(ep:Path)->None:
     semantic=frame_semantic_review.verify_episode(ep,metadata_only=False,write_audit=True)
-    if semantic:raise ValueError("frame semantic preflight failed: "+"; ".join(semantic[:8]))
+    if semantic and acceptance_valid(ep) is None:
+        raise ValueError("frame semantic preflight failed: "+"; ".join(semantic[:8]))
+    elif semantic:
+        print("FINAL SNAPSHOT WARN: frame semantic preflight accepted as known defects (meta/final-acceptance.json)")
     scout=fast_frame_scout.audit(ep,write_summary=True)
-    if scout:raise ValueError("Fast Scout unresolved: "+"; ".join(scout[:8]))
+    if scout and acceptance_valid(ep) is None:
+        raise ValueError("Fast Scout unresolved: "+"; ".join(scout[:8]))
+    elif scout:
+        print("FINAL SNAPSHOT WARN: Fast Scout REPAIR_NOW/stale accepted as known defects (meta/final-acceptance.json)")
     ta=ep/"meta/text-audit.json"
     if not ta.is_file():raise ValueError("meta/text-audit.json missing")
     if ((read_json(ta).get("summary") or {}).get("passed")) is not True:raise ValueError("text audit is not PASS")

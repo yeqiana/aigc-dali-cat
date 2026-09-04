@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "audited_at": "2026-09-04T11:21:49+08:00",
+  "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\meta\\subtitles.yaml",
+  "caption_count": 20,
+  "silent_frames": [],
+  "hard_errors": [],
+  "warnings": [
+    {
+      "code": "UNIFORM_LENGTH_3",
+      "frames": [
+        1,
+        2,
+        3
+      ],
+      "message": "连续三帧句长过于整齐，像批量生成"
+    },
+    {
+      "code": "UNIFORM_LENGTH_3",
+      "frames": [
+        2,
+        3,
+        4
+      ],
+      "message": "连续三帧句长过于整齐，像批量生成"
+    },
+    {
+      "code": "UNIFORM_LENGTH_3",
+      "frames": [
+        3,
+        4,
+        5
+      ],
+      "message": "连续三帧句长过于整齐，像批量生成"
+    },
+    {
+      "code": "UNIFORM_LENGTH_3",
+      "frames": [
+        18,
+        19,
+        20
+      ],
+      "message": "连续三帧句长过于整齐，像批量生成"
+    }
+  ],
+  "summary": {
+    "hard_error_count": 0,
+    "warning_count": 4,
+    "passed": true
+  },
+  "voice_contract_sha256": null,
+  "source_sha256": "be956a7f5d97b54c01bae828875aaf6f9869a9bab6db226928287618cc7b209e"
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-04T12:18:17.509+08:00",
+  "sample_size": 1,
+  "p50_total_seconds": 317240.96,
+  "p90_total_seconds": 317240.96,
+  "average_total_seconds": 317240.96,
+  "episodes": [
+    {
+      "episode": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳",
+      "total_wall_seconds": 317240.96,
+      "final_status": "PUBLISH_READY",
+      "images": {
+        "attempts": 29,
+        "successful_attempts": 9,
+        "repair_attempts": 24,
+        "technical_failures_or_retries": 13,
+        "image_backend_seconds": 2624.7,
+        "average_attempt_seconds": 90.507,
+        "max_attempt_seconds": 512.0
+      },
+      "stage_wall": {}
+    }
+  ],
+  "telemetry_policy": "fail-soft; never a Story/Release gate"
+}

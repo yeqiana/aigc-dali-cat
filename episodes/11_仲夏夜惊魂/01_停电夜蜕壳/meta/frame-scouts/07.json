@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "frame": "07",
+  "risk_level": "HIGH",
+  "risk_score": 78,
+  "risk_tags": [
+    "first_anomaly",
+    "impact_2",
+    "reveal"
+  ],
+  "frame_contract_sha256": "b8fdf66adcd6dcbe7fdf55f2fce9678d3be421e251611e386d65d5465e9c5fab",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/07-196f9319c22f-a1.png",
+  "asset_sha256": "8fe6ef101783510f22d4b3fd39459a1980461af8275e9545750addc44bbdff95",
+  "scouted_at": "2026-09-04T04:46:26+08:00",
+  "final_critic_still_required": true,
+  "decision": "REPAIR_NOW",
+  "issue_codes": [
+    "ANOMALY_SCALE_OBVIOUSLY_WEAK",
+    "FRAME_CONTRACT_OBVIOUS_MISMATCH"
+  ],
+  "notes": "Actual pixels: damaged beige/tan stucco wall, irregular hole exposes ordinary dark cracked masonry/concrete, window framed by the damage. Contract 07 required the first-anomaly reveal to read in pixels as thin skin peeling to a dark rough BONE-PLATE ARMOR surface (explicitly not brick/masonry) plus the scale cue of the window opening offset ~half-meter from old holes. Image shows no armor texture and no offset window vs old holes; it falls back to routine wall damage. Environment/lighting (night alley, flash, clutter) fit, but the required reveal and scale reference are absent.",
+  "confidence": 0.9,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scouts/07.jsonl"
+}

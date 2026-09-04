@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "frame": "19",
+  "risk_level": "HIGH",
+  "risk_score": 61,
+  "risk_tags": [
+    "ending",
+    "impact_2",
+    "payoff"
+  ],
+  "frame_contract_sha256": "b38cda1e149eaac156a06bf359db5ad3d8f170dc9e8d44ca87c4cbb192a1612a",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/19-8b2a22d18b0e-a1.png",
+  "asset_sha256": "bc9af0af9fe39cf824652a377dcd64c4f0b17dcccab49d7a6b8c4f3c3ca4d488",
+  "scouted_at": "2026-09-04T00:07:51+08:00",
+  "final_critic_still_required": true,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "Daylight unposed street record with cream facing peeling to dark-gray substrate matches material cues and M00 capture; no rendering artifacts or impossible recorder. But peeled area reads as a large irregular deteriorating section plus extra cracks, not a single palm-sized patch whose outline matches the torn fragment; window-frame misalignment (~half meter) and pale bone-plate substrate texture are not clearly readable from this view. Confirming gap/fragment shape identity needs the neighbor fragment frame, so route to final review.",
+  "confidence": 0.4,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scouts/19.jsonl"
+}

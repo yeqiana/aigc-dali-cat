@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "06",
+  "scene_prompt": "手机手电从画面一侧照亮药房米黄色外墙：一条外墙饰面向下卷起，卷边边缘必须是一层压一层、规整细薄的甲片状薄层叠翘，不是一整块厚墙皮被撕开；薄层厚度均匀、边缘细而锐、略微半透明，像极薄的墙皮层叠。乍看整体仍像高温鼓包脱落、可以被解释为热损伤；但近看卷边分层必须是重复、规整的薄片结构。背景保持正常低照夜街，远处商铺招牌熄灭，无发光、无漂浮、无超自然特效。竖版4:5，真实手机夜景质感，暗部自然噪点，轻微手持不稳，无文字无水印。",
+  "scene_prompt_sha256": "3f7afd6b1771feba870404a05cd342ee8b95ea578456a79c4883c00d8840eb14",
+  "frame_contract_sha256": "16a97ce58ebab8b7244359208aeeb255923b876db3d832c44435879ef40c733f",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\06_repair.txt",
+  "package_sha256": "5b0ade18fecc18cfd7745872de35c4942e9eaf02cc7865bf4a98dd3802436465",
+  "compiled_at": "2026-09-03T21:29:47+08:00"
+}

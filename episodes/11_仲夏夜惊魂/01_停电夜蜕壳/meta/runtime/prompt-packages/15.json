@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "15",
+  "scene_prompt": "强热风下整条街的表面薄层向上鼓起，已经高过二楼；薄层上保留广告颜色、玻璃高光、斑马线碎片般的视觉信息；公交站棚、六层楼作尺度，夜拍高ISO手持不稳。",
+  "scene_prompt_sha256": "6353a87d908c2ff67385106c94187346bf06a2652670ba7fded394697806f932",
+  "frame_contract_sha256": "2b21b127a163c64d68ae2c0a823dd1267dfef6d989f1b78504581dbdaf7711a2",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\15.txt",
+  "package_sha256": "28f1b98a5abab96fe32bf68c829b6b9f141467f09598b8d9701b14804d5a7def",
+  "compiled_at": "2026-09-03T21:05:11+08:00"
+}

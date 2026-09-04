@@ -502,7 +502,7 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
             errors.append(f"perceptual duplicate audit failed: {exc}")
 
     if write_audit:
-        write_json(ep / AUDIT_REL, {
+        audit = {
             "schema_version": 1,
             "story_os_version": expected_version,
             "checked_at": now(),
@@ -512,7 +512,23 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
             "near_duplicate_pairs": duplicates,
             "errors": errors,
             "summary": {"passed": not errors},
-        })
+        }
+        # Keep the audit reproducible: snapshot verification may re-run this
+        # audit repeatedly, so do not rewrite (and re-hash) the evidence file
+        # when only the wall-clock checked_at would change.
+        audit_path = ep / AUDIT_REL
+        changed = True
+        if audit_path.is_file():
+            try:
+                old = read_json(audit_path)
+                old.pop("checked_at", None)
+                fresh = dict(audit)
+                fresh.pop("checked_at", None)
+                changed = old != fresh
+            except Exception:
+                changed = True
+        if changed:
+            write_json(audit_path, audit)
     return errors
 
 

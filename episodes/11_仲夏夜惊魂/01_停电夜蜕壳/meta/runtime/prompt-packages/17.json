@@ -1,17 +1,18 @@
 {
   "schema_version": 1,
   "frame": "17",
-  "scene_prompt": "返修：纯第一人称手机镜头视角，不出现第二部完整手机；画面下方只见自己握手机的右手与手机边缘一角，膜缘从身侧扫过缠住手机边缘上掀、视角正被带离；左手紧攥包带，前臂一道细红浅痕非饰品；背景半透明城市表皮悬于楼顶上方30-50米如巨大空心蝉蜕，膜上可辨道路标线、窗面反光、招牌色块，下方黑暗错位里层县城；六层住宅、公交车、路灯、天桥栏杆给出尺度；夜拍高ISO手持不稳。",
-  "scene_prompt_sha256": "4981efd02311777329840e0954022b1468970d78d61b83bdf219d7f82d2c164e",
-  "frame_contract_sha256": "28ea7d38f8aaa9ef5665f1f146e4cde28871f45acceecc0f3f3241cd866ed6b9",
+  "scene_prompt": "第一人称夜拍高潮帧：断电县城里，整片城市表皮被底下巨大生物整体撑起，悬在六层住宅楼顶上方三五十米，巨物必须完整可辨——山脊线隆起成卧兽背脊、成排肋缝、路灯杆化作探出的须、楼群如背上的鳞甲，膜下露出暗灰粗糙躯体表面；公交站棚与路面标线随薄层被顶起。桥面上他左手紧攥旅行包带、膜缘只划过留下一道细红痕，右手松握的手机正被膜缘整只卷走腾空离手。六层住宅、公交车、路灯、天桥栏杆做尺度。竖版4:5、手持高ISO夜拍、轻微抖动，全城停电楼窗必须全黑。",
+  "scene_prompt_sha256": "1dd99e18fa87720e17763987cfc0763a35d77aea40322845f8cd8823eeb27b21",
+  "frame_contract_sha256": "a18f453536f61e8e960668e4ccc1ea448285b74f54a0cb60763bf07148b1804a",
   "image_model": {
     "provider": "openai",
     "model": "gpt-image-2",
+    "quality": "high",
     "source": "system_default",
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\17_repair.txt",
-  "package_sha256": "bd1e46b313187dd1d2dc39a51a3af8071f1df640c52408effbf1b49050e740bc",
-  "compiled_at": "2026-08-31T21:07:58+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\17_exception_repair.txt",
+  "package_sha256": "a82354ad4616c3d4b918f8324883deb523cf96dc27fc4dc3739848d36619a53a",
+  "compiled_at": "2026-09-03T22:47:31+08:00"
 }

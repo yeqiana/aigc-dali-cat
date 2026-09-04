@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "frame": "10",
+  "risk_level": "HIGH",
+  "risk_score": 72,
+  "risk_tags": [
+    "anomaly_amplified",
+    "impact_3_4"
+  ],
+  "frame_contract_sha256": "9b6560f33a9491b94a3091783f372bbd438ac81d149cdc597bf5f053d0f726ab",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/10-ff2a8432b2c3-a1.png",
+  "asset_sha256": "879c54f10a6ced916fe355ddb403868f4ee5c9008ff4d3047b5e308ac9b30da7",
+  "scouted_at": "2026-09-04T01:24:29+08:00",
+  "final_critic_still_required": true,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "Actual pixels: first-person POV with hand holding phone at far-left edge (legal), night 4:5 handheld street, extensive rippling semi-transparent plastic sheeting stretched over a building facade/entrance with warm interior glow through it, billboard, crosswalk markings, manhole, approaching car with headlights, wet-looking warm reflections. No obvious identity drift, key-prop drift, illegal recorder, or weather mismatch (night, hot, dry). Open questions for final with neighbor context: (1) the membrane reads as single-building construction sheeting over the entrance, but whether it visibly CONNECTS wall/ad/glass/road-markings as one continuous film across the corner and sits ~1m off ground with readable underside is not verifiable from this frame alone; (2) required distant ridge lying-beast silhouette bulge (impact 3/4, more raised than prior frame) is not observable in the evidence read - needs frame 03/08 comparison. Suspicion: ANOMALY_SCALE_OBVIOUSLY_WEAK if the thin layer fails the multi-surface continuous-membrane and elevated-corner contract.",
+  "confidence": 0.55,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scouts/10.jsonl"
+}

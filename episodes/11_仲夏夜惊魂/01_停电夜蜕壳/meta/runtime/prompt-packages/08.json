@@ -1,17 +1,18 @@
 {
   "schema_version": 1,
   "frame": "08",
-  "scene_prompt": "返修：中国县城停电后的低照街景，路灯红绿灯与远处灯牌全部熄灭，只有车灯和手机光；药房外墙米黄色饰面薄膜、隔壁橱窗最外反光层、路沿黄色漆三种彼此隔开的表面，全部朝画面左侧同向卷起，像被同一阵热风拉扯；无字即知不是普通墙皮；中文招牌，无英文，第一人称手机随手拍。",
-  "scene_prompt_sha256": "aed709cceb256386f2bd52109ca595319304236c614afd5d26420dec8e1ec02b",
-  "frame_contract_sha256": "f6b951f42e960d9a9e0318501a5cc146482d7606f3f561250b980bc8cfd5acdc",
+  "scene_prompt": "第一人称手机竖拍退后几步的街道中景：同一画面里三样东西同时向同一方向卷起——药房墙面米黄饰面薄膜、隔壁橱窗最外层反光玻璃像皮一样从边缘揭开卷起露出较暗里层、马路路沿的黄色漆皮。三处彼此隔开、材质不同，但卷边动作一致、方向一致、彼此呼应，每处卷边都带甲片状规整分层，无字也能看出像同一只动物身上的甲片同时被撑起，不是零散普通墙皮脱落。真实手机夜拍相册感，无文字无水印，竖版4:5。",
+  "scene_prompt_sha256": "044d5638e2da1c0477aea43385e84712da52d3fc62dd63ad5337fdfda60824f6",
+  "frame_contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d",
   "image_model": {
     "provider": "openai",
     "model": "gpt-image-2",
+    "quality": "high",
     "source": "system_default",
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\08_repair.txt",
-  "package_sha256": "f2e7ba088cc59a579080ea947d6958fa4bbc4bcf917b5c78bcbb628b7724099c",
-  "compiled_at": "2026-08-31T21:07:58+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\08_semantic_repair.txt",
+  "package_sha256": "5bd9e5267b0b24ea6314710eca7f25b00ee7969d9d62c125c80df332dee855b8",
+  "compiled_at": "2026-09-04T05:13:50+08:00"
 }

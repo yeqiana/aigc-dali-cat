@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "batch_id": "BATCH_b291ff166808",
+  "decisions": [
+    {
+      "schema_version": 1,
+      "frame": "18",
+      "deviation_score": 0,
+      "criticality_score": 68,
+      "deviation_high_min": 80,
+      "criticality_high_min": 80,
+      "high_high": false,
+      "batch_complete": true,
+      "action": "KEEP_OR_DEFER_FINAL",
+      "issue_codes": [],
+      "scout_decision": "DEFER_TO_FINAL",
+      "batch_id": "BATCH_b291ff166808",
+      "ledger_repair_authorized": false
+    },
+    {
+      "schema_version": 1,
+      "frame": "19",
+      "deviation_score": 0,
+      "criticality_score": 55,
+      "deviation_high_min": 80,
+      "criticality_high_min": 80,
+      "high_high": false,
+      "batch_complete": true,
+      "action": "KEEP_OR_DEFER_FINAL",
+      "issue_codes": [],
+      "scout_decision": "DEFER_TO_FINAL",
+      "batch_id": "BATCH_b291ff166808",
+      "ledger_repair_authorized": false
+    },
+    {
+      "schema_version": 1,
+      "frame": "20",
+      "deviation_score": 60,
+      "criticality_score": 43,
+      "deviation_high_min": 80,
+      "criticality_high_min": 80,
+      "high_high": false,
+      "batch_complete": true,
+      "action": "SINGLE_REPAIR",
+      "issue_codes": [
+        "ANOMALY_SCALE_OBVIOUSLY_WEAK"
+      ],
+      "scout_decision": "REPAIR_NOW",
+      "batch_id": "BATCH_b291ff166808",
+      "ledger_repair_authorized": true,
+      "ledger_message": "20: CONTENT_FAILED\n"
+    }
+  ],
+  "evidence_not_authority": true
+}

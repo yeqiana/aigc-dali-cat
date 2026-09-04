@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "frame": "13",
+  "risk_level": "HIGH",
+  "risk_score": 97,
+  "risk_tags": [
+    "anomaly_amplified",
+    "impact_3_4",
+    "reveal"
+  ],
+  "frame_contract_sha256": "cc82d2c3e949d0f748ae4ceb92b6f95956bc57c0d661db0621cb940978a3a3ba",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/13-441f9292be5c-a1.png",
+  "asset_sha256": "7e2a9ea211ef69ec4f0c9c10ce5ba8a1ee13ebb7e5a64e809a4815a7bfee5aa0",
+  "scouted_at": "2026-09-04T01:26:37+08:00",
+  "final_critic_still_required": true,
+  "decision": "REPAIR_NOW",
+  "issue_codes": [
+    "FRAME_CONTRACT_OBVIOUS_MISMATCH"
+  ],
+  "notes": "实际像素证据：高机位俯瞰宽多车道街道，异常主体为横跨/覆盖路面的大片半透明类塑料膜罩，带光泽皱褶与车灯红蓝白反光，由两侧立柱/围栏支撑，对岸楼宇昏暗无卷曲。Frame13 为 reveal，合约要求 山脊隆起成连贯卧兽背脊+鳞片叠压层次+对岸楼角同向卷起（外围向中心），描述像素中均未见；表现为道路上方膜罩而非地表卧兽脊线，异常结构识别偏置，需返修。",
+  "confidence": 0.8,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scouts/13.jsonl"
+}

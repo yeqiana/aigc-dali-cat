@@ -1,0 +1,384 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.4.2",
+  "engine": "story_os_subtitle_layout_v1",
+  "canonical_renderer": true,
+  "source": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/subtitles.yaml",
+  "source_sha256": "be956a7f5d97b54c01bae828875aaf6f9869a9bab6db226928287618cc7b209e",
+  "policy": {
+    "punctuation_only_second_line": "drop_entire_second_line",
+    "max_lines": 2,
+    "font": "Microsoft YaHei Bold",
+    "font_size": 42,
+    "stroke_width": 4,
+    "left_margin": 72
+  },
+  "frames": {
+    "01": {
+      "caption": "我到县城的时候，已经快十一点了。",
+      "lines": [
+        "我到县城的时候，已经快十一点了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/01.png",
+      "base_sha256": "f42261c0fe90ebdcc1e194c5806738fed9fdd198efbc43933e58db95e3313dc8",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/01.png",
+      "output_sha256": "0453bd5833bdc089c8745953b8210ef6afda1701cc877f13196d731b2ae99ecf"
+    },
+    "02": {
+      "caption": "白天四十度，晚上还是闷得喘不过气。",
+      "lines": [
+        "白天四十度，晚上还是闷得喘不过气。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/02.png",
+      "base_sha256": "ee83a4ae884b00ac84d5b32c9d401a9a2aceff8023223f98b21ba63d1e12edde",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/02.png",
+      "output_sha256": "96e18990f56742156158b453081669760a24a439f372c320360b4096c3e5e3a0"
+    },
+    "03": {
+      "caption": "我家离车站不远，我准备走回去。",
+      "lines": [
+        "我家离车站不远，我准备走回去。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/03.png",
+      "base_sha256": "06f9314da7cefce0009fa332b2aeccc3843f5c58a2babbec2754378a3ca3f2c9",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/03.png",
+      "output_sha256": "2c0f1b0a9ee6cad0b5da87019dc78243649cf872edac41a96950a84077de0572"
+    },
+    "04": {
+      "caption": "23点03分，整条街一下全黑了。",
+      "lines": [
+        "23点03分，整条街一下全黑了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/04.png",
+      "base_sha256": "1b1ede78663220a4faad858ff1acd14967bf49db13db0c603676fa9f98a9eb1e",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/04.png",
+      "output_sha256": "047d6e0699ce2a1ddb7172a443ce3896f97cee487cf87e76d78ad02b18d051a4"
+    },
+    "05": {
+      "caption": "打车软件一直转圈，我就继续往家走。",
+      "lines": [
+        "打车软件一直转圈，我就继续往家走。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/05.png",
+      "base_sha256": "652ee6e0dadc93f62d29f0181d3bf38692a323c108d30ef1f92f4dc4615ba3f3",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/05.png",
+      "output_sha256": "0a50e1223c0e412f32ce8ebc4e7d57a26194964096d9e9ca665c8f875abd35b4"
+    },
+    "06": {
+      "caption": "我先以为是墙皮被晒坏了。",
+      "lines": [
+        "我先以为是墙皮被晒坏了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/06.png",
+      "base_sha256": "e9f33870eb38c7ee39c6b6abdf79ae1598fac5f14a56f984d18bee6ad8da4055",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/06.png",
+      "output_sha256": "7ecaf56d05a9a07f5dc1b32f7662ee45ae8fc016438f62eb96f3cd4fbc1265fa"
+    },
+    "07": {
+      "caption": "可它后面那扇窗的位置，不对。",
+      "lines": [
+        "可它后面那扇窗的位置，不对。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/07.png",
+      "base_sha256": "e6e66403977cc41f94dc94fbf6975e056a45b6f97d3dd713473fb642af44bc83",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/07.png",
+      "output_sha256": "34b1107f848dc1b3c646a1b4d02f8ceda373e059155f3bd3c30931cc75936dd5"
+    },
+    "08": {
+      "caption": "我站远了一点，才发现不只这一面墙。",
+      "lines": [
+        "我站远了一点，才发现不只这一面墙。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/08.png",
+      "base_sha256": "f85048801d61a67f665652ed6617dfb98c37431b2c24d39b48b89244275b5514",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/08.png",
+      "output_sha256": "21f8a4796d7f2fbd03db05e5b4e9d6de188f818c2fe3da830438ebc90e0a09dd"
+    },
+    "09": {
+      "caption": "连路面都有一层。",
+      "lines": [
+        "连路面都有一层。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/09.png",
+      "base_sha256": "1b7c89e980b6550bb52eaceca4fd6ed49ea4487aa2feb54c7e713daffbf264a0",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/09.png",
+      "output_sha256": "42edf75dafe41517bb5be8c3f7a570a738f49fe62cbf7dc8e3abdb184304951d"
+    },
+    "10": {
+      "caption": "它们像是同一张东西。",
+      "lines": [
+        "它们像是同一张东西。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/10.png",
+      "base_sha256": "b5d984e99d8493f9c07b688090707e0c2982b9fb21fadf19986dabbef41ae72e",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/10.png",
+      "output_sha256": "737bb23cdd4ced2766cc8f35b5acd0ccc9de21afe35f557495e21f3de7fca5ae"
+    },
+    "11": {
+      "caption": "我得在天亮前赶回家——明天我是伴郎。",
+      "lines": [
+        "我得在天亮前赶回家——明天我是伴郎。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/11.png",
+      "base_sha256": "697f50777c39cc04ae24dbb3bac94262f45a6fc9cf70a7f863c0818eccc8a01e",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/11.png",
+      "output_sha256": "feeccec781b7961364b1e6778b9e1401aebaa13be0fc950314974e9c972e4798"
+    },
+    "12": {
+      "caption": "它撕下一块粘在包上，回头路也合上了。\n灯一照它卷得更快，我关了手电。",
+      "lines": [
+        "它撕下一块粘在包上，回头路也合上了。",
+        "灯一照它卷得更快，我关了手电。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/12.png",
+      "base_sha256": "5e7548b115a75c25d04b0b37cf259db93b8bea8097a92a0ca4b2d6abcf1160ff",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/12.png",
+      "output_sha256": "de9a75cfd7dfc69f5ec8dc5ba7633882f085a67d6fabe2ea7e4604f5bf133442"
+    },
+    "13": {
+      "caption": "我到天桥下面时，终于看清它有多大。",
+      "lines": [
+        "我到天桥下面时，终于看清它有多大。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/13.png",
+      "base_sha256": "a067e0e83b6c06823766dc51579ec344c3800d27bd0ab64f50264ccabd8fdb9c",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/13.png",
+      "output_sha256": "b34d7dc7e29d8835ace2caf0e177308548816346ac2f9db315a3d80a017ac2cc"
+    },
+    "14": {
+      "caption": "外面那层，和里面根本对不上。",
+      "lines": [
+        "外面那层，和里面根本对不上。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/14.png",
+      "base_sha256": "3de374d91e72a47d6e351f00b6c6b09df276b62267bc212e3d06be15bef9707b",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/14.png",
+      "output_sha256": "aaae7426a54c0abfc0cb6c708ccbb951782a835a2c25a19aafd9a3712af86e4f"
+    },
+    "15": {
+      "caption": "那阵风一来，整条街都被掀了起来。",
+      "lines": [
+        "那阵风一来，整条街都被掀了起来。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/15.png",
+      "base_sha256": "9d008a5b66aee376c65e4a145c241d7eb90504b53d548650708316e9745bfbce",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/15.png",
+      "output_sha256": "86b7955c02e52bda07260f1657eebe0b1d63fecb25d66f3b1a5978c44019fa44"
+    },
+    "16": {
+      "caption": "我这才明白，它不是掉墙皮。",
+      "lines": [
+        "我这才明白，它不是掉墙皮。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/16.png",
+      "base_sha256": "562a8c0122e267e7243de410b43bc5474689286ad91900afaec3d4a440b1b384",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/16.png",
+      "output_sha256": "117fd20ff14020ae5a23984a17c3c9be07eda0752bd6fc94d759231f2d9f7c38"
+    },
+    "17": {
+      "caption": "我跑过去的时候，它把整座城顶了起来。\n松握的手机被卷走，攥紧包带的手只被划了一道。",
+      "lines": [
+        "我跑过去的时候，它把整座城顶了起来。",
+        "松握的手机被卷走，攥紧包带的手只被划了一道。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/17.png",
+      "base_sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/17.png",
+      "output_sha256": "7504b51ade4ca5978a73fcc1b78e2dde88dbfc8ea77f874671c41e665e5b5f54"
+    },
+    "18": {
+      "caption": "零点过几分，电来了。我到了家，手机却没了。",
+      "lines": [
+        "零点过几分，电来了。我到了家，手机却没了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/18.png",
+      "base_sha256": "56aa7bc69892c58b561c01ff31d5fea3acf2f4b83a4e269462f9f1763e9951fa",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/18.png",
+      "output_sha256": "70e260a65566538c8c95873145a521b00b965ad4b45e457571ec3a488374bb00"
+    },
+    "19": {
+      "caption": "药房外墙缺了一块——和我抽屉里那块一模一样。",
+      "lines": [
+        "药房外墙缺了一块——和我抽屉里那块一模一样。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/19.png",
+      "base_sha256": "bc9af0af9fe39cf824652a377dcd64c4f0b17dcccab49d7a6b8c4f3c3ca4d488",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/19.png",
+      "output_sha256": "bb9682ee38beb87f46e0c2f6e2d0d854714b3b079bfa0e2cc191eacf566df2fe"
+    },
+    "20": {
+      "caption": "第二天我才发现，县城变旧，也许不是年头到了。",
+      "lines": [
+        "第二天我才发现，县城变旧，也许不是年头到了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/20.png",
+      "base_sha256": "6a33e4d52ce22dffbf66563743e8f4faa89bc16ad16a2da7e2381cf562e9081a",
+      "output_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/20.png",
+      "output_sha256": "02cd8336e02474f675fdba99ef0c7597f383ac5da447162abc264863194dad37"
+    }
+  },
+  "summary": {
+    "passed": true,
+    "frame_count": 20
+  }
+}

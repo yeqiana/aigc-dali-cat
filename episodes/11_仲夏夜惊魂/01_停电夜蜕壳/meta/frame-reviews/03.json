@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.1.0",
+  "frame": "03",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/03.png",
+  "asset_sha256": "ee743f0f72d25a032365ea0910845dea3d616cb13df47d3d1bfb0462b8a416dd",
+  "story_sha256": "1036636614fc8208f3831078635a860b484927c133ac2eb497d9c2601c5b69b3",
+  "storyboard_sha256": "a6147f70d2de6e06c6f4fba6e48ae5dfc36a1634a2117bd9ea22b47fba75d9fd",
+  "visual_contract_sha256": "4807f63cdd5d52981eb635b44547e1c320ab573c58c192713d341fa4fed34dad",
+  "environment_frame_sha256": "88ae7bea8a781f66a7ca669b83d5fc292469966cc863a9946f28d96f7ff81924",
+  "frame_directive_sha256": "897c51f356f0c5574be38456c10c856bb2e26114df2998ffdfa17e02dc983bbb",
+  "frame_contract_sha256": "270107e328b077b5b763e85259106dd7f5ca439a7ede58ae29e69e61b3b6f070",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "review_scope": "FULL_FRAME_SET",
+    "attempt": 2,
+    "reviewed_at": "2026-09-04T04:32:25+08:00",
+    "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-critic-attempt-2.jsonl"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": false,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": false,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true
+  },
+  "issue_codes": [
+    "ANOMALY_UNREADABLE",
+    "STORY_BEAT_NOT_VISIBLE"
+  ],
+  "notes": "停电前一秒完整照明街景成立（红绿灯、商铺灯、住宅窗亮、路边电动车），但整帧上缘为楼群与夜空，无故事板要求的远山脊=卧兽背脊剪影；首处可辨认异常证据未在像素中出现，需字幕与后帧补位。",
+  "decision": "fail"
+}

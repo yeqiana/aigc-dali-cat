@@ -1,23 +1,33 @@
 {
   "scheduler_mode": "continuous_first_completed",
-  "generated": 2,
-  "tech_failed": 0,
+  "generated": 22,
+  "tech_failed": 4,
   "dependency_blocked": 0,
   "hard_blocked": 0,
-  "scout_repair": 2,
+  "scout_repair": 6,
   "scout_audit_errors": [
-    "frame 08 unresolved REPAIR_NOW",
-    "frame 17 unresolved REPAIR_NOW"
+    "high-risk frame 07 scout stale for current asset",
+    "frame 07 unresolved REPAIR_NOW",
+    "high-risk frame 10 scout stale for current asset",
+    "high-risk frame 13 scout stale for current asset",
+    "frame 13 unresolved REPAIR_NOW",
+    "high-risk frame 14 scout stale for current asset",
+    "frame 14 unresolved REPAIR_NOW",
+    "high-risk frame 16 scout stale for current asset",
+    "frame 16 unresolved REPAIR_NOW",
+    "high-risk frame 18 scout stale for current asset",
+    "high-risk frame 20 scout stale for current asset",
+    "frame 20 unresolved REPAIR_NOW"
   ],
   "queued": 0,
   "awaiting_visual_lock_baseline_review": false,
   "next_action": null,
-  "adaptive_parallel": 3,
+  "adaptive_parallel": 1,
   "events": [
     {
       "event": 1,
       "mode": "continuous_first_completed",
-      "at": "2026-08-31T19:41:45+08:00",
+      "at": "2026-09-03T18:52:42+08:00",
       "frame": 1,
       "status": "tech_failed",
       "inflight_after": 0,
@@ -27,7 +37,7 @@
     {
       "event": 2,
       "mode": "continuous_first_completed",
-      "at": "2026-08-31T19:51:48+08:00",
+      "at": "2026-09-03T18:53:01+08:00",
       "frame": 1,
       "status": "generated",
       "inflight_after": 0,
@@ -37,8 +47,8 @@
     {
       "event": 3,
       "mode": "continuous_first_completed",
-      "at": "2026-08-31T19:59:09+08:00",
-      "frame": 8,
+      "at": "2026-09-03T21:05:12+08:00",
+      "frame": 15,
       "status": "generated",
       "inflight_after": 1,
       "next_parallel": 3,
@@ -47,9 +57,9 @@
     {
       "event": 4,
       "mode": "continuous_first_completed",
-      "at": "2026-08-31T19:59:11+08:00",
+      "at": "2026-09-03T21:05:13+08:00",
       "frame": 17,
-      "status": "scout_repair",
+      "status": "generated",
       "inflight_after": 1,
       "next_parallel": 3,
       "elapsed_seconds": 0.0
@@ -57,8 +67,8 @@
     {
       "event": 5,
       "mode": "continuous_first_completed",
-      "at": "2026-08-31T19:59:11+08:00",
-      "frame": 5,
+      "at": "2026-09-03T21:05:15+08:00",
+      "frame": 6,
       "status": "generated",
       "inflight_after": 0,
       "next_parallel": 3,
@@ -67,19 +77,19 @@
     {
       "event": 6,
       "mode": "continuous_first_completed",
-      "at": "2026-08-31T20:10:56+08:00",
-      "frame": 8,
-      "status": "scout_repair",
-      "inflight_after": 1,
+      "at": "2026-09-03T21:29:48+08:00",
+      "frame": 6,
+      "status": "generated",
+      "inflight_after": 0,
       "next_parallel": 3,
       "elapsed_seconds": 0.0
     },
     {
       "event": 7,
       "mode": "continuous_first_completed",
-      "at": "2026-08-31T20:11:06+08:00",
+      "at": "2026-09-03T21:44:56+08:00",
       "frame": 17,
-      "status": "scout_repair",
+      "status": "generated",
       "inflight_after": 0,
       "next_parallel": 3,
       "elapsed_seconds": 0.0
@@ -87,23 +97,183 @@
     {
       "event": 8,
       "mode": "continuous_first_completed",
-      "at": "2026-08-31T21:11:10+08:00",
+      "at": "2026-09-03T22:26:14+08:00",
       "frame": 17,
-      "status": "scout_repair",
-      "inflight_after": 1,
-      "next_parallel": 3,
-      "elapsed_seconds": 0.0
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
     },
     {
       "event": 9,
       "mode": "continuous_first_completed",
-      "at": "2026-08-31T21:11:21+08:00",
-      "frame": 8,
+      "at": "2026-09-03T22:28:46+08:00",
+      "frame": 17,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 10,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-03T22:38:21+08:00",
+      "frame": 17,
+      "status": "blocked",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 11,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-03T22:49:42+08:00",
+      "frame": 17,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": 0.0
+    },
+    {
+      "event": 12,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T00:25:48+08:00",
+      "frame": 20,
       "status": "scout_repair",
       "inflight_after": 0,
-      "next_parallel": 3,
+      "next_parallel": 1,
       "elapsed_seconds": 0.0
+    },
+    {
+      "event": 13,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T01:37:06+08:00",
+      "frame": 13,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 14,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T01:38:29+08:00",
+      "frame": 14,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 15,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T04:40:59+08:00",
+      "frame": 16,
+      "status": "scout_repair",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": 207.75
+    },
+    {
+      "event": 16,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T04:43:24+08:00",
+      "frame": 18,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 17,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T04:47:59+08:00",
+      "frame": 7,
+      "status": "scout_repair",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": 180.42
+    },
+    {
+      "event": 18,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T04:50:41+08:00",
+      "frame": 8,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 19,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T04:52:39+08:00",
+      "frame": 9,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 20,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T04:54:40+08:00",
+      "frame": 3,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": 118.67
+    },
+    {
+      "event": 21,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T05:05:01+08:00",
+      "frame": 18,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 2,
+      "elapsed_seconds": 454.86
+    },
+    {
+      "event": 22,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T05:06:51+08:00",
+      "frame": 8,
+      "status": "tech_failed",
+      "inflight_after": 1,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 23,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T05:13:34+08:00",
+      "frame": 9,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 24,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T05:16:49+08:00",
+      "frame": 8,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 25,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-04T05:19:31+08:00",
+      "frame": 9,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
     }
   ],
-  "reported_at": "2026-08-31T21:11:21+08:00"
+  "reported_at": "2026-09-04T05:19:32+08:00"
 }

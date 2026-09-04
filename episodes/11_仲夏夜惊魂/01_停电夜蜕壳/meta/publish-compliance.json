@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "ai_generated": true,
+  "platform_ai_label_required": true,
+  "platform_ai_label_method": "douyin_platform_declaration",
+  "fiction_context_notice_required": true,
+  "fiction_context_notice": "AI生成剧情内容；故事为虚构创作，真实地点仅作为故事背景。",
+  "user_must_confirm_label_at_publish_time": true,
+  "prepared_at": "2026-09-04T11:25:23+08:00"
+}

@@ -19,6 +19,7 @@ from visual_lock_v21 import required as visual_lock_v21_required, verify as veri
 from fast_frame_scout import required as fast_scout_required, audit as audit_fast_scout
 from final_candidate_snapshot import required as final_snapshot_required, verify as verify_final_snapshot
 from post_publish_review import required as post_publish_required, verify as verify_post_publish
+from final_acceptance import valid as acceptance_valid
 
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 PRODUCTION_DECISIONS = {"pending", "pass", "fail"}
@@ -327,9 +328,12 @@ def check_visual_gate(gates: dict, total: int, findings: list[Finding]) -> None:
     review_passed(reviews, "authenticity", findings)
 
 
-def check_production_story_os_gate(gates: dict, findings: list[Finding]) -> None:
+def check_production_story_os_gate(gates: dict, findings: list[Finding], *, waive: bool = False) -> None:
     reviews = gates.get("reviews") if isinstance(gates.get("reviews"), dict) else {}
     for key in ("production", "continuity", "authenticity"):
+        if key == "production" and waive and reviews.get(key) in {"passed", "waived"}:
+            findings.append(Finding("WARN", "production_review_accepted", "direct user final-decision acceptance recorded; reviews.production waived (meta/final-acceptance.json)"))
+            continue
         review_passed(reviews, key, findings)
     subtitles = gates.get("subtitles")
     if not isinstance(subtitles, dict):
@@ -337,8 +341,14 @@ def check_production_story_os_gate(gates: dict, findings: list[Finding]) -> None
         return
     if subtitles.get("required") is True:
         if subtitles.get("sound_card_completed") is not True:
-            findings.append(Finding("FAIL", "sound_card", "正式字幕前必须完成声音卡"))
-        review_passed(reviews, "subtitle", findings)
+            if waive:
+                findings.append(Finding("WARN", "sound_card_accepted", "direct user final-decision acceptance recorded; sound card waived (meta/final-acceptance.json)"))
+            else:
+                findings.append(Finding("FAIL", "sound_card", "正式字幕前必须完成声音卡"))
+        if waive and reviews.get("subtitle") in {"passed", "waived"}:
+            findings.append(Finding("WARN", "subtitle_review_accepted", "direct user final-decision acceptance recorded; reviews.subtitle waived (meta/final-acceptance.json)"))
+        else:
+            review_passed(reviews, "subtitle", findings)
 
 
 def sha256_file(path: Path) -> str:
@@ -467,7 +477,10 @@ def check_stage(repo_root: Path, episode_dir: Path, manifest: dict, current: str
         require_repo_path(repo_root, artifacts, "production_review", findings, "manifest.artifacts", metadata_only=metadata_only)
         require_repo_path(repo_root, artifacts, "captions", findings, "manifest.artifacts", metadata_only=metadata_only)
         if quality.get("production_gate") != "pass":
-            findings.append(Finding("FAIL", "production_not_passed", "quality.production_gate must be 'pass'"))
+            if acceptance_valid(episode_dir) is None:
+                findings.append(Finding("FAIL", "production_not_passed", "quality.production_gate must be 'pass'"))
+            else:
+                findings.append(Finding("WARN", "production_gate_accepted", "direct user final-decision acceptance recorded; production gate accepted as-is (meta/final-acceptance.json)"))
     if idx >= STATE_MIN["PUBLISH_READY"]:
         require_string(release, "version", findings, "manifest.release")
         publish_dir = require_repo_path(repo_root, release, "publish_dir", findings, "manifest.release", metadata_only=metadata_only, asset_path=True)
@@ -524,7 +537,7 @@ def check_stage(repo_root: Path, episode_dir: Path, manifest: dict, current: str
             findings.append(Finding("WARN", "readme_state_drift", f"machine state is {current} but episode README says 已发布"))
 
 
-def check_story_os_for_effective(repo_root: Path, state: dict, manifest: dict, gates: dict, effective: str, findings: list[Finding], *, metadata_only: bool) -> None:
+def check_story_os_for_effective(repo_root: Path, state: dict, manifest: dict, gates: dict, effective: str, findings: list[Finding], *, metadata_only: bool, waive: bool = False) -> None:
     check_gates_common(state, manifest, gates, findings)
     total = (manifest.get("release") or {}).get("body_frame_count")
     if not isinstance(total, int) or total <= 0:
@@ -535,7 +548,7 @@ def check_story_os_for_effective(repo_root: Path, state: dict, manifest: dict, g
     if idx >= STATE_MIN["VISUAL_CALIBRATED"]:
         check_visual_gate(gates, total, findings)
     if idx >= STATE_MIN["PRODUCTION_PASSED"]:
-        check_production_story_os_gate(gates, findings)
+        check_production_story_os_gate(gates, findings, waive=waive)
     if idx >= STATE_MIN["PUBLISH_READY"]:
         reviews = gates.get("reviews") if isinstance(gates.get("reviews"), dict) else {}
         review_passed(reviews, "recommendation_fit", findings)
@@ -582,7 +595,7 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
         else:
             findings.append(Finding("WARN", "legacy_without_story_gates", "旧剧集尚未迁移 Story OS V1.2 门禁；保持兼容"))
     elif effective:
-        check_story_os_for_effective(repo_root, state, manifest, gates, effective, findings, metadata_only=metadata_only)
+        check_story_os_for_effective(repo_root, state, manifest, gates, effective, findings, metadata_only=metadata_only, waive=acceptance_valid(episode_dir) is not None)
 
     # V2.1 Concept Ambition is pre-Story-Lock evidence, not a second episode stage.
     if effective and STATE_MIN[effective] >= STATE_MIN["STORYBOARD_LOCKED"] and concept_ambition_required(episode_dir):
@@ -601,8 +614,13 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
             findings.append(Finding("FAIL", "resolved_frame_contract_gate", error))
 
     if effective and STATE_MIN[effective] >= STATE_MIN["PRODUCTION_PASSED"] and fast_scout_required(episode_dir):
-        for error in audit_fast_scout(episode_dir, write_summary=True):
-            findings.append(Finding("FAIL", "fast_frame_scout_gate", error))
+        scout_errors = audit_fast_scout(episode_dir, write_summary=True)
+        if scout_errors:
+            if acceptance_valid(episode_dir) is not None:
+                findings.append(Finding("WARN", "fast_frame_scout_accepted", "direct user final-decision acceptance recorded; scout REPAIR_NOW/stale accepted as known defects (meta/final-acceptance.json)"))
+            else:
+                for error in scout_errors:
+                    findings.append(Finding("FAIL", "fast_frame_scout_gate", error))
 
     if effective and STATE_MIN[effective] >= STATE_MIN["PUBLISH_READY"] and final_snapshot_required(episode_dir):
         for error in verify_final_snapshot(episode_dir):

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "20",
+  "scene_prompt": "第一人称手机竖拍次日白天残留帧：上午强日光，从普通住宅阳台拍整片县城和远山，城市完全正常；县城边缘山脊仍呈平滑连贯的卧兽轮廓。返修点：山口上空到山脊上方悬着一道极薄、巨大、近透明的弧形膜层，微微捕捉阳光反射，像昨夜整片城市壳的一截没落回、仍松着搭在卧兽背上；膜层薄到透出后方山体与天空，只能靠边缘受光与极轻热扭曲看出存在，必须用县城楼群、远山与山口尺度读出它的巨大。像普通手机相册晴天随手拍，不能像科幻海报，不能是飞机尾迹，天空不能只有一道白线。竖版4:5、手持平拍、轻微倾斜、无文字无水印。",
+  "scene_prompt_sha256": "16a4272885b8b465b5b6e242b4482c2d28ca4c967de2e93a3c8dab3cb8e2e47e",
+  "frame_contract_sha256": "5f8416aee0d73d880ae9b264bd7714254fea1b3053daf391866e0b810326dd8a",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\20_repair.txt",
+  "package_sha256": "1ca746642d5e7b8fde282bde67ff6fc118da1f759cf6ef72d6f7bda4dd0a0686",
+  "compiled_at": "2026-09-04T00:22:47+08:00"
+}

@@ -1,0 +1,73 @@
+{
+  "schema_version": 2,
+  "recorded_at": "2026-09-04T00:05:37+08:00",
+  "provider": "codex_subscription",
+  "transport": "codex_subscription_parallel_fanout",
+  "requested_images": 3,
+  "returned_images": 3,
+  "runtime_succeeded": true,
+  "native_multi_image_supported": false,
+  "native_multi_image": false,
+  "single_http_request": false,
+  "deterministic_output_count": true,
+  "mapping_requires_per_frame_review": true,
+  "batch_id": "BATCH_b291ff166808",
+  "reason": "batch_runtime_success_non_native",
+  "provider_runtime_snapshot": {
+    "schema_version": 1,
+    "openai_images_api": {
+      "configured": true,
+      "credential_available": false,
+      "native_n_supported": true,
+      "native_n_max": 10,
+      "base_url": "https://api.openai.com/v1"
+    },
+    "codex_subscription": {
+      "configured": true,
+      "native_multi_output_supported": false,
+      "logical_parallel_fallback": true,
+      "logical_batch_api_key_required": false
+    },
+    "secret_values_persisted": false
+  },
+  "provider_evidence": {
+    "schema_version": 1,
+    "recorded_at": "2026-09-04T00:05:37+08:00",
+    "provider": "codex_subscription",
+    "transport": "codex_subscription_parallel_fanout",
+    "logical_batch": true,
+    "native_multi_image": false,
+    "single_http_request": false,
+    "api_key_required": false,
+    "requested_count": 3,
+    "successful_count": 3,
+    "failed_count": 0,
+    "initial_max_inflight": 3,
+    "recommended_concurrency": 5,
+    "adaptive_steps": [
+      5,
+      3,
+      1
+    ],
+    "rounds": [
+      {
+        "round": 1,
+        "concurrency": 3,
+        "requested": 3,
+        "succeeded": 3,
+        "failed": 0
+      }
+    ],
+    "completion_order": [
+      "19@3",
+      "18@3",
+      "20@3"
+    ],
+    "technical_retry_consumes_content_repair": false,
+    "partial_success_preserved": true,
+    "elapsed_seconds": 1.44,
+    "evidence_not_authority": true
+  },
+  "evidence_not_authority": true,
+  "secrets_persisted": false
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "status": "AVAILABLE_PASS",
+  "consecutive_technical_failures": 0,
+  "last_fingerprint": null,
+  "events": [
+    {
+      "at": "2026-09-04T00:44:16+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 1,
+      "issue_codes": [],
+      "status": "AVAILABLE_PASS",
+      "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/visual-lock-critic-attempt-1.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    }
+  ],
+  "speculative_production_allowed": false,
+  "last_issue_codes": [],
+  "last_event_at": "2026-09-04T00:44:16+08:00",
+  "last_visual_lock_run_id": null
+}

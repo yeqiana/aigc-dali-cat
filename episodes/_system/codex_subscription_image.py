@@ -19,6 +19,8 @@ import image_model_policy
 import provider_capability
 import image_artifact_collector
 
+ROOT = Path(__file__).resolve().parents[2]
+
 PNG = b'\x89PNG\r\n\x1a\n'
 JPEG = b'\xff\xd8\xff'
 

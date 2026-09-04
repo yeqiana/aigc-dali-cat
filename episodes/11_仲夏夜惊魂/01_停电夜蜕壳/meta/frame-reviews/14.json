@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.1.0",
+  "frame": "14",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/14.png",
+  "asset_sha256": "3de374d91e72a47d6e351f00b6c6b09df276b62267bc212e3d06be15bef9707b",
+  "story_sha256": "1036636614fc8208f3831078635a860b484927c133ac2eb497d9c2601c5b69b3",
+  "storyboard_sha256": "a6147f70d2de6e06c6f4fba6e48ae5dfc36a1634a2117bd9ea22b47fba75d9fd",
+  "visual_contract_sha256": "4807f63cdd5d52981eb635b44547e1c320ab573c58c192713d341fa4fed34dad",
+  "environment_frame_sha256": "e63f0f69a42cc1b2c6cdd1edbe7d3a2360b5d2270f9c95c8acde3ecdfedb009a",
+  "frame_directive_sha256": "fb180d9a691e8d88e9c1030f1774876d5e5dd4554d95234573af43a3659e7900",
+  "frame_contract_sha256": "fd0eef5288d9fbe8e12f9e9a5d82b0a491047ff7542f8f98994f34c5297c8ed8",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "review_scope": "FULL_FRAME_SET",
+    "attempt": 2,
+    "reviewed_at": "2026-09-04T04:32:25+08:00",
+    "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-critic-attempt-2.jsonl"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": false,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": false,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true
+  },
+  "issue_codes": [
+    "FRAME_SCENE_MISMATCH",
+    "ANOMALY_UNREADABLE"
+  ],
+  "notes": "实际画面为室内走廊/楼梯间墙面（踢脚线+地板+天花板、两扇门与一个黑色撕裂洞口），并非故事板锁定的'天桥楼梯中段斜拍下方建筑、实体门窗与表层错位'场景；暗灰粗糙躯体表面与浅骨板纹理未出现，黑洞口只能读作墙面破损，'表里对不上'不可在像素中核验。",
+  "decision": "fail"
+}

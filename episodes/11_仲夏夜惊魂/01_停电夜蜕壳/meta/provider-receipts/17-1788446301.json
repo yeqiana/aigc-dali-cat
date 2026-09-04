@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "recorded_at_epoch": 1788446301,
+  "frame": "17",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "generation_route": "codex_desktop_interface_imagegen",
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "requested_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": 0.8
+  },
+  "provider_raw_canvas": {
+    "width": 1086,
+    "height": 1448,
+    "aspect_ratio": 0.75,
+    "exact_requested_canvas": false,
+    "resize_direction_to_release": "downscale"
+  },
+  "ratio_delta": 0.0625,
+  "normalize_decision": "ASPECT_RATIO_MISMATCH",
+  "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\media\\raw\\17-1788446301.png",
+  "raw_sha256": "2b88e83d1e59201cc76539cd33017e41f03f30aa6d50cf337a31a5661a7e06b5",
+  "provider_attestation": false,
+  "exact_raw_canvas_guaranteed": false,
+  "receipt_is_evidence_not_authority": true
+}

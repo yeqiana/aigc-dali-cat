@@ -1,0 +1,75 @@
+{
+  "release_checks": {
+    "cover_title_match": true,
+    "cover_frame01_handoff": true,
+    "first3_coherence": true,
+    "climax_upgrade": true,
+    "payoff_honesty": true,
+    "description_consistency": true,
+    "no_caption_invented_core_evidence": true
+  },
+  "governance_checks": {
+    "ai_generated_declared": true,
+    "platform_ai_label_planned": true,
+    "fiction_context_not_misrepresented_as_official_fact": true,
+    "no_unverifiable_real_group_accusation": true,
+    "real_location_handled_as_fictional_story_context": true
+  },
+  "issue_codes": [],
+  "notes": [
+    "16.png以覆盖县城与楼群的巨大半透明表层兑现标题中的停电后县城蜕壳，封面与实际标题承诺同一核心异常。",
+    "01.png至03.png连续呈现深夜抵达县城客运站、拖旅行包经过夜市、步行进入县城街道；正文首图为封面事件提供同一晚返乡入口，没有切换人物、地点或母题。",
+    "17.png较封面进一步呈现县城道路和楼群被巨物躯体整体顶起，并同帧可见脱手腾空的手机、攥紧包带的手和前臂红痕，形成不可逆的行动代价；字幕没有替像素发明核心结果。",
+    "20.png以白日恢复正常的县城和仍呈卧兽轮廓的山脊回收03.png的夜间山影以及16.png、17.png的巨物显形，没有引入新的异常机制。",
+    "发布正文明确人物、地点、情节均为虚构且内容由AI生成；话题没有冒充官方通报、真实案件或已验证事故，publish-compliance已计划使用抖音平台AI声明并要求发布时确认。"
+  ],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "artifacts": {
+    "cover": {
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/16.png",
+      "sha256": "117fd20ff14020ae5a23984a17c3c9be07eda0752bd6fc94d759231f2d9f7c38"
+    },
+    "body01": {
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/01.png",
+      "sha256": "0453bd5833bdc089c8745953b8210ef6afda1701cc877f13196d731b2ae99ecf"
+    },
+    "body02": {
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/02.png",
+      "sha256": "96e18990f56742156158b453081669760a24a439f372c320360b4096c3e5e3a0"
+    },
+    "body03": {
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/03.png",
+      "sha256": "2c0f1b0a9ee6cad0b5da87019dc78243649cf872edac41a96950a84077de0572"
+    },
+    "climax": {
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/17.png",
+      "sha256": "7504b51ade4ca5978a73fcc1b78e2dde88dbfc8ea77f874671c41e665e5b5f54"
+    },
+    "payoff": {
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/production/publish/20.png",
+      "sha256": "02cd8336e02474f675fdba99ef0c7597f383ac5da447162abc264863194dad37"
+    },
+    "captions": {
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/subtitles.yaml",
+      "sha256": "be956a7f5d97b54c01bae828875aaf6f9869a9bab6db226928287618cc7b209e"
+    },
+    "publish_copy": {
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/release/publish-copy.md",
+      "sha256": "9ac467e9e2d843f2b4719316e35ac00c1bd67a88ac62e4c41403b0bcaeb11544"
+    },
+    "propagation_card": {
+      "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/release/propagation-card.md",
+      "sha256": "0562d50af112a888a0c4fcedde47903e6bf26dad7bfafff8cfc8167c21a20981"
+    }
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "reviewed_at": "2026-09-04T11:47:33+08:00",
+    "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/release-critic.jsonl"
+  }
+}

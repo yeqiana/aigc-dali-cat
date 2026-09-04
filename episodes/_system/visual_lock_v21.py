@@ -267,10 +267,10 @@ def choose_plan(ep: Path) -> dict:
     ))
 
     plan_rows = [
-        {"id": "V-B", "role": ROLES[0], **baseline, "depends_on": []},
-        {"id": "V-W", "role": ROLES[1], **worst, "depends_on": [baseline["frame"]]},
-        {"id": "V-A", "role": ROLES[2], **first_anomaly, "depends_on": [baseline["frame"]]},
-        {"id": "V-H", "role": ROLES[3], **high, "depends_on": [baseline["frame"]]},
+        {"id": "V-B", **baseline, "role": ROLES[0], "depends_on": []},
+        {"id": "V-W", **worst, "role": ROLES[1], "depends_on": [baseline["frame"]]},
+        {"id": "V-A", **first_anomaly, "role": ROLES[2], "depends_on": [baseline["frame"]]},
+        {"id": "V-H", **high, "role": ROLES[3], "depends_on": [baseline["frame"]]},
     ]
     return {
         "schema_version": 1,

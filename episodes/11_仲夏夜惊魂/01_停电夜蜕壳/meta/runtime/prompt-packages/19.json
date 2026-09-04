@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "19",
+  "scene_prompt": "第二天上午自然日光，药房外墙缺一块巴掌大浅黄色饰面，露出下方蓝灰粗糙墙面，窗框旧孔位与现实窗户错开约半米；缺口边缘卷边残余与昨夜膜缘纹理相同，背景街道普通正常。",
+  "scene_prompt_sha256": "1e6c4a02b9ce5a1dd9a68a61238537b8b8e3f26dca3a8e39868c3a9202f068ab",
+  "frame_contract_sha256": "b38cda1e149eaac156a06bf359db5ad3d8f170dc9e8d44ca87c4cbb192a1612a",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\19.txt",
+  "package_sha256": "4c3a54db57128bc18db3d9dc5b12e507204ac9739f892afb0614daee6f3f095b",
+  "compiled_at": "2026-09-04T00:05:36+08:00"
+}

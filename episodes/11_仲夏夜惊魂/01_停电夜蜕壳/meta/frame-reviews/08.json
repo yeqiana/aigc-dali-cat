@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.1.0",
+  "frame": "08",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/08.png",
+  "asset_sha256": "1929e3c795654aa7d71d674d57c4ae21127a49f259e7cc3043dd3c72e7f17dba",
+  "story_sha256": "1036636614fc8208f3831078635a860b484927c133ac2eb497d9c2601c5b69b3",
+  "storyboard_sha256": "a6147f70d2de6e06c6f4fba6e48ae5dfc36a1634a2117bd9ea22b47fba75d9fd",
+  "visual_contract_sha256": "4807f63cdd5d52981eb635b44547e1c320ab573c58c192713d341fa4fed34dad",
+  "environment_frame_sha256": "af28fde797b4a022cf8a2471307c03f8f608e72743287a59b3dba1b2399a3da4",
+  "frame_directive_sha256": "865440c321e0f04ac1f5f37d3aa13b726c28f7141bb8a298188d32f10599688d",
+  "frame_contract_sha256": "9e86b453c31d849966bbbb505bb8f30bba062fb007cb7667351d3259bace413d",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "review_scope": "FULL_FRAME_SET",
+    "attempt": 2,
+    "reviewed_at": "2026-09-04T04:32:25+08:00",
+    "log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-critic-attempt-2.jsonl"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": false,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": false,
+    "caption_image_support": false,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true
+  },
+  "issue_codes": [
+    "ANOMALY_UNREADABLE",
+    "CAPTION_DEPENDENCY"
+  ],
+  "notes": "黄路沿卷起、右上墙面板撕开露灰底、橱窗玻璃倒影三者俱在，但未呈现'彼此隔开却同向卷起、各带甲片状分层'的联动动作；橱窗最外反光层是否参与卷边像素不可读，'不只这一面墙'的跨材质联动依赖字幕。",
+  "decision": "fail"
+}

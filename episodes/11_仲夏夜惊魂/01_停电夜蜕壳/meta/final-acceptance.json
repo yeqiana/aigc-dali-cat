@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "episode_id": "11-01",
+  "decision": "accept_current_as_final",
+  "basis": "direct_user_review",
+  "declared_at": "2026-09-04T11:16:49+08:00",
+  "user_statement": "用户明确声明：不返修了，接受当前资产为终稿、接受发布品携带已知缺陷，继续走完整个流程到 PUBLISH_READY；选定受控例外放行方案。",
+  "accepted_assets": true,
+  "revokes": false,
+  "known_defect_frames": ["03","06","07","08","09","10","13","14","16","17","20"],
+  "known_defects": {
+    "frame_semantic_review": "summary.passed=false，attempt-2 十帧 FAIL 细节见 meta/frame-semantic-review.json，记录原样保留不伪造。",
+    "fast_scout": "07/08/10/13/14/16/20 stale 或 REPAIR_NOW 未消除，作为已知缺陷接受。",
+    "binding": "03/08/18 为 09:50 promote 的返修候选，按当前 approved 重渲染并重绑定。"
+  },
+  "evidence_refs": [
+    "meta/frame-semantic-review.json",
+    "meta/frame-scout-summary.json",
+    "meta/production-ledger.json",
+    "meta/subtitle-layout-audit.json",
+    "meta/text-audit.json"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "13",
+  "scene_prompt": "手机从天桥斜拍停电夜长街（第一人称，只露手与手机边缘一角），街灯、栏杆、人行道与店面高度作尺度。返修点：对岸一长排楼墙、窗反光与招牌在同一高度整齐同向翘起并向街区中心收卷，像整张城市包装膜从边缘被揭开；远郊山脊线隆起成连贯卧兽背脊剪影，脊背带层层叠压鳞甲轮廓。禁止覆盖马路的塑料棚、围挡、工地、怪物脸或科幻光效。竖版4:5、手机夜拍实拍感、轻手持倾斜、暗部合理噪点、无文字无水印。",
+  "scene_prompt_sha256": "36b174e4405b8330bed35293efa3bf13826bc78b83576e190fb03545641337b6",
+  "frame_contract_sha256": "cc82d2c3e949d0f748ae4ceb92b6f95956bc57c0d661db0621cb940978a3a3ba",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\11_仲夏夜惊魂\\01_停电夜蜕壳\\prompts\\production\\13_repair.txt",
+  "package_sha256": "4f4ac1f11f9595afe99bb812077de83ca88d82c60ba8b5ece7ab6693683a2b69",
+  "compiled_at": "2026-09-04T01:35:45+08:00"
+}

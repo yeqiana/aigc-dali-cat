@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.1.0",
+  "frame": "18",
+  "risk_level": "HIGH",
+  "risk_score": 55,
+  "risk_tags": [
+    "impact_3_4",
+    "payoff"
+  ],
+  "frame_contract_sha256": "b6468c6e10747366207d6a7d18506d0c46686d325ccfdeff002b43a2d4bacb28",
+  "asset_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/18-21a7f751ccdb-a1.png",
+  "asset_sha256": "56aa7bc69892c58b561c01ff31d5fea3acf2f4b83a4e269462f9f1763e9951fa",
+  "scouted_at": "2026-09-04T05:03:23+08:00",
+  "final_critic_still_required": true,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "POV/环境合规：夜居家入户第一人称，仅露手臂局部无非法记录者，窗外居民楼逐层亮灯对应复电表面看似正常，前臂细红痕、黑色旅行包靠门、桌上白色充电线空置且无手机均在像素中成立。延审点：payoff核心碎片仅见一坨与粉色墙面饰面同材质的撕裂壁材，画面合同写明该块为图12撕下的浅黄甲片且甲片状分层清晰，单帧无法确认其即图12同一块、也无法排除被误读为普通墙皮掉落；碎片颜色(粉vs浅黄)与跨帧连续性需图12/图19邻帧比对后由终审定。",
+  "confidence": 0.6,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-scouts/18.jsonl"
+}
