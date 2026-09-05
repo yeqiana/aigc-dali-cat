@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "rules": {
+    "delete_frame_test": true,
+    "max_frames_without_strong_progress": 5,
+    "max_repeated_visual_without_new_information": 2
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "建立情侣继续旅行与衣着"
+    },
+    {
+      "frame": "02",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_SPACE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "建立窗外陡坡无站立面"
+    },
+    {
+      "frame": "03",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "出现另一屋袖口"
+    },
+    {
+      "frame": "04",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "关灯排除反光"
+    },
+    {
+      "frame": "05",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "倒影与对面动作分离"
+    },
+    {
+      "frame": "06",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "共同目击成立"
+    },
+    {
+      "frame": "07",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "木碗矮凳证明生活空间"
+    },
+    {
+      "frame": "08",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "女友擦雾触发"
+    },
+    {
+      "frame": "09",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "ANOMALY_ESCALATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "对面直接擦开雨膜"
+    },
+    {
+      "frame": "10",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "普通成人也在观察判断"
+    },
+    {
+      "frame": "11",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "手机亮光引发防御"
+    },
+    {
+      "frame": "12",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "REVERSAL",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "女友压低手机后对面缓和"
+    },
+    {
+      "frame": "13",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "孩子出现引入家庭风险"
+    },
+    {
+      "frame": "14",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "PAYOFF",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "成年人抱走孩子完成反转"
+    },
+    {
+      "frame": "15",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "对面主动盖窗终止接触"
+    },
+    {
+      "frame": "16",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "女友制止追拍"
+    },
+    {
+      "frame": "17",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "两人从争真假转向理解"
+    },
+    {
+      "frame": "18",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_SPACE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "次日外墙与陡坡复核"
+    },
+    {
+      "frame": "19",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "无掌印线头保留留白"
+    },
+    {
+      "frame": "20",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "PAYOFF",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "正常离开且男友放下取证"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "authority": "Story Build Voice Contract",
+  "voice_card": {
+    "person": "P01",
+    "role": "普通年轻人/当事人",
+    "age": 24,
+    "education_and_knowledge_boundary": "普通上班族日常常识；能排查反光、站位和窗外结构，但不知道异常机制与对面身份。",
+    "recording_reason": "用普通手机记录情侣自驾、住宿环境及供两人确认的异常片段，不以调查或传播为职业目的。",
+    "knows_now": "亲眼确认玻璃后存在会观察、害怕并保护孩子的普通人，现实窗外没有站立条件。",
+    "does_not_know": "不知道空间为何重叠、对面属于哪里、人物身份与年代，也不能裁决现实解释或异常解释。",
+    "stress_language": "短句、停顿、自我修正和生活化判断，不使用报告腔。",
+    "fear_language_change": "先说动作和位置，紧张时句子变短；高潮后从证明真假转向理解对方。",
+    "ordinary_vocabulary": "雨、窗、雾、袖子、手机、孩子、别拍了、该走了。",
+    "forbidden_technical_terms": "维度、量子、频率、时空裂缝、实验体、能量场、传送门。"
+  },
+  "subtitle_policy": {
+    "max_visible_chars": 48,
+    "continuous_three_frame_test": true,
+    "read_aloud_test": true,
+    "delete_subtitle_test": true,
+    "do_not_repeat_visible_anomaly": true,
+    "allow_short_fragments_and_self_correction": true
+  }
+}

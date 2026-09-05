@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "request_id": "20260904_224139_a7277304",
+  "created_at": "2026-09-04T22:41:39+08:00",
+  "mode": "full_auto",
+  "repository": {
+    "branch": "story",
+    "source": "user_explicit"
+  },
+  "topic": {
+    "title": "彼此的天上",
+    "raw": "彼此的天上"
+  },
+  "story_input": {
+    "mode": "core_constraints",
+    "raw": "读取 story 分支。全自动重新制作一篇题目：玻璃另一边的手。必须保留：\\n- 本篇属于《彼此的天上》EP002，承接EP001，不推翻系列Bible和人物关系弧\\n- 主角仍是二十多岁普通情侣，自驾旅行进入，不使用记者、调查员、研究人员等专业身份\\n- 全系列只保留一套空间局部重叠异常机制，不新增鬼、怪物、裂缝、维度解释或神秘组织\\n- 这集的核心必须从俗套的鬼手贴窗改成双向普通人接触：对面的人也在观察、理解和害怕我们\\n- 女友必须有一个普通、自然、可画的主动动作，对面要有直接回应，形成强动作-回应-后果传播核\\n- 高潮必须保留孩子想靠近，而对面成年人立刻把孩子拉走这一层，让观众意识到在对方视角里我们才是异常\\n- 不要用标准敲两下回两下的老套交流，可重新设计更生活化、更自然的动作回应\\n- 不要用线头等过强实体证据破坏留白，结尾以第二天现实空间复核和人物认知变化收束\\n- 默认20张，第一人称真实手机相册感，前3张必须同时建立旅行生活和直接可见异常\\n- 严格按仓库当前Story OS V2.5.1完成Story/Storyboard/Contracts/Visual Lock/Production/Review/Subtitles/Release/Final Snapshot，一直做到PUBLISH_READY，不要每一步询问我",
+    "constraints": [
+      "\\n- 本篇属于《彼此的天上》EP002，承接EP001，不推翻系列Bible和人物关系弧\\n- 主角仍是二十多岁普通情侣，自驾旅行进入，不使用记者、调查员、研究人员等专业身份\\n- 全系列只保留一套空间局部重叠异常机制，不新增鬼、怪物、裂缝、维度解释或神秘组织\\n- 这集的核心必须从俗套的鬼手贴窗改成双向普通人接触：对面的人也在观察、理解和害怕我们\\n- 女友必须有一个普通、自然、可画的主动动作，对面要有直接回应，形成强动作-回应-后果传播核\\n- 高潮必须保留孩子想靠近，而对面成年人立刻把孩子拉走这一层，让观众意识到在对方视角里我们才是异常\\n- 不要用标准敲两下回两下的老套交流，可重新设计更生活化、更自然的动作回应\\n- 不要用线头等过强实体证据破坏留白，结尾以第二天现实空间复核和人物认知变化收束\\n- 默认20张，第一人称真实手机相册感，前3张必须同时建立旅行生活和直接可见异常\\n- 严格按仓库当前Story OS V2.5.1完成Story/Storyboard/Contracts/Visual Lock/Production/Review/Subtitles/Release/Final Snapshot，一直做到PUBLISH_READY，不要每一步询问我"
+    ],
+    "rewrite_policy": "preserve_constraints_optimize_rest",
+    "preserve_core_intent": true,
+    "allow_structure_rewrite": true
+  },
+  "intent": {
+    "intent": "CREATE_EPISODE",
+    "source": "deterministic_rules",
+    "confidence": 1.0,
+    "reason_codes": [
+      "DEFAULT_CREATE"
+    ],
+    "normalized_request_sha256": "1de46979297db9b1ec029e815963c89262f9df627ad3d8532d57b38ed0ea305e",
+    "normalized_request": "读取 story 分支。全自动重新制作一篇题目:玻璃另一边的手。必须保留:\\n- 本篇属于《彼此的天上》EP002,承接EP001,不推翻系列Bible和人物关系弧\\n- 主角仍是二十多岁普通情侣,自驾旅行进入,不使用记者、调查员、研究人员等专业身份\\n- 全系列只保留一套空间局部重叠异常机制,不新增鬼、怪物、裂缝、维度解释或神秘组织\\n- 这集的核心必须从俗套的鬼手贴窗改成双向普通人接触:对面的人也在观察、理解和害怕我们\\n- 女友必须有一个普通、自然、可画的主动动作,对面要有直接回应,形成强动作-回应-后果传播核\\n- 高潮必须保留孩子想靠近,而对面成年人立刻把孩子拉走这一层,让观众意识到在对方视角里我们才是异常\\n- 不要用标准敲两下回两下的老套交流,可重新设计更生活化、更自然的动作回应\\n- 不要用线头等过强实体证据破坏留白,结尾以第二天现实空间复核和人物认知变化收束\\n- 默认20张,第一人称真实手机相册感,前3张必须同时建立旅行生活和直接可见异常\\n- 严格按仓库当前Story OS V2.5.1完成Story/Storyboard/Contracts/Visual Lock/Production/Review/Subtitles/Release/Final Snapshot,一直做到PUBLISH_READY,不要每一步询问我",
+    "requires_llm_rewrite": false,
+    "requires_clarification": false
+  },
+  "creative_hints": [],
+  "image_model": "gpt-image-2",
+  "image_quality": "high",
+  "image": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "source": "system_default",
+    "strict_model": false,
+    "quality": "high"
+  },
+  "runtime": {
+    "execution_mode": "dag",
+    "continuous_execution": true,
+    "resume": true,
+    "max_image_workers": 3,
+    "fail_soft": true,
+    "incremental_reuse": true
+  },
+  "delivery": {
+    "mode": "auto",
+    "zip_required_for_completion": false
+  },
+  "user_intent": {
+    "full_auto_authorized": true,
+    "allow_story_strengthening": true,
+    "allow_story_rewrite": true,
+    "ask_before_each_step": false
+  },
+  "provenance": {
+    "source": "natural_language",
+    "original_request": "读取 story 分支。全自动重新制作一篇题目：玻璃另一边的手。必须保留：\\n- 本篇属于《彼此的天上》EP002，承接EP001，不推翻系列Bible和人物关系弧\\n- 主角仍是二十多岁普通情侣，自驾旅行进入，不使用记者、调查员、研究人员等专业身份\\n- 全系列只保留一套空间局部重叠异常机制，不新增鬼、怪物、裂缝、维度解释或神秘组织\\n- 这集的核心必须从俗套的鬼手贴窗改成双向普通人接触：对面的人也在观察、理解和害怕我们\\n- 女友必须有一个普通、自然、可画的主动动作，对面要有直接回应，形成强动作-回应-后果传播核\\n- 高潮必须保留孩子想靠近，而对面成年人立刻把孩子拉走这一层，让观众意识到在对方视角里我们才是异常\\n- 不要用标准敲两下回两下的老套交流，可重新设计更生活化、更自然的动作回应\\n- 不要用线头等过强实体证据破坏留白，结尾以第二天现实空间复核和人物认知变化收束\\n- 默认20张，第一人称真实手机相册感，前3张必须同时建立旅行生活和直接可见异常\\n- 严格按仓库当前Story OS V2.5.1完成Story/Storyboard/Contracts/Visual Lock/Production/Review/Subtitles/Release/Final Snapshot，一直做到PUBLISH_READY，不要每一步询问我"
+  }
+}

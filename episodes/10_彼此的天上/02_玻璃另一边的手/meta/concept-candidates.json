@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.5.1",
+  "creative_doctrine": "概念不要克制，镜头必须真实；真实性约束怎么拍，不限制发生什么。",
+  "candidates": [
+    {
+      "id": "C01",
+      "title": "玻璃另一边的手",
+      "one_line_hook": "女友擦开民宿窗雾，对面普通人也擦开玻璃观察她，最后把想靠近的孩子抱走。",
+      "concept_class": "双向普通人观察",
+      "anomaly_ceiling": {
+        "initial": "悬崖外出现另一间屋",
+        "middle": "擦雾、避光确认双方会害怕",
+        "climax": "成年人抱走孩子并遮窗"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "错位半圆里两张普通人的脸互看",
+          "why_stop": "空间矛盾与双向注视"
+        },
+        "mid": {
+          "visual": "手机亮光使对面举布防御",
+          "why_stop": "动作因果直接"
+        },
+        "climax": {
+          "visual": "孩子伸手却被大人抱走",
+          "why_stop": "家庭保护完成反转"
+        }
+      },
+      "discussion_question": "哪一边才是异常？"
+    },
+    {
+      "id": "C02",
+      "title": "窗上的晚饭",
+      "one_line_hook": "玻璃后出现另一家人的饭桌，我们摆下外卖时，对面把孩子的碗挪远。",
+      "concept_class": "双空间生活叠合",
+      "anomaly_ceiling": {
+        "initial": "悬崖位置出现饭桌",
+        "middle": "两边饭桌动作引发避让",
+        "climax": "一家人搬桌离窗"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "现代外卖与木碗隔窗并置",
+          "why_stop": "普通生活冲突"
+        },
+        "mid": {
+          "visual": "女友递水，对面挪走孩子的碗",
+          "why_stop": "日常动作可转述"
+        },
+        "climax": {
+          "visual": "全家抬桌撤离",
+          "why_stop": "整体撤退有后果"
+        }
+      },
+      "discussion_question": "他们怕的是我们还是食物？"
+    },
+    {
+      "id": "C03",
+      "title": "镜子里多出的房间",
+      "one_line_hook": "浴室镜子多出另一间有人洗漱的屋，女友擦镜时，对面把孩子拉离镜面。",
+      "concept_class": "镜面局部重叠",
+      "anomaly_ceiling": {
+        "initial": "镜中背景错成另一屋",
+        "middle": "双方擦水汽确认动作不同",
+        "climax": "成年人抱走孩子并盖镜"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "同一镜面容纳两间屋",
+          "why_stop": "空间错位直观"
+        },
+        "mid": {
+          "visual": "两只手擦出错位透明区",
+          "why_stop": "回应无需字幕"
+        },
+        "climax": {
+          "visual": "孩子被抱走、镜面被盖",
+          "why_stop": "保护动作完成反转"
+        }
+      },
+      "discussion_question": "镜子反射的是谁？"
+    },
+    {
+      "id": "C04",
+      "title": "他们也在拍窗外",
+      "one_line_hook": "我们举手机拍对面，对方举磨亮金属观察我们，最后为保护孩子放弃记录。",
+      "concept_class": "双向记录误读",
+      "anomaly_ceiling": {
+        "initial": "对面举反光物观察",
+        "middle": "手机与金属反光互相刺激",
+        "climax": "对面丢下物件抱走孩子"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "手机光与粗糙反光隔窗对峙",
+          "why_stop": "双向记录概念强"
+        },
+        "mid": {
+          "visual": "女友压低手机，对面也放低金属",
+          "why_stop": "避让动作自然"
+        },
+        "climax": {
+          "visual": "孩子靠近后物件落地",
+          "why_stop": "选择与代价可见"
+        }
+      },
+      "discussion_question": "证据和家人为何都选后者？"
+    },
+    {
+      "id": "C05",
+      "title": "玻璃后的雨没停",
+      "one_line_hook": "我们这边雨刚停，对面仍在下雨；女友擦雾后，对面大人回应并抱走孩子。",
+      "concept_class": "天气错位接触",
+      "anomaly_ceiling": {
+        "initial": "同窗两侧雨态不同",
+        "middle": "擦痕暴露另一间屋",
+        "climax": "粗布封窗后雨态恢复"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "静水珠与雨线同窗并存",
+          "why_stop": "物理矛盾强"
+        },
+        "mid": {
+          "visual": "两侧擦痕出现在不同水层",
+          "why_stop": "材质运动清楚"
+        },
+        "climax": {
+          "visual": "抱走孩子后布压住雨幕",
+          "why_stop": "天气与动作共同封口"
+        }
+      },
+      "discussion_question": "连接的是房间还是一场雨？"
+    },
+    {
+      "id": "C06",
+      "title": "窗外有人收衣服",
+      "one_line_hook": "无法站人的窗外有人收湿衣，女友挪开袖口后，对面立即护住孩子。",
+      "concept_class": "生活动作错位",
+      "anomaly_ceiling": {
+        "initial": "悬崖外出现湿衣和手",
+        "middle": "两侧处理湿衣互相回应",
+        "climax": "孩子伸手后被抱走"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "现代卫衣与粗织布重叠",
+          "why_stop": "生活材质对照"
+        },
+        "mid": {
+          "visual": "女友挪袖，对面收布",
+          "why_stop": "非暗号式回应"
+        },
+        "climax": {
+          "visual": "成年人护孩封窗",
+          "why_stop": "劳动变成保护动作"
+        }
+      },
+      "discussion_question": "他们把我们的衣服看成什么？"
+    },
+    {
+      "id": "C07",
+      "title": "住在悬崖外的人",
+      "one_line_hook": "白天窗外是陡坡，夜里另一家人在玻璃后生活；我们退一步，他们也退一步。",
+      "concept_class": "局部空间重叠",
+      "anomaly_ceiling": {
+        "initial": "陡坡位置出现室内",
+        "middle": "关灯换位排除倒影",
+        "climax": "一家人整体退离窗边"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "白天陡坡与夜间室内冲突",
+          "why_stop": "前后对照易懂"
+        },
+        "mid": {
+          "visual": "双方带着同伴后退",
+          "why_stop": "群体避让强化害怕"
+        },
+        "climax": {
+          "visual": "粗布盖窗恢复悬崖",
+          "why_stop": "复核产生余味"
+        }
+      },
+      "discussion_question": "他们是否也把我们挂在天上？"
+    },
+    {
+      "id": "C08",
+      "title": "孩子先看见了我们",
+      "one_line_hook": "对面孩子先从雨玻璃后发现女友，大人循着视线看过来，最后把孩子拉走。",
+      "concept_class": "家庭视线链",
+      "anomaly_ceiling": {
+        "initial": "儿童小手指向我们",
+        "middle": "成人循视线擦开玻璃",
+        "climax": "判断危险后抱走孩子"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "孩子的手指向镜头外女友",
+          "why_stop": "被看见感强"
+        },
+        "mid": {
+          "visual": "女友擦雾，成人顺势回应",
+          "why_stop": "视线链自然"
+        },
+        "climax": {
+          "visual": "孩子靠近即被抱走",
+          "why_stop": "反转集中"
+        }
+      },
+      "discussion_question": "究竟是谁先把谁当怪物？"
+    }
+  ]
+}

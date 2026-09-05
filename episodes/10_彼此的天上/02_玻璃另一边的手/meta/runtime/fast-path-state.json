@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "module_version": "2.5.1",
+  "resume_capsule": "meta/runtime/resume-capsule.json",
+  "runtime_step": "CREATIVE_STORY",
+  "capability_cache_fresh": true,
+  "execution_capsule_compiled": true,
+  "performance_slo": {
+    "health": "UNKNOWN",
+    "active_wall_seconds": null,
+    "gate": false
+  },
+  "fast_path_policy": "resume capsule first; no broad rescan while source SHA is unchanged"
+}

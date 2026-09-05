@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "source_tags": [
+    "modern_2020s",
+    "travel",
+    "village_home",
+    "川西山谷小镇普通民宿"
+  ],
+  "selected": [
+    {
+      "id": "CAPTURE_PHONE_REALISM",
+      "type": "capture_descriptor",
+      "path": "library/capture/capture-presets.json",
+      "tags": [
+        "modern_2020s",
+        "phone",
+        "first_person",
+        "realistic"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.2,
+      "match_score": 1
+    },
+    {
+      "id": "ERA_MODERN_2020S_YOUTH",
+      "type": "character_era_descriptor",
+      "path": "library/characters/era-presets.json",
+      "tags": [
+        "modern_2020s",
+        "young_people",
+        "ordinary",
+        "smartphone"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0,
+      "match_score": 1
+    },
+    {
+      "id": "LOC_NORTHWEST_VILLAGE",
+      "type": "location_descriptor",
+      "path": "library/locations/scene-presets.json",
+      "tags": [
+        "village_home",
+        "西北农村",
+        "return_home",
+        "county_town"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0,
+      "match_score": 1
+    }
+  ],
+  "policy": {
+    "reference_only": true,
+    "reuse_final_episode_images": false
+  },
+  "cache_hit": false
+}

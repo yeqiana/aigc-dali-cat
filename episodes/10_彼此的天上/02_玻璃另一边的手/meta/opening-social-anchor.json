@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "applicable": true,
+  "mode": "vehicle_selfie",
+  "reason": "Frame 01用副驾前置随手自拍建立情侣关系、灰色系衣着和继续自驾的生活状态。",
+  "exception_reason": "",
+  "opening_frames": [
+    {
+      "frame": "01",
+      "selfie": true,
+      "location_type": "vehicle",
+      "people_visible": 2,
+      "relationship_anchor": true,
+      "clothing_anchor_visible": true,
+      "natural_unpolished_capture": true,
+      "anomaly_level": "none",
+      "notes": "P02副驾举手机，P01半身与方向盘入镜；轻微歪斜、雨刷掠过。"
+    }
+  ],
+  "rules": {
+    "preferred_frame_range": [
+      1,
+      2
+    ],
+    "preferred_contexts": [
+      "vehicle",
+      "destination_checkin"
+    ],
+    "selfie_required_when_applicable": true,
+    "minimum_people_visible": 2,
+    "establish_relationship_before_anomaly": true,
+    "strong_anomaly_forbidden_in_opening_anchor": true,
+    "commercial_or_staged_group_photo_forbidden": true,
+    "allow_exception_with_reason": true
+  }
+}

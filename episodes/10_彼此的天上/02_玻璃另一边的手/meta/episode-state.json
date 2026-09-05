@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.5.1",
+  "episode_id": "10-02",
+  "series": "10_彼此的天上",
+  "title": "玻璃另一边的手",
+  "current_state": "IDEA_LOCKED",
+  "updated_at": "2026-09-04T22:17:22+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-04T22:17:22+08:00",
+      "note": "EP002 V2.5.1正式重制接入：按系列Bible与当前Story OS重写，保留双向普通人接触内核，降低鬼手俗套感"
+    }
+  ]
+}

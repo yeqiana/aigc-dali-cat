@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "note": "Performance evidence only; NOT a stage source.",
+  "runs": [
+    {
+      "run_id": "1788532915-codex",
+      "runtime": "CODEX",
+      "mode": "run",
+      "started_at": "2026-09-04T22:41:55+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.234,
+          "recorded_at": "2026-09-04T22:41:56+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "FAILED",
+          "elapsed_seconds": 0.234,
+          "recorded_at": "2026-09-04T22:41:56+08:00",
+          "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+        }
+      ],
+      "status": "BLOCKED",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 1.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.532
+      },
+      "finished_at": "2026-09-04T22:41:56+08:00",
+      "total_seconds": 1.063,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.234,
+          "recorded_at": "2026-09-04T22:41:56+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "FAILED",
+          "elapsed_seconds": 0.234,
+          "recorded_at": "2026-09-04T22:41:56+08:00",
+          "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+        }
+      ]
+    },
+    {
+      "run_id": "1788533003-codex",
+      "runtime": "CODEX",
+      "mode": "resume",
+      "started_at": "2026-09-04T22:43:23+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.219,
+          "recorded_at": "2026-09-04T22:43:24+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "FAILED",
+          "elapsed_seconds": 0.297,
+          "recorded_at": "2026-09-04T22:43:24+08:00",
+          "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+        }
+      ],
+      "status": "BLOCKED",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 1.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.484
+      },
+      "finished_at": "2026-09-04T22:43:24+08:00",
+      "total_seconds": 1.047,
+      "slowest_steps": [
+        {
+          "step": "CREATIVE_STORY",
+          "status": "FAILED",
+          "elapsed_seconds": 0.297,
+          "recorded_at": "2026-09-04T22:43:24+08:00",
+          "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+        },
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.219,
+          "recorded_at": "2026-09-04T22:43:24+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        }
+      ]
+    },
+    {
+      "run_id": "1788533049-codex",
+      "runtime": "CODEX",
+      "mode": "resume",
+      "started_at": "2026-09-04T22:44:09+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.25,
+          "recorded_at": "2026-09-04T22:44:09+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "FAILED",
+          "elapsed_seconds": 0.281,
+          "recorded_at": "2026-09-04T22:44:10+08:00",
+          "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+        }
+      ],
+      "status": "BLOCKED",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 1.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.469
+      },
+      "finished_at": "2026-09-04T22:44:10+08:00",
+      "total_seconds": 1.125,
+      "slowest_steps": [
+        {
+          "step": "CREATIVE_STORY",
+          "status": "FAILED",
+          "elapsed_seconds": 0.281,
+          "recorded_at": "2026-09-04T22:44:10+08:00",
+          "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+        },
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.25,
+          "recorded_at": "2026-09-04T22:44:09+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        }
+      ]
+    },
+    {
+      "run_id": "1788533167-codex",
+      "runtime": "CODEX",
+      "mode": "resume",
+      "started_at": "2026-09-04T22:46:07+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.25,
+          "recorded_at": "2026-09-04T22:46:08+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "FAILED",
+          "elapsed_seconds": 47.703,
+          "recorded_at": "2026-09-04T22:46:56+08:00",
+          "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+        }
+      ],
+      "status": "BLOCKED",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 49.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.0214
+      },
+      "finished_at": "2026-09-04T22:46:56+08:00",
+      "total_seconds": 48.5,
+      "slowest_steps": [
+        {
+          "step": "CREATIVE_STORY",
+          "status": "FAILED",
+          "elapsed_seconds": 47.703,
+          "recorded_at": "2026-09-04T22:46:56+08:00",
+          "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+        },
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.25,
+          "recorded_at": "2026-09-04T22:46:08+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        }
+      ]
+    },
+    {
+      "run_id": "1788533265-codex",
+      "runtime": "CODEX",
+      "mode": "resume",
+      "started_at": "2026-09-04T22:47:45+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.234,
+          "recorded_at": "2026-09-04T22:47:45+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "BLOCKED",
+          "elapsed_seconds": 116.078,
+          "recorded_at": "2026-09-04T22:49:42+08:00",
+          "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl\nCHARACTER CONTRACT FAIL\ncharacter contract status must be LOCKED before Story Lock\nNO-ANOMALY TEST must be rechecked_against_final_story=true before Story Lock"
+        }
+      ],
+      "status": "BLOCKED",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 117.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.0059
+      },
+      "finished_at": "2026-09-04T22:49:42+08:00",
+      "total_seconds": 116.875,
+      "slowest_steps": [
+        {
+          "step": "CREATIVE_STORY",
+          "status": "BLOCKED",
+          "elapsed_seconds": 116.078,
+          "recorded_at": "2026-09-04T22:49:42+08:00",
+          "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl\nCHARACTER CONTRACT FAIL\ncharacter contract status must be LOCKED before Story Lock\nNO-ANOMALY TEST must be rechecked_against_final_story=true before Story Lock"
+        },
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.234,
+          "recorded_at": "2026-09-04T22:47:45+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        }
+      ]
+    },
+    {
+      "run_id": "1788533461-codex",
+      "runtime": "CODEX",
+      "mode": "resume",
+      "started_at": "2026-09-04T22:51:01+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.234,
+          "recorded_at": "2026-09-04T22:51:02+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        }
+      ],
+      "status": "RUNNING",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 1.307,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.8209
+      }
+    }
+  ],
+  "updated_at": "2026-09-04T22:51:02+08:00",
+  "performance_budget_updated_at": "2026-09-04T22:51:02+08:00",
+  "active_run_id": "1788533461-codex"
+}

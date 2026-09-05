@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "profile_version": 2,
+  "director_upgrade_v2": true,
+  "enabled": true,
+  "enabled_at": "2026-09-04T22:41:56+08:00",
+  "not_episode_stage": true,
+  "legacy_auto_migration": false,
+  "requirements": {
+    "story": [
+      "voice_contract",
+      "storyboard_density_delete_test",
+      "opening_social_anchor",
+      "character_visual_contract",
+      "shot_progression_gate"
+    ],
+    "preimage": [
+      "capture_event_contract",
+      "persistent_world_state",
+      "temporal_continuity",
+      "scene_aware_wardrobe"
+    ],
+    "production": [
+      "asset_version_lineage"
+    ],
+    "release": [
+      "text_audit",
+      "semantic_voice_review"
+    ],
+    "regression": [
+      "curated_golden_episode_registry"
+    ]
+  }
+}

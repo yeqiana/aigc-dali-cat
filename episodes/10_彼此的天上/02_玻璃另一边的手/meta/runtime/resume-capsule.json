@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "module_version": "2.5.1",
+  "generated_at": "2026-09-04T22:56:19+08:00",
+  "episode": "episodes/10_彼此的天上/02_玻璃另一边的手",
+  "current_state": "IDEA_LOCKED",
+  "next_target": "STORYBOARD_LOCKED",
+  "runtime_step": "CREATIVE_STORY",
+  "source_fingerprint": "0a16d03be93dca8f37a225ffd7c2ab21c6ceab37b0d52be041f7bc981c245b5d",
+  "source_files": [
+    {
+      "path": "meta/episode-state.json",
+      "sha256": "f51b37a28110d7546cb02feef6e1a69ed293d3d21fafa5096b0af2d44897b88f"
+    },
+    {
+      "path": "meta/production-ledger.json",
+      "sha256": null
+    },
+    {
+      "path": "meta/production-queue.json",
+      "sha256": null
+    },
+    {
+      "path": "meta/runtime-request.json",
+      "sha256": "fdae99d92866df4454adfa708f346ebdc412116913161d2089df1393a498fe94"
+    },
+    {
+      "path": "meta/story-gates.json",
+      "sha256": "22359c740c67d36f1095ee318c11c04af1f7e375d3aed29e9e92a46b752af31a"
+    },
+    {
+      "path": "meta/runtime-checkpoint.json",
+      "sha256": "42c0fa3a3225e1b77b8dddde3dd4f27b739398f48b406e2f0d10c393a1e882f5"
+    },
+    {
+      "path": "meta/final-acceptance.json",
+      "sha256": null
+    }
+  ],
+  "ledger": {
+    "frame_count": 0,
+    "status_counts": {},
+    "blocking_frames": [],
+    "tech_retry_frames": [],
+    "ready_frames": []
+  },
+  "queue_status_counts": {},
+  "runtime_capabilities": {
+    "schema_version": 1,
+    "module_version": "2.5.1",
+    "generated_at": "2026-09-04T22:41:55+08:00",
+    "expires_after_seconds": 21600,
+    "platform": "nt",
+    "codex_path": "C:\\Users\\79873\\AppData\\Local\\OpenAI\\Codex\\bin\\codex.EXE",
+    "text_worker": "available",
+    "vision_review": "unverified",
+    "image_generation_route": "unknown",
+    "sandbox_risk": "windows_1385_possible",
+    "source": "cheap_auto_detect_no_model_probe",
+    "note": "Set/record vision_review=verified only after a real pixel-vision probe succeeds."
+  },
+  "next_actions": [
+    "continue only the next canonical stage"
+  ],
+  "read_policy": "Read this capsule first after context loss. Do not broad-rescan repository authority unless a listed SHA changed, a required detail is missing, or a gate reports drift.",
+  "authority_policy": "Derived cache only; source authority always wins."
+}

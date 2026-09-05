@@ -1,0 +1,125 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.0",
+  "last_completed": "RUNTIME_INITIALIZED",
+  "next_action": "READ_EPISODE_STATE",
+  "locked_frames": [],
+  "failed_frames": [],
+  "step_runs": [
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "18099f20c8d4eb343431c958fafcb7a01c305049908a2c63e46e91ddde7bdf47",
+      "output_hash": "768bb0182e27357ab6494e7467b5d1cd653c0804d55919dffe0271b6714dd1a8",
+      "attempt": 1,
+      "started_at": null,
+      "finished_at": "2026-09-04T22:41:56+08:00",
+      "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "FAILED",
+      "input_hash": "4d115bb6c7ded0eb0ec2eb819348945b61194a5d07d85b5233d17379d357d414",
+      "output_hash": "4a96c2d770c28c2d802add8c8201a1785382496122f0c1e1133ba2f11c6e4838",
+      "attempt": 1,
+      "started_at": null,
+      "finished_at": "2026-09-04T22:41:56+08:00",
+      "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "c1f8683639fd4becadd1f7be700c874da0aa18e02487b58df5fae331bba560e2",
+      "output_hash": "bd4ecee6d1baa9e1e04a1c2ce43e649d1808a78854a7ed3210e66297d8737bf0",
+      "attempt": 2,
+      "started_at": null,
+      "finished_at": "2026-09-04T22:43:24+08:00",
+      "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "FAILED",
+      "input_hash": "4d115bb6c7ded0eb0ec2eb819348945b61194a5d07d85b5233d17379d357d414",
+      "output_hash": "4a96c2d770c28c2d802add8c8201a1785382496122f0c1e1133ba2f11c6e4838",
+      "attempt": 2,
+      "started_at": null,
+      "finished_at": "2026-09-04T22:43:24+08:00",
+      "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "0a9c701ac49cc4c45ddc5f7bec55ac1c825f9b8e06f1378a827e590ec9abd988",
+      "output_hash": "05ac14ca3e30dd7761ba600c4a4e5d9ab811b33196b17807a20d146ab6f43c7b",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-04T22:44:09+08:00",
+      "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "FAILED",
+      "input_hash": "4d115bb6c7ded0eb0ec2eb819348945b61194a5d07d85b5233d17379d357d414",
+      "output_hash": "4a96c2d770c28c2d802add8c8201a1785382496122f0c1e1133ba2f11c6e4838",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-04T22:44:09+08:00",
+      "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "c46411f7226c14edff82b94d91f3a2f08f578f2255da2f0d74f1d2a0bcf41aa9",
+      "output_hash": "fdcc6c625a83239ff14b75eb0f8e8e7396ec26719ddad7e1884e1e61402261a8",
+      "attempt": 4,
+      "started_at": null,
+      "finished_at": "2026-09-04T22:46:08+08:00",
+      "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "FAILED",
+      "input_hash": "4d115bb6c7ded0eb0ec2eb819348945b61194a5d07d85b5233d17379d357d414",
+      "output_hash": "4a96c2d770c28c2d802add8c8201a1785382496122f0c1e1133ba2f11c6e4838",
+      "attempt": 4,
+      "started_at": null,
+      "finished_at": "2026-09-04T22:46:56+08:00",
+      "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "db6d91c35f92db84bbbd8cadd6bd5f3deee222cda4ebfca7a0d44a32b62957fb",
+      "output_hash": "1631c00b38278c940388d6072ea745056fd219df1fad28c09155fbce367a2318",
+      "attempt": 5,
+      "started_at": null,
+      "finished_at": "2026-09-04T22:47:45+08:00",
+      "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "BLOCKED",
+      "input_hash": "4d115bb6c7ded0eb0ec2eb819348945b61194a5d07d85b5233d17379d357d414",
+      "output_hash": "4a96c2d770c28c2d802add8c8201a1785382496122f0c1e1133ba2f11c6e4838",
+      "attempt": 5,
+      "started_at": null,
+      "finished_at": "2026-09-04T22:49:42+08:00",
+      "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl\nCHARACTER CONTRACT FAIL\ncharacter contract status must be LOCKED before Story Lock\nNO-ANOMALY TEST must be rechecked_against_final_story=true before Story Lock"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "464908c4be317afc15a69d09d7af17df3d7e0ca7fff44e442f6d58cd0331b9f0",
+      "output_hash": "248335b9ab97d4652a5bac1c4ce361a484433afe3fd6e876d16817c4415007e4",
+      "attempt": 6,
+      "started_at": null,
+      "finished_at": "2026-09-04T22:51:02+08:00",
+      "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    }
+  ],
+  "note": "Recovery evidence only; NOT a stage source.",
+  "runtime": "CODEX",
+  "continuous_execution_authorized": true,
+  "approval_basis": "delegated_continuous_execution",
+  "updated_at": "2026-09-04T22:51:02+08:00"
+}

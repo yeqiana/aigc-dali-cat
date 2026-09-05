@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "module_version": "2.5.1",
+  "generated_at": "2026-09-04T22:41:55+08:00",
+  "expires_after_seconds": 21600,
+  "platform": "nt",
+  "codex_path": "C:\\Users\\79873\\AppData\\Local\\OpenAI\\Codex\\bin\\codex.EXE",
+  "text_worker": "available",
+  "vision_review": "unverified",
+  "image_generation_route": "unknown",
+  "sandbox_risk": "windows_1385_possible",
+  "source": "cheap_auto_detect_no_model_probe",
+  "note": "Set/record vision_review=verified only after a real pixel-vision probe succeeds."
+}

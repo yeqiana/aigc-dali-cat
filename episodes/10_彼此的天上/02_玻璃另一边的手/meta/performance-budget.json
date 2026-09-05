@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-04T22:51:02+08:00",
+  "run_id": "1788533461-codex",
+  "context": "INCREMENTAL_PLAN",
+  "elapsed_seconds": 1.307,
+  "elapsed_minutes": 0.02,
+  "performance_status": "WITHIN_BUDGET",
+  "budgets_seconds": {
+    "diagnostic": 3600,
+    "warning": 5400,
+    "exceeded": 7200,
+    "critical": 9000
+  },
+  "image_backend_resource_seconds": 0.0,
+  "generation_utilization_upper_bound": 0.0,
+  "generation_utilization_target_floor": 0.25,
+  "orchestration_bottleneck": false,
+  "classified_step_seconds": 0.234,
+  "unclassified_wall_seconds": 1.073,
+  "unclassified_wall_ratio": 0.8209
+}

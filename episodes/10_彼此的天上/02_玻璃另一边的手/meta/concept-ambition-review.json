@@ -1,0 +1,230 @@
+{
+  "candidates": [
+    {
+      "id": "C01",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 12,
+        "discussion_space": 9
+      },
+      "concept_voltage": 86,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "Cover has immediate two-world spatial contradiction and mutual gaze before captions.",
+        "Human action to abnormal response is clear: wiping/lighting the glass changes the other side's behavior.",
+        "Final reversal has discussion value because the other family treats our side as the danger."
+      ],
+      "risks": [
+        "The climax is emotionally readable but visually small compared with the spatial premise.",
+        "Child-being-carried-away payoff overlaps with several other candidates and may feel repeated."
+      ]
+    },
+    {
+      "id": "C02",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 15,
+        "hero_frame": 16,
+        "escalation_ceiling": 14,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 10,
+        "discussion_space": 8
+      },
+      "concept_voltage": 74,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": false
+      },
+      "strengths": [
+        "Modern takeout versus another family's meal table is a simple, retellable visual contrast.",
+        "Moving the child's bowl gives the ordinary action a visible abnormal response."
+      ],
+      "risks": [
+        "The escalation ceiling stays domestic and small.",
+        "The table-moving climax is legible but not a strong final image without captions."
+      ]
+    },
+    {
+      "id": "C03",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 17,
+        "escalation_ceiling": 14,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 10,
+        "discussion_space": 8
+      },
+      "concept_voltage": 77,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "A mirror holding two different rooms is immediately readable as an impossible capture.",
+        "Two hands clearing condensation gives a clean action-response chain."
+      ],
+      "risks": [
+        "Mirror anomalies are familiar, so novelty depends heavily on execution.",
+        "The covered-mirror ending is understandable but does not expand the world rule."
+      ]
+    },
+    {
+      "id": "C04",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 15,
+        "hero_frame": 16,
+        "escalation_ceiling": 13,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 73,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": false
+      },
+      "strengths": [
+        "Phone versus polished metal creates a compact dual-recording idea.",
+        "Dropping the recording object to protect the child gives a visible choice."
+      ],
+      "risks": [
+        "The anomaly is mostly mediated by props, so the world rule may read as social misunderstanding rather than a major event.",
+        "The final image needs context to explain why abandoning the object matters."
+      ]
+    },
+    {
+      "id": "C05",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 18,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 82,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "Two incompatible rain states on one window are a strong wordless hook.",
+        "Different water layers and wiping marks can make the mechanism visible in still frames."
+      ],
+      "risks": [
+        "The final cloth-over-rain image may collapse into a texture trick if scale references are weak.",
+        "Weather mismatch is conceptually strong but needs a sharper consequence than simply sealing the window."
+      ]
+    },
+    {
+      "id": "C06",
+      "ambition_band": "A2",
+      "scores": {
+        "one_line_hook": 13,
+        "hero_frame": 14,
+        "escalation_ceiling": 11,
+        "climax_visual_payoff": 9,
+        "mechanism_novelty": 8,
+        "discussion_space": 7
+      },
+      "concept_voltage": 62,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": false,
+        "curiosity_gap": false
+      },
+      "strengths": [
+        "Wet clothing outside an impossible window is easy to stage and read.",
+        "The ordinary handling of sleeves and cloth supports natural action-response causality."
+      ],
+      "risks": [
+        "The anomaly remains a small domestic displacement with limited escalation.",
+        "The payoff repeats the protective-child beat without adding a larger visual turn."
+      ]
+    },
+    {
+      "id": "C07",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 19,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 91,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "Day cliff versus night interior creates the strongest image-first contrast in the pool.",
+        "Group-to-group retreat makes fear mutual and readable without caption exposition.",
+        "The ending restores the cliff after the cloth cover, leaving a strong reality-recheck image."
+      ],
+      "risks": [
+        "Needs careful storyboard timing so the daytime cliff proof appears before the night-room reveal.",
+        "If staged too politely, the family retreat can feel like discovery-only escalation instead of a consequence."
+      ]
+    },
+    {
+      "id": "C08",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 16,
+        "escalation_ceiling": 13,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 9,
+        "discussion_space": 9
+      },
+      "concept_voltage": 74,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "The child's gaze chain is emotionally direct and easy to retell.",
+        "It frames the protagonist as the possible monster, which keeps comment debate open."
+      ],
+      "risks": [
+        "The concept depends more on social interpretation than on a fresh visual mechanism.",
+        "It repeats the same child-protection climax with less spatial ambition than C01 or C07."
+      ]
+    }
+  ],
+  "selected_id": "C07",
+  "selection_reason": "C07 has the strongest image-first ladder: a verifiable ordinary cliff, an impossible lived-in room occupying that space, mutual group retreat, and a final cloth-cover/revealed-cliff reality check. It scores above 80, passes stop-scroll, readable escalation, and curiosity-gap tests, and leaves the most useful discussion question: whether the other family also sees us as people hanging in the sky.",
+  "issue_codes": [],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.5.1",
+  "candidates_sha256": "9458d52c92018123d1f7823465f4eedad3c925f574f607d995cd74867b0c2449",
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "isolated_session": true,
+    "attempt": 1,
+    "reviewed_at": "2026-09-04T23:14:20+08:00",
+    "log": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/concept-ambition-critic-attempt-1.jsonl"
+  }
+}

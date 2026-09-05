@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.5.1",
+  "episode_id": "10-02",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_profile": "auto",
+    "override_reason": null
+  },
+  "story": {
+    "recent5_checked": true,
+    "four_locks_diff_count": 4,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [
+      3,
+      5,
+      7,
+      9,
+      11,
+      13,
+      14,
+      15
+    ],
+    "climax_frame": 14,
+    "payoff_frame": 20,
+    "semantic_review_path": "meta/story-semantic-review.json",
+    "recent5_evidence_note": "本地账号索引缺失，不伪造平台数据；仅完成系列与结构同质化核对，EP02与EP01的场景、触发、载体和高潮均不同。"
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": null,
+        "location": null,
+        "key_prop": null,
+        "wardrobe": null,
+        "weather_time": null
+      }
+    },
+    "authenticity_card": {
+      "story_era": null,
+      "location": null,
+      "photographer": null,
+      "shooting_reason": null,
+      "primary_capture": {
+        "id": null,
+        "device": null
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": null,
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": null,
+        "restricted": null,
+        "lost_control": null
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": null,
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": null
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "worst_condition": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "first_major_anomaly": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      }
+    },
+    "calibration_contact_sheet": {
+      "path": null,
+      "sha256": null
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": false,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "pending",
+    "continuity": "pending",
+    "visual_admission": "pending",
+    "subtitle": "pending",
+    "production": "pending",
+    "recommendation_fit": "pending",
+    "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 2,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true
+  }
+}

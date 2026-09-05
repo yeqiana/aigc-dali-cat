@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-04T22:49:42.263+08:00",
+  "diagnostic_only": true,
+  "stage_authority": false,
+  "latest_trace_id": "ST_bfa98a4d913841d2",
+  "event_count": 35,
+  "span_end_count": 10,
+  "status_counts": {
+    "PASS": 5,
+    "FAILED": 4,
+    "BLOCKED": 1
+  },
+  "elapsed_ms_by_category": {
+    "workflow_step": 167485.0
+  },
+  "slowest_spans": [
+    {
+      "name": "CREATIVE_STORY",
+      "category": "workflow_step",
+      "status": "BLOCKED",
+      "elapsed_ms": 116250.0,
+      "span_id": "SP_73a7d31f21cc4ea1"
+    },
+    {
+      "name": "CREATIVE_STORY",
+      "category": "workflow_step",
+      "status": "FAILED",
+      "elapsed_ms": 47875.0,
+      "span_id": "SP_d78ec978b8b24f18"
+    },
+    {
+      "name": "CREATIVE_STORY",
+      "category": "workflow_step",
+      "status": "FAILED",
+      "elapsed_ms": 500.0,
+      "span_id": "SP_44508eeeae1447e5"
+    },
+    {
+      "name": "CREATIVE_STORY",
+      "category": "workflow_step",
+      "status": "FAILED",
+      "elapsed_ms": 453.0,
+      "span_id": "SP_1278a8db3fc940fa"
+    },
+    {
+      "name": "INCREMENTAL_PLAN",
+      "category": "workflow_step",
+      "status": "PASS",
+      "elapsed_ms": 422.0,
+      "span_id": "SP_4fa353ef846a4793"
+    },
+    {
+      "name": "INCREMENTAL_PLAN",
+      "category": "workflow_step",
+      "status": "PASS",
+      "elapsed_ms": 407.0,
+      "span_id": "SP_40afe7f55c6c4125"
+    },
+    {
+      "name": "INCREMENTAL_PLAN",
+      "category": "workflow_step",
+      "status": "PASS",
+      "elapsed_ms": 406.0,
+      "span_id": "SP_f4948ead11544bd4"
+    },
+    {
+      "name": "CREATIVE_STORY",
+      "category": "workflow_step",
+      "status": "FAILED",
+      "elapsed_ms": 406.0,
+      "span_id": "SP_46f8233677214959"
+    },
+    {
+      "name": "INCREMENTAL_PLAN",
+      "category": "workflow_step",
+      "status": "PASS",
+      "elapsed_ms": 391.0,
+      "span_id": "SP_39dcf2e0661f41c4"
+    },
+    {
+      "name": "INCREMENTAL_PLAN",
+      "category": "workflow_step",
+      "status": "PASS",
+      "elapsed_ms": 375.0,
+      "span_id": "SP_3372af3aeffc40bb"
+    }
+  ]
+}
