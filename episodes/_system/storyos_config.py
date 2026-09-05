@@ -97,10 +97,10 @@ def validate(data: dict | None = None) -> list[str]:
     image_execution_runtime = str(get_path(cfg, "runtime.image_execution_runtime", "")).upper()
     if image_execution_runtime not in {"CODEX", "PRODUCT_RUNTIME", "AUTO"}:
         errors.append("runtime.image_execution_runtime must be CODEX, PRODUCT_RUNTIME or AUTO")
-    if get_path(cfg, "runtime.codex_image_controller_model") != "gpt-5.6-sol":
-        errors.append("runtime.codex_image_controller_model must be gpt-5.6-sol")
-    if get_path(cfg, "runtime.codex_image_reasoning_effort") != "high":
-        errors.append("runtime.codex_image_reasoning_effort must be high")
+    if get_path(cfg, "runtime.codex_image_controller_model") != "gpt-5.6-luna":
+        errors.append("runtime.codex_image_controller_model must be gpt-5.6-luna")
+    if get_path(cfg, "runtime.codex_image_reasoning_effort") != "medium":
+        errors.append("runtime.codex_image_reasoning_effort must be medium")
     if get_path(cfg, "runtime.local_codex_fallback") != "explicit_only":
         errors.append("runtime.local_codex_fallback must be explicit_only")
     for key in (

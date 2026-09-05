@@ -325,7 +325,7 @@ def main() -> int:
         assert 'save or copy the actual generated candidate to ./out.png' not in smoke_prompt
         assert provider_size(1080, 1350) == '1080x1350'
         assert provider_size(1080, 1920) == '1080x1920'
-        assert controller_args() == ['-m', 'gpt-5.6-sol', '-c', 'model_reasoning_effort="high"']
+        assert controller_args() == ['-m', 'gpt-5.6-luna', '-c', 'model_reasoning_effort="medium"']
         assert not valid_image(Path('__missing__'))
         print('CODEX SUBSCRIPTION IMAGE BACKEND SELF-TEST PASS')
         return 0

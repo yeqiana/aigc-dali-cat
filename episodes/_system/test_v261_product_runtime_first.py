@@ -68,8 +68,8 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         self.assertEqual(caps["effective_runtime"], "WORK")
         self.assertFalse(caps["local_codex_spawn_allowed"])
         self.assertEqual(caps["image_execution_runtime"], "CODEX")
-        self.assertEqual(caps["codex_image_controller_model"], "gpt-5.6-sol")
-        self.assertEqual(caps["codex_image_reasoning_effort"], "high")
+        self.assertEqual(caps["codex_image_controller_model"], "gpt-5.6-luna")
+        self.assertEqual(caps["codex_image_reasoning_effort"], "medium")
         self.assertTrue(caps["local_codex_image_spawn_allowed"])
 
     def test_codex_requires_explicit_runtime_or_explicit_call(self) -> None:
@@ -179,7 +179,7 @@ class ProductRuntimeFirstTests(unittest.TestCase):
     def test_codex_image_controller_is_sol_high(self) -> None:
         self.assertEqual(
             codex_subscription_image.controller_args(),
-            ['-m', 'gpt-5.6-sol', '-c', 'model_reasoning_effort="high"'],
+            ['-m', 'gpt-5.6-luna', '-c', 'model_reasoning_effort="medium"'],
         )
 
     def test_resource_selection_stale_guard_rebuilds_wrong_location(self) -> None:

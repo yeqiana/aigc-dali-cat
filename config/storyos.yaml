@@ -143,8 +143,8 @@ runtime:
   # 显式使用本机 Codex 图片能力；它不改变 preferred_runtime，也不授权 Codex full-auto。
   # 可用 STORY_OS_IMAGE_RUNTIME=CODEX|PRODUCT_RUNTIME|AUTO 临时覆盖。
   image_execution_runtime: CODEX
-  codex_image_controller_model: gpt-5.6-sol
-  codex_image_reasoning_effort: high
+  codex_image_controller_model: gpt-5.6-luna
+  codex_image_reasoning_effort: medium
   local_codex_fallback: explicit_only
   continuous_host_loop: true
   next_action_path: meta/runtime/next-action.json

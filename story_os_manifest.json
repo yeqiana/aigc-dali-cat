@@ -277,7 +277,7 @@
     "Missing user plot means auto_create; Story OS must author the story instead of asking for a plot.",
     "A rough user plot is a seed to strengthen and rewrite, not an automatic Story Lock.",
     "Image model defaults to gpt-image-2 when the user does not specify one.",
-    "Codex image execution uses gpt-5.6-sol with high reasoning as the controller while gpt-image-2/high remains the actual image payload model/quality.",
+    "Codex image execution uses gpt-5.6-luna with medium reasoning as the lightweight controller while gpt-image-2/high remains the actual image payload model/quality.",
     "Resource Selection must match resolver version, catalog SHA, source tags and explicit primary_place before any image generation; stale derived selection is rebuilt and generation fails closed if freshness cannot converge.",
     "The only Story OS platform version authority is story_os_manifest.json#platform_version; module_version, contract_version and platform_min_version remain independent compatibility metadata.",
     "An explicitly requested image model must not be silently substituted.",

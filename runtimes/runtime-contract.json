@@ -57,8 +57,8 @@
   "common_rules": {
     "default_runtime": "WORK",
     "default_image_execution_runtime": "CODEX",
-    "codex_image_controller_model": "gpt-5.6-sol",
-    "codex_image_reasoning_effort": "high",
+    "codex_image_controller_model": "gpt-5.6-luna",
+    "codex_image_reasoning_effort": "medium",
     "codex_image_payload_model": "gpt-image-2",
     "codex_image_payload_quality": "high",
     "image_execution_runtime_env": "STORY_OS_IMAGE_RUNTIME",

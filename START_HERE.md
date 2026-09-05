@@ -18,7 +18,7 @@ ChatGPT / Work + DevSpace
 → machine/evidence gates
 ```
 
-**本机存在 `codex.exe` 只代表“可用能力”，不再代表整个 Runtime=CODEX。** 当前默认 `runtime.preferred_runtime=WORK`，同时 `runtime.image_execution_runtime=CODEX`：只有正式图片生成/图片返修允许调用本地 Codex；Codex 图片控制模型固定 `gpt-5.6-sol` + `reasoning=high`，实际图片仍由 `gpt-image-2` + `quality=high` 生成。Story、PREIMAGE、Critic、Review、Gate、Release 仍由 WORK/产品运行时执行。需要整套 CODEX Runtime 时仍必须显式设置 `STORY_OS_RUNTIME=CODEX`。
+**本机存在 `codex.exe` 只代表“可用能力”，不再代表整个 Runtime=CODEX。** 当前默认 `runtime.preferred_runtime=WORK`，同时 `runtime.image_execution_runtime=CODEX`：只有正式图片生成/图片返修允许调用本地 Codex；Codex 图片控制模型固定 `gpt-5.6-luna` + `reasoning=medium`，实际图片仍由 `gpt-image-2` + `quality=high` 生成。Story、PREIMAGE、Critic、Review、Gate、Release 仍由 WORK/产品运行时执行。需要整套 CODEX Runtime 时仍必须显式设置 `STORY_OS_RUNTIME=CODEX`。
 
 Concept / Story / Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，均必须 fresh + SHA-bound。图片执行层可用 `STORY_OS_IMAGE_RUNTIME=CODEX|PRODUCT_RUNTIME|AUTO` 覆盖；只有显式选择 `PRODUCT_RUNTIME` 时，缺文件传输能力才返回 `HOST_ACTION_REQUIRED / HOST_WAIT`。Host Action 以 request_id 保存历史，Product Review 以 attempt-scoped request 保存历史。WORK `--full-auto` 必须进入统一 Runtime DAG 连续推进；`PREIMAGE_COMPILE` 是独立 Runtime 节点但不是第八个 Episode stage。每次宿主/审图动作后读取派生 `meta/runtime/next-action.json` 自动继续，不得因为正常 Host Action 再询问用户。Visual Lock baseline 与每个 Production Logical Batch 生成后都必须回 WORK 做 actual-pixel review，再放行后续生成。
 
