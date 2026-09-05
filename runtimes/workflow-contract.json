@@ -55,6 +55,9 @@
     "legacy_three_image_calibration_is_not_current_v21": true,
     "runtime_dag_v1_enabled": true,
     "runtime_dag_is_execution_only_not_stage_source": true,
+    "preimage_compile_is_runtime_node_not_episode_stage": true,
+    "next_action_runtime_hint_enabled": true,
+    "continuous_work_host_loop": true,
     "step_level_resume": true,
     "scoped_codex_workers": true,
     "warm_python_image_worker_pool": true,
@@ -201,6 +204,9 @@
     "codex_artifact_recovery_enabled": true,
     "provider_mapping_review_required": true,
     "codex_subscription_logical_batch_v242": true,
+    "codex_logical_batch_size": 5,
+    "codex_max_inflight_images": 3,
+    "codex_adaptive_concurrency": [3, 2, 1],
     "codex_logical_batch_partial_success_preserved": true,
     "codex_logical_batch_failed_only_retry": true,
     "codex_logical_batch_defer_scout_until_barrier": true,
@@ -271,9 +277,19 @@
       "cost": "EXPENSIVE",
       "parallel_group": "story_review"
     },
-    "VISUAL_LOCK": {
+    "PREIMAGE_COMPILE": {
       "depends_on": [
         "RESOLVED_FRAME_CONTRACT"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false,
+      "runtime_node_only": true,
+      "does_not_create_episode_stage": true,
+      "evidence": "meta/preproduction-handoff.json"
+    },
+    "VISUAL_LOCK": {
+      "depends_on": [
+        "PREIMAGE_COMPILE"
       ],
       "cost": "EXPENSIVE",
       "parallelizable": false,

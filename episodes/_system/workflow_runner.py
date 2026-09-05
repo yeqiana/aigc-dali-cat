@@ -28,6 +28,7 @@ import storyos_config
 import runtime_trace
 import request_router
 import product_runtime_adapter
+import next_action
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -93,26 +94,7 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         if errors: raise SystemExit("invalid runtime request: " + "; ".join(errors))
     runtime, reason = detect()
     run([sys.executable, SYSTEM / "runtime_checkpoint.py", "init", ep, "--runtime", runtime, "--full-auto"])
-    if runtime in {"WORK", "WEB"}:
-        mode = runtime_execution.effective_mode(ep)
-        host_request = product_runtime_adapter.build_request(
-            ep,
-            runtime=runtime,
-            mode=mode,
-            resume=resume,
-            request_data=request_data,
-            source="workflow_runner",
-        )
-        record_checkpoint_step(
-            ep,
-            "PRODUCT_RUNTIME_HANDOFF",
-            "HOST_WAIT" if host_request.get("status") != "COMPLETE" else "PASS",
-            0.0,
-            f"runtime={runtime} next_step={host_request.get('next_step')} local_codex_spawn_allowed=false",
-        )
-        product_runtime_adapter.print_request(host_request)
-        return 0 if host_request.get("status") == "COMPLETE" else product_runtime_adapter.HOST_ACTION_REQUIRED_RC
-    if runtime != "CODEX":
+    if runtime not in {"WORK", "WEB", "CODEX"}:
         raise SystemExit(f"unsupported runtime: {runtime}")
     run_id = perf.start_run(ep, runtime, "resume" if resume else "run")
     route_decision = request_router.route_episode(ep, request_data, write=True) if request_data else None
@@ -121,17 +103,20 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         runtime_trace.route_event(ep, route_decision)
     try:
         execution_mode = str(((request_data or {}).get("runtime") or {}).get("execution_mode") or "compat")
-        if execution_mode == "dag":
+        if runtime in {"WORK", "WEB"} or execution_mode == "dag":
             rc = runtime_dag.execute(ep, codex=codex, timeout=timeout, run_id=run_id, trace_id=trace_id)
             total = time.monotonic() - started
-            perf.finish_run(ep, run_id, "COMPLETE" if rc == 0 else "BLOCKED", total)
+            final_status = "COMPLETE" if rc == 0 else ("HOST_WAIT" if rc == product_runtime_adapter.HOST_ACTION_REQUIRED_RC else "BLOCKED")
+            perf.finish_run(ep, run_id, final_status, total)
             try: performance_guard_v211.observe(ep, run_id, context="DAG_FINISH")
             except Exception: pass
             try:
                 obs.collect(ep, write=True)
             except Exception:
                 pass
-            runtime_trace.finish_run(ep, trace_id, run_id, "COMPLETE" if rc == 0 else "BLOCKED", note="runtime_dag")
+            try: next_action.write(ep)
+            except Exception: pass
+            runtime_trace.finish_run(ep, trace_id, run_id, final_status, note="runtime_dag")
             return rc  # RUNTIME_DAG_V1
         t0 = time.monotonic()
         p = plan(ep)

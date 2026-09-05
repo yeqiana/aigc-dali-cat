@@ -54,6 +54,10 @@ __pycache__/
 # Episode meta intermediate review candidates (formal evidence lives in final files)
 episodes/**/meta/.*.candidate.json
 
+# Local opt-out marker for reference/image sets that live under episodes/ but are not Episodes.
+# Canonical discovery still requires meta/episode-state.json and excludes _system/_tests.
+episodes/**/.storyos-non-episode.json
+
 # Story OS local virtualenv / upgrade packages
 .story-os-venv/
 Story_OS_V2.0_OneClick_FullAuto_Upgrade_UTF8_FINAL/

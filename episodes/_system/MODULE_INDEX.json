@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "story_os_platform_source": "story_os_manifest.json#platform_version",
+  "purpose": "Bounded module map for agents. Read canonical modules first; legacy/test modules are not workflow entrypoints.",
+  "canonical_entrypoints": [
+    "story_os.py",
+    "workflow_runner.py",
+    "runtime_dag.py",
+    "next_action.py"
+  ],
+  "runtime": [
+    "runtime_router.py",
+    "product_runtime_adapter.py",
+    "product_review_adapter.py",
+    "runtime_checkpoint.py",
+    "runtime_trace.py",
+    "runtime_portability.py",
+    "episode_discovery.py"
+  ],
+  "preimage": [
+    "preproduction_handoff.py",
+    "resource_library.py",
+    "environment_contract.py",
+    "frame_contract.py",
+    "character_contract.py",
+    "character_visual_contract.py"
+  ],
+  "image_execution": [
+    "image_scheduler.py",
+    "batch_scheduler.py",
+    "codex_subscription_image.py",
+    "codex_logical_batch_worker.py",
+    "visual_lock_baseline_gate.py",
+    "production_batch_review.py"
+  ],
+  "formal_review": [
+    "story_review.py",
+    "visual_lock_v21.py",
+    "frame_semantic_review.py",
+    "release_preflight.py"
+  ],
+  "release": [
+    "final_candidate_snapshot.py",
+    "delegated_delivery.py",
+    "release_package.py"
+  ],
+  "data_health": [
+    "text_encoding_health.py",
+    "runtime_portability.py",
+    "episode_discovery.py"
+  ],
+  "legacy_or_migration_patterns": [
+    "*_v20*.py",
+    "*_v21*.py",
+    "*_v22*.py",
+    "migrate_*.py",
+    "visual_review_legacy.py",
+    "codex_auto_orchestrator.py"
+  ],
+  "test_patterns": [
+    "test_*.py"
+  ],
+  "agent_read_policy": "Start from canonical_entrypoints and the category required by next-action.json. Do not broad-read legacy/test modules unless a gate, migration, or regression requires them."
+}

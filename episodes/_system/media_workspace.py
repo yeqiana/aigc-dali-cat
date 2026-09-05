@@ -402,7 +402,8 @@ def restore(backup_raw: str) -> dict:
 
 
 def ensure_all_managed() -> list[str]:
-    eps = sorted({p.parent.parent for p in EPISODES.rglob("meta/episode-state.json")})
+    import episode_discovery
+    eps = episode_discovery.iter_episode_roots(EPISODES)
     for ep in eps:
         ensure_layout(ep)
         write_index(ep)

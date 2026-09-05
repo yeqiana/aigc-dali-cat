@@ -10,6 +10,7 @@ from pathlib import Path
 from contract_sync import collect_errors
 import storyos_config
 import runtime_log_policy
+import episode_discovery
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -27,8 +28,8 @@ def scan_episode_meta(issues):
     episodes = ROOT / "episodes"
     if not episodes.exists():
         return
-    for state_path in episodes.rglob("meta/episode-state.json"):
-        ep = state_path.parent.parent
+    for ep in episode_discovery.iter_episode_roots(episodes):
+        state_path = ep / "meta/episode-state.json"
         try:
             state = load_json(state_path)
         except Exception as e:

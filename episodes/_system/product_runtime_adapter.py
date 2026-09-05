@@ -18,14 +18,17 @@ import json
 from pathlib import Path
 from typing import Any
 
+import episode_performance
+import preproduction_handoff
+
 ROOT = Path(__file__).resolve().parents[2]
 REQUEST_REL = Path("meta/runtime/product-host-request.json")
 REQUEST_HISTORY_REL = Path("meta/runtime/host-requests")
 HOST_ACTION_REQUIRED_RC = 20
+STAGES = ("IDEA_LOCKED","STORYBOARD_LOCKED","VISUAL_CALIBRATED","PRODUCTION_PASSED","PUBLISH_READY","PUBLISHED","DATA_REVIEWED")
 
 STATE_TO_STEP = {
     "IDEA_LOCKED": ("CREATIVE_STORY", "STORYBOARD_LOCKED"),
-    "STORYBOARD_LOCKED": ("VISUAL_LOCK", "VISUAL_CALIBRATED"),
     "VISUAL_CALIBRATED": ("PRODUCTION", "PRODUCTION_PASSED"),
     "PRODUCTION_PASSED": ("RELEASE", "PUBLISH_READY"),
 }
@@ -55,10 +58,47 @@ def episode_state(ep: Path) -> str:
     return str(_read_json(path).get("current_state") or "") if path.is_file() else ""
 
 
+def _state_at_least(current: str, target: str) -> bool:
+    return current in STAGES and target in STAGES and STAGES.index(current) >= STAGES.index(target)
+
+
+def reconcile(ep: Path) -> dict | None:
+    """Finalize a stale current host pointer when canonical evidence already proves completion."""
+    current_path = ep / REQUEST_REL
+    if not current_path.is_file():
+        return None
+    current = _read_json(current_path)
+    if current.get("status") != "HOST_ACTION_REQUIRED":
+        return current
+    request_id = str(current.get("request_id") or "")
+    if not request_id:
+        return current
+    step = str(current.get("next_step") or "")
+    target = str(current.get("target_state") or "")
+    cur_state = episode_state(ep)
+    complete = bool(target and _state_at_least(cur_state, target))
+    if step == "PREIMAGE_COMPILE":
+        try:
+            complete = (ep / "meta/preproduction-handoff.json").is_file() and not preproduction_handoff.verify(ep)
+        except Exception:
+            complete = False
+    if complete:
+        return mark_complete(ep, request_id, result={"reconciled_from_canonical_evidence": True, "episode_state": cur_state, "step": step})
+    return current
+
+
 def next_host_step(ep: Path, mode: str = "full_auto") -> tuple[str, str | None]:
     state = episode_state(ep)
-    if mode == "preproduction_only" and state == "STORYBOARD_LOCKED":
-        return "PREIMAGE_COMPILE", None
+    if state == "STORYBOARD_LOCKED":
+        try:
+            handoff_valid = (ep / "meta/preproduction-handoff.json").is_file() and not preproduction_handoff.verify(ep)
+        except Exception:
+            handoff_valid = False
+        if not handoff_valid:
+            return "PREIMAGE_COMPILE", None
+        if mode == "preproduction_only":
+            return "COMPLETE", "STORYBOARD_LOCKED"
+        return "VISUAL_LOCK", "VISUAL_CALIBRATED"
     if state == "PUBLISH_READY":
         return "COMPLETE", "PUBLISH_READY"
     return STATE_TO_STEP.get(state, ("READ_EPISODE_STATE", None))
@@ -142,7 +182,12 @@ def build_request(
     }
     if request_data:
         data["runtime_request_id"] = request_data.get("request_id")
-    return _persist_request(ep, data, category="host")
+    stored = _persist_request(ep, data, category="host")
+    if stored.get("status") == "HOST_ACTION_REQUIRED":
+        episode_performance.safe_begin_named_span(
+            ep, f"HOST_ACTION_{step}", source=source,
+            metadata={"request_id": stored.get("request_id"), "runtime": runtime, "next_step": step})
+    return stored
 
 
 def build_image_request(
@@ -188,7 +233,11 @@ def build_image_request(
             "on_missing_file_transport": "pause as HOST_ACTION_REQUIRED; never fall back to local Codex",
         },
     }
-    return _persist_request(ep, data, category="image")
+    stored = _persist_request(ep, data, category="image")
+    episode_performance.safe_begin_named_span(
+        ep, "HOST_ACTION_IMAGE_GENERATION", source=source,
+        metadata={"request_id": stored.get("request_id"), "runtime": runtime, "count": len(items)})
+    return stored
 
 
 def mark_complete(ep: Path, request_id: str, *, result: dict | None = None) -> dict:
@@ -198,6 +247,8 @@ def mark_complete(ep: Path, request_id: str, *, result: dict | None = None) -> d
     data = _read_json(path)
     data["status"] = "FINALIZED"
     data["finalized_at"] = now()
+    span_name = "HOST_ACTION_IMAGE_GENERATION" if str(data.get("next_step") or "") == "IMAGE_GENERATION" else f"HOST_ACTION_{str(data.get('next_step') or 'UNKNOWN')}"
+    episode_performance.safe_end_named_span(ep, span_name, status="PASS", metadata={"request_id": request_id})
     if result is not None:
         data["result"] = result
     _write_json(path, data)
@@ -221,8 +272,11 @@ def print_request(data: dict) -> None:
 
 def self_test() -> None:
     assert HOST_ACTION_REQUIRED_RC == 20
+    assert _state_at_least("PUBLISH_READY", "STORYBOARD_LOCKED")
+    assert not _state_at_least("IDEA_LOCKED", "STORYBOARD_LOCKED")
     assert STATE_TO_STEP["IDEA_LOCKED"] == ("CREATIVE_STORY", "STORYBOARD_LOCKED")
     assert REQUEST_HISTORY_REL.as_posix() == "meta/runtime/host-requests"
+    assert next_host_step.__name__ == "next_host_step"
     print("PRODUCT RUNTIME ADAPTER V2.6.1.1 SELF-TEST PASS")
 
 

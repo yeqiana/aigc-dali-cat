@@ -7,6 +7,8 @@
 
 ## V2.6.1 Product Runtime First
 
+正常 Agent 恢复上下文时先读 `episodes/_system/MODULE_INDEX.json` 与 `meta/runtime/next-action.json`（若存在），不要默认广扫 `episodes/_system` 的 legacy/test 模块。
+
 默认 Runtime：`WORK`。
 
 ```text
@@ -18,7 +20,7 @@ ChatGPT / Work + DevSpace
 
 **本机存在 `codex.exe` 只代表“可用能力”，不再代表整个 Runtime=CODEX。** 当前默认 `runtime.preferred_runtime=WORK`，同时 `runtime.image_execution_runtime=CODEX`：只有正式图片生成/图片返修允许调用本地 Codex；Codex 图片控制模型固定 `gpt-5.6-sol` + `reasoning=high`，实际图片仍由 `gpt-image-2` + `quality=high` 生成。Story、PREIMAGE、Critic、Review、Gate、Release 仍由 WORK/产品运行时执行。需要整套 CODEX Runtime 时仍必须显式设置 `STORY_OS_RUNTIME=CODEX`。
 
-Concept / Story / Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，均必须 fresh + SHA-bound。图片执行层可用 `STORY_OS_IMAGE_RUNTIME=CODEX|PRODUCT_RUNTIME|AUTO` 覆盖；只有显式选择 `PRODUCT_RUNTIME` 时，缺文件传输能力才返回 `HOST_ACTION_REQUIRED / HOST_WAIT`。Host Action 以 request_id 保存历史，Product Review 以 attempt-scoped request 保存历史。
+Concept / Story / Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，均必须 fresh + SHA-bound。图片执行层可用 `STORY_OS_IMAGE_RUNTIME=CODEX|PRODUCT_RUNTIME|AUTO` 覆盖；只有显式选择 `PRODUCT_RUNTIME` 时，缺文件传输能力才返回 `HOST_ACTION_REQUIRED / HOST_WAIT`。Host Action 以 request_id 保存历史，Product Review 以 attempt-scoped request 保存历史。WORK `--full-auto` 必须进入统一 Runtime DAG 连续推进；`PREIMAGE_COMPILE` 是独立 Runtime 节点但不是第八个 Episode stage。每次宿主/审图动作后读取派生 `meta/runtime/next-action.json` 自动继续，不得因为正常 Host Action 再询问用户。Visual Lock baseline 与每个 Production Logical Batch 生成后都必须回 WORK 做 actual-pixel review，再放行后续生成。
 
 <!-- STORY_OS_V2_1_CONCEPT_BEGIN -->
 ## V2.1 概念野心与图像传播入口
@@ -419,7 +421,7 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 
 没有 `OPENAI_API_KEY` 时，Production Batch 正式走：
 
-`1 Story OS Batch -> 5 isolated Codex image workers in parallel`
+`1 Story OS Logical Batch = 5 frames; up to 3 isolated Codex image workers in flight`
 
 这是 Logical Batch，不是 Provider-native `n=5`：
 
@@ -427,9 +429,9 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 - `native_multi_image=false`
 - `single_http_request=false`
 - 不需要 API Key，使用本机 ChatGPT/Codex 登录态
-- 默认最多 5 个 Codex 图片 worker 同时在途
-- 无 API Key 时全局只允许 1 个 Logical Batch 在途，避免 2×5=10 个图片调用
-- 技术失败自适应 5→3→1，只重试失败帧
+- Logical Batch 仍按 5 帧管理，但最多 3 个 Codex 图片 worker 同时在途
+- 无 API Key 时全局只允许 1 个 Logical Batch 在途，避免多个 Logical Batch 叠加造成并发放大
+- 技术失败自适应 3→2→1，只重试失败帧
 - 成功帧永不因为同批其他帧技术失败而重生
 - Fast Scout 延迟到 5 帧原始生成 barrier terminal 后再执行
 <!-- STORY_OS_V242_CODEX_SUBSCRIPTION_BATCH_END -->

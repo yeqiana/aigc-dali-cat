@@ -77,6 +77,7 @@ def main():
     sub.add_parser("doctor")
     p = sub.add_parser("status"); p.add_argument("episode_dir")
     p = sub.add_parser("next"); p.add_argument("episode_dir")
+    p = sub.add_parser("next-action"); p.add_argument("episode_dir"); p.add_argument("--write", action="store_true")
     p = sub.add_parser("plan"); p.add_argument("episode_dir")
     p = sub.add_parser("performance"); p.add_argument("episode_dir")
     # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
@@ -106,6 +107,8 @@ def main():
     p = sub.add_parser("environment"); p.add_argument("environment_cmd", choices=["init", "verify", "resolve-frame", "show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("frame-contract"); p.add_argument("frame_contract_cmd", choices=["compile-all", "compile", "verify", "show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("visual-lock-v21"); p.add_argument("visual_lock_cmd", choices=["prepare", "bind-from-queue", "run-critic", "verify", "show-plan"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("baseline-review"); p.add_argument("baseline_cmd", choices=["prepare-review","run-critic","finalize-review","verify","status"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("batch-review"); p.add_argument("batch_review_cmd", choices=["prepare","finalize","pending"]); p.add_argument("episode_dir"); p.add_argument("batch_id", nargs="?"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("image-scheduler"); p.add_argument("scheduler_cmd", choices=["init", "add", "import-visual-lock", "import-batch", "plan", "run", "retry-tech", "show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("frame-scout"); p.add_argument("scout_cmd", choices=["enable", "classify", "run", "audit", "show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("final-snapshot"); p.add_argument("snapshot_cmd", choices=["enable", "build", "verify", "reuse-status", "show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
@@ -173,6 +176,11 @@ def main():
     if args.cmd == "environment": return forward("environment_contract.py", [args.environment_cmd, str(ep), *args.extra])
     if args.cmd == "frame-contract": return forward("frame_contract.py", [args.frame_contract_cmd, str(ep), *args.extra])
     if args.cmd == "visual-lock-v21": return forward("visual_lock_v21.py", [args.visual_lock_cmd, str(ep), *args.extra])
+    if args.cmd == "baseline-review": return forward("visual_lock_baseline_gate.py", [args.baseline_cmd, str(ep), *args.extra])
+    if args.cmd == "batch-review":
+        extra=[args.batch_review_cmd, str(ep)]
+        if args.batch_id: extra.append(args.batch_id)
+        extra.extend(args.extra); return forward("production_batch_review.py", extra)
     if args.cmd == "image-scheduler": return forward("image_scheduler.py", [args.scheduler_cmd, str(ep), *args.extra])
     if args.cmd == "frame-scout": return forward("fast_frame_scout.py", [args.scout_cmd, str(ep), *args.extra])
     if args.cmd == "final-snapshot": return forward("final_candidate_snapshot.py", [args.snapshot_cmd, str(ep), *args.extra])
@@ -192,6 +200,7 @@ def main():
     if args.cmd == "release-package": return forward("release_package.py", [args.release_cmd, str(ep), *args.extra])
     if args.cmd == "status": return cmd_status(ep)
     if args.cmd == "next": return cmd_next(ep)
+    if args.cmd == "next-action": return forward("next_action.py", ["write" if args.write else "show", str(ep)])
     if args.cmd == "checklist": return forward("final_checklist.py", [str(ep)] + (["--no-validators"] if args.no_validators else []))
     return 2
 

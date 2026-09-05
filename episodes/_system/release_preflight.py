@@ -28,6 +28,7 @@ import visual_final_freeze
 import runtime_router
 import runtime_provenance
 import product_review_adapter
+import text_encoding_health
 from fingerprint_semantics import (
     REVIEW_REL as RECENT5_SEMANTIC_REL,
     comparison_index as semantic_comparison_index,
@@ -156,7 +157,7 @@ def ep_path(raw: str) -> Path:
 
 def fingerprint_complete(data: dict) -> bool:
     dims = data.get("dimensions")
-    return (
+    structurally_complete = (
         isinstance(data.get("episode_id"), str)
         and bool(data.get("episode_id").strip())
         and isinstance(data.get("title"), str)
@@ -164,6 +165,7 @@ def fingerprint_complete(data: dict) -> bool:
         and isinstance(dims, dict)
         and all(isinstance(dims.get(k), str) and dims.get(k).strip() for k in FINGERPRINT_KEYS)
     )
+    return bool(structurally_complete and not text_encoding_health.json_text_errors(data, label="episode-fingerprint"))
 
 def normalized(value: object) -> str:
     return " ".join(str(value or "").strip().lower().split())
@@ -186,7 +188,11 @@ def load_registry() -> dict:
     p = ROOT / REGISTRY_REL
     if not p.is_file():
         return {"schema_version": 1, "story_os_version": story_os_version(), "episodes": []}
-    return read_json(p)
+    data = read_json(p)
+    encoding_errors = text_encoding_health.json_text_errors(data, label="account-pattern-registry")
+    if encoding_errors:
+        raise ValueError("account-pattern-registry text encoding invalid: " + "; ".join(encoding_errors[:8]))
+    return data
 
 def registry_sha() -> str:
     p = ROOT / REGISTRY_REL
@@ -195,10 +201,9 @@ def registry_sha() -> str:
 def cmd_bootstrap_registry(_args: argparse.Namespace) -> int:
     reg = load_registry()
     existing = {str(x.get("episode_id")): x for x in reg.get("episodes", []) if isinstance(x, dict)}
+    import episode_discovery
     candidates = []
-    for fp_path in (ROOT / "episodes").rglob("meta/episode-fingerprint.json"):
-        if "_system" in fp_path.parts:
-            continue
+    for fp_path in episode_discovery.iter_fingerprint_paths(ROOT / "episodes"):
         try:
             fp = read_json(fp_path)
         except Exception:

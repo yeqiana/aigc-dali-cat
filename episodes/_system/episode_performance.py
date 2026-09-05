@@ -295,13 +295,15 @@ def percentile(values,p):
     return vals[lo]+(vals[hi]-vals[lo])*(pos-lo)
 
 def rebuild_report(root=ROOT):
+    import episode_discovery
     root=Path(root).resolve();rows=[]
-    for p in root.rglob(REL.as_posix()):
-        if "_system" in p.parts:continue
+    for ep in episode_discovery.iter_episode_roots(root/"episodes"):
+        p=ep/REL
+        if not p.is_file():continue
         try:
             d=read_json(p);_refresh_summary(d)
             if isinstance(d.get("total_wall_seconds"),(int,float)):
-                rows.append({"episode":p.parent.parent.relative_to(root).as_posix(),
+                rows.append({"episode":ep.relative_to(root).as_posix(),
                              "total_wall_seconds":float(d["total_wall_seconds"]),
                              "final_status":d.get("final_status"),
                              "images":(d.get("summary") or {}).get("images") or {},

@@ -129,7 +129,7 @@ agent_runtime:
     enabled: true
     config: config/agent_runtime/batch.json
 
-  # V2.4.2 兼容能力：仅在显式 CODEX Runtime 下，没有 API Key 时可把一批5帧拆成5个 Codex 单图 worker 并行；WORK/WEB 不得使用此兜底。
+  # Codex 图片执行能力：Logical Batch 仍按 5 帧管理，但实际最多 3 个 Codex 图片 worker 同时在途，失败时 3→2→1。整体 Runtime 可保持 WORK。
   codex_subscription_batch:
     enabled: true
     config: config/agent_runtime/codex-subscription-batch.json
@@ -146,8 +146,10 @@ runtime:
   codex_image_controller_model: gpt-5.6-sol
   codex_image_reasoning_effort: high
   local_codex_fallback: explicit_only
+  continuous_host_loop: true
+  next_action_path: meta/runtime/next-action.json
 
-  # 新篇默认走分段 DAG；它是执行器，不是第二状态机。
+  # 新篇默认走分段 DAG；PREIMAGE_COMPILE 是执行节点，不是新的 Episode stage。
   execution_mode: dag
   canonical_stage_source: meta/episode-state.json
   runtime_request_path: meta/runtime-request.json

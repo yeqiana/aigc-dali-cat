@@ -28,13 +28,13 @@ ChatGPT Product Runtime
 → meta/episode-state.json
 ```
 
-`python episodes/_system/story_os.py run <episode> --full-auto` 在 WORK 下只负责初始化、校验并生成：
+`python episodes/_system/story_os.py run <episode> --full-auto` 在 WORK 下会进入 canonical Runtime DAG；DAG 仍只是执行器，阶段权威继续只有 `<episode>/meta/episode-state.json`。
 
-`<episode>/meta/runtime/product-host-request.json`（当前指针）以及 `<episode>/meta/runtime/host-requests/<request_id>.json`（不可覆盖历史）
+非图片 Host Action 会写入 `<episode>/meta/runtime/product-host-request.json`（当前指针）以及 `<episode>/meta/runtime/host-requests/<request_id>.json`（不可覆盖历史），同时由 `<episode>/meta/runtime/next-action.json` 给出当前唯一派生下一步。已经完成的旧 Host Request 会按当前阶段/证据自动对账，避免恢复时重复卡在同一步。
 
-它不会再进入 `runtime_dag → scoped_codex_worker → codex exec`。
+`PREIMAGE_COMPILE` 是独立 Runtime DAG 节点，但不是新的 Episode Stage。图片步骤只在 `runtime.image_execution_runtime=CODEX` 时进入 Codex image worker；Story、PREIMAGE、Critic、Review、Gate、Release 不会因此进入 `scoped_codex_worker` 或 Codex full-auto。
 
-宿主 ChatGPT 读取该 request 后直接执行对应 `next_step`，完成后继续跑确定性 Gate。
+Visual Lock baseline 与每个 Production Logical Batch 生成后都会回到 WORK 做实际像素审核；明确失败帧才进入返修，审核完成后继续下一 Runtime Action。
 
 ## 独立 Critic
 

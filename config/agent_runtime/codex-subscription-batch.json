@@ -5,10 +5,10 @@
   "enabled": true,
   "mode": "parallel_single_frame_fanout",
   "logical_batch_size": 5,
-  "max_inflight_codex_images": 5,
+  "max_inflight_codex_images": 3,
   "adaptive_concurrency_steps": [
-    5,
     3,
+    2,
     1
   ],
   "first_completed_refill": true,

@@ -65,6 +65,15 @@ REQUIRED_CAPABILITIES = {
     "no_silent_codex_fallback",
     "product_runtime_host_action",
     "product_runtime_image_route",
+    "continuous_work_host_loop",
+    "derived_next_action",
+    "preimage_runtime_node",
+    "work_actual_pixel_review_barrier",
+    "canonical_episode_discovery",
+    "semantic_text_encoding_health",
+    "runtime_path_portability",
+    "canonical_module_index",
+    "codex_batch_inflight_3",
 }
 ADAPTER_SKILLS = [
     Path("skills/dali-cat-story/SKILL.md"),

@@ -250,7 +250,7 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 
 没有 `OPENAI_API_KEY` 时，Production Batch 正式走：
 
-`1 Story OS Batch -> 5 isolated Codex image workers in parallel`
+`1 Story OS Logical Batch = 5 frames; up to 3 isolated Codex image workers in flight`
 
 这是 Logical Batch，不是 Provider-native `n=5`：
 
@@ -258,9 +258,9 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 - `native_multi_image=false`
 - `single_http_request=false`
 - 不需要 API Key，使用本机 ChatGPT/Codex 登录态
-- 默认最多 5 个 Codex 图片 worker 同时在途
-- 无 API Key 时全局只允许 1 个 Logical Batch 在途，避免 2×5=10 个图片调用
-- 技术失败自适应 5→3→1，只重试失败帧
+- Logical Batch 仍按 5 帧管理，但默认最多 3 个 Codex 图片 worker 同时在途
+- 无 API Key 时全局只允许 1 个 Logical Batch 在途，避免多个 Logical Batch 叠加造成并发放大
+- 技术失败自适应 3→2→1，只重试失败帧
 - 成功帧永不因为同批其他帧技术失败而重生
 - Fast Scout 延迟到 5 帧原始生成 barrier terminal 后再执行
 <!-- STORY_OS_V242_CODEX_SUBSCRIPTION_BATCH_END -->

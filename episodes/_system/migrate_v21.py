@@ -55,15 +55,8 @@ def resolve_ep(raw: str) -> Path:
 
 
 def discover() -> Iterable[Path]:
-    root = ROOT / "episodes"
-    if not root.is_dir():
-        return []
-    rows = []
-    for state in root.rglob("meta/episode-state.json"):
-        if "_system" in state.parts:
-            continue
-        rows.append(state.parents[1])
-    return sorted(set(rows))
+    import episode_discovery
+    return episode_discovery.iter_episode_roots(ROOT / "episodes")
 
 
 def detected_version(ep: Path) -> str:

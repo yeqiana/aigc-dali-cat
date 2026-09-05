@@ -43,7 +43,7 @@
       "expensive": true
     },
     {
-      "id": "VISUAL_LOCK",
+      "id": "PREIMAGE_COMPILE",
       "executor": "scoped_model",
       "depends_on": [
         "CREATIVE_STORY"
@@ -51,6 +51,26 @@
       "covers": [
         "ENVIRONMENT_IMPACT_CONTRACT",
         "RESOLVED_FRAME_CONTRACT",
+        "RESOURCE_SELECTION",
+        "PROMPT_PACKAGE",
+        "PREPRODUCTION_HANDOFF"
+      ],
+      "target_state": null,
+      "evidence_paths": [
+        "meta/story-gates.json",
+        "meta/resource-selection.json",
+        "meta/runtime/contracts/frame-contract-index.json",
+        "meta/preproduction-handoff.json"
+      ],
+      "expensive": true
+    },
+    {
+      "id": "VISUAL_LOCK",
+      "executor": "scoped_model",
+      "depends_on": [
+        "PREIMAGE_COMPILE"
+      ],
+      "covers": [
         "VISUAL_LOCK"
       ],
       "target_state": "VISUAL_CALIBRATED",

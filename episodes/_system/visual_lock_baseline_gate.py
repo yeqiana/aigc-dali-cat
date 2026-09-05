@@ -7,10 +7,13 @@ from pathlib import Path
 import character_visual_contract
 import frame_contract
 import episode_performance
+import product_review_adapter
+import runtime_router
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
 REL=Path("meta/visual-lock-baseline-review.json")
+CANDIDATE_REL=Path("meta/.visual-lock-baseline-review.candidate.json")
 CHECKS=("visual_profile_match","reality_first","ordinary_life_density","unposed_capture","not_cinematic","capture_credibility","identity_usable","group_members_distinct")
 
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -102,6 +105,39 @@ def _ledger_pass(ep,frame):
     cp=subprocess.run([sys.executable,str(SYSTEM/"production_ledger.py"),"review",str(ep),"--frame",f"{int(frame):02d}","--decision","pass","--notes","Visual Lock ordinary baseline separate PASS"],cwd=ROOT,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
     if cp.returncode!=0:raise ValueError("baseline ledger PASS failed: "+cp.stdout[-1200:])
 
+def critic_prompt(ep):
+    draft=prepare_review(ep,force=False);candidate=Path(ep)/CANDIDATE_REL
+    return f"""You are a fresh isolated Story OS Visual Lock ordinary-baseline actual-pixel reviewer.
+Inspect the attached baseline image itself. This PASS unlocks the parallel-three Visual Lock images and may create the provisional character pixel master, so fail closed on visible identity/capture/style problems.
+Required checks: {list(CHECKS)}
+The target is an ordinary believable phone/photo baseline: reality-first, unposed, non-cinematic, usable identity, distinct group members where applicable.
+Write ONLY JSON to {repo_rel(candidate)}:
+{{"decision":"PASS|FAIL","checks":{{"visual_profile_match":"PASS|FAIL","reality_first":"PASS|FAIL","ordinary_life_density":"PASS|FAIL","unposed_capture":"PASS|FAIL","not_cinematic":"PASS|FAIL","capture_credibility":"PASS|FAIL","identity_usable":"PASS|FAIL","group_members_distinct":"PASS|FAIL"}},"face_boxes":[{{"character_id":"P01","x":0.0,"y":0.0,"w":0.1,"h":0.1}}],"note":"actual-pixel evidence"}}
+Face boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.
+Do not modify source files or the image.
+"""
+
+def run_product_critic(ep,attempt=1):
+    ep=Path(ep).resolve();draft=prepare_review(ep,force=False);runtime,_=runtime_router.detect()
+    if runtime not in {"WORK","WEB"}:raise ValueError("baseline product critic requires WORK/WEB")
+    sources=[repo_file(draft["asset_path"]),ep/"meta/story-gates.json",ep/character_visual_contract.REL]
+    prov=frame_contract.provenance(ep,int(draft["frame"]))
+    if prov and prov.get("path"):sources.append(repo_file(prov["path"]))
+    request=product_review_adapter.prepare(ep,kind="visual-lock-baseline",runtime=runtime,attempt=attempt,prompt=critic_prompt(ep),source_paths=sources,candidate_path=ep/CANDIDATE_REL)
+    return request
+
+def finalize_product_critic(ep,attempt=1,runtime="WORK"):
+    ep=Path(ep).resolve();draft=prepare_review(ep,force=False);candidate=ep/CANDIDATE_REL
+    data,provenance=product_review_adapter.finalize_candidate(ep,kind="visual-lock-baseline",runtime=runtime,attempt=attempt,candidate_path=candidate)
+    review={**draft,"decision":str(data.get("decision") or "FAIL").upper(),"checks":data.get("checks") or {},"face_boxes":data.get("face_boxes") or [],"note":str(data.get("note") or ""),"critic_provenance":provenance}
+    write_json(ep/REL,review)
+    errors=validate_review(ep)
+    if errors:return {"status":"FAIL","errors":errors}
+    result=approve(ep)
+    product_review_adapter.mark_complete(ep,"visual-lock-baseline",attempt=attempt,final_path=ep/REL)
+    candidate.unlink(missing_ok=True)
+    return {"status":"PASS",**result}
+
 def approve(ep):
     ep=Path(ep).resolve();errors=validate_review(ep)
     if errors:raise ValueError("; ".join(errors[:12]))
@@ -155,11 +191,16 @@ def self_test():assert len(CHECKS)>=8;print("VISUAL LOCK BASELINE GATE SELF-TEST
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("prepare-review");p.add_argument("episode_dir");p.add_argument("--force",action="store_true")
+    p=sub.add_parser("run-critic");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1)
+    p=sub.add_parser("finalize-review");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1);p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK")
     p=sub.add_parser("approve");p.add_argument("episode_dir");p=sub.add_parser("verify");p.add_argument("episode_dir");p=sub.add_parser("status");p.add_argument("episode_dir");sub.add_parser("self-test");a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0
     ep=Path(a.episode_dir).resolve()
     try:
         if a.cmd=="prepare-review":print(json.dumps(prepare_review(ep,a.force),ensure_ascii=False,indent=2));return 0
+        if a.cmd=="run-critic":print(json.dumps(run_product_critic(ep,a.attempt),ensure_ascii=False,indent=2));return product_review_adapter.HOST_ACTION_REQUIRED_RC
+        if a.cmd=="finalize-review":
+            result=finalize_product_critic(ep,a.attempt,a.runtime);print(json.dumps(result,ensure_ascii=False,indent=2));return 0 if result.get("status")=="PASS" else 2
         if a.cmd=="approve":print(json.dumps(approve(ep),ensure_ascii=False,indent=2));return 0
         if a.cmd=="verify":
             e=validate_review(ep)

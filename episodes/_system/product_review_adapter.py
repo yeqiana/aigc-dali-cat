@@ -17,6 +17,7 @@ import json
 from pathlib import Path
 
 import runtime_provenance
+import episode_performance
 
 ROOT = Path(__file__).resolve().parents[2]
 HOST_ACTION_REQUIRED_RC = 20
@@ -157,6 +158,9 @@ def prepare(
     # Compatibility/current pointer. This alias may move, the attempt file may not.
     current = {**req, "attempt_request_path": _repo_rel(attempt_path)}
     _write_json(request_path(ep, kind), current)
+    episode_performance.safe_begin_named_span(
+        ep, f"PRODUCT_REVIEW_{kind}", source="product_review_adapter",
+        metadata={"request_id": req.get("request_id"), "attempt": attempt, "runtime": base})
     return {
         **req,
         "request_path": _repo_rel(attempt_path),
@@ -241,6 +245,9 @@ def mark_complete(ep: Path, kind: str, *, final_path: Path, attempt: int | None 
                 "attempt_request_path": _repo_rel(scoped_path),
             })
             _write_json(current_path, current)
+    episode_performance.safe_end_named_span(
+        ep, f"PRODUCT_REVIEW_{kind}", status="PASS",
+        metadata={"attempt": attempt, "final_path": _repo_rel(final_path)})
 
 
 def self_test() -> None:

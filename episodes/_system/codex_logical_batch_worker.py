@@ -219,12 +219,13 @@ def execute(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|None)->
 
 def self_test():
     assert batch_cfg.batch_size()==5
-    assert batch_cfg.max_inflight()==5
-    assert _next_concurrency(5,3,2)==3
-    assert _next_concurrency(3,3,0)==5
-    assert _next_concurrency(1,1,0)==3
+    assert batch_cfg.max_inflight()==3
+    assert batch_cfg.adaptive_steps()==[3,2,1]
+    assert _next_concurrency(3,3,2)==2
+    assert _next_concurrency(2,3,0)==3
+    assert _next_concurrency(1,1,0)==2
     assert [x["attempts"] for x in _round_items([{"id":"x","attempts":1}],2)]==[3]
-    print("CODEX LOGICAL BATCH WORKER V2.4.2 SELF-TEST PASS")
+    print("CODEX LOGICAL BATCH WORKER V2.6.1 H3 SELF-TEST PASS")
 
 if __name__=="__main__":
     self_test()

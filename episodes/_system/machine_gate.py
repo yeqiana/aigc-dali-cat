@@ -433,7 +433,8 @@ def current_state(episode_dir: Path) -> str:
 
 
 def discover_episode_dirs(repo_root: Path) -> list[Path]:
-    return sorted({p.parents[1] for p in (repo_root / "episodes").rglob("meta/story-gates.json")})
+    import episode_discovery
+    return episode_discovery.iter_episode_roots(repo_root / "episodes")
 
 
 def print_findings(ep: Path, target: str, findings: list[Finding]) -> bool:

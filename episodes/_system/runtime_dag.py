@@ -25,6 +25,8 @@ import performance_guard_v211
 import runtime_trace
 import runtime_router
 import product_runtime_adapter
+import next_action
+import episode_performance
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -108,6 +110,24 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
         prior=(proto.load_state(ep).get("steps") or {}).get(s.step_id) or {}
         attempt=int(prior.get("attempt") or 0)+1
         input_hash=proto.evidence_hash(ep,["meta/runtime-request.json","meta/episode-state.json",*s.evidence_paths])
+        if s.step_id=="PREIMAGE_COMPILE":
+            handoff_valid=False
+            try:
+                handoff_valid=(ep/"meta/preproduction-handoff.json").is_file() and not preproduction_handoff.verify(ep)
+            except Exception:
+                handoff_valid=False
+            if handoff_valid or stage_at_least(cur,"VISUAL_CALIBRATED"):
+                reason="preproduction handoff already valid" if handoff_valid else "downstream stage already valid; legacy preimage not backfilled"
+                out_hash=proto.evidence_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+                res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,reason,0)
+                proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,reason,attempt,input_hash,out_hash)
+                if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,reason)
+                episode_performance.safe_end_stage(ep,s.step_id,status="PASS",metadata={"reused":True,"reason":reason})
+                next_action.write(ep)
+                if mode=="preproduction_only":
+                    background.shutdown(wait=False,cancel_futures=True)
+                    return 0
+                continue
         if s.target_state and stage_at_least(cur,s.target_state):
             ok,msg=validate_target(ep,s.target_state)
             if ok:
@@ -115,12 +135,17 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
                 res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,"target already valid",0)
                 proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,"target already valid",attempt,input_hash,out_hash)
                 if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,"target already valid")
+                episode_performance.safe_end_stage(ep,s.step_id,status="PASS",metadata={"reused":True,"target_state":s.target_state})
                 _t=time.monotonic()
                 _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"reused":True})
                 runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=run_id,attrs={"target_state":s.target_state})
                 continue
         started_at=proto.now(); t0=time.monotonic(); rc=0; note=""
+        episode_performance.safe_begin_stage(ep,s.step_id,source="runtime_dag",metadata={"executor":s.executor,"target_state":s.target_state})
         trace_span=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"executor":s.executor,"target_state":s.target_state})
+        if s.step_id=="PREIMAGE_COMPILE":
+            resource_library.resolve(ep,write=True)
+            intro_policy.resolve(ep,write=True)
         if s.executor=="machine_incremental_plan":
             cp=run([sys.executable,SYSTEM/"incremental_closure.py","plan",ep,"--json"]); rc=cp.returncode; note=cp.stdout[-3000:]
         elif s.executor in {"scoped_model","scoped_codex"}:
@@ -162,6 +187,18 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
                     if anchor_errors:
                         rc=4
                         note=(note+"\nCHARACTER APPEARANCE ANCHOR FAIL\n"+"\n".join(anchor_errors))[-5000:]
+        if rc==0 and s.step_id=="PREIMAGE_COMPILE":
+            quality_errors=directing_quality.verify_preimage(ep)
+            if quality_errors:
+                rc=4
+                note=(note+"\nPREIMAGE DIRECTING QUALITY FAIL\n"+"\n".join(quality_errors))[-5000:]
+            else:
+                try:
+                    handoff=preproduction_handoff.build(ep,source_runtime="chatgpt_or_codex")
+                    note=(note+"\npreproduction_handoff="+str(handoff.get("manifest_sha256") or ""))[-5000:]
+                except Exception as exc:
+                    rc=7
+                    note=(note+"\nPREPRODUCTION HANDOFF FAIL: "+str(exc))[-5000:]
         if rc==0:
             quality_errors=directing_quality.after_step(ep,s.step_id)
             if quality_errors:
@@ -176,10 +213,13 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
         proto.save_result(ep,res); checkpoint(ep,s.step_id,status,elapsed,note[-1200:],attempt,input_hash,out_hash)
         if run_id: perf.record_step(ep,run_id,s.step_id,status,elapsed,note[-500:])
         runtime_trace.end_span(ep,trace_span,name=s.step_id,category="workflow_step",status=status,started_monotonic=t0,trace_id=trace_id,run_id=run_id,attrs={"rc":rc,"attempt":attempt})
+        if status != "HOST_WAIT":
+            episode_performance.safe_end_stage(ep,s.step_id,status=status,metadata={"rc":rc,"attempt":attempt})
         try: quota_observability.snapshot(ep,note=f"after {s.step_id}")
         except Exception: pass
         try: performance_guard_v211.observe(ep,run_id,context=s.step_id)
         except Exception: pass
+        next_action.write(ep)
         if rc!=0:
             # STORY_OS_V211_PERF_RECOVERY: on Visual Lock infrastructure failure,
             # generate at most six non-approvable candidates instead of idling.
@@ -193,47 +233,13 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
                     if run_id: perf.record_step(ep,run_id,"SPECULATIVE_PRODUCTION","FAILED",0.0,str(exc)[:500])
             background.shutdown(wait=False,cancel_futures=True)
             return rc
-        if mode=="preproduction_only" and s.step_id=="CREATIVE_STORY":
-            resource_library.resolve(ep,write=True)
-            intro_policy.resolve(ep,write=True)
-            pre_started=time.monotonic()
-            active_runtime,_=runtime_router.detect()
-            if active_runtime in {"WORK","WEB"} and not codex:
-                pre_request=product_runtime_adapter.build_request(
-                    ep,runtime=active_runtime,mode=mode,resume=True,source="runtime_dag:PREIMAGE_COMPILE")
-                pre_rc=product_runtime_adapter.HOST_ACTION_REQUIRED_RC
-                pre_log=json.dumps(pre_request,ensure_ascii=True)
-                product_runtime_adapter.print_request(pre_request)
-            else:
-                pre_rc,pre_log=scoped_codex_worker.run_step(
-                    ep,"PREIMAGE_COMPILE",codex_raw=codex,
-                    timeout=min(timeout,int(dag.get("scoped_worker_timeout_seconds") or 3600)))
-            pre_elapsed=time.monotonic()-pre_started
-            pre_status="PASS" if pre_rc==0 else ("HOST_WAIT" if pre_rc==product_runtime_adapter.HOST_ACTION_REQUIRED_RC else "FAILED")
-            checkpoint(ep,"PREIMAGE_COMPILE",pre_status,pre_elapsed,f"log={pre_log}")
-            if run_id:perf.record_step(ep,run_id,"PREIMAGE_COMPILE",pre_status,pre_elapsed,f"log={pre_log}")
-            if pre_rc!=0:
-                background.shutdown(wait=False,cancel_futures=True)
-                return pre_rc
-            quality_errors=directing_quality.verify_preimage(ep)
-            if quality_errors:
-                print("PREIMAGE DIRECTING QUALITY FAIL")
-                for err in quality_errors: print(err)
-                background.shutdown(wait=False,cancel_futures=True)
-                return 4
+        if mode=="preproduction_only" and s.step_id=="PREIMAGE_COMPILE":
             try:
                 provisional_release.build(ep,codex,900)
             except Exception as exc:
                 print("PROVISIONAL RELEASE NONBLOCKING:",exc)
-            try:
-                handoff=preproduction_handoff.build(ep,source_runtime="chatgpt_or_codex")
-                checkpoint(ep,"PREPRODUCTION_HANDOFF","PASS",0.0,handoff.get("manifest_sha256",""))
-                if run_id:perf.record_step(ep,run_id,"PREPRODUCTION_HANDOFF","PASS",0.0,handoff.get("manifest_sha256",""))
-            except Exception as exc:
-                print("PREPRODUCTION HANDOFF FAIL:",exc)
-                background.shutdown(wait=False,cancel_futures=True)
-                return 7
             background.shutdown(wait=False,cancel_futures=True)
+            next_action.write(ep)
             return 0
         if s.step_id=="CREATIVE_STORY" and provisional_future is None and bool(dag.get("provisional_release_parallel",True)):
             provisional_future=background.submit(provisional_release.build,ep,codex,900)
@@ -242,7 +248,7 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
 
 def self_test():
     rows=spec_rows()
-    assert [x.step_id for x in rows]==["INCREMENTAL_PLAN","CREATIVE_STORY","VISUAL_LOCK","PRODUCTION","RELEASE"]
+    assert [x.step_id for x in rows]==["INCREMENTAL_PLAN","CREATIVE_STORY","PREIMAGE_COMPILE","VISUAL_LOCK","PRODUCTION","RELEASE"]
     assert rows[-1].target_state=="PUBLISH_READY"
     print("RUNTIME DAG V1 SELF-TEST PASS")
 

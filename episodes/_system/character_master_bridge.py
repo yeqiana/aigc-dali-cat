@@ -43,9 +43,11 @@ def backfill_episode(ep):
         except Exception:pass
     return {"status":"BACKFILLED","frame":baseline["frame"],"sha256":master["sha256"]}
 def backfill_all():
+    import episode_discovery
     results=[]
-    for p in sorted(ROOT.rglob("meta/visual-profile-review.json")):
-        ep=p.parent.parent
+    for ep in episode_discovery.iter_episode_roots(ROOT/"episodes"):
+        p=ep/"meta/visual-profile-review.json"
+        if not p.is_file():continue
         try:r=backfill_episode(ep)
         except Exception as exc:r={"status":"ERROR","error":str(exc)}
         if r.get("status")!="SKIP":results.append({"episode":ep.relative_to(ROOT).as_posix(),**r})

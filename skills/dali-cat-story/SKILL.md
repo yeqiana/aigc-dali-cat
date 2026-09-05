@@ -70,6 +70,15 @@ IDEA_LOCKED
 - `delegated_delivery`
 - `release_manifest`
 - `minimal_edit_contract`
+- `continuous_work_host_loop`
+- `derived_next_action`
+- `preimage_runtime_node`
+- `work_actual_pixel_review_barrier`
+- `canonical_episode_discovery`
+- `semantic_text_encoding_health`
+- `runtime_path_portability`
+- `canonical_module_index`
+- `codex_batch_inflight_3`
 
 支持的执行环境由根 Story OS contract 决定；当前 contract 覆盖 CODEX / ChatGPT Work / ChatGPT Web。任何 runtime 都不得绕开 Story Lock、Visual Lock、最小修改协议和 Release Lock。
 

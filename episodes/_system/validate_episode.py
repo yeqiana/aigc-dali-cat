@@ -634,9 +634,8 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
 
 
 def discover_episode_dirs(episodes_root: Path) -> Iterable[Path]:
-    for state_path in episodes_root.rglob(str(STATE_FILE)):
-        if "_system" not in state_path.parts:
-            yield state_path.parents[1]
+    import episode_discovery
+    yield from episode_discovery.iter_episode_roots(episodes_root)
 
 
 def print_result(episode_dir: Path, findings: list[Finding]) -> bool:

@@ -33,6 +33,7 @@ import batch_scheduler
 import runtime_router
 import product_runtime_adapter
 import resource_library
+import runtime_portability
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -96,7 +97,11 @@ def load_queue(ep:Path)->dict:
     p=ep/QUEUE_REL
     if not p.is_file():
         return {"schema_version":1,"created_at":now(),"updated_at":now(),"max_parallel":3,"items":[],"waves":[]}
-    return read_json(p)
+    q=read_json(p)
+    errors=runtime_portability.queue_path_errors(q)
+    if errors:
+        raise ValueError("production queue portability guard failed: "+"; ".join(errors[:8]))
+    return q
 
 
 def save_queue(ep:Path,q:dict)->None:
@@ -381,7 +386,7 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                 current=byid[item["id"]]
                 if not ok:
                     current["status"]="blocked"
-                    current["last_error"]="ledger begin failed: "+msg[-1200:]
+                    current["last_error"]=runtime_portability.sanitize_diagnostic_text("ledger begin failed: "+msg[-1200:])
                     save_queue(ep,q)
                     continue
                 current["status"]="running"
@@ -429,7 +434,7 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                         cp=run([sys.executable,SYSTEM/"production_ledger.py","review",ep,"--frame",f"{int(item['frame']):02d}","--decision","repair","--notes","Phase7 Fast Scout obvious defect"])
                         item["status"]="scout_repair" if cp.returncode==0 else "blocked"
                         if cp.returncode!=0:
-                            item["last_error"]="scout repair handoff failed: "+cp.stdout[-1200:]
+                            item["last_error"]=runtime_portability.sanitize_diagnostic_text("scout repair handoff failed: "+cp.stdout[-1200:])
                     else:
                         item["status"]="generated"
                         if int(item.get("priority") or 0)>=90 and res.get("output"):
@@ -444,7 +449,7 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                     ledger_tech_fail(ep,item,code,msg or "image backend failed")
                     item["status"]="blocked" if code in NON_REGENERATING_FAILURE_CODES else "tech_failed"
                     item["completed_at"]=now()
-                    item["last_error"]=msg[-1600:]
+                    item["last_error"]=runtime_portability.sanitize_diagnostic_text(msg[-1600:])
                     cap=max(1,cap-1)
                     stable=0
                 q["adaptive_parallel"]=cap
@@ -484,6 +489,10 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     if queued and not awaiting_baseline_review:
         return 4
     if awaiting_baseline_review:
+        if runtime in {"WORK","WEB"}:
+            request=visual_lock_baseline_gate.run_product_critic(ep,attempt=1)
+            print(json.dumps(request,ensure_ascii=False,indent=2))
+            return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
         return 0
     return 0
 

@@ -16,7 +16,10 @@ import storyos_config
 import image_provider_runtime
 import runtime_router
 import product_runtime_adapter
+import product_review_adapter
 import resource_library
+import runtime_portability
+import production_batch_review
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -32,7 +35,11 @@ def read_json(p):
 def write_json(p,d):
     p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 def load_queue(ep):
-    p=ep/QUEUE_REL;return read_json(p) if p.is_file() else {"schema_version":1,"items":[],"waves":[]}
+    p=ep/QUEUE_REL
+    q=read_json(p) if p.is_file() else {"schema_version":1,"items":[],"waves":[]}
+    errors=runtime_portability.queue_path_errors(q)
+    if errors:raise ValueError("production queue portability guard failed: "+"; ".join(errors[:8]))
+    return q
 def save_queue(ep,q):
     q["updated_at"]=now();write_json(ep/QUEUE_REL,q)
 def _run(cmd):
@@ -112,7 +119,7 @@ def _mark_batch_running(ep,contract):
         item["batch_id"]=contract["batch_id"]
         ok,msg=ledger_begin(ep,item)
         if not ok:
-            item["status"]="blocked";item["last_error"]="ledger begin failed: "+msg[-1000:]
+            item["status"]="blocked";item["last_error"]=runtime_portability.sanitize_diagnostic_text("ledger begin failed: "+msg[-1000:])
             save_queue(ep,q);return None
         item["status"]="running";item["attempts"]=int(item.get("attempts") or 0)+1
         item["started_at"]=now();item["batch_id"]=contract["batch_id"];items.append(dict(item))
@@ -129,6 +136,13 @@ def _update_batch_row(q,batch_id,**fields):
 def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     resource_library.ensure_fresh(ep)
     runtime,_=runtime_router.detect()
+    pending_reviews=production_batch_review.pending(ep)
+    if pending_reviews:
+        batch_id=pending_reviews[0]
+        req_path=product_review_adapter.request_path(ep,production_batch_review.kind(batch_id))
+        payload=read_json(req_path) if req_path.is_file() else {"status":"AWAITING_PRODUCT_REVIEW","batch_id":batch_id}
+        print(json.dumps(payload,ensure_ascii=False,indent=2))
+        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
     image_runtime,_=runtime_router.image_execution_runtime()
     if runtime in {"WORK","WEB"} and not codex and image_runtime != "CODEX":
         q=load_queue(ep)
@@ -200,6 +214,10 @@ def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                     _update_batch_row(q,contract["batch_id"],status="generated",completed_at=now(),
                         returned_count=result.get("returned_count"),elapsed_seconds=result.get("elapsed_seconds"))
                     save_queue(ep,q)
+                    if runtime in {"WORK","WEB"} and generated_rows:
+                        request=production_batch_review.prepare(ep,contract["batch_id"],attempt=1)
+                        print(json.dumps(request,ensure_ascii=False,indent=2))
+                        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
 
                     # All original outputs in this request are now terminal, so the Batch Repair
                     # Barrier is open. Assess frames independently; High×High remains explicitly
@@ -254,8 +272,12 @@ def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                                 detail=logical_failures.get(original["id"]) or {}
                                 message=str(detail.get("error") or result.get("error") or "logical batch frame failed")
                                 ledger_tech_fail(ep,item,"CODEX_LOGICAL_BATCH_FRAME_FAILED",message)
-                                item["status"]="tech_failed";item["last_error"]=message[-1200:]
+                                item["status"]="tech_failed";item["last_error"]=runtime_portability.sanitize_diagnostic_text(message[-1200:])
                         save_queue(ep,q)
+                        if runtime in {"WORK","WEB"} and generated_rows:
+                            request=production_batch_review.prepare(ep,contract["batch_id"],attempt=1)
+                            print(json.dumps(request,ensure_ascii=False,indent=2))
+                            return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
 
                         # The original five fan-out workers are now terminal, so the content
                         # repair barrier is open for successful candidates. Technical failures
@@ -296,7 +318,7 @@ def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                         for original in items:
                             item=byid[original["id"]]
                             ledger_tech_fail(ep,item,"BATCH_TRANSPORT_FAILURE",str(result.get("error") or "batch failed"))
-                            item["status"]="tech_failed";item["last_error"]=str(result.get("error") or "batch failed")[-1200:]
+                            item["status"]="tech_failed";item["last_error"]=runtime_portability.sanitize_diagnostic_text(str(result.get("error") or "batch failed")[-1200:])
                         save_queue(ep,q)
                         for original in items:
                             q=load_queue(ep);item={x["id"]:x for x in q.get("items") or []}[original["id"]]

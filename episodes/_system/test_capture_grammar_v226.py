@@ -23,13 +23,15 @@ def main():
     bridge_text = (SYSTEM / "visual_profile_bridge_v224.py").read_text(encoding="utf-8")
     required = [
         "GLOBAL CAPTURE GRAMMAR",
-        "capture_grammar_v226",
         "visual_profile_composition_hint_NON_AUTHORITY",
     ]
     for token in required:
         if token not in bridge_text:
             print(f"missing token: {token}")
             return 2
+    if "capture_grammar_v226" not in bridge_text and "capture_grammar_v228" not in bridge_text:
+        print("missing compatible capture grammar bridge: expected v226 or newer")
+        return 2
 
     print("STORY OS V2.2.6 GLOBAL FIRST-PERSON CAPTURE GRAMMAR INTEGRATION SELF-TEST PASS")
     return 0
