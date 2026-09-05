@@ -216,6 +216,15 @@ def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float 
     y_cfg = layout_cfg.get("frames") or {}
     font_path = find_font(font_raw)
 
+    canvas = ledger.get("canvas") or {}
+    try:
+        canonical_width = int(canvas.get("width"))
+        canonical_height = int(canvas.get("height"))
+    except Exception as exc:
+        raise RuntimeError("production ledger canvas width/height missing") from exc
+    if canonical_width != 1080 or canonical_height not in {1350, 1920}:
+        raise RuntimeError(f"subtitle renderer requires canonical ledger canvas; got {canonical_width}x{canonical_height}")
+
     rows = {}
     for key, frame in sorted((ledger.get("frames") or {}).items()):
         number = int(key)
@@ -227,12 +236,9 @@ def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float 
         per = y_cfg.get(key) or y_cfg.get(str(number)) or {}
         y_value = per.get("y") if isinstance(per, dict) else None
         override_reason = str(per.get("safe_zone_override_reason") or "").strip() if isinstance(per, dict) else ""
-        from PIL import Image
-        with Image.open(base) as im:
-            base_height = im.height
         if y_value is None:
-            y_value = int(base_height * default_y_ratio)
-        y_ratio = int(y_value) / base_height
+            y_value = int(canonical_height * default_y_ratio)
+        y_ratio = int(y_value) / canonical_height
         if not LEFT_MIDDLE_MIN_RATIO <= y_ratio <= LEFT_MIDDLE_MAX_RATIO and not override_reason:
             raise RuntimeError(f"frame {key} subtitle leaves left-middle safe zone without safe_zone_override_reason")
 
@@ -266,7 +272,7 @@ def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float 
             "base_sha256": sha256_file(base),
             "output_path": output.relative_to(ROOT).as_posix(),
             "output_sha256": sha256_file(output),
-            "y_ratio": round(int(y_value) / base_height, 4),
+            "y_ratio": round(int(y_value) / canonical_height, 4),
             "safe_zone_override_reason": override_reason,
         }
 

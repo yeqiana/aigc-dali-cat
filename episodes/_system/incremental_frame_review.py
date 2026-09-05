@@ -197,7 +197,7 @@ def _scope_ok(data: dict) -> bool:
     }
 
 
-def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, caption_hash: str, version: str) -> tuple[bool, list[str]]:
+def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, caption_hash: str, version: str, directing_v3: bool) -> tuple[bool, list[str]]:
     reasons: list[str] = []
     if not isinstance(data, dict):
         return False, ["missing_review"]
@@ -220,7 +220,7 @@ def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, capt
     if data.get("decision") != "pass" or data.get("issue_codes") not in ([], None):
         reasons.append("review_not_pass")
     checks = data.get("checks") or {}
-    for name in base.checks_for_version(version, base.directing_v3_required(ep)):
+    for name in base.checks_for_version(version, directing_v3):
         if checks.get(name) is not True:
             reasons.append(f"check_failed:{name}")
     return not reasons, reasons
@@ -247,12 +247,13 @@ def build_plan(ep: Path) -> dict:
     contexts = base.context_hashes(ep)
     captions = caption_state(ep, frames)
     version = base.episode_contract_version(ep)
+    directing_v3 = base.directing_v3_required(ep)
     dirty: list[str] = []
     reasons: dict[str, list[str]] = {}
     context_change = False
     for frame in frames:
         data = _review_data(ep, frame["frame"])
-        clean, why = _review_clean(ep, data, frame, contexts, captions["frame_sha256"][frame["frame"]], version)
+        clean, why = _review_clean(ep, data, frame, contexts, captions["frame_sha256"][frame["frame"]], version, directing_v3)
         if not clean:
             dirty.append(frame["frame"])
             reasons[frame["frame"]] = why
@@ -288,6 +289,8 @@ def _command_prefix(codex: Path) -> list[str]:
 
 def _prompt(ep: Path, selected: list[dict], dirty: list[str], candidate: Path, attempt: int, captions: dict) -> str:
     story, storyboard = base.episode_files(ep)
+    version = base.episode_contract_version(ep)
+    directing_v3 = base.directing_v3_required(ep)
     rel_ep = ep.relative_to(ROOT).as_posix()
     mapping = "\n".join(f"- context frame {r['frame']}: {r['path_rel']}" for r in selected)
     dirty_text = ", ".join(dirty)
@@ -309,9 +312,9 @@ Attached mapping:
 {mapping}
 
 Attempt {attempt}. Judge ACTUAL pixels. Every supplied frame must pass all checks:
-{', '.join(base.checks_for_version(base.episode_contract_version(ep), base.directing_v3_required(ep)))}
+{', '.join(base.checks_for_version(version, directing_v3))}
 Hard failures include wrong scene/beat/prop/person/wardrobe, illegal POV, ghost camera, broken space/time continuity, unreadable anomaly, caption inventing missing evidence, missing actual information gain, narrative redundancy, repeated shot grammar, unmotivated camera defects, impossible screen/UI physics, broken visual memory, wrong locked shot scale, visually repeated planned camera position, failed cinematic-structure translation, invented/non-matching light, or missing declared reflection/fog/light-shadow/occlusion anomaly carrier.
-Episode contract version: {base.episode_contract_version(ep)}. V2.2-only Visual Narrative checks and issue codes apply ONLY when version >= 2.2.0; legacy episodes must not fail on V2.2-only criteria.
+Episode contract version: {version}. V2.2-only Visual Narrative checks and issue codes apply ONLY when version >= 2.2.0; legacy episodes must not fail on V2.2-only criteria.
 Return one row for EVERY supplied context frame, not only dirty roots.
 Use issue codes only from: {', '.join(sorted(base.ISSUE_CODES))}
 
@@ -381,7 +384,9 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
     if {r["frame"]: base.sha256_file(r["path"]) for r in current} != before:
         raise RuntimeError("incremental critic modified approved image assets")
     data = read_json(candidate)
-    candidate_errors = base.validate_candidate_rows(data.get("frames"), selected, version=base.episode_contract_version(ep), directing_v3=base.directing_v3_required(ep))
+    version = base.episode_contract_version(ep)
+    directing_v3 = base.directing_v3_required(ep)
+    candidate_errors = base.validate_candidate_rows(data.get("frames"), selected, version=version, directing_v3=directing_v3)
     global_codes = data.get("issue_codes")
     if not isinstance(global_codes, list):
         candidate_errors.append("global issue_codes must be list")
@@ -392,7 +397,6 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
         candidate_errors.append("critic summary.passed must be true")
 
     rows_by_frame = {str(r.get("frame") or "").zfill(2): r for r in (data.get("frames") or []) if isinstance(r, dict)}
-    version = base.episode_contract_version(ep)
     provenance = {
         "runtime": "CODEX_ISOLATED",
         "isolated_session": True,

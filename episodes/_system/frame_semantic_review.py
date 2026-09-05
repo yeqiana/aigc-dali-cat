@@ -495,6 +495,7 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
         if summary.get("issue_codes") not in ([], None):
             errors.append(f"frame semantic summary issue_codes not empty: {summary.get('issue_codes')}")
 
+    directing_v3 = directing_v3_required(ep)
     for frame in frames:
         path = ep / REVIEW_DIR / f"{frame['frame']}.json"
         if not path.is_file():
@@ -505,7 +506,7 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
         except Exception as exc:
             errors.append(str(exc))
             continue
-        errors.extend(validate_bound_review(data, frame=frame, contexts=contexts, version=expected_version, metadata_only=metadata_only, phase3_contexts=phase3_context_hashes(ep, frame["frame"]), directing_v3=directing_v3_required(ep)))
+        errors.extend(validate_bound_review(data, frame=frame, contexts=contexts, version=expected_version, metadata_only=metadata_only, phase3_contexts=phase3_context_hashes(ep, frame["frame"]), directing_v3=directing_v3))
 
     phashes: list[dict] = []
     duplicates: list[dict] = []
@@ -683,7 +684,9 @@ def _persist_candidate(
     phashes: list[dict],
     provenance: dict,
 ) -> int:
-    candidate_errors = validate_candidate_rows(data.get("frames"), current, version=episode_contract_version(ep), directing_v3=directing_v3_required(ep))
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    candidate_errors = validate_candidate_rows(data.get("frames"), current, version=version, directing_v3=directing_v3)
     global_codes = data.get("issue_codes")
     if not isinstance(global_codes, list):
         candidate_errors.append("global issue_codes must be list")
@@ -693,7 +696,6 @@ def _persist_candidate(
     if (data.get("summary") or {}).get("passed") is not True:
         candidate_errors.append("critic summary.passed must be true")
 
-    version = episode_contract_version(ep)
     rows_by_frame = {str(row.get("frame") or "").zfill(2): row for row in (data.get("frames") or []) if isinstance(row, dict)}
     review_dir = ep / REVIEW_DIR
     review_dir.mkdir(parents=True, exist_ok=True)

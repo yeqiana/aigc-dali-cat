@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Incremental Caption ↔ Image audit for Story OS V2.6.0.
+"""Incremental final-publish Caption ↔ Image audit for Story OS V2.6.1.
 
-Caption edits never invalidate the Visual Semantic Review. Only caption/image pairs
-whose caption SHA or image SHA changed are reviewed again, in chunks of up to 5.
+Caption edits never invalidate the Visual Semantic Review. Final publish images are
+reviewed in chunks of up to 5, so subtitle obstruction and caption support do not
+force one oversized Release Critic request. Evidence is reused by caption/publish SHA.
 """
 from __future__ import annotations
 
@@ -16,10 +17,11 @@ import incremental_frame_review as inc
 import runtime_command
 import runtime_router
 import product_review_adapter
+import subtitle_layout
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/caption-image-audit.json")
-SCHEMA = 1
+SCHEMA = 2
 CHUNK = 5
 
 
@@ -27,6 +29,11 @@ class ProductReviewHostAction(RuntimeError):
     def __init__(self, request: dict):
         super().__init__("caption/image review requires product runtime host action")
         self.request = request
+
+
+def _review_kind(index: int) -> str:
+    return f"caption-image-audit-v2-{index:03d}"
+
 
 def _caption_texts(ep: Path, frames: list[dict]) -> tuple[dict[str, str], dict]:
     source = inc._manifest_caption_path(ep)
@@ -51,15 +58,60 @@ def _caption_texts(ep: Path, frames: list[dict]) -> tuple[dict[str, str], dict]:
 def _read(ep: Path) -> dict:
     p = ep / REL
     if not p.is_file():
-        return {"schema_version": SCHEMA, "module_version": "2.6.0", "frames": {}}
+        return {"schema_version": SCHEMA, "module_version": "2.6.1", "frames": {}}
     try:
         d = json.loads(p.read_text(encoding="utf-8-sig"))
-        return d if isinstance(d, dict) else {"schema_version": SCHEMA, "module_version": "2.6.0", "frames": {}}
+        return d if isinstance(d, dict) else {"schema_version": SCHEMA, "module_version": "2.6.1", "frames": {}}
     except Exception:
-        return {"schema_version": SCHEMA, "module_version": "2.6.0", "frames": {}}
+        return {"schema_version": SCHEMA, "module_version": "2.6.1", "frames": {}}
 
 def _write(ep: Path, data: dict) -> None:
     base.write_json(ep / REL, data)
+
+
+def _review_frame_records(ep: Path) -> tuple[list[dict], dict]:
+    """Use final subtitled publish pixels when the canonical subtitle layout is required."""
+    base_rows = base.frame_records(ep, require_files=False)
+    if not subtitle_layout.layout_required(ep):
+        return base.frame_records(ep, require_files=True), {"mode": "approved_base"}
+    report_path = ep / subtitle_layout.REPORT_REL
+    if not report_path.is_file():
+        raise ValueError("subtitle layout audit missing before final caption/image review")
+    report = base.read_json(report_path)
+    if report.get("engine") != subtitle_layout.ENGINE or report.get("canonical_renderer") is not True:
+        raise ValueError("subtitle layout audit is not canonical")
+    audited = report.get("frames") or {}
+    rows: list[dict] = []
+    for row in base_rows:
+        key = row["frame"]
+        layout = audited.get(key)
+        if not isinstance(layout, dict):
+            raise ValueError(f"subtitle layout audit missing frame {key}")
+        lines = layout.get("lines")
+        if not isinstance(lines, list) or len(lines) > 2:
+            raise ValueError(f"subtitle layout frame {key} invalid wrapped lines")
+        if int(layout.get("x") or -1) != 72:
+            raise ValueError(f"subtitle layout frame {key} must stay left aligned at x=72")
+        try:
+            y_ratio = float(layout.get("y_ratio"))
+        except Exception as exc:
+            raise ValueError(f"subtitle layout frame {key} y_ratio missing") from exc
+        if not subtitle_layout.LEFT_MIDDLE_MIN_RATIO <= y_ratio <= subtitle_layout.LEFT_MIDDLE_MAX_RATIO and not str(layout.get("safe_zone_override_reason") or "").strip():
+            raise ValueError(f"subtitle layout frame {key} leaves left-middle zone without override reason")
+        path = base.repo_path(layout.get("output_path"), f"subtitle layout frame {key} output_path", require_file=True)
+        expected_sha = str(layout.get("output_sha256") or "").lower()
+        if len(expected_sha) != 64:
+            raise ValueError(f"subtitle layout frame {key} output_sha256 invalid")
+        actual_sha = base.sha256_file(path).lower()
+        if actual_sha != expected_sha:
+            raise ValueError(f"subtitle layout publish output drift: {key}")
+        rows.append({**row, "path": path, "path_rel": base.repo_rel(path), "sha256": actual_sha})
+    return rows, {
+        "mode": "final_publish_with_subtitle",
+        "layout_audit_path": base.repo_rel(report_path),
+        "layout_audit_sha256": base.sha256_file(report_path),
+    }
+
 
 def _hashes(ep: Path, frames: list[dict]) -> tuple[dict[str, str], dict[str, str], dict[str, str], dict]:
     cap_state = inc.caption_state(ep, frames)
@@ -69,9 +121,10 @@ def _hashes(ep: Path, frames: list[dict]) -> tuple[dict[str, str], dict[str, str
     return image_sha, caption_sha, texts, {**source_meta, "source_sha256": cap_state.get("source_sha256")}
 
 def dirty_frames(ep: Path) -> tuple[list[dict], dict, dict[str, str], dict[str, str], dict[str, str], dict]:
-    frames = base.frame_records(ep, require_files=True)
+    frames, review_meta = _review_frame_records(ep)
     current = _read(ep)
     image_sha, caption_sha, texts, source_meta = _hashes(ep, frames)
+    source_meta = {**source_meta, "review_image": review_meta}
     existing = current.get("frames") or {}
     dirty = []
     for row in frames:
@@ -88,27 +141,28 @@ def dirty_frames(ep: Path) -> tuple[list[dict], dict, dict[str, str], dict[str, 
 
 def _prompt(ep: Path, rows: list[dict], texts: dict[str, str], out: Path) -> str:
     mapping = "\n".join(
-        f"- frame {r['frame']}: image={r['path_rel']} | caption={json.dumps(texts[r['frame']], ensure_ascii=False)}"
+        f"- frame {r['frame']}: final_publish_image={r['path_rel']} | caption={json.dumps(texts[r['frame']], ensure_ascii=False)}"
         for r in rows
     )
-    return f"""You are the Story OS Caption ↔ Image Support Critic.
-Review ONLY whether each supplied caption is honestly supported by the actual pixels of its mapped image.
-Do not re-review story quality, composition, character continuity, or overall visual quality.
-A caption may add ordinary context, but must not invent a core visible event, prop, person, UI text, anomaly, action, or causal fact absent from the image.
-Empty captions automatically pass and should not be embellished.
+    return f"""You are the Story OS final-publish Caption ↔ Image + Subtitle Obstruction Critic.
+Review ONLY the supplied FINAL publish pixels after subtitle rendering.
+For each frame judge two things:
+1. supported: the caption is honestly supported by the underlying photographed/generated scene; it must not invent a core event, prop, person, UI text, anomaly, action, or causal fact absent from the scene. The rendered subtitle text itself is NEVER visual evidence for supported=true; mentally ignore the overlay when judging support.
+2. subtitle_unobstructed: rendered text does not cover a face, anomaly evidence, hand/action, key prop, native text, or causal clue. Left/middle geometry and line-count are checked deterministically elsewhere; here judge actual pixel obstruction.
+Do not re-review overall story quality, character continuity, or visual style. Empty captions automatically pass both checks.
 Mappings:
 {mapping}
 
 Write ONLY JSON to {out.relative_to(ROOT).as_posix()}:
-{{"frames":[{{"frame":"01","supported":true,"notes":"specific pixel support"}}],"summary":{{"passed":true}}}}
-Return one row for every attached frame. summary.passed=false if any supported=false.
+{{"frames":[{{"frame":"01","supported":true,"subtitle_unobstructed":true,"notes":"specific pixel evidence"}}],"summary":{{"passed":true}}}}
+Return one row for every attached frame. summary.passed=false if any supported=false or subtitle_unobstructed=false.
 """
 
 def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str | None, timeout: int, index: int) -> dict:
     out = ep / "meta" / f".caption-image-audit-candidate-{index:03d}.json"
     active_runtime, _ = runtime_router.detect()
     if active_runtime in {"WORK", "WEB"} and not codex_raw:
-        kind = f"caption-image-audit-{index:03d}"
+        kind = _review_kind(index)
         request_file = product_review_adapter.request_path(ep, kind)
         if out.is_file() and request_file.is_file():
             data, provenance = product_review_adapter.finalize_candidate(
@@ -148,7 +202,7 @@ def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str
         cmd += ["-i", str(row["path"])]
     cmd += ["-"]
     cp = runtime_command.run_argv(cmd, cwd=ROOT, stdin_text=_prompt(ep, rows, texts, out), timeout=timeout, capture=True)
-    log = ep / "meta" / f"caption-image-audit-{index:03d}.jsonl"
+    log = ep / "meta" / f"caption-image-audit-v2-{index:03d}.jsonl"
     log.write_text(cp.stdout or "", encoding="utf-8", newline="\n")
     if cp.returncode != 0 or not out.is_file():
         raise RuntimeError(f"caption image critic failed rc={cp.returncode}; log={log}")
@@ -159,11 +213,11 @@ def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str
 def ensure(ep: Path, codex_raw: str | None = None, timeout: int = 900) -> tuple[bool, dict]:
     ep = Path(ep).resolve()
     dirty, current, image_sha, caption_sha, texts, source_meta = dirty_frames(ep)
-    rows_by_key = {r["frame"]: r for r in base.frame_records(ep, require_files=True)}
+    rows_by_key = {r["frame"]: r for r in base.frame_records(ep, require_files=False)}
     evidence = current if isinstance(current, dict) else {}
     evidence.update({
         "schema_version": SCHEMA,
-        "module_version": "2.6.0",
+        "module_version": "2.6.1",
         "caption_source": source_meta,
     })
     dest = evidence.setdefault("frames", {})
@@ -178,6 +232,7 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int = 900) -> tuple[
             dest[key] = {
                 "schema_version": SCHEMA, "frame": key,
                 "image_sha256": image_sha[key], "caption_sha256": caption_sha[key],
+                "supported": True, "subtitle_unobstructed": True,
                 "passed": True, "mode": "empty_caption", "notes": "no caption to validate",
             }
         else:
@@ -192,11 +247,15 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int = 900) -> tuple[
             result = got.get(key)
             if not result:
                 raise RuntimeError(f"caption image critic omitted frame {key}")
-            passed = result.get("supported") is True
+            supported = result.get("supported") is True
+            unobstructed = result.get("subtitle_unobstructed") is True
+            passed = supported and unobstructed
             dest[key] = {
                 "schema_version": SCHEMA, "frame": key,
                 "image_sha256": image_sha[key], "caption_sha256": caption_sha[key],
-                "passed": passed, "mode": "pixel_critic",
+                "supported": supported,
+                "subtitle_unobstructed": unobstructed,
+                "passed": passed, "mode": "final_publish_pixel_critic",
                 "notes": str(result.get("notes") or ""),
                 "critic_provenance": data.get("critic_provenance"),
             }
@@ -215,7 +274,7 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int = 900) -> tuple[
     if active_runtime in {"WORK", "WEB"} and not codex_raw:
         chunk_count = (len(nonempty) + CHUNK - 1) // CHUNK
         for index in range(1, chunk_count + 1):
-            kind = f"caption-image-audit-{index:03d}"
+            kind = _review_kind(index)
             request_file = product_review_adapter.request_path(ep, kind)
             candidate_file = ep / "meta" / f".caption-image-audit-candidate-{index:03d}.json"
             if request_file.is_file() and candidate_file.is_file():
@@ -225,11 +284,15 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int = 900) -> tuple[
 
 def verify(ep: Path) -> list[str]:
     ep = Path(ep).resolve()
-    frames = base.frame_records(ep, require_files=True)
+    frames, review_meta = _review_frame_records(ep)
     data = _read(ep)
     image_sha, caption_sha, _texts, _source_meta = _hashes(ep, frames)
     errors = []
     rows = data.get("frames") or {}
+    if data.get("schema_version") != SCHEMA:
+        errors.append(f"caption image audit schema_version must be {SCHEMA}")
+    if str((data.get("caption_source") or {}).get("review_image", {}).get("mode") or "") != str(review_meta.get("mode") or ""):
+        errors.append("caption image audit review-image mode stale")
     for frame in frames:
         key = frame["frame"]
         row = rows.get(key)
@@ -240,13 +303,19 @@ def verify(ep: Path) -> list[str]:
             errors.append(f"caption image audit image SHA stale: {key}")
         if row.get("caption_sha256") != caption_sha[key]:
             errors.append(f"caption image audit caption SHA stale: {key}")
+        if row.get("supported") is not True:
+            errors.append(f"caption image audit unsupported caption: {key}")
+        if row.get("subtitle_unobstructed") is not True:
+            errors.append(f"caption image audit subtitle obstruction failed: {key}")
         if row.get("passed") is not True:
             errors.append(f"caption image audit failed: {key}")
     return errors
 
 def self_test():
     assert CHUNK == 5
-    print("CAPTION IMAGE AUDIT V2.6.0 SELF-TEST PASS")
+    assert SCHEMA == 2
+    assert _review_kind(1) == "caption-image-audit-v2-001"
+    print("CAPTION IMAGE AUDIT V2.6.1 SELF-TEST PASS")
 
 def main() -> int:
     ap = argparse.ArgumentParser()

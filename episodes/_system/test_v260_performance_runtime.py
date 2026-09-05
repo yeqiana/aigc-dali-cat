@@ -43,5 +43,14 @@ class RuntimePerformanceV260Test(unittest.TestCase):
         self.assertIn("visual_final_freeze", src)
         self.assertIn("caption_image_audit", src)
 
+    def test_release_does_not_attach_every_body_frame_to_final_critic(self):
+        release_src = (ROOT / "episodes/_system/release_preflight.py").read_text(encoding="utf-8-sig")
+        caption_src = (ROOT / "episodes/_system/caption_image_audit.py").read_text(encoding="utf-8-sig")
+        self.assertIn("release_review_rows(rows)", release_src)
+        self.assertNotIn('ROOT / row["path"] for row in rows.values()', release_src)
+        self.assertIn("final_publish_with_subtitle", caption_src)
+        self.assertIn("subtitle_unobstructed", caption_src)
+        self.assertIn("CHUNK = 5", caption_src)
+
 if __name__ == "__main__":
     unittest.main()

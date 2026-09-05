@@ -24,6 +24,7 @@ from pathlib import Path
 
 from story_os_contract import story_os_version
 import caption_image_audit
+import subtitle_layout
 import visual_final_freeze
 import runtime_router
 import runtime_provenance
@@ -625,6 +626,13 @@ def release_hashes(ep: Path) -> dict[str, dict]:
         for role, path in release_artifacts(ep).items()
     }
 
+
+def release_review_rows(rows: dict[str, dict]) -> dict[str, dict]:
+    """Keep the final critic on release semantics; all-body subtitle pixels are chunk-audited separately."""
+    roles = ("cover", "body01", "body02", "body03", "climax", "payoff", "captions", "publish_copy", "propagation_card")
+    return {role: rows[role] for role in roles if role in rows}
+
+
 def cmd_init_compliance(args: argparse.Namespace) -> int:
     ep = ep_path(args.episode_dir)
     p = ep / COMPLIANCE_REL
@@ -690,7 +698,8 @@ def release_critic_prompt(ep: Path, candidate: Path, rows: dict[str, dict]) -> s
     title = str(publication.get("actual_title") or "")
     description = str(publication.get("description") or "")
     topics = publication.get("topics") or []
-    mapping = "\n".join(f"- {role}: {row['path']}" for role, row in rows.items())
+    review_rows = release_review_rows(rows)
+    mapping = "\n".join(f"- {role}: {row['path']}" for role, row in review_rows.items())
     rel = ep.relative_to(ROOT).as_posix()
     out = candidate.relative_to(ROOT).as_posix()
     return f"""You are an adversarial FINAL RELEASE Semantic + Governance Critic in a fresh isolated session.
@@ -712,6 +721,8 @@ Topics:
 Read:
 - standards/制作规范_正式版.md
 - standards/release_preflight_guard_V2.0.3.5.md
+- {rel}/meta/subtitle-layout-audit.json (deterministic all-frame placement/line-count/hash audit)
+- {rel}/meta/caption-image-audit.json (all final publish frames reviewed in SHA-bound chunks of up to 5 for caption support + actual subtitle obstruction)
 - the episode Story Lock / storyboard / captions / publish copy / propagation card.
 
 Hard release checks:
@@ -722,7 +733,7 @@ Hard release checks:
 5. payoff_honesty: the payoff is earned by earlier evidence and does not add a brand-new mechanism.
 6. description_consistency: description/topics do not claim official fact, real case, or evidence absent from the story.
 7. no_caption_invented_core_evidence: final text may add context, but may not invent the core visual evidence.
-8. subtitle_left_middle_and_unobstructed: inspect EVERY bodyNN final subtitled publish image in the mapping, not only body01-03/climax/payoff. Text should stay on the left and prefer the middle band; any moved caption must still avoid faces, anomaly evidence, hands/actions, key props, native text and causal clues. Any obstruction on any body frame is FAIL.
+8. subtitle_left_middle_and_unobstructed: require BOTH SHA-bound all-frame audits above to PASS. subtitle-layout-audit proves left/middle geometry, line count and current publish-output hashes; caption-image-audit proves every final publish frame was pixel-reviewed in chunks and subtitle_unobstructed=true. Do not reopen every body image here; fail if either audit is missing/stale/failed.
 9. caption_conversational_hook_quality: captions must sound like a real first-person immediate record, stay concise/eye-catching, avoid novel narration/AI boilerplate, and perform one clear narrative function per frame. Two rendered lines is the hard maximum.
 
 Governance checks:
@@ -823,8 +834,11 @@ def cmd_run_release_critic(args: argparse.Namespace) -> int:
     candidate.unlink(missing_ok=True)
     active_runtime, _ = runtime_router.detect()
     if active_runtime in {"WORK", "WEB"} and not args.codex:
-        source_paths = list(dict.fromkeys(ROOT / row["path"] for row in rows.values()))
+        review_rows = release_review_rows(rows)
+        source_paths = list(dict.fromkeys(ROOT / row["path"] for row in review_rows.values()))
         source_paths += [
+            ep / subtitle_layout.REPORT_REL,
+            ep / caption_image_audit.REL,
             ROOT / "standards/制作规范_正式版.md",
             ROOT / "standards/release_preflight_guard_V2.0.3.5.md",
         ]
