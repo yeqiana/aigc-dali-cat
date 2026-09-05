@@ -224,11 +224,13 @@ def collect_errors(root: Path | None = None) -> list[str]:
         Path("standards/生产帧语义强制规范_V1.0.md"),
         Path("standards/工作区与增量闭环规范_V1.0.md"),
         Path("standards/最终字幕视觉规范_V1.2.md"),
+        Path("standards/导演镜头光影与异常隐藏规范_V1.0.md"),
+        Path("standards/directing_grammar_v1.json"),
     ]:
         if not (root / rel).is_file():
             errors.append(f"missing active creative enforcement standard: {rel.as_posix()}")
     authority_text = read_text(root / "standards/AUTHORITY_INDEX.json")
-    for token in ["standards/创作执行强制规范_V2.0.3.2.md", "standards/生产帧语义强制规范_V1.0.md", "standards/工作区与增量闭环规范_V1.0.md", "standards/最终字幕视觉规范_V1.2.md"]:
+    for token in ["standards/创作执行强制规范_V2.0.3.2.md", "standards/生产帧语义强制规范_V1.0.md", "standards/工作区与增量闭环规范_V1.0.md", "standards/最终字幕视觉规范_V1.2.md", "standards/导演镜头光影与异常隐藏规范_V1.0.md"]:
         if token not in authority_text:
             errors.append(f"AUTHORITY_INDEX missing active creative enforcement route: {token}")
 
@@ -326,6 +328,15 @@ def collect_errors(root: Path | None = None) -> list[str]:
         "subtitle_layout.py": [
             "drop_entire_second_line",
             "PUNCTUATION_ONLY_SECOND_LINE",
+            "LEFT_MIDDLE_MIN_RATIO",
+            "safe_zone_override_reason",
+        ],
+        "shot_progression_gate.py": [
+            "schema_version\":3",
+            "scene_position_id",
+            "cinematic_reference",
+            "lighting_design",
+            "anomaly_concealment",
         ],
         "codex_auto_orchestrator.py": [
             "from story_os_contract import canonical_stages, story_os_version",

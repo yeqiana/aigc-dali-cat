@@ -65,9 +65,15 @@ def verify_story(ep):
          ["DENSITY:"+x for x in storyboard_density_gate.validate(ep,True)] + \
          ["OPENING:"+x for x in opening_social_anchor.validate(ep,True)]
     if not advanced_enabled(ep):return base
+    shot_errors=["SHOT_PROGRESS:"+x for x in shot_progression_gate.validate(ep,True)]
+    try:
+        shot_data=read_json(Path(ep).resolve()/shot_progression_gate.REL)
+        if int(shot_data.get("schema_version") or 0)<3:
+            shot_errors.append("SHOT_PROGRESS:directing-quality v2 new/unlocked story requires shot progression schema_version=3")
+    except Exception as exc:
+        shot_errors.append("SHOT_PROGRESS:"+str(exc))
     return base + \
-           ["CAST_VISUAL:"+x for x in character_visual_contract.validate(ep,True)] + \
-           ["SHOT_PROGRESS:"+x for x in shot_progression_gate.validate(ep,True)]
+           ["CAST_VISUAL:"+x for x in character_visual_contract.validate(ep,True)] + shot_errors
 def verify_preimage(ep):
     if not enabled(ep):return []
     base=["CAPTURE:"+x for x in capture_event_contract.validate(ep,True)] + \

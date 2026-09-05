@@ -37,7 +37,7 @@
 新增约束由 `Character_Visual_And_Wardrobe_V1.0.md` 定义：
 - Camera-Friendly Ordinary Cast：主角略高于普通路人颜值，但必须真实；
 - Anti-Likeness：参考真人只做风格参考，不复制身份；
-- Capture Setup Diversity：同摄影方式不得反复刷屏；
+- Capture Setup Diversity：同摄影方式不得反复刷屏；新制作使用 `shot-progression` schema_version=3，额外锁定景别、精确机位唯一、经典镜头结构翻译、现实光影与异常隐藏载体；详细见 `导演镜头光影与异常隐藏规范_V1.0.md`；
 - Anomaly Logic Escalation：异常必须从“变多/变大”升级为“空间/因果不可能”；
 - Human Action Ladder：人物不能一直站着看，必须进入确认、讨论、移动、行动、失败、适应；
 - Temporal Continuity：昼夜、天气、环境光跳变必须有时间和剧情解释；

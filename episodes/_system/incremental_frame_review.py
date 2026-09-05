@@ -220,7 +220,7 @@ def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, capt
     if data.get("decision") != "pass" or data.get("issue_codes") not in ([], None):
         reasons.append("review_not_pass")
     checks = data.get("checks") or {}
-    for name in base.checks_for_version(version):
+    for name in base.checks_for_version(version, base.directing_v3_required(ep)):
         if checks.get(name) is not True:
             reasons.append(f"check_failed:{name}")
     return not reasons, reasons
@@ -309,14 +309,14 @@ Attached mapping:
 {mapping}
 
 Attempt {attempt}. Judge ACTUAL pixels. Every supplied frame must pass all checks:
-{', '.join(base.checks_for_version(base.episode_contract_version(ep)))}
-Hard failures include wrong scene/beat/prop/person/wardrobe, illegal POV, ghost camera, broken space/time continuity, unreadable anomaly, caption inventing missing evidence, missing actual information gain, narrative redundancy, repeated shot grammar, unmotivated camera defects, impossible screen/UI physics, or broken visual memory.
+{', '.join(base.checks_for_version(base.episode_contract_version(ep), base.directing_v3_required(ep)))}
+Hard failures include wrong scene/beat/prop/person/wardrobe, illegal POV, ghost camera, broken space/time continuity, unreadable anomaly, caption inventing missing evidence, missing actual information gain, narrative redundancy, repeated shot grammar, unmotivated camera defects, impossible screen/UI physics, broken visual memory, wrong locked shot scale, visually repeated planned camera position, failed cinematic-structure translation, invented/non-matching light, or missing declared reflection/fog/light-shadow/occlusion anomaly carrier.
 Episode contract version: {base.episode_contract_version(ep)}. V2.2-only Visual Narrative checks and issue codes apply ONLY when version >= 2.2.0; legacy episodes must not fail on V2.2-only criteria.
 Return one row for EVERY supplied context frame, not only dirty roots.
 Use issue codes only from: {', '.join(sorted(base.ISSUE_CODES))}
 
 Write ONLY JSON to {candidate.relative_to(ROOT).as_posix()} with shape:
-{{"frames":[{{"frame":"01","checks":{{"scene_storyboard_fidelity":true,"story_beat_fidelity":true,"key_prop_fidelity":true,"character_identity":true,"wardrobe_continuity":true,"pov_photographer_legality":true,"spatial_continuity":true,"temporal_continuity":true,"anomaly_readability":true,"caption_image_support":true,"actual_information_gain":true,"environment_physics_fidelity":true,"anomaly_escalation_fidelity":true,"scale_reference_fidelity":true,"camera_authorship_physical":true,"moment_capture_credibility":true,"narrative_evidence_gain":true,"shot_grammar_diversity":true,"camera_defect_physics":true,"screen_content_physics":true,"visual_memory_continuity":true}},"issue_codes":[],"notes":"pixel-level evidence","decision":"pass"}}],"issue_codes":[],"summary":{{"passed":true,"notes":"incremental context judgment"}}}}
+{{"frames":[{{"frame":"01","checks":{{"scene_storyboard_fidelity":true,"story_beat_fidelity":true,"key_prop_fidelity":true,"character_identity":true,"wardrobe_continuity":true,"pov_photographer_legality":true,"spatial_continuity":true,"temporal_continuity":true,"anomaly_readability":true,"caption_image_support":true,"actual_information_gain":true,"environment_physics_fidelity":true,"anomaly_escalation_fidelity":true,"scale_reference_fidelity":true,"camera_authorship_physical":true,"moment_capture_credibility":true,"narrative_evidence_gain":true,"shot_grammar_diversity":true,"camera_defect_physics":true,"screen_content_physics":true,"visual_memory_continuity":true,"shot_scale_fidelity":true,"scene_position_uniqueness_fidelity":true,"cinematic_structure_translation_fidelity":true,"practical_lighting_design_fidelity":true,"anomaly_concealment_fidelity":true}},"issue_codes":[],"notes":"pixel-level evidence","decision":"pass"}}],"issue_codes":[],"summary":{{"passed":true,"notes":"incremental context judgment"}}}}
 If any supplied frame fails, summary.passed=false.
 """
 
@@ -381,7 +381,7 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
     if {r["frame"]: base.sha256_file(r["path"]) for r in current} != before:
         raise RuntimeError("incremental critic modified approved image assets")
     data = read_json(candidate)
-    candidate_errors = base.validate_candidate_rows(data.get("frames"), selected, version=base.episode_contract_version(ep))
+    candidate_errors = base.validate_candidate_rows(data.get("frames"), selected, version=base.episode_contract_version(ep), directing_v3=base.directing_v3_required(ep))
     global_codes = data.get("issue_codes")
     if not isinstance(global_codes, list):
         candidate_errors.append("global issue_codes must be list")

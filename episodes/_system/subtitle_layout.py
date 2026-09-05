@@ -16,6 +16,9 @@ REPORT_REL = Path("meta/subtitle-layout-audit.json")
 TARGET_CONTRACT = (2, 0, 3, 2)
 SEMANTIC_RE = re.compile(r"[\u3400-\u9fffA-Za-z0-9]")
 ENGINE = "story_os_subtitle_layout_v1"
+DEFAULT_Y_RATIO = 0.52
+LEFT_MIDDLE_MIN_RATIO = 0.42
+LEFT_MIDDLE_MAX_RATIO = 0.62
 
 
 def sha256_file(path: Path) -> str:
@@ -158,7 +161,7 @@ def render_one(base: Path, output: Path, caption: str, *, y: int | None, font_pa
         raise RuntimeError("non-silent caption became empty")
 
     x = 72
-    baseline_y = int(height * 0.68) if y is None else int(y)
+    baseline_y = int(height * DEFAULT_Y_RATIO) if y is None else int(y)
     line_height = 54
 
     shadow = Image.new("RGBA", image.size, (0, 0, 0, 0))
@@ -199,7 +202,7 @@ def render_one(base: Path, output: Path, caption: str, *, y: int | None, font_pa
     }
 
 
-def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float = 0.68) -> Path:
+def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float = DEFAULT_Y_RATIO) -> Path:
     if not (0.1 <= default_y_ratio <= 0.85):
         raise RuntimeError("default_y_ratio must be 0.1..0.85")
     source = discover_input(ep)
@@ -223,10 +226,15 @@ def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float 
         output = ep / "production" / "publish" / f"{key}.png"
         per = y_cfg.get(key) or y_cfg.get(str(number)) or {}
         y_value = per.get("y") if isinstance(per, dict) else None
+        override_reason = str(per.get("safe_zone_override_reason") or "").strip() if isinstance(per, dict) else ""
+        from PIL import Image
+        with Image.open(base) as im:
+            base_height = im.height
         if y_value is None:
-            from PIL import Image
-            with Image.open(base) as im:
-                y_value = int(im.height * default_y_ratio)
+            y_value = int(base_height * default_y_ratio)
+        y_ratio = int(y_value) / base_height
+        if not LEFT_MIDDLE_MIN_RATIO <= y_ratio <= LEFT_MIDDLE_MAX_RATIO and not override_reason:
+            raise RuntimeError(f"frame {key} subtitle leaves left-middle safe zone without safe_zone_override_reason")
 
         if number in silent:
             from PIL import Image
@@ -258,6 +266,8 @@ def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float 
             "base_sha256": sha256_file(base),
             "output_path": output.relative_to(ROOT).as_posix(),
             "output_sha256": sha256_file(output),
+            "y_ratio": round(int(y_value) / base_height, 4),
+            "safe_zone_override_reason": override_reason,
         }
 
     report = {
@@ -274,6 +284,10 @@ def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float 
             "font_size": 42,
             "stroke_width": 4,
             "left_margin": 72,
+            "horizontal_alignment": "left",
+            "default_y_ratio": DEFAULT_Y_RATIO,
+            "preferred_vertical_zone": [LEFT_MIDDLE_MIN_RATIO, LEFT_MIDDLE_MAX_RATIO],
+            "outside_zone_requires_reason": True,
         },
         "frames": rows,
         "summary": {"passed": True, "frame_count": len(rows)},
@@ -322,6 +336,14 @@ def verify_audit(ep: Path) -> list[str]:
         if not isinstance(lines, list) or len(lines) > 2:
             errors.append(f"{key}: invalid wrapped lines")
             continue
+        if int(row.get("x") or -1) != 72:
+            errors.append(f"{key}: subtitle must remain left aligned at x=72")
+        try:
+            y_ratio=float(row.get("y_ratio"))
+        except Exception:
+            errors.append(f"{key}: y_ratio missing"); y_ratio=DEFAULT_Y_RATIO
+        if not LEFT_MIDDLE_MIN_RATIO <= y_ratio <= LEFT_MIDDLE_MAX_RATIO and not str(row.get("safe_zone_override_reason") or "").strip():
+            errors.append(f"{key}: outside left-middle zone without safe_zone_override_reason")
         if len(lines) >= 2 and punctuation_only(str(lines[1])):
             errors.append(f"{key}: PUNCTUATION_ONLY_SECOND_LINE")
         try:
@@ -342,6 +364,8 @@ def verify_audit(ep: Path) -> list[str]:
 
 
 def self_test() -> None:
+    assert DEFAULT_Y_RATIO == 0.52
+    assert LEFT_MIDDLE_MIN_RATIO < DEFAULT_Y_RATIO < LEFT_MIDDLE_MAX_RATIO
     assert contains_semantic_character("。A")
     assert not contains_semantic_character("。！？……”）")
     lines, dropped = sanitize_wrapped_lines(["昨天我明明锁进柜子里了", "。"])
@@ -357,7 +381,7 @@ def main() -> int:
     p = sub.add_parser("render-all")
     p.add_argument("episode_dir")
     p.add_argument("--font")
-    p.add_argument("--default-y-ratio", type=float, default=0.68)
+    p.add_argument("--default-y-ratio", type=float, default=DEFAULT_Y_RATIO)
     p = sub.add_parser("audit")
     p.add_argument("episode_dir")
     sub.add_parser("self-test")

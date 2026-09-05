@@ -20,6 +20,7 @@ from typing import Any
 
 import episode_performance
 import preproduction_handoff
+import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUEST_REL = Path("meta/runtime/product-host-request.json")
@@ -152,6 +153,21 @@ def build_request(
         raise ValueError("product runtime adapter only supports WORK/WEB")
     step, target = next_host_step(ep, mode)
     rel = ep.resolve().relative_to(ROOT.resolve()).as_posix()
+    try:
+        index=storyos_config.load_index(); required_read=((index.get("stage_read_sets") or {}).get(step) or [])
+    except Exception:
+        required_read=[]
+    step_instructions=[]
+    if step=="CREATIVE_STORY":
+        step_instructions += [
+            "Read config/profiles/account_creative/default.json as the account default topic/style profile, without overriding explicit user constraints or recent-5 anti-homogeneity evidence.",
+            "For new/unlocked work author meta/shot-progression-review.json schema_version=3 using standards/directing_grammar_v1.json: large+small shot scales, globally unique scene_position_id, at least two translated classic shot-structure references, practical-light narrative design, and at least one physically valid concealed anomaly carrier for suspense/strange genres. Run shot_progression_gate.py validate before completing CREATIVE_STORY."
+        ]
+    if step=="RELEASE":
+        step_instructions += [
+            "Inspect approved images before subtitle rendering. Prefer left-middle 42%-62% height, x=72; if moving outside that band, write safe_zone_override_reason per frame. Never cover faces, anomaly evidence, hands/actions, key props, native text or causal clues.",
+            "Keep captions first-person, conversational, concise and eye-catching; canonical renderer maximum remains two lines."
+        ]
     data = {
         "runtime": runtime,
         "status": "COMPLETE" if step == "COMPLETE" else "HOST_ACTION_REQUIRED",
@@ -162,6 +178,7 @@ def build_request(
         "resume": bool(resume),
         "next_step": step,
         "target_state": target,
+        "required_read": required_read,
         "local_codex_spawn_allowed": False,
         "local_codex_fallback_allowed": False,
         "host_contract": {
@@ -178,6 +195,7 @@ def build_request(
             "Reuse valid SHA-bound evidence and obey existing Story OS gates.",
             "For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.",
             "When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.",
+            *step_instructions,
         ],
     }
     if request_data:

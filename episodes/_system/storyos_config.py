@@ -111,6 +111,8 @@ def validate(data: dict | None = None) -> list[str]:
         "agent_runtime.router.config",
         "agent_runtime.batch.config",
         "agent_runtime.codex_subscription_batch.config",
+        "creative.account_profile_path",
+        "directing.grammar_path",
         "visual.default_profile_path",
         "visual.capture_profile_registry",
         "visual.capture_grammar_path",

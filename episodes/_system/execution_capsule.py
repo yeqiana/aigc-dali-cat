@@ -29,6 +29,8 @@ AUTHORITY_FILES=[
     "standards/Character_Master_Final_Closure_V1.0.md",
     "standards/Human_Response_Interaction_V1.0.md",
     "standards/wardrobe-scenario-profiles.json",
+    "config/profiles/account_creative/default.json",
+    "standards/directing_grammar_v1.json",
 ]
 STEP_EVIDENCE={
     "CREATIVE_STORY":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/resource-selection.json","meta/story-gates.json","reports/account-learning-index.json"],

@@ -4,6 +4,7 @@
 from __future__ import annotations
 import argparse, json
 from pathlib import Path
+import storyos_config
 
 REL=Path("meta/shot-progression-review.json")
 ANOMALY_STAGES={"ordinary","discovery","confirmation","spatial_contradiction","causal_contradiction","human_consequence","reversal","payoff"}
@@ -14,6 +15,26 @@ EMOTION_STATES={"ordinary","relaxed","curious","alert","uneasy","urgent"}
 RESPONSE_SYNC={"not_applicable","single_subject","asynchronous","shared_but_unsynchronized"}
 INTERACTION_TYPES={"none","group_selfie","shared_attention","show_phone","point_out","hand_item","check_map",
                    "talk","tease","help_clothing","touch_support","pack_together","enter_vehicle","leave_vehicle","other"}
+ROOT=Path(__file__).resolve().parents[2]
+
+def _directing_grammar():
+    cfg=storyos_config.load_config()
+    rel=storyos_config.get_path(cfg,"directing.grammar_path")
+    return read_json(ROOT/str(rel))
+
+def _director_sets():
+    g=_directing_grammar()
+    refs={str(x.get("id")):x for x in (g.get("cinematic_references") or []) if isinstance(x,dict) and x.get("id")}
+    lighting=g.get("lighting") or {}
+    return {
+      "shot_scales":set(g.get("shot_scales") or []),
+      "genre_families":set(g.get("genre_families") or []),
+      "reference_rows":refs,
+      "practical_sources":set(lighting.get("practical_sources") or []),
+      "contrast_modes":set(lighting.get("contrast_modes") or []),
+      "suspense_functions":set(lighting.get("suspense_functions") or []),
+      "concealment_carriers":set(g.get("concealment_carriers") or []),
+    }
 
 def read_json(p):
     d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
@@ -44,13 +65,18 @@ def prepare(ep,force=False):
         rows.append({
           "frame":f"{n:02d}","camera_position":"","subject_distance":"","primary_subject":"",
           "action":"","visual_function":"","capture_purpose":"","pov_mode":"","location_zone":"",
+          "shot_scale":"","scene_position_id":"",
+          "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":False},
+          "lighting_design":{"practical_source":"","contrast_mode":"","suspense_function":"none","physically_motivated":True,"invented_cinematic_light":False},
+          "anomaly_concealment":{"carrier":"none","purpose":"","physical_anchor":"","adds_information":False},
           "anomaly_logic_stage":"ordinary","human_action_stage":"ordinary","human_present":False,
           "emotion":{"state":"ordinary","intensity":0,"trigger":"","response_sync":"not_applicable"},
           "interaction":{"type":"none","actor":"","target":"","action":"","meaningful":False},
           "new_information":False,"continuity_exception_reason":""
         })
     d={
-      "schema_version":2,"status":"DRAFT","anomaly_applicable":True,"anomaly_exception_reason":"",
+      "schema_version":3,"status":"DRAFT","genre_family":"general_reality_crack",
+      "anomaly_applicable":True,"anomaly_exception_reason":"",
       "interaction_applicable":multi,
       "interaction_exception_reason":"" if multi else "single-person or non-group story",
       "rules":{
@@ -62,7 +88,12 @@ def prepare(ep,force=False):
         "max_consecutive_urgent_frames":2,
         "min_meaningful_interaction_per_5_human_frames":1,
         "max_meaningful_interaction_ratio":0.75,
-        "opening_social_natural_interaction_required":True
+        "opening_social_natural_interaction_required":True,
+        "require_large_and_small_scene":True,
+        "exact_scene_position_reuse_forbidden":True,
+        "min_cinematic_reference_frames":2,
+        "practical_lighting_required":True,
+        "suspense_genre_requires_concealed_anomaly":True
       },
       "frames":rows
     }
@@ -128,11 +159,73 @@ def _validate_response(ep,d,normalized,e):
         elif not any(((r.get("interaction") or {}).get("meaningful") is True) for r in opening):
             e.append("OPENING_INTERACTION_FAIL:opening social anchor needs at least one natural meaningful interaction in Frame 01/02")
 
+def _validate_directing(d,normalized,e):
+    sets=_director_sets();genre=str(d.get("genre_family") or "")
+    if genre not in sets["genre_families"]:e.append("genre_family invalid for directing grammar")
+    positions=set();scales=[];ref_frames=0;concealed_frames=0;prev_scale=None;same_scale_run=0;prev_carrier=None;same_carrier_run=0
+    large={"extreme_wide","wide"};small={"close","detail"}
+    for n,row,_ in normalized:
+        scale=str(row.get("shot_scale") or "")
+        if scale not in sets["shot_scales"]:e.append(f"frame {n:02d} invalid shot_scale")
+        else:
+            scales.append(scale);same_scale_run=same_scale_run+1 if scale==prev_scale else 1
+            if same_scale_run>2:e.append(f"SHOT_SCALE_REPEAT:{n:02d}:same shot scale >2 consecutive")
+            prev_scale=scale
+        pos=str(row.get("scene_position_id") or "").strip()
+        if not pos:e.append(f"frame {n:02d} scene_position_id missing")
+        elif pos in positions:e.append(f"SCENE_POSITION_REUSE:{n:02d}:{pos}")
+        else:positions.add(pos)
+        cref=row.get("cinematic_reference") or {}
+        if not isinstance(cref,dict):e.append(f"frame {n:02d} cinematic_reference must be object");cref={}
+        rid=str(cref.get("reference_id") or "").strip()
+        if rid:
+            ref=sets["reference_rows"].get(rid)
+            if not ref:e.append(f"frame {n:02d} invalid cinematic reference id: {rid}")
+            else:
+                fits=set(ref.get("genre_fit") or [])
+                if genre and fits and genre not in fits:e.append(f"frame {n:02d} cinematic reference {rid} not suited to genre {genre}")
+            if not str(cref.get("technique_translation") or "").strip():e.append(f"frame {n:02d} cinematic technique_translation missing")
+            if cref.get("exact_shot_recreation") is not False:e.append(f"frame {n:02d} exact film-shot recreation forbidden")
+            ref_frames+=1
+        light=row.get("lighting_design") or {}
+        if not isinstance(light,dict):e.append(f"frame {n:02d} lighting_design must be object");light={}
+        if str(light.get("practical_source") or "") not in sets["practical_sources"]:e.append(f"frame {n:02d} invalid practical light source")
+        if str(light.get("contrast_mode") or "") not in sets["contrast_modes"]:e.append(f"frame {n:02d} invalid lighting contrast_mode")
+        sf=str(light.get("suspense_function") or "")
+        if sf not in sets["suspense_functions"]:e.append(f"frame {n:02d} invalid lighting suspense_function")
+        if light.get("physically_motivated") is not True:e.append(f"frame {n:02d} lighting must be physically_motivated=true")
+        if light.get("invented_cinematic_light") is not False:e.append(f"frame {n:02d} invented cinematic light forbidden")
+        stage=str(row.get("anomaly_logic_stage") or "")
+        if stage != "ordinary" and sf=="none":
+            e.append(f"LIGHTING_NARRATIVE_MISSING:{n:02d}:anomaly frame needs a real-light narrative function")
+        conceal=row.get("anomaly_concealment") or {}
+        if not isinstance(conceal,dict):e.append(f"frame {n:02d} anomaly_concealment must be object");conceal={}
+        carrier=str(conceal.get("carrier") or "")
+        if carrier not in sets["concealment_carriers"]:e.append(f"frame {n:02d} invalid anomaly concealment carrier")
+        non_direct=carrier not in {"none","direct_visible",""}
+        if non_direct:
+            concealed_frames+=1
+            if not str(conceal.get("purpose") or "").strip():e.append(f"frame {n:02d} concealed anomaly purpose missing")
+            if not str(conceal.get("physical_anchor") or "").strip():e.append(f"frame {n:02d} concealed anomaly physical_anchor missing")
+            if conceal.get("adds_information") is not True:e.append(f"frame {n:02d} concealed anomaly must add information")
+            same_carrier_run=same_carrier_run+1 if carrier==prev_carrier else 1
+            if same_carrier_run>2:e.append(f"CONCEALMENT_CARRIER_REPEAT:{n:02d}:{carrier}")
+            prev_carrier=carrier
+        else:
+            same_carrier_run=0;prev_carrier=None
+    if scales and not any(x in large for x in scales):e.append("SHOT_SCALE_COVERAGE_FAIL:episode requires at least one large/establishing scene")
+    if scales and not any(x in small for x in scales):e.append("SHOT_SCALE_COVERAGE_FAIL:episode requires at least one close/detail small scene")
+    if len(set(scales))<3:e.append("SHOT_SCALE_COVERAGE_FAIL:episode requires at least three shot scales")
+    if len(normalized)>=8 and ref_frames<2:e.append("CINEMATIC_REFERENCE_COVERAGE_FAIL:at least two frames must translate a classic shot structure")
+    suspense={"suspense_strange","folk_horror","travel_anomaly","mountain_mockumentary","old_device_mystery","general_reality_crack"}
+    if genre in suspense and d.get("anomaly_applicable") is True and concealed_frames<1:
+        e.append("ANOMALY_CONCEALMENT_MISSING:suspense genre requires at least one mirror/reflection/fog/light/occlusion carrier")
+
 def validate(ep,require_locked=True):
     ep=Path(ep).resolve();p=ep/REL
     if not p.is_file():return ["meta/shot-progression-review.json missing"]
     d=read_json(p);e=[];total=frame_count(ep);version=int(d.get("schema_version") or 1)
-    if version not in {1,2}:e.append("shot progression schema_version must be 1 or 2")
+    if version not in {1,2,3}:e.append("shot progression schema_version must be 1, 2 or 3")
     if require_locked and d.get("status")!="LOCKED":e.append("shot progression review must be LOCKED")
     rows=d.get("frames") or []
     if len(rows)!=total:e.append(f"shot progression frame count mismatch {len(rows)} != {total}")
@@ -177,6 +270,7 @@ def validate(ep,require_locked=True):
         if row10 and (row10.get("new_information") is not True or str(row10.get("visual_function") or "").lower() in {"recap","bridge","repeat"}):
             e.append("FRAME10_MUST_OPEN_NEW_QUESTION_OR_EVIDENCE")
     if version>=2:_validate_response(ep,d,normalized,e)
+    if version>=3:_validate_directing(d,normalized,e)
     return e
 
 def resolve_frame(ep,frame):
@@ -185,11 +279,15 @@ def resolve_frame(ep,frame):
     return {"frame":key,"shot_progression":row or {}}
 
 def self_test():
+    sets=_director_sets()
+    assert "wide" in sets["shot_scales"] and "detail" in sets["shot_scales"]
+    assert "REFLECTION_SECOND_LAYER" in sets["reference_rows"]
+    assert "glass_reflection" in sets["concealment_carriers"]
     assert "spatial_contradiction" in STRONG_LOGIC
     assert "urgent" in EMOTION_STATES
     assert "group_selfie" in INTERACTION_TYPES
     assert 4==max(range(5))
-    print("SHOT PROGRESSION V2 HUMAN RESPONSE SELF-TEST PASS")
+    print("SHOT PROGRESSION V3 DIRECTING SELF-TEST PASS")
 
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)

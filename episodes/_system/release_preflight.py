@@ -68,6 +68,8 @@ RELEASE_CHECKS = (
     "payoff_honesty",
     "description_consistency",
     "no_caption_invented_core_evidence",
+    "subtitle_left_middle_and_unobstructed",
+    "caption_conversational_hook_quality",
 )
 GOV_CHECKS = (
     "ai_generated_declared",
@@ -606,17 +608,16 @@ def release_artifacts(ep: Path) -> dict[str, Path]:
         if isinstance(n, bool) or not isinstance(n, int) or not 1 <= n <= len(body):
             raise ValueError(f"invalid story frame reference: {n!r}")
         return body[n - 1]
-    return {
-        "cover": cover,
-        "body01": body[0],
-        "body02": body[1],
-        "body03": body[2],
+    rows = {"cover": cover}
+    rows.update({f"body{i:02d}": path for i, path in enumerate(body, start=1)})
+    rows.update({
         "climax": frame_for(climax),
         "payoff": frame_for(payoff),
         "captions": captions,
         "publish_copy": publish_copy,
         "propagation_card": propagation,
-    }
+    })
+    return rows
 
 def release_hashes(ep: Path) -> dict[str, dict]:
     return {
@@ -721,6 +722,8 @@ Hard release checks:
 5. payoff_honesty: the payoff is earned by earlier evidence and does not add a brand-new mechanism.
 6. description_consistency: description/topics do not claim official fact, real case, or evidence absent from the story.
 7. no_caption_invented_core_evidence: final text may add context, but may not invent the core visual evidence.
+8. subtitle_left_middle_and_unobstructed: inspect EVERY bodyNN final subtitled publish image in the mapping, not only body01-03/climax/payoff. Text should stay on the left and prefer the middle band; any moved caption must still avoid faces, anomaly evidence, hands/actions, key props, native text and causal clues. Any obstruction on any body frame is FAIL.
+9. caption_conversational_hook_quality: captions must sound like a real first-person immediate record, stay concise/eye-catching, avoid novel narration/AI boilerplate, and perform one clear narrative function per frame. Two rendered lines is the hard maximum.
 
 Governance checks:
 - This is AI-generated realistic fictional story content.
@@ -739,7 +742,9 @@ Write ONLY valid JSON to {out}:
     "climax_upgrade": true,
     "payoff_honesty": true,
     "description_consistency": true,
-    "no_caption_invented_core_evidence": true
+    "no_caption_invented_core_evidence": true,
+    "subtitle_left_middle_and_unobstructed": true,
+    "caption_conversational_hook_quality": true
   }},
   "governance_checks": {{
     "ai_generated_declared": true,
@@ -818,7 +823,7 @@ def cmd_run_release_critic(args: argparse.Namespace) -> int:
     candidate.unlink(missing_ok=True)
     active_runtime, _ = runtime_router.detect()
     if active_runtime in {"WORK", "WEB"} and not args.codex:
-        source_paths = [ROOT / row["path"] for row in rows.values()]
+        source_paths = list(dict.fromkeys(ROOT / row["path"] for row in rows.values()))
         source_paths += [
             ROOT / "standards/制作规范_正式版.md",
             ROOT / "standards/release_preflight_guard_V2.0.3.5.md",

@@ -66,12 +66,28 @@ V221_WORLD_IDENTITY_CHECKS = [
     "cultural_environment_fidelity",
 ]
 
-def checks_for_version(version: str) -> list[str]:
+DIRECTING_V3_CHECKS = [
+    "shot_scale_fidelity",
+    "scene_position_uniqueness_fidelity",
+    "cinematic_structure_translation_fidelity",
+    "practical_lighting_design_fidelity",
+    "anomaly_concealment_fidelity",
+]
+
+def directing_v3_required(ep: Path) -> bool:
+    p=Path(ep)/"meta/shot-progression-review.json"
+    if not p.is_file(): return False
+    try: return int(read_json(p).get("schema_version") or 0) >= 3
+    except Exception: return False
+
+def checks_for_version(version: str, directing_v3: bool = False) -> list[str]:
     checks = CHECKS + (V21_PHASE3_CHECKS if version_tuple(version) >= (2, 1, 0) else [])
     if version_tuple(version) >= (2, 2, 0):
         checks += V22_VISUAL_NARRATIVE_CHECKS
     if version_tuple(version) >= (2, 2, 1):
         checks += V221_WORLD_IDENTITY_CHECKS
+    if directing_v3:
+        checks += DIRECTING_V3_CHECKS
     return checks
 
 ISSUE_CODES = {
@@ -104,6 +120,11 @@ ISSUE_CODES = {
     "WORLD_IDENTITY_DRIFT",
     "CHARACTER_APPEARANCE_DRIFT",
     "CULTURAL_CONTEXT_DRIFT",
+    "SHOT_SCALE_MISMATCH",
+    "SCENE_POSITION_VISUAL_REPEAT",
+    "CINEMATIC_TRANSLATION_FAILED",
+    "LIGHTING_DESIGN_MISMATCH",
+    "ANOMALY_CONCEALMENT_MISSING",
 }
 
 
@@ -345,7 +366,7 @@ def duplicate_pairs(phashes: list[dict]) -> list[dict]:
     return pairs
 
 
-def validate_candidate_rows(rows: object, expected_frames: list[dict], version: str = "2.0.3.6") -> list[str]:
+def validate_candidate_rows(rows: object, expected_frames: list[dict], version: str = "2.0.3.6", directing_v3: bool = False) -> list[str]:
     errors: list[str] = []
     expected = {row["frame"] for row in expected_frames}
     if not isinstance(rows, list) or len(rows) != len(expected_frames):
@@ -363,7 +384,7 @@ def validate_candidate_rows(rows: object, expected_frames: list[dict], version: 
             errors.append(f"duplicate frame row: {key}")
         seen.add(key)
         checks = row.get("checks") or {}
-        for check in checks_for_version(version):
+        for check in checks_for_version(version, directing_v3):
             if checks.get(check) is not True:
                 errors.append(f"frame {key} checks.{check} must be true")
         codes = row.get("issue_codes")
@@ -381,7 +402,7 @@ def validate_candidate_rows(rows: object, expected_frames: list[dict], version: 
     return errors
 
 
-def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: str, metadata_only: bool, phase3_contexts: dict | None = None) -> list[str]:
+def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: str, metadata_only: bool, phase3_contexts: dict | None = None, directing_v3: bool = False) -> list[str]:
     errors: list[str] = []
     key = frame["frame"]
     if data.get("schema_version") != SCHEMA_VERSION:
@@ -408,7 +429,7 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
     if provenance.get("attempt") not in {1, 2}:
         errors.append(f"frame {key} critic attempt must be 1 or 2")
     checks = data.get("checks") or {}
-    for check in checks_for_version(version):
+    for check in checks_for_version(version, directing_v3):
         if checks.get(check) is not True:
             errors.append(f"frame {key} checks.{check} must be true")
     codes = data.get("issue_codes")
@@ -484,7 +505,7 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
         except Exception as exc:
             errors.append(str(exc))
             continue
-        errors.extend(validate_bound_review(data, frame=frame, contexts=contexts, version=expected_version, metadata_only=metadata_only, phase3_contexts=phase3_context_hashes(ep, frame["frame"])))
+        errors.extend(validate_bound_review(data, frame=frame, contexts=contexts, version=expected_version, metadata_only=metadata_only, phase3_contexts=phase3_context_hashes(ep, frame["frame"]), directing_v3=directing_v3_required(ep)))
 
     phashes: list[dict] = []
     duplicates: list[dict] = []
@@ -601,7 +622,8 @@ Hard rules for EVERY frame:
 17. camera_defect_physics: blur/noise/reflection/underexposure must have a plausible physical cause.
 18. screen_content_physics: phone/map/dashboard/time/camera UI must be internally, perspectivally and narratively coherent.
 19. visual_memory_continuity: character/wardrobe/vehicle/props/route/weather/light/anomaly evidence must persist unless explicitly changed.
-20. PASS only if all required checks are true, issue_codes is empty and decision=pass.
+20. For shot-progression schema_version >=3 only: shot_scale_fidelity must match the locked shot_scale; scene_position_uniqueness_fidelity must not collapse different planned positions into visibly repeated camera setups; cinematic_structure_translation_fidelity must use the locked structural technique without becoming an exact film-still recreation; practical_lighting_design_fidelity must honor the declared real light source/contrast/suspense function; anomaly_concealment_fidelity must visibly use the locked mirror/water/glass/fog/light-shadow/screen/occlusion carrier when declared.
+21. PASS only if all required checks are true, issue_codes is empty and decision=pass.
 
 Use issue codes only from this set:
 {', '.join(sorted(ISSUE_CODES))}
@@ -633,7 +655,12 @@ Required shape:
         "shot_grammar_diversity": true,
         "camera_defect_physics": true,
         "screen_content_physics": true,
-        "visual_memory_continuity": true
+        "visual_memory_continuity": true,
+        "shot_scale_fidelity": true,
+        "scene_position_uniqueness_fidelity": true,
+        "cinematic_structure_translation_fidelity": true,
+        "practical_lighting_design_fidelity": true,
+        "anomaly_concealment_fidelity": true
       }},
       "issue_codes": [],
       "notes": "specific pixel-level evidence",
@@ -656,7 +683,7 @@ def _persist_candidate(
     phashes: list[dict],
     provenance: dict,
 ) -> int:
-    candidate_errors = validate_candidate_rows(data.get("frames"), current, version=episode_contract_version(ep))
+    candidate_errors = validate_candidate_rows(data.get("frames"), current, version=episode_contract_version(ep), directing_v3=directing_v3_required(ep))
     global_codes = data.get("issue_codes")
     if not isinstance(global_codes, list):
         candidate_errors.append("global issue_codes must be list")

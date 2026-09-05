@@ -173,6 +173,13 @@
       "note": "Quality-enhancement contract only; does not create an Episode stage or override the canonical creative authority."
     },
     {
+      "path": "standards/导演镜头光影与异常隐藏规范_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "shot_scale_cinematic_structure_practical_lighting_anomaly_concealment",
+      "active": true,
+      "note": "Machine grammar lives in standards/directing_grammar_v1.json; references film structure only, never exact-shot recreation or invented cinematic lighting."
+    },
+    {
       "path": "standards/设备物理档案与参考预算规范_V1.0.md",
       "authority": "active_subordinate",
       "scope": "capture_physics_and_reference_budget",

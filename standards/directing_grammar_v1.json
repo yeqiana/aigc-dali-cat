@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "grammar_id": "DG01_REALISTIC_SUSPENSE_DIRECTING_V1",
+  "principle": "借电影的镜头信息组织、光影和隐藏技巧，但必须翻译成故事内真实摄影者能够拍到的画面；禁止复刻具体电影镜头、海报构图或无来源电影灯。",
+  "shot_scales": ["extreme_wide", "wide", "medium", "close", "detail"],
+  "shot_scale_policy": {
+    "episode_requires_large_scene": ["extreme_wide", "wide"],
+    "episode_requires_small_scene": ["close", "detail"],
+    "max_same_scale_consecutive": 2,
+    "exact_scene_position_reuse_forbidden": true
+  },
+  "genre_families": [
+    "suspense_strange",
+    "folk_horror",
+    "travel_anomaly",
+    "mountain_mockumentary",
+    "old_device_mystery",
+    "world_anomaly",
+    "general_reality_crack"
+  ],
+  "cinematic_references": [
+    {
+      "id": "NEGATIVE_SPACE_SUSPENSE",
+      "genre_fit": ["suspense_strange", "folk_horror", "travel_anomaly", "general_reality_crack"],
+      "classic_examples": ["Psycho", "Cure", "Ringu"],
+      "technique": "人物或主要物件偏置，把空出来的走廊、门口、窗边、暗区变成观众会持续检查的第二信息区。",
+      "diegetic_translation": "仍保持手机/旧数码/随手记录站位；不做精确复刻，不用海报式对称。"
+    },
+    {
+      "id": "DEEP_BACKGROUND_ANOMALY",
+      "genre_fit": ["suspense_strange", "folk_horror", "travel_anomaly", "mountain_mockumentary"],
+      "classic_examples": ["The Shining", "The Wicker Man", "The Blair Witch Project"],
+      "technique": "前景保持普通行动，异常先在远处、门后、窗外、队伍后方或画面边缘成立。",
+      "diegetic_translation": "异常尺度和清晰度必须符合真实焦段、空气透视与设备能力。"
+    },
+    {
+      "id": "FRAME_WITHIN_FRAME",
+      "genre_fit": ["suspense_strange", "folk_horror", "old_device_mystery", "general_reality_crack"],
+      "classic_examples": ["Rear Window", "Cure", "Ringu"],
+      "technique": "利用门框、窗框、车窗、镜面、屏幕形成第二层画框，把异常放在被框住的小区域中。",
+      "diegetic_translation": "框中框必须来自现场真实结构，不额外搭景。"
+    },
+    {
+      "id": "OCCLUSION_REVEAL",
+      "genre_fit": ["suspense_strange", "folk_horror", "travel_anomaly", "mountain_mockumentary", "world_anomaly"],
+      "classic_examples": ["Alien", "The Blair Witch Project", "Jaws"],
+      "technique": "先让前景、雾、墙角、车门、树、衣物、水汽挡住部分信息，再通过人物移动或环境变化露出关键异常。",
+      "diegetic_translation": "遮挡必须由现实物体和拍摄位置造成，不用舞台化机关。"
+    },
+    {
+      "id": "REFLECTION_SECOND_LAYER",
+      "genre_fit": ["suspense_strange", "folk_horror", "old_device_mystery", "travel_anomaly"],
+      "classic_examples": ["Ringu", "Black Swan", "Cure"],
+      "technique": "现实层看似正常，镜子、水面、玻璃或湿地反射提供第二份不一致信息。",
+      "diegetic_translation": "反射方向、视角、遮挡、亮度必须物理成立。"
+    },
+    {
+      "id": "LIGHT_BOUNDARY_REVEAL",
+      "genre_fit": ["suspense_strange", "folk_horror", "travel_anomaly", "world_anomaly"],
+      "classic_examples": ["The Exorcist", "Alien", "The Shining"],
+      "technique": "让异常只在现实光源照到或照不到的边界上成立，例如门外亮屋内暗、车灯扫过、路灯断续、屏幕光或窗光。",
+      "diegetic_translation": "只能使用现场可解释光源；禁止无来源轮廓光和人为电影主光。"
+    }
+  ],
+  "lighting": {
+    "practical_sources": ["sunlight", "sky_light", "window_light", "fluorescent", "bare_bulb", "ceiling_light", "street_light", "vehicle_headlight", "flashlight", "phone_screen", "computer_screen", "shop_sign", "fire_or_stove", "other_story_motivated"],
+    "contrast_modes": ["flat_natural", "soft_directional", "hard_directional", "mixed_practical", "backlit_silhouette", "partial_illumination", "low_light_practical"],
+    "suspense_functions": ["none", "hide_information", "reveal_partial_information", "create_negative_space", "separate_foreground_background", "make_reflection_legible", "shadow_contradiction", "guide_attention_without_staging"],
+    "rules": [
+      "所有光都必须有现场来源",
+      "悬疑感来自现实光源的方向、遮挡、明暗边界和曝光限制，不来自额外电影灯",
+      "同一场景连续出现时主光方向必须连续，除非时间或灯具状态明确变化"
+    ]
+  },
+  "concealment_carriers": [
+    "none",
+    "direct_visible",
+    "mirror",
+    "water_reflection",
+    "glass_reflection",
+    "wet_surface_reflection",
+    "fog_or_mist",
+    "light_and_shadow",
+    "screen_reflection",
+    "foreground_occlusion",
+    "doorway_or_window",
+    "silhouette"
+  ],
+  "concealment_policy": {
+    "recommended_for_suspense_genres": true,
+    "max_same_non_direct_carrier_consecutive": 2,
+    "must_remain_physically_explainable": true,
+    "carrier_must_add_information": true,
+    "fog_cannot_be_decorative_only": true
+  }
+}

@@ -26,6 +26,8 @@ authority:
   episode_stage: <episode>/meta/episode-state.json
 
 registries:
+  account_creative_profile: config/profiles/account_creative/default.json
+  directing_grammar: standards/directing_grammar_v1.json
   visual_profiles: standards/visual_profiles
   capture_profiles: standards/capture_profiles/index.json
   capture_grammars: standards/capture_grammars
@@ -90,6 +92,8 @@ episode_layout:
 stage_read_sets:
   CREATIVE_STORY:
     - config/storyos.yaml
+    - config/profiles/account_creative/default.json
+    - standards/directing_grammar_v1.json
     - story_os_manifest.json
     - meta/runtime-request.json
     - meta/character-contract.json
