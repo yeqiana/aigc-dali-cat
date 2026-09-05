@@ -35,6 +35,16 @@ def _review_kind(index: int) -> str:
     return f"caption-image-audit-v2-{index:03d}"
 
 
+def _resolve_layout_y_ratio(layout: dict, canvas_height: int) -> tuple[float, bool]:
+    """Return y_ratio plus whether it came from a legacy audit missing explicit y_ratio."""
+    raw = layout.get("y_ratio")
+    if raw is not None:
+        return float(raw), False
+    if canvas_height <= 0:
+        raise ValueError("subtitle layout canonical canvas height missing")
+    return int(layout.get("y")) / canvas_height, True
+
+
 def _caption_texts(ep: Path, frames: list[dict]) -> tuple[dict[str, str], dict]:
     source = inc._manifest_caption_path(ep)
     keys = [row["frame"] for row in frames]
@@ -81,6 +91,12 @@ def _review_frame_records(ep: Path) -> tuple[list[dict], dict]:
     if report.get("engine") != subtitle_layout.ENGINE or report.get("canonical_renderer") is not True:
         raise ValueError("subtitle layout audit is not canonical")
     audited = report.get("frames") or {}
+    ledger = base.read_json(ep / "meta/production-ledger.json")
+    try:
+        canvas_height = int((ledger.get("canvas") or {}).get("height"))
+    except Exception as exc:
+        raise ValueError("production ledger canvas height missing") from exc
+    layout_errors: list[str] = []
     rows: list[dict] = []
     for row in base_rows:
         key = row["frame"]
@@ -93,11 +109,13 @@ def _review_frame_records(ep: Path) -> tuple[list[dict], dict]:
         if int(layout.get("x") or -1) != 72:
             raise ValueError(f"subtitle layout frame {key} must stay left aligned at x=72")
         try:
-            y_ratio = float(layout.get("y_ratio"))
+            y_ratio, legacy_ratio = _resolve_layout_y_ratio(layout, canvas_height)
         except Exception as exc:
-            raise ValueError(f"subtitle layout frame {key} y_ratio missing") from exc
+            raise ValueError(f"subtitle layout frame {key} y position invalid") from exc
+        if legacy_ratio:
+            layout_errors.append(f"{key}: y_ratio missing; rerender subtitle layout with current renderer")
         if not subtitle_layout.LEFT_MIDDLE_MIN_RATIO <= y_ratio <= subtitle_layout.LEFT_MIDDLE_MAX_RATIO and not str(layout.get("safe_zone_override_reason") or "").strip():
-            raise ValueError(f"subtitle layout frame {key} leaves left-middle zone without override reason")
+            layout_errors.append(f"{key}: leaves left-middle zone without override reason")
         path = base.repo_path(layout.get("output_path"), f"subtitle layout frame {key} output_path", require_file=True)
         expected_sha = str(layout.get("output_sha256") or "").lower()
         if len(expected_sha) != 64:
@@ -108,6 +126,8 @@ def _review_frame_records(ep: Path) -> tuple[list[dict], dict]:
         rows.append({**row, "path": path, "path_rel": base.repo_rel(path), "sha256": actual_sha})
     return rows, {
         "mode": "final_publish_with_subtitle",
+        "layout_current": not layout_errors,
+        "layout_errors": layout_errors,
         "layout_audit_path": base.repo_rel(report_path),
         "layout_audit_sha256": base.sha256_file(report_path),
     }
@@ -213,6 +233,10 @@ def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str
 def ensure(ep: Path, codex_raw: str | None = None, timeout: int = 900) -> tuple[bool, dict]:
     ep = Path(ep).resolve()
     dirty, current, image_sha, caption_sha, texts, source_meta = dirty_frames(ep)
+    review_meta = source_meta.get("review_image") or {}
+    if review_meta.get("mode") == "final_publish_with_subtitle" and review_meta.get("layout_current") is not True:
+        details = "; ".join((review_meta.get("layout_errors") or [])[:5])
+        raise ValueError(f"subtitle layout audit is stale; rerender before caption/image review: {details}")
     rows_by_key = {r["frame"]: r for r in base.frame_records(ep, require_files=False)}
     evidence = current if isinstance(current, dict) else {}
     evidence.update({
@@ -287,7 +311,7 @@ def verify(ep: Path) -> list[str]:
     frames, review_meta = _review_frame_records(ep)
     data = _read(ep)
     image_sha, caption_sha, _texts, _source_meta = _hashes(ep, frames)
-    errors = []
+    errors = [f"subtitle layout stale: {e}" for e in (review_meta.get("layout_errors") or [])]
     rows = data.get("frames") or {}
     if data.get("schema_version") != SCHEMA:
         errors.append(f"caption image audit schema_version must be {SCHEMA}")
@@ -315,6 +339,10 @@ def self_test():
     assert CHUNK == 5
     assert SCHEMA == 2
     assert _review_kind(1) == "caption-image-audit-v2-001"
+    ratio, legacy = _resolve_layout_y_ratio({"y": 918}, 1350)
+    assert round(ratio, 2) == 0.68 and legacy is True
+    ratio, legacy = _resolve_layout_y_ratio({"y_ratio": 0.52, "y": 702}, 1350)
+    assert ratio == 0.52 and legacy is False
     print("CAPTION IMAGE AUDIT V2.6.1 SELF-TEST PASS")
 
 def main() -> int:
