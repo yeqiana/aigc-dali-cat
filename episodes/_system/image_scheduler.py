@@ -166,7 +166,7 @@ def init_queue(ep:Path,force:bool=False)->dict:
     save_queue(ep,q);return q
 
 
-def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:list[dict],capture_id:str,model:str,depends_on:list[int],quality:str=DEFAULT_IMAGE_QUALITY,replace:bool=False)->dict:
+def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:list[dict],capture_id:str,model:str,depends_on:list[int],quality:str=DEFAULT_IMAGE_QUALITY,strict_model:bool=False,replace:bool=False)->dict:
     q=load_queue(ep)
     key=f"{frame:02d}"
     active=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed"}]
@@ -186,6 +186,7 @@ def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:
         "capture_id":capture_id,
         "model":model,
         "quality":quality,
+        "strict_model":bool(strict_model),
         "depends_on":sorted(set(int(x) for x in depends_on if int(x)!=frame)),
         "narrative_escalation_from":narrative_escalation_from(ep,frame),
         "priority":risk_priority(ep,frame,scope),
@@ -216,7 +217,7 @@ def import_visual_lock(ep:Path,prompt_dir:Path)->dict:
         frame=int(row["frame"]);prompt=prompt_dir/f"{frame:02d}.txt"
         if not prompt.is_file():raise ValueError(f"Visual Lock prompt missing: {prompt}")
         policy=image_model_policy.for_episode(ep)
-        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="visual_lock",references=contract_references(ep,frame,scope="visual_lock"),capture_id=f"visual-lock-{frame:02d}",model=policy["model"],quality=policy["quality"],depends_on=[int(x) for x in row.get("depends_on") or []],replace=False))
+        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="visual_lock",references=contract_references(ep,frame,scope="visual_lock"),capture_id=f"visual-lock-{frame:02d}",model=policy["model"],quality=policy["quality"],strict_model=bool(policy.get("strict_model")),depends_on=[int(x) for x in row.get("depends_on") or []],replace=False))
     return {"added":[x["id"] for x in added]}
 
 
@@ -231,7 +232,7 @@ def import_batch(ep:Path,prompt_dir:Path)->dict:
         prompt=prompt_dir/f"{frame:02d}.txt"
         if not prompt.is_file():raise ValueError(f"batch prompt missing: {prompt}")
         policy=image_model_policy.for_episode(ep)
-        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="batch",references=contract_references(ep,frame,scope="batch"),capture_id=f"batch-{frame:02d}",model=policy["model"],quality=policy["quality"],depends_on=directive_dependency(ep,frame),replace=False))
+        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="batch",references=contract_references(ep,frame,scope="batch"),capture_id=f"batch-{frame:02d}",model=policy["model"],quality=policy["quality"],strict_model=bool(policy.get("strict_model")),depends_on=directive_dependency(ep,frame),replace=False))
     return {"added":[x["frame"] for x in added],"skipped":skipped}
 
 
@@ -545,7 +546,7 @@ def main()->int:
                 deps.extend(int(x) for x in str(raw).split(",") if x.strip())
             prompt=repo_file(a.prompt_file)
             policy=image_model_policy.for_episode(ep)
-            row=add_item(ep,frame=a.frame,kind=a.kind,prompt_file=prompt,scope=a.scope,references=refs,capture_id=a.capture_id or f"scheduler-{a.frame:02d}",model=a.model or policy["model"],quality=a.quality or policy["quality"],depends_on=deps,replace=a.replace)
+            row=add_item(ep,frame=a.frame,kind=a.kind,prompt_file=prompt,scope=a.scope,references=refs,capture_id=a.capture_id or f"scheduler-{a.frame:02d}",model=a.model or policy["model"],quality=a.quality or policy["quality"],strict_model=True if a.model else bool(policy.get("strict_model")),depends_on=deps,replace=a.replace)
             print(json.dumps(row,ensure_ascii=False,indent=2));return 0
         if a.cmd=="import-visual-lock":print(json.dumps(import_visual_lock(ep,Path(a.prompt_dir).resolve()),ensure_ascii=False,indent=2));return 0
         if a.cmd=="import-batch":print(json.dumps(import_batch(ep,Path(a.prompt_dir).resolve()),ensure_ascii=False,indent=2));return 0

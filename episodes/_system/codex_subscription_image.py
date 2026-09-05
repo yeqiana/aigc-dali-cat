@@ -42,10 +42,12 @@ def valid_image(path: Path) -> bool:
 
 def resolve_codex(raw: str | None) -> Path:
     explicit = bool(raw or os.environ.get("CODEX_EXE"))
-    if not runtime_router.local_codex_allowed(explicit=explicit):
+    if not runtime_router.local_codex_image_allowed(explicit=explicit):
         runtime, _ = runtime_router.detect()
+        image_runtime, _ = runtime_router.image_execution_runtime()
         raise BackendError(
-            f'LOCAL_CODEX_DISABLED_FOR_RUNTIME: runtime={runtime}; use the product image backend or explicitly select CODEX'
+            f'LOCAL_CODEX_IMAGE_DISABLED_FOR_RUNTIME: runtime={runtime}; image_runtime={image_runtime}; '
+            'select runtime.image_execution_runtime=CODEX or pass an explicit Codex executable'
         )
     value = raw or os.environ.get("CODEX_EXE")
     # On Windows prefer the newest ChatGPT Desktop bundled Codex CLI over PATH.
@@ -107,8 +109,9 @@ def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str 
         f'{frame_block}'
         f'<scene>\n{scene}\n</scene>\n\n'
         'The visual contract is mandatory production context, not optional inspiration. '
-        'After generation, save or copy the actual generated candidate to ./out.png. '
-        'Do not synthesize an image with Python or reuse a cached image. Reply only after out.png exists.'
+        'After the image tool succeeds, stop immediately and do not call shell, exec, Python, node_repl, or any other tool to copy/move the image. '
+        'Story OS will recover the generated artifact from this Codex thread by thread_id. '
+        'Do not synthesize an image with Python or reuse a cached image.'
     )
 
 
@@ -200,7 +203,11 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     raw_dir.mkdir(parents=True, exist_ok=True)
     raw_output = raw_dir / f'{int(args.frame):02d}-{int(time.time())}.png'
     frame_contract_text = frame_contract['prompt_contract'] if frame_contract else None
-    model_policy = image_model_policy.for_episode(ep, explicit=getattr(args, 'image_model', None), explicit_quality=getattr(args, 'image_quality', None))
+    internal_policy = getattr(args, '_image_model_policy', None)
+    if isinstance(internal_policy, dict):
+        model_policy = dict(internal_policy)
+    else:
+        model_policy = image_model_policy.for_episode(ep, explicit=getattr(args, 'image_model', None), explicit_quality=getattr(args, 'image_quality', None))
     manual_dir = os.environ.get('STORY_OS_MANUAL_RAW_DIR')
     manual_src = None
     if manual_dir:
@@ -312,6 +319,10 @@ def main() -> int:
         assert '<visual_contract>' in worker_prompt('x', [], '1024x1280', 'reality first')
         assert '<frame_contract>' in worker_prompt('x', [], '1080x1350', 'reality first', 'frame-contract-test')
         assert 'quality=high' in worker_prompt('x', [], '1080x1350')
+        smoke_prompt = worker_prompt('x', [], '1080x1350')
+        assert 'stop immediately' in smoke_prompt
+        assert 'thread_id' in smoke_prompt
+        assert 'save or copy the actual generated candidate to ./out.png' not in smoke_prompt
         assert provider_size(1080, 1350) == '1080x1350'
         assert provider_size(1080, 1920) == '1080x1920'
         assert controller_args() == ['-m', 'gpt-5.6-sol', '-c', 'model_reasoning_effort="high"']

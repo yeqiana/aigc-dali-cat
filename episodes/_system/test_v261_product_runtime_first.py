@@ -18,6 +18,7 @@ if str(SYSTEM) not in sys.path:
 import caption_image_audit
 import codex_subscription_image
 import image_provider_runtime
+import image_worker_pool
 import product_image_import
 import product_review_adapter
 import product_runtime_adapter
@@ -80,6 +81,27 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         runtime, _ = runtime_router.detect()
         self.assertEqual(runtime, "CODEX")
         self.assertTrue(runtime_router.local_codex_allowed())
+
+    def test_work_image_runtime_can_resolve_codex_without_full_codex_runtime(self) -> None:
+        os.environ["STORY_OS_RUNTIME"] = "WORK"
+        os.environ["STORY_OS_IMAGE_RUNTIME"] = "CODEX"
+        with tempfile.TemporaryDirectory(prefix="v261-no-desktop-codex-") as td:
+            with mock.patch.dict(os.environ, {"LOCALAPPDATA": td, "CODEX_EXE": ""}, clear=False):
+                with mock.patch.object(
+                    codex_subscription_image.shutil,
+                    "which",
+                    side_effect=lambda name: sys.executable if name == "codex" else None,
+                ):
+                    resolved = codex_subscription_image.resolve_codex(None)
+        self.assertEqual(resolved, Path(sys.executable).resolve())
+
+    def test_queue_model_strictness_survives_internal_forwarding(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            default_policy = image_worker_pool.model_policy_for_item(ep, {"model": "gpt-image-2", "quality": "high"})
+            self.assertFalse(default_policy["strict_model"])
+            strict_policy = image_worker_pool.model_policy_for_item(ep, {"model": "gpt-image-2", "quality": "high", "strict_model": True})
+            self.assertTrue(strict_policy["strict_model"])
 
     def test_work_isolated_provenance_is_valid(self) -> None:
         prov = runtime_provenance.build_critic_provenance("WORK", attempt=1)

@@ -25,6 +25,12 @@ import resource_library
 MODE="python_warm_pool_codex_ephemeral"
 CODEX_SESSION_REUSE=False
 
+def model_policy_for_item(ep,item):
+    episode_model_policy=image_model_policy.for_episode(ep)
+    model=str(item.get("model") or episode_model_policy["model"])
+    quality=str(item.get("quality") or episode_model_policy["quality"])
+    return {**episode_model_policy,"model":model,"quality":quality,"strict_model":bool(item.get("strict_model",episode_model_policy.get("strict_model")))}
+
 def execute(ep,item,timeout,codex):
     resource_library.ensure_fresh(ep)
     runtime,_=runtime_router.detect()
@@ -46,8 +52,9 @@ def execute(ep,item,timeout,codex):
     root=Path(__file__).resolve().parents[2]
     prompt=(root/item["prompt_file"]).resolve()
     refs=[(root/x["path"]).resolve() for x in item.get("references") or []]
-    model=str(item.get("model") or image_model_policy.for_episode(ep)["model"])
-    quality=str(item.get("quality") or image_model_policy.for_episode(ep)["quality"])
+    effective_model_policy=model_policy_for_item(ep,item)
+    model=str(effective_model_policy["model"])
+    quality=str(effective_model_policy["quality"])
     package=prompt_package.compile_frame(ep,frame,prompt,write=True)
     blocked=runtime_circuit_breaker.blocking(ep,"image")
     if blocked:
@@ -60,6 +67,7 @@ def execute(ep,item,timeout,codex):
     ns=argparse.Namespace(
         episode_dir=ep,frame=f"{frame:02d}",prompt_file=prompt,output=out,log=log,
         reference=refs,timeout=timeout,codex=codex,image_model=model,image_quality=quality,overwrite=False,
+        _image_model_policy=effective_model_policy,
         _raw_candidate_budget_preclaimed=True,_raw_candidate_token=budget_token,candidate_kind=budget_kind)
     trace_span=runtime_trace.start_span(ep,f"image.generate.frame.{frame:02d}",category="image_generation",attrs={"frame":frame,"model":model,"quality":quality})
     trace_started=time.monotonic()

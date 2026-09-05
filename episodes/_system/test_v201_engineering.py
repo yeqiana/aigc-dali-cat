@@ -46,7 +46,9 @@ class EngineeringTests(unittest.TestCase):
     def test_backend_prompt_contract(self):
         text = backend.worker_prompt('scene', [], '1024x1280')
         self.assertIn('image_generation exactly once', text)
-        self.assertIn('./out.png', text)
+        self.assertNotIn('./out.png', text)
+        self.assertIn('thread_id', text)
+        self.assertIn('stop immediately', text)
 
     def test_release_version_not_v18(self):
         text = (SYSTEM / 'release_package.py').read_text(encoding='utf-8')

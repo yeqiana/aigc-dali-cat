@@ -52,6 +52,10 @@ def _thread_ids(text: str) -> list[str]:
     return out
 
 
+def _local_fallback_allowed(workdir: Path) -> bool:
+    return Path(workdir).name.startswith("story-os-image-")
+
+
 def recover_codex_generated(log: Path, workdir: Path) -> Path | None:
     candidates: list[Path] = []
     if log.is_file():
@@ -80,14 +84,16 @@ def recover_codex_generated(log: Path, workdir: Path) -> Path | None:
                         candidates.append(probe.resolve())
                 except OSError:
                     pass
-    # Safe local recursive fallback: never scan all of HOME because workers may overlap.
-    try:
-        for p in workdir.rglob("*"):
-            if p.is_file() and p.suffix.lower() in {".png", ".jpg", ".jpeg"} and not p.name.startswith("reference-"):
-                if valid_image(p):
-                    candidates.append(p.resolve())
-    except OSError:
-        pass
+    # Compatibility fallback is allowed only inside Story OS's dedicated per-worker temp dir.
+    # Never let a caller accidentally point this at the repository/home and cross-pick an unrelated image.
+    if _local_fallback_allowed(workdir):
+        try:
+            for p in workdir.rglob("*"):
+                if p.is_file() and p.suffix.lower() in {".png", ".jpg", ".jpeg"} and not p.name.startswith("reference-"):
+                    if valid_image(p):
+                        candidates.append(p.resolve())
+        except OSError:
+            pass
     if not candidates:
         return None
     return max(set(candidates), key=lambda p: p.stat().st_mtime_ns)
@@ -96,6 +102,8 @@ def self_test() -> None:
     assert valid_image(Path("__missing__")) is False
     sample='{"type":"thread.started","thread_id":"abc-123"}\n{"type":"item.completed"}'
     assert _thread_ids(sample) == ["abc-123"]
+    assert _local_fallback_allowed(Path("story-os-image-abc")) is True
+    assert _local_fallback_allowed(Path("repository-root")) is False
     print("IMAGE ARTIFACT COLLECTOR V2.6.1 THREAD-SCOPED SELF-TEST PASS")
 
 if __name__ == "__main__":
