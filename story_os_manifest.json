@@ -1,5 +1,5 @@
 {
-  "platform_version": "2.6.0",
+  "platform_version": "2.6.1",
   "version_semantics": {
     "platform_version": "Root product release identifier; the only platform version authority.",
     "schema_version": "Shape of this specific document.",
@@ -7,7 +7,7 @@
     "platform_min_version": "Lowest Story OS platform version that may consume a module."
   },
   "contract_schema": 1,
-  "release_name": "Performance Runtime: atomic lifecycle + visual freeze + cross-shell hardening",
+  "release_name": "Product Runtime First: WORK default + explicit Codex isolation",
   "canonical_engine": "episodes/_system",
   "canonical_state_source": "<episode>/meta/episode-state.json",
   "canonical_creative_authority": "standards/制作规范_正式版.md",
@@ -221,7 +221,22 @@
     "cross_shell_safe_runtime",
     "argv_stdin_utf8_transport",
     "heredoc_avoidance_contract",
-    "runtime_circuit_breaker"
+    "runtime_circuit_breaker",
+    "product_runtime_first",
+    "work_default_runtime",
+    "scoped_model_runtime_dispatch",
+    "work_isolated_critic",
+    "web_isolated_critic",
+    "local_codex_explicit_only",
+    "no_silent_codex_fallback",
+    "product_runtime_host_action",
+    "product_runtime_image_route",
+    "product_runtime_request_history",
+    "product_review_attempt_history",
+    "host_wait_observability",
+    "legacy_visual_product_review",
+    "product_image_import_transaction",
+    "local_runtime_log_hygiene"
   ],
   "adapters": [
     "skills/dali-cat-story",
@@ -294,7 +309,7 @@
     "GPT-Image-2 Image API native n may request 1..10 images in one HTTP request.",
     "A native multi-image response count is Provider evidence; output-index to distinct Frame semantics remains a Story OS mapping convention and requires per-frame review.",
     "OpenAI Image API custom request canvases use divisible-by-16 dimensions while preserving the locked Story OS aspect ratio, then Normalize to the exact release canvas without crop.",
-    "Codex subscription remains a fallback transport when API credentials are absent or the API transport fails.",
+    "Codex Subscription is a fallback transport only inside explicitly selected CODEX Runtime; WORK/WEB never fall back to it when API credentials are absent or product image transport fails.",
     "Codex subscription logical Batch is not Provider-native multi-image and must be recorded with native_multi_image=false and single_http_request=false.",
     "A five-frame Codex logical Batch may launch up to five isolated image-generation workers concurrently without requiring OPENAI_API_KEY.",
     "Logical Batch generation defers Fast Scout until the original Batch generation barrier is terminal.",
@@ -312,7 +327,17 @@
     "Formal image-generation entrypoints must claim Raw Candidate Budget automatically; technical failures release the claim and do not consume candidate budget.",
     "Caption/title/description edits must not invalidate a clean Final Visual Freeze unless visual inputs changed.",
     "A successfully normalized image candidate is committed before Fast Scout or Rolling Review; review technical failure must not release or regenerate it.",
-    "Runtime commands must use argv/stdin/UTF-8 files; shell=True, Bash heredoc and PowerShell here-string are forbidden for canonical Story OS execution."
+    "Runtime commands must use argv/stdin/UTF-8 files; shell=True, Bash heredoc and PowerShell here-string are forbidden for canonical Story OS execution.",
+    "WORK is the default Story OS runtime; local Codex availability is a capability, not an automatic routing decision.",
+    "WORK/WEB must never silently spawn local codex.exe or consume local Codex quota; CODEX requires explicit runtime selection or an explicit Codex call.",
+    "Independent Concept/Story critic provenance may be WORK_ISOLATED, WEB_ISOLATED or CODEX_ISOLATED, but must remain fresh, source-SHA-bound and honestly isolated.",
+    "If WORK/WEB lacks product image file transport, image production pauses as HOST_ACTION_REQUIRED instead of falling back to Codex Subscription.",
+    "HOST_ACTION_REQUIRED is recorded as HOST_WAIT in runtime checkpoints and is not classified as a technical failure by itself.",
+    "Product runtime host actions use deterministic request_id history; the current request file is only a pointer and historical requests are not overwritten.",
+    "Product review requests are attempt-scoped and immutable once frozen; a different source/prompt fingerprint requires a new attempt.",
+    "Legacy Visual Profile Review supports WORK_ISOLATED/WEB_ISOLATED product review and must not require local Codex by default.",
+    "Product image import releases uncommitted candidate budget on technical failure and preserves committed budget after a real normalized candidate exists.",
+    "High-volume worker/trace JSONL files are local derived runtime logs, not Git authority; formal SHA-bound review evidence remains trackable."
   ],
   "legacy_adapter_note": "Legacy repository adapter paths may keep historical names; product/system name is Story OS."
 }

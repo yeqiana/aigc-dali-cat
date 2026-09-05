@@ -60,6 +60,7 @@ def main() -> int:
     ap=argparse.ArgumentParser(description=__doc__)
     sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("run-critic");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1);p.add_argument("--codex");p.add_argument("--timeout",type=int,default=900)
+    p=sub.add_parser("finalize-review");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1);p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK")
     p=sub.add_parser("verify");p.add_argument("episode_dir")
     sub.add_parser("self-test")
     a=ap.parse_args()
@@ -70,6 +71,8 @@ def main() -> int:
     ep=Path(a.episode_dir).resolve()
     target="visual_lock_v21.py" if is_v21(ep) else "visual_review_legacy.py"
     if a.cmd=="verify": return forward(target,["verify",str(ep)])
+    if a.cmd=="finalize-review":
+        return forward(target,["finalize-review",str(ep),"--attempt",str(a.attempt),"--runtime",a.runtime])
     args=["run-critic",str(ep),"--attempt",str(a.attempt),"--timeout",str(a.timeout)]
     if a.codex:args += ["--codex",a.codex]
     return forward(target,args)

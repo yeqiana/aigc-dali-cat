@@ -1,4 +1,4 @@
-# dali-cat-story — Story OS V2.6.0 Adapter Contract
+# dali-cat-story — Story OS V2.6.1 Adapter Contract
 
 > This Skill is a **thin execution adapter** for the repository's canonical Story OS.  
 > It does not own a state machine, does not duplicate engine logic, and must not become a second source of creative or release truth.
@@ -160,11 +160,20 @@ Skill is an adapter, not a Story OS copy.
 正式生图入口自动执行 Raw Candidate Budget；技术失败释放预算；同一 Queue Item 技术重试复用 token；候选额度耗尽后硬停止内容生图循环。
 <!-- STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE_END -->
 
-<!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_BEGIN -->
-## V2.6.0 Performance Runtime / Cross-Shell Contract
+<!-- STORY_OS_V2_6_1_PRODUCT_RUNTIME_FIRST_BEGIN -->
+## V2.6.1 Product Runtime First / Cross-Shell Contract
 
 性能优先，但不降低创作门禁。恢复优先使用 Resume Capsule；正式图片候选走原子 Candidate Lifecycle。
 禁止 Agent 使用 Bash heredoc、PowerShell here-string、嵌套 `powershell -Command`、`shell=True` 或把大段 JSON/多行 Python 塞进 shell。
 多行/结构化内容必须走 UTF-8 文件、stdin 或仓库 file edit/write API；路径作为 argv 元素传递，不手工拼引号。
 Final Visual Freeze 只绑定视觉 SHA，Caption 变化只触发 Caption ↔ Image Audit，不得重新拉起全量 Visual Critic。
-<!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_END -->
+
+V2.6.1 Runtime 能力声明：
+- `product_runtime_first`
+- `local_codex_explicit_only`
+- `no_silent_codex_fallback`
+- `product_runtime_host_action`
+- `product_runtime_image_route`
+
+WORK/WEB 的宿主动作使用 request_id + SHA-bound request history；正常等待宿主执行记为 `HOST_WAIT`，不是故障 `BLOCKED`。
+<!-- STORY_OS_V2_6_1_PRODUCT_RUNTIME_FIRST_END -->

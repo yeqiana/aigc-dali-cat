@@ -18,6 +18,9 @@ from story_os_contract import story_os_version
 import environment_contract as phase3_env
 import frame_contract as phase4_contract
 import fast_frame_scout as phase7_scout
+import runtime_router
+import runtime_provenance
+import product_review_adapter
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_DIR = Path("meta/frame-reviews")
@@ -398,10 +401,8 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
         if str(data.get(field) or "").lower() != str(expected).lower():
             errors.append(f"frame {key} {field} mismatch")
     provenance = data.get("critic_provenance") or {}
-    if provenance.get("runtime") != "CODEX_ISOLATED":
-        errors.append(f"frame {key} critic runtime must be CODEX_ISOLATED")
-    if provenance.get("isolated_session") is not True:
-        errors.append(f"frame {key} critic must be isolated")
+    for error in runtime_provenance.validate_critic_provenance(provenance):
+        errors.append(f"frame {key} {error}")
     if provenance.get("review_scope") not in {"FULL_FRAME_SET", "INCREMENTAL_CONTEXT_SET"}:
         errors.append(f"frame {key} critic review_scope must be FULL_FRAME_SET or INCREMENTAL_CONTEXT_SET")
     if provenance.get("attempt") not in {1, 2}:
@@ -460,8 +461,8 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
             if str(summary.get(field) or "").lower() != str(expected).lower():
                 errors.append(f"frame semantic summary {field} mismatch")
         provenance = summary.get("critic_provenance") or {}
-        if provenance.get("runtime") != "CODEX_ISOLATED" or provenance.get("isolated_session") is not True:
-            errors.append("frame semantic summary critic provenance invalid")
+        for error in runtime_provenance.validate_critic_provenance(provenance):
+            errors.append("frame semantic summary critic provenance invalid: " + error)
         if provenance.get("review_scope") not in {"FULL_FRAME_SET", "BASELINE_PLUS_PATCHES"}:
             errors.append("frame semantic summary must prove FULL_FRAME_SET or BASELINE_PLUS_PATCHES review")
         bound = summary.get("frames")
@@ -646,6 +647,109 @@ Return one row for EVERY attached frame. If any hard check fails, mark it false,
 """
 
 
+def _persist_candidate(
+    ep: Path,
+    *,
+    data: dict,
+    current: list[dict],
+    contexts: dict,
+    phashes: list[dict],
+    provenance: dict,
+) -> int:
+    candidate_errors = validate_candidate_rows(data.get("frames"), current, version=episode_contract_version(ep))
+    global_codes = data.get("issue_codes")
+    if not isinstance(global_codes, list):
+        candidate_errors.append("global issue_codes must be list")
+        global_codes = []
+    elif global_codes:
+        candidate_errors.append(f"global issue_codes must be empty for PASS: {global_codes}")
+    if (data.get("summary") or {}).get("passed") is not True:
+        candidate_errors.append("critic summary.passed must be true")
+
+    version = episode_contract_version(ep)
+    rows_by_frame = {str(row.get("frame") or "").zfill(2): row for row in (data.get("frames") or []) if isinstance(row, dict)}
+    review_dir = ep / REVIEW_DIR
+    review_dir.mkdir(parents=True, exist_ok=True)
+    for frame in current:
+        source = rows_by_frame.get(frame["frame"], {})
+        bound = {
+            "schema_version": SCHEMA_VERSION,
+            "story_os_version": version,
+            "frame": frame["frame"],
+            "asset_path": frame["path_rel"],
+            "asset_sha256": frame["sha256"],
+            **contexts,
+            **phase3_context_hashes(ep, frame["frame"]),
+            "critic_provenance": provenance,
+            "checks": source.get("checks") or {},
+            "issue_codes": source.get("issue_codes") if isinstance(source.get("issue_codes"), list) else ["FRAME_SCENE_MISMATCH"],
+            "notes": source.get("notes") or "",
+            "decision": source.get("decision") or "fail",
+        }
+        write_json(review_dir / f"{frame['frame']}.json", bound)
+
+    summary = {
+        "schema_version": SCHEMA_VERSION,
+        "story_os_version": version,
+        **contexts,
+        "critic_provenance": provenance,
+        "frames": [{"frame": row["frame"], "asset_sha256": row["sha256"]} for row in current],
+        "perceptual_hashes": phashes,
+        "near_duplicate_pairs": [],
+        "issue_codes": global_codes,
+        "critic_summary": data.get("summary") or {},
+        "summary": {"passed": not candidate_errors},
+    }
+    write_json(ep / SUMMARY_REL, summary)
+    (ep / CANDIDATE_REL).unlink(missing_ok=True)
+
+    verify_errors = verify_episode(ep, metadata_only=False, write_audit=True)
+    errors = candidate_errors + [x for x in verify_errors if x not in candidate_errors]
+    if errors:
+        print("FRAME SEMANTIC REVIEW FAIL")
+        for error in errors:
+            print("FAIL:", error)
+        return 2
+    print("FRAME SEMANTIC REVIEW PASS")
+    return 0
+
+
+def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
+    frames = frame_records(ep, require_files=True)
+    contexts = context_hashes(ep)
+    binding_errors = phase4_binding_errors(ep, frames)
+    if binding_errors:
+        for error in binding_errors:
+            print("FAIL:", error)
+        return 2
+    phashes = perceptual_rows(frames)
+    duplicates = duplicate_pairs(phashes)
+    if duplicates:
+        for pair in duplicates:
+            print("FRAME SEMANTIC REVIEW FAIL: NEAR_DUPLICATE_ACTUAL_FRAMES", pair)
+        return 2
+    candidate = ep / CANDIDATE_REL
+    data, provenance = product_review_adapter.finalize_candidate(
+        ep,
+        kind="frame-semantic",
+        runtime=runtime,
+        attempt=attempt,
+        candidate_path=candidate,
+    )
+    provenance["review_scope"] = "FULL_FRAME_SET"
+    rc = _persist_candidate(
+        ep,
+        data=data,
+        current=frames,
+        contexts=contexts,
+        phashes=phashes,
+        provenance=provenance,
+    )
+    if rc == 0:
+        product_review_adapter.mark_complete(ep, "frame-semantic", attempt=attempt, final_path=ep / SUMMARY_REL)
+    return rc
+
+
 def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
     if attempt not in {1, 2}:
         raise RuntimeError("attempt must be 1 or 2; only one automatic content-repair round is permitted")
@@ -686,6 +790,30 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
         "visual": sha256_json(stable_visual_contract(ep)),
     }
 
+    active_runtime, _ = runtime_router.detect()
+    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+        sources = [
+            story,
+            storyboard,
+            ep / "meta/story-gates.json",
+            ROOT / "standards/制作规范_正式版.md",
+            ROOT / "standards/生产帧语义强制规范_V1.0.md",
+            ROOT / "standards/Resolved_Frame_Contract规范_V1.0.md",
+            ROOT / "standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md",
+            *[row["path"] for row in frames],
+        ]
+        request = product_review_adapter.prepare(
+            ep,
+            kind="frame-semantic",
+            runtime=active_runtime,
+            attempt=attempt,
+            prompt=critic_prompt(ep, frames, candidate, attempt),
+            source_paths=sources,
+            candidate_path=candidate,
+        )
+        print(json.dumps(request, ensure_ascii=False, indent=2))
+        return product_review_adapter.HOST_ACTION_REQUIRED_RC
+
     codex = resolve_codex(codex_raw)
     cmd = command_prefix(codex) + [
         "exec", "--skip-git-repo-check", "--ephemeral",
@@ -724,70 +852,18 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
         raise RuntimeError("frame semantic critic modified Story Lock / storyboard / visual continuity context")
 
     data = read_json(candidate)
-    candidate_errors = validate_candidate_rows(data.get("frames"), current, version=episode_contract_version(ep))
-    global_codes = data.get("issue_codes")
-    if not isinstance(global_codes, list):
-        candidate_errors.append("global issue_codes must be list")
-        global_codes = []
-    elif global_codes:
-        candidate_errors.append(f"global issue_codes must be empty for PASS: {global_codes}")
-    if (data.get("summary") or {}).get("passed") is not True:
-        candidate_errors.append("critic summary.passed must be true")
-
-    provenance = {
-        "runtime": "CODEX_ISOLATED",
-        "isolated_session": True,
-        "review_scope": "FULL_FRAME_SET",
-        "attempt": attempt,
-        "reviewed_at": now(),
-        "log": log.relative_to(ROOT).as_posix(),
-    }
-    version = episode_contract_version(ep)
-    rows_by_frame = {str(row.get("frame") or "").zfill(2): row for row in (data.get("frames") or []) if isinstance(row, dict)}
-    review_dir = ep / REVIEW_DIR
-    review_dir.mkdir(parents=True, exist_ok=True)
-    for frame in current:
-        source = rows_by_frame.get(frame["frame"], {})
-        bound = {
-            "schema_version": SCHEMA_VERSION,
-            "story_os_version": version,
-            "frame": frame["frame"],
-            "asset_path": frame["path_rel"],
-            "asset_sha256": frame["sha256"],
-            **contexts,
-            **phase3_context_hashes(ep, frame["frame"]),
-            "critic_provenance": provenance,
-            "checks": source.get("checks") or {},
-            "issue_codes": source.get("issue_codes") if isinstance(source.get("issue_codes"), list) else ["FRAME_SCENE_MISMATCH"],
-            "notes": source.get("notes") or "",
-            "decision": source.get("decision") or "fail",
-        }
-        write_json(review_dir / f"{frame['frame']}.json", bound)
-
-    summary = {
-        "schema_version": SCHEMA_VERSION,
-        "story_os_version": version,
-        **contexts,
-        "critic_provenance": provenance,
-        "frames": [{"frame": row["frame"], "asset_sha256": row["sha256"]} for row in current],
-        "perceptual_hashes": phashes,
-        "near_duplicate_pairs": [],
-        "issue_codes": global_codes,
-        "critic_summary": data.get("summary") or {},
-        "summary": {"passed": not candidate_errors},
-    }
-    write_json(ep / SUMMARY_REL, summary)
-    candidate.unlink(missing_ok=True)
-
-    verify_errors = verify_episode(ep, metadata_only=False, write_audit=True)
-    errors = candidate_errors + [x for x in verify_errors if x not in candidate_errors]
-    if errors:
-        print("FRAME SEMANTIC REVIEW FAIL")
-        for error in errors:
-            print("FAIL:", error)
-        return 2
-    print("FRAME SEMANTIC REVIEW PASS")
-    return 0
+    provenance = runtime_provenance.build_critic_provenance(
+        "CODEX", attempt=attempt, log=log.relative_to(ROOT).as_posix()
+    )
+    provenance["review_scope"] = "FULL_FRAME_SET"
+    return _persist_candidate(
+        ep,
+        data=data,
+        current=current,
+        contexts=contexts,
+        phashes=phashes,
+        provenance=provenance,
+    )
 
 
 def self_test() -> None:
@@ -829,6 +905,10 @@ def main() -> int:
     p.add_argument("--attempt", type=int, default=1)
     p.add_argument("--codex")
     p.add_argument("--timeout", type=int, default=1800)
+    p = sub.add_parser("finalize-review")
+    p.add_argument("episode_dir")
+    p.add_argument("--attempt", type=int, default=1)
+    p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
     p = sub.add_parser("verify")
     p.add_argument("episode_dir")
     p.add_argument("--metadata-only", action="store_true")
@@ -850,6 +930,12 @@ def main() -> int:
             return run_critic(ep, attempt=args.attempt, codex_raw=args.codex, timeout=args.timeout)
         except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
             print("FRAME SEMANTIC REVIEW ERROR:", exc)
+            return 3
+    if args.cmd == "finalize-review":
+        try:
+            return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime)
+        except (OSError, RuntimeError, ValueError) as exc:
+            print("FRAME SEMANTIC REVIEW FINALIZE ERROR:", exc)
             return 3
     if args.cmd == "show":
         p = ep / SUMMARY_REL

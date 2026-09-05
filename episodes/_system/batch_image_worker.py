@@ -55,7 +55,7 @@ def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],tim
         log.parent.mkdir(parents=True,exist_ok=True)
         with log.open("w",encoding="utf-8",newline="\n") as h:
             try:
-                done=subprocess.run(cmd,input=prompt_text,text=True,stdout=h,stderr=subprocess.STDOUT,
+                done=subprocess.run(cmd,input=prompt_text,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,
                     timeout=timeout,check=False)
             except subprocess.TimeoutExpired as exc:
                 raise BatchBackendError(f"TIMEOUT: batch image worker timeout after {timeout}s; log={log}") from exc

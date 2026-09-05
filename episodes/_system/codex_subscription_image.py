@@ -20,6 +20,7 @@ import image_model_policy
 import provider_capability
 import image_artifact_collector
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
+import runtime_router
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -36,6 +37,12 @@ def valid_image(path: Path) -> bool:
     return header.startswith(PNG) or header.startswith(JPEG)
 
 def resolve_codex(raw: str | None) -> Path:
+    explicit = bool(raw or os.environ.get("CODEX_EXE"))
+    if not runtime_router.local_codex_allowed(explicit=explicit):
+        runtime, _ = runtime_router.detect()
+        raise BackendError(
+            f'LOCAL_CODEX_DISABLED_FOR_RUNTIME: runtime={runtime}; use the product image backend or explicitly select CODEX'
+        )
     value = raw or os.environ.get("CODEX_EXE")
     # On Windows prefer the newest ChatGPT Desktop bundled Codex CLI over PATH.
     # The real V2.4 smoke found an older PATH codex that could not start while the

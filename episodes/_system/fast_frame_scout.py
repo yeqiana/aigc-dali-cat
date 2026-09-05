@@ -21,6 +21,7 @@ import sys
 from pathlib import Path
 
 import frame_contract
+import runtime_router
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY_PATH = ("visual", "fast_frame_scout")
@@ -225,12 +226,24 @@ Write ONLY JSON to {rel_out}:
 {{"decision":"PASS_FAST|REPAIR_NOW|DEFER_TO_FINAL","issue_codes":[],"notes":"brief actual-pixel evidence","confidence":0.0}}
 Allowed issue codes: {sorted(ISSUE_CODES)}
 """
+    active_runtime,_=runtime_router.detect()
+    if active_runtime in {"WORK","WEB"} and not codex_raw:
+        result={
+            **base,
+            "decision":"DEFER_TO_FINAL",
+            "issue_codes":[],
+            "notes":f"{active_runtime} product runtime: Fast Scout is non-blocking and does not launch local Codex; defer actual-pixel authority to product/final review.",
+            "model_called":False,
+            "scout_status":"product_runtime_defer",
+        }
+        write_json(_result_path(ep,frame),result)
+        return result
     try:
         codex=resolve_codex(codex_raw)
         cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-c",'model_reasoning_effort="low"',"-s","workspace-write","-C",str(ROOT),"--json","-i",str(image),"-"]
         log=ep/"meta/frame-scouts"/f"{frame:02d}.jsonl";log.parent.mkdir(parents=True,exist_ok=True)
         with log.open("w",encoding="utf-8",newline="\n") as h:
-            done=subprocess.run(cmd,input=prompt,text=True,stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+            done=subprocess.run(cmd,input=prompt,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
         if done.returncode!=0 or not candidate.is_file():
             raise RuntimeError(f"scout critic failed rc={done.returncode}")
         model=read_json(candidate);candidate.unlink(missing_ok=True)

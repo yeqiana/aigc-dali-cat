@@ -1,30 +1,22 @@
 #!/usr/bin/env python3
-"""Windows Codex CLI shim delegating to the desktop-bundled codex 0.153."""
+"""RETIRED temporary Codex shim.
+
+Kept only because older Git history referenced this tracked path. New Story OS
+runtime code must not call it. Use explicit CODEX runtime routing instead.
+"""
 from __future__ import annotations
 
-import subprocess
 import sys
-
-REAL = r"C:\Users\79873\AppData\Local\OpenAI\Codex\bin\9ba750cce02d5e5c\codex.exe"
 
 
 def main() -> int:
-    argv = sys.argv[1:]
-    rewritten: list[str] = []
-    index = 0
-    while index < len(argv):
-        arg = argv[index]
-        if arg == "-s" and index + 1 < len(argv) and argv[index + 1] in {
-            "workspace-write",
-            "read-only",
-        }:
-            index += 2
-            continue
-        rewritten.append(arg)
-        index += 1
-    rewritten += ["-s", "danger-full-access"]
-    return subprocess.run([REAL, *rewritten]).returncode
+    print(
+        "RETIRED_CODEX_SHIM: use STORY_OS_RUNTIME=CODEX and the canonical runtime router; "
+        "this temporary shim no longer delegates to a user-specific codex.exe path.",
+        file=sys.stderr,
+    )
+    return 2
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

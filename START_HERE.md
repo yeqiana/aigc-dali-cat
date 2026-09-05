@@ -1,9 +1,24 @@
-# Story OS — START HERE V2.6.0
+# Story OS — START HERE V2.6.1
 
 > 30 秒执行入口。这里不是第二套创作规范，只负责告诉 Agent **先读什么、现在在哪、下一步做什么**。
 >
 > 创作规则唯一权威：`standards/制作规范_正式版.md`  
 > 阶段状态唯一事实源：`<episode>/meta/episode-state.json`
+
+## V2.6.1 Product Runtime First
+
+默认 Runtime：`WORK`。
+
+```text
+ChatGPT / Work + DevSpace
+→ WORK Runtime
+→ Story OS deterministic scripts + product-host model/image actions
+→ machine/evidence gates
+```
+
+**本机存在 `codex.exe` 只代表“可用能力”，不再代表默认路由。** WORK/WEB 绝不允许静默启动本地 Codex；需要本地 Codex 时必须显式设置 `STORY_OS_RUNTIME=CODEX` 或明确传入 Codex 执行入口。
+
+Concept / Story / Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，均必须 fresh + SHA-bound。WORK/WEB 图片若缺文件传输能力，返回 `HOST_ACTION_REQUIRED`，Checkpoint 记为 `HOST_WAIT`，不得回退 Codex Subscription。Host Action 以 request_id 保存历史，Product Review 以 attempt-scoped request 保存历史。
 
 <!-- STORY_OS_V2_1_CONCEPT_BEGIN -->
 ## V2.1 概念野心与图像传播入口

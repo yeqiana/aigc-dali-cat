@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Iterable
 
 from story_os_contract import CANONICAL_STAGES, load_contract
+import storyos_config
 
 CORE_ENGINE_FILES = [
     "story_os_contract.py",
@@ -32,6 +33,7 @@ CORE_ENGINE_FILES = [
     "incremental_closure.py",
     "incremental_frame_review.py",
     "media_workspace.py",
+    "runtime_log_policy.py",
 ]
 REQUIRED_CAPABILITIES = {
     "single_state_machine",
@@ -58,6 +60,11 @@ REQUIRED_CAPABILITIES = {
     "local_media_workspace",
     "media_sha_index",
     "safe_media_migration",
+    "product_runtime_first",
+    "local_codex_explicit_only",
+    "no_silent_codex_fallback",
+    "product_runtime_host_action",
+    "product_runtime_image_route",
 }
 ADAPTER_SKILLS = [
     Path("skills/dali-cat-story/SKILL.md"),
@@ -166,6 +173,33 @@ def collect_errors(root: Path | None = None) -> list[str]:
         except Exception as exc:
             errors.append(f"invalid {rel.as_posix()}: {exc}")
 
+    # Product-runtime-first routing must be identical across config, runtime contract,
+    # authority routing metadata and the active multi-runtime standard.
+    try:
+        cfg = storyos_config.load_config()
+        preferred = str(storyos_config.get_path(cfg, "runtime.preferred_runtime") or "").upper()
+        runtime_contract = read_json(root / "runtimes/runtime-contract.json")
+        authority_index = read_json(root / "standards/AUTHORITY_INDEX.json")
+        runtime_order = [str(x).upper() for x in (runtime_contract.get("routing_order") or [])]
+        authority_order = [str(x).upper() for x in (((authority_index.get("rules") or {}).get("runtime_routing") or {}).get("order") or [])]
+        contract_default = str((runtime_contract.get("common_rules") or {}).get("default_runtime") or "").upper()
+        expected_order = ["WORK", "CODEX", "WEB"]
+        if preferred != "WORK":
+            errors.append("config runtime.preferred_runtime must remain WORK for product-runtime-first")
+        if contract_default != preferred:
+            errors.append("runtime contract default_runtime drifted from config runtime.preferred_runtime")
+        if runtime_order != expected_order:
+            errors.append("runtime-contract routing_order must be WORK,CODEX,WEB")
+        if authority_order != expected_order:
+            errors.append("AUTHORITY_INDEX runtime_routing.order must be WORK,CODEX,WEB")
+        runtime_standard = read_text(root / "standards/多运行时执行与断点规范_V2.0.md")
+        if "WORK > CODEX > WEB" not in runtime_standard:
+            errors.append("active multi-runtime standard must declare WORK > CODEX > WEB")
+        if "CODEX > WORK > WEB" in runtime_standard:
+            errors.append("active multi-runtime standard still contains CODEX-first routing")
+    except Exception as exc:
+        errors.append(f"runtime routing consistency check failed: {exc}")
+
     for rel in [
         Path("standards/创作执行强制规范_V2.0.3.2.md"),
         Path("standards/生产帧语义强制规范_V1.0.md"),
@@ -251,7 +285,8 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "verify_layout_audit",
         ],
         "story_review.py": [
-            "CODEX_ISOLATED",
+            "runtime_provenance.validate_critic_provenance",
+            "product_review_adapter",
             "MECHANISM_CONTRADICTION",
         ],
         "visual_review.py": [
@@ -259,7 +294,8 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "visual_lock_v21",
         ],
         "frame_semantic_review.py": [
-            "CODEX_ISOLATED",
+            "runtime_provenance.validate_critic_provenance",
+            "product_review_adapter",
             "asset_sha256",
             "scene_storyboard_fidelity",
             "actual_information_gain",
@@ -277,6 +313,33 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "STORY_OS_VERSION=story_os_version()",
             "STATES=canonical_stages()",
             "'story_os_version':STORY_OS_VERSION",
+        ],
+        "visual_review_legacy.py": [
+            "runtime_provenance.validate_critic_provenance",
+            "product_review_adapter",
+            "WORK",
+            "WEB",
+        ],
+        "product_runtime_adapter.py": [
+            "REQUEST_HISTORY_REL",
+            "request_fingerprint",
+            "local_codex_spawn_allowed",
+        ],
+        "product_review_adapter.py": [
+            "attempt_request_path",
+            "request_fingerprint",
+            "WORK_ISOLATED",
+        ],
+        "runtime_checkpoint.py": [
+            "HOST_WAIT",
+        ],
+        "workflow_observability.py": [
+            "awaiting_product_host",
+            "HOST_WAIT",
+        ],
+        "runtime_log_policy.py": [
+            "local_derived_not_git_authority",
+            "tracked_historical_count",
         ],
     }
     source_expectations.update({
@@ -386,6 +449,15 @@ def collect_errors(root: Path | None = None) -> list[str]:
             template = read_json(template_path)
             if template.get("tool_version") != version:
                 errors.append("story-gates template tool_version drifted from manifest")
+            template_profile = str((template.get("visual_profile") or {}).get("profile_path") or "")
+            try:
+                cfg_profile = str(storyos_config.get_path(storyos_config.load_config(), "visual.default_profile_path") or "")
+            except Exception:
+                cfg_profile = ""
+            if template_profile != cfg_profile:
+                errors.append("story-gates template visual_profile.profile_path drifted from config default")
+            if "�" in template_profile or not (root / template_profile).is_file():
+                errors.append("story-gates template visual profile path is corrupted or missing")
             if (template.get("machine_contract") or {}).get("strict") is not True:
                 errors.append("story-gates template must represent current strict machine contract")
             visual = template.get("visual") or {}
@@ -454,6 +526,36 @@ def collect_errors(root: Path | None = None) -> list[str]:
     installer = root / "INSTALL_WINDOWS.ps1"
     if installer.is_file() and "DEPRECATED_STORY_OS_INSTALLER" not in read_text(installer):
         errors.append("INSTALL_WINDOWS.ps1 is a stale executable installer and must be retired")
+
+    # Security/portability closure: no canonical shim may hard-code a local user path
+    # or silently grant danger-full-access. Historical wrappers must be inert.
+    fullaccess = engine / "codex_win_fullaccess.py"
+    if fullaccess.is_file():
+        text = read_text(fullaccess)
+        if "C:\\Users\\" in text or "79873" in text:
+            errors.append("codex_win_fullaccess.py contains a user-specific executable path")
+        for token in ["STORY_OS_RUNTIME", "STORY_OS_ALLOW_CODEX_FULL_ACCESS", "CODEX_EXE"]:
+            if token not in text:
+                errors.append(f"codex_win_fullaccess.py missing explicit opt-in token: {token}")
+    retired_root = root / "_tmp_codex_shim_0153.py"
+    if retired_root.is_file() and "RETIRED_CODEX_SHIM" not in read_text(retired_root):
+        errors.append("tracked root Codex temp shim must be retired/inert")
+    retired_episode = root / "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/codex_danger_wrapper.py"
+    if retired_episode.is_file() and "RETIRED_CODEX_DANGER_WRAPPER" not in read_text(retired_episode):
+        errors.append("episode-local Codex danger wrapper must be retired/inert")
+
+    gitignore = read_text(root / ".gitignore") if (root / ".gitignore").is_file() else ""
+    for token in [
+        "_tmp_*",
+        "episodes/**/meta/image-workers/",
+        "episodes/**/meta/rolling-review-workers/",
+        "episodes/**/meta/scoped-workers/",
+        "episodes/**/meta/codex-auto-run.jsonl",
+        "episodes/**/meta/runtime/trace-events.jsonl",
+        "episodes/**/meta/workflow-run.jsonl",
+    ]:
+        if token not in gitignore:
+            errors.append(f".gitignore missing runtime-log hygiene token: {token}")
 
     tracked = tracked_local_artifacts(root)
     if tracked:

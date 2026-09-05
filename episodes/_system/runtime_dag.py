@@ -23,6 +23,8 @@ import workflow_step_protocol as proto
 import speculative_production  # STORY_OS_V211_PERF_RECOVERY
 import performance_guard_v211
 import runtime_trace
+import runtime_router
+import product_runtime_adapter
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -121,16 +123,23 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
         trace_span=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"executor":s.executor,"target_state":s.target_state})
         if s.executor=="machine_incremental_plan":
             cp=run([sys.executable,SYSTEM/"incremental_closure.py","plan",ep,"--json"]); rc=cp.returncode; note=cp.stdout[-3000:]
-        elif s.executor=="scoped_codex":
+        elif s.executor in {"scoped_model","scoped_codex"}:
             execution_capsule.compile_capsule(ep,s.step_id,write=True)
-            if s.step_id=="RELEASE" and provisional_future is not None:
-                try:
-                    prep=provisional_future.result(timeout=120)
-                    note=f"provisional_release={prep}"
-                except Exception as exc:
-                    note=f"provisional_release_nonblocking_failure={exc}"
-            step_timeout=min(timeout,int(dag.get("scoped_worker_timeout_seconds") or 3600))
-            rc,log=scoped_codex_worker.run_step(ep,s.step_id,codex_raw=codex,timeout=step_timeout); note=(note+" "+f"log={log}").strip()
+            active_runtime,_=runtime_router.detect()
+            if active_runtime in {"WORK","WEB"} and not codex:
+                request=product_runtime_adapter.build_request(
+                    ep,runtime=active_runtime,mode=mode,resume=True,source=f"runtime_dag:{s.step_id}")
+                rc=product_runtime_adapter.HOST_ACTION_REQUIRED_RC
+                note=json.dumps(request,ensure_ascii=False)
+            else:
+                if s.step_id=="RELEASE" and provisional_future is not None:
+                    try:
+                        prep=provisional_future.result(timeout=120)
+                        note=f"provisional_release={prep}"
+                    except Exception as exc:
+                        note=f"provisional_release_nonblocking_failure={exc}"
+                step_timeout=min(timeout,int(dag.get("scoped_worker_timeout_seconds") or 3600))
+                rc,log=scoped_codex_worker.run_step(ep,s.step_id,codex_raw=codex,timeout=step_timeout); note=(note+" "+f"log={log}").strip()
         else:
             rc=2; note=f"unknown executor {s.executor}"
         elapsed=time.monotonic()-t0
@@ -161,7 +170,7 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
         if rc==0 and s.target_state:
             ok,msg=validate_target(ep,s.target_state)
             if not ok: rc=4; note=(note+"\nPOSTCONDITION FAIL\n"+msg)[-5000:]
-        status="PASS" if rc==0 else ("BLOCKED" if rc in {124,3,4} else "FAILED")
+        status="PASS" if rc==0 else ("HOST_WAIT" if rc==product_runtime_adapter.HOST_ACTION_REQUIRED_RC else ("BLOCKED" if rc in {124,3,4} else "FAILED"))
         out_hash=proto.evidence_hash(ep,["meta/episode-state.json",*s.evidence_paths])
         res=proto.StepResult(s.step_id,status,attempt,started_at,proto.now(),elapsed,input_hash,out_hash,note,rc)
         proto.save_result(ep,res); checkpoint(ep,s.step_id,status,elapsed,note[-1200:],attempt,input_hash,out_hash)

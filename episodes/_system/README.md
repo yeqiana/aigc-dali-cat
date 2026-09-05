@@ -1,4 +1,4 @@
-# Episodes 状态机 + Story OS 门禁 V2.6.0
+# Episodes 状态机 + Story OS 门禁 V2.6.1
 
 本目录只建立一套机器阶段状态；V2.2.2 延续 V1.8 引入的证据 SHA 门禁，并增加稳定 evidence gate 与可执行 Codex runtime，不新增第二状态机。
 
@@ -144,7 +144,7 @@ V2.0.3.3 新剧集的 `meta/frame-reviews/NN.json` 使用 schema 2，绑定实�
 <!-- STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE_END -->
 
 <!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_BEGIN -->
-## V2.6.0 Performance Runtime / Cross-Shell Contract
+## V2.6.1 Product Runtime First / Cross-Shell Contract
 
 性能优先，但不降低创作门禁。恢复优先使用 Resume Capsule；正式图片候选走原子 Candidate Lifecycle。
 禁止 Agent 使用 Bash heredoc、PowerShell here-string、嵌套 `powershell -Command`、`shell=True` 或把大段 JSON/多行 Python 塞进 shell。

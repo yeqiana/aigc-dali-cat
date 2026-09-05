@@ -25,12 +25,16 @@ from pathlib import Path
 from story_os_contract import story_os_version
 import caption_image_audit
 import visual_final_freeze
+import runtime_router
+import runtime_provenance
+import product_review_adapter
 from fingerprint_semantics import (
     REVIEW_REL as RECENT5_SEMANTIC_REL,
     comparison_index as semantic_comparison_index,
     ensure_review as ensure_semantic_review,
     required as semantic_recent5_required,
     validate_review as validate_semantic_review,
+    ProductReviewHostAction,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -326,7 +330,11 @@ def build_recent5(ep: Path, codex: str | None = None, timeout: int = 1800) -> di
 
 def cmd_build_recent5(args: argparse.Namespace) -> int:
     ep = ep_path(args.episode_dir)
-    data = build_recent5(ep, codex=args.codex, timeout=args.timeout)
+    try:
+        data = build_recent5(ep, codex=args.codex, timeout=args.timeout)
+    except ProductReviewHostAction as exc:
+        print(json.dumps(exc.request, ensure_ascii=False, indent=2))
+        return product_review_adapter.HOST_ACTION_REQUIRED_RC
     write_json(ep / RECENT5_REL, data)
     print(f"RECENT5: {data['decision'].upper()} max={data['max_similarity_score']} count={data['comparison_count']}")
     return 0 if data["decision"] == "pass" else 3
@@ -751,8 +759,7 @@ def validate_release_review(ep: Path, data: dict) -> list[str]:
     if data.get("artifacts") != current:
         errors.append("release semantic artifact SHA set is stale or mismatched")
     prov = data.get("critic_provenance") or {}
-    if prov.get("runtime") != "CODEX_ISOLATED" or prov.get("isolated_session") is not True:
-        errors.append("release semantic critic must be fresh CODEX_ISOLATED")
+    errors.extend(runtime_provenance.validate_critic_provenance(prov))
     checks = data.get("release_checks") or {}
     for key in RELEASE_CHECKS:
         if checks.get(key) is not True:
@@ -767,11 +774,61 @@ def validate_release_review(ep: Path, data: dict) -> list[str]:
         errors.append("release semantic summary.passed must be true")
     return errors
 
+def _finalize_release_review(ep: Path, data: dict, provenance: dict) -> int:
+    data["schema_version"] = 1
+    data["story_os_version"] = episode_contract_version(ep)
+    data["artifacts"] = release_hashes(ep)
+    data["critic_provenance"] = provenance
+    write_json(ep / RELEASE_REVIEW_REL, data)
+    (ep / RELEASE_CANDIDATE_REL).unlink(missing_ok=True)
+    errors = validate_release_review(ep, data)
+    if errors:
+        print("RELEASE SEMANTIC REVIEW FAIL")
+        for e in errors:
+            print("FAIL:", e)
+        return 2
+    print("RELEASE SEMANTIC REVIEW PASS")
+    return 0
+
+
+def finalize_product_release_review(ep: Path, runtime: str) -> int:
+    candidate = ep / RELEASE_CANDIDATE_REL
+    data, provenance = product_review_adapter.finalize_candidate(
+        ep,
+        kind="release-semantic",
+        runtime=runtime,
+        attempt=1,
+        candidate_path=candidate,
+    )
+    rc = _finalize_release_review(ep, data, provenance)
+    if rc == 0:
+        product_review_adapter.mark_complete(ep, "release-semantic", attempt=1, final_path=ep / RELEASE_REVIEW_REL)
+    return rc
+
+
 def cmd_run_release_critic(args: argparse.Namespace) -> int:
     ep = ep_path(args.episode_dir)
     rows = release_hashes(ep)
     candidate = ep / RELEASE_CANDIDATE_REL
     candidate.unlink(missing_ok=True)
+    active_runtime, _ = runtime_router.detect()
+    if active_runtime in {"WORK", "WEB"} and not args.codex:
+        source_paths = [ROOT / row["path"] for row in rows.values()]
+        source_paths += [
+            ROOT / "standards/制作规范_正式版.md",
+            ROOT / "standards/release_preflight_guard_V2.0.3.5.md",
+        ]
+        request = product_review_adapter.prepare(
+            ep,
+            kind="release-semantic",
+            runtime=active_runtime,
+            attempt=1,
+            prompt=release_critic_prompt(ep, candidate, rows),
+            source_paths=source_paths,
+            candidate_path=candidate,
+        )
+        print(json.dumps(request, ensure_ascii=False, indent=2))
+        return product_review_adapter.HOST_ACTION_REQUIRED_RC
     codex = resolve_codex(args.codex)
     cmd = prefix(codex) + [
         "exec", "--skip-git-repo-check", "--ephemeral",
@@ -798,25 +855,10 @@ def cmd_run_release_critic(args: argparse.Namespace) -> int:
     if not candidate.is_file():
         raise RuntimeError("release critic did not produce candidate JSON")
     data = read_json(candidate)
-    data["schema_version"] = 1
-    data["story_os_version"] = episode_contract_version(ep)
-    data["artifacts"] = release_hashes(ep)
-    data["critic_provenance"] = {
-        "runtime": "CODEX_ISOLATED",
-        "isolated_session": True,
-        "reviewed_at": now(),
-        "log": repo_rel(log),
-    }
-    write_json(ep / RELEASE_REVIEW_REL, data)
-    candidate.unlink(missing_ok=True)
-    errors = validate_release_review(ep, data)
-    if errors:
-        print("RELEASE SEMANTIC REVIEW FAIL")
-        for e in errors:
-            print("FAIL:", e)
-        return 2
-    print("RELEASE SEMANTIC REVIEW PASS")
-    return 0
+    provenance = runtime_provenance.build_critic_provenance(
+        "CODEX", attempt=1, log=repo_rel(log)
+    )
+    return _finalize_release_review(ep, data, provenance)
 
 def verify_release_semantic(ep: Path) -> list[str]:
     if not guard_required(ep):
@@ -871,6 +913,9 @@ def cmd_prepare_auto(args: argparse.Namespace) -> int:
         if data["decision"] != "pass":
             print(f"FAIL recent5: max={data['max_similarity_score']} decision={data['decision']}")
             return 3
+    except ProductReviewHostAction as exc:
+        print(json.dumps(exc.request, ensure_ascii=False, indent=2))
+        return product_review_adapter.HOST_ACTION_REQUIRED_RC
     except Exception as exc:
         print("FAIL recent5:", exc)
         return 3
@@ -893,6 +938,9 @@ def cmd_prepare_auto(args: argparse.Namespace) -> int:
         if not caption_ok:
             print("FAIL caption_image_audit: unsupported caption/image pair")
             return 3
+    except caption_image_audit.ProductReviewHostAction as exc:
+        print(json.dumps(exc.request, ensure_ascii=False, indent=2))
+        return product_review_adapter.HOST_ACTION_REQUIRED_RC
     except Exception as exc:
         print("FAIL caption_image_audit:", exc)
         return 3
@@ -975,6 +1023,10 @@ def main() -> int:
     p.add_argument("--codex")
     p.add_argument("--timeout", type=int, default=1800)
 
+    p = sub.add_parser("finalize-review")
+    p.add_argument("episode_dir")
+    p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
+
     p = sub.add_parser("prepare-auto")
     p.add_argument("episode_dir")
     p.add_argument("--codex")
@@ -1002,6 +1054,8 @@ def main() -> int:
         return cmd_init_compliance(args)
     if args.cmd == "run-release-critic":
         return cmd_run_release_critic(args)
+    if args.cmd == "finalize-review":
+        return finalize_product_release_review(ep_path(args.episode_dir), args.runtime)
     if args.cmd == "prepare-auto":
         return cmd_prepare_auto(args)
     if args.cmd == "verify":

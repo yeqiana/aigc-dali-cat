@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "task_id": "storyos-v2611-git-closure",
+  "runtime": "CODEX",
+  "selection": "explicit_user_requested",
+  "scope": "git_index_staging_and_commit_only",
+  "repository": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat",
+  "branch": "story",
+  "purpose": "Finish Git-only closure steps that the current DevSpace shell policy cannot perform.",
+  "hard_constraints": [
+    "Do not edit Story OS source files.",
+    "Do not edit Episode story/docs/meta content except staging the exact current working-tree versions.",
+    "Do not regenerate any Story OS evidence.",
+    "Do not run image generation.",
+    "Do not rewrite or delete formal review JSON/SHA evidence.",
+    "Do not push.",
+    "Do not use destructive Git reset/clean/checkout operations.",
+    "Preserve all working-tree file contents exactly as they are when this task starts."
+  ],
+  "steps": [
+    {
+      "id": "A",
+      "action": "audit",
+      "commands": [
+        "git status --short --branch",
+        "python episodes/_system/runtime_log_policy.py audit"
+      ],
+      "requirement": "The runtime log audit must report the historical tracked local-derived raw log paths."
+    },
+    {
+      "id": "B",
+      "action": "untrack_historical_runtime_logs",
+      "instruction": "For every existing path returned by runtime_log_policy.py audit as a tracked historical raw runtime log, remove it from the Git index only with git rm --cached -- <path>. Do NOT delete the local file. Do not untrack formal review JSON, final summaries, provider receipts, SHA evidence, release manifests, or Episode authority files."
+    },
+    {
+      "id": "C",
+      "action": "refresh_staging",
+      "commands": [
+        "git add -A"
+      ],
+      "requirement": "This must refresh previously AM/stale staged files so the index exactly matches the current working tree, including the corrected trailing whitespace in EP002 concept-ambition critic log."
+    },
+    {
+      "id": "D",
+      "action": "precommit_validation",
+      "commands": [
+        "git diff --check",
+        "git diff --cached --check",
+        "python episodes/_system/story_os_doctor.py",
+        "python episodes/_system/contract_sync.py",
+        "python episodes/_system/test_v261_product_runtime_first.py",
+        "python episodes/_system/test_v2_multi_runtime.py"
+      ],
+      "requirements": [
+        "story_os_doctor.py must report errors=0 warnings=0 after untracking historical raw runtime logs.",
+        "contract_sync.py must PASS.",
+        "Product Runtime tests must PASS.",
+        "Multi-runtime tests must PASS.",
+        "Both diff checks must PASS."
+      ]
+    },
+    {
+      "id": "E",
+      "action": "split_commits",
+      "instruction": "Create two commits without changing file contents. First commit only Story OS/runtime/config/standards/docs/tooling closure changes and Git untracking of local-derived raw runtime logs. Second commit only EP002 assets/docs/meta plus runtime/requests/ep002_remake_v251.json. Exclude runtime/requests/codex_git_closure_v2611.json from the EP002 commit; include it in the Story OS closure commit if still present.",
+      "commit_1_message": "feat(story-os): close WORK-first product runtime architecture",
+      "commit_2_message": "feat(episode): add 彼此的天上 EP002 preproduction assets"
+    },
+    {
+      "id": "F",
+      "action": "final_audit",
+      "commands": [
+        "git status --short --branch",
+        "git log -2 --oneline --decorate"
+      ],
+      "requirement": "Do not push. Report the two commit SHAs and any remaining working-tree changes."
+    }
+  ]
+}

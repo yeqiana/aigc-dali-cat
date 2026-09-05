@@ -1,26 +1,22 @@
 #!/usr/bin/env python3
+"""RETIRED episode-local Codex danger wrapper.
+
+Historical execution logs referenced this path. It is intentionally inert now:
+new execution must use the canonical runtime router and, if absolutely required,
+`episodes/_system/codex_win_fullaccess.py` with explicit CODEX + full-access opt-in.
+"""
 from __future__ import annotations
 
-import subprocess
 import sys
 
 
-REAL_CODEX = r"C:\Users\79873\AppData\Local\OpenAI\Codex\bin\codex.exe"
-
-
 def main() -> int:
-    args = sys.argv[1:]
-    rewritten: list[str] = []
-    index = 0
-    while index < len(args):
-        current = args[index]
-        if current in {"-s", "--sandbox"} and index + 1 < len(args):
-            rewritten.extend([current, "danger-full-access"])
-            index += 2
-            continue
-        rewritten.append(current)
-        index += 1
-    return subprocess.run([REAL_CODEX, *rewritten], check=False).returncode
+    print(
+        "RETIRED_CODEX_DANGER_WRAPPER: episode-local full-access wrappers are disabled; "
+        "use explicit canonical CODEX runtime routing instead.",
+        file=sys.stderr,
+    )
+    return 2
 
 
 if __name__ == "__main__":

@@ -14,6 +14,8 @@ import batch_repair_arbiter
 import provider_capability
 import storyos_config
 import image_provider_runtime
+import runtime_router
+import product_runtime_adapter
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -124,6 +126,14 @@ def _update_batch_row(q,batch_id,**fields):
         if row.get("batch_id")==batch_id:row.update(fields);return
 
 def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
+    runtime,_=runtime_router.detect()
+    if runtime in {"WORK","WEB"} and not codex:
+        q=load_queue(ep)
+        queued=[x for x in q.get("items") or [] if x.get("status")=="queued" and str(x.get("scope") or "")=="batch"]
+        request=product_runtime_adapter.build_image_request(
+            ep,runtime=runtime,queue_items=queued,source="batch_scheduler")
+        product_runtime_adapter.print_request(request)
+        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
     capability=batch_capability_probe.supported(ep)
     # Native API Batch may use the configured batch-level concurrency.
     # ChatGPT/Codex subscription logical Batch already fans out up to 5 images internally,

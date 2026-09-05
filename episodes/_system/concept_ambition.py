@@ -5,6 +5,9 @@ from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, os, shutil, subprocess, sys
 from pathlib import Path
 from story_os_contract import story_os_version
+import runtime_router
+import runtime_provenance
+import product_review_adapter
 
 ROOT = Path(__file__).resolve().parents[2]
 CANDIDATES_REL = Path("meta/concept-candidates.json")
@@ -123,9 +126,7 @@ def validate_review(ep, review):
         errors.append("concept ambition review candidates_sha256 drift")
     if review.get("schema_version") != 1: errors.append("concept ambition review schema_version must be 1")
     prov=review.get("critic_provenance") or {}
-    if prov.get("runtime")!="CODEX_ISOLATED" or prov.get("isolated_session") is not True:
-        errors.append("concept ambition critic must be fresh CODEX_ISOLATED")
-    if prov.get("attempt") not in {1,2}: errors.append("concept ambition critic attempt must be 1 or 2")
+    errors += runtime_provenance.validate_critic_provenance(prov)
     expected_ids=[str(x.get("id") or "") for x in candidates["candidates"]]
     rows=review.get("candidates")
     if not isinstance(rows,list) or len(rows)!=len(expected_ids):
@@ -224,6 +225,30 @@ Episode: {rel_ep}
 Attempt: {attempt}
 """
 
+def _finalize_review(ep, review, before, provenance):
+    review["schema_version"]=1
+    review["story_os_version"]=episode_contract_version(ep)
+    review["candidates_sha256"]=before
+    review["critic_provenance"]=provenance
+    final=ep/REVIEW_REL
+    write_json(final,review)
+    (ep/CANDIDATE_REVIEW_REL).unlink(missing_ok=True)
+    errs=validate_review(ep,review)
+    if errs:
+        print("CONCEPT AMBITION REVIEW FAIL")
+        [print("FAIL:",e) for e in errs]; return 2
+    print("CONCEPT AMBITION REVIEW PASS"); return 0
+
+
+def finalize_product_review(ep, attempt, runtime):
+    cp=ep/CANDIDATES_REL; candidate=ep/CANDIDATE_REVIEW_REL
+    review,provenance=product_review_adapter.finalize_candidate(
+        ep,kind="concept-ambition",runtime=runtime,attempt=attempt,candidate_path=candidate)
+    rc=_finalize_review(ep,review,sha256_file(cp),provenance)
+    if rc==0: product_review_adapter.mark_complete(ep,"concept-ambition",attempt=attempt,final_path=ep/REVIEW_REL)
+    return rc
+
+
 def run_critic(ep, attempt, codex_raw, timeout):
     if not required(ep):
         print("CONCEPT AMBITION: NOT REQUIRED FOR LEGACY EPISODE"); return 0
@@ -235,25 +260,24 @@ def run_critic(ep, attempt, codex_raw, timeout):
         [print("FAIL:",e) for e in errs]; return 2
     before=sha256_file(cp)
     candidate=ep/CANDIDATE_REVIEW_REL; candidate.unlink(missing_ok=True)
+    runtime,_=runtime_router.detect()
+    if runtime in {"WORK","WEB"} and not codex_raw:
+        req=product_review_adapter.prepare(
+            ep,kind="concept-ambition",runtime=runtime,attempt=attempt,
+            prompt=critic_prompt(ep,cp,candidate,attempt),source_paths=[cp],candidate_path=candidate)
+        print(json.dumps(req,ensure_ascii=False,indent=2))
+        return product_review_adapter.HOST_ACTION_REQUIRED_RC
     codex=resolve_codex(codex_raw)
     cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-c",'model_reasoning_effort="medium"'," -s".strip(),"workspace-write","-C",str(ROOT),"--json","-"]
     log=ep/"meta"/f"concept-ambition-critic-attempt-{attempt}.jsonl"
     with log.open("w",encoding="utf-8",newline="\n") as h:
-        done=subprocess.run(cmd,input=critic_prompt(ep,cp,candidate,attempt),text=True,stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+        done=subprocess.run(cmd,input=critic_prompt(ep,cp,candidate,attempt),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
     if done.returncode != 0: raise RuntimeError(f"concept critic failed rc={done.returncode}; log={log}")
     if sha256_file(cp) != before: raise RuntimeError("concept critic modified candidate pool")
     if not candidate.is_file(): raise RuntimeError("concept critic did not produce candidate JSON")
     review=read_json(candidate)
-    review["schema_version"]=1
-    review["story_os_version"]=episode_contract_version(ep)
-    review["candidates_sha256"]=before
-    review["critic_provenance"]={"runtime":"CODEX_ISOLATED","isolated_session":True,"attempt":attempt,"reviewed_at":now(),"log":log.relative_to(ROOT).as_posix()}
-    write_json(ep/REVIEW_REL,review); candidate.unlink(missing_ok=True)
-    errs=validate_review(ep,review)
-    if errs:
-        print("CONCEPT AMBITION REVIEW FAIL")
-        [print("FAIL:",e) for e in errs]; return 2
-    print("CONCEPT AMBITION REVIEW PASS"); return 0
+    provenance=runtime_provenance.build_critic_provenance("CODEX",attempt=attempt,log=log.relative_to(ROOT).as_posix())
+    return _finalize_review(ep,review,before,provenance)
 
 def init_candidates(ep):
     p=ep/CANDIDATES_REL
@@ -283,6 +307,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("init"); p.add_argument("episode_dir")
     p=sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=900)
+    p=sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK")
     p=sub.add_parser("verify"); p.add_argument("episode_dir")
     p=sub.add_parser("show"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
@@ -298,6 +323,10 @@ def main():
         try: return run_critic(ep,a.attempt,a.codex,a.timeout)
         except (OSError,RuntimeError,ValueError,subprocess.TimeoutExpired) as exc:
             print("CONCEPT AMBITION ERROR:",exc); return 3
+    if a.cmd=="finalize-review":
+        try: return finalize_product_review(ep,a.attempt,a.runtime)
+        except (OSError,RuntimeError,ValueError) as exc:
+            print("CONCEPT AMBITION FINALIZE ERROR:",exc); return 3
     errs=verify(ep)
     if errs:
         [print("FAIL:",e) for e in errs]; return 2

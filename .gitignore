@@ -12,6 +12,24 @@ desktop.ini
 *.temp
 *.bak
 *.swp
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Story OS / Codex transient runtime homes and helper scripts
+.tmp-codex-critic-home/
+_tmp_*
+episodes/_system/_tmp_*
+
+# Story OS high-volume raw runtime logs are local/derived evidence.
+# Formal review JSON and SHA-bound critic evidence remain trackable.
+episodes/**/meta/image-workers/
+episodes/**/meta/rolling-review-workers/
+episodes/**/meta/scoped-workers/
+episodes/**/meta/codex-auto-run.jsonl
+episodes/**/meta/runtime/trace-events.jsonl
+episodes/**/meta/workflow-run.jsonl
 
 # Python build artifacts
 __pycache__/

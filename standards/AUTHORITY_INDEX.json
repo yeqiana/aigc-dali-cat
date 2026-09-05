@@ -107,6 +107,72 @@
       "active": true
     },
     {
+      "path": "standards/Runtime_Request_Contract_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "runtime_request_intent_and_execution_parameters",
+      "active": true,
+      "note": "Runtime request records user intent and execution parameters only; it never becomes creative authority or a second stage source."
+    },
+    {
+      "path": "standards/Runtime_Refactor_P0.5_P0.6_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "runtime_dag_scoped_worker_checkpoint_resume",
+      "active": true,
+      "note": "Engineering execution contract retained for DAG/resume compatibility; current WORK-first routing takes precedence where runtime selection differs."
+    },
+    {
+      "path": "standards/Runtime_Performance_P0.7_P1.2_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "runtime_scheduler_parallelism_and_performance",
+      "active": true,
+      "note": "Performance-only subordinate contract; must not weaken Story, Visual, Production or Release gates."
+    },
+    {
+      "path": "standards/Runtime_Optimization_R2_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "runtime_cache_resume_and_execution_optimization",
+      "active": true,
+      "note": "Optimization contract only; current Product-Runtime-First routing and canonical stage source remain authoritative."
+    },
+    {
+      "path": "standards/Episode_Performance_Telemetry_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "episode_runtime_performance_telemetry",
+      "active": true,
+      "note": "Telemetry is diagnostic evidence only and never Story Authority or Release Gate."
+    },
+    {
+      "path": "standards/Character_And_Entry_Pool_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "character_and_entry_pool",
+      "active": true
+    },
+    {
+      "path": "standards/Character_Visual_And_Wardrobe_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "character_visual_identity_and_scene_wardrobe",
+      "active": true
+    },
+    {
+      "path": "standards/Character_Master_Final_Closure_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "character_master_visual_lock_to_final_snapshot_closure",
+      "active": true
+    },
+    {
+      "path": "standards/Human_Response_Interaction_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "human_response_interaction_and_capture_behavior",
+      "active": true
+    },
+    {
+      "path": "standards/AIGC_Directing_Quality_V1.0.md",
+      "authority": "active_subordinate",
+      "scope": "directing_quality_capture_event_and_shot_progression",
+      "active": true,
+      "note": "Quality-enhancement contract only; does not create an Episode stage or override the canonical creative authority."
+    },
+    {
       "path": "standards/设备物理档案与参考预算规范_V1.0.md",
       "authority": "active_subordinate",
       "scope": "capture_physics_and_reference_budget",
@@ -296,8 +362,8 @@
     "runtime_routing": {
       "contract": "runtimes/runtime-contract.json",
       "order": [
-        "CODEX",
         "WORK",
+        "CODEX",
         "WEB"
       ],
       "ask_user_to_choose": false,

@@ -11,6 +11,8 @@ import intro_policy
 import directing_quality
 import episode_performance
 import storyos_config
+import runtime_router
+import product_runtime_adapter
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -175,12 +177,20 @@ def run_step(ep,step,codex_raw=None,timeout=3600):
     if step not in STEP_DIRECTIVES: raise ValueError(f"unknown scoped step: {step}")
     perf_run=episode_performance.safe_begin_stage(ep,step,source="scoped_codex_worker")
     rc=99;log=ep/"meta/scoped-workers"/f"{step.lower()}.jsonl";log.parent.mkdir(parents=True,exist_ok=True)
+    if not runtime_router.local_codex_allowed(explicit=bool(codex_raw)):
+        runtime,_=runtime_router.detect()
+        request=product_runtime_adapter.build_request(
+            ep,runtime=runtime,mode="full_auto",resume=True,source=f"scoped_codex_worker:{step}")
+        log.write_text(json.dumps({"status":"HOST_ACTION_REQUIRED","request":request},ensure_ascii=False)+"\n",encoding="utf-8")
+        episode_performance.safe_end_stage(ep,step,perf_run,status="HOST_ACTION_REQUIRED",
+                                           metadata={"timeout_seconds":timeout,"log":str(log)})
+        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC,str(log)
     try:
         codex=resolve_codex(codex_raw)
         cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"--json","-"]
         with log.open("a",encoding="utf-8",newline="\n") as h:
             try:
-                cp=subprocess.run(cmd,input=prompt(ep,step),text=True,stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+                cp=subprocess.run(cmd,input=prompt(ep,step),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
                 rc=cp.returncode
             except subprocess.TimeoutExpired:
                 rc=124

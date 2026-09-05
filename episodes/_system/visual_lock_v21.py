@@ -31,6 +31,9 @@ import character_visual_contract
 import visual_lock_baseline_gate
 import visual_narrative_core_v22  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 import critic_runtime_v211  # STORY_OS_V211_PERF_RECOVERY
+import runtime_router
+import runtime_provenance
+import product_review_adapter
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path("meta/story-gates.json")
@@ -438,10 +441,7 @@ def validate_payload(data: dict, *, contract: dict, assets: list[dict], version:
     if str(data.get("profile_sha256") or "").lower() != contract["profile_sha256"].lower():
         errors.append("profile_sha256 mismatch")
     prov = data.get("critic_provenance") or {}
-    if prov.get("runtime") != "CODEX_ISOLATED" or prov.get("isolated_session") is not True:
-        errors.append("Visual Lock critic must be fresh CODEX_ISOLATED")
-    if prov.get("attempt") not in {1, 2}:
-        errors.append("critic attempt must be 1 or 2")
+    errors.extend(runtime_provenance.validate_critic_provenance(prov))
 
     expected = {row["id"]: row for row in assets}
     rows = data.get("calibration")
@@ -624,6 +624,105 @@ def _record_failed_calibration_frames(ep: Path, data: dict) -> None:
             row.setdefault("ledger_review_warnings", []).append(cp.stdout[-1200:])
 
 
+def _finalize_review_payload(
+    ep: Path,
+    *,
+    data: dict,
+    contract: dict,
+    current: list[dict],
+    provenance: dict,
+    attempt: int,
+) -> int:
+    data["schema_version"] = 2
+    data["story_os_version"] = episode_version(ep)
+    data["profile_id"] = contract["profile_id"]
+    data["profile_path"] = contract["profile_path"]
+    data["profile_sha256"] = contract["profile_sha256"]
+    data["critic_provenance"] = provenance
+    by_id = {r["id"]: r for r in current}
+    for row in data.get("calibration") or []:
+        rid = str(row.get("id") or "")
+        if rid in by_id:
+            row["sha256"] = by_id[rid]["sha256"]
+            row["frame_contract_sha256"] = by_id[rid]["frame_contract_sha256"]
+            row["frame"] = by_id[rid]["frame"]
+            row["role"] = by_id[rid]["role"]
+
+    technical_codes = critic_runtime_v211.classify_issue_codes(data.get("issue_codes") or [])
+    evidence_ref = provenance.get("log") or provenance.get("request_path") or "product_runtime_review"
+    if technical_codes:
+        write_json(ep / REVIEW_REL, data)
+        (ep / CANDIDATE_REL).unlink(missing_ok=True)
+        health = critic_runtime_v211.record_technical_failure(
+            ep,
+            issue_codes=technical_codes,
+            attempt=attempt,
+            log=str(evidence_ref),
+            source="visual_lock_critic_payload",
+        )
+        print("VISUAL LOCK CRITIC TECHNICAL FAIL:", ",".join(technical_codes), "status=" + health["status"])
+        return 11
+
+    errors = validate_payload(data, contract=contract, assets=current, version=episode_version(ep))
+    if errors:
+        _record_failed_calibration_frames(ep, data)
+    write_json(ep / REVIEW_REL, data)
+    (ep / CANDIDATE_REL).unlink(missing_ok=True)
+    critic_runtime_v211.record_content_result(
+        ep,
+        passed=not errors,
+        attempt=attempt,
+        issue_codes=data.get("issue_codes") or [],
+        log=str(evidence_ref),
+    )
+    _mark_decisions(ep, not errors)
+    if errors:
+        print("VISUAL LOCK V2.1 REVIEW FAIL")
+        for error in errors:
+            print("FAIL:", error)
+        return 2
+    if character_visual_contract.pixel_master_required(ep):
+        expected = _pixel_master_expected(current)
+        if expected is None:
+            raise RuntimeError("ordinary_baseline asset missing for character pixel master")
+        character_visual_contract.lock_pixel_master(
+            ep,
+            frame=expected["frame"],
+            asset_path=expected["asset_path"],
+            asset_sha256=expected["sha256"],
+            frame_contract_sha256=expected["frame_contract_sha256"],
+        )
+    print("VISUAL LOCK V2.1 REVIEW PASS")
+    return 0
+
+
+def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
+    baseline_errors = visual_lock_baseline_gate.validate_review(ep)
+    if baseline_errors:
+        raise RuntimeError("ordinary_baseline separate review must PASS before final Visual Lock critic: " + "; ".join(baseline_errors[:8]))
+    contract = compile_prompt_contract(ep)
+    assets = calibration_assets(ep)
+    candidate = ep / CANDIDATE_REL
+    data, provenance = product_review_adapter.finalize_candidate(
+        ep,
+        kind="visual-lock",
+        runtime=runtime,
+        attempt=attempt,
+        candidate_path=candidate,
+    )
+    rc = _finalize_review_payload(
+        ep,
+        data=data,
+        contract=contract,
+        current=assets,
+        provenance=provenance,
+        attempt=attempt,
+    )
+    if rc == 0:
+        product_review_adapter.mark_complete(ep, "visual-lock", attempt=attempt, final_path=ep / REVIEW_REL)
+    return rc
+
+
 def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
     if attempt not in {1, 2}:
         raise RuntimeError("attempt must be 1 or 2")
@@ -634,6 +733,22 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
     candidate = ep / CANDIDATE_REL
     candidate.unlink(missing_ok=True)
     before = {r["id"]: r["sha256"] for r in assets}
+    active_runtime, _ = runtime_router.detect()
+    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+        profile_path = Path(contract["profile_path"])
+        profile_path = profile_path.resolve() if profile_path.is_absolute() else (ROOT / profile_path).resolve()
+        sources = [ep / GATES_REL, profile_path, *[r["path"] for r in assets]]
+        request = product_review_adapter.prepare(
+            ep,
+            kind="visual-lock",
+            runtime=active_runtime,
+            attempt=attempt,
+            prompt=critic_prompt(ep, contract, assets, candidate, attempt),
+            source_paths=sources,
+            candidate_path=candidate,
+        )
+        print(json.dumps(request, ensure_ascii=False, indent=2))
+        return product_review_adapter.HOST_ACTION_REQUIRED_RC
     codex = resolve_codex(codex_raw)
     # Codex's Windows image sidecar may not resolve Chinese workspace paths.
     # Supply byte-identical ASCII-only temporary attachments for this review.
@@ -682,57 +797,17 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
     if {r["id"]: r["sha256"] for r in current} != before:
         raise RuntimeError("Visual Lock critic modified calibration images")
     data = read_json(candidate)
-    data["schema_version"] = 2
-    data["story_os_version"] = episode_version(ep)
-    data["profile_id"] = contract["profile_id"]
-    data["profile_path"] = contract["profile_path"]
-    data["profile_sha256"] = contract["profile_sha256"]
-    data["critic_provenance"] = {
-        "runtime": "CODEX_ISOLATED",
-        "isolated_session": True,
-        "attempt": attempt,
-        "reviewed_at": now(),
-        "log": log.relative_to(ROOT).as_posix(),
-    }
-    by_id = {r["id"]: r for r in current}
-    for row in data.get("calibration") or []:
-        rid = str(row.get("id") or "")
-        if rid in by_id:
-            row["sha256"] = by_id[rid]["sha256"]
-            row["frame_contract_sha256"] = by_id[rid]["frame_contract_sha256"]
-            row["frame"] = by_id[rid]["frame"]
-            row["role"] = by_id[rid]["role"]
-    # STORY_OS_V211_PERF_RECOVERY: infrastructure failure is not content failure.
-    technical_codes = critic_runtime_v211.classify_issue_codes(data.get("issue_codes") or [])
-    if technical_codes:
-        write_json(ep / REVIEW_REL, data)
-        candidate.unlink(missing_ok=True)
-        health = critic_runtime_v211.record_technical_failure(
-            ep, issue_codes=technical_codes, attempt=attempt,
-            log=log.relative_to(ROOT).as_posix(), source="visual_lock_critic_payload")
-        print("VISUAL LOCK CRITIC TECHNICAL FAIL:", ",".join(technical_codes), "status="+health["status"])
-        return 11
-
-    errors = validate_payload(data, contract=contract, assets=current, version=episode_version(ep))
-    if errors:
-        _record_failed_calibration_frames(ep, data)
-    write_json(ep / REVIEW_REL, data)
-    candidate.unlink(missing_ok=True)
-    critic_runtime_v211.record_content_result(
-        ep, passed=not errors, attempt=attempt,
-        issue_codes=data.get("issue_codes") or [], log=log.relative_to(ROOT).as_posix())
-    _mark_decisions(ep, not errors)
-    if errors:
-        print("VISUAL LOCK V2.1 REVIEW FAIL")
-        for error in errors:
-            print("FAIL:", error)
-        return 2
-    if character_visual_contract.pixel_master_required(ep):
-        expected=_pixel_master_expected(current)
-        if expected is None:raise RuntimeError("ordinary_baseline asset missing for character pixel master")
-        character_visual_contract.lock_pixel_master(ep,frame=expected["frame"],asset_path=expected["asset_path"],asset_sha256=expected["sha256"],frame_contract_sha256=expected["frame_contract_sha256"])
-    print("VISUAL LOCK V2.1 REVIEW PASS")
-    return 0
+    provenance = runtime_provenance.build_critic_provenance(
+        "CODEX", attempt=attempt, log=log.relative_to(ROOT).as_posix()
+    )
+    return _finalize_review_payload(
+        ep,
+        data=data,
+        contract=contract,
+        current=current,
+        provenance=provenance,
+        attempt=attempt,
+    )
 
 
 def self_test() -> None:
@@ -751,6 +826,7 @@ def main() -> int:
     p = sub.add_parser("prepare"); p.add_argument("episode_dir")
     p = sub.add_parser("bind-from-queue"); p.add_argument("episode_dir")
     p = sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=900)
+    p = sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
     p = sub.add_parser("verify"); p.add_argument("episode_dir")
     p = sub.add_parser("show-plan"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
@@ -772,6 +848,8 @@ def main() -> int:
             return 0
         if args.cmd == "run-critic":
             return run_critic(ep, attempt=args.attempt, codex_raw=args.codex, timeout=args.timeout)
+        if args.cmd == "finalize-review":
+            return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime)
         errors = verify(ep)
         if errors:
             for error in errors:

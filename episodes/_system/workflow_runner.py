@@ -27,6 +27,7 @@ import performance_guard_v211  # STORY_OS_V211_PERF_RECOVERY
 import storyos_config
 import runtime_trace
 import request_router
+import product_runtime_adapter
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -91,9 +92,28 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         errors = runtime_request_contract.validate_request(request_data)
         if errors: raise SystemExit("invalid runtime request: " + "; ".join(errors))
     runtime, reason = detect()
-    if runtime != "CODEX":
-        raise SystemExit(f"local workflow_runner only executes CODEX adapter; detected {runtime}. WORK/WEB are product runtime adapters.")
     run([sys.executable, SYSTEM / "runtime_checkpoint.py", "init", ep, "--runtime", runtime, "--full-auto"])
+    if runtime in {"WORK", "WEB"}:
+        mode = runtime_execution.effective_mode(ep)
+        host_request = product_runtime_adapter.build_request(
+            ep,
+            runtime=runtime,
+            mode=mode,
+            resume=resume,
+            request_data=request_data,
+            source="workflow_runner",
+        )
+        record_checkpoint_step(
+            ep,
+            "PRODUCT_RUNTIME_HANDOFF",
+            "HOST_WAIT" if host_request.get("status") != "COMPLETE" else "PASS",
+            0.0,
+            f"runtime={runtime} next_step={host_request.get('next_step')} local_codex_spawn_allowed=false",
+        )
+        product_runtime_adapter.print_request(host_request)
+        return 0 if host_request.get("status") == "COMPLETE" else product_runtime_adapter.HOST_ACTION_REQUIRED_RC
+    if runtime != "CODEX":
+        raise SystemExit(f"unsupported runtime: {runtime}")
     run_id = perf.start_run(ep, runtime, "resume" if resume else "run")
     route_decision = request_router.route_episode(ep, request_data, write=True) if request_data else None
     trace_id = runtime_trace.start_run(ep, run_id, request_data, runtime, route_decision)

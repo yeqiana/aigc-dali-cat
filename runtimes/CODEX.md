@@ -2,7 +2,15 @@
 
 当前 Story OS 版本以根目录 `story_os_manifest.json` 为准。
 
-Codex 是文件原生全自动生产 runtime。用户明确“全自动执行”后，正常节点不反复询问继续。
+Codex 是文件原生全自动生产 runtime。**Story OS V2.6.1 起它不再是默认 Runtime，必须显式选择。** 用户明确选择 CODEX 并要求“全自动执行”后，正常节点不反复询问继续。
+
+显式启用：
+
+```bash
+set STORY_OS_RUNTIME=CODEX
+```
+
+或由调用方明确传入 Codex 执行入口。仅仅因为本机安装了 `codex.exe`，不得自动进入 CODEX Runtime。
 
 一键入口：
 

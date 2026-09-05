@@ -3,7 +3,7 @@
   "module_version": "1.1",
   "platform_min_version": "2.4.2",
   "selection": {
-    "strategy": "openai_api_if_key_else_codex_logical_batch",
+    "strategy": "openai_api_if_key_else_product_runtime_else_codex_explicit",
     "api_key_env": "OPENAI_API_KEY",
     "base_url_env": "OPENAI_BASE_URL",
     "default_base_url": "https://api.openai.com/v1",
@@ -23,6 +23,15 @@
     "text_endpoint": "images/generations",
     "output_format": "png",
     "fallback_on_transport_failure": true
+  },
+  "product_runtime_image": {
+    "enabled": true,
+    "runtimes": ["WORK", "WEB"],
+    "importer": "episodes/_system/product_image_import.py",
+    "requires_local_codex": false,
+    "host_action_required": true,
+    "local_codex_fallback": false,
+    "note": "The surrounding ChatGPT product runtime performs image generation when it has an image tool/file transport. Local Story OS must pause rather than silently consume Codex quota."
   },
   "codex_subscription": {
     "enabled": true,

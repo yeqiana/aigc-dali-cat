@@ -30,6 +30,8 @@ import visual_lock_baseline_gate
 import episode_performance
 import storyos_config
 import batch_scheduler
+import runtime_router
+import product_runtime_adapter
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -305,6 +307,14 @@ def classify_error(text:str)->str:
 
 
 def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
+    runtime,_=runtime_router.detect()
+    if runtime in {"WORK","WEB"} and not codex:
+        q=load_queue(ep)
+        queued=[x for x in q.get("items") or [] if x.get("status")=="queued"]
+        request=product_runtime_adapter.build_image_request(
+            ep,runtime=runtime,queue_items=queued,source="image_scheduler")
+        product_runtime_adapter.print_request(request)
+        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
     requested=max(1,min(MAX_SUPPORTED_WORKERS,int(max_workers)))
     q=load_queue(ep)
     cap=max(1,min(requested,int(q.get("adaptive_parallel") or requested)))

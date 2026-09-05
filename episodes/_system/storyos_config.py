@@ -91,6 +91,11 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("agent_runtime.batch.enabled must be true")
     if get_path(cfg, "agent_runtime.codex_subscription_batch.enabled") is not True:
         errors.append("agent_runtime.codex_subscription_batch.enabled must be true")
+    preferred_runtime = str(get_path(cfg, "runtime.preferred_runtime", "")).upper()
+    if preferred_runtime not in {"WORK", "WEB", "CODEX"}:
+        errors.append("runtime.preferred_runtime must be WORK, WEB or CODEX")
+    if get_path(cfg, "runtime.local_codex_fallback") != "explicit_only":
+        errors.append("runtime.local_codex_fallback must be explicit_only")
     for key in (
         "provider.registry",
         "provider.runtime",

@@ -9,6 +9,7 @@ from pathlib import Path
 
 from contract_sync import collect_errors
 import storyos_config
+import runtime_log_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -139,6 +140,15 @@ def run_doctor():
             text = p.read_text(encoding="utf-8", errors="replace")
             if rel != "START_HERE.md" and "START_HERE.md" not in text:
                 issue(issues, "WARN", "ENTRYPOINT_NOT_LINKED", f"{rel} 未链接 START_HERE.md")
+
+    log_audit = runtime_log_policy.audit(ROOT)
+    if int(log_audit.get("tracked_historical_count") or 0) > 0:
+        issue(
+            issues,
+            "WARN",
+            "TRACKED_LOCAL_RUNTIME_LOGS",
+            f"历史 raw runtime logs 仍被 Git 跟踪：{log_audit['tracked_historical_count']} 个，现存约 {log_audit['tracked_existing_bytes']} bytes；新日志已 local-only，历史记录可后续 git rm --cached + gc。",
+        )
 
     scan_episode_meta(issues)
     return issues

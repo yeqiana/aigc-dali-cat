@@ -14,6 +14,8 @@ from pathlib import Path
 import frame_semantic_review as base
 # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 from story_os_contract import story_os_version
+import runtime_router
+import runtime_provenance
 
 ROOT = Path(__file__).resolve().parents[2]
 STATE_REL = Path("meta/incremental-frame-review.json")
@@ -190,7 +192,7 @@ def _context_match(data: dict, contexts: dict) -> bool:
 
 def _scope_ok(data: dict) -> bool:
     p = data.get("critic_provenance") or {}
-    return p.get("runtime") == "CODEX_ISOLATED" and p.get("isolated_session") is True and p.get("review_scope") in {
+    return not runtime_provenance.validate_critic_provenance(p) and p.get("review_scope") in {
         "FULL_FRAME_SET", "INCREMENTAL_CONTEXT_SET"
     }
 
@@ -371,7 +373,7 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
     cmd += ["-"]
     log = ep / "meta" / f"incremental-frame-critic-attempt-{attempt}.jsonl"
     with log.open("w", encoding="utf-8", newline="\n") as handle:
-        completed = subprocess.run(cmd, input=_prompt(ep, selected, plan["dirty_frames"], candidate, attempt, captions), text=True, stdout=handle, stderr=subprocess.STDOUT, timeout=timeout, check=False)
+        completed = subprocess.run(cmd, input=_prompt(ep, selected, plan["dirty_frames"], candidate, attempt, captions), text=True, encoding="utf-8", stdout=handle, stderr=subprocess.STDOUT, timeout=timeout, check=False)
     if completed.returncode != 0 or not candidate.is_file():
         raise RuntimeError(f"incremental critic failed rc={completed.returncode}; log={log}")
 
@@ -518,8 +520,10 @@ def run_review(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
             return 2
         print("INCREMENTAL FRAME REVIEW REUSE: 0 critic calls")
         return 0
-    if action == "FULL":
-        print(f"INCREMENTAL FRAME REVIEW ESCALATE FULL: dirty={plan['dirty_frames']}")
+    active_runtime, _ = runtime_router.detect()
+    if action == "FULL" or (action == "PATCH" and active_runtime in {"WORK", "WEB"} and not codex_raw):
+        reason = "product runtime avoids local Codex patch critic" if action == "PATCH" else "dirty/context threshold"
+        print(f"INCREMENTAL FRAME REVIEW ESCALATE FULL: dirty={plan['dirty_frames']} reason={reason}")
         rc = base.run_critic(ep, attempt=attempt, codex_raw=codex_raw, timeout=timeout)
         if rc == 0:
             _decorate_full(ep)

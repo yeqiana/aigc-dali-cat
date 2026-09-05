@@ -18,11 +18,24 @@ import runtime_trace
 import raw_candidate_budget  # STORY_OS_V2_6_0_PERFORMANCE_RUNTIME
 import runtime_circuit_breaker
 import time
+import runtime_router
+import product_runtime_adapter
 
 MODE="python_warm_pool_codex_ephemeral"
 CODEX_SESSION_REUSE=False
 
 def execute(ep,item,timeout,codex):
+    runtime,_=runtime_router.detect()
+    if runtime in {"WORK","WEB"} and not codex:
+        request=product_runtime_adapter.build_image_request(
+            ep,runtime=runtime,queue_items=[item],source="image_worker_pool")
+        return {
+            "returncode":product_runtime_adapter.HOST_ACTION_REQUIRED_RC,
+            "stdout":"HOST_ACTION_REQUIRED: product runtime image generation required; local Codex fallback disabled",
+            "payload":{"product_runtime_request":request},
+            "output":None,"log":None,"attempt":max(1,int(item.get("attempts") or 1)),"scout":None,
+            "worker_pool":{"mode":"product_runtime_host","codex_session_reuse":False},
+        }
     frame=int(item["frame"]); attempt=max(1,int(item.get("attempts") or 1))
     out=ep/"media/candidates/scheduled"/f"{frame:02d}-{item['id']}-a{attempt}.png"
     log=ep/"meta/image-workers"/f"{frame:02d}-{item['id']}-a{attempt}.jsonl"

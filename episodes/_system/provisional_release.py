@@ -9,6 +9,8 @@ import argparse, json, os, shutil, subprocess, sys, tempfile
 from pathlib import Path
 import execution_capsule
 import intro_policy
+import runtime_router
+import product_runtime_adapter
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/provisional-release.json")
@@ -21,6 +23,17 @@ def prefix(p):
     if os.name=="nt" and p.suffix.lower() in {".cmd",".bat"}: return ["cmd.exe","/d","/c",str(p)]
     return [str(p)]
 def build(ep,codex_raw=None,timeout=900):
+    active_runtime,_=runtime_router.detect()
+    if active_runtime in {"WORK","WEB"} and not codex_raw:
+        request=product_runtime_adapter.build_request(
+            ep,runtime=active_runtime,mode="full_auto",resume=True,source="provisional_release")
+        return {
+            "ok":False,
+            "status":"HOST_ACTION_REQUIRED",
+            "returncode":product_runtime_adapter.HOST_ACTION_REQUIRED_RC,
+            "request":request,
+            "local_codex_spawn_allowed":False,
+        }
     intro=intro_policy.resolve(ep,write=True)
     capsule=execution_capsule.compile_capsule(ep,"RELEASE",write=True)
     out=ep/REL; out.parent.mkdir(parents=True,exist_ok=True)
@@ -50,7 +63,7 @@ Do not claim final approval. Stop after this file exists.
     cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"--json","-"]
     log=ep/"meta/scoped-workers/provisional-release.jsonl"; log.parent.mkdir(parents=True,exist_ok=True)
     with log.open("a",encoding="utf-8",newline="\n") as h:
-        try: cp=subprocess.run(cmd,input=prompt,text=True,stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+        try: cp=subprocess.run(cmd,input=prompt,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
         except subprocess.TimeoutExpired: return {"ok":False,"returncode":124,"log":str(log)}
     ok=cp.returncode==0 and out.is_file()
     if ok:

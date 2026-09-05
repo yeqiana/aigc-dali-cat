@@ -89,15 +89,25 @@
 - `.storyos_cache/` 为本地全局缓存，不入 Git，不是权威资产。
 <!-- STORY_OS_RUNTIME_OPTIMIZATION_R2_AGENTS_END -->
 
-## V2.0 Multi-Runtime 执行路由
+## V2.6.1 Product-Runtime-First Multi-Runtime 执行路由
 
-涉及 story 分支任务时，先读 `config/storyos.yaml` 和 `config/index.yaml`，再读 `START_HERE.md`，并按索引指向的 Runtime Contract 自动路由，不让用户手工选 runtime。
+涉及 story 分支任务时，先读 `config/storyos.yaml` 和 `config/index.yaml`，再读 `START_HERE.md`，并按 Runtime Contract 自动路由。
 
-- 可写仓库文件系统 + terminal/code execution：`runtimes/CODEX.md`
+默认优先级：
+
+1. `WORK`：ChatGPT/Work + DevSpace，默认路径；
+2. `CODEX`：仅显式选择时启用；
+3. `WEB`：无本地工作区能力时的产品运行时。
+
 - ChatGPT Work：`runtimes/WORK.md`
+- 显式本地 Codex：`runtimes/CODEX.md`
 - 普通 ChatGPT Web：`runtimes/WEB.md`
 
-Codex 不再被全局限制为“只能生成网页交接单”。当前 Codex 原生工具能生成/编辑图片和保存文件时，应直接按 CODEX runtime 执行；缺媒体能力时才降级 checkpoint/handoff。
+**本机存在 `codex.exe` 不再自动推导 Runtime=CODEX。** WORK/WEB 不得静默启动本地 Codex，也不得把“没有 API Key / 某个产品工具缺能力”解释成使用 Codex Subscription 的许可。需要 CODEX 时必须显式设置 `STORY_OS_RUNTIME=CODEX` 或明确传入 Codex 执行入口。
+
+Runtime DAG 使用通用 `scoped_model`；WORK/WEB 通过 `product_runtime_adapter.py` 暴露宿主动作，CODEX 才使用 `scoped_codex_worker.py`。宿主请求使用 `meta/runtime/host-requests/<request_id>.json` 保存不可覆盖历史，正常等待宿主执行记为 `HOST_WAIT`；Product Review 使用 attempt-scoped request。Concept/Story/Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，但都必须 fresh + source-SHA-bound。
+
+Codex 不再被全局限制为“只能生成网页交接单”。当用户**明确选择 CODEX Runtime**且当前 Codex 原生工具能生成/编辑图片和保存文件时，应直接按 CODEX runtime 执行；缺媒体能力时才降级 checkpoint/handoff。
 
 全自动授权后：当前 V2.1 统一先完成 4 张 Visual Lock（ordinary baseline / worst condition / first anomaly / high-impact admission），再进入 Batch；每帧最多一次内容返修；已通过且 SHA 未漂移资产必须复用；自动审查不得冒充用户亲眼审核。
 

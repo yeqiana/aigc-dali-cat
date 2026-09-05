@@ -129,12 +129,18 @@ agent_runtime:
     enabled: true
     config: config/agent_runtime/batch.json
 
-  # V2.4.2：没有 API Key 时，一批5帧拆成5个 Codex 单图 worker 并行。
+  # V2.4.2 兼容能力：仅在显式 CODEX Runtime 下，没有 API Key 时可把一批5帧拆成5个 Codex 单图 worker 并行；WORK/WEB 不得使用此兜底。
   codex_subscription_batch:
     enabled: true
     config: config/agent_runtime/codex-subscription-batch.json
 
 runtime:
+  # Product-runtime-first：在 ChatGPT + DevSpace / Work 中默认由当前产品运行时
+  # 直接执行 Story OS，不再因为本机存在 codex.exe 就自动消耗本地 Codex 配额。
+  # 需要本地 Codex 时显式设置 STORY_OS_RUNTIME=CODEX。
+  preferred_runtime: WORK
+  local_codex_fallback: explicit_only
+
   # 新篇默认走分段 DAG；它是执行器，不是第二状态机。
   execution_mode: dag
   canonical_stage_source: meta/episode-state.json

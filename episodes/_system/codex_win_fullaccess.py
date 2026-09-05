@@ -1,37 +1,55 @@
 #!/usr/bin/env python3
-"""Windows Codex CLI shim for isolated critic sessions.
+"""Explicit-only Windows Codex full-access compatibility shim.
 
-Story OS spawns isolated critics with `-s workspace-write`. On Windows desktop
-environments that sandbox mode can fail with CreateProcessWithLogonW 1385.
-This shim rewrites that flag to danger-full-access and then delegates to the
-real codex.exe, so CODEX_ISOLATED critics can run shell commands at all.
-It is an execution transport fix only; it never fabricates critic output.
+This historical transport exists only for an explicitly selected CODEX runtime
+on Windows hosts where Codex sandbox creation fails. It is never selected by
+WORK/WEB, contains no user-specific executable path, and refuses to elevate
+unless STORY_OS_ALLOW_CODEX_FULL_ACCESS=1 is explicitly set.
 """
 from __future__ import annotations
 
+import os
+import shutil
 import subprocess
 import sys
+from pathlib import Path
 
-REAL = r"C:\Users\79873\AppData\Local\OpenAI\Codex\bin\codex.exe"
+
+def resolve_real_codex() -> Path:
+    if os.environ.get("STORY_OS_RUNTIME", "").strip().upper() != "CODEX":
+        raise RuntimeError("codex_win_fullaccess requires explicit STORY_OS_RUNTIME=CODEX")
+    if os.environ.get("STORY_OS_ALLOW_CODEX_FULL_ACCESS", "").strip() != "1":
+        raise RuntimeError("full-access shim disabled; set STORY_OS_ALLOW_CODEX_FULL_ACCESS=1 explicitly")
+    raw = os.environ.get("CODEX_EXE") or shutil.which("codex.exe") or shutil.which("codex") or shutil.which("codex.cmd")
+    if not raw:
+        raise RuntimeError("Codex CLI not found; set CODEX_EXE")
+    path = Path(raw).expanduser().resolve()
+    if path == Path(__file__).resolve():
+        raise RuntimeError("CODEX_EXE resolves to the compatibility shim itself")
+    if not path.is_file():
+        raise RuntimeError(f"Codex CLI not found: {path}")
+    return path
 
 
 def main() -> int:
+    try:
+        real = resolve_real_codex()
+    except RuntimeError as exc:
+        print(f"CODEX_FULL_ACCESS_DISABLED: {exc}", file=sys.stderr)
+        return 2
     argv = sys.argv[1:]
     rewritten: list[str] = []
     index = 0
     while index < len(argv):
         arg = argv[index]
-        if arg == "-s" and index + 1 < len(argv) and argv[index + 1] in {
-            "workspace-write",
-            "read-only",
-        }:
+        if arg in {"-s", "--sandbox"} and index + 1 < len(argv):
             index += 2
             continue
         rewritten.append(arg)
         index += 1
     rewritten += ["-s", "danger-full-access"]
-    return subprocess.run([REAL, *rewritten]).returncode
+    return subprocess.run([str(real), *rewritten], check=False).returncode
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

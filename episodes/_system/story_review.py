@@ -13,6 +13,9 @@ from pathlib import Path
 
 from story_os_contract import story_os_version
 import propagation_core_gate  # STORY_OS_V2_5_PROPAGATION_CORE
+import runtime_router
+import runtime_provenance
+import product_review_adapter
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_REL = Path("meta/story-semantic-review.json")
@@ -146,10 +149,7 @@ def validate_payload(data: dict, *, story_sha: str, storyboard_sha: str, version
         errors.append("storyboard_sha256 mismatch")
 
     provenance = data.get("critic_provenance") or {}
-    if provenance.get("runtime") != "CODEX_ISOLATED":
-        errors.append("critic runtime must be CODEX_ISOLATED")
-    if provenance.get("isolated_session") is not True:
-        errors.append("critic must be an isolated session")
+    errors.extend(runtime_provenance.validate_critic_provenance(provenance))
     attempt = provenance.get("attempt")
     if attempt not in {1, 2}:
         errors.append("critic attempt must be 1 or 2")
@@ -321,6 +321,58 @@ Episode: {rel_ep}
 """
 
 
+def _finalize_review(ep: Path, data: dict, *, attempt: int, before_story: str, before_board: str, provenance: dict) -> int:
+    data["schema_version"] = 1
+    data["story_os_version"] = episode_contract_version(ep)
+    data["story_sha256"] = before_story
+    data["storyboard_sha256"] = before_board
+    data["revision_count"] = attempt - 1
+    data["critic_provenance"] = provenance
+    errors = validate_payload(
+        data,
+        story_sha=before_story,
+        storyboard_sha=before_board,
+        version=episode_contract_version(ep),
+    )
+    final = ep / REVIEW_REL
+    write_json(final, data)
+    (ep / CANDIDATE_REL).unlink(missing_ok=True)
+    if version_tuple(episode_contract_version(ep)) >= (2, 5, 0):
+        errors.extend(propagation_core_gate.verify(ep, force=True))
+    if errors:
+        print("STORY SEMANTIC REVIEW FAIL")
+        for error in errors:
+            print("FAIL:", error)
+        for code in data.get("issue_codes") or []:
+            print("ISSUE:", code)
+        return 2
+    print("STORY SEMANTIC REVIEW PASS")
+    return 0
+
+
+def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
+    story, storyboard = story_paths(ep)
+    candidate = ep / CANDIDATE_REL
+    data, provenance = product_review_adapter.finalize_candidate(
+        ep,
+        kind="story-semantic",
+        runtime=runtime,
+        attempt=attempt,
+        candidate_path=candidate,
+    )
+    rc = _finalize_review(
+        ep,
+        data,
+        attempt=attempt,
+        before_story=sha256_file(story),
+        before_board=sha256_file(storyboard),
+        provenance=provenance,
+    )
+    if rc == 0:
+        product_review_adapter.mark_complete(ep, "story-semantic", attempt=attempt, final_path=ep / REVIEW_REL)
+    return rc
+
+
 def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
     if attempt not in {1, 2}:
         raise RuntimeError("attempt must be 1 or 2; only one automatic story revision is allowed")
@@ -329,6 +381,28 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
     before_board = sha256_file(storyboard)
     candidate = ep / CANDIDATE_REL
     candidate.unlink(missing_ok=True)
+
+    runtime, _ = runtime_router.detect()
+    if runtime in {"WORK", "WEB"} and not codex_raw:
+        sources = [
+            story,
+            storyboard,
+            ROOT / "standards/制作规范_正式版.md",
+            ROOT / "standards/创作执行强制规范_V2.0.3.2.md",
+            ROOT / "standards/story_regressions/cases.json",
+            ROOT / "standards/传播核与动作回应链规范_V1.0.md",
+        ]
+        request = product_review_adapter.prepare(
+            ep,
+            kind="story-semantic",
+            runtime=runtime,
+            attempt=attempt,
+            prompt=critic_prompt(ep, story, storyboard, candidate, attempt),
+            source_paths=sources,
+            candidate_path=candidate,
+        )
+        print(json.dumps(request, ensure_ascii=False, indent=2))
+        return product_review_adapter.HOST_ACTION_REQUIRED_RC
 
     codex = resolve_codex(codex_raw)
     cmd = command_prefix(codex) + [
@@ -343,6 +417,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
             cmd,
             input=critic_prompt(ep, story, storyboard, candidate, attempt),
             text=True,
+            encoding="utf-8",
             stdout=handle,
             stderr=subprocess.STDOUT,
             timeout=timeout,
@@ -356,38 +431,17 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
         raise RuntimeError(f"critic did not produce {candidate}")
 
     data = read_json(candidate)
-    data["schema_version"] = 1
-    data["story_os_version"] = episode_contract_version(ep)
-    data["story_sha256"] = before_story
-    data["storyboard_sha256"] = before_board
-    data["revision_count"] = attempt - 1
-    data["critic_provenance"] = {
-        "runtime": "CODEX_ISOLATED",
-        "isolated_session": True,
-        "attempt": attempt,
-        "reviewed_at": now(),
-        "log": log.relative_to(ROOT).as_posix(),
-    }
-    errors = validate_payload(
-        data,
-        story_sha=before_story,
-        storyboard_sha=before_board,
-        version=episode_contract_version(ep),
+    provenance = runtime_provenance.build_critic_provenance(
+        "CODEX", attempt=attempt, log=log.relative_to(ROOT).as_posix()
     )
-    final = ep / REVIEW_REL
-    write_json(final, data)
-    candidate.unlink(missing_ok=True)
-    if version_tuple(episode_contract_version(ep)) >= (2, 5, 0):
-        errors.extend(propagation_core_gate.verify(ep, force=True))
-    if errors:
-        print("STORY SEMANTIC REVIEW FAIL")
-        for error in errors:
-            print("FAIL:", error)
-        for code in data.get("issue_codes") or []:
-            print("ISSUE:", code)
-        return 2
-    print("STORY SEMANTIC REVIEW PASS")
-    return 0
+    return _finalize_review(
+        ep,
+        data,
+        attempt=attempt,
+        before_story=before_story,
+        before_board=before_board,
+        provenance=provenance,
+    )
 
 
 def self_test() -> None:
@@ -420,6 +474,10 @@ def main() -> int:
     p.add_argument("--attempt", type=int, default=1)
     p.add_argument("--codex")
     p.add_argument("--timeout", type=int, default=900)
+    p = sub.add_parser("finalize-review")
+    p.add_argument("episode_dir")
+    p.add_argument("--attempt", type=int, default=1)
+    p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
     p = sub.add_parser("verify")
     p.add_argument("episode_dir")
     p = sub.add_parser("show")
@@ -438,6 +496,12 @@ def main() -> int:
             return run_critic(ep, attempt=args.attempt, codex_raw=args.codex, timeout=args.timeout)
         except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
             print("STORY SEMANTIC REVIEW ERROR:", exc)
+            return 3
+    if args.cmd == "finalize-review":
+        try:
+            return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime)
+        except (OSError, RuntimeError, ValueError) as exc:
+            print("STORY SEMANTIC REVIEW FINALIZE ERROR:", exc)
             return 3
     if args.cmd == "show":
         path = ep / REVIEW_REL

@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 REL = Path("meta/runtime-checkpoint.json")
-VALID_STEP_STATUS = {"PASS", "REUSED", "DIRTY", "FAILED", "BLOCKED", "SKIPPED_NOT_APPLICABLE"}
+VALID_STEP_STATUS = {"PASS", "REUSED", "DIRTY", "FAILED", "BLOCKED", "HOST_WAIT", "SKIPPED_NOT_APPLICABLE"}
 
 
 def now() -> str:

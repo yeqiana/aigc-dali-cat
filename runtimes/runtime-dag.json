@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "Story OS V2.1 Runtime DAG V1",
   "canonical_episode_stage_source": "meta/episode-state.json",
-  "note": "Runtime execution DAG only; does not create a second episode stage system.",
+  "note": "Runtime execution DAG only; does not create a second episode stage system. scoped_model is resolved by the active runtime adapter (WORK/WEB/CODEX).",
   "scoped_worker_timeout_seconds": 3600,
   "steps": [
     {
@@ -21,7 +21,7 @@
     },
     {
       "id": "CREATIVE_STORY",
-      "executor": "scoped_codex",
+      "executor": "scoped_model",
       "depends_on": [
         "INCREMENTAL_PLAN"
       ],
@@ -44,7 +44,7 @@
     },
     {
       "id": "VISUAL_LOCK",
-      "executor": "scoped_codex",
+      "executor": "scoped_model",
       "depends_on": [
         "CREATIVE_STORY"
       ],
@@ -63,7 +63,7 @@
     },
     {
       "id": "PRODUCTION",
-      "executor": "scoped_codex",
+      "executor": "scoped_model",
       "depends_on": [
         "VISUAL_LOCK"
       ],
@@ -83,7 +83,7 @@
     },
     {
       "id": "RELEASE",
-      "executor": "scoped_codex",
+      "executor": "scoped_model",
       "depends_on": [
         "PRODUCTION"
       ],

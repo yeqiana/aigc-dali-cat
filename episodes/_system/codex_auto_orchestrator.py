@@ -12,6 +12,7 @@ from pathlib import Path
 
 from story_os_contract import canonical_stages, story_os_version
 import episode_performance
+import runtime_router
 
 ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=Path('meta/runtime-checkpoint.json')
 STORY_OS_VERSION=story_os_version(); STATES=canonical_stages()
@@ -232,7 +233,7 @@ def run_worker(args,resume):
     update_checkpoint(ep,'ORCHESTRATOR_STARTED','CODEX_WORKER_RUNNING')
     cmd=prefix(codex)+['exec','--skip-git-repo-check','--ephemeral','-s','workspace-write','-C',str(ROOT),'--json','-']
     with log.open('a',encoding='utf-8',newline='\n') as h:
-        try: completed=subprocess.run(cmd,input=worker_instruction(ep,resume,args.runtime_request),text=True,stdout=h,stderr=subprocess.STDOUT,timeout=args.timeout,check=False)
+        try: completed=subprocess.run(cmd,input=worker_instruction(ep,resume,args.runtime_request),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=args.timeout,check=False)
         except subprocess.TimeoutExpired:
             update_checkpoint(ep,'ORCHESTRATOR_BLOCKED','RESUME_FULL_AUTO','worker timeout'); print('FULL-AUTO BLOCKED: worker timeout'); return 3
     if completed.returncode!=0:
@@ -256,5 +257,9 @@ def main():
     if a.cmd=='postflight':
         ep=resolve_episode(a.episode_dir); status,reason=postflight(ep); print(status,reason); return 0 if status=='COMPLETE' else 4 if status=='PAUSED' else 3
     if not a.full_auto: raise SystemExit('run/resume requires explicit --full-auto')
+    active_runtime,_=runtime_router.detect()
+    if active_runtime!='CODEX' and not a.codex:
+        print('CODEX_RUNTIME_NOT_SELECTED: set STORY_OS_RUNTIME=CODEX or pass --codex explicitly; local Codex will not be started from WORK/WEB')
+        return 20
     return run_worker(a,a.cmd=='resume')
 if __name__=='__main__': raise SystemExit(main())

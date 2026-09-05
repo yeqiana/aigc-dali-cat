@@ -12,6 +12,10 @@ entrypoints:
   repository_rules: AGENTS.md
   cli: episodes/_system/story_os.py
   config_loader: episodes/_system/storyos_config.py
+  product_runtime_adapter: episodes/_system/product_runtime_adapter.py
+  product_review_adapter: episodes/_system/product_review_adapter.py
+  product_image_import: episodes/_system/product_image_import.py
+  runtime_log_policy: episodes/_system/runtime_log_policy.py
 
 authority:
   creative: standards/制作规范_正式版.md
@@ -34,6 +38,10 @@ registries:
 
 runtimes:
   routing: runtimes/runtime-contract.json
+  product_host: episodes/_system/product_runtime_adapter.py
+  product_review: episodes/_system/product_review_adapter.py
+  product_image_import: episodes/_system/product_image_import.py
+  runtime_log_policy: episodes/_system/runtime_log_policy.py
   workflow: runtimes/workflow-contract.json
   dag: runtimes/runtime-dag.json
   modes: runtimes/runtime-mode-contract-r2.json
@@ -55,6 +63,8 @@ episode_layout:
     - meta/production-ledger.json
     - meta/frame-reviews
     - meta/final-candidate-snapshot.json
+    - meta/runtime/host-requests
+    - meta/runtime/reviews
   derived:
     - meta/runtime/contracts
     - meta/runtime/prompt-packages
@@ -62,6 +72,13 @@ episode_layout:
     - meta/runtime/trace-events.jsonl
     - meta/runtime/trace-summary.json
     - meta/runtime-route.json
+  local_derived:
+    - meta/image-workers
+    - meta/rolling-review-workers
+    - meta/scoped-workers
+    - meta/codex-auto-run.jsonl
+    - meta/runtime/trace-events.jsonl
+    - meta/workflow-run.jsonl
   media:
     - media/raw
     - media/candidates

@@ -13,6 +13,9 @@ from pathlib import Path
 
 from story_os_contract import story_os_version
 from visual_profile import compile_prompt_contract
+import runtime_router
+import runtime_provenance
+import product_review_adapter
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_REL = Path("meta/visual-profile-review.json")
@@ -153,12 +156,7 @@ def validate_payload(data: dict, *, profile_id: str, profile_sha: str, assets: l
     if str(data.get("profile_sha256") or "").lower() != profile_sha.lower():
         errors.append("profile_sha256 mismatch")
     provenance = data.get("critic_provenance") or {}
-    if provenance.get("runtime") != "CODEX_ISOLATED":
-        errors.append("visual critic runtime must be CODEX_ISOLATED")
-    if provenance.get("isolated_session") is not True:
-        errors.append("visual critic must be isolated")
-    if provenance.get("attempt") not in {1, 2}:
-        errors.append("visual critic attempt must be 1 or 2")
+    errors.extend(runtime_provenance.validate_critic_provenance(provenance))
 
     expected = {str(row["id"]): row for row in assets}
     actual_rows = data.get("calibration")
@@ -283,9 +281,27 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
     contract = compile_prompt_contract(ep)
     assets = calibration_assets(ep)
     candidate = ep / CANDIDATE_REL
-    candidate.unlink(missing_ok=True)
     before = {str(row["id"]): row["sha256"] for row in assets}
+    active_runtime, _ = runtime_router.detect()
+    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+        kind = "visual-profile-legacy"
+        request_file = product_review_adapter.request_path(ep, kind, attempt=attempt)
+        if candidate.is_file() and request_file.is_file():
+            return finalize_product_review(ep, attempt=attempt, runtime=active_runtime)
+        candidate.unlink(missing_ok=True)
+        request = product_review_adapter.prepare(
+            ep,
+            kind=kind,
+            runtime=active_runtime,
+            attempt=attempt,
+            prompt=critic_prompt(ep, contract, assets, candidate, attempt),
+            source_paths=[ep / "meta/story-gates.json", Path(contract["profile_path"]).resolve() if Path(contract["profile_path"]).is_absolute() else ROOT / contract["profile_path"], *[row["path"] for row in assets]],
+            candidate_path=candidate,
+        )
+        print(json.dumps(request, ensure_ascii=False, indent=2))
+        return product_review_adapter.HOST_ACTION_REQUIRED_RC
 
+    candidate.unlink(missing_ok=True)
     codex = resolve_codex(codex_raw)
     cmd = prefix(codex) + [
         "exec", "--skip-git-repo-check", "--ephemeral",
@@ -321,13 +337,11 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
     data["profile_id"] = contract["profile_id"]
     data["profile_path"] = contract["profile_path"]
     data["profile_sha256"] = contract["profile_sha256"]
-    data["critic_provenance"] = {
-        "runtime": "CODEX_ISOLATED",
-        "isolated_session": True,
-        "attempt": attempt,
-        "reviewed_at": now(),
-        "log": log.relative_to(ROOT).as_posix(),
-    }
+    data["critic_provenance"] = runtime_provenance.build_critic_provenance(
+        "CODEX",
+        attempt=attempt,
+        log=log.relative_to(ROOT).as_posix(),
+    )
     by_id = {str(row["id"]): row for row in current_assets}
     for row in data.get("calibration") or []:
         rid = str(row.get("id") or "")
@@ -353,6 +367,48 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
     return 0
 
 
+def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
+    contract = compile_prompt_contract(ep)
+    assets = calibration_assets(ep)
+    candidate = ep / CANDIDATE_REL
+    data, provenance = product_review_adapter.finalize_candidate(
+        ep,
+        kind="visual-profile-legacy",
+        runtime=runtime,
+        attempt=attempt,
+        candidate_path=candidate,
+    )
+    data["schema_version"] = 1
+    data["story_os_version"] = episode_contract_version(ep)
+    data["profile_id"] = contract["profile_id"]
+    data["profile_path"] = contract["profile_path"]
+    data["profile_sha256"] = contract["profile_sha256"]
+    data["critic_provenance"] = provenance
+    by_id = {str(row["id"]): row for row in assets}
+    for row in data.get("calibration") or []:
+        rid = str(row.get("id") or "")
+        if rid in by_id:
+            row["sha256"] = by_id[rid]["sha256"]
+    errors = validate_payload(
+        data,
+        profile_id=contract["profile_id"],
+        profile_sha=contract["profile_sha256"],
+        assets=assets,
+        version=episode_contract_version(ep),
+    )
+    final = ep / REVIEW_REL
+    write_json(final, data)
+    if errors:
+        print("VISUAL PROFILE REVIEW FAIL")
+        for error in errors:
+            print("FAIL:", error)
+        return 2
+    product_review_adapter.mark_complete(ep, "visual-profile-legacy", attempt=attempt, final_path=final)
+    candidate.unlink(missing_ok=True)
+    print("VISUAL PROFILE REVIEW PASS")
+    return 0
+
+
 def self_test() -> None:
     h = "a" * 64
     assets = [{"id": x, "sha256": h} for x in ("A", "B", "C")]
@@ -361,7 +417,7 @@ def self_test() -> None:
         "story_os_version": story_os_version(),
         "profile_id": "M00",
         "profile_sha256": h,
-        "critic_provenance": {"runtime": "CODEX_ISOLATED", "isolated_session": True, "attempt": 1},
+        "critic_provenance": runtime_provenance.build_critic_provenance("WORK", attempt=1),
         "calibration": [
             {"id": x, "sha256": h, "checks": {k: True for k in CHECKS}, "issues": []}
             for x in ("A", "B", "C")
@@ -383,6 +439,10 @@ def main() -> int:
     p.add_argument("--attempt", type=int, default=1)
     p.add_argument("--codex")
     p.add_argument("--timeout", type=int, default=900)
+    p = sub.add_parser("finalize-review")
+    p.add_argument("episode_dir")
+    p.add_argument("--attempt", type=int, default=1)
+    p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
     p = sub.add_parser("verify")
     p.add_argument("episode_dir")
     p = sub.add_parser("show")
@@ -400,6 +460,12 @@ def main() -> int:
         try:
             return run_critic(ep, attempt=args.attempt, codex_raw=args.codex, timeout=args.timeout)
         except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+            print("VISUAL PROFILE REVIEW ERROR:", exc)
+            return 3
+    if args.cmd == "finalize-review":
+        try:
+            return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime)
+        except (OSError, RuntimeError, ValueError, product_review_adapter.ProductReviewError) as exc:
             print("VISUAL PROFILE REVIEW ERROR:", exc)
             return 3
     if args.cmd == "show":

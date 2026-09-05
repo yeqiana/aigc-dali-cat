@@ -13,6 +13,13 @@ import subprocess
 import sys
 from pathlib import Path
 
+import runtime_router
+import runtime_provenance
+import product_review_adapter
+from story_os_contract import story_os_version
+
+ROOT = Path(__file__).resolve().parents[2]
+
 WEIGHTS = {
     "core_anomaly_mechanism": 25,
     "story_engine": 15,
@@ -29,6 +36,12 @@ VETO_KEYS = ("core_anomaly_mechanism", "middle_escalation", "climax_form")
 REVIEW_REL = Path("meta/recent5-semantic-review.json")
 CANDIDATE_REL = Path("meta/.recent5-semantic-review.candidate.json")
 LOG_REL = Path("meta/recent5-semantic-critic.jsonl")
+
+
+class ProductReviewHostAction(RuntimeError):
+    def __init__(self, request: dict):
+        super().__init__("HOST_ACTION_REQUIRED")
+        self.request = request
 
 def now() -> str:
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -61,6 +74,29 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 def required(contract_version: str) -> bool:
     return version_tuple(contract_version) >= (2, 0, 3, 6)
+
+
+def episode_contract_version(ep: Path) -> str:
+    versions: list[tuple[tuple[int, ...], str]] = []
+    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+        p = ep / rel
+        if not p.is_file():
+            continue
+        try:
+            raw = str(read_json(p).get("tool_version") or "")
+            vt = version_tuple(raw)
+            if vt != (0,):
+                versions.append((vt, raw))
+        except Exception:
+            continue
+    return max(versions, key=lambda x: x[0])[1] if versions else story_os_version()
+
+
+def history_from_registry(current: dict, registry: dict) -> list[dict]:
+    return [
+        row for row in registry.get("episodes", [])
+        if isinstance(row, dict) and row.get("episode_id") != current.get("episode_id")
+    ][-5:]
 
 def resolve_codex(raw: str | None) -> Path:
     value = raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
@@ -240,22 +276,25 @@ def validate_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, hi
         errors.append("semantic recent5 history episode set/order drift")
 
     prov = data.get("critic_provenance") or {}
-    if prov.get("runtime") != "CODEX_ISOLATED" or prov.get("isolated_session") is not True:
-        errors.append("semantic recent5 critic must be fresh CODEX_ISOLATED")
-    log_raw = prov.get("log")
-    if not isinstance(log_raw, str) or not log_raw.strip():
-        errors.append("semantic recent5 critic log path missing")
-    else:
-        log_path = (root / log_raw).resolve()
-        try:
-            log_path.relative_to(root.resolve())
-        except ValueError:
-            errors.append("semantic recent5 critic log escapes repository")
+    errors.extend(runtime_provenance.validate_critic_provenance(prov, attempt_required=False))
+    base_runtime = runtime_provenance.base_from_isolated(prov.get("runtime"))
+    if base_runtime == "CODEX":
+        log_raw = prov.get("log")
+        if not isinstance(log_raw, str) or not log_raw.strip():
+            errors.append("semantic recent5 CODEX critic log path missing")
         else:
-            if not log_path.is_file():
-                errors.append("semantic recent5 critic log missing")
-            elif str(prov.get("log_sha256") or "").lower() != sha256_file(log_path).lower():
-                errors.append("semantic recent5 critic log SHA drift")
+            log_path = (root / log_raw).resolve()
+            try:
+                log_path.relative_to(root.resolve())
+            except ValueError:
+                errors.append("semantic recent5 critic log escapes repository")
+            else:
+                if not log_path.is_file():
+                    errors.append("semantic recent5 critic log missing")
+                elif str(prov.get("log_sha256") or "").lower() != sha256_file(log_path).lower():
+                    errors.append("semantic recent5 critic log SHA drift")
+    elif base_runtime in {"WORK", "WEB"} and not str(prov.get("request_path") or "").strip():
+        errors.append("semantic recent5 product critic request_path missing")
 
     rows = data.get("comparisons")
     if not isinstance(rows, list):
@@ -292,6 +331,56 @@ def validate_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, hi
                 errors.append(f"semantic comparison[{idx}] match reasons inconsistent")
     return errors
 
+def _finalize_review_data(
+    root: Path,
+    ep: Path,
+    fp_path: Path,
+    registry_path: Path,
+    history: list[dict],
+    contract_version: str,
+    raw: dict,
+    provenance: dict,
+) -> dict:
+    current = read_json(fp_path)
+    rows, errors = validate_candidate(raw, history)
+    if errors:
+        raise RuntimeError("semantic recent5 candidate invalid: " + "; ".join(errors))
+    data = {
+        "schema_version": 1,
+        "story_os_version": contract_version,
+        "episode_id": current.get("episode_id"),
+        "reviewed_at": now(),
+        "candidate_fingerprint_path": repo_rel(root, fp_path),
+        "candidate_fingerprint_sha256": sha256_file(fp_path),
+        "registry_path": repo_rel(root, registry_path),
+        "registry_sha256": sha256_file(registry_path),
+        "history_episode_ids": history_ids(history),
+        "critic_provenance": provenance,
+        "comparisons": rows,
+    }
+    review_path = ep / REVIEW_REL
+    write_json(review_path, data)
+    (ep / CANDIDATE_REL).unlink(missing_ok=True)
+    errors = validate_review(root, ep, fp_path, registry_path, history, contract_version, data)
+    if errors:
+        raise RuntimeError("semantic recent5 finalized review invalid: " + "; ".join(errors))
+    return data
+
+
+def finalize_product_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history: list[dict], contract_version: str, runtime: str) -> dict:
+    candidate = ep / CANDIDATE_REL
+    raw, provenance = product_review_adapter.finalize_candidate(
+        ep,
+        kind="recent5-semantic",
+        runtime=runtime,
+        attempt=1,
+        candidate_path=candidate,
+    )
+    data = _finalize_review_data(root, ep, fp_path, registry_path, history, contract_version, raw, provenance)
+    product_review_adapter.mark_complete(ep, "recent5-semantic", attempt=1, final_path=ep / REVIEW_REL)
+    return data
+
+
 def run_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history: list[dict], contract_version: str, codex_raw: str | None = None, timeout: int = 1800) -> dict:
     current = read_json(fp_path)
     candidate = ep / CANDIDATE_REL
@@ -302,6 +391,18 @@ def run_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history
 
     before_fp = sha256_file(fp_path)
     before_reg = sha256_file(registry_path)
+    active_runtime, _ = runtime_router.detect()
+    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+        request = product_review_adapter.prepare(
+            ep,
+            kind="recent5-semantic",
+            runtime=active_runtime,
+            attempt=1,
+            prompt=critic_prompt(root, ep, fp_path, registry_path, current, history, candidate),
+            source_paths=[fp_path, registry_path],
+            candidate_path=candidate,
+        )
+        raise ProductReviewHostAction(request)
     codex = resolve_codex(codex_raw)
     cmd = prefix(codex) + [
         "exec", "--skip-git-repo-check", "--ephemeral",
@@ -326,35 +427,11 @@ def run_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history
         raise RuntimeError("semantic recent5 critic did not produce candidate JSON")
 
     raw = read_json(candidate)
-    rows, errors = validate_candidate(raw, history)
-    if errors:
-        raise RuntimeError("semantic recent5 candidate invalid: " + "; ".join(errors))
-
-    data = {
-        "schema_version": 1,
-        "story_os_version": contract_version,
-        "episode_id": current.get("episode_id"),
-        "reviewed_at": now(),
-        "candidate_fingerprint_path": repo_rel(root, fp_path),
-        "candidate_fingerprint_sha256": sha256_file(fp_path),
-        "registry_path": repo_rel(root, registry_path),
-        "registry_sha256": sha256_file(registry_path),
-        "history_episode_ids": history_ids(history),
-        "critic_provenance": {
-            "runtime": "CODEX_ISOLATED",
-            "isolated_session": True,
-            "log": repo_rel(root, log_path),
-            "log_sha256": sha256_file(log_path),
-            "reviewed_at": now(),
-        },
-        "comparisons": rows,
-    }
-    write_json(review_path, data)
-    candidate.unlink(missing_ok=True)
-    errors = validate_review(root, ep, fp_path, registry_path, history, contract_version, data)
-    if errors:
-        raise RuntimeError("semantic recent5 finalized review invalid: " + "; ".join(errors))
-    return data
+    provenance = runtime_provenance.build_critic_provenance(
+        "CODEX", attempt=1, log=repo_rel(root, log_path)
+    )
+    provenance["log_sha256"] = sha256_file(log_path)
+    return _finalize_review_data(root, ep, fp_path, registry_path, history, contract_version, raw, provenance)
 
 def ensure_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history: list[dict], contract_version: str, codex_raw: str | None = None, timeout: int = 1800) -> dict:
     p = ep / REVIEW_REL
@@ -398,8 +475,33 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("self-test")
+    p = sub.add_parser("finalize-review")
+    p.add_argument("episode_dir")
+    p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
     args = ap.parse_args()
-    return self_test()
+    if args.cmd == "self-test":
+        return self_test()
+    ep = Path(args.episode_dir).resolve()
+    fp_path = ep / "meta/episode-fingerprint.json"
+    registry_path = ROOT / "reports/account-pattern-registry.json"
+    try:
+        current = read_json(fp_path)
+        registry = read_json(registry_path)
+        history = history_from_registry(current, registry)
+        data = finalize_product_review(
+            ROOT,
+            ep,
+            fp_path,
+            registry_path,
+            history,
+            episode_contract_version(ep),
+            args.runtime,
+        )
+    except (OSError, RuntimeError, ValueError) as exc:
+        print("RECENT5 SEMANTIC FINALIZE ERROR:", exc)
+        return 3
+    print(json.dumps(data, ensure_ascii=False, indent=2))
+    return 0
 
 if __name__ == "__main__":
     raise SystemExit(main())

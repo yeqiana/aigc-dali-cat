@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "tool_version": "2.6.0",
+  "tool_version": "2.6.1",
   "episode_id": "__EPISODE_ID__",
   "visual_profile": {
     "mode": "default",
     "profile_id": "M00",
-    "profile_path": "standards/visual_profiles/M00_MP4_����_��ˮϯ_������.json",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
     "capture_profile": "auto",
     "override_reason": null
   },

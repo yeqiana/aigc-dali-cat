@@ -1,18 +1,19 @@
 {
-  "schema_version": 4,
-  "module_version": "2.4.2",
-  "platform_min_version": "2.4.2",
+  "schema_version": 5,
+  "module_version": "2.6.1",
+  "platform_min_version": "2.6.0",
   "workflow_contract": "runtimes/workflow-contract.json",
-  "name": "Story OS V2.4.2 Multi-Runtime + Codex Subscription Batch Runtime",
+  "name": "Story OS V2.6.1 Product-Runtime-First Multi-Runtime Contract",
   "state_source": "meta/episode-state.json",
   "creative_authority": "standards/制作规范_正式版.md",
   "routing_order": [
-    "CODEX",
     "WORK",
+    "CODEX",
     "WEB"
   ],
   "routing": {
     "CODEX": {
+      "selection": "explicit_only",
       "target": "deterministic_full_auto_file_pipeline",
       "checkpoint": "repository",
       "orchestrator": "episodes/_system/workflow_runner.py",
@@ -25,21 +26,42 @@
       "final_zip": "not_required"
     },
     "WORK": {
+      "selection": "default",
       "target": "full_auto_workspace_pipeline",
       "checkpoint": "workspace_and_repository_when_writable",
+      "orchestrator": "episodes/_system/product_runtime_adapter.py",
+      "critic_provenance": "WORK_ISOLATED",
+      "image_backend": "product_runtime_image",
+      "local_codex_spawn_allowed": false,
+      "local_codex_fallback_allowed": false,
       "production_complete_at": "PUBLISH_READY",
       "delivery_package": "when_capable",
       "final_zip": "required_when_tools_allow"
     },
     "WEB": {
+      "selection": "product_fallback",
       "target": "continuous_best_effort_with_resume",
       "checkpoint": "conversation_and_repository_when_writable",
+      "orchestrator": "episodes/_system/product_runtime_adapter.py",
+      "critic_provenance": "WEB_ISOLATED",
+      "image_backend": "product_runtime_image",
+      "local_codex_spawn_allowed": false,
+      "local_codex_fallback_allowed": false,
       "production_complete_at": "PUBLISH_READY",
       "delivery_package": "when_capable",
       "final_zip": "best_effort_only_when_tools_allow"
     }
   },
   "common_rules": {
+    "default_runtime": "WORK",
+    "local_codex_fallback": "explicit_only",
+    "product_runtime_host_request": "meta/runtime/product-host-request.json",
+    "product_runtime_host_request_history": "meta/runtime/host-requests/<request_id>.json",
+    "product_review_request_pattern": "meta/runtime/reviews/<kind>-attempt-<n>-request.json",
+    "product_host_checkpoint_status": "HOST_WAIT",
+    "independent_critic_runtimes": ["WORK_ISOLATED", "WEB_ISOLATED", "CODEX_ISOLATED"],
+    "work_web_must_not_spawn_local_codex": true,
+    "product_image_missing_file_transport_must_pause": true,
     "do_not_create_second_episode_stage": true,
     "do_not_duplicate_creative_rules_per_runtime": true,
     "explicit_full_auto_request_is_continuous_execution_authorization": true,
@@ -90,7 +112,7 @@
     "batch_contract_is_derived_execution_evidence": true,
     "default_batch_images": 5,
     "batch_provider_probe": "lazy_first_real_batch",
-    "batch_transport_failure_fallback": "single_frame",
+    "batch_transport_failure_fallback": "single_frame_same_runtime_only",
     "deviation_high_min": 80,
     "criticality_high_min": 80,
     "high_high_requires_both": true,
@@ -99,6 +121,7 @@
     "openai_api_key_source": "environment_only",
     "provider_route_is_stage_authority": false,
     "distinct_frame_mapping_requires_review": true,
+    "codex_subscription_runtime": "CODEX",
     "codex_subscription_logical_batch_config": "config/agent_runtime/codex-subscription-batch.json",
     "codex_logical_batch_size": 5,
     "codex_logical_batch_max_inflight_images": 5,
@@ -109,6 +132,15 @@
     ],
     "codex_logical_batch_requires_api_key": false,
     "codex_logical_batch_native_multi_image": false,
-    "codex_logical_batch_single_http_request": false
+    "codex_logical_batch_single_http_request": false,
+    "raw_runtime_logs_git_authority": false,
+    "local_only_runtime_log_patterns": [
+      "meta/image-workers/**",
+      "meta/rolling-review-workers/**",
+      "meta/scoped-workers/**",
+      "meta/codex-auto-run.jsonl",
+      "meta/runtime/trace-events.jsonl",
+      "meta/workflow-run.jsonl"
+    ]
   }
 }

@@ -14,11 +14,19 @@ from pathlib import Path
 import frame_semantic_review as base
 import incremental_frame_review as inc
 import runtime_command
+import runtime_router
+import product_review_adapter
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/caption-image-audit.json")
 SCHEMA = 1
 CHUNK = 5
+
+
+class ProductReviewHostAction(RuntimeError):
+    def __init__(self, request: dict):
+        super().__init__("caption/image review requires product runtime host action")
+        self.request = request
 
 def _caption_texts(ep: Path, frames: list[dict]) -> tuple[dict[str, str], dict]:
     source = inc._manifest_caption_path(ep)
@@ -98,6 +106,37 @@ Return one row for every attached frame. summary.passed=false if any supported=f
 
 def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str | None, timeout: int, index: int) -> dict:
     out = ep / "meta" / f".caption-image-audit-candidate-{index:03d}.json"
+    active_runtime, _ = runtime_router.detect()
+    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+        kind = f"caption-image-audit-{index:03d}"
+        request_file = product_review_adapter.request_path(ep, kind)
+        if out.is_file() and request_file.is_file():
+            data, provenance = product_review_adapter.finalize_candidate(
+                ep,
+                kind=kind,
+                runtime=active_runtime,
+                attempt=1,
+                candidate_path=out,
+            )
+            data["critic_provenance"] = provenance
+            data["_product_review_kind"] = kind
+            return data
+        out.unlink(missing_ok=True)
+        sources = [Path(row["path"]).resolve() for row in rows]
+        caption_source = inc._manifest_caption_path(ep)
+        if caption_source is not None:
+            sources.append(caption_source.resolve())
+        request = product_review_adapter.prepare(
+            ep,
+            kind=kind,
+            runtime=active_runtime,
+            attempt=1,
+            prompt=_prompt(ep, rows, texts, out),
+            source_paths=sources,
+            candidate_path=out,
+        )
+        raise ProductReviewHostAction(request)
+
     out.unlink(missing_ok=True)
     codex = base.resolve_codex(codex_raw)
     cmd = base.command_prefix(codex) + [
@@ -159,6 +198,7 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int = 900) -> tuple[
                 "image_sha256": image_sha[key], "caption_sha256": caption_sha[key],
                 "passed": passed, "mode": "pixel_critic",
                 "notes": str(result.get("notes") or ""),
+                "critic_provenance": data.get("critic_provenance"),
             }
             reviewed += 1
 
@@ -170,6 +210,17 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int = 900) -> tuple[
         "visual_review_invalidated": False,
     }
     _write(ep, evidence)
+
+    active_runtime, _ = runtime_router.detect()
+    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+        chunk_count = (len(nonempty) + CHUNK - 1) // CHUNK
+        for index in range(1, chunk_count + 1):
+            kind = f"caption-image-audit-{index:03d}"
+            request_file = product_review_adapter.request_path(ep, kind)
+            candidate_file = ep / "meta" / f".caption-image-audit-candidate-{index:03d}.json"
+            if request_file.is_file() and candidate_file.is_file():
+                product_review_adapter.mark_complete(ep, kind, attempt=1, final_path=ep / REL)
+                candidate_file.unlink(missing_ok=True)
     return evidence["summary"]["passed"], evidence
 
 def verify(ep: Path) -> list[str]:

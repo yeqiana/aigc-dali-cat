@@ -1,8 +1,19 @@
-# Story OS — Repository Execution Contract V2.6.0
+# Story OS — Repository Execution Contract V2.6.1
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
 > **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
+
+## V2.6.1 Product Runtime First
+
+- 默认 Runtime 为 `WORK`，当前 ChatGPT/Work + DevSpace 直接执行仓库工作。
+- 本机 `codex.exe` 仅是可选能力，不得因为它存在就自动路由到 CODEX。
+- `WORK/WEB` 下任何旧 Codex worker 入口必须返回 `HOST_ACTION_REQUIRED`，Checkpoint 记为 `HOST_WAIT`，禁止静默 fallback。
+- Host Action 使用 `meta/runtime/host-requests/<request_id>.json` 保存不可覆盖历史；`product-host-request.json` 只作为当前指针。
+- Product Review 使用 `<kind>-attempt-<n>-request.json`，同一 attempt 的 frozen inputs 不得覆盖。
+- 需要本地 Codex 时显式设置 `STORY_OS_RUNTIME=CODEX` 或明确传入 Codex 参数。
+- Concept / Story Critic provenance 支持 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`；均必须 fresh、source-SHA-bound、不可伪造 PASS。
+- 图片：API Key 可走 OpenAI Image API；WORK/WEB 默认走 product runtime image；若产品运行时无法把真实图片文件写入仓库则暂停，不得烧本地 Codex 配额。
 
 <!-- STORY_OS_V2_1_CONCEPT_BEGIN -->
 ## Story OS V2.1：概念野心优先

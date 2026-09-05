@@ -67,6 +67,14 @@ def collect(ep: Path, *, write: bool = True) -> dict:
     runs = performance.get("runs") or []
     latest_run = runs[-1] if runs else {}
     steps = latest_run.get("steps") or []
+    latest_checkpoint_steps = {}
+    for row in checkpoint.get("step_runs") or []:
+        if isinstance(row, dict) and row.get("step"):
+            latest_checkpoint_steps[str(row["step"])] = row
+    host_wait_steps = [
+        row for row in latest_checkpoint_steps.values()
+        if str(row.get("status") or "") == "HOST_WAIT"
+    ]
     slowest = sorted(
         [x for x in steps if isinstance(x, dict)],
         key=lambda x: float(x.get("elapsed_seconds") or 0),
@@ -122,10 +130,16 @@ def collect(ep: Path, *, write: bool = True) -> dict:
         },
         "runtime_trace": runtime_trace.summarize(ep, write=True),
         "batch_runtime": batch_runtime_metrics.collect(ep),
+        "runtime_handoff": {
+            "awaiting_product_host": bool(host_wait_steps),
+            "host_wait_steps": host_wait_steps,
+            "host_wait_is_failure": False,
+        },
         "failure_taxonomy": failure_taxonomy,
         "health": {
             "has_blockers": any(v for v in failure_taxonomy.values()),
-            "workflow_status": latest_run.get("status") or "UNKNOWN",
+            "awaiting_product_host": bool(host_wait_steps),
+            "workflow_status": latest_run.get("status") or ("HOST_WAIT" if host_wait_steps else "UNKNOWN"),
         },
     }
     if write:
