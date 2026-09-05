@@ -3,11 +3,14 @@
 import importlib.util
 import json
 import os
+import sys
 import unittest
 from pathlib import Path
 
 SYSTEM = Path(__file__).resolve().parent
 ROOT = SYSTEM.parents[1]
+if str(SYSTEM) not in sys.path:
+    sys.path.insert(0, str(SYSTEM))
 
 def load(name, filename):
     spec = importlib.util.spec_from_file_location(name, SYSTEM / filename)
@@ -18,6 +21,7 @@ def load(name, filename):
 
 router = load('router201', 'runtime_router.py')
 backend = load('backend201', 'codex_subscription_image.py')
+story_contract = load('story_contract201', 'story_os_contract.py')
 
 class EngineeringTests(unittest.TestCase):
     def test_version_contract(self):
@@ -25,7 +29,7 @@ class EngineeringTests(unittest.TestCase):
         manifest = json.loads((ROOT / 'story_os_manifest.json').read_text(encoding='utf-8-sig'))
         self.assertIn('module_version', data)
         self.assertIn('platform_min_version', data)
-        self.assertEqual(manifest['platform_version'], '2.2.2')
+        self.assertEqual(manifest['platform_version'], story_contract.story_os_version())
         self.assertEqual(data['common_rules']['stable_evidence_gate'], 'episodes/_system/evidence_gate.py')
 
     def test_runtime_override(self):

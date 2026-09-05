@@ -37,11 +37,37 @@ def atomic_write_bytes(path: Path, data: bytes) -> dict:
         raise ValueError(f"provider output is not a valid PNG/JPEG: {path}")
     return {"path": str(path), "sha256": sha256_file(path), "bytes": path.stat().st_size}
 
+def _thread_ids(text: str) -> list[str]:
+    out: list[str] = []
+    for line in text.splitlines():
+        try:
+            row = json.loads(line)
+        except Exception:
+            continue
+        if not isinstance(row, dict) or row.get("type") != "thread.started":
+            continue
+        thread_id = str(row.get("thread_id") or "").strip()
+        if thread_id and thread_id not in out:
+            out.append(thread_id)
+    return out
+
+
 def recover_codex_generated(log: Path, workdir: Path) -> Path | None:
     candidates: list[Path] = []
     if log.is_file():
         text = log.read_text(encoding="utf-8", errors="replace")
-        # Codex image tool commonly exposes paths under .codex/generated_images.
+        # Primary recovery: use the exact Codex thread directory so parallel workers cannot cross-pick images.
+        for thread_id in _thread_ids(text):
+            thread_dir = Path.home() / ".codex" / "generated_images" / thread_id
+            if not thread_dir.is_dir():
+                continue
+            try:
+                for probe in thread_dir.rglob("*"):
+                    if probe.is_file() and probe.suffix.lower() in {".png", ".jpg", ".jpeg"} and valid_image(probe):
+                        candidates.append(probe.resolve())
+            except OSError:
+                pass
+        # Compatibility recovery for logs that contain an explicit generated image path.
         for raw in re.findall(r'(?i)(?:[A-Za-z]:)?[^"\'\r\n]*?\.codex[\\/]+generated_images[\\/]+[^"\'\r\n]+?\.(?:png|jpe?g)', text):
             cleaned = raw.strip().replace("\\\\", "\\")
             p = Path(cleaned)
@@ -68,7 +94,9 @@ def recover_codex_generated(log: Path, workdir: Path) -> Path | None:
 
 def self_test() -> None:
     assert valid_image(Path("__missing__")) is False
-    print("IMAGE ARTIFACT COLLECTOR V2.4.1 SELF-TEST PASS")
+    sample='{"type":"thread.started","thread_id":"abc-123"}\n{"type":"item.completed"}'
+    assert _thread_ids(sample) == ["abc-123"]
+    print("IMAGE ARTIFACT COLLECTOR V2.6.1 THREAD-SCOPED SELF-TEST PASS")
 
 if __name__ == "__main__":
     self_test()

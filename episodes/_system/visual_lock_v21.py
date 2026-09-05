@@ -133,8 +133,13 @@ def required(ep: Path) -> bool:
     if not p.is_file():
         return False
     try:
-        calibration = ((read_json(p).get("visual") or {}).get("calibration") or {})
-        return calibration.get("policy") == "four_admission_v21"
+        gates = read_json(p)
+        calibration = ((gates.get("visual") or {}).get("calibration") or {})
+        if calibration.get("policy") == "four_admission_v21":
+            return True
+        # V2.1+ strict episodes with an old three-slot calibration schema still require
+        # the four-admission gate. prepare() performs the schema migration when invoked.
+        return ((gates.get("machine_contract") or {}).get("strict") is True)
     except Exception:
         return False
 

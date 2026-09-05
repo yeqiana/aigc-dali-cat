@@ -10,6 +10,7 @@ ROOT=Path(__file__).resolve().parents[2]
 LIB=ROOT/"library"
 CATALOG=LIB/"catalog.json"
 REL=Path("meta/resource-selection.json")
+RESOLVER_VERSION=3
 
 def read_json(p): return cache.read_json(p)
 def write_json(p,d):
@@ -34,9 +35,64 @@ def tags_for_episode(ep):
         for key in ("炎热","夏天","下雨","雨天","雪","雾","夜"):
             if key in raw:tags.add(key)
     return tags
+
+def primary_place_for_episode(ep):
+    cp=ep/"meta/character-contract.json"
+    if not cp.is_file():return ""
+    scene=(read_json(cp).get("scene") or {})
+    return str(scene.get("primary_place") or "").strip()
+
+def _norm(value):
+    return "".join(str(value or "").strip().lower().split())
+
+def _contains_cjk(value):
+    return any("\u4e00" <= ch <= "\u9fff" for ch in str(value or ""))
+
+def location_match_score(primary_place,resource_tags):
+    place=_norm(primary_place)
+    if not place:return 0
+    best=0
+    for raw in resource_tags:
+        tag=_norm(raw)
+        if not tag:continue
+        if tag==place:best=max(best,4);continue
+        # Location fuzziness is deliberately limited to human-readable place tags.
+        # Generic taxonomy tags such as village_home must never override an explicit place.
+        if _contains_cjk(tag) and len(tag)>=2 and (tag in place or place in tag):
+            best=max(best,3)
+    return best
+
+def selection_source(ep):
+    ep=Path(ep).resolve()
+    tags=tags_for_episode(ep)
+    return {
+        "resolver_version":RESOLVER_VERSION,
+        "catalog_sha":file_sha(CATALOG),
+        "tags":sorted(tags),
+        "primary_place":primary_place_for_episode(ep),
+    }
+
+
+def is_fresh(ep):
+    ep=Path(ep).resolve(); p=ep/REL
+    if not p.is_file():return False
+    try:data=read_json(p)
+    except Exception:return False
+    expected=selection_source(ep)
+    return all(data.get(k)==expected[k] for k in ("resolver_version","catalog_sha","primary_place")) and data.get("source_tags")==expected["tags"]
+
+
+def ensure_fresh(ep):
+    ep=Path(ep).resolve()
+    if not is_fresh(ep):
+        resolve(ep,write=True)
+    if not is_fresh(ep):
+        raise ValueError("RESOURCE_SELECTION_STALE: resolver/catalog/place binding did not converge")
+    return read_json(ep/REL)
+
+
 def resolve(ep,write=True):
-    ep=Path(ep).resolve(); cat=read_json(CATALOG); tags=tags_for_episode(ep)
-    source={"catalog_sha":file_sha(CATALOG),"tags":sorted(tags)}
+    ep=Path(ep).resolve(); cat=read_json(CATALOG); source=selection_source(ep); tags=set(source["tags"]); primary_place=source["primary_place"]
     key=cache.sha_json(source)
     hit=cache.get("resource_selection",key)
     if hit and isinstance(hit,dict) and "data" in hit:
@@ -46,6 +102,11 @@ def resolve(ep,write=True):
         for row in cat.get("resources") or []:
             rtags=set(str(x) for x in row.get("tags") or [])
             score=len(tags & rtags)
+            if row.get("type")=="location_descriptor" and primary_place:
+                specific=location_match_score(primary_place,rtags)
+                if specific<=0:
+                    continue
+                score += specific
             if score:
                 scored.append((score,float(row.get("quality_score") or 0),row))
         scored.sort(key=lambda x:(-x[0],-x[1],x[2].get("id","")))
@@ -56,7 +117,7 @@ def resolve(ep,write=True):
             if typ in seen_types:continue
             copy=dict(row);copy["match_score"]=score;selected.append(copy);seen_types.add(typ)
             if len(selected)>=8:break
-        data={"schema_version":1,"source_tags":sorted(tags),"selected":selected,"policy":{"reference_only":True,"reuse_final_episode_images":False},"cache_hit":False}
+        data={"schema_version":1,"resolver_version":RESOLVER_VERSION,"catalog_sha":source["catalog_sha"],"primary_place":primary_place,"source_tags":sorted(tags),"selected":selected,"policy":{"reference_only":True,"reuse_final_episode_images":False},"cache_hit":False}
         cache.put("resource_selection",key,data,meta=source)
     if write:write_json(ep/REL,data)
     return data
@@ -71,7 +132,11 @@ def register(resource_id,typ,path,tags,quality):
     write_json(CATALOG,cat);return rows[-1]
 def self_test():
     c=read_json(CATALOG);assert c["policy"]["reuse_final_episode_images"] is False
-    print("RESOURCE LIBRARY SELF-TEST PASS")
+    assert RESOLVER_VERSION==3
+    assert location_match_score("川西山谷小镇普通民宿",{"village_home","西北农村"})==0
+    assert location_match_score("废弃游乐园",{"abandoned_place","游乐园"})>0
+    assert location_match_score("西北农村老家",{"village_home","西北农村"})>0
+    print("RESOURCE LIBRARY V2 SPECIFIC LOCATION SELF-TEST PASS")
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("resolve");p.add_argument("episode_dir")

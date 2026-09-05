@@ -1,6 +1,6 @@
 # Episodes 状态机 + Story OS 门禁 V2.6.1
 
-本目录只建立一套机器阶段状态；V2.2.2 延续 V1.8 引入的证据 SHA 门禁，并增加稳定 evidence gate 与可执行 Codex runtime，不新增第二状态机。
+本目录只建立一套机器阶段状态；当前平台版本以根目录 story_os_manifest.json 的 platform_version 为唯一权威。现行 V2.6.1 延续证据 SHA 门禁、稳定 evidence gate 与多 Runtime 执行能力，不新增第二状态机。
 
 ## 核心事实源
 

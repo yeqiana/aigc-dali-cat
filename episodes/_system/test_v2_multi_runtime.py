@@ -13,5 +13,5 @@ class Tests(unittest.TestCase):
         d={k:"same" for k in keys}; score,veto,_=similarity({"dimensions":d},{"dimensions":d}); self.assertEqual(score,100); self.assertTrue(veto)
     def test_contract(self):
         root=Path(__file__).resolve().parents[2]; d=json.loads((root/"runtimes"/"runtime-contract.json").read_text(encoding="utf-8"))
-        self.assertEqual(d["routing_order"],["WORK","CODEX","WEB"]); self.assertEqual(d["common_rules"]["default_runtime"],"WORK"); self.assertTrue(d["common_rules"]["work_web_must_not_spawn_local_codex"]); self.assertTrue(d["common_rules"]["do_not_create_second_episode_stage"])
+        self.assertEqual(d["routing_order"],["WORK","CODEX","WEB"]); self.assertEqual(d["common_rules"]["default_runtime"],"WORK"); self.assertEqual(d["common_rules"]["default_image_execution_runtime"],"CODEX"); self.assertTrue(d["common_rules"]["work_web_must_not_spawn_local_codex_for_non_image_work"]); self.assertTrue(d["common_rules"]["codex_image_execution_must_not_run_full_auto"]); self.assertTrue(d["common_rules"]["do_not_create_second_episode_stage"])
 if __name__=="__main__": unittest.main()

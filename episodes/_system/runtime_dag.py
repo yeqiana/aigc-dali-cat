@@ -130,7 +130,7 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
                 request=product_runtime_adapter.build_request(
                     ep,runtime=active_runtime,mode=mode,resume=True,source=f"runtime_dag:{s.step_id}")
                 rc=product_runtime_adapter.HOST_ACTION_REQUIRED_RC
-                note=json.dumps(request,ensure_ascii=False)
+                note=json.dumps(request,ensure_ascii=True)
             else:
                 if s.step_id=="RELEASE" and provisional_future is not None:
                     try:
@@ -187,8 +187,8 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
                 try:
                     spec=speculative_production.run(ep,codex=codex,timeout=min(600,max(60,int(timeout))),max_frames=6)
                     spec_elapsed=float(spec.get("elapsed_seconds") or 0.0)
-                    if run_id: perf.record_step(ep,run_id,"SPECULATIVE_PRODUCTION","PASS" if spec.get("status")=="GENERATED_CANDIDATES" else "SKIPPED",spec_elapsed,json.dumps(spec,ensure_ascii=False)[:500])
-                    checkpoint(ep,"SPECULATIVE_PRODUCTION","PASS" if spec.get("status")=="GENERATED_CANDIDATES" else "SKIPPED",spec_elapsed,json.dumps(spec,ensure_ascii=False)[:1000])
+                    if run_id: perf.record_step(ep,run_id,"SPECULATIVE_PRODUCTION","PASS" if spec.get("status")=="GENERATED_CANDIDATES" else "SKIPPED",spec_elapsed,json.dumps(spec,ensure_ascii=True)[:500])
+                    checkpoint(ep,"SPECULATIVE_PRODUCTION","PASS" if spec.get("status")=="GENERATED_CANDIDATES" else "SKIPPED",spec_elapsed,json.dumps(spec,ensure_ascii=True)[:1000])
                 except Exception as exc:
                     if run_id: perf.record_step(ep,run_id,"SPECULATIVE_PRODUCTION","FAILED",0.0,str(exc)[:500])
             background.shutdown(wait=False,cancel_futures=True)
@@ -197,10 +197,21 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
             resource_library.resolve(ep,write=True)
             intro_policy.resolve(ep,write=True)
             pre_started=time.monotonic()
-            pre_rc,pre_log=scoped_codex_worker.run_step(ep,"PREIMAGE_COMPILE",codex_raw=codex,timeout=min(timeout,int(dag.get("scoped_worker_timeout_seconds") or 3600)))
+            active_runtime,_=runtime_router.detect()
+            if active_runtime in {"WORK","WEB"} and not codex:
+                pre_request=product_runtime_adapter.build_request(
+                    ep,runtime=active_runtime,mode=mode,resume=True,source="runtime_dag:PREIMAGE_COMPILE")
+                pre_rc=product_runtime_adapter.HOST_ACTION_REQUIRED_RC
+                pre_log=json.dumps(pre_request,ensure_ascii=True)
+                product_runtime_adapter.print_request(pre_request)
+            else:
+                pre_rc,pre_log=scoped_codex_worker.run_step(
+                    ep,"PREIMAGE_COMPILE",codex_raw=codex,
+                    timeout=min(timeout,int(dag.get("scoped_worker_timeout_seconds") or 3600)))
             pre_elapsed=time.monotonic()-pre_started
-            checkpoint(ep,"PREIMAGE_COMPILE","PASS" if pre_rc==0 else "FAILED",pre_elapsed,f"log={pre_log}")
-            if run_id:perf.record_step(ep,run_id,"PREIMAGE_COMPILE","PASS" if pre_rc==0 else "FAILED",pre_elapsed,f"log={pre_log}")
+            pre_status="PASS" if pre_rc==0 else ("HOST_WAIT" if pre_rc==product_runtime_adapter.HOST_ACTION_REQUIRED_RC else "FAILED")
+            checkpoint(ep,"PREIMAGE_COMPILE",pre_status,pre_elapsed,f"log={pre_log}")
+            if run_id:perf.record_step(ep,run_id,"PREIMAGE_COMPILE",pre_status,pre_elapsed,f"log={pre_log}")
             if pre_rc!=0:
                 background.shutdown(wait=False,cancel_futures=True)
                 return pre_rc
@@ -244,8 +255,8 @@ def main():
     sub.add_parser("self-test"); a=ap.parse_args()
     if a.cmd=="self-test": self_test(); return 0
     ep=Path(a.episode_dir).resolve()
-    if a.cmd=="plan": print(json.dumps(plan(ep),ensure_ascii=False,indent=2)); return 0
-    if a.cmd=="show": print(json.dumps(proto.load_state(ep),ensure_ascii=False,indent=2)); return 0
+    if a.cmd=="plan": print(json.dumps(plan(ep),ensure_ascii=True,indent=2)); return 0
+    if a.cmd=="show": print(json.dumps(proto.load_state(ep),ensure_ascii=True,indent=2)); return 0
     return execute(ep,codex=a.codex,timeout=a.timeout)
 
 if __name__=="__main__": raise SystemExit(main())

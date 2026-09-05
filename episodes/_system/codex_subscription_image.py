@@ -21,8 +21,12 @@ import provider_capability
 import image_artifact_collector
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
 import runtime_router
+import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
+_CONFIG = storyos_config.load_config()
+CODEX_IMAGE_CONTROLLER_MODEL = str(storyos_config.get_path(_CONFIG, "runtime.codex_image_controller_model"))
+CODEX_IMAGE_REASONING_EFFORT = str(storyos_config.get_path(_CONFIG, "runtime.codex_image_reasoning_effort"))
 
 PNG = b'\x89PNG\r\n\x1a\n'
 JPEG = b'\xff\xd8\xff'
@@ -76,6 +80,13 @@ def command_prefix(codex: Path) -> list[str]:
 def provider_size(width: int, height: int) -> str:
     return f'{width}x{height}'
 
+
+def controller_args() -> list[str]:
+    return [
+        '-m', CODEX_IMAGE_CONTROLLER_MODEL,
+        '-c', f'model_reasoning_effort="{CODEX_IMAGE_REASONING_EFFORT}"',
+    ]
+
 def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = 'gpt-image-2', image_quality: str = 'high', strict_model: bool = False) -> str:
     reference_lines = '\n'.join(f'- reference {i}: {p.name}' for i, p in enumerate(refs, 1)) or '- no references'
     visual_block = (
@@ -117,7 +128,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             local_refs.append(target)
         cmd = command_prefix(codex) + [
             'exec', '--skip-git-repo-check', '--ephemeral', '--enable', 'image_generation',
-            '-c', 'model_reasoning_effort="low"', '-s', 'workspace-write', '-C', str(workdir), '--json'
+            *controller_args(), '-s', 'workspace-write', '-C', str(workdir), '--json'
         ]
         for ref in local_refs:
             cmd.extend(['-i', str(ref)])
@@ -129,6 +140,8 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
                     cmd,
                     input=worker_prompt(scene, local_refs, size, visual_contract, frame_contract_text, image_model, image_quality, strict_model),
                     text=True,
+                    encoding="utf-8",
+                    errors="strict",
                     stdout=log_handle,
                     stderr=subprocess.STDOUT,
                     timeout=timeout,
@@ -301,6 +314,7 @@ def main() -> int:
         assert 'quality=high' in worker_prompt('x', [], '1080x1350')
         assert provider_size(1080, 1350) == '1080x1350'
         assert provider_size(1080, 1920) == '1080x1920'
+        assert controller_args() == ['-m', 'gpt-5.6-sol', '-c', 'model_reasoning_effort="high"']
         assert not valid_image(Path('__missing__'))
         print('CODEX SUBSCRIPTION IMAGE BACKEND SELF-TEST PASS')
         return 0

@@ -128,16 +128,16 @@ def build_request(
             "actor": "chatgpt_product_runtime",
             "workspace_access": "use DevSpace/workspace tools directly",
             "critic_provenance": f"{runtime}_ISOLATED",
-            "image_generation": "use product image tool when available; import resulting RAW through Story OS without starting codex.exe",
+            "image_generation": "delegate only the image execution substep according to runtime.image_execution_runtime; CODEX image mode must not take ownership of Story/PREIMAGE/Review/Release",
             "deterministic_scripts": "may run locally when they do not invoke a model backend",
             "stage_authority": "meta/episode-state.json",
             "must_not_claim_pass_without_evidence": True,
         },
         "instructions": [
-            "Execute the declared step in the surrounding product runtime; do not launch local codex.exe.",
+            "Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.",
             "Reuse valid SHA-bound evidence and obey existing Story OS gates.",
             "For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.",
-            "For images, use the product image backend/manual RAW import path; never fall back to Codex unless the user explicitly switches runtime to CODEX.",
+            "When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.",
         ],
     }
     if request_data:

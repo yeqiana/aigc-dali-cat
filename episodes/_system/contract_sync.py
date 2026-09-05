@@ -130,6 +130,16 @@ def collect_errors(root: Path | None = None) -> list[str]:
     if not isinstance(version, str) or not version.strip():
         errors.append("manifest platform_version must be a non-empty string")
         version = "<invalid>"
+    semantics = manifest.get("version_semantics") or {}
+    if not str(semantics.get("platform_version") or "").startswith("Root product release identifier"):
+        errors.append("story_os_manifest.json must declare platform_version as the sole product-version authority")
+    story_contract_source = read_text(root / "episodes/_system/story_os_contract.py")
+    if 'load_contract(root).get("platform_version")' not in story_contract_source:
+        errors.append("story_os_contract.py must derive Story OS version from story_os_manifest.json#platform_version")
+    for rel in (Path("runtimes/runtime-contract.json"), Path("config/storyos.yaml"), Path("config/index.yaml")):
+        p = root / rel
+        if p.is_file() and re.search(r'(?m)^\s*["\']?platform_version["\']?\s*:', read_text(p)):
+            errors.append(f"{rel.as_posix()} must not declare a second platform_version authority")
     if manifest.get("contract_schema") != 1:
         errors.append("manifest contract_schema must remain 1")
     if manifest.get("canonical_engine") != "episodes/_system":

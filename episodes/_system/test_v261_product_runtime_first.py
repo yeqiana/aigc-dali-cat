@@ -16,12 +16,14 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import caption_image_audit
+import codex_subscription_image
 import image_provider_runtime
 import product_image_import
 import product_review_adapter
 import product_runtime_adapter
 import raw_candidate_budget
 import release_preflight
+import resource_library
 import runtime_checkpoint
 import runtime_provenance
 import runtime_router
@@ -32,8 +34,10 @@ import visual_review_legacy
 class ProductRuntimeFirstTests(unittest.TestCase):
     def setUp(self) -> None:
         self.runtime = os.environ.get("STORY_OS_RUNTIME")
+        self.image_runtime = os.environ.get("STORY_OS_IMAGE_RUNTIME")
         self.api_key = os.environ.get("OPENAI_API_KEY")
         os.environ.pop("STORY_OS_RUNTIME", None)
+        os.environ.pop("STORY_OS_IMAGE_RUNTIME", None)
         os.environ.pop("OPENAI_API_KEY", None)
 
     def tearDown(self) -> None:
@@ -41,6 +45,10 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             os.environ.pop("STORY_OS_RUNTIME", None)
         else:
             os.environ["STORY_OS_RUNTIME"] = self.runtime
+        if self.image_runtime is None:
+            os.environ.pop("STORY_OS_IMAGE_RUNTIME", None)
+        else:
+            os.environ["STORY_OS_IMAGE_RUNTIME"] = self.image_runtime
         if self.api_key is None:
             os.environ.pop("OPENAI_API_KEY", None)
         else:
@@ -58,11 +66,16 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         caps = runtime_router.capabilities()
         self.assertEqual(caps["effective_runtime"], "WORK")
         self.assertFalse(caps["local_codex_spawn_allowed"])
+        self.assertEqual(caps["image_execution_runtime"], "CODEX")
+        self.assertEqual(caps["codex_image_controller_model"], "gpt-5.6-sol")
+        self.assertEqual(caps["codex_image_reasoning_effort"], "high")
+        self.assertTrue(caps["local_codex_image_spawn_allowed"])
 
     def test_codex_requires_explicit_runtime_or_explicit_call(self) -> None:
         os.environ["STORY_OS_RUNTIME"] = "WORK"
         self.assertFalse(runtime_router.local_codex_allowed())
         self.assertTrue(runtime_router.local_codex_allowed(explicit=True))
+        self.assertTrue(runtime_router.local_codex_image_allowed())
         os.environ["STORY_OS_RUNTIME"] = "CODEX"
         runtime, _ = runtime_router.detect()
         self.assertEqual(runtime, "CODEX")
@@ -141,14 +154,56 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             [],
         )
 
-    def test_image_provider_does_not_fall_back_to_codex_in_work(self) -> None:
+    def test_codex_image_controller_is_sol_high(self) -> None:
+        self.assertEqual(
+            codex_subscription_image.controller_args(),
+            ['-m', 'gpt-5.6-sol', '-c', 'model_reasoning_effort="high"'],
+        )
+
+    def test_resource_selection_stale_guard_rebuilds_wrong_location(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True, exist_ok=True)
+            (ep / "meta/character-contract.json").write_text(json.dumps({
+                "era": {"bucket": "modern_2020s"},
+                "entry": {"type": "travel"},
+                "scene": {"primary_category": "village_home", "primary_place": "川西山谷小镇普通民宿"},
+                "cast": {"size": 2},
+            }, ensure_ascii=False), encoding="utf-8")
+            (ep / "meta/resource-selection.json").write_text(json.dumps({
+                "schema_version": 1,
+                "source_tags": ["village_home"],
+                "selected": [{"id": "LOC_NORTHWEST_VILLAGE", "tags": ["西北农村"]}],
+            }, ensure_ascii=False), encoding="utf-8")
+            self.assertFalse(resource_library.is_fresh(ep))
+            rebuilt = resource_library.ensure_fresh(ep)
+            self.assertTrue(resource_library.is_fresh(ep))
+            self.assertEqual(rebuilt["resolver_version"], resource_library.RESOLVER_VERSION)
+            self.assertNotIn("LOC_NORTHWEST_VILLAGE", {x.get("id") for x in rebuilt.get("selected") or []})
+
+    def test_work_authoring_uses_codex_for_images_only(self) -> None:
         os.environ["STORY_OS_RUNTIME"] = "WORK"
+        decision = image_provider_runtime.select_batch_provider(5)
+        self.assertEqual(decision["provider"], "codex_subscription")
+        self.assertEqual(runtime_router.detect()[0], "WORK")
+        self.assertFalse(runtime_router.local_codex_allowed())
+        self.assertTrue(runtime_router.local_codex_image_allowed())
+
+    def test_codex_image_runtime_wins_even_if_api_key_exists(self) -> None:
+        os.environ["STORY_OS_RUNTIME"] = "WORK"
+        os.environ["OPENAI_API_KEY"] = "test-only-not-used"
+        decision = image_provider_runtime.select_batch_provider(5)
+        self.assertEqual(decision["provider"], "codex_subscription")
+
+    def test_product_image_runtime_can_be_explicitly_restored(self) -> None:
+        os.environ["STORY_OS_RUNTIME"] = "WORK"
+        os.environ["STORY_OS_IMAGE_RUNTIME"] = "PRODUCT_RUNTIME"
         decision = image_provider_runtime.select_batch_provider(5)
         self.assertEqual(decision["provider"], "product_runtime_image")
         self.assertTrue(decision["host_action_required"])
         self.assertFalse(decision["local_codex_fallback"])
 
-    def test_codex_subscription_is_available_only_when_codex_selected(self) -> None:
+    def test_full_codex_runtime_still_supports_codex_images(self) -> None:
         os.environ["STORY_OS_RUNTIME"] = "CODEX"
         decision = image_provider_runtime.select_batch_provider(5)
         self.assertEqual(decision["provider"], "codex_subscription")

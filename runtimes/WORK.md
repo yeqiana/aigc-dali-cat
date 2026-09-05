@@ -9,9 +9,10 @@ Story OS V2.6.1 起，**WORK 是默认 Runtime**。在 ChatGPT + DevSpace / Work
 核心规则：
 
 - 默认 `runtime.preferred_runtime=WORK`。
-- WORK **不得静默启动本地 Codex**。
-- 本地 Codex 只在用户/调用方显式设置 `STORY_OS_RUNTIME=CODEX` 或显式传入 Codex 执行入口时启用。
-- WORK 缺某项产品能力时必须返回 `HOST_ACTION_REQUIRED`；Checkpoint 记为 `HOST_WAIT`（正常宿主握手，不计作故障 BLOCKED），不得以“兜底”为名消耗本地 Codex 配额。
+- 默认 `runtime.image_execution_runtime=CODEX`：**只有图片生成 / 图片返修**显式使用本地 Codex；图片控制模型锁定 `gpt-5.6-sol` + `reasoning=high`，实际图片模型仍为 `gpt-image-2` + `quality=high`。
+- Story、PREIMAGE、Critic、Review、Gate、Release 仍由 WORK 负责；图片 Runtime 不得升级成 Codex full-auto。
+- 非图片步骤 WORK **不得静默启动本地 Codex**；若需要整套 CODEX Runtime，仍必须显式设置 `STORY_OS_RUNTIME=CODEX`。
+- 图片执行可用 `STORY_OS_IMAGE_RUNTIME=CODEX|PRODUCT_RUNTIME|AUTO` 临时覆盖。
 
 ## 执行方式
 
@@ -21,7 +22,8 @@ Story OS V2.6.1 起，**WORK 是默认 Runtime**。在 ChatGPT + DevSpace / Work
 ChatGPT Product Runtime
 → DevSpace / workspace
 → Story OS deterministic scripts
-→ Product-host review / image actions
+→ Product-host Story / PREIMAGE / Review
+→ CODEX image execution only
 → canonical machine/evidence gates
 → meta/episode-state.json
 ```
@@ -64,22 +66,21 @@ run-critic
 
 ## 图片
 
-Provider 顺序：
+当前默认图片路由：
 
 ```text
-OPENAI_API_KEY 存在
-→ OpenAI Image API
-
-否则 Runtime=WORK/WEB
-→ product_runtime_image
-
-只有 Runtime=CODEX
-→ Codex Subscription
+Runtime=WORK
++ image_execution_runtime=CODEX
+→ Codex Subscription image worker (`gpt-5.6-sol`, reasoning=high)
+→ image_generation (`gpt-image-2`, quality=high)
+→ RAW / candidate 落本地
+→ Story OS Normalize / Ledger
+→ WORK / Story OS Review 与 Gate
 ```
 
-WORK 图片任务由 `meta/runtime/product-host-request.json` 暴露待生成帧、Prompt、Reference、模型与 Frame Contract。
+这不是 fallback，而是显式的图片执行层配置。Codex 只拿锁定后的 Prompt / Frame Contract / References 做生图或图片返修，**不得重写 Story、Storyboard、Character Contract、PREIMAGE 或 Stage**。
 
-如果当前产品运行时可以把真实生成图片保存/导入工作区，就继续 Normalize / Ledger / Review；如果产品图片工具无法把文件送入仓库，必须暂停为 `HOST_ACTION_REQUIRED`，**禁止自动回退本地 Codex**。
+Visual Lock 继续执行真实 1+3 barrier：baseline actual-pixel PASS 前，后三张不得进入正式生成。若临时设置 `STORY_OS_IMAGE_RUNTIME=PRODUCT_RUNTIME`，才恢复产品图片 Host Request / `HOST_WAIT` 路径。
 
 ## Checkpoint / Approval
 

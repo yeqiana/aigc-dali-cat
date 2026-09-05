@@ -16,9 +16,9 @@ ChatGPT / Work + DevSpace
 → machine/evidence gates
 ```
 
-**本机存在 `codex.exe` 只代表“可用能力”，不再代表默认路由。** WORK/WEB 绝不允许静默启动本地 Codex；需要本地 Codex 时必须显式设置 `STORY_OS_RUNTIME=CODEX` 或明确传入 Codex 执行入口。
+**本机存在 `codex.exe` 只代表“可用能力”，不再代表整个 Runtime=CODEX。** 当前默认 `runtime.preferred_runtime=WORK`，同时 `runtime.image_execution_runtime=CODEX`：只有正式图片生成/图片返修允许调用本地 Codex；Codex 图片控制模型固定 `gpt-5.6-sol` + `reasoning=high`，实际图片仍由 `gpt-image-2` + `quality=high` 生成。Story、PREIMAGE、Critic、Review、Gate、Release 仍由 WORK/产品运行时执行。需要整套 CODEX Runtime 时仍必须显式设置 `STORY_OS_RUNTIME=CODEX`。
 
-Concept / Story / Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，均必须 fresh + SHA-bound。WORK/WEB 图片若缺文件传输能力，返回 `HOST_ACTION_REQUIRED`，Checkpoint 记为 `HOST_WAIT`，不得回退 Codex Subscription。Host Action 以 request_id 保存历史，Product Review 以 attempt-scoped request 保存历史。
+Concept / Story / Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，均必须 fresh + SHA-bound。图片执行层可用 `STORY_OS_IMAGE_RUNTIME=CODEX|PRODUCT_RUNTIME|AUTO` 覆盖；只有显式选择 `PRODUCT_RUNTIME` 时，缺文件传输能力才返回 `HOST_ACTION_REQUIRED / HOST_WAIT`。Host Action 以 request_id 保存历史，Product Review 以 attempt-scoped request 保存历史。
 
 <!-- STORY_OS_V2_1_CONCEPT_BEGIN -->
 ## V2.1 概念野心与图像传播入口

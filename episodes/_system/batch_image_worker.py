@@ -48,7 +48,7 @@ def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],tim
             shutil.copy2(source,target); local_refs.append(target)
         cmd=single_backend.command_prefix(codex)+[
             "exec","--skip-git-repo-check","--ephemeral","--enable","image_generation",
-            "-c",'model_reasoning_effort="low"','-s',"workspace-write","-C",str(workdir),"--json"
+            *single_backend.controller_args(),'-s',"workspace-write","-C",str(workdir),"--json"
         ]
         for ref in local_refs: cmd.extend(["-i",str(ref)])
         cmd.append("-")

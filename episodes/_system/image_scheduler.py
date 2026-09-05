@@ -32,6 +32,7 @@ import storyos_config
 import batch_scheduler
 import runtime_router
 import product_runtime_adapter
+import resource_library
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -307,16 +308,25 @@ def classify_error(text:str)->str:
 
 
 def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
+    resource_library.ensure_fresh(ep)
     runtime,_=runtime_router.detect()
-    if runtime in {"WORK","WEB"} and not codex:
-        q=load_queue(ep)
-        queued=[x for x in q.get("items") or [] if x.get("status")=="queued"]
-        request=product_runtime_adapter.build_image_request(
-            ep,runtime=runtime,queue_items=queued,source="image_scheduler")
-        product_runtime_adapter.print_request(request)
-        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
+    image_runtime,_=runtime_router.image_execution_runtime()
     requested=max(1,min(MAX_SUPPORTED_WORKERS,int(max_workers)))
     q=load_queue(ep)
+    if runtime in {"WORK","WEB"} and not codex and image_runtime != "CODEX":
+        ready,blocked=ready_items(ep,q)
+        if not ready:
+            print(json.dumps({
+                "scheduler_mode":"product_runtime_host",
+                "ready":0,
+                "dependency_blocked":len(blocked),
+                "next_action":"WAIT_DEPENDENCY_REVIEW" if blocked else None,
+            },ensure_ascii=False,indent=2))
+            return 0
+        request=product_runtime_adapter.build_image_request(
+            ep,runtime=runtime,queue_items=ready[:requested],source="image_scheduler")
+        product_runtime_adapter.print_request(request)
+        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
     cap=max(1,min(requested,int(q.get("adaptive_parallel") or requested)))
     stable=int(q.get("stable_waves") or 0)
     event_no=len(q.get("waves") or [])
@@ -494,9 +504,13 @@ def self_test()->None:
     assert classify_error("ASPECT_RATIO_MISMATCH: inspect Generation Request")=="ASPECT_RATIO_MISMATCH"
     assert image_worker_pool.CODEX_SESSION_REUSE is False
     assert rolling_frame_review.VALID == {"PASS_PREVIEW","REPAIR_NOW","UNCERTAIN"}
+    assert runtime_router.image_execution_runtime()[0] in {"CODEX","PRODUCT_RUNTIME","AUTO"}
     src=Path(__file__).read_text(encoding="utf-8-sig")
     body=src[src.index("def directive_dependency"):src.index("def narrative_escalation_from")]
     assert "generation_depends_on" in body and "escalation_from" not in body
+    host_branch=src[src.index("def run_scheduler"):src.index("with cf.ThreadPoolExecutor",src.index("def run_scheduler"))]
+    assert "ready,blocked=ready_items(ep,q)" in host_branch
+    assert "queue_items=ready[:requested]" in host_branch
     print("IMAGE SCHEDULER V2.1 PHASE6 + R2 DEPENDENCY SELF-TEST PASS")
 
 

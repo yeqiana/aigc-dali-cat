@@ -61,7 +61,15 @@ def guard(ep: Path, mode: str) -> list[str]:
             errors.append(f"PREPRODUCTION_ONLY_REFUSES_POST_IMAGE_STATE:current={cur}")
     return errors
 
-def _run_scoped(ep: Path, step: str, codex: str | None, timeout: int) -> int:
+def _run_scoped(ep: Path, step: str, codex: str | None, timeout: int, mode: str) -> int:
+    import runtime_router
+    import product_runtime_adapter
+    active_runtime,_=runtime_router.detect()
+    if active_runtime in {"WORK","WEB"} and not codex:
+        request=product_runtime_adapter.build_request(
+            ep,runtime=active_runtime,mode=mode,resume=True,source=f"runtime_mode_router:{step}")
+        product_runtime_adapter.print_request(request)
+        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
     import scoped_codex_worker
     rc,log=scoped_codex_worker.run_step(ep,step,codex_raw=codex,timeout=min(timeout,3600))
     print(f"RUNTIME MODE {step}: rc={rc} log={log}")
@@ -75,7 +83,7 @@ def dispatch_special(ep: Path, mode: str, codex: str | None, timeout: int) -> in
     if mode == "repair_only":
         # The PRODUCTION scoped directive inspects effective_execution_mode and, in
         # repair_only, is forbidden to generate untouched originals or rewrite story.
-        return _run_scoped(ep,"PRODUCTION",codex,timeout)
+        return _run_scoped(ep,"PRODUCTION",codex,timeout,mode)
     if mode == "release_only":
         if cur == "PUBLISH_READY":
             ok,msg=validate_target(ep,"PUBLISH_READY")
@@ -85,7 +93,7 @@ def dispatch_special(ep: Path, mode: str, codex: str | None, timeout: int) -> in
                 return 4
             print("RELEASE_ONLY_REUSE: PUBLISH_READY already valid")
             return 0
-        rc=_run_scoped(ep,"RELEASE",codex,timeout)
+        rc=_run_scoped(ep,"RELEASE",codex,timeout,mode)
         if rc != 0: return rc
         ok,msg=validate_target(ep,"PUBLISH_READY")
         if not ok:

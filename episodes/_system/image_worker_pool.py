@@ -20,18 +20,21 @@ import runtime_circuit_breaker
 import time
 import runtime_router
 import product_runtime_adapter
+import resource_library
 
 MODE="python_warm_pool_codex_ephemeral"
 CODEX_SESSION_REUSE=False
 
 def execute(ep,item,timeout,codex):
+    resource_library.ensure_fresh(ep)
     runtime,_=runtime_router.detect()
-    if runtime in {"WORK","WEB"} and not codex:
+    image_runtime,_=runtime_router.image_execution_runtime()
+    if runtime in {"WORK","WEB"} and not codex and image_runtime != "CODEX":
         request=product_runtime_adapter.build_image_request(
             ep,runtime=runtime,queue_items=[item],source="image_worker_pool")
         return {
             "returncode":product_runtime_adapter.HOST_ACTION_REQUIRED_RC,
-            "stdout":"HOST_ACTION_REQUIRED: product runtime image generation required; local Codex fallback disabled",
+            "stdout":"HOST_ACTION_REQUIRED: product runtime image generation required; Codex image execution is not selected",
             "payload":{"product_runtime_request":request},
             "output":None,"log":None,"attempt":max(1,int(item.get("attempts") or 1)),"scout":None,
             "worker_pool":{"mode":"product_runtime_host","codex_session_reuse":False},

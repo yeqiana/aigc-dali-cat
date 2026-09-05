@@ -29,7 +29,42 @@ def base_url() -> str:
 
 def select_batch_provider(requested_count: int) -> dict:
     cfg = load()
+    runtime, _ = runtime_router.detect()
+    image_runtime, _ = runtime_router.image_execution_runtime()
+    codex = cfg.get("codex_subscription") or {}
+    product = cfg.get("product_runtime_image") or {}
     api = cfg.get("openai_images_api") or {}
+
+    if image_runtime == "CODEX":
+        if codex.get("enabled") is not True:
+            raise RuntimeError("CODEX_IMAGE_RUNTIME_SELECTED_BUT_PROVIDER_DISABLED")
+        return {
+            "provider": "codex_subscription",
+            "execution_mode": "logical_parallel_fanout" if int(requested_count) > 1 else "legacy_bridge",
+            "native_multi_image": False,
+            "logical_batch": int(requested_count) > 1,
+            "max_images": 1,
+            "requested_logical_batch_size": int(requested_count),
+            "api_key_required": False,
+            "reason": "CODEX selected as image execution runtime; authoring runtime remains unchanged",
+        }
+
+    if image_runtime == "PRODUCT_RUNTIME":
+        if runtime not in set(product.get("runtimes") or []) or product.get("enabled") is not True:
+            raise RuntimeError("PRODUCT_IMAGE_RUNTIME_SELECTED_BUT_UNAVAILABLE")
+        return {
+            "provider": "product_runtime_image",
+            "execution_mode": "host_action_required",
+            "native_multi_image": False,
+            "logical_batch": int(requested_count) > 1,
+            "max_images": int(requested_count),
+            "requested_logical_batch_size": int(requested_count),
+            "api_key_required": False,
+            "local_codex_fallback": False,
+            "host_action_required": True,
+            "reason": f"{runtime} authoring runtime selected product image execution",
+        }
+
     if api.get("enabled") is True and api_key_present():
         maximum = int(api.get("native_n_max") or 10)
         if 1 <= int(requested_count) <= maximum:
@@ -38,10 +73,8 @@ def select_batch_provider(requested_count: int) -> dict:
                 "execution_mode": str(api.get("story_batch_mode") or "native_n_first"),
                 "native_multi_image": True,
                 "max_images": maximum,
-                "reason": "OPENAI_API_KEY present and requested count supported",
+                "reason": "AUTO image runtime: OPENAI_API_KEY present and requested count supported",
             }
-    runtime, _ = runtime_router.detect()
-    product = cfg.get("product_runtime_image") or {}
     if runtime in set(product.get("runtimes") or []) and product.get("enabled") is True:
         return {
             "provider": "product_runtime_image",
@@ -53,9 +86,8 @@ def select_batch_provider(requested_count: int) -> dict:
             "api_key_required": False,
             "local_codex_fallback": False,
             "host_action_required": True,
-            "reason": f"{runtime} selected; product image tool must execute without local Codex fallback",
+            "reason": f"AUTO image runtime: {runtime} uses product image host",
         }
-    codex = cfg.get("codex_subscription") or {}
     if runtime == "CODEX" and codex.get("enabled") is True:
         return {
             "provider": "codex_subscription",
@@ -65,7 +97,7 @@ def select_batch_provider(requested_count: int) -> dict:
             "max_images": 1,
             "requested_logical_batch_size": int(requested_count),
             "api_key_required": False,
-            "reason": "CODEX runtime explicitly selected; use Codex subscription logical batch fan-out",
+            "reason": "AUTO image runtime: CODEX authoring runtime selected Codex subscription",
         }
     raise RuntimeError("NO_IMAGE_PROVIDER_AVAILABLE_WITHOUT_LOCAL_CODEX_FALLBACK")
 
@@ -75,6 +107,7 @@ def capability_snapshot() -> dict:
     product = cfg.get("product_runtime_image") or {}
     codex = cfg.get("codex_subscription") or {}
     runtime, _ = runtime_router.detect()
+    image_runtime, _ = runtime_router.image_execution_runtime()
     return {
         "schema_version": 1,
         "openai_images_api": {
@@ -84,15 +117,16 @@ def capability_snapshot() -> dict:
             "native_n_max": int(api.get("native_n_max") or 10),
             "base_url": base_url(),
         },
+        "image_execution_runtime": image_runtime,
         "product_runtime_image": {
             "configured": product.get("enabled") is True,
-            "runtime_eligible": runtime in set(product.get("runtimes") or []),
+            "runtime_eligible": runtime in set(product.get("runtimes") or []) and image_runtime in {"PRODUCT_RUNTIME", "AUTO"},
             "host_action_required": bool(product.get("host_action_required")),
             "local_codex_fallback": bool(product.get("local_codex_fallback")),
         },
         "codex_subscription": {
             "configured": codex.get("enabled") is True,
-            "runtime_eligible": runtime == "CODEX",
+            "runtime_eligible": image_runtime == "CODEX" or (image_runtime == "AUTO" and runtime == "CODEX"),
             "native_multi_output_supported": bool(codex.get("native_multi_output_supported")),
             "logical_parallel_fallback": bool(codex.get("logical_parallel_fallback")),
             "logical_batch_api_key_required": False,

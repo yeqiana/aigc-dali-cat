@@ -16,6 +16,7 @@ import storyos_config
 import image_provider_runtime
 import runtime_router
 import product_runtime_adapter
+import resource_library
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -126,19 +127,28 @@ def _update_batch_row(q,batch_id,**fields):
         if row.get("batch_id")==batch_id:row.update(fields);return
 
 def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
+    resource_library.ensure_fresh(ep)
     runtime,_=runtime_router.detect()
-    if runtime in {"WORK","WEB"} and not codex:
+    image_runtime,_=runtime_router.image_execution_runtime()
+    if runtime in {"WORK","WEB"} and not codex and image_runtime != "CODEX":
         q=load_queue(ep)
-        queued=[x for x in q.get("items") or [] if x.get("status")=="queued" and str(x.get("scope") or "")=="batch"]
+        ready=ready_items(ep,q)
+        if not ready:
+            print(json.dumps({"mode":"product_runtime_host","ready":0,"next_action":"WAIT_DEPENDENCY_REVIEW"},ensure_ascii=False,indent=2))
+            return 0
         request=product_runtime_adapter.build_image_request(
-            ep,runtime=runtime,queue_items=queued,source="batch_scheduler")
+            ep,runtime=runtime,queue_items=ready,source="batch_scheduler")
         product_runtime_adapter.print_request(request)
         return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
     capability=batch_capability_probe.supported(ep)
     # Native API Batch may use the configured batch-level concurrency.
     # ChatGPT/Codex subscription logical Batch already fans out up to 5 images internally,
     # so keep only one logical Batch in flight to avoid 2 batches x 5 workers = 10 Codex calls.
-    pool_workers=batch_runtime_config.max_inflight_batches() if image_provider_runtime.api_key_present() else 1
+    pool_workers=(
+        batch_runtime_config.max_inflight_batches()
+        if image_runtime != "CODEX" and image_provider_runtime.api_key_present()
+        else 1
+    )
     cap=pool_workers if capability is True else min(pool_workers,batch_runtime_config.probe_initial_inflight())
     perf={"schema_version":1,"mode":"batch_image_runtime_v240","started_at":now(),"batches":[],"fallback_single_frames":0}
     inflight={}
