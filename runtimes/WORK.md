@@ -9,7 +9,7 @@ Story OS V2.6.1 起，**WORK 是默认 Runtime**。在 ChatGPT + DevSpace / Work
 核心规则：
 
 - 默认 `runtime.preferred_runtime=WORK`。
-- 默认 `runtime.image_execution_runtime=CODEX`：**只有图片生成 / 图片返修**显式使用本地 Codex；图片控制模型锁定 `gpt-5.6-sol` + `reasoning=high`，实际图片模型仍为 `gpt-image-2` + `quality=high`。
+- 默认 `runtime.image_execution_runtime=CODEX`：**只有图片生成 / 图片返修**显式使用本地 Codex；图片控制模型锁定 `gpt-5.6-luna` + `reasoning=medium`，实际图片模型仍为 `gpt-image-2` + `quality=high`。
 - Story、PREIMAGE、Critic、Review、Gate、Release 仍由 WORK 负责；图片 Runtime 不得升级成 Codex full-auto。
 - 非图片步骤 WORK **不得静默启动本地 Codex**；若需要整套 CODEX Runtime，仍必须显式设置 `STORY_OS_RUNTIME=CODEX`。
 - 图片执行可用 `STORY_OS_IMAGE_RUNTIME=CODEX|PRODUCT_RUNTIME|AUTO` 临时覆盖。
@@ -71,7 +71,7 @@ run-critic
 ```text
 Runtime=WORK
 + image_execution_runtime=CODEX
-→ Codex Subscription image worker (`gpt-5.6-sol`, reasoning=high)
+→ Codex Subscription image worker (`gpt-5.6-luna`, reasoning=medium)
 → image_generation (`gpt-image-2`, quality=high)
 → RAW / candidate 落本地
 → Story OS Normalize / Ledger

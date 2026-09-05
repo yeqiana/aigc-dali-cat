@@ -13,7 +13,7 @@
 - Host Action 使用 `meta/runtime/host-requests/<request_id>.json` 保存不可覆盖历史；`product-host-request.json` 只作为当前指针。
 - Product Review 使用 `<kind>-attempt-<n>-request.json`，同一 attempt 的 frozen inputs 不得覆盖。
 - Concept / Story Critic provenance 支持 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`；均必须 fresh、source-SHA-bound、不可伪造 PASS。
-- Codex 图片执行只消费已锁 Prompt / Frame Contract / References；控制模型固定 `gpt-5.6-sol` + `reasoning=high`，实际图片模型固定 `gpt-image-2` + `quality=high`。图片产出后仍回 Story OS 做 Normalize / Ledger / Review / Gate。
+- Codex 图片执行只消费已锁 Prompt / Frame Contract / References；控制模型固定 `gpt-5.6-luna` + `reasoning=medium`，实际图片模型固定 `gpt-image-2` + `quality=high`。图片产出后仍回 Story OS 做 Normalize / Ledger / Review / Gate。
 
 <!-- STORY_OS_V2_1_CONCEPT_BEGIN -->
 ## Story OS V2.1：概念野心优先

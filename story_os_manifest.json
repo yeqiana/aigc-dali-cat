@@ -226,7 +226,7 @@
     "work_default_runtime",
     "split_authoring_image_runtime",
     "codex_image_execution_only",
-    "codex_image_controller_sol_high",
+    "codex_image_controller_lightweight_luna_medium",
     "resource_selection_stale_guard",
     "continuous_work_host_loop",
     "derived_next_action",
