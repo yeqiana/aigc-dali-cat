@@ -1,32 +1,32 @@
 {
   "schema_version": 1,
   "module_version": "2.5.1",
-  "generated_at": "2026-09-04T22:56:19+08:00",
+  "generated_at": "2026-09-06T09:50:07+08:00",
   "episode": "episodes/10_彼此的天上/02_玻璃另一边的手",
-  "current_state": "IDEA_LOCKED",
-  "next_target": "STORYBOARD_LOCKED",
-  "runtime_step": "CREATIVE_STORY",
-  "source_fingerprint": "0a16d03be93dca8f37a225ffd7c2ab21c6ceab37b0d52be041f7bc981c245b5d",
+  "current_state": "STORYBOARD_LOCKED",
+  "next_target": "VISUAL_CALIBRATED",
+  "runtime_step": "VISUAL_LOCK",
+  "source_fingerprint": "56ff38b0ccdb7b0a7fbe365e6e3bfa3422a0f2cae4547ac13596e6e2e711ac98",
   "source_files": [
     {
       "path": "meta/episode-state.json",
-      "sha256": "f51b37a28110d7546cb02feef6e1a69ed293d3d21fafa5096b0af2d44897b88f"
+      "sha256": "d68f397cecbab16b2777c85c6b1aadf9ebda09269651b25cdc7aadd3ba938858"
     },
     {
       "path": "meta/production-ledger.json",
-      "sha256": null
+      "sha256": "7bf9a1f19a16e92e0503f3546d4c0392f5837c587987f302c36c961056738c61"
     },
     {
       "path": "meta/production-queue.json",
-      "sha256": null
+      "sha256": "d872faefdfca5ba00342072c4ba44efa73216a51ed97457d53d26442dd576ecc"
     },
     {
       "path": "meta/runtime-request.json",
-      "sha256": "fdae99d92866df4454adfa708f346ebdc412116913161d2089df1393a498fe94"
+      "sha256": "8a3119447b754bd13f4597a38203b9c4161a71336aa60bcbdd1146d78a4f6718"
     },
     {
       "path": "meta/story-gates.json",
-      "sha256": "22359c740c67d36f1095ee318c11c04af1f7e375d3aed29e9e92a46b752af31a"
+      "sha256": "dbdfbb1771d432d439b0628100714b38d06b8d3fafa904b6a8857084309805b9"
     },
     {
       "path": "meta/runtime-checkpoint.json",
@@ -38,20 +38,28 @@
     }
   ],
   "ledger": {
-    "frame_count": 0,
-    "status_counts": {},
+    "frame_count": 20,
+    "status_counts": {
+      "TECH_FAILED": 1,
+      "PENDING": 19
+    },
     "blocking_frames": [],
-    "tech_retry_frames": [],
+    "tech_retry_frames": [
+      "01"
+    ],
     "ready_frames": []
   },
-  "queue_status_counts": {},
+  "queue_status_counts": {
+    "tech_failed": 1,
+    "queued": 3
+  },
   "runtime_capabilities": {
     "schema_version": 1,
     "module_version": "2.5.1",
-    "generated_at": "2026-09-04T22:41:55+08:00",
+    "generated_at": "2026-09-06T09:50:07+08:00",
     "expires_after_seconds": 21600,
     "platform": "nt",
-    "codex_path": "C:\\Users\\79873\\AppData\\Local\\OpenAI\\Codex\\bin\\codex.EXE",
+    "codex_path": "D:\\soft\\nvm-setup\\nodejs\\codex.CMD",
     "text_worker": "available",
     "vision_review": "unverified",
     "image_generation_route": "unknown",
@@ -60,7 +68,7 @@
     "note": "Set/record vision_review=verified only after a real pixel-vision probe succeeds."
   },
   "next_actions": [
-    "continue only the next canonical stage"
+    "retry technical-failure frames only; do not regenerate successful siblings"
   ],
   "read_policy": "Read this capsule first after context loss. Do not broad-rescan repository authority unless a listed SHA changed, a required detail is missing, or a gate reports drift.",
   "authority_policy": "Derived cache only; source authority always wins."

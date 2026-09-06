@@ -97,7 +97,51 @@
         "sha256": null,
         "decision": "pending",
         "note": ""
-      }
+      },
+      "schema_version": 2,
+      "policy": "four_admission_v21",
+      "items": [
+        {
+          "id": "V-B",
+          "role": "ordinary_baseline",
+          "frame": 1,
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-a1b2c3d4e5f6-a4.png",
+          "sha256": "79990e8bd59cd62e9b56e977567ef581cca0193d16565e580680a850ff08f5fc",
+          "decision": "passed",
+          "frame_contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c",
+          "note": "baseline separately PASS; parallel-three may start"
+        },
+        {
+          "id": "V-W",
+          "role": "worst_capture_condition",
+          "frame": 9,
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-32a9c6c0d9e7-a1.png",
+          "sha256": "b3cb41cb705fad1d50a8c830628886fedf43a5aafc4aeaae7d45742d83f6f0eb",
+          "decision": "passed",
+          "frame_contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687",
+          "note": ""
+        },
+        {
+          "id": "V-A",
+          "role": "first_major_anomaly",
+          "frame": 3,
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/03-89c8abc517a3-a3.png",
+          "sha256": "8fbf06bb9d9a20ea4f7d83a7e1c5908006580d5395e7d2e6774078445a8d312a",
+          "decision": "passed",
+          "frame_contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72",
+          "note": ""
+        },
+        {
+          "id": "V-H",
+          "role": "high_impact_admission",
+          "frame": 14,
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/14-0bed26ad211c-a5.png",
+          "sha256": "aa1a9982ccbc2ac2c9d3b6129b4d5e3a66671c4ee60e37c87bd4542e762bd7ba",
+          "decision": "passed",
+          "frame_contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637",
+          "note": ""
+        }
+      ]
     },
     "calibration_contact_sheet": {
       "path": null,
@@ -107,6 +151,273 @@
       "required": false,
       "required_anchors": [],
       "items": []
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "early_autumn_2023",
+      "baseline": {
+        "condition": "川西山谷连续降雨后的潮湿旅行环境，民宿房间与窗外陡坡保持现实可核对",
+        "time_of_day": "afternoon_to_night_then_next_morning",
+        "temperature_feel": "雨后明显降温，室内偏凉，次日上午湿冷",
+        "ground_state": "道路与民宿外墙周边均潮湿，室外地面湿润但无异常脚印",
+        "visibility": "白天受低云和雨幕影响，夜间受玻璃雾气、残雨与室内灯反射影响",
+        "wind": "山谷弱风到间歇冷风",
+        "precipitation": "前段持续降雨，入夜后停雨但玻璃外侧残留水膜，次日上午无降水",
+        "physical_cues": [
+          "玻璃内侧冷凝雾与外侧残留雨膜必须分层可读",
+          "民宿窗外始终是窄外墙与向下陡坡，不得凭空生成阳台",
+          "夜间低云、潮湿反光和普通室内暖光共同决定曝光与噪点",
+          "次日上午外墙、窗位和陡坡必须与夜间基线一致"
+        ]
+      },
+      "segments": [
+        {
+          "id": "rainy_arrival",
+          "start_frame": 1,
+          "end_frame": 2,
+          "condition": "持续降雨中的自驾与入住",
+          "physical_cues": [
+            "车窗雨痕与雨刷运动模糊",
+            "湿外套与潮湿民宿入口"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "cold_night_overlap",
+          "start_frame": 3,
+          "end_frame": 17,
+          "condition": "雨停后突然降温、低云压入山谷的夜间民宿房间",
+          "physical_cues": [
+            "玻璃内雾外雨膜",
+            "室内低照噪点",
+            "窗外现实陡坡基线仍在异常区域周围可辨"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "异常只在玻璃局部清晰区泄露，不覆盖整扇窗",
+              "when": [
+                "frame>=3",
+                "frame<=16"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "next_morning_reality_check",
+          "start_frame": 18,
+          "end_frame": 20,
+          "condition": "次日上午雨停后的普通离店与现实复核",
+          "physical_cues": [
+            "自然阴天亮度",
+            "潮湿外墙",
+            "无平台无脚印无实体残留"
+          ],
+          "conditional_effects": []
+        }
+      ],
+      "frame_overrides": {
+        "14": {
+          "visibility_priority": "孩子伸手、成年人拉走、P02按住手腕三层动作必须同时可读"
+        },
+        "18": {
+          "visibility_priority": "完整外墙、窗位、陡坡三者同时清晰"
+        }
+      }
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "03": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "外侧雨膜被擦开的小块清晰区",
+          "粗墙与普通袖口",
+          "周围仍是现实山谷窗外基线"
+        ],
+        "scale_reference": "清晰区只占整扇落地窗的小部分",
+        "escalation_from": null
+      },
+      "04": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "05": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "06": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "07": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "较低位置重新出现的局部清晰区",
+          "木架木碗与粗布袖",
+          "玻璃雨膜边缘"
+        ],
+        "scale_reference": "异常仍局限在局部窗口而非整片空间",
+        "escalation_from": null
+      },
+      "08": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "09": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "内侧雾气被P02擦出的半圆",
+          "外侧雨膜被成年人擦出的反向错位半圆",
+          "双方手部动作不同步"
+        ],
+        "scale_reference": "两个半圆均明显小于整扇窗且边缘不规则",
+        "escalation_from": 8
+      },
+      "10": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "普通成年人的半张脸与警惕眼睛",
+          "木碗湿布矮凳等生活用品",
+          "玻璃水膜与反射仍存在"
+        ],
+        "scale_reference": "人物只从局部清晰区露出，不做贴脸恐怖特写",
+        "escalation_from": 9
+      },
+      "11": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "P01抬高手机造成玻璃亮屏反射",
+          "对面成年人后退",
+          "粗织布被举起作为防御"
+        ],
+        "scale_reference": "亮光只来自普通手机屏反射，不形成超自然光源",
+        "escalation_from": 10
+      },
+      "12": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "13": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "成年人身后探出的普通孩子",
+          "半张脸与小手",
+          "成年人仍处在保护位置"
+        ],
+        "scale_reference": "孩子只部分露出，成年人身体保持主要遮挡关系",
+        "escalation_from": 12
+      },
+      "14": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "孩子向玻璃伸手",
+          "成年人迅速把孩子抱离并挡到身后",
+          "P02按住P01手腕",
+          "玻璃反射中P01手机屏按灭且机位开始下坠"
+        ],
+        "scale_reference": "孩子与成年人形成一前一后的明确人体尺度；手机反射只作为前景小尺度参照",
+        "escalation_from": 13
+      },
+      "15": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "成年人一手护住孩子",
+          "粗织布盖向玻璃",
+          "录像停止前机位继续向下歪"
+        ],
+        "scale_reference": "粗布只遮住对面空间，不能穿过玻璃",
+        "escalation_from": 14
+      },
+      "16": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "17": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "18": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "19": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "20": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      }
     }
   },
   "subtitles": {
@@ -122,7 +433,7 @@
     "story": "passed",
     "authenticity": "pending",
     "continuity": "pending",
-    "visual_admission": "pending",
+    "visual_admission": "passed",
     "subtitle": "pending",
     "production": "pending",
     "recommendation_fit": "pending",

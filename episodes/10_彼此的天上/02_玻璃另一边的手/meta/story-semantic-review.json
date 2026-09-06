@@ -1,0 +1,80 @@
+{
+  "contract": {
+    "protagonist": "P01 男友，24 岁普通青年，第一人称拍摄者；P02 女友为共同行动人。",
+    "presence_reason": "第一集后两人继续原定川西自驾，因傍晚连续降雨临时入住山谷普通民宿；P01 仍下意识想拍到一段足够清楚、能自证昨晚没看错的影像，P02 想把拖了很久的旅行正常走完。",
+    "personal_stake": "P01 需要一段能说服自己或朋友的关键清晰证据；P02 需要这趟旅行不被追异常吞掉。高潮以 P01 主动放弃整晚最清楚证据换取不再刺激对面家庭，证明两人仍能把普通旅行和普通人判断放回第一位。",
+    "core_anomaly": "极少数山区地点在连续降雨、降温与低云条件下，两个有人正常生活的空间短暂局部重叠；当晚民宿落地窗像同时属于两间房屋的同一扇窗，但双方都不知道原因。",
+    "rule": "重叠只在特定地点与天气条件短暂成立，双方不会跨过、不产生可带走实体证物、不解释来源；玻璃另一侧是同样会观察、会避让、会保护孩子的普通家庭，手机亮屏只是会让对方警惕的光，不是开启或关闭机制的开关。",
+    "trigger": "P02 嫌内侧雾气挡眼，用自己灰色卫衣袖口随手擦出一个半圆，把脸凑近玻璃，想看清对面。",
+    "direct_consequence": "几乎同时，对面成年人也用整只手掌和粗布袖口从另一侧擦开外侧雨膜，形成一个方向相反、边缘不规则的清晰半圆，并侧头、退让、重新靠近，像在判断玻璃里的两张陌生脸是什么。",
+    "midpoint_reframe": "Frame 10-12：对面不是等待吓人的影像，而是一个会观察、会因手机亮光退让、也会在亮光减弱后放下布的普通人；双方第一次通过普通避让动作确认对方会回应并判断我们的反应。",
+    "climax_choice": "孩子靠近玻璃时，P01 本可拍下整晚最清楚的画面，却在 P02 劝阻下主动按灭手机、压低机位并停录，亲手放弃这段最强证据。",
+    "ending_recontextualization": [
+      "对面第一次擦开雨膜露出普通屋子和袖口，实际是想看清玻璃里的两人，不是突然出现怪手。",
+      "P01 手机亮起时对面举起粗织布挡身，是在躲一种自己不理解的亮光，不是要攻击或封路。",
+      "孩子想靠近时，成年人立刻把孩子抱离并挡到身后，说明对方整晚都在判断我们是否有危险。"
+    ]
+  },
+  "propagation_core": {
+    "retell_sentence": "女友擦开民宿窗上的雾想看清对面，对面的人也擦开一块看她；一个孩子刚靠近，就被大人立刻拉走。",
+    "protagonist_action": "P02 嫌内侧雾气挡眼，用卫衣袖口随手擦出半圆并凑近玻璃，想看清对方。",
+    "abnormal_response": "对面成年人立即从另一侧擦开水膜，形成反向半圆，并观察、侧头、退让地判断玻璃里的两人。",
+    "consequence": "双方第一次确认彼此会回应；随后 P01 举手机时对方立刻举布防御，P01 最终在孩子靠近时主动停录放弃证据，对面大人马上把孩子抱走挡到身后。",
+    "response_latency": "immediate",
+    "visual_causality": "strong",
+    "retellable_in_10s": true,
+    "social_send_impulse": "strong",
+    "trigger_frame": 8,
+    "response_frame": 9,
+    "payoff_frame": 14,
+    "late_trigger_exception_reason": "",
+    "surface_copy_guard": {
+      "structural_reference_only": true,
+      "copied_surface_elements": []
+    }
+  },
+  "blind_retell": {
+    "protagonist_and_reason": "一对普通旅行情侣雨夜住进川西山谷民宿；男友想拍到能自证的清楚影像，女友只想把原定旅行正常走完。",
+    "core_anomaly_rule": "连续降雨后突然降温低云时，民宿落地窗短暂连接两侧有人正常生活的空间；窗玻璃像同时属于两间屋，双方都只能隔着玻璃观察，不发生实体穿越。",
+    "worsening_choice": "P02 随手擦开自己这侧雾气凑近看，对面成年人也从另一侧擦开水膜回应；P01 接着举手机想拍清，亮屏让对面立刻躲闪举布遮挡；孩子探身后，两人面临继续取证还是停手的直接选择。",
+    "climax_resolution": "P01 主动按灭手机、停录并压低机位，放弃整晚最清楚的证据；对面成年人随即把孩子抱离并挡到身后、盖住玻璃，主角第一次意识到在对方眼里自己才是需要防的危险。",
+    "ending_reinterpretation": "之前擦窗、举布、抱走孩子不是三件独立怪事，而是对面普通家庭依据我们的动作一步步判断风险的连续反应；手机亮光不是开启机制，只是让他们警惕的普通光。"
+  },
+  "hard_checks": {
+    "clarity": true,
+    "causal_chain": true,
+    "mechanism_consistency": true,
+    "motivation_stake": true,
+    "trigger_consequence": true,
+    "midpoint_reframe": true,
+    "climax_payoff": true,
+    "ending_payoff": true,
+    "storyboard_information_gain": true,
+    "delete_frame_test": true
+  },
+  "issue_codes": [],
+  "notes": [
+    "Trigger 绑定 Storyboard Frame 08/20（40%），不晚于 50%；Response 为 Frame 09，Payoff 为 Frame 14，与 Storyboard 一致。",
+    "终局重读落在三个具体前文事实：Frame 09 擦开水膜、Frame 11 举布挡光、Frame 14 抱走孩子，均不是结尾临时新增机制。",
+    "机制一致性成立：贯穿主事件的是同一空间短暂重叠；对面的擦雾、挡布、抱孩子都是普通家庭对观察与光的连续回应，未出现对象物自行返回、引导或标记等分裂行为。",
+    "手机亮光按系列 Bible R4 处理为对面社会的文化避让，不承担开关通道的物理规则，因此不会造成机制矛盾。",
+    "盲复述不需 maybe/unclear；同系列情侣与旅行延续属于系列 Bible 连续性，未复制 EP01 的灯队、远光灯互动或灯依次熄灭高潮。"
+  ],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "story_sha256": "c64b2b4815419b3cf4754cd2c583d2301b7dd7639f85c1883ca21fcb1df64141",
+  "storyboard_sha256": "531d3eb9b587ce8f279853282b3a45af5f9fdfc887f8eec02023e63c6154bc1d",
+  "revision_count": 1,
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 2,
+    "reviewed_at": "2026-09-06T02:08:45+08:00",
+    "log": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/story-critic-attempt-2.jsonl"
+  }
+}

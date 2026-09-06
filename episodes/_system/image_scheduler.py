@@ -8,6 +8,7 @@ All Production Ledger mutations are committed sequentially by the scheduler main
 from __future__ import annotations
 
 import argparse
+import asyncio
 import concurrent.futures as cf
 import datetime as dt
 import json
@@ -34,6 +35,9 @@ import runtime_router
 import product_runtime_adapter
 import resource_library
 import runtime_portability
+import async_scheduler_adapter
+import runtime_event_collector
+import runtime_event_collector
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -173,7 +177,8 @@ def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:
     if active and not replace:
         return active[-1]
     if replace:
-        for x in active:x["status"]="superseded"
+        replaceable=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed","blocked","scout_repair"}]
+        for x in replaceable:x["status"]="superseded"
     contract=frame_contract.provenance(ep,frame)
     item={
         "id":uuid.uuid4().hex[:12],
@@ -313,7 +318,88 @@ def classify_error(text:str)->str:
     return "IMAGE_BACKEND_ERROR"
 
 
-def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
+async def async_backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->dict:
+    """V2.7 async runtime bridge.
+
+    image_worker_pool is still the execution boundary. This wrapper only makes
+    scheduler ownership explicit: async runtime manages task lifecycle, while
+    scheduler remains the single ledger committer.
+    """
+    return await asyncio.to_thread(backend_worker,ep,item,timeout,codex)
+
+
+def run_async_backend_batch(tasks:list[dict],ep:Path,timeout:int,codex:str|None,workers:int)->list[async_scheduler_adapter.TaskEvent]:
+    async def handler(task:dict)->dict:
+        return await async_backend_worker(ep,task,timeout,codex)
+
+    return asyncio.run(async_scheduler_adapter.run_tasks(tasks,handler,workers=workers))
+
+
+def run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
+    """V2.7 async scheduler entry.
+
+    Execution is event-driven; ledger commits remain in scheduler context.
+    Image execution no longer depends on the legacy image ThreadPool path.
+    Rolling review remains isolated on its own review executor.
+    """
+    return asyncio.run(_run_scheduler_async(ep,max_workers,timeout,codex))
+
+
+async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
+    resource_library.ensure_fresh(ep)
+    q=load_queue(ep)
+    ready,_=ready_items(ep,q)
+    if not ready:
+        return 0
+
+    async def handler(item:dict)->dict:
+        return await async_backend_worker(ep,item,timeout,codex)
+
+    q=load_queue(ep)
+    byid={x["id"]:x for x in q.get("items") or []}
+    started={}
+    for item in ready[:max_workers]:
+        ok,msg=ledger_begin(ep,item)
+        if not ok:
+            byid[item["id"]]["status"]="blocked"
+            byid[item["id"]]["last_error"]=msg[-1000:]
+            continue
+        byid[item["id"]]["status"]="running"
+        byid[item["id"]]["attempts"]=int(byid[item["id"]].get("attempts") or 0)+1
+        byid[item["id"]]["started_at"]=now()
+        started[item["id"]]=byid[item["id"]]
+    save_queue(ep,q)
+
+    async for event in async_scheduler_adapter.stream_tasks(list(started.values()),handler,workers=max_workers):
+        image_event=runtime_event_collector.collect(event)
+        q=load_queue(ep)
+        item=next((x for x in q.get("items") or [] if x["id"]==image_event.item_id),None)
+        if not item:
+            continue
+        if image_event.event=="IMAGE_SUCCESS":
+            result=image_event.payload.get("result") or image_event.payload
+            ok,msg=ledger_success(ep,item,result)
+            item["status"]="generated" if ok else "tech_failed"
+            item["last_error"] = None if ok else msg
+        elif image_event.event=="IMAGE_FAILED":
+            msg=str(image_event.payload.get("error") or "async worker failed")
+            code=classify_error(msg)
+            ledger_tech_fail(ep,item,code,msg)
+            item["status"]="tech_failed"
+            item["last_error"]=msg
+        q.setdefault("runtime_events",[]).append({"event":image_event.event,"task_id":image_event.item_id,"payload":image_event.payload,"at":now()})
+        save_queue(ep,q)
+    return 0
+
+
+def run_scheduler_legacy_removed_path(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
+    """Legacy image execution path removed in V2.7.
+
+    Production execution must use run_scheduler_async(). This guard remains
+    only to provide a clear failure for stale callers.
+    """
+    raise RuntimeError("LEGACY_IMAGE_SCHEDULER_REMOVED_USE_ASYNC_RUNTIME")
+
     resource_library.ensure_fresh(ep)
     runtime,_=runtime_router.detect()
     image_runtime,_=runtime_router.image_execution_runtime()
@@ -498,12 +584,12 @@ def run_scheduler(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     return 0
 
 
-def retry_tech(ep:Path)->dict:
+def retry_tech(ep:Path,frame:int|None=None)->dict:
     q=load_queue(ep);count=0
     for item in q.get("items") or []:
-        if item.get("status")=="tech_failed":
+        if item.get("status")=="tech_failed" and (frame is None or int(item.get("frame") or -1)==int(frame)):
             item["status"]="queued";item["last_error"]=None;count+=1
-    save_queue(ep,q);return {"requeued":count}
+    save_queue(ep,q);return {"requeued":count,"frame":frame}
 
 
 def self_test()->None:
@@ -516,6 +602,8 @@ def self_test()->None:
     assert rolling_frame_review.VALID == {"PASS_PREVIEW","REPAIR_NOW","UNCERTAIN"}
     assert runtime_router.image_execution_runtime()[0] in {"CODEX","PRODUCT_RUNTIME","AUTO"}
     src=Path(__file__).read_text(encoding="utf-8-sig")
+    assert "LEGACY_IMAGE_SCHEDULER_REMOVED_USE_ASYNC_RUNTIME" in src
+    assert "story-os-image" not in src[src.index("def run_scheduler_async"):src.index("def run_scheduler", src.index("def run_scheduler_async"))]
     body=src[src.index("def directive_dependency"):src.index("def narrative_escalation_from")]
     assert "generation_depends_on" in body and "escalation_from" not in body
     host_branch=src[src.index("def run_scheduler"):src.index("with cf.ThreadPoolExecutor",src.index("def run_scheduler"))]
@@ -532,7 +620,7 @@ def main()->int:
     p=sub.add_parser("import-batch");p.add_argument("episode_dir");p.add_argument("--prompt-dir",required=True)
     p=sub.add_parser("plan");p.add_argument("episode_dir")
     p=sub.add_parser("run");p.add_argument("episode_dir");p.add_argument("--max-workers",type=int,default=3);p.add_argument("--timeout",type=int,default=600);p.add_argument("--codex")
-    p=sub.add_parser("retry-tech");p.add_argument("episode_dir")
+    p=sub.add_parser("retry-tech");p.add_argument("episode_dir");p.add_argument("--frame",type=int)
     p=sub.add_parser("show");p.add_argument("episode_dir")
     sub.add_parser("self-test")
     a=ap.parse_args()
@@ -556,8 +644,8 @@ def main()->int:
         if a.cmd=="run":
             if batch_scheduler.should_use(ep):
                 return batch_scheduler.run(ep,a.max_workers,a.timeout,a.codex)
-            return run_scheduler(ep,a.max_workers,a.timeout,a.codex)
-        if a.cmd=="retry-tech":print(json.dumps(retry_tech(ep),ensure_ascii=False,indent=2));return 0
+            return run_scheduler_async(ep,a.max_workers,a.timeout,a.codex)
+        if a.cmd=="retry-tech":print(json.dumps(retry_tech(ep,a.frame),ensure_ascii=False,indent=2));return 0
         print((ep/QUEUE_REL).read_text(encoding="utf-8") if (ep/QUEUE_REL).is_file() else "{}");return 0
     except (OSError,ValueError,RuntimeError,subprocess.TimeoutExpired) as exc:
         print("IMAGE SCHEDULER ERROR:",exc);return 3

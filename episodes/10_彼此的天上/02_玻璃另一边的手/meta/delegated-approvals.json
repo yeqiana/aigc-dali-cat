@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "approvals": {
+    "story_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "story_lock",
+      "approved_at": "2026-09-06T01:49:15+08:00",
+      "artifacts": [
+        {
+          "role": "story",
+          "path": "episodes/10_彼此的天上/02_玻璃另一边的手/docs/02_玻璃另一边的手_StoryLock_DRAFT_V1.0.md",
+          "sha256": "c64b2b4815419b3cf4754cd2c583d2301b7dd7639f85c1883ca21fcb1df64141"
+        },
+        {
+          "role": "storyboard",
+          "path": "episodes/10_彼此的天上/02_玻璃另一边的手/docs/03_玻璃另一边的手_20张正式分镜_DRAFT_V1.0.md",
+          "sha256": "74d5534046c57b815b1a2ef930f04fb8c82479ded9959388805dffa068b5e0f2"
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/story-semantic-review.json",
+          "sha256": "b7d2c5f51087e9d862f43da67ba2ed53d2702fae1c311f12aa350cf12bb80562"
+        }
+      ],
+      "note": "runtime-request full_auto_authorized=true; Story Critic attempt 2 PASS"
+    }
+  }
+}

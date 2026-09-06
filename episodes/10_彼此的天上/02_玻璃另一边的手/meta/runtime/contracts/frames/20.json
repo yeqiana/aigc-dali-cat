@@ -1,0 +1,772 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "20",
+  "derived_cache": true,
+  "authority": "Story + Storyboard + Character Contract + Character Visual + Shot Progression + Visual Narrative Core V2.2 + World Identity V2.2.1 + Character Appearance Anchor + Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile",
+  "generated_at": "2026-09-06T02:20:46+08:00",
+  "source_trace": {
+    "story": {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/docs/02_玻璃另一边的手_StoryLock_DRAFT_V1.0.md",
+      "sha256": "c64b2b4815419b3cf4754cd2c583d2301b7dd7639f85c1883ca21fcb1df64141"
+    },
+    "storyboard": {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/docs/03_玻璃另一边的手_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "531d3eb9b587ce8f279853282b3a45af5f9fdfc887f8eec02023e63c6154bc1d"
+    },
+    "story_gates": {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/story-gates.json",
+      "sha256": "e23a018c51d7983bc6e3c36237abfedcdd1ae5e013c0bf24bc5a46b50a074df7"
+    },
+    "visual_profile": {
+      "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+      "sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+    },
+    "character_contract": {
+      "path": "meta/character-contract.json",
+      "sha256": "e476fbac4354b10ea6f1a4fca6e8ab4b3013ea955e31a6ed020120eb00464c61"
+    },
+    "capture_event_contract": {
+      "path": "meta/capture-event-contract.json",
+      "sha256": "44e8eb1edb6a03e36d0e270c269624513bc135971528a3840c76828727deacc3"
+    },
+    "world_state": {
+      "path": "meta/world-state.json",
+      "sha256": "670a2d2f1c3ff6e4816e30cadb0c6dc9402aee06454ce775d898200037b5b2b1"
+    },
+    "character_visual_contract": {
+      "path": "meta/character-visual-contract.json",
+      "sha256": "5f2390ab185c40250083e892dd083165b75384c4c87d88821531c09149f3275a"
+    },
+    "shot_progression": {
+      "path": "meta/shot-progression-review.json",
+      "sha256": "f5e2c2b4764ded530714cda7e55ea60ead113c50b3a546504cb59704d73a45a9"
+    },
+    "temporal_continuity": {
+      "path": "meta/temporal-continuity.json",
+      "sha256": "85506aa8fb46db1273360ccc3345232caf58883926b23e02d818b3fd1c211e63"
+    },
+    "wardrobe_contract": {
+      "path": "meta/wardrobe-contract.json",
+      "sha256": "4e2b4037cb709749381f3a3ac1805b91e1081c0f3713741056758678c1000c8f"
+    },
+    "world_identity_default": {
+      "path": "config/profiles/world_identity/default.json",
+      "sha256": "6abdb8eb90bc79fc983e3d045fb25eb8a894501d44d5576b9ce1d099cdfe01a9"
+    },
+    "world_identity_override": {
+      "path": "meta/world-identity.json",
+      "sha256": null
+    },
+    "character_appearance_anchor": {
+      "path": "meta/runtime/contracts/character-appearance-anchor.json",
+      "sha256": "40f8142ec52da99fdcd6a9217e43257e09053bac21ef19ab67c89e07fbefc16c"
+    }
+  },
+  "storyboard_frame": {
+    "mode": "whole_storyboard_fallback",
+    "text": "",
+    "sha256": "531d3eb9b587ce8f279853282b3a45af5f9fdfc887f8eec02023e63c6154bc1d"
+  },
+  "hash_material": {
+    "schema_version": 1,
+    "frame": "20",
+    "story_sha256": "c64b2b4815419b3cf4754cd2c583d2301b7dd7639f85c1883ca21fcb1df64141",
+    "storyboard_frame_sha256": "531d3eb9b587ce8f279853282b3a45af5f9fdfc887f8eec02023e63c6154bc1d",
+    "storyboard_extraction_mode": "whole_storyboard_fallback",
+    "visual_profile": {
+      "profile_id": "M00",
+      "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+      "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+      "capture_profile": "auto"
+    },
+    "authenticity_card": {
+      "story_era": null,
+      "location": null,
+      "photographer": null,
+      "shooting_reason": null,
+      "primary_capture": {
+        "id": null,
+        "device": null
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": null,
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": null,
+        "restricted": null,
+        "lost_control": null
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": null,
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": null
+      }
+    },
+    "character_contract": {
+      "schema_version": 1,
+      "status": "LOCKED",
+      "derived_from_pools": true,
+      "not_episode_stage": true,
+      "created_at": "2026-09-04T22:41:56+08:00",
+      "selection_seed": 17572552403874736002,
+      "era": {
+        "bucket": "modern_2020s",
+        "year": 2023,
+        "source": "explicit_hint_or_weighted"
+      },
+      "world_identity": {
+        "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+        "country": "China",
+        "region": "Mainland China",
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents",
+        "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+      },
+      "cast": {
+        "type": "pair",
+        "size": 2,
+        "relationship": "普通情侣",
+        "members": [
+          {
+            "id": "P01",
+            "pov": true,
+            "gender": "male",
+            "age": 24,
+            "build": "普通年轻人体型",
+            "hair": "黑色短碎发，耳上长度，日常自然蓬松",
+            "clothing_anchor": "灰色连帽卫衣+深灰休闲长裤+普通运动鞋",
+            "device_anchor": "普通智能手机",
+            "nationality_context": "Chinese",
+            "resident_context": "mainland Chinese local residents"
+          },
+          {
+            "id": "P02",
+            "pov": false,
+            "gender": "female",
+            "age": 24,
+            "build": "普通年轻人体型",
+            "hair": "锁骨长度自然黑发，旅行时低马尾，洗漱后可自然放下",
+            "clothing_anchor": "浅灰圆领卫衣+深色直筒长裤+普通运动鞋",
+            "device_anchor": null,
+            "nationality_context": "Chinese",
+            "resident_context": "mainland Chinese local residents"
+          }
+        ]
+      },
+      "pov": {
+        "character_id": "P01",
+        "first_person": true
+      },
+      "entry": {
+        "type": "travel",
+        "label": "旅行/出游",
+        "source": "user_hint",
+        "reason": "承接 EP001 的情侣川西自驾，因傍晚连续降雨入住山谷小镇普通民宿"
+      },
+      "scene": {
+        "primary_category": "village_home",
+        "primary_place": "川西山谷小镇普通民宿"
+      },
+      "role_policy": {
+        "protagonist_role": "普通年轻人/普通朋友小团体",
+        "career_function": "arrival_only",
+        "solves_anomaly_professionally": false
+      },
+      "no_anomaly_test": {
+        "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+        "ordinary_day_plan": "原本只是继续情侣自驾、因雨入住民宿、吃饭充电休息并于次日退房返程",
+        "pass": true,
+        "must_be_rechecked_before_story_lock": true,
+        "rechecked_against_final_story": true
+      },
+      "continuity_policy": {
+        "member_count_changes_require_story_event": true,
+        "pov_character_id_stable": true,
+        "clothing_and_device_anchors_propagate_to_frame_contract": true
+      },
+      "ordinary_person_score": 100,
+      "forbidden_role_check": {
+        "pass": true,
+        "hits": []
+      },
+      "story_build_note": "这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。"
+    },
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": null,
+        "location": null,
+        "key_prop": null,
+        "wardrobe": null,
+        "weather_time": null
+      }
+    },
+    "environment": {
+      "condition": "次日上午雨停后的普通离店与现实复核",
+      "time_of_day": "afternoon_to_night_then_next_morning",
+      "temperature_feel": "雨后明显降温，室内偏凉，次日上午湿冷",
+      "ground_state": "道路与民宿外墙周边均潮湿，室外地面湿润但无异常脚印",
+      "visibility": "白天受低云和雨幕影响，夜间受玻璃雾气、残雨与室内灯反射影响",
+      "wind": "山谷弱风到间歇冷风",
+      "precipitation": "前段持续降雨，入夜后停雨但玻璃外侧残留水膜，次日上午无降水",
+      "physical_cues": [
+        "自然阴天亮度",
+        "潮湿外墙",
+        "无平台无脚印无实体残留"
+      ],
+      "conditional_effects": []
+    },
+    "active_environment_segments": [
+      "next_morning_reality_check"
+    ],
+    "environment_frame_sha256": "12e6098d5fadc843c4a6b30ff57ea0ec9aef6004793e9ae12e47b52dd630374a",
+    "frame_directive": {
+      "narrative_role": "setup",
+      "frame_mode": "normal_record",
+      "impact_level": 0,
+      "required_visual_cues": [],
+      "scale_reference": "",
+      "escalation_from": null
+    },
+    "frame_directive_sha256": "db5bfeedaa8c40048b04eb362e97499a76506a5a2de3f45dd2ac758bb3661530",
+    "capture_event": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "离店前拍一张普通旅行照",
+      "device_position": "车旁后摄，P02与民宿外墙同框",
+      "subject_awareness": "aware",
+      "operator_state": "准备离开，恢复旅行节奏",
+      "framing_constraint": "不追求异常，只保留正常离店构图",
+      "retained_reason": "保留因为终局回到普通生活且不再追加异常",
+      "causal_defects": []
+    },
+    "capture_event_sha256": "224c1be9d06268a7ee175adf0ba879d3534e6d93040594e9c638f1c1ac34172d",
+    "world_state": {
+      "time": "次日上午",
+      "location": "民宿停车处与家用车旁",
+      "weather": "雨已停，阴天转亮，山谷仍潮湿",
+      "characters": {
+        "P01": {
+          "gender": "male",
+          "age": 24,
+          "build": "普通年轻人体型",
+          "hair": "黑色短碎发，耳上长度，日常自然蓬松",
+          "clothing_anchor": "灰色连帽卫衣+深灰休闲长裤+普通运动鞋",
+          "device_anchor": "普通智能手机",
+          "status": "present"
+        },
+        "P02": {
+          "gender": "female",
+          "age": 24,
+          "build": "普通年轻人体型",
+          "hair": "锁骨长度自然黑发，旅行时低马尾",
+          "clothing_anchor": "浅灰圆领卫衣+深色直筒长裤+普通运动鞋",
+          "status": "present"
+        }
+      },
+      "recorder": {
+        "photographer_id": "P01",
+        "active_device": "普通智能手机"
+      },
+      "props": {
+        "vehicle": "普通中国大陆左舵家用车",
+        "travel_bags": "后排旅行袋",
+        "P01_phone": "普通智能手机",
+        "P02_phone": "普通智能手机",
+        "charger": "充电线",
+        "P01_recording": "stopped",
+        "water_bottle": "普通瓶装水",
+        "luggage": "装回车内"
+      },
+      "anomaly": {
+        "phase": "ordinary",
+        "mechanism": "特殊天气与地点下两个有人正常生活的空间短暂局部重叠；不解释来源",
+        "visible_zone": "玻璃重新只剩外侧雨水与内侧雾气",
+        "local_action": "P01主动按灭并压低手机，放弃最强证据",
+        "remote_action": "成年人护住孩子并用粗织布盖住玻璃",
+        "remote_scene": "成年人身后出现一个好奇孩子",
+        "stimulus": "P01抬高亮屏手机",
+        "residue": "玻璃无掌印、线头、布片或其他实体残留"
+      }
+    },
+    "world_state_sha256": "dd9df8f32c70c3bb091f5b7292c11b58d3f5c119316623d93e82c954bdd89063",
+    "character_visual_contract": {
+      "schema_version": 2,
+      "status": "LOCKED",
+      "created_at": "2026-09-04T22:53:02+08:00",
+      "lock_model": "identity_spec__provisional_baseline_master__final_visual_lock_master",
+      "primary_cast_ids": [
+        "P02",
+        "P01"
+      ],
+      "members": {
+        "P01": {
+          "visual_priority": "primary",
+          "attractiveness": "moderately_above_average_but_real",
+          "body_build": "lean_proportionate_natural",
+          "body_build_story_override_reason": "",
+          "face_identity": {
+            "original_character": true,
+            "independently_distinct_face": true,
+            "celebrity_likeness": false,
+            "influencer_face": false,
+            "fashion_model_styling": false,
+            "reference_similarity_target": "low",
+            "skin_texture": "natural_visible_texture",
+            "slight_asymmetry": true,
+            "identity_spec_locked": true
+          },
+          "hair": {
+            "haircut_anchor": "自然黑色短碎发，顶部轻微蓬松，无明显烫染",
+            "hair_length_anchor": "耳上短发，后颈不过领",
+            "allowed_state_variation": [
+              "wet",
+              "windblown",
+              "messy",
+              "hood_up",
+              "tied_or_untied_with_story_reason"
+            ],
+            "exact_reference_hairstyle_copy": false
+          },
+          "world_identity": {
+            "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+            "nationality_context": "Chinese",
+            "resident_context": "mainland Chinese local residents",
+            "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+          },
+          "presentation": {
+            "heavy_makeup": false,
+            "porcelain_skin": false,
+            "excessive_face_symmetry": false,
+            "ai_beauty_face": false,
+            "camera_friendly_but_believable": true
+          }
+        },
+        "P02": {
+          "visual_priority": "primary",
+          "attractiveness": "moderately_above_average_but_real",
+          "body_build": "slim_proportionate_natural",
+          "body_build_story_override_reason": "",
+          "face_identity": {
+            "original_character": true,
+            "independently_distinct_face": true,
+            "celebrity_likeness": false,
+            "influencer_face": false,
+            "fashion_model_styling": false,
+            "reference_similarity_target": "low",
+            "skin_texture": "natural_visible_texture",
+            "slight_asymmetry": true,
+            "identity_spec_locked": true
+          },
+          "hair": {
+            "haircut_anchor": "自然黑发，旅行时低马尾；洗漱后可因剧情自然放下",
+            "hair_length_anchor": "锁骨长度",
+            "allowed_state_variation": [
+              "wet",
+              "windblown",
+              "messy",
+              "hood_up",
+              "tied_or_untied_with_story_reason"
+            ],
+            "exact_reference_hairstyle_copy": false
+          },
+          "world_identity": {
+            "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+            "nationality_context": "Chinese",
+            "resident_context": "mainland Chinese local residents",
+            "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+          },
+          "presentation": {
+            "heavy_makeup": false,
+            "porcelain_skin": false,
+            "excessive_face_symmetry": false,
+            "ai_beauty_face": false,
+            "camera_friendly_but_believable": true
+          }
+        }
+      },
+      "reference_policy": {
+        "allowed_reference_roles": [
+          "age_vibe",
+          "attractiveness_range",
+          "realism",
+          "capture_style",
+          "clothing_direction",
+          "color_mood"
+        ],
+        "must_not_copy": [
+          "exact_face_geometry",
+          "exact_eye_nose_mouth_combination",
+          "exact_hairstyle",
+          "distinctive_personal_markers",
+          "celebrity_identity"
+        ],
+        "reference_is_not_identity_master": true,
+        "real_person_exact_likeness_forbidden": true
+      },
+      "master_policy": {
+        "preferred_identity_source": [
+          "character_individual_crop",
+          "character_pixel_master",
+          "ordinary_baseline_group_selfie",
+          "original_character_library_asset"
+        ],
+        "preproduction_only_must_not_generate_master_images": true,
+        "ordinary_baseline_can_become_group_identity_master": true,
+        "pixel_master_artifact": "meta/character-pixel-master.json",
+        "crop_manifest_artifact": "meta/character-master-crops.json",
+        "provisional_master_after_baseline_review_pass": true,
+        "final_master_after_four_admission_pass": true,
+        "derived_crops_are_not_new_identity_generation": true
+      },
+      "realism_priority": true,
+      "note": "Story Lock 只锁规格；baseline 单独 PASS 后建立临时像素母版，四项 Visual Lock 全 PASS 后升级为正式母版。"
+    },
+    "shot_progression": {
+      "frame": "20",
+      "camera_position": "车旁离店普通后摄",
+      "subject_distance": "中广景",
+      "primary_subject": "P02、车门与民宿外墙",
+      "action": "P02拉门回看，P01拍完普通离店照后删除求证长消息",
+      "visual_function": "正常离开并确认求证优先级已经改变",
+      "capture_purpose": "普通旅行离店照",
+      "pov_mode": "P01第一人称手机",
+      "location_zone": "停车位车侧",
+      "shot_scale": "wide",
+      "scene_position_id": "departure_car_side_20",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "consequence",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "enter_vehicle",
+        "actor": "P02",
+        "target": "P01",
+        "action": "P02说完后拉门上车",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    "temporal_state": {
+      "frame": "20",
+      "elapsed_minutes_from_prev": 15,
+      "daypart": "morning",
+      "weather": "rain cleared, damp valley, cloud breaking",
+      "precipitation": "none",
+      "ambient_light": "overcast_day",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    "wardrobe": {
+      "scene_context": "mountain_lodging_morning",
+      "location_type": "outdoor",
+      "temperature_band": "cool",
+      "weather": "rain cleared; damp and cool",
+      "activity": "departure by car",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "morning_departure_gray",
+          "garments": [
+            "灰色连帽卫衣",
+            "深灰休闲长裤"
+          ],
+          "outer_layer": "防风外套",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通运动鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "morning_departure_gray",
+          "garments": [
+            "浅灰圆领卫衣",
+            "深色直筒长裤"
+          ],
+          "outer_layer": "防风外套",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通运动鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "references": [],
+    "visual_narrative": {
+      "core_id": "VISUAL_NARRATIVE_CORE_V2.2",
+      "activation_mode": "production",
+      "authority": "PREPRODUCTION_DERIVED_CONTRACT",
+      "frame": "20",
+      "camera_authorship": {
+        "owner_class": "primary_photographer",
+        "pov_mode": "P01第一人称手机",
+        "camera_position": "车旁离店普通后摄",
+        "ghost_camera_forbidden": true,
+        "camera_owner_must_be_physically_explainable": true
+      },
+      "moment": {
+        "action_in_progress": "P02拉门回看，P01拍完普通离店照后删除求证长消息",
+        "save_reason": "普通旅行离店照",
+        "must_not_be_result_only_showcase": true
+      },
+      "shot_grammar": {
+        "family": "other:车旁离店普通后摄",
+        "subject_distance": "中广景",
+        "location_zone": "停车位车侧",
+        "first_person_is_logic_not_fixed_composition": true,
+        "repeated_hand_phone_distant_anomaly_template_forbidden": true
+      },
+      "narrative_evidence": {
+        "new_information": true,
+        "new_information_this_frame": "正常离开并确认求证优先级已经改变",
+        "anomaly_logic_stage": "payoff",
+        "human_action_stage": "consequence",
+        "narrative_redundancy_forbidden": true,
+        "continuity_exception_reason": ""
+      },
+      "human_response": {
+        "human_present": true,
+        "emotion": {
+          "state": "relaxed",
+          "intensity": 1,
+          "trigger": "",
+          "response_sync": "asynchronous"
+        },
+        "interaction": {
+          "type": "enter_vehicle",
+          "actor": "P02",
+          "target": "P01",
+          "action": "P02说完后拉门上车",
+          "meaningful": true
+        }
+      },
+      "camera_roster_policy": {
+        "primary_photographer_required": true,
+        "primary_photographer_preferred_share": "70-80%",
+        "secondary_photographer_allowed": true,
+        "secondary_requires_reason": true,
+        "allowed_handoffs": [
+          "phone_handed_to_companion",
+          "companion_records_primary",
+          "selfie_when_story_requires",
+          "timer_or_fixed_mount_when_explicit",
+          "third_companion_when_present_in_story"
+        ],
+        "all_known_participants_visible_rule": "若所有已知同行者都完整入镜，必须能解释相机来源；否则视为幽灵摄影机。"
+      },
+      "sequence_grammar": {
+        "selection": "global_default",
+        "sequence_grammar_id": "SG01_PERSONAL_EVIDENCE_SEQUENCE_V1",
+        "sequence_grammar_path": "standards/sequence_grammars/SG01_personal_evidence_sequence.json",
+        "authority_source": "global_default_sequence_grammar"
+      },
+      "camera_defect_physics": {
+        "defects_must_have_physical_cause": true,
+        "forbid_decorative_fake_damage": true,
+        "forbid_every_night_frame_equally_blurred": true
+      },
+      "visual_memory_continuity": {
+        "time_of_day_must_progress_plausibly": true,
+        "time_reversal_requires_explicit_flashback_or_jump": true,
+        "persist": [
+          "character_appearance",
+          "wardrobe",
+          "vehicle",
+          "carried_props",
+          "route_and_location",
+          "weather",
+          "lighting_direction_when_same_scene",
+          "anomaly_evidence"
+        ],
+        "no_independent_beauty_time_selection_per_frame": true
+      },
+      "screen_content_physics": {
+        "must_be_internally_consistent": true,
+        "must_match_scene_time_route_and_action_when_story_critical": true,
+        "screen_reflection_and_orientation_must_be_physical": true,
+        "forbid_fake_impossible_camera_ui": true,
+        "critical_text_should_be_verified_or_added_in_post": true
+      }
+    },
+    "visual_narrative_sha256": "2a7998a3fcbed2b1ce238774ec29b91475989af9c7dac6865f9a4c1bada9c816",
+    "world_identity": {
+      "schema_version": 1,
+      "contract_version": "2.2.1",
+      "source": "GLOBAL_DEFAULT",
+      "inherit_default": true,
+      "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+      "world": {
+        "country": "China",
+        "region": "Mainland China",
+        "culture_context": "contemporary_mainland_chinese_daily_life",
+        "language_context": "Simplified Chinese / Mandarin-context daily life",
+        "architecture_context": "location-appropriate mainland Chinese residential/commercial/rural/urban built environment",
+        "traffic_context": "mainland China road, vehicle and plate conventions when visible",
+        "consumer_goods_context": "ordinary mainland Chinese daily-life objects appropriate to era and location"
+      },
+      "population": {
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents",
+        "default_protagonist_age_range": [
+          19,
+          30
+        ],
+        "default_protagonist_identity": "ordinary Chinese young adult",
+        "ethnicity_policy": "do_not_force_ethnicity; use natural Chinese diversity unless Story explicitly specifies",
+        "foreign_character_policy": "do_not_introduce foreign characters unless Story/episode override explicitly requires them"
+      },
+      "visual_rules": {
+        "visible_text_context": "Chinese context when environmental text is naturally visible; do not force readable text into images",
+        "do_not_import_foreign_architecture_by_default": true,
+        "do_not_import_foreign_population_by_default": true,
+        "do_not_import_foreign_cultural_props_by_default": true,
+        "preserve_location_specific_chinese_regional_detail": true
+      },
+      "default_config_path": "config/profiles/world_identity/default.json",
+      "default_config_sha256": "6abdb8eb90bc79fc983e3d045fb25eb8a894501d44d5576b9ce1d099cdfe01a9",
+      "override_path": null,
+      "override_sha256": null,
+      "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+    },
+    "world_identity_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b",
+    "character_appearance_anchor": {
+      "schema_version": 1,
+      "contract_version": "2.2.1",
+      "derived_cache": true,
+      "world_identity_profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+      "world_identity_effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b",
+      "character_contract_path": "meta/character-contract.json",
+      "character_contract_sha256": "e476fbac4354b10ea6f1a4fca6e8ab4b3013ea955e31a6ed020120eb00464c61",
+      "character_visual_contract_path": "meta/character-visual-contract.json",
+      "character_visual_contract_sha256": "5f2390ab185c40250083e892dd083165b75384c4c87d88821531c09149f3275a",
+      "members": {
+        "P01": {
+          "character_id": "P01",
+          "nationality_context": "Chinese",
+          "resident_context": "mainland Chinese local residents",
+          "gender": "male",
+          "age": 24,
+          "build": "普通年轻人体型",
+          "body_build": "lean_proportionate_natural",
+          "hair": {
+            "character_contract_anchor": "黑色短碎发，耳上长度，日常自然蓬松",
+            "haircut_anchor": "自然黑色短碎发，顶部轻微蓬松，无明显烫染",
+            "hair_length_anchor": "耳上短发，后颈不过领"
+          },
+          "clothing_anchor": "灰色连帽卫衣+深灰休闲长裤+普通运动鞋",
+          "device_anchor": "普通智能手机",
+          "visual_priority": "primary",
+          "identity_rules": {
+            "same_person_across_frames": true,
+            "original_character": true,
+            "independently_distinct_face": true,
+            "reference_similarity_target": "low",
+            "natural_skin_texture": "natural_visible_texture",
+            "allowed_variation": [
+              "wet",
+              "windblown",
+              "messy",
+              "hood_up",
+              "tied_or_untied_with_story_reason"
+            ],
+            "forbidden_unmotivated_drift": [
+              "nationality/cultural identity",
+              "apparent age",
+              "face identity",
+              "haircut or hair length",
+              "body build",
+              "character role",
+              "clothing anchor unless wardrobe contract changes it"
+            ]
+          }
+        },
+        "P02": {
+          "character_id": "P02",
+          "nationality_context": "Chinese",
+          "resident_context": "mainland Chinese local residents",
+          "gender": "female",
+          "age": 24,
+          "build": "普通年轻人体型",
+          "body_build": "slim_proportionate_natural",
+          "hair": {
+            "character_contract_anchor": "锁骨长度自然黑发，旅行时低马尾，洗漱后可自然放下",
+            "haircut_anchor": "自然黑发，旅行时低马尾；洗漱后可因剧情自然放下",
+            "hair_length_anchor": "锁骨长度"
+          },
+          "clothing_anchor": "浅灰圆领卫衣+深色直筒长裤+普通运动鞋",
+          "device_anchor": null,
+          "visual_priority": "primary",
+          "identity_rules": {
+            "same_person_across_frames": true,
+            "original_character": true,
+            "independently_distinct_face": true,
+            "reference_similarity_target": "low",
+            "natural_skin_texture": "natural_visible_texture",
+            "allowed_variation": [
+              "wet",
+              "windblown",
+              "messy",
+              "hood_up",
+              "tied_or_untied_with_story_reason"
+            ],
+            "forbidden_unmotivated_drift": [
+              "nationality/cultural identity",
+              "apparent age",
+              "face identity",
+              "haircut or hair length",
+              "body build",
+              "character role",
+              "clothing anchor unless wardrobe contract changes it"
+            ]
+          }
+        }
+      },
+      "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+      "anchor_sha256": "068480c0d6db3dd2a86e66af9259ae36bcfe8cd67435a21ecbecfa597ee3a532"
+    },
+    "character_appearance_anchor_sha256": "068480c0d6db3dd2a86e66af9259ae36bcfe8cd67435a21ecbecfa597ee3a532"
+  },
+  "contract_sha256": "50aff8efa7050441f59561bd1c8208843b69d877d16ce678947588d45aaada19",
+  "prompt_contract": "RESOLVED FRAME CONTRACT | frame=20 | sha256=50aff8efa7050441f59561bd1c8208843b69d877d16ce678947588d45aaada19\nThis derived contract is mandatory. Locked sources outrank ad-hoc prompt wording.\n\n[STORYBOARD FRAME]\nlocalized excerpt unavailable; bind storyboard frame hash=531d3eb9b587ce8f279853282b3a45af5f9fdfc887f8eec02023e63c6154bc1d\n\n[VISUAL DNA]\nprofile=M00 | 现实生活纪实母版\nreality first; the image must still feel like a plausible personal/work record without the anomaly\nordinary Chinese life density=high; retain causal incidental clutter\npractical available light=True; no invented cinematic key/rim lighting\ncomposition=unposed_imperfect_personal_record\npeople=ordinary_unprepared_not_actor_like\ncolor=environment_driven_low_to_medium_saturation\ntexture=causal_controlled_imperfection\nanomaly=embedded_in_reality_before_spectacle\nforbid commercial HDR, promo polish, default portrait bokeh, heroic framing and causeless retro/noise effects\ncapture physics and story era override texture; never fake an old device when the story uses a modern phone\n\n[CAPTURE / AUTHENTICITY]\n{\"aspect_ratio\":\"4:5\",\"camera_rules\":{\"current_device_may_be_fully_visible\":false,\"current_device_visibility_explanation\":null,\"photographer_may_be_fully_visible\":false,\"photographer_visibility_explanation\":null},\"capture_states\":{\"lost_control\":null,\"restricted\":null,\"stable\":null},\"location\":null,\"photographer\":null,\"primary_capture\":{\"device\":null,\"id\":null},\"secondary_captures\":[],\"secondary_source_explanation\":null,\"shooting_reason\":null,\"story_era\":null}\n\n[CHARACTER / POV CONTRACT]\n{\"cast\":{\"members\":[{\"age\":24,\"build\":\"普通年轻人体型\",\"clothing_anchor\":\"灰色连帽卫衣+深灰休闲长裤+普通运动鞋\",\"device_anchor\":\"普通智能手机\",\"gender\":\"male\",\"hair\":\"黑色短碎发，耳上长度，日常自然蓬松\",\"id\":\"P01\",\"nationality_context\":\"Chinese\",\"pov\":true,\"resident_context\":\"mainland Chinese local residents\"},{\"age\":24,\"build\":\"普通年轻人体型\",\"clothing_anchor\":\"浅灰圆领卫衣+深色直筒长裤+普通运动鞋\",\"device_anchor\":null,\"gender\":\"female\",\"hair\":\"锁骨长度自然黑发，旅行时低马尾，洗漱后可自然放下\",\"id\":\"P02\",\"nationality_context\":\"Chinese\",\"pov\":false,\"resident_context\":\"mainland Chinese local residents\"}],\"relationship\":\"普通情侣\",\"size\":2,\"type\":\"pair\"},\"continuity_policy\":{\"clothing_and_device_anchors_propagate_to_frame_contract\":true,\"member_count_changes_require_story_event\":true,\"pov_character_id_stable\":true},\"created_at\":\"2026-09-04T22:41:56+08:00\",\"derived_from_pools\":true,\"entry\":{\"label\":\"旅行/出游\",\"reason\":\"承接 EP001 的情侣川西自驾，因傍晚连续降雨入住山谷小镇普通民宿\",\"source\":\"user_hint\",\"type\":\"travel\"},\"era\":{\"bucket\":\"modern_2020s\",\"source\":\"explicit_hint_or_weighted\",\"year\":2023},\"forbidden_role_check\":{\"hits\":[],\"pass\":true},\"no_anomaly_test\":{\"must_be_rechecked_before_story_lock\":true,\"ordinary_day_plan\":\"原本只是继续情侣自驾、因雨入住民宿、吃饭充电休息并于次日退房返程\",\"pass\":true,\"question\":\"如果删掉所有异常，这一天是否仍像真实生活？\",\"rechecked_against_final_story\":true},\"not_episode_stage\":true,\"ordinary_person_score\":100,\"pov\":{\"character_id\":\"P01\",\"first_person\":true},\"role_policy\":{\"career_function\":\"arrival_only\",\"protagonist_role\":\"普通年轻人/普通朋友小团体\",\"solves_anomaly_professionally\":false},\"scene\":{\"primary_category\":\"village_home\",\"primary_place\":\"川西山谷小镇普通民宿\"},\"schema_version\":1,\"selection_seed\":17572552403874736002,\"status\":\"LOCKED\",\"story_build_note\":\"这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。\",\"world_identity\":{\"country\":\"China\",\"effective_sha256\":\"f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b\",\"nationality_context\":\"Chinese\",\"profile_id\":\"CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1\",\"region\":\"Mainland China\",\"resident_context\":\"mainland Chinese local residents\"}}\n\n[WORLD IDENTITY V2.2.1]\nWORLD_IDENTITY_PROFILE=CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1\ncountry=China\nregion=Mainland China\nculture_context=contemporary_mainland_chinese_daily_life\nlanguage_context=Simplified Chinese / Mandarin-context daily life\narchitecture_context=location-appropriate mainland Chinese residential/commercial/rural/urban built environment\npopulation=mainland Chinese local residents\ndefault_character=ordinary Chinese young adult\nnationality_context=Chinese\nDo not introduce a foreign population, foreign architecture, foreign traffic convention or foreign cultural props unless the Episode world identity explicitly overrides the default.\nDo not force ethnicity inside China; preserve natural Chinese regional/ethnic diversity unless Story explicitly specifies it.\n\n[CHARACTER APPEARANCE ANCHOR V2.2.1]\n{\"members\":{\"P01\":{\"age\":24,\"body_build\":\"lean_proportionate_natural\",\"build\":\"普通年轻人体型\",\"character_id\":\"P01\",\"clothing_anchor\":\"灰色连帽卫衣+深灰休闲长裤+普通运动鞋\",\"device_anchor\":\"普通智能手机\",\"gender\":\"male\",\"hair\":{\"character_contract_anchor\":\"黑色短碎发，耳上长度，日常自然蓬松\",\"hair_length_anchor\":\"耳上短发，后颈不过领\",\"haircut_anchor\":\"自然黑色短碎发，顶部轻微蓬松，无明显烫染\"},\"identity_rules\":{\"allowed_variation\":[\"wet\",\"windblown\",\"messy\",\"hood_up\",\"tied_or_untied_with_story_reason\"],\"forbidden_unmotivated_drift\":[\"nationality/cultural identity\",\"apparent age\",\"face identity\",\"haircut or hair length\",\"body build\",\"character role\",\"clothing anchor unless wardrobe contract changes it\"],\"independently_distinct_face\":true,\"natural_skin_texture\":\"natural_visible_texture\",\"original_character\":true,\"reference_similarity_target\":\"low\",\"same_person_across_frames\":true},\"nationality_context\":\"Chinese\",\"resident_context\":\"mainland Chinese local residents\",\"visual_priority\":\"primary\"},\"P02\":{\"age\":24,\"body_build\":\"slim_proportionate_natural\",\"build\":\"普通年轻人体型\",\"character_id\":\"P02\",\"clothing_anchor\":\"浅灰圆领卫衣+深色直筒长裤+普通运动鞋\",\"device_anchor\":null,\"gender\":\"female\",\"hair\":{\"character_contract_anchor\":\"锁骨长度自然黑发，旅行时低马尾，洗漱后可自然放下\",\"hair_length_anchor\":\"锁骨长度\",\"haircut_anchor\":\"自然黑发，旅行时低马尾；洗漱后可因剧情自然放下\"},\"identity_rules\":{\"allowed_variation\":[\"wet\",\"windblown\",\"messy\",\"hood_up\",\"tied_or_untied_with_story_reason\"],\"forbidden_unmotivated_drift\":[\"nationality/cultural identity\",\"apparent age\",\"face identity\",\"haircut or hair length\",\"body build\",\"character role\",\"clothing anchor unless wardrobe contract changes it\"],\"independently_distinct_face\":true,\"natural_skin_texture\":\"natural_visible_texture\",\"original_character\":true,\"reference_similarity_target\":\"low\",\"same_person_across_frames\":true},\"nationality_context\":\"Chinese\",\"resident_context\":\"mainland Chinese local residents\",\"visual_priority\":\"primary\"}},\"rule\":\"Keep the same person across frames. Natural changes in expression, pose, sweat, wetness, lighting and story-motivated hair state are allowed; unmotivated face/age/nationality/haircut/body drift is forbidden.\",\"world_identity_profile_id\":\"CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1\"}\n\n[CONTINUITY]\n{\"anchors\":{\"key_prop\":null,\"location\":null,\"protagonist\":null,\"wardrobe\":null,\"weather_time\":null},\"required\":[\"location\",\"key_prop\",\"weather_time\"]}\n\n[ENVIRONMENT PHYSICS]\n{\"condition\":\"次日上午雨停后的普通离店与现实复核\",\"conditional_effects\":[],\"ground_state\":\"道路与民宿外墙周边均潮湿，室外地面湿润但无异常脚印\",\"physical_cues\":[\"自然阴天亮度\",\"潮湿外墙\",\"无平台无脚印无实体残留\"],\"precipitation\":\"前段持续降雨，入夜后停雨但玻璃外侧残留水膜，次日上午无降水\",\"temperature_feel\":\"雨后明显降温，室内偏凉，次日上午湿冷\",\"time_of_day\":\"afternoon_to_night_then_next_morning\",\"visibility\":\"白天受低云和雨幕影响，夜间受玻璃雾气、残雨与室内灯反射影响\",\"wind\":\"山谷弱风到间歇冷风\"}\n\n[CAPTURE EVENT]\n{\"capture_device\":\"普通智能手机\",\"causal_defects\":[],\"device_position\":\"车旁后摄，P02与民宿外墙同框\",\"framing_constraint\":\"不追求异常，只保留正常离店构图\",\"operator_state\":\"准备离开，恢复旅行节奏\",\"photographer_id\":\"P01\",\"retained_reason\":\"保留因为终局回到普通生活且不再追加异常\",\"subject_awareness\":\"aware\",\"why_capture_now\":\"离店前拍一张普通旅行照\"}\n\n[PERSISTENT WORLD STATE]\n{\"anomaly\":{\"local_action\":\"P01主动按灭并压低手机，放弃最强证据\",\"mechanism\":\"特殊天气与地点下两个有人正常生活的空间短暂局部重叠；不解释来源\",\"phase\":\"ordinary\",\"remote_action\":\"成年人护住孩子并用粗织布盖住玻璃\",\"remote_scene\":\"成年人身后出现一个好奇孩子\",\"residue\":\"玻璃无掌印、线头、布片或其他实体残留\",\"stimulus\":\"P01抬高亮屏手机\",\"visible_zone\":\"玻璃重新只剩外侧雨水与内侧雾气\"},\"characters\":{\"P01\":{\"age\":24,\"build\":\"普通年轻人体型\",\"clothing_anchor\":\"灰色连帽卫衣+深灰休闲长裤+普通运动鞋\",\"device_anchor\":\"普通智能手机\",\"gender\":\"male\",\"hair\":\"黑色短碎发，耳上长度，日常自然蓬松\",\"status\":\"present\"},\"P02\":{\"age\":24,\"build\":\"普通年轻人体型\",\"clothing_anchor\":\"浅灰圆领卫衣+深色直筒长裤+普通运动鞋\",\"gender\":\"female\",\"hair\":\"锁骨长度自然黑发，旅行时低马尾\",\"status\":\"present\"}},\"location\":\"民宿停车处与家用车旁\",\"props\":{\"P01_phone\":\"普通智能手机\",\"P01_recording\":\"stopped\",\"P02_phone\":\"普通智能手机\",\"charger\":\"充电线\",\"luggage\":\"装回车内\",\"travel_bags\":\"后排旅行袋\",\"vehicle\":\"普通中国大陆左舵家用车\",\"water_bottle\":\"普通瓶装水\"},\"recorder\":{\"active_device\":\"普通智能手机\",\"photographer_id\":\"P01\"},\"time\":\"次日上午\",\"weather\":\"雨已停，阴天转亮，山谷仍潮湿\"}\n\n[CHARACTER VISUAL / ORIGINAL IDENTITY]\n{\"created_at\":\"2026-09-04T22:53:02+08:00\",\"lock_model\":\"identity_spec__provisional_baseline_master__final_visual_lock_master\",\"master_policy\":{\"crop_manifest_artifact\":\"meta/character-master-crops.json\",\"derived_crops_are_not_new_identity_generation\":true,\"final_master_after_four_admission_pass\":true,\"ordinary_baseline_can_become_group_identity_master\":true,\"pixel_master_artifact\":\"meta/character-pixel-master.json\",\"preferred_identity_source\":[\"character_individual_crop\",\"character_pixel_master\",\"ordinary_baseline_group_selfie\",\"original_character_library_asset\"],\"preproduction_only_must_not_generate_master_images\":true,\"provisional_master_after_baseline_review_pass\":true},\"members\":{\"P01\":{\"attractiveness\":\"moderately_above_average_but_real\",\"body_build\":\"lean_proportionate_natural\",\"body_build_story_override_reason\":\"\",\"face_identity\":{\"celebrity_likeness\":false,\"fashion_model_styling\":false,\"identity_spec_locked\":true,\"independently_distinct_face\":true,\"influencer_face\":false,\"original_character\":true,\"reference_similarity_target\":\"low\",\"skin_texture\":\"natural_visible_texture\",\"slight_asymmetry\":true},\"hair\":{\"allowed_state_variation\":[\"wet\",\"windblown\",\"messy\",\"hood_up\",\"tied_or_untied_with_story_reason\"],\"exact_reference_hairstyle_copy\":false,\"hair_length_anchor\":\"耳上短发，后颈不过领\",\"haircut_anchor\":\"自然黑色短碎发，顶部轻微蓬松，无明显烫染\"},\"presentation\":{\"ai_beauty_face\":false,\"camera_friendly_but_believable\":true,\"excessive_face_symmetry\":false,\"heavy_makeup\":false,\"porcelain_skin\":false},\"visual_priority\":\"primary\",\"world_identity\":{\"effective_sha256\":\"f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b\",\"nationality_context\":\"Chinese\",\"profile_id\":\"CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1\",\"resident_context\":\"mainland Chinese local residents\"}},\"P02\":{\"attractiveness\":\"moderately_above_average_but_real\",\"body_build\":\"slim_proportionate_natural\",\"body_build_story_override_reason\":\"\",\"face_identity\":{\"celebrity_likeness\":false,\"fashion_model_styling\":false,\"identity_spec_locked\":true,\"independently_distinct_face\":true,\"influencer_face\":false,\"original_character\":true,\"reference_similarity_target\":\"low\",\"skin_texture\":\"natural_visible_texture\",\"slight_asymmetry\":true},\"hair\":{\"allowed_state_variation\":[\"wet\",\"windblown\",\"messy\",\"hood_up\",\"tied_or_untied_with_story_reason\"],\"exact_reference_hairstyle_copy\":false,\"hair_length_anchor\":\"锁骨长度\",\"haircut_anchor\":\"自然黑发，旅行时低马尾；洗漱后可因剧情自然放下\"},\"presentation\":{\"ai_beauty_face\":false,\"camera_friendly_but_believable\":true,\"excessive_face_symmetry\":false,\"heavy_makeup\":false,\"porcelain_skin\":false},\"visual_priority\":\"primary\",\"wor…\n\n[SHOT PROGRESSION / ACTION / ANOMALY LOGIC]\n{\"action\":\"P02拉门回看，P01拍完普通离店照后删除求证长消息\",\"anomaly_concealment\":{\"adds_information\":false,\"carrier\":\"none\",\"physical_anchor\":\"\",\"purpose\":\"\"},\"anomaly_logic_stage\":\"payoff\",\"camera_position\":\"车旁离店普通后摄\",\"capture_purpose\":\"普通旅行离店照\",\"cinematic_reference\":{\"exact_shot_recreation\":false,\"reference_id\":\"\",\"technique_translation\":\"\"},\"continuity_exception_reason\":\"\",\"emotion\":{\"intensity\":1,\"response_sync\":\"asynchronous\",\"state\":\"relaxed\",\"trigger\":\"\"},\"frame\":\"20\",\"human_action_stage\":\"consequence\",\"human_present\":true,\"interaction\":{\"action\":\"P02说完后拉门上车\",\"actor\":\"P02\",\"meaningful\":true,\"target\":\"P01\",\"type\":\"enter_vehicle\"},\"lighting_design\":{\"contrast_mode\":\"flat_natural\",\"invented_cinematic_light\":false,\"physically_motivated\":true,\"practical_source\":\"sky_light\",\"suspense_function\":\"guide_attention_without_staging\"},\"location_zone\":\"停车位车侧\",\"new_information\":true,\"pov_mode\":\"P01第一人称手机\",\"primary_subject\":\"P02、车门与民宿外墙\",\"scene_position_id\":\"departure_car_side_20\",\"shot_scale\":\"wide\",\"subject_distance\":\"中广景\",\"visual_function\":\"正常离开并确认求证优先级已经改变\"}\n\n[TEMPORAL CONTINUITY]\n{\"ambient_light\":\"overcast_day\",\"daypart\":\"morning\",\"elapsed_minutes_from_prev\":15,\"frame\":\"20\",\"large_transition\":false,\"precipitation\":\"none\",\"transition_reason\":\"\",\"weather\":\"rain cleared, damp valley, cloud breaking\"}\n\n[SCENE-AWARE WARDROBE]\n{\"activity\":\"departure by car\",\"location_type\":\"outdoor\",\"outfits\":{\"P01\":{\"activity_fit\":\"PASS\",\"aesthetic_fit\":\"pretty_realistic\",\"change_reason\":\"\",\"footwear\":\"普通运动鞋\",\"garments\":[\"灰色连帽卫衣\",\"深灰休闲长裤\"],\"headwear\":\"\",\"identity_consistent\":true,\"leg_layer\":\"\",\"look_id\":\"morning_departure_gray\",\"outer_layer\":\"防风外套\",\"present\":true,\"temperature_fit\":\"PASS\",\"weather_fit\":\"PASS\"},\"P02\":{\"activity_fit\":\"PASS\",\"aesthetic_fit\":\"pretty_realistic\",\"change_reason\":\"\",\"footwear\":\"普通运动鞋\",\"garments\":[\"浅灰圆领卫衣\",\"深色直筒长裤\"],\"headwear\":\"\",\"identity_consistent\":true,\"leg_layer\":\"\",\"look_id\":\"morning_departure_gray\",\"outer_layer\":\"防风外套\",\"present\":true,\"temperature_fit\":\"PASS\",\"weather_fit\":\"PASS\"}},\"scene_context\":\"mountain_lodging_morning\",\"temperature_band\":\"cool\",\"weather\":\"rain cleared; damp and cool\"}\n\n[VISUAL NARRATIVE CORE V2.2]\n{\"activation_mode\":\"production\",\"authority\":\"PREPRODUCTION_DERIVED_CONTRACT\",\"camera_authorship\":{\"camera_owner_must_be_physically_explainable\":true,\"camera_position\":\"车旁离店普通后摄\",\"ghost_camera_forbidden\":true,\"owner_class\":\"primary_photographer\",\"pov_mode\":\"P01第一人称手机\"},\"camera_defect_physics\":{\"defects_must_have_physical_cause\":true,\"forbid_decorative_fake_damage\":true,\"forbid_every_night_frame_equally_blurred\":true},\"camera_roster_policy\":{\"all_known_participants_visible_rule\":\"若所有已知同行者都完整入镜，必须能解释相机来源；否则视为幽灵摄影机。\",\"allowed_handoffs\":[\"phone_handed_to_companion\",\"companion_records_primary\",\"selfie_when_story_requires\",\"timer_or_fixed_mount_when_explicit\",\"third_companion_when_present_in_story\"],\"primary_photographer_preferred_share\":\"70-80%\",\"primary_photographer_required\":true,\"secondary_photographer_allowed\":true,\"secondary_requires_reason\":true},\"core_id\":\"VISUAL_NARRATIVE_CORE_V2.2\",\"frame\":\"20\",\"human_response\":{\"emotion\":{\"intensity\":1,\"response_sync\":\"asynchronous\",\"state\":\"relaxed\",\"trigger\":\"\"},\"human_present\":true,\"interaction\":{\"action\":\"P02说完后拉门上车\",\"actor\":\"P02\",\"meaningful\":true,\"target\":\"P01\",\"type\":\"enter_vehicle\"}},\"moment\":{\"action_in_progress\":\"P02拉门回看，P01拍完普通离店照后删除求证长消息\",\"must_not_be_result_only_showcase\":true,\"save_reason\":\"普通旅行离店照\"},\"narrative_evidence\":{\"anomaly_logic_stage\":\"payoff\",\"continuity_exception_reason\":\"\",\"human_action_stage\":\"consequence\",\"narrative_redundancy_forbidden\":true,\"new_information\":true,\"new_information_this_frame\":\"正常离开并确认求证优先级已经改变\"},\"screen_content_physics\":{\"critical_text_should_be_verified_or_added_in_post\":true,\"forbid_fake_impossible_camera_ui\":true,\"must_be_internally_consistent\":true,\"must_match_scene_time_route_and_action_when_story_critical\":true,\"screen_reflection_and_orientation_must_be_physical\":true},\"sequence_grammar\":{\"authority_source\":\"global_default_sequence_grammar\",\"selection\":\"global_default\",\"sequence_grammar_id\":\"SG01_PERSONAL_EVIDENCE_SEQUENCE_V1\",\"sequence_grammar_path\":\"standards/sequence_grammars/SG01_personal_evidence_sequence.json\"},\"shot_grammar\":{\"family\":\"other:车旁离店普通后摄\",\"first_person_is_logic_not_fixed_composition\":true,\"location_zone\":\"停车位车侧\",\"repeated_hand_phone_distant_anomaly_template_forbidden\":true,\"subject_distance\":\"中广景\"},\"visual_memory_continuity\":{\"no_independent_beauty_time_selection_per_frame\":true,\"persist\":[\"character_appearance\",\"wardrobe\",\"vehicle\",\"carried_props\",\"route_and_location\",\"weather\",\"lighting_direction_when_same_scene\",\"anomaly_evidence\"],\"time_of_day_must_progress_plausibly\":true,\"time_reversal_requires_explicit_flashback_or_jump\":true}}\n\n[FRAME DIRECTIVE]\n{\"escalation_from\":null,\"frame_mode\":\"normal_record\",\"impact_level\":0,\"narrative_role\":\"setup\",\"required_visual_cues\":[],\"scale_reference\":\"\"}\n\n[REFERENCES CONTRACT]\n[]\n\nHard rule: reality constrains capture physics, not anomaly scale. Do not weaken impact_level or remove required scale references to make the scene easier."
+}

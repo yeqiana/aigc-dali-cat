@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "module_version": "2.5.1",
-  "generated_at": "2026-09-04T22:41:55+08:00",
+  "generated_at": "2026-09-06T09:50:07+08:00",
   "expires_after_seconds": 21600,
   "platform": "nt",
-  "codex_path": "C:\\Users\\79873\\AppData\\Local\\OpenAI\\Codex\\bin\\codex.EXE",
+  "codex_path": "D:\\soft\\nvm-setup\\nodejs\\codex.CMD",
   "text_worker": "available",
   "vision_review": "unverified",
   "image_generation_route": "unknown",

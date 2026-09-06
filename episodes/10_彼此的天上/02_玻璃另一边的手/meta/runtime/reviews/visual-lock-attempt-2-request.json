@@ -1,0 +1,49 @@
+{
+  "schema_version": 2,
+  "request_id": "visual-lock-a2-b849d038f0ce83f1",
+  "request_fingerprint": "b849d038f0ce83f153a485ae7218288bff434dae6f82e60c273f63152e94b481",
+  "created_at": "2026-09-06T12:04:24+08:00",
+  "status": "FINALIZED",
+  "review_kind": "visual-lock",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 2,
+  "source_files": [
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/story-gates.json",
+      "sha256": "9a6aa64613d78a128f3973cfa31c3c39428c895d57ba6716118de029b4307c07"
+    },
+    {
+      "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+      "sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-e7bf8a9697a2-a2.png",
+      "sha256": "824c1ce9c3bbb3816c64cf347bd59b6c0e8a1352eebda9d3166f23786e1b61e4"
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-32a9c6c0d9e7-a1.png",
+      "sha256": "b3cb41cb705fad1d50a8c830628886fedf43a5aafc4aeaae7d45742d83f6f0eb"
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/03-89c8abc517a3-a3.png",
+      "sha256": "8fbf06bb9d9a20ea4f7d83a7e1c5908006580d5395e7d2e6774078445a8d312a"
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/14-0bed26ad211c-a5.png",
+      "sha256": "aa1a9982ccbc2ac2c9d3b6129b4d5e3a66671c4ee60e37c87bd4542e762bd7ba"
+    }
+  ],
+  "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/.visual-lock-review.candidate.json",
+  "prompt_sha256": "74c6c320c861616b86b8173bcf74c5e32a4de60a04b147e3f90961f05e41beaa",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are the adversarial Story OS V2.1 Visual Lock Critic in a fresh isolated session.\nReview exactly FOUR attached calibration/admission images in the listed order. Do not generate or edit images.\n\nResolved visual profile:\n<visual_contract>\nprofile=M00 | 现实生活纪实母版\nreality first; the image must still feel like a plausible personal/work record without the anomaly\nordinary Chinese life density=high; retain causal incidental clutter\npractical available light=True; no invented cinematic key/rim lighting\ncomposition=unposed_imperfect_personal_record\npeople=ordinary_unprepared_not_actor_like\ncolor=environment_driven_low_to_medium_saturation\ntexture=causal_controlled_imperfection\nanomaly=embedded_in_reality_before_spectacle\nforbid commercial HDR, promo polish, default portrait bokeh, heroic framing and causeless retro/noise effects\ncapture physics and story era override texture; never fake an old device when the story uses a modern phone\n</visual_contract>\n\nRows:\n- id=V-B role=ordinary_baseline frame=01 mode=normal_record impact=0 scale_reference='' frame_contract_sha=078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c\n- id=V-W role=worst_capture_condition frame=09 mode=anomaly_reveal impact=2 scale_reference='两个半圆均明显小于整扇窗且边缘不规则' frame_contract_sha=dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687\n- id=V-A role=first_major_anomaly frame=03 mode=anomaly_reveal impact=1 scale_reference='清晰区只占整扇落地窗的小部分' frame_contract_sha=76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72\n- id=V-H role=high_impact_admission frame=14 mode=climax_impact impact=3 scale_reference='孩子与成年人形成一前一后的明确人体尺度；手机反射只作为前景小尺度参照' frame_contract_sha=2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637\n\nThis gate deliberately allows huge/impossible anomalies. DO NOT fail an image merely because the supernatural event is large, impossible, cosmic, surreal or frightening.\nReality-first constrains HOW the event looks captured: optics, available light, atmosphere, occlusion, scale cues, device limitations, photographer behavior, ordinary-life context and causal imperfection.\n\nRole expectations:\n- ordinary_baseline: ordinary world must look convincingly real before anomaly spectacle.\n- worst_capture_condition: difficult weather/light/capture state must obey physical causes; no blanket weather filter.\n- first_major_anomaly: anomaly must be clearly readable yet embedded into believable reality rather than promo concept art.\n- high_impact_admission: impact 3-4 must visibly deliver its promised abnormal scale/consequence, include readable real-world scale reference, and STILL look like an accidental/working record rather than a cinematic poster.\n\nFor every image judge the checks required for Story OS contract version 2.6.1:\nvisual_profile_match, reality_first, ordinary_life_density, available_light, unposed_capture, not_cinematic, causal_imperfection, environment_physics_fidelity, capture_credibility, anomaly_scale_delivery, scale_reference_fidelity, camera_authorship_physical, moment_capture_credibility, camera_defect_physics, screen_content_physics, world_identity_fidelity, character_appearance_anchor_fidelity, cultural_environment_fidelity.\nV2.2-only checks (camera authorship / moment / camera defect / screen physics) apply only when episode contract version >= 2.2.0. Do not fail legacy V2.1 episodes on V2.2-only criteria.\nV2.2.1-only checks (world identity / character appearance anchor / cultural environment) apply only when episode contract version >= 2.2.1. For the default profile, visible primary/local characters should read as Chinese local residents in a believable Mainland China environment unless the Episode explicitly overrides world identity.\n\nInterpret anomaly_scale_delivery=true on ordinary/no-anomaly frames as \"the frame correctly avoids unplanned spectacle and matches its locked impact level.\"\nInterpret scale_reference_fidelity=true on low-impact frames as \"no false/contradictory scale cue\"; for high impact it MUST be visibly useful.\n\nReturn ONLY valid JSON as your final response. Do not call shell/exec/PowerShell, do not read SKILL.md/AGENTS.md/repository files, and do not inspect any source beyond the four attached images plus the contract text already embedded in this prompt. The Codex CLI will persist your final response to episodes/10_彼此的天上/02_玻璃另一边的手/meta/.visual-lock-review.candidate.json automatically:\n{\n  \"calibration\": [\n    {\n      \"id\": \"V-B\",\n      \"checks\": {\n        \"visual_profile_match\": true,\n        \"reality_first\": true,\n        \"ordinary_life_density\": true,\n        \"available_light\": true,\n        \"unposed_capture\": true,\n        \"not_cinematic\": true,\n        \"causal_imperfection\": true,\n        \"environment_physics_fidelity\": true,\n        \"capture_credibility\": true,\n        \"anomaly_scale_delivery\": true,\n        \"scale_reference_fidelity\": true,\n        \"camera_authorship_physical\": true,\n        \"moment_capture_credibility\": true,\n        \"camera_defect_physics\": true,\n        \"screen_content_physics\": true,\n        \"world_identity_fidelity\": true,\n        \"character_appearance_anchor_fidelity\": true,\n        \"cultural_environment_fidelity\": true\n      },\n      \"issues\": [],\n      \"notes\": \"specific actual-pixel evidence\"\n    }\n  ],\n  \"issue_codes\": [],\n  \"summary\": {\"passed\": true}\n}\nPASS only if every check returned by checks_for_version for this Episode version is true on all 4 images. This is attempt 2.\n",
+  "finalized_at": "2026-09-06T13:25:38+08:00",
+  "final_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/visual-profile-review.json"
+}

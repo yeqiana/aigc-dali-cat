@@ -64,8 +64,16 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
         errors.append("WORK/WEB critic execution_source must be product_runtime")
     if base == "CODEX" and source not in {"", "local_codex_cli"}:
         errors.append("CODEX critic execution_source must be local_codex_cli")
-    if attempt_required and provenance.get("attempt") not in {1, 2}:
-        errors.append("critic attempt must be 1 or 2")
+    if attempt_required:
+        attempt = provenance.get("attempt")
+        extended = (
+            isinstance(attempt, int)
+            and attempt > 2
+            and provenance.get("extended_source_drift_review") is True
+            and base in {"WORK", "WEB"}
+        )
+        if attempt not in {1, 2} and not extended:
+            errors.append("critic attempt must be 1 or 2 unless this is a validated WORK/WEB source-drift re-review")
     return errors
 
 
@@ -75,10 +83,13 @@ def build_critic_provenance(
     attempt: int,
     log: str | None = None,
     request_path: str | None = None,
+    allow_extended_attempt: bool = False,
 ) -> dict:
     base = normalize_base_runtime(base_runtime)
-    if attempt not in {1, 2}:
-        raise ValueError("attempt must be 1 or 2")
+    if attempt < 1:
+        raise ValueError("attempt must be >= 1")
+    if attempt > 2 and not (allow_extended_attempt and base in {"WORK", "WEB"}):
+        raise ValueError("attempt must be 1 or 2 unless this is a validated WORK/WEB source-drift re-review")
     data = {
         "runtime": isolated_runtime(base),
         "base_runtime": base,
@@ -87,6 +98,8 @@ def build_critic_provenance(
         "attempt": attempt,
         "reviewed_at": now(),
     }
+    if attempt > 2:
+        data["extended_source_drift_review"] = True
     if log:
         data["log"] = log
     if request_path:
@@ -97,6 +110,7 @@ def build_critic_provenance(
 def self_test() -> None:
     assert validate_critic_provenance(build_critic_provenance("CODEX", attempt=1)) == []
     assert validate_critic_provenance(build_critic_provenance("WORK", attempt=2)) == []
+    assert validate_critic_provenance(build_critic_provenance("WORK", attempt=3, allow_extended_attempt=True)) == []
     bad = build_critic_provenance("WEB", attempt=1)
     bad["execution_source"] = "local_codex_cli"
     assert validate_critic_provenance(bad)

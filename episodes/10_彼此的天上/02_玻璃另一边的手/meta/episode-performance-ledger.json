@@ -5,7 +5,7 @@
   "fail_soft": true,
   "episode_path": "episodes/10_彼此的天上/02_玻璃另一边的手",
   "started_at": "2026-09-04T22:17:22.279+08:00",
-  "updated_at": "2026-09-04T23:01:04.171+08:00",
+  "updated_at": "2026-09-06T13:45:38.910+08:00",
   "finalized_at": null,
   "final_status": null,
   "total_wall_seconds": null,
@@ -186,12 +186,334 @@
           "metadata": {
             "fast_path": "2.5.1"
           }
+        },
+        {
+          "run_id": "f35afc46dbff",
+          "started_at": "2026-09-06T09:50:07.379+08:00",
+          "ended_at": "2026-09-06T09:50:07.408+08:00",
+          "duration_seconds": 0.029,
+          "status": "PASS",
+          "source": "runtime_fast_path_v251",
+          "metadata": {
+            "fast_path": "2.6.0"
+          }
+        }
+      ]
+    },
+    "VISUAL_LOCK_BASELINE_REVIEW": {
+      "runs": [
+        {
+          "run_id": "c32c1d8dc946",
+          "started_at": "2026-09-06T10:00:59.319+08:00",
+          "ended_at": "2026-09-06T10:07:13.915+08:00",
+          "duration_seconds": 374.596,
+          "status": "PASS",
+          "source": "visual_lock_baseline_gate",
+          "metadata": {
+            "frame": 1,
+            "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-e7bf8a9697a2-a2.png",
+            "pixel_master_status": "PROVISIONAL"
+          }
+        },
+        {
+          "run_id": "169609a45121",
+          "started_at": "2026-09-06T13:34:35.641+08:00",
+          "ended_at": "2026-09-06T13:35:41.117+08:00",
+          "duration_seconds": 65.476,
+          "status": "PASS",
+          "source": "visual_lock_baseline_gate",
+          "metadata": {
+            "frame": 1,
+            "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-a1b2c3d4e5f6-a4.png",
+            "pixel_master_status": "LOCKED"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_VISUAL-LOCK": {
+      "runs": [
+        {
+          "run_id": "c9670eeb67cb",
+          "started_at": "2026-09-06T12:04:24.216+08:00",
+          "ended_at": "2026-09-06T13:25:38.868+08:00",
+          "duration_seconds": 4874.652,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-a2-b849d038f0ce83f1",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/visual-profile-review.json"
+          }
+        },
+        {
+          "run_id": "299e6ecb4520",
+          "started_at": "2026-09-06T13:38:59.955+08:00",
+          "ended_at": "2026-09-06T13:41:28.155+08:00",
+          "duration_seconds": 148.2,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-a3-29664bc94b56ae6a",
+            "attempt": 3,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/visual-profile-review.json"
+          }
+        },
+        {
+          "run_id": "ebad25e1a02f",
+          "started_at": "2026-09-06T13:44:59.513+08:00",
+          "ended_at": "2026-09-06T13:45:38.910+08:00",
+          "duration_seconds": 39.397,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-a4-42a52f65519c9748",
+            "attempt": 4,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/visual-profile-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_VISUAL-LOCK-BASELINE": {
+      "runs": [
+        {
+          "run_id": "9a2f0f58ea7e",
+          "started_at": "2026-09-06T13:35:19.733+08:00",
+          "ended_at": "2026-09-06T13:35:41.123+08:00",
+          "duration_seconds": 21.39,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-baseline-a2-874f3c405c87f8cf",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/visual-lock-baseline-review.json"
+          }
+        },
+        {
+          "run_id": "70cffa94be78",
+          "started_at": "2026-09-06T13:43:41.584+08:00",
+          "ended_at": "2026-09-06T13:44:29.660+08:00",
+          "duration_seconds": 48.076,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-baseline-a3-172675bc28aba351",
+            "attempt": 3,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/visual-lock-baseline-review.json"
+          }
         }
       ]
     }
   },
-  "state_transitions": [],
-  "image_attempts": [],
+  "state_transitions": [
+    {
+      "from": "IDEA_LOCKED",
+      "to": "STORYBOARD_LOCKED",
+      "at": "2026-09-06T02:00:25+08:00"
+    }
+  ],
+  "image_attempts": [
+    {
+      "event_id": "ef6838bdf84d",
+      "frame": "01",
+      "scope": "visual_lock",
+      "kind": "original",
+      "status": "tech_failed",
+      "model": "gpt-image-2",
+      "attempt": 1,
+      "started_at": "2026-09-06T02:22:39+08:00",
+      "ended_at": "2026-09-06T02:24:04+08:00",
+      "elapsed_seconds": 85.0,
+      "queue_item_id": "e7bf8a9697a2",
+      "error_code": "IMAGE_BACKEND_ERROR"
+    },
+    {
+      "event_id": "bcbc333be472",
+      "frame": "01",
+      "scope": "visual_lock",
+      "kind": "original",
+      "status": "generated",
+      "model": "gpt-image-2",
+      "attempt": 2,
+      "started_at": "2026-09-06T09:58:52+08:00",
+      "ended_at": "2026-09-06T10:00:59+08:00",
+      "elapsed_seconds": 125.59,
+      "queue_item_id": "e7bf8a9697a2",
+      "error_code": null
+    },
+    {
+      "event_id": "9fefe689be3e",
+      "frame": "14",
+      "scope": "visual_lock",
+      "kind": "original",
+      "status": "tech_failed",
+      "model": "gpt-image-2",
+      "attempt": 1,
+      "started_at": "2026-09-06T10:07:41+08:00",
+      "ended_at": "2026-09-06T10:08:53+08:00",
+      "elapsed_seconds": 72.0,
+      "queue_item_id": "0bed26ad211c",
+      "error_code": "IMAGE_BACKEND_ERROR"
+    },
+    {
+      "event_id": "45b99b5a6d6f",
+      "frame": "09",
+      "scope": "visual_lock",
+      "kind": "original",
+      "status": "generated",
+      "model": "gpt-image-2",
+      "attempt": 1,
+      "started_at": "2026-09-06T10:08:53+08:00",
+      "ended_at": "2026-09-06T10:10:57+08:00",
+      "elapsed_seconds": 122.64,
+      "queue_item_id": "4b3b8f40440e",
+      "error_code": null
+    },
+    {
+      "event_id": "eb60afde8401",
+      "frame": "03",
+      "scope": "visual_lock",
+      "kind": "original",
+      "status": "tech_failed",
+      "model": "gpt-image-2",
+      "attempt": 1,
+      "started_at": "2026-09-06T10:10:57+08:00",
+      "ended_at": "2026-09-06T10:12:00+08:00",
+      "elapsed_seconds": 63.0,
+      "queue_item_id": "89c8abc517a3",
+      "error_code": "IMAGE_BACKEND_ERROR"
+    },
+    {
+      "event_id": "eae0516f0415",
+      "frame": "14",
+      "scope": "visual_lock",
+      "kind": "original",
+      "status": "tech_failed",
+      "model": "gpt-image-2",
+      "attempt": 2,
+      "started_at": "2026-09-06T10:13:29+08:00",
+      "ended_at": "2026-09-06T10:16:48+08:00",
+      "elapsed_seconds": 199.0,
+      "queue_item_id": "0bed26ad211c",
+      "error_code": "IMAGE_BACKEND_ERROR"
+    },
+    {
+      "event_id": "5c6227a127f2",
+      "frame": "14",
+      "scope": "visual_lock",
+      "kind": "original",
+      "status": "tech_failed",
+      "model": "gpt-image-2",
+      "attempt": 3,
+      "started_at": "2026-09-06T10:21:23+08:00",
+      "ended_at": "2026-09-06T10:25:23+08:00",
+      "elapsed_seconds": 240.0,
+      "queue_item_id": "0bed26ad211c",
+      "error_code": "TIMEOUT"
+    },
+    {
+      "event_id": "ed10368a321c",
+      "frame": "03",
+      "scope": "visual_lock",
+      "kind": "original",
+      "status": "generated",
+      "model": "gpt-image-2",
+      "attempt": 3,
+      "started_at": "2026-09-06T10:57:35+08:00",
+      "ended_at": "2026-09-06T11:01:07+08:00",
+      "elapsed_seconds": 210.72,
+      "queue_item_id": "89c8abc517a3",
+      "error_code": null
+    },
+    {
+      "event_id": "4e12a0e49d3e",
+      "frame": "14",
+      "scope": "visual_lock",
+      "kind": "original",
+      "status": "tech_failed",
+      "model": "gpt-image-2",
+      "attempt": 4,
+      "started_at": "2026-09-06T11:01:32+08:00",
+      "ended_at": "2026-09-06T11:06:02+08:00",
+      "elapsed_seconds": 270.0,
+      "queue_item_id": "0bed26ad211c",
+      "error_code": "TIMEOUT"
+    },
+    {
+      "event_id": "85216a5991b9",
+      "frame": "14",
+      "scope": "visual_lock",
+      "kind": "original",
+      "status": "generated",
+      "model": "gpt-image-2",
+      "attempt": 5,
+      "started_at": "2026-09-06T11:07:46+08:00",
+      "ended_at": "2026-09-06T11:09:29+08:00",
+      "elapsed_seconds": 101.61,
+      "queue_item_id": "0bed26ad211c",
+      "error_code": null
+    },
+    {
+      "event_id": "fe3b4e16a1d1",
+      "frame": "09",
+      "scope": "repair",
+      "kind": "repair",
+      "status": "generated",
+      "model": "gpt-image-2",
+      "attempt": 1,
+      "started_at": "2026-09-06T12:01:33+08:00",
+      "ended_at": "2026-09-06T12:03:23+08:00",
+      "elapsed_seconds": 108.25,
+      "queue_item_id": "32a9c6c0d9e7",
+      "error_code": null
+    },
+    {
+      "event_id": "88d31c2ee1b7",
+      "frame": "01",
+      "scope": "repair",
+      "kind": "repair",
+      "status": "tech_failed",
+      "model": "gpt-image-2",
+      "attempt": 3,
+      "started_at": "2026-09-06T13:03:05+08:00",
+      "ended_at": "2026-09-06T13:06:45+08:00",
+      "elapsed_seconds": 220.0,
+      "queue_item_id": "a1b2c3d4e5f6",
+      "error_code": "TIMEOUT"
+    },
+    {
+      "event_id": "32247f9d8607",
+      "frame": "01",
+      "scope": "repair",
+      "kind": "repair",
+      "status": "generated",
+      "model": "gpt-image-2",
+      "attempt": 4,
+      "started_at": "2026-09-06T13:27:37+08:00",
+      "ended_at": "2026-09-06T13:30:41+08:00",
+      "elapsed_seconds": 182.06,
+      "queue_item_id": "a1b2c3d4e5f6",
+      "error_code": null
+    },
+    {
+      "event_id": "d30284fbf13d",
+      "frame": "03",
+      "scope": "repair",
+      "kind": "repair",
+      "status": "tech_failed",
+      "model": "gpt-image-2",
+      "attempt": 1,
+      "started_at": "2026-09-06T13:35:55+08:00",
+      "ended_at": "2026-09-06T13:37:40+08:00",
+      "elapsed_seconds": 105.0,
+      "queue_item_id": "35f537379be6",
+      "error_code": "IMAGE_BACKEND_ERROR"
+    }
+  ],
   "summary": {
     "stage_wall": {
       "CREATIVE_STORY": {
@@ -201,15 +523,27 @@
     },
     "named_span_wall": {
       "CONTEXT_RECOVERY": {
-        "wall_seconds": 0.151,
-        "runs": 8
+        "wall_seconds": 0.18,
+        "runs": 9
+      },
+      "VISUAL_LOCK_BASELINE_REVIEW": {
+        "wall_seconds": 440.072,
+        "runs": 2
+      },
+      "PRODUCT_REVIEW_VISUAL-LOCK": {
+        "wall_seconds": 5062.249,
+        "runs": 3
+      },
+      "PRODUCT_REVIEW_VISUAL-LOCK-BASELINE": {
+        "wall_seconds": 69.466,
+        "runs": 2
       }
     },
     "critical_path": {
       "kind": "observed_end_to_end_wall",
-      "critical_path_seconds": 2621.892,
-      "image_backend_union_wall_seconds": 0.0,
-      "image_backend_resource_seconds": 0.0,
+      "critical_path_seconds": 141617.721,
+      "image_backend_union_wall_seconds": 2114.0,
+      "image_backend_resource_seconds": 2104.87,
       "parallel_saved_seconds": 0.0,
       "dependency_chain": [
         {
@@ -277,13 +611,13 @@
       "gate": false
     },
     "images": {
-      "attempts": 0,
-      "successful_attempts": 0,
-      "repair_attempts": 0,
-      "technical_failures_or_retries": 0,
-      "image_backend_seconds": 0,
-      "average_attempt_seconds": null,
-      "max_attempt_seconds": null
+      "attempts": 14,
+      "successful_attempts": 6,
+      "repair_attempts": 4,
+      "technical_failures_or_retries": 8,
+      "image_backend_seconds": 2104.87,
+      "average_attempt_seconds": 150.348,
+      "max_attempt_seconds": 270.0
     },
     "note": "stage wall time and image backend resource time can overlap; do not add them together."
   },

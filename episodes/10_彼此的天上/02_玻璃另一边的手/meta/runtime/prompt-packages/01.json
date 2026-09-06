@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "01",
+  "scene_prompt": "Frame 01 系列角色身份返修。保留原分镜：真实中国大陆年轻情侣自驾旅行的普通手机前置自拍，P02 坐副驾举手机，镜头偏向驾驶位 P01；方向盘、车窗雨痕、模糊雨刷、后排旅行袋自然可见，左舵家用车，灰色系日常旅行穿着，随手旅行相册感，不摆拍、不恐怖、不加文字。角色身份必须严格沿用所附 EP001 系列身份参考：P01 与 P02 是同一对男女主，不得重新选脸；优先保留脸型、五官组合、年龄感、发际线/发型身份和整体气质。衣服可按当前雨天自驾场景调整，但换衣不能换人。",
+  "scene_prompt_sha256": "6973ae2cc68386583872a6d41a464816a57f8dc8d170ecec3bfabf4e7d8093ae",
+  "frame_contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\01-series-identity.txt",
+  "package_sha256": "09c036e6185e85fb902c44281e71f8225ae73fc66cfa85850b2c70899e10d60f",
+  "compiled_at": "2026-09-06T13:27:37+08:00"
+}

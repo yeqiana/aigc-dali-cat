@@ -18,6 +18,7 @@ REL=Path("meta/character-visual-contract.json")
 PIXEL_MASTER_REL=Path("meta/character-pixel-master.json")
 CROPS_REL=Path("meta/character-master-crops.json")
 CROPS_DIR=Path("media/identity/character-masters")
+SERIES_IDENTITY_REL=Path("meta/series-character-identity.json")
 PRIMARY_ATTRACTIVENESS="moderately_above_average_but_real"
 SECONDARY_ATTRACTIVENESS="ordinary_camera_friendly"
 FEMALE_LEAD_BUILD="slim_proportionate_natural"
@@ -37,10 +38,52 @@ def sha_file(p):
         for b in iter(lambda:f.read(1024*1024),b""):h.update(b)
     return h.hexdigest()
 def repo_rel(p):return Path(p).resolve().relative_to(ROOT.resolve()).as_posix()
+def series_identity_path(ep):
+    ep=Path(ep).resolve()
+    return ep.parent/SERIES_IDENTITY_REL
+
 def _repo_asset(raw):
     p=Path(str(raw));p=p.resolve() if p.is_absolute() else (ROOT/p).resolve()
     p.relative_to(ROOT.resolve())
     return p
+
+def validate_series_identity(ep):
+    p=series_identity_path(ep)
+    if not p.is_file():return []
+    d=read_json(p);e=[]
+    if d.get("schema_version")!=1:e.append("series character identity schema_version must be 1")
+    if d.get("approved") is not True:e.append("series character identity must be approved=true")
+    chars=d.get("characters") or {}
+    if not isinstance(chars,dict) or not chars:e.append("series character identity characters missing")
+    rows=[]
+    group=d.get("group_identity_asset")
+    if isinstance(group,dict):rows.append(("group",group))
+    for cid,row in chars.items():
+        if not isinstance(row,dict):e.append(f"series character identity {cid} invalid");continue
+        asset=row.get("primary_asset")
+        if not isinstance(asset,dict):e.append(f"series character identity {cid} primary_asset missing");continue
+        rows.append((str(cid),asset))
+        for index,support in enumerate(row.get("supporting_assets") or []):
+            if not isinstance(support,dict):e.append(f"series character identity {cid} supporting_asset[{index}] invalid");continue
+            rows.append((f"{cid}:supporting:{index}",support))
+    for cid,row in rows:
+        try:
+            fp=_repo_asset(row.get("path"))
+            if not fp.is_file():e.append(f"series character identity {cid} asset missing")
+            elif sha_file(fp).lower()!=str(row.get("sha256") or "").lower():e.append(f"series character identity {cid} sha mismatch")
+        except Exception:e.append(f"series character identity {cid} asset path invalid")
+    return e
+
+def series_identity_reference(ep,character_id=None):
+    p=series_identity_path(ep)
+    if not p.is_file():return None
+    errors=validate_series_identity(ep)
+    if errors:raise ValueError("invalid series character identity: "+"; ".join(errors[:8]))
+    d=read_json(p);cid=str(character_id or "").strip();row=None
+    if cid:row=((d.get("characters") or {}).get(cid) or {}).get("primary_asset")
+    if not isinstance(row,dict):row=d.get("group_identity_asset")
+    if not isinstance(row,dict):return None
+    return {"path":row["path"],"role":f"series_character_identity:{cid or 'group'}","kind":"identity","sha256":row["sha256"],"character_id":cid or None,"status":"SERIES_LOCKED","authority_path":repo_rel(p)}
 
 def _primary_ids(cp):
     members=((cp.get("cast") or {}).get("members") or [])
@@ -191,7 +234,14 @@ def _pixel_master_data(ep,*,frame,asset_path,asset_sha256,frame_contract_sha256,
 
 def lock_provisional_pixel_master(ep,*,frame,asset_path,asset_sha256,frame_contract_sha256,baseline_review_sha256,face_boxes=None):
     ep=Path(ep).resolve();existing=read_json(ep/PIXEL_MASTER_REL) if (ep/PIXEL_MASTER_REL).is_file() else None
-    if existing and existing.get("status")=="LOCKED":return existing
+    if existing and existing.get("status")=="LOCKED":
+        same_locked_evidence=(
+            str(existing.get("frame") or "").zfill(2)==f"{int(frame):02d}"
+            and str(existing.get("sha256") or "").lower()==str(asset_sha256 or "").lower()
+            and str(existing.get("frame_contract_sha256") or "").lower()==str(frame_contract_sha256 or "").lower()
+            and str(existing.get("baseline_review_sha256") or "").lower()==str(baseline_review_sha256 or "").lower()
+        )
+        if same_locked_evidence:return existing
     data=_pixel_master_data(ep,frame=frame,asset_path=asset_path,asset_sha256=asset_sha256,frame_contract_sha256=frame_contract_sha256,status="PROVISIONAL",baseline_review_sha256=baseline_review_sha256)
     write_json(ep/PIXEL_MASTER_REL,data)
     crop_result=derive_face_crops(ep,face_boxes or [],allow_non_png=True)

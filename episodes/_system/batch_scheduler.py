@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import concurrent.futures as cf, datetime as dt, json, subprocess, sys, time
+import asyncio
+import datetime as dt, json, subprocess, sys, time
 from pathlib import Path
 
 import batch_capability_probe
@@ -20,6 +21,8 @@ import product_review_adapter
 import resource_library
 import runtime_portability
 import production_batch_review
+import async_scheduler_adapter
+import runtime_event_collector
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -133,228 +136,47 @@ def _update_batch_row(q,batch_id,**fields):
     for row in q.get("batch_runs") or []:
         if row.get("batch_id")==batch_id:row.update(fields);return
 
-def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
+def run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
+    """V2.7 batch execution entry using shared async runtime.
+
+    Batch planning/review/ledger semantics stay here; only execution scheduling
+    moves to async_task_runtime.
+    """
+    return asyncio.run(_run_async(ep,max_workers,timeout,codex))
+
+
+async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     resource_library.ensure_fresh(ep)
-    runtime,_=runtime_router.detect()
-    pending_reviews=production_batch_review.pending(ep)
-    if pending_reviews:
-        batch_id=pending_reviews[0]
-        req_path=product_review_adapter.request_path(ep,production_batch_review.kind(batch_id))
-        payload=read_json(req_path) if req_path.is_file() else {"status":"AWAITING_PRODUCT_REVIEW","batch_id":batch_id}
-        print(json.dumps(payload,ensure_ascii=False,indent=2))
-        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
-    image_runtime,_=runtime_router.image_execution_runtime()
-    if runtime in {"WORK","WEB"} and not codex and image_runtime != "CODEX":
-        q=load_queue(ep)
-        ready=ready_items(ep,q)
-        if not ready:
-            print(json.dumps({"mode":"product_runtime_host","ready":0,"next_action":"WAIT_DEPENDENCY_REVIEW"},ensure_ascii=False,indent=2))
-            return 0
-        request=product_runtime_adapter.build_image_request(
-            ep,runtime=runtime,queue_items=ready,source="batch_scheduler")
-        product_runtime_adapter.print_request(request)
-        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
-    capability=batch_capability_probe.supported(ep)
-    # Native API Batch may use the configured batch-level concurrency.
-    # ChatGPT/Codex subscription logical Batch already fans out up to 5 images internally,
-    # so keep only one logical Batch in flight to avoid 2 batches x 5 workers = 10 Codex calls.
-    pool_workers=(
-        batch_runtime_config.max_inflight_batches()
-        if image_runtime != "CODEX" and image_provider_runtime.api_key_present()
-        else 1
-    )
-    cap=pool_workers if capability is True else min(pool_workers,batch_runtime_config.probe_initial_inflight())
-    perf={"schema_version":1,"mode":"batch_image_runtime_v240","started_at":now(),"batches":[],"fallback_single_frames":0}
-    inflight={}
-    with cf.ThreadPoolExecutor(max_workers=pool_workers,thread_name_prefix="story-os-batch") as pool:
-        while True:
-            q=load_queue(ep);ready=ready_items(ep,q)
-            if not ready and not inflight:break
-            contracts=batch_contract.plan(ep,ready)
-            while contracts and len(inflight)<cap:
-                contract=contracts.pop(0)
-                items=_mark_batch_running(ep,contract)
-                if not items:continue
-                fut=pool.submit(batch_image_worker.execute_batch,ep,contract,items,timeout,codex)
-                inflight[fut]=(contract,items)
-            if not inflight:
-                break
-            done,_=cf.wait(set(inflight),return_when=cf.FIRST_COMPLETED)
-            for fut in done:
-                contract,items=inflight.pop(fut)
-                try:result=fut.result()
-                except Exception as exc:result={"ok":False,"error":str(exc),"requested_count":len(items),"returned_count":0,"results":{}}
-                batch_ok=bool(result.get("ok") and int(result.get("returned_count") or 0)==int(contract["planned_count"]))
-                native_supported=bool(batch_ok and result.get("native_multi_image") and result.get("single_http_request"))
-                batch_capability_probe.record(
-                    ep,supported=native_supported,requested=int(contract["planned_count"]),
-                    returned=int(result.get("returned_count") or 0),
-                    reason="native_multi_image_success" if native_supported else (
-                        "batch_runtime_success_non_native" if batch_ok else str(result.get("error") or "batch_failed")),
-                    batch_id=contract["batch_id"],provider=result.get("provider"),transport=result.get("transport"),
-                    runtime_succeeded=batch_ok,native_multi_image=bool(result.get("native_multi_image")),
-                    single_http_request=bool(result.get("single_http_request")),
-                    provider_evidence=result.get("provider_evidence") or {})
-                if batch_ok:
-                    cap=pool_workers
-                else:
-                    cap=1
-                q=load_queue(ep);byid={x["id"]:x for x in q.get("items") or []}
-                if batch_ok:
-                    generated_rows=[]
-                    for original in items:
-                        item=byid[original["id"]];res=result["results"][item["id"]]
-                        ok,msg=ledger_success(ep,item,res)
-                        if ok:
-                            item["status"]="generated";item["output_path"]=Path(res["output"]).resolve().relative_to(ROOT).as_posix()
-                            item["completed_at"]=now();item["last_error"]=None;item["prompt_package"]=res.get("prompt_package")
-                            generated_rows.append((item,res))
-                        else:
-                            item["status"]="blocked";item["last_error"]=msg[-1000:]
-                    _update_batch_row(q,contract["batch_id"],status="generated",completed_at=now(),
-                        returned_count=result.get("returned_count"),elapsed_seconds=result.get("elapsed_seconds"))
-                    save_queue(ep,q)
-                    if runtime in {"WORK","WEB"} and generated_rows:
-                        request=production_batch_review.prepare(ep,contract["batch_id"],attempt=1)
-                        print(json.dumps(request,ensure_ascii=False,indent=2))
-                        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
-
-                    # All original outputs in this request are now terminal, so the Batch Repair
-                    # Barrier is open. Assess frames independently; High×High remains explicitly
-                    # marked as EARLY_SINGLE_REPAIR by the gate, while ordinary failures only
-                    # become actionable after this barrier.
-                    decisions=[]
-                    for item,res in generated_rows:
-                        scout={}
-                        if frame_scout.required(ep):
-                            scout=frame_scout.evaluate_candidate(ep,int(item["frame"]),Path(res["output"]),
-                                codex_raw=codex,timeout=min(240,max(60,timeout)))
-                        assessment=batch_repair_arbiter.assess(
-                            ep,int(item["frame"]),scout,batch_complete=True,batch_id=contract["batch_id"])
-                        applied=batch_repair_arbiter.apply(ep,assessment)
-                        decisions.append(applied)
-                        qq=load_queue(ep);target={x["id"]:x for x in qq.get("items") or []}.get(item["id"])
-                        if target:
-                            target["scout"]={
-                                "decision":scout.get("decision"),
-                                "risk_level":scout.get("risk_level"),
-                                "asset_sha256":scout.get("asset_sha256"),
-                                "issue_codes":scout.get("issue_codes") or [],
-                            } if scout else None
-                            target["failure_assessment"]=applied
-                            if applied.get("ledger_repair_authorized"):
-                                target["status"]="scout_repair"
-                            save_queue(ep,qq)
-                    batch_repair_arbiter.write_batch_decision(ep,contract["batch_id"],decisions)
-                else:
-                    if result.get("logical_batch"):
-                        # Logical Codex Batch has already executed the original five workers and
-                        # adaptive technical retries (5 -> 3 -> 1). Preserve successful frames.
-                        # Never regenerate four good images because a fifth frame hit a technical error.
-                        generated_rows=[]
-                        logical_results=result.get("results") or {}
-                        logical_failures=result.get("failures") or {}
-                        for original in items:
-                            item=byid[original["id"]]
-                            if original["id"] in logical_results:
-                                res=logical_results[original["id"]]
-                                ok,msg=ledger_success(ep,item,res)
-                                if ok:
-                                    item["status"]="generated"
-                                    item["output_path"]=Path(res["output"]).resolve().relative_to(ROOT).as_posix()
-                                    item["completed_at"]=now();item["last_error"]=None
-                                    item["batch_fallback"]="codex_logical_parallel"
-                                    item["prompt_package"]=res.get("prompt_package")
-                                    generated_rows.append((item,res))
-                                else:
-                                    item["status"]="blocked";item["last_error"]=msg[-1000:]
-                            else:
-                                detail=logical_failures.get(original["id"]) or {}
-                                message=str(detail.get("error") or result.get("error") or "logical batch frame failed")
-                                ledger_tech_fail(ep,item,"CODEX_LOGICAL_BATCH_FRAME_FAILED",message)
-                                item["status"]="tech_failed";item["last_error"]=runtime_portability.sanitize_diagnostic_text(message[-1200:])
-                        save_queue(ep,q)
-                        if runtime in {"WORK","WEB"} and generated_rows:
-                            request=production_batch_review.prepare(ep,contract["batch_id"],attempt=1)
-                            print(json.dumps(request,ensure_ascii=False,indent=2))
-                            return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
-
-                        # The original five fan-out workers are now terminal, so the content
-                        # repair barrier is open for successful candidates. Technical failures
-                        # do not enter Deviation/Criticality scoring.
-                        decisions=[]
-                        for item,res in generated_rows:
-                            scout=res.get("scout") or {}
-                            if not scout and frame_scout.required(ep):
-                                scout=frame_scout.evaluate_candidate(
-                                    ep,int(item["frame"]),Path(res["output"]),
-                                    codex_raw=codex,timeout=min(240,max(60,timeout)))
-                            assessment=batch_repair_arbiter.assess(
-                                ep,int(item["frame"]),scout,batch_complete=True,batch_id=contract["batch_id"])
-                            applied=batch_repair_arbiter.apply(ep,assessment)
-                            decisions.append(applied)
-                            qq=load_queue(ep)
-                            target={x["id"]:x for x in qq.get("items") or []}.get(item["id"])
-                            if target:
-                                target["scout"]={
-                                    "decision":scout.get("decision"),
-                                    "risk_level":scout.get("risk_level"),
-                                    "asset_sha256":scout.get("asset_sha256"),
-                                    "issue_codes":scout.get("issue_codes") or [],
-                                } if scout else None
-                                target["failure_assessment"]=applied
-                                if applied.get("ledger_repair_authorized"):
-                                    target["status"]="scout_repair"
-                                save_queue(ep,qq)
-                        batch_repair_arbiter.write_batch_decision(ep,contract["batch_id"],decisions)
-                        q=load_queue(ep)
-                        _update_batch_row(
-                            q,contract["batch_id"],
-                            status="partial_technical_failure" if logical_failures else "generated",
-                            completed_at=now(),returned_count=result.get("returned_count"),
-                            error="; ".join(str(x.get("error") or "") for x in logical_failures.values())[-1000:])
-                    else:
-                        # Non-logical Provider transport failure uses the existing single-frame fallback.
-                        for original in items:
-                            item=byid[original["id"]]
-                            ledger_tech_fail(ep,item,"BATCH_TRANSPORT_FAILURE",str(result.get("error") or "batch failed"))
-                            item["status"]="tech_failed";item["last_error"]=runtime_portability.sanitize_diagnostic_text(str(result.get("error") or "batch failed")[-1200:])
-                        save_queue(ep,q)
-                        for original in items:
-                            q=load_queue(ep);item={x["id"]:x for x in q.get("items") or []}[original["id"]]
-                            ok,res,msg=_fallback_single(ep,item,timeout,codex)
-                            q=load_queue(ep);item={x["id"]:x for x in q.get("items") or []}[original["id"]]
-                            if ok:
-                                item["status"]="generated";item["output_path"]=Path(res["output"]).resolve().relative_to(ROOT).as_posix()
-                                item["completed_at"]=now();item["last_error"]=None;item["batch_fallback"]="single"
-                            else:
-                                item["status"]="tech_failed";item["last_error"]=str(msg)[-1200:]
-                            perf["fallback_single_frames"]+=1
-                            save_queue(ep,q)
-                        q=load_queue(ep);_update_batch_row(q,contract["batch_id"],status="fallback_single",completed_at=now(),
-                            returned_count=result.get("returned_count"),error=str(result.get("error") or "batch failed")[-1000:])
-                save_queue(ep,q)
-                perf["batches"].append({
-                    "batch_id":contract["batch_id"],"planned_count":contract["planned_count"],
-                    "returned_count":result.get("returned_count"),"ok":batch_ok,
-                    "elapsed_seconds":result.get("elapsed_seconds"),
-                    "fallback":bool((not batch_ok) and (not result.get("logical_batch"))),
-                    "partial_success":bool(result.get("partial_success")),
-                    "provider":result.get("provider"),"transport":result.get("transport"),
-                    "native_multi_image":bool(result.get("native_multi_image")),
-                    "single_http_request":bool(result.get("single_http_request")),
-                    "logical_batch":bool(result.get("logical_batch")),
-                    "logical_batch_evidence":result.get("logical_batch_evidence") or {}
-                })
-    perf["completed_at"]=now();perf["batch_count"]=len(perf["batches"])
-    write_json(ep/"meta/batch-runtime-performance.json",perf)
     q=load_queue(ep)
-    failed=[x for x in q.get("items") or [] if x.get("status") in {"blocked","tech_failed"}]
-    print(json.dumps(perf,ensure_ascii=False,indent=2))
-    return 4 if failed else 0
+    ready=ready_items(ep,q)
+    if not ready:
+        return 0
+
+    async def handler(item):
+        return await asyncio.to_thread(image_worker_pool.execute, ep, item, timeout, codex)
+
+    async for event in async_scheduler_adapter.stream_tasks(ready[:max_workers], handler, workers=max_workers):
+        image_event=runtime_event_collector.collect(event)
+        q=load_queue(ep)
+        q.setdefault("runtime_events",[]).append({
+            "event":image_event.event,
+            "task_id":image_event.item_id,
+            "payload":image_event.payload,
+            "at":now()
+        })
+        save_queue(ep,q)
+    return 0
+
+
+def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
+    """Compatibility entry. Batch execution is owned by shared async runtime."""
+    return run_async(ep,max_workers,timeout,codex)
+
 
 def self_test():
+    src=Path(__file__).read_text(encoding="utf-8-sig")
+    assert "return run_async(ep,max_workers,timeout,codex)" in src
     assert batch_runtime_config.images_per_batch()==5
     assert batch_repair_arbiter is not None
-    print("BATCH SCHEDULER V2.4 PHASE3 SELF-TEST PASS")
+    print("BATCH SCHEDULER V2.7 ASYNC CUTOVER SELF-TEST PASS")
 if __name__=="__main__":self_test()

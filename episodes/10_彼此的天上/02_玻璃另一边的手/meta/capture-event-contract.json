@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "principle": "A frame must first be a credible capture event, then a narrative image.",
+  "max_causal_defects_per_frame": 2,
+  "frames": {
+    "01": {
+      "photographer_id": "P02",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "旅途中给两人留一张普通自拍",
+      "device_position": "副驾手持前置镜头，略偏向驾驶位",
+      "subject_awareness": "aware",
+      "operator_state": "放松，随手记录旅行",
+      "framing_constraint": "受车内狭小空间、雨刷和行车姿态限制",
+      "retained_reason": "保留因为是旅行当天的普通生活开场",
+      "causal_defects": []
+    },
+    "02": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "入住后拍房间发给朋友看",
+      "device_position": "站在房门附近单手后摄",
+      "subject_awareness": "partial",
+      "operator_state": "刚进房，边收拾边拍",
+      "framing_constraint": "湿外套、床和落地窗自然同框，不追求端正",
+      "retained_reason": "保留因为明确窗外没有阳台或站立面",
+      "causal_defects": []
+    },
+    "03": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "P02叫他看窗上被擦开的异常区域",
+      "device_position": "距玻璃约两米手持后摄",
+      "subject_awareness": "aware",
+      "operator_state": "疑惑，先记录再靠近",
+      "framing_constraint": "低照、玻璃雾气和残雨造成局部遮挡",
+      "retained_reason": "保留因为前三张内首次出现直接可见异常",
+      "causal_defects": []
+    },
+    "04": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "关灯排查室内反光时继续拍",
+      "device_position": "靠床头灯一侧单手持机",
+      "subject_awareness": "aware",
+      "operator_state": "偏理性，正在排除反光",
+      "framing_constraint": "房间变暗后曝光自动抬高，噪点增加",
+      "retained_reason": "保留因为异常区域未随灯光消失",
+      "causal_defects": []
+    },
+    "05": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "P02换站位验证倒影错位",
+      "device_position": "斜贴玻璃一侧手持",
+      "subject_awareness": "aware",
+      "operator_state": "专注比较倒影和对面动作",
+      "framing_constraint": "玻璃反射叠加，画面允许轻微偏斜",
+      "retained_reason": "保留因为证明不是简单镜像",
+      "causal_defects": []
+    },
+    "06": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "异常短暂消失后给P02看刚拍内容",
+      "device_position": "手机从玻璃方向收回到两人之间",
+      "subject_awareness": "aware",
+      "operator_state": "不确定，和P02共同确认",
+      "framing_constraint": "画面更生活化，可能只拍到P02与玻璃",
+      "retained_reason": "保留因为把共同目击从单人感受变成双方确认",
+      "causal_defects": []
+    },
+    "07": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "较低位置再次出现清晰区",
+      "device_position": "半蹲后摄，避开强反光",
+      "subject_awareness": "partial",
+      "operator_state": "警惕但仍想看清",
+      "framing_constraint": "低机位受床沿和窗框遮挡",
+      "retained_reason": "保留因为出现木架、木碗等普通生活证据",
+      "causal_defects": []
+    },
+    "08": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "P02用袖口擦雾时自然继续记录",
+      "device_position": "P02侧后方约一米手持",
+      "subject_awareness": "aware",
+      "operator_state": "跟拍P02的普通动作",
+      "framing_constraint": "必须让袖口与内侧雾面接触关系可读",
+      "retained_reason": "保留因为这是动作触发点",
+      "causal_defects": []
+    },
+    "09": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "对面立即出现对应擦拭动作",
+      "device_position": "原机位轻微前移",
+      "subject_awareness": "partial",
+      "operator_state": "惊讶，短暂停住",
+      "framing_constraint": "两块擦拭半圆需错位，不能完美对称",
+      "retained_reason": "保留因为是异常的直接响应",
+      "causal_defects": []
+    },
+    "10": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "清晰区露出普通成年人的脸和屋内生活物",
+      "device_position": "靠近但不贴玻璃，轻微数码变焦",
+      "subject_awareness": "partial",
+      "operator_state": "想确认对面是不是普通人",
+      "framing_constraint": "玻璃、水膜与低照限制清晰度",
+      "retained_reason": "保留因为首次确认对面是具体普通人",
+      "causal_defects": []
+    },
+    "11": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "为了拍清对面而抬高手中手机",
+      "device_position": "手机靠近面部并稳住",
+      "subject_awareness": "partial",
+      "operator_state": "求证欲增强",
+      "framing_constraint": "亮屏反射可能进入玻璃，对面因而防御",
+      "retained_reason": "保留因为P01动作直接造成对方警惕",
+      "causal_defects": []
+    },
+    "12": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "P02按住他手腕让他把手机压低",
+      "device_position": "机位被外力压低并产生轻微下坠",
+      "subject_awareness": "aware",
+      "operator_state": "被制止后暂时配合",
+      "framing_constraint": "构图可偏斜，手腕互动优先可读",
+      "retained_reason": "保留因为双方避让形成因果链",
+      "causal_defects": []
+    },
+    "13": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "孩子从成年人身后探出",
+      "device_position": "保持较低机位，不再主动逼近",
+      "subject_awareness": "partial",
+      "operator_state": "克制地继续看",
+      "framing_constraint": "孩子只能部分露出，避免表演感",
+      "retained_reason": "保留因为家庭关系让风险重新定义",
+      "causal_defects": []
+    },
+    "14": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "孩子靠近时P01决定放弃最清楚的证据并按灭屏幕",
+      "device_position": "仍在录像的最后几秒，玻璃反射可见手机与手腕",
+      "subject_awareness": "partial",
+      "operator_state": "犹豫后主动停止取证",
+      "framing_constraint": "机位开始下坠；暗屏动作通过玻璃反射读取",
+      "retained_reason": "保留因为这是高潮选择与代价发生的最后清楚瞬间",
+      "causal_defects": []
+    },
+    "15": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "录像停止前残留的最后下坠画面",
+      "device_position": "机位持续向下，仍朝向玻璃",
+      "subject_awareness": "partial",
+      "operator_state": "已经决定停拍",
+      "framing_constraint": "构图明显歪斜且边缘遮挡增加",
+      "retained_reason": "保留因为记录到对面护住孩子并盖窗的直接后果",
+      "causal_defects": []
+    },
+    "16": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "停止录像前的最后一帧",
+      "device_position": "手机已压低到床边高度",
+      "subject_awareness": "aware",
+      "operator_state": "停止追拍窗口",
+      "framing_constraint": "只能看到玻璃回归普通雨雾和P02松手",
+      "retained_reason": "保留因为明确记录取证行为的终止",
+      "causal_defects": []
+    },
+    "17": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "几分钟后恢复普通旅行记录，只拍房间生活照",
+      "device_position": "站在床侧或门边单手后摄",
+      "subject_awareness": "aware",
+      "operator_state": "情绪平复，不再对窗取证",
+      "framing_constraint": "只拍P02、外卖袋、充电线和潮湿外套",
+      "retained_reason": "保留因为异常后生活重新接管画面",
+      "causal_defects": []
+    },
+    "18": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "次日从室外复核窗位和陡坡",
+      "device_position": "民宿侧面安全位置手持后摄",
+      "subject_awareness": "aware",
+      "operator_state": "白天理性复核",
+      "framing_constraint": "完整外墙、窗位、陡坡必须同时可读",
+      "retained_reason": "保留因为现实空间不支持昨夜有人站窗外",
+      "causal_defects": []
+    },
+    "19": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "退房前回看停录前短视频并拍普通玻璃近景",
+      "device_position": "房内距玻璃约一米手持",
+      "subject_awareness": "aware",
+      "operator_state": "按顺序复盘三个动作",
+      "framing_constraint": "屏幕文字无需可读，玻璃不得出现实体残留",
+      "retained_reason": "保留因为把擦开、挡光、抱走孩子串成同一反应链",
+      "causal_defects": []
+    },
+    "20": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "离店前拍一张普通旅行照",
+      "device_position": "车旁后摄，P02与民宿外墙同框",
+      "subject_awareness": "aware",
+      "operator_state": "准备离开，恢复旅行节奏",
+      "framing_constraint": "不追求异常，只保留正常离店构图",
+      "retained_reason": "保留因为终局回到普通生活且不再追加异常",
+      "causal_defects": []
+    }
+  }
+}

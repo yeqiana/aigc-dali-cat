@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.5.1",
+  "episode_id": "10-02",
+  "generated_at": "2026-09-06T01:52:53+08:00",
+  "candidate_fingerprint_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "90d0504a616e585a4c15c7bdc999a57ab1010f26b1567e8e3530c1fc21c5bda3",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "comparison_count": 2,
+  "compared": [
+    {
+      "episode_id": "10-01",
+      "title": "鳌太线·热汤",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 0,
+      "similarity_score": 0,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [],
+      "matched_dimensions": []
+    },
+    {
+      "episode_id": "09-04",
+      "title": "瓶中世界",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 0,
+      "similarity_score": 0,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [],
+      "matched_dimensions": []
+    }
+  ],
+  "max_similarity_score": 0,
+  "mechanism_veto": false,
+  "decision": "pass",
+  "scoring_policy": "effective=max(exact_string,semantic_equivalence); veto=exact_veto OR semantic_veto",
+  "note": "V2.0.3.6 uses a fresh isolated semantic equivalence matrix so paraphrased/skin-swapped fingerprints cannot bypass Recent-5 by changing wording. Python, not the critic, computes scores.",
+  "semantic_review_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/recent5-semantic-review.json",
+  "semantic_review_sha256": "3cde17827ad75413d8e62ab866643bdc1d4e8eebeaa7d488e34b5744ddb0ef34"
+}

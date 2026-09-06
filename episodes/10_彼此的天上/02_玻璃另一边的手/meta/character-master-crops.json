@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "source_master_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-a1b2c3d4e5f6-a4.png",
+  "source_master_sha256": "79990e8bd59cd62e9b56e977567ef581cca0193d16565e580680a850ff08f5fc",
+  "source_master_status": "LOCKED",
+  "created_at": "2026-09-06T13:44:29+08:00",
+  "updated_at": "2026-09-06T13:45:38+08:00",
+  "items": {
+    "P01": {
+      "character_id": "P01",
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/identity/character-masters/P01.png",
+      "sha256": "1baa444fa2218b7b729b39b3cd71f91c9f5669fe573c830755fa5badad6134a3",
+      "face_box": {
+        "x": 0.29,
+        "y": 0.2,
+        "w": 0.25,
+        "h": 0.28
+      },
+      "crop_size": [
+        513,
+        831
+      ],
+      "derived_not_generated": true
+    },
+    "P02": {
+      "character_id": "P02",
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/identity/character-masters/P02.png",
+      "sha256": "29c9fe08576b8eb19964236cb31cc004210dd1f202280b970e0e2f693306394e",
+      "face_box": {
+        "x": 0.55,
+        "y": 0.29,
+        "w": 0.33,
+        "h": 0.29
+      },
+      "crop_size": [
+        647,
+        861
+      ],
+      "derived_not_generated": true
+    }
+  }
+}

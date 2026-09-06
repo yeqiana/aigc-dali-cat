@@ -5,8 +5,9 @@
 Formal activation is version-based, never file-presence based.
 
 Modes:
-- production: Episode tool_version >= 2.2.0; canonical schema-2 LOCKED
-  meta/shot-progression-review.json is mandatory.
+- production: Episode tool_version >= 2.2.0; canonical schema-2 or schema-3 LOCKED
+  meta/shot-progression-review.json is mandatory. Schema 3 is the V2.6.1
+  directing superset and remains compatible with the V2.2 narrative core.
 - legacy: Episode tool_version < 2.2.0; core is NOT_APPLICABLE.
 - regression: legacy Episode may explicitly opt into a
   NON_AUTHORITY_REGRESSION_ONLY test input. Regression input can never satisfy
@@ -212,8 +213,9 @@ def activation_errors(ep: Path) -> list[str]:
     except Exception as exc:
         return [f"VISUAL_NARRATIVE_INPUT_INVALID:{exc}"]
 
-    if int(data.get("schema_version") or 0) != 2:
-        return ["VISUAL_NARRATIVE_INPUT_SCHEMA_MISMATCH:expected=2"]
+    input_schema = int(data.get("schema_version") or 0)
+    if input_schema not in {2, 3}:
+        return ["VISUAL_NARRATIVE_INPUT_SCHEMA_MISMATCH:expected=2_or_3"]
     if data.get("status") != "LOCKED":
         return ["VISUAL_NARRATIVE_INPUT_NOT_LOCKED"]
     rows = data.get("frames")

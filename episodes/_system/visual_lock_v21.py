@@ -34,6 +34,7 @@ import critic_runtime_v211  # STORY_OS_V211_PERF_RECOVERY
 import runtime_router
 import runtime_provenance
 import product_review_adapter
+import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path("meta/story-gates.json")
@@ -261,17 +262,20 @@ def choose_plan(ep: Path) -> dict:
         key=lambda r: (r["impact"], r["frame"])
     ))
     baseline_selection = "opening_social_anchor" if preferred_baseline else "ordinary_fallback"
-    worst = take(sorted(
-        [r for r in rows if r["frame"] != baseline["frame"]],
-        key=lambda r: (-r["environment_severity"], -r["impact"], r["frame"])
+    # Reserve scarce semantic roles before the generic worst-environment slot.
+    # A common episode has exactly one true climax/high-impact frame; selecting
+    # `worst` first can consume that frame and make a valid 1+3 plan impossible.
+    high = take(sorted(
+        [r for r in rows if r["mode"] in {"climax_impact", "anomaly_amplified"} or r["impact"] >= 3] or rows,
+        key=lambda r: (-r["impact"], r["mode"] != "climax_impact", -r["frame"])
     ))
     first_anomaly = take(sorted(
         [r for r in rows if r["mode"] == "anomaly_reveal" or r["impact"] >= 2] or rows,
         key=lambda r: (r["frame"], -r["impact"])
     ))
-    high = take(sorted(
-        [r for r in rows if r["mode"] in {"climax_impact", "anomaly_amplified"} or r["impact"] >= 3] or rows,
-        key=lambda r: (-r["impact"], r["mode"] != "climax_impact", -r["frame"])
+    worst = take(sorted(
+        [r for r in rows if r["frame"] != baseline["frame"]],
+        key=lambda r: (-r["environment_severity"], -r["impact"], r["frame"])
     ))
 
     plan_rows = [
@@ -555,7 +559,7 @@ V2.2.1-only checks (world identity / character appearance anchor / cultural envi
 Interpret anomaly_scale_delivery=true on ordinary/no-anomaly frames as "the frame correctly avoids unplanned spectacle and matches its locked impact level."
 Interpret scale_reference_fidelity=true on low-impact frames as "no false/contradictory scale cue"; for high impact it MUST be visibly useful.
 
-Write ONLY valid JSON to {rel_out}:
+Return ONLY valid JSON as your final response. Do not call shell/exec/PowerShell, do not read SKILL.md/AGENTS.md/repository files, and do not inspect any source beyond the four attached images plus the contract text already embedded in this prompt. The Codex CLI will persist your final response to {rel_out} automatically:
 {{
   "calibration": [
     {{
@@ -729,8 +733,11 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
 
 
 def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
-    if attempt not in {1, 2}:
-        raise RuntimeError("attempt must be 1 or 2")
+    if attempt < 1:
+        raise RuntimeError("attempt must be >= 1")
+    active_runtime, _ = runtime_router.detect()
+    if attempt > 2 and (active_runtime not in {"WORK", "WEB"} or codex_raw):
+        raise RuntimeError("extended Visual Lock attempts require WORK/WEB product review after finalized source drift")
     baseline_errors=visual_lock_baseline_gate.validate_review(ep)
     if baseline_errors:raise RuntimeError("ordinary_baseline separate review must PASS before final Visual Lock critic: "+"; ".join(baseline_errors[:8]))
     contract = compile_prompt_contract(ep)
@@ -738,7 +745,6 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
     candidate = ep / CANDIDATE_REL
     candidate.unlink(missing_ok=True)
     before = {r["id"]: r["sha256"] for r in assets}
-    active_runtime, _ = runtime_router.detect()
     if active_runtime in {"WORK", "WEB"} and not codex_raw:
         profile_path = Path(contract["profile_path"])
         profile_path = profile_path.resolve() if profile_path.is_absolute() else (ROOT / profile_path).resolve()
@@ -763,10 +769,11 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
         staged = staging / f"{row['id']}-{int(row['frame']):02d}{Path(row['path']).suffix.lower()}"
         shutil.copy2(row["path"], staged)
         staged_assets.append(staged)
+    cfg=storyos_config.load_config();model=str(storyos_config.get_path(cfg,"runtime.codex_image_controller_model"));effort=str(storyos_config.get_path(cfg,"runtime.codex_image_reasoning_effort"))
     cmd = prefix(codex) + [
-        "exec", "--skip-git-repo-check", "--ephemeral",
-        "-c", 'model_reasoning_effort="high"',
-        "-s", "workspace-write", "-C", str(ROOT), "--json"
+        "exec", "--skip-git-repo-check", "--ephemeral", "--ignore-rules",
+        "-m", model, "-c", f'model_reasoning_effort="{effort}"',
+        "-s", "danger-full-access" if os.name=="nt" else "workspace-write", "-C", str(ROOT), "--json", "-o", str(candidate)
     ]
     for staged in staged_assets:
         cmd += ["-i", str(staged)]

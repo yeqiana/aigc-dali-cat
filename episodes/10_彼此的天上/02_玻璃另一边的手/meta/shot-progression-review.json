@@ -1,6 +1,7 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "status": "LOCKED",
+  "genre_family": "general_reality_crack",
   "anomaly_applicable": true,
   "anomaly_exception_reason": "",
   "interaction_applicable": true,
@@ -11,597 +12,199 @@
     "frame10_requires_new_question_or_evidence": true,
     "scale_only_escalation_is_not_enough": true,
     "max_passive_human_frames_after_confirmation": 2,
-    "emotion_intensity_range": [
-      0,
-      4
-    ],
+    "emotion_intensity_range": [0, 4],
     "emotion_trigger_required_at_intensity_gte": 2,
     "synchronized_theatrical_reaction_forbidden": true,
     "max_consecutive_urgent_frames": 2,
     "min_meaningful_interaction_per_5_human_frames": 1,
     "max_meaningful_interaction_ratio": 0.75,
-    "opening_social_natural_interaction_required": true
+    "opening_social_natural_interaction_required": true,
+    "require_large_and_small_scene": true,
+    "exact_scene_position_reuse_forbidden": true,
+    "min_cinematic_reference_frames": 2,
+    "practical_lighting_required": true,
+    "suspense_genre_requires_concealed_anomaly": true
   },
   "frames": [
     {
-      "frame": "01",
-      "camera_position": "副驾前置自拍",
-      "subject_distance": "近中景",
-      "primary_subject": "情侣与方向盘",
-      "action": "P02偏镜头带入P01",
-      "visual_function": "建立情侣继续旅行与衣着",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P02前置手机",
-      "location_zone": "车内",
-      "anomaly_logic_stage": "ordinary",
-      "human_action_stage": "ordinary",
-      "human_present": true,
-      "emotion": {
-        "state": "relaxed",
-        "intensity": 1,
-        "trigger": "",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "group_selfie",
-        "actor": "P02",
-        "target": "P01",
-        "action": "P02偏镜头带入P01",
-        "meaningful": true
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"01","camera_position":"副驾前置自拍","subject_distance":"近中景","primary_subject":"情侣与方向盘","action":"P02偏镜头带入P01","visual_function":"建立情侣继续旅行与衣着","capture_purpose":"普通旅行自拍","pov_mode":"P02前置手机","location_zone":"车内副驾","shot_scale":"medium","scene_position_id":"car_passenger_front_selfie_01",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"sky_light","contrast_mode":"flat_natural","suspense_function":"none","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"none","purpose":"","physical_anchor":"","adds_information":false},
+      "anomaly_logic_stage":"ordinary","human_action_stage":"ordinary","human_present":true,
+      "emotion":{"state":"relaxed","intensity":1,"trigger":"","response_sync":"asynchronous"},
+      "interaction":{"type":"group_selfie","actor":"P02","target":"P01","action":"P02偏镜头带入P01","meaningful":true},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "02",
-      "camera_position": "房门内广角",
-      "subject_distance": "广角",
-      "primary_subject": "P02与落地窗",
-      "action": "P02搭外套并提醒充电",
-      "visual_function": "建立窗外陡坡无站立面",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "房间入口",
-      "anomaly_logic_stage": "ordinary",
-      "human_action_stage": "ordinary",
-      "human_present": true,
-      "emotion": {
-        "state": "ordinary",
-        "intensity": 0,
-        "trigger": "",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"02","camera_position":"房门内广角","subject_distance":"广角","primary_subject":"P02与落地窗","action":"P02搭外套并提醒充电","visual_function":"建立窗外陡坡无站立面","capture_purpose":"入住后拍房间给朋友看","pov_mode":"P01第一人称手机","location_zone":"房间入口","shot_scale":"wide","scene_position_id":"room_door_establish_02",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"window_light","contrast_mode":"soft_directional","suspense_function":"none","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"none","purpose":"","physical_anchor":"","adds_information":false},
+      "anomaly_logic_stage":"ordinary","human_action_stage":"ordinary","human_present":true,
+      "emotion":{"state":"ordinary","intensity":0,"trigger":"","response_sync":"asynchronous"},
+      "interaction":{"type":"none","actor":"","target":"","action":"","meaningful":false},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "03",
-      "camera_position": "窗边斜侧",
-      "subject_distance": "近中景",
-      "primary_subject": "雨玻璃与P02",
-      "action": "P02指出外侧清晰区",
-      "visual_function": "出现另一屋袖口",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "窗左侧",
-      "anomaly_logic_stage": "discovery",
-      "human_action_stage": "notice",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 2,
-        "trigger": "出现另一屋袖口",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"03","camera_position":"窗边斜侧","subject_distance":"近中景","primary_subject":"雨玻璃与P02","action":"P02指出外侧清晰区","visual_function":"出现另一屋袖口","capture_purpose":"记录刚被发现的异常局部","pov_mode":"P01第一人称手机","location_zone":"窗左前侧","shot_scale":"close","scene_position_id":"window_left_oblique_03",
+      "cinematic_reference":{"reference_id":"FRAME_WITHIN_FRAME","technique_translation":"利用真实落地窗框把异常限制在小块清晰区，保持手机站位，不复刻具体电影镜头","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"ceiling_light","contrast_mode":"mixed_practical","suspense_function":"make_reflection_legible","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"fog_or_mist","purpose":"让异常先只从内侧雾与外侧雨膜之间泄露一小块信息","physical_anchor":"玻璃内侧冷凝雾与外侧残留水膜","adds_information":true},
+      "anomaly_logic_stage":"discovery","human_action_stage":"notice","human_present":true,
+      "emotion":{"state":"alert","intensity":2,"trigger":"出现另一屋袖口","response_sync":"asynchronous"},
+      "interaction":{"type":"none","actor":"","target":"","action":"","meaningful":false},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "04",
-      "camera_position": "床头侧后方",
-      "subject_distance": "广角",
-      "primary_subject": "床头灯与异常窗",
-      "action": "P01关灯、P02横移",
-      "visual_function": "关灯排除反光",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "床头区",
-      "anomaly_logic_stage": "confirmation",
-      "human_action_stage": "verify",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 2,
-        "trigger": "关灯排除反光",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"04","camera_position":"床头侧后方","subject_distance":"广角","primary_subject":"床头灯与异常窗","action":"P01关灯、P02横移","visual_function":"关灯排除反光","capture_purpose":"验证异常是否来自室内反射","pov_mode":"P01第一人称手机","location_zone":"床头后侧","shot_scale":"wide","scene_position_id":"bedside_back_test_04",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"other_story_motivated","contrast_mode":"low_light_practical","suspense_function":"hide_information","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"glass_reflection","purpose":"灯灭后仍保留玻璃层次，帮助区分真实反射与另一侧动作","physical_anchor":"落地窗玻璃表面与房间残余环境光","adds_information":true},
+      "anomaly_logic_stage":"confirmation","human_action_stage":"verify","human_present":true,
+      "emotion":{"state":"alert","intensity":2,"trigger":"关灯后异常仍不随反光移动","response_sync":"asynchronous"},
+      "interaction":{"type":"none","actor":"","target":"","action":"","meaningful":false},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "05",
-      "camera_position": "玻璃右侧贴近",
-      "subject_distance": "近景",
-      "primary_subject": "P02倒影与袖口",
-      "action": "P02换位观察错位",
-      "visual_function": "倒影与对面动作分离",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "窗右侧",
-      "anomaly_logic_stage": "spatial_contradiction",
-      "human_action_stage": "verify",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 2,
-        "trigger": "倒影与对面动作分离",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "point_out",
-        "actor": "P02",
-        "target": "P01",
-        "action": "P02换位观察错位",
-        "meaningful": true
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"05","camera_position":"玻璃右侧贴近","subject_distance":"近景","primary_subject":"P02倒影与袖口","action":"P02换位观察错位","visual_function":"倒影与对面动作分离","capture_purpose":"记录倒影与对面动作的错位证据","pov_mode":"P01第一人称手机","location_zone":"窗右贴近位","shot_scale":"detail","scene_position_id":"window_right_reflection_05",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"other_story_motivated","contrast_mode":"low_light_practical","suspense_function":"make_reflection_legible","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"glass_reflection","purpose":"同一块玻璃同时显示P02真实倒影与不同步袖口，提供第二层不一致信息","physical_anchor":"玻璃反射角度与窗后局部清晰区","adds_information":true},
+      "anomaly_logic_stage":"spatial_contradiction","human_action_stage":"verify","human_present":true,
+      "emotion":{"state":"alert","intensity":2,"trigger":"倒影与对面动作分离","response_sync":"asynchronous"},
+      "interaction":{"type":"point_out","actor":"P02","target":"P01","action":"P02换位让P01看错位","meaningful":true},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "06",
-      "camera_position": "床尾看手机",
-      "subject_distance": "近中景",
-      "primary_subject": "P02与手机屏",
-      "action": "P01展示相册",
-      "visual_function": "共同目击成立",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "车内",
-      "anomaly_logic_stage": "confirmation",
-      "human_action_stage": "discuss",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 1,
-        "trigger": "",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"06","camera_position":"床尾回看位","subject_distance":"近中景","primary_subject":"P02与刚拍内容","action":"P01把手机收回给P02看","visual_function":"共同目击成立","capture_purpose":"异常短暂消失后保留两人的共同确认","pov_mode":"P01第一人称手机","location_zone":"床尾区域","shot_scale":"medium","scene_position_id":"bedfoot_review_06",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"phone_screen","contrast_mode":"low_light_practical","suspense_function":"reveal_partial_information","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"screen_reflection","purpose":"只让手机亮面和P02反应说明共同目击，不把屏幕内容拍成硬证据说明书","physical_anchor":"普通手机屏幕反光","adds_information":true},
+      "anomaly_logic_stage":"confirmation","human_action_stage":"discuss","human_present":true,
+      "emotion":{"state":"alert","intensity":1,"trigger":"","response_sync":"asynchronous"},
+      "interaction":{"type":"show_phone","actor":"P01","target":"P02","action":"P01把刚拍内容给P02确认","meaningful":true},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "07",
-      "camera_position": "窗下低位",
-      "subject_distance": "广角",
-      "primary_subject": "低位擦痕和木碗",
-      "action": "P02蹲低观察",
-      "visual_function": "木碗矮凳证明生活空间",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "房间入口",
-      "anomaly_logic_stage": "spatial_contradiction",
-      "human_action_stage": "move",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 2,
-        "trigger": "木碗矮凳证明生活空间",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"07","camera_position":"窗下低位","subject_distance":"广角","primary_subject":"低位擦痕和木碗","action":"P02蹲低观察","visual_function":"木碗矮凳证明生活空间","capture_purpose":"记录对面普通生活物第一次稳定出现","pov_mode":"P01第一人称手机","location_zone":"窗下低位左侧","shot_scale":"wide","scene_position_id":"window_low_life_07",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"other_story_motivated","contrast_mode":"partial_illumination","suspense_function":"reveal_partial_information","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"foreground_occlusion","purpose":"让窗框和残余雨膜遮住大部分区域，只露木碗、木架与袖口","physical_anchor":"窗框、床沿和雨膜共同形成真实遮挡","adds_information":true},
+      "anomaly_logic_stage":"spatial_contradiction","human_action_stage":"move","human_present":true,
+      "emotion":{"state":"alert","intensity":2,"trigger":"木碗矮凳证明生活空间","response_sync":"asynchronous"},
+      "interaction":{"type":"none","actor":"","target":"","action":"","meaningful":false},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "08",
-      "camera_position": "P02侧后方",
-      "subject_distance": "近中景",
-      "primary_subject": "P02擦雾",
-      "action": "P02用袖口擦内雾",
-      "visual_function": "女友擦雾触发",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "窗左侧",
-      "anomaly_logic_stage": "causal_contradiction",
-      "human_action_stage": "act",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 2,
-        "trigger": "女友擦雾触发",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"08","camera_position":"P02侧后方","subject_distance":"近中景","primary_subject":"P02擦雾","action":"P02用袖口擦内雾","visual_function":"女友普通擦雾动作成为触发","capture_purpose":"记录P02自然擦雾动作","pov_mode":"P01第一人称手机","location_zone":"窗中左侧后方","shot_scale":"close","scene_position_id":"window_p02_wipe_08",
+      "cinematic_reference":{"reference_id":"NEGATIVE_SPACE_SUSPENSE","technique_translation":"P02偏在画面一侧，另一侧留给被雾遮住的玻璃信息区；仍是P01实际站位能拍到的侧后方手机画面","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"ceiling_light","contrast_mode":"mixed_practical","suspense_function":"create_negative_space","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"fog_or_mist","purpose":"P02擦雾前异常大部分仍藏在冷凝雾后，擦拭动作本身逐步开放信息","physical_anchor":"玻璃内侧冷凝雾","adds_information":true},
+      "anomaly_logic_stage":"causal_contradiction","human_action_stage":"act","human_present":true,
+      "emotion":{"state":"alert","intensity":2,"trigger":"P02决定擦开雾看清对面","response_sync":"asynchronous"},
+      "interaction":{"type":"none","actor":"","target":"","action":"","meaningful":false},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "09",
-      "camera_position": "玻璃表面斜近拍",
-      "subject_distance": "广角",
-      "primary_subject": "两块错位半圆",
-      "action": "对面成人擦开外侧水膜",
-      "visual_function": "对面直接擦开雨膜",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "床头区",
-      "anomaly_logic_stage": "causal_contradiction",
-      "human_action_stage": "act",
-      "human_present": true,
-      "emotion": {
-        "state": "urgent",
-        "intensity": 3,
-        "trigger": "对面直接擦开雨膜",
-        "response_sync": "shared_but_unsynchronized"
-      },
-      "interaction": {
-        "type": "shared_attention",
-        "actor": "P02",
-        "target": "对面成年人",
-        "action": "对面成人擦开外侧水膜",
-        "meaningful": true
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"09","camera_position":"玻璃表面斜近拍","subject_distance":"广角","primary_subject":"两块错位半圆","action":"对面成年人擦开外侧水膜","visual_function":"对面直接回应P02的擦雾动作","capture_purpose":"记录动作—回应的核心证据","pov_mode":"P01第一人称手机","location_zone":"窗中部斜侧","shot_scale":"detail","scene_position_id":"window_dual_wipe_09",
+      "cinematic_reference":{"reference_id":"FRAME_WITHIN_FRAME","technique_translation":"把两个不规则清晰半圆当成真实玻璃上的二层小画框，突出回应关系但不做机械对称","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"ceiling_light","contrast_mode":"mixed_practical","suspense_function":"make_reflection_legible","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"doorway_or_window","purpose":"异常只通过玻璃上的局部清晰窗口开放，周围仍被雾和雨膜封住","physical_anchor":"落地窗与两个错位擦拭半圆","adds_information":true},
+      "anomaly_logic_stage":"causal_contradiction","human_action_stage":"act","human_present":true,
+      "emotion":{"state":"urgent","intensity":3,"trigger":"对面成年人直接擦开外侧雨膜回应","response_sync":"shared_but_unsynchronized"},
+      "interaction":{"type":"shared_attention","actor":"P02","target":"对面成年人","action":"双方通过各自擦拭动作互相观察","meaningful":true},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "10",
-      "camera_position": "半圆缺口平视",
-      "subject_distance": "近景",
-      "primary_subject": "对面成年人半脸",
-      "action": "双方从遮挡后互相探看",
-      "visual_function": "普通成人也在观察判断",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "窗右侧",
-      "anomaly_logic_stage": "human_consequence",
-      "human_action_stage": "observe",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 2,
-        "trigger": "普通成人也在观察判断",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"10","camera_position":"半圆缺口平视","subject_distance":"近景","primary_subject":"对面成年人半脸","action":"双方从遮挡后互相探看","visual_function":"普通成年人也在观察判断我们","capture_purpose":"确认对面是普通人而非鬼脸","pov_mode":"P01第一人称手机","location_zone":"窗中右侧视线位","shot_scale":"close","scene_position_id":"window_adult_face_10",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"other_story_motivated","contrast_mode":"partial_illumination","suspense_function":"reveal_partial_information","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"foreground_occlusion","purpose":"只通过擦开的边缘和生活物遮挡露出半张普通脸，避免恐怖贴脸","physical_anchor":"雨膜边缘、窗框和对面室内生活物","adds_information":true},
+      "anomaly_logic_stage":"human_consequence","human_action_stage":"observe","human_present":true,
+      "emotion":{"state":"alert","intensity":2,"trigger":"对面普通成年人明确回看并判断主角","response_sync":"asynchronous"},
+      "interaction":{"type":"none","actor":"","target":"","action":"","meaningful":false},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "11",
-      "camera_position": "胸口高度上抬",
-      "subject_distance": "近中景",
-      "primary_subject": "手机亮光与成年人",
-      "action": "P01抬手机、对面举布",
-      "visual_function": "手机亮光引发防御",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "车内",
-      "anomaly_logic_stage": "human_consequence",
-      "human_action_stage": "act",
-      "human_present": true,
-      "emotion": {
-        "state": "urgent",
-        "intensity": 3,
-        "trigger": "手机亮光引发防御",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"11","camera_position":"胸口高度上抬","subject_distance":"近中景","primary_subject":"手机亮光与成年人","action":"P01抬手机、对面举布","visual_function":"P01求证动作直接引发对方防御","capture_purpose":"为了拍清而继续举机时自然记录反应","pov_mode":"P01第一人称手机","location_zone":"窗前中部站位","shot_scale":"medium","scene_position_id":"window_phone_raise_11",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"phone_screen","contrast_mode":"mixed_practical","suspense_function":"guide_attention_without_staging","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"light_and_shadow","purpose":"普通手机亮屏只改变玻璃亮度边界并触发对方遮挡，不作为超自然光源","physical_anchor":"P01手机屏幕在湿玻璃上的真实反射","adds_information":true},
+      "anomaly_logic_stage":"human_consequence","human_action_stage":"act","human_present":true,
+      "emotion":{"state":"urgent","intensity":3,"trigger":"手机亮光引发对面举布防御","response_sync":"asynchronous"},
+      "interaction":{"type":"none","actor":"","target":"","action":"","meaningful":false},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "12",
-      "camera_position": "手机压低倾斜",
-      "subject_distance": "广角",
-      "primary_subject": "P02手和粗布",
-      "action": "P02按低P01手腕",
-      "visual_function": "女友压低手机后对面缓和",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "房间入口",
-      "anomaly_logic_stage": "reversal",
-      "human_action_stage": "adapt",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 2,
-        "trigger": "女友压低手机后对面缓和",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"12","camera_position":"手机压低倾斜","subject_distance":"广角","primary_subject":"P02手腕动作和对面粗布","action":"P02按低P01手腕","visual_function":"P02制止逼近式拍摄后对面缓和","capture_purpose":"机位被P02压低时自然留下歪斜记录","pov_mode":"P01第一人称手机","location_zone":"窗前偏左低机位","shot_scale":"wide","scene_position_id":"window_wrist_lower_12",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"phone_screen","contrast_mode":"low_light_practical","suspense_function":"separate_foreground_background","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"screen_reflection","purpose":"随着手机压低让屏幕反光变弱，对面粗布也放低，强化普通避让因果","physical_anchor":"手机屏与湿玻璃反光强度变化","adds_information":true},
+      "anomaly_logic_stage":"reversal","human_action_stage":"adapt","human_present":true,
+      "emotion":{"state":"alert","intensity":2,"trigger":"P02压低手机后对面也缓和","response_sync":"asynchronous"},
+      "interaction":{"type":"touch_support","actor":"P02","target":"P01","action":"P02按住P01手腕并把手机压低","meaningful":true},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "13",
-      "camera_position": "P02肩侧",
-      "subject_distance": "近中景",
-      "primary_subject": "孩子与成年人",
-      "action": "孩子从成人身后探出",
-      "visual_function": "孩子出现引入家庭风险",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "窗左侧",
-      "anomaly_logic_stage": "human_consequence",
-      "human_action_stage": "observe",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 2,
-        "trigger": "孩子出现引入家庭风险",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "shared_attention",
-        "actor": "P02",
-        "target": "对面孩子",
-        "action": "孩子从成人身后探出",
-        "meaningful": true
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"13","camera_position":"P02肩侧","subject_distance":"近中景","primary_subject":"孩子与成年人","action":"孩子从成年人身后探出","visual_function":"孩子出现引入家庭关系与风险","capture_purpose":"保持低机位时记录孩子第一次出现","pov_mode":"P01第一人称手机","location_zone":"窗前左肩线","shot_scale":"medium","scene_position_id":"window_child_peek_13",
+      "cinematic_reference":{"reference_id":"NEGATIVE_SPACE_SUSPENSE","technique_translation":"以前景P02肩线压住一侧，把对面成年人身后的窄空隙留给孩子探出，信息来自真实遮挡而非摆拍","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"other_story_motivated","contrast_mode":"partial_illumination","suspense_function":"reveal_partial_information","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"foreground_occlusion","purpose":"孩子先被成年人身体遮住，只露半张脸和小手，建立家庭关系而非惊吓","physical_anchor":"成年人身体、衣物与窗框形成遮挡","adds_information":true},
+      "anomaly_logic_stage":"human_consequence","human_action_stage":"observe","human_present":true,
+      "emotion":{"state":"alert","intensity":2,"trigger":"孩子从成年人身后探出","response_sync":"asynchronous"},
+      "interaction":{"type":"shared_attention","actor":"P02","target":"对面孩子","action":"P02停住动作看向孩子，孩子试图靠近","meaningful":true},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "14",
-      "camera_position": "窗面稍广",
-      "subject_distance": "广角",
-      "primary_subject": "孩子被抱走",
-      "action": "成人抱离孩子并挡住",
-      "visual_function": "成年人抱走孩子完成反转",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "床头区",
-      "anomaly_logic_stage": "payoff",
-      "human_action_stage": "consequence",
-      "human_present": true,
-      "emotion": {
-        "state": "urgent",
-        "intensity": 4,
-        "trigger": "成年人抱走孩子完成反转",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"14","camera_position":"窗面稍广且开始下坠","subject_distance":"广角","primary_subject":"孩子被抱走、P02手腕动作与玻璃反射中的暗屏","action":"P01按灭并压低手机，同时成年人抱离孩子","visual_function":"P01放弃最强证据与对面保护孩子同时完成高潮反转","capture_purpose":"录像停止前最后清楚的高潮瞬间","pov_mode":"P01第一人称手机","location_zone":"窗前中央高潮位","shot_scale":"wide","scene_position_id":"window_climax_lowering_14",
+      "cinematic_reference":{"reference_id":"FRAME_WITHIN_FRAME","technique_translation":"利用真实窗框把对面成年人和孩子框在局部清晰区，同时让手机暗屏只通过玻璃反射作为前景小信息层","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"phone_screen","contrast_mode":"mixed_practical","suspense_function":"make_reflection_legible","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"glass_reflection","purpose":"用玻璃反射同时证明P01按灭手机与对面成年人抱走孩子的并发动作","physical_anchor":"湿玻璃反射中的暗屏、P02手腕与对面局部清晰区","adds_information":true},
+      "anomaly_logic_stage":"payoff","human_action_stage":"consequence","human_present":true,
+      "emotion":{"state":"urgent","intensity":4,"trigger":"孩子靠近时成年人立刻抱走，P01同时决定停录","response_sync":"asynchronous"},
+      "interaction":{"type":"touch_support","actor":"P02","target":"P01","action":"P02仍按住P01手腕，P01主动按灭并压低手机","meaningful":true},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "15",
-      "camera_position": "布边遮挡近拍",
-      "subject_distance": "近景",
-      "primary_subject": "粗布边与最后一眼",
-      "action": "成人盖窗、P02收手",
-      "visual_function": "对面主动盖窗终止接触",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "窗右侧",
-      "anomaly_logic_stage": "payoff",
-      "human_action_stage": "consequence",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 2,
-        "trigger": "对面主动盖窗终止接触",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"15","camera_position":"停止前下坠残帧","subject_distance":"近景","primary_subject":"护住孩子的成年人、粗布边与倾斜窗面","action":"成年人护住孩子并盖窗，机位继续下坠","visual_function":"双方主动终止接触","capture_purpose":"录像停止前残留的最后下坠画面","pov_mode":"P01第一人称手机","location_zone":"窗前下坠右侧","shot_scale":"close","scene_position_id":"window_cloth_close_15",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"other_story_motivated","contrast_mode":"partial_illumination","suspense_function":"hide_information","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"foreground_occlusion","purpose":"粗织布从对面空间逐步遮住最后视野，明确接触由对方主动终止","physical_anchor":"对面成年人手中的粗织布与窗框","adds_information":true},
+      "anomaly_logic_stage":"payoff","human_action_stage":"consequence","human_present":true,
+      "emotion":{"state":"alert","intensity":2,"trigger":"对面主动盖窗终止接触","response_sync":"asynchronous"},
+      "interaction":{"type":"none","actor":"","target":"","action":"","meaningful":false},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "16",
-      "camera_position": "手机下垂低机位",
-      "subject_distance": "近中景",
-      "primary_subject": "P02按低的手",
-      "action": "P02示意别追拍",
-      "visual_function": "女友制止追拍",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "车内",
-      "anomaly_logic_stage": "reversal",
-      "human_action_stage": "adapt",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 2,
-        "trigger": "女友制止追拍",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"16","camera_position":"床边高度最终低机位","subject_distance":"近中景","primary_subject":"普通雨雾玻璃与P02松开的手","action":"录像在机位压低后停止","visual_function":"主角停止追拍，异常回到不可见","capture_purpose":"停止录像前最后一帧","pov_mode":"P01第一人称手机","location_zone":"床侧低位","shot_scale":"detail","scene_position_id":"bededge_record_stop_16",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"ceiling_light","contrast_mode":"low_light_practical","suspense_function":"hide_information","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"fog_or_mist","purpose":"玻璃重新被内侧雾与外侧雨膜封住，表示信息消失而非新机制出现","physical_anchor":"恢复完整覆盖的冷凝雾和残雨膜","adds_information":true},
+      "anomaly_logic_stage":"reversal","human_action_stage":"adapt","human_present":true,
+      "emotion":{"state":"alert","intensity":2,"trigger":"P01明确停止追拍并结束录像","response_sync":"asynchronous"},
+      "interaction":{"type":"none","actor":"","target":"","action":"","meaningful":false},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "17",
-      "camera_position": "床边远角",
-      "subject_distance": "广角",
-      "primary_subject": "床沿P02与生活物",
-      "action": "P01递水共同复盘",
-      "visual_function": "两人从争真假转向理解",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "房间入口",
-      "anomaly_logic_stage": "ordinary",
-      "human_action_stage": "discuss",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 1,
-        "trigger": "",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "hand_item",
-        "actor": "P01",
-        "target": "P02",
-        "action": "P01递水共同复盘",
-        "meaningful": true
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"17","camera_position":"几分钟后房门侧普通旅行照","subject_distance":"广角","primary_subject":"床沿P02与充电线、外卖袋、潮湿外套","action":"P01递水，P02接过，二人低声复盘","visual_function":"异常后普通生活重新接管画面","capture_purpose":"几分钟后只拍普通房间生活照，不再对窗取证","pov_mode":"P01第一人称手机","location_zone":"房门内右侧","shot_scale":"wide","scene_position_id":"room_aftercare_17",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"ceiling_light","contrast_mode":"flat_natural","suspense_function":"none","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"none","purpose":"","physical_anchor":"","adds_information":false},
+      "anomaly_logic_stage":"ordinary","human_action_stage":"discuss","human_present":true,
+      "emotion":{"state":"alert","intensity":1,"trigger":"","response_sync":"asynchronous"},
+      "interaction":{"type":"hand_item","actor":"P01","target":"P02","action":"P01递水给P02，二人低声复盘","meaningful":true},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "18",
-      "camera_position": "室外侧墙仰拍",
-      "subject_distance": "近中景",
-      "primary_subject": "外墙窗位与陡坡",
-      "action": "P02指出昨夜窗位",
-      "visual_function": "次日外墙与陡坡复核",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "窗左侧",
-      "anomaly_logic_stage": "spatial_contradiction",
-      "human_action_stage": "verify",
-      "human_present": true,
-      "emotion": {
-        "state": "alert",
-        "intensity": 1,
-        "trigger": "",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"18","camera_position":"次日上午室外侧墙远看","subject_distance":"大场景","primary_subject":"完整外墙、窗位与向下陡坡","action":"P02在安全处指出昨夜窗位","visual_function":"现实复核窗外无法站人","capture_purpose":"次日正常室外复核","pov_mode":"P01第一人称手机","location_zone":"民宿外墙安全侧位","shot_scale":"extreme_wide","scene_position_id":"exterior_wall_reality_18",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"sky_light","contrast_mode":"flat_natural","suspense_function":"reveal_partial_information","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"none","purpose":"","physical_anchor":"","adds_information":false},
+      "anomaly_logic_stage":"spatial_contradiction","human_action_stage":"verify","human_present":true,
+      "emotion":{"state":"alert","intensity":1,"trigger":"","response_sync":"asynchronous"},
+      "interaction":{"type":"point_out","actor":"P02","target":"P01","action":"P02指出昨夜对应窗位和陡坡","meaningful":true},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "19",
-      "camera_position": "室内窗面侧光",
-      "subject_distance": "广角",
-      "primary_subject": "普通玻璃与背包",
-      "action": "P01检查玻璃、P02催离开",
-      "visual_function": "无掌印线头保留留白",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "床头区",
-      "anomaly_logic_stage": "ordinary",
-      "human_action_stage": "adapt",
-      "human_present": true,
-      "emotion": {
-        "state": "ordinary",
-        "intensity": 0,
-        "trigger": "",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "none",
-        "actor": "",
-        "target": "",
-        "action": "",
-        "meaningful": false
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"19","camera_position":"次日上午室内玻璃侧近拍","subject_distance":"近景","primary_subject":"普通玻璃、P02旅行包与P01回看动作","action":"P01回看停录前短视频并复核无实体残留","visual_function":"把擦窗、挡光、抱走孩子重读为一条风险判断链","capture_purpose":"退房前最后一次普通复核","pov_mode":"P01第一人称手机","location_zone":"窗边晨间侧位","shot_scale":"close","scene_position_id":"morning_glass_review_19",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"window_light","contrast_mode":"soft_directional","suspense_function":"reveal_partial_information","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"glass_reflection","purpose":"普通晨光下玻璃只保留现实反射和水痕，不再出现对面空间，形成留白","physical_anchor":"清晨窗光与普通玻璃表面","adds_information":true},
+      "anomaly_logic_stage":"ordinary","human_action_stage":"adapt","human_present":true,
+      "emotion":{"state":"ordinary","intensity":0,"trigger":"","response_sync":"asynchronous"},
+      "interaction":{"type":"none","actor":"","target":"","action":"","meaningful":false},"new_information":true,"continuity_exception_reason":""
     },
     {
-      "frame": "20",
-      "camera_position": "车旁腰部",
-      "subject_distance": "近景",
-      "primary_subject": "P02、车门和楼上窗",
-      "action": "P02说完拉门上车",
-      "visual_function": "正常离开且男友放下取证",
-      "capture_purpose": "保存旅行或异常变化的当事人记录",
-      "pov_mode": "P01第一人称手机",
-      "location_zone": "窗右侧",
-      "anomaly_logic_stage": "payoff",
-      "human_action_stage": "consequence",
-      "human_present": true,
-      "emotion": {
-        "state": "relaxed",
-        "intensity": 1,
-        "trigger": "",
-        "response_sync": "asynchronous"
-      },
-      "interaction": {
-        "type": "enter_vehicle",
-        "actor": "P02",
-        "target": "P01",
-        "action": "P02说完拉门上车",
-        "meaningful": true
-      },
-      "new_information": true,
-      "continuity_exception_reason": ""
+      "frame":"20","camera_position":"车旁离店普通后摄","subject_distance":"中广景","primary_subject":"P02、车门与民宿外墙","action":"P02拉门回看，P01拍完普通离店照后删除求证长消息","visual_function":"正常离开并确认求证优先级已经改变","capture_purpose":"普通旅行离店照","pov_mode":"P01第一人称手机","location_zone":"停车位车侧","shot_scale":"wide","scene_position_id":"departure_car_side_20",
+      "cinematic_reference":{"reference_id":"","technique_translation":"","exact_shot_recreation":false},
+      "lighting_design":{"practical_source":"sky_light","contrast_mode":"flat_natural","suspense_function":"guide_attention_without_staging","physically_motivated":true,"invented_cinematic_light":false},
+      "anomaly_concealment":{"carrier":"none","purpose":"","physical_anchor":"","adds_information":false},
+      "anomaly_logic_stage":"payoff","human_action_stage":"consequence","human_present":true,
+      "emotion":{"state":"relaxed","intensity":1,"trigger":"","response_sync":"asynchronous"},
+      "interaction":{"type":"enter_vehicle","actor":"P02","target":"P01","action":"P02说完后拉门上车","meaningful":true},"new_information":true,"continuity_exception_reason":""
     }
   ]
 }

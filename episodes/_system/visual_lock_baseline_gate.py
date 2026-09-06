@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 """Machine bridge between Visual Lock baseline generation and the parallel three."""
 from __future__ import annotations
-import argparse, datetime as dt, hashlib, json, subprocess, sys
+import argparse, datetime as dt, hashlib, json, shutil, subprocess, sys, tempfile
 from pathlib import Path
 import character_visual_contract
 import frame_contract
 import episode_performance
 import product_review_adapter
+import runtime_provenance
 import runtime_router
+import storyos_config
+from codex_subscription_image import command_prefix, resolve_codex
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -122,7 +125,11 @@ def run_product_critic(ep,attempt=1):
     if runtime not in {"WORK","WEB"}:raise ValueError("baseline product critic requires WORK/WEB")
     sources=[repo_file(draft["asset_path"]),ep/"meta/story-gates.json",ep/character_visual_contract.REL]
     prov=frame_contract.provenance(ep,int(draft["frame"]))
-    if prov and prov.get("path"):sources.append(repo_file(prov["path"]))
+    if prov and prov.get("path"):
+        prov_path=(ep/str(prov["path"])).resolve()
+        prov_path.relative_to(ep.resolve())
+        if not prov_path.is_file():raise ValueError(f"baseline frame contract missing: {prov['path']}")
+        sources.append(prov_path)
     request=product_review_adapter.prepare(ep,kind="visual-lock-baseline",runtime=runtime,attempt=attempt,prompt=critic_prompt(ep),source_paths=sources,candidate_path=ep/CANDIDATE_REL)
     return request
 
@@ -137,6 +144,29 @@ def finalize_product_critic(ep,attempt=1,runtime="WORK"):
     product_review_adapter.mark_complete(ep,"visual-lock-baseline",attempt=attempt,final_path=ep/REL)
     candidate.unlink(missing_ok=True)
     return {"status":"PASS",**result}
+
+def run_codex_critic(ep,attempt=1,codex_raw=None,timeout=300):
+    ep=Path(ep).resolve();draft=prepare_review(ep,force=False);candidate=ep/CANDIDATE_REL;candidate.unlink(missing_ok=True)
+    asset=repo_file(draft["asset_path"]);before=sha_file(asset)
+    staging=Path(tempfile.mkdtemp(prefix="story-os-baseline-"));staged=staging/("baseline"+asset.suffix.lower())
+    shutil.copy2(asset,staged)
+    cfg=storyos_config.load_config();model=str(storyos_config.get_path(cfg,"runtime.codex_image_controller_model"));effort=str(storyos_config.get_path(cfg,"runtime.codex_image_reasoning_effort"))
+    codex=resolve_codex(codex_raw);log=ep/"meta"/f"visual-lock-baseline-critic-attempt-{attempt}.jsonl"
+    cmd=command_prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-m",model,"-c",f'model_reasoning_effort="{effort}"',"-s","workspace-write","-C",str(ROOT),"--json","-i",str(staged),"-"]
+    try:
+        with log.open("w",encoding="utf-8",newline="\n") as handle:
+            done=subprocess.run(cmd,input=critic_prompt(ep).encode("utf-8"),stdout=handle,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+    finally:
+        shutil.rmtree(staging,ignore_errors=True)
+    if done.returncode!=0:raise ValueError(f"baseline Codex critic failed rc={done.returncode}; log={repo_rel(log)}")
+    if not candidate.is_file():raise ValueError(f"baseline Codex critic did not produce candidate JSON; log={repo_rel(log)}")
+    if sha_file(asset)!=before:raise ValueError("baseline Codex critic modified source image")
+    data=read_json(candidate);provenance=runtime_provenance.build_critic_provenance("CODEX",attempt=attempt,log=repo_rel(log));provenance["log_sha256"]=sha_file(log)
+    review={**draft,"decision":str(data.get("decision") or "FAIL").upper(),"checks":data.get("checks") or {},"face_boxes":data.get("face_boxes") or [],"note":str(data.get("note") or ""),"critic_provenance":provenance}
+    write_json(ep/REL,review);errors=validate_review(ep)
+    candidate.unlink(missing_ok=True)
+    if errors:return {"status":"FAIL","errors":errors}
+    return {"status":"PASS",**approve(ep)}
 
 def approve(ep):
     ep=Path(ep).resolve();errors=validate_review(ep)
@@ -191,14 +221,17 @@ def self_test():assert len(CHECKS)>=8;print("VISUAL LOCK BASELINE GATE SELF-TEST
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("prepare-review");p.add_argument("episode_dir");p.add_argument("--force",action="store_true")
-    p=sub.add_parser("run-critic");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1)
+    p=sub.add_parser("run-critic");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1);p.add_argument("--codex");p.add_argument("--timeout",type=int,default=300)
     p=sub.add_parser("finalize-review");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1);p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK")
     p=sub.add_parser("approve");p.add_argument("episode_dir");p=sub.add_parser("verify");p.add_argument("episode_dir");p=sub.add_parser("status");p.add_argument("episode_dir");sub.add_parser("self-test");a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0
     ep=Path(a.episode_dir).resolve()
     try:
         if a.cmd=="prepare-review":print(json.dumps(prepare_review(ep,a.force),ensure_ascii=False,indent=2));return 0
-        if a.cmd=="run-critic":print(json.dumps(run_product_critic(ep,a.attempt),ensure_ascii=False,indent=2));return product_review_adapter.HOST_ACTION_REQUIRED_RC
+        if a.cmd=="run-critic":
+            if a.codex:
+                result=run_codex_critic(ep,a.attempt,a.codex,a.timeout);print(json.dumps(result,ensure_ascii=False,indent=2));return 0 if result.get("status")=="PASS" else 2
+            print(json.dumps(run_product_critic(ep,a.attempt),ensure_ascii=False,indent=2));return product_review_adapter.HOST_ACTION_REQUIRED_RC
         if a.cmd=="finalize-review":
             result=finalize_product_critic(ep,a.attempt,a.runtime);print(json.dumps(result,ensure_ascii=False,indent=2));return 0 if result.get("status")=="PASS" else 2
         if a.cmd=="approve":print(json.dumps(approve(ep),ensure_ascii=False,indent=2));return 0

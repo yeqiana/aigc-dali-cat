@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "03",
+  "scene_prompt": "Frame 03 系列角色身份返修。保留原分镜与异常尺度：川西山谷普通民宿雨夜，P01 从窗边斜侧拍 P02 和落地窗；玻璃内侧冷凝起雾、外侧残留雨膜，只有一小块外侧水膜像刚被谁擦开，清晰区后面是另一间昏暗普通屋子的粗糙墙面和一截普通粗布袖口，周围仍能读到现实窗外窄外墙和向下陡坡。P02 必须严格沿用所附 EP001 女主身份参考：同一张脸、同一年龄感、同一黑发身份与自然体型，不得重新选脸；可按民宿室内场景穿浅灰卫衣/长裤等合适衣物。异常克制、局部、物理可信；不要鬼手、怪脸、裂缝、发光、文字、电影海报感。",
+  "scene_prompt_sha256": "16043f25474e79c36eb8f471bdbbde2339f9467e63beb1a83cb0a3e141e0045f",
+  "frame_contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\03-series-identity.txt",
+  "package_sha256": "4d8f72fa86bf024e16b7a2694c9beadf854c0f006e39a14dc8ed85282360e571",
+  "compiled_at": "2026-09-06T13:35:55+08:00"
+}

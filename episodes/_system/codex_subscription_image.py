@@ -100,7 +100,9 @@ def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str 
         if frame_contract_text and frame_contract_text.strip() else ''
     )
     return (
-        'You are an isolated Story OS image worker. Use image_generation exactly once.\n'
+        'You are an isolated Story OS image worker. FIRST ACTION: call image_generation exactly once. '
+        'Do NOT read SKILL.md, AGENTS.md, repository files, or any other instructions; all required production context is already embedded below. '
+        'Do NOT call shell/exec/Python/node before image_generation.\n'
         f'IMAGE MODEL CONTRACT: request model={image_model}, quality={image_quality}, canvas={size} exactly. strict={strict_model}. Never silently substitute a different image model or quality. If the image tool cannot honor an explicitly strict model, fail instead of pretending success.\n'
         f'{reference_lines}\n'
         'Use attached images only as continuity references required by the scene. '
@@ -129,9 +131,21 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             target = workdir / f'reference-{index:02d}{ext}'
             shutil.copy2(source, target)
             local_refs.append(target)
+        # Windows Codex sandbox can intermittently fail to read attached images with
+        # CreateProcessWithLogonW(1385), even after refs are copied into an ASCII-only
+        # temporary workdir. For reference-bound image workers only, disable that OS
+        # sandbox layer while still constraining the process cwd to the disposable
+        # workdir and preserving Story OS SHA/reference contracts.
+        sandbox_mode = 'danger-full-access' if os.name == 'nt' and local_refs else 'workspace-write'
+        # Image workers are intentionally narrow: Story OS already embeds the complete
+        # visual/frame contracts in the prompt. Muting the Codex skills catalog prevents
+        # the controller from spending a turn loading imagegen/SKILL.md before it can
+        # reach image_generation; project docs are likewise unnecessary in this temp cwd.
         cmd = command_prefix(codex) + [
-            'exec', '--skip-git-repo-check', '--ephemeral', '--enable', 'image_generation',
-            *controller_args(), '-s', 'workspace-write', '-C', str(workdir), '--json'
+            'exec', '--skip-git-repo-check', '--ephemeral', '--ignore-rules',
+            '-c', 'skills.include_instructions=false', '-c', 'project_doc_max_bytes=0',
+            '--enable', 'image_generation',
+            *controller_args(), '-s', sandbox_mode, '-C', str(workdir), '--json'
         ]
         for ref in local_refs:
             cmd.extend(['-i', str(ref)])
@@ -314,7 +328,9 @@ def main() -> int:
     sub.add_parser('self-test')
     args = ap.parse_args()
     if args.cmd == 'self-test':
-        assert worker_prompt('x', [], '1024x1280').count('image_generation') == 1
+        smoke = worker_prompt('x', [], '1024x1280')
+        assert 'FIRST ACTION: call image_generation exactly once' in smoke
+        assert 'Do NOT read SKILL.md' in smoke
         assert 'gpt-image-2' in worker_prompt('x', [], '1024x1280')
         assert '<visual_contract>' in worker_prompt('x', [], '1024x1280', 'reality first')
         assert '<frame_contract>' in worker_prompt('x', [], '1080x1350', 'reality first', 'frame-contract-test')

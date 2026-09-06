@@ -62,6 +62,34 @@ def request_path(ep: Path, kind: str, *, attempt: int | None = None) -> Path:
     return root / f"{kind}-attempt-{int(attempt)}-request.json"
 
 
+_EXTENDED_SOURCE_DRIFT_KINDS = {"visual-lock", "visual-lock-baseline"}
+
+
+def _validate_attempt(ep: Path, kind: str, attempt: int, sources: list[dict]) -> None:
+    if attempt < 1:
+        raise ProductReviewError("attempt must be >= 1")
+    if attempt <= 2:
+        return
+    if kind not in _EXTENDED_SOURCE_DRIFT_KINDS:
+        raise ProductReviewError("attempt must be 1 or 2")
+    previous_path = request_path(ep, kind, attempt=attempt - 1)
+    if not previous_path.is_file():
+        raise ProductReviewError(f"extended review attempt requires previous attempt: {previous_path}")
+    previous = _read_json(previous_path)
+    if previous.get("status") != "FINALIZED":
+        raise ProductReviewError("extended review attempt requires the previous attempt to be FINALIZED")
+    previous_sources = [
+        (str(row.get("path") or ""), str(row.get("sha256") or "").lower())
+        for row in (previous.get("source_files") or [])
+    ]
+    current_sources = [
+        (str(row.get("path") or ""), str(row.get("sha256") or "").lower())
+        for row in sources
+    ]
+    if previous_sources == current_sources:
+        raise ProductReviewError("extended review attempt requires changed frozen source hashes")
+
+
 def _request_fingerprint(
     *,
     kind: str,
@@ -96,8 +124,6 @@ def prepare(
     base = runtime_provenance.normalize_base_runtime(runtime)
     if base not in {"WORK", "WEB"}:
         raise ProductReviewError("product review adapter supports WORK/WEB only")
-    if attempt not in {1, 2}:
-        raise ProductReviewError("attempt must be 1 or 2")
     sources = []
     for path in source_paths:
         p = path.resolve()
@@ -108,6 +134,7 @@ def prepare(
         if not p.is_file():
             raise ProductReviewError(f"review source missing: {p}")
         sources.append({"path": _repo_rel(p), "sha256": _sha256(p)})
+    _validate_attempt(ep, kind, attempt, sources)
     candidate = candidate_path.resolve()
     try:
         candidate.relative_to(ep.resolve())
@@ -149,10 +176,23 @@ def prepare(
     if attempt_path.is_file():
         existing = _read_json(attempt_path)
         if existing.get("request_fingerprint") != fingerprint:
-            raise ProductReviewError(
-                f"review attempt {attempt} already exists with different frozen inputs; use the next attempt instead of overwriting history"
-            )
-        req = existing
+            existing_candidate = (ROOT / str(existing.get("candidate_path") or "")).resolve()
+            if existing.get("status") == "AWAITING_PRODUCT_REVIEW" and not existing_candidate.is_file():
+                archive = attempt_path.with_name(
+                    f"{attempt_path.stem}-superseded-{str(existing.get('request_fingerprint') or 'unknown')[:12]}{attempt_path.suffix}"
+                )
+                archived = dict(existing)
+                archived["status"] = "SUPERSEDED_BEFORE_PRODUCT_REVIEW"
+                archived["superseded_at"] = runtime_provenance.now()
+                archived["superseded_reason"] = "frozen review inputs changed before any product-review candidate was written"
+                _write_json(archive, archived)
+                _write_json(attempt_path, req)
+            else:
+                raise ProductReviewError(
+                    f"review attempt {attempt} already exists with different frozen inputs; use the next attempt instead of overwriting completed/reviewed history"
+                )
+        else:
+            req = existing
     else:
         _write_json(attempt_path, req)
     # Compatibility/current pointer. This alias may move, the attempt file may not.
@@ -213,6 +253,7 @@ def finalize_candidate(
         base,
         attempt=attempt,
         request_path=_repo_rel(path),
+        allow_extended_attempt=(attempt > 2 and kind in _EXTENDED_SOURCE_DRIFT_KINDS),
     )
     provenance["request_id"] = req.get("request_id")
     provenance["request_fingerprint"] = req.get("request_fingerprint")
@@ -224,7 +265,7 @@ def mark_complete(ep: Path, kind: str, *, final_path: Path, attempt: int | None 
         current_path = request_path(ep, kind)
         req = _read_json(current_path)
         attempt = int(req.get("attempt") or 0)
-        if attempt not in {1, 2}:
+        if attempt < 1:
             raise ProductReviewError("cannot infer finalized review attempt")
     scoped_path, req = _resolve_request(ep, kind, attempt)
     req["status"] = "FINALIZED"
@@ -253,6 +294,7 @@ def mark_complete(ep: Path, kind: str, *, final_path: Path, attempt: int | None 
 def self_test() -> None:
     assert runtime_provenance.isolated_runtime("WORK") == "WORK_ISOLATED"
     assert request_path(Path("ep"), "story", attempt=2).as_posix().endswith("story-attempt-2-request.json")
+    assert request_path(Path("ep"), "visual-lock", attempt=3).as_posix().endswith("visual-lock-attempt-3-request.json")
     print("PRODUCT REVIEW ADAPTER V2.6.1.1 SELF-TEST PASS")
 
 

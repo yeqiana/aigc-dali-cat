@@ -295,7 +295,13 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     visual_narrative = visual_narrative_core_v22.resolve_frame(ep,n) if visual_narrative_active else None
     world_identity_active = world_identity_contract.required(ep)
     world_identity = world_identity_contract.effective(ep) if world_identity_active else None
-    character_anchor = character_appearance_anchor.build(ep, write=True) if world_identity_active else None
+    character_anchor = None
+    if world_identity_active:
+        # The appearance anchor is a derived cache shared by every frame. Rewriting
+        # the same file once per compile/verify frame is redundant and can trigger
+        # Windows file/path failures during verify_all's second compile pass.
+        ca_errors = character_appearance_anchor.verify(ep)
+        character_anchor = character_appearance_anchor.build(ep, write=bool(ca_errors))
     excerpt = extract_frame_excerpt(storyboard_path, n)
     refs = resolved_references(ep, n)
 

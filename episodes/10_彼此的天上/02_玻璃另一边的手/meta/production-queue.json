@@ -1,0 +1,668 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-06T02:20:53+08:00",
+  "updated_at": "2026-09-06T13:37:40+08:00",
+  "max_parallel": 3,
+  "adaptive_parallel": 1,
+  "stable_waves": 0,
+  "items": [
+    {
+      "id": "e7bf8a9697a2",
+      "frame": 1,
+      "kind": "original",
+      "scope": "visual_lock",
+      "status": "generated",
+      "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/01.txt",
+      "references": [],
+      "capture_id": "visual-lock-01",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": null,
+      "priority": 50,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/01.json",
+        "contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c"
+      },
+      "attempts": 2,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-e7bf8a9697a2-a2.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/01-e7bf8a9697a2-a2.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-06T02:22:14+08:00",
+      "reference_arbitration": {
+        "frame": "01",
+        "scope": "visual_lock",
+        "max_refs": 2,
+        "identity_needed": false,
+        "identity_reason": "no_human_identity_signal",
+        "selected": [],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      },
+      "started_at": "2026-09-06T09:58:52+08:00",
+      "completed_at": "2026-09-06T10:00:59+08:00",
+      "lineage": {
+        "version": 1,
+        "created_at": "2026-09-06T10:00:59+08:00",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-e7bf8a9697a2-a2.png",
+        "sha256": "824c1ce9c3bbb3816c64cf347bd59b6c0e8a1352eebda9d3166f23786e1b61e4",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": null,
+        "source_item_id": "e7bf8a9697a2",
+        "frame_contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c"
+      },
+      "prompt_package": {
+        "package_sha256": "b9db5bd76283396bc5b000df06c370f188580dc8fec99e84b99f58af3ee76c17",
+        "frame_contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c"
+      },
+      "scout": null
+    },
+    {
+      "id": "4b3b8f40440e",
+      "frame": 9,
+      "kind": "original",
+      "scope": "visual_lock",
+      "status": "generated",
+      "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/09.txt",
+      "references": [
+        {
+          "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-e7bf8a9697a2-a2.png",
+          "role": "character_pixel_master",
+          "kind": "identity"
+        }
+      ],
+      "capture_id": "visual-lock-09",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [
+        1
+      ],
+      "narrative_escalation_from": 8,
+      "priority": 130,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/09.json",
+        "contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687"
+      },
+      "attempts": 1,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-4b3b8f40440e-a1.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/09-4b3b8f40440e-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-06T02:22:14+08:00",
+      "reference_arbitration": {
+        "frame": "09",
+        "scope": "visual_lock",
+        "max_refs": 2,
+        "identity_needed": true,
+        "identity_reason": "no_human_identity_signal",
+        "identity_source": "group_master",
+        "selected": [
+          {
+            "role": "character_pixel_master",
+            "kind": "identity",
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-e7bf8a9697a2-a2.png"
+          }
+        ],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      },
+      "started_at": "2026-09-06T10:08:53+08:00",
+      "lineage": {
+        "version": 1,
+        "created_at": "2026-09-06T10:10:57+08:00",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-4b3b8f40440e-a1.png",
+        "sha256": "ffd50806114e4ed721e7720dc1c9c0617af37986b3688385bf413a2e093f8cd0",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": null,
+        "source_item_id": "4b3b8f40440e",
+        "frame_contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687"
+      },
+      "completed_at": "2026-09-06T10:10:57+08:00",
+      "prompt_package": {
+        "package_sha256": "de4496eb6161648799e3833e8540002f7068f2b56ecdf124b3ace41e57f1a79f",
+        "frame_contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687"
+      },
+      "scout": null,
+      "rolling_review": {
+        "decision": "UNCERTAIN",
+        "reason": "vision_capability_not_verified",
+        "fast_path_deferred": true,
+        "final_pass_authority": false,
+        "returncode": 0
+      }
+    },
+    {
+      "id": "89c8abc517a3",
+      "frame": 3,
+      "kind": "original",
+      "scope": "visual_lock",
+      "status": "generated",
+      "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/03.txt",
+      "references": [
+        {
+          "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/identity/character-masters/P02.png",
+          "role": "character_crop:P02",
+          "kind": "identity",
+          "sha256": "b8a702062c939839b82dc35ad5fa5d37a91c0b36ef22d1a5e6a20f9df6e2eb52",
+          "character_id": "P02"
+        }
+      ],
+      "capture_id": "visual-lock-03",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [
+        1
+      ],
+      "narrative_escalation_from": null,
+      "priority": 103,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/03.json",
+        "contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72"
+      },
+      "attempts": 3,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/03-89c8abc517a3-a3.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/03-89c8abc517a3-a3.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-06T02:22:15+08:00",
+      "reference_arbitration": {
+        "frame": "03",
+        "scope": "visual_lock",
+        "max_refs": 2,
+        "identity_needed": true,
+        "identity_reason": "primary_subject_character_id",
+        "identity_source": "individual_crop",
+        "selected": [
+          {
+            "role": "character_crop:P02",
+            "kind": "identity",
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/identity/character-masters/P02.png"
+          }
+        ],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      },
+      "started_at": "2026-09-06T10:57:35+08:00",
+      "completed_at": "2026-09-06T11:01:07+08:00",
+      "lineage": {
+        "version": 1,
+        "created_at": "2026-09-06T11:01:07+08:00",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/03-89c8abc517a3-a3.png",
+        "sha256": "8fbf06bb9d9a20ea4f7d83a7e1c5908006580d5395e7d2e6774078445a8d312a",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": null,
+        "source_item_id": "89c8abc517a3",
+        "frame_contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72"
+      },
+      "prompt_package": {
+        "package_sha256": "ffbbcf30225ace468fc3151fbab05013231bd47106a13517ed2d44b18e154891",
+        "frame_contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72"
+      },
+      "scout": null,
+      "rolling_review": {
+        "decision": "UNCERTAIN",
+        "reason": "vision_capability_not_verified",
+        "fast_path_deferred": true,
+        "final_pass_authority": false,
+        "returncode": 0
+      }
+    },
+    {
+      "id": "0bed26ad211c",
+      "frame": 14,
+      "kind": "original",
+      "scope": "visual_lock",
+      "status": "generated",
+      "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/14.txt",
+      "references": [],
+      "capture_id": "visual-lock-14",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [
+        1
+      ],
+      "narrative_escalation_from": 13,
+      "priority": 180,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/14.json",
+        "contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637"
+      },
+      "attempts": 5,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/14-0bed26ad211c-a5.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/14-0bed26ad211c-a5.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-06T02:22:15+08:00",
+      "reference_arbitration": {
+        "frame": "14",
+        "scope": "visual_lock",
+        "max_refs": 2,
+        "identity_needed": false,
+        "identity_reason": "non_face_character_fragment",
+        "selected": [],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      },
+      "started_at": "2026-09-06T11:07:46+08:00",
+      "completed_at": "2026-09-06T11:09:29+08:00",
+      "lineage": {
+        "version": 1,
+        "created_at": "2026-09-06T11:09:29+08:00",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/14-0bed26ad211c-a5.png",
+        "sha256": "aa1a9982ccbc2ac2c9d3b6129b4d5e3a66671c4ee60e37c87bd4542e762bd7ba",
+        "kind": "original",
+        "reason": "scheduler:visual_lock",
+        "parent_sha256": null,
+        "source_item_id": "0bed26ad211c",
+        "frame_contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637"
+      },
+      "prompt_package": {
+        "package_sha256": "33ae8ccb5c4a36d5127b691f5d628ffdb5acd3b7b1e928e7302d81a160710283",
+        "frame_contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637"
+      },
+      "scout": null,
+      "rolling_review": {
+        "decision": "UNCERTAIN",
+        "reason": "vision_capability_not_verified",
+        "fast_path_deferred": true,
+        "final_pass_authority": false,
+        "returncode": 0
+      }
+    },
+    {
+      "id": "7752e2a57569",
+      "frame": 9,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "superseded",
+      "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/repair/09-v1.txt",
+      "references": [],
+      "capture_id": "visual-lock-09-repair-1",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": 8,
+      "priority": 80,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/09.json",
+        "contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687"
+      },
+      "attempts": 0,
+      "output_path": null,
+      "log_path": null,
+      "last_error": "ledger begin failed: repair requires REPAIR_AUTHORIZED, EXCEPTION_REPAIR_AUTHORIZED, or TECH_FAILED retry; got CONTENT_FAILED\n",
+      "superseded_by": "32a9c6c0d9e7",
+      "superseded_reason": "later authorized repair generated successfully; retain historical begin failure as diagnostic evidence",
+      "queued_at": "2026-09-06T11:19:22+08:00",
+      "reference_arbitration": {
+        "frame": "09",
+        "scope": "repair",
+        "max_refs": 2,
+        "identity_needed": false,
+        "identity_reason": "no_human_identity_signal",
+        "selected": [],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      }
+    },
+    {
+      "id": "32a9c6c0d9e7",
+      "frame": 9,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "generated",
+      "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/repair/09-v1.txt",
+      "references": [],
+      "capture_id": "visual-lock-09-repair-1b",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": 8,
+      "priority": 80,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/09.json",
+        "contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687"
+      },
+      "attempts": 1,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-32a9c6c0d9e7-a1.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/09-32a9c6c0d9e7-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-06T11:20:17+08:00",
+      "reference_arbitration": {
+        "frame": "09",
+        "scope": "repair",
+        "max_refs": 2,
+        "identity_needed": false,
+        "identity_reason": "no_human_identity_signal",
+        "selected": [],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      },
+      "started_at": "2026-09-06T12:01:33+08:00",
+      "lineage": {
+        "version": 2,
+        "created_at": "2026-09-06T12:03:23+08:00",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-32a9c6c0d9e7-a1.png",
+        "sha256": "b3cb41cb705fad1d50a8c830628886fedf43a5aafc4aeaae7d45742d83f6f0eb",
+        "kind": "repair",
+        "reason": "scheduler:repair",
+        "parent_sha256": "ffd50806114e4ed721e7720dc1c9c0617af37986b3688385bf413a2e093f8cd0",
+        "source_item_id": "32a9c6c0d9e7",
+        "frame_contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687"
+      },
+      "completed_at": "2026-09-06T12:03:23+08:00",
+      "prompt_package": {
+        "package_sha256": "27066770337855e7babcceb9f1aff7a76785ed1918ef4ac7be0b2c2f6146b229",
+        "frame_contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687"
+      },
+      "scout": null
+    },
+    {
+      "id": "a1b2c3d4e5f6",
+      "frame": 1,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "generated",
+      "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/repair/01-series-identity.txt",
+      "references": [
+        {
+          "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/01_情侣自拍_正脸.png",
+          "role": "series_character_identity:group",
+          "kind": "identity"
+        }
+      ],
+      "capture_id": "visual-lock-01-series-identity-repair",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": null,
+      "priority": 120,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/01.json",
+        "contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c"
+      },
+      "attempts": 4,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-a1b2c3d4e5f6-a4.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/01-a1b2c3d4e5f6-a4.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-06T12:45:54+08:00",
+      "reference_arbitration": {
+        "frame": "01",
+        "scope": "repair",
+        "max_refs": 2,
+        "identity_needed": true,
+        "identity_reason": "selfie_capture_event",
+        "identity_source": "series_character_identity",
+        "selected": [
+          {
+            "role": "series_character_identity:group",
+            "kind": "identity",
+            "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/01_情侣自拍_正脸.png"
+          }
+        ],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      },
+      "started_at": "2026-09-06T13:27:37+08:00",
+      "recovery_note": "Attempt 1 hit HTTP 502 on image edits relay. Attempt 2 was terminated by the 300s DevSpace outer timeout with no candidate. Ledger is TECH_FAILED; retry the same repair with a shorter inner timeout so scheduler can close failures cleanly before the outer runner.",
+      "completed_at": "2026-09-06T13:30:41+08:00",
+      "lineage": {
+        "version": 2,
+        "created_at": "2026-09-06T13:30:41+08:00",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-a1b2c3d4e5f6-a4.png",
+        "sha256": "79990e8bd59cd62e9b56e977567ef581cca0193d16565e580680a850ff08f5fc",
+        "kind": "repair",
+        "reason": "scheduler:repair",
+        "parent_sha256": "824c1ce9c3bbb3816c64cf347bd59b6c0e8a1352eebda9d3166f23786e1b61e4",
+        "source_item_id": "a1b2c3d4e5f6",
+        "frame_contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c"
+      },
+      "prompt_package": {
+        "package_sha256": "09c036e6185e85fb902c44281e71f8225ae73fc66cfa85850b2c70899e10d60f",
+        "frame_contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c"
+      },
+      "scout": null,
+      "rolling_review": {
+        "decision": "UNCERTAIN",
+        "reason": "vision_capability_not_verified",
+        "fast_path_deferred": true,
+        "final_pass_authority": false,
+        "returncode": 0
+      }
+    },
+    {
+      "id": "35f537379be6",
+      "frame": 3,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "tech_failed",
+      "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/repair/03-series-identity.txt",
+      "references": [
+        {
+          "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/11_车内夜间_正侧脸.png",
+          "role": "series_character_identity:P02",
+          "kind": "identity"
+        }
+      ],
+      "capture_id": "visual-lock-03-series-identity-repair",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": null,
+      "priority": 53,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/03.json",
+        "contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72"
+      },
+      "attempts": 1,
+      "output_path": null,
+      "log_path": null,
+      "last_error": "Codex image worker failed rc=0; log=episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/03-35f537379be6-a1.jsonl",
+      "queued_at": "2026-09-06T13:34:59+08:00",
+      "reference_arbitration": {
+        "frame": "03",
+        "scope": "repair",
+        "max_refs": 2,
+        "identity_needed": true,
+        "identity_reason": "primary_subject_character_id",
+        "identity_source": "series_character_identity",
+        "selected": [
+          {
+            "role": "series_character_identity:P02",
+            "kind": "identity",
+            "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/11_车内夜间_正侧脸.png"
+          }
+        ],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      },
+      "started_at": "2026-09-06T13:35:55+08:00",
+      "completed_at": "2026-09-06T13:37:40+08:00"
+    },
+    {
+      "id": "00dae95ca7bf",
+      "frame": 14,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "blocked",
+      "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/repair/14-series-identity.txt",
+      "references": [],
+      "capture_id": "visual-lock-14-series-identity-repair",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": 13,
+      "priority": 130,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/14.json",
+        "contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637"
+      },
+      "attempts": 0,
+      "output_path": null,
+      "log_path": null,
+      "last_error": "ledger begin failed: prompt budget exceeded: 284 chars/782 bytes; limit=260 chars/900 bytes. Shorten the per-frame prompt or use --allow-long-prompt with an explicit reason in notes.\n",
+      "queued_at": "2026-09-06T13:34:59+08:00",
+      "reference_arbitration": {
+        "frame": "14",
+        "scope": "repair",
+        "max_refs": 2,
+        "identity_needed": false,
+        "identity_reason": "non_face_character_fragment",
+        "selected": [],
+        "policy": "identity_if_needed_or_visual_lock_then_context_reference"
+      }
+    }
+  ],
+  "waves": [
+    {
+      "event": 1,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T02:24:04+08:00",
+      "frame": 1,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 2,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T10:00:59+08:00",
+      "frame": 1,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": 125.59
+    },
+    {
+      "event": 3,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T10:08:53+08:00",
+      "frame": 14,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 4,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T10:10:57+08:00",
+      "frame": 9,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": 122.64
+    },
+    {
+      "event": 5,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T10:12:00+08:00",
+      "frame": 3,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 6,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T10:16:48+08:00",
+      "frame": 14,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 7,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T10:25:23+08:00",
+      "frame": 14,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 8,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T11:01:07+08:00",
+      "frame": 3,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": 210.72
+    },
+    {
+      "event": 9,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T11:06:02+08:00",
+      "frame": 14,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 10,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T11:09:29+08:00",
+      "frame": 14,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": 101.61
+    },
+    {
+      "event": 11,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T12:03:23+08:00",
+      "frame": 9,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": 108.25
+    },
+    {
+      "event": 12,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T13:06:45+08:00",
+      "frame": 1,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    },
+    {
+      "event": 13,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T13:30:41+08:00",
+      "frame": 1,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": 182.06
+    },
+    {
+      "event": 14,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-06T13:37:40+08:00",
+      "frame": 3,
+      "status": "tech_failed",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "elapsed_seconds": null
+    }
+  ]
+}

@@ -642,6 +642,38 @@ def cmd_authorize_user_locked_repair(args: argparse.Namespace) -> None:
     print(f"{key}: REPAIR_AUTHORIZED (direct-user locked-frame scope recorded)")
 
 
+def cmd_authorize_user_passed_repair(args: argparse.Namespace) -> None:
+    """Reopen a pre-lock PASSED frame when a later user-approved authority change invalidates it."""
+    ep = episode_dir(args.episode_dir)
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, args.frame)
+    if frame["status"] != "PASSED":
+        raise SystemExit(f"passed repair requires PASSED, got {frame['status']}")
+    if frame.get("content_repairs_used", 0) != 0:
+        raise SystemExit("passed repair is only for a frame with no ordinary content repair")
+    approval = args.approval_text.strip()
+    if not approval:
+        raise SystemExit("direct user approval text is required")
+    frame.setdefault("superseded_passes", []).append({
+        "at": now_iso(),
+        "current_candidate": frame.get("current_candidate"),
+        "reviews": list(frame.get("reviews") or []),
+        "reason": args.reason,
+    })
+    frame["status"] = "REPAIR_AUTHORIZED"
+    frame["repair_authorization"] = {
+        "at": now_iso(),
+        "note": args.reason,
+        "user_approved": True,
+        "delegated_auto_review": False,
+        "approval_basis": "direct_user_review_passed_repair",
+        "approval_text": approval,
+    }
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    print(f"{key}: REPAIR_AUTHORIZED (direct-user passed-frame authority change recorded)")
+
+
 def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     """Record one explicit, non-delegable user exception after a hard repair failure.
 
@@ -993,6 +1025,13 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--approval-text", required=True)
     s.add_argument("--reason", required=True)
     s.set_defaults(func=cmd_authorize_user_locked_repair)
+
+    s = sub.add_parser("authorize-user-passed-repair", help="reopen a PASSED pre-lock frame after a direct-user authority change")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--approval-text", required=True)
+    s.add_argument("--reason", required=True)
+    s.set_defaults(func=cmd_authorize_user_passed_repair)
 
     s = sub.add_parser("authorize-user-exception-repair", help="record one direct-user exception after the ordinary repair hard-fails")
     s.add_argument("episode_dir")

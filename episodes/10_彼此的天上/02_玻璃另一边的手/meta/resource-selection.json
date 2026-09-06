@@ -1,10 +1,15 @@
 {
   "schema_version": 1,
+  "resolver_version": 3,
+  "catalog_sha": "20ecd1817b3dc4f9ffb01873307f32aa5c354b21831d463764473d588e8d3dc4",
+  "primary_place": "川西山谷小镇普通民宿",
   "source_tags": [
     "modern_2020s",
     "travel",
     "village_home",
-    "川西山谷小镇普通民宿"
+    "夜",
+    "川西山谷小镇普通民宿",
+    "雾"
   ],
   "selected": [
     {
@@ -30,20 +35,6 @@
         "young_people",
         "ordinary",
         "smartphone"
-      ],
-      "reuse_scope": "prompt_reference",
-      "quality_score": 9.0,
-      "match_score": 1
-    },
-    {
-      "id": "LOC_NORTHWEST_VILLAGE",
-      "type": "location_descriptor",
-      "path": "library/locations/scene-presets.json",
-      "tags": [
-        "village_home",
-        "西北农村",
-        "return_home",
-        "county_town"
       ],
       "reuse_scope": "prompt_reference",
       "quality_score": 9.0,

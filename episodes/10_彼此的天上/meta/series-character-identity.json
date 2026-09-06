@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "series_id": "10_彼此的天上",
+  "approved": true,
+  "source_episode": "episodes/10_彼此的天上/01_不存在的夜行路",
+  "authority_priority": [
+    "EP001 approved series character asset",
+    "current episode pixel master",
+    "current-frame derived crop"
+  ],
+  "group_identity_asset": {
+    "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/01_情侣自拍_正脸.png",
+    "sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c",
+    "source_role": "EP001 approved couple selfie containing P01 and P02"
+  },
+  "characters": {
+    "P01": {
+      "identity_rule": "Same male lead across the whole series; do not recast between episodes.",
+      "primary_asset": {
+        "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/01_情侣自拍_正脸.png",
+        "sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c",
+        "source_role": "EP001 approved group selfie; no dedicated male-lead directory exists"
+      },
+      "dedicated_asset_status": "fallback_to_ep001_approved_group_pixel_evidence",
+      "wardrobe_variation_allowed": true
+    },
+    "P02": {
+      "identity_rule": "Same female lead across the whole series: preserve face, age impression, hair identity, body proportions and overall presence.",
+      "primary_asset": {
+        "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/11_车内夜间_正侧脸.png",
+        "sha256": "d5bc8e55dadbd4eaabefcb926e1d4816f7e72453e4c17b50ed7453aff2b4da32",
+        "source_role": "EP001 approved single-person face and hair identity anchor"
+      },
+      "supporting_assets": [
+        {
+          "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/01_情侣自拍_正脸.png",
+          "sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c",
+          "role": "front-face couple identity and relationship anchor"
+        },
+        {
+          "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/02_日间车旁_全身侧面.png",
+          "sha256": "d21bd6c48380a615da6cb3dcbc268973b7bec5c5cc051b70c52e6ec3a042f7cf",
+          "role": "daytime full-body proportion and side profile"
+        },
+        {
+          "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/20_日间车旁_全身回望.png",
+          "sha256": "fea8f2cb83fc7364ae872d75bfa1d4f6e9865e04fab4ee688e1ff2c72ee64f83",
+          "role": "full-body turn-back and scale continuity"
+        }
+      ],
+      "wardrobe_variation_allowed": true,
+      "wardrobe_examples": [
+        "long trousers",
+        "socks",
+        "camisole",
+        "weather-appropriate indoor/outdoor travel clothing"
+      ],
+      "wardrobe_rule": "Clothes may change for scene, weather and time; identity may not change."
+    }
+  },
+  "notes": "Series-level synthetic character authority. EP001 approved assets outrank EP002 provisional pixel masters for generation reference arbitration. Non-face-only frames still skip identity references."
+}

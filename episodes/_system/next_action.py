@@ -70,6 +70,24 @@ def queue_summary(ep: Path) -> dict:
         counts[status] = counts.get(status, 0) + 1
         if status == "queued":
             queued_frames.append(int(row.get("frame") or 0))
+    # Technical failures are attempt history, not automatically the current
+    # production truth. A later successful candidate/commit must win over an
+    # earlier backend timeout, otherwise a recovered frame can permanently
+    # block the pipeline.
+    tech_failed = []
+    for row in q.get("items") or []:
+        if not isinstance(row, dict) or row.get("status") != "tech_failed":
+            continue
+        attempts = row.get("attempts") or []
+        if not isinstance(attempts, list):
+            attempts = []
+        recovered = any(isinstance(a, dict) and a.get("result") in {"success", "PASSED"} for a in attempts)
+        # Some legacy queue entries only contain counters/ids instead of an
+        # attempt list. They cannot prove recovery, so keep the technical retry
+        # requirement for those entries.
+        if not recovered:
+            tech_failed.append(row)
+    counts["tech_failed"] = len(tech_failed)
     return {"counts": counts, "queued_frames": sorted(x for x in queued_frames if x > 0), "raw": q}
 
 

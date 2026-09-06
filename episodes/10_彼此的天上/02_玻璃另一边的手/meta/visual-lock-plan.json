@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "generated_at": "2026-09-06T02:20:46+08:00",
+  "policy": {
+    "baseline_first": true,
+    "remaining_three_parallelizable": true,
+    "calibration_count": 4,
+    "baseline_selection": "opening_social_anchor",
+    "baseline_frame": 1,
+    "opening_social_anchor_machine_priority": true
+  },
+  "items": [
+    {
+      "id": "V-B",
+      "frame": 1,
+      "mode": "normal_record",
+      "role": "ordinary_baseline",
+      "impact": 0,
+      "scale_reference": "",
+      "environment_severity": 14,
+      "contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c",
+      "depends_on": []
+    },
+    {
+      "id": "V-W",
+      "frame": 9,
+      "mode": "anomaly_reveal",
+      "role": "worst_capture_condition",
+      "impact": 2,
+      "scale_reference": "两个半圆均明显小于整扇窗且边缘不规则",
+      "environment_severity": 18,
+      "contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-A",
+      "frame": 3,
+      "mode": "anomaly_reveal",
+      "role": "first_major_anomaly",
+      "impact": 1,
+      "scale_reference": "清晰区只占整扇落地窗的小部分",
+      "environment_severity": 18,
+      "contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-H",
+      "frame": 14,
+      "mode": "climax_impact",
+      "role": "high_impact_admission",
+      "impact": 3,
+      "scale_reference": "孩子与成年人形成一前一后的明确人体尺度；手机反射只作为前景小尺度参照",
+      "environment_severity": 18,
+      "contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637",
+      "depends_on": [
+        1
+      ]
+    }
+  ]
+}

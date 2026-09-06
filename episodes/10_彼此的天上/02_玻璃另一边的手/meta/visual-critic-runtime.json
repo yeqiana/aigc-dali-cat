@@ -1,0 +1,52 @@
+{
+  "schema_version": 2,
+  "status": "AVAILABLE_PASS",
+  "consecutive_technical_failures": 0,
+  "last_fingerprint": null,
+  "events": [
+    {
+      "at": "2026-09-06T11:18:20+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 1,
+      "issue_codes": [],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/visual-lock-critic-attempt-1.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-06T13:25:38+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 2,
+      "issue_codes": [],
+      "status": "AVAILABLE_PASS",
+      "log": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/runtime/reviews/visual-lock-attempt-2-request.json",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-06T13:41:28+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 3,
+      "issue_codes": [],
+      "status": "AVAILABLE_PASS",
+      "log": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/runtime/reviews/visual-lock-attempt-3-request.json",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-06T13:45:38+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 4,
+      "issue_codes": [],
+      "status": "AVAILABLE_PASS",
+      "log": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/runtime/reviews/visual-lock-attempt-4-request.json",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    }
+  ],
+  "speculative_production_allowed": false,
+  "last_issue_codes": [],
+  "last_event_at": "2026-09-06T13:45:38+08:00",
+  "last_visual_lock_run_id": null
+}

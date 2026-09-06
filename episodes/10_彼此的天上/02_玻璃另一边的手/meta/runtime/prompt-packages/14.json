@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "14",
+  "scene_prompt": "高潮关键图，真实第一人称手机录像停止前最后清楚的一帧。落地窗局部重叠里，一个普通孩子好奇地靠近玻璃，对面家长立即把孩子温和地拉回自己身后并用身体挡住；本侧P02正按住P01手腕，湿玻璃反射中可读到P01手机屏正在按灭、机位开始下坠。画面同时读懂“主角主动停止拍摄”和“对面家长保护孩子”两层动作。所有人物都是普通家庭成员，动作克制、无受伤、无暴力、无惊叫；粗布、雾气、雨膜和反射物理正确，无恐怖化儿童、无鬼脸、无裂缝、无文字。",
+  "scene_prompt_sha256": "4e035f3b63997fe2ea5658f5122e15d8cf4d4c260d0778f7bf8587787ca65369",
+  "frame_contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\14.txt",
+  "package_sha256": "33ae8ccb5c4a36d5127b691f5d628ffdb5acd3b7b1e928e7302d81a160710283",
+  "compiled_at": "2026-09-06T11:07:46+08:00"
+}
