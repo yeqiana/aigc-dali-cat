@@ -5,14 +5,12 @@ import argparse
 import datetime as dt
 import hashlib
 import json
-import os
-import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 from story_os_contract import story_os_version
 from visual_profile import compile_prompt_contract
+import codex_critic_runner as critic_runner
 import runtime_router
 import runtime_provenance
 import product_review_adapter
@@ -210,22 +208,8 @@ def verify(ep: Path) -> list[str]:
     )
 
 
-def resolve_codex(raw: str | None) -> Path:
-    value = raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not value:
-        raise RuntimeError("Codex CLI not found")
-    path = Path(value).expanduser().resolve()
-    if not path.exists():
-        raise RuntimeError(f"Codex CLI not found: {path}")
-    return path
-
-
-def prefix(codex: Path) -> list[str]:
-    if codex.suffix.lower() == ".py":
-        return [sys.executable, str(codex)]
-    if os.name == "nt" and codex.suffix.lower() in {".cmd", ".bat"}:
-        return ["cmd.exe", "/d", "/c", str(codex)]
-    return [str(codex)]
+resolve_codex = critic_runner.resolve_codex
+prefix = critic_runner.prefix
 
 
 def critic_prompt(ep: Path, contract: dict, assets: list[dict], candidate: Path, attempt: int) -> str:
@@ -303,25 +287,17 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
 
     candidate.unlink(missing_ok=True)
     codex = resolve_codex(codex_raw)
-    cmd = prefix(codex) + [
-        "exec", "--skip-git-repo-check", "--ephemeral",
-        "-c", 'model_reasoning_effort="high"',
-        "-s", "workspace-write", "-C", str(ROOT), "--json"
-    ]
-    for row in assets:
-        cmd += ["-i", str(row["path"])]
-    cmd += ["-"]
     log = ep / "meta" / f"visual-critic-attempt-{attempt}.jsonl"
-    with log.open("w", encoding="utf-8", newline="\n") as handle:
-        completed = subprocess.run(
-            cmd,
-            input=critic_prompt(ep, contract, assets, candidate, attempt),
-            text=True,
-            stdout=handle,
-            stderr=subprocess.STDOUT,
-            timeout=timeout,
-            check=False,
-        )
+    completed = critic_runner.launch(
+        critic_prompt(ep, contract, assets, candidate, attempt),
+        codex=codex,
+        root=ROOT,
+        timeout=timeout,
+        sandbox="workspace-write",
+        reasoning_effort_literal='model_reasoning_effort="high"',
+        attachments=[row["path"] for row in assets],
+        log_path=log,
+    )
     if completed.returncode != 0:
         raise RuntimeError(f"isolated visual critic failed rc={completed.returncode}; log={log}")
     if not candidate.is_file():

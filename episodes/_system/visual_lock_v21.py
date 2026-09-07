@@ -31,6 +31,7 @@ import character_visual_contract
 import visual_lock_baseline_gate
 import visual_narrative_core_v22  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 import critic_runtime_v211  # STORY_OS_V211_PERF_RECOVERY
+import codex_critic_runner as critic_runner
 import runtime_router
 import runtime_provenance
 import product_review_adapter
@@ -505,22 +506,8 @@ def verify(ep: Path) -> list[str]:
         return [str(exc)]
 
 
-def resolve_codex(raw: str | None) -> Path:
-    value = raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not value:
-        raise RuntimeError("Codex CLI not found")
-    p = Path(value).expanduser().resolve()
-    if not p.exists():
-        raise RuntimeError(f"Codex CLI not found: {p}")
-    return p
-
-
-def prefix(codex: Path) -> list[str]:
-    if codex.suffix.lower() == ".py":
-        return [sys.executable, str(codex)]
-    if os.name == "nt" and codex.suffix.lower() in {".cmd", ".bat"}:
-        return ["cmd.exe", "/d", "/c", str(codex)]
-    return [str(codex)]
+resolve_codex = critic_runner.resolve_codex
+prefix = critic_runner.prefix
 
 
 def critic_prompt(ep: Path, contract: dict, assets: list[dict], candidate: Path, attempt: int) -> str:
@@ -770,29 +757,25 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
         shutil.copy2(row["path"], staged)
         staged_assets.append(staged)
     cfg=storyos_config.load_config();model=str(storyos_config.get_path(cfg,"runtime.codex_image_controller_model"));effort=str(storyos_config.get_path(cfg,"runtime.codex_image_reasoning_effort"))
-    cmd = prefix(codex) + [
-        "exec", "--skip-git-repo-check", "--ephemeral", "--ignore-rules",
-        "-m", model, "-c", f'model_reasoning_effort="{effort}"',
-        "-s", "danger-full-access" if os.name=="nt" else "workspace-write", "-C", str(ROOT), "--json", "-o", str(candidate)
-    ]
-    for staged in staged_assets:
-        cmd += ["-i", str(staged)]
-    cmd += ["-"]
     log = ep / "meta" / f"visual-lock-critic-attempt-{attempt}.jsonl"
     try:
-        with log.open("w", encoding="utf-8", newline="\n") as handle:
-            done = subprocess.run(
-                cmd,
-                input=critic_prompt(ep, contract, assets, candidate, attempt).encode("utf-8"),
-                stdout=handle,
-                stderr=subprocess.STDOUT,
-                timeout=timeout,
-                check=False,
-            )
+        done = critic_runner.launch(
+            critic_prompt(ep, contract, assets, candidate, attempt),
+            codex=codex,
+            root=ROOT,
+            timeout=timeout,
+            output_path=candidate,
+            attachments=staged_assets,
+            model=model,
+            reasoning_effort=effort,
+            sandbox="danger-full-access" if os.name=="nt" else "workspace-write",
+            log_path=log,
+            extra=["--ignore-rules"],
+        )
     finally:
         shutil.rmtree(staging, ignore_errors=True)
     if done.returncode != 0:
-        log_text = log.read_text(encoding="utf-8-sig", errors="replace") if log.is_file() else ""
+        log_text = done.log_text
         codes = critic_runtime_v211.classify_log_text(log_text) or ["CRITIC_PROCESS_ERROR"]
         health = critic_runtime_v211.record_technical_failure(
             ep, issue_codes=codes, attempt=attempt,

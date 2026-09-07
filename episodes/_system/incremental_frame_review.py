@@ -4,13 +4,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import re
-import shutil
 import subprocess
-import sys
 from pathlib import Path
 
+import codex_critic_runner as critic_runner
 import frame_semantic_review as base
 # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 from story_os_contract import story_os_version
@@ -279,14 +277,6 @@ def build_plan(ep: Path) -> dict:
     }
 
 
-def _resolve_codex(raw: str | None) -> Path:
-    return base.resolve_codex(raw)
-
-
-def _command_prefix(codex: Path) -> list[str]:
-    return base.command_prefix(codex)
-
-
 def _prompt(ep: Path, selected: list[dict], dirty: list[str], candidate: Path, attempt: int, captions: dict) -> str:
     story, storyboard = base.episode_files(ep)
     version = base.episode_contract_version(ep)
@@ -365,18 +355,18 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
     candidate = ep / CANDIDATE_REL
     candidate.unlink(missing_ok=True)
     before = {r["frame"]: base.sha256_file(r["path"]) for r in all_frames}
-    codex = _resolve_codex(codex_raw)
-    cmd = _command_prefix(codex) + [
-        "exec", "--skip-git-repo-check", "--ephemeral",
-        "-c", 'model_reasoning_effort="medium"',
-        "-s", "workspace-write", "-C", str(ROOT), "--json",
-    ]
-    for row in selected:
-        cmd += ["-i", str(row["path"])]
-    cmd += ["-"]
+    codex = critic_runner.resolve_codex(codex_raw)
     log = ep / "meta" / f"incremental-frame-critic-attempt-{attempt}.jsonl"
-    with log.open("w", encoding="utf-8", newline="\n") as handle:
-        completed = subprocess.run(cmd, input=_prompt(ep, selected, plan["dirty_frames"], candidate, attempt, captions), text=True, encoding="utf-8", stdout=handle, stderr=subprocess.STDOUT, timeout=timeout, check=False)
+    completed = critic_runner.launch(
+        _prompt(ep, selected, plan["dirty_frames"], candidate, attempt, captions),
+        codex=codex,
+        root=ROOT,
+        timeout=timeout,
+        sandbox="workspace-write",
+        reasoning_effort_literal='model_reasoning_effort="medium"',
+        attachments=[row["path"] for row in selected],
+        log_path=log,
+    )
     if completed.returncode != 0 or not candidate.is_file():
         raise RuntimeError(f"incremental critic failed rc={completed.returncode}; log={log}")
 

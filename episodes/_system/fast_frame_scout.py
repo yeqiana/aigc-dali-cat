@@ -14,12 +14,10 @@ import argparse
 import datetime as dt
 import hashlib
 import json
-import os
-import shutil
 import subprocess
-import sys
 from pathlib import Path
 
+import codex_critic_runner as critic_runner
 import frame_contract
 import runtime_router
 
@@ -143,18 +141,8 @@ def classify_frame(ep:Path,frame:int)->dict:
     return {"frame":f"{frame:02d}","risk_level":level,"risk_score":score,"risk_tags":sorted(set(tags)),"frame_contract_sha256":c["contract_sha256"]}
 
 
-def resolve_codex(raw:str|None)->Path:
-    value=raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not value: raise RuntimeError("Codex CLI not found")
-    p=Path(value).expanduser().resolve()
-    if not p.exists(): raise RuntimeError(f"Codex CLI not found: {p}")
-    return p
-
-
-def prefix(codex:Path)->list[str]:
-    if codex.suffix.lower()==".py":return [sys.executable,str(codex)]
-    if os.name=="nt" and codex.suffix.lower() in {".cmd",".bat"}:return ["cmd.exe","/d","/c",str(codex)]
-    return [str(codex)]
+resolve_codex = critic_runner.resolve_codex
+prefix = critic_runner.prefix
 
 
 def _result_path(ep:Path,frame:int)->Path:
@@ -240,10 +228,11 @@ Allowed issue codes: {sorted(ISSUE_CODES)}
         return result
     try:
         codex=resolve_codex(codex_raw)
-        cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-c",'model_reasoning_effort="low"',"-s","workspace-write","-C",str(ROOT),"--json","-i",str(image),"-"]
-        log=ep/"meta/frame-scouts"/f"{frame:02d}.jsonl";log.parent.mkdir(parents=True,exist_ok=True)
-        with log.open("w",encoding="utf-8",newline="\n") as h:
-            done=subprocess.run(cmd,input=prompt,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+        log=ep/"meta/frame-scouts"/f"{frame:02d}.jsonl"
+        done=critic_runner.launch(
+            prompt,codex=codex,root=ROOT,timeout=timeout,
+            sandbox="workspace-write",reasoning_effort_literal='model_reasoning_effort="low"',
+            attachments=[image],log_path=log)
         if done.returncode!=0 or not candidate.is_file():
             raise RuntimeError(f"scout critic failed rc={done.returncode}")
         model=read_json(candidate);candidate.unlink(missing_ok=True)
