@@ -7,6 +7,7 @@ from pathlib import Path
 
 from story_os_contract import FOUR_ADMISSION_V21_POLICY
 import story_json
+import runtime_timeout_policy
 
 SYSTEM = Path(__file__).resolve().parent
 ROOT = SYSTEM.parents[1]
@@ -62,7 +63,7 @@ def forward(script: str, args: list[str]) -> int:
 def main() -> int:
     ap=argparse.ArgumentParser(description=__doc__)
     sub=ap.add_subparsers(dest="cmd",required=True)
-    p=sub.add_parser("run-critic");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1);p.add_argument("--codex");p.add_argument("--timeout",type=int,default=900)
+    p=sub.add_parser("run-critic");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1);p.add_argument("--codex");p.add_argument("--timeout",type=int,default=None)
     p=sub.add_parser("finalize-review");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1);p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK")
     p=sub.add_parser("verify");p.add_argument("episode_dir")
     sub.add_parser("self-test")
@@ -76,7 +77,7 @@ def main() -> int:
     if a.cmd=="verify": return forward(target,["verify",str(ep)])
     if a.cmd=="finalize-review":
         return forward(target,["finalize-review",str(ep),"--attempt",str(a.attempt),"--runtime",a.runtime])
-    args=["run-critic",str(ep),"--attempt",str(a.attempt),"--timeout",str(a.timeout)]
+    args=["run-critic",str(ep),"--attempt",str(a.attempt),"--timeout",str(runtime_timeout_policy.resolve("review_critic", a.timeout))]
     if a.codex:args += ["--codex",a.codex]
     return forward(target,args)
 

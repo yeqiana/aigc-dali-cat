@@ -18,6 +18,7 @@ import runtime_provenance
 import product_review_adapter
 from story_os_contract import story_os_version
 import story_json
+import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -378,7 +379,9 @@ def finalize_product_review(root: Path, ep: Path, fp_path: Path, registry_path: 
     return data
 
 
-def run_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history: list[dict], contract_version: str, codex_raw: str | None = None, timeout: int = 1800) -> dict:
+def run_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history: list[dict], contract_version: str, codex_raw: str | None = None, timeout: int | None = None) -> dict:
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("release_semantic")
     current = read_json(fp_path)
     candidate = ep / CANDIDATE_REL
     review_path = ep / REVIEW_REL
@@ -430,7 +433,7 @@ def run_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history
     provenance["log_sha256"] = sha256_file(log_path)
     return _finalize_review_data(root, ep, fp_path, registry_path, history, contract_version, raw, provenance)
 
-def ensure_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history: list[dict], contract_version: str, codex_raw: str | None = None, timeout: int = 1800) -> dict:
+def ensure_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history: list[dict], contract_version: str, codex_raw: str | None = None, timeout: int | None = None) -> dict:
     p = ep / REVIEW_REL
     if p.is_file():
         try:

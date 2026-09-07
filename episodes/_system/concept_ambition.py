@@ -9,6 +9,7 @@ import runtime_router
 import runtime_provenance
 import product_review_adapter
 import story_json
+import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 CANDIDATES_REL = Path("meta/concept-candidates.json")
@@ -247,10 +248,12 @@ def finalize_product_review(ep, attempt, runtime):
     return rc
 
 
-def run_critic(ep, attempt, codex_raw, timeout):
+def run_critic(ep, attempt, codex_raw, timeout=None):
     if not required(ep):
         print("CONCEPT AMBITION: NOT REQUIRED FOR LEGACY EPISODE"); return 0
     if attempt not in {1,2}: raise RuntimeError("attempt must be 1 or 2")
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("review_critic")
     cp=ep/CANDIDATES_REL
     if not cp.is_file(): raise RuntimeError("meta/concept-candidates.json missing")
     errs=validate_candidates(read_json(cp))
@@ -304,7 +307,7 @@ def self_test():
 def main():
     ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("init"); p.add_argument("episode_dir")
-    p=sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=900)
+    p=sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=None)
     p=sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK")
     p=sub.add_parser("verify"); p.add_argument("episode_dir")
     p=sub.add_parser("show"); p.add_argument("episode_dir")

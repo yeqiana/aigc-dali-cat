@@ -17,6 +17,7 @@ import runtime_router
 import runtime_provenance
 import product_review_adapter
 import story_json
+import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_REL = Path("meta/story-semantic-review.json")
@@ -370,7 +371,9 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
     return rc
 
 
-def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
+def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("review_critic")
     if attempt not in {1, 2}:
         raise RuntimeError("attempt must be 1 or 2; only one automatic story revision is allowed")
     story, storyboard = story_paths(ep)
@@ -470,7 +473,7 @@ def main() -> int:
     p.add_argument("episode_dir")
     p.add_argument("--attempt", type=int, default=1)
     p.add_argument("--codex")
-    p.add_argument("--timeout", type=int, default=900)
+    p.add_argument("--timeout", type=int, default=None)
     p = sub.add_parser("finalize-review")
     p.add_argument("episode_dir")
     p.add_argument("--attempt", type=int, default=1)

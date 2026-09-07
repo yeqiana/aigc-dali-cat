@@ -39,6 +39,7 @@ from fingerprint_semantics import (
     ProductReviewHostAction,
 )
 import story_json
+import runtime_timeout_policy
 
 from release_preflight_core import *
 from release_preflight_recent5 import *
@@ -99,7 +100,7 @@ def cmd_prepare_auto(args: argparse.Namespace) -> int:
         print("FAIL visual_final_freeze:", exc)
         return 3
     try:
-        caption_ok,_caption_data=caption_image_audit.ensure(ep,codex_raw=args.codex,timeout=min(args.timeout,900))
+        caption_ok,_caption_data=caption_image_audit.ensure(ep,codex_raw=args.codex,timeout=min(args.timeout,runtime_timeout_policy.seconds("review_critic")))
         if not caption_ok:
             print("FAIL caption_image_audit: unsupported caption/image pair")
             return 3
@@ -166,7 +167,7 @@ def main() -> int:
     p = sub.add_parser("build-recent5")
     p.add_argument("episode_dir")
     p.add_argument("--codex")
-    p.add_argument("--timeout", type=int, default=1800)
+    p.add_argument("--timeout", type=int, default=None)
 
     p = sub.add_parser("declare-series")
     p.add_argument("series_dir")
@@ -186,7 +187,7 @@ def main() -> int:
     p = sub.add_parser("run-release-critic")
     p.add_argument("episode_dir")
     p.add_argument("--codex")
-    p.add_argument("--timeout", type=int, default=1800)
+    p.add_argument("--timeout", type=int, default=None)
 
     p = sub.add_parser("finalize-review")
     p.add_argument("episode_dir")
@@ -195,7 +196,7 @@ def main() -> int:
     p = sub.add_parser("prepare-auto")
     p.add_argument("episode_dir")
     p.add_argument("--codex")
-    p.add_argument("--timeout", type=int, default=1800)
+    p.add_argument("--timeout", type=int, default=None)
 
     p = sub.add_parser("verify")
     p.add_argument("episode_dir")
@@ -203,6 +204,7 @@ def main() -> int:
     sub.add_parser("self-test")
 
     args = ap.parse_args()
+    args.timeout = runtime_timeout_policy.resolve("release_semantic", getattr(args, "timeout", None))
     if args.cmd == "bootstrap-registry":
         return cmd_bootstrap_registry(args)
     if args.cmd == "enable":

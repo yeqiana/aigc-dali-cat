@@ -38,6 +38,7 @@ import product_review_adapter
 import storyos_config
 import story_json
 import visual_review_schema
+import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path("meta/story-gates.json")
@@ -721,7 +722,9 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
     return rc
 
 
-def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
+def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("review_critic")
     if attempt < 1:
         raise RuntimeError("attempt must be >= 1")
     active_runtime, _ = runtime_router.detect()
@@ -822,7 +825,7 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("prepare"); p.add_argument("episode_dir")
     p = sub.add_parser("bind-from-queue"); p.add_argument("episode_dir")
-    p = sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=900)
+    p = sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None)
     p = sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
     p = sub.add_parser("verify"); p.add_argument("episode_dir")
     p = sub.add_parser("show-plan"); p.add_argument("episode_dir")

@@ -17,6 +17,7 @@ from fingerprint_semantics import (
     ProductReviewHostAction,
 )
 from release_preflight_core import *
+import runtime_timeout_policy
 
 def recent5_history(current: dict, reg: dict) -> list[dict]:
     return [
@@ -24,7 +25,9 @@ def recent5_history(current: dict, reg: dict) -> list[dict]:
         if isinstance(x, dict) and x.get("episode_id") != current.get("episode_id")
     ][-5:]
 
-def build_recent5(ep: Path, codex: str | None = None, timeout: int = 1800) -> dict:
+def build_recent5(ep: Path, codex: str | None = None, timeout: int | None = None) -> dict:
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("release_semantic")
     fp_path = ep / "meta/episode-fingerprint.json"
     if not fp_path.is_file():
         raise ValueError("meta/episode-fingerprint.json missing")
@@ -206,4 +209,3 @@ def verify_recent5_evidence(ep: Path) -> list[str]:
     if not isinstance(score, int) or score >= 55:
         errors.append(f"recent5 max_similarity_score must be <55 for this strict guard; got {score!r}")
     return errors
-

@@ -41,7 +41,7 @@ def main() -> int:
     p = sub.add_parser("compare")
     p.add_argument("episode_dir")
     p.add_argument("--codex")
-    p.add_argument("--timeout", type=int, default=1800)
+    p.add_argument("--timeout", type=int, default=None)
 
     args = ap.parse_args()
     ep = Path(args.episode_dir).resolve()

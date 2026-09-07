@@ -11,6 +11,7 @@ import execution_capsule
 import intro_policy
 import runtime_router
 import product_runtime_adapter
+import runtime_timeout_policy
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/provisional-release.json")
@@ -22,8 +23,10 @@ def prefix(p):
     if p.suffix.lower()==".py": return [sys.executable,str(p)]
     if os.name=="nt" and p.suffix.lower() in {".cmd",".bat"}: return ["cmd.exe","/d","/c",str(p)]
     return [str(p)]
-def build(ep,codex_raw=None,timeout=900):
+def build(ep,codex_raw=None,timeout=None):
     active_runtime,_=runtime_router.detect()
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("review_critic")
     if active_runtime in {"WORK","WEB"} and not codex_raw:
         request=product_runtime_adapter.build_request(
             ep,runtime=active_runtime,mode="full_auto",resume=True,source="provisional_release")
@@ -77,7 +80,7 @@ def self_test():
     print("PROVISIONAL RELEASE SELF-TEST PASS")
 def main():
     ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True)
-    p=sub.add_parser("build"); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=900)
+    p=sub.add_parser("build"); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=None)
     p=sub.add_parser("show"); p.add_argument("episode_dir")
     sub.add_parser("self-test"); a=ap.parse_args()
     if a.cmd=="self-test": self_test(); return 0

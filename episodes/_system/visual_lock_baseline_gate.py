@@ -13,6 +13,7 @@ import runtime_router
 import storyos_config
 from codex_subscription_image import command_prefix, resolve_codex
 import story_json
+import runtime_timeout_policy
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -144,8 +145,10 @@ def finalize_product_critic(ep,attempt=1,runtime="WORK"):
     candidate.unlink(missing_ok=True)
     return {"status":"PASS",**result}
 
-def run_codex_critic(ep,attempt=1,codex_raw=None,timeout=300):
+def run_codex_critic(ep,attempt=1,codex_raw=None,timeout=None):
     ep=Path(ep).resolve();draft=prepare_review(ep,force=False);candidate=ep/CANDIDATE_REL;candidate.unlink(missing_ok=True)
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("visual_baseline_critic")
     asset=repo_file(draft["asset_path"]);before=sha_file(asset)
     staging=Path(tempfile.mkdtemp(prefix="story-os-baseline-"));staged=staging/("baseline"+asset.suffix.lower())
     shutil.copy2(asset,staged)
@@ -220,7 +223,7 @@ def self_test():assert len(CHECKS)>=8;print("VISUAL LOCK BASELINE GATE SELF-TEST
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("prepare-review");p.add_argument("episode_dir");p.add_argument("--force",action="store_true")
-    p=sub.add_parser("run-critic");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1);p.add_argument("--codex");p.add_argument("--timeout",type=int,default=300)
+    p=sub.add_parser("run-critic");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1);p.add_argument("--codex");p.add_argument("--timeout",type=int,default=None)
     p=sub.add_parser("finalize-review");p.add_argument("episode_dir");p.add_argument("--attempt",type=int,default=1);p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK")
     p=sub.add_parser("approve");p.add_argument("episode_dir");p=sub.add_parser("verify");p.add_argument("episode_dir");p=sub.add_parser("status");p.add_argument("episode_dir");sub.add_parser("self-test");a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0

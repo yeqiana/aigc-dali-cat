@@ -18,6 +18,7 @@ import runtime_command
 import runtime_router
 import product_review_adapter
 import subtitle_layout
+import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/caption-image-audit.json")
@@ -230,8 +231,10 @@ def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str
     out.unlink(missing_ok=True)
     return data if isinstance(data, dict) else {}
 
-def ensure(ep: Path, codex_raw: str | None = None, timeout: int = 900) -> tuple[bool, dict]:
+def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -> tuple[bool, dict]:
     ep = Path(ep).resolve()
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("review_critic")
     dirty, current, image_sha, caption_sha, texts, source_meta = dirty_frames(ep)
     review_meta = source_meta.get("review_image") or {}
     if review_meta.get("mode") == "final_publish_with_subtitle" and review_meta.get("layout_current") is not True:
@@ -348,7 +351,7 @@ def self_test():
 def main() -> int:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
-    p = sub.add_parser("ensure"); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=900)
+    p = sub.add_parser("ensure"); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None)
     p = sub.add_parser("verify"); p.add_argument("episode_dir")
     p = sub.add_parser("show"); p.add_argument("episode_dir")
     sub.add_parser("self-test")

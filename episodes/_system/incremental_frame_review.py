@@ -15,6 +15,7 @@ from story_os_contract import story_os_version
 import runtime_router
 import runtime_provenance
 import story_json
+import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 STATE_REL = Path("meta/incremental-frame-review.json")
@@ -498,7 +499,9 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
     return errors
 
 
-def run_review(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
+def run_review(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("deep_semantic_review")
     if attempt not in {1, 2}:
         raise RuntimeError("attempt must be 1 or 2")
     plan = build_plan(ep)
@@ -544,7 +547,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Story OS V2.0.3.4 incremental actual-frame semantic review")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("plan"); p.add_argument("episode_dir")
-    p = sub.add_parser("review"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=1800)
+    p = sub.add_parser("review"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None)
     p = sub.add_parser("verify"); p.add_argument("episode_dir"); p.add_argument("--metadata-only", action="store_true")
     p = sub.add_parser("audit"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
