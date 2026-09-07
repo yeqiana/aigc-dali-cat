@@ -72,7 +72,7 @@ def list_registered_profiles() -> list[dict]:
     return profiles
 
 
-def resolve_profile(ep: Path) -> dict:
+def resolve_base_profile(ep: Path) -> dict:
     resolved = default_profile()
     gates_path = ep / GATES_REL
     if not gates_path.is_file():
@@ -120,30 +120,16 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def resolve_profile(ep: Path) -> dict:
+    from visual_profile_bridge_v224 import resolve_profile as resolve
+    return resolve(ep)
+
+
 def compile_prompt_contract(ep: Path) -> dict:
-    """Compile the resolved visual profile into a compact production contract."""
-    profile = resolve_profile(ep)
-    p = (ROOT / profile["profile_path"]).resolve()
-    data = load_json(p) if p.suffix.lower() == ".json" else {}
-    dna = data.get("visual_dna") or {}
-    lines = [
-        f"profile={profile['profile_id']} | {profile.get('profile_name') or ''}",
-        "reality first; the image must still feel like a plausible personal/work record without the anomaly",
-        f"ordinary Chinese life density={dna.get('ordinary_chinese_life_density', 'high')}; retain causal incidental clutter",
-        f"practical available light={dna.get('practical_available_light', dna.get('available_light_only', True))}; no invented cinematic key/rim lighting",
-        f"composition={dna.get('composition', 'unposed_imperfect_personal_record')}",
-        f"people={dna.get('people', 'ordinary_unprepared_not_actor_like')}",
-        f"color={dna.get('color', 'environment-driven low/medium saturation')}",
-        f"texture={dna.get('texture', 'capture-device/scene-caused imperfection only')}",
-        f"anomaly={dna.get('anomaly', 'embedded_in_reality_before_spectacle')}",
-        "forbid commercial HDR, promo polish, default portrait bokeh, heroic framing and causeless retro/noise effects",
-        "capture physics and story era override texture; never fake an old device when the story uses a modern phone",
-    ]
-    return {
-        **profile,
-        "profile_sha256": sha256_file(p),
-        "text": "\n".join(lines),
-    }
+    """Compatibility entry; all consumers use the same texture/capture compiler."""
+    from visual_profile_bridge_v224 import compile_prompt_contract as compile_contract
+    return compile_contract(ep)
+
 
 def cmd_show(args: argparse.Namespace) -> int:
     ep = resolve_episode(args.episode_dir)

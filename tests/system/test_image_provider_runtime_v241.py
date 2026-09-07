@@ -27,10 +27,20 @@ class ProviderRuntimeTests(unittest.TestCase):
         self.assertEqual(row["max_images"],1)
 
     def test_key_routes_openai(self):
-        with patch.dict(os.environ,{"OPENAI_API_KEY":"test-not-a-real-key"},clear=False):
+        with patch.dict(os.environ,{"OPENAI_API_KEY":"test-not-a-real-key","STORY_OS_IMAGE_RUNTIME":"AUTO"},clear=False):
             row=image_provider_runtime.select_batch_provider(5)
         self.assertEqual(row["provider"],"openai_images_api")
         self.assertTrue(row["native_multi_image"])
+
+    def test_api_key_cannot_override_locked_codex(self):
+        with patch.dict(os.environ,{"OPENAI_API_KEY":"test-only","STORY_OS_IMAGE_RUNTIME":"CODEX"}):
+            self.assertEqual(image_provider_runtime.select_batch_provider(5)["provider"],"codex_subscription")
+
+    def test_repository_fallback_never_picks_other_worker_image(self):
+        with tempfile.TemporaryDirectory(prefix="repository-") as td:
+            root=Path(td); p=root/"unrelated.png"
+            p.write_bytes(b"\x89PNG\r\n\x1a\n"+b"q"*64)
+            self.assertIsNone(image_artifact_collector.recover_codex_generated(root/"missing.log",root))
 
     def test_release_canvas_provider_size(self):
         self.assertEqual(openai_images_provider.provider_size_for_release(1080,1350),(1088,1360))
@@ -53,7 +63,7 @@ class ProviderRuntimeTests(unittest.TestCase):
             openai_images_provider._decode_response(body,4)
 
     def test_artifact_recovery_from_worker_directory(self):
-        with tempfile.TemporaryDirectory() as td:
+        with tempfile.TemporaryDirectory(prefix="story-os-image-") as td:
             root=Path(td)
             generated=root/".codex/generated_images/x.png"
             generated.parent.mkdir(parents=True)

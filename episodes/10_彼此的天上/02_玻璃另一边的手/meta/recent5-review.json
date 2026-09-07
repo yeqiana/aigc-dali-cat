@@ -1,8 +1,8 @@
 {
   "schema_version": 2,
-  "story_os_version": "2.5.1",
+  "story_os_version": "2.6.1",
   "episode_id": "10-02",
-  "generated_at": "2026-09-06T01:52:53+08:00",
+  "generated_at": "2026-09-06T22:24:53+08:00",
   "candidate_fingerprint_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/episode-fingerprint.json",
   "candidate_fingerprint_sha256": "90d0504a616e585a4c15c7bdc999a57ab1010f26b1567e8e3530c1fc21c5bda3",
   "registry_path": "reports/account-pattern-registry.json",
@@ -42,5 +42,5 @@
   "scoring_policy": "effective=max(exact_string,semantic_equivalence); veto=exact_veto OR semantic_veto",
   "note": "V2.0.3.6 uses a fresh isolated semantic equivalence matrix so paraphrased/skin-swapped fingerprints cannot bypass Recent-5 by changing wording. Python, not the critic, computes scores.",
   "semantic_review_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/recent5-semantic-review.json",
-  "semantic_review_sha256": "3cde17827ad75413d8e62ab866643bdc1d4e8eebeaa7d488e34b5744ddb0ef34"
+  "semantic_review_sha256": "f3c7aace1ecfe67cfcd2ddb7d7119d8264bfe5352b77520df53e404a77d50fce"
 }

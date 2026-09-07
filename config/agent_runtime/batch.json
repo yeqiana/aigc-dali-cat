@@ -40,7 +40,7 @@
   "codex_subscription_logical_batch": {
     "config": "config/agent_runtime/codex-subscription-batch.json",
     "logical_batch_size": 5,
-    "max_inflight_codex_images": 5,
+    "max_inflight_codex_images": 3,
     "native_multi_image": false,
     "single_http_request": false,
     "api_key_required": false,

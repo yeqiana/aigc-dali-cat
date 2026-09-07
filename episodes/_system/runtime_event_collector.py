@@ -7,6 +7,7 @@ Workers emit execution events only. Scheduler owns ledger mutations.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from async_task_runtime import TaskEvent
@@ -26,6 +27,18 @@ _EVENT_MAP = {
 }
 
 
+def json_safe(value: Any) -> Any:
+    if isinstance(value, Path):
+        return value.as_posix()
+    if isinstance(value, dict):
+        return {str(k): json_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [json_safe(v) for v in value]
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    return str(value)
+
+
 def collect(task_event: TaskEvent) -> RuntimeImageEvent:
     return RuntimeImageEvent(
         event=_EVENT_MAP.get(task_event.event, task_event.event),
@@ -38,6 +51,7 @@ def self_test() -> None:
     assert collect(TaskEvent("TASK_STARTED", "01", {})).event == "IMAGE_STARTED"
     assert collect(TaskEvent("TASK_SUCCESS", "01", {})).event == "IMAGE_SUCCESS"
     assert collect(TaskEvent("TASK_FAILED", "01", {})).event == "IMAGE_FAILED"
+    assert json_safe({"path": Path("a") / "b.png"}) == {"path": "a/b.png"}
 
 
 if __name__ == "__main__":

@@ -1,37 +1,65 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-04T22:49:42+08:00",
+  "generated_at": "2026-09-07T09:42:57+08:00",
   "diagnostic_only": true,
   "stage_source": "meta/episode-state.json",
   "episode": "episodes/10_彼此的天上/02_玻璃另一边的手",
-  "current_state": "IDEA_LOCKED",
+  "current_state": "VISUAL_CALIBRATED",
   "latest_workflow_run": {
-    "run_id": "1788533265-codex",
-    "status": "BLOCKED",
-    "total_seconds": 116.875,
+    "run_id": "1788745371-work",
+    "status": "HOST_WAIT",
+    "total_seconds": 5.563,
     "slowest_steps": [
-      {
-        "step": "CREATIVE_STORY",
-        "status": "BLOCKED",
-        "elapsed_seconds": 116.078,
-        "recorded_at": "2026-09-04T22:49:42+08:00",
-        "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl\nCHARACTER CONTRACT FAIL\ncharacter contract status must be LOCKED before Story Lock\nNO-ANOMALY TEST must be rechecked_against_final_story=true before Story Lock"
-      },
       {
         "step": "INCREMENTAL_PLAN",
         "status": "PASS",
-        "elapsed_seconds": 0.234,
-        "recorded_at": "2026-09-04T22:47:45+08:00",
-        "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        "elapsed_seconds": 1.5,
+        "recorded_at": "2026-09-07T09:42:53+08:00",
+        "note": "iew.py\\\", line 246, in build_plan\\n    frames = base.frame_records(ep, require_files=True)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\frame_semantic_review.py\\\", line 276, in frame_records\\n    raise ValueError(f\\\"frame {key} approved_asset missing\\\")\\nValueError: frame 01 approved_asset missing\\n\"\n  },\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"PRODUCTION_INCREMENTAL_REQUIRED\",\n  \"missing\": []\n}\n"
+      },
+      {
+        "step": "PRODUCTION",
+        "status": "HOST_WAIT",
+        "elapsed_seconds": 0.047,
+        "recorded_at": "2026-09-07T09:42:56+08:00",
+        "note": "rsion\": 2, \"request_id\": \"host-36e511dc6ff37921\", \"request_fingerprint\": \"36e511dc6ff37921acc5541ea7c873961666b309e62ccb870eb99e79ce98a0cb\", \"created_at\": \"2026-09-06T23:39:04+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/02_\\u73bb\\u7483\\u53e6\\u4e00\\u8fb9\\u7684\\u624b/meta/runtime/host-requests/host-36e511dc6ff37921.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/02_\\u73bb\\u7483\\u53e6\\u4e00\\u8fb9\\u7684\\u624b/meta/runtime/product-host-request.json\"}"
+      },
+      {
+        "step": "CREATIVE_STORY",
+        "status": "REUSED",
+        "elapsed_seconds": 0.0,
+        "recorded_at": "2026-09-07T09:42:54+08:00",
+        "note": "target already valid"
+      },
+      {
+        "step": "PREIMAGE_COMPILE",
+        "status": "REUSED",
+        "elapsed_seconds": 0.0,
+        "recorded_at": "2026-09-07T09:42:54+08:00",
+        "note": "preproduction handoff already valid"
+      },
+      {
+        "step": "VISUAL_LOCK",
+        "status": "REUSED",
+        "elapsed_seconds": 0.0,
+        "recorded_at": "2026-09-07T09:42:56+08:00",
+        "note": "target already valid"
       }
     ]
   },
   "production": {
-    "ledger_status_counts": {},
-    "queue_status_counts": {},
+    "ledger_status_counts": {
+      "PASSED": 1,
+      "PENDING": 16,
+      "REPAIR_READY": 3
+    },
+    "queue_status_counts": {
+      "generated": 8,
+      "superseded": 5
+    },
     "scheduler_wave_count": 0,
     "max_observed_parallel": 0,
-    "adaptive_parallel_current": null
+    "adaptive_parallel_current": 1
   },
   "review": {
     "scout_decisions": {},
@@ -47,90 +75,107 @@
   },
   "runtime_trace": {
     "schema_version": 1,
-    "generated_at": "2026-09-04T22:49:42.259+08:00",
+    "generated_at": "2026-09-07T09:42:57.035+08:00",
     "diagnostic_only": true,
     "stage_authority": false,
-    "latest_trace_id": "ST_bfa98a4d913841d2",
-    "event_count": 34,
-    "span_end_count": 10,
+    "latest_trace_id": "ST_413782eda2074d83",
+    "event_count": 165,
+    "span_end_count": 65,
     "status_counts": {
-      "PASS": 5,
-      "FAILED": 4,
-      "BLOCKED": 1
+      "PASS": 23,
+      "FAILED": 32,
+      "BLOCKED": 1,
+      "REUSED": 6,
+      "HOST_WAIT": 3
     },
     "elapsed_ms_by_category": {
-      "workflow_step": 167485.0
+      "workflow_step": 173781.0,
+      "image_generation": 6704497.0
     },
     "slowest_spans": [
       {
-        "name": "CREATIVE_STORY",
-        "category": "workflow_step",
-        "status": "BLOCKED",
-        "elapsed_ms": 116250.0,
-        "span_id": "SP_73a7d31f21cc4ea1"
-      },
-      {
-        "name": "CREATIVE_STORY",
-        "category": "workflow_step",
+        "name": "image.generate.frame.14",
+        "category": "image_generation",
         "status": "FAILED",
-        "elapsed_ms": 47875.0,
-        "span_id": "SP_d78ec978b8b24f18"
+        "elapsed_ms": 290109.0,
+        "span_id": "SP_e7593399d026440c"
       },
       {
-        "name": "CREATIVE_STORY",
-        "category": "workflow_step",
+        "name": "image.generate.frame.01",
+        "category": "image_generation",
         "status": "FAILED",
-        "elapsed_ms": 500.0,
-        "span_id": "SP_44508eeeae1447e5"
+        "elapsed_ms": 270422.0,
+        "span_id": "SP_bcd0621410b74f0d"
       },
       {
-        "name": "CREATIVE_STORY",
-        "category": "workflow_step",
+        "name": "image.generate.frame.01",
+        "category": "image_generation",
         "status": "FAILED",
-        "elapsed_ms": 453.0,
-        "span_id": "SP_1278a8db3fc940fa"
+        "elapsed_ms": 270422.0,
+        "span_id": "SP_4120ecc8d0264928"
       },
       {
-        "name": "INCREMENTAL_PLAN",
-        "category": "workflow_step",
-        "status": "PASS",
-        "elapsed_ms": 422.0,
-        "span_id": "SP_4fa353ef846a4793"
-      },
-      {
-        "name": "INCREMENTAL_PLAN",
-        "category": "workflow_step",
-        "status": "PASS",
-        "elapsed_ms": 407.0,
-        "span_id": "SP_40afe7f55c6c4125"
-      },
-      {
-        "name": "INCREMENTAL_PLAN",
-        "category": "workflow_step",
-        "status": "PASS",
-        "elapsed_ms": 406.0,
-        "span_id": "SP_f4948ead11544bd4"
-      },
-      {
-        "name": "CREATIVE_STORY",
-        "category": "workflow_step",
+        "name": "image.generate.frame.01",
+        "category": "image_generation",
         "status": "FAILED",
-        "elapsed_ms": 406.0,
-        "span_id": "SP_46f8233677214959"
+        "elapsed_ms": 270421.0,
+        "span_id": "SP_4a5c88a2a0b049c3"
       },
       {
-        "name": "INCREMENTAL_PLAN",
-        "category": "workflow_step",
-        "status": "PASS",
-        "elapsed_ms": 391.0,
-        "span_id": "SP_39dcf2e0661f41c4"
+        "name": "image.generate.frame.03",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 270359.0,
+        "span_id": "SP_d4426cbb21a34a4c"
       },
       {
-        "name": "INCREMENTAL_PLAN",
-        "category": "workflow_step",
-        "status": "PASS",
-        "elapsed_ms": 375.0,
-        "span_id": "SP_3372af3aeffc40bb"
+        "name": "image.generate.frame.14",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 270343.0,
+        "span_id": "SP_621b1cb4948e4d02"
+      },
+      {
+        "name": "image.generate.frame.01",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 258172.0,
+        "span_id": "SP_0f675c895a03452a"
+      },
+      {
+        "name": "image.generate.frame.01",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 240422.0,
+        "span_id": "SP_e82a0896f1d14ecf"
+      },
+      {
+        "name": "image.generate.frame.03",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 240391.0,
+        "span_id": "SP_539f27d2d4514549"
+      },
+      {
+        "name": "image.generate.frame.03",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 240360.0,
+        "span_id": "SP_c72a1b8eda214f0c"
+      },
+      {
+        "name": "image.generate.frame.14",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 240360.0,
+        "span_id": "SP_f26acddf512849de"
+      },
+      {
+        "name": "image.generate.frame.14",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 240328.0,
+        "span_id": "SP_d178754977ae413a"
       }
     ]
   },
@@ -166,6 +211,22 @@
     "ordinary_repairs_after_barrier": 0,
     "wait_batch_decisions": 0
   },
+  "runtime_handoff": {
+    "awaiting_product_host": true,
+    "host_wait_steps": [
+      {
+        "step": "PRODUCTION",
+        "status": "HOST_WAIT",
+        "input_hash": "568b62aab02341136642fb83bcab19d6c713e04134a88abda972e3b5a43167a1",
+        "output_hash": "a3067850d779d83faadc870d8a8136e12ade2836dec75011d736b1820675bd6e",
+        "attempt": 3,
+        "started_at": null,
+        "finished_at": "2026-09-07T09:42:56+08:00",
+        "note": "tic_scripts\": \"may run locally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-36e511dc6ff37921\", \"request_fingerprint\": \"36e511dc6ff37921acc5541ea7c873961666b309e62ccb870eb99e79ce98a0cb\", \"created_at\": \"2026-09-06T23:39:04+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/02_\\u73bb\\u7483\\u53e6\\u4e00\\u8fb9\\u7684\\u624b/meta/runtime/host-requests/host-36e511dc6ff37921.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/02_\\u73bb\\u7483\\u53e6\\u4e00\\u8fb9\\u7684\\u624b/meta/runtime/product-host-request.json\"}"
+      }
+    ],
+    "host_wait_is_failure": false
+  },
   "failure_taxonomy": {
     "technical_failures": 0,
     "dependency_or_hard_blocked": 0,
@@ -176,6 +237,7 @@
   },
   "health": {
     "has_blockers": false,
-    "workflow_status": "BLOCKED"
+    "awaiting_product_host": true,
+    "workflow_status": "HOST_WAIT"
   }
 }

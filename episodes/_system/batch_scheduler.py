@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import asyncio
+import uuid
 import datetime as dt, json, subprocess, sys, time
 from pathlib import Path
 
@@ -23,20 +24,52 @@ import runtime_portability
 import production_batch_review
 import async_scheduler_adapter
 import runtime_event_collector
+from runtime_atomic_store import atomic_write_json
+CAPABILITY_WAIT=24
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
 QUEUE_REL=Path("meta/production-queue.json")
 READY_LEDGER_STATES={"ORIGINAL_READY","REPAIR_READY","PASSED","LOCKED"}
+
+# Runtime result semantics. Keep technical recovery separate from host action.
+SUCCESS=0
+RECOVERABLE_FAILURE=21
+HUMAN_REQUIRED=22
+HARD_STOP=23
 DEFAULT_QUALITY=str(storyos_config.get_path(storyos_config.load_config(),"image.quality"))
 
 def now():
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
+
+def ensure_image_capability(ep:Path, batch_id:str|None=None, requested:int=0)->bool:
+    """Guard image lane before consuming worker slots.
+
+    Capability failure is a technical wait, not a content failure. The batch
+    must not start multiple workers when the image tool is unavailable.
+    """
+    snapshot=image_provider_runtime.capability_snapshot()
+    # A configured route permits one real probe; it is never proof of capability.
+    codex=snapshot.get("codex_subscription") or {}
+    product=snapshot.get("product_runtime_image") or {}
+    api=snapshot.get("openai_images_api") or {}
+    available=bool(snapshot.get("available") or snapshot.get("image_generation")
+        or (codex.get("configured") and codex.get("runtime_eligible"))
+        or (product.get("configured") and product.get("runtime_eligible"))
+        or (snapshot.get("image_execution_runtime")=="AUTO" and api.get("configured") and api.get("credential_available")))
+    return available
+
+
+def verified_image_lane(ep:Path)->bool:
+    evidence=batch_capability_probe.read(ep)
+    return bool(evidence.get("runtime_succeeded") and int(evidence.get("returned_images") or 0)>0
+        and evidence.get("provider_runtime_snapshot")==image_provider_runtime.capability_snapshot())
+
 def read_json(p):
     d=json.loads(p.read_text(encoding="utf-8-sig"))
     return d if isinstance(d,dict) else {}
 def write_json(p,d):
-    p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    atomic_write_json(p,d)
 def load_queue(ep):
     p=ep/QUEUE_REL
     q=read_json(p) if p.is_file() else {"schema_version":1,"items":[],"waves":[]}
@@ -142,7 +175,14 @@ def run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     Batch planning/review/ledger semantics stay here; only execution scheduling
     moves to async_task_runtime.
     """
-    return asyncio.run(_run_async(ep,max_workers,timeout,codex))
+    import runner_state_store
+    lock_rel=Path("meta/runtime-image-scheduler.lock")
+    if not runner_state_store.acquire_lock(ep,lock_rel=lock_rel):
+        return 21
+    try:
+        return asyncio.run(_run_async(ep,max_workers,timeout,codex))
+    finally:
+        runner_state_store.release_lock(ep,lock_rel=lock_rel)
 
 
 async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
@@ -150,22 +190,161 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     q=load_queue(ep)
     ready=ready_items(ep,q)
     if not ready:
-        return 0
+        return SUCCESS
 
+    # V2.7 async runtime only executes workers. Scheduler still owns the
+    # queue/ledger state transition. Never leave a successful worker event as
+    # trace-only data.
+    max_workers = min(max(1, max_workers), int(storyos_config.get_path(storyos_config.load_config(), "production.max_inflight_images")))
+    runtime,_=runtime_router.detect()
+    image_runtime,_=runtime_router.image_execution_runtime()
+    provider=image_provider_runtime.select_batch_provider(batch_runtime_config.images_per_batch())
+    if provider["provider"]=="product_runtime_image":
+        request=product_runtime_adapter.build_image_request(ep,runtime=runtime,queue_items=ready[:batch_runtime_config.images_per_batch()],source="batch_scheduler")
+        product_runtime_adapter.print_request(request)
+        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
+    if provider["provider"]=="codex_subscription" and not verified_image_lane(ep):
+        max_workers=1
+    max_workers=min(max_workers,int(q.get("adaptive_parallel") or max_workers))
+    batch_items = ready[:batch_runtime_config.images_per_batch()] if provider["provider"]!="codex_subscription" or verified_image_lane(ep) else ready[:1]
+    if provider["provider"]=="openai_images_api":
+        planned=batch_contract.build(ep,batch_items)
+        planned_ids={x["queue_item_id"] for x in planned["frames"]}
+        batch_items=[x for x in batch_items if x["id"] in planned_ids]
+    batch_id="BATCH_"+uuid.uuid4().hex[:12]
+    if not ensure_image_capability(ep, requested=len(batch_items)):
+        q["image_lane"] = {"status": "CAPABILITY_WAIT", "reason": "IMAGE_TOOL_UNAVAILABLE", "at": now()}
+        save_queue(ep,q)
+        return CAPABILITY_WAIT
+    q.pop("image_lane", None)
+    q_by_id={x["id"]:x for x in q.get("items") or []}
+    started=[]
+    has_human_block=False
+    for item in batch_items:
+        row=q_by_id.get(item["id"])
+        if not row:
+            continue
+        ok,msg=ledger_begin(ep,row)
+        if not ok:
+            row["status"]="blocked"
+            row["last_error"]="ledger begin failed: "+msg[-500:]
+            has_human_block=True
+            continue
+        row["status"]="running"
+        row["attempts"]=int(row.get("attempts") or 0)+1
+        row["started_at"]=now()
+        row["batch_id"]=batch_id
+        row["_defer_scout"]=True
+        started.append(row)
+    save_queue(ep,q)
+
+    native_task=None
     async def handler(item):
+        nonlocal native_task
+        if provider["provider"]=="openai_images_api":
+            if native_task is None:
+                contract=batch_contract.build(ep,started)
+                if contract["planned_count"]!=len(started):
+                    return {"returncode":99,"error":"BATCH_CONTINUITY_MISMATCH","output":None}
+                native_task=asyncio.create_task(asyncio.to_thread(batch_image_worker.execute_batch,ep,contract,started,timeout,codex))
+            native=await asyncio.shield(native_task)
+            if item["id"] in (native.get("results") or {}): return native["results"][item["id"]]
+            if runtime=="CODEX" and batch_runtime_config.load()["technical_failure"]["fallback_to_single_frame"]:
+                return await asyncio.to_thread(image_worker_pool.execute,ep,item,timeout,codex)
+            return {"returncode":99,"error":native.get("error") or "native batch failed","output":None}
         return await asyncio.to_thread(image_worker_pool.execute, ep, item, timeout, codex)
 
-    async for event in async_scheduler_adapter.stream_tasks(ready[:max_workers], handler, workers=max_workers):
+    has_technical_failure=False
+
+    async for event in async_scheduler_adapter.stream_tasks(started, handler, workers=max_workers):
         image_event=runtime_event_collector.collect(event)
         q=load_queue(ep)
+        item=next((x for x in q.get("items") or [] if x.get("id")==image_event.item_id),None)
+        payload=runtime_event_collector.json_safe(image_event.payload)
+        if item:
+            if image_event.event == "IMAGE_SUCCESS":
+                result=payload.get("result") or payload
+                if result.get("returncode")==0 and result.get("output") and Path(result["output"]).is_file():
+                    ok,msg=ledger_success(ep,item,result)
+                    if ok:
+                        item["status"]="generated"
+                        item["completed_at"]=now()
+                        item["output_path"]=Path(result["output"]).resolve().relative_to(ROOT).as_posix()
+                        item["log_path"]=Path(result["log"]).resolve().relative_to(ROOT).as_posix() if result.get("log") else None
+                        item["prompt_package"]=result.get("prompt_package")
+                        item["last_error"]=None
+                        batch_capability_probe.record(ep,supported=False,requested=1,returned=1,
+                            reason="REAL_FRAME_SUCCEEDED",provider=provider["provider"],
+                            runtime_succeeded=True,native_multi_image=False,single_http_request=False)
+                    else:
+                        # The backend already produced pixels; keep the open
+                        # attempt/candidate for reconciliation, never regenerate.
+                        item["status"]="blocked"
+                        item["candidate_output_path"]=str(result["output"])
+                        item["last_error"]="CANDIDATE_COMMIT_FAILED: "+msg
+                        has_human_block=True
+                else:
+                    err=str(result.get("stdout") or result.get("error") or "worker returned success without output")
+                    from image_scheduler import classify_error, NON_REGENERATING_FAILURE_CODES
+                    code=classify_error(err)
+                    ledger_tech_fail(ep,item,code,err)
+                    item["status"]="blocked" if code in NON_REGENERATING_FAILURE_CODES else "tech_failed"
+                    if result.get("output"):
+                        item["candidate_output_path"]=str(result["output"])
+                    has_human_block=has_human_block or item["status"]=="blocked"
+                    item["last_error"]=err[-1000:]
+                    has_technical_failure=True
+            elif image_event.event == "IMAGE_FAILED":
+                err=str(payload.get("error") or payload.get("result") or "worker failed")
+                ledger_tech_fail(ep,item,"WORKER_FAILED",err)
+                item["status"]="tech_failed"
+                item["last_error"]=err[:1000]
+                has_technical_failure=True
+
         q.setdefault("runtime_events",[]).append({
             "event":image_event.event,
             "task_id":image_event.item_id,
-            "payload":image_event.payload,
+            "payload":payload,
             "at":now()
         })
         save_queue(ep,q)
-    return 0
+    # Scout starts only after every submitted original is terminal. It cannot
+    # grant final PASS, and its own technical failure does not stop sibling work.
+    q=load_queue(ep)
+    submitted={x["id"] for x in started}
+    for item in q.get("items") or []:
+        if item.get("id") not in submitted or item.get("status")!="generated": continue
+        if frame_scout.required(ep):
+            try:
+                scout=await asyncio.to_thread(frame_scout.evaluate_candidate,ep,int(item["frame"]),
+                    ROOT/item["output_path"],codex_raw=codex,timeout=min(timeout,240))
+                item["scout"]=scout
+                decision=batch_repair_arbiter.assess(ep,int(item["frame"]),scout,
+                    batch_complete=True,batch_id=str(item.get("batch_id") or "ASYNC"))
+                if decision["action"] in {"SINGLE_REPAIR","EARLY_SINGLE_REPAIR"}:
+                    applied=batch_repair_arbiter.apply(ep,decision)
+                    item["repair_assessment"]=applied
+                    if applied["ledger_repair_authorized"]: item["status"]="scout_repair"
+            except Exception as exc:
+                item["scout"]={"decision":"DEFER_TO_FINAL","notes":str(exc),"final_critic_still_required":True}
+        item.pop("_defer_scout",None)
+    save_queue(ep,q)
+    perf_path=ep/"meta/batch-runtime-performance.json"
+    perf=read_json(perf_path) if perf_path.is_file() else {"schema_version":1,"batches":[]}
+    completed=[x for x in q.get("items") or [] if x.get("id") in submitted and x.get("output_path")]
+    perf.setdefault("batches",[]).append({"batch_id":batch_id,"planned_count":len(started),
+        "returned_count":len(completed),"provider":provider["provider"],
+        "logical_batch":provider["provider"]=="codex_subscription","max_workers":max_workers,
+        "evidence_not_authority":True,"finished_at":now()})
+    write_json(perf_path,perf)
+    if has_human_block and not ready_items(ep,load_queue(ep)):
+        return HUMAN_REQUIRED
+    if has_technical_failure:
+        q=load_queue(ep)
+        q["adaptive_parallel"]=max(1,max_workers-1)
+        save_queue(ep,q)
+        return RECOVERABLE_FAILURE
+    return SUCCESS
 
 
 def run(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:

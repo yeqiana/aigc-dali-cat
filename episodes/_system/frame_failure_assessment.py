@@ -24,21 +24,7 @@ def deviation_score(scout:dict)->int:
     elif confidence>=0.75: total+=5
     return min(100,max(0,int(total)))
 
-def risk_priority(ep:Path,frame:int)->int:
-    c=frame_contract.compile_frame(ep,frame,write_cache=True)
-    d=c["hash_material"]["frame_directive"]
-    mode=str(d.get("frame_mode") or "")
-    role=str(d.get("narrative_role") or "")
-    impact=int(d.get("impact_level") or 0)
-    base=impact*20
-    mode_bonus={"climax_impact":40,"anomaly_amplified":35,"anomaly_reveal":25,"payoff":20,"normal_record":0}.get(mode,10)
-    role_bonus={"climax":30,"payoff":22,"reveal":18,"escalation":15,"evidence":8,"setup":0,"transition":0,"residue":5}.get(role,0)
-    return base+mode_bonus+role_bonus
-
-def criticality_score(ep:Path,frame:int)->int:
-    # Current scheduler risk_priority practical ceiling is roughly 170 including visual-lock scope bonus.
-    # Batch production excludes Visual Lock, so normalize against 150 and clamp.
-    return min(100,max(0,round(risk_priority(ep,frame)/150*100)))
+from frame_risk import risk_priority, criticality_score
 
 def assess(ep:Path,frame:int,scout:dict,*,batch_complete:bool)->dict:
     dev=deviation_score(scout)

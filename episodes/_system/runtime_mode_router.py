@@ -12,7 +12,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
-STAGES = ("IDEA_LOCKED","STORYBOARD_LOCKED","VISUAL_CALIBRATED","PRODUCTION_PASSED","PUBLISH_READY","PUBLISHED","DATA_REVIEWED")
+from story_os_contract import canonical_stages
+STAGES=tuple(canonical_stages())
 SPECIAL = {"repair_only","release_only","data_review"}
 
 def read_json(path: Path) -> dict:

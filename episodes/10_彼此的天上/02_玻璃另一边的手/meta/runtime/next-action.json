@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "derived_at": "2026-09-07T09:42:57+08:00",
+  "episode": "episodes/10_彼此的天上/02_玻璃另一边的手",
+  "episode_state": "VISUAL_CALIBRATED",
+  "execution_mode": "full_auto",
+  "authoring_runtime": "WORK",
+  "image_execution_runtime": "CODEX",
+  "stage_authority": "meta/episode-state.json",
+  "derived_runtime_only": true,
+  "continue_without_user_prompt": true,
+  "action": "PRODUCTION",
+  "executor": "WORK",
+  "blocking": true,
+  "request_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/runtime/product-host-request.json",
+  "target_state": "PRODUCTION_PASSED",
+  "reason": "product host step is awaiting execution"
+}

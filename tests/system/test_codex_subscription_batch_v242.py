@@ -16,8 +16,8 @@ class ConfigTests(unittest.TestCase):
     def test_defaults(self):
         self.assertTrue(codex_subscription_batch_runtime.enabled())
         self.assertEqual(codex_subscription_batch_runtime.batch_size(),5)
-        self.assertEqual(codex_subscription_batch_runtime.max_inflight(),5)
-        self.assertEqual(codex_subscription_batch_runtime.adaptive_steps(),[5,3,1])
+        self.assertEqual(codex_subscription_batch_runtime.max_inflight(),3)
+        self.assertEqual(codex_subscription_batch_runtime.adaptive_steps(),[3,2,1])
 
     def test_no_api_key_routes_logical_codex(self):
         with patch.dict(os.environ,{"OPENAI_API_KEY":""},clear=False):
@@ -48,7 +48,7 @@ class LogicalWorkerTests(unittest.TestCase):
             self.assertFalse(row["native_multi_image"])
             self.assertFalse(row["single_http_request"])
             evidence=(ep/"meta/codex-subscription-batch-capability.json").read_text(encoding="utf-8")
-            self.assertIn('"initial_max_inflight": 5', evidence)
+            self.assertIn('"initial_max_inflight": 3', evidence)
             self.assertIn('"logical_batch": true', evidence)
 
     def test_partial_success_is_preserved(self):

@@ -14,27 +14,37 @@ def load()->dict:
     p=ROOT/rel
     data=json.loads(p.read_text(encoding="utf-8-sig"))
     if not isinstance(data,dict): raise ValueError("batch config root must be object")
+    gate=data.get("repair_gate") or {}
+    for key,expected in {"requires_both_high":True,"non_high_high_action_before_batch_complete":"WAIT_BATCH",
+        "automatic_whole_batch_content_regeneration":False,"max_inflight_single_repairs":1}.items():
+        if gate.get(key)!=expected: raise ValueError(f"unsupported repair policy: {key} must be {expected!r}")
+    technical=data.get("technical_failure") or {}
+    for key,expected in {"consumes_content_repair":False,"batch_retry_limit":0,"fallback_to_single_frame":True}.items():
+        if technical.get(key)!=expected: raise ValueError(f"unsupported technical policy: {key} must be {expected!r}")
     return data
 
 def enabled()->bool:
     return bool(load().get("enabled"))
 
+def integer(data:dict,key:str,minimum:int,maximum:int)->int:
+    value=data.get(key)
+    if type(value) is not int or not minimum<=value<=maximum:
+        raise ValueError(f"{key} must be an integer in {minimum}..{maximum}; got {value!r}")
+    return value
+
 def images_per_batch()->int:
-    n=int(load().get("images_per_batch") or 5)
-    if n<2 or n>10: raise ValueError("images_per_batch must be 2..10")
-    return n
+    return integer(load(),"images_per_batch",2,10)
 
 def max_inflight_batches()->int:
-    n=int(load().get("max_inflight_batches") or 1)
-    if n<1 or n>2: raise ValueError("max_inflight_batches must be 1..2")
-    return n
+    return integer(load(),"max_inflight_batches",1,2)
 
 def probe_initial_inflight()->int:
-    return max(1,min(max_inflight_batches(),int(load().get("initial_inflight_until_probe") or 1)))
+    return integer(load(),"initial_inflight_until_probe",1,max_inflight_batches())
 
 def repair_thresholds()->tuple[int,int]:
-    gate=load().get("repair_gate") or {}
-    return int(gate.get("deviation_high_min") or 80),int(gate.get("criticality_high_min") or 80)
+    gate=load().get("repair_gate")
+    if not isinstance(gate,dict): raise ValueError("repair_gate must be object")
+    return integer(gate,"deviation_high_min",0,100),integer(gate,"criticality_high_min",0,100)
 
 def self_test():
     cfg=load()

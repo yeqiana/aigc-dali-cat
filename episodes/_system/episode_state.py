@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -33,6 +34,13 @@ def save_json(path: Path, data: dict) -> None:
     with path.open("w", encoding="utf-8", newline="\n") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
         f.write("\n")
+
+
+def child_process_env() -> dict[str, str]:
+    env = os.environ.copy()
+    env["PYTHONUTF8"] = "1"
+    env["PYTHONIOENCODING"] = "utf-8"
+    return env
 
 
 def ensure_episode_dir(raw: str) -> Path:
@@ -338,6 +346,7 @@ def transition_cmd(args: argparse.Namespace) -> None:
         result = subprocess.run(
             [sys.executable, str(validator), str(episode_dir), "--target", target],
             check=False,
+            env=child_process_env(),
         )
         if result.returncode != 0:
             raise SystemExit(f"target gate failed; state remains {current}")
@@ -345,6 +354,7 @@ def transition_cmd(args: argparse.Namespace) -> None:
         result = subprocess.run(
             [sys.executable, str(machine), str(episode_dir), "--target", target],
             check=False,
+            env=child_process_env(),
         )
         if result.returncode != 0:
             raise SystemExit(f"machine evidence gate failed; state remains {current}")
@@ -353,6 +363,7 @@ def transition_cmd(args: argparse.Namespace) -> None:
             result = subprocess.run(
                 [sys.executable, str(evidence_gate), str(episode_dir), "--target", target],
                 check=False,
+                env=child_process_env(),
             )
             if result.returncode != 0:
                 raise SystemExit(f"Story OS evidence gate failed; state remains {current}")

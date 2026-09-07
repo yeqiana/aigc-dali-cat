@@ -43,5 +43,16 @@ def write_batch_decision(ep:Path,batch_id:str,rows:list[dict])->Path:
     return p
 
 def self_test():
+    from unittest.mock import patch
+    with patch.object(frame_failure_assessment,"criticality_score",return_value=90):
+        low={"decision":"REPAIR_NOW","issue_codes":["WEATHER_OBVIOUS_MISMATCH"],"confidence":0.8}
+        high={"decision":"REPAIR_NOW","issue_codes":["IDENTITY_OBVIOUS_DRIFT"],"confidence":0.95}
+        assert assess(Path("."),1,low,batch_complete=False,batch_id="TEST")["action"]=="WAIT_BATCH"
+        assert assess(Path("."),1,low,batch_complete=True,batch_id="TEST")["action"]=="SINGLE_REPAIR"
+        assert assess(Path("."),1,high,batch_complete=False,batch_id="TEST")["action"]=="EARLY_SINGLE_REPAIR"
+        with patch(__name__+".authorize_single_repair") as authorize:
+            result=apply(Path("."),assess(Path("."),1,low,batch_complete=False,batch_id="TEST"))
+            assert not result["ledger_repair_authorized"]
+            authorize.assert_not_called()
     print("BATCH REPAIR ARBITER SELF-TEST PASS")
 if __name__=="__main__": self_test()

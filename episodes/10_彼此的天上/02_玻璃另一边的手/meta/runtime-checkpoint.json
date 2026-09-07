@@ -115,11 +115,161 @@
       "started_at": null,
       "finished_at": "2026-09-04T22:51:02+08:00",
       "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/02_������һ�ߵ���\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "d1b350d8c8fdf98082bcf14ce7399635681b8f61fd19b687cd74cae1040939cf",
+      "output_hash": "3e4345f4472d0b2f022aed9990dd74c6596a808985ae1cf0fa2df0b9d793a849",
+      "attempt": 7,
+      "started_at": null,
+      "finished_at": "2026-09-06T23:39:00+08:00",
+      "note": "  \"story\": \"CLEAN\",\n  \"visual\": \"CLEAN\",\n  \"frames\": \"DIRTY\",\n  \"frame_plan\": {\n    \"action\": \"ERROR\",\n    \"raw\": \"Traceback (most recent call last):\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 582, in <module>\\n    raise SystemExit(main())\\n                     ^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 567, in main\\n    print(json.dumps(build_plan(ep), ensure_ascii=False, indent=2)); return 0\\n                     ^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 246, in build_plan\\n    frames = base.frame_records(ep, require_files=True)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\frame_semantic_review.py\\\", line 276, in frame_records\\n    raise ValueError(f\\\"frame {key} approved_asset missing\\\")\\nValueError: frame 01 approved_asset missing\\n\"\n  },\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"PRODUCTION_INCREMENTAL_REQUIRED\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "78670b1c7cb30631b7b33d4621215228a33497add1c377af71b36a45bac3e2d4",
+      "output_hash": "251aba948562f179819d5857e6d8ea7d7aeba4ca885cc35353c87145e72b90e6",
+      "attempt": 6,
+      "started_at": null,
+      "finished_at": "2026-09-06T23:39:01+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "REUSED",
+      "input_hash": "f44e8169c8039189c7c18417d26485ba0816d67d9cba5ced0abc9ebaeef13a0b",
+      "output_hash": "f1630757e4e580166296ff6b17c9d1a3648161545664eacfc89bc5efa170a98e",
+      "attempt": 1,
+      "started_at": null,
+      "finished_at": "2026-09-06T23:39:01+08:00",
+      "note": "preproduction handoff already valid"
+    },
+    {
+      "step": "VISUAL_LOCK",
+      "status": "REUSED",
+      "input_hash": "b91c86aebe9cd325b39b6652a864f2b973569b7d73393c31497e03a1871ca495",
+      "output_hash": "c8f23fedde7129c135830c38e29c37e9cfd54ca9748ba6122443b5b477d49cc8",
+      "attempt": 1,
+      "started_at": null,
+      "finished_at": "2026-09-06T23:39:03+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PRODUCTION",
+      "status": "HOST_WAIT",
+      "input_hash": "568b62aab02341136642fb83bcab19d6c713e04134a88abda972e3b5a43167a1",
+      "output_hash": "a3067850d779d83faadc870d8a8136e12ade2836dec75011d736b1820675bd6e",
+      "attempt": 1,
+      "started_at": null,
+      "finished_at": "2026-09-06T23:39:04+08:00",
+      "note": "tic_scripts\": \"may run locally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-36e511dc6ff37921\", \"request_fingerprint\": \"36e511dc6ff37921acc5541ea7c873961666b309e62ccb870eb99e79ce98a0cb\", \"created_at\": \"2026-09-06T23:39:04+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/02_\\u73bb\\u7483\\u53e6\\u4e00\\u8fb9\\u7684\\u624b/meta/runtime/host-requests/host-36e511dc6ff37921.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/02_\\u73bb\\u7483\\u53e6\\u4e00\\u8fb9\\u7684\\u624b/meta/runtime/product-host-request.json\"}"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "d7cb558bdfca0bd68969deb2a011477439cdfec001c23bc29600905b2321a9cf",
+      "output_hash": "d574d490f771e47b107b9398a7cf48b220c854fd3bcc1feabed52f7583ddef98",
+      "attempt": 8,
+      "started_at": null,
+      "finished_at": "2026-09-06T23:40:52+08:00",
+      "note": "  \"story\": \"CLEAN\",\n  \"visual\": \"CLEAN\",\n  \"frames\": \"DIRTY\",\n  \"frame_plan\": {\n    \"action\": \"ERROR\",\n    \"raw\": \"Traceback (most recent call last):\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 582, in <module>\\n    raise SystemExit(main())\\n                     ^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 567, in main\\n    print(json.dumps(build_plan(ep), ensure_ascii=False, indent=2)); return 0\\n                     ^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 246, in build_plan\\n    frames = base.frame_records(ep, require_files=True)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\frame_semantic_review.py\\\", line 276, in frame_records\\n    raise ValueError(f\\\"frame {key} approved_asset missing\\\")\\nValueError: frame 01 approved_asset missing\\n\"\n  },\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"PRODUCTION_INCREMENTAL_REQUIRED\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "78670b1c7cb30631b7b33d4621215228a33497add1c377af71b36a45bac3e2d4",
+      "output_hash": "251aba948562f179819d5857e6d8ea7d7aeba4ca885cc35353c87145e72b90e6",
+      "attempt": 7,
+      "started_at": null,
+      "finished_at": "2026-09-06T23:40:53+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "REUSED",
+      "input_hash": "f44e8169c8039189c7c18417d26485ba0816d67d9cba5ced0abc9ebaeef13a0b",
+      "output_hash": "f1630757e4e580166296ff6b17c9d1a3648161545664eacfc89bc5efa170a98e",
+      "attempt": 2,
+      "started_at": null,
+      "finished_at": "2026-09-06T23:40:53+08:00",
+      "note": "preproduction handoff already valid"
+    },
+    {
+      "step": "VISUAL_LOCK",
+      "status": "REUSED",
+      "input_hash": "b91c86aebe9cd325b39b6652a864f2b973569b7d73393c31497e03a1871ca495",
+      "output_hash": "c8f23fedde7129c135830c38e29c37e9cfd54ca9748ba6122443b5b477d49cc8",
+      "attempt": 2,
+      "started_at": null,
+      "finished_at": "2026-09-06T23:40:56+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PRODUCTION",
+      "status": "HOST_WAIT",
+      "input_hash": "568b62aab02341136642fb83bcab19d6c713e04134a88abda972e3b5a43167a1",
+      "output_hash": "a3067850d779d83faadc870d8a8136e12ade2836dec75011d736b1820675bd6e",
+      "attempt": 2,
+      "started_at": null,
+      "finished_at": "2026-09-06T23:40:56+08:00",
+      "note": "tic_scripts\": \"may run locally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-36e511dc6ff37921\", \"request_fingerprint\": \"36e511dc6ff37921acc5541ea7c873961666b309e62ccb870eb99e79ce98a0cb\", \"created_at\": \"2026-09-06T23:39:04+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/02_\\u73bb\\u7483\\u53e6\\u4e00\\u8fb9\\u7684\\u624b/meta/runtime/host-requests/host-36e511dc6ff37921.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/02_\\u73bb\\u7483\\u53e6\\u4e00\\u8fb9\\u7684\\u624b/meta/runtime/product-host-request.json\"}"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "22e456a28cb083198ae10191b8eb8832189f21af183b4446544226a7ccda03fb",
+      "output_hash": "ace9694940a0d04aa2c85c1c3743682a65ea383dbeaedb8a3578970bc47e890f",
+      "attempt": 9,
+      "started_at": null,
+      "finished_at": "2026-09-07T09:42:53+08:00",
+      "note": "  \"story\": \"CLEAN\",\n  \"visual\": \"CLEAN\",\n  \"frames\": \"DIRTY\",\n  \"frame_plan\": {\n    \"action\": \"ERROR\",\n    \"raw\": \"Traceback (most recent call last):\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 582, in <module>\\n    raise SystemExit(main())\\n                     ^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 567, in main\\n    print(json.dumps(build_plan(ep), ensure_ascii=False, indent=2)); return 0\\n                     ^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 246, in build_plan\\n    frames = base.frame_records(ep, require_files=True)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\_system\\\\frame_semantic_review.py\\\", line 276, in frame_records\\n    raise ValueError(f\\\"frame {key} approved_asset missing\\\")\\nValueError: frame 01 approved_asset missing\\n\"\n  },\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"PRODUCTION_INCREMENTAL_REQUIRED\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "78670b1c7cb30631b7b33d4621215228a33497add1c377af71b36a45bac3e2d4",
+      "output_hash": "251aba948562f179819d5857e6d8ea7d7aeba4ca885cc35353c87145e72b90e6",
+      "attempt": 8,
+      "started_at": null,
+      "finished_at": "2026-09-07T09:42:54+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "REUSED",
+      "input_hash": "f44e8169c8039189c7c18417d26485ba0816d67d9cba5ced0abc9ebaeef13a0b",
+      "output_hash": "f1630757e4e580166296ff6b17c9d1a3648161545664eacfc89bc5efa170a98e",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-07T09:42:54+08:00",
+      "note": "preproduction handoff already valid"
+    },
+    {
+      "step": "VISUAL_LOCK",
+      "status": "REUSED",
+      "input_hash": "b91c86aebe9cd325b39b6652a864f2b973569b7d73393c31497e03a1871ca495",
+      "output_hash": "c8f23fedde7129c135830c38e29c37e9cfd54ca9748ba6122443b5b477d49cc8",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-07T09:42:56+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PRODUCTION",
+      "status": "HOST_WAIT",
+      "input_hash": "568b62aab02341136642fb83bcab19d6c713e04134a88abda972e3b5a43167a1",
+      "output_hash": "a3067850d779d83faadc870d8a8136e12ade2836dec75011d736b1820675bd6e",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-07T09:42:56+08:00",
+      "note": "tic_scripts\": \"may run locally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-36e511dc6ff37921\", \"request_fingerprint\": \"36e511dc6ff37921acc5541ea7c873961666b309e62ccb870eb99e79ce98a0cb\", \"created_at\": \"2026-09-06T23:39:04+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/02_\\u73bb\\u7483\\u53e6\\u4e00\\u8fb9\\u7684\\u624b/meta/runtime/host-requests/host-36e511dc6ff37921.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/02_\\u73bb\\u7483\\u53e6\\u4e00\\u8fb9\\u7684\\u624b/meta/runtime/product-host-request.json\"}"
     }
   ],
   "note": "Recovery evidence only; NOT a stage source.",
-  "runtime": "CODEX",
+  "runtime": "WORK",
   "continuous_execution_authorized": true,
   "approval_basis": "delegated_continuous_execution",
-  "updated_at": "2026-09-04T22:51:02+08:00"
+  "updated_at": "2026-09-07T09:42:56+08:00"
 }

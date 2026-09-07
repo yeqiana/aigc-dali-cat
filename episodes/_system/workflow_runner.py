@@ -102,7 +102,7 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
     if route_decision:
         runtime_trace.route_event(ep, route_decision)
     try:
-        execution_mode = str(((request_data or {}).get("runtime") or {}).get("execution_mode") or "compat")
+        execution_mode = str(((request_data or {}).get("runtime") or {}).get("execution_mode") or storyos_config.get_path(_CONFIG,"runtime.execution_mode"))
         if runtime in {"WORK", "WEB"} or execution_mode == "dag":
             rc = runtime_dag.execute(ep, codex=codex, timeout=timeout, run_id=run_id, trace_id=trace_id)
             total = time.monotonic() - started

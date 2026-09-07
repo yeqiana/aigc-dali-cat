@@ -1,89 +1,106 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-04T22:49:42.263+08:00",
+  "generated_at": "2026-09-07T09:42:57.045+08:00",
   "diagnostic_only": true,
   "stage_authority": false,
-  "latest_trace_id": "ST_bfa98a4d913841d2",
-  "event_count": 35,
-  "span_end_count": 10,
+  "latest_trace_id": "ST_413782eda2074d83",
+  "event_count": 166,
+  "span_end_count": 65,
   "status_counts": {
-    "PASS": 5,
-    "FAILED": 4,
-    "BLOCKED": 1
+    "PASS": 23,
+    "FAILED": 32,
+    "BLOCKED": 1,
+    "REUSED": 6,
+    "HOST_WAIT": 3
   },
   "elapsed_ms_by_category": {
-    "workflow_step": 167485.0
+    "workflow_step": 173781.0,
+    "image_generation": 6704497.0
   },
   "slowest_spans": [
     {
-      "name": "CREATIVE_STORY",
-      "category": "workflow_step",
-      "status": "BLOCKED",
-      "elapsed_ms": 116250.0,
-      "span_id": "SP_73a7d31f21cc4ea1"
-    },
-    {
-      "name": "CREATIVE_STORY",
-      "category": "workflow_step",
+      "name": "image.generate.frame.14",
+      "category": "image_generation",
       "status": "FAILED",
-      "elapsed_ms": 47875.0,
-      "span_id": "SP_d78ec978b8b24f18"
+      "elapsed_ms": 290109.0,
+      "span_id": "SP_e7593399d026440c"
     },
     {
-      "name": "CREATIVE_STORY",
-      "category": "workflow_step",
+      "name": "image.generate.frame.01",
+      "category": "image_generation",
       "status": "FAILED",
-      "elapsed_ms": 500.0,
-      "span_id": "SP_44508eeeae1447e5"
+      "elapsed_ms": 270422.0,
+      "span_id": "SP_bcd0621410b74f0d"
     },
     {
-      "name": "CREATIVE_STORY",
-      "category": "workflow_step",
+      "name": "image.generate.frame.01",
+      "category": "image_generation",
       "status": "FAILED",
-      "elapsed_ms": 453.0,
-      "span_id": "SP_1278a8db3fc940fa"
+      "elapsed_ms": 270422.0,
+      "span_id": "SP_4120ecc8d0264928"
     },
     {
-      "name": "INCREMENTAL_PLAN",
-      "category": "workflow_step",
-      "status": "PASS",
-      "elapsed_ms": 422.0,
-      "span_id": "SP_4fa353ef846a4793"
-    },
-    {
-      "name": "INCREMENTAL_PLAN",
-      "category": "workflow_step",
-      "status": "PASS",
-      "elapsed_ms": 407.0,
-      "span_id": "SP_40afe7f55c6c4125"
-    },
-    {
-      "name": "INCREMENTAL_PLAN",
-      "category": "workflow_step",
-      "status": "PASS",
-      "elapsed_ms": 406.0,
-      "span_id": "SP_f4948ead11544bd4"
-    },
-    {
-      "name": "CREATIVE_STORY",
-      "category": "workflow_step",
+      "name": "image.generate.frame.01",
+      "category": "image_generation",
       "status": "FAILED",
-      "elapsed_ms": 406.0,
-      "span_id": "SP_46f8233677214959"
+      "elapsed_ms": 270421.0,
+      "span_id": "SP_4a5c88a2a0b049c3"
     },
     {
-      "name": "INCREMENTAL_PLAN",
-      "category": "workflow_step",
-      "status": "PASS",
-      "elapsed_ms": 391.0,
-      "span_id": "SP_39dcf2e0661f41c4"
+      "name": "image.generate.frame.03",
+      "category": "image_generation",
+      "status": "FAILED",
+      "elapsed_ms": 270359.0,
+      "span_id": "SP_d4426cbb21a34a4c"
     },
     {
-      "name": "INCREMENTAL_PLAN",
-      "category": "workflow_step",
-      "status": "PASS",
-      "elapsed_ms": 375.0,
-      "span_id": "SP_3372af3aeffc40bb"
+      "name": "image.generate.frame.14",
+      "category": "image_generation",
+      "status": "FAILED",
+      "elapsed_ms": 270343.0,
+      "span_id": "SP_621b1cb4948e4d02"
+    },
+    {
+      "name": "image.generate.frame.01",
+      "category": "image_generation",
+      "status": "FAILED",
+      "elapsed_ms": 258172.0,
+      "span_id": "SP_0f675c895a03452a"
+    },
+    {
+      "name": "image.generate.frame.01",
+      "category": "image_generation",
+      "status": "FAILED",
+      "elapsed_ms": 240422.0,
+      "span_id": "SP_e82a0896f1d14ecf"
+    },
+    {
+      "name": "image.generate.frame.03",
+      "category": "image_generation",
+      "status": "FAILED",
+      "elapsed_ms": 240391.0,
+      "span_id": "SP_539f27d2d4514549"
+    },
+    {
+      "name": "image.generate.frame.03",
+      "category": "image_generation",
+      "status": "FAILED",
+      "elapsed_ms": 240360.0,
+      "span_id": "SP_c72a1b8eda214f0c"
+    },
+    {
+      "name": "image.generate.frame.14",
+      "category": "image_generation",
+      "status": "FAILED",
+      "elapsed_ms": 240360.0,
+      "span_id": "SP_f26acddf512849de"
+    },
+    {
+      "name": "image.generate.frame.14",
+      "category": "image_generation",
+      "status": "FAILED",
+      "elapsed_ms": 240328.0,
+      "span_id": "SP_d178754977ae413a"
     }
   ]
 }

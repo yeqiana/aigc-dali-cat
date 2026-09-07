@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "runtime": "Story OS V2.7",
+  "generated_at": "2026-09-06T21:40:58.621047+08:00",
+  "stage": "VISUAL_LOCK_FINAL_VERIFY",
+  "episode": "02_玻璃另一边的手",
+  "decision": "PASS",
+  "checks": {
+    "baseline_review": true,
+    "four_admission_roles": true,
+    "visual_lock_plan_exists": true
+  },
+  "frames": [
+    {
+      "frame": 1,
+      "role": "ordinary_baseline",
+      "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-6f5182e6f65b-a6.png",
+      "sha256": "308b8a08193606fdecee86b5518ca34635ad81418d253e4d8b45697240c0a25c",
+      "contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c",
+      "frame_contract_sha256": "8d584e1d09e54a5bc95a0fa239ba669515dfe7873302ceb36dd88af1e75e8489"
+    },
+    {
+      "frame": 9,
+      "role": "worst_capture_condition",
+      "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-35216c31b625-a2.png",
+      "sha256": "60ce59c566230fdeee76fcde462eb007f6841cfd537c0b72978f58e2f84705a7",
+      "contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687",
+      "frame_contract_sha256": "11c9d1ba9c9ce4bbf2d7072064cfce547b78f9b5bd9ca787144815b9d3f3c37a"
+    },
+    {
+      "frame": 3,
+      "role": "first_major_anomaly",
+      "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/03-55049c2c730b-a4.png",
+      "sha256": "b421da74adeb65fec6014b9eefb0cb59f66c663cb0a2e277ae6cc2453e9a448f",
+      "contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72",
+      "frame_contract_sha256": "5a2eb0f6c59383a67198a6abf0a39ab8ec4dc5dde6acbbe549653663e9fccbec"
+    },
+    {
+      "frame": 14,
+      "role": "high_impact_admission",
+      "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/14-7c8e14f1a2b3-a3.png",
+      "sha256": "f3aa095093e23e8a7a476c73f504ec6f42639710f6a81bef3710272a8dbd906c",
+      "contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637",
+      "frame_contract_sha256": "a35b497aae1be82ed0152338c65bb3dd199f1985142027957e3fd7c6f86b3eb4"
+    }
+  ],
+  "next_stage": "VISUAL_CALIBRATED"
+}

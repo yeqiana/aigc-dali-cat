@@ -12,33 +12,11 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/execution-capsules")
-AUTHORITY_FILES=[
-    "config/storyos.yaml","config/index.yaml","START_HERE.md","SKILL.md","AGENTS.md","standards/制作规范_正式版.md",
-    "runtimes/workflow-contract.json",
-    "standards/Character_And_Entry_Pool_V1.0.md",
-    "standards/character-pools.json",
-    "standards/entry-motivation-pools.json",
-    "standards/scene-pools.json",
-    "standards/forbidden-character-roles.json",
-    "runtimes/runtime-mode-contract-r2.json",
-    "runtimes/runtime-fast-path-v251.json",  # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
-    "library/catalog.json",
-    "library/copy/intro-openers.json",
-    "standards/AIGC_Directing_Quality_V1.0.md",
-    "standards/Character_Visual_And_Wardrobe_V1.0.md",
-    "standards/Character_Master_Final_Closure_V1.0.md",
-    "standards/Human_Response_Interaction_V1.0.md",
-    "standards/wardrobe-scenario-profiles.json",
-    "config/profiles/account_creative/default.json",
-    "standards/directing_grammar_v1.json",
-]
-STEP_EVIDENCE={
-    "CREATIVE_STORY":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/resource-selection.json","meta/story-gates.json","reports/account-learning-index.json"],
-    "PREIMAGE_COMPILE":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/resource-selection.json","meta/story-gates.json","meta/intro-policy.json"],
-    "VISUAL_LOCK":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/story-gates.json","meta/concept-ambition-review.json"],
-    "PRODUCTION":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/story-gates.json","meta/visual-lock-plan.json","meta/production-ledger.json"],
-    "RELEASE":["meta/runtime-request.json","meta/episode-state.json","meta/character-contract.json","meta/resource-selection.json","meta/intro-policy.json","meta/story-gates.json","meta/production-ledger.json","meta/runtime/provisional-release.json"],
-}
+import storyos_config
+_INDEX=storyos_config.load_index()
+AUTHORITY_FILES=_INDEX["capsule_authority_files"]
+STEP_EVIDENCE=_INDEX["stage_read_sets"]
+
 RULE_KEYS=[
     "zip_is_delivery_adapter_not_stage_gate","codex_production_complete_at_publish_ready",
     "concept_ambition_before_story_lock","image_first_propagation_gate",
@@ -94,12 +72,12 @@ def compile_capsule(ep,step,write=True):
     evidence=[]
     evidence_paths=list(STEP_EVIDENCE[step])
     if "meta/runtime-execution.json" not in evidence_paths: evidence_paths.insert(1,"meta/runtime-execution.json")
-    quality_evidence={"CREATIVE_STORY":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/character-visual-contract.json","meta/shot-progression-review.json"],"PREIMAGE_COMPILE":["meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/character-visual-contract.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json"],"VISUAL_LOCK":["meta/directing-quality.json","meta/character-visual-contract.json","meta/visual-lock-baseline-review.json","meta/character-pixel-master.json","meta/character-master-crops.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json"],"PRODUCTION":["meta/character-visual-contract.json","meta/visual-lock-baseline-review.json","meta/character-pixel-master.json","meta/character-master-crops.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json","meta/asset-lineage.json"],"RELEASE":["meta/voice-contract.json","meta/text-audit.json","meta/subtitle-voice-review.json","meta/visual-lock-baseline-review.json","meta/character-pixel-master.json","meta/character-master-crops.json","meta/asset-lineage.json"]}.get(step,[])
-    for qrel in quality_evidence:
-        if qrel not in evidence_paths:evidence_paths.append(qrel)
-    for rel in evidence_paths:
-        p=(ROOT/rel) if rel.startswith("reports/") else (ep/rel)
-        base=ROOT if rel.startswith("reports/") else ep
+    for raw in evidence_paths:
+        rel=raw.split(" (",1)[0]
+        if "<" in rel: continue
+        local=rel.startswith(("meta/","prompts/","media/","release/"))
+        p=(ep/rel) if local else (ROOT/rel)
+        base=ep if local else ROOT
         evidence.append(file_row(p,base))
     material={
       "schema_version":1,"story_os":"2.1","step":step,"current_state":current_state(ep),

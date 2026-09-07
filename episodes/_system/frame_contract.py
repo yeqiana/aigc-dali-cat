@@ -49,6 +49,7 @@ def read_json(path: Path) -> dict:
 
 
 def write_json(path: Path, data: dict) -> None:
+    path = Path(path).resolve()
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
 
@@ -126,6 +127,31 @@ def repo_path(raw: object, where: str, *, must_exist: bool = True) -> Path:
 
 def repo_rel(path: Path) -> str:
     return path.resolve().relative_to(ROOT.resolve()).as_posix()
+
+
+def normalize_contract_path(raw: object, *, base: Path | None = None) -> str | None:
+    """Return stable repository-relative POSIX paths for derived contracts.
+
+    Frame Contract is hashed and moved between workers. Absolute Windows paths
+    or slash variants must never enter contract material because they make the
+    same logical contract produce different SHA values on another machine.
+    """
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    if not text:
+        return None
+    p = Path(text)
+    if p.is_absolute():
+        p = p.resolve()
+    elif base is not None:
+        p = (base / p).resolve()
+    else:
+        p = (ROOT / p).resolve()
+    try:
+        return p.relative_to(ROOT.resolve()).as_posix()
+    except ValueError:
+        return Path(text).as_posix()
 
 
 def manifest(ep: Path) -> dict:
@@ -269,6 +295,7 @@ def _compact_json(value: object, limit: int = 1800) -> str:
 
 
 def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> dict:
+    ep = Path(ep).resolve()
     total = frame_count(ep)
     try:
         n = int(frame)
@@ -310,7 +337,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "storyboard": {"path": repo_rel(storyboard_path), "sha256": sha256_file(storyboard_path)},
         "story_gates": {"path": repo_rel(ep / "meta/story-gates.json"), "sha256": sha256_file(ep / "meta/story-gates.json")},
         "visual_profile": {
-            "path": visual_profile["profile_path"],
+            "path": normalize_contract_path(visual_profile.get("profile_path")),
             "sha256": visual_profile["profile_sha256"],
         },
         "character_contract": {
@@ -338,7 +365,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "storyboard_extraction_mode": excerpt["mode"],
         "visual_profile": {
             "profile_id": visual_profile["profile_id"],
-            "profile_path": visual_profile["profile_path"],
+            "profile_path": normalize_contract_path(visual_profile.get("profile_path")),
             "profile_sha256": visual_profile["profile_sha256"],
             "capture_profile": visual_profile["capture_profile"],
         },
@@ -497,7 +524,7 @@ def compile_all(ep: Path) -> dict:
 
 
 def cache_path(ep: Path, frame: int | str) -> Path:
-    return ep / CACHE_ROOT / f"{int(frame):02d}.json"
+    return Path(ep).resolve() / CACHE_ROOT / f"{int(frame):02d}.json"
 
 
 def provenance(ep: Path, frame: int | str) -> dict | None:
@@ -576,7 +603,7 @@ def verify_recorded_provenance(ep: Path, frame: int | str, recorded: object) -> 
         return []
     if not isinstance(recorded, dict):
         return [f"frame {int(frame):02d} generation request missing frame_contract provenance"]
-    current = compile_frame(ep, frame, write_cache=True)
+    current = compile_frame(ep, frame, write_cache=False)
     errors = []
     if str(recorded.get("contract_sha256") or "").lower() != current["contract_sha256"].lower():
         errors.append(f"frame {int(frame):02d} generation frame_contract_sha256 stale")

@@ -57,7 +57,7 @@ def episode_meta(ep: Path):
 
 def resolve_profile(ep: Path) -> dict:
     meta = episode_meta(ep)
-    resolved = base.resolve_profile(ep)
+    resolved = base.resolve_base_profile(ep)
     if not meta:
         resolved["authority_source"] = resolved.get("authority_source") or "story-gates/default"
         return resolved

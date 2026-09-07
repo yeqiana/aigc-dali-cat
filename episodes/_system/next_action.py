@@ -123,20 +123,25 @@ def derive(ep: Path) -> dict:
         "stage_authority": "meta/episode-state.json",
         "derived_runtime_only": True,
         "continue_without_user_prompt": True,
+        "work_pending": False,
+        "auto_recoverable": False,
+        "hard_stop": False,
     }
-    if review:
-        return {**base, "action": "PRODUCT_REVIEW", "executor": runtime, "blocking": True,
-                "request_path": review.get("path"), "review_kind": review.get("review_kind"),
-                "candidate_path": review.get("candidate_path"), "reason": "fresh isolated product review is awaiting completion"}
-
-    host_path = ep / HOST_REL
-    if host_path.is_file():
-        host = read_json(host_path)
-        if host.get("status") == "HOST_ACTION_REQUIRED":
-            return {**base, "action": str(host.get("next_step") or "HOST_ACTION"), "executor": runtime,
-                    "blocking": True, "request_path": host_path.relative_to(ROOT).as_posix(),
-                    "target_state": host.get("target_state"), "reason": "product host step is awaiting execution"}
-
+    def action_result(**kwargs):
+        hard_stop = bool(kwargs.pop("hard_stop", False))
+        auto = bool(kwargs.pop("auto_recoverable", True))
+        pending = bool(kwargs.pop("work_pending", True))
+        return {
+            **base,
+            "work_pending": pending,
+            "auto_recoverable": auto,
+            "hard_stop": hard_stop,
+            "blocking": bool(hard_stop),
+            **kwargs,
+        }
+    # Production queue recovery has priority over stale host requests.
+    # A previous host request can remain after a worker failure; it must not
+    # hide an automatic technical retry action.
     qs = queue_summary(ep)
     q = qs["raw"]
     if q:
@@ -147,19 +152,34 @@ def derive(ep: Path) -> dict:
                         "reason": "Visual Lock baseline pixels must PASS before parallel-three generation"}
         except Exception:
             pass
+        ledger=read_json(ep/"meta/production-ledger.json").get("frames") or {}
+        ready_states={"ORIGINAL_READY","REPAIR_READY","PASSED","LOCKED"}
+        satisfied={int(k) for k,v in ledger.items() if str(k).isdigit() and v.get("status") in ready_states}
+        satisfied.update(int(x.get("frame") or 0) for x in q.get("items") or [] if x.get("status")=="generated")
+        runnable=[int(x["frame"]) for x in q.get("items") or [] if x.get("status")=="queued"
+                  and all(int(d) in satisfied for d in x.get("depends_on") or [])]
+        if runnable:
+            return action_result(action="GENERATE_IMAGES",executor="CODEX_IMAGE" if image_runtime=="CODEX" else runtime,
+                frames=sorted(runnable),reason="independent ready frames can continue while other frames await repair/review")
         if qs["counts"].get("review_pending"):
             return {**base, "action": "REVIEW_GENERATED_IMAGES", "executor": runtime, "blocking": True,
                     "reason": "generated image batch awaits actual-pixel WORK review"}
         if qs["counts"].get("scout_repair"):
-            return {**base, "action": "REPAIR_FAILED_IMAGES", "executor": "CODEX_IMAGE", "blocking": True,
+            return {**base, "action": "REPAIR_FAILED_IMAGES", "executor": runtime, "blocking": True,
                     "reason": "actual-pixel review authorized content repair"}
         if qs["counts"].get("tech_failed"):
-            return {**base, "action": "RETRY_TECHNICAL_FAILURES", "executor": "CODEX_IMAGE", "blocking": True,
-                    "reason": "technical image failures remain; successful siblings must be reused"}
+            return action_result(action="RETRY_TECHNICAL_FAILURES", executor="CODEX_IMAGE",
+                    reason="technical image failures remain; successful siblings must be reused")
         if qs["queued_frames"]:
-            return {**base, "action": "GENERATE_IMAGES", "executor": "CODEX_IMAGE" if image_runtime == "CODEX" else runtime,
-                    "blocking": True, "frames": qs["queued_frames"],
-                    "reason": "production queue has ready/pending image work; scheduler enforces dependencies and concurrency"}
+            return action_result(action="GENERATE_IMAGES", executor="CODEX_IMAGE" if image_runtime == "CODEX" else runtime,
+                    frames=qs["queued_frames"],
+                    reason="production queue has ready/pending image work; scheduler enforces dependencies and concurrency")
+
+    if review:
+        return action_result(action="PRODUCT_REVIEW", executor=runtime,
+                request_path=review.get("path"), review_kind=review.get("review_kind"),
+                candidate_path=review.get("candidate_path"),
+                reason="fresh isolated product review is awaiting completion")
 
     if cur == "IDEA_LOCKED":
         return {**base, "action": "CREATIVE_STORY", "executor": runtime, "blocking": True,
@@ -183,8 +203,40 @@ def derive(ep: Path) -> dict:
             "reason": f"unrecognized episode state: {cur}"}
 
 
+def apply_runtime_block_semantics(data: dict) -> dict:
+    """V2.7: blocking no longer means every pending action is a hard stop.
+
+    Runtime consumers need to know whether work exists, whether it can be
+    recovered automatically, and whether a human decision is truly required.
+    Keep legacy ``blocking`` for compatibility, but expose explicit semantics.
+    """
+    action = str(data.get("action") or "")
+    hard_stop_actions = {"REPAIR_STATE"}
+    recoverable_actions = {
+        "GENERATE_IMAGES",
+        "RETRY_TECHNICAL_FAILURES",
+        "REPAIR_FAILED_IMAGES",
+        "PRODUCT_REVIEW",
+        "HOST_ACTION",
+        "PRODUCTION",
+        "VISUAL_LOCK",
+        "RELEASE",
+        "CREATIVE_STORY",
+        "PREIMAGE_COMPILE",
+        "REVIEW_ORDINARY_BASELINE",
+        "REVIEW_GENERATED_IMAGES",
+    }
+    data["work_pending"] = action != "COMPLETE"
+    data["auto_recoverable"] = action in recoverable_actions
+    data["hard_stop"] = action in hard_stop_actions
+    # Backward compatibility: blocking means there is pending work, not that
+    # the whole workflow must stop.
+    data["blocking"] = bool(data["work_pending"] and data["hard_stop"])
+    return data
+
+
 def write(ep: Path) -> dict:
-    data = derive(ep)
+    data = apply_runtime_block_semantics(derive(ep))
     path = Path(ep) / REL
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
@@ -206,7 +258,7 @@ def main() -> int:
     if args.cmd == "self-test":
         self_test(); return 0
     ep = Path(args.episode_dir).resolve()
-    data = write(ep) if args.cmd == "write" else derive(ep)
+    data = write(ep) if args.cmd == "write" else apply_runtime_block_semantics(derive(ep))
     print(json.dumps(data, ensure_ascii=False, indent=2))
     return 0
 

@@ -286,7 +286,7 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "from story_os_contract import story_os_version",
             "STORY_OS_VERSION = story_os_version()",
         ],
-        "visual_profile.py": [
+        "visual_profile_bridge_v224.py": [
             "def compile_prompt_contract",
             "profile_sha256",
         ],

@@ -11,7 +11,9 @@ import sys
 import tempfile
 import time
 import uuid
+import tomllib
 from pathlib import Path
+from PIL import Image
 
 from canvas_normalize import NormalizeError, normalize, read_canvas
 from visual_profile_bridge_v224 import compile_prompt_contract
@@ -83,10 +85,41 @@ def provider_size(width: int, height: int) -> str:
     return f'{width}x{height}'
 
 
+def _codex_http_only_provider_args() -> list[str]:
+    """Return optional API-provider overrides only for explicit API image routes.
+
+    Subscription Codex image workers must keep the native ChatGPT/Codex image
+    capability. Injecting a custom HTTP provider here can replace the native
+    image tool path and make a healthy Codex session appear to have no
+    image_generation capability.
+    """
+    route = str(os.environ.get("STORY_OS_IMAGE_PROVIDER_ROUTE") or "").strip().lower()
+    if route != "api_http":
+        # This adapter is the ChatGPT subscription image lane. The built-in
+        # provider otherwise inherits global OpenCodex openai_base_url, which
+        # can return rc=0/text-only without exposing image generation.
+        # Override only this child process; preserve the user's global config.
+        return ['-c', 'model_provider="openai"',
+                '-c', 'openai_base_url="https://chatgpt.com/backend-api/codex"']
+    base_url = os.environ.get("OPENAI_BASE_URL")
+    if not base_url:
+        return []
+    provider = "storyos_http"
+    return [
+        '-c', f'model_provider="{provider}"',
+        '-c', f'model_providers.{provider}.name="Story OS HTTP"',
+        '-c', f'model_providers.{provider}.base_url={json.dumps(str(base_url))}',
+        '-c', f'model_providers.{provider}.wire_api="responses"',
+        '-c', f'model_providers.{provider}.requires_openai_auth=true',
+        '-c', f'model_providers.{provider}.supports_websockets=false',
+    ]
+
+
 def controller_args() -> list[str]:
     return [
         '-m', CODEX_IMAGE_CONTROLLER_MODEL,
         '-c', f'model_reasoning_effort="{CODEX_IMAGE_REASONING_EFFORT}"',
+        *_codex_http_only_provider_args(),
     ]
 
 def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = 'gpt-image-2', image_quality: str = 'high', strict_model: bool = False) -> str:
@@ -117,6 +150,43 @@ def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str 
     )
 
 
+def _reference_proxy(source: Path, workdir: Path, index: int) -> Path:
+    """Create a lightweight disposable Codex attachment without changing authority.
+
+    Queue/Ledger provenance continues to bind the original reference path + SHA.
+    This proxy exists only inside the temporary worker directory to avoid Windows
+    Codex reference-image stalls on multi-megabyte PNG attachments.
+    """
+    target = workdir / f'reference-{index:02d}.jpg'
+    try:
+        with Image.open(source) as image:
+            image = image.convert('RGB')
+            group_proxy = str(os.environ.get('STORY_OS_GROUP_REFERENCE_PROXY') or '').strip().lower() in {'1','true','on','yes'}
+            if group_proxy and image.width >= 600:
+                # Same source authority, but reduce a two-person selfie to a compact
+                # overlapping left/right identity strip. This is a disposable
+                # attachment only; the original file + SHA stay in Queue/Ledger.
+                overlap = max(48, image.width // 10)
+                mid = image.width // 2
+                left = image.crop((0, 0, min(image.width, mid + overlap), image.height))
+                right = image.crop((max(0, mid - overlap), 0, image.width, image.height))
+                for crop in (left, right):
+                    crop.thumbnail((360, 520), Image.Resampling.LANCZOS)
+                canvas = Image.new('RGB', (left.width + right.width, max(left.height, right.height)))
+                canvas.paste(left, (0, 0))
+                canvas.paste(right, (left.width, 0))
+                image = canvas
+            else:
+                image.thumbnail((768, 768), Image.Resampling.LANCZOS)
+            image.save(target, format='JPEG', quality=90, optimize=True)
+        return target
+    except Exception:
+        ext = source.suffix.lower() if source.suffix.lower() in {'.png', '.jpg', '.jpeg'} else '.png'
+        target = workdir / f'reference-{index:02d}{ext}'
+        shutil.copy2(source, target)
+        return target
+
+
 def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = 'gpt-image-2', image_quality: str = 'high', strict_model: bool = False) -> float:
     scene = prompt_path.read_text(encoding='utf-8').strip()
     if not scene:
@@ -127,10 +197,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
         workdir = Path(raw_dir)
         local_refs = []
         for index, source in enumerate(refs, 1):
-            ext = source.suffix.lower() if source.suffix.lower() in {'.png', '.jpg', '.jpeg'} else '.png'
-            target = workdir / f'reference-{index:02d}{ext}'
-            shutil.copy2(source, target)
-            local_refs.append(target)
+            local_refs.append(_reference_proxy(source, workdir, index))
         # Windows Codex sandbox can intermittently fail to read attached images with
         # CreateProcessWithLogonW(1385), even after refs are copied into an ASCII-only
         # temporary workdir. For reference-bound image workers only, disable that OS
@@ -183,7 +250,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             machine_code=image_model_policy.classify_backend_error(tail)
             if machine_code:
                 raise BackendError(f'{machine_code}: requested={image_model}; log={log}')
-            raise BackendError(f'Codex image worker failed rc={completed.returncode}; log={log}')
+            raise BackendError(f'Codex image worker failed rc={completed.returncode}; no_valid_image=true; log={log}')
         raw_output.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(candidate, raw_output)
     return round(time.monotonic() - started, 2)
@@ -341,7 +408,13 @@ def main() -> int:
         assert 'save or copy the actual generated candidate to ./out.png' not in smoke_prompt
         assert provider_size(1080, 1350) == '1080x1350'
         assert provider_size(1080, 1920) == '1080x1920'
-        assert controller_args() == ['-m', 'gpt-5.6-luna', '-c', 'model_reasoning_effort="medium"']
+        from unittest.mock import patch
+        with patch.dict(os.environ, {'STORY_OS_IMAGE_PROVIDER_ROUTE': 'subscription'}):
+            assert controller_args() == [
+                '-m', 'gpt-5.6-luna', '-c', 'model_reasoning_effort="medium"',
+                '-c', 'model_provider="openai"',
+                '-c', 'openai_base_url="https://chatgpt.com/backend-api/codex"',
+            ]
         assert not valid_image(Path('__missing__'))
         print('CODEX SUBSCRIPTION IMAGE BACKEND SELF-TEST PASS')
         return 0

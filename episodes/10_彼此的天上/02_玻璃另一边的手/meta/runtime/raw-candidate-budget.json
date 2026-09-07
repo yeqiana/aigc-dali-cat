@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "module_version": "2.6.0",
-  "updated_at": "2026-09-06T13:37:39+08:00",
+  "updated_at": "2026-09-07T15:33:27+08:00",
   "frames": {
     "01": {
       "original": {
@@ -17,13 +17,20 @@
         }
       },
       "repair": {
-        "used": 1,
+        "used": 2,
         "claims": {
           "a1b2c3d4e5f6": {
             "claimed_at": "2026-09-06T13:27:37+08:00",
             "reason": "formal_generation_entrypoint scope=repair attempt=4",
             "committed": true,
             "committed_at": "2026-09-06T13:30:40+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "6f5182e6f65b": {
+            "claimed_at": "2026-09-06T17:45:23+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=6",
+            "committed": true,
+            "committed_at": "2026-09-06T17:47:52+08:00",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -38,6 +45,25 @@
             "reason": "formal_generation_entrypoint scope=visual_lock attempt=5",
             "committed": true,
             "committed_at": "2026-09-06T11:09:29+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "repair": {
+        "used": 2,
+        "claims": {
+          "00dae95ca7bf": {
+            "claimed_at": "2026-09-06T16:05:22+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=3",
+            "committed": true,
+            "committed_at": "2026-09-06T16:07:28+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "7c8e14f1a2b3": {
+            "claimed_at": "2026-09-06T16:50:40+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=3",
+            "committed": true,
+            "committed_at": "2026-09-06T16:52:38+08:00",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -57,13 +83,20 @@
         }
       },
       "repair": {
-        "used": 1,
+        "used": 2,
         "claims": {
           "32a9c6c0d9e7": {
             "claimed_at": "2026-09-06T12:01:33+08:00",
             "reason": "formal_generation_entrypoint scope=repair attempt=1",
             "committed": true,
             "committed_at": "2026-09-06T12:03:22+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "35216c31b625": {
+            "claimed_at": "2026-09-06T16:45:09+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-06T16:47:12+08:00",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -83,6 +116,57 @@
         }
       },
       "repair": {
+        "used": 2,
+        "claims": {
+          "35f537379be6": {
+            "claimed_at": "2026-09-06T16:21:04+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=7",
+            "committed": true,
+            "committed_at": "2026-09-06T16:22:48+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "55049c2c730b": {
+            "claimed_at": "2026-09-06T17:06:53+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=4",
+            "committed": true,
+            "committed_at": "2026-09-06T17:08:57+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      }
+    },
+    "02": {
+      "original": {
+        "used": 0,
+        "claims": {}
+      }
+    },
+    "04": {
+      "original": {
+        "used": 0,
+        "claims": {}
+      }
+    },
+    "05": {
+      "original": {
+        "used": 0,
+        "claims": {}
+      }
+    },
+    "06": {
+      "original": {
+        "used": 0,
+        "claims": {}
+      }
+    },
+    "07": {
+      "original": {
+        "used": 0,
+        "claims": {}
+      }
+    },
+    "08": {
+      "original": {
         "used": 0,
         "claims": {}
       }
@@ -291,6 +375,450 @@
       "frame": "03",
       "kind": "repair",
       "token": "35f537379be6",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T15:51:41+08:00",
+      "event": "claim",
+      "frame": "03",
+      "kind": "repair",
+      "token": "35f537379be6"
+    },
+    {
+      "at": "2026-09-06T15:51:41+08:00",
+      "event": "claim",
+      "frame": "14",
+      "kind": "repair",
+      "token": "00dae95ca7bf"
+    },
+    {
+      "at": "2026-09-06T16:03:06+08:00",
+      "event": "release",
+      "frame": "03",
+      "kind": "repair",
+      "token": "35f537379be6",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T16:03:06+08:00",
+      "event": "release",
+      "frame": "14",
+      "kind": "repair",
+      "token": "00dae95ca7bf",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T16:05:22+08:00",
+      "event": "claim",
+      "frame": "14",
+      "kind": "repair",
+      "token": "00dae95ca7bf"
+    },
+    {
+      "at": "2026-09-06T16:05:22+08:00",
+      "event": "claim",
+      "frame": "03",
+      "kind": "repair",
+      "token": "35f537379be6"
+    },
+    {
+      "at": "2026-09-06T16:07:28+08:00",
+      "event": "commit",
+      "frame": "14",
+      "kind": "repair",
+      "token": "00dae95ca7bf"
+    },
+    {
+      "at": "2026-09-06T16:09:23+08:00",
+      "event": "release",
+      "frame": "03",
+      "kind": "repair",
+      "token": "35f537379be6",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T16:11:13+08:00",
+      "event": "claim",
+      "frame": "03",
+      "kind": "repair",
+      "token": "35f537379be6"
+    },
+    {
+      "at": "2026-09-06T16:15:43+08:00",
+      "event": "release",
+      "frame": "03",
+      "kind": "repair",
+      "token": "35f537379be6",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T16:17:06+08:00",
+      "event": "claim",
+      "frame": "03",
+      "kind": "repair",
+      "token": "35f537379be6"
+    },
+    {
+      "at": "2026-09-06T16:19:33+08:00",
+      "event": "release",
+      "frame": "03",
+      "kind": "repair",
+      "token": "35f537379be6",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T16:21:04+08:00",
+      "event": "claim",
+      "frame": "03",
+      "kind": "repair",
+      "token": "35f537379be6"
+    },
+    {
+      "at": "2026-09-06T16:22:48+08:00",
+      "event": "commit",
+      "frame": "03",
+      "kind": "repair",
+      "token": "35f537379be6"
+    },
+    {
+      "at": "2026-09-06T16:42:16+08:00",
+      "event": "claim",
+      "frame": "14",
+      "kind": "repair",
+      "token": "7c8e14f1a2b3"
+    },
+    {
+      "at": "2026-09-06T16:42:16+08:00",
+      "event": "claim",
+      "frame": "09",
+      "kind": "repair",
+      "token": "35216c31b625"
+    },
+    {
+      "at": "2026-09-06T16:42:16+08:00",
+      "event": "claim",
+      "frame": "03",
+      "kind": "repair",
+      "token": "55049c2c730b"
+    },
+    {
+      "at": "2026-09-06T16:43:26+08:00",
+      "event": "release",
+      "frame": "09",
+      "kind": "repair",
+      "token": "35216c31b625",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T16:43:51+08:00",
+      "event": "release",
+      "frame": "03",
+      "kind": "repair",
+      "token": "55049c2c730b",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T16:44:00+08:00",
+      "event": "release",
+      "frame": "14",
+      "kind": "repair",
+      "token": "7c8e14f1a2b3",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T16:45:09+08:00",
+      "event": "claim",
+      "frame": "14",
+      "kind": "repair",
+      "token": "7c8e14f1a2b3"
+    },
+    {
+      "at": "2026-09-06T16:45:09+08:00",
+      "event": "claim",
+      "frame": "09",
+      "kind": "repair",
+      "token": "35216c31b625"
+    },
+    {
+      "at": "2026-09-06T16:47:12+08:00",
+      "event": "commit",
+      "frame": "09",
+      "kind": "repair",
+      "token": "35216c31b625"
+    },
+    {
+      "at": "2026-09-06T16:49:59+08:00",
+      "event": "release",
+      "frame": "14",
+      "kind": "repair",
+      "token": "7c8e14f1a2b3",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T16:50:40+08:00",
+      "event": "claim",
+      "frame": "14",
+      "kind": "repair",
+      "token": "7c8e14f1a2b3"
+    },
+    {
+      "at": "2026-09-06T16:52:38+08:00",
+      "event": "commit",
+      "frame": "14",
+      "kind": "repair",
+      "token": "7c8e14f1a2b3"
+    },
+    {
+      "at": "2026-09-06T16:53:28+08:00",
+      "event": "claim",
+      "frame": "03",
+      "kind": "repair",
+      "token": "55049c2c730b"
+    },
+    {
+      "at": "2026-09-06T17:01:59+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b"
+    },
+    {
+      "at": "2026-09-06T17:04:16+08:00",
+      "event": "release",
+      "frame": "03",
+      "kind": "repair",
+      "token": "55049c2c730b",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T17:04:32+08:00",
+      "event": "release",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T17:06:53+08:00",
+      "event": "claim",
+      "frame": "03",
+      "kind": "repair",
+      "token": "55049c2c730b"
+    },
+    {
+      "at": "2026-09-06T17:06:53+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b"
+    },
+    {
+      "at": "2026-09-06T17:08:57+08:00",
+      "event": "commit",
+      "frame": "03",
+      "kind": "repair",
+      "token": "55049c2c730b"
+    },
+    {
+      "at": "2026-09-06T17:10:53+08:00",
+      "event": "release",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T17:11:36+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b"
+    },
+    {
+      "at": "2026-09-06T17:16:06+08:00",
+      "event": "release",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T17:18:02+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b"
+    },
+    {
+      "at": "2026-09-06T17:22:32+08:00",
+      "event": "release",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T17:24:19+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b"
+    },
+    {
+      "at": "2026-09-06T17:28:50+08:00",
+      "event": "release",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-06T17:45:23+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b"
+    },
+    {
+      "at": "2026-09-06T17:47:52+08:00",
+      "event": "commit",
+      "frame": "01",
+      "kind": "repair",
+      "token": "6f5182e6f65b"
+    },
+    {
+      "at": "2026-09-07T10:53:35+08:00",
+      "event": "claim",
+      "frame": "02",
+      "kind": "original",
+      "token": "d29acc72fa07"
+    },
+    {
+      "at": "2026-09-07T10:53:35+08:00",
+      "event": "claim",
+      "frame": "04",
+      "kind": "original",
+      "token": "cf74057cfb9e"
+    },
+    {
+      "at": "2026-09-07T10:53:35+08:00",
+      "event": "claim",
+      "frame": "05",
+      "kind": "original",
+      "token": "30059c260bb5"
+    },
+    {
+      "at": "2026-09-07T10:54:20+08:00",
+      "event": "release",
+      "frame": "04",
+      "kind": "original",
+      "token": "cf74057cfb9e",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-07T10:54:30+08:00",
+      "event": "release",
+      "frame": "02",
+      "kind": "original",
+      "token": "d29acc72fa07",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-07T10:55:07+08:00",
+      "event": "release",
+      "frame": "05",
+      "kind": "original",
+      "token": "30059c260bb5",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-07T11:01:34+08:00",
+      "event": "claim",
+      "frame": "04",
+      "kind": "original",
+      "token": "cf74057cfb9e"
+    },
+    {
+      "at": "2026-09-07T11:01:34+08:00",
+      "event": "claim",
+      "frame": "02",
+      "kind": "original",
+      "token": "d29acc72fa07"
+    },
+    {
+      "at": "2026-09-07T11:01:34+08:00",
+      "event": "claim",
+      "frame": "05",
+      "kind": "original",
+      "token": "30059c260bb5"
+    },
+    {
+      "at": "2026-09-07T11:02:24+08:00",
+      "event": "release",
+      "frame": "05",
+      "kind": "original",
+      "token": "30059c260bb5",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-07T11:02:28+08:00",
+      "event": "release",
+      "frame": "02",
+      "kind": "original",
+      "token": "d29acc72fa07",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-07T11:03:28+08:00",
+      "event": "release",
+      "frame": "04",
+      "kind": "original",
+      "token": "cf74057cfb9e",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-07T15:31:21+08:00",
+      "event": "claim",
+      "frame": "06",
+      "kind": "original",
+      "token": "8e4a07a762cd"
+    },
+    {
+      "at": "2026-09-07T15:31:21+08:00",
+      "event": "claim",
+      "frame": "07",
+      "kind": "original",
+      "token": "127d21da4684"
+    },
+    {
+      "at": "2026-09-07T15:31:21+08:00",
+      "event": "claim",
+      "frame": "08",
+      "kind": "original",
+      "token": "68ad77c3bd31"
+    },
+    {
+      "at": "2026-09-07T15:32:10+08:00",
+      "event": "release",
+      "frame": "07",
+      "kind": "original",
+      "token": "127d21da4684",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-07T15:32:10+08:00",
+      "event": "release",
+      "frame": "06",
+      "kind": "original",
+      "token": "8e4a07a762cd",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-07T15:33:27+08:00",
+      "event": "release",
+      "frame": "08",
+      "kind": "original",
+      "token": "68ad77c3bd31",
       "reason": "generation_failed_before_candidate_commit"
     }
   ]

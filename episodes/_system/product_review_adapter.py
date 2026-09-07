@@ -177,20 +177,9 @@ def prepare(
         existing = _read_json(attempt_path)
         if existing.get("request_fingerprint") != fingerprint:
             existing_candidate = (ROOT / str(existing.get("candidate_path") or "")).resolve()
-            if existing.get("status") == "AWAITING_PRODUCT_REVIEW" and not existing_candidate.is_file():
-                archive = attempt_path.with_name(
-                    f"{attempt_path.stem}-superseded-{str(existing.get('request_fingerprint') or 'unknown')[:12]}{attempt_path.suffix}"
-                )
-                archived = dict(existing)
-                archived["status"] = "SUPERSEDED_BEFORE_PRODUCT_REVIEW"
-                archived["superseded_at"] = runtime_provenance.now()
-                archived["superseded_reason"] = "frozen review inputs changed before any product-review candidate was written"
-                _write_json(archive, archived)
-                _write_json(attempt_path, req)
-            else:
-                raise ProductReviewError(
-                    f"review attempt {attempt} already exists with different frozen inputs; use the next attempt instead of overwriting completed/reviewed history"
-                )
+            raise ProductReviewError(
+                f"review attempt {attempt} already exists with different frozen inputs; use the next attempt instead of overwriting completed/reviewed history"
+            )
         else:
             req = existing
     else:

@@ -50,7 +50,7 @@ def generated_baseline(ep):
     rows=[x for x in (q.get("items") or []) if int(x.get("frame") or -1)==frame and x.get("scope") in {"visual_lock","repair"} and x.get("status")=="generated" and x.get("output_path")]
     if not rows:raise ValueError(f"ordinary_baseline frame {frame:02d} is not generated")
     row=rows[-1];asset=repo_file(row["output_path"])
-    return {"frame":frame,"asset_path":repo_rel(asset),"sha256":sha_file(asset),"frame_contract_sha256":frame_contract.compile_frame(ep,frame,write_cache=True)["contract_sha256"],"queue_item_id":row.get("id")}
+    return {"frame":frame,"asset_path":repo_rel(asset),"sha256":sha_file(asset),"frame_contract_sha256":frame_contract.compile_frame(ep,frame,write_cache=False)["contract_sha256"],"queue_item_id":row.get("id")}
 
 def prepare_review(ep,force=False):
     ep=Path(ep).resolve();p=ep/REL

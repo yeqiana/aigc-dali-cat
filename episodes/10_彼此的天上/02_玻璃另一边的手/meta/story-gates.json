@@ -37,7 +37,12 @@
   },
   "visual": {
     "profile_review_path": "meta/visual-profile-review.json",
-    "admission_frames": [],
+    "admission_frames": [
+      1,
+      9,
+      3,
+      14
+    ],
     "continuity": {
       "required": [
         "location",
@@ -45,29 +50,35 @@
         "weather_time"
       ],
       "anchors": {
-        "protagonist": null,
-        "location": null,
-        "key_prop": null,
-        "wardrobe": null,
-        "weather_time": null
+        "protagonist": "P01/P02普通情侣；P02身份沿用EP001系列角色Authority，P01维持既有视觉身份",
+        "location": "川西山谷小镇普通民宿房间；落地窗外始终为窄外墙与向下陡坡，无阳台",
+        "key_prop": "落地窗湿玻璃、P01普通智能手机、旅行随身物品；异常只通过玻璃局部重叠泄露",
+        "wardrobe": "灰色系普通旅行装，入住后仅按场景自然脱湿外层",
+        "weather_time": "2023年初秋持续降雨傍晚→雨停降温夜间→次日上午湿冷阴天"
       }
     },
     "authenticity_card": {
-      "story_era": null,
-      "location": null,
-      "photographer": null,
-      "shooting_reason": null,
+      "story_era": "2023年初秋，现代中国大陆智能手机记录",
+      "location": "川西山谷自驾途中与山谷小镇普通民宿",
+      "photographer": "P01为主要记录者；开场旅行自拍由P02短暂持机",
+      "shooting_reason": "普通情侣自驾途中随手记录、入住后拍房间与窗外情况，异常出现后继续用手机留存现实证据",
       "primary_capture": {
-        "id": null,
-        "device": null
+        "id": "P01_phone",
+        "device": "普通现代智能手机"
       },
-      "secondary_captures": [],
-      "secondary_source_explanation": null,
+      "secondary_captures": [
+        {
+          "id": "P02_phone",
+          "device": "普通现代智能手机",
+          "use": "开场旅行自拍与必要的同伴记录"
+        }
+      ],
+      "secondary_source_explanation": "仅在剧情明确由P02持机或自拍时使用；其余帧默认由P01手机记录",
       "aspect_ratio": "4:5",
       "capture_states": {
-        "stable": null,
-        "restricted": null,
-        "lost_control": null
+        "stable": "普通旅行自拍、入住记录与静态观察，手持构图自然但可读",
+        "restricted": "雨天车内、民宿狭小空间、湿玻璃反射和低照度限制构图与曝光",
+        "lost_control": "高潮时P02按住P01手腕、手机被主动按灭且机位开始下坠，允许短暂倾斜和运动模糊"
       },
       "camera_rules": {
         "current_device_may_be_fully_visible": false,
@@ -105,47 +116,53 @@
           "id": "V-B",
           "role": "ordinary_baseline",
           "frame": 1,
-          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-a1b2c3d4e5f6-a4.png",
-          "sha256": "79990e8bd59cd62e9b56e977567ef581cca0193d16565e580680a850ff08f5fc",
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-6f5182e6f65b-a6.png",
+          "sha256": "308b8a08193606fdecee86b5518ca34635ad81418d253e4d8b45697240c0a25c",
           "decision": "passed",
-          "frame_contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c",
-          "note": "baseline separately PASS; parallel-three may start"
+          "frame_contract_sha256": "8d584e1d09e54a5bc95a0fa239ba669515dfe7873302ceb36dd88af1e75e8489",
+          "note": "",
+          "contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c"
         },
         {
           "id": "V-W",
           "role": "worst_capture_condition",
           "frame": 9,
-          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-32a9c6c0d9e7-a1.png",
-          "sha256": "b3cb41cb705fad1d50a8c830628886fedf43a5aafc4aeaae7d45742d83f6f0eb",
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-35216c31b625-a2.png",
+          "sha256": "60ce59c566230fdeee76fcde462eb007f6841cfd537c0b72978f58e2f84705a7",
           "decision": "passed",
-          "frame_contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687",
-          "note": ""
+          "frame_contract_sha256": "11c9d1ba9c9ce4bbf2d7072064cfce547b78f9b5bd9ca787144815b9d3f3c37a",
+          "note": "",
+          "contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687"
         },
         {
           "id": "V-A",
           "role": "first_major_anomaly",
           "frame": 3,
-          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/03-89c8abc517a3-a3.png",
-          "sha256": "8fbf06bb9d9a20ea4f7d83a7e1c5908006580d5395e7d2e6774078445a8d312a",
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/03-55049c2c730b-a4.png",
+          "sha256": "b421da74adeb65fec6014b9eefb0cb59f66c663cb0a2e277ae6cc2453e9a448f",
           "decision": "passed",
-          "frame_contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72",
-          "note": ""
+          "frame_contract_sha256": "5a2eb0f6c59383a67198a6abf0a39ab8ec4dc5dde6acbbe549653663e9fccbec",
+          "note": "",
+          "contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72"
         },
         {
           "id": "V-H",
           "role": "high_impact_admission",
           "frame": 14,
-          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/14-0bed26ad211c-a5.png",
-          "sha256": "aa1a9982ccbc2ac2c9d3b6129b4d5e3a66671c4ee60e37c87bd4542e762bd7ba",
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/14-7c8e14f1a2b3-a3.png",
+          "sha256": "f3aa095093e23e8a7a476c73f504ec6f42639710f6a81bef3710272a8dbd906c",
           "decision": "passed",
-          "frame_contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637",
-          "note": ""
+          "frame_contract_sha256": "a35b497aae1be82ed0152338c65bb3dd199f1985142027957e3fd7c6f86b3eb4",
+          "note": "",
+          "contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637"
         }
-      ]
+      ],
+      "finalizer_reconciled": true,
+      "finalizer_source": "meta/visual-lock-final-report.json"
     },
     "calibration_contact_sheet": {
-      "path": null,
-      "sha256": null
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/review/contact-sheets/visual-lock-admission.jpg",
+      "sha256": "79b8dc7d954822768a863396e7af346aa8594dcf7415bd6b8f864a4397c1e654"
     },
     "references": {
       "required": false,
@@ -431,8 +448,8 @@
   },
   "reviews": {
     "story": "passed",
-    "authenticity": "pending",
-    "continuity": "pending",
+    "authenticity": "passed",
+    "continuity": "passed",
     "visual_admission": "passed",
     "subtitle": "pending",
     "production": "pending",

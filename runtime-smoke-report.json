@@ -1,0 +1,13 @@
+{
+  "schema_version": 2,
+  "classification": "NON_AUTHORITY_TEST_ONLY",
+  "scope": "real coordinator and scheduler; mocked image backend; isolated temporary episodes",
+  "tests_run": 15,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "elapsed_seconds": 0.828,
+  "result": "PASS",
+  "output": "test_baseline_still_blocks_dependent_images (test_runtime_recovery.RecoveryTests.test_baseline_still_blocks_dependent_images) ... ok\ntest_begin_rejected_frame_never_runs (test_runtime_recovery.RecoveryTests.test_begin_rejected_frame_never_runs) ... ok\ntest_capability_wait_does_not_consume_frames (test_runtime_recovery.RecoveryTests.test_capability_wait_does_not_consume_frames) ... ok\ntest_daemon_exception_releases_lock (test_runtime_recovery.RecoveryTests.test_daemon_exception_releases_lock) ... ok\ntest_explicit_results_override_contract_words (test_runtime_recovery.RecoveryTests.test_explicit_results_override_contract_words) ... ok\ntest_failed_commit_returns_failure_and_keeps_sibling (test_runtime_recovery.RecoveryTests.test_failed_commit_returns_failure_and_keeps_sibling) ... ok\ntest_native_provider_uses_one_batch_call (test_runtime_recovery.RecoveryTests.test_native_provider_uses_one_batch_call) ... ok\ntest_process_kill_releases_single_owner_lock (test_runtime_recovery.RecoveryTests.test_process_kill_releases_single_owner_lock) ... ok\ntest_ready_sibling_precedes_optional_review_and_retry (test_runtime_recovery.RecoveryTests.test_ready_sibling_precedes_optional_review_and_retry) ... ok\ntest_retry_is_bounded_and_checkpoint_preserved (test_runtime_recovery.RecoveryTests.test_retry_is_bounded_and_checkpoint_preserved) ... ok\ntest_single_scheduler_reports_worker_error (test_runtime_recovery.RecoveryTests.test_single_scheduler_reports_worker_error) ... ok\ntest_terminal_stage_requires_real_gate_validation (test_runtime_recovery.RecoveryTests.test_terminal_stage_requires_real_gate_validation) ... ok\ntest_transient_failure_recovers_and_completes (test_runtime_recovery.RecoveryTests.test_transient_failure_recovers_and_completes) ... ok\ntest_wait_and_hard_stop_do_not_spin (test_runtime_recovery.RecoveryTests.test_wait_and_hard_stop_do_not_spin) ... ok\ntest_zero_exit_without_progress_is_bounded (test_runtime_recovery.RecoveryTests.test_zero_exit_without_progress_is_bounded) ... ok\n\n----------------------------------------------------------------------\nRan 15 tests in 0.835s\n\nOK\n",
+  "real_image_generation_verified": false
+}

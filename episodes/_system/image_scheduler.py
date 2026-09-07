@@ -37,7 +37,7 @@ import resource_library
 import runtime_portability
 import async_scheduler_adapter
 import runtime_event_collector
-import runtime_event_collector
+from runtime_atomic_store import atomic_write_json
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -68,8 +68,7 @@ def read_json(path: Path) -> dict:
 
 
 def write_json(path: Path,data:dict)->None:
-    path.parent.mkdir(parents=True,exist_ok=True)
-    path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    atomic_write_json(path,data)
 
 
 def resolve_ep(raw:str)->Path:
@@ -100,7 +99,7 @@ def run(cmd:list[object])->subprocess.CompletedProcess[str]:
 def load_queue(ep:Path)->dict:
     p=ep/QUEUE_REL
     if not p.is_file():
-        return {"schema_version":1,"created_at":now(),"updated_at":now(),"max_parallel":3,"items":[],"waves":[]}
+        return {"schema_version":1,"created_at":now(),"updated_at":now(),"max_parallel":MAX_SUPPORTED_WORKERS,"items":[],"waves":[]}
     q=read_json(p)
     errors=runtime_portability.queue_path_errors(q)
     if errors:
@@ -122,17 +121,7 @@ def ledger_state(ep:Path,frame:int)->str:
     return str((((ledger(ep).get("frames") or {}).get(f"{frame:02d}") or {}).get("status") or "PENDING"))
 
 
-def risk_priority(ep:Path,frame:int,scope:str)->int:
-    c=frame_contract.compile_frame(ep,frame,write_cache=True)
-    d=c["hash_material"]["frame_directive"]
-    mode=str(d.get("frame_mode") or "")
-    role=str(d.get("narrative_role") or "")
-    impact=int(d.get("impact_level") or 0)
-    base=impact*20
-    mode_bonus={"climax_impact":40,"anomaly_amplified":35,"anomaly_reveal":25,"payoff":20,"normal_record":0}.get(mode,10)
-    role_bonus={"climax":30,"payoff":22,"reveal":18,"escalation":15,"evidence":8,"setup":0,"transition":0,"residue":5}.get(role,0)
-    scope_bonus=50 if scope=="visual_lock" else 0
-    return base+mode_bonus+role_bonus+scope_bonus
+from frame_risk import risk_priority
 
 
 def directive_dependency(ep:Path,frame:int)->list[int]:
@@ -166,7 +155,7 @@ def contract_references(ep:Path,frame:int,scope:str="batch")->list[dict]:
 def init_queue(ep:Path,force:bool=False)->dict:
     p=ep/QUEUE_REL
     if p.exists() and not force:return read_json(p)
-    q={"schema_version":1,"created_at":now(),"updated_at":now(),"max_parallel":3,"adaptive_parallel":3,"stable_waves":0,"items":[],"waves":[]}
+    q={"schema_version":1,"created_at":now(),"updated_at":now(),"max_parallel":MAX_SUPPORTED_WORKERS,"adaptive_parallel":MAX_SUPPORTED_WORKERS,"stable_waves":0,"items":[],"waves":[]}
     save_queue(ep,q);return q
 
 
@@ -321,11 +310,17 @@ def classify_error(text:str)->str:
 async def async_backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->dict:
     """V2.7 async runtime bridge.
 
-    image_worker_pool is still the execution boundary. This wrapper only makes
-    scheduler ownership explicit: async runtime manages task lifecycle, while
-    scheduler remains the single ledger committer.
+    A worker function returning normally is not necessarily an image success:
+    image_worker_pool reports transport/backend failures as structured results.
+    Convert those results into task failures so RuntimeImageEvent semantics stay
+    truthful and the scheduler can close the active ledger attempt correctly.
     """
-    return await asyncio.to_thread(backend_worker,ep,item,timeout,codex)
+    result=await asyncio.to_thread(backend_worker,ep,item,timeout,codex)
+    output=result.get("output")
+    if result.get("returncode")!=0 or not output or not Path(output).is_file():
+        message=str(result.get("stdout") or "image backend returned no committed output")
+        raise RuntimeError(message)
+    return result
 
 
 def run_async_backend_batch(tasks:list[dict],ep:Path,timeout:int,codex:str|None,workers:int)->list[async_scheduler_adapter.TaskEvent]:
@@ -342,7 +337,14 @@ def run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int
     Image execution no longer depends on the legacy image ThreadPool path.
     Rolling review remains isolated on its own review executor.
     """
-    return asyncio.run(_run_scheduler_async(ep,max_workers,timeout,codex))
+    import runner_state_store
+    lock_rel=Path("meta/runtime-image-scheduler.lock")
+    if not runner_state_store.acquire_lock(ep,lock_rel=lock_rel):
+        return 21
+    try:
+        return asyncio.run(_run_scheduler_async(ep,max_workers,timeout,codex))
+    finally:
+        runner_state_store.release_lock(ep,lock_rel=lock_rel)
 
 
 async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
@@ -350,8 +352,20 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
     q=load_queue(ep)
     ready,_=ready_items(ep,q)
     if not ready:
-        return 0
+        statuses={x.get("status") for x in q.get("items") or []}
+        return 22 if "blocked" in statuses else (24 if "running" in statuses else (20 if "queued" in statuses else 0))
 
+    runtime,_=runtime_router.detect()
+    image_runtime,_=runtime_router.image_execution_runtime()
+    if runtime in {"WORK","WEB"} and image_runtime != "CODEX":
+        request=product_runtime_adapter.build_image_request(ep,runtime=runtime,queue_items=ready[:max_workers],source="image_scheduler")
+        product_runtime_adapter.print_request(request)
+        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
+    max_workers=max(1,min(MAX_SUPPORTED_WORKERS,max_workers))
+    if any(x.get("kind")=="repair" for x in ready):
+        max_workers=1
+    has_block=False
+    has_failure=False
     async def handler(item:dict)->dict:
         return await async_backend_worker(ep,item,timeout,codex)
 
@@ -361,6 +375,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
     for item in ready[:max_workers]:
         ok,msg=ledger_begin(ep,item)
         if not ok:
+            has_block=True
             byid[item["id"]]["status"]="blocked"
             byid[item["id"]]["last_error"]=msg[-1000:]
             continue
@@ -378,18 +393,46 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             continue
         if image_event.event=="IMAGE_SUCCESS":
             result=image_event.payload.get("result") or image_event.payload
-            ok,msg=ledger_success(ep,item,result)
-            item["status"]="generated" if ok else "tech_failed"
-            item["last_error"] = None if ok else msg
+            msg=str(result.get("stdout") or result.get("error") or "")
+            backend_ok=bool(
+                result.get("returncode")==0
+                and result.get("output")
+                and Path(result["output"]).is_file()
+            )
+            ok=False
+            if backend_ok:
+                ok,msg=ledger_success(ep,item,result)
+            if ok:
+                item["status"]="generated"
+                item["output_path"]=repo_rel(Path(result["output"]))
+                if result.get("log"):
+                    item["log_path"]=repo_rel(Path(result["log"]))
+                item["completed_at"]=now()
+                item["last_error"]=None
+                item["prompt_package"]=result.get("prompt_package")
+            else:
+                if not msg:
+                    msg="image backend failed without terminal output"
+                has_failure=True
+                code="CANDIDATE_COMMIT_FAILED" if backend_ok else classify_error(msg)
+                if not backend_ok: ledger_tech_fail(ep,item,code,msg)
+                item["status"]="blocked" if code in NON_REGENERATING_FAILURE_CODES else "tech_failed"
+                has_block=has_block or item["status"]=="blocked"
+                if result.get("output"): item["candidate_output_path"]=str(result["output"])
+                item["completed_at"]=now()
+                item["last_error"]=runtime_portability.sanitize_diagnostic_text(str(msg)[-1600:])
         elif image_event.event=="IMAGE_FAILED":
+            has_failure=True
             msg=str(image_event.payload.get("error") or "async worker failed")
             code=classify_error(msg)
             ledger_tech_fail(ep,item,code,msg)
-            item["status"]="tech_failed"
-            item["last_error"]=msg
-        q.setdefault("runtime_events",[]).append({"event":image_event.event,"task_id":image_event.item_id,"payload":image_event.payload,"at":now()})
+            item["status"]="blocked" if code in NON_REGENERATING_FAILURE_CODES else "tech_failed"
+            has_block=has_block or item["status"]=="blocked"
+            item["completed_at"]=now()
+            item["last_error"]=runtime_portability.sanitize_diagnostic_text(msg[-1600:])
+        q.setdefault("runtime_events",[]).append({"event":image_event.event,"task_id":image_event.item_id,"payload":runtime_event_collector.json_safe(image_event.payload),"at":now()})
         save_queue(ep,q)
-    return 0
+    return 22 if has_block and not ready_items(ep,load_queue(ep))[0] else (21 if has_failure else 0)
 
 
 def run_scheduler_legacy_removed_path(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
@@ -400,200 +443,20 @@ def run_scheduler_legacy_removed_path(ep:Path,max_workers:int,timeout:int,codex:
     """
     raise RuntimeError("LEGACY_IMAGE_SCHEDULER_REMOVED_USE_ASYNC_RUNTIME")
 
-    resource_library.ensure_fresh(ep)
-    runtime,_=runtime_router.detect()
-    image_runtime,_=runtime_router.image_execution_runtime()
-    requested=max(1,min(MAX_SUPPORTED_WORKERS,int(max_workers)))
-    q=load_queue(ep)
-    if runtime in {"WORK","WEB"} and not codex and image_runtime != "CODEX":
-        ready,blocked=ready_items(ep,q)
-        if not ready:
-            print(json.dumps({
-                "scheduler_mode":"product_runtime_host",
-                "ready":0,
-                "dependency_blocked":len(blocked),
-                "next_action":"WAIT_DEPENDENCY_REVIEW" if blocked else None,
-            },ensure_ascii=False,indent=2))
-            return 0
-        request=product_runtime_adapter.build_image_request(
-            ep,runtime=runtime,queue_items=ready[:requested],source="image_scheduler")
-        product_runtime_adapter.print_request(request)
-        return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
-    cap=max(1,min(requested,int(q.get("adaptive_parallel") or requested)))
-    stable=int(q.get("stable_waves") or 0)
-    event_no=len(q.get("waves") or [])
-    inflight={}
-    review_futures={}
-    review_pool=cf.ThreadPoolExecutor(max_workers=1,thread_name_prefix="story-os-rolling-review")
-
-    def commit_review(fut,item_id):
-        try:
-            review=fut.result()
-        except Exception as exc:
-            review={"decision":"UNCERTAIN","reason":str(exc)}
-        qq=load_queue(ep)
-        byid={x["id"]:x for x in qq.get("items") or []}
-        item=byid.get(item_id)
-        if not item:
-            return
-        item["rolling_review"]=review
-        if review.get("decision")=="REPAIR_NOW" and item.get("status")=="generated":
-            cp=run([sys.executable,SYSTEM/"production_ledger.py","review",ep,"--frame",f"{int(item['frame']):02d}","--decision","repair","--notes","rolling pre-final obvious defect"])
-            if cp.returncode==0:
-                item["status"]="scout_repair"
-            else:
-                item["last_error"]="rolling review repair handoff failed: "+cp.stdout[-1000:]
-        save_queue(ep,qq)
-
-    with cf.ThreadPoolExecutor(max_workers=requested,thread_name_prefix="story-os-image") as pool:
-        while True:
-            for fut,item_id in list(review_futures.items()):
-                if fut.done():
-                    commit_review(fut,item_id)
-                    review_futures.pop(fut,None)
-
-            q=load_queue(ep)
-            ready,blocked=ready_items(ep,q)
-            running_ids={x["id"] for x in inflight.values()}
-            ready=[x for x in ready if x["id"] not in running_ids]
-
-            while ready and len(inflight)<cap:
-                item=ready.pop(0)
-                q=load_queue(ep)
-                byid={x["id"]:x for x in q.get("items") or []}
-                current=byid[item["id"]]
-                refs,arb=reference_arbitrator.select(ep,int(current["frame"]),scope=str(current.get("scope") or "batch"))
-                current["references"]=refs
-                current["reference_arbitration"]=arb
-                save_queue(ep,q)
-                item=current
-                ok,msg=ledger_begin(ep,item)
-                q=load_queue(ep)
-                byid={x["id"]:x for x in q.get("items") or []}
-                current=byid[item["id"]]
-                if not ok:
-                    current["status"]="blocked"
-                    current["last_error"]=runtime_portability.sanitize_diagnostic_text("ledger begin failed: "+msg[-1200:])
-                    save_queue(ep,q)
-                    continue
-                current["status"]="running"
-                current["attempts"]=int(current.get("attempts") or 0)+1
-                current["started_at"]=now()
-                save_queue(ep,q)
-                fut=pool.submit(backend_worker,ep,current,timeout,codex)
-                inflight[fut]=current
-                q=load_queue(ep)
-                ready,_=ready_items(ep,q)
-                ready=[x for x in ready if x["id"] not in {y["id"] for y in inflight.values()}]
-
-            if not inflight:
-                break
-
-            done,_=cf.wait(set(inflight),return_when=cf.FIRST_COMPLETED)
-            for fut in done:
-                begun=inflight.pop(fut)
-                try:
-                    res=fut.result()
-                except Exception as exc:
-                    res={"returncode":99,"stdout":str(exc),"payload":None,"output":None,"log":None,"attempt":begun.get("attempts",1),"scout":None}
-                q=load_queue(ep)
-                byid={x["id"]:x for x in q.get("items") or []}
-                item=byid[begun["id"]]
-                ok=False
-                msg=res.get("stdout") or ""
-                if res.get("returncode")==0 and res.get("output") and Path(res["output"]).is_file():
-                    ok,msg=ledger_success(ep,item,res)
-                event_no+=1
-                if ok:
-                    scout=res.get("scout") or {}
-                    decision=scout.get("decision")
-                    item["output_path"]=repo_rel(Path(res["output"]))
-                    try:
-                        item["lineage"]=asset_lineage.record(ep,int(item["frame"]),Path(res["output"]),kind=str(item.get("kind") or "original"),reason=f"scheduler:{item.get('scope')}",source_item_id=item.get("id"),frame_contract_sha256=current_contract_sha(ep,int(item["frame"])))
-                    except Exception as exc:
-                        item["lineage_warning"]=str(exc)
-                    item["log_path"]=repo_rel(Path(res["log"]))
-                    item["completed_at"]=now()
-                    item["last_error"]=None
-                    item["prompt_package"]=res.get("prompt_package")
-                    item["scout"]={"decision":decision,"risk_level":scout.get("risk_level"),"asset_sha256":scout.get("asset_sha256")} if scout else None
-                    if decision=="REPAIR_NOW":
-                        cp=run([sys.executable,SYSTEM/"production_ledger.py","review",ep,"--frame",f"{int(item['frame']):02d}","--decision","repair","--notes","Phase7 Fast Scout obvious defect"])
-                        item["status"]="scout_repair" if cp.returncode==0 else "blocked"
-                        if cp.returncode!=0:
-                            item["last_error"]=runtime_portability.sanitize_diagnostic_text("scout repair handoff failed: "+cp.stdout[-1200:])
-                    else:
-                        item["status"]="generated"
-                        if int(item.get("priority") or 0)>=90 and res.get("output"):
-                            rf=review_pool.submit(rolling_frame_review.review,ep,int(item["frame"]),Path(res["output"]),codex,min(240,max(60,timeout)))
-                            review_futures[rf]=item["id"]
-                    stable+=1
-                    if stable>=2 and cap<requested:
-                        cap+=1
-                        stable=0
-                else:
-                    code=classify_error(msg)
-                    ledger_tech_fail(ep,item,code,msg or "image backend failed")
-                    item["status"]="blocked" if code in NON_REGENERATING_FAILURE_CODES else "tech_failed"
-                    item["completed_at"]=now()
-                    item["last_error"]=runtime_portability.sanitize_diagnostic_text(msg[-1600:])
-                    cap=max(1,cap-1)
-                    stable=0
-                q["adaptive_parallel"]=cap
-                q["stable_waves"]=stable
-                q.setdefault("waves",[]).append({"event":event_no,"mode":"continuous_first_completed","at":now(),"frame":item["frame"],"status":item["status"],"inflight_after":len(inflight),"next_parallel":cap,"elapsed_seconds":((res.get("payload") or {}).get("elapsed_seconds"))})
-                episode_performance.safe_record_image_attempt(
-                    ep,frame=int(item["frame"]),scope=str(item.get("scope") or "unknown"),
-                    kind=str(item.get("kind") or "original"),status=str(item.get("status") or "unknown"),
-                    model=item.get("model"),attempt=int(item.get("attempts") or 1),
-                    started_at=item.get("started_at"),ended_at=item.get("completed_at") or now(),
-                    elapsed_seconds=((res.get("payload") or {}).get("elapsed_seconds")),
-                    queue_item_id=item.get("id"),
-                    error_code=classify_error(msg) if str(item.get("status") or "") in {"tech_failed","blocked"} else None
-                )
-                save_queue(ep,q)
-
-    for fut,item_id in list(review_futures.items()):
-        commit_review(fut,item_id)
-    review_pool.shutdown(wait=True)
-
-    q=load_queue(ep)
-    ready,blocked=ready_items(ep,q)
-    tech=[x for x in q.get("items") or [] if x.get("status")=="tech_failed"]
-    queued=[x for x in q.get("items") or [] if x.get("status")=="queued"]
-    hard_blocked=[x for x in q.get("items") or [] if x.get("status")=="blocked"]
-    scout_repair=[x for x in q.get("items") or [] if x.get("status")=="scout_repair"]
-    generated=[x for x in q.get("items") or [] if x.get("status")=="generated"]
-    awaiting_baseline_review=visual_lock_baseline_gate.awaiting_review(ep,q)
-    scout_errors=frame_scout.audit(ep,write_summary=True) if frame_scout.required(ep) else []
-    summary={"scheduler_mode":"continuous_first_completed","generated":len(generated),"tech_failed":len(tech),"dependency_blocked":len(blocked),"hard_blocked":len(hard_blocked),"scout_repair":len(scout_repair),"scout_audit_errors":scout_errors,"queued":len(queued),"awaiting_visual_lock_baseline_review":awaiting_baseline_review,"next_action":"REVIEW_ORDINARY_BASELINE" if awaiting_baseline_review else None,"adaptive_parallel":q.get("adaptive_parallel"),"events":q.get("waves") or [],"reported_at":now()}
-    write_json(ep/"meta/image-scheduler-performance.json",summary)
-    print(json.dumps(summary,ensure_ascii=False,indent=2))
-    if tech or hard_blocked:
-        return 4
-    if scout_repair or scout_errors:
-        return 5
-    if queued and not awaiting_baseline_review:
-        return 4
-    if awaiting_baseline_review:
-        if runtime in {"WORK","WEB"}:
-            request=visual_lock_baseline_gate.run_product_critic(ep,attempt=1)
-            print(json.dumps(request,ensure_ascii=False,indent=2))
-            return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
-        return 0
-    return 0
-
 
 def retry_tech(ep:Path,frame:int|None=None)->dict:
     q=load_queue(ep);count=0
     for item in q.get("items") or []:
         if item.get("status")=="tech_failed" and (frame is None or int(item.get("frame") or -1)==int(frame)):
-            item["status"]="queued";item["last_error"]=None;count+=1
+            item["status"]="queued"
+            item["last_error"]=None
+            item["retry_pending"]=False
+            count+=1
     save_queue(ep,q);return {"requeued":count,"frame":frame}
 
 
 def self_test()->None:
-    assert MAX_SUPPORTED_WORKERS==3
+    assert MAX_SUPPORTED_WORKERS == int(storyos_config.get_path(_CONFIG, "production.max_inflight_images"))
     assert classify_error("429 Too Many Requests")=="RATE_LIMIT_429"
     assert classify_error("worker timeout")=="TIMEOUT"
     assert classify_error("unknown model")=="MODEL_UNAVAILABLE"
@@ -606,9 +469,6 @@ def self_test()->None:
     assert "story-os-image" not in src[src.index("def run_scheduler_async"):src.index("def run_scheduler", src.index("def run_scheduler_async"))]
     body=src[src.index("def directive_dependency"):src.index("def narrative_escalation_from")]
     assert "generation_depends_on" in body and "escalation_from" not in body
-    host_branch=src[src.index("def run_scheduler"):src.index("with cf.ThreadPoolExecutor",src.index("def run_scheduler"))]
-    assert "ready,blocked=ready_items(ep,q)" in host_branch
-    assert "queue_items=ready[:requested]" in host_branch
     print("IMAGE SCHEDULER V2.1 PHASE6 + R2 DEPENDENCY SELF-TEST PASS")
 
 
@@ -619,7 +479,7 @@ def main()->int:
     p=sub.add_parser("import-visual-lock");p.add_argument("episode_dir");p.add_argument("--prompt-dir",required=True)
     p=sub.add_parser("import-batch");p.add_argument("episode_dir");p.add_argument("--prompt-dir",required=True)
     p=sub.add_parser("plan");p.add_argument("episode_dir")
-    p=sub.add_parser("run");p.add_argument("episode_dir");p.add_argument("--max-workers",type=int,default=3);p.add_argument("--timeout",type=int,default=600);p.add_argument("--codex")
+    p=sub.add_parser("run");p.add_argument("episode_dir");p.add_argument("--max-workers",type=int,default=MAX_SUPPORTED_WORKERS);p.add_argument("--timeout",type=int,default=600);p.add_argument("--codex")
     p=sub.add_parser("retry-tech");p.add_argument("episode_dir");p.add_argument("--frame",type=int)
     p=sub.add_parser("show");p.add_argument("episode_dir")
     sub.add_parser("self-test")

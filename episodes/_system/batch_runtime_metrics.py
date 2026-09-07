@@ -67,5 +67,12 @@ def collect(ep:Path)->dict:
     }
 
 def self_test():
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="storyos-metrics-") as td:
+        ep=Path(td); (ep/"meta").mkdir()
+        assert collect(ep)["images_requested"]==0
+        (ep/"meta/batch-runtime-performance.json").write_text(json.dumps({"batches":[{"planned_count":5,"returned_count":4,"provider":"codex_subscription","logical_batch":True}]}),encoding="utf-8")
+        row=collect(ep)
+        assert (row["images_requested"],row["images_returned"],row["logical_codex_batch_count"])==(5,4,1)
     print("BATCH RUNTIME METRICS V2.4.2 SELF-TEST PASS")
 if __name__=="__main__":self_test()

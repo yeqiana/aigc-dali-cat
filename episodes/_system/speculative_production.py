@@ -163,7 +163,7 @@ def run(ep: Path, *, codex: str | None = None, timeout: int = 600,
     if not added:
         return {"status": "SKIPPED", "reason": "no_items_added", "generated_or_attempted": [], "elapsed_seconds": 0.0}
     started = time.monotonic()
-    rc = image_scheduler.run_scheduler(ep, max_workers=3, timeout=timeout, codex=codex)
+    rc = image_scheduler.run_scheduler(ep, max_workers=image_scheduler.MAX_SUPPORTED_WORKERS, timeout=timeout, codex=codex)
     elapsed = time.monotonic() - started
     result = {
         "status": "GENERATED_CANDIDATES" if rc in {0, 5} else "PARTIAL_OR_TECHNICAL",

@@ -18,6 +18,8 @@ async def stream_tasks(
     handler: Callable[[dict[str, Any]], Awaitable[dict[str, Any]]],
     workers: int = 5,
 ) -> AsyncIterator[TaskEvent]:
+    if not tasks:
+        return
     runtime = AsyncTaskRuntime(workers=workers)
     events: asyncio.Queue[TaskEvent] = asyncio.Queue()
 
@@ -39,6 +41,7 @@ async def stream_tasks(
         await runtime.queue.join()
         await runtime.stop()
         runner.cancel()
+        await asyncio.gather(runner, return_exceptions=True)
 
 
 async def run_tasks(

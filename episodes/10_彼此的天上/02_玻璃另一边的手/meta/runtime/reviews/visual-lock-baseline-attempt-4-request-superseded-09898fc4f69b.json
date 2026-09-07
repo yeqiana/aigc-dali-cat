@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "request_id": "visual-lock-baseline-a4-09898fc4f69b3468",
+  "request_fingerprint": "09898fc4f69b34684dc6aac84f250e355934e9f997af0031b399448db50fcac1",
+  "created_at": "2026-09-06T17:51:00+08:00",
+  "status": "SUPERSEDED_BEFORE_PRODUCT_REVIEW",
+  "review_kind": "visual-lock-baseline",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 4,
+  "source_files": [
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-a1b2c3d4e5f6-a4.png",
+      "sha256": "79990e8bd59cd62e9b56e977567ef581cca0193d16565e580680a850ff08f5fc"
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/story-gates.json",
+      "sha256": "1b30b8d8e36f29c5f49c86f7f88098ff77a76d78131316ed71c4b52ed86fbe55"
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/character-visual-contract.json",
+      "sha256": "5f2390ab185c40250083e892dd083165b75384c4c87d88821531c09149f3275a"
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/runtime/contracts/frames/01.json",
+      "sha256": "0088920ed13a8c8bb0bf0eb9791b8a4c6070b108cf37c7a7981f1f015faf4e88"
+    }
+  ],
+  "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/.visual-lock-baseline-review.candidate.json",
+  "prompt_sha256": "d548cca5df5ccaa8db9e5fc2d9c6744593f931104b1244f9ea14630d411bb23e",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are a fresh isolated Story OS Visual Lock ordinary-baseline actual-pixel reviewer.\nInspect the attached baseline image itself. This PASS unlocks the parallel-three Visual Lock images and may create the provisional character pixel master, so fail closed on visible identity/capture/style problems.\nRequired checks: ['visual_profile_match', 'reality_first', 'ordinary_life_density', 'unposed_capture', 'not_cinematic', 'capture_credibility', 'identity_usable', 'group_members_distinct']\nThe target is an ordinary believable phone/photo baseline: reality-first, unposed, non-cinematic, usable identity, distinct group members where applicable.\nWrite ONLY JSON to episodes/10_彼此的天上/02_玻璃另一边的手/meta/.visual-lock-baseline-review.candidate.json:\n{\"decision\":\"PASS|FAIL\",\"checks\":{\"visual_profile_match\":\"PASS|FAIL\",\"reality_first\":\"PASS|FAIL\",\"ordinary_life_density\":\"PASS|FAIL\",\"unposed_capture\":\"PASS|FAIL\",\"not_cinematic\":\"PASS|FAIL\",\"capture_credibility\":\"PASS|FAIL\",\"identity_usable\":\"PASS|FAIL\",\"group_members_distinct\":\"PASS|FAIL\"},\"face_boxes\":[{\"character_id\":\"P01\",\"x\":0.0,\"y\":0.0,\"w\":0.1,\"h\":0.1}],\"note\":\"actual-pixel evidence\"}\nFace boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.\nDo not modify source files or the image.\n",
+  "superseded_at": "2026-09-06T17:51:31+08:00",
+  "superseded_reason": "frozen review inputs changed before any product-review candidate was written"
+}

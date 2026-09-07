@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "story_os_version": "2.5.1",
+  "story_os_version": "2.6.1",
   "episode_id": "10-02",
-  "reviewed_at": "2026-09-06T01:52:53+08:00",
+  "reviewed_at": "2026-09-06T22:23:57+08:00",
   "candidate_fingerprint_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/episode-fingerprint.json",
   "candidate_fingerprint_sha256": "90d0504a616e585a4c15c7bdc999a57ab1010f26b1567e8e3530c1fc21c5bda3",
   "registry_path": "reports/account-pattern-registry.json",
@@ -12,14 +12,15 @@
     "10-01"
   ],
   "critic_provenance": {
-    "runtime": "CODEX_ISOLATED",
-    "base_runtime": "CODEX",
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
     "isolated_session": true,
-    "execution_source": "local_codex_cli",
+    "execution_source": "product_runtime",
     "attempt": 1,
-    "reviewed_at": "2026-09-06T01:52:53+08:00",
-    "log": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/recent5-semantic-critic.jsonl",
-    "log_sha256": "6af5556ee9e88293d64ed56fc9ba507eced775036fed1a6f603ead318ebbee41"
+    "reviewed_at": "2026-09-06T22:23:57+08:00",
+    "request_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/runtime/reviews/recent5-semantic-attempt-1-request.json",
+    "request_id": "recent5-semantic-a1-3a1712cf057e55f4",
+    "request_fingerprint": "3a1712cf057e55f46bd0586d83881761663f56666ba5c1e5ad13d703decf5774"
   },
   "comparisons": [
     {

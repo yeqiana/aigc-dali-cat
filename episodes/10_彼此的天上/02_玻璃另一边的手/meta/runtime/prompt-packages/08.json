@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "08",
+  "scene_prompt": "真实旅行照片视角，车窗内向外拍摄山谷道路。雨雾、玻璃水痕、远处树林和路牌组成普通场景，异常藏在玻璃反光层里，比例很小，像照片回看时才发现的细节。",
+  "scene_prompt_sha256": "628bff0dfaddddf3a7b360159bafde78f56e31fceaf2e38d5b94c82be8f8137d",
+  "frame_contract_sha256": "f099552cc514c2768f556153ef543334ff907043754eba3824bc0aecec642a9c",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\08.txt",
+  "package_sha256": "c7e8e85c139758fb079cd0ae64c30a7e5cb9121a38b1227da1082b2d8e3278d2",
+  "compiled_at": "2026-09-07T15:31:21+08:00"
+}

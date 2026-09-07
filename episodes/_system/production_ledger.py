@@ -30,6 +30,7 @@ FRAME_STATES = {
     "ORIGINAL_READY",
     "CONTENT_FAILED",
     "REPAIR_AUTHORIZED",
+    "AUTHORITY_REFRESH_AUTHORIZED",
     "EXCEPTION_REPAIR_AUTHORIZED",
     "REPAIRING",
     "REPAIR_READY",
@@ -200,7 +201,7 @@ def init_ledger(ep: Path, *, count: int | None = None, ratio: str | None = None,
             "default_aspect_ratio": DEFAULT_ASPECT_RATIO,
             "prompt_char_limit": PROMPT_CHAR_LIMIT,
             "prompt_byte_limit": PROMPT_BYTE_LIMIT,
-            "max_content_repairs_per_frame": 1,
+            "max_content_repairs_per_frame": int(storyos_config.get_path(_CONFIG, "production.max_content_repairs_per_frame")),
             "technical_failures_consume_content_repair": False,
             "image_quality": DEFAULT_IMAGE_QUALITY,
             "normalize_enabled": True,
@@ -439,7 +440,7 @@ def cmd_init(args: argparse.Namespace) -> None:
     data = init_ledger(ep, count=args.frame_count, ratio=args.aspect_ratio, overwrite=args.force)
     c = data["canvas"]
     print(f"initialized {path}")
-    print(f"canvas: {c['aspect_ratio']} / {c['width']}×{c['height']} ({c['source']})")
+    print(f"canvas: {c['aspect_ratio']} / {c['width']}脳{c['height']} ({c['source']})")
 
 
 def cmd_begin(args: argparse.Namespace) -> None:
@@ -453,10 +454,10 @@ def cmd_begin(args: argparse.Namespace) -> None:
         raise SystemExit(f"technical retry must preserve attempt kind {last_kind!r}")
     if kind == "original" and status not in {"PENDING", "TECH_FAILED"}:
         raise SystemExit(f"cannot begin original from {status}")
-    if kind == "repair" and status not in {"REPAIR_AUTHORIZED", "EXCEPTION_REPAIR_AUTHORIZED", "TECH_FAILED"}:
-        raise SystemExit(f"repair requires REPAIR_AUTHORIZED, EXCEPTION_REPAIR_AUTHORIZED, or TECH_FAILED retry; got {status}")
+    if kind == "repair" and status not in {"REPAIR_AUTHORIZED", "AUTHORITY_REFRESH_AUTHORIZED", "EXCEPTION_REPAIR_AUTHORIZED", "TECH_FAILED"}:
+        raise SystemExit(f"repair requires REPAIR_AUTHORIZED, AUTHORITY_REFRESH_AUTHORIZED, EXCEPTION_REPAIR_AUTHORIZED, or TECH_FAILED retry; got {status}")
     if kind == "repair" and status == "REPAIR_AUTHORIZED":
-        if frame.get("content_repairs_used", 0) >= 1:
+        if frame.get("content_repairs_used", 0) >= content_repair_limit(data):
             raise SystemExit("content repair limit reached")
         frame["content_repairs_used"] = frame.get("content_repairs_used", 0) + 1
     if kind == "repair" and status == "EXCEPTION_REPAIR_AUTHORIZED":
@@ -557,7 +558,7 @@ def cmd_success(args: argparse.Namespace) -> None:
     frame["status"] = "ORIGINAL_READY" if attempt["kind"] == "original" else "REPAIR_READY"
     data["updated_at"] = now_iso()
     save_json(path, data)
-    print(f"{key}: {frame['status']} {dims[0]}×{dims[1]} sha256={candidate_info['sha256']}")
+    print(f"{key}: {frame['status']} {dims[0]}脳{dims[1]} sha256={candidate_info['sha256']}")
 
 
 def cmd_tech_fail(args: argparse.Namespace) -> None:
@@ -577,6 +578,22 @@ def cmd_tech_fail(args: argparse.Namespace) -> None:
     print(f"{key}: TECH_FAILED; content_repairs_used={frame.get('content_repairs_used', 0)} (unchanged)")
 
 
+def content_repair_limit(data:dict)->int:
+    # Existing ledgers freeze their policy; legacy ledgers keep the original limit.
+    value=(data.get("policy") or {}).get("max_content_repairs_per_frame",1)
+    if type(value) is not int or value not in {0,1}:
+        raise ValueError("max_content_repairs_per_frame must be 0 or 1 under the production standard")
+    return value
+
+
+def content_repair_limit(data:dict)->int:
+    # Existing ledgers freeze their policy; legacy ledgers keep the original limit.
+    value=(data.get("policy") or {}).get("max_content_repairs_per_frame",1)
+    if type(value) is not int or value not in {0,1}:
+        raise ValueError("max_content_repairs_per_frame must be 0 or 1 under the production standard")
+    return value
+
+
 def cmd_review(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
@@ -589,7 +606,7 @@ def cmd_review(args: argparse.Namespace) -> None:
     if decision == "pass":
         frame["status"] = "PASSED"
     elif decision == "repair":
-        if was_repair or frame.get("content_repairs_used", 0) >= 1:
+        if was_repair or frame.get("content_repairs_used", 0) >= content_repair_limit(data):
             frame["status"] = "NEEDS_USER"
         else:
             frame["status"] = "CONTENT_FAILED"
@@ -606,7 +623,7 @@ def cmd_authorize_repair(args: argparse.Namespace) -> None:
     key, frame = frame_obj(data, args.frame)
     if frame["status"] != "CONTENT_FAILED":
         raise SystemExit(f"repair authorization requires CONTENT_FAILED, got {frame['status']}")
-    if frame.get("content_repairs_used", 0) >= 1:
+    if frame.get("content_repairs_used", 0) >= content_repair_limit(data):
         raise SystemExit("content repair limit reached")
     frame["status"] = "REPAIR_AUTHORIZED"
     delegated = bool(getattr(args, "delegated_auto", False))
@@ -672,6 +689,45 @@ def cmd_authorize_user_passed_repair(args: argparse.Namespace) -> None:
     data["updated_at"] = now_iso()
     save_json(path, data)
     print(f"{key}: REPAIR_AUTHORIZED (direct-user passed-frame authority change recorded)")
+
+
+def cmd_authorize_authority_refresh(args: argparse.Namespace) -> None:
+    """Reopen a ready/passed frame after non-content authority or contract drift.
+
+    This path is audit-only and does not consume the single content-repair budget.
+    It exists for cases such as Frame Contract / authenticity / continuity authority
+    updates where existing pixels must be regenerated against the new provenance.
+    """
+    ep = episode_dir(args.episode_dir)
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, args.frame)
+    if frame["status"] not in {"PASSED", "ORIGINAL_READY", "REPAIR_READY"}:
+        raise SystemExit(f"authority refresh requires PASSED/ORIGINAL_READY/REPAIR_READY, got {frame['status']}")
+    approval = args.approval_text.strip()
+    if not approval:
+        raise SystemExit("direct user approval text is required")
+    current_contract = current_frame_contract_provenance(ep, key)
+    if not current_contract:
+        raise SystemExit("current frame contract provenance missing")
+    frame.setdefault("authority_refresh_history", []).append({
+        "at": now_iso(),
+        "previous_status": frame.get("status"),
+        "current_candidate": frame.get("current_candidate"),
+        "reviews": list(frame.get("reviews") or []),
+        "reason": args.reason,
+    })
+    frame["status"] = "AUTHORITY_REFRESH_AUTHORIZED"
+    frame["authority_refresh_authorization"] = {
+        "at": now_iso(),
+        "reason": args.reason,
+        "approval_text": approval,
+        "approval_basis": "direct_user_authority_contract_refresh",
+        "frame_contract_sha256": current_contract.get("contract_sha256"),
+        "content_repair_budget_unchanged": True,
+    }
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    print(f"{key}: AUTHORITY_REFRESH_AUTHORIZED (content repair budget unchanged)")
 
 
 def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
@@ -909,8 +965,8 @@ def cmd_audit(args: argparse.Namespace) -> None:
         status = frame.get("status")
         if status not in FRAME_STATES:
             failures.append(f"{key}: invalid status {status!r}")
-        if frame.get("content_repairs_used", 0) > 1:
-            failures.append(f"{key}: content repair count > 1")
+        if frame.get("content_repairs_used", 0) > content_repair_limit(data):
+            failures.append(f"{key}: content repair count exceeds frozen policy")
         exception_repairs = frame.get("user_exception_repairs_used", 0)
         approvals = frame.get("user_exception_authorizations") or []
         if exception_repairs > 1:
@@ -947,7 +1003,7 @@ def cmd_audit(args: argparse.Namespace) -> None:
         print(f"[FAIL] {item}")
     if failures:
         raise SystemExit(1)
-    print(f"PASS: production ledger; canvas={data['canvas']['aspect_ratio']} {expected[0]}×{expected[1]}")
+    print(f"PASS: production ledger; canvas={data['canvas']['aspect_ratio']} {expected[0]}脳{expected[1]}")
 
 
 def cmd_show(args: argparse.Namespace) -> None:
@@ -1032,6 +1088,13 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--approval-text", required=True)
     s.add_argument("--reason", required=True)
     s.set_defaults(func=cmd_authorize_user_passed_repair)
+
+    s = sub.add_parser("authorize-authority-refresh", help="reopen a ready/passed frame after direct-user authority or Frame Contract drift without consuming content repair budget")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--approval-text", required=True)
+    s.add_argument("--reason", required=True)
+    s.set_defaults(func=cmd_authorize_authority_refresh)
 
     s = sub.add_parser("authorize-user-exception-repair", help="record one direct-user exception after the ordinary repair hard-fails")
     s.add_argument("episode_dir")

@@ -2,7 +2,14 @@
 from __future__ import annotations
 import argparse, hashlib, json, re, unicodedata
 
-VALID_INTENTS={"CREATE_EPISODE","RESUME","PREPRODUCTION","IMAGE_CONTINUE","REPAIR","RELEASE","DATA_REVIEW"}
+from pathlib import Path
+import storyos_config
+_CFG=storyos_config.load_config()
+_ROOT=Path(__file__).resolve().parents[2]
+_POLICY=json.loads((_ROOT/storyos_config.get_path(_CFG,"agent_runtime.intent.config")).read_text(encoding="utf-8-sig"))
+if _POLICY.get("strategy")!="deterministic_rules_first" or _POLICY.get("llm_rewrite_default") is not False:
+    raise ValueError("unsupported intent execution policy")
+VALID_INTENTS=set(_POLICY["intents"])
 RULES=[
 ("RESUME",("从断点继续","继续上次断点","resume 模式","resume")),
 ("IMAGE_CONTINUE",("接管前期资产","从生图开始","从图片开始","image_continue","image continue")),
@@ -12,8 +19,10 @@ RULES=[
 ("DATA_REVIEW",("数据复盘","只做复盘","data_review","data review"))]
 def normalize(text):
     if not isinstance(text,str):raise ValueError("request must be string")
-    text=unicodedata.normalize("NFKC",text).replace("\r\n","\n").replace("\r","\n")
-    return "\n".join(re.sub(r"[ \t]+"," ",x).strip() for x in text.split("\n") if x.strip()).strip()
+    text=unicodedata.normalize(_POLICY["normalization"]["unicode"],text).replace("\r\n","\n").replace("\r","\n")
+    lines=[x.strip() for x in text.split("\n") if x.strip()]
+    if _POLICY["normalization"]["collapse_inline_whitespace"]: lines=[re.sub(r"[ \t]+"," ",x) for x in lines]
+    return ("\n" if _POLICY["normalization"]["preserve_line_breaks"] else " ").join(lines).strip()
 def resolve(text):
     n=normalize(text)
     if not n:raise ValueError("EMPTY_REQUEST")

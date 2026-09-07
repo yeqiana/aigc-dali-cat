@@ -2,13 +2,13 @@
   "schema_version": 1,
   "status": "LOCKED",
   "decision": "PASS",
-  "created_at": "2026-09-06T13:34:35+08:00",
+  "created_at": "2026-09-06T18:11:10+08:00",
   "role": "ordinary_baseline",
   "frame": 1,
-  "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-a1b2c3d4e5f6-a4.png",
-  "sha256": "79990e8bd59cd62e9b56e977567ef581cca0193d16565e580680a850ff08f5fc",
-  "frame_contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c",
-  "queue_item_id": "a1b2c3d4e5f6",
+  "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-6f5182e6f65b-a6.png",
+  "sha256": "308b8a08193606fdecee86b5518ca34635ad81418d253e4d8b45697240c0a25c",
+  "frame_contract_sha256": "8d584e1d09e54a5bc95a0fa239ba669515dfe7873302ceb36dd88af1e75e8489",
+  "queue_item_id": "6f5182e6f65b",
   "reviewer_scope": "delegated_pixel_review",
   "checks": {
     "visual_profile_match": "PASS",
@@ -23,32 +23,32 @@
   "face_boxes": [
     {
       "character_id": "P01",
-      "x": 0.29,
-      "y": 0.2,
-      "w": 0.25,
-      "h": 0.28
+      "x": 0.08,
+      "y": 0.251,
+      "w": 0.362,
+      "h": 0.344
     },
     {
       "character_id": "P02",
-      "x": 0.55,
-      "y": 0.29,
-      "w": 0.33,
-      "h": 0.29
+      "x": 0.463,
+      "y": 0.273,
+      "w": 0.374,
+      "h": 0.34
     }
   ],
-  "note": "Actual-pixel review: repaired rainy-road car selfie remains a believable casual personal record with physically consistent rain/wiper/cabin conditions, two distinct usable primary-cast faces, and visual identity aligned to the EP001 approved couple reference used for generation.",
+  "note": "实际像素审核：雨天山路、雨滴挡风玻璃、车内日常物品和自然伸手前置自拍共同构成可解释的普通情侣旅行记录；两位主角面部清晰、彼此可区分，并与所附 EP001 情侣自拍的脸型、五官组合、年龄感及核心发型一致。画面无摆拍棚灯、无 HDR 海报感、无第三人称幽灵机位。",
   "critic_provenance": {
     "runtime": "WORK_ISOLATED",
     "base_runtime": "WORK",
     "isolated_session": true,
     "execution_source": "product_runtime",
-    "attempt": 3,
-    "reviewed_at": "2026-09-06T13:44:24+08:00",
+    "attempt": 4,
+    "reviewed_at": "2026-09-06T18:12:00+08:00",
     "extended_source_drift_review": true,
-    "request_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/runtime/reviews/visual-lock-baseline-attempt-3-request.json",
-    "request_id": "visual-lock-baseline-a3-172675bc28aba351",
-    "request_fingerprint": "172675bc28aba3513bf2526034e18eb8c916b2584f36ba118bce1e891f7e251d"
+    "request_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/runtime/reviews/visual-lock-baseline-attempt-4-request.json",
+    "request_id": "visual-lock-baseline-a4-d89078713f4d7ba7",
+    "request_fingerprint": "d89078713f4d7ba7636fe518a479b1bd434e3014c496edbed4378f8005b26294"
   },
-  "approved_at": "2026-09-06T13:44:24+08:00",
+  "approved_at": "2026-09-06T18:12:00+08:00",
   "provisional_master_created": true
 }

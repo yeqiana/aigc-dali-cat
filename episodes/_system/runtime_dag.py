@@ -31,7 +31,8 @@ import episode_performance
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
 DAG_FILE=ROOT/"runtimes/runtime-dag.json"
-STAGES=("IDEA_LOCKED","STORYBOARD_LOCKED","VISUAL_CALIBRATED","PRODUCTION_PASSED","PUBLISH_READY","PUBLISHED","DATA_REVIEWED")
+from story_os_contract import canonical_stages
+STAGES=tuple(canonical_stages())
 
 def run(cmd):
     return subprocess.run([str(x) for x in cmd],cwd=ROOT,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")

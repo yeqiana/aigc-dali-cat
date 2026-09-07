@@ -3,7 +3,7 @@
   "frame": "09",
   "scene_prompt": "Frame 09 定向返修，只修 Visual Lock Critic 指出的异常尺度可读性。保持真实民宿雨夜手机纪实、湿玻璃、低照噪点和非电影化构图。画面必须同时清楚出现两块彼此错位的半圆形清晰区：内侧冷凝雾被 P02 用袖口擦出一块不规则半圆；外侧残留雨膜被对面普通成年人从另一方向擦出另一块反向、不重合的半圆。两个半圆都明显小于整扇落地窗，各自只占局部，边缘粗糙自然，大小和方向一眼可比较；双方手部动作不同步。不要把整扇窗擦清，不要只做单个手印或单个清晰斑块，不要海报构图、鬼脸、裂缝、超自然发光、文字。",
   "scene_prompt_sha256": "a538e01a4e855eb618ffbb31381033115ea54ffe81dff601c9ac97d4f6812ff1",
-  "frame_contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687",
+  "frame_contract_sha256": "11c9d1ba9c9ce4bbf2d7072064cfce547b78f9b5bd9ca787144815b9d3f3c37a",
   "image_model": {
     "provider": "openai",
     "model": "gpt-image-2",
@@ -13,6 +13,6 @@
     "reproducible_snapshot": false
   },
   "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\09-v1.txt",
-  "package_sha256": "27066770337855e7babcceb9f1aff7a76785ed1918ef4ac7be0b2c2f6146b229",
-  "compiled_at": "2026-09-06T12:01:33+08:00"
+  "package_sha256": "aa76646b79ba3b0ce96f4984220f4ac245dc6c58414545652ad8bf93a67bafa8",
+  "compiled_at": "2026-09-06T16:45:09+08:00"
 }

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "02",
+  "scene_prompt": "普通手机照片视角，情侣自驾途中在雨天山路临时停车。P01站在车旁查看雨雾中的道路，P02从车内拍摄，玻璃上的雨滴遮挡部分画面。远处山谷和护栏保持真实尺度，画面重点是普通旅行中突然停留的瞬间，不解释原因，不刻意制造恐怖氛围。",
+  "scene_prompt_sha256": "e24a36d0db8e86387b95ae6310a4e7a151109588d4ff01c79ab0c0729ef8fa8c",
+  "frame_contract_sha256": "3e6055802d2488bdbdf7a6c388a7856a8f8ce18802d1fef5271aad32b32b743d",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\02.txt",
+  "package_sha256": "3b2ebc71c9a6b00b2587eaec310eb0fd855be3dc7c72583d1b943f0f33610846",
+  "compiled_at": "2026-09-07T11:01:34+08:00"
+}

@@ -1,0 +1,43 @@
+{
+  "runtime": "WORK",
+  "status": "HOST_ACTION_REQUIRED",
+  "source": "runtime_dag:PRODUCTION",
+  "episode": "episodes/10_彼此的天上/02_玻璃另一边的手",
+  "episode_state": "VISUAL_CALIBRATED",
+  "execution_mode": "full_auto",
+  "resume": true,
+  "next_step": "PRODUCTION",
+  "target_state": "PRODUCTION_PASSED",
+  "required_read": [
+    "config/storyos.yaml",
+    "config/providers/index.json",
+    "config/providers/image-provider-runtime.json",
+    "config/agent_runtime/batch.json",
+    "config/agent_runtime/codex-subscription-batch.json",
+    "meta/runtime/contracts/frame-contract-index.json",
+    "meta/production-ledger.json",
+    "meta/production-queue.json",
+    "meta/story-gates.json"
+  ],
+  "local_codex_spawn_allowed": false,
+  "local_codex_fallback_allowed": false,
+  "host_contract": {
+    "actor": "chatgpt_product_runtime",
+    "workspace_access": "use DevSpace/workspace tools directly",
+    "critic_provenance": "WORK_ISOLATED",
+    "image_generation": "delegate only the image execution substep according to runtime.image_execution_runtime; CODEX image mode must not take ownership of Story/PREIMAGE/Review/Release",
+    "deterministic_scripts": "may run locally when they do not invoke a model backend",
+    "stage_authority": "meta/episode-state.json",
+    "must_not_claim_pass_without_evidence": true
+  },
+  "instructions": [
+    "Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.",
+    "Reuse valid SHA-bound evidence and obey existing Story OS gates.",
+    "For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.",
+    "When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto."
+  ],
+  "schema_version": 2,
+  "request_id": "host-36e511dc6ff37921",
+  "request_fingerprint": "36e511dc6ff37921acc5541ea7c873961666b309e62ccb870eb99e79ce98a0cb",
+  "created_at": "2026-09-06T23:39:04+08:00"
+}

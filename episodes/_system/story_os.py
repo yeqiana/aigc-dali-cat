@@ -75,6 +75,7 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("config"); p.add_argument("config_cmd", choices=["validate", "show", "index"])
     sub.add_parser("doctor")
+    p = sub.add_parser("evidence"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("status"); p.add_argument("episode_dir")
     p = sub.add_parser("next"); p.add_argument("episode_dir")
     p = sub.add_parser("next-action"); p.add_argument("episode_dir"); p.add_argument("--write", action="store_true")
@@ -127,6 +128,7 @@ def main():
     p = sub.add_parser("delegated-approval"); p.add_argument("episode_dir"); p.add_argument("approval_cmd", choices=["record", "verify", "show"]); p.add_argument("kind", nargs="?", choices=["story_lock", "visual_lock", "release_lock"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     args = ap.parse_args()
 
+    if args.cmd == "evidence": return forward("evidence_tool.py", args.extra)
     if args.cmd == "config": return forward("storyos_config.py", [args.config_cmd])
     if args.cmd == "doctor": return forward("story_os_doctor.py", [])
     if args.cmd == "runtime": return forward("runtime_router.py", [args.runtime_cmd, *args.extra])

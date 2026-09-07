@@ -373,8 +373,9 @@ def check_production(repo_root: Path, episode_dir: Path, gates: dict, manifest: 
             continue
         if frame.get("status") not in {"PASSED", "LOCKED"}:
             findings.append(Finding("FAIL", "production_status", f"{key}: status={frame.get('status')!r}, expected PASSED/LOCKED"))
-        if frame.get("content_repairs_used", 0) > 1:
-            findings.append(Finding("FAIL", "repair_limit", f"{key}: content_repairs_used > 1"))
+        from production_ledger import content_repair_limit
+        if frame.get("content_repairs_used", 0) > content_repair_limit(ledger):
+            findings.append(Finding("FAIL", "repair_limit", f"{key}: content_repairs_used exceeds frozen policy"))
         approved = frame.get("approved_asset")
         if not isinstance(approved, dict):
             findings.append(Finding("FAIL", "approved_asset", f"{key}: approved_asset required"))

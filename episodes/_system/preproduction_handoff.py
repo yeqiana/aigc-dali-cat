@@ -146,7 +146,8 @@ def verify(ep):
     d=read_json(p);errors=[]
     if d.get("handoff_ready") is not True:errors.append("HANDOFF_NOT_READY")
     if d.get("story_rewrite_allowed") is not False:errors.append("HANDOFF_STORY_REWRITE_POLICY_INVALID")
-    order=("IDEA_LOCKED","STORYBOARD_LOCKED","VISUAL_CALIBRATED","PRODUCTION_PASSED","PUBLISH_READY","PUBLISHED","DATA_REVIEWED")
+    from story_os_contract import canonical_stages
+    order=canonical_stages()
     cur=stage(ep)
     if cur not in order or order.index(cur)<order.index("STORYBOARD_LOCKED"):errors.append("HANDOFF_STAGE_MISMATCH")
     for row in d.get("authority_assets") or []:

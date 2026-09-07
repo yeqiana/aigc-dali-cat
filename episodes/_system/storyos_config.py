@@ -125,6 +125,9 @@ def validate(data: dict | None = None) -> list[str]:
         raw = get_path(cfg, key)
         if not isinstance(raw, str) or not (ROOT / raw).exists():
             errors.append(f"{key} points to a missing path: {raw}")
+    repair_limit=get_path(cfg,"production.max_content_repairs_per_frame")
+    if type(repair_limit) is not int or repair_limit not in {0,1}:
+        errors.append("production.max_content_repairs_per_frame must be 0 or 1")
     return errors
 
 

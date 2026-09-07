@@ -5,7 +5,7 @@
   "fail_soft": true,
   "episode_path": "episodes/10_彼此的天上/02_玻璃另一边的手",
   "started_at": "2026-09-04T22:17:22.279+08:00",
-  "updated_at": "2026-09-06T13:45:38.910+08:00",
+  "updated_at": "2026-09-07T09:42:56.835+08:00",
   "finalized_at": null,
   "final_status": null,
   "total_wall_seconds": null,
@@ -75,11 +75,14 @@
         {
           "run_id": "f990ffd299f0",
           "started_at": "2026-09-04T22:51:02.324+08:00",
-          "ended_at": null,
-          "duration_seconds": null,
-          "status": "RUNNING",
+          "ended_at": "2026-09-06T23:39:01.367+08:00",
+          "duration_seconds": 175679.043,
+          "status": "PASS",
           "source": "scoped_codex_worker",
-          "metadata": {}
+          "metadata": {
+            "reused": true,
+            "target_state": "STORYBOARD_LOCKED"
+          }
         },
         {
           "run_id": "13fe5c6da4f0",
@@ -91,6 +94,196 @@
           "metadata": {
             "timeout_seconds": 240,
             "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\scoped-workers\\creative_story.jsonl"
+          }
+        },
+        {
+          "run_id": "a3253d18be01",
+          "started_at": "2026-09-06T23:40:53.877+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "STORYBOARD_LOCKED"
+          },
+          "ended_at": "2026-09-06T23:40:53.877+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "da0a0110e758",
+          "started_at": "2026-09-07T09:42:54.091+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "STORYBOARD_LOCKED"
+          },
+          "ended_at": "2026-09-07T09:42:54.091+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    "INCREMENTAL_PLAN": {
+      "runs": [
+        {
+          "run_id": "3cb54ade63e5",
+          "started_at": "2026-09-06T23:38:58.851+08:00",
+          "ended_at": "2026-09-06T23:39:00.440+08:00",
+          "duration_seconds": 1.589,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 7
+          }
+        },
+        {
+          "run_id": "19b3a4750c38",
+          "started_at": "2026-09-06T23:40:51.390+08:00",
+          "ended_at": "2026-09-06T23:40:52.954+08:00",
+          "duration_seconds": 1.564,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 8
+          }
+        },
+        {
+          "run_id": "f886b4879c69",
+          "started_at": "2026-09-07T09:42:51.581+08:00",
+          "ended_at": "2026-09-07T09:42:53.176+08:00",
+          "duration_seconds": 1.595,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 9
+          }
+        }
+      ]
+    },
+    "PREIMAGE_COMPILE": {
+      "runs": [
+        {
+          "run_id": "5e340d9080a7",
+          "started_at": "2026-09-06T23:39:01.498+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "reason": "preproduction handoff already valid"
+          },
+          "ended_at": "2026-09-06T23:39:01.498+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "92ec217e1890",
+          "started_at": "2026-09-06T23:40:54.014+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "reason": "preproduction handoff already valid"
+          },
+          "ended_at": "2026-09-06T23:40:54.014+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "c9e65a6b0a38",
+          "started_at": "2026-09-07T09:42:54.232+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "reason": "preproduction handoff already valid"
+          },
+          "ended_at": "2026-09-07T09:42:54.232+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    "VISUAL_LOCK": {
+      "runs": [
+        {
+          "run_id": "b31b8cfbb2a4",
+          "started_at": "2026-09-06T23:39:03.996+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "VISUAL_CALIBRATED"
+          },
+          "ended_at": "2026-09-06T23:39:03.996+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "ede7e8be0e07",
+          "started_at": "2026-09-06T23:40:56.653+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "VISUAL_CALIBRATED"
+          },
+          "ended_at": "2026-09-06T23:40:56.653+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "0e150d49eb0b",
+          "started_at": "2026-09-07T09:42:56.825+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "VISUAL_CALIBRATED"
+          },
+          "ended_at": "2026-09-07T09:42:56.825+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    "PRODUCTION": {
+      "runs": [
+        {
+          "run_id": "a14af7fad60f",
+          "started_at": "2026-09-06T23:39:04.005+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "PRODUCTION_PASSED"
+          }
+        },
+        {
+          "run_id": "ead67f988538",
+          "started_at": "2026-09-06T23:40:56.662+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "PRODUCTION_PASSED"
+          }
+        },
+        {
+          "run_id": "0d7e20866615",
+          "started_at": "2026-09-07T09:42:56.835+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "PRODUCTION_PASSED"
           }
         }
       ]
@@ -197,6 +390,39 @@
           "metadata": {
             "fast_path": "2.6.0"
           }
+        },
+        {
+          "run_id": "e9ce94d29e50",
+          "started_at": "2026-09-06T23:38:58.339+08:00",
+          "ended_at": "2026-09-06T23:38:58.377+08:00",
+          "duration_seconds": 0.038,
+          "status": "PASS",
+          "source": "runtime_fast_path_v251",
+          "metadata": {
+            "fast_path": "2.6.0"
+          }
+        },
+        {
+          "run_id": "42270a77fe9b",
+          "started_at": "2026-09-06T23:40:50.904+08:00",
+          "ended_at": "2026-09-06T23:40:50.930+08:00",
+          "duration_seconds": 0.026,
+          "status": "PASS",
+          "source": "runtime_fast_path_v251",
+          "metadata": {
+            "fast_path": "2.6.0"
+          }
+        },
+        {
+          "run_id": "df5b563c7d78",
+          "started_at": "2026-09-07T09:42:50.474+08:00",
+          "ended_at": "2026-09-07T09:42:50.566+08:00",
+          "duration_seconds": 0.092,
+          "status": "PASS",
+          "source": "runtime_fast_path_v251",
+          "metadata": {
+            "fast_path": "2.6.0"
+          }
         }
       ]
     },
@@ -226,6 +452,19 @@
             "frame": 1,
             "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-a1b2c3d4e5f6-a4.png",
             "pixel_master_status": "LOCKED"
+          }
+        },
+        {
+          "run_id": "1a64e914c1a4",
+          "started_at": "2026-09-06T17:51:30.498+08:00",
+          "ended_at": "2026-09-06T18:12:04.842+08:00",
+          "duration_seconds": 1234.344,
+          "status": "PASS",
+          "source": "visual_lock_baseline_gate",
+          "metadata": {
+            "frame": 1,
+            "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-6f5182e6f65b-a6.png",
+            "pixel_master_status": "PROVISIONAL"
           }
         }
       ]
@@ -273,6 +512,20 @@
             "runtime": "WORK",
             "final_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/visual-profile-review.json"
           }
+        },
+        {
+          "run_id": "db9d36f1fba7",
+          "started_at": "2026-09-06T22:05:10.133+08:00",
+          "ended_at": "2026-09-06T22:07:54.607+08:00",
+          "duration_seconds": 164.474,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-a5-e0e97e7b430a10fe",
+            "attempt": 5,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/visual-profile-review.json"
+          }
         }
       ]
     },
@@ -305,6 +558,55 @@
             "runtime": "WORK",
             "final_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/visual-lock-baseline-review.json"
           }
+        },
+        {
+          "run_id": "d3611b06fb8a",
+          "started_at": "2026-09-06T17:51:00.340+08:00",
+          "ended_at": "2026-09-06T18:12:04.850+08:00",
+          "duration_seconds": 1264.51,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-baseline-a4-09898fc4f69b3468",
+            "attempt": 4,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/visual-lock-baseline-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_RECENT5-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "a7359c755589",
+          "started_at": "2026-09-06T22:21:36.332+08:00",
+          "ended_at": "2026-09-06T22:23:57.241+08:00",
+          "duration_seconds": 140.909,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "recent5-semantic-a1-3a1712cf057e55f4",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/recent5-semantic-review.json"
+          }
+        }
+      ]
+    },
+    "HOST_ACTION_PRODUCTION": {
+      "runs": [
+        {
+          "run_id": "1049ee10c297",
+          "started_at": "2026-09-06T23:39:04.038+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag:PRODUCTION",
+          "metadata": {
+            "request_id": "host-36e511dc6ff37921",
+            "runtime": "WORK",
+            "next_step": "PRODUCTION"
+          }
         }
       ]
     }
@@ -314,6 +616,11 @@
       "from": "IDEA_LOCKED",
       "to": "STORYBOARD_LOCKED",
       "at": "2026-09-06T02:00:25+08:00"
+    },
+    {
+      "from": "STORYBOARD_LOCKED",
+      "to": "VISUAL_CALIBRATED",
+      "at": "2026-09-06T23:09:03+08:00"
     }
   ],
   "image_attempts": [
@@ -517,31 +824,55 @@
   "summary": {
     "stage_wall": {
       "CREATIVE_STORY": {
-        "wall_seconds": 404.585,
-        "runs": 7
+        "wall_seconds": 176083.628,
+        "runs": 9
+      },
+      "INCREMENTAL_PLAN": {
+        "wall_seconds": 4.748,
+        "runs": 3
+      },
+      "PREIMAGE_COMPILE": {
+        "wall_seconds": 0.0,
+        "runs": 3
+      },
+      "VISUAL_LOCK": {
+        "wall_seconds": 0.0,
+        "runs": 3
+      },
+      "PRODUCTION": {
+        "wall_seconds": 0,
+        "runs": 3
       }
     },
     "named_span_wall": {
       "CONTEXT_RECOVERY": {
-        "wall_seconds": 0.18,
-        "runs": 9
+        "wall_seconds": 0.336,
+        "runs": 12
       },
       "VISUAL_LOCK_BASELINE_REVIEW": {
-        "wall_seconds": 440.072,
-        "runs": 2
-      },
-      "PRODUCT_REVIEW_VISUAL-LOCK": {
-        "wall_seconds": 5062.249,
+        "wall_seconds": 1674.416,
         "runs": 3
       },
+      "PRODUCT_REVIEW_VISUAL-LOCK": {
+        "wall_seconds": 5226.723,
+        "runs": 4
+      },
       "PRODUCT_REVIEW_VISUAL-LOCK-BASELINE": {
-        "wall_seconds": 69.466,
-        "runs": 2
+        "wall_seconds": 1333.976,
+        "runs": 3
+      },
+      "PRODUCT_REVIEW_RECENT5-SEMANTIC": {
+        "wall_seconds": 140.909,
+        "runs": 1
+      },
+      "HOST_ACTION_PRODUCTION": {
+        "wall_seconds": 0,
+        "runs": 1
       }
     },
     "critical_path": {
       "kind": "observed_end_to_end_wall",
-      "critical_path_seconds": 141617.721,
+      "critical_path_seconds": 213934.546,
       "image_backend_union_wall_seconds": 2114.0,
       "image_backend_resource_seconds": 2104.87,
       "parallel_saved_seconds": 0.0,
@@ -589,10 +920,10 @@
         {
           "stage": "CREATIVE_STORY",
           "run_id": "f990ffd299f0",
-          "status": "RUNNING",
+          "status": "PASS",
           "started_at": "2026-09-04T22:51:02.324+08:00",
-          "ended_at": null,
-          "duration_seconds": null
+          "ended_at": "2026-09-06T23:39:01.367+08:00",
+          "duration_seconds": 175679.043
         },
         {
           "stage": "CREATIVE_STORY",
@@ -601,6 +932,118 @@
           "started_at": "2026-09-04T22:57:04.113+08:00",
           "ended_at": "2026-09-04T23:01:04.171+08:00",
           "duration_seconds": 240.058
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "3cb54ade63e5",
+          "status": "PASS",
+          "started_at": "2026-09-06T23:38:58.851+08:00",
+          "ended_at": "2026-09-06T23:39:00.440+08:00",
+          "duration_seconds": 1.589
+        },
+        {
+          "stage": "PREIMAGE_COMPILE",
+          "run_id": "5e340d9080a7",
+          "status": "PASS",
+          "started_at": "2026-09-06T23:39:01.498+08:00",
+          "ended_at": "2026-09-06T23:39:01.498+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "VISUAL_LOCK",
+          "run_id": "b31b8cfbb2a4",
+          "status": "PASS",
+          "started_at": "2026-09-06T23:39:03.996+08:00",
+          "ended_at": "2026-09-06T23:39:03.996+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "PRODUCTION",
+          "run_id": "a14af7fad60f",
+          "status": "RUNNING",
+          "started_at": "2026-09-06T23:39:04.005+08:00",
+          "ended_at": null,
+          "duration_seconds": null
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "19b3a4750c38",
+          "status": "PASS",
+          "started_at": "2026-09-06T23:40:51.390+08:00",
+          "ended_at": "2026-09-06T23:40:52.954+08:00",
+          "duration_seconds": 1.564
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "a3253d18be01",
+          "status": "PASS",
+          "started_at": "2026-09-06T23:40:53.877+08:00",
+          "ended_at": "2026-09-06T23:40:53.877+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "PREIMAGE_COMPILE",
+          "run_id": "92ec217e1890",
+          "status": "PASS",
+          "started_at": "2026-09-06T23:40:54.014+08:00",
+          "ended_at": "2026-09-06T23:40:54.014+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "VISUAL_LOCK",
+          "run_id": "ede7e8be0e07",
+          "status": "PASS",
+          "started_at": "2026-09-06T23:40:56.653+08:00",
+          "ended_at": "2026-09-06T23:40:56.653+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "PRODUCTION",
+          "run_id": "ead67f988538",
+          "status": "RUNNING",
+          "started_at": "2026-09-06T23:40:56.662+08:00",
+          "ended_at": null,
+          "duration_seconds": null
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "f886b4879c69",
+          "status": "PASS",
+          "started_at": "2026-09-07T09:42:51.581+08:00",
+          "ended_at": "2026-09-07T09:42:53.176+08:00",
+          "duration_seconds": 1.595
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "da0a0110e758",
+          "status": "PASS",
+          "started_at": "2026-09-07T09:42:54.091+08:00",
+          "ended_at": "2026-09-07T09:42:54.091+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "PREIMAGE_COMPILE",
+          "run_id": "c9e65a6b0a38",
+          "status": "PASS",
+          "started_at": "2026-09-07T09:42:54.232+08:00",
+          "ended_at": "2026-09-07T09:42:54.232+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "VISUAL_LOCK",
+          "run_id": "0e150d49eb0b",
+          "status": "PASS",
+          "started_at": "2026-09-07T09:42:56.825+08:00",
+          "ended_at": "2026-09-07T09:42:56.825+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "PRODUCTION",
+          "run_id": "0d7e20866615",
+          "status": "RUNNING",
+          "started_at": "2026-09-07T09:42:56.835+08:00",
+          "ended_at": null,
+          "duration_seconds": null
         }
       ],
       "note": "End-to-end wall is the user-visible critical path; image resource time is overlap-aware and is not added to stage wall."

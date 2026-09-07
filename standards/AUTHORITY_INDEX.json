@@ -329,6 +329,42 @@
       "scope": "visual_narrative_capture_causality",
       "active": true,
       "note": "V2.2 Visual Narrative Core; V2.5 consumes Propagation Core trigger/response/payoff roles."
+    },
+    {
+      "path": "runtimes/runtime-contract.json",
+      "authority": "active_subordinate",
+      "scope": "runtime_routing_only",
+      "active": true
+    },
+    {
+      "path": "runtimes/runtime-dag.json",
+      "authority": "active_subordinate",
+      "scope": "runtime_routing_only",
+      "active": true
+    },
+    {
+      "path": "runtimes/runtime-mode-contract-r2.json",
+      "authority": "active_subordinate",
+      "scope": "runtime_routing_only",
+      "active": true
+    },
+    {
+      "path": "runtimes/WORK.md",
+      "authority": "active_subordinate",
+      "scope": "runtime_routing_only",
+      "active": true
+    },
+    {
+      "path": "runtimes/CODEX.md",
+      "authority": "active_subordinate",
+      "scope": "runtime_routing_only",
+      "active": true
+    },
+    {
+      "path": "runtimes/WEB.md",
+      "authority": "active_subordinate",
+      "scope": "runtime_routing_only",
+      "active": true
     }
   ],
   "rules": {

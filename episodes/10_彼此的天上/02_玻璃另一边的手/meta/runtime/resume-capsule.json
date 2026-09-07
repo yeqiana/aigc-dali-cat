@@ -1,24 +1,24 @@
 {
   "schema_version": 1,
   "module_version": "2.5.1",
-  "generated_at": "2026-09-06T09:50:07+08:00",
+  "generated_at": "2026-09-07T09:42:50+08:00",
   "episode": "episodes/10_彼此的天上/02_玻璃另一边的手",
-  "current_state": "STORYBOARD_LOCKED",
-  "next_target": "VISUAL_CALIBRATED",
-  "runtime_step": "VISUAL_LOCK",
-  "source_fingerprint": "56ff38b0ccdb7b0a7fbe365e6e3bfa3422a0f2cae4547ac13596e6e2e711ac98",
+  "current_state": "VISUAL_CALIBRATED",
+  "next_target": "PRODUCTION_PASSED",
+  "runtime_step": "PRODUCTION",
+  "source_fingerprint": "00cf096fcc5b864d169b9f9f391e2c78427ccf475c9a92c92a168b84ca62b6d9",
   "source_files": [
     {
       "path": "meta/episode-state.json",
-      "sha256": "d68f397cecbab16b2777c85c6b1aadf9ebda09269651b25cdc7aadd3ba938858"
+      "sha256": "ca9f370118d51cbf8aa5691f11b488a75f8b243cb226a11c06247cf03b01f18b"
     },
     {
       "path": "meta/production-ledger.json",
-      "sha256": "7bf9a1f19a16e92e0503f3546d4c0392f5837c587987f302c36c961056738c61"
+      "sha256": "cd43733e9f98020aeb07d535636514faad974649d2cc7d08037a2d70efa15a67"
     },
     {
       "path": "meta/production-queue.json",
-      "sha256": "d872faefdfca5ba00342072c4ba44efa73216a51ed97457d53d26442dd576ecc"
+      "sha256": "7928d3e668ab4ea371d7d711f3532bea739e5d764d8e1a31968bf849a96ce958"
     },
     {
       "path": "meta/runtime-request.json",
@@ -26,11 +26,11 @@
     },
     {
       "path": "meta/story-gates.json",
-      "sha256": "dbdfbb1771d432d439b0628100714b38d06b8d3fafa904b6a8857084309805b9"
+      "sha256": "d1443d85adabfdc581442d0f13a8ed1a18d2cb88d65fe5907ae87cf9b23e0b3d"
     },
     {
       "path": "meta/runtime-checkpoint.json",
-      "sha256": "42c0fa3a3225e1b77b8dddde3dd4f27b739398f48b406e2f0d10c393a1e882f5"
+      "sha256": "912ef27af380c4db95f7ed27b45bb24a31f6e354cd1051dd5e631a6f829f5a8e"
     },
     {
       "path": "meta/final-acceptance.json",
@@ -40,23 +40,27 @@
   "ledger": {
     "frame_count": 20,
     "status_counts": {
-      "TECH_FAILED": 1,
-      "PENDING": 19
+      "PASSED": 1,
+      "PENDING": 16,
+      "REPAIR_READY": 3
     },
     "blocking_frames": [],
-    "tech_retry_frames": [
-      "01"
-    ],
-    "ready_frames": []
+    "tech_retry_frames": [],
+    "ready_frames": [
+      "01",
+      "03",
+      "09",
+      "14"
+    ]
   },
   "queue_status_counts": {
-    "tech_failed": 1,
-    "queued": 3
+    "generated": 8,
+    "superseded": 5
   },
   "runtime_capabilities": {
     "schema_version": 1,
     "module_version": "2.5.1",
-    "generated_at": "2026-09-06T09:50:07+08:00",
+    "generated_at": "2026-09-07T09:42:50+08:00",
     "expires_after_seconds": 21600,
     "platform": "nt",
     "codex_path": "D:\\soft\\nvm-setup\\nodejs\\codex.CMD",
@@ -68,7 +72,7 @@
     "note": "Set/record vision_review=verified only after a real pixel-vision probe succeeds."
   },
   "next_actions": [
-    "retry technical-failure frames only; do not regenerate successful siblings"
+    "continue Production/Review from current ledger"
   ],
   "read_policy": "Read this capsule first after context loss. Do not broad-rescan repository authority unless a listed SHA changed, a required detail is missing, or a gate reports drift.",
   "authority_policy": "Derived cache only; source authority always wins."

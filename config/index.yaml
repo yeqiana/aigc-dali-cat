@@ -92,6 +92,16 @@ episode_layout:
 stage_read_sets:
   CREATIVE_STORY:
     - config/storyos.yaml
+    - meta/episode-state.json
+    - meta/resource-selection.json
+    - meta/story-gates.json
+    - reports/account-learning-index.json
+    - meta/directing-quality.json
+    - meta/voice-contract.json
+    - meta/storyboard-density-review.json
+    - meta/opening-social-anchor.json
+    - meta/character-visual-contract.json
+    - meta/shot-progression-review.json
     - config/profiles/account_creative/default.json
     - standards/directing_grammar_v1.json
     - story_os_manifest.json
@@ -106,6 +116,14 @@ stage_read_sets:
     - standards/传播核与动作回应链规范_V1.0.md
   PREIMAGE_COMPILE:
     - config/storyos.yaml
+    - meta/runtime-request.json
+    - meta/episode-state.json
+    - meta/resource-selection.json
+    - meta/intro-policy.json
+    - meta/directing-quality.json
+    - meta/voice-contract.json
+    - meta/storyboard-density-review.json
+    - meta/opening-social-anchor.json
     - meta/story-gates.json
     - meta/story-semantic-review.json
     - meta/character-contract.json
@@ -117,12 +135,40 @@ stage_read_sets:
     - meta/wardrobe-contract.json
   VISUAL_LOCK:
     - config/storyos.yaml
+    - meta/runtime-request.json
+    - meta/episode-state.json
+    - meta/character-contract.json
+    - meta/concept-ambition-review.json
+    - meta/directing-quality.json
+    - meta/character-visual-contract.json
+    - meta/visual-lock-baseline-review.json
+    - meta/character-pixel-master.json
+    - meta/character-master-crops.json
+    - meta/shot-progression-review.json
+    - meta/capture-event-contract.json
+    - meta/world-state.json
+    - meta/temporal-continuity.json
+    - meta/wardrobe-contract.json
     - meta/visual-lock-plan.json
     - meta/runtime/contracts/frame-contract-index.json
     - meta/runtime/contracts/character-appearance-anchor.json
     - meta/story-gates.json
   PRODUCTION:
     - config/storyos.yaml
+    - meta/runtime-request.json
+    - meta/episode-state.json
+    - meta/character-contract.json
+    - meta/visual-lock-plan.json
+    - meta/character-visual-contract.json
+    - meta/visual-lock-baseline-review.json
+    - meta/character-pixel-master.json
+    - meta/character-master-crops.json
+    - meta/shot-progression-review.json
+    - meta/capture-event-contract.json
+    - meta/world-state.json
+    - meta/temporal-continuity.json
+    - meta/wardrobe-contract.json
+    - meta/asset-lineage.json
     - config/providers/index.json
     - config/providers/image-provider-runtime.json
     - config/agent_runtime/batch.json
@@ -133,6 +179,19 @@ stage_read_sets:
     - meta/story-gates.json
   RELEASE:
     - config/storyos.yaml
+    - meta/runtime-request.json
+    - meta/episode-state.json
+    - meta/character-contract.json
+    - meta/resource-selection.json
+    - meta/story-gates.json
+    - meta/runtime/provisional-release.json
+    - meta/voice-contract.json
+    - meta/text-audit.json
+    - meta/subtitle-voice-review.json
+    - meta/visual-lock-baseline-review.json
+    - meta/character-pixel-master.json
+    - meta/character-master-crops.json
+    - meta/asset-lineage.json
     - meta/production-ledger.json
     - meta/frame-semantic-review.json
     - meta/final-candidate-snapshot.json
@@ -142,3 +201,29 @@ internal:
   install_history: .storyos/history/install
   migration_history: .storyos/history/migrations
   legacy_runtime_index: .storyos/history/legacy/runtime-index.json
+
+# Shared capsule authority inputs; source remains authoritative.
+capsule_authority_files:
+  - config/storyos.yaml
+  - config/index.yaml
+  - START_HERE.md
+  - SKILL.md
+  - AGENTS.md
+  - standards/制作规范_正式版.md
+  - runtimes/workflow-contract.json
+  - standards/Character_And_Entry_Pool_V1.0.md
+  - standards/character-pools.json
+  - standards/entry-motivation-pools.json
+  - standards/scene-pools.json
+  - standards/forbidden-character-roles.json
+  - runtimes/runtime-mode-contract-r2.json
+  - runtimes/runtime-fast-path-v251.json
+  - library/catalog.json
+  - library/copy/intro-openers.json
+  - standards/AIGC_Directing_Quality_V1.0.md
+  - standards/Character_Visual_And_Wardrobe_V1.0.md
+  - standards/Character_Master_Final_Closure_V1.0.md
+  - standards/Human_Response_Interaction_V1.0.md
+  - standards/wardrobe-scenario-profiles.json
+  - config/profiles/account_creative/default.json
+  - standards/directing_grammar_v1.json

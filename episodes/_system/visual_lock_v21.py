@@ -364,7 +364,7 @@ def calibration_assets(ep: Path) -> list[dict]:
         frame = int(item.get("frame"))
         p = repo_file(item.get("asset_path"))
         asset_sha = sha256_file(p)
-        current = frame_contract.compile_frame(ep, frame, write_cache=True)
+        current = frame_contract.compile_frame(ep, frame, write_cache=False)
         recorded_fc = str(item.get("frame_contract_sha256") or "")
         if recorded_fc and recorded_fc != current["contract_sha256"]:
             raise ValueError(f"{role} frame contract stale")

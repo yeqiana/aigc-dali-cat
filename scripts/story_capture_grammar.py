@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SYSTEM = ROOT / "episodes" / "_system"
 sys.path.insert(0, str(SYSTEM))
 
-import capture_grammar_v226
+import capture_grammar_v228
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
     ep = Path(args.episode_dir).resolve()
     if not ep.is_dir():
         raise SystemExit(f"episode directory not found: {ep}")
-    result = capture_grammar_v226.compile_capture_contract(ep)
+    result = capture_grammar_v228.compile_capture_contract(ep)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 

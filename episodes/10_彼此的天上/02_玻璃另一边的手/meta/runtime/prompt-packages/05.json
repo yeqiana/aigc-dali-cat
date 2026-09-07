@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "05",
+  "scene_prompt": "真实手机照片，车内视角拍摄雨夜道路。P01和P02在车里查看刚拍到的照片，手机屏幕作为生活细节出现但不清晰展示内容。车内灯光、雨滴、湿润玻璃形成自然光影，保持情侣旅行记录感。",
+  "scene_prompt_sha256": "79ec17fe84bf5694c296a009e6bcb2853aa3139ca22bab13bd4c008434925234",
+  "frame_contract_sha256": "18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\05.txt",
+  "package_sha256": "20be12ccaef279d9b690e3a8c82cbf3a8183a61416eb886aaba8fdc6c07ffcd6",
+  "compiled_at": "2026-09-07T11:01:34+08:00"
+}
