@@ -14,4 +14,4 @@ Story OS 技术设计文档门户
 说明：
 - 每个子文档保持独立
 - 每个子文档右上角可以返回 index.html
-- 当前版本事实：Story OS V2.1 主平台 + V2.2 Visual Narrative Core R1 主链集成
+- 当前版本事实：以根目录 story_os_manifest.json 的 platform_version 为唯一版本事实（当前 Story OS 2.6.1 Product Runtime First）；门户文档不再单独人工同步版本行。
