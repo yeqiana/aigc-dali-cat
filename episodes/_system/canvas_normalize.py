@@ -56,7 +56,8 @@ def read_canvas(ep: Path) -> tuple[int, int, str]:
             return w, h, ledger_spec.aspect_ratio
     if manifest_ratio:
         return manifest_spec.width, manifest_spec.height, manifest_spec.aspect_ratio
-    return 1080, 1350, '4:5'
+    fallback = resolve_canvas_spec(None)
+    return fallback.width, fallback.height, fallback.aspect_ratio
 
 
 def _normalize_once(src: Path, dst: Path, width: int, height: int) -> dict:

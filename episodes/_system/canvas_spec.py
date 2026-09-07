@@ -23,6 +23,7 @@ SPECS: dict[str, CanvasSpec] = {
     ratio: CanvasSpec(ratio, int(row["width"]), int(row["height"]))
     for ratio, row in storyos_config.get_path(_CONFIG, "image.canvases").items()
 }
+CANONICAL_SIZES = frozenset(spec.size for spec in SPECS.values())
 
 ALIASES = {
     "4x5": "4:5",

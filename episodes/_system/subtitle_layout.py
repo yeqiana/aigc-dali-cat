@@ -9,6 +9,7 @@ import re
 from pathlib import Path
 
 from story_os_contract import story_os_version
+from canvas_spec import CANONICAL_SIZES
 from text_audit import captions_from_text, discover_input, parse_simple_subtitles_yaml
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -152,8 +153,8 @@ def render_one(base: Path, output: Path, caption: str, *, y: int | None, font_pa
 
     image = Image.open(base).convert("RGBA")
     width, height = image.size
-    if width != 1080 or height not in {1350, 1920}:
-        raise RuntimeError(f"subtitle renderer requires canonical 1080px-wide canvas; got {width}x{height}")
+    if (width, height) not in CANONICAL_SIZES:
+        raise RuntimeError(f"subtitle renderer requires canonical canvas; got {width}x{height}")
     font = ImageFont.truetype(str(font_path), 42)
     max_width = width - 144
     lines, dropped = wrap_caption(caption, font, max_width)
@@ -222,7 +223,7 @@ def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float 
         canonical_height = int(canvas.get("height"))
     except Exception as exc:
         raise RuntimeError("production ledger canvas width/height missing") from exc
-    if canonical_width != 1080 or canonical_height not in {1350, 1920}:
+    if (canonical_width, canonical_height) not in CANONICAL_SIZES:
         raise RuntimeError(f"subtitle renderer requires canonical ledger canvas; got {canonical_width}x{canonical_height}")
 
     rows = {}

@@ -10,6 +10,7 @@ sys.path.insert(0, str(SYSTEM))
 import validation_stage_v223
 import visual_profile_bridge_v224 as visual_bridge
 import codex_subscription_image
+from canvas_spec import resolve_canvas_spec
 from canvas_normalize import normalize
 
 VERSION="2.2.4"
@@ -62,7 +63,11 @@ def need_preproduction(ep):
 def canvas(ep):
     _,bp=blueprint(ep)
     r=str((((bp or {}).get("episode") or {}).get("aspect_ratio") or "4:5")).strip()
-    return {"9:16":(1080,1920),"1:1":(1080,1080)}.get(r,(1080,1350))
+    try:
+        spec=resolve_canvas_spec(r)
+    except ValueError:
+        spec=resolve_canvas_spec(None)
+    return spec.width,spec.height
 
 def check_drift(ep):
     d=profile_drift(ep)
