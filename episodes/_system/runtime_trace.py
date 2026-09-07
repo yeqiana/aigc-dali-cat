@@ -24,6 +24,11 @@ def _clean(v):
     return str(v)[:200]
 def emit(ep:Path,event:dict):
     if storyos_config.get_path(_CONFIG,"agent_runtime.trace.enabled") is not True:return
+    # Trace channel owner: runtime_observability.append_trace_event is the simple
+    # appender (daemon bridge delegates there). This config-driven agent trace
+    # engine keeps its own guarded append because enabled/_clean/event_path are
+    # config semantics that a fixed-constant helper cannot express; the file is
+    # shared and readers tolerate both line shapes.
     p=_path(ep,"event_path");p.parent.mkdir(parents=True,exist_ok=True)
     line=json.dumps({"at":now(),**_clean(event)},ensure_ascii=False,separators=(",",":"))+"\n"
     with _LOCK:
