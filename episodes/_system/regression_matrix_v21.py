@@ -13,6 +13,7 @@ from pathlib import Path
 from story_os_contract import CANONICAL_STAGES, FOUR_ADMISSION_V21_POLICY, canonical_stages
 import migrate_v21
 import post_publish_review
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT = ROOT / "reports" / "story-os-v21-regression-matrix.json"
@@ -23,14 +24,11 @@ def now() -> str:
 
 
 def read_json(path: Path) -> dict:
-    data=json.loads(path.read_text(encoding="utf-8-sig"))
-    if not isinstance(data,dict):raise ValueError(f"JSON root must be object: {path}")
-    return data
+    return story_json.read_json(path)
 
 
 def write_json(path: Path,data:dict)->None:
-    path.parent.mkdir(parents=True,exist_ok=True)
-    path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(path, data)
 
 
 def case(name: str, fn) -> dict:

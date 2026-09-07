@@ -4,6 +4,7 @@
 from __future__ import annotations
 import argparse, hashlib, json
 from pathlib import Path
+import story_json
 
 REL=Path("meta/temporal-continuity.json")
 DAYPART={"dawn","morning","day","afternoon","dusk","night"}
@@ -12,12 +13,9 @@ DARK={"night_dark","artificial_night"}
 BRIGHT={"daylight","overcast_day"}
 
 def read_json(p):
-    d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict):raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 def write_json(p,d):
-    p=Path(p);p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def frame_count(ep):
     d=read_json(Path(ep)/"meta/release-manifest.json")

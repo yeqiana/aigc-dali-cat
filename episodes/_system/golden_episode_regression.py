@@ -10,6 +10,7 @@ import argparse, datetime as dt, json
 from pathlib import Path
 import storyboard_density_gate, voice_contract, capture_event_contract, world_state, asset_lineage
 import propagation_core_gate  # STORY_OS_V2_5_PROPAGATION_CORE
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 REG=ROOT/"reports/golden-episode-registry.json"
@@ -17,12 +18,9 @@ REPORT=ROOT/"reports/golden-episode-regression.json"
 
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read_json(p):
-    d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict):raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 def write_json(p,d):
-    p=Path(p);p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 def rel(p):return Path(p).resolve().relative_to(ROOT.resolve()).as_posix()
 def registry():
     return read_json(REG) if REG.is_file() else {"schema_version":1,"episodes":[],"recommended_minimum":10}

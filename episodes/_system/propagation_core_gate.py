@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse, json
 from pathlib import Path
 from story_os_contract import story_os_version
+import story_json
 
 REVIEW_REL=Path("meta/story-semantic-review.json")
 FORMAL_MIN_VERSION=(2,5,0)
@@ -13,9 +14,7 @@ VISUAL_CAUSALITY={"strong","medium","weak"}
 SEND_IMPULSE={"strong","medium","weak"}
 
 def read_json(path):
-    d=json.loads(Path(path).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict): raise ValueError(f"JSON root must be object: {path}")
-    return d
+    return story_json.read_json(path)
 
 def version_tuple(raw):
     try:return tuple(int(x) for x in str(raw or "").split("."))

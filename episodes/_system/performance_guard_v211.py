@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 from pathlib import Path
+import story_json
 
 WORKFLOW_REL = Path("meta/workflow-performance.json")
 EP_PERF_REL = Path("meta/episode-performance-ledger.json")
@@ -27,14 +28,11 @@ def parse_ts(raw):
     except Exception: return None
 
 def read_json(path: Path) -> dict:
-    data = json.loads(path.read_text(encoding="utf-8-sig"))
+    data = story_json.read_json(path, require_object=False)
     return data if isinstance(data, dict) else {}
 
 def write_json(path: Path, data: dict):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-    tmp.replace(path)
+    story_json.write_json(path, data)
 
 def _pick_run(wf: dict, run_id: str | None):
     rows = wf.get("runs") or []

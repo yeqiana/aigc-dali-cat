@@ -10,6 +10,7 @@ import datetime as dt
 import hashlib
 import json
 from pathlib import Path
+import story_json
 
 REL = Path("meta/visual-critic-runtime.json")
 EP_PERF_REL = Path("meta/episode-performance-ledger.json")
@@ -30,15 +31,12 @@ def now() -> str:
 
 
 def read_json(path: Path) -> dict:
-    data = json.loads(path.read_text(encoding="utf-8-sig"))
+    data = story_json.read_json(path, require_object=False)
     return data if isinstance(data, dict) else {}
 
 
 def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-    tmp.replace(path)
+    story_json.write_json(path, data)
 
 
 def load(ep: Path) -> dict:

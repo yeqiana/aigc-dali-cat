@@ -11,13 +11,13 @@ from contract_sync import collect_errors
 import storyos_config
 import runtime_log_policy
 import episode_discovery
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
 def load_json(path: Path):
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
+    return story_json.read_json(path, require_object=False)
 
 
 def issue(bucket, level: str, code: str, message: str):

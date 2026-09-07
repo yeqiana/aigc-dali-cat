@@ -14,6 +14,7 @@ from pathlib import Path
 
 import runtime_trace
 import batch_runtime_metrics
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/workflow-observability.json")
@@ -24,7 +25,7 @@ def now() -> str:
 
 
 def read_json(path: Path) -> dict:
-    data = json.loads(path.read_text(encoding="utf-8-sig"))
+    data = story_json.read_json(path, require_object=False)
     return data if isinstance(data, dict) else {}
 
 
@@ -34,8 +35,7 @@ def maybe(ep: Path, rel: str) -> dict:
 
 
 def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    story_json.write_json(path, data)
 
 
 def resolve_ep(raw: str) -> Path:

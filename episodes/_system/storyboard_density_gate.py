@@ -7,6 +7,7 @@ This is structured Story Critic evidence, not a new Episode stage.
 from __future__ import annotations
 import argparse, json
 from pathlib import Path
+import story_json
 
 REL=Path("meta/storyboard-density-review.json")
 NECESSITY=("causal_loss","evidence_loss","suspense_loss","spatial_orientation_loss","emotional_state_change_loss")
@@ -15,12 +16,9 @@ PROGRESS={"NEW_EVIDENCE","NEW_CAUSALITY","NEW_INFORMATION","NEW_SPACE","NEW_CHAR
 STRONG=PROGRESS-{"BRIDGE"}
 
 def read_json(p):
-    d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict): raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 def write_json(p,d):
-    p=Path(p);p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 def frame_count(ep):
     d=read_json(Path(ep)/"meta/release-manifest.json")
     return int(((d.get("release") or {}).get("body_frame_count")) or 0)

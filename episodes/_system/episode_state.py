@@ -12,6 +12,7 @@ from pathlib import Path
 from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
 from story_os_contract import canonical_stages, story_os_version
 import episode_performance
+import story_json
 
 STATES = canonical_stages()
 STATE_FILE = Path("meta/episode-state.json")
@@ -25,15 +26,11 @@ def now_iso() -> str:
 
 
 def load_json(path: Path) -> dict:
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
+    return story_json.read_json(path, require_object=False)
 
 
 def save_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8", newline="\n") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-        f.write("\n")
+    story_json.write_json(path, data)
 
 
 def child_process_env() -> dict[str, str]:

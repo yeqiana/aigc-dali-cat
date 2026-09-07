@@ -10,6 +10,7 @@ with stage totals as if they were independent.
 from __future__ import annotations
 import argparse, datetime as dt, json, math, os, statistics, uuid
 from pathlib import Path
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/episode-performance-ledger.json")
@@ -29,14 +30,9 @@ def seconds_between(a,b):
     if not aa or not bb:return None
     return max(0.0,(bb-aa).total_seconds())
 def read_json(p):
-    d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict):raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 def write_json(p,d):
-    p=Path(p);p.parent.mkdir(parents=True,exist_ok=True)
-    tmp=p.with_suffix(p.suffix+".tmp")
-    tmp.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
-    os.replace(tmp,p)
+    story_json.write_json(p, d)
 
 def _new(ep):
     return {
