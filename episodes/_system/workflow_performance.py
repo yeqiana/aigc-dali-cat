@@ -11,8 +11,9 @@ import datetime as dt
 import json
 import time
 from pathlib import Path
+import runtime_observability
 
-REL = Path("meta/workflow-performance.json")
+REL = runtime_observability.WORKFLOW_PERFORMANCE_REL
 RUN_LOG = Path("meta/workflow-run.jsonl")
 
 
@@ -34,6 +35,7 @@ def read(ep: Path) -> dict:
 def write(ep: Path, data: dict) -> None:
     p = ep / REL
     p.parent.mkdir(parents=True, exist_ok=True)
+    data = runtime_observability.summary_document("workflow_performance", data)
     tmp = p.with_suffix(p.suffix + ".tmp")
     tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     tmp.replace(p)
@@ -97,7 +99,7 @@ def main() -> int:
     sub.add_parser("self-test")
     args = ap.parse_args()
     if args.cmd == "self-test":
-        assert REL.as_posix() == "meta/workflow-performance.json"
+        assert REL == runtime_observability.WORKFLOW_PERFORMANCE_REL
         assert RUN_LOG.as_posix() == "meta/workflow-run.jsonl"
         print("WORKFLOW PERFORMANCE SELF-TEST PASS")
         return 0

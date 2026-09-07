@@ -3,8 +3,9 @@
 from __future__ import annotations
 import argparse, datetime as dt, json
 from pathlib import Path
+import runtime_observability
 
-REL=Path("meta/quota-observability.json")
+REL=runtime_observability.QUOTA_OBSERVABILITY_REL
 TOKEN_KEYS={"input_tokens","output_tokens","total_tokens","cached_input_tokens","prompt_tokens","completion_tokens"}
 
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -13,6 +14,7 @@ def read(ep):
     if not p.is_file(): return {"schema_version":1,"note":"Diagnostic only; quota percentages are never guessed.","snapshots":[]}
     d=json.loads(p.read_text(encoding="utf-8-sig")); d.setdefault("snapshots",[]); return d
 def write(ep,d):
+    d.setdefault("kind","quota_observability"); d.setdefault("schema_version",1); d.setdefault("generated_at",now())
     p=ep/REL; p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
 def walk_tokens(obj,out):
     if isinstance(obj,dict):
@@ -52,7 +54,7 @@ def report(ep):
           "from":a["at"],"to":b["at"]}
     return result
 def self_test():
-    assert REL.as_posix()=="meta/quota-observability.json"; print("QUOTA OBSERVABILITY SELF-TEST PASS")
+    assert REL==runtime_observability.QUOTA_OBSERVABILITY_REL; print("QUOTA OBSERVABILITY SELF-TEST PASS")
 def main():
     ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("auto"); p.add_argument("episode_dir"); p.add_argument("--note",default="")

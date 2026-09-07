@@ -15,9 +15,10 @@ from pathlib import Path
 import runtime_trace
 import batch_runtime_metrics
 import story_json
+import runtime_observability
 
 ROOT = Path(__file__).resolve().parents[2]
-REL = Path("meta/workflow-observability.json")
+REL = runtime_observability.WORKFLOW_OBSERVABILITY_REL
 
 
 def now() -> str:
@@ -29,7 +30,7 @@ def read_json(path: Path) -> dict:
     return data if isinstance(data, dict) else {}
 
 
-def maybe(ep: Path, rel: str) -> dict:
+def maybe(ep: Path, rel: Path | str) -> dict:
     p = ep / rel
     return read_json(p) if p.is_file() else {}
 
@@ -56,8 +57,8 @@ def counts(rows, key):
 def collect(ep: Path, *, write: bool = True) -> dict:
     state = maybe(ep, "meta/episode-state.json")
     checkpoint = maybe(ep, "meta/runtime-checkpoint.json")
-    performance = maybe(ep, "meta/workflow-performance.json")
-    scheduler = maybe(ep, "meta/image-scheduler-performance.json")
+    performance = maybe(ep, runtime_observability.WORKFLOW_PERFORMANCE_REL)
+    scheduler = maybe(ep, runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL)
     queue = maybe(ep, "meta/production-queue.json")
     ledger = maybe(ep, "meta/production-ledger.json")
     scout = maybe(ep, "meta/frame-scout-summary.json")
@@ -99,6 +100,7 @@ def collect(ep: Path, *, write: bool = True) -> dict:
     report = {
         "schema_version": 1,
         "generated_at": now(),
+        "kind": "workflow_observability",
         "diagnostic_only": True,
         "stage_source": "meta/episode-state.json",
         "episode": ep.relative_to(ROOT).as_posix(),
@@ -148,7 +150,7 @@ def collect(ep: Path, *, write: bool = True) -> dict:
 
 
 def self_test() -> None:
-    assert REL.as_posix() == "meta/workflow-observability.json"
+    assert REL == runtime_observability.WORKFLOW_OBSERVABILITY_REL
     assert counts([{"status": "A"}, {"status": "A"}, {"status": "B"}], "status") == {"A": 2, "B": 1}
     print("WORKFLOW OBSERVABILITY V2.1 PHASE9 SELF-TEST PASS")
 

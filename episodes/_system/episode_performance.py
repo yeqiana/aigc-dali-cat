@@ -11,9 +11,10 @@ from __future__ import annotations
 import argparse, datetime as dt, json, math, os, statistics, uuid
 from pathlib import Path
 import story_json
+import runtime_observability
 
 ROOT=Path(__file__).resolve().parents[2]
-REL=Path("meta/episode-performance-ledger.json")
+REL=runtime_observability.EPISODE_PERFORMANCE_REL
 REPORT_REL=Path("reports/story-os-performance-summary.json")
 STAGE_NAMES={"CREATIVE_STORY","PREIMAGE_COMPILE","VISUAL_LOCK","PRODUCTION","RELEASE","FULL_AUTO_LEGACY","VISUAL_LOCK_BASELINE_REVIEW"}
 
@@ -37,6 +38,8 @@ def write_json(p,d):
 def _new(ep):
     return {
       "schema_version":1,
+      "kind":"episode_performance",
+      "generated_at":now(),
       "telemetry_only":True,
       "not_stage_gate":True,
       "fail_soft":True,
@@ -316,7 +319,7 @@ def rebuild_report(root=ROOT):
 
 def self_test():
     assert abs(percentile([10,20,30],0.5)-20)<0.001
-    assert REL.as_posix()=="meta/episode-performance-ledger.json"
+    assert REL==runtime_observability.EPISODE_PERFORMANCE_REL
     assert _interval_union_seconds([])==0.0
     print("EPISODE PERFORMANCE + R3 CRITICAL PATH SELF-TEST PASS")
 

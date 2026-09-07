@@ -20,6 +20,7 @@ import caption_image_audit
 import visual_final_freeze
 from final_acceptance import valid as acceptance_valid
 import story_json
+import runtime_observability
 
 ROOT=Path(__file__).resolve().parents[2]
 SNAPSHOT_REL=Path("meta/final-candidate-snapshot.json")
@@ -194,7 +195,7 @@ def build_lock(ep:Path, *, write_evidence:bool=True)->dict:
         ("meta/recent5-semantic-review.json","recent5_semantic_review","qa/recent5-semantic-review.json"),
         ("meta/series-lock-binding.json","series_lock_binding","evidence/series-lock-binding.json"),
         ("meta/frame-scout-summary.json","frame_scout_summary","qa/frame-scout-summary.json"),
-        ("meta/image-scheduler-performance.json","image_scheduler_performance","evidence/image-scheduler-performance.json"),
+        (runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL.as_posix(),"image_scheduler_performance","evidence/image-scheduler-performance.json"),
         ("meta/runtime/contracts/frame-contract-index.json","frame_contract_index","evidence/frame-contract-index.json"),
         ("meta/visual-lock-baseline-review.json","visual_lock_baseline_review","qa/visual-lock-baseline-review.json"),
         ("meta/visual-final-freeze.json","visual_final_freeze","qa/visual-final-freeze.json"),

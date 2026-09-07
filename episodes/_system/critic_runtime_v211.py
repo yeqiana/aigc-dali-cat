@@ -11,9 +11,10 @@ import hashlib
 import json
 from pathlib import Path
 import story_json
+import runtime_observability
 
 REL = Path("meta/visual-critic-runtime.json")
-EP_PERF_REL = Path("meta/episode-performance-ledger.json")
+EP_PERF_REL = runtime_observability.EPISODE_PERFORMANCE_REL
 TECHNICAL_CODES = {
     "INPUT_IMAGES_UNAVAILABLE",
     "CRITIC_PROCESS_ERROR",

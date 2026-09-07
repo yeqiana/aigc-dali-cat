@@ -27,6 +27,7 @@ import async_scheduler_adapter
 import runtime_event_collector
 import production_recovery
 import production_ledger
+import runtime_observability
 CAPABILITY_WAIT=24
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -345,9 +346,12 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                 item["scout"]={"decision":"DEFER_TO_FINAL","notes":str(exc),"final_critic_still_required":True}
         item.pop("_defer_scout",None)
     save_queue(ep,q)
-    perf_path=ep/"meta/batch-runtime-performance.json"
+    perf_path=ep/runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL
     perf=read_json(perf_path) if perf_path.is_file() else {"schema_version":1,"batches":[]}
     completed=[x for x in q.get("items") or [] if x.get("id") in submitted and x.get("output_path")]
+    perf.setdefault("kind","batch_runtime_performance")
+    perf.setdefault("schema_version",1)
+    perf.setdefault("generated_at",now())
     perf.setdefault("batches",[]).append({"batch_id":batch_id,"planned_count":len(started),
         "returned_count":len(completed),"provider":provider["provider"],
         "logical_batch":provider["provider"]=="codex_subscription",

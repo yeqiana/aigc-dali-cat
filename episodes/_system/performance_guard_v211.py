@@ -6,9 +6,10 @@ import datetime as dt
 import json
 from pathlib import Path
 import story_json
+import runtime_observability
 
-WORKFLOW_REL = Path("meta/workflow-performance.json")
-EP_PERF_REL = Path("meta/episode-performance-ledger.json")
+WORKFLOW_REL = runtime_observability.WORKFLOW_PERFORMANCE_REL
+EP_PERF_REL = runtime_observability.EPISODE_PERFORMANCE_REL
 BUDGET_REL = Path("meta/performance-budget.json")
 SLOW_REL = Path("meta/slow-step-report.json")
 SOFT_DIAGNOSTIC_SECONDS = 60 * 60
@@ -91,7 +92,7 @@ def observe(ep: Path, run_id: str | None = None, context: str = "") -> dict:
         "unclassified_wall_ratio": budget["unclassified_wall_ratio"],
     }
     wf["performance_budget_updated_at"] = budget["observed_at"]
-    write_json(wf_path, wf)
+    write_json(wf_path, runtime_observability.summary_document("workflow_performance", wf))
     if elapsed >= EXCEEDED_SECONDS:
         slow = sorted(steps, key=lambda x: float(x.get("elapsed_seconds") or 0), reverse=True)[:5]
         report = {

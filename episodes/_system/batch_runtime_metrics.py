@@ -2,6 +2,7 @@
 from __future__ import annotations
 import json
 from pathlib import Path
+import runtime_observability
 
 def _read(path:Path)->dict:
     if not path.is_file():return {}
@@ -11,7 +12,7 @@ def _read(path:Path)->dict:
     except Exception:return {}
 
 def collect(ep:Path)->dict:
-    perf=_read(ep/"meta/batch-runtime-performance.json")
+    perf=_read(ep/runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL)
     cap=_read(ep/"meta/batch-provider-capability.json")
     codex=_read(ep/"meta/codex-subscription-batch-capability.json")
     decision_dir=ep/"meta/batch-repair-decisions"
@@ -71,7 +72,7 @@ def self_test():
     with tempfile.TemporaryDirectory(prefix="storyos-metrics-") as td:
         ep=Path(td); (ep/"meta").mkdir()
         assert collect(ep)["images_requested"]==0
-        (ep/"meta/batch-runtime-performance.json").write_text(json.dumps({"batches":[{"planned_count":5,"returned_count":4,"provider":"codex_subscription","logical_batch":True}]}),encoding="utf-8")
+        (ep/runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL).write_text(json.dumps({"batches":[{"planned_count":5,"returned_count":4,"provider":"codex_subscription","logical_batch":True}]}),encoding="utf-8")
         row=collect(ep)
         assert (row["images_requested"],row["images_returned"],row["logical_codex_batch_count"])==(5,4,1)
     print("BATCH RUNTIME METRICS V2.4.2 SELF-TEST PASS")

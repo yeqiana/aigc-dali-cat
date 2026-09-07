@@ -5,9 +5,10 @@ from __future__ import annotations
 import argparse, json
 from pathlib import Path
 import episode_performance, execution_capsule, raw_candidate_budget, runtime_capability_cache, runtime_resume_capsule
+import runtime_observability
 ROOT=Path(__file__).resolve().parents[2]
 def slo(ep):
-    ep=Path(ep).resolve();p=ep/"meta/episode-performance-ledger.json"
+    ep=Path(ep).resolve();p=ep/runtime_observability.EPISODE_PERFORMANCE_REL
     if not p.is_file():return {"health":"UNKNOWN","active_wall_seconds":None,"gate":False}
     d=json.loads(p.read_text(encoding="utf-8-sig"));active=((d.get("run_wall") or {}).get("active_wall_seconds"));active=active if isinstance(active,(int,float)) else d.get("total_wall_seconds")
     if not isinstance(active,(int,float)):return {"health":"UNKNOWN","active_wall_seconds":None,"gate":False}

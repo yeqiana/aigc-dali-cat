@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -31,6 +32,7 @@ IMAGE_SCHEDULER_PERFORMANCE_REL = Path("meta/image-scheduler-performance.json")
 BATCH_RUNTIME_PERFORMANCE_REL = Path("meta/batch-runtime-performance.json")
 QUOTA_OBSERVABILITY_REL = Path("meta/quota-observability.json")
 TRACE_EVENTS_REL = Path("meta/runtime/trace-events.jsonl")
+_TRACE_LOCK = threading.Lock()
 
 KNOWN_PATHS = {
     "episode_performance": EPISODE_PERFORMANCE_REL,
@@ -87,8 +89,9 @@ def append_trace_event(ep: Path | str, event: dict) -> Path:
     target = Path(ep).resolve() / TRACE_EVENTS_REL
     target.parent.mkdir(parents=True, exist_ok=True)
     line = json.dumps(event, ensure_ascii=False, separators=(",", ":")) + "\n"
-    with target.open("a", encoding="utf-8", newline="\n") as handle:
-        handle.write(line)
+    with _TRACE_LOCK:
+        with target.open("a", encoding="utf-8", newline="\n") as handle:
+            handle.write(line)
     return target
 
 

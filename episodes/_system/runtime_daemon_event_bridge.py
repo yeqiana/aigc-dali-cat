@@ -8,11 +8,10 @@ This is observability only; it does not change episode stage authority.
 from __future__ import annotations
 
 import datetime as dt
-import json
 from pathlib import Path
+import runtime_observability
 
-
-TRACE_REL = Path("meta/runtime/trace-events.jsonl")
+TRACE_REL = runtime_observability.TRACE_EVENTS_REL
 
 
 def _now() -> str:
@@ -26,10 +25,7 @@ def emit(episode: Path, event: str, **payload) -> dict:
         "episode": str(episode),
         **payload,
     }
-    path = episode / TRACE_REL
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    runtime_observability.append_trace_event(episode, row)
     return row
 
 
