@@ -23,19 +23,19 @@
       "scope": "distribution_and_post_publish",
       "active": true,
       "supersedes": [
-        "standards/抖音推流评分与发布后漏斗规范_V1.2.md",
-        "standards/抖音推流评分与发布后漏斗规范_V1.3.md"
+        "standards/_superseded/抖音推流评分与发布后漏斗规范_V1.2.md",
+        "standards/_superseded/抖音推流评分与发布后漏斗规范_V1.3.md"
       ]
     },
     {
-      "path": "standards/抖音推流评分与发布后漏斗规范_V1.2.md",
+      "path": "standards/_superseded/抖音推流评分与发布后漏斗规范_V1.2.md",
       "authority": "superseded",
       "scope": "distribution_and_post_publish",
       "active": false,
       "superseded_by": "standards/抖音推流评分与发布后漏斗规范_V1.4.md"
     },
     {
-      "path": "standards/抖音推流评分与发布后漏斗规范_V1.3.md",
+      "path": "standards/_superseded/抖音推流评分与发布后漏斗规范_V1.3.md",
       "authority": "superseded",
       "scope": "distribution_and_post_publish",
       "active": false,
@@ -54,21 +54,21 @@
       "active": true
     },
     {
-      "path": "standards/最终字幕视觉规范_V1.1.md",
+      "path": "standards/_superseded/最终字幕视觉规范_V1.1.md",
       "authority": "superseded",
       "scope": "caption_visual",
       "active": false,
       "supersedes": [
-        "standards/最终字幕视觉规范_V1.0.md"
+        "standards/_superseded/最终字幕视觉规范_V1.0.md"
       ],
       "superseded_by": "standards/最终字幕视觉规范_V1.2.md"
     },
     {
-      "path": "standards/最终字幕视觉规范_V1.0.md",
+      "path": "standards/_superseded/最终字幕视觉规范_V1.0.md",
       "authority": "superseded",
       "scope": "caption_visual",
       "active": false,
-      "superseded_by": "standards/最终字幕视觉规范_V1.1.md"
+      "superseded_by": "standards/_superseded/最终字幕视觉规范_V1.1.md"
     },
     {
       "path": "standards/生产引擎与画幅规范_V1.2.md",
@@ -83,7 +83,7 @@
       "active": true
     },
     {
-      "path": "standards/风格锚点_流水席_村子_误入小镇_V1.1.md",
+      "path": "standards/_superseded/风格锚点_流水席_村子_误入小镇_V1.1.md",
       "authority": "superseded",
       "scope": "optional_visual_mother_style",
       "active": false,
@@ -96,7 +96,7 @@
       "scope": "default_visual_mother_style",
       "active": true,
       "supersedes": [
-        "standards/风格锚点_流水席_村子_误入小镇_V1.1.md"
+        "standards/_superseded/风格锚点_流水席_村子_误入小镇_V1.1.md"
       ],
       "note": "Story OS V1.8 account default when user does not specify another visual style. Capture physics/story era take precedence over texture."
     },
@@ -203,7 +203,7 @@
       "scope": "caption_visual",
       "active": true,
       "supersedes": [
-        "standards/最终字幕视觉规范_V1.1.md"
+        "standards/_superseded/最终字幕视觉规范_V1.1.md"
       ]
     },
     {
