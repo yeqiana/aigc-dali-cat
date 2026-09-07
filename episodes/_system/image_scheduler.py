@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import asyncio
 import concurrent.futures as cf
-from contextlib import contextmanager
 import datetime as dt
 import json
 import os
@@ -30,6 +29,7 @@ import reference_arbitrator
 import visual_lock_baseline_gate
 import episode_performance
 import storyos_config
+import scheduler_core
 import batch_scheduler
 import runtime_router
 import product_runtime_adapter
@@ -37,10 +37,8 @@ import resource_library
 import runtime_portability
 import async_scheduler_adapter
 import runtime_event_collector
-import ledger_call
 import production_recovery
 import production_ledger
-from runtime_atomic_store import atomic_write_json
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -67,13 +65,11 @@ def now() -> str:
 
 
 def read_json(path: Path) -> dict:
-    data=json.loads(path.read_text(encoding="utf-8-sig"))
-    if not isinstance(data,dict):raise ValueError(f"JSON root must be object: {path}")
-    return data
+    return scheduler_core.read_json(path)
 
 
 def write_json(path: Path,data:dict)->None:
-    atomic_write_json(path,data)
+    scheduler_core.write_json(path,data)
 
 
 def resolve_ep(raw:str)->Path:
@@ -98,51 +94,25 @@ def repo_rel(path:Path)->str:
 
 
 def load_queue(ep:Path)->dict:
-    p=ep/QUEUE_REL
-    if not p.is_file():
-        return {"schema_version":1,"created_at":now(),"updated_at":now(),"max_parallel":MAX_SUPPORTED_WORKERS,"items":[],"waves":[]}
-    q=read_json(p)
-    errors=runtime_portability.queue_path_errors(q)
-    if errors:
-        raise ValueError("production queue portability guard failed: "+"; ".join(errors[:8]))
-    return q
+    return scheduler_core.load_queue(ep, max_parallel=MAX_SUPPORTED_WORKERS)
 
 
 def save_queue(ep:Path,q:dict)->None:
-    q["updated_at"]=now()
-    write_json(ep/QUEUE_REL,q)
+    scheduler_core.save_queue(ep,q)
 
 
-class QueueMutationBusy(RuntimeError):
-    """A queue writer raced an active image scheduler or another writer."""
+QueueMutationBusy = scheduler_core.QueueMutationBusy
 
 
-@contextmanager
-def queue_transaction(ep: Path):
-    """Serialize a queue read-modify-write against image execution.
-
-    The scheduler holds the same OS lock for its whole run.  Small direct
-    mutations therefore fail explicitly while pixels/ledger transitions are
-    in flight instead of writing a stale full queue back over scheduler work.
-    The caller can retry this recoverable condition later.
-    """
-    import runner_state_store
-    ep = Path(ep).resolve()
-    if not runner_state_store.acquire_lock(ep, lock_rel=SCHEDULER_LOCK_REL):
-        raise QueueMutationBusy("QUEUE_MUTATION_BUSY: image scheduler owns the production queue; retry later")
-    try:
-        yield
-    finally:
-        runner_state_store.release_lock(ep, lock_rel=SCHEDULER_LOCK_REL)
+queue_transaction = scheduler_core.queue_transaction
 
 
 def ledger(ep:Path)->dict:
-    p=ep/"meta/production-ledger.json"
-    return read_json(p) if p.is_file() else {}
+    return scheduler_core.ledger(ep)
 
 
 def ledger_state(ep:Path,frame:int)->str:
-    return str((((ledger(ep).get("frames") or {}).get(f"{frame:02d}") or {}).get("status") or "PENDING"))
+    return scheduler_core.ledger_state(ep,frame)
 
 
 from frame_risk import risk_priority
@@ -277,33 +247,14 @@ def ready_items(ep:Path,q:dict)->tuple[list[dict],list[dict]]:
 
 
 def current_contract_sha(ep:Path,frame:int)->str:
-    p=frame_contract.provenance(ep,frame)
-    if not p:raise ValueError(f"frame {frame:02d} missing Frame Contract provenance")
-    return p["contract_sha256"]
-
-
-def _resolve_prompt(item: dict) -> Path:
-    raw = Path(str(item["prompt_file"]))
-    return raw if raw.is_absolute() else (ROOT / raw).resolve()
-
-
-def _ledger_references(item: dict) -> list[str]:
-    return [f"{(ROOT / ref['path']).resolve()}::{ref['role']}::{ref['kind']}"
-            for ref in item.get("references") or []]
+    return scheduler_core.current_contract_sha(ep,frame)
 
 
 def ledger_begin(ep:Path,item:dict)->tuple[bool,str]:
-    return ledger_call.begin(
+    return scheduler_core.ledger_begin(
         ep,
-        frame=int(item["frame"]),
-        kind=item["kind"],
-        prompt_file=_resolve_prompt(item),
-        capture_id=item["capture_id"],
-        model=item.get("model") or "default",
-        quality=item.get("quality") or DEFAULT_IMAGE_QUALITY,
+        item,
         notes=f"phase6 scheduler item={item['id']} scope={item['scope']}",
-        references=_ledger_references(item),
-        transaction_id=str((item.get("execution") or {}).get("transaction_id") or "") or None,
     )
 
 
@@ -313,26 +264,12 @@ def backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->dict:
 
 
 def ledger_success(ep:Path,item:dict,result:dict)->tuple[bool,str]:
-    returned_policy=(result.get("payload") or {}).get("image_model") or {}
-    if str(returned_policy.get("model") or "") != str(item.get("model") or ""):
-        return False,f"IMAGE_MODEL_CONTRACT_MISMATCH: returned={returned_policy.get('model')} requested={item.get('model')}"
-    if str(returned_policy.get("quality") or "") != str(item.get("quality") or DEFAULT_IMAGE_QUALITY):
-        return False,f"IMAGE_QUALITY_CONTRACT_MISMATCH: returned={returned_policy.get('quality')} requested={item.get('quality') or DEFAULT_IMAGE_QUALITY}"
-    returned=((result.get("payload") or {}).get("frame_contract") or {}).get("contract_sha256")
-    current=current_contract_sha(ep,int(item["frame"]))
-    if returned and str(returned).lower()!=current.lower():
-        return False,f"backend frame contract drift returned={returned} current={current}"
-    receipt=((result.get("payload") or {}).get("provider_receipt") or {}).get("path")
-    receipt_path=None
-    if receipt:
-        receipt_path=Path(str(receipt))
-        if not receipt_path.is_absolute(): receipt_path=ROOT/receipt_path
-    return ledger_call.success(ep, frame=int(item["frame"]), path=Path(str(result["output"])),
-                               provider_receipt=receipt_path)
+    return scheduler_core.ledger_success(ep,item,result,
+                                         default_quality=DEFAULT_IMAGE_QUALITY)
 
 
 def ledger_tech_fail(ep:Path,item:dict,code:str,message:str)->None:
-    ledger_call.tech_fail(ep, frame=int(item["frame"]), code=code, message=message)
+    scheduler_core.ledger_tech_fail(ep,item,code,message)
 
 
 def classify_error(text:str)->str:

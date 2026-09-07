@@ -13,6 +13,7 @@ import frame_contract
 import fast_frame_scout as frame_scout
 import image_worker_pool
 import batch_repair_arbiter
+import scheduler_core
 import provider_capability
 import storyos_config
 import image_provider_runtime
@@ -24,10 +25,8 @@ import runtime_portability
 import production_batch_review
 import async_scheduler_adapter
 import runtime_event_collector
-import ledger_call
 import production_recovery
 import production_ledger
-from runtime_atomic_store import atomic_write_json
 CAPABILITY_WAIT=24
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -70,18 +69,16 @@ def verified_image_lane(ep:Path)->bool:
         and evidence.get("provider_runtime_snapshot")==image_provider_runtime.capability_snapshot())
 
 def read_json(p):
-    d=json.loads(p.read_text(encoding="utf-8-sig"))
+    import story_json
+    d=story_json.read_json(p,require_object=False)
     return d if isinstance(d,dict) else {}
 def write_json(p,d):
-    atomic_write_json(p,d)
+    import story_json
+    story_json.write_json(p,d)
 def load_queue(ep):
-    p=ep/QUEUE_REL
-    q=read_json(p) if p.is_file() else {"schema_version":1,"items":[],"waves":[]}
-    errors=runtime_portability.queue_path_errors(q)
-    if errors:raise ValueError("production queue portability guard failed: "+"; ".join(errors[:8]))
-    return q
+    return scheduler_core.load_queue(ep)
 def save_queue(ep,q):
-    q["updated_at"]=now();write_json(ep/QUEUE_REL,q)
+    scheduler_core.save_queue(ep,q)
 def ledger(ep):
     p=ep/"meta/production-ledger.json";return read_json(p) if p.is_file() else {}
 def ledger_state(ep,frame):
@@ -97,48 +94,18 @@ def ready_items(ep,q):
         if all(dependency_satisfied(ep,q,x) for x in deps):rows.append(item)
     return sorted(rows,key=lambda x:int(x["frame"]))
 def current_contract_sha(ep,frame):
-    p=frame_contract.provenance(ep,frame)
-    if not p:raise ValueError(f"frame {frame:02d} missing Frame Contract provenance")
-    return p["contract_sha256"]
+    return scheduler_core.current_contract_sha(ep,frame)
 def ledger_begin(ep,item):
-    references=[f"{(ROOT / ref['path']).resolve()}::{ref['role']}::{ref['kind']}"
-                for ref in item.get("references") or []]
-    prompt=(ROOT/item["prompt_file"]).resolve()
-    return ledger_call.begin(
+    return scheduler_core.ledger_begin(
         ep,
-        frame=int(item["frame"]),
-        kind=item["kind"],
-        prompt_file=prompt,
-        capture_id=item["capture_id"],
-        model=item.get("model") or "default",
-        quality=item.get("quality") or DEFAULT_QUALITY,
+        item,
         notes=f"V2.4 batch scheduler item={item['id']}",
-        references=references,
         batch_id=str(item["batch_id"]) if item.get("batch_id") else None,
-        transaction_id=str((item.get("execution") or {}).get("transaction_id") or "") or None,
     )
-
-
 def ledger_success(ep,item,res):
-    policy=(res.get("payload") or {}).get("image_model") or {}
-    if str(policy.get("model") or "")!=str(item.get("model") or ""):
-        return False,"IMAGE_MODEL_CONTRACT_MISMATCH"
-    if str(policy.get("quality") or "")!=str(item.get("quality") or DEFAULT_QUALITY):
-        return False,"IMAGE_QUALITY_CONTRACT_MISMATCH"
-    returned=((res.get("payload") or {}).get("frame_contract") or {}).get("contract_sha256")
-    if returned and str(returned).lower()!=current_contract_sha(ep,int(item["frame"])).lower():
-        return False,"CONTRACT_DRIFT"
-    receipt=((res.get("payload") or {}).get("provider_receipt") or {}).get("path")
-    receipt_path=None
-    if receipt:
-        receipt_path=Path(str(receipt))
-        if not receipt_path.is_absolute(): receipt_path=ROOT/receipt_path
-    return ledger_call.success(ep, frame=int(item["frame"]), path=Path(str(res["output"])),
-                               provider_receipt=receipt_path)
-
-
+    return scheduler_core.ledger_success(ep,item,res,default_quality=DEFAULT_QUALITY)
 def ledger_tech_fail(ep,item,code,message):
-    ledger_call.tech_fail(ep, frame=int(item["frame"]), code=code, message=message)
+    scheduler_core.ledger_tech_fail(ep,item,code,message)
 
 def _fallback_single(ep,item,timeout,codex):
     ok,msg=ledger_begin(ep,item)

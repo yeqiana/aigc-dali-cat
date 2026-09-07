@@ -54,7 +54,7 @@ def empty_queue(*, max_parallel: int | None = None) -> dict:
     return q
 
 
-def load_queue(ep: Path) -> dict:
+def load_queue(ep: Path, *, max_parallel: int | None = None) -> dict:
     """Read production queue with the portability path guard.
 
     Missing file returns EMPTY_QUEUE (same semantics as both scheduler lanes'
@@ -62,7 +62,10 @@ def load_queue(ep: Path) -> dict:
     """
     p = Path(ep).resolve() / QUEUE_REL
     if not p.is_file():
-        return dict(EMPTY_QUEUE)
+        q = dict(EMPTY_QUEUE)
+        if max_parallel is not None:
+            q["max_parallel"] = int(max_parallel)
+        return q
     q = read_json(p)
     import runtime_portability
 
