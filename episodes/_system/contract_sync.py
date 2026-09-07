@@ -578,9 +578,8 @@ def collect_errors(root: Path | None = None) -> list[str]:
         "episodes/**/meta/image-workers/",
         "episodes/**/meta/rolling-review-workers/",
         "episodes/**/meta/scoped-workers/",
-        "episodes/**/meta/codex-auto-run.jsonl",
-        "episodes/**/meta/runtime/trace-events.jsonl",
-        "episodes/**/meta/workflow-run.jsonl",
+        # Named meta JSONL runtime logs are covered by this meta-wide wildcard.
+        "episodes/**/meta/**/*.jsonl",
     ]:
         if token not in gitignore:
             errors.append(f".gitignore missing runtime-log hygiene token: {token}")
