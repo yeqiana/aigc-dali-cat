@@ -212,6 +212,30 @@ class RecoveryTests(unittest.TestCase):
         atomic_write_json(self.ep / batch.QUEUE_REL,q)
         return q
 
+    def test_corrupt_worker_lifecycle_never_counts_as_success(self):
+        item = self._running_item()
+        production_recovery.prepare_execution(self.ep, item)
+        production_recovery.mark_worker_pending(self.ep, item)
+        lifecycle = production_recovery.lifecycle_path(self.ep, item)
+        lifecycle.parent.mkdir(parents=True, exist_ok=True)
+        lifecycle.write_bytes(b"{broken json")
+        atomic_write_json(self.ep / batch.QUEUE_REL, {"items": [item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json", self._active_ledger())
+        q = batch.load_queue(self.ep)
+        report = production_recovery.reconcile_locked(self.ep, q)
+        self.assertEqual(report["rows"][0]["outcome"], "PRE_WORKER_INTERRUPTION_RETRYABLE")
+        self.assertEqual(q["items"][0]["status"], "tech_failed")
+
+    def test_double_stale_queue_ledger_stays_unknown(self):
+        item = self._running_item()
+        atomic_write_json(self.ep / batch.QUEUE_REL, {"items": [item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json",
+                          {"frames": {"01": {"status": "PENDING", "attempts": []}}})
+        q = batch.load_queue(self.ep)
+        report = production_recovery.reconcile_locked(self.ep, q)
+        self.assertEqual(report["rows"][0]["outcome"], "QUEUE_LEDGER_MISMATCH")
+        self.assertEqual(q["items"][0]["status"], "interrupted_unknown")
+
     @contextlib.contextmanager
     def batch_deps(self, capable=True):
         with contextlib.ExitStack() as stack:
