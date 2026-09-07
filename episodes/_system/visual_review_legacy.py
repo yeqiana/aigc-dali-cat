@@ -15,6 +15,7 @@ import runtime_router
 import runtime_provenance
 import product_review_adapter
 import story_json
+import visual_review_schema
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_REL = Path("meta/visual-profile-review.json")
@@ -142,8 +143,9 @@ def calibration_assets(ep: Path) -> list[dict]:
 
 def validate_payload(data: dict, *, profile_id: str, profile_sha: str, assets: list[dict], version: str) -> list[str]:
     errors: list[str] = []
-    if data.get("schema_version") != 1:
-        errors.append("schema_version must be 1")
+    if data.get("schema_version") != visual_review_schema.SCHEMA_VERSION_LEGACY:
+        errors.append(f"schema_version must be {visual_review_schema.SCHEMA_VERSION_LEGACY}")
+        errors.extend(visual_review_schema.era_divergence(data, version=version))
     if data.get("story_os_version") != version:
         errors.append("story_os_version mismatch")
     if data.get("profile_id") != profile_id:
@@ -155,8 +157,11 @@ def validate_payload(data: dict, *, profile_id: str, profile_sha: str, assets: l
 
     expected = {str(row["id"]): row for row in assets}
     actual_rows = data.get("calibration")
-    if not isinstance(actual_rows, list) or len(actual_rows) != 3:
-        errors.append("calibration review must contain exactly 3 rows")
+    if not isinstance(actual_rows, list) or len(actual_rows) != visual_review_schema.CALIBRATION_ROWS_LEGACY:
+        errors.append(
+            f"calibration review must contain exactly "
+            f"{visual_review_schema.CALIBRATION_ROWS_LEGACY} rows"
+        )
     else:
         seen = set()
         for row in actual_rows:
@@ -305,7 +310,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int) -
             raise RuntimeError("visual critic modified calibration assets")
 
     data = read_json(candidate)
-    data["schema_version"] = 1
+    data["schema_version"] = visual_review_schema.SCHEMA_VERSION_LEGACY
     data["story_os_version"] = episode_contract_version(ep)
     data["profile_id"] = contract["profile_id"]
     data["profile_path"] = contract["profile_path"]
@@ -351,7 +356,7 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
         attempt=attempt,
         candidate_path=candidate,
     )
-    data["schema_version"] = 1
+    data["schema_version"] = visual_review_schema.SCHEMA_VERSION_LEGACY
     data["story_os_version"] = episode_contract_version(ep)
     data["profile_id"] = contract["profile_id"]
     data["profile_path"] = contract["profile_path"]
@@ -386,7 +391,7 @@ def self_test() -> None:
     h = "a" * 64
     assets = [{"id": x, "sha256": h} for x in ("A", "B", "C")]
     data = {
-        "schema_version": 1,
+        "schema_version": visual_review_schema.SCHEMA_VERSION_LEGACY,
         "story_os_version": story_os_version(),
         "profile_id": "M00",
         "profile_sha256": h,

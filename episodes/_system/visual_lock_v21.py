@@ -37,6 +37,7 @@ import runtime_provenance
 import product_review_adapter
 import storyos_config
 import story_json
+import visual_review_schema
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path("meta/story-gates.json")
@@ -439,8 +440,9 @@ def bind_from_queue(ep: Path) -> dict:
 
 def validate_payload(data: dict, *, contract: dict, assets: list[dict], version: str) -> list[str]:
     errors = []
-    if data.get("schema_version") != 2:
-        errors.append("schema_version must be 2")
+    if data.get("schema_version") != visual_review_schema.SCHEMA_VERSION_V2:
+        errors.append(f"schema_version must be {visual_review_schema.SCHEMA_VERSION_V2}")
+        errors.extend(visual_review_schema.era_divergence(data, version=version))
     if data.get("story_os_version") != version:
         errors.append("story_os_version mismatch")
     if data.get("profile_id") != contract["profile_id"]:
@@ -452,8 +454,11 @@ def validate_payload(data: dict, *, contract: dict, assets: list[dict], version:
 
     expected = {row["id"]: row for row in assets}
     rows = data.get("calibration")
-    if not isinstance(rows, list) or len(rows) != 4:
-        errors.append("Visual Lock review must contain exactly 4 rows")
+    if not isinstance(rows, list) or len(rows) != visual_review_schema.CALIBRATION_ROWS_V2:
+        errors.append(
+            f"Visual Lock review must contain exactly "
+            f"{visual_review_schema.CALIBRATION_ROWS_V2} rows"
+        )
         rows = []
     seen = set()
     for row in rows:
@@ -626,7 +631,7 @@ def _finalize_review_payload(
     provenance: dict,
     attempt: int,
 ) -> int:
-    data["schema_version"] = 2
+    data["schema_version"] = visual_review_schema.SCHEMA_VERSION_V2
     data["story_os_version"] = episode_version(ep)
     data["profile_id"] = contract["profile_id"]
     data["profile_path"] = contract["profile_path"]
