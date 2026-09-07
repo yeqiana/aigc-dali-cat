@@ -20,6 +20,7 @@ import image_scheduler
 import preproduction_handoff
 import visual_lock_v21
 import story_json
+import runtime_timeout_policy
 
 MAX_SPECULATIVE_FRAMES = 6
 
@@ -133,9 +134,11 @@ def select_frames(ep: Path, limit: int = MAX_SPECULATIVE_FRAMES) -> list[int]:
     return selected
 
 
-def run(ep: Path, *, codex: str | None = None, timeout: int = 600,
+def run(ep: Path, *, codex: str | None = None, timeout: int | None = None,
         max_frames: int = MAX_SPECULATIVE_FRAMES) -> dict:
     ep = Path(ep).resolve()
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("image_lane_run")
     ok, reason = eligible(ep)
     if not ok:
         return {"status": "SKIPPED", "reason": reason, "generated_or_attempted": [], "elapsed_seconds": 0.0}
@@ -164,7 +167,9 @@ def run(ep: Path, *, codex: str | None = None, timeout: int = 600,
     if not added:
         return {"status": "SKIPPED", "reason": "no_items_added", "generated_or_attempted": [], "elapsed_seconds": 0.0}
     started = time.monotonic()
-    rc = image_scheduler.run_scheduler(ep, max_workers=image_scheduler.MAX_SUPPORTED_WORKERS, timeout=timeout, codex=codex)
+    # V2.7 renamed the image lane entry to run_scheduler_async and removed the
+    # legacy run_scheduler guard; speculative candidates stay on the image lane.
+    rc = image_scheduler.run_scheduler_async(ep, max_workers=image_scheduler.MAX_SUPPORTED_WORKERS, timeout=timeout, codex=codex)
     elapsed = time.monotonic() - started
     result = {
         "status": "GENERATED_CANDIDATES" if rc in {0, 5} else "PARTIAL_OR_TECHNICAL",
@@ -193,7 +198,7 @@ def self_test() -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=600); p.add_argument("--max-frames", type=int, default=6)
+    p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None); p.add_argument("--max-frames", type=int, default=6)
     p = sub.add_parser("eligible"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
     a = ap.parse_args()

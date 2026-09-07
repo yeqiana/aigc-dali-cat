@@ -23,6 +23,7 @@ import runtime_router
 import product_runtime_adapter
 import resource_library
 import production_recovery
+import runtime_timeout_policy
 
 MODE="python_warm_pool_codex_ephemeral"
 CODEX_SESSION_REUSE=False
@@ -103,7 +104,7 @@ def execute(ep,item,timeout,codex):
     scout=None
     if out.is_file() and frame_scout.required(ep) and not bool(item.get("_defer_scout")):
         try:
-            scout=frame_scout.evaluate_candidate(ep,frame,out,codex_raw=codex,timeout=min(240,max(60,timeout)))
+            scout=frame_scout.evaluate_candidate(ep,frame,out,codex_raw=codex,timeout=runtime_timeout_policy.clamp("fast_scout",timeout))
         except Exception as exc:
             scout={"decision":"UNCERTAIN","reason":"scout_technical_failure","error":str(exc),"candidate_committed":True}
     runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="PASS",started_monotonic=trace_started,attrs={"frame":frame,"backend":payload.get("backend"),"candidate_committed":True})

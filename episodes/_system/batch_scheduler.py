@@ -28,6 +28,7 @@ import runtime_event_collector
 import production_recovery
 import production_ledger
 import runtime_observability
+import runtime_timeout_policy
 CAPABILITY_WAIT=24
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -334,7 +335,7 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
         if frame_scout.required(ep):
             try:
                 scout=await asyncio.to_thread(frame_scout.evaluate_candidate,ep,int(item["frame"]),
-                    ROOT/item["output_path"],codex_raw=codex,timeout=min(timeout,240))
+                    ROOT/item["output_path"],codex_raw=codex,timeout=runtime_timeout_policy.cap("fast_scout",timeout))
                 item["scout"]=scout
                 decision=batch_repair_arbiter.assess(ep,int(item["frame"]),scout,
                     batch_complete=True,batch_id=str(item.get("batch_id") or "ASYNC"))

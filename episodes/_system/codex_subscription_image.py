@@ -24,6 +24,7 @@ import image_artifact_collector
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
 import runtime_router
 import storyos_config
+import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 _CONFIG = storyos_config.load_config()
@@ -379,7 +380,7 @@ def main() -> int:
     p.add_argument('--output', required=True, type=Path)
     p.add_argument('--log', required=True, type=Path)
     p.add_argument('--reference', action='append', default=[], type=Path)
-    p.add_argument('--timeout', type=int, default=600)
+    p.add_argument('--timeout', type=int, default=None)
     p.add_argument('--codex')
     p.add_argument('--image-model')
     p.add_argument('--image-quality', choices=['high'])
@@ -391,7 +392,7 @@ def main() -> int:
     p.add_argument('--log', required=True, type=Path)
     p.add_argument('--reference', action='append', default=[], type=Path)
     p.add_argument('--size', default='1024x1280')
-    p.add_argument('--timeout', type=int, default=600)
+    p.add_argument('--timeout', type=int, default=None)
     p.add_argument('--codex')
     p.add_argument('--image-model')
     p.add_argument('--image-quality', choices=['high'])
@@ -422,8 +423,10 @@ def main() -> int:
         assert not valid_image(Path('__missing__'))
         print('CODEX SUBSCRIPTION IMAGE BACKEND SELF-TEST PASS')
         return 0
-    if args.timeout < 60 or args.timeout > 1200:
-        raise SystemExit('timeout must be 60..1200 seconds')
+    args.timeout = runtime_timeout_policy.resolve("image_worker_request", args.timeout)
+    low, high = runtime_timeout_policy.VALID_RANGE["image_worker_request"]
+    if not low <= args.timeout <= high:
+        raise SystemExit(f'timeout must be {low}..{high} seconds')
     budget_token=None
     budget_reserved=False
     try:

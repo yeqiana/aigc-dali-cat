@@ -7,6 +7,7 @@ import test_stage_v224 as v224
 import visual_profile_bridge_v224 as visual_bridge
 import codex_subscription_image
 from canvas_normalize import normalize
+import runtime_timeout_policy
 VERSION="2.2.5"; NON_AUTHORITY="NON_AUTHORITY_TEST_ONLY"
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def rj(p): return json.loads(p.read_text(encoding="utf-8-sig"))
@@ -53,8 +54,13 @@ def selftest(a):
 def main():
  ap=argparse.ArgumentParser(description='Story OS V2.2.5 Visual Test Fast Path'); sub=ap.add_subparsers(dest='cmd',required=True)
  p=sub.add_parser('check'); p.add_argument('episode_dir'); p.set_defaults(func=check)
- p=sub.add_parser('visual'); p.add_argument('episode_dir'); g=p.add_mutually_exclusive_group(required=True); g.add_argument('--scene'); g.add_argument('--scene-file'); p.add_argument('--image-model',default='gpt-image-2'); p.add_argument('--strict-model',action='store_true'); p.add_argument('--worker-route',action='store_true'); p.add_argument('--timeout',type=int,default=600); p.add_argument('--codex'); p.set_defaults(func=lambda a:v224.visual(a) if a.worker_route else visual_prepare(a))
+ p=sub.add_parser('visual'); p.add_argument('episode_dir'); g=p.add_mutually_exclusive_group(required=True); g.add_argument('--scene'); g.add_argument('--scene-file'); p.add_argument('--image-model',default='gpt-image-2'); p.add_argument('--strict-model',action='store_true'); p.add_argument('--worker-route',action='store_true'); p.add_argument('--timeout',type=int,default=None); p.add_argument('--codex'); p.set_defaults(func=lambda a:v224.visual(a) if a.worker_route else visual_prepare(a))
  p=sub.add_parser('visual-finalize'); p.add_argument('episode_dir'); p.add_argument('--plan'); p.add_argument('--generation-seconds',type=float); p.set_defaults(func=visual_finalize)
- p=sub.add_parser('production-smoke'); p.add_argument('episode_dir'); p.add_argument('--frame',required=True); p.add_argument('--prompt-file',required=True); p.add_argument('--image-model',default='gpt-image-2'); p.add_argument('--timeout',type=int,default=600); p.add_argument('--codex'); p.set_defaults(func=v224.production_smoke)
- p=sub.add_parser('self-test'); p.set_defaults(func=selftest); a=ap.parse_args(); return a.func(a)
+ p=sub.add_parser('production-smoke'); p.add_argument('episode_dir'); p.add_argument('--frame',required=True); p.add_argument('--prompt-file',required=True); p.add_argument('--image-model',default='gpt-image-2'); p.add_argument('--timeout',type=int,default=None); p.add_argument('--codex'); p.set_defaults(func=v224.production_smoke)
+ p=sub.add_parser('self-test'); p.set_defaults(func=selftest); a=ap.parse_args()
+ if hasattr(a,'timeout'):
+  a.timeout=runtime_timeout_policy.resolve('image_worker_request',a.timeout)
+  low,high=runtime_timeout_policy.VALID_RANGE['image_worker_request']
+  if not low <= a.timeout <= high: raise SystemExit(f'timeout must be {low}..{high}')
+ return a.func(a)
 if __name__=='__main__': raise SystemExit(main())

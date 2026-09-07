@@ -11,6 +11,7 @@ from pathlib import Path
 import frame_contract
 import runtime_capability_cache  # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
 import runtime_router
+import runtime_timeout_policy
 # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -25,8 +26,10 @@ def prefix(p):
     if p.suffix.lower()==".py": return [sys.executable,str(p)]
     if os.name=="nt" and p.suffix.lower() in {".cmd",".bat"}: return ["cmd.exe","/d","/c",str(p)]
     return [str(p)]
-def review(ep,frame,image,codex_raw=None,timeout=240):
+def review(ep,frame,image,codex_raw=None,timeout=None):
     image=Path(image).resolve()
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("fast_scout")
     # STORY_OS_V2_5_1_RUNTIME_FAST_PATH: a reviewer without verified pixel vision cannot safely trigger a repair.
     caps=runtime_capability_cache.load(ep,create=False)
     if not runtime_capability_cache.vision_verified(caps):

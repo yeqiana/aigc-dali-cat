@@ -5,6 +5,7 @@ from pathlib import Path
 
 import image_provider_runtime
 import openai_images_provider
+import runtime_timeout_policy
 
 def main() -> int:
     ap=argparse.ArgumentParser(description="Story OS V2.4.1 Image Provider smoke utility")
@@ -18,11 +19,12 @@ def main() -> int:
     p.add_argument("--height",type=int,default=1350)
     p.add_argument("--quality",choices=["low","medium","high"],default="high")
     p.add_argument("--model",default="gpt-image-2")
-    p.add_argument("--timeout",type=int,default=900)
+    p.add_argument("--timeout",type=int,default=None)
     a=ap.parse_args()
     if a.cmd=="capability":
         print(json.dumps(image_provider_runtime.capability_snapshot(),ensure_ascii=False,indent=2))
         return 0
+    a.timeout=runtime_timeout_policy.resolve("image_probe",a.timeout)
     if not 1<=a.count<=10:
         raise SystemExit("--count must be 1..10")
     a.out_dir.mkdir(parents=True,exist_ok=True)

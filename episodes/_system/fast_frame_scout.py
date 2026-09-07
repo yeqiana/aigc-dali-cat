@@ -21,6 +21,7 @@ import codex_critic_runner as critic_runner
 import frame_contract
 import runtime_router
 import story_json
+import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY_PATH = ("visual", "fast_frame_scout")
@@ -164,8 +165,10 @@ def _validate_model(data:dict)->list[str]:
     return errors
 
 
-def evaluate_candidate(ep:Path,frame:int,image:Path|str,*,codex_raw:str|None=None,timeout:int=240)->dict:
+def evaluate_candidate(ep:Path,frame:int,image:Path|str,*,codex_raw:str|None=None,timeout:int|None=None)->dict:
     image=repo_file(str(image))
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("fast_scout")
     risk=classify_frame(ep,frame)
     contract=frame_contract.compile_frame(ep,frame,write_cache=True)
     asset_sha=sha256_file(image)
@@ -301,7 +304,7 @@ def main()->int:
     ap=argparse.ArgumentParser(description=__doc__);sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("enable");p.add_argument("episode_dir")
     p=sub.add_parser("classify");p.add_argument("episode_dir");p.add_argument("--frame",type=int,required=True)
-    p=sub.add_parser("run");p.add_argument("episode_dir");p.add_argument("--frame",type=int,required=True);p.add_argument("--image",required=True);p.add_argument("--codex");p.add_argument("--timeout",type=int,default=240)
+    p=sub.add_parser("run");p.add_argument("episode_dir");p.add_argument("--frame",type=int,required=True);p.add_argument("--image",required=True);p.add_argument("--codex");p.add_argument("--timeout",type=int,default=None)
     p=sub.add_parser("audit");p.add_argument("episode_dir")
     p=sub.add_parser("show");p.add_argument("episode_dir");p.add_argument("--frame",type=int)
     sub.add_parser("self-test")

@@ -13,6 +13,7 @@ import codex_subscription_image
 from canvas_spec import resolve_canvas_spec
 from canvas_normalize import normalize
 import story_json
+import runtime_timeout_policy
 
 VERSION="2.2.4"
 NON_AUTHORITY="NON_AUTHORITY_TEST_ONLY"
@@ -164,14 +165,17 @@ def main():
     p=sub.add_parser("visual"); p.add_argument("episode_dir")
     g=p.add_mutually_exclusive_group(required=True); g.add_argument("--scene"); g.add_argument("--scene-file")
     p.add_argument("--plan-only",action="store_true"); p.add_argument("--image-model",default="gpt-image-2")
-    p.add_argument("--strict-model",action="store_true"); p.add_argument("--timeout",type=int,default=600); p.add_argument("--codex")
+    p.add_argument("--strict-model",action="store_true"); p.add_argument("--timeout",type=int,default=None); p.add_argument("--codex")
     p.set_defaults(func=visual)
     p=sub.add_parser("production-smoke"); p.add_argument("episode_dir"); p.add_argument("--frame",required=True)
     p.add_argument("--prompt-file",required=True); p.add_argument("--image-model",default="gpt-image-2")
-    p.add_argument("--timeout",type=int,default=600); p.add_argument("--codex"); p.set_defaults(func=production_smoke)
+    p.add_argument("--timeout",type=int,default=None); p.add_argument("--codex"); p.set_defaults(func=production_smoke)
     p=sub.add_parser("self-test"); p.set_defaults(func=self_test)
     args=ap.parse_args()
-    if hasattr(args,"timeout") and not 60 <= args.timeout <= 1200: raise SystemExit("timeout must be 60..1200")
+    if hasattr(args,"timeout"):
+        args.timeout = runtime_timeout_policy.resolve("image_worker_request", args.timeout)
+        low,high=runtime_timeout_policy.VALID_RANGE["image_worker_request"]
+        if not low <= args.timeout <= high: raise SystemExit(f"timeout must be {low}..{high}")
     return args.func(args)
 
 if __name__=="__main__": raise SystemExit(main())
