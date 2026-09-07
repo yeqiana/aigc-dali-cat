@@ -144,3 +144,31 @@ jobs:
         run: python episodes/_system/validate_episode.py --all --metadata-only
       - name: Validate strict machine evidence metadata
         run: python episodes/_system/machine_gate.py --all --metadata-only
+
+  # B5 (2026-09-08): manual golden/performance replay gate. Registry is empty
+  # until a candidate passes every density/voice/capture/world/lineage/
+  # propagation/text gate with zero errors; do not register below that bar.
+  golden-replay:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONUTF8: "1"
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: episodes/_system/requirements.txt
+      - name: Install Story OS runtime dependencies
+        run: python -m pip install -r episodes/_system/requirements.txt
+      - name: Golden episode regression
+        run: |
+          python episodes/_system/golden_episode_regression.py self-test
+          python episodes/_system/golden_episode_regression.py run
+      - name: Performance replay (PERF-REPLAY-V2.1.1-20260831-停电夜蜕壳)
+        run: python episodes/_system/performance_regression_v211.py replay
