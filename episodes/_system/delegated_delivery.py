@@ -19,6 +19,7 @@ from frame_semantic_review import (
 )
 from machine_gate import validate as validate_machine_gate
 import final_candidate_snapshot as final_snapshot
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT_REL = Path('meta/delegated-release.json')
@@ -30,7 +31,7 @@ def read_json(p: Path) -> dict:
     return d
 
 def write_json(p: Path,d: dict):
-    p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+    story_json.write_json(p, d)
 def sha256_file(p: Path) -> str:
     h=hashlib.sha256()
     with p.open('rb') as f:

@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import story_json
 
 try:
     from PIL import Image, ImageDraw, ImageFont
@@ -27,7 +28,7 @@ def load_json(path: Path) -> dict:
 
 
 def save_json(path: Path, data: dict) -> None:
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    story_json.write_json(path, data)
 
 
 def sha256_file(path: Path) -> str:

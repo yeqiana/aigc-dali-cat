@@ -11,6 +11,7 @@ import sys
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
+import story_json
 
 TX_ROOT = Path('meta/text-revisions')
 ALLOWED_SUFFIXES = {'.md', '.txt', '.yaml', '.yml', '.json'}
@@ -36,10 +37,7 @@ def sha256_file(path: Path) -> str:
 
 
 def save_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + '.tmp')
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    tmp.replace(path)
+    story_json.write_json(path, data)
 
 
 def load_json(path: Path) -> dict:

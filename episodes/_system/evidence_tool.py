@@ -6,6 +6,7 @@ import hashlib
 import json
 import shutil
 from pathlib import Path
+import story_json
 
 GATES_FILE = Path("meta/story-gates.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
@@ -41,8 +42,7 @@ def load_json(path: Path) -> dict:
 
 
 def save_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    story_json.write_json(path, data)
 
 
 def sha256_file(path: Path) -> str:

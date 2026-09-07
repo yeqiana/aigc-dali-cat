@@ -18,6 +18,7 @@ from pathlib import Path
 
 import runtime_provenance
 import episode_performance
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 HOST_ACTION_REQUIRED_RC = 20
@@ -47,8 +48,7 @@ def _read_json(path: Path) -> dict:
 
 
 def _write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    story_json.write_json(path, data)
 
 
 def _repo_rel(path: Path) -> str:

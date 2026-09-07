@@ -10,6 +10,7 @@ from pathlib import Path
 from visual_profile import resolve_profile
 from story_review import review_required as story_review_required, verify as verify_story_review
 from visual_review import review_required as visual_review_required, verify as verify_visual_review
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path('meta/story-gates.json')
@@ -28,10 +29,7 @@ def load_json(path: Path) -> dict:
 
 
 def save_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + '.tmp')
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    tmp.replace(path)
+    story_json.write_json(path, data)
 
 
 def sha256_file(path: Path) -> str:

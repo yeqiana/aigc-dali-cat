@@ -7,6 +7,7 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+import story_json
 
 STATE_REL = Path('meta/transport-state.json')
 LEDGER_REL = Path('meta/production-ledger.json')
@@ -33,10 +34,7 @@ def load_json(path: Path) -> dict:
 
 
 def save_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + '.tmp')
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    tmp.replace(path)
+    story_json.write_json(path, data)
 
 
 def resolve_episode(raw: str) -> Path:

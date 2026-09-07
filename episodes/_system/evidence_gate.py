@@ -16,14 +16,13 @@ from story_review import review_required as story_review_required, verify as ver
 from visual_review import review_required as visual_review_required, verify as verify_visual_review
 from subtitle_layout import layout_required as subtitle_layout_required, verify_audit as verify_layout_audit
 from release_preflight import verify_recent5_evidence, verify_series_lock, verify_release_semantic, verify_governance
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 STATES=canonical_stages()
 
 def load_json(p: Path) -> dict:
-    d=json.loads(p.read_text(encoding='utf-8'))
-    if not isinstance(d,dict):raise ValueError(f'JSON root must be object: {p}')
-    return d
+    return story_json.read_json(p)
 
 def sha256_file(p: Path) -> str:
     h=hashlib.sha256()

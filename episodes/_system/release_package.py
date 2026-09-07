@@ -11,6 +11,7 @@ from story_os_contract import story_os_version
 from frame_semantic_review import review_required as frame_semantic_required, verify_episode as verify_frame_semantic_episode
 import final_candidate_snapshot as final_snapshot
 from final_acceptance import valid as acceptance_valid
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_REL = Path('meta/release-manifest.json')
@@ -30,10 +31,7 @@ def load_json(path: Path) -> dict:
 
 
 def save_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + '.tmp')
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    tmp.replace(path)
+    story_json.write_json(path, data)
 
 
 def sha256_file(path: Path) -> str:

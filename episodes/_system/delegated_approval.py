@@ -10,6 +10,7 @@ from pathlib import Path
 
 from approval_lock import story_assets, visual_assets
 from story_os_contract import story_os_version
+import story_json
 
 REL = Path('meta/delegated-approvals.json')
 CHECKPOINT = Path('meta/runtime-checkpoint.json')
@@ -29,8 +30,7 @@ def read_json(path: Path) -> dict:
 
 
 def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
+    story_json.write_json(path, data)
 
 
 def sha256_file(path: Path) -> str:

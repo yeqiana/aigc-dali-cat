@@ -10,16 +10,14 @@ from approval_lock import verify_lock
 from release_package import verify_payload
 from story_os_contract import canonical_stages
 from visual_profile import resolve_profile
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 STATES = canonical_stages()
 
 
 def load_json(path: Path) -> dict:
-    data = json.loads(path.read_text(encoding='utf-8'))
-    if not isinstance(data, dict):
-        raise ValueError(f'JSON root must be object: {path}')
-    return data
+    return story_json.read_json(path)
 
 
 def sha256_file(path: Path) -> str:

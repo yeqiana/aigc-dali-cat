@@ -15,6 +15,7 @@ from typing import Iterable
 
 from story_os_contract import CANONICAL_STAGES, load_contract
 import storyos_config
+import story_json
 
 CORE_ENGINE_FILES = [
     "story_os_contract.py",
@@ -90,10 +91,7 @@ def read_text(path: Path) -> str:
 
 
 def read_json(path: Path) -> dict:
-    data = json.loads(read_text(path))
-    if not isinstance(data, dict):
-        raise ValueError("JSON root must be object")
-    return data
+    return story_json.read_json(path)
 
 
 def declares_version(text: str, version: str) -> bool:

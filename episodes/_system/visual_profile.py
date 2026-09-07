@@ -6,6 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import storyos_config
+import story_json
 
 SYSTEM_DIR = Path(__file__).resolve().parent
 ROOT = SYSTEM_DIR.parents[1]
@@ -23,10 +24,7 @@ def load_json(path: Path) -> dict:
 
 
 def save_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + '.tmp')
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    tmp.replace(path)
+    story_json.write_json(path, data)
 
 
 def resolve_episode(raw: str) -> Path:
