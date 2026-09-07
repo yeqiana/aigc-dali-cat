@@ -128,6 +128,22 @@ def validate(data: dict | None = None) -> list[str]:
     repair_limit=get_path(cfg,"production.max_content_repairs_per_frame")
     if type(repair_limit) is not int or repair_limit not in {0,1}:
         errors.append("production.max_content_repairs_per_frame must be 0 or 1")
+    policy = get_path(cfg, "timeout_policy")
+    try:
+        from runtime_timeout_policy import REQUIRED_ROLES
+    except ImportError:
+        REQUIRED_ROLES = ()
+    if not isinstance(policy, dict):
+        errors.append("timeout_policy must be a mapping")
+    else:
+        for role in REQUIRED_ROLES:
+            if role not in policy:
+                errors.append(f"timeout_policy missing required key: {role}")
+        for role, value in policy.items():
+            if role not in REQUIRED_ROLES:
+                errors.append(f"timeout_policy has unknown key: {role}")
+            elif not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+                errors.append(f"timeout_policy.{role} must be a positive int")
     return errors
 
 

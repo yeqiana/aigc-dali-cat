@@ -186,3 +186,17 @@ compatibility:
   read_legacy_json: true
   rewrite_bound_runtime_request: false
   migrate_historical_episode_meta: false
+
+timeout_policy:
+  # Story OS 超时默认值唯一人工配置面；数值为历史默认（行为不变）。
+  # 运行类别含义见 episodes/_system/runtime_timeout_policy.py DEFAULT_SECONDS。
+  codex_supervisor_run: 7200
+  codex_scoped_step: 3600
+  image_worker_request: 600
+  image_lane_run: 600
+  visual_baseline_critic: 300
+  fast_scout: 240
+  review_critic: 900
+  image_probe: 900
+  deep_semantic_review: 1800
+  release_semantic: 1800
