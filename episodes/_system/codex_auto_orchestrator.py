@@ -15,13 +15,14 @@ import episode_performance
 import image_model_policy
 import production_ledger
 import runtime_router
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=Path('meta/runtime-checkpoint.json')
 STORY_OS_VERSION=story_os_version(); STATES=canonical_stages()
 
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec='seconds')
-def read_json(p): return json.loads(p.read_text(encoding='utf-8-sig'))
-def write_json(p,d): p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+def read_json(p): return story_json.read_json(p, require_object=False)
+def write_json(p,d): story_json.write_json(p, d)
 def resolve_episode(raw):
     ep=Path(raw).resolve()
     if not ep.is_dir(): raise SystemExit(f'episode directory not found: {ep}')

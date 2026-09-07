@@ -14,6 +14,7 @@ import codex_critic_runner as critic_runner
 import runtime_router
 import runtime_provenance
 import product_review_adapter
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_REL = Path("meta/visual-profile-review.json")
@@ -43,15 +44,11 @@ def sha256_file(path: Path) -> str:
 
 
 def read_json(path: Path) -> dict:
-    data = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(data, dict):
-        raise ValueError(f"JSON root must be object: {path}")
-    return data
+    return story_json.read_json(path)
 
 
 def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    story_json.write_json(path, data)
 
 
 def version_tuple(raw: object) -> tuple[int, ...]:

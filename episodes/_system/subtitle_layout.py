@@ -11,6 +11,7 @@ from pathlib import Path
 from story_os_contract import story_os_version
 from canvas_spec import CANONICAL_SIZES
 from text_audit import captions_from_text, discover_input, parse_simple_subtitles_yaml
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT_REL = Path("meta/subtitle-layout-audit.json")
@@ -31,15 +32,11 @@ def sha256_file(path: Path) -> str:
 
 
 def read_json(path: Path) -> dict:
-    data = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(data, dict):
-        raise ValueError(f"JSON root must be object: {path}")
-    return data
+    return story_json.read_json(path)
 
 
 def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    story_json.write_json(path, data)
 
 
 def version_tuple(raw: object) -> tuple[int, ...]:

@@ -19,6 +19,7 @@ import character_visual_contract
 import caption_image_audit
 import visual_final_freeze
 from final_acceptance import valid as acceptance_valid
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 SNAPSHOT_REL=Path("meta/final-candidate-snapshot.json")
@@ -29,14 +30,11 @@ def now()->str:return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(ti
 
 
 def read_json(p:Path)->dict:
-    d=json.loads(p.read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict):raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 
 
 def write_json(p:Path,d:dict)->None:
-    p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 
 
 def sha256_file(p:Path)->str:

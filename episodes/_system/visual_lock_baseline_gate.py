@@ -12,6 +12,7 @@ import runtime_provenance
 import runtime_router
 import storyos_config
 from codex_subscription_image import command_prefix, resolve_codex
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -21,11 +22,9 @@ CHECKS=("visual_profile_match","reality_first","ordinary_life_density","unposed_
 
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read_json(p):
-    d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict):raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 def write_json(p,d):
-    p=Path(p);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 def sha_file(p):
     h=hashlib.sha256()
     with Path(p).open("rb") as f:

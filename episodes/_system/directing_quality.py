@@ -9,16 +9,14 @@ from __future__ import annotations
 import argparse, datetime as dt, json
 from pathlib import Path
 import voice_contract, storyboard_density_gate, capture_event_contract, world_state, opening_social_anchor, character_visual_contract, shot_progression_gate, wardrobe_contract, temporal_continuity_gate
+import story_json
 
 REL=Path("meta/directing-quality.json")
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read_json(p):
-    d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict):raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 def write_json(p,d):
-    p=Path(p);p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 
 def enabled(ep):
     p=Path(ep).resolve()/REL

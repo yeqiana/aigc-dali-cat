@@ -6,13 +6,14 @@ import argparse, json, subprocess, sys
 from pathlib import Path
 
 from story_os_contract import FOUR_ADMISSION_V21_POLICY
+import story_json
 
 SYSTEM = Path(__file__).resolve().parent
 ROOT = SYSTEM.parents[1]
 
 
 def read_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    return story_json.read_json(path, require_object=False)
 
 
 def version_tuple(raw):

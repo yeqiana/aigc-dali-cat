@@ -19,12 +19,13 @@ import image_model_policy
 import image_scheduler
 import preproduction_handoff
 import visual_lock_v21
+import story_json
 
 MAX_SPECULATIVE_FRAMES = 6
 
 
 def read_json(path: Path) -> dict:
-    data = json.loads(path.read_text(encoding="utf-8-sig"))
+    data = story_json.read_json(path, require_object=False)
     return data if isinstance(data, dict) else {}
 
 

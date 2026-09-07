@@ -12,18 +12,18 @@ import datetime as dt
 import hashlib
 import json
 from pathlib import Path
+import story_json
 
 
 REPORT = Path("meta/visual-lock-final-report.json")
 
 
 def read_json(path: Path):
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    return story_json.read_json(path, require_object=False)
 
 
 def write_json(path: Path, data: dict):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    story_json.write_json(path, data)
 
 
 def sha256(path: Path):
