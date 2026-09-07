@@ -19,7 +19,7 @@ from frame_contract import required as frame_contract_required, verify_all as ve
 from visual_lock_v21 import required as visual_lock_v21_required, verify as verify_visual_lock_v21
 from fast_frame_scout import required as fast_scout_required, audit as audit_fast_scout
 from final_candidate_snapshot import required as final_snapshot_required, verify as verify_final_snapshot
-from post_publish_review import required as post_publish_required, verify as verify_post_publish
+from post_publish_review import REQUIRED_FOR_DATA_REVIEWED, required as post_publish_required, verify as verify_post_publish
 from final_acceptance import valid as acceptance_valid
 
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
@@ -526,8 +526,9 @@ def check_stage(repo_root: Path, episode_dir: Path, manifest: dict, current: str
         else:
             require_repo_path(repo_root, data_review, "report_path", findings, "manifest.data_review", metadata_only=metadata_only)
             completed = data_review.get("completed_checkpoints")
-        if not isinstance(completed, list) or "48h" not in completed:
-            findings.append(Finding("FAIL", "missing_48h_review", "DATA_REVIEWED requires completed_checkpoints to include '48h'"))
+        if not isinstance(completed, list) or not all(cp in completed for cp in REQUIRED_FOR_DATA_REVIEWED):
+            required_text = ", ".join(REQUIRED_FOR_DATA_REVIEWED)
+            findings.append(Finding("FAIL", "missing_48h_review", f"DATA_REVIEWED requires completed_checkpoints to include {required_text}"))
 
     readme = episode_dir / "README.md"
     if readme.exists():

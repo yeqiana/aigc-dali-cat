@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from typing import Iterable
 
+from post_publish_review import CHECKPOINTS, REQUIRED_FOR_DATA_REVIEWED
 from story_os_contract import story_os_version
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -209,8 +210,8 @@ def activate(ep: Path) -> dict:
     post.setdefault("data_review", {
         "schema_version": 1,
         "enabled": True,
-        "checkpoints": ["6h", "24h", "48h", "7d"],
-        "required_for_data_reviewed": ["48h"],
+        "checkpoints": list(CHECKPOINTS),
+        "required_for_data_reviewed": list(REQUIRED_FOR_DATA_REVIEWED),
         "learning_packet_is_authority": False,
     })
     write_json(gates_path, gates)
