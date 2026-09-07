@@ -149,6 +149,15 @@ def validate(data: dict | None = None) -> list[str]:
                 rng = VALID_RANGE.get(role)
                 if rng is not None and not rng[0] <= value <= rng[1]:
                     errors.append(f"timeout_policy.{role} must be within {rng[0]}..{rng[1]}")
+    # B9 契约位：compatibility 三开关只允许布尔；false 表示禁止对应历史兼容行为。
+    compat = get_path(cfg, "compatibility")
+    if not isinstance(compat, dict):
+        errors.append("compatibility must be a mapping")
+    else:
+        for key in ("read_legacy_json", "rewrite_bound_runtime_request", "migrate_historical_episode_meta"):
+            value = compat.get(key)
+            if not isinstance(value, bool):
+                errors.append(f"compatibility.{key} must be a bool")
     return errors
 
 
@@ -190,7 +199,42 @@ def validate_index(data: dict | None = None) -> list[str]:
         for step, paths in stages.items():
             if not isinstance(paths, list) or not paths or paths[0] != "config/storyos.yaml":
                 errors.append(f"stage_read_sets.{step} must start with config/storyos.yaml")
+    internal = index.get("internal")
+    if not isinstance(internal, dict):
+        errors.append("internal must be a mapping")
+    else:
+        legacy_index = internal.get("legacy_runtime_index")
+        if not isinstance(legacy_index, str) or not legacy_index.strip():
+            errors.append("internal.legacy_runtime_index must be a non-empty relative path string")
+    layout = index.get("episode_layout")
+    layout_groups = ("authority", "evidence", "derived", "local_derived", "media")
+    if not isinstance(layout, dict) or any(not isinstance(layout.get(group), list) for group in layout_groups):
+        errors.append("episode_layout must declare authority/evidence/derived/local_derived/media lists")
     return errors
+
+
+def legacy_json_read_allowed(cfg: dict | None = None) -> bool:
+    """compatibility.read_legacy_json 当前是否允许读取 legacy JSON。"""
+    data = cfg if cfg is not None else _load(CONFIG_PATH)
+    return get_path(data, "compatibility.read_legacy_json") is True
+
+
+def guard_legacy_json_read(path: str | Path, *, cfg: dict | None = None) -> None:
+    """legacy JSON 读取闸口（B9 契约位）。
+
+    仓库当前没有历史 legacy JSON 的 .py 消费者；未来任何代码若要读取
+    .storyos/history/legacy/ 下的 runtime-index 或历史请求/证据 JSON，
+    必须先经过本闸口：compatibility.read_legacy_json=false 时显式报错，
+    禁止静默读旧格式。rewrite_bound_runtime_request 与
+    migrate_historical_episode_meta 同样登记为契约位（当前无对应写路径），
+    新增写路径的代码必须显式读取这两个开关。
+    """
+    if legacy_json_read_allowed(cfg):
+        return
+    raise ValueError(
+        "LEGACY_JSON_READ_BLOCKED: compatibility.read_legacy_json=false; "
+        f"refusing legacy JSON read: {path}"
+    )
 
 
 def main() -> int:

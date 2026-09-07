@@ -182,8 +182,12 @@ paths:
   internal_history: .storyos/history
 
 compatibility:
-  # 历史 JSON 请求/证据继续可读，但新的人工配置只写本 YAML。
+  # 契约位：历史 JSON 请求/证据可读，但新的人工配置只写本 YAML。
+  # read_legacy_json=false 时，任何 legacy JSON 读取必须先经
+  # storyos_config.guard_legacy_json_read 并显式报错，禁止静默读旧格式。
   read_legacy_json: true
+  # 以下两开关当前无对应写路径；新增回写 bound runtime request / 迁移
+  # 历史 episode meta 的代码必须显式读取本开关，false 表示禁止该行为。
   rewrite_bound_runtime_request: false
   migrate_historical_episode_meta: false
 
