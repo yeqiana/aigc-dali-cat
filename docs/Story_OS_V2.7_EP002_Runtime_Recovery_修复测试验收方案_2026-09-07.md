@@ -68,9 +68,34 @@ PASS
 失败图片不会继续保持 queued 状态
 ```
 
+## P0 Production Crash Recovery（代码级）
+
+状态：
+
+PASS（代码级）
+
+包含（本地提交 `e33f458`）：
+
+- 每个图片尝试的 transaction journal 与 worker lifecycle（PID、transaction id、预期输出/日志、终态 result/receipt）
+- 调度启动时按 Queue / Ledger / lifecycle 三方对账；确定成功回补 Queue、确定失败关闭为 tech_failed
+- `BACKEND_INVOKED` 后无终态 receipt 的帧保留 `interrupted_unknown`，不自动重生、不伪造 PASS；无依赖的兄弟帧继续
+- Ledger 热路径 begin/success/tech-fail/review 收敛为进程内直调，每帧不再两次解释器冷启动（提交 `decc54b`）
+- 队列写入口共享 OS 锁，并发直接写入得到 `QUEUE_MUTATION_BUSY` 可稍后重试
+
+## 其余代码级修复（截至 2026-09-07）
+
+- 原生批次回退到单帧时不误报 `native_multi_image=true`
+- 图片能力仅按真实探针记录，不把配置/路由可用当能力已通过
+- Next Action 中 `interrupted_unknown` 是 hard-stop，需人工按对账证据处理后才能重试
+
+注意：以上 PASS 只表示代码与隔离回归（system suite 77 项、Runtime First 20 项），**不代表 EP002 真实生产验收**；第六节方框仍需要真实 EP002 执行证据才能勾选。
+
 ---
 
 # 三、剩余验收范围
+
+以下范围指真实 EP002 上的生产链路验收；代码级机制已在上一节标记完成，剩余的是在冻结的
+EP002 上按 Step 2-4 实际跑通失败恢复并保留运行证据。
 
 ## P1-4 Production Queue Recovery
 
