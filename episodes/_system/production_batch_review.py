@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 
 import frame_contract
+import image_scheduler
 import product_review_adapter
 import runtime_router
 
@@ -83,7 +84,7 @@ Return exactly one row for every supplied frame.
 """
 
 
-def prepare(ep: Path, batch_id: str, *, attempt: int = 1) -> dict:
+def _prepare_locked(ep: Path, batch_id: str, *, attempt: int = 1) -> dict:
     ep = ep.resolve(); rows = batch_items(ep, batch_id)
     if not rows:
         raise ValueError(f"batch has no generated reviewable items: {batch_id}")
@@ -110,6 +111,11 @@ def prepare(ep: Path, batch_id: str, *, attempt: int = 1) -> dict:
     return request
 
 
+def prepare(ep: Path, batch_id: str, *, attempt: int = 1) -> dict:
+    with image_scheduler.queue_transaction(ep):
+        return _prepare_locked(ep, batch_id, attempt=attempt)
+
+
 def _ledger_review(ep: Path, frame: int, decision: str, notes: str) -> None:
     cp = subprocess.run(
         [sys.executable, str(SYSTEM / "production_ledger.py"), "review", str(ep), "--frame", f"{frame:02d}",
@@ -120,7 +126,7 @@ def _ledger_review(ep: Path, frame: int, decision: str, notes: str) -> None:
         raise RuntimeError(f"production ledger review failed frame={frame:02d}: {cp.stdout[-1000:]}")
 
 
-def finalize(ep: Path, batch_id: str, *, runtime: str = "WORK", attempt: int = 1) -> dict:
+def _finalize_locked(ep: Path, batch_id: str, *, runtime: str = "WORK", attempt: int = 1) -> dict:
     ep = ep.resolve(); candidate = candidate_path(ep, batch_id)
     data, provenance = product_review_adapter.finalize_candidate(
         ep, kind=kind(batch_id), runtime=runtime, attempt=attempt, candidate_path=candidate)
@@ -158,6 +164,11 @@ def finalize(ep: Path, batch_id: str, *, runtime: str = "WORK", attempt: int = 1
     product_review_adapter.mark_complete(ep, kind(batch_id), attempt=attempt, final_path=out)
     candidate.unlink(missing_ok=True)
     return final
+
+
+def finalize(ep: Path, batch_id: str, *, runtime: str = "WORK", attempt: int = 1) -> dict:
+    with image_scheduler.queue_transaction(ep):
+        return _finalize_locked(ep, batch_id, runtime=runtime, attempt=attempt)
 
 
 def pending(ep: Path) -> list[str]:

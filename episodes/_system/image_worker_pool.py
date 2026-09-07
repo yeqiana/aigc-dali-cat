@@ -8,6 +8,7 @@ persistent image-generation daemon/session contract.
 """
 from __future__ import annotations
 import argparse
+import os
 from pathlib import Path
 
 import codex_subscription_image as backend
@@ -21,6 +22,7 @@ import time
 import runtime_router
 import product_runtime_adapter
 import resource_library
+import production_recovery
 
 MODE="python_warm_pool_codex_ephemeral"
 CODEX_SESSION_REUSE=False
@@ -49,6 +51,8 @@ def execute(ep,item,timeout,codex):
     out=ep/"media/candidates/scheduled"/f"{frame:02d}-{item['id']}-a{attempt}.png"
     log=ep/"meta/image-workers"/f"{frame:02d}-{item['id']}-a{attempt}.jsonl"
     out.parent.mkdir(parents=True,exist_ok=True); log.parent.mkdir(parents=True,exist_ok=True)
+    production_recovery.write_lifecycle(ep, item, "WORKER_STARTED", worker_pid=os.getpid(),
+                                        expected_output=str(out), expected_log=str(log))
     root=Path(__file__).resolve().parents[2]
     prompt=(root/item["prompt_file"]).resolve()
     refs=[(root/x["path"]).resolve() for x in item.get("references") or []]
@@ -58,12 +62,16 @@ def execute(ep,item,timeout,codex):
     package=prompt_package.compile_frame(ep,frame,prompt,write=True)
     blocked=runtime_circuit_breaker.blocking(ep,"image")
     if blocked:
-        return {"returncode":97,"stdout":"RUNTIME_CIRCUIT_OPEN: "+str(blocked),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None}
+        result={"returncode":97,"stdout":"RUNTIME_CIRCUIT_OPEN: "+str(blocked),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None}
+        production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=result["stdout"], result=result)
+        return result
     budget_kind=raw_candidate_budget.kind_for_queue_item(item)
     budget_token=str(item["id"])
     budget_ok,budget_row=raw_candidate_budget.claim(ep,frame,budget_kind,reason=f"formal_generation_entrypoint scope={item.get('scope')} attempt={attempt}",token=budget_token)
     if not budget_ok:
-        return {"returncode":98,"stdout":"RAW_CANDIDATE_BUDGET_EXHAUSTED: "+str(budget_row),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None,"budget":budget_row}
+        result={"returncode":98,"stdout":"RAW_CANDIDATE_BUDGET_EXHAUSTED: "+str(budget_row),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None,"budget":budget_row}
+        production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=result["stdout"], result=result)
+        return result
     ns=argparse.Namespace(
         episode_dir=ep,frame=f"{frame:02d}",prompt_file=prompt,output=out,log=log,
         reference=refs,timeout=timeout,codex=codex,image_model=model,image_quality=quality,overwrite=False,
@@ -72,18 +80,24 @@ def execute(ep,item,timeout,codex):
     trace_span=runtime_trace.start_span(ep,f"image.generate.frame.{frame:02d}",category="image_generation",attrs={"frame":frame,"model":model,"quality":quality})
     trace_started=time.monotonic()
     try:
+        production_recovery.write_lifecycle(ep, item, "BACKEND_INVOKED", worker_pid=os.getpid(),
+                                            expected_output=str(out), expected_log=str(log))
         payload=backend.generate_for_frame(ns)
     except Exception as exc:
         code=runtime_circuit_breaker.classify_text(str(exc))
         if code:runtime_circuit_breaker.record_failure(ep,"image",code)
         raw_candidate_budget.release(ep,budget_token,reason="generation_failed_before_candidate_commit")
         runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="FAILED",started_monotonic=trace_started,attrs={"frame":frame,"error":str(exc)})
-        return {"returncode":99,"stdout":str(exc),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None,"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
+        result={"returncode":99,"stdout":str(exc),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None,"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
+        production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=str(exc), result=result)
+        return result
 
     commit_ok,commit_row=raw_candidate_budget.commit(ep,budget_token,reason="normalized_candidate_exists")
     if not commit_ok:
         runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="FAILED",started_monotonic=trace_started,attrs={"frame":frame,"error":"candidate commit failed"})
-        return {"returncode":96,"stdout":"CANDIDATE_COMMIT_FAILED: "+str(commit_row),"payload":payload,"output":out,"log":log,"attempt":attempt,"scout":None}
+        result={"returncode":96,"stdout":"CANDIDATE_COMMIT_FAILED: "+str(commit_row),"payload":payload,"output":out,"log":log,"attempt":attempt,"scout":None}
+        production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=result["stdout"], result=result)
+        return result
     runtime_circuit_breaker.record_success(ep,"image")
 
     scout=None
@@ -93,7 +107,9 @@ def execute(ep,item,timeout,codex):
         except Exception as exc:
             scout={"decision":"UNCERTAIN","reason":"scout_technical_failure","error":str(exc),"candidate_committed":True}
     runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="PASS",started_monotonic=trace_started,attrs={"frame":frame,"backend":payload.get("backend"),"candidate_committed":True})
-    return {"returncode":0,"stdout":"","payload":payload,"output":out,"log":log,"attempt":attempt,"scout":scout,"candidate_budget":commit_row,"prompt_package":{"package_sha256":package["package_sha256"],"frame_contract_sha256":package["frame_contract_sha256"]},"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
+    result={"returncode":0,"stdout":"","payload":payload,"output":out,"log":log,"attempt":attempt,"scout":scout,"candidate_budget":commit_row,"prompt_package":{"package_sha256":package["package_sha256"],"frame_contract_sha256":package["frame_contract_sha256"]},"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
+    production_recovery.write_lifecycle(ep, item, "SUCCEEDED", worker_pid=os.getpid(), result=result)
+    return result
 
 def self_test():
     assert MODE=="python_warm_pool_codex_ephemeral"

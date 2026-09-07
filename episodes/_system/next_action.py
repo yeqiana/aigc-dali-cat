@@ -170,6 +170,10 @@ def derive(ep: Path) -> dict:
         if qs["counts"].get("tech_failed"):
             return action_result(action="RETRY_TECHNICAL_FAILURES", executor="CODEX_IMAGE",
                     reason="technical image failures remain; successful siblings must be reused")
+        if qs["counts"].get("interrupted_unknown"):
+            return {**base, "action": "RECOVER_INTERRUPTED_IMAGES", "executor": runtime, "blocking": True,
+                    "work_pending": True, "auto_recoverable": False, "hard_stop": True,
+                    "reason": "an interrupted worker has no terminal receipt; inspect reconciliation evidence before retry"}
         if qs["queued_frames"]:
             return action_result(action="GENERATE_IMAGES", executor="CODEX_IMAGE" if image_runtime == "CODEX" else runtime,
                     frames=qs["queued_frames"],
@@ -211,7 +215,7 @@ def apply_runtime_block_semantics(data: dict) -> dict:
     Keep legacy ``blocking`` for compatibility, but expose explicit semantics.
     """
     action = str(data.get("action") or "")
-    hard_stop_actions = {"REPAIR_STATE"}
+    hard_stop_actions = {"REPAIR_STATE", "RECOVER_INTERRUPTED_IMAGES"}
     recoverable_actions = {
         "GENERATE_IMAGES",
         "RETRY_TECHNICAL_FAILURES",

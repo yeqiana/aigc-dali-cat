@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import concurrent.futures as cf
+from contextlib import contextmanager
 import datetime as dt
 import json
 import os
@@ -37,11 +38,13 @@ import resource_library
 import runtime_portability
 import async_scheduler_adapter
 import runtime_event_collector
+import production_recovery
 from runtime_atomic_store import atomic_write_json
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
 QUEUE_REL = Path("meta/production-queue.json")
+SCHEDULER_LOCK_REL = Path("meta/runtime-image-scheduler.lock")
 _CONFIG = storyos_config.load_config()
 MAX_SUPPORTED_WORKERS = int(storyos_config.get_path(_CONFIG, "production.max_inflight_images"))
 DEFAULT_IMAGE_QUALITY = str(storyos_config.get_path(_CONFIG, "image.quality"))
@@ -112,6 +115,29 @@ def save_queue(ep:Path,q:dict)->None:
     write_json(ep/QUEUE_REL,q)
 
 
+class QueueMutationBusy(RuntimeError):
+    """A queue writer raced an active image scheduler or another writer."""
+
+
+@contextmanager
+def queue_transaction(ep: Path):
+    """Serialize a queue read-modify-write against image execution.
+
+    The scheduler holds the same OS lock for its whole run.  Small direct
+    mutations therefore fail explicitly while pixels/ledger transitions are
+    in flight instead of writing a stale full queue back over scheduler work.
+    The caller can retry this recoverable condition later.
+    """
+    import runner_state_store
+    ep = Path(ep).resolve()
+    if not runner_state_store.acquire_lock(ep, lock_rel=SCHEDULER_LOCK_REL):
+        raise QueueMutationBusy("QUEUE_MUTATION_BUSY: image scheduler owns the production queue; retry later")
+    try:
+        yield
+    finally:
+        runner_state_store.release_lock(ep, lock_rel=SCHEDULER_LOCK_REL)
+
+
 def ledger(ep:Path)->dict:
     p=ep/"meta/production-ledger.json"
     return read_json(p) if p.is_file() else {}
@@ -153,45 +179,47 @@ def contract_references(ep:Path,frame:int,scope:str="batch")->list[dict]:
 
 
 def init_queue(ep:Path,force:bool=False)->dict:
-    p=ep/QUEUE_REL
-    if p.exists() and not force:return read_json(p)
-    q={"schema_version":1,"created_at":now(),"updated_at":now(),"max_parallel":MAX_SUPPORTED_WORKERS,"adaptive_parallel":MAX_SUPPORTED_WORKERS,"stable_waves":0,"items":[],"waves":[]}
-    save_queue(ep,q);return q
+    with queue_transaction(ep):
+        p=ep/QUEUE_REL
+        if p.exists() and not force:return read_json(p)
+        q={"schema_version":1,"created_at":now(),"updated_at":now(),"max_parallel":MAX_SUPPORTED_WORKERS,"adaptive_parallel":MAX_SUPPORTED_WORKERS,"stable_waves":0,"items":[],"waves":[]}
+        save_queue(ep,q);return q
 
 
 def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:list[dict],capture_id:str,model:str,depends_on:list[int],quality:str=DEFAULT_IMAGE_QUALITY,strict_model:bool=False,replace:bool=False)->dict:
-    q=load_queue(ep)
-    key=f"{frame:02d}"
-    active=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed"}]
-    if active and not replace:
-        return active[-1]
-    if replace:
-        replaceable=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed","blocked","scout_repair"}]
-        for x in replaceable:x["status"]="superseded"
-    contract=frame_contract.provenance(ep,frame)
-    item={
-        "id":uuid.uuid4().hex[:12],
-        "frame":frame,
-        "kind":kind,
-        "scope":scope,
-        "status":"queued",
-        "prompt_file":repo_rel(prompt_file),
-        "references":references,
-        "capture_id":capture_id,
-        "model":model,
-        "quality":quality,
-        "strict_model":bool(strict_model),
-        "depends_on":sorted(set(int(x) for x in depends_on if int(x)!=frame)),
-        "narrative_escalation_from":narrative_escalation_from(ep,frame),
-        "priority":risk_priority(ep,frame,scope),
-        "frame_contract":contract,
-        "attempts":0,
-        "output_path":None,
-        "log_path":None,
-        "last_error":None,
-        "queued_at":now(),
-    }
-    q.setdefault("items",[]).append(item);save_queue(ep,q);return item
+    with queue_transaction(ep):
+        q=load_queue(ep)
+        key=f"{frame:02d}"
+        active=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed"}]
+        if active and not replace:
+            return active[-1]
+        if replace:
+            replaceable=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed","blocked","scout_repair"}]
+            for x in replaceable:x["status"]="superseded"
+        contract=frame_contract.provenance(ep,frame)
+        item={
+            "id":uuid.uuid4().hex[:12],
+            "frame":frame,
+            "kind":kind,
+            "scope":scope,
+            "status":"queued",
+            "prompt_file":repo_rel(prompt_file),
+            "references":references,
+            "capture_id":capture_id,
+            "model":model,
+            "quality":quality,
+            "strict_model":bool(strict_model),
+            "depends_on":sorted(set(int(x) for x in depends_on if int(x)!=frame)),
+            "narrative_escalation_from":narrative_escalation_from(ep,frame),
+            "priority":risk_priority(ep,frame,scope),
+            "frame_contract":contract,
+            "attempts":0,
+            "output_path":None,
+            "log_path":None,
+            "last_error":None,
+            "queued_at":now(),
+        }
+        q.setdefault("items",[]).append(item);save_queue(ep,q);return item
 
 
 def parse_ref(raw:str)->dict:
@@ -261,6 +289,9 @@ def ledger_begin(ep:Path,item:dict)->tuple[bool,str]:
     cmd=[sys.executable,SYSTEM/"production_ledger.py","begin",ep,"--frame",f"{int(item['frame']):02d}","--kind",item["kind"],"--prompt-file",prompt,"--capture-id",item["capture_id"],"--model",item.get("model") or "default","--quality",item.get("quality") or DEFAULT_IMAGE_QUALITY,"--notes",f"phase6 scheduler item={item['id']} scope={item['scope']}"]
     for ref in item.get("references") or []:
         cmd += ["--reference",f"{ROOT/ref['path']}::{ref['role']}::{ref['kind']}"]
+    transaction_id=str((item.get("execution") or {}).get("transaction_id") or "")
+    if transaction_id:
+        cmd += ["--runtime-transaction-id",transaction_id]
     cp=run(cmd)
     return cp.returncode==0,cp.stdout
 
@@ -338,22 +369,23 @@ def run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int
     Rolling review remains isolated on its own review executor.
     """
     import runner_state_store
-    lock_rel=Path("meta/runtime-image-scheduler.lock")
-    if not runner_state_store.acquire_lock(ep,lock_rel=lock_rel):
+    if not runner_state_store.acquire_lock(ep,lock_rel=SCHEDULER_LOCK_REL):
         return 21
     try:
         return asyncio.run(_run_scheduler_async(ep,max_workers,timeout,codex))
     finally:
-        runner_state_store.release_lock(ep,lock_rel=lock_rel)
+        runner_state_store.release_lock(ep,lock_rel=SCHEDULER_LOCK_REL)
 
 
 async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     resource_library.ensure_fresh(ep)
     q=load_queue(ep)
+    production_recovery.reconcile_locked(ep,q)
+    save_queue(ep,q)
     ready,_=ready_items(ep,q)
     if not ready:
         statuses={x.get("status") for x in q.get("items") or []}
-        return 22 if "blocked" in statuses else (24 if "running" in statuses else (20 if "queued" in statuses else 0))
+        return 22 if "blocked" in statuses else (22 if "interrupted_unknown" in statuses else (24 if "running" in statuses else (20 if "queued" in statuses else 0)))
 
     runtime,_=runtime_router.detect()
     image_runtime,_=runtime_router.image_execution_runtime()
@@ -373,17 +405,23 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
     byid={x["id"]:x for x in q.get("items") or []}
     started={}
     for item in ready[:max_workers]:
-        ok,msg=ledger_begin(ep,item)
+        row=byid[item["id"]]
+        production_recovery.prepare_execution(ep,row)
+        save_queue(ep,q)
+        ok,msg=ledger_begin(ep,row)
         if not ok:
             has_block=True
-            byid[item["id"]]["status"]="blocked"
-            byid[item["id"]]["last_error"]=msg[-1000:]
+            row["status"]="blocked"
+            row["last_error"]=msg[-1000:]
+            production_recovery.mark_terminal(ep,row,"BEGIN_REJECTED",reason=row["last_error"])
+            save_queue(ep,q)
             continue
-        byid[item["id"]]["status"]="running"
-        byid[item["id"]]["attempts"]=int(byid[item["id"]].get("attempts") or 0)+1
-        byid[item["id"]]["started_at"]=now()
-        started[item["id"]]=byid[item["id"]]
-    save_queue(ep,q)
+        row["status"]="running"
+        row["attempts"]=int(row.get("attempts") or 0)+1
+        row["started_at"]=now()
+        production_recovery.mark_worker_pending(ep,row)
+        started[row["id"]]=row
+        save_queue(ep,q)
 
     async for event in async_scheduler_adapter.stream_tasks(list(started.values()),handler,workers=max_workers):
         image_event=runtime_event_collector.collect(event)
@@ -401,6 +439,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             )
             ok=False
             if backend_ok:
+                production_recovery.mark_terminal(ep,item,"SUCCESS_PREPARED")
                 ok,msg=ledger_success(ep,item,result)
             if ok:
                 item["status"]="generated"
@@ -410,6 +449,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
                 item["completed_at"]=now()
                 item["last_error"]=None
                 item["prompt_package"]=result.get("prompt_package")
+                production_recovery.mark_terminal(ep,item,"COMMITTED")
             else:
                 if not msg:
                     msg="image backend failed without terminal output"
@@ -421,6 +461,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
                 if result.get("output"): item["candidate_output_path"]=str(result["output"])
                 item["completed_at"]=now()
                 item["last_error"]=runtime_portability.sanitize_diagnostic_text(str(msg)[-1600:])
+                production_recovery.mark_terminal(ep,item,"BLOCKED" if item["status"]=="blocked" else "TECH_FAILED", code=code)
         elif image_event.event=="IMAGE_FAILED":
             has_failure=True
             msg=str(image_event.payload.get("error") or "async worker failed")
@@ -430,6 +471,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             has_block=has_block or item["status"]=="blocked"
             item["completed_at"]=now()
             item["last_error"]=runtime_portability.sanitize_diagnostic_text(msg[-1600:])
+            production_recovery.mark_terminal(ep,item,"BLOCKED" if item["status"]=="blocked" else "TECH_FAILED", code=code)
         q.setdefault("runtime_events",[]).append({"event":image_event.event,"task_id":image_event.item_id,"payload":runtime_event_collector.json_safe(image_event.payload),"at":now()})
         save_queue(ep,q)
     return 22 if has_block and not ready_items(ep,load_queue(ep))[0] else (21 if has_failure else 0)
@@ -445,14 +487,15 @@ def run_scheduler_legacy_removed_path(ep:Path,max_workers:int,timeout:int,codex:
 
 
 def retry_tech(ep:Path,frame:int|None=None)->dict:
-    q=load_queue(ep);count=0
-    for item in q.get("items") or []:
-        if item.get("status")=="tech_failed" and (frame is None or int(item.get("frame") or -1)==int(frame)):
-            item["status"]="queued"
-            item["last_error"]=None
-            item["retry_pending"]=False
-            count+=1
-    save_queue(ep,q);return {"requeued":count,"frame":frame}
+    with queue_transaction(ep):
+        q=load_queue(ep);count=0
+        for item in q.get("items") or []:
+            if item.get("status")=="tech_failed" and (frame is None or int(item.get("frame") or -1)==int(frame)):
+                item["status"]="queued"
+                item["last_error"]=None
+                item["retry_pending"]=False
+                count+=1
+        save_queue(ep,q);return {"requeued":count,"frame":frame}
 
 
 def self_test()->None:
@@ -481,6 +524,7 @@ def main()->int:
     p=sub.add_parser("plan");p.add_argument("episode_dir")
     p=sub.add_parser("run");p.add_argument("episode_dir");p.add_argument("--max-workers",type=int,default=MAX_SUPPORTED_WORKERS);p.add_argument("--timeout",type=int,default=600);p.add_argument("--codex")
     p=sub.add_parser("retry-tech");p.add_argument("episode_dir");p.add_argument("--frame",type=int)
+    p=sub.add_parser("reconcile");p.add_argument("episode_dir")
     p=sub.add_parser("show");p.add_argument("episode_dir")
     sub.add_parser("self-test")
     a=ap.parse_args()
@@ -496,6 +540,12 @@ def main()->int:
             policy=image_model_policy.for_episode(ep)
             row=add_item(ep,frame=a.frame,kind=a.kind,prompt_file=prompt,scope=a.scope,references=refs,capture_id=a.capture_id or f"scheduler-{a.frame:02d}",model=a.model or policy["model"],quality=a.quality or policy["quality"],strict_model=True if a.model else bool(policy.get("strict_model")),depends_on=deps,replace=a.replace)
             print(json.dumps(row,ensure_ascii=False,indent=2));return 0
+        if a.cmd=="reconcile":
+            with queue_transaction(ep):
+                q=load_queue(ep)
+                report=production_recovery.reconcile_locked(ep,q)
+                save_queue(ep,q)
+            print(json.dumps(report,ensure_ascii=False,indent=2));return 0
         if a.cmd=="import-visual-lock":print(json.dumps(import_visual_lock(ep,Path(a.prompt_dir).resolve()),ensure_ascii=False,indent=2));return 0
         if a.cmd=="import-batch":print(json.dumps(import_batch(ep,Path(a.prompt_dir).resolve()),ensure_ascii=False,indent=2));return 0
         if a.cmd=="plan":

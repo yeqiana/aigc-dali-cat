@@ -91,7 +91,7 @@ def _record_technical_failure(
     )
 
 
-def import_frame(ep: Path, frame: int, raw: Path, *, item_id: str | None = None, runtime: str | None = None) -> dict:
+def _import_frame_locked(ep: Path, frame: int, raw: Path, *, item_id: str | None = None, runtime: str | None = None) -> dict:
     ep = ep.resolve()
     active_runtime, _ = runtime_router.detect()
     base_runtime = str(runtime or active_runtime).upper()
@@ -225,6 +225,15 @@ def import_frame(ep: Path, frame: int, raw: Path, *, item_id: str | None = None,
         if isinstance(exc, ProductImageImportError):
             raise
         raise ProductImageImportError(f"{code}: {exc}") from exc
+
+
+def import_frame(ep: Path, frame: int, raw: Path, *, item_id: str | None = None, runtime: str | None = None) -> dict:
+    """Import one host-produced candidate without racing the local scheduler."""
+    try:
+        with image_scheduler.queue_transaction(ep):
+            return _import_frame_locked(ep, frame, raw, item_id=item_id, runtime=runtime)
+    except image_scheduler.QueueMutationBusy as exc:
+        raise ProductImageImportError(str(exc)) from exc
 
 
 def self_test() -> None:

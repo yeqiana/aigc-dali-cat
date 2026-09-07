@@ -14,7 +14,10 @@ SYSTEM = Path(__file__).resolve().parents[2] / "episodes" / "_system"
 sys.path.insert(0, str(SYSTEM))
 import batch_scheduler as batch
 import episode_runner as runner
+import image_scheduler as single
 import persistent_runner_daemon as daemon
+import product_image_import
+import production_recovery
 import runner_state_store as store
 import runtime_failure_classifier as classifier
 from runtime_atomic_store import atomic_write_json
@@ -107,6 +110,103 @@ class RecoveryTests(unittest.TestCase):
             if proc.poll() is None: proc.kill(); proc.wait(timeout=10)
             proc.stdout.close()
 
+    def test_direct_queue_mutation_defers_while_scheduler_is_running(self):
+        self.queue()
+        q=batch.load_queue(self.ep)
+        q["items"][0]["status"]="tech_failed"
+        batch.save_queue(self.ep,q)
+        self.assertTrue(store.acquire_lock(self.ep,lock_rel=single.SCHEDULER_LOCK_REL))
+        try:
+            with self.assertRaises(single.QueueMutationBusy):
+                single.retry_tech(self.ep,1)
+            with patch.object(product_image_import,"_import_frame_locked") as import_locked:
+                with self.assertRaises(product_image_import.ProductImageImportError):
+                    product_image_import.import_frame(self.ep,1,self.ep/"unused.png",runtime="WORK")
+                import_locked.assert_not_called()
+        finally:
+            store.release_lock(self.ep,lock_rel=single.SCHEDULER_LOCK_REL)
+        self.assertEqual(batch.load_queue(self.ep)["items"][0]["status"],"tech_failed")
+        self.assertEqual(single.retry_tech(self.ep,1)["requeued"],1)
+
+    def _running_item(self):
+        return {
+            "id":"recover-01", "frame":1, "scope":"batch", "kind":"original",
+            "status":"running", "attempts":1, "model":"gpt-image-2", "quality":"high",
+            "frame_contract":{"contract_sha256":"contract-a"}, "depends_on":[],
+        }
+
+    def _active_ledger(self):
+        return {"frames":{"01":{"status":"GENERATING","attempts":[{
+            "attempt_id":"attempt-01", "result":"pending", "kind":"original"
+        }]}}}
+
+    def test_recovery_retries_only_pre_worker_interruption(self):
+        item=self._running_item()
+        production_recovery.prepare_execution(self.ep,item)
+        production_recovery.mark_worker_pending(self.ep,item)
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json",self._active_ledger())
+        q=batch.load_queue(self.ep)
+        report=production_recovery.reconcile_locked(self.ep,q)
+        self.assertEqual(report["rows"][0]["outcome"],"PRE_WORKER_INTERRUPTION_RETRYABLE")
+        self.assertEqual(q["items"][0]["status"],"tech_failed")
+        self.assertEqual(json.loads((self.ep/"meta/production-ledger.json").read_text())["frames"]["01"]["status"],"TECH_FAILED")
+
+    def test_recovery_never_regenerates_unknown_inflight_worker(self):
+        item=self._running_item()
+        production_recovery.prepare_execution(self.ep,item)
+        production_recovery.mark_worker_pending(self.ep,item)
+        production_recovery.write_lifecycle(self.ep,item,"BACKEND_INVOKED",worker_pid=99999)
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json",self._active_ledger())
+        q=batch.load_queue(self.ep)
+        report=production_recovery.reconcile_locked(self.ep,q)
+        self.assertEqual(report["rows"][0]["outcome"],"UNKNOWN_RUNNING_WORKER")
+        self.assertEqual(q["items"][0]["status"],"interrupted_unknown")
+        frame=json.loads((self.ep/"meta/production-ledger.json").read_text())["frames"]["01"]
+        self.assertEqual(frame["status"],"GENERATING")
+        self.assertEqual(frame["attempts"][-1]["result"],"pending")
+
+    def test_recovery_replays_ledger_commit_missing_from_queue(self):
+        item=self._running_item()
+        candidate=self.ep/"candidate.png"; candidate.write_bytes(b"candidate")
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json",{"frames":{"01":{
+            "status":"ORIGINAL_READY", "current_candidate":{"path":str(candidate)}
+        }}})
+        q=batch.load_queue(self.ep)
+        report=production_recovery.reconcile_locked(self.ep,q)
+        self.assertEqual(report["rows"][0]["outcome"],"LEDGER_READY_REPLAYED")
+        self.assertEqual(q["items"][0]["status"],"generated")
+        self.assertTrue(q["items"][0]["output_path"].endswith("candidate.png"))
+
+    def test_recovery_replays_durable_worker_success_once(self):
+        item=self._running_item()
+        production_recovery.prepare_execution(self.ep,item)
+        production_recovery.mark_worker_pending(self.ep,item)
+        candidate=self.ep/"candidate-success.png"; candidate.write_bytes(b"candidate")
+        result={"output":str(candidate),"payload":{"image_model":{"model":"gpt-image-2","quality":"high"},
+                "frame_contract":{"contract_sha256":"contract-a"}}}
+        production_recovery.write_lifecycle(self.ep,item,"SUCCEEDED",worker_pid=123,result=result)
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json",self._active_ledger())
+        q=batch.load_queue(self.ep)
+        with patch.object(production_recovery.production_ledger,"cmd_success") as success:
+            report=production_recovery.reconcile_locked(self.ep,q)
+        success.assert_called_once()
+        self.assertEqual(report["rows"][0]["outcome"],"WORKER_SUCCESS_REPLAYED")
+        self.assertEqual(q["items"][0]["status"],"generated")
+
+    def test_worker_lifecycle_serializes_path_result_evidence(self):
+        item=self._running_item()
+        production_recovery.prepare_execution(self.ep,item)
+        production_recovery.write_lifecycle(self.ep,item,"SUCCEEDED",result={
+            "output":self.ep/"candidate.png", "log":self.ep/"worker.jsonl"
+        })
+        saved=json.loads(production_recovery.lifecycle_path(self.ep,item).read_text())
+        self.assertEqual(saved["result"]["output"],str(self.ep/"candidate.png"))
+        self.assertEqual(saved["result"]["log"],str(self.ep/"worker.jsonl"))
+
     def queue(self):
         q={"items":[{"id":str(i),"frame":i,"scope":"batch","status":"queued","attempts":0,"depends_on":[]} for i in (1,2)]}
         atomic_write_json(self.ep / batch.QUEUE_REL,q)
@@ -141,11 +241,31 @@ class RecoveryTests(unittest.TestCase):
         items=batch.load_queue(self.ep)["items"]
         contract={"planned_count":2,"frames":[{"queue_item_id":x["id"]} for x in items]}
         result={"results":{x["id"]:{"returncode":0,"output":out} for x in items}}
-        with self.batch_deps(), patch.object(batch.image_provider_runtime,"select_batch_provider",return_value={"provider":"openai_images_api"}), patch.object(batch.batch_contract,"build",return_value=contract), patch.object(batch,"ledger_begin",return_value=(True,"")), patch.object(batch,"ledger_success",return_value=(True,"")), patch.object(batch.batch_image_worker,"execute_batch",return_value=result) as native, patch.object(batch.image_worker_pool,"execute") as single:
+        provider={"provider":"openai_images_api","native_multi_image":True,"execution_mode":"native_n_first"}
+        with self.batch_deps(), patch.object(batch.image_provider_runtime,"select_batch_provider",return_value=provider), patch.object(batch.batch_contract,"build",return_value=contract), patch.object(batch,"ledger_begin",return_value=(True,"")), patch.object(batch,"ledger_success",return_value=(True,"")), patch.object(batch.batch_image_worker,"execute_batch",return_value=result) as native, patch.object(batch.image_worker_pool,"execute") as single, patch.object(batch.batch_capability_probe,"record") as record:
             self.assertEqual(asyncio.run(batch._run_async(self.ep,3,60,None)),0)
             self.assertEqual(native.call_count,1)
             single.assert_not_called()
+            record.assert_called_once()
+            self.assertEqual(record.call_args.kwargs["requested"],2)
+            self.assertEqual(record.call_args.kwargs["returned"],2)
+            self.assertTrue(record.call_args.kwargs["native_multi_image"])
+            self.assertTrue(record.call_args.kwargs["single_http_request"])
         self.assertEqual([x["status"] for x in batch.load_queue(self.ep)["items"]],["generated","generated"])
+
+    def test_native_fallback_does_not_claim_native_multi_image(self):
+        self.queue()
+        out=self.ep/"fallback.png"; out.write_bytes(b"mock fallback artifact")
+        items=batch.load_queue(self.ep)["items"]
+        contract={"planned_count":2,"frames":[{"queue_item_id":x["id"]} for x in items]}
+        provider={"provider":"openai_images_api","native_multi_image":True,"execution_mode":"native_n_first"}
+        def fallback(*_args): return {"returncode":0,"output":out}
+        with self.batch_deps(), patch.object(batch.runtime_router,"detect",return_value=("CODEX",{})), patch.object(batch.image_provider_runtime,"select_batch_provider",return_value=provider), patch.object(batch.batch_contract,"build",return_value=contract), patch.object(batch,"ledger_begin",return_value=(True,"")), patch.object(batch,"ledger_success",return_value=(True,"")), patch.object(batch.batch_image_worker,"execute_batch",return_value={"results":{}}) as native, patch.object(batch.image_worker_pool,"execute",side_effect=fallback), patch.object(batch.batch_capability_probe,"record") as record:
+            self.assertEqual(asyncio.run(batch._run_async(self.ep,3,60,None)),0)
+            self.assertEqual(native.call_count,1)
+            self.assertFalse(record.call_args.kwargs["native_multi_image"])
+            self.assertFalse(record.call_args.kwargs["single_http_request"])
+            self.assertEqual(record.call_args.kwargs["reason"],"NATIVE_BATCH_PARTIAL")
 
     def test_single_scheduler_reports_worker_error(self):
         import image_scheduler as single

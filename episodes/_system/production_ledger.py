@@ -15,6 +15,7 @@ from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
 from visual_profile import compile_prompt_contract
 import frame_contract as resolved_frame_contract
 import storyos_config
+from runtime_atomic_store import atomic_write_json
 
 LEDGER_FILE = Path("meta/production-ledger.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
@@ -66,10 +67,7 @@ def load_json(path: Path) -> dict:
 
 
 def save_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8", newline="\n") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-        f.write("\n")
+    atomic_write_json(path, data)
 
 
 def episode_dir(raw: str) -> Path:
@@ -496,6 +494,8 @@ def cmd_begin(args: argparse.Namespace) -> None:
         "notes": args.notes,
         "result": "pending",
     }
+    if getattr(args, "runtime_transaction_id", None):
+        attempt["runtime_transaction_id"] = str(args.runtime_transaction_id)
     frame.setdefault("attempts", []).append(attempt)
     frame["status"] = "GENERATING" if kind == "original" else "REPAIRING"
     data["updated_at"] = now_iso()
@@ -1044,6 +1044,7 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--reference", action="append", help="PATH::ROLE::KIND, KIND=identity|prop|location|capture_style")
     s.add_argument("--notes", default="")
     s.add_argument("--batch-id", help="V2.4 Batch Runtime derived execution id")
+    s.add_argument("--runtime-transaction-id", help="queue/ledger crash-recovery correlation id")
     s.add_argument("--allow-long-prompt", action="store_true")
     s.set_defaults(func=cmd_begin)
 

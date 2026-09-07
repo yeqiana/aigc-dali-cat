@@ -177,10 +177,10 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         )
 
     def test_codex_image_controller_is_luna_medium(self) -> None:
-        self.assertEqual(
-            codex_subscription_image.controller_args(),
-            ['-m', 'gpt-5.6-luna', '-c', 'model_reasoning_effort="medium"'],
-        )
+        args = codex_subscription_image.controller_args()
+        self.assertEqual(args[:4], ['-m', 'gpt-5.6-luna', '-c', 'model_reasoning_effort="medium"'])
+        self.assertIn('model_provider="openai"', args)
+        self.assertIn('openai_base_url="https://chatgpt.com/backend-api/codex"', args)
 
     def test_resource_selection_stale_guard_rebuilds_wrong_location(self) -> None:
         with self.temp_episode() as td:
