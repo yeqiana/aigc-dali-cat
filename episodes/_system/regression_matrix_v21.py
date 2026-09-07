@@ -10,7 +10,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from story_os_contract import CANONICAL_STAGES, canonical_stages
+from story_os_contract import CANONICAL_STAGES, FOUR_ADMISSION_V21_POLICY, canonical_stages
 import migrate_v21
 import post_publish_review
 
@@ -92,7 +92,7 @@ def run_matrix() -> dict:
             "legacy 2.0.x classified below V2.1 and migration default is read-only"
         )),
         case("R08_template_has_current_v21_policies",lambda: assert_true(
-            (((tmpl.get("visual") or {}).get("calibration") or {}).get("policy")=="four_admission_v21")
+            (((tmpl.get("visual") or {}).get("calibration") or {}).get("policy")==FOUR_ADMISSION_V21_POLICY)
             and (((tmpl.get("visual") or {}).get("fast_frame_scout") or {}).get("enabled") is True)
             and (((tmpl.get("release") or {}).get("final_candidate_snapshot") or {}).get("enabled") is True),
             "new episode template carries Phase5-8 policies"

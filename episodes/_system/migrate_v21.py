@@ -4,6 +4,10 @@
 
 Default behavior is READ-ONLY for existing episodes.
 Legacy episodes are never upgraded by fabricating V2.1 evidence.
+The V2.1 data migration mission ended 2026-08-31: activate is kept for
+historical/legacy-resume use only and is DEPRECATED. New V2.1+ episodes must
+use the per-module enable commands (fast_frame_scout / final_candidate_snapshot /
+post_publish_review) instead of migrate_v21.activate.
 """
 from __future__ import annotations
 
@@ -14,7 +18,7 @@ from pathlib import Path
 from typing import Iterable
 
 from post_publish_review import CHECKPOINTS, REQUIRED_FOR_DATA_REVIEWED
-from story_os_contract import story_os_version
+from story_os_contract import FOUR_ADMISSION_V21_POLICY, story_os_version
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT = ROOT / "reports" / "story-os-v21-migration-report.json"
@@ -114,7 +118,7 @@ def classify(ep: Path) -> dict:
         "concept_ambition_versioned": vt >= MIN_V21,
         "environment_contract_present": isinstance(visual.get("environment_contract"), dict),
         "frame_directives_present": isinstance(visual.get("frame_directives"), dict),
-        "four_admission_visual_lock": ((visual.get("calibration") or {}).get("policy") == "four_admission_v21"),
+        "four_admission_visual_lock": ((visual.get("calibration") or {}).get("policy") == FOUR_ADMISSION_V21_POLICY),
         "fast_frame_scout": ((visual.get("fast_frame_scout") or {}).get("enabled") is True),
         "final_candidate_snapshot": ((release.get("final_candidate_snapshot") or {}).get("enabled") is True),
     }
@@ -246,7 +250,7 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("scan")
     p = sub.add_parser("plan"); p.add_argument("episode_dir")
-    p = sub.add_parser("activate"); p.add_argument("episode_dir")
+    p = sub.add_parser("activate", help="DEPRECATED: prefer per-module enable commands; kept for legacy resume only"); p.add_argument("episode_dir")
     sub.add_parser("verify")
     sub.add_parser("show")
     sub.add_parser("self-test")

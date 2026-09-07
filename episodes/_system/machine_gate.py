@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from story_os_contract import canonical_stages
+from story_os_contract import FOUR_ADMISSION_V21_POLICY
 from incremental_frame_review import review_required as semantic_frame_review_required, verify_episode as verify_frame_semantic_episode
 from final_acceptance import valid as acceptance_valid
 
@@ -189,7 +190,7 @@ def check_calibration(repo_root: Path, gates: dict, manifest: dict, findings: li
     if not isinstance(calibration, dict):
         findings.append(Finding("FAIL", "calibration", "visual.calibration must be object"))
         return
-    if calibration.get("policy") == "four_admission_v21":
+    if calibration.get("policy") == FOUR_ADMISSION_V21_POLICY:
         check_four_admission(repo_root, visual, manifest, findings, metadata_only=metadata_only)
         return
     total = frame_total(manifest)

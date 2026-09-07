@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse, json, subprocess, sys
 from pathlib import Path
 
+from story_os_contract import FOUR_ADMISSION_V21_POLICY
+
 SYSTEM = Path(__file__).resolve().parent
 ROOT = SYSTEM.parents[1]
 
@@ -32,7 +34,7 @@ def is_v21(ep: Path) -> bool:
         return False
     try:
         calibration = ((read_json(gates).get("visual") or {}).get("calibration") or {})
-        return calibration.get("policy") == "four_admission_v21"
+        return calibration.get("policy") == FOUR_ADMISSION_V21_POLICY
     except Exception:
         return False
 

@@ -311,7 +311,7 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "MECHANISM_CONTRADICTION",
         ],
         "visual_review.py": [
-            "four_admission_v21",
+            "FOUR_ADMISSION_V21_POLICY",
             "visual_lock_v21",
         ],
         "frame_semantic_review.py": [

@@ -23,7 +23,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from story_os_contract import story_os_version
+from story_os_contract import FOUR_ADMISSION_V21_POLICY, story_os_version
 from visual_profile import compile_prompt_contract
 import environment_contract
 import frame_contract
@@ -136,7 +136,7 @@ def required(ep: Path) -> bool:
     try:
         gates = read_json(p)
         calibration = ((gates.get("visual") or {}).get("calibration") or {})
-        if calibration.get("policy") == "four_admission_v21":
+        if calibration.get("policy") == FOUR_ADMISSION_V21_POLICY:
             return True
         # V2.1+ strict episodes with an old three-slot calibration schema still require
         # the four-admission gate. prepare() performs the schema migration when invoked.
@@ -308,7 +308,7 @@ def prepare(ep: Path) -> dict:
     visual = g.setdefault("visual", {})
     calibration = visual.setdefault("calibration", {})
     calibration["schema_version"] = 2
-    calibration["policy"] = "four_admission_v21"
+    calibration["policy"] = FOUR_ADMISSION_V21_POLICY
     calibration["items"] = [
         {
             "id": row["id"],

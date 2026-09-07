@@ -23,6 +23,9 @@ CANONICAL_STAGES = (
     "PUBLISHED",
     "DATA_REVIEWED",
 )
+# V2.1 Visual Lock 校准策略标识，持久化在 story-gates.json visual.calibration.policy。
+# 该字符串是盘面数据契约，引擎侧比较/写入统一引用本常量，避免散落字面量漂移。
+FOUR_ADMISSION_V21_POLICY = "four_admission_v21"
 
 
 def load_contract(root: Path | None = None) -> dict:
