@@ -63,5 +63,18 @@
     "default_id": "SG01_PERSONAL_EVIDENCE_SEQUENCE_V1",
     "default_path": "standards/sequence_grammars/SG01_personal_evidence_sequence.json",
     "rule": "镜头分配、开篇节奏、跨帧连续性和屏幕内容连续性由 Sequence Grammar 管理。"
-  }
+  },
+  "review_questions": [
+    "谁拍的？",
+    "为什么此刻拍？",
+    "摄影者在哪里？",
+    "相机为什么在这个人手里？",
+    "正在发生什么？",
+    "为什么这张会被保存？",
+    "有没有幽灵摄影机？",
+    "和前后帧人物/衣服/车/时间/天气是否连续？",
+    "摄影缺陷是否有真实物理原因？",
+    "屏幕/UI 是否成立？",
+    "是否又重复“手 + 手机 + 远景异常”？"
+  ]
 }

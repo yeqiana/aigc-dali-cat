@@ -40,8 +40,17 @@ def main():
     assert "visual_profile_bridge_v224" in backend
     assert "compile_prompt_contract" in backend
 
-    rules = (ROOT / "rules/photography_os_default_rules.md").read_text(encoding="utf-8")
+    archived_rules = ROOT / "docs/archive/2026-09-07/photography_os_default_rules.md"
+    rules = archived_rules.read_text(encoding="utf-8")
     assert "STORY_OS_V228_PHOTOGRAPHY_CONTINUITY_START" in rules
+
+    questions = g.get("review_questions") or []
+    assert len(questions) == 11, "capture grammar must carry the 11 per-frame review questions"
+    assert questions[0] == "谁拍的？"
+    assert questions[1] == "为什么此刻拍？"
+    assert "远景异常" in questions[-1]
+    mirror = json.loads((ROOT / "meta/capture_grammar/default_capture_grammar_v226.json").read_text(encoding="utf-8-sig"))
+    assert mirror["default_capture_grammar"] == g["grammar_id"]
 
     print("CAPTURE/SEQUENCE GRAMMAR LOCAL-SAFE INTEGRATION SELF-TEST PASS")
 
