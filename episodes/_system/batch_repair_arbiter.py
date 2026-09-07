@@ -1,21 +1,16 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, subprocess, sys
+import json
 from pathlib import Path
 import frame_failure_assessment
 import runtime_trace
+import ledger_call
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
 
-def _run(cmd):
-    return subprocess.run([str(x) for x in cmd],cwd=ROOT,check=False,stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
-
 def authorize_single_repair(ep:Path,frame:int,reason:str)->tuple[bool,str]:
-    cp=_run([sys.executable,SYSTEM/"production_ledger.py","review",ep,"--frame",f"{frame:02d}",
-        "--decision","repair","--notes",reason])
-    return cp.returncode==0,cp.stdout
+    return ledger_call.review(ep, frame=frame, decision="repair", notes=reason)
 
 def assess(ep:Path,frame:int,scout:dict,*,batch_complete:bool,batch_id:str)->dict:
     result=frame_failure_assessment.assess(ep,frame,scout,batch_complete=batch_complete)

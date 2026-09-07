@@ -15,7 +15,6 @@ import datetime as dt
 import json
 import os
 import subprocess
-import sys
 import uuid
 from pathlib import Path
 
@@ -38,6 +37,7 @@ import resource_library
 import runtime_portability
 import async_scheduler_adapter
 import runtime_event_collector
+import ledger_call
 import production_recovery
 from runtime_atomic_store import atomic_write_json
 
@@ -93,10 +93,6 @@ def repo_file(raw:str)->Path:
 
 def repo_rel(path:Path)->str:
     return path.resolve().relative_to(ROOT.resolve()).as_posix()
-
-
-def run(cmd:list[object])->subprocess.CompletedProcess[str]:
-    return subprocess.run([str(x) for x in cmd],cwd=ROOT,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
 
 
 def load_queue(ep:Path)->dict:
@@ -284,16 +280,29 @@ def current_contract_sha(ep:Path,frame:int)->str:
     return p["contract_sha256"]
 
 
+def _resolve_prompt(item: dict) -> Path:
+    raw = Path(str(item["prompt_file"]))
+    return raw if raw.is_absolute() else (ROOT / raw).resolve()
+
+
+def _ledger_references(item: dict) -> list[str]:
+    return [f"{(ROOT / ref['path']).resolve()}::{ref['role']}::{ref['kind']}"
+            for ref in item.get("references") or []]
+
+
 def ledger_begin(ep:Path,item:dict)->tuple[bool,str]:
-    prompt=repo_file(item["prompt_file"])
-    cmd=[sys.executable,SYSTEM/"production_ledger.py","begin",ep,"--frame",f"{int(item['frame']):02d}","--kind",item["kind"],"--prompt-file",prompt,"--capture-id",item["capture_id"],"--model",item.get("model") or "default","--quality",item.get("quality") or DEFAULT_IMAGE_QUALITY,"--notes",f"phase6 scheduler item={item['id']} scope={item['scope']}"]
-    for ref in item.get("references") or []:
-        cmd += ["--reference",f"{ROOT/ref['path']}::{ref['role']}::{ref['kind']}"]
-    transaction_id=str((item.get("execution") or {}).get("transaction_id") or "")
-    if transaction_id:
-        cmd += ["--runtime-transaction-id",transaction_id]
-    cp=run(cmd)
-    return cp.returncode==0,cp.stdout
+    return ledger_call.begin(
+        ep,
+        frame=int(item["frame"]),
+        kind=item["kind"],
+        prompt_file=_resolve_prompt(item),
+        capture_id=item["capture_id"],
+        model=item.get("model") or "default",
+        quality=item.get("quality") or DEFAULT_IMAGE_QUALITY,
+        notes=f"phase6 scheduler item={item['id']} scope={item['scope']}",
+        references=_ledger_references(item),
+        transaction_id=str((item.get("execution") or {}).get("transaction_id") or "") or None,
+    )
 
 
 def backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->dict:
@@ -311,18 +320,17 @@ def ledger_success(ep:Path,item:dict,result:dict)->tuple[bool,str]:
     current=current_contract_sha(ep,int(item["frame"]))
     if returned and str(returned).lower()!=current.lower():
         return False,f"backend frame contract drift returned={returned} current={current}"
-    command=[sys.executable,SYSTEM/"production_ledger.py","success",ep,"--frame",f"{int(item['frame']):02d}","--path",result["output"]]
     receipt=((result.get("payload") or {}).get("provider_receipt") or {}).get("path")
+    receipt_path=None
     if receipt:
-        receipt_path=Path(receipt)
+        receipt_path=Path(str(receipt))
         if not receipt_path.is_absolute(): receipt_path=ROOT/receipt_path
-        command += ["--provider-receipt",receipt_path]
-    cp=run(command)
-    return cp.returncode==0,cp.stdout
+    return ledger_call.success(ep, frame=int(item["frame"]), path=Path(str(result["output"])),
+                               provider_receipt=receipt_path)
 
 
 def ledger_tech_fail(ep:Path,item:dict,code:str,message:str)->None:
-    run([sys.executable,SYSTEM/"production_ledger.py","tech-fail",ep,"--frame",f"{int(item['frame']):02d}","--code",code,"--message",message[:1000]])
+    ledger_call.tech_fail(ep, frame=int(item["frame"]), code=code, message=message)
 
 
 def classify_error(text:str)->str:

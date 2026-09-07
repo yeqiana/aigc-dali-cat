@@ -2,7 +2,7 @@
 from __future__ import annotations
 import asyncio
 import uuid
-import datetime as dt, json, subprocess, sys, time
+import datetime as dt, json, time
 from pathlib import Path
 
 import batch_capability_probe
@@ -24,6 +24,7 @@ import runtime_portability
 import production_batch_review
 import async_scheduler_adapter
 import runtime_event_collector
+import ledger_call
 import production_recovery
 from runtime_atomic_store import atomic_write_json
 CAPABILITY_WAIT=24
@@ -79,9 +80,6 @@ def load_queue(ep):
     return q
 def save_queue(ep,q):
     q["updated_at"]=now();write_json(ep/QUEUE_REL,q)
-def _run(cmd):
-    return subprocess.run([str(x) for x in cmd],cwd=ROOT,check=False,stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
 def ledger(ep):
     p=ep/"meta/production-ledger.json";return read_json(p) if p.is_file() else {}
 def ledger_state(ep,frame):
@@ -101,19 +99,24 @@ def current_contract_sha(ep,frame):
     if not p:raise ValueError(f"frame {frame:02d} missing Frame Contract provenance")
     return p["contract_sha256"]
 def ledger_begin(ep,item):
+    references=[f"{(ROOT / ref['path']).resolve()}::{ref['role']}::{ref['kind']}"
+                for ref in item.get("references") or []]
     prompt=(ROOT/item["prompt_file"]).resolve()
-    cmd=[sys.executable,SYSTEM/"production_ledger.py","begin",ep,"--frame",f"{int(item['frame']):02d}",
-        "--kind",item["kind"],"--prompt-file",prompt,"--capture-id",item["capture_id"],
-        "--model",item.get("model") or "default","--quality",item.get("quality") or DEFAULT_QUALITY,
-        "--notes",f"V2.4 batch scheduler item={item['id']}"]
-    if item.get("batch_id"):
-        cmd += ["--batch-id",str(item["batch_id"])]
-    transaction_id=str((item.get("execution") or {}).get("transaction_id") or "")
-    if transaction_id:
-        cmd += ["--runtime-transaction-id",transaction_id]
-    for ref in item.get("references") or []:
-        cmd += ["--reference",f"{ROOT/ref['path']}::{ref['role']}::{ref['kind']}"]
-    cp=_run(cmd);return cp.returncode==0,cp.stdout
+    return ledger_call.begin(
+        ep,
+        frame=int(item["frame"]),
+        kind=item["kind"],
+        prompt_file=prompt,
+        capture_id=item["capture_id"],
+        model=item.get("model") or "default",
+        quality=item.get("quality") or DEFAULT_QUALITY,
+        notes=f"V2.4 batch scheduler item={item['id']}",
+        references=references,
+        batch_id=str(item["batch_id"]) if item.get("batch_id") else None,
+        transaction_id=str((item.get("execution") or {}).get("transaction_id") or "") or None,
+    )
+
+
 def ledger_success(ep,item,res):
     policy=(res.get("payload") or {}).get("image_model") or {}
     if str(policy.get("model") or "")!=str(item.get("model") or ""):
@@ -123,14 +126,17 @@ def ledger_success(ep,item,res):
     returned=((res.get("payload") or {}).get("frame_contract") or {}).get("contract_sha256")
     if returned and str(returned).lower()!=current_contract_sha(ep,int(item["frame"])).lower():
         return False,"CONTRACT_DRIFT"
-    cmd=[sys.executable,SYSTEM/"production_ledger.py","success",ep,"--frame",f"{int(item['frame']):02d}","--path",res["output"]]
     receipt=((res.get("payload") or {}).get("provider_receipt") or {}).get("path")
+    receipt_path=None
     if receipt:
-        rp=Path(receipt);rp=rp if rp.is_absolute() else ROOT/rp;cmd += ["--provider-receipt",rp]
-    cp=_run(cmd);return cp.returncode==0,cp.stdout
+        receipt_path=Path(str(receipt))
+        if not receipt_path.is_absolute(): receipt_path=ROOT/receipt_path
+    return ledger_call.success(ep, frame=int(item["frame"]), path=Path(str(res["output"])),
+                               provider_receipt=receipt_path)
+
+
 def ledger_tech_fail(ep,item,code,message):
-    _run([sys.executable,SYSTEM/"production_ledger.py","tech-fail",ep,"--frame",f"{int(item['frame']):02d}",
-        "--code",code,"--message",message[:1000]])
+    ledger_call.tech_fail(ep, frame=int(item["frame"]), code=code, message=message)
 
 def _fallback_single(ep,item,timeout,codex):
     ok,msg=ledger_begin(ep,item)

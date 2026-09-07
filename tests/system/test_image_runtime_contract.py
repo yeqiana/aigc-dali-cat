@@ -88,6 +88,96 @@ class NormalizePolicyTests(unittest.TestCase):
 
 
 class BackendAndLedgerContractTests(unittest.TestCase):
+    def _ready_episode(self, td: str) -> Path:
+        ep = Path(td)
+        (ep / "meta").mkdir()
+        (ep / "meta/release-manifest.json").write_text(
+            json.dumps({"episode": {"aspect_ratio": "4:5"}, "release": {"body_frame_count": 1}}),
+            encoding="utf-8",
+        )
+        production_ledger.init_ledger(ep)
+        return ep
+
+    def _queue_item(self, prompt: Path) -> dict:
+        return {"id": "q-recovery-01", "frame": 1, "kind": "original", "scope": "batch",
+                "prompt_file": str(prompt), "capture_id": "CP01", "model": "gpt-image-2",
+                "quality": "high", "references": []}
+
+    def _no_spawn(self) -> mock._patch:
+        return mock.patch("subprocess.run",
+                          side_effect=AssertionError("ledger must not spawn a subprocess"))
+
+    def test_ledger_bridge_begin_and_tech_fail_are_in_process(self):
+        with tempfile.TemporaryDirectory() as td:
+            ep = self._ready_episode(td)
+            prompt = Path(td) / "prompt.md"
+            prompt.write_text("ordinary snapshot", encoding="utf-8")
+            item = self._queue_item(prompt)
+            with self._no_spawn():
+                ok, msg = image_scheduler.ledger_begin(ep, item)
+            self.assertTrue(ok, msg)
+            data = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))
+            self.assertEqual(data["frames"]["01"]["status"], "GENERATING")
+            with self._no_spawn():
+                ok2, msg2 = image_scheduler.ledger_begin(ep, item)
+            self.assertFalse(ok2)
+            self.assertIn("cannot begin original", msg2)
+            with self._no_spawn():
+                image_scheduler.ledger_tech_fail(ep, item, "WORKER_FAILED", "boom")
+            data = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))
+            self.assertEqual(data["frames"]["01"]["status"], "TECH_FAILED")
+
+    def test_batch_scheduler_ledger_begin_is_in_process(self):
+        import batch_scheduler
+        with tempfile.TemporaryDirectory() as td:
+            ep = self._ready_episode(td)
+            prompt = Path(td) / "prompt.md"
+            prompt.write_text("ordinary snapshot", encoding="utf-8")
+            with self._no_spawn():
+                ok, msg = batch_scheduler.ledger_begin(ep, self._queue_item(prompt))
+            self.assertTrue(ok, msg)
+            data = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))
+            self.assertEqual(data["frames"]["01"]["status"], "GENERATING")
+
+    def test_ledger_bridge_maps_cli_failure_to_false_without_exit(self):
+        import ledger_call
+        with tempfile.TemporaryDirectory() as td:
+            ep = self._ready_episode(td)
+            prompt = Path(td) / "prompt.md"
+            prompt.write_text("ordinary snapshot", encoding="utf-8")
+            with self._no_spawn():
+                ok, msg = ledger_call.begin(
+                    ep, frame=1, kind="original", prompt_file=prompt, capture_id="CP01",
+                    model="gpt-image-2", quality="high", notes="bridge test")
+            self.assertTrue(ok, msg)
+            ok2, msg2 = ledger_call.success(ep, frame=1, path=Path(td) / "missing.png")
+            self.assertFalse(ok2)
+            self.assertIn("candidate not found", msg2)
+
+    def test_repair_arbiter_review_is_in_process(self):
+        import batch_repair_arbiter
+        import ledger_call
+        with tempfile.TemporaryDirectory() as td:
+            ep = self._ready_episode(td)
+            prompt = Path(td) / "prompt.md"
+            prompt.write_text("ordinary snapshot", encoding="utf-8")
+            with self._no_spawn():
+                ok, msg = ledger_call.begin(
+                    ep, frame=1, kind="original", prompt_file=prompt, capture_id="CP01",
+                    model="gpt-image-2", quality="high", notes="bridge test")
+            self.assertTrue(ok, msg)
+            canvas = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))["canvas"]
+            candidate = Path(td) / "candidate.png"
+            Image.new("RGB", (canvas["width"], canvas["height"]), (30, 40, 50)).save(candidate, "PNG")
+            with self._no_spawn():
+                ok, msg = ledger_call.success(ep, frame=1, path=candidate)
+            self.assertTrue(ok, msg)
+            with self._no_spawn():
+                ok2, msg2 = batch_repair_arbiter.authorize_single_repair(ep, 1, "unit bridge test")
+            self.assertTrue(ok2, msg2)
+            data = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))
+            self.assertEqual(data["frames"]["01"]["status"], "CONTENT_FAILED")
+
     def test_worker_consumes_exact_canvas_and_high_quality(self):
         prompt = codex_subscription_image.worker_prompt("scene", [], "1080x1920")
         self.assertIn("quality=high", prompt)

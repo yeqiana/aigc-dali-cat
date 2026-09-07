@@ -586,14 +586,6 @@ def content_repair_limit(data:dict)->int:
     return value
 
 
-def content_repair_limit(data:dict)->int:
-    # Existing ledgers freeze their policy; legacy ledgers keep the original limit.
-    value=(data.get("policy") or {}).get("max_content_repairs_per_frame",1)
-    if type(value) is not int or value not in {0,1}:
-        raise ValueError("max_content_repairs_per_frame must be 0 or 1 under the production standard")
-    return value
-
-
 def cmd_review(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
