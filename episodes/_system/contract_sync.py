@@ -78,7 +78,6 @@ REQUIRED_CAPABILITIES = {
 }
 ADAPTER_SKILLS = [
     Path("skills/dali-cat-story/SKILL.md"),
-    Path(".agents/skills/dali-cat-story/SKILL.md"),
 ]
 
 
@@ -428,8 +427,8 @@ def collect_errors(root: Path | None = None) -> list[str]:
                 errors.append(f"{rel.as_posix()} missing adapter contract token: {token}")
         if "Skill is an adapter, not a Story OS copy" not in text:
             errors.append(f"{rel.as_posix()} missing thin-adapter invariant")
-    if len(adapter_texts) == 2 and adapter_texts[0][1] != adapter_texts[1][1]:
-        errors.append("skills/ and .agents/ dali-cat-story adapter contracts are not byte-equivalent")
+    if len({text for _, text in adapter_texts}) > 1:
+        errors.append("dali-cat-story adapter contracts are not byte-equivalent")
 
     bootstrap = skill_scripts / "bootstrap_episode.py"
     if not bootstrap.is_file():
@@ -518,7 +517,6 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "python episodes/_system/incremental_frame_review.py self-test",
             "python episodes/_system/media_workspace.py self-test",
             "python episodes/_system/story_os.py doctor",
-            ".agents/skills/dali-cat-story/**",
         ]:
             if token not in wf:
                 errors.append(f"CI missing Story OS hardening check: {token}")

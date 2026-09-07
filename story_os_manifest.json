@@ -261,8 +261,7 @@
     "local_runtime_log_hygiene"
   ],
   "adapters": [
-    "skills/dali-cat-story",
-    ".agents/skills/dali-cat-story"
+    "skills/dali-cat-story"
   ],
   "invariants": [
     "Skill is an adapter, not a Story OS copy.",

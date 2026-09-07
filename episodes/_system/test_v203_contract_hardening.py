@@ -71,8 +71,9 @@ class StoryOSContractHardeningTests(unittest.TestCase):
 
     def test_adapter_contracts_are_synchronized(self) -> None:
         primary = (ROOT / "skills/dali-cat-story/SKILL.md").read_text(encoding="utf-8-sig")
-        agents = (ROOT / ".agents/skills/dali-cat-story/SKILL.md").read_text(encoding="utf-8-sig")
-        self.assertEqual(primary, agents)
+        self.assertFalse((ROOT / ".agents/skills/dali-cat-story/SKILL.md").exists(),
+                         ".agents duplicate adapter copy must be removed")
+        self.assertEqual(self.manifest()["adapters"], ["skills/dali-cat-story"])
         self.assertIn(self.manifest()["platform_version"], primary)
         self.assertIn("Skill is an adapter, not a Story OS copy", primary)
 

@@ -62,7 +62,6 @@ def run_doctor():
         "standards/AUTHORITY_INDEX.json",
         "runtimes/runtime-contract.json",
         "skills/dali-cat-story/SKILL.md",
-        ".agents/skills/dali-cat-story/SKILL.md",
         "episodes/_system/story_os_contract.py",
         "episodes/_system/contract_sync.py",
         "episodes/_system/requirements.txt",
