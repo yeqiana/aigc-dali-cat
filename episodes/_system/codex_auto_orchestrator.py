@@ -16,6 +16,7 @@ import image_model_policy
 import production_ledger
 import runtime_router
 import story_json
+import runtime_timeout_policy
 
 ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=Path('meta/runtime-checkpoint.json')
 STORY_OS_VERSION=story_os_version(); STATES=canonical_stages()
@@ -250,7 +251,7 @@ def run_worker(args,resume):
 def main():
     ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest='cmd',required=True)
     for name in ('run','resume'):
-        p=sub.add_parser(name); p.add_argument('episode_dir'); p.add_argument('--full-auto',action='store_true'); p.add_argument('--codex'); p.add_argument('--timeout',type=int,default=7200); p.add_argument('--runtime-request')
+        p=sub.add_parser(name); p.add_argument('episode_dir'); p.add_argument('--full-auto',action='store_true'); p.add_argument('--codex'); p.add_argument('--timeout',type=int,default=None); p.add_argument('--runtime-request')
     p=sub.add_parser('status'); p.add_argument('episode_dir'); p=sub.add_parser('postflight'); p.add_argument('episode_dir'); sub.add_parser('self-test')
     a=ap.parse_args()
     if a.cmd=='self-test':
@@ -264,5 +265,6 @@ def main():
     if active_runtime!='CODEX' and not a.codex:
         print('CODEX_RUNTIME_NOT_SELECTED: set STORY_OS_RUNTIME=CODEX or pass --codex explicitly; local Codex will not be started from WORK/WEB')
         return 20
+    a.timeout = runtime_timeout_policy.resolve('codex_supervisor_run', a.timeout)
     return run_worker(a,a.cmd=='resume')
 if __name__=='__main__': raise SystemExit(main())

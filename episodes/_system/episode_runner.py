@@ -11,6 +11,7 @@ import runtime_resume_token
 import runner_state_store
 import runtime_checkpoint
 import next_action
+import runtime_timeout_policy
 
 TERMINAL = {"PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED"}
 
@@ -36,10 +37,11 @@ def execute_cycle(episode: Path) -> int:
         if action["action"] == "RETRY_TECHNICAL_FAILURES":
             image_scheduler.retry_tech(episode)
         workers = int(storyos_config.get_path(storyos_config.load_config(), "production.max_inflight_images"))
+        worker_timeout = runtime_timeout_policy.seconds("image_worker_request")
         try:
             if batch_scheduler.should_use(episode):
-                return batch_scheduler.run(episode, workers, 600, None)
-            return image_scheduler.run_scheduler_async(episode, workers, 600, None)
+                return batch_scheduler.run(episode, workers, worker_timeout, None)
+            return image_scheduler.run_scheduler_async(episode, workers, worker_timeout, None)
         finally:
             next_action.write(episode)
     return runtime_dag.execute(episode)

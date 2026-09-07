@@ -6,7 +6,14 @@ Every runtime role that needs a timeout default reads it here, and the YAML
 section config/storyos.yaml:timeout_policy is the human-editable authority.
 Values equal the historical defaults so behavior does not change until a
 deliberate tuning decision is made. Clamp bounds reproduce the two existing
-cap semantics (fast frame scout 60..240, speculative image lane 60..600).
+full-range cap semantics (fast frame scout 60..240, speculative image lane
+60..600); VALID_RANGE additionally carries the provider channel bound of
+image_worker_request (60..1200) used for config validation only.
+
+- ``resolve(role, None)``: configured/CLI default path.
+- ``resolve(role, explicit)``: an explicit CLI/library override wins as-is.
+- ``clamp(role, value)``: reproduce the historical full-range clamps.
+- ``cap(role, value)``: reproduce the historical upper-only forwarding caps.
 """
 from __future__ import annotations
 
@@ -33,6 +40,14 @@ REQUIRED_ROLES: tuple[str, ...] = tuple(DEFAULT_SECONDS)
 CLAMP_BOUNDS: dict[str, tuple[int, int]] = {
     "fast_scout": (60, 240),
     "image_lane_run": (60, 600),
+}
+
+# role -> allowed default range when the YAML policy is validated; absent
+# role means the default is unbounded. image_worker_request is validated by
+# the provider channel bound (60..1200) that used to live only in the CLI.
+VALID_RANGE: dict[str, tuple[int, int]] = {
+    **CLAMP_BOUNDS,
+    "image_worker_request": (60, 1200),
 }
 
 
@@ -62,6 +77,21 @@ def seconds(role: str) -> int:
     return configured_seconds(role)
 
 
+def resolve(role: str, timeout: object = None) -> int:
+    """Return an explicit API/CLI timeout, or the configured role default.
+
+    CLI overrides keep priority: parser defaults are None and pass through
+    here, so the YAML timeout_policy section is the only default authority
+    (values preserve the historical defaults).
+    """
+    if timeout is None:
+        return configured_seconds(role)
+    value = int(timeout)
+    if value <= 0:
+        raise ValueError(f"timeout for role {role!r} must be a positive int")
+    return value
+
+
 def clamp(role: str, value: int) -> int:
     """Clamp value to the role bounds (identity when role is unbound)."""
     bounds = CLAMP_BOUNDS.get(role)
@@ -71,16 +101,36 @@ def clamp(role: str, value: int) -> int:
     return max(low, min(high, int(value)))
 
 
+def cap(role: str, value: int) -> int:
+    """Upper-only forwarding cap (min(value, role high bound))."""
+    bounds = CLAMP_BOUNDS.get(role)
+    if bounds is None:
+        raise ValueError(f"no upper bound for role: {role}")
+    return min(bounds[1], int(value))
+
+
 def self_test() -> None:
     cfg = storyos_config.load_config()
     policy = storyos_config.get_path(cfg, "timeout_policy") or {}
     for role in REQUIRED_ROLES:
         assert policy.get(role) == DEFAULT_SECONDS[role], role
+        rng = VALID_RANGE.get(role)
+        if rng is not None:
+            assert rng[0] <= policy[role] <= rng[1], role
     assert clamp("fast_scout", 10_000) == 240
     assert clamp("fast_scout", 10) == 60
     assert clamp("image_lane_run", 10) == 60
     assert clamp("image_lane_run", 10_000) == 600
     assert clamp("review_critic", 123) == 123
+    assert cap("fast_scout", 10) == 10
+    assert cap("fast_scout", 300) == 240
+    try:
+        cap("review_critic", 1)
+        raise AssertionError("cap of unbound role must raise")
+    except ValueError:
+        pass
+    assert resolve("review_critic", None) == DEFAULT_SECONDS["review_critic"]
+    assert resolve("review_critic", 42) == 42
     print("RUNTIME TIMEOUT POLICY SELF-TEST PASS")
 
 
@@ -98,4 +148,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

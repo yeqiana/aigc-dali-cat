@@ -130,9 +130,10 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("production.max_content_repairs_per_frame must be 0 or 1")
     policy = get_path(cfg, "timeout_policy")
     try:
-        from runtime_timeout_policy import REQUIRED_ROLES
+        from runtime_timeout_policy import REQUIRED_ROLES, VALID_RANGE
     except ImportError:
         REQUIRED_ROLES = ()
+        VALID_RANGE = {}
     if not isinstance(policy, dict):
         errors.append("timeout_policy must be a mapping")
     else:
@@ -144,6 +145,10 @@ def validate(data: dict | None = None) -> list[str]:
                 errors.append(f"timeout_policy has unknown key: {role}")
             elif not isinstance(value, int) or isinstance(value, bool) or value <= 0:
                 errors.append(f"timeout_policy.{role} must be a positive int")
+            else:
+                rng = VALID_RANGE.get(role)
+                if rng is not None and not rng[0] <= value <= rng[1]:
+                    errors.append(f"timeout_policy.{role} must be within {rng[0]}..{rng[1]}")
     return errors
 
 

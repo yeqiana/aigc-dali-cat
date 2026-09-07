@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
 from story_os_contract import canonical_stages
 import story_json
+import runtime_timeout_policy
 STAGES=tuple(canonical_stages())
 SPECIAL = {"repair_only","release_only","data_review"}
 
@@ -71,7 +72,8 @@ def _run_scoped(ep: Path, step: str, codex: str | None, timeout: int, mode: str)
         product_runtime_adapter.print_request(request)
         return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
     import scoped_codex_worker
-    rc,log=scoped_codex_worker.run_step(ep,step,codex_raw=codex,timeout=min(timeout,3600))
+    # Cap one scoped step at the role's configured default (historical literal 3600).
+    rc,log=scoped_codex_worker.run_step(ep,step,codex_raw=codex,timeout=min(timeout,runtime_timeout_policy.seconds("codex_scoped_step")))
     print(f"RUNTIME MODE {step}: rc={rc} log={log}")
     return rc
 

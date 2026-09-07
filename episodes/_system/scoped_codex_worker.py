@@ -13,6 +13,7 @@ import episode_performance
 import storyos_config
 import runtime_router
 import product_runtime_adapter
+import runtime_timeout_policy
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -176,8 +177,10 @@ Read the embedded FAST_RUNTIME_INDEX first. Do NOT recursively scan the reposito
 Stop when the bounded target is reached. The parent runtime independently verifies all gates.
 """
 
-def run_step(ep,step,codex_raw=None,timeout=3600):
+def run_step(ep,step,codex_raw=None,timeout=None):
     if step not in STEP_DIRECTIVES: raise ValueError(f"unknown scoped step: {step}")
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("codex_scoped_step")
     perf_run=episode_performance.safe_begin_stage(ep,step,source="scoped_codex_worker")
     rc=99;log=ep/"meta/scoped-workers"/f"{step.lower()}.jsonl";log.parent.mkdir(parents=True,exist_ok=True)
     if not runtime_router.local_codex_allowed(explicit=bool(codex_raw)):
@@ -208,10 +211,10 @@ def self_test():
 
 def main():
     ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True)
-    p=sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("step",choices=sorted(STEP_DIRECTIVES)); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=3600)
+    p=sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("step",choices=sorted(STEP_DIRECTIVES)); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=None)
     sub.add_parser("self-test"); a=ap.parse_args()
     if a.cmd=="self-test": self_test(); return 0
-    ep=Path(a.episode_dir).resolve(); rc,log=run_step(ep,a.step,codex_raw=a.codex,timeout=a.timeout)
+    ep=Path(a.episode_dir).resolve(); rc,log=run_step(ep,a.step,codex_raw=a.codex,timeout=runtime_timeout_policy.resolve("codex_scoped_step", a.timeout))
     print(json.dumps({"step":a.step,"returncode":rc,"log":log},ensure_ascii=False)); return rc
 
 if __name__=="__main__": raise SystemExit(main())

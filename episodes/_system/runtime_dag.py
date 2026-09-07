@@ -27,6 +27,7 @@ import runtime_router
 import product_runtime_adapter
 import next_action
 import episode_performance
+import runtime_timeout_policy
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -83,8 +84,10 @@ def plan(ep):
         out.append(row)
     return {"current_state":cur,"steps":out}
 
-def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
+def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
     dag=load_dag(); specs=spec_rows(); total_start=time.monotonic()
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("codex_supervisor_run")
     mode=request_mode(ep)
     mode_errors=runtime_mode_router.guard(ep,mode)
     if mode_errors:
@@ -164,7 +167,7 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
                         note=f"provisional_release={prep}"
                     except Exception as exc:
                         note=f"provisional_release_nonblocking_failure={exc}"
-                step_timeout=min(timeout,int(dag.get("scoped_worker_timeout_seconds") or 3600))
+                step_timeout=min(timeout,int(dag.get("scoped_worker_timeout_seconds") or runtime_timeout_policy.seconds("codex_scoped_step")))
                 rc,log=scoped_codex_worker.run_step(ep,s.step_id,codex_raw=codex,timeout=step_timeout); note=(note+" "+f"log={log}").strip()
         else:
             rc=2; note=f"unknown executor {s.executor}"
@@ -226,7 +229,7 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
             # generate at most six non-approvable candidates instead of idling.
             if s.step_id=="VISUAL_LOCK" and mode=="image_continue":
                 try:
-                    spec=speculative_production.run(ep,codex=codex,timeout=min(600,max(60,int(timeout))),max_frames=6)
+                    spec=speculative_production.run(ep,codex=codex,timeout=runtime_timeout_policy.clamp("image_lane_run", int(timeout)),max_frames=6)
                     spec_elapsed=float(spec.get("elapsed_seconds") or 0.0)
                     if run_id: perf.record_step(ep,run_id,"SPECULATIVE_PRODUCTION","PASS" if spec.get("status")=="GENERATED_CANDIDATES" else "SKIPPED",spec_elapsed,json.dumps(spec,ensure_ascii=True)[:500])
                     checkpoint(ep,"SPECULATIVE_PRODUCTION","PASS" if spec.get("status")=="GENERATED_CANDIDATES" else "SKIPPED",spec_elapsed,json.dumps(spec,ensure_ascii=True)[:1000])
@@ -236,14 +239,15 @@ def execute(ep,codex=None,timeout=7200,run_id=None,trace_id=None):
             return rc
         if mode=="preproduction_only" and s.step_id=="PREIMAGE_COMPILE":
             try:
-                provisional_release.build(ep,codex,900)
+                # 900s was the historical review-critic default; build() now owns that default.
+                provisional_release.build(ep,codex)
             except Exception as exc:
                 print("PROVISIONAL RELEASE NONBLOCKING:",exc)
             background.shutdown(wait=False,cancel_futures=True)
             next_action.write(ep)
             return 0
         if s.step_id=="CREATIVE_STORY" and provisional_future is None and bool(dag.get("provisional_release_parallel",True)):
-            provisional_future=background.submit(provisional_release.build,ep,codex,900)
+            provisional_future=background.submit(provisional_release.build,ep,codex)
     background.shutdown(wait=False)
     return 0
 
@@ -257,14 +261,14 @@ def main():
     ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("plan"); p.add_argument("episode_dir")
     for n in ("run","resume"):
-        p=sub.add_parser(n); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=7200)
+        p=sub.add_parser(n); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=None)
     p=sub.add_parser("show"); p.add_argument("episode_dir")
     sub.add_parser("self-test"); a=ap.parse_args()
     if a.cmd=="self-test": self_test(); return 0
     ep=Path(a.episode_dir).resolve()
     if a.cmd=="plan": print(json.dumps(plan(ep),ensure_ascii=True,indent=2)); return 0
     if a.cmd=="show": print(json.dumps(proto.load_state(ep),ensure_ascii=True,indent=2)); return 0
-    return execute(ep,codex=a.codex,timeout=a.timeout)
+    return execute(ep,codex=a.codex,timeout=runtime_timeout_policy.resolve("codex_supervisor_run", a.timeout))
 
 if __name__=="__main__": raise SystemExit(main())
 

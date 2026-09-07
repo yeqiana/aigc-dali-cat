@@ -29,6 +29,7 @@ import runtime_trace
 import request_router
 import product_runtime_adapter
 import next_action
+import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -170,7 +171,7 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("plan"); p.add_argument("episode_dir")
     for name in ("run", "resume"):
-        p = sub.add_parser(name); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=7200); p.add_argument("--request-file")
+        p = sub.add_parser(name); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None); p.add_argument("--request-file")
     p = sub.add_parser("performance"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
     args = ap.parse_args()
@@ -200,7 +201,7 @@ def main() -> int:
         print(json.dumps(plan(ep), ensure_ascii=False, indent=2)); return 0
     if args.cmd == "performance":
         print(json.dumps(perf.read(ep), ensure_ascii=False, indent=2)); return 0
-    return execute(ep, resume=args.cmd == "resume", full_auto=args.full_auto, codex=args.codex, timeout=args.timeout, request_file=args.request_file)
+    return execute(ep, resume=args.cmd == "resume", full_auto=args.full_auto, codex=args.codex, timeout=runtime_timeout_policy.resolve("codex_supervisor_run", args.timeout), request_file=args.request_file)
 
 
 if __name__ == "__main__":

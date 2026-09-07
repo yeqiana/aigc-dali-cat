@@ -9,6 +9,7 @@ from pathlib import Path
 
 from story_os_contract import canonical_stages, story_os_version
 import storyos_config
+import runtime_timeout_policy
 
 SYSTEM_DIR = Path(__file__).resolve().parent
 ROOT = SYSTEM_DIR.parents[1]
@@ -83,7 +84,7 @@ def main():
     p = sub.add_parser("performance"); p.add_argument("episode_dir")
     # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
     p = sub.add_parser("fast-path"); p.add_argument("fast_cmd", choices=["prepare","resume","capabilities","candidate","slo"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
-    p = sub.add_parser("dag"); p.add_argument("dag_cmd", choices=["plan", "run", "resume", "show"]); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=7200)
+    p = sub.add_parser("dag"); p.add_argument("dag_cmd", choices=["plan", "run", "resume", "show"]); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None)
     p = sub.add_parser("quota"); p.add_argument("quota_cmd", choices=["auto", "snapshot", "report"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("checklist"); p.add_argument("episode_dir"); p.add_argument("--no-validators", action="store_true")
     p = sub.add_parser("audit-text"); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
@@ -122,7 +123,7 @@ def main():
     p = sub.add_parser("quality"); p.add_argument("quality_cmd", choices=["enable","verify-story","verify-preimage","verify-release","show"]); p.add_argument("episode_dir")
     p = sub.add_parser("lineage"); p.add_argument("lineage_cmd", choices=["record","verify","show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("golden"); p.add_argument("golden_cmd", choices=["register","run","show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
-    p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--resume", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=7200); p.add_argument("--request-file")
+    p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--resume", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None); p.add_argument("--request-file")
     p = sub.add_parser("image-backend"); p.add_argument("backend_cmd", choices=["generate", "generate-for-frame", "self-test"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("delegated-delivery"); p.add_argument("episode_dir"); p.add_argument("delivery_cmd", choices=["build", "verify", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("delegated-approval"); p.add_argument("episode_dir"); p.add_argument("approval_cmd", choices=["record", "verify", "show"]); p.add_argument("kind", nargs="?", choices=["story_lock", "visual_lock", "release_lock"]); p.add_argument("extra", nargs=argparse.REMAINDER)
@@ -151,14 +152,14 @@ def main():
     if args.cmd == "dag":
         extra=[args.dag_cmd, str(ep)]
         if args.codex: extra += ["--codex", args.codex]
-        if args.dag_cmd in {"run","resume"}: extra += ["--timeout", str(args.timeout)]
+        if args.dag_cmd in {"run","resume"}: extra += ["--timeout", str(runtime_timeout_policy.resolve("codex_supervisor_run", args.timeout))]
         return forward("runtime_dag.py", extra)
     if args.cmd == "run":
         mode = "resume" if args.resume else "run"
         extra = [mode, str(ep)]
         if args.full_auto: extra.append("--full-auto")
         if args.codex: extra += ["--codex", args.codex]
-        extra += ["--timeout", str(args.timeout)]
+        extra += ["--timeout", str(runtime_timeout_policy.resolve("codex_supervisor_run", args.timeout))]
         if args.request_file: extra += ["--request-file", args.request_file]
         return forward("workflow_runner.py", extra)
     if args.cmd == "plan": return forward("workflow_runner.py", ["plan", str(ep)])
