@@ -355,6 +355,7 @@ def check_frame_review(path: Path, key: str, findings: list[Finding]) -> None:
 
 def check_production(repo_root: Path, episode_dir: Path, gates: dict, manifest: dict, findings: list[Finding], *, metadata_only: bool) -> None:
     semantic_required = semantic_frame_review_required(episode_dir)
+    from production_ledger import ACCEPTED_LEDGER_STATES, content_repair_limit
     ledger = load_json(episode_dir / "meta/production-ledger.json", findings)
     if ledger is None:
         return
@@ -371,9 +372,8 @@ def check_production(repo_root: Path, episode_dir: Path, gates: dict, manifest: 
         if not isinstance(frame, dict):
             findings.append(Finding("FAIL", "missing_production_frame", f"ledger missing frame {key}"))
             continue
-        if frame.get("status") not in {"PASSED", "LOCKED"}:
+        if frame.get("status") not in ACCEPTED_LEDGER_STATES:
             findings.append(Finding("FAIL", "production_status", f"{key}: status={frame.get('status')!r}, expected PASSED/LOCKED"))
-        from production_ledger import content_repair_limit
         if frame.get("content_repairs_used", 0) > content_repair_limit(ledger):
             findings.append(Finding("FAIL", "repair_limit", f"{key}: content_repairs_used exceeds frozen policy"))
         approved = frame.get("approved_asset")

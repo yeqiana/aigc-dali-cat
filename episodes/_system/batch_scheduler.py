@@ -26,13 +26,15 @@ import async_scheduler_adapter
 import runtime_event_collector
 import ledger_call
 import production_recovery
+import production_ledger
 from runtime_atomic_store import atomic_write_json
 CAPABILITY_WAIT=24
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
 QUEUE_REL=Path("meta/production-queue.json")
-READY_LEDGER_STATES={"ORIGINAL_READY","REPAIR_READY","PASSED","LOCKED"}
+
+READY_LEDGER_STATES=production_ledger.READY_LEDGER_STATES
 
 # Runtime result semantics. Keep technical recovery separate from host action.
 SUCCESS=0

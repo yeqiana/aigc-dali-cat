@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 
 import preproduction_handoff
+import production_ledger
 import product_runtime_adapter
 import runtime_execution
 import runtime_router
@@ -153,7 +154,7 @@ def derive(ep: Path) -> dict:
         except Exception:
             pass
         ledger=read_json(ep/"meta/production-ledger.json").get("frames") or {}
-        ready_states={"ORIGINAL_READY","REPAIR_READY","PASSED","LOCKED"}
+        ready_states=production_ledger.READY_LEDGER_STATES
         satisfied={int(k) for k,v in ledger.items() if str(k).isdigit() and v.get("status") in ready_states}
         satisfied.update(int(x.get("frame") or 0) for x in q.get("items") or [] if x.get("status")=="generated")
         runnable=[int(x["frame"]) for x in q.get("items") or [] if x.get("status")=="queued"

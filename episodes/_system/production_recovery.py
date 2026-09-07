@@ -22,8 +22,11 @@ QUEUE_REL = Path("meta/production-queue.json")
 LEDGER_REL = Path("meta/production-ledger.json")
 JOURNAL_REL = Path("meta/runtime/production-commit-journal.json")
 LIFECYCLE_DIR = Path("meta/image-workers")
-READY_LEDGER_STATES = {"ORIGINAL_READY", "REPAIR_READY", "PASSED", "LOCKED"}
-ACTIVE_LEDGER_STATES = {"GENERATING", "REPAIRING"}
+
+# Canonical vocabulary lives in production_ledger; keep these module-level
+# names so existing consumers (including tests) keep working.
+READY_LEDGER_STATES = production_ledger.READY_LEDGER_STATES
+ACTIVE_LEDGER_STATES = production_ledger.ACTIVE_LEDGER_STATES
 
 
 def now() -> str:

@@ -4,6 +4,7 @@
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json
 from pathlib import Path
+import production_ledger
 import runtime_capability_cache
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -30,7 +31,7 @@ def _ledger_summary(ledger):
         st=str((row or {}).get("status") or "PENDING");status_counts[st]=status_counts.get(st,0)+1
         if st in {"NEEDS_USER","CONTENT_FAILED"}:blocking.append(str(k).zfill(2))
         if st=="TECH_FAILED":tech.append(str(k).zfill(2))
-        if st in {"ORIGINAL_READY","REPAIR_READY","PASSED","LOCKED"}:ready.append(str(k).zfill(2))
+        if st in production_ledger.READY_LEDGER_STATES:ready.append(str(k).zfill(2))
     return {"frame_count":len(frames),"status_counts":status_counts,"blocking_frames":sorted(blocking),"tech_retry_frames":sorted(tech),"ready_frames":sorted(ready)}
 def _queue_summary(q):
     counts={}

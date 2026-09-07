@@ -8,18 +8,11 @@ from pathlib import Path
 
 from approval_lock import verify_lock
 from release_package import verify_payload
+from story_os_contract import canonical_stages
 from visual_profile import resolve_profile
 
 ROOT = Path(__file__).resolve().parents[2]
-STATES = [
-    'IDEA_LOCKED',
-    'STORYBOARD_LOCKED',
-    'VISUAL_CALIBRATED',
-    'PRODUCTION_PASSED',
-    'PUBLISH_READY',
-    'PUBLISHED',
-    'DATA_REVIEWED',
-]
+STATES = canonical_stages()
 
 
 def load_json(path: Path) -> dict:

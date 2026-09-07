@@ -39,6 +39,7 @@ import async_scheduler_adapter
 import runtime_event_collector
 import ledger_call
 import production_recovery
+import production_ledger
 from runtime_atomic_store import atomic_write_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -57,7 +58,8 @@ NON_REGENERATING_FAILURE_CODES = {
     "RUNTIME_CIRCUIT_OPEN",
     "CANDIDATE_COMMIT_FAILED",  # STORY_OS_V2_6_0_PERFORMANCE_RUNTIME
 }
-READY_LEDGER_STATES = {"ORIGINAL_READY","REPAIR_READY","PASSED","LOCKED"}
+
+READY_LEDGER_STATES = production_ledger.READY_LEDGER_STATES
 
 
 def now() -> str:

@@ -21,6 +21,7 @@ import fast_frame_scout as phase7_scout
 import runtime_router
 import runtime_provenance
 import product_review_adapter
+import production_ledger
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_DIR = Path("meta/frame-reviews")
@@ -269,7 +270,7 @@ def frame_records(ep: Path, *, require_files: bool) -> list[dict]:
         frame = frames[key]
         if not isinstance(frame, dict):
             raise ValueError(f"ledger frame {key} invalid")
-        if frame.get("status") not in {"PASSED", "LOCKED"}:
+        if frame.get("status") not in production_ledger.ACCEPTED_LEDGER_STATES:
             raise ValueError(f"frame {key} not production-passed: {frame.get('status')!r}")
         asset = frame.get("approved_asset")
         if not isinstance(asset, dict):

@@ -40,6 +40,11 @@ FRAME_STATES = {
     "LOCKED",
 }
 REFERENCE_KINDS = {"identity", "prop", "location", "capture_style"}
+# Canonical derived subsets of FRAME_STATES. Consumers import these instead of
+# re-typing the member sets so scheduler/recovery/gate vocabulary cannot drift.
+READY_LEDGER_STATES = frozenset({"ORIGINAL_READY", "REPAIR_READY", "PASSED", "LOCKED"})
+ACTIVE_LEDGER_STATES = frozenset({"GENERATING", "REPAIRING"})
+ACCEPTED_LEDGER_STATES = frozenset({"PASSED", "LOCKED"})
 
 
 def now_iso() -> str:
@@ -985,7 +990,7 @@ def cmd_audit(args: argparse.Namespace) -> None:
         lock = frame.get("lock")
         if isinstance(lock, dict) and isinstance(approved, dict) and lock.get("sha256") != approved.get("sha256"):
             failures.append(f"{key}: lock hash != approved hash")
-        if args.require_passed and status not in {"PASSED", "LOCKED"}:
+        if args.require_passed and status not in ACCEPTED_LEDGER_STATES:
             failures.append(f"{key}: not passed ({status})")
         if status == "TECH_FAILED":
             warnings.append(f"{key}: pending technical retry")

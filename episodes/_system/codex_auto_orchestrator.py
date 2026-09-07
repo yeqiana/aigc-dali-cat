@@ -12,6 +12,7 @@ from pathlib import Path
 
 from story_os_contract import canonical_stages, story_os_version
 import episode_performance
+import production_ledger
 import runtime_router
 
 ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=Path('meta/runtime-checkpoint.json')
@@ -195,7 +196,7 @@ def postflight(ep):
     if failed:return 'PAUSED',f'failed_frames present: {failed}'
     ledger_path=ep/'meta/production-ledger.json'
     if not ledger_path.is_file(): return 'PAUSED','production ledger missing'
-    ledger=read_json(ledger_path); incomplete=[f'{k}:{v.get("status")}' for k,v in (ledger.get('frames') or {}).items() if v.get('status') not in {'PASSED','LOCKED'}]
+    ledger=read_json(ledger_path); incomplete=[f'{k}:{v.get("status")}' for k,v in (ledger.get('frames') or {}).items() if v.get('status') not in production_ledger.ACCEPTED_LEDGER_STATES]
     if incomplete:return 'PAUSED','production ledger incomplete: '+', '.join(incomplete[:12])
     r=run_cmd([sys.executable,SYSTEM/'production_ledger.py','audit',ep,'--require-passed'])
     if r.returncode!=0:return 'PAUSED','production ledger not fully passed:\n'+r.stdout[-2000:]
