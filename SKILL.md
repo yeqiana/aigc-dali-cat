@@ -531,4 +531,5 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 禁止 Agent 使用 Bash heredoc、PowerShell here-string、嵌套 `powershell -Command`、`shell=True` 或把大段 JSON/多行 Python 塞进 shell。
 多行/结构化内容必须走 UTF-8 文件、stdin 或仓库 file edit/write API；路径作为 argv 元素传递，不手工拼引号。
 Final Visual Freeze 只绑定视觉 SHA，Caption 变化只触发 Caption ↔ Image Audit，不得重新拉起全量 Visual Critic。
+Golden/性能回归（B5）：`golden_episode_regression.py run` 读 `reports/golden-episode-registry.json` 逐项回归（当前空骨架：现役候选未同时具备 density/voice/capture/world/lineage/propagation/text 全零错误输入，不降门槛注册）；`performance_regression_v211.py replay` 回放 `tests/performance/replays/PERF-REPLAY-V2.1.1-20260831-停电夜蜕壳.json`。两入口已由 story-gates.yml `golden-replay` job（workflow_dispatch）接线，本机与远端执行同一命令。
 <!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_END -->
