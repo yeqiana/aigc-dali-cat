@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse, hashlib, json
 from pathlib import Path
 import multi_level_cache as cache
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 LIB=ROOT/"library"
@@ -14,7 +15,7 @@ RESOLVER_VERSION=3
 
 def read_json(p): return cache.read_json(p)
 def write_json(p,d):
-    p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 def file_sha(p):
     h=hashlib.sha256()
     with p.open("rb") as f:

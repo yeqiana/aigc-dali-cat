@@ -6,6 +6,7 @@ import argparse, datetime as dt, hashlib, json
 from pathlib import Path
 import production_ledger
 import runtime_capability_cache
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/resume-capsule.json")
@@ -15,16 +16,12 @@ STEP_BY_STATE={"IDEA_LOCKED":"CREATIVE_STORY","STORYBOARD_LOCKED":"VISUAL_LOCK",
 
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read_json(p):
-    p=Path(p)
-    if not p.is_file():return None
-    try:
-        d=json.loads(p.read_text(encoding="utf-8-sig"));return d if isinstance(d,dict) else None
-    except Exception:return None
+    return story_json.read_json(p, default=None)
 def sha(p):
     p=Path(p)
     return hashlib.sha256(p.read_bytes()).hexdigest() if p.is_file() else None
 def write_json(p,d):
-    p=Path(p);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 def _ledger_summary(ledger):
     frames=(ledger or {}).get("frames") or {};status_counts={}; blocking=[];tech=[];ready=[]
     for k,row in frames.items():

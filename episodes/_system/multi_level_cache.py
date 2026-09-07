@@ -10,6 +10,7 @@ L3 negative: explicit opt-in short-lived failure fingerprints (never used to sup
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, time
 from pathlib import Path
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 CACHE_ROOT=ROOT/".storyos_cache"
@@ -33,7 +34,7 @@ def read_json(path:Path):
     path=path.resolve(); stat=path.stat(); key=(str(path),stat.st_mtime_ns,stat.st_size)
     if key not in _PROCESS_JSON:
         _PROCESS_JSON.clear() if len(_PROCESS_JSON)>256 else None
-        data=json.loads(read_text(path))
+        data=story_json.read_json(path)
         if not isinstance(data,dict): raise ValueError(f"JSON root must be object: {path}")
         _PROCESS_JSON[key]=data
     return _PROCESS_JSON[key]

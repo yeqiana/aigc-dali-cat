@@ -12,6 +12,7 @@ import argparse, datetime as dt, hashlib, json, re
 from pathlib import Path
 import storyos_config
 import request_intent
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUESTS_DIR = ROOT / "runtime" / "requests"
@@ -38,12 +39,9 @@ def now():
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read_text(path): return path.read_text(encoding="utf-8-sig")
 def read_json(path):
-    data=json.loads(read_text(path))
-    if not isinstance(data,dict): raise ValueError(f"JSON root must be object: {path}")
-    return data
+    return story_json.read_json(path)
 def write_json(path,data):
-    path.parent.mkdir(parents=True,exist_ok=True)
-    path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(path, data)
 def contains_any(text,signals):
     low=text.lower(); return any(s.lower() in low for s in signals)
 def request_id(text):

@@ -19,6 +19,7 @@ import product_runtime_adapter
 import runtime_execution
 import runtime_router
 import visual_lock_baseline_gate
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/runtime/next-action.json")
@@ -32,11 +33,7 @@ def now() -> str:
 
 
 def read_json(path: Path) -> dict:
-    try:
-        data = json.loads(path.read_text(encoding="utf-8-sig"))
-        return data if isinstance(data, dict) else {}
-    except Exception:
-        return {}
+    return story_json.read_json(path, default={})
 
 
 def state(ep: Path) -> str:

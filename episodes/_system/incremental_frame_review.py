@@ -14,6 +14,7 @@ import frame_semantic_review as base
 from story_os_contract import story_os_version
 import runtime_router
 import runtime_provenance
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 STATE_REL = Path("meta/incremental-frame-review.json")
@@ -28,11 +29,11 @@ def now() -> str:
 
 
 def read_json(path: Path) -> dict:
-    return base.read_json(path)
+    return story_json.read_json(path)
 
 
 def write_json(path: Path, data: dict) -> None:
-    base.write_json(path, data)
+    story_json.write_json(path, data)
 
 
 def version_tuple(raw: object) -> tuple[int, ...]:

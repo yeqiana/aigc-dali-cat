@@ -19,6 +19,7 @@ from typing import Iterable
 
 from post_publish_review import CHECKPOINTS, REQUIRED_FOR_DATA_REVIEWED
 from story_os_contract import FOUR_ADMISSION_V21_POLICY, story_os_version
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT = ROOT / "reports" / "story-os-v21-migration-report.json"
@@ -30,15 +31,11 @@ def now() -> str:
 
 
 def read_json(path: Path) -> dict:
-    data = json.loads(path.read_text(encoding="utf-8-sig"))
-    if not isinstance(data, dict):
-        raise ValueError(f"JSON root must be object: {path}")
-    return data
+    return story_json.read_json(path)
 
 
 def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    story_json.write_json(path, data)
 
 
 def version_tuple(raw: object) -> tuple[int, ...]:

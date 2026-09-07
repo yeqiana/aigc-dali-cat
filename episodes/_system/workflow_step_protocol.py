@@ -4,6 +4,7 @@ from __future__ import annotations
 import datetime as dt, hashlib, json
 from dataclasses import asdict, dataclass
 from pathlib import Path
+import story_json
 
 DAG_REL = Path("meta/runtime-dag-state.json")
 
@@ -11,15 +12,10 @@ def now():
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
 def read_json(path):
-    data=json.loads(path.read_text(encoding="utf-8-sig"))
-    if not isinstance(data,dict): raise ValueError(f"JSON root must be object: {path}")
-    return data
+    return story_json.read_json(path)
 
 def write_json(path,data):
-    path.parent.mkdir(parents=True,exist_ok=True)
-    tmp=path.with_suffix(path.suffix+".tmp")
-    tmp.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
-    tmp.replace(path)
+    story_json.write_json(path, data)
 
 def evidence_hash(ep,paths):
     h=hashlib.sha256()

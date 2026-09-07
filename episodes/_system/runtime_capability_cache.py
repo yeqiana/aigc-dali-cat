@@ -9,6 +9,7 @@ Unknown vision capability is treated as unverified; rolling review must defer to
 from __future__ import annotations
 import argparse, datetime as dt, json, os, shutil
 from pathlib import Path
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/runtime-capabilities.json")
@@ -18,12 +19,9 @@ VALID_VISION={"verified","unverified","unavailable"}
 def now_dt(): return dt.datetime.now(dt.timezone.utc).astimezone()
 def now(): return now_dt().isoformat(timespec="seconds")
 def read_json(p):
-    d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict): raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 def write_json(p,d):
-    p=Path(p); p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 def ttl_seconds():
     try:return int(read_json(CFG).get("capability_cache_ttl_seconds") or 21600)
     except Exception:return 21600

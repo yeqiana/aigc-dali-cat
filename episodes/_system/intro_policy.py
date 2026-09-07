@@ -5,13 +5,14 @@ from __future__ import annotations
 import argparse, hashlib, json
 from pathlib import Path
 import multi_level_cache as cache
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 POOL=ROOT/"library/copy/intro-openers.json"
 REL=Path("meta/intro-policy.json")
 
 def read_json(p):return cache.read_json(p)
-def write_json(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+def write_json(p,d): story_json.write_json(p, d)
 def recent_families(ep):
     out=[]
     episodes=ep.parent

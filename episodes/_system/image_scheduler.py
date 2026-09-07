@@ -65,11 +65,11 @@ def now() -> str:
 
 
 def read_json(path: Path) -> dict:
-    return scheduler_core.read_json(path)
+    return story_json.read_json(path)
 
 
 def write_json(path: Path,data:dict)->None:
-    scheduler_core.write_json(path,data)
+    story_json.write_json(path, data)
 
 
 def resolve_ep(raw:str)->Path:
@@ -116,6 +116,7 @@ def ledger_state(ep:Path,frame:int)->str:
 
 
 from frame_risk import risk_priority
+import story_json
 
 
 def directive_dependency(ep:Path,frame:int)->list[int]:

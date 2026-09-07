@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/execution-capsules")
 import storyos_config
+import story_json
 _INDEX=storyos_config.load_index()
 AUTHORITY_FILES=_INDEX["capsule_authority_files"]
 STEP_EVIDENCE=_INDEX["stage_read_sets"]
@@ -48,12 +49,7 @@ def file_row(path,base):
     data=path.read_bytes()
     return {"path":path.relative_to(base).as_posix(),"exists":True,"sha256":sha_bytes(data),"bytes":len(data)}
 def read_json(path):
-    if not path.is_file(): return None
-    try:
-        data=json.loads(path.read_text(encoding="utf-8-sig"))
-        return data if isinstance(data,dict) else None
-    except Exception:
-        return None
+    return story_json.read_json(path, default=None)
 def current_state(ep):
     d=read_json(ep/"meta/episode-state.json") or {}
     return d.get("current_state")

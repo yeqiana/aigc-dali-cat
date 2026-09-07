@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from story_os_contract import canonical_stages
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -20,11 +21,7 @@ def run(args: list[object]) -> tuple[int, str]:
 
 
 def read_json(path: Path) -> dict:
-    try:
-        data = json.loads(path.read_text(encoding="utf-8-sig"))
-        return data if isinstance(data, dict) else {}
-    except Exception:
-        return {}
+    return story_json.read_json(path, default={})
 
 
 def current_state(ep: Path) -> str:

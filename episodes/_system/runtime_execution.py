@@ -8,16 +8,15 @@ runtime-execution.json may change only the current execution mode for handoff/re
 from __future__ import annotations
 import argparse, datetime as dt, json
 from pathlib import Path
+import story_json
 
 REL=Path("meta/runtime-execution.json")
 MODES={"full_auto","preproduction_only","image_continue","resume","repair_only","release_only","data_review"}
 
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read_json(p):
-    d=json.loads(p.read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict):raise ValueError(f"JSON root must be object: {p}")
-    return d
-def write_json(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    return story_json.read_json(p)
+def write_json(p,d): story_json.write_json(p, d)
 def request_mode(ep):
     p=ep/"meta/runtime-request.json"
     if not p.is_file():return "full_auto"

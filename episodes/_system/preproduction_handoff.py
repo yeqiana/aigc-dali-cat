@@ -6,16 +6,15 @@ import argparse, hashlib, json
 from pathlib import Path
 import character_contract, environment_contract, frame_contract, resource_library, runtime_execution
 import directing_quality
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/preproduction-handoff.json")
 BOUNDARY_MIGRATION_REL=Path("meta/preproduction-handoff-boundary-migration.json")  # STORY_OS_V211_PERF_RECOVERY
 
 def read_json(p):
-    d=json.loads(p.read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict):raise ValueError(f"JSON root must be object: {p}")
-    return d
-def write_json(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    return story_json.read_json(p)
+def write_json(p,d): story_json.write_json(p, d)
 def sha(p):
     h=hashlib.sha256()
     with p.open("rb") as f:
