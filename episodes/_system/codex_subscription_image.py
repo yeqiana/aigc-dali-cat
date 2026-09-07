@@ -29,6 +29,10 @@ ROOT = Path(__file__).resolve().parents[2]
 _CONFIG = storyos_config.load_config()
 CODEX_IMAGE_CONTROLLER_MODEL = str(storyos_config.get_path(_CONFIG, "runtime.codex_image_controller_model"))
 CODEX_IMAGE_REASONING_EFFORT = str(storyos_config.get_path(_CONFIG, "runtime.codex_image_reasoning_effort"))
+# 图片模型/质量回落的唯一配置源是 storyos.yaml 的 image.model / image.quality；
+# 不在函数默认值里复制字面量，避免改 yaml 后 worker 仍按旧模型生成。
+DEFAULT_IMAGE_MODEL = image_model_policy.DEFAULT_MODEL
+DEFAULT_IMAGE_QUALITY = image_model_policy.DEFAULT_QUALITY
 
 PNG = b'\x89PNG\r\n\x1a\n'
 JPEG = b'\xff\xd8\xff'
@@ -122,7 +126,7 @@ def controller_args() -> list[str]:
         *_codex_http_only_provider_args(),
     ]
 
-def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = 'gpt-image-2', image_quality: str = 'high', strict_model: bool = False) -> str:
+def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False) -> str:
     reference_lines = '\n'.join(f'- reference {i}: {p.name}' for i, p in enumerate(refs, 1)) or '- no references'
     visual_block = (
         f'<visual_contract>\n{visual_contract.strip()}\n</visual_contract>\n\n'
@@ -187,7 +191,7 @@ def _reference_proxy(source: Path, workdir: Path, index: int) -> Path:
         return target
 
 
-def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = 'gpt-image-2', image_quality: str = 'high', strict_model: bool = False) -> float:
+def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False) -> float:
     scene = prompt_path.read_text(encoding='utf-8').strip()
     if not scene:
         raise BackendError('prompt is empty')
@@ -398,10 +402,10 @@ def main() -> int:
         smoke = worker_prompt('x', [], '1024x1280')
         assert 'FIRST ACTION: call image_generation exactly once' in smoke
         assert 'Do NOT read SKILL.md' in smoke
-        assert 'gpt-image-2' in worker_prompt('x', [], '1024x1280')
+        assert image_model_policy.DEFAULT_MODEL in worker_prompt('x', [], '1024x1280')
         assert '<visual_contract>' in worker_prompt('x', [], '1024x1280', 'reality first')
         assert '<frame_contract>' in worker_prompt('x', [], '1080x1350', 'reality first', 'frame-contract-test')
-        assert 'quality=high' in worker_prompt('x', [], '1080x1350')
+        assert f'quality={image_model_policy.DEFAULT_QUALITY}' in worker_prompt('x', [], '1080x1350')
         smoke_prompt = worker_prompt('x', [], '1080x1350')
         assert 'stop immediately' in smoke_prompt
         assert 'thread_id' in smoke_prompt

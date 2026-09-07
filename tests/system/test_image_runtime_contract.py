@@ -221,5 +221,31 @@ class BackendAndLedgerContractTests(unittest.TestCase):
         self.assertEqual(dna["visual_polish_ceiling"], "documentary_realism")
 
 
+class ModelFallbackConvergenceTests(unittest.TestCase):
+    def test_subscription_worker_defaults_follow_yaml_policy(self):
+        import inspect
+        for func in (codex_subscription_image.worker_prompt, codex_subscription_image.invoke_codex):
+            params = inspect.signature(func).parameters
+            self.assertEqual(params["image_model"].default, image_model_policy.DEFAULT_MODEL)
+            self.assertEqual(params["image_quality"].default, image_model_policy.DEFAULT_QUALITY)
+            self.assertEqual(params["image_model"].default, codex_subscription_image.DEFAULT_IMAGE_MODEL)
+            self.assertEqual(params["image_quality"].default, codex_subscription_image.DEFAULT_IMAGE_QUALITY)
+
+    def test_orchestrator_runtime_request_fallback_follows_yaml_policy(self):
+        import codex_auto_orchestrator
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            request = ep / "meta/runtime-request.json"
+            request.parent.mkdir(parents=True)
+            request.write_text(
+                json.dumps({"story_input": {"mode": "auto_create"}, "image": {}}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            block = codex_auto_orchestrator.runtime_request_block(ep)
+            expected = f"requested={image_model_policy.DEFAULT_MODEL} quality={image_model_policy.DEFAULT_QUALITY}"
+            self.assertIn(expected, block)
+            self.assertIn("auto_create", block)
+
+
 if __name__ == "__main__":
     unittest.main()

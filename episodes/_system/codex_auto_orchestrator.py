@@ -12,6 +12,7 @@ from pathlib import Path
 
 from story_os_contract import canonical_stages, story_os_version
 import episode_performance
+import image_model_policy
 import production_ledger
 import runtime_router
 
@@ -50,8 +51,8 @@ def runtime_request_block(ep, request_path=None):
     data = read_json(path)
     story = data.get("story_input") or {}
     image = data.get("image") or {}
-    image_model = data.get("image_model") or image.get("model") or "gpt-image-2"
-    image_quality = data.get("image_quality") or image.get("quality") or "high"
+    image_model = data.get("image_model") or image.get("model") or image_model_policy.DEFAULT_MODEL
+    image_quality = data.get("image_quality") or image.get("quality") or image_model_policy.DEFAULT_QUALITY
     mode = story.get("mode")
     directives = {
         "auto_create": "No plot was supplied. You MUST author the complete story yourself: diverge concepts first, pass Concept Ambition, then Story Build. Do not ask the user for a plot.",
