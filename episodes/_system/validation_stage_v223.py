@@ -7,6 +7,7 @@ import re
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Iterable, Optional
+import story_json
 
 VERSION = "2.2.3"
 
@@ -95,10 +96,7 @@ def _json_has_placeholder(value) -> bool:
 
 
 def _load_json(path: Path):
-    try:
-        return json.loads(path.read_text(encoding="utf-8-sig"))
-    except Exception:
-        return None
+    return story_json.read_json(path, default=None, require_object=False)
 
 
 def _is_meaningful_json(path: Path) -> tuple[bool, str]:

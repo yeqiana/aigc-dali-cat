@@ -12,11 +12,11 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import validate_episode as validator
+import story_json
 
 
 def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    story_json.write_json(path, data)
 
 
 def fake_png(path: Path, width=1080, height=1920) -> None:

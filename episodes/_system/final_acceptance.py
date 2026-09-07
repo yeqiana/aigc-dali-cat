@@ -10,16 +10,13 @@ episode keeps full enforcement. Removing the file restores full gates.
 from __future__ import annotations
 import json
 from pathlib import Path
+import story_json
 
 REL = Path("meta/final-acceptance.json")
 
 
 def read_json(path: Path) -> dict:
-    with path.open(encoding="utf-8-sig") as fh:
-        data = json.load(fh)
-    if not isinstance(data, dict):
-        raise ValueError("root must be object")
-    return data
+    return story_json.read_json(path)
 
 
 def _nonempty(value: object) -> bool:

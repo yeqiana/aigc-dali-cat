@@ -13,13 +13,13 @@ import performance_guard_v211
 import preproduction_handoff
 import speculative_production
 import runtime_fault_replay_v211
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
 def write_json(path: Path, data: dict):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    story_json.write_json(path, data)
 
 
 def test_handoff_boundary_excludes_runtime_calibration():

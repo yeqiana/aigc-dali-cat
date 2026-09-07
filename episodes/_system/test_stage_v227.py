@@ -17,6 +17,7 @@ import test_stage_v225 as v225
 import visual_profile_bridge_v224 as visual_bridge
 import codex_subscription_image
 from canvas_normalize import normalize
+import story_json
 
 VERSION = "2.2.7"
 NON_AUTHORITY = "NON_AUTHORITY_TEST_ONLY"
@@ -28,14 +29,11 @@ def now() -> str:
 
 
 def read_json(path: Path):
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    return story_json.read_json(path, require_object=False)
 
 
 def write_json(path: Path, data):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    tmp.replace(path)
+    story_json.write_json(path, data)
 
 
 def sha256_file(path: Path) -> str:

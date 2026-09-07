@@ -12,15 +12,18 @@ import visual_profile_bridge_v224 as visual_bridge
 import codex_subscription_image
 from canvas_spec import resolve_canvas_spec
 from canvas_normalize import normalize
+import story_json
 
 VERSION="2.2.4"
 NON_AUTHORITY="NON_AUTHORITY_TEST_ONLY"
 
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
-def read_json(p): return json.loads(p.read_text(encoding="utf-8-sig"))
+def read_json(p):
+    return story_json.read_json(p, require_object=False)
+
+
 def write_json(p,d):
-    p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    story_json.write_json(p, d)
 
 def episode(raw):
     ep=Path(raw).resolve()

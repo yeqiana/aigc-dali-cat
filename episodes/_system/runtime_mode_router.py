@@ -13,13 +13,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
 from story_os_contract import canonical_stages
+import story_json
 STAGES=tuple(canonical_stages())
 SPECIAL = {"repair_only","release_only","data_review"}
 
 def read_json(path: Path) -> dict:
-    data=json.loads(path.read_text(encoding="utf-8-sig"))
-    if not isinstance(data,dict): raise ValueError(f"JSON root must be object: {path}")
-    return data
+    return story_json.read_json(path)
 
 def state(ep: Path) -> str | None:
     p=ep/"meta/episode-state.json"

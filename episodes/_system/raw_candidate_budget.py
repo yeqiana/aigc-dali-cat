@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 import runtime_atomic_store as atomic
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/runtime/raw-candidate-budget.json")
@@ -19,13 +20,7 @@ def now() -> str:
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
 def _read_json(path: Path) -> dict:
-    if not path.is_file():
-        return {}
-    try:
-        data = json.loads(path.read_text(encoding="utf-8-sig"))
-        return data if isinstance(data, dict) else {}
-    except Exception:
-        return {}
+    return story_json.read_json(path, default={})
 
 def limits() -> dict:
     try:

@@ -11,11 +11,11 @@ from unittest import mock
 from PIL import Image
 
 import frame_semantic_review as fsr
+import story_json
 
 
 def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    story_json.write_json(path, data)
 
 
 def sha(path: Path) -> str:

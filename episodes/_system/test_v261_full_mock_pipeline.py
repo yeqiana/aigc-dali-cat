@@ -25,6 +25,7 @@ import release_preflight
 import runtime_provenance
 import subtitle_layout
 import text_audit
+import story_json
 
 VERSION = "2.6.1"
 TITLE = "凌晨一点，返乡大巴多停了一站"
@@ -66,8 +67,7 @@ def repo_rel(path: Path) -> str:
 
 
 def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    story_json.write_json(path, data)
 
 
 def write_text(path: Path, text: str) -> None:

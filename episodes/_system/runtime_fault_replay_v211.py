@@ -15,6 +15,7 @@ from pathlib import Path
 
 import critic_runtime_v211
 import speculative_production
+import story_json
 
 
 def now() -> str:
@@ -22,8 +23,7 @@ def now() -> str:
 
 
 def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    story_json.write_json(path, data)
 
 
 def _visual_lock_run(ep: Path, run_id: str, *, append: bool = False) -> None:
