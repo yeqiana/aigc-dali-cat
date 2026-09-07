@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, random, re
 from pathlib import Path
 import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 STD = ROOT / "standards"
@@ -24,13 +25,10 @@ def now():
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
 def read_json(path):
-    data=json.loads(path.read_text(encoding="utf-8-sig"))
-    if not isinstance(data,dict): raise ValueError(f"JSON root must be object: {path}")
-    return data
+    return story_json.read_json(path)
 
 def write_json(path,data):
-    path.parent.mkdir(parents=True,exist_ok=True)
-    path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(path, data)
 
 def pools():
     return {k:read_json(v) for k,v in POOL_FILES.items()}

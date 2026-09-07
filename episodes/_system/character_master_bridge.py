@@ -6,13 +6,12 @@ import argparse, datetime as dt, json
 from pathlib import Path
 import character_visual_contract
 import visual_lock_v21
+import story_json
 ROOT=Path(__file__).resolve().parents[2]
 SAFE_STATES={"VISUAL_CALIBRATED","PRODUCTION_PASSED"}
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read_json(p):
-    d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict):raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 def state(ep):
     p=Path(ep)/"meta/episode-state.json";return str(read_json(p).get("current_state") or "") if p.is_file() else ""
 def base_visual_lock_errors(ep):

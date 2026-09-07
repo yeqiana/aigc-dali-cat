@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse, binascii, datetime as dt, hashlib, json, struct, zlib
 from pathlib import Path
 import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
+import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/character-visual-contract.json")
@@ -26,12 +27,9 @@ MALE_LEAD_BUILD="lean_proportionate_natural"
 
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read_json(p):
-    d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict):raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 def write_json(p,d):
-    p=Path(p);p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 def sha_file(p):
     h=hashlib.sha256()
     with Path(p).open("rb") as f:

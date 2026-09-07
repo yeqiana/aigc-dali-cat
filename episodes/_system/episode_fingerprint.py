@@ -15,13 +15,14 @@ from release_preflight import (
     write_json,
 )
 from story_os_contract import story_os_version
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 TPL = ROOT / "standards" / "templates" / "episode-fingerprint.template.json"
 REG = ROOT / "reports" / "account-pattern-registry.json"
 
 def read_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    return story_json.read_json(path, require_object=False)
 
 def write(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)

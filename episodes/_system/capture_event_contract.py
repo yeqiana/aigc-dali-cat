@@ -4,6 +4,7 @@
 from __future__ import annotations
 import argparse, hashlib, json
 from pathlib import Path
+import story_json
 
 REL=Path("meta/capture-event-contract.json")
 AWARENESS={"aware","unaware","partial","not_applicable"}
@@ -11,12 +12,9 @@ REQUIRED=("photographer_id","capture_device","why_capture_now","device_position"
           "subject_awareness","operator_state","framing_constraint","retained_reason")
 
 def read_json(p):
-    d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict):raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 def write_json(p,d):
-    p=Path(p);p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 def sha_json(d):
     raw=json.dumps(d,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
     return hashlib.sha256(raw).hexdigest()

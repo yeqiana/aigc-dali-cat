@@ -8,6 +8,7 @@ can know. Subtitle files remain final copy; they do not redefine the narrator.
 from __future__ import annotations
 import argparse, hashlib, json
 from pathlib import Path
+import story_json
 
 REL=Path("meta/voice-contract.json")
 REVIEW_REL=Path("meta/subtitle-voice-review.json")
@@ -17,12 +18,9 @@ REVIEW_TESTS=("continuous_three_frame_test","read_aloud_test","delete_subtitle_t
               "knowledge_boundary_test","clue_payoff_test")
 
 def read_json(p:Path)->dict:
-    d=json.loads(p.read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict): raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 def write_json(p:Path,d:dict):
-    p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 def sha_file(p:Path)->str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 

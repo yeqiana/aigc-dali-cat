@@ -9,6 +9,7 @@ check-in selfie. Conditional rule; not a new Episode stage.
 from __future__ import annotations
 import argparse, json
 from pathlib import Path
+import story_json
 
 REL=Path("meta/opening-social-anchor.json")
 MODES={"vehicle_selfie","destination_checkin_selfie","mixed_selfie","not_applicable"}
@@ -16,13 +17,10 @@ ANOMALY={"none","micro_background_only"}
 MIN_PEOPLE=2
 
 def read_json(p):
-    d=json.loads(Path(p).read_text(encoding="utf-8-sig"))
-    if not isinstance(d,dict): raise ValueError(f"JSON root must be object: {p}")
-    return d
+    return story_json.read_json(p)
 
 def write_json(p,d):
-    p=Path(p);p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    story_json.write_json(p, d)
 
 def prepare(ep,force=False):
     ep=Path(ep).resolve();target=ep/REL
