@@ -226,6 +226,22 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(report["rows"][0]["outcome"], "PRE_WORKER_INTERRUPTION_RETRYABLE")
         self.assertEqual(q["items"][0]["status"], "tech_failed")
 
+    def test_corrupt_commit_journal_never_forges_success_or_blocks_reconcile(self):
+        item = self._running_item()
+        production_recovery.prepare_execution(self.ep, item)
+        production_recovery.mark_worker_pending(self.ep, item)
+        journal = self.ep / production_recovery.JOURNAL_REL
+        journal.parent.mkdir(parents=True, exist_ok=True)
+        journal.write_bytes(b"{broken json")
+        atomic_write_json(self.ep / batch.QUEUE_REL, {"items": [item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json", self._active_ledger())
+        q = batch.load_queue(self.ep)
+        report = production_recovery.reconcile_locked(self.ep, q)
+        self.assertEqual(report["rows"][0]["outcome"], "PRE_WORKER_INTERRUPTION_RETRYABLE")
+        self.assertEqual(q["items"][0]["status"], "tech_failed")
+        fresh = production_recovery._read(journal)
+        self.assertIn(item["execution"]["transaction_id"], fresh.get("transactions") or {})
+
     def test_double_stale_queue_ledger_stays_unknown(self):
         item = self._running_item()
         atomic_write_json(self.ep / batch.QUEUE_REL, {"items": [item]})
