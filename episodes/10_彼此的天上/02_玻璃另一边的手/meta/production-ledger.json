@@ -2,7 +2,7 @@
   "schema_version": 1,
   "engine_version": "1.2",
   "created_at": "2026-09-06T02:22:39+08:00",
-  "updated_at": "2026-09-08T17:41:05+08:00",
+  "updated_at": "2026-09-08T21:14:45+08:00",
   "note": "Per-frame production transaction ledger. This is NOT an episode stage source.",
   "canvas": {
     "aspect_ratio": "4:5",
@@ -4137,7 +4137,7 @@
     },
     "13": {
       "number": 13,
-      "status": "NEEDS_USER",
+      "status": "PASSED",
       "content_repairs_used": 1,
       "technical_failures": [
         {
@@ -4316,18 +4316,72 @@
             "kind": "repair",
             "attempt_id": "aadb2c6d74fa"
           }
+        },
+        {
+          "attempt_id": "ba68f1c207d5",
+          "started_at": "2026-09-08T21:14:09+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "13",
+            "kind": "repair",
+            "prompt_sha256": "396a8b27a868b718dcb1f06715ee842edd74e081fc098028a8646013c66be47b",
+            "prompt_chars": 155,
+            "prompt_bytes": 409,
+            "capture_id": "user-exception-13-fix",
+            "model": "default",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/13.json",
+              "contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53"
+            },
+            "frame_contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53",
+            "batch_id": null
+          },
+          "request_fingerprint": "841a117e43744c86142b6e18ce9aac43b764325ad51917e807b3560b7b708204",
+          "notes": "direct user exception repair: adult+child must be across the wet glass, adult back/side to camera, child half-face+small hand on garment side, wet-glass film over pair",
+          "result": "success",
+          "completed_at": "2026-09-08T21:14:20+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/13-user-exception-a1.png",
+            "sha256": "aa9c683bee17c964ba6e7c1c80890d8af82e57a88c0ca577d34f6fe5b183629f",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T21:14:20+08:00",
+            "kind": "repair",
+            "attempt_id": "ba68f1c207d5"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/13-292d55a20e05-a1.png",
-        "sha256": "8ef5ed9990c20802a614164b920070e07581a2651beeeb2be20e43ea15def958",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/13-user-exception-a1.png",
+        "sha256": "aa9c683bee17c964ba6e7c1c80890d8af82e57a88c0ca577d34f6fe5b183629f",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T16:32:13+08:00",
+        "recorded_at": "2026-09-08T21:14:20+08:00",
         "kind": "repair",
-        "attempt_id": "aadb2c6d74fa"
+        "attempt_id": "ba68f1c207d5"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/13.png",
+        "sha256": "aa9c683bee17c964ba6e7c1c80890d8af82e57a88c0ca577d34f6fe5b183629f",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T21:14:45+08:00",
+        "source_sha256": "aa9c683bee17c964ba6e7c1c80890d8af82e57a88c0ca577d34f6fe5b183629f"
+      },
       "lock": null,
       "reviews": [
         {
@@ -4339,6 +4393,11 @@
           "at": "2026-09-08T16:39:11+08:00",
           "decision": "needs_user",
           "notes": "delegated_auto_review frame-13 candidate=13-292d55a20e05-a1 sha=8ef5ed9990c20802a614164b920070e07581a2651beeeeb2be20e43ea15def958 contract=storyboard S6/Z6; failure: adult+child pair reads as THIS-side foreground (large crisp torso in gray top with folded hands, child gripping that same garment with one eye up, no wet-glass film between camera and faces; our luggage/charger/white plastic bag on same floor plane) instead of required opposite-side adult with child emerging behind them through the glass; would introduce an unexplained this-side child and loses the across-space depth; adult-facing-camera pose also conflicts with adult-not-turned-back beat. content_repairs_used=1; needs user review/exception repair with prompt emphasizing: adult with back/side to camera across the glass, child half-face+small hand gripping adult clothing behind them, wet-glass film over the pair, our luggage only as soft foreground. decision=needs_user"
+        },
+        {
+          "at": "2026-09-08T21:14:33+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-13 user-exception candidate 13-user-exception-a1.png sha=aa9c683bee17c964ba6e7c1c80890d8af82e57a88c0ca577d34f6fe5b183629f contract_sha=e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53: 成年人背/侧对镜头在玻璃对面，孩子只露半张脸+一只小手扶其衣侧，二者之上有湿玻璃雨膜反光与纵深；前景我们房间 P02 只留背影；对面木碗木架、房间行李/充电线保留。孩子不恐怖、无全脸特写、无玻璃上文字。residual: 孩子被成人遮挡比例略大、清晰度略高，交语义 critic 复核。decision=pass"
         }
       ],
       "repair_authorization": {
@@ -4347,7 +4406,18 @@
         "user_approved": false,
         "delegated_auto_review": true,
         "approval_basis": "delegated_auto_review"
-      }
+      },
+      "user_exception_authorizations": [
+        {
+          "at": "2026-09-08T21:10:29+08:00",
+          "approval_text": "用户明确要求重做第13帧一张，授权一次例外返修",
+          "reason": "F13 当前候选成年人+孩子被画在玻璃本侧，未形成玻璃对面成年人背后探出孩子的跨玻璃纵深，需按冻结分镜重做",
+          "user_approved": true,
+          "delegated_auto_review": false,
+          "approval_basis": "direct_user_review_exception"
+        }
+      ],
+      "user_exception_repairs_used": 1
     },
     "14": {
       "number": 14,

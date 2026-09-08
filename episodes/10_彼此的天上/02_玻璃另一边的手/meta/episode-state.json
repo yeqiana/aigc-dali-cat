@@ -23,6 +23,12 @@
       "at": "2026-09-06T23:09:03+08:00",
       "mode": "advance",
       "note": "Visual Lock Final Verify PASS, evidence snapshot reconciled"
+    },
+    {
+      "state": "VISUAL_CALIBRATED",
+      "at": "2026-09-08T22:15:00+08:00",
+      "mode": "manual_publish_confirm",
+      "note": "用户确认已在抖音实际发布。本次仅记录发布事实与最终发布文案；production/subtitle/publish 门禁未闭环，04帧仍为 NEEDS_USER，未伪造通过，未推进机器状态。"
     }
   ]
 }

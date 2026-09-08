@@ -36,12 +36,14 @@
   "publication": {
     "platform": "douyin",
     "actual_title": null,
-    "description": null,
-    "topics": [],
+    "description": "最近趁着换工作的空档，我俩终于把拖了两年的川西自驾给兑现了。第二天傍晚她在车上晕得不行，我找了个路边停下让她缓一缓。天快黑的时候，她先看见对面山坡上亮了一盏灯，我还说是不是看错了，结果没一会儿，后面跟着亮起一串。可那片山坡，白天根本连路都没有。她半开玩笑说：你闪一下远光试试。我真就闪了一次。几秒后，最前面那盏灯停了，然后一盏接一盏灭，整片山坡又黑回去了...... 人物、地点、情节均为虚构，画面由AI生成。",
+    "topics": ["#折多山", "#川藏线", "#悬疑故事", "#怪谈", "#川西自驾"],
     "pinned_comment": null,
-    "published_at": null,
+    "published_at": "2026-09-03T19:20:00+08:00",
     "timing_window": null,
-    "post_url": null
+    "post_url": "https://www.douyin.com/user/self?modal_id=7681267455498489142",
+    "published_confirmed": true,
+    "published_confirmed_note": "用户直接确认已发布，并提供发布链接与北京时间（精确到分钟）。"
   },
   "data_review": {
     "report_path": "reports/数据验收报告.md",

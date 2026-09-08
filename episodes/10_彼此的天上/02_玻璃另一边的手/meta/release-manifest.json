@@ -35,13 +35,22 @@
   },
   "publication": {
     "platform": "douyin",
-    "actual_title": null,
-    "description": null,
-    "topics": [],
+    "actual_title": "玻璃另一边的手",
+    "description": "翻过折多山继续往前，傍晚雨大，我俩住进山谷里的民宿。她找充电线时，发现窗外剩下的雨水像被谁从外面擦开了一块——可窗外是悬崖，根本没地方站人。我关了灯，那截袖子却没跟着我们动。她抬手擦掉眼前的雾，对面那只手也从另一侧把雨膜擦开了。他身后还探出一个小孩子，我刚举起手机，她按住我：\"别拍了。\"手机暗下去，他把孩子护到身后，又用布盖上了玻璃。第二天，窗外还是一面够不到的外墙。回去路上我一直在想——他们，是不是也在看着我们...... 人物、地点、情节均为虚构，画面由AI生成。",
+    "topics": [
+      "#折多山",
+      "#川藏线",
+      "#悬疑故事",
+      "#怪谈",
+      "#川西自驾",
+      "#民宿"
+    ],
     "pinned_comment": null,
-    "published_at": null,
+    "published_at": "2026-09-08T22:01:00+08:00",
     "timing_window": null,
-    "post_url": null
+    "post_url": "https://www.douyin.com/user/self?modal_id=7683164158539353384",
+    "published_confirmed": true,
+    "published_confirmed_note": "用户直接确认已发布，并提供发布链接与北京时间（精确到分钟）。"
   },
   "data_review": {
     "report_path": "reports/数据验收报告.md",

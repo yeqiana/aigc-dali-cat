@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "audited_at": "2026-09-08T21:35:02+08:00",
+  "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\subtitles.yaml",
+  "caption_count": 18,
+  "silent_frames": [
+    9,
+    14
+  ],
+  "hard_errors": [],
+  "warnings": [
+    {
+      "code": "UNIFORM_LENGTH_3",
+      "frames": [
+        4,
+        5,
+        6
+      ],
+      "message": "连续三帧句长过于整齐，像批量生成"
+    },
+    {
+      "code": "UNIFORM_LENGTH_3",
+      "frames": [
+        15,
+        16,
+        17
+      ],
+      "message": "连续三帧句长过于整齐，像批量生成"
+    },
+    {
+      "code": "LOW_LENGTH_VARIANCE",
+      "value": 0.134,
+      "message": "整篇字幕句长变化偏小，建议增加短句/停顿/改口"
+    }
+  ],
+  "summary": {
+    "hard_error_count": 0,
+    "warning_count": 3,
+    "passed": true
+  },
+  "voice_contract_sha256": "8a4164da8102d180692a2ec720f4efb4cafec1d15f3ec3041a9dc145a18aa41a",
+  "source_sha256": "1510e482760c453a5d168c82b03a6bb3f42d417c640b64c79fcf135e4d6f1e64"
+}
