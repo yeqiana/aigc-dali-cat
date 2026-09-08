@@ -155,6 +155,11 @@ def _safe_output(ep: Path, raw: object) -> Path | None:
     path = Path(str(raw))
     if not path.is_absolute():
         path = (Path(ep).parents[2] / path).resolve()
+    else:
+        # Windows runner TEMP may use the 8.3 short spelling (RUNNER~1) while
+        # tempfile/realpath resolve to the long name. Normalize before the
+        # subpath check so the same file is never judged "outside the episode".
+        path = path.resolve()
     try:
         path.relative_to(Path(ep).resolve())
     except ValueError:

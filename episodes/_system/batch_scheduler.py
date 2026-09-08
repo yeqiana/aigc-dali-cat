@@ -260,8 +260,8 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                     if ok:
                         item["status"]="generated"
                         item["completed_at"]=now()
-                        item["output_path"]=Path(result["output"]).resolve().relative_to(ROOT).as_posix()
-                        item["log_path"]=Path(result["log"]).resolve().relative_to(ROOT).as_posix() if result.get("log") else None
+                        item["output_path"]=Path(result["output"]).resolve().relative_to(ROOT.resolve()).as_posix()
+                        item["log_path"]=Path(result["log"]).resolve().relative_to(ROOT.resolve()).as_posix() if result.get("log") else None
                         item["prompt_package"]=result.get("prompt_package")
                         item["last_error"]=None
                         successful_results+=1

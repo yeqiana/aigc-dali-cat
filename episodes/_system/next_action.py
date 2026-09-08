@@ -54,7 +54,7 @@ def pending_product_review(ep: Path) -> dict | None:
     if not rows:
         return None
     _, path, data = sorted(rows, key=lambda x: (x[0], x[1].name))[0]
-    return {"path": path.relative_to(ROOT).as_posix(), **data}
+    return {"path": path.resolve().relative_to(ROOT.resolve()).as_posix(), **data}
 
 
 def queue_summary(ep: Path) -> dict:
@@ -113,7 +113,7 @@ def derive(ep: Path) -> dict:
     base = {
         "schema_version": 1,
         "derived_at": now(),
-        "episode": ep.relative_to(ROOT).as_posix(),
+        "episode": ep.resolve().relative_to(ROOT.resolve()).as_posix(),
         "episode_state": cur,
         "execution_mode": mode,
         "authoring_runtime": runtime,
