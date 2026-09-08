@@ -345,7 +345,16 @@ def _find_attempt_binding(ep: Path, frame: int, asset_sha: str) -> list[str]:
     return [f"frame {frame:02d} calibration image has no matching generation attempt"]
 
 
-def calibration_assets(ep: Path) -> list[dict]:
+def calibration_assets(ep: Path, *, metadata_only: bool = False) -> list[dict]:
+    """Resolve the four locked calibration rows.
+
+    Full mode hashes the real pixel file and binds it to the current Resolved
+    Frame Contract. metadata_only is the Git-metadata scan mode used by CI
+    clean checkouts where media/ is absent by design: it validates the gate
+    row shape and keeps the recorded sha256/frame_contract_sha256 for the
+    pure-data payload comparison without touching pixel files or derived
+    caches.
+    """
     g = read_json(ep / GATES_REL)
     calibration = ((g.get("visual") or {}).get("calibration") or {})
     items = calibration.get("items")
@@ -362,27 +371,39 @@ def calibration_assets(ep: Path) -> list[dict]:
         if role in by_role:
             raise ValueError(f"duplicate Visual Lock role: {role}")
         frame = int(item.get("frame"))
-        p = repo_file(item.get("asset_path"))
-        asset_sha = sha256_file(p)
-        current = frame_contract.compile_frame(ep, frame, write_cache=False)
-        recorded_fc = str(item.get("frame_contract_sha256") or "")
-        if recorded_fc and recorded_fc != current["contract_sha256"]:
-            raise ValueError(f"{role} frame contract stale")
-        binding_errors = _find_attempt_binding(ep, frame, asset_sha)
-        if binding_errors:
-            raise ValueError("; ".join(binding_errors))
-        row = {
-            "id": str(item.get("id") or role),
-            "role": role,
-            "frame": frame,
-            "path": p,
-            "asset_path": repo_rel(p),
-            "sha256": asset_sha,
-            "frame_contract_sha256": current["contract_sha256"],
-            "impact_level": current["hash_material"]["frame_directive"].get("impact_level"),
-            "frame_mode": current["hash_material"]["frame_directive"].get("frame_mode"),
-            "scale_reference": current["hash_material"]["frame_directive"].get("scale_reference"),
-        }
+        if metadata_only:
+            row = {
+                "id": str(item.get("id") or role),
+                "role": role,
+                "frame": frame,
+                "path": None,
+                "asset_path": str(item.get("asset_path") or ""),
+                "sha256": str(item.get("sha256") or ""),
+                "frame_contract_sha256": str(item.get("frame_contract_sha256") or ""),
+                "metadata_only": True,
+            }
+        else:
+            p = repo_file(item.get("asset_path"))
+            asset_sha = sha256_file(p)
+            current = frame_contract.compile_frame(ep, frame, write_cache=False)
+            recorded_fc = str(item.get("frame_contract_sha256") or "")
+            if recorded_fc and recorded_fc != current["contract_sha256"]:
+                raise ValueError(f"{role} frame contract stale")
+            binding_errors = _find_attempt_binding(ep, frame, asset_sha)
+            if binding_errors:
+                raise ValueError("; ".join(binding_errors))
+            row = {
+                "id": str(item.get("id") or role),
+                "role": role,
+                "frame": frame,
+                "path": p,
+                "asset_path": repo_rel(p),
+                "sha256": asset_sha,
+                "frame_contract_sha256": current["contract_sha256"],
+                "impact_level": current["hash_material"]["frame_directive"].get("impact_level"),
+                "frame_mode": current["hash_material"]["frame_directive"].get("frame_mode"),
+                "scale_reference": current["hash_material"]["frame_directive"].get("scale_reference"),
+            }
         by_role[role] = row
         out.append(row)
     if set(by_role) != set(ROLES):
@@ -469,9 +490,14 @@ def validate_payload(data: dict, *, contract: dict, assets: list[dict], version:
         if exp is None:
             errors.append(f"unexpected calibration id: {rid}")
             continue
-        if str(row.get("sha256") or "").lower() != exp["sha256"].lower():
+        # metadata_only rows carry the hash recorded in story-gates instead of a
+        # fresh pixel hash; when the gate row has no recorded hash the check is
+        # deferred to full local verification instead of guessing a value.
+        exp_sha = str(exp.get("sha256") or "")
+        if exp_sha and str(row.get("sha256") or "").lower() != exp_sha.lower():
             errors.append(f"{rid} sha mismatch")
-        if str(row.get("frame_contract_sha256") or "").lower() != exp["frame_contract_sha256"].lower():
+        exp_fc = str(exp.get("frame_contract_sha256") or "")
+        if exp_fc and str(row.get("frame_contract_sha256") or "").lower() != exp_fc.lower():
             errors.append(f"{rid} frame_contract_sha mismatch")
         checks = row.get("checks") or {}
         for key in checks_for_version(version):
@@ -488,7 +514,14 @@ def validate_payload(data: dict, *, contract: dict, assets: list[dict], version:
     return errors
 
 
-def verify(ep: Path) -> list[str]:
+def verify(ep: Path, *, metadata_only: bool = False) -> list[str]:
+    """Verify the four-admission Visual Lock review.
+
+    metadata_only (Git-metadata CI scan) validates every pure-data layer of the
+    review payload and the recorded calibration hashes, but skips pixel file
+    existence/hash, baseline gate and character pixel-master checks that
+    require media/ present in the working tree.
+    """
     if not required(ep):
         return []
     path = ep / REVIEW_REL
@@ -496,14 +529,15 @@ def verify(ep: Path) -> list[str]:
         return ["meta/visual-profile-review.json missing"]
     try:
         contract = compile_prompt_contract(ep)
-        assets = calibration_assets(ep)
+        assets = calibration_assets(ep, metadata_only=metadata_only)
         data = read_json(path)
         errors = validate_payload(data, contract=contract, assets=assets, version=episode_version(ep))
-        if not errors:
-            errors.extend("BASELINE_GATE:"+x for x in visual_lock_baseline_gate.validate_final_requirement(ep))
-        if not errors and character_visual_contract.pixel_master_required(ep):
-            expected=_pixel_master_expected(assets)
-            errors.extend(character_visual_contract.validate_pixel_master(ep,expected))
+        if not metadata_only:
+            if not errors:
+                errors.extend("BASELINE_GATE:"+x for x in visual_lock_baseline_gate.validate_final_requirement(ep))
+            if not errors and character_visual_contract.pixel_master_required(ep):
+                expected=_pixel_master_expected(assets)
+                errors.extend(character_visual_contract.validate_pixel_master(ep,expected))
         return errors
     except Exception as exc:
         return [str(exc)]

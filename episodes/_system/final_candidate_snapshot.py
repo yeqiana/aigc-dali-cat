@@ -269,12 +269,44 @@ def build(ep:Path)->dict:
     return snapshot
 
 
-def verify(ep:Path)->list[str]:
+def verify(ep:Path,*,metadata_only:bool=False)->list[str]:
+    """Verify the final candidate snapshot.
+
+    Full mode rebuilds the lock from actual media and text artifacts and
+    compares every SHA. metadata_only is the Git-metadata CI scan on clean
+    checkouts where media/ is absent by design: it performs the static
+    self-consistency checks (schema, snapshot_sha256 over the saved lock, file
+    row shape) and defers media-bound rebuild checks to local/full verify.
+    """
     if not required(ep) and not (ep/SNAPSHOT_REL).is_file():return []
     p=ep/SNAPSHOT_REL
     if not p.is_file():return ["final-candidate-snapshot.json missing"]
     try:
-        saved=read_json(p);current=build_lock(ep, write_evidence=False);errors=[]
+        saved=read_json(p);errors=[]
+        if metadata_only:
+            # Static self-consistency only: clean CI checkouts have no media/,
+            # so the media-bound rebuild below is deferred to local/full verify.
+            if saved.get("schema_version")!=1:errors.append("final candidate snapshot schema_version must be 1")
+            lock=saved.get("lock")
+            if not isinstance(lock,dict):
+                return errors+["final candidate snapshot lock must be object"]
+            if str(saved.get("snapshot_sha256") or "").lower()!=sha256_json(lock).lower():
+                errors.append("final candidate snapshot internal drift")
+            for section in ("body","text_artifacts","evidence","delivery_files"):
+                rows=lock.get(section) or []
+                if not isinstance(rows,list):
+                    errors.append(f"final candidate lock.{section} must be array")
+                    continue
+                for row in rows:
+                    if not isinstance(row,dict):
+                        errors.append(f"final candidate lock.{section} entry must be object")
+                        continue
+                    if not isinstance(row.get("path"),str) or not str(row.get("path") or "").strip():
+                        errors.append(f"final candidate lock.{section} entry missing path")
+                    if not isinstance(row.get("sha256"),str) or not str(row.get("sha256") or "").strip():
+                        errors.append(f"final candidate lock.{section} entry missing sha256")
+            return errors
+        current=build_lock(ep, write_evidence=False)
         current_sha=sha256_json(current)
         if str(saved.get("snapshot_sha256") or "").lower()!=current_sha.lower():errors.append("final candidate snapshot drift")
         if saved.get("lock")!=current:errors.append("final candidate lock content drift")

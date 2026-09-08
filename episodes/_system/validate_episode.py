@@ -26,6 +26,11 @@ STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 PRODUCTION_DECISIONS = {"pending", "pass", "fail"}
 PROPAGATION_DECISIONS = {"pending", "strong", "publishable", "conditional", "not_recommended"}
 PUBLISH_DECISIONS = {"hold", "go"}
+# Pre-V2.6 quality envelopes wrote placeholder values outside the canonical
+# decision sets (example: IDEA_LOCKED drafts used production_gate=not_ready and
+# omitted propagation_decision). They are only tolerated as WARN in the
+# Git-metadata CI scan; full validation still requires migration before advance.
+LEGACY_PRODUCTION_GATE_VALUES = {"not_ready", "NOT_READY"}
 REVIEW_STATUSES = {"pending", "passed", "failed", "waived"}
 LOCK_MODES = {"none", "subtitle_only", "crop_only", "regenerate_frame", "regenerate_sequence"}
 WINDOWS_DRIVE_RE = re.compile(r"^[A-Za-z]:")
@@ -180,7 +185,7 @@ def check_populated_manifest_paths(repo_root: Path, manifest: dict, findings: li
                 resolve_repo_relative_path(repo_root, value, findings, f"{where}.{key}")
 
 
-def check_common(repo_root: Path, state: dict, manifest: dict, findings: list[Finding]) -> str | None:
+def check_common(repo_root: Path, state: dict, manifest: dict, findings: list[Finding], *, metadata_only: bool = False) -> str | None:
     if state.get("schema_version") != 1:
         findings.append(Finding("FAIL", "state_schema", "episode-state.json schema_version must be 1"))
     if manifest.get("schema_version") != 1:
@@ -225,10 +230,18 @@ def check_common(repo_root: Path, state: dict, manifest: dict, findings: list[Fi
     if not isinstance(quality, dict):
         findings.append(Finding("FAIL", "manifest_quality", "manifest.quality must be an object"))
     else:
-        if quality.get("production_gate") not in PRODUCTION_DECISIONS:
-            findings.append(Finding("FAIL", "production_gate", "invalid quality.production_gate"))
+        pg = quality.get("production_gate")
+        legacy_quality = metadata_only and pg in LEGACY_PRODUCTION_GATE_VALUES
+        if pg not in PRODUCTION_DECISIONS:
+            if legacy_quality:
+                findings.append(Finding("WARN", "legacy_quality_placeholder", f"旧世代 quality.production_gate={pg!r} 占位值；推进前先迁移质量字段"))
+            else:
+                findings.append(Finding("FAIL", "production_gate", "invalid quality.production_gate"))
         if quality.get("propagation_decision") not in PROPAGATION_DECISIONS:
-            findings.append(Finding("FAIL", "propagation_decision", "invalid quality.propagation_decision"))
+            if legacy_quality:
+                findings.append(Finding("WARN", "legacy_quality_placeholder", "旧世代 manifest 未登记 propagation_decision；推进前迁移"))
+            else:
+                findings.append(Finding("FAIL", "propagation_decision", "invalid quality.propagation_decision"))
         if quality.get("publish_decision") not in PUBLISH_DECISIONS:
             findings.append(Finding("FAIL", "publish_decision", "invalid quality.publish_decision"))
     return current
@@ -360,10 +373,13 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def check_locks(repo_root: Path, gates: dict, findings: list[Finding], *, metadata_only: bool) -> None:
+def check_locks(repo_root: Path, gates: dict, findings: list[Finding], *, metadata_only: bool, legacy_gates_pending: bool = False) -> None:
     locks = gates.get("locks")
     if not isinstance(locks, dict):
-        findings.append(Finding("FAIL", "locks", "story-gates.locks must be object"))
+        if metadata_only and legacy_gates_pending:
+            findings.append(Finding("WARN", "legacy_locks_pending", "旧世代 story-gates 尚未迁移 locks（legacy gates envelope）；推进前运行 episode_state.py migrate-gates"))
+        else:
+            findings.append(Finding("FAIL", "locks", "story-gates.locks must be object"))
         return
     mode = locks.get("edit_mode", "none")
     if mode not in LOCK_MODES:
@@ -539,7 +555,7 @@ def check_stage(repo_root: Path, episode_dir: Path, manifest: dict, current: str
             findings.append(Finding("WARN", "readme_state_drift", f"machine state is {current} but episode README says 已发布"))
 
 
-def check_story_os_for_effective(repo_root: Path, state: dict, manifest: dict, gates: dict, effective: str, findings: list[Finding], *, metadata_only: bool, waive: bool = False) -> None:
+def check_story_os_for_effective(repo_root: Path, state: dict, manifest: dict, gates: dict, effective: str, findings: list[Finding], *, metadata_only: bool, waive: bool = False, legacy_gates_pending: bool = False) -> None:
     check_gates_common(state, manifest, gates, findings)
     total = (manifest.get("release") or {}).get("body_frame_count")
     if not isinstance(total, int) or total <= 0:
@@ -555,7 +571,7 @@ def check_story_os_for_effective(repo_root: Path, state: dict, manifest: dict, g
         reviews = gates.get("reviews") if isinstance(gates.get("reviews"), dict) else {}
         review_passed(reviews, "recommendation_fit", findings)
         review_passed(reviews, "publish", findings)
-    check_locks(repo_root, gates, findings, metadata_only=metadata_only)
+    check_locks(repo_root, gates, findings, metadata_only=metadata_only, legacy_gates_pending=legacy_gates_pending)
 
 
 def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, target_state: str | None = None) -> list[Finding]:
@@ -564,7 +580,7 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
     manifest = load_json(episode_dir / MANIFEST_FILE, findings)
     if state is None or manifest is None:
         return findings
-    current = check_common(repo_root, state, manifest, findings)
+    current = check_common(repo_root, state, manifest, findings, metadata_only=metadata_only)
     effective = target_state or current
     if target_state is not None and target_state not in STATES:
         findings.append(Finding("FAIL", "invalid_target_state", f"target_state={target_state!r}"))
@@ -588,6 +604,13 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
     # Story Gates became mandatory in Story OS V1.4. Keep that boundary
     # monotonic when SYSTEM_VERSION advances.
     new_system_episode = version_at_least(state_v, (1, 4)) or version_at_least(manifest_v, (1, 4))
+    # Pre-migration drafts still carry the legacy top-level "gates" envelope
+    # and no locks; only the Git-metadata scan tolerates that shape.
+    legacy_gates_pending = (
+        isinstance(gates, dict)
+        and isinstance(gates.get("gates"), dict)
+        and not isinstance(gates.get("locks"), dict)
+    )
 
     if gates is None:
         if new_system_episode:
@@ -597,7 +620,7 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
         else:
             findings.append(Finding("WARN", "legacy_without_story_gates", "旧剧集尚未迁移 Story OS V1.2 门禁；保持兼容"))
     elif effective:
-        check_story_os_for_effective(repo_root, state, manifest, gates, effective, findings, metadata_only=metadata_only, waive=acceptance_valid(episode_dir) is not None)
+        check_story_os_for_effective(repo_root, state, manifest, gates, effective, findings, metadata_only=metadata_only, waive=acceptance_valid(episode_dir) is not None, legacy_gates_pending=legacy_gates_pending)
 
     # V2.1 Concept Ambition is pre-Story-Lock evidence, not a second episode stage.
     if effective and STATE_MIN[effective] >= STATE_MIN["STORYBOARD_LOCKED"] and concept_ambition_required(episode_dir):
@@ -608,7 +631,7 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
             findings.append(Finding("FAIL", "environment_impact_gate", error))
 
     if effective and STATE_MIN[effective] >= STATE_MIN["VISUAL_CALIBRATED"] and visual_lock_v21_required(episode_dir):
-        for error in verify_visual_lock_v21(episode_dir):
+        for error in verify_visual_lock_v21(episode_dir, metadata_only=metadata_only):
             findings.append(Finding("FAIL", "visual_lock_v21_gate", error))
 
     if effective and STATE_MIN[effective] >= STATE_MIN["PRODUCTION_PASSED"] and frame_contract_required(episode_dir):
@@ -616,16 +639,20 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
             findings.append(Finding("FAIL", "resolved_frame_contract_gate", error))
 
     if effective and STATE_MIN[effective] >= STATE_MIN["PRODUCTION_PASSED"] and fast_scout_required(episode_dir):
-        scout_errors = audit_fast_scout(episode_dir, write_summary=True)
-        if scout_errors:
-            if acceptance_valid(episode_dir) is not None:
-                findings.append(Finding("WARN", "fast_frame_scout_accepted", "direct user final-decision acceptance recorded; scout REPAIR_NOW/stale accepted as known defects (meta/final-acceptance.json)"))
-            else:
-                for error in scout_errors:
-                    findings.append(Finding("FAIL", "fast_frame_scout_gate", error))
+        # Fast Scout is a pixel-triage gate over actual media and its audit
+        # rewrites derived frame-contract caches; the Git-metadata CI scan
+        # defers it to local/full verification where media exists.
+        if not metadata_only:
+            scout_errors = audit_fast_scout(episode_dir, write_summary=True)
+            if scout_errors:
+                if acceptance_valid(episode_dir) is not None:
+                    findings.append(Finding("WARN", "fast_frame_scout_accepted", "direct user final-decision acceptance recorded; scout REPAIR_NOW/stale accepted as known defects (meta/final-acceptance.json)"))
+                else:
+                    for error in scout_errors:
+                        findings.append(Finding("FAIL", "fast_frame_scout_gate", error))
 
     if effective and STATE_MIN[effective] >= STATE_MIN["PUBLISH_READY"] and final_snapshot_required(episode_dir):
-        for error in verify_final_snapshot(episode_dir):
+        for error in verify_final_snapshot(episode_dir, metadata_only=metadata_only):
             findings.append(Finding("FAIL", "final_candidate_snapshot_gate", error))
 
     if effective and STATE_MIN[effective] >= STATE_MIN["PUBLISHED"] and post_publish_required(episode_dir):
