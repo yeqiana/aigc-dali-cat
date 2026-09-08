@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "batches": [
+    {
+      "batch_id": "BATCH_fd5207364303",
+      "planned_count": 1,
+      "returned_count": 1,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 1,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-08T12:06:55+08:00"
+    },
+    {
+      "batch_id": "BATCH_65d7499eac35",
+      "planned_count": 5,
+      "returned_count": 3,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 1,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-08T12:31:42+08:00"
+    },
+    {
+      "batch_id": "BATCH_75db9dae323f",
+      "planned_count": 1,
+      "returned_count": 1,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 1,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-08T12:35:28+08:00"
+    },
+    {
+      "batch_id": "BATCH_adc45ded8879",
+      "planned_count": 5,
+      "returned_count": 4,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 1,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-08T12:55:31+08:00"
+    },
+    {
+      "batch_id": "BATCH_8b9d046c4ff5",
+      "planned_count": 1,
+      "returned_count": 1,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 1,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-08T13:01:38+08:00"
+    },
+    {
+      "batch_id": "BATCH_dbc42cee7e2a",
+      "planned_count": 5,
+      "returned_count": 5,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 1,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-08T13:18:23+08:00"
+    },
+    {
+      "batch_id": "BATCH_553efb809a3d",
+      "planned_count": 1,
+      "returned_count": 1,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 1,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-08T13:21:55+08:00"
+    }
+  ],
+  "kind": "batch_runtime_performance",
+  "generated_at": "2026-09-08T12:06:55+08:00"
+}

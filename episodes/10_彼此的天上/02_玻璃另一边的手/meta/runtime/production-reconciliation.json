@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "reconciled_at": "2026-09-08T13:18:23+08:00",
+  "rows": [
+    {
+      "item_id": "e7bf8a9697a2",
+      "frame": 1,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "MISSING"
+    },
+    {
+      "item_id": "4b3b8f40440e",
+      "frame": 9,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "REPAIR_READY",
+      "lifecycle_state": "MISSING"
+    },
+    {
+      "item_id": "89c8abc517a3",
+      "frame": 3,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "REPAIR_READY",
+      "lifecycle_state": "MISSING"
+    },
+    {
+      "item_id": "0bed26ad211c",
+      "frame": 14,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "REPAIR_READY",
+      "lifecycle_state": "MISSING"
+    },
+    {
+      "item_id": "6f5182e6f65b",
+      "frame": 1,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "MISSING"
+    },
+    {
+      "item_id": "55049c2c730b",
+      "frame": 3,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "REPAIR_READY",
+      "lifecycle_state": "MISSING"
+    },
+    {
+      "item_id": "35216c31b625",
+      "frame": 9,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "REPAIR_READY",
+      "lifecycle_state": "MISSING"
+    },
+    {
+      "item_id": "7c8e14f1a2b3",
+      "frame": 14,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "REPAIR_READY",
+      "lifecycle_state": "MISSING"
+    },
+    {
+      "item_id": "d29acc72fa07",
+      "frame": 2,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "cf74057cfb9e",
+      "frame": 4,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "30059c260bb5",
+      "frame": 5,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "8e4a07a762cd",
+      "frame": 6,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "127d21da4684",
+      "frame": 7,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "68ad77c3bd31",
+      "frame": 8,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "a7f86678c6fa",
+      "frame": 10,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "b6bb3abab6c4",
+      "frame": 11,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "c93e4c98ecea",
+      "frame": 12,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "3979017ac688",
+      "frame": 13,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "1159f9819c2d",
+      "frame": 15,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "f531fb27202b",
+      "frame": 16,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "d45f2feae5f1",
+      "frame": 17,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "d788501b64dd",
+      "frame": 18,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "066dd935385a",
+      "frame": 19,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "ORIGINAL_READY",
+      "lifecycle_state": "SUCCEEDED"
+    }
+  ]
+}

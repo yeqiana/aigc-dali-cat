@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "17",
+  "scene_prompt": "手机相册记录感，情侣准备离开停车点。P01收拾东西，P02最后看一眼车窗和照片。环境、车辆、衣物保持连续性，异常像遗漏在照片里的证据，不直接揭示答案。",
+  "scene_prompt_sha256": "42c07cb233210a5e5dfc3e86ec3482f17f7e7de1f3c62685905188355f768541",
+  "frame_contract_sha256": "3c5a017dae877395ee60cd22e3ff8b9f98bfd15394124d8885a9eb9883da1899",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\17.txt",
+  "package_sha256": "de780f8353233554c29d7255912eed4a35b5d33eecb7fc9dbb71863ce0b85189",
+  "compiled_at": "2026-09-08T13:06:46+08:00"
+}

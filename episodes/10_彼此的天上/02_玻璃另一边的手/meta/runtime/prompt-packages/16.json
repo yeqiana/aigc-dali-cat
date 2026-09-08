@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "16",
+  "scene_prompt": "真实手机照片，P02站在车边重新拍摄玻璃反射。P01在背景中保持普通动作，异常手影藏在透明表面和光线交界处。画面不要夸张，不出现超自然解释。",
+  "scene_prompt_sha256": "2477c4c035a4ed10281e439a2cd741f89f3c4e050a6a00210f2d8531d680250b",
+  "frame_contract_sha256": "9d8c86cfcfca8f05c17ba0b519c59542871bd5c7b66ddced9020abe1b478fa26",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\16.txt",
+  "package_sha256": "9aa6d81b06c27d583d446150212cce53d47f1ad86a3c28b730ff4b9e36cd4579",
+  "compiled_at": "2026-09-08T13:04:31+08:00"
+}

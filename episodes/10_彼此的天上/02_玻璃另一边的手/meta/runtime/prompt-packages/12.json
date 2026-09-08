@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "12",
+  "scene_prompt": "真实手机照片，P02站在车外拍摄车窗。车内P01的位置和倒影产生不容易察觉的不一致，画面仍然像普通旅行记录。重点是发现瞬间，而不是调查过程。",
+  "scene_prompt_sha256": "6182c24411defa985d45ec1aade22857bc40c883d8e7e715550cab5937f786a9",
+  "frame_contract_sha256": "955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\12.txt",
+  "package_sha256": "03268f32a2043708a133cd5c934ebbedca549ed49ca9a06e90567b6e09f194c3",
+  "compiled_at": "2026-09-08T12:47:00+08:00"
+}

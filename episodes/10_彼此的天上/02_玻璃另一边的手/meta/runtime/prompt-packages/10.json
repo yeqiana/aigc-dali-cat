@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "10",
+  "scene_prompt": "普通手机照片，情侣回到车旁继续整理行李。P01背对镜头打开后备箱，P02拍摄这一刻，后备箱物品、雨伞、旅行包体现真实生活。玻璃倒影中出现轻微不协调，但不要让人物发现。",
+  "scene_prompt_sha256": "1cab74e9a9cda1c60331a732d5bfc668853ba07621fb0eeedfbf6d4b098bdb0c",
+  "frame_contract_sha256": "4c71fba7104024058f8544d65914aac298ec9e9f05af3a05b673a75a5078a350",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\10.txt",
+  "package_sha256": "b50f70450bcf4a6ac1b94666942e70d3143d0b43c49111df2e0e9a99cbcb0ee6",
+  "compiled_at": "2026-09-08T12:42:13+08:00"
+}

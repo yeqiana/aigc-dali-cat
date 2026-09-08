@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "19",
+  "scene_prompt": "普通手机照片，故事接近结尾。P02查看所有旅行照片，屏幕反光与现实玻璃形成呼应。不要展示完整真相，让观众自己发现不合理之处。保持克制悬疑。",
+  "scene_prompt_sha256": "975edceff8a5c1f4288d2ef154de73ea090fe61a0a8a8ad7a65c456e734084bc",
+  "frame_contract_sha256": "289117db5bb6c7e493941475468ff3e38f5c02c97949aecb173cedb6bdecb54b",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\19.txt",
+  "package_sha256": "d1ccbfee6225ecf740e17ad05ccfb85584502cefba5f41b78ffc26153ef734ba",
+  "compiled_at": "2026-09-08T13:14:12+08:00"
+}

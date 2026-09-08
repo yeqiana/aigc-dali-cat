@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "13",
+  "scene_prompt": "普通相册照片视角，P01和P02站在山路旁短暂停留。P02举手机回看照片，P01没有意识到异常。环境保持真实阴雨天气，异常只通过背景玻璃、水面或反射出现。",
+  "scene_prompt_sha256": "05832bc891a7b25939bbcf9784d4e83e391015d7a2eff43b4cc559225d09fdba",
+  "frame_contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\13.txt",
+  "package_sha256": "d0b15e910683792a59cbd7f7b0693680863f1073bacb070330606cddf8929b8d",
+  "compiled_at": "2026-09-08T12:55:32+08:00"
+}

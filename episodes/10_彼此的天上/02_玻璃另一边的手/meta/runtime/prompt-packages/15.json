@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "15",
+  "scene_prompt": "高冲击前的真实手机抓拍，车内玻璃成为主要视觉元素。P02拍摄窗外，反射中出现与现实不同的手部细节，但尺度符合玻璃反射规律。不要解释来源，保持偶然拍摄感。",
+  "scene_prompt_sha256": "eaed317bbcc0217ae52c205f53f6ce11657485ecc3e33635b7174c90cc3a5ce5",
+  "frame_contract_sha256": "74eab8cbcd953150f4fece690c1351639c44c7871d216ff82f723b6c033809b8",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\15.txt",
+  "package_sha256": "6f5d7562ce15a98766904ee7422785359c8f1b791aa8a49224581bc628162769",
+  "compiled_at": "2026-09-08T13:01:39+08:00"
+}

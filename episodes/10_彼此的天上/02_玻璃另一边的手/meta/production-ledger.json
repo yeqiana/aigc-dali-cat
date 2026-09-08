@@ -2,7 +2,7 @@
   "schema_version": 1,
   "engine_version": "1.2",
   "created_at": "2026-09-06T02:22:39+08:00",
-  "updated_at": "2026-09-07T15:33:28+08:00",
+  "updated_at": "2026-09-08T13:21:55+08:00",
   "note": "Per-frame production transaction ledger. This is NOT an episode stage source.",
   "canvas": {
     "aspect_ratio": "4:5",
@@ -824,7 +824,7 @@
     },
     "02": {
       "number": 2,
-      "status": "TECH_FAILED",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [
         {
@@ -883,9 +883,87 @@
             "code": "WORKER_FAILED",
             "message": "[Errno 22] Invalid argument: 'D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\10_彼此的天上\\\\02_玻璃另一边的手\\\\meta\\\\runtime\\\\contracts\\\\frames\\\\02.json'"
           }
+        },
+        {
+          "attempt_id": "a8ee60fd220a",
+          "started_at": "2026-09-08T12:04:48+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "02",
+            "kind": "original",
+            "prompt_sha256": "e24a36d0db8e86387b95ae6310a4e7a151109588d4ff01c79ab0c0729ef8fa8c",
+            "prompt_chars": 111,
+            "prompt_bytes": 321,
+            "capture_id": "batch-02",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/11_车内夜间_正侧脸.png",
+                "role": "series_character_identity:P02",
+                "kind": "identity",
+                "sha256": "d5bc8e55dadbd4eaabefcb926e1d4816f7e72453e4c17b50ed7453aff2b4da32"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/02.json",
+              "contract_sha256": "3e6055802d2488bdbdf7a6c388a7856a8f8ce18802d1fef5271aad32b32b743d"
+            },
+            "frame_contract_sha256": "3e6055802d2488bdbdf7a6c388a7856a8f8ce18802d1fef5271aad32b32b743d",
+            "batch_id": null
+          },
+          "request_fingerprint": "428ae508795d6b39a75fd875bd6c64e131b0184cacda4fda616ba3b298ffe116",
+          "notes": "V2.4 batch scheduler item=d29acc72fa07",
+          "result": "success",
+          "runtime_transaction_id": "2232a37dd4a74163a7f1374e5cc5ba93",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/02-1788840414.json",
+            "sha256": "f1cbacd58998b11b83f2ca7d4fed87b37318cb868c15969eb8f0911d7715470b",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T12:06:55+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/02-d29acc72fa07-a2.png",
+            "sha256": "ac4d0f9f8781eebe72d16b06bce9365bcaa4cbfb0df9cc06f78b7627dfba3705",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T12:06:55+08:00",
+            "kind": "original",
+            "attempt_id": "a8ee60fd220a"
+          }
         }
       ],
-      "current_candidate": null,
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/02-d29acc72fa07-a2.png",
+        "sha256": "ac4d0f9f8781eebe72d16b06bce9365bcaa4cbfb0df9cc06f78b7627dfba3705",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T12:06:55+08:00",
+        "kind": "original",
+        "attempt_id": "a8ee60fd220a"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
@@ -1792,7 +1870,7 @@
     },
     "04": {
       "number": 4,
-      "status": "TECH_FAILED",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [
         {
@@ -1800,6 +1878,12 @@
           "attempt_id": "e8691cc1248c",
           "code": "WORKER_FAILED",
           "message": "[Errno 22] Invalid argument: 'D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\10_彼此的天上\\\\02_玻璃另一边的手\\\\meta\\\\runtime\\\\contracts\\\\frames\\\\04.json'"
+        },
+        {
+          "at": "2026-09-08T12:17:22+08:00",
+          "attempt_id": "ed139acea4da",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\04-cf74057cfb9e-a2.jsonl"
         }
       ],
       "attempts": [
@@ -1844,16 +1928,130 @@
             "code": "WORKER_FAILED",
             "message": "[Errno 22] Invalid argument: 'D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\10_彼此的天上\\\\02_玻璃另一边的手\\\\meta\\\\runtime\\\\contracts\\\\frames\\\\04.json'"
           }
+        },
+        {
+          "attempt_id": "ed139acea4da",
+          "started_at": "2026-09-08T12:11:21+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "04",
+            "kind": "original",
+            "prompt_sha256": "cdf97cbedbc4828a76825edb3b19740771ff0094f710f3f5ac6ec54d8e992494",
+            "prompt_chars": 96,
+            "prompt_bytes": 276,
+            "capture_id": "batch-04",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/04.json",
+              "contract_sha256": "92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555"
+            },
+            "frame_contract_sha256": "92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555",
+            "batch_id": null
+          },
+          "request_fingerprint": "d6e9cf1a9b9dbe9d63ed89d0adbde8db3b0ba3ebdc491e4881f15fd9c0889228",
+          "notes": "V2.4 batch scheduler item=cf74057cfb9e",
+          "result": "technical_failure",
+          "runtime_transaction_id": "a6850eeb821e40469719515aa8319a30",
+          "completed_at": "2026-09-08T12:17:22+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\04-cf74057cfb9e-a2.jsonl"
+          }
+        },
+        {
+          "attempt_id": "d623347457c0",
+          "started_at": "2026-09-08T12:31:42+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "04",
+            "kind": "original",
+            "prompt_sha256": "cdf97cbedbc4828a76825edb3b19740771ff0094f710f3f5ac6ec54d8e992494",
+            "prompt_chars": 96,
+            "prompt_bytes": 276,
+            "capture_id": "batch-04",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/04.json",
+              "contract_sha256": "92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555"
+            },
+            "frame_contract_sha256": "92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555",
+            "batch_id": "BATCH_65d7499eac35"
+          },
+          "request_fingerprint": "de141c1281fe6f768106b6f996af7fd3d74d24521700260dc8dfae9312a39d02",
+          "notes": "V2.4 batch scheduler item=cf74057cfb9e",
+          "result": "success",
+          "runtime_transaction_id": "a6850eeb821e40469719515aa8319a30",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/04-1788842127.json",
+            "sha256": "8145e2b32f41c8a9b75b2184ec1a99285cea90e066365264fe9bf305c17e4a16",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T12:35:28+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/04-cf74057cfb9e-a3.png",
+            "sha256": "5cefacc772504e3e7d701466e9ddf5dee219a110887ee4a350d2d8ab23162327",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T12:35:28+08:00",
+            "kind": "original",
+            "attempt_id": "d623347457c0"
+          }
         }
       ],
-      "current_candidate": null,
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/04-cf74057cfb9e-a3.png",
+        "sha256": "5cefacc772504e3e7d701466e9ddf5dee219a110887ee4a350d2d8ab23162327",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T12:35:28+08:00",
+        "kind": "original",
+        "attempt_id": "d623347457c0"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "05": {
       "number": 5,
-      "status": "TECH_FAILED",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [
         {
@@ -1861,6 +2059,12 @@
           "attempt_id": "b752a1a4b24f",
           "code": "WORKER_FAILED",
           "message": "[Errno 22] Invalid argument: 'D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\10_彼此的天上\\\\02_玻璃另一边的手\\\\meta\\\\runtime\\\\contracts\\\\frames\\\\05.json'"
+        },
+        {
+          "at": "2026-09-08T12:23:24+08:00",
+          "attempt_id": "6be2210a6efc",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\05-30059c260bb5-a2.jsonl"
         }
       ],
       "attempts": [
@@ -1905,16 +2109,130 @@
             "code": "WORKER_FAILED",
             "message": "[Errno 22] Invalid argument: 'D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\aigc-dali-cat\\\\episodes\\\\10_彼此的天上\\\\02_玻璃另一边的手\\\\meta\\\\runtime\\\\contracts\\\\frames\\\\05.json'"
           }
+        },
+        {
+          "attempt_id": "6be2210a6efc",
+          "started_at": "2026-09-08T12:11:21+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "05",
+            "kind": "original",
+            "prompt_sha256": "79ec17fe84bf5694c296a009e6bcb2853aa3139ca22bab13bd4c008434925234",
+            "prompt_chars": 87,
+            "prompt_bytes": 249,
+            "capture_id": "batch-05",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/05.json",
+              "contract_sha256": "18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2"
+            },
+            "frame_contract_sha256": "18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2",
+            "batch_id": null
+          },
+          "request_fingerprint": "3abeb584b56e0747f8d9f76aa606815a2680a82ed673b90734be82dbfb16dc67",
+          "notes": "V2.4 batch scheduler item=30059c260bb5",
+          "result": "technical_failure",
+          "runtime_transaction_id": "c0be6e1f866a44599c05be36ecd4a65b",
+          "completed_at": "2026-09-08T12:23:24+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\05-30059c260bb5-a2.jsonl"
+          }
+        },
+        {
+          "attempt_id": "780698187f95",
+          "started_at": "2026-09-08T12:35:28+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "05",
+            "kind": "original",
+            "prompt_sha256": "79ec17fe84bf5694c296a009e6bcb2853aa3139ca22bab13bd4c008434925234",
+            "prompt_chars": 87,
+            "prompt_bytes": 249,
+            "capture_id": "batch-05",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/05.json",
+              "contract_sha256": "18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2"
+            },
+            "frame_contract_sha256": "18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2",
+            "batch_id": "BATCH_65d7499eac35"
+          },
+          "request_fingerprint": "b96985e50bf464b489c751fd5614132b3feda961450318c1d3123c42c70039d3",
+          "notes": "V2.4 batch scheduler item=30059c260bb5",
+          "result": "success",
+          "runtime_transaction_id": "c0be6e1f866a44599c05be36ecd4a65b",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/05-1788842532.json",
+            "sha256": "e434bf0678aaaaca64962529b31d08ff39994a395eee798e02dedaf068ed2d6f",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T12:42:13+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/05-30059c260bb5-a3.png",
+            "sha256": "25d8b45a19ea880ace128bbdba8968684ea0660eaa771cfa8eefc7d8c892381c",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T12:42:13+08:00",
+            "kind": "original",
+            "attempt_id": "780698187f95"
+          }
         }
       ],
-      "current_candidate": null,
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/05-30059c260bb5-a3.png",
+        "sha256": "25d8b45a19ea880ace128bbdba8968684ea0660eaa771cfa8eefc7d8c892381c",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T12:42:13+08:00",
+        "kind": "original",
+        "attempt_id": "780698187f95"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "06": {
       "number": 6,
-      "status": "TECH_FAILED",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [
         {
@@ -1973,16 +2291,94 @@
             "code": "OUTPUT_MISSING",
             "message": "worker returned success without output"
           }
+        },
+        {
+          "attempt_id": "e2300565fc1e",
+          "started_at": "2026-09-08T12:11:21+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "06",
+            "kind": "original",
+            "prompt_sha256": "71ee729ae0a61ddcae19f75adff020f91498adfe68e665cbef8673a33b6ec153",
+            "prompt_chars": 83,
+            "prompt_bytes": 237,
+            "capture_id": "batch-06",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/11_车内夜间_正侧脸.png",
+                "role": "series_character_identity:P02",
+                "kind": "identity",
+                "sha256": "d5bc8e55dadbd4eaabefcb926e1d4816f7e72453e4c17b50ed7453aff2b4da32"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/06.json",
+              "contract_sha256": "55f388f934d76a220dcbbc3c94d43ecb2afd5121d85e971f505fa3359723c16f"
+            },
+            "frame_contract_sha256": "55f388f934d76a220dcbbc3c94d43ecb2afd5121d85e971f505fa3359723c16f",
+            "batch_id": null
+          },
+          "request_fingerprint": "22c1814fbd32bbceeb845ea82e0fe02fe893ba6eaeb6ee9cc38fade78f6569f4",
+          "notes": "V2.4 batch scheduler item=8e4a07a762cd",
+          "result": "success",
+          "runtime_transaction_id": "255505db632647fd89c89608e1a02433",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/06-1788841512.json",
+            "sha256": "98655300b7ef9d2c16c2e59a58466674261b7c4cb67464e04b3cd5ef7d3ea3bc",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T12:25:13+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/06-8e4a07a762cd-a2.png",
+            "sha256": "ff156550de672f3c5d6ecc4561ee7da5b8f27d65fac1844a9947a72e3444f546",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T12:25:13+08:00",
+            "kind": "original",
+            "attempt_id": "e2300565fc1e"
+          }
         }
       ],
-      "current_candidate": null,
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/06-8e4a07a762cd-a2.png",
+        "sha256": "ff156550de672f3c5d6ecc4561ee7da5b8f27d65fac1844a9947a72e3444f546",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T12:25:13+08:00",
+        "kind": "original",
+        "attempt_id": "e2300565fc1e"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "07": {
       "number": 7,
-      "status": "TECH_FAILED",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [
         {
@@ -2034,16 +2430,87 @@
             "code": "OUTPUT_MISSING",
             "message": "worker returned success without output"
           }
+        },
+        {
+          "attempt_id": "1e68d9bd123b",
+          "started_at": "2026-09-08T12:11:21+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "07",
+            "kind": "original",
+            "prompt_sha256": "4341045a658a0e74d228652668dfe3531b04366e06d98946a77079837a3df843",
+            "prompt_chars": 79,
+            "prompt_bytes": 225,
+            "capture_id": "batch-07",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/07.json",
+              "contract_sha256": "ede71264dfe6e654388a57f292e7a28ec4d80269a72a8ec1772648f0fae32180"
+            },
+            "frame_contract_sha256": "ede71264dfe6e654388a57f292e7a28ec4d80269a72a8ec1772648f0fae32180",
+            "batch_id": null
+          },
+          "request_fingerprint": "aab56f931356a186469207d977abe292a55d7e33dbd1f3326a6bf84cd2f6ea5f",
+          "notes": "V2.4 batch scheduler item=127d21da4684",
+          "result": "success",
+          "runtime_transaction_id": "de9192e56d1e48239ee47b5280321cff",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/07-1788841641.json",
+            "sha256": "c96d2a0e1f83e7cc2d15add1b4a438fc2da29030b9abe28efcf05ab03919f2dc",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T12:27:22+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/07-127d21da4684-a2.png",
+            "sha256": "1b0caa328176e2d6f641b30c37f5f4be9408d4087829bf9fd485d02aef70c18d",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T12:27:22+08:00",
+            "kind": "original",
+            "attempt_id": "1e68d9bd123b"
+          }
         }
       ],
-      "current_candidate": null,
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/07-127d21da4684-a2.png",
+        "sha256": "1b0caa328176e2d6f641b30c37f5f4be9408d4087829bf9fd485d02aef70c18d",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T12:27:22+08:00",
+        "kind": "original",
+        "attempt_id": "1e68d9bd123b"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "08": {
       "number": 8,
-      "status": "TECH_FAILED",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [
         {
@@ -2102,9 +2569,87 @@
             "code": "OUTPUT_MISSING",
             "message": "worker returned success without output"
           }
+        },
+        {
+          "attempt_id": "52dc1d0e06f7",
+          "started_at": "2026-09-08T12:11:21+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "08",
+            "kind": "original",
+            "prompt_sha256": "628bff0dfaddddf3a7b360159bafde78f56e31fceaf2e38d5b94c82be8f8137d",
+            "prompt_chars": 72,
+            "prompt_bytes": 216,
+            "capture_id": "batch-08",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/11_车内夜间_正侧脸.png",
+                "role": "series_character_identity:P02",
+                "kind": "identity",
+                "sha256": "d5bc8e55dadbd4eaabefcb926e1d4816f7e72453e4c17b50ed7453aff2b4da32"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/08.json",
+              "contract_sha256": "f099552cc514c2768f556153ef543334ff907043754eba3824bc0aecec642a9c"
+            },
+            "frame_contract_sha256": "f099552cc514c2768f556153ef543334ff907043754eba3824bc0aecec642a9c",
+            "batch_id": null
+          },
+          "request_fingerprint": "6c0746ed85b9617b114ecefeffa04bb8fa8eff252d720781016225eb06ea710d",
+          "notes": "V2.4 batch scheduler item=68ad77c3bd31",
+          "result": "success",
+          "runtime_transaction_id": "c419f4f128294efab18c2ca9d88ada1f",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/08-1788841900.json",
+            "sha256": "6db2f8598e1fb7cd591985ef8e72c45274e176052dfa04be09d145c737fcb2e5",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T12:31:42+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/08-68ad77c3bd31-a2.png",
+            "sha256": "5d16b88a14ea26060cda4f54ce801bd5e28d8d589300f8edb23f6730928af7a1",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T12:31:42+08:00",
+            "kind": "original",
+            "attempt_id": "52dc1d0e06f7"
+          }
         }
       ],
-      "current_candidate": null,
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/08-68ad77c3bd31-a2.png",
+        "sha256": "5d16b88a14ea26060cda4f54ce801bd5e28d8d589300f8edb23f6730928af7a1",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T12:31:42+08:00",
+        "kind": "original",
+        "attempt_id": "52dc1d0e06f7"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
@@ -2427,44 +2972,382 @@
     },
     "10": {
       "number": 10,
-      "status": "PENDING",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
+      "attempts": [
+        {
+          "attempt_id": "f66f45336cd4",
+          "started_at": "2026-09-08T12:35:28+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "10",
+            "kind": "original",
+            "prompt_sha256": "1cab74e9a9cda1c60331a732d5bfc668853ba07621fb0eeedfbf6d4b098bdb0c",
+            "prompt_chars": 83,
+            "prompt_bytes": 237,
+            "capture_id": "batch-10",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/10.json",
+              "contract_sha256": "4c71fba7104024058f8544d65914aac298ec9e9f05af3a05b673a75a5078a350"
+            },
+            "frame_contract_sha256": "4c71fba7104024058f8544d65914aac298ec9e9f05af3a05b673a75a5078a350",
+            "batch_id": null
+          },
+          "request_fingerprint": "21fac9cb9c93e3fbd9a28313f73808ff34258d59551a2c114789cc9114ba08be",
+          "notes": "V2.4 batch scheduler item=a7f86678c6fa",
+          "result": "success",
+          "runtime_transaction_id": "2a3a398de3ee4482bee272e346e05bc6",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/10-1788842648.json",
+            "sha256": "a641ee423d5017606dc4d0f984e5556e738bcb4c66ef42e0d8138a0a36af1e3c",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T12:44:09+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/10-a7f86678c6fa-a1.png",
+            "sha256": "b6b0da04c61afb182fdbcfc78aa68c6c9daac5f75035b9f034cdde0d0616bd07",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T12:44:09+08:00",
+            "kind": "original",
+            "attempt_id": "f66f45336cd4"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/10-a7f86678c6fa-a1.png",
+        "sha256": "b6b0da04c61afb182fdbcfc78aa68c6c9daac5f75035b9f034cdde0d0616bd07",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T12:44:09+08:00",
+        "kind": "original",
+        "attempt_id": "f66f45336cd4"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "11": {
       "number": 11,
-      "status": "PENDING",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
+      "attempts": [
+        {
+          "attempt_id": "714b941b3cef",
+          "started_at": "2026-09-08T12:35:28+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "11",
+            "kind": "original",
+            "prompt_sha256": "48cc11cd3b27335076f172ab870c727b3a1de6870fe836f94f0c88d834815a84",
+            "prompt_chars": 74,
+            "prompt_bytes": 210,
+            "capture_id": "batch-11",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/11.json",
+              "contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d"
+            },
+            "frame_contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d",
+            "batch_id": null
+          },
+          "request_fingerprint": "e9147b22ac5884dd2e3a1a33c75459d198be7b11c11d4c8b1425f899de2f5046",
+          "notes": "V2.4 batch scheduler item=b6bb3abab6c4",
+          "result": "success",
+          "runtime_transaction_id": "f7e8a3d8bbcb43edafb78d4ac806b218",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/11-1788842818.json",
+            "sha256": "cf130716e347f1ebab784d6d1af1df404f9d27f2a3a09dd8f8fd5bcc44a27c19",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T12:47:00+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/11-b6bb3abab6c4-a1.png",
+            "sha256": "cc27bb62674ba9796d344dd1d153a5e20500312aa365cfc7b50698188754bc1b",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T12:47:00+08:00",
+            "kind": "original",
+            "attempt_id": "714b941b3cef"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/11-b6bb3abab6c4-a1.png",
+        "sha256": "cc27bb62674ba9796d344dd1d153a5e20500312aa365cfc7b50698188754bc1b",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T12:47:00+08:00",
+        "kind": "original",
+        "attempt_id": "714b941b3cef"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "12": {
       "number": 12,
-      "status": "PENDING",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
+      "attempts": [
+        {
+          "attempt_id": "cbefac2f712d",
+          "started_at": "2026-09-08T12:35:28+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "12",
+            "kind": "original",
+            "prompt_sha256": "6182c24411defa985d45ec1aade22857bc40c883d8e7e715550cab5937f786a9",
+            "prompt_chars": 70,
+            "prompt_bytes": 198,
+            "capture_id": "batch-12",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/12.json",
+              "contract_sha256": "955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354"
+            },
+            "frame_contract_sha256": "955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354",
+            "batch_id": null
+          },
+          "request_fingerprint": "604a2a9251cad94cca179dd3963b857ca6b533c56ebb72d49e1c607a00815176",
+          "notes": "V2.4 batch scheduler item=c93e4c98ecea",
+          "result": "success",
+          "runtime_transaction_id": "c968b937e0ce4b938fd69d4ae47fb66e",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/12-1788842959.json",
+            "sha256": "5a027be508eb2cc9e5996d362fe489c67cd41dbf62e3a9285d4e9442bf9b6f1c",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T12:49:20+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/12-c93e4c98ecea-a1.png",
+            "sha256": "36012b520ce24fb6f237ef52a7c804018a3140cbdbd34010da11714e14cf6870",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T12:49:20+08:00",
+            "kind": "original",
+            "attempt_id": "cbefac2f712d"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/12-c93e4c98ecea-a1.png",
+        "sha256": "36012b520ce24fb6f237ef52a7c804018a3140cbdbd34010da11714e14cf6870",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T12:49:20+08:00",
+        "kind": "original",
+        "attempt_id": "cbefac2f712d"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "13": {
       "number": 13,
-      "status": "PENDING",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
-      "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
+      "technical_failures": [
+        {
+          "at": "2026-09-08T12:55:31+08:00",
+          "attempt_id": "15b576ea4def",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\13-3979017ac688-a1.jsonl"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt_id": "15b576ea4def",
+          "started_at": "2026-09-08T12:35:28+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "13",
+            "kind": "original",
+            "prompt_sha256": "05832bc891a7b25939bbcf9784d4e83e391015d7a2eff43b4cc559225d09fdba",
+            "prompt_chars": 77,
+            "prompt_bytes": 207,
+            "capture_id": "batch-13",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/13.json",
+              "contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53"
+            },
+            "frame_contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53",
+            "batch_id": null
+          },
+          "request_fingerprint": "453d1687f3b3fc91419e116e762c10858bfacb91abccd35962b5339da8e1920e",
+          "notes": "V2.4 batch scheduler item=3979017ac688",
+          "result": "technical_failure",
+          "runtime_transaction_id": "9a43e010c7154eac936c10189c4a2700",
+          "completed_at": "2026-09-08T12:55:31+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\13-3979017ac688-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "189d7e583b27",
+          "started_at": "2026-09-08T12:55:32+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "13",
+            "kind": "original",
+            "prompt_sha256": "05832bc891a7b25939bbcf9784d4e83e391015d7a2eff43b4cc559225d09fdba",
+            "prompt_chars": 77,
+            "prompt_bytes": 207,
+            "capture_id": "batch-13",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/13.json",
+              "contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53"
+            },
+            "frame_contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53",
+            "batch_id": "BATCH_adc45ded8879"
+          },
+          "request_fingerprint": "d5cce2840bc54a3d925232318066e196bd784a2362d2eb603533c459b71710c2",
+          "notes": "V2.4 batch scheduler item=3979017ac688",
+          "result": "success",
+          "runtime_transaction_id": "9a43e010c7154eac936c10189c4a2700",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/13-1788843697.json",
+            "sha256": "3c2ac0681d945a54f4b4613dfdda81f70cbedacfec545b096c7ffbdc0e747886",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T13:01:38+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/13-3979017ac688-a2.png",
+            "sha256": "c4fe3309c5f98cdd5c0994cc176c2ec4f44aa21768a4c609aef2898db9657700",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T13:01:38+08:00",
+            "kind": "original",
+            "attempt_id": "189d7e583b27"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/13-3979017ac688-a2.png",
+        "sha256": "c4fe3309c5f98cdd5c0994cc176c2ec4f44aa21768a4c609aef2898db9657700",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T13:01:38+08:00",
+        "kind": "original",
+        "attempt_id": "189d7e583b27"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
@@ -3157,66 +4040,519 @@
     },
     "15": {
       "number": 15,
-      "status": "PENDING",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
+      "attempts": [
+        {
+          "attempt_id": "1b1fd5fc23db",
+          "started_at": "2026-09-08T13:01:39+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "15",
+            "kind": "original",
+            "prompt_sha256": "eaed317bbcc0217ae52c205f53f6ce11657485ecc3e33635b7174c90cc3a5ce5",
+            "prompt_chars": 76,
+            "prompt_bytes": 222,
+            "capture_id": "batch-15",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/15.json",
+              "contract_sha256": "74eab8cbcd953150f4fece690c1351639c44c7871d216ff82f723b6c033809b8"
+            },
+            "frame_contract_sha256": "74eab8cbcd953150f4fece690c1351639c44c7871d216ff82f723b6c033809b8",
+            "batch_id": null
+          },
+          "request_fingerprint": "971ce9cf4651aef1b8021f2a0adafceae383a6f6daa6843c4d2411b337fd7b9b",
+          "notes": "V2.4 batch scheduler item=1159f9819c2d",
+          "result": "success",
+          "runtime_transaction_id": "a376ac8cd8c0432482cd202d526d5904",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/15-1788843870.json",
+            "sha256": "4d6bf4adcf1cddbf2f9d590b89bac7c3abb178ce49d7b00e90d62f9cc90980e9",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T13:04:31+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/15-1159f9819c2d-a1.png",
+            "sha256": "9ac8c690054887506da1b090906527cc4128f1c7bee0c1e5127580ab4cf64439",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T13:04:31+08:00",
+            "kind": "original",
+            "attempt_id": "1b1fd5fc23db"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/15-1159f9819c2d-a1.png",
+        "sha256": "9ac8c690054887506da1b090906527cc4128f1c7bee0c1e5127580ab4cf64439",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T13:04:31+08:00",
+        "kind": "original",
+        "attempt_id": "1b1fd5fc23db"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "16": {
       "number": 16,
-      "status": "PENDING",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
+      "attempts": [
+        {
+          "attempt_id": "aacdd192e213",
+          "started_at": "2026-09-08T13:01:39+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "16",
+            "kind": "original",
+            "prompt_sha256": "2477c4c035a4ed10281e439a2cd741f89f3c4e050a6a00210f2d8531d680250b",
+            "prompt_chars": 70,
+            "prompt_bytes": 198,
+            "capture_id": "batch-16",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/16.json",
+              "contract_sha256": "9d8c86cfcfca8f05c17ba0b519c59542871bd5c7b66ddced9020abe1b478fa26"
+            },
+            "frame_contract_sha256": "9d8c86cfcfca8f05c17ba0b519c59542871bd5c7b66ddced9020abe1b478fa26",
+            "batch_id": null
+          },
+          "request_fingerprint": "bdd8a4348f3c5c549d347ed43536bcc18e9e41df993b1fe657b8301d4d98941f",
+          "notes": "V2.4 batch scheduler item=f531fb27202b",
+          "result": "success",
+          "runtime_transaction_id": "56ca7d28f7ed40d78a47e668a45af8e0",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/16-1788844005.json",
+            "sha256": "45f881fe1010bdb30375fbadd68e1004e904a05a995f179644f8634985236719",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T13:06:46+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/16-f531fb27202b-a1.png",
+            "sha256": "31b16a451dfe1a235e7ec14562ab616fc74c03065cb3fad526a90a0c327b5243",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T13:06:46+08:00",
+            "kind": "original",
+            "attempt_id": "aacdd192e213"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/16-f531fb27202b-a1.png",
+        "sha256": "31b16a451dfe1a235e7ec14562ab616fc74c03065cb3fad526a90a0c327b5243",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T13:06:46+08:00",
+        "kind": "original",
+        "attempt_id": "aacdd192e213"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "17": {
       "number": 17,
-      "status": "PENDING",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
+      "attempts": [
+        {
+          "attempt_id": "dd6a0fefcf35",
+          "started_at": "2026-09-08T13:01:39+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "17",
+            "kind": "original",
+            "prompt_sha256": "42c07cb233210a5e5dfc3e86ec3482f17f7e7de1f3c62685905188355f768541",
+            "prompt_chars": 75,
+            "prompt_bytes": 213,
+            "capture_id": "batch-17",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/11_车内夜间_正侧脸.png",
+                "role": "series_character_identity:P02",
+                "kind": "identity",
+                "sha256": "d5bc8e55dadbd4eaabefcb926e1d4816f7e72453e4c17b50ed7453aff2b4da32"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/17.json",
+              "contract_sha256": "3c5a017dae877395ee60cd22e3ff8b9f98bfd15394124d8885a9eb9883da1899"
+            },
+            "frame_contract_sha256": "3c5a017dae877395ee60cd22e3ff8b9f98bfd15394124d8885a9eb9883da1899",
+            "batch_id": null
+          },
+          "request_fingerprint": "4da95a973c1d2f6609c516389723a745751c170b4013c0f0287266e0c6ed2a6d",
+          "notes": "V2.4 batch scheduler item=d45f2feae5f1",
+          "result": "success",
+          "runtime_transaction_id": "aa931581de724a6c985231b21f51b78c",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/17-1788844136.json",
+            "sha256": "e80b2c6523d475d00219dcf6df43d025cb8e1e70c1f3fd89497a1f147497dfd3",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T13:08:57+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/17-d45f2feae5f1-a1.png",
+            "sha256": "0c41cd39c36d7527e2eee6684a877b4cebbfe44bd39a0fbe0d080292020f2afa",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T13:08:57+08:00",
+            "kind": "original",
+            "attempt_id": "dd6a0fefcf35"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/17-d45f2feae5f1-a1.png",
+        "sha256": "0c41cd39c36d7527e2eee6684a877b4cebbfe44bd39a0fbe0d080292020f2afa",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T13:08:57+08:00",
+        "kind": "original",
+        "attempt_id": "dd6a0fefcf35"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "18": {
       "number": 18,
-      "status": "PENDING",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
+      "attempts": [
+        {
+          "attempt_id": "b81b1ebe1772",
+          "started_at": "2026-09-08T13:01:39+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "18",
+            "kind": "original",
+            "prompt_sha256": "6c9821a40f949c7908cede834393730a50020459fee928b6708551c6235eeb09",
+            "prompt_chars": 66,
+            "prompt_bytes": 192,
+            "capture_id": "batch-18",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/18.json",
+              "contract_sha256": "5a582856771610c153d0afe4b259d8d7ec3a037945a08b8c2d692df963f1ead1"
+            },
+            "frame_contract_sha256": "5a582856771610c153d0afe4b259d8d7ec3a037945a08b8c2d692df963f1ead1",
+            "batch_id": null
+          },
+          "request_fingerprint": "77e5f3ff483f4a89ef27e897eea4926a26822385ca6a6ff47ca8587cef6a5466",
+          "notes": "V2.4 batch scheduler item=d788501b64dd",
+          "result": "success",
+          "runtime_transaction_id": "f45b85b058c64923b853e034b6372b6f",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/18-1788844451.json",
+            "sha256": "e386b19fcec3909459c88445592bb49b8321a3fbeec6d4fbadafa847421f202c",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T13:14:12+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/18-d788501b64dd-a1.png",
+            "sha256": "b1ec3bb62582bada2b2948d51a487dfd1d863e31deb314b3a2c9390100d5d1e9",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T13:14:12+08:00",
+            "kind": "original",
+            "attempt_id": "b81b1ebe1772"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/18-d788501b64dd-a1.png",
+        "sha256": "b1ec3bb62582bada2b2948d51a487dfd1d863e31deb314b3a2c9390100d5d1e9",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T13:14:12+08:00",
+        "kind": "original",
+        "attempt_id": "b81b1ebe1772"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "19": {
       "number": 19,
-      "status": "PENDING",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
+      "attempts": [
+        {
+          "attempt_id": "3b8fdc3d4058",
+          "started_at": "2026-09-08T13:01:39+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "19",
+            "kind": "original",
+            "prompt_sha256": "975edceff8a5c1f4288d2ef154de73ea090fe61a0a8a8ad7a65c456e734084bc",
+            "prompt_chars": 69,
+            "prompt_bytes": 201,
+            "capture_id": "batch-19",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/01_情侣自拍_正脸.png",
+                "role": "series_character_identity:P01",
+                "kind": "identity",
+                "sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/19.json",
+              "contract_sha256": "289117db5bb6c7e493941475468ff3e38f5c02c97949aecb173cedb6bdecb54b"
+            },
+            "frame_contract_sha256": "289117db5bb6c7e493941475468ff3e38f5c02c97949aecb173cedb6bdecb54b",
+            "batch_id": null
+          },
+          "request_fingerprint": "eb7930dd836e6499476e7b42269cc380f78ad1a9c25a2fc595b6e1de61e36f78",
+          "notes": "V2.4 batch scheduler item=066dd935385a",
+          "result": "success",
+          "runtime_transaction_id": "c80cb51b900648368aa37353386238b5",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/19-1788844703.json",
+            "sha256": "5a066d72e4f382962983e233ab2f9319049cea99899d25af021eb4bebda4b3cc",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T13:18:23+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/19-066dd935385a-a1.png",
+            "sha256": "6c8ce685b70193c1cad43a385f0d4e8d224b89fffe0f1d81265ef9e57e77c6af",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T13:18:23+08:00",
+            "kind": "original",
+            "attempt_id": "3b8fdc3d4058"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/19-066dd935385a-a1.png",
+        "sha256": "6c8ce685b70193c1cad43a385f0d4e8d224b89fffe0f1d81265ef9e57e77c6af",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T13:18:23+08:00",
+        "kind": "original",
+        "attempt_id": "3b8fdc3d4058"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []
     },
     "20": {
       "number": 20,
-      "status": "PENDING",
+      "status": "ORIGINAL_READY",
       "content_repairs_used": 0,
       "technical_failures": [],
-      "attempts": [],
-      "current_candidate": null,
+      "attempts": [
+        {
+          "attempt_id": "e453de5a4ed9",
+          "started_at": "2026-09-08T13:18:24+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "20",
+            "kind": "original",
+            "prompt_sha256": "3db5e88f1f33e7d20d3283939318e50092fe74019696b841876218b426e51a7e",
+            "prompt_chars": 81,
+            "prompt_bytes": 243,
+            "capture_id": "batch-20",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/11_车内夜间_正侧脸.png",
+                "role": "series_character_identity:P02",
+                "kind": "identity",
+                "sha256": "d5bc8e55dadbd4eaabefcb926e1d4816f7e72453e4c17b50ed7453aff2b4da32"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/20.json",
+              "contract_sha256": "82a6598ebc23536a892fcf0f3f19bffa6c26564378c60165ae6ff2f5dcdaa05f"
+            },
+            "frame_contract_sha256": "82a6598ebc23536a892fcf0f3f19bffa6c26564378c60165ae6ff2f5dcdaa05f",
+            "batch_id": null
+          },
+          "request_fingerprint": "cead3189df9920246431051e6fdd6034fcdcd08823f81e96cd54fa792ecb69bb",
+          "notes": "V2.4 batch scheduler item=c959cb95acd7",
+          "result": "success",
+          "runtime_transaction_id": "4a4d67744c4f40e895912107fd6b8f53",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/20-1788844914.json",
+            "sha256": "33a3974f26b5dba2f3d9505899c07410ed0ee144205a747926bd58c6897264b3",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T13:21:55+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/20-c959cb95acd7-a1.png",
+            "sha256": "bfad361180585509354f00e5d6bd6c6772bae1d1c0f7ef5715233745f8ad942c",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T13:21:55+08:00",
+            "kind": "original",
+            "attempt_id": "e453de5a4ed9"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/20-c959cb95acd7-a1.png",
+        "sha256": "bfad361180585509354f00e5d6bd6c6772bae1d1c0f7ef5715233745f8ad942c",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-08T13:21:55+08:00",
+        "kind": "original",
+        "attempt_id": "e453de5a4ed9"
+      },
       "approved_asset": null,
       "lock": null,
       "reviews": []

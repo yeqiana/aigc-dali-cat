@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "created_at": "2026-09-06T02:20:53+08:00",
-  "updated_at": "2026-09-07T18:47:44+08:00",
+  "updated_at": "2026-09-08T13:21:55+08:00",
   "max_parallel": 3,
   "adaptive_parallel": 1,
   "stable_waves": 0,
@@ -27,7 +27,7 @@
         "contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c"
       },
       "attempts": 2,
-      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-e7bf8a9697a2-a2.png",
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-6f5182e6f65b-a6.png",
       "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/01-e7bf8a9697a2-a2.jsonl",
       "last_error": null,
       "queued_at": "2026-09-06T02:22:14+08:00",
@@ -57,7 +57,8 @@
         "package_sha256": "b9db5bd76283396bc5b000df06c370f188580dc8fec99e84b99f58af3ee76c17",
         "frame_contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c"
       },
-      "scout": null
+      "scout": null,
+      "execution": {}
     },
     {
       "id": "4b3b8f40440e",
@@ -88,7 +89,7 @@
         "contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687"
       },
       "attempts": 1,
-      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-4b3b8f40440e-a1.png",
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-35216c31b625-a2.png",
       "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/09-4b3b8f40440e-a1.jsonl",
       "last_error": null,
       "queued_at": "2026-09-06T02:22:14+08:00",
@@ -132,7 +133,8 @@
         "fast_path_deferred": true,
         "final_pass_authority": false,
         "returncode": 0
-      }
+      },
+      "execution": {}
     },
     {
       "id": "89c8abc517a3",
@@ -165,7 +167,7 @@
         "contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72"
       },
       "attempts": 3,
-      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/03-89c8abc517a3-a3.png",
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/03-55049c2c730b-a4.png",
       "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/03-89c8abc517a3-a3.jsonl",
       "last_error": null,
       "queued_at": "2026-09-06T02:22:15+08:00",
@@ -209,7 +211,8 @@
         "fast_path_deferred": true,
         "final_pass_authority": false,
         "returncode": 0
-      }
+      },
+      "execution": {}
     },
     {
       "id": "0bed26ad211c",
@@ -234,7 +237,7 @@
         "contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637"
       },
       "attempts": 5,
-      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/14-0bed26ad211c-a5.png",
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/14-7c8e14f1a2b3-a3.png",
       "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/14-0bed26ad211c-a5.jsonl",
       "last_error": null,
       "queued_at": "2026-09-06T02:22:15+08:00",
@@ -271,7 +274,8 @@
         "fast_path_deferred": true,
         "final_pass_authority": false,
         "returncode": 0
-      }
+      },
+      "execution": {}
     },
     {
       "id": "7752e2a57569",
@@ -564,7 +568,8 @@
       "prompt_package": {
         "package_sha256": "3600becc3b7ca024971b032574462354c7ede4a909a18d47c3201344fd1e2bc9",
         "frame_contract_sha256": "8d584e1d09e54a5bc95a0fa239ba669515dfe7873302ceb36dd88af1e75e8489"
-      }
+      },
+      "execution": {}
     },
     {
       "id": "55049c2c730b",
@@ -602,7 +607,8 @@
       "prompt_package": {
         "package_sha256": "fcb66abcbda4c1115d03e24752065ae684aabf5a4f10742303e700e05e7bc243",
         "frame_contract_sha256": "5a2eb0f6c59383a67198a6abf0a39ab8ec4dc5dde6acbbe549653663e9fccbec"
-      }
+      },
+      "execution": {}
     },
     {
       "id": "35216c31b625",
@@ -634,7 +640,8 @@
       "prompt_package": {
         "package_sha256": "aa76646b79ba3b0ce96f4984220f4ac245dc6c58414545652ad8bf93a67bafa8",
         "frame_contract_sha256": "11c9d1ba9c9ce4bbf2d7072064cfce547b78f9b5bd9ca787144815b9d3f3c37a"
-      }
+      },
+      "execution": {}
     },
     {
       "id": "7c8e14f1a2b3",
@@ -666,14 +673,15 @@
       "prompt_package": {
         "package_sha256": "2e67e5a0deb32c9685f6a8aa7991b6bdac80e8a2692b957873706cc011b674d1",
         "frame_contract_sha256": "a35b497aae1be82ed0152338c65bb3dd199f1985142027957e3fd7c6f86b3eb4"
-      }
+      },
+      "execution": {}
     },
     {
       "id": "d29acc72fa07",
       "frame": 2,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/02.txt",
       "references": [
         {
@@ -694,20 +702,34 @@
         "path": "meta/runtime/contracts/frames/02.json",
         "contract_sha256": "3e6055802d2488bdbdf7a6c388a7856a8f8ce18802d1fef5271aad32b32b743d"
       },
-      "attempts": 1,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 2,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/02-d29acc72fa07-a2.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/02-d29acc72fa07-a2.jsonl",
       "last_error": null,
       "queued_at": "2026-09-07T10:52:39+08:00",
       "retry_pending": false,
-      "started_at": "2026-09-07T15:30:33+08:00"
+      "started_at": "2026-09-08T12:04:48+08:00",
+      "execution": {
+        "transaction_id": "2232a37dd4a74163a7f1374e5cc5ba93",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T12:04:47+08:00",
+        "expected_lifecycle": "meta/image-workers/02-d29acc72fa07-a2.lifecycle.json",
+        "worker_pending_at": "2026-09-08T12:04:48+08:00",
+        "updated_at": "2026-09-08T13:18:23+08:00"
+      },
+      "batch_id": "BATCH_fd5207364303",
+      "completed_at": "2026-09-08T12:06:55+08:00",
+      "prompt_package": {
+        "package_sha256": "3b2ebc71c9a6b00b2587eaec310eb0fd855be3dc7c72583d1b943f0f33610846",
+        "frame_contract_sha256": "3e6055802d2488bdbdf7a6c388a7856a8f8ce18802d1fef5271aad32b32b743d"
+      }
     },
     {
       "id": "cf74057cfb9e",
       "frame": 4,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/04.txt",
       "references": [],
       "capture_id": "batch-04",
@@ -722,20 +744,34 @@
         "path": "meta/runtime/contracts/frames/04.json",
         "contract_sha256": "92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555"
       },
-      "attempts": 1,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 3,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/04-cf74057cfb9e-a3.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/04-cf74057cfb9e-a3.jsonl",
       "last_error": null,
       "queued_at": "2026-09-07T10:52:39+08:00",
       "retry_pending": false,
-      "started_at": "2026-09-07T15:30:33+08:00"
+      "started_at": "2026-09-08T12:31:42+08:00",
+      "execution": {
+        "transaction_id": "a6850eeb821e40469719515aa8319a30",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T12:31:42+08:00",
+        "expected_lifecycle": "meta/image-workers/04-cf74057cfb9e-a3.lifecycle.json",
+        "worker_pending_at": "2026-09-08T12:31:42+08:00",
+        "updated_at": "2026-09-08T13:18:23+08:00"
+      },
+      "batch_id": "BATCH_75db9dae323f",
+      "completed_at": "2026-09-08T12:35:28+08:00",
+      "prompt_package": {
+        "package_sha256": "7cdfb25909d8af85d2d2fc5535c04b96efdf85e045f1de49cd742b6513a81767",
+        "frame_contract_sha256": "92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555"
+      }
     },
     {
       "id": "30059c260bb5",
       "frame": 5,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/05.txt",
       "references": [],
       "capture_id": "batch-05",
@@ -750,20 +786,34 @@
         "path": "meta/runtime/contracts/frames/05.json",
         "contract_sha256": "18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2"
       },
-      "attempts": 1,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 3,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/05-30059c260bb5-a3.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/05-30059c260bb5-a3.jsonl",
       "last_error": null,
       "queued_at": "2026-09-07T10:52:39+08:00",
       "retry_pending": false,
-      "started_at": "2026-09-07T15:30:33+08:00"
+      "started_at": "2026-09-08T12:35:28+08:00",
+      "execution": {
+        "transaction_id": "c0be6e1f866a44599c05be36ecd4a65b",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T12:35:28+08:00",
+        "expected_lifecycle": "meta/image-workers/05-30059c260bb5-a3.lifecycle.json",
+        "worker_pending_at": "2026-09-08T12:35:28+08:00",
+        "updated_at": "2026-09-08T13:18:23+08:00"
+      },
+      "batch_id": "BATCH_adc45ded8879",
+      "completed_at": "2026-09-08T12:42:13+08:00",
+      "prompt_package": {
+        "package_sha256": "20be12ccaef279d9b690e3a8c82cbf3a8183a61416eb886aaba8fdc6c07ffcd6",
+        "frame_contract_sha256": "18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2"
+      }
     },
     {
       "id": "8e4a07a762cd",
       "frame": 6,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/06.txt",
       "references": [
         {
@@ -784,20 +834,34 @@
         "path": "meta/runtime/contracts/frames/06.json",
         "contract_sha256": "55f388f934d76a220dcbbc3c94d43ecb2afd5121d85e971f505fa3359723c16f"
       },
-      "attempts": 1,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 2,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/06-8e4a07a762cd-a2.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/06-8e4a07a762cd-a2.jsonl",
       "last_error": null,
       "queued_at": "2026-09-07T10:52:40+08:00",
-      "started_at": "2026-09-07T15:31:20+08:00",
-      "retry_pending": false
+      "started_at": "2026-09-08T12:11:21+08:00",
+      "retry_pending": false,
+      "execution": {
+        "transaction_id": "255505db632647fd89c89608e1a02433",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T12:11:21+08:00",
+        "expected_lifecycle": "meta/image-workers/06-8e4a07a762cd-a2.lifecycle.json",
+        "worker_pending_at": "2026-09-08T12:11:21+08:00",
+        "updated_at": "2026-09-08T13:18:23+08:00"
+      },
+      "batch_id": "BATCH_65d7499eac35",
+      "completed_at": "2026-09-08T12:25:13+08:00",
+      "prompt_package": {
+        "package_sha256": "9bb9c31ddd101768dd1235e42f7371141385befcbaced1d934b111522f0a7a4d",
+        "frame_contract_sha256": "55f388f934d76a220dcbbc3c94d43ecb2afd5121d85e971f505fa3359723c16f"
+      }
     },
     {
       "id": "127d21da4684",
       "frame": 7,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/07.txt",
       "references": [],
       "capture_id": "batch-07",
@@ -812,20 +876,34 @@
         "path": "meta/runtime/contracts/frames/07.json",
         "contract_sha256": "ede71264dfe6e654388a57f292e7a28ec4d80269a72a8ec1772648f0fae32180"
       },
-      "attempts": 1,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 2,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/07-127d21da4684-a2.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/07-127d21da4684-a2.jsonl",
       "last_error": null,
       "queued_at": "2026-09-07T10:52:40+08:00",
-      "started_at": "2026-09-07T15:31:20+08:00",
-      "retry_pending": false
+      "started_at": "2026-09-08T12:11:21+08:00",
+      "retry_pending": false,
+      "execution": {
+        "transaction_id": "de9192e56d1e48239ee47b5280321cff",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T12:11:21+08:00",
+        "expected_lifecycle": "meta/image-workers/07-127d21da4684-a2.lifecycle.json",
+        "worker_pending_at": "2026-09-08T12:11:21+08:00",
+        "updated_at": "2026-09-08T13:18:23+08:00"
+      },
+      "batch_id": "BATCH_65d7499eac35",
+      "completed_at": "2026-09-08T12:27:22+08:00",
+      "prompt_package": {
+        "package_sha256": "124e8f9a8ebeb4ca32d4fe3b7b1eec040b54362a276b64f79af78e22725d36bf",
+        "frame_contract_sha256": "ede71264dfe6e654388a57f292e7a28ec4d80269a72a8ec1772648f0fae32180"
+      }
     },
     {
       "id": "68ad77c3bd31",
       "frame": 8,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/08.txt",
       "references": [
         {
@@ -846,20 +924,34 @@
         "path": "meta/runtime/contracts/frames/08.json",
         "contract_sha256": "f099552cc514c2768f556153ef543334ff907043754eba3824bc0aecec642a9c"
       },
-      "attempts": 1,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 2,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/08-68ad77c3bd31-a2.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/08-68ad77c3bd31-a2.jsonl",
       "last_error": null,
       "queued_at": "2026-09-07T10:52:40+08:00",
-      "started_at": "2026-09-07T15:31:21+08:00",
-      "retry_pending": false
+      "started_at": "2026-09-08T12:11:21+08:00",
+      "retry_pending": false,
+      "execution": {
+        "transaction_id": "c419f4f128294efab18c2ca9d88ada1f",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T12:11:21+08:00",
+        "expected_lifecycle": "meta/image-workers/08-68ad77c3bd31-a2.lifecycle.json",
+        "worker_pending_at": "2026-09-08T12:11:21+08:00",
+        "updated_at": "2026-09-08T13:18:23+08:00"
+      },
+      "batch_id": "BATCH_65d7499eac35",
+      "completed_at": "2026-09-08T12:31:42+08:00",
+      "prompt_package": {
+        "package_sha256": "c7e8e85c139758fb079cd0ae64c30a7e5cb9121a38b1227da1082b2d8e3278d2",
+        "frame_contract_sha256": "f099552cc514c2768f556153ef543334ff907043754eba3824bc0aecec642a9c"
+      }
     },
     {
       "id": "a7f86678c6fa",
       "frame": 10,
       "kind": "original",
       "scope": "batch",
-      "status": "tech_failed",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/10.txt",
       "references": [],
       "capture_id": "batch-10",
@@ -874,18 +966,34 @@
         "path": "meta/runtime/contracts/frames/10.json",
         "contract_sha256": "4c71fba7104024058f8544d65914aac298ec9e9f05af3a05b673a75a5078a350"
       },
-      "attempts": 0,
-      "output_path": null,
-      "log_path": null,
-      "last_error": "IMAGE_TOOL_UNAVAILABLE",
-      "queued_at": "2026-09-07T10:52:41+08:00"
+      "attempts": 1,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/10-a7f86678c6fa-a1.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/10-a7f86678c6fa-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-07T10:52:41+08:00",
+      "retry_pending": false,
+      "execution": {
+        "transaction_id": "2a3a398de3ee4482bee272e346e05bc6",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T12:35:28+08:00",
+        "expected_lifecycle": "meta/image-workers/10-a7f86678c6fa-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-08T12:35:28+08:00",
+        "updated_at": "2026-09-08T13:18:23+08:00"
+      },
+      "started_at": "2026-09-08T12:35:28+08:00",
+      "batch_id": "BATCH_adc45ded8879",
+      "completed_at": "2026-09-08T12:44:09+08:00",
+      "prompt_package": {
+        "package_sha256": "b50f70450bcf4a6ac1b94666942e70d3143d0b43c49111df2e0e9a99cbcb0ee6",
+        "frame_contract_sha256": "4c71fba7104024058f8544d65914aac298ec9e9f05af3a05b673a75a5078a350"
+      }
     },
     {
       "id": "b6bb3abab6c4",
       "frame": 11,
       "kind": "original",
       "scope": "batch",
-      "status": "tech_failed",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/11.txt",
       "references": [],
       "capture_id": "batch-11",
@@ -900,18 +1008,34 @@
         "path": "meta/runtime/contracts/frames/11.json",
         "contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d"
       },
-      "attempts": 0,
-      "output_path": null,
-      "log_path": null,
-      "last_error": "IMAGE_TOOL_UNAVAILABLE",
-      "queued_at": "2026-09-07T10:52:41+08:00"
+      "attempts": 1,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/11-b6bb3abab6c4-a1.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/11-b6bb3abab6c4-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-07T10:52:41+08:00",
+      "retry_pending": false,
+      "execution": {
+        "transaction_id": "f7e8a3d8bbcb43edafb78d4ac806b218",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T12:35:28+08:00",
+        "expected_lifecycle": "meta/image-workers/11-b6bb3abab6c4-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-08T12:35:28+08:00",
+        "updated_at": "2026-09-08T13:18:24+08:00"
+      },
+      "started_at": "2026-09-08T12:35:28+08:00",
+      "batch_id": "BATCH_adc45ded8879",
+      "completed_at": "2026-09-08T12:47:00+08:00",
+      "prompt_package": {
+        "package_sha256": "ae3a6e3be6e8f35ef4d3c81d691ea823da6ee654d7b76178a8ef6e82079e5886",
+        "frame_contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d"
+      }
     },
     {
       "id": "c93e4c98ecea",
       "frame": 12,
       "kind": "original",
       "scope": "batch",
-      "status": "tech_failed",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/12.txt",
       "references": [],
       "capture_id": "batch-12",
@@ -926,18 +1050,34 @@
         "path": "meta/runtime/contracts/frames/12.json",
         "contract_sha256": "955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354"
       },
-      "attempts": 0,
-      "output_path": null,
-      "log_path": null,
-      "last_error": "IMAGE_TOOL_UNAVAILABLE",
-      "queued_at": "2026-09-07T10:52:41+08:00"
+      "attempts": 1,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/12-c93e4c98ecea-a1.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/12-c93e4c98ecea-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-07T10:52:41+08:00",
+      "retry_pending": false,
+      "execution": {
+        "transaction_id": "c968b937e0ce4b938fd69d4ae47fb66e",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T12:35:28+08:00",
+        "expected_lifecycle": "meta/image-workers/12-c93e4c98ecea-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-08T12:35:28+08:00",
+        "updated_at": "2026-09-08T13:18:24+08:00"
+      },
+      "started_at": "2026-09-08T12:35:28+08:00",
+      "batch_id": "BATCH_adc45ded8879",
+      "completed_at": "2026-09-08T12:49:20+08:00",
+      "prompt_package": {
+        "package_sha256": "03268f32a2043708a133cd5c934ebbedca549ed49ca9a06e90567b6e09f194c3",
+        "frame_contract_sha256": "955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354"
+      }
     },
     {
       "id": "3979017ac688",
       "frame": 13,
       "kind": "original",
       "scope": "batch",
-      "status": "tech_failed",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/13.txt",
       "references": [],
       "capture_id": "batch-13",
@@ -952,18 +1092,34 @@
         "path": "meta/runtime/contracts/frames/13.json",
         "contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53"
       },
-      "attempts": 0,
-      "output_path": null,
-      "log_path": null,
-      "last_error": "IMAGE_TOOL_UNAVAILABLE",
-      "queued_at": "2026-09-07T10:52:41+08:00"
+      "attempts": 2,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/13-3979017ac688-a2.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/13-3979017ac688-a2.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-07T10:52:41+08:00",
+      "retry_pending": false,
+      "execution": {
+        "transaction_id": "9a43e010c7154eac936c10189c4a2700",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T12:55:31+08:00",
+        "expected_lifecycle": "meta/image-workers/13-3979017ac688-a2.lifecycle.json",
+        "worker_pending_at": "2026-09-08T12:55:32+08:00",
+        "updated_at": "2026-09-08T13:18:24+08:00"
+      },
+      "started_at": "2026-09-08T12:55:32+08:00",
+      "batch_id": "BATCH_8b9d046c4ff5",
+      "completed_at": "2026-09-08T13:01:38+08:00",
+      "prompt_package": {
+        "package_sha256": "d0b15e910683792a59cbd7f7b0693680863f1073bacb070330606cddf8929b8d",
+        "frame_contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53"
+      }
     },
     {
       "id": "1159f9819c2d",
       "frame": 15,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/15.txt",
       "references": [],
       "capture_id": "batch-15",
@@ -978,18 +1134,33 @@
         "path": "meta/runtime/contracts/frames/15.json",
         "contract_sha256": "74eab8cbcd953150f4fece690c1351639c44c7871d216ff82f723b6c033809b8"
       },
-      "attempts": 0,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 1,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/15-1159f9819c2d-a1.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/15-1159f9819c2d-a1.jsonl",
       "last_error": null,
-      "queued_at": "2026-09-07T10:52:42+08:00"
+      "queued_at": "2026-09-07T10:52:42+08:00",
+      "execution": {
+        "transaction_id": "a376ac8cd8c0432482cd202d526d5904",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T13:01:39+08:00",
+        "expected_lifecycle": "meta/image-workers/15-1159f9819c2d-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-08T13:01:39+08:00",
+        "updated_at": "2026-09-08T13:18:24+08:00"
+      },
+      "started_at": "2026-09-08T13:01:39+08:00",
+      "batch_id": "BATCH_dbc42cee7e2a",
+      "completed_at": "2026-09-08T13:04:31+08:00",
+      "prompt_package": {
+        "package_sha256": "6f5d7562ce15a98766904ee7422785359c8f1b791aa8a49224581bc628162769",
+        "frame_contract_sha256": "74eab8cbcd953150f4fece690c1351639c44c7871d216ff82f723b6c033809b8"
+      }
     },
     {
       "id": "f531fb27202b",
       "frame": 16,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/16.txt",
       "references": [],
       "capture_id": "batch-16",
@@ -1004,18 +1175,33 @@
         "path": "meta/runtime/contracts/frames/16.json",
         "contract_sha256": "9d8c86cfcfca8f05c17ba0b519c59542871bd5c7b66ddced9020abe1b478fa26"
       },
-      "attempts": 0,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 1,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/16-f531fb27202b-a1.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/16-f531fb27202b-a1.jsonl",
       "last_error": null,
-      "queued_at": "2026-09-07T10:52:42+08:00"
+      "queued_at": "2026-09-07T10:52:42+08:00",
+      "execution": {
+        "transaction_id": "56ca7d28f7ed40d78a47e668a45af8e0",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T13:01:39+08:00",
+        "expected_lifecycle": "meta/image-workers/16-f531fb27202b-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-08T13:01:39+08:00",
+        "updated_at": "2026-09-08T13:18:24+08:00"
+      },
+      "started_at": "2026-09-08T13:01:39+08:00",
+      "batch_id": "BATCH_dbc42cee7e2a",
+      "completed_at": "2026-09-08T13:06:46+08:00",
+      "prompt_package": {
+        "package_sha256": "9aa6d81b06c27d583d446150212cce53d47f1ad86a3c28b730ff4b9e36cd4579",
+        "frame_contract_sha256": "9d8c86cfcfca8f05c17ba0b519c59542871bd5c7b66ddced9020abe1b478fa26"
+      }
     },
     {
       "id": "d45f2feae5f1",
       "frame": 17,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/17.txt",
       "references": [
         {
@@ -1036,18 +1222,33 @@
         "path": "meta/runtime/contracts/frames/17.json",
         "contract_sha256": "3c5a017dae877395ee60cd22e3ff8b9f98bfd15394124d8885a9eb9883da1899"
       },
-      "attempts": 0,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 1,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/17-d45f2feae5f1-a1.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/17-d45f2feae5f1-a1.jsonl",
       "last_error": null,
-      "queued_at": "2026-09-07T10:52:42+08:00"
+      "queued_at": "2026-09-07T10:52:42+08:00",
+      "execution": {
+        "transaction_id": "aa931581de724a6c985231b21f51b78c",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T13:01:39+08:00",
+        "expected_lifecycle": "meta/image-workers/17-d45f2feae5f1-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-08T13:01:39+08:00",
+        "updated_at": "2026-09-08T13:18:24+08:00"
+      },
+      "started_at": "2026-09-08T13:01:39+08:00",
+      "batch_id": "BATCH_dbc42cee7e2a",
+      "completed_at": "2026-09-08T13:08:57+08:00",
+      "prompt_package": {
+        "package_sha256": "de780f8353233554c29d7255912eed4a35b5d33eecb7fc9dbb71863ce0b85189",
+        "frame_contract_sha256": "3c5a017dae877395ee60cd22e3ff8b9f98bfd15394124d8885a9eb9883da1899"
+      }
     },
     {
       "id": "d788501b64dd",
       "frame": 18,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/18.txt",
       "references": [],
       "capture_id": "batch-18",
@@ -1062,18 +1263,33 @@
         "path": "meta/runtime/contracts/frames/18.json",
         "contract_sha256": "5a582856771610c153d0afe4b259d8d7ec3a037945a08b8c2d692df963f1ead1"
       },
-      "attempts": 0,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 1,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/18-d788501b64dd-a1.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/18-d788501b64dd-a1.jsonl",
       "last_error": null,
-      "queued_at": "2026-09-07T10:52:43+08:00"
+      "queued_at": "2026-09-07T10:52:43+08:00",
+      "execution": {
+        "transaction_id": "f45b85b058c64923b853e034b6372b6f",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T13:01:39+08:00",
+        "expected_lifecycle": "meta/image-workers/18-d788501b64dd-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-08T13:01:39+08:00",
+        "updated_at": "2026-09-08T13:18:24+08:00"
+      },
+      "started_at": "2026-09-08T13:01:39+08:00",
+      "batch_id": "BATCH_dbc42cee7e2a",
+      "completed_at": "2026-09-08T13:14:12+08:00",
+      "prompt_package": {
+        "package_sha256": "837e2b0aa00ab618f6842d2b5101da597e35a2d562024ad2a3be0a0be483ddf5",
+        "frame_contract_sha256": "5a582856771610c153d0afe4b259d8d7ec3a037945a08b8c2d692df963f1ead1"
+      }
     },
     {
       "id": "066dd935385a",
       "frame": 19,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/19.txt",
       "references": [
         {
@@ -1094,18 +1310,33 @@
         "path": "meta/runtime/contracts/frames/19.json",
         "contract_sha256": "289117db5bb6c7e493941475468ff3e38f5c02c97949aecb173cedb6bdecb54b"
       },
-      "attempts": 0,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 1,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/19-066dd935385a-a1.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/19-066dd935385a-a1.jsonl",
       "last_error": null,
-      "queued_at": "2026-09-07T10:52:43+08:00"
+      "queued_at": "2026-09-07T10:52:43+08:00",
+      "execution": {
+        "transaction_id": "c80cb51b900648368aa37353386238b5",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T13:01:39+08:00",
+        "expected_lifecycle": "meta/image-workers/19-066dd935385a-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-08T13:01:39+08:00",
+        "updated_at": "2026-09-08T13:18:24+08:00"
+      },
+      "started_at": "2026-09-08T13:01:39+08:00",
+      "batch_id": "BATCH_dbc42cee7e2a",
+      "completed_at": "2026-09-08T13:18:23+08:00",
+      "prompt_package": {
+        "package_sha256": "d1ccbfee6225ecf740e17ad05ccfb85584502cefba5f41b78ffc26153ef734ba",
+        "frame_contract_sha256": "289117db5bb6c7e493941475468ff3e38f5c02c97949aecb173cedb6bdecb54b"
+      }
     },
     {
       "id": "c959cb95acd7",
       "frame": 20,
       "kind": "original",
       "scope": "batch",
-      "status": "queued",
+      "status": "generated",
       "prompt_file": "episodes/10_彼此的天上/02_玻璃另一边的手/prompts/production/20.txt",
       "references": [
         {
@@ -1126,11 +1357,26 @@
         "path": "meta/runtime/contracts/frames/20.json",
         "contract_sha256": "82a6598ebc23536a892fcf0f3f19bffa6c26564378c60165ae6ff2f5dcdaa05f"
       },
-      "attempts": 0,
-      "output_path": null,
-      "log_path": null,
+      "attempts": 1,
+      "output_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/20-c959cb95acd7-a1.png",
+      "log_path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/20-c959cb95acd7-a1.jsonl",
       "last_error": null,
-      "queued_at": "2026-09-07T10:52:43+08:00"
+      "queued_at": "2026-09-07T10:52:43+08:00",
+      "execution": {
+        "transaction_id": "4a4d67744c4f40e895912107fd6b8f53",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-08T13:18:24+08:00",
+        "expected_lifecycle": "meta/image-workers/20-c959cb95acd7-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-08T13:18:24+08:00",
+        "updated_at": "2026-09-08T13:21:55+08:00"
+      },
+      "started_at": "2026-09-08T13:18:24+08:00",
+      "batch_id": "BATCH_553efb809a3d",
+      "completed_at": "2026-09-08T13:21:55+08:00",
+      "prompt_package": {
+        "package_sha256": "3c2fdc8c0bc8fd0299092bdafba48cba0e1eb125cdbe4e0c88685200c1233d15",
+        "frame_contract_sha256": "82a6598ebc23536a892fcf0f3f19bffa6c26564378c60165ae6ff2f5dcdaa05f"
+      }
     }
   ],
   "waves": [
@@ -2400,6 +2646,2145 @@
         "elapsed_seconds": 126.569
       },
       "at": "2026-09-07T15:33:28+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "d29acc72fa07",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "02",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\02-1788840288.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\02-d29acc72fa07-a2.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\02-d29acc72fa07-a2.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [
+              "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\01_不存在的夜行路\\assets\\characters\\female-lead\\11_车内夜间_正侧脸.png"
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/02.json",
+              "contract_sha256": "3e6055802d2488bdbdf7a6c388a7856a8f8ce18802d1fef5271aad32b32b743d"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\02-1788840288.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\02-d29acc72fa07-a2.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/02-1788840414.json",
+              "sha256": "f1cbacd58998b11b83f2ca7d4fed87b37318cb868c15969eb8f0911d7715470b"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788840414,
+              "frame": "02",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\02-1788840288.png",
+              "raw_sha256": "f05650d035f2769c9b8534e8b930c804c7452395fed356a0fc58d1624175d2ee",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\02-d29acc72fa07-a2.png",
+                "sha256": "ac4d0f9f8781eebe72d16b06bce9365bcaa4cbfb0df9cc06f78b7627dfba3705"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 126.28
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/02-d29acc72fa07-a2.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/02-d29acc72fa07-a2.jsonl",
+          "attempt": 2,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "d29acc72fa07",
+            "frame": "02",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "3b2ebc71c9a6b00b2587eaec310eb0fd855be3dc7c72583d1b943f0f33610846",
+            "frame_contract_sha256": "3e6055802d2488bdbdf7a6c388a7856a8f8ce18802d1fef5271aad32b32b743d"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 127.315
+      },
+      "at": "2026-09-08T12:06:55+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "cf74057cfb9e",
+      "payload": {
+        "result": {
+          "returncode": 99,
+          "stdout": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\04-cf74057cfb9e-a2.jsonl",
+          "payload": null,
+          "output": null,
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/04-cf74057cfb9e-a2.jsonl",
+          "attempt": 2,
+          "scout": null,
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 361.202
+      },
+      "at": "2026-09-08T12:17:22+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "30059c260bb5",
+      "payload": {
+        "result": {
+          "returncode": 99,
+          "stdout": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\05-30059c260bb5-a2.jsonl",
+          "payload": null,
+          "output": null,
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/05-30059c260bb5-a2.jsonl",
+          "attempt": 2,
+          "scout": null,
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 361.632
+      },
+      "at": "2026-09-08T12:23:24+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "8e4a07a762cd",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "06",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\06-1788841404.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\06-8e4a07a762cd-a2.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\06-8e4a07a762cd-a2.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [
+              "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\01_不存在的夜行路\\assets\\characters\\female-lead\\11_车内夜间_正侧脸.png"
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/06.json",
+              "contract_sha256": "55f388f934d76a220dcbbc3c94d43ecb2afd5121d85e971f505fa3359723c16f"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\06-1788841404.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\06-8e4a07a762cd-a2.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/06-1788841512.json",
+              "sha256": "98655300b7ef9d2c16c2e59a58466674261b7c4cb67464e04b3cd5ef7d3ea3bc"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788841512,
+              "frame": "06",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\06-1788841404.png",
+              "raw_sha256": "59b3a451962d079256c6e66c55f7a88ff2916e29291541dc5477259c8c4a278e",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\06-8e4a07a762cd-a2.png",
+                "sha256": "ff156550de672f3c5d6ecc4561ee7da5b8f27d65fac1844a9947a72e3444f546"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 107.7
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/06-8e4a07a762cd-a2.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/06-8e4a07a762cd-a2.jsonl",
+          "attempt": 2,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "8e4a07a762cd",
+            "frame": "06",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "9bb9c31ddd101768dd1235e42f7371141385befcbaced1d934b111522f0a7a4d",
+            "frame_contract_sha256": "55f388f934d76a220dcbbc3c94d43ecb2afd5121d85e971f505fa3359723c16f"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 108.744
+      },
+      "at": "2026-09-08T12:25:13+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "127d21da4684",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "07",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\07-1788841513.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\07-127d21da4684-a2.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\07-127d21da4684-a2.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/07.json",
+              "contract_sha256": "ede71264dfe6e654388a57f292e7a28ec4d80269a72a8ec1772648f0fae32180"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\07-1788841513.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\07-127d21da4684-a2.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/07-1788841641.json",
+              "sha256": "c96d2a0e1f83e7cc2d15add1b4a438fc2da29030b9abe28efcf05ab03919f2dc"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788841641,
+              "frame": "07",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\07-1788841513.png",
+              "raw_sha256": "86c03245050ac09804de4a30d0d8710e0e6906ed4f413163fca31bd8d1ec6220",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\07-127d21da4684-a2.png",
+                "sha256": "1b0caa328176e2d6f641b30c37f5f4be9408d4087829bf9fd485d02aef70c18d"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 128.27
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/07-127d21da4684-a2.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/07-127d21da4684-a2.jsonl",
+          "attempt": 2,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "127d21da4684",
+            "frame": "07",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "124e8f9a8ebeb4ca32d4fe3b7b1eec040b54362a276b64f79af78e22725d36bf",
+            "frame_contract_sha256": "ede71264dfe6e654388a57f292e7a28ec4d80269a72a8ec1772648f0fae32180"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 129.605
+      },
+      "at": "2026-09-08T12:27:22+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "68ad77c3bd31",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "08",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\08-1788841643.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\08-68ad77c3bd31-a2.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\08-68ad77c3bd31-a2.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [
+              "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\01_不存在的夜行路\\assets\\characters\\female-lead\\11_车内夜间_正侧脸.png"
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/08.json",
+              "contract_sha256": "f099552cc514c2768f556153ef543334ff907043754eba3824bc0aecec642a9c"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\08-1788841643.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\08-68ad77c3bd31-a2.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/08-1788841900.json",
+              "sha256": "6db2f8598e1fb7cd591985ef8e72c45274e176052dfa04be09d145c737fcb2e5"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788841900,
+              "frame": "08",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\08-1788841643.png",
+              "raw_sha256": "1769727d9b2de6d2502112de17732de373f5f3bbfc791a319c89ae1f135a26c4",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\08-68ad77c3bd31-a2.png",
+                "sha256": "5d16b88a14ea26060cda4f54ce801bd5e28d8d589300f8edb23f6730928af7a1"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 257.81
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/08-68ad77c3bd31-a2.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/08-68ad77c3bd31-a2.jsonl",
+          "attempt": 2,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "68ad77c3bd31",
+            "frame": "08",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "c7e8e85c139758fb079cd0ae64c30a7e5cb9121a38b1227da1082b2d8e3278d2",
+            "frame_contract_sha256": "f099552cc514c2768f556153ef543334ff907043754eba3824bc0aecec642a9c"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 259.098
+      },
+      "at": "2026-09-08T12:31:42+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "cf74057cfb9e",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "04",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\04-1788841902.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\04-cf74057cfb9e-a3.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\04-cf74057cfb9e-a3.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/04.json",
+              "contract_sha256": "92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\04-1788841902.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\04-cf74057cfb9e-a3.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/04-1788842127.json",
+              "sha256": "8145e2b32f41c8a9b75b2184ec1a99285cea90e066365264fe9bf305c17e4a16"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788842127,
+              "frame": "04",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\04-1788841902.png",
+              "raw_sha256": "2af7c425839915803fcf232a53ab2bc9fc4790b29a548c469498b0084eb838fb",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\04-cf74057cfb9e-a3.png",
+                "sha256": "5cefacc772504e3e7d701466e9ddf5dee219a110887ee4a350d2d8ab23162327"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 224.77
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/04-cf74057cfb9e-a3.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/04-cf74057cfb9e-a3.jsonl",
+          "attempt": 3,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "cf74057cfb9e",
+            "frame": "04",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "7cdfb25909d8af85d2d2fc5535c04b96efdf85e045f1de49cd742b6513a81767",
+            "frame_contract_sha256": "92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 225.616
+      },
+      "at": "2026-09-08T12:35:28+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "30059c260bb5",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "05",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\05-1788842128.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\05-30059c260bb5-a3.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\05-30059c260bb5-a3.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/05.json",
+              "contract_sha256": "18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\05-1788842128.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\05-30059c260bb5-a3.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/05-1788842532.json",
+              "sha256": "e434bf0678aaaaca64962529b31d08ff39994a395eee798e02dedaf068ed2d6f"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788842532,
+              "frame": "05",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\05-1788842128.png",
+              "raw_sha256": "9fe2f4a209dc9d334ea5f1ab2050c99d35870dd35666cf02b01b6239b1edbbd2",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\05-30059c260bb5-a3.png",
+                "sha256": "25d8b45a19ea880ace128bbdba8968684ea0660eaa771cfa8eefc7d8c892381c"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 404.12
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/05-30059c260bb5-a3.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/05-30059c260bb5-a3.jsonl",
+          "attempt": 3,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "30059c260bb5",
+            "frame": "05",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "20be12ccaef279d9b690e3a8c82cbf3a8183a61416eb886aaba8fdc6c07ffcd6",
+            "frame_contract_sha256": "18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 405.192
+      },
+      "at": "2026-09-08T12:42:13+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "a7f86678c6fa",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "10",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\10-1788842534.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\10-a7f86678c6fa-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\10-a7f86678c6fa-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/10.json",
+              "contract_sha256": "4c71fba7104024058f8544d65914aac298ec9e9f05af3a05b673a75a5078a350"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\10-1788842534.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\10-a7f86678c6fa-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/10-1788842648.json",
+              "sha256": "a641ee423d5017606dc4d0f984e5556e738bcb4c66ef42e0d8138a0a36af1e3c"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788842648,
+              "frame": "10",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\10-1788842534.png",
+              "raw_sha256": "64e926a9dabab54315f93979e8ed184295e3253ba3bf877730fc52f3b003b8fb",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\10-a7f86678c6fa-a1.png",
+                "sha256": "b6b0da04c61afb182fdbcfc78aa68c6c9daac5f75035b9f034cdde0d0616bd07"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 114.17
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/10-a7f86678c6fa-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/10-a7f86678c6fa-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "a7f86678c6fa",
+            "frame": "10",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "b50f70450bcf4a6ac1b94666942e70d3143d0b43c49111df2e0e9a99cbcb0ee6",
+            "frame_contract_sha256": "4c71fba7104024058f8544d65914aac298ec9e9f05af3a05b673a75a5078a350"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 115.13
+      },
+      "at": "2026-09-08T12:44:09+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "b6bb3abab6c4",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "11",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\11-1788842649.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\11-b6bb3abab6c4-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\11-b6bb3abab6c4-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/11.json",
+              "contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\11-1788842649.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\11-b6bb3abab6c4-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/11-1788842818.json",
+              "sha256": "cf130716e347f1ebab784d6d1af1df404f9d27f2a3a09dd8f8fd5bcc44a27c19"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788842818,
+              "frame": "11",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\11-1788842649.png",
+              "raw_sha256": "315d2d9b83b8556d55e253fd0fe3406f8b954755e5cbcfb37ddd048e6821885d",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\11-b6bb3abab6c4-a1.png",
+                "sha256": "cc27bb62674ba9796d344dd1d153a5e20500312aa365cfc7b50698188754bc1b"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 169.8
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/11-b6bb3abab6c4-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/11-b6bb3abab6c4-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "b6bb3abab6c4",
+            "frame": "11",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "ae3a6e3be6e8f35ef4d3c81d691ea823da6ee654d7b76178a8ef6e82079e5886",
+            "frame_contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 171.019
+      },
+      "at": "2026-09-08T12:47:00+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "c93e4c98ecea",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "12",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\12-1788842820.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\12-c93e4c98ecea-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\12-c93e4c98ecea-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/12.json",
+              "contract_sha256": "955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\12-1788842820.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\12-c93e4c98ecea-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/12-1788842959.json",
+              "sha256": "5a027be508eb2cc9e5996d362fe489c67cd41dbf62e3a9285d4e9442bf9b6f1c"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788842959,
+              "frame": "12",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\12-1788842820.png",
+              "raw_sha256": "1e167ba2c3c47f88b18e0419865b607f7ada12aa3b331da1180d821e268765fe",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\12-c93e4c98ecea-a1.png",
+                "sha256": "36012b520ce24fb6f237ef52a7c804018a3140cbdbd34010da11714e14cf6870"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 139.03
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/12-c93e4c98ecea-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/12-c93e4c98ecea-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "c93e4c98ecea",
+            "frame": "12",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "03268f32a2043708a133cd5c934ebbedca549ed49ca9a06e90567b6e09f194c3",
+            "frame_contract_sha256": "955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 140.246
+      },
+      "at": "2026-09-08T12:49:20+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "3979017ac688",
+      "payload": {
+        "result": {
+          "returncode": 99,
+          "stdout": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\13-3979017ac688-a1.jsonl",
+          "payload": null,
+          "output": null,
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/13-3979017ac688-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 371.588
+      },
+      "at": "2026-09-08T12:55:31+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "3979017ac688",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "13",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\13-1788843332.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\13-3979017ac688-a2.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\13-3979017ac688-a2.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/13.json",
+              "contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\13-1788843332.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\13-3979017ac688-a2.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/13-1788843697.json",
+              "sha256": "3c2ac0681d945a54f4b4613dfdda81f70cbedacfec545b096c7ffbdc0e747886"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788843697,
+              "frame": "13",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\13-1788843332.png",
+              "raw_sha256": "9db6c88b1e2d38370056f1ed60a5ebc2c659718ff3e0e865b84cc3992e010fbb",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\13-3979017ac688-a2.png",
+                "sha256": "c4fe3309c5f98cdd5c0994cc176c2ec4f44aa21768a4c609aef2898db9657700"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 365.62
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/13-3979017ac688-a2.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/13-3979017ac688-a2.jsonl",
+          "attempt": 2,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "3979017ac688",
+            "frame": "13",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "d0b15e910683792a59cbd7f7b0693680863f1073bacb070330606cddf8929b8d",
+            "frame_contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 366.717
+      },
+      "at": "2026-09-08T13:01:38+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "1159f9819c2d",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "15",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\15-1788843699.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\15-1159f9819c2d-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\15-1159f9819c2d-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/15.json",
+              "contract_sha256": "74eab8cbcd953150f4fece690c1351639c44c7871d216ff82f723b6c033809b8"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\15-1788843699.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\15-1159f9819c2d-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/15-1788843870.json",
+              "sha256": "4d6bf4adcf1cddbf2f9d590b89bac7c3abb178ce49d7b00e90d62f9cc90980e9"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788843870,
+              "frame": "15",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\15-1788843699.png",
+              "raw_sha256": "987a93027203649380380da11694c3301260885ea22c8f87e472a206a15a12d4",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\15-1159f9819c2d-a1.png",
+                "sha256": "9ac8c690054887506da1b090906527cc4128f1c7bee0c1e5127580ab4cf64439"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 171.05
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/15-1159f9819c2d-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/15-1159f9819c2d-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "1159f9819c2d",
+            "frame": "15",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "6f5d7562ce15a98766904ee7422785359c8f1b791aa8a49224581bc628162769",
+            "frame_contract_sha256": "74eab8cbcd953150f4fece690c1351639c44c7871d216ff82f723b6c033809b8"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 172.112
+      },
+      "at": "2026-09-08T13:04:31+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "f531fb27202b",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "16",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\16-1788843871.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\16-f531fb27202b-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\16-f531fb27202b-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/16.json",
+              "contract_sha256": "9d8c86cfcfca8f05c17ba0b519c59542871bd5c7b66ddced9020abe1b478fa26"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\16-1788843871.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\16-f531fb27202b-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/16-1788844005.json",
+              "sha256": "45f881fe1010bdb30375fbadd68e1004e904a05a995f179644f8634985236719"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788844005,
+              "frame": "16",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\16-1788843871.png",
+              "raw_sha256": "d9aaf33ff5e804c2f88d67a8dcd027e35d3e6140ae5093761d661bca6474621f",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\16-f531fb27202b-a1.png",
+                "sha256": "31b16a451dfe1a235e7ec14562ab616fc74c03065cb3fad526a90a0c327b5243"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 133.83
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/16-f531fb27202b-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/16-f531fb27202b-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "f531fb27202b",
+            "frame": "16",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "9aa6d81b06c27d583d446150212cce53d47f1ad86a3c28b730ff4b9e36cd4579",
+            "frame_contract_sha256": "9d8c86cfcfca8f05c17ba0b519c59542871bd5c7b66ddced9020abe1b478fa26"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 134.902
+      },
+      "at": "2026-09-08T13:06:46+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "d45f2feae5f1",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "17",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\17-1788844006.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\17-d45f2feae5f1-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\17-d45f2feae5f1-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [
+              "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\01_不存在的夜行路\\assets\\characters\\female-lead\\11_车内夜间_正侧脸.png"
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/17.json",
+              "contract_sha256": "3c5a017dae877395ee60cd22e3ff8b9f98bfd15394124d8885a9eb9883da1899"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\17-1788844006.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\17-d45f2feae5f1-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/17-1788844136.json",
+              "sha256": "e80b2c6523d475d00219dcf6df43d025cb8e1e70c1f3fd89497a1f147497dfd3"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788844136,
+              "frame": "17",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\17-1788844006.png",
+              "raw_sha256": "d92d181d4ed45a2d40c9f460ce2cac4a627010630148c5d00b2034f25eeb7dc1",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\17-d45f2feae5f1-a1.png",
+                "sha256": "0c41cd39c36d7527e2eee6684a877b4cebbfe44bd39a0fbe0d080292020f2afa"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 129.88
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/17-d45f2feae5f1-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/17-d45f2feae5f1-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "d45f2feae5f1",
+            "frame": "17",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "de780f8353233554c29d7255912eed4a35b5d33eecb7fc9dbb71863ce0b85189",
+            "frame_contract_sha256": "3c5a017dae877395ee60cd22e3ff8b9f98bfd15394124d8885a9eb9883da1899"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 131.12
+      },
+      "at": "2026-09-08T13:08:57+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "d788501b64dd",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "18",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\18-1788844137.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\18-d788501b64dd-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\18-d788501b64dd-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/18.json",
+              "contract_sha256": "5a582856771610c153d0afe4b259d8d7ec3a037945a08b8c2d692df963f1ead1"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\18-1788844137.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\18-d788501b64dd-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/18-1788844451.json",
+              "sha256": "e386b19fcec3909459c88445592bb49b8321a3fbeec6d4fbadafa847421f202c"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788844451,
+              "frame": "18",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\18-1788844137.png",
+              "raw_sha256": "997d5d08a9472cd19f3d7e1137b93963c33d5596807d7ea3378d45a7984e2664",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\18-d788501b64dd-a1.png",
+                "sha256": "b1ec3bb62582bada2b2948d51a487dfd1d863e31deb314b3a2c9390100d5d1e9"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 313.78
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/18-d788501b64dd-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/18-d788501b64dd-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "d788501b64dd",
+            "frame": "18",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "837e2b0aa00ab618f6842d2b5101da597e35a2d562024ad2a3be0a0be483ddf5",
+            "frame_contract_sha256": "5a582856771610c153d0afe4b259d8d7ec3a037945a08b8c2d692df963f1ead1"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 314.532
+      },
+      "at": "2026-09-08T13:14:12+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "066dd935385a",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "19",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\19-1788844452.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\19-066dd935385a-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\19-066dd935385a-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [
+              "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\01_不存在的夜行路\\assets\\characters\\female-lead\\01_情侣自拍_正脸.png"
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/19.json",
+              "contract_sha256": "289117db5bb6c7e493941475468ff3e38f5c02c97949aecb173cedb6bdecb54b"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\19-1788844452.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\19-066dd935385a-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/19-1788844703.json",
+              "sha256": "5a066d72e4f382962983e233ab2f9319049cea99899d25af021eb4bebda4b3cc"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788844703,
+              "frame": "19",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\19-1788844452.png",
+              "raw_sha256": "53608baa9459702517b2eed2d94116c957697f6e5c3cf08ab3bf2fd9d0ad764e",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\19-066dd935385a-a1.png",
+                "sha256": "6c8ce685b70193c1cad43a385f0d4e8d224b89fffe0f1d81265ef9e57e77c6af"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 250.58
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/19-066dd935385a-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/19-066dd935385a-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "066dd935385a",
+            "frame": "19",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "d1ccbfee6225ecf740e17ad05ccfb85584502cefba5f41b78ffc26153ef734ba",
+            "frame_contract_sha256": "289117db5bb6c7e493941475468ff3e38f5c02c97949aecb173cedb6bdecb54b"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 251.511
+      },
+      "at": "2026-09-08T13:18:23+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "c959cb95acd7",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "20",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\20-1788844704.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\20-c959cb95acd7-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\20-c959cb95acd7-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [
+              "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\01_不存在的夜行路\\assets\\characters\\female-lead\\11_车内夜间_正侧脸.png"
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/20.json",
+              "contract_sha256": "82a6598ebc23536a892fcf0f3f19bffa6c26564378c60165ae6ff2f5dcdaa05f"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\20-1788844704.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\20-c959cb95acd7-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/20-1788844914.json",
+              "sha256": "33a3974f26b5dba2f3d9505899c07410ed0ee144205a747926bd58c6897264b3"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1788844914,
+              "frame": "20",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\20-1788844704.png",
+              "raw_sha256": "5f1250c18399930ec2fdf9b29d9bcd2f9273c40cf8926195698a6fb5a665b41a",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\20-c959cb95acd7-a1.png",
+                "sha256": "bfad361180585509354f00e5d6bd6c6772bae1d1c0f7ef5715233745f8ad942c"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 210.38
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/20-c959cb95acd7-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/aigc-dali-cat/episodes/10_彼此的天上/02_玻璃另一边的手/meta/image-workers/20-c959cb95acd7-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "c959cb95acd7",
+            "frame": "20",
+            "kind": "original"
+          },
+          "prompt_package": {
+            "package_sha256": "3c2fdc8c0bc8fd0299092bdafba48cba0e1eb125cdbe4e0c88685200c1233d15",
+            "frame_contract_sha256": "82a6598ebc23536a892fcf0f3f19bffa6c26564378c60165ae6ff2f5dcdaa05f"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 211.447
+      },
+      "at": "2026-09-08T13:21:55+08:00"
     }
   ]
 }

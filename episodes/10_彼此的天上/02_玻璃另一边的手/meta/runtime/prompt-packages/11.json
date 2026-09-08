@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "11",
+  "scene_prompt": "手机随手拍，夜晚车内停车状态。仪表盘微光照亮两个人，P02查看相册，P01看向窗外。玻璃反射中的人物关系出现轻微错位感，保持真实摄影而不是恐怖海报。",
+  "scene_prompt_sha256": "48cc11cd3b27335076f172ab870c727b3a1de6870fe836f94f0c88d834815a84",
+  "frame_contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\11.txt",
+  "package_sha256": "ae3a6e3be6e8f35ef4d3c81d691ea823da6ee654d7b76178a8ef6e82079e5886",
+  "compiled_at": "2026-09-08T12:44:09+08:00"
+}
