@@ -173,6 +173,24 @@ def _safe_output(ep: Path, raw: object) -> Path | None:
     return path if path.is_file() else None
 
 
+def _current_contract_sha(ep: Path, frame: int) -> str | None:
+    """Current resolved Frame Contract SHA without writing the derived cache.
+
+    Legacy/test fixtures without version evidence return None so recovery
+    keeps its pre-V2.1 behavior; V2.1+ episodes compare the queue-bound
+    contract against the live authority before replaying worker success.
+    """
+    try:
+        import frame_contract
+
+        if not frame_contract.required(ep):
+            return None
+        row = frame_contract.compile_frame(ep, int(frame), write_cache=False)
+        return str(row.get("contract_sha256") or "")
+    except Exception:
+        return None
+
+
 def _commit_success(ep: Path, item: dict, lifecycle: dict) -> tuple[bool, str]:
     """Commit a worker's durable success through the normal ledger verifier."""
     if lifecycle.get("transaction_id") != (item.get("execution") or {}).get("transaction_id"):
@@ -189,6 +207,10 @@ def _commit_success(ep: Path, item: dict, lifecycle: dict) -> tuple[bool, str]:
     actual_sha = (((result.get("payload") or {}).get("frame_contract") or {}).get("contract_sha256"))
     if expected_sha and str(expected_sha).lower() != str(actual_sha or "").lower():
         return False, "lifecycle frame contract does not match queue contract"
+    current_sha = _current_contract_sha(ep, int(item.get("frame") or 0))
+    if current_sha and expected_sha and str(current_sha).lower() != str(expected_sha).lower():
+        return False, (f"lifecycle frame contract stale vs current authority "
+                       f"{current_sha}")
     output = _safe_output(ep, result.get("output"))
     if output is None:
         return False, "lifecycle output is absent or outside the episode"

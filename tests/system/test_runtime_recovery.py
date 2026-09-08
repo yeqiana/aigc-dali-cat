@@ -227,6 +227,77 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(report["rows"][0]["outcome"],"WORKER_SUCCESS_REPLAYED")
         self.assertEqual(q["items"][0]["status"],"generated")
 
+    def test_ledger_ready_replay_is_idempotent_and_frozen_sources_untouched(self):
+        source=self.ep/"story.md"; source.write_bytes(b"frozen story text")
+        candidate=self.ep/"candidate.png"; candidate.write_bytes(b"candidate")
+        item=self._running_item()
+        ledger_row={"frames":{"01":{
+            "status":"ORIGINAL_READY",
+            "current_candidate":{"path":str(candidate)},
+        }}}
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json",ledger_row)
+        q1=batch.load_queue(self.ep)
+        r1=production_recovery.reconcile_locked(self.ep,q1)
+        batch.save_queue(self.ep,q1)
+        q2=batch.load_queue(self.ep)
+        r2=production_recovery.reconcile_locked(self.ep,q2)
+        self.assertEqual([x["outcome"] for x in r1["rows"]],["LEDGER_READY_REPLAYED"])
+        self.assertEqual(r1["rows"],r2["rows"])
+        self.assertEqual(len(q2["items"]),1)
+        row=q2["items"][0]
+        self.assertEqual(row["status"],"generated")
+        self.assertEqual(row["attempts"],1)
+        self.assertTrue(row["output_path"].endswith("candidate.png"))
+        self.assertEqual(source.read_bytes(),b"frozen story text")
+        self.assertEqual(candidate.read_bytes(),b"candidate")
+        self.assertEqual(json.loads((self.ep / "meta/production-ledger.json").read_text()),ledger_row)
+
+    def test_stale_contract_success_evidence_is_never_auto_committed(self):
+        item=self._running_item()
+        production_recovery.prepare_execution(self.ep,item)
+        production_recovery.mark_worker_pending(self.ep,item)
+        candidate=self.ep/"candidate-stale.png"; candidate.write_bytes(b"stale")
+        result={"output":str(candidate),"payload":{"image_model":{"model":"gpt-image-2","quality":"high"},
+                "frame_contract":{"contract_sha256":"contract-b"}}}
+        production_recovery.write_lifecycle(self.ep,item,"SUCCEEDED",worker_pid=456,result=result)
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json",self._active_ledger())
+        q=batch.load_queue(self.ep)
+        with patch.object(production_recovery.production_ledger,"cmd_success") as success:
+            report=production_recovery.reconcile_locked(self.ep,q)
+        self.assertEqual(report["rows"][0]["outcome"],"SUCCESS_EVIDENCE_INVALID")
+        self.assertEqual(q["items"][0]["status"],"interrupted_unknown")
+        success.assert_not_called()
+        frame=json.loads((self.ep / "meta/production-ledger.json").read_text())["frames"]["01"]
+        self.assertEqual(frame["status"],"GENERATING")
+        self.assertEqual(frame["attempts"][-1]["result"],"pending")
+
+    def test_stale_queue_contract_against_current_authority_never_auto_commits(self):
+        # S4: even when lifecycle evidence matches the queue-bound (old)
+        # contract, a crash replay must not commit it if the live authority
+        # now resolves to a different Frame Contract SHA.
+        item=self._running_item()
+        production_recovery.prepare_execution(self.ep,item)
+        production_recovery.mark_worker_pending(self.ep,item)
+        candidate=self.ep/"candidate-old.png"; candidate.write_bytes(b"old")
+        result={"output":str(candidate),"payload":{"image_model":{"model":"gpt-image-2","quality":"high"},
+                "frame_contract":{"contract_sha256":"contract-a"}}}
+        production_recovery.write_lifecycle(self.ep,item,"SUCCEEDED",worker_pid=789,result=result)
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json",self._active_ledger())
+        q=batch.load_queue(self.ep)
+        with patch.object(production_recovery,"_current_contract_sha",return_value="contract-new") as current, \
+             patch.object(production_recovery.production_ledger,"cmd_success") as success:
+            report=production_recovery.reconcile_locked(self.ep,q)
+        current.assert_called_once_with(self.ep,1)
+        self.assertEqual(report["rows"][0]["outcome"],"SUCCESS_EVIDENCE_INVALID")
+        self.assertEqual(q["items"][0]["status"],"interrupted_unknown")
+        self.assertIn("stale vs current authority",q["items"][0]["last_error"])
+        success.assert_not_called()
+        frame=json.loads((self.ep / "meta/production-ledger.json").read_text())["frames"]["01"]
+        self.assertEqual(frame["status"],"GENERATING")
+
     def test_worker_lifecycle_serializes_path_result_evidence(self):
         item=self._running_item()
         production_recovery.prepare_execution(self.ep,item)

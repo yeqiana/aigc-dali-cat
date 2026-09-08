@@ -88,6 +88,58 @@ class SchedulerCoreTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 scheduler_core.current_contract_sha(self.ep, 1)
 
+    def test_ledger_success_rejects_backend_contract_drift(self):
+        # S4: a worker result bound to a stale Frame Contract must never be
+        # committed as if it matched the currently resolved contract.
+        import sys
+
+        item = {
+            "id": "drift-item", "frame": 1, "kind": "original",
+            "model": "gpt-image-2", "quality": "high",
+            "frame_contract": {"contract_sha256": "stale-sha"},
+        }
+        result = {
+            "output": str(self.ep / "candidate.png"),
+            "payload": {
+                "image_model": {"model": "gpt-image-2", "quality": "high"},
+                "frame_contract": {"contract_sha256": "stale-sha"},
+            },
+        }
+        fake_ledger = mock.Mock()
+        with mock.patch.object(scheduler_core, "current_contract_sha",
+                               return_value="current-sha"), \
+             mock.patch.dict(sys.modules, {"ledger_call": fake_ledger}):
+            ok, message = scheduler_core.ledger_success(self.ep, item, result)
+        self.assertFalse(ok)
+        self.assertIn("backend frame contract drift", message)
+        self.assertIn("stale-sha", message)
+        self.assertIn("current-sha", message)
+        fake_ledger.success.assert_not_called()
+
+    def test_ledger_success_accepts_matching_current_contract(self):
+        import sys
+
+        item = {
+            "id": "fresh-item", "frame": 1, "kind": "original",
+            "model": "gpt-image-2", "quality": "high",
+            "frame_contract": {"contract_sha256": "current-sha"},
+        }
+        result = {
+            "output": str(self.ep / "candidate.png"),
+            "payload": {
+                "image_model": {"model": "gpt-image-2", "quality": "high"},
+                "frame_contract": {"contract_sha256": "current-sha"},
+            },
+        }
+        fake_ledger = mock.Mock()
+        fake_ledger.success.return_value = (True, "")
+        with mock.patch.object(scheduler_core, "current_contract_sha",
+                               return_value="current-sha"), \
+             mock.patch.dict(sys.modules, {"ledger_call": fake_ledger}):
+            ok, message = scheduler_core.ledger_success(self.ep, item, result)
+        self.assertTrue(ok, message)
+        fake_ledger.success.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()
