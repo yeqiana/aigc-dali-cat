@@ -18,6 +18,12 @@ from types import SimpleNamespace
 import production_ledger
 from runtime_atomic_store import atomic_write_json, update_json
 
+# Repository root, derived from this module's checked-in location like every
+# other Story OS module.  Do not guess it from ``ep`` parent depth: the runner
+# temp isolation layout differs per platform (e.g. /tmp on Ubuntu vs a deep
+# user profile on Windows), so ``ep.parents[n]`` is not portable.
+ROOT = Path(__file__).resolve().parents[2]
+
 QUEUE_REL = Path("meta/production-queue.json")
 LEDGER_REL = Path("meta/production-ledger.json")
 JOURNAL_REL = Path("meta/runtime/production-commit-journal.json")
@@ -154,7 +160,7 @@ def _safe_output(ep: Path, raw: object) -> Path | None:
         return None
     path = Path(str(raw))
     if not path.is_absolute():
-        path = (Path(ep).parents[2] / path).resolve()
+        path = (ROOT / path).resolve()
     else:
         # Windows runner TEMP may use the 8.3 short spelling (RUNNER~1) while
         # tempfile/realpath resolve to the long name. Normalize before the
@@ -199,15 +205,14 @@ def _commit_success(ep: Path, item: dict, lifecycle: dict) -> tuple[bool, str]:
     except (SystemExit, OSError, ValueError) as exc:
         return False, str(exc)
     item["status"] = "generated"
-    root = Path(ep).parents[2]
-    item["output_path"] = output.relative_to(root).as_posix()
+    item["output_path"] = output.relative_to(ROOT.resolve()).as_posix()
     item["completed_at"] = now()
     item["last_error"] = None
     item["prompt_package"] = result.get("prompt_package")
     if result.get("log"):
         log = Path(str(result["log"]))
         if log.is_file():
-            item["log_path"] = log.resolve().relative_to(root).as_posix()
+            item["log_path"] = log.resolve().relative_to(ROOT.resolve()).as_posix()
     mark_terminal(ep, item, "COMMITTED", recovery="worker_success_replayed")
     return True, "worker success committed"
 
@@ -253,7 +258,7 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
             candidate_path = _safe_output(ep, candidate.get("path"))
             if candidate_path:
                 item["status"] = "generated"
-                item["output_path"] = candidate_path.relative_to(ep.parents[2]).as_posix()
+                item["output_path"] = candidate_path.relative_to(ROOT.resolve()).as_posix()
                 item["completed_at"] = item.get("completed_at") or now()
                 item["last_error"] = None
                 mark_terminal(ep, item, "COMMITTED", recovery="ledger_ready_replayed")

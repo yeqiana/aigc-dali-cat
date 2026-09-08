@@ -30,6 +30,8 @@ class RecoveryTests(unittest.TestCase):
         self.ep = Path(self.tmp.name)
         validator=patch.object(runner.runtime_dag,"validate_target",return_value=(True,"mocked external gates"))
         validator.start(); self.addCleanup(validator.stop)
+        root=patch.object(production_recovery,"ROOT",self.ep)
+        root.start(); self.addCleanup(root.stop)
         atomic_write_json(self.ep / "meta/episode-state.json", {"current_state": "VISUAL_CALIBRATED"})
 
     def test_zero_exit_without_progress_is_bounded(self):
