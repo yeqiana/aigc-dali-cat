@@ -290,7 +290,9 @@ class RecoveryTests(unittest.TestCase):
         with patch.object(production_recovery,"_current_contract_sha",return_value="contract-new") as current, \
              patch.object(production_recovery.production_ledger,"cmd_success") as success:
             report=production_recovery.reconcile_locked(self.ep,q)
-        current.assert_called_once_with(self.ep,1)
+        # reconcile_locked canonicalizes ep via resolve(); on Windows runners
+        # TEMP may use the 8.3 short spelling (RUNNER~1), so compare resolved.
+        current.assert_called_once_with(self.ep.resolve(),1)
         self.assertEqual(report["rows"][0]["outcome"],"SUCCESS_EVIDENCE_INVALID")
         self.assertEqual(q["items"][0]["status"],"interrupted_unknown")
         self.assertIn("stale vs current authority",q["items"][0]["last_error"])
