@@ -45,9 +45,14 @@ class RuntimePerformanceV260Test(unittest.TestCase):
 
     def test_release_does_not_attach_every_body_frame_to_final_critic(self):
         release_src = (ROOT / "episodes/_system/release_preflight.py").read_text(encoding="utf-8-sig")
+        review_src = (ROOT / "episodes/_system/release_preflight_review.py").read_text(encoding="utf-8-sig")
         caption_src = (ROOT / "episodes/_system/caption_image_audit.py").read_text(encoding="utf-8-sig")
-        self.assertIn("release_review_rows(rows)", release_src)
-        self.assertNotIn('ROOT / row["path"] for row in rows.values()', release_src)
+        # B4 split moved the release-review row filter into release_preflight_review;
+        # the facade re-exports it, so guard both source layers against regressions
+        # that would attach every body frame to the final release critic.
+        review_layers = release_src + review_src
+        self.assertIn("release_review_rows(rows)", review_layers)
+        self.assertNotIn('ROOT / row["path"] for row in rows.values()', review_layers)
         self.assertIn("final_publish_with_subtitle", caption_src)
         self.assertIn("subtitle_unobstructed", caption_src)
         self.assertIn("CHUNK = 5", caption_src)
