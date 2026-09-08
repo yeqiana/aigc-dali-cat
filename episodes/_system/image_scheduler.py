@@ -372,12 +372,13 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
         started[row["id"]]=row
         save_queue(ep,q)
 
-    async for event in async_scheduler_adapter.stream_tasks(list(started.values()),handler,workers=max_workers):
+    async def consume(event):
+        nonlocal has_block, has_failure
         image_event=runtime_event_collector.collect(event)
         q=load_queue(ep)
         item=next((x for x in q.get("items") or [] if x["id"]==image_event.item_id),None)
         if not item:
-            continue
+            return
         if image_event.event=="IMAGE_SUCCESS":
             result=image_event.payload.get("result") or image_event.payload
             msg=str(result.get("stdout") or result.get("error") or "")
@@ -423,6 +424,11 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             production_recovery.mark_terminal(ep,item,"BLOCKED" if item["status"]=="blocked" else "TECH_FAILED", code=code)
         q.setdefault("runtime_events",[]).append({"event":image_event.event,"task_id":image_event.item_id,"payload":runtime_event_collector.json_safe(image_event.payload),"at":now()})
         save_queue(ep,q)
+
+    await scheduler_core.run_execution_loop(
+        list(started.values()), handler, consume, workers=max_workers,
+        stream=async_scheduler_adapter.stream_tasks)
+
     return 22 if has_block and not ready_items(ep,load_queue(ep))[0] else (21 if has_failure else 0)
 
 

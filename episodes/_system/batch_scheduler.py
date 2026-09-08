@@ -246,7 +246,8 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     has_technical_failure=False
     successful_results=0
 
-    async for event in async_scheduler_adapter.stream_tasks(started, handler, workers=max_workers):
+    async def consume(event):
+        nonlocal has_human_block, has_technical_failure, successful_results
         image_event=runtime_event_collector.collect(event)
         q=load_queue(ep)
         item=next((x for x in q.get("items") or [] if x.get("id")==image_event.item_id),None)
@@ -301,6 +302,10 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
             "at":now()
         })
         save_queue(ep,q)
+
+    await scheduler_core.run_execution_loop(
+        started, handler, consume, workers=max_workers,
+        stream=async_scheduler_adapter.stream_tasks)
 
     # A logical Codex batch is concurrent single-image work.  Do not let its
     # successful frames claim native multi-image/provider-request capability.

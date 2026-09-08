@@ -86,6 +86,34 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(len(calls),2)
         self.assertEqual(store.load(self.ep)["status"],"COMPLETED")
 
+    def test_upper_driver_readmits_waves_until_ready_queue_drained(self):
+        rows = [{"id": f"row-{i}", "frame": i, "scope": "batch", "status": "queued",
+                 "attempts": 0, "depends_on": []} for i in range(1, 8)]
+        atomic_write_json(self.ep / batch.QUEUE_REL,
+                          {"schema_version": 1, "items": rows, "waves": []})
+        drained = []
+
+        def cycle(ep):
+            q = batch.load_queue(ep)
+            ready = [x for x in q["items"] if x["status"] == "queued"]
+            if ready:
+                wave = ready[:3]
+                drained.append(len(wave))
+                for x in wave:
+                    x["status"] = "generated"
+                    x["output_path"] = f"mock/{int(x['frame']):02d}.png"
+                batch.save_queue(ep, q)
+                return 0
+            atomic_write_json(ep / "meta/episode-state.json",
+                              {"current_state": "PUBLISH_READY"})
+            return 0
+
+        with patch.object(runner, "execute_cycle", side_effect=cycle):
+            self.assertEqual(runner.run_episode(self.ep, interval=0), 0)
+        final = batch.load_queue(self.ep)
+        self.assertEqual(drained, [3, 3, 1])
+        self.assertTrue(all(x["status"] == "generated" for x in final["items"]))
+
     def test_wait_and_hard_stop_do_not_spin(self):
         for rc in (20,22,23,24):
             with patch.object(runner,"execute_cycle",return_value=rc) as execute:

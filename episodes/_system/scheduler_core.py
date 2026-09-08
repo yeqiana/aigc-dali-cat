@@ -30,6 +30,20 @@ def now() -> str:
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
 
+async def run_execution_loop(tasks, handler, consume, *, workers, stream=None):
+    """Execute one admitted wave and serialize all lane result mutations.
+
+    The caller owns admission and the queue lock. Batch post-processing must
+    run only after this function returns, when every submitted event has been
+    consumed. Lane callbacks retain their existing result/return-code policy.
+    """
+    import async_scheduler_adapter
+
+    source = stream or async_scheduler_adapter.stream_tasks
+    async for event in source(tasks, handler, workers=workers):
+        await consume(event)
+
+
 def read_json(path: Path) -> dict:
     import story_json
 
