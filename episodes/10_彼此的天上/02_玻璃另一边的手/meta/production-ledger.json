@@ -2,7 +2,7 @@
   "schema_version": 1,
   "engine_version": "1.2",
   "created_at": "2026-09-06T02:22:39+08:00",
-  "updated_at": "2026-09-08T13:21:55+08:00",
+  "updated_at": "2026-09-08T13:43:40+08:00",
   "note": "Per-frame production transaction ledger. This is NOT an episode stage source.",
   "canvas": {
     "aspect_ratio": "4:5",
@@ -743,7 +743,14 @@
         "kind": "repair",
         "attempt_id": "f3585d5383f3"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/01.png",
+        "sha256": "308b8a08193606fdecee86b5518ca34635ad81418d253e4d8b45697240c0a25c",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T13:40:21+08:00",
+        "source_sha256": "308b8a08193606fdecee86b5518ca34635ad81418d253e4d8b45697240c0a25c"
+      },
       "lock": null,
       "reviews": [
         {
@@ -970,7 +977,7 @@
     },
     "03": {
       "number": 3,
-      "status": "REPAIR_READY",
+      "status": "PASSED",
       "content_repairs_used": 1,
       "technical_failures": [
         {
@@ -1797,13 +1804,25 @@
         "kind": "repair",
         "attempt_id": "c29afa1f5eca"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/03.png",
+        "sha256": "b421da74adeb65fec6014b9eefb0cb59f66c663cb0a2e277ae6cc2453e9a448f",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T13:43:38+08:00",
+        "source_sha256": "b421da74adeb65fec6014b9eefb0cb59f66c663cb0a2e277ae6cc2453e9a448f"
+      },
       "lock": null,
       "reviews": [
         {
           "at": "2026-09-06T13:32:32+08:00",
           "decision": "pass",
           "notes": "WORK actual-pixel review: first anomaly remains a localized small clear zone in credible wet-glass room capture; P02 remains compatible with the series identity anchor."
+        },
+        {
+          "at": "2026-09-08T13:43:32+08:00",
+          "decision": "pass",
+          "notes": "Ledger reconciliation: current candidate sha-bound pixel review PASS by WORK_ISOLATED Visual Lock attempt-5 2026-09-06T22:07:54 (meta/visual-profile-review.json); frame contract BOUND verified 2026-09-08; no drift"
         }
       ],
       "superseded_passes": [
@@ -2656,7 +2675,7 @@
     },
     "09": {
       "number": 9,
-      "status": "REPAIR_READY",
+      "status": "PASSED",
       "content_repairs_used": 1,
       "technical_failures": [
         {
@@ -2912,7 +2931,14 @@
         "kind": "repair",
         "attempt_id": "55abced834c2"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/09.png",
+        "sha256": "60ce59c566230fdeee76fcde462eb007f6841cfd537c0b72978f58e2f84705a7",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T13:43:39+08:00",
+        "source_sha256": "60ce59c566230fdeee76fcde462eb007f6841cfd537c0b72978f58e2f84705a7"
+      },
       "lock": null,
       "reviews": [
         {
@@ -2924,6 +2950,11 @@
           "at": "2026-09-06T13:32:43+08:00",
           "decision": "pass",
           "notes": "WORK actual-pixel review: repaired frame visibly delivers two offset local wiped/clear regions smaller than the full wet window with natural rough boundaries."
+        },
+        {
+          "at": "2026-09-08T13:43:33+08:00",
+          "decision": "pass",
+          "notes": "Ledger reconciliation: current candidate sha-bound pixel review PASS by WORK_ISOLATED Visual Lock attempt-5 2026-09-06T22:07:54 (meta/visual-profile-review.json); frame contract BOUND verified 2026-09-08; no drift"
         }
       ],
       "repair_authorization": {
@@ -3354,7 +3385,7 @@
     },
     "14": {
       "number": 14,
-      "status": "REPAIR_READY",
+      "status": "PASSED",
       "content_repairs_used": 1,
       "technical_failures": [
         {
@@ -3967,13 +3998,25 @@
         "kind": "repair",
         "attempt_id": "a58cb9991c08"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/14.png",
+        "sha256": "f3aa095093e23e8a7a476c73f504ec6f42639710f6a81bef3710272a8dbd906c",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T13:43:40+08:00",
+        "source_sha256": "f3aa095093e23e8a7a476c73f504ec6f42639710f6a81bef3710272a8dbd906c"
+      },
       "lock": null,
       "reviews": [
         {
           "at": "2026-09-06T13:32:50+08:00",
           "decision": "pass",
           "notes": "WORK actual-pixel review: high-impact frame has readable adult/child scale through wet glass, physically grounded foreground authorship and P02 appearance compatible with series anchor."
+        },
+        {
+          "at": "2026-09-08T13:43:34+08:00",
+          "decision": "pass",
+          "notes": "Ledger reconciliation: current candidate sha-bound pixel review PASS by WORK_ISOLATED Visual Lock attempt-5 2026-09-06T22:07:54 (meta/visual-profile-review.json); frame contract BOUND verified 2026-09-08; no drift"
         }
       ],
       "superseded_passes": [
