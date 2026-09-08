@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "frame": "04",
-  "scene_prompt": "普通手机随手拍视角，雨后山路停车点附近的小范围探索。P02拍摄P01沿着护栏走近一块普通路边玻璃反光面，周围只有自然环境和旅行痕迹，异常信息隐藏在远处反射中，不让人物主动调查，只表现偶然发现。",
-  "scene_prompt_sha256": "cdf97cbedbc4828a76825edb3b19740771ff0094f710f3f5ac6ec54d8e992494",
+  "scene_prompt": "Frame 04 返修：整场重画回关灯场景，山路停车点画面作废。P01 在床头侧后方伸手关灯，房间变暗，P02 沿落地窗横移观察；关灯后玻璃中异常残影（对面半截深色粗布袖）停在原位缓慢后退，玻璃水雾真实。硬禁：手机不完整入镜、无第三拍摄者、无恐怖脸、无文字。P02 沿用 EP001 女主身份：锁骨黑发、浅灰圆领卫衣、深色直筒长裤。",
+  "scene_prompt_sha256": "e3f65dc81c3d72f70a4783502db5f25116632775830c657f49822f98d5b0c865",
   "frame_contract_sha256": "92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555",
   "image_model": {
     "provider": "openai",
@@ -12,7 +12,7 @@
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\04.txt",
-  "package_sha256": "7cdfb25909d8af85d2d2fc5535c04b96efdf85e045f1de49cd742b6513a81767",
-  "compiled_at": "2026-09-08T12:31:42+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\04-contract-anchor.txt",
+  "package_sha256": "4db4904c26b9067e01f589c10fa66e020a3d6bd61b191e3395cedb4a9b5849ea",
+  "compiled_at": "2026-09-08T14:57:36+08:00"
 }

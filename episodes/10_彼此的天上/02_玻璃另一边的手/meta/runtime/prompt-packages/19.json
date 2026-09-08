@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "frame": "19",
-  "scene_prompt": "普通手机照片，故事接近结尾。P02查看所有旅行照片，屏幕反光与现实玻璃形成呼应。不要展示完整真相，让观众自己发现不合理之处。保持克制悬疑。",
-  "scene_prompt_sha256": "975edceff8a5c1f4288d2ef154de73ea090fe61a0a8a8ad7a65c456e734084bc",
+  "scene_prompt": "Frame 19 返修：白天民宿房内近景：落地窗玻璃干净普通，无掌印线头布片；P01 坐床边低头回看停录前的短视频，屏幕无需可读；P02 背旅行包站在旁边等待。硬禁：玻璃掌印、线头、布片、血迹、手印；屏幕文字。P02 沿用 EP001 女主身份：锁骨黑发低马尾、浅灰圆领卫衣、深色直筒长裤、普通运动鞋。",
+  "scene_prompt_sha256": "aee7a25e799794f740b82ae33404b3ea8f6751d7af50f340fce46d1b4c8e4eb6",
   "frame_contract_sha256": "289117db5bb6c7e493941475468ff3e38f5c02c97949aecb173cedb6bdecb54b",
   "image_model": {
     "provider": "openai",
@@ -12,7 +12,7 @@
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\19.txt",
-  "package_sha256": "d1ccbfee6225ecf740e17ad05ccfb85584502cefba5f41b78ffc26153ef734ba",
-  "compiled_at": "2026-09-08T13:14:12+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\19-contract-anchor.txt",
+  "package_sha256": "d1f52fa821aeb44bdd5e8bf8d747dbd21bda3135c9f752ed86d4b30892e358f9",
+  "compiled_at": "2026-09-08T17:00:02+08:00"
 }

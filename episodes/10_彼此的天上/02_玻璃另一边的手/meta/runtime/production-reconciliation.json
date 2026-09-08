@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reconciled_at": "2026-09-08T13:18:23+08:00",
+  "reconciled_at": "2026-09-08T16:57:42+08:00",
   "rows": [
     {
       "item_id": "e7bf8a9697a2",
@@ -13,21 +13,21 @@
       "item_id": "4b3b8f40440e",
       "frame": 9,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "REPAIR_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "MISSING"
     },
     {
       "item_id": "89c8abc517a3",
       "frame": 3,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "REPAIR_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "MISSING"
     },
     {
       "item_id": "0bed26ad211c",
       "frame": 14,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "REPAIR_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "MISSING"
     },
     {
@@ -41,126 +41,189 @@
       "item_id": "55049c2c730b",
       "frame": 3,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "REPAIR_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "MISSING"
     },
     {
       "item_id": "35216c31b625",
       "frame": 9,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "REPAIR_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "MISSING"
     },
     {
       "item_id": "7c8e14f1a2b3",
       "frame": 14,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "REPAIR_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "MISSING"
     },
     {
       "item_id": "d29acc72fa07",
       "frame": 2,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "cf74057cfb9e",
       "frame": 4,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "outcome": "QUEUE_LEDGER_MISMATCH",
+      "ledger_status": "NEEDS_USER",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "30059c260bb5",
       "frame": 5,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "8e4a07a762cd",
       "frame": 6,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "127d21da4684",
       "frame": 7,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "68ad77c3bd31",
       "frame": 8,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "a7f86678c6fa",
       "frame": 10,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
-      "lifecycle_state": "SUCCEEDED"
-    },
-    {
-      "item_id": "b6bb3abab6c4",
-      "frame": 11,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "ledger_status": "PASSED",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "c93e4c98ecea",
       "frame": 12,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "outcome": "LEDGER_TECH_FAILED_REPLAYED",
+      "ledger_status": "TECH_FAILED",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "3979017ac688",
       "frame": 13,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
-      "lifecycle_state": "SUCCEEDED"
-    },
-    {
-      "item_id": "1159f9819c2d",
-      "frame": 15,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "outcome": "QUEUE_LEDGER_MISMATCH",
+      "ledger_status": "NEEDS_USER",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "f531fb27202b",
       "frame": 16,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "outcome": "QUEUE_LEDGER_MISMATCH",
+      "ledger_status": "REPAIR_AUTHORIZED",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "d45f2feae5f1",
       "frame": 17,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "outcome": "QUEUE_LEDGER_MISMATCH",
+      "ledger_status": "REPAIR_AUTHORIZED",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "d788501b64dd",
       "frame": 18,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "outcome": "QUEUE_LEDGER_MISMATCH",
+      "ledger_status": "REPAIR_AUTHORIZED",
       "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "066dd935385a",
       "frame": 19,
+      "outcome": "QUEUE_LEDGER_MISMATCH",
+      "ledger_status": "REPAIR_AUTHORIZED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "c959cb95acd7",
+      "frame": 20,
+      "outcome": "QUEUE_LEDGER_MISMATCH",
+      "ledger_status": "REPAIR_AUTHORIZED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "cd96ca228a3d",
+      "frame": 2,
       "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "ORIGINAL_READY",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "957ed090a294",
+      "frame": 4,
+      "outcome": "QUEUE_LEDGER_MISMATCH",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "a9a09095385f",
+      "frame": 5,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "b6357ce0f98c",
+      "frame": 6,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "5e6e4ad1e36f",
+      "frame": 7,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "74d781667000",
+      "frame": 8,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "c87468d114a6",
+      "frame": 10,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "292d55a20e05",
+      "frame": 13,
+      "outcome": "QUEUE_LEDGER_MISMATCH",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "e4373ca6e609",
+      "frame": 11,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "91d2baf2ccb8",
+      "frame": 15,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
       "lifecycle_state": "SUCCEEDED"
     }
   ]

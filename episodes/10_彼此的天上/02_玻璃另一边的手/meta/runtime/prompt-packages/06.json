@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "frame": "06",
-  "scene_prompt": "普通手机抓拍，清晨雨雾中的停车区域。P01站在车后整理旅行物品，P02无意间拍到车窗反射里的异常细节。异常只存在于反射和角落，不占据主体，不解释，不改变现实旅行环境。",
-  "scene_prompt_sha256": "71ee729ae0a61ddcae19f75adff020f91498adfe68e665cbef8673a33b6ec153",
+  "scene_prompt": "Frame 06 返修：整场重画回房内场景，室外停车整理行李画面作废。异常清晰区已被雨重新覆盖，落地窗只剩普通雨膜与内侧雾；P02 回头看 P01，P01 把手机相册给她看，屏幕无需可读文字。普通民宿夜间低照。P02 沿用 EP001 女主身份：锁骨黑发低马尾、浅灰圆领卫衣、深色直筒长裤。",
+  "scene_prompt_sha256": "96e0e887423b3d6718702851576059c3b386a3cda685289ca62190336a8f729b",
   "frame_contract_sha256": "55f388f934d76a220dcbbc3c94d43ecb2afd5121d85e971f505fa3359723c16f",
   "image_model": {
     "provider": "openai",
@@ -12,7 +12,7 @@
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\06.txt",
-  "package_sha256": "9bb9c31ddd101768dd1235e42f7371141385befcbaced1d934b111522f0a7a4d",
-  "compiled_at": "2026-09-08T12:23:24+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\06-contract-anchor.txt",
+  "package_sha256": "08e9e064ec92921668d17ab1687fd46a581aebaa21cfd693010543766db88a7c",
+  "compiled_at": "2026-09-08T15:32:04+08:00"
 }

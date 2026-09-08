@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "frame": "07",
-  "scene_prompt": "手机相册纪实感，情侣继续在山路附近停留。P02靠近车窗观察外面的玻璃反射，P01在旁边等待，人物关系自然。画面重点是普通人的迟疑和不确定，不出现主动探秘行为。",
-  "scene_prompt_sha256": "4341045a658a0e74d228652668dfe3531b04366e06d98946a77079837a3df843",
+  "scene_prompt": "Frame 07 返修：保持 P02 蹲低凑近玻璃、落地窗与玻璃下方对面空间（木架、木碗、粗布织物）基础上，重做作者视角：只保留 P01 第一人称手机取景，不得出现 P01 本体躯干或第三人称双人构图；P02 蹲在窗前观察，玻璃上补出对面刚擦开的低处短痕与半截深色粗布袖。硬禁：第三拍摄者、恐怖、文字。",
+  "scene_prompt_sha256": "9d25b560103bc840a90a18ce418a748dc8651561b6bc669e0c6169be78acf2d9",
   "frame_contract_sha256": "ede71264dfe6e654388a57f292e7a28ec4d80269a72a8ec1772648f0fae32180",
   "image_model": {
     "provider": "openai",
@@ -12,7 +12,7 @@
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\07.txt",
-  "package_sha256": "124e8f9a8ebeb4ca32d4fe3b7b1eec040b54362a276b64f79af78e22725d36bf",
-  "compiled_at": "2026-09-08T12:25:13+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\07-contract-anchor.txt",
+  "package_sha256": "310e0e0b771cdef260cb06620408ad8e916d33413c321cff124dd9595bd31f12",
+  "compiled_at": "2026-09-08T15:02:19+08:00"
 }

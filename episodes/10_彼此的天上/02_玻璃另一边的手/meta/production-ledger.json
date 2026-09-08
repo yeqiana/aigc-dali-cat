@@ -2,7 +2,7 @@
   "schema_version": 1,
   "engine_version": "1.2",
   "created_at": "2026-09-06T02:22:39+08:00",
-  "updated_at": "2026-09-08T13:43:40+08:00",
+  "updated_at": "2026-09-08T17:41:05+08:00",
   "note": "Per-frame production transaction ledger. This is NOT an episode stage source.",
   "canvas": {
     "aspect_ratio": "4:5",
@@ -831,8 +831,8 @@
     },
     "02": {
       "number": 2,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [
         {
           "at": "2026-09-07T15:30:34+08:00",
@@ -960,20 +960,108 @@
             "kind": "original",
             "attempt_id": "a8ee60fd220a"
           }
+        },
+        {
+          "attempt_id": "bf5ac4d28bcc",
+          "started_at": "2026-09-08T14:52:02+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "02",
+            "kind": "repair",
+            "prompt_sha256": "6e8f40374ed658c31729c593e561c697f2fe1c27a3a517ea3730a032453fdc97",
+            "prompt_chars": 165,
+            "prompt_bytes": 439,
+            "capture_id": "scheduler-02",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/02.json",
+              "contract_sha256": "3e6055802d2488bdbdf7a6c388a7856a8f8ce18802d1fef5271aad32b32b743d"
+            },
+            "frame_contract_sha256": "3e6055802d2488bdbdf7a6c388a7856a8f8ce18802d1fef5271aad32b32b743d",
+            "batch_id": null
+          },
+          "request_fingerprint": "cd1dac37cff1e805a79eb4b3ee021786c97114db3ff9a0d2f6be0af4cbf63c7e",
+          "notes": "phase6 scheduler item=cd96ca228a3d scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "21a8f04e7d3b4323bb468a23b5a6b4ac",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/02-1788850465.json",
+            "sha256": "09dd05204ddaf2d16eddc86db952bfc994091517de60f656fe26cb74b11bbbf4",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T14:54:26+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/02-cd96ca228a3d-a1.png",
+            "sha256": "c9355412f5ee2f3e8e19ccc8e0b5f551a5b61b9c081b55035bd04f7171937142",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T14:54:26+08:00",
+            "kind": "repair",
+            "attempt_id": "bf5ac4d28bcc"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/02-d29acc72fa07-a2.png",
-        "sha256": "ac4d0f9f8781eebe72d16b06bce9365bcaa4cbfb0df9cc06f78b7627dfba3705",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/02-cd96ca228a3d-a1.png",
+        "sha256": "c9355412f5ee2f3e8e19ccc8e0b5f551a5b61b9c081b55035bd04f7171937142",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T12:06:55+08:00",
-        "kind": "original",
-        "attempt_id": "a8ee60fd220a"
+        "recorded_at": "2026-09-08T14:54:26+08:00",
+        "kind": "repair",
+        "attempt_id": "bf5ac4d28bcc"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/02.png",
+        "sha256": "c9355412f5ee2f3e8e19ccc8e0b5f551a5b61b9c081b55035bd04f7171937142",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T14:59:37+08:00",
+        "source_sha256": "c9355412f5ee2f3e8e19ccc8e0b5f551a5b61b9c081b55035bd04f7171937142"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T14:50:13+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-02 candidate=02-d29acc72fa07-a2 sha=ac4d0f9f8781eebe72d16b06bce9365bcaa4cbfb0df9cc06f78b7627dfba3705 contract_sha=3e6055802d2488bdbdf7a6c388a7856a8f8ce18802d1fef5271aad32b32b743d window fails hard rule (outer wall+steep slope must be readable; no balcony/standing surface): full frame and window crops show grey stair/walkway-like structure with railing and stone/greenery outside glass; wet coat held in front instead of draped over chair back; room/P02 identity otherwise conforms. decision=repair"
+        },
+        {
+          "at": "2026-09-08T14:59:36+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-02 repair candidate 02-cd96ca228a3d-a1 sha=c9355412f5ee2f3e8e19ccc8e0b5f551a5b61b9c081b55035bd04f7171937142: standing-surface elements (walkway/railing/steps) removed; tall gray concrete outer wall adjacent beyond glass; distant trees/valley lights only; P02 draping wet jacket over chair back and looks back at P01; doorway-wide P01 POV; ordinary homestay room; identity matches P02 anchor. Residual risk: steep-slope readability partial, noted for semantic critic recheck. decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T14:50:16+08:00",
+        "note": "G2 delegated_auto_review frame-02 window standing-surface violation; single content repair anchored to frozen storyboard row 02; no direct user approval claimed",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "03": {
       "number": 3,
@@ -1889,8 +1977,8 @@
     },
     "04": {
       "number": 4,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "NEEDS_USER",
+      "content_repairs_used": 1,
       "technical_failures": [
         {
           "at": "2026-09-07T15:30:34+08:00",
@@ -2053,25 +2141,106 @@
             "kind": "original",
             "attempt_id": "d623347457c0"
           }
+        },
+        {
+          "attempt_id": "be36e55f64a6",
+          "started_at": "2026-09-08T14:57:36+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "04",
+            "kind": "repair",
+            "prompt_sha256": "e3f65dc81c3d72f70a4783502db5f25116632775830c657f49822f98d5b0c865",
+            "prompt_chars": 166,
+            "prompt_bytes": 442,
+            "capture_id": "scheduler-04",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/04.json",
+              "contract_sha256": "92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555"
+            },
+            "frame_contract_sha256": "92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555",
+            "batch_id": null
+          },
+          "request_fingerprint": "7c85d0dd74dec6600c3f68c2245464894aee915cde2465e144ced96ba322dbfb",
+          "notes": "phase6 scheduler item=957ed090a294 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "c0b58334968f4a7fba05b0834f52e78a",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/04-1788850898.json",
+            "sha256": "aed544b0e2ea9e7f0daafa9366e4db13beb748eb799b2c451cf844572729d2e3",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T15:01:39+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/04-957ed090a294-a1.png",
+            "sha256": "c31782fd941af22cb8892aa44e75b431d2dc529c0f9fdd2241d97c34f138a551",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T15:01:39+08:00",
+            "kind": "repair",
+            "attempt_id": "be36e55f64a6"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/04-cf74057cfb9e-a3.png",
-        "sha256": "5cefacc772504e3e7d701466e9ddf5dee219a110887ee4a350d2d8ab23162327",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/04-957ed090a294-a1.png",
+        "sha256": "c31782fd941af22cb8892aa44e75b431d2dc529c0f9fdd2241d97c34f138a551",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T12:35:28+08:00",
-        "kind": "original",
-        "attempt_id": "d623347457c0"
+        "recorded_at": "2026-09-08T15:01:39+08:00",
+        "kind": "repair",
+        "attempt_id": "be36e55f64a6"
       },
       "approved_asset": null,
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T14:50:15+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-04 candidate=04-cf74057cfb9e-a3 sha=5cefacc772504e3e7d701466e9ddf5dee219a110887ee4a350d2d8ab23162327 contract_sha=92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555 whole scene mismatch: shows rainy mountain road/white SUV/guardrail/roadside glass building instead of lamp-off homestay bedroom window test; not a duplicate of any sibling candidate; luminance 110 vs expected dim indoor. decision=repair"
+        },
+        {
+          "at": "2026-09-08T15:16:59+08:00",
+          "decision": "needs_user",
+          "notes": "delegated_auto_review frame-04 candidate=04-957ed090a294-a1 sha=c31782fd941af22cb8892aa44e75b431d2dc529c0f9fdd2241d97c34f138a551 contract_sha=92b307a6f837264f94792a2383656cbbe5615bec2a027f85407d345def22b555 scene repaired ok: lamp-off moment homestay bedroom, P01 arm reaching lamp, P02 observing by window, no car/road element. Hard fail: core anomaly layer (opposite dark coarse-cloth sleeve residue staying in glass / small window remained) not identifiable in full 4:5 and multiple zoom crops (left curtain side, beside P02, right glass, lower outside); outside shows foliage+low wall+warm light+retaining/railing-like line instead of narrow wall/slope target. Content repair already used 1 time; second failure needs human check. decision=needs_user"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T14:50:17+08:00",
+        "note": "G2 delegated_auto_review frame-04 off-scene candidate; single content repair anchored to frozen storyboard row 04; no direct user approval claimed",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "05": {
       "number": 5,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [
         {
           "at": "2026-09-07T15:30:35+08:00",
@@ -2234,25 +2403,113 @@
             "kind": "original",
             "attempt_id": "780698187f95"
           }
+        },
+        {
+          "attempt_id": "b4334face0ca",
+          "started_at": "2026-09-08T15:17:20+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "05",
+            "kind": "repair",
+            "prompt_sha256": "577f95e36f006c8f57cfc670639bc88ed9ddc791f5b75069bac470826a892e77",
+            "prompt_chars": 173,
+            "prompt_bytes": 461,
+            "capture_id": "scheduler-05",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/05.json",
+              "contract_sha256": "18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2"
+            },
+            "frame_contract_sha256": "18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2",
+            "batch_id": null
+          },
+          "request_fingerprint": "c4bf9946226d0865775421b44228eed06786e9e3c31a78a5e3390c73c00da277",
+          "notes": "phase6 scheduler item=a9a09095385f scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "cc7aae6937ca402287cc7e3066d9667b",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/05-1788852096.json",
+            "sha256": "d5eb057257b074c4dc3bba8d310f29837160d456381e535040b5bde3e4f686b0",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T15:21:37+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/05-a9a09095385f-a1.png",
+            "sha256": "e6ce633de4f1a6dadef766f097864bd5661dbe71e212130db345e078ee30e304",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T15:21:37+08:00",
+            "kind": "repair",
+            "attempt_id": "b4334face0ca"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/05-30059c260bb5-a3.png",
-        "sha256": "25d8b45a19ea880ace128bbdba8968684ea0660eaa771cfa8eefc7d8c892381c",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/05-a9a09095385f-a1.png",
+        "sha256": "e6ce633de4f1a6dadef766f097864bd5661dbe71e212130db345e078ee30e304",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T12:42:13+08:00",
-        "kind": "original",
-        "attempt_id": "780698187f95"
+        "recorded_at": "2026-09-08T15:21:37+08:00",
+        "kind": "repair",
+        "attempt_id": "b4334face0ca"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/05.png",
+        "sha256": "e6ce633de4f1a6dadef766f097864bd5661dbe71e212130db345e078ee30e304",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T15:38:31+08:00",
+        "source_sha256": "e6ce633de4f1a6dadef766f097864bd5661dbe71e212130db345e078ee30e304"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T14:56:22+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-05 candidate=05-30059c260bb5-a3 glass crops upper+lower: own reflection and room/window present, but opposite-side sleeve layer at different depth/direction missing; frame new-information (reflection vs other-side separation) not delivered; identity/setting conform. decision=repair"
+        },
+        {
+          "at": "2026-09-08T15:38:24+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-05 candidate=05-a9a09095385f-a1 sha=e6ce633de4f1a6dadef766f0 contract_sha=18205b064663d39ed71763071a5a40fd06e16348bd99b6249cd88992bd8bcea2 repair verified: close angled glass view with P02 side face at left pointing at droplet; her own faint reflection in glass (face probe) confirmed; second dark coarse-sleeve/arm layer enters from lower-right at different depth and direction (sleeve probe), separated from P02 action; night valley + slope houses outside; no third-photographer, no horror face on glass, no text. Residual: sleeve layer depth/attribution (opposite-side vs own/operator arm) remains low-confidence under wet glass - recorded for frame_semantic_review critic and human check. decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T14:56:25+08:00",
+        "note": "G2 delegated_auto_review frame-05 missing anomaly sleeve layer; single content repair anchored to frozen storyboard row 05",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "06": {
       "number": 6,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [
         {
           "at": "2026-09-07T15:32:11+08:00",
@@ -2380,25 +2637,113 @@
             "kind": "original",
             "attempt_id": "e2300565fc1e"
           }
+        },
+        {
+          "attempt_id": "4c5ae55ea209",
+          "started_at": "2026-09-08T15:32:04+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "06",
+            "kind": "repair",
+            "prompt_sha256": "96e0e887423b3d6718702851576059c3b386a3cda685289ca62190336a8f729b",
+            "prompt_chars": 145,
+            "prompt_bytes": 371,
+            "capture_id": "scheduler-06",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/06.json",
+              "contract_sha256": "55f388f934d76a220dcbbc3c94d43ecb2afd5121d85e971f505fa3359723c16f"
+            },
+            "frame_contract_sha256": "55f388f934d76a220dcbbc3c94d43ecb2afd5121d85e971f505fa3359723c16f",
+            "batch_id": null
+          },
+          "request_fingerprint": "179b5e82423573e45e9b94c17c3bc627e6b11a18da7ce40f67348c2cc38fb07a",
+          "notes": "phase6 scheduler item=b6357ce0f98c scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "cdfbc398d7614530b4ea8fc0904f3b8f",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/06-1788852842.json",
+            "sha256": "b6558f7c3a34028d8fe86bd227f508c777ecb3efbcdc42498c05531e2654ef84",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T15:34:04+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/06-b6357ce0f98c-a1.png",
+            "sha256": "e3fa7deb92c98c6bdc41e09e7e6279645b0bd38c28295ba82a6b904f7b63cf00",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T15:34:04+08:00",
+            "kind": "repair",
+            "attempt_id": "4c5ae55ea209"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/06-8e4a07a762cd-a2.png",
-        "sha256": "ff156550de672f3c5d6ecc4561ee7da5b8f27d65fac1844a9947a72e3444f546",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/06-b6357ce0f98c-a1.png",
+        "sha256": "e3fa7deb92c98c6bdc41e09e7e6279645b0bd38c28295ba82a6b904f7b63cf00",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T12:25:13+08:00",
-        "kind": "original",
-        "attempt_id": "e2300565fc1e"
+        "recorded_at": "2026-09-08T15:34:04+08:00",
+        "kind": "repair",
+        "attempt_id": "4c5ae55ea209"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/06.png",
+        "sha256": "e3fa7deb92c98c6bdc41e09e7e6279645b0bd38c28295ba82a6b904f7b63cf00",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T15:45:31+08:00",
+        "source_sha256": "e3fa7deb92c98c6bdc41e09e7e6279645b0bd38c28295ba82a6b904f7b63cf00"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T14:56:23+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-06 candidate=06-8e4a07a762cd-a2 shows outdoor rainy parking/SUV open trunk packing scene instead of indoor rain-film window + album share beat; off-scene mismatch. decision=repair"
+        },
+        {
+          "at": "2026-09-08T15:45:27+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-06 candidate=06-b6357ce0f98c-a1 sha=e3fa7deb92c98c6bdc41e09e contract_sha=55f388f934d76a220dcbbc3c94d43ecb2afd5121d85e971f505fa3359723c16f repair verified: whole scene back to homestay room interior (bed, window with rain film and night lights, luggage/desk props); P02 seated at bed edge in light-gray crew sweatshirt with low ponytail looking down at phone held near her face (P01 album-share beat); window shows ordinary rain film/inside fog, no reopened clear anomaly area; no car/outdoor-packing element, no readable text. Residual: screen lit state and camera-owner attribution of album-share moment remain low-confidence - recorded for frame_semantic_review critic and human check. decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T14:56:27+08:00",
+        "note": "G2 delegated_auto_review frame-06 off-scene candidate; single content repair anchored to frozen storyboard row 06",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "07": {
       "number": 7,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [
         {
           "at": "2026-09-07T15:32:10+08:00",
@@ -2512,25 +2857,113 @@
             "kind": "original",
             "attempt_id": "1e68d9bd123b"
           }
+        },
+        {
+          "attempt_id": "352f83dd6ca6",
+          "started_at": "2026-09-08T15:02:19+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "07",
+            "kind": "repair",
+            "prompt_sha256": "9d25b560103bc840a90a18ce418a748dc8651561b6bc669e0c6169be78acf2d9",
+            "prompt_chars": 151,
+            "prompt_bytes": 397,
+            "capture_id": "scheduler-07",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/07.json",
+              "contract_sha256": "ede71264dfe6e654388a57f292e7a28ec4d80269a72a8ec1772648f0fae32180"
+            },
+            "frame_contract_sha256": "ede71264dfe6e654388a57f292e7a28ec4d80269a72a8ec1772648f0fae32180",
+            "batch_id": null
+          },
+          "request_fingerprint": "b75aaeffd505275edd6f10567aa73cc3b6bd1a109024368ab15ba964977b0163",
+          "notes": "phase6 scheduler item=5e6e4ad1e36f scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "4f9c133125bd48009cc77cc91283dc19",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/07-1788851124.json",
+            "sha256": "61fdb5391d7cdcbdf7ef3658f3a35325aee54a8dc5a64d865c55e706c2fd1c6a",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T15:05:25+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/07-5e6e4ad1e36f-a1.png",
+            "sha256": "7bacb1bf82181acbde1932d40a7bea11ecea09910af6b61ee334424fda80ab7b",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T15:05:25+08:00",
+            "kind": "repair",
+            "attempt_id": "352f83dd6ca6"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/07-127d21da4684-a2.png",
-        "sha256": "1b0caa328176e2d6f641b30c37f5f4be9408d4087829bf9fd485d02aef70c18d",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/07-5e6e4ad1e36f-a1.png",
+        "sha256": "7bacb1bf82181acbde1932d40a7bea11ecea09910af6b61ee334424fda80ab7b",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T12:27:22+08:00",
-        "kind": "original",
-        "attempt_id": "1e68d9bd123b"
+        "recorded_at": "2026-09-08T15:05:25+08:00",
+        "kind": "repair",
+        "attempt_id": "352f83dd6ca6"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/07.png",
+        "sha256": "7bacb1bf82181acbde1932d40a7bea11ecea09910af6b61ee334424fda80ab7b",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T15:27:27+08:00",
+        "source_sha256": "7bacb1bf82181acbde1932d40a7bea11ecea09910af6b61ee334424fda80ab7b"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:01:57+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-07 candidate=07-127d21da4684-a2: opposite-space wood rack/bowl/fabric present and P02 crouching, but P01 photographer torso appears as in-frame third-person subject (ghost-camera authorship violation); opposite wipe short-mark/sleeve cue not readable. decision=repair"
+        },
+        {
+          "at": "2026-09-08T15:27:17+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-07 candidate=07-5e6e4ad1e36f-a1 sha=7bacb1bf82181acbde1932d40a7bea11ecea09910af6b61ee334424fda80ab7b contract_sha=ede71264dfe6e654388a57f292e7a28ec4d80269a72a8ec1772648f0fae32180 repair verified: P01 photographer torso removed (first-person view from bed side); P02 crouched low near window with head down (side face at frame left); opposite-space wooden rack and bowl visible through glass; no third-person double composition, no horror face, no text. Residual: dark coarse-cloth sleeve cue and low wipe short-mark remain low-readability under droplets/low light - recorded for frame_semantic_review critic and human check. decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:01:59+08:00",
+        "note": "G2 delegated_auto_review frame-07 authorship violation + missing wipe cue; single content repair anchored to frozen storyboard row 07",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "08": {
       "number": 8,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [
         {
           "at": "2026-09-07T15:33:28+08:00",
@@ -2658,20 +3091,108 @@
             "kind": "original",
             "attempt_id": "52dc1d0e06f7"
           }
+        },
+        {
+          "attempt_id": "28fe03f7c3aa",
+          "started_at": "2026-09-08T15:38:46+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "08",
+            "kind": "repair",
+            "prompt_sha256": "0f1cec46ee3667007832c703bf2d8ad4bd8d57fe7daff14575e70ee037399b01",
+            "prompt_chars": 148,
+            "prompt_bytes": 388,
+            "capture_id": "scheduler-08",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/08.json",
+              "contract_sha256": "f099552cc514c2768f556153ef543334ff907043754eba3824bc0aecec642a9c"
+            },
+            "frame_contract_sha256": "f099552cc514c2768f556153ef543334ff907043754eba3824bc0aecec642a9c",
+            "batch_id": null
+          },
+          "request_fingerprint": "8399a5849f66a7c74666cda54a723481cf1c2d66236fdc3bca5dddcfb1553340",
+          "notes": "phase6 scheduler item=74d781667000 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "cc93625469584750840c3b206479d198",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/08-1788853294.json",
+            "sha256": "9322f0a9097d9c1e06ac1887a3d81f2e0f31f7506c7efdeae8e301c36e6bcbd9",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T15:41:35+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/08-74d781667000-a1.png",
+            "sha256": "7b369625ef043bdb3c3ae0aeef0b8f95eda187477d7a08d4e45db2af434f6425",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T15:41:35+08:00",
+            "kind": "repair",
+            "attempt_id": "28fe03f7c3aa"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/08-68ad77c3bd31-a2.png",
-        "sha256": "5d16b88a14ea26060cda4f54ce801bd5e28d8d589300f8edb23f6730928af7a1",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/08-74d781667000-a1.png",
+        "sha256": "7b369625ef043bdb3c3ae0aeef0b8f95eda187477d7a08d4e45db2af434f6425",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T12:31:42+08:00",
-        "kind": "original",
-        "attempt_id": "52dc1d0e06f7"
+        "recorded_at": "2026-09-08T15:41:35+08:00",
+        "kind": "repair",
+        "attempt_id": "28fe03f7c3aa"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/08.png",
+        "sha256": "7b369625ef043bdb3c3ae0aeef0b8f95eda187477d7a08d4e45db2af434f6425",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T15:50:21+08:00",
+        "source_sha256": "7b369625ef043bdb3c3ae0aeef0b8f95eda187477d7a08d4e45db2af434f6425"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:01:58+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-08 candidate=08-68ad77c3bd31-a2: shows car interior passenger-window road view; expected homestay-room close P02 wiping inner fog semicircle; off-scene mismatch. decision=repair"
+        },
+        {
+          "at": "2026-09-08T15:50:18+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-08 candidate=08-74d781667000-a1 sha=7b369625ef043bdb3c3ae0ae contract_sha=f099552cc514c2768f556153ef543334ff907043754eba3824bc0aecec642a9c repair verified: whole scene inside homestay room (no car shot); P02 seen from side-behind (P01 first-person) leaning close to floor-to-ceiling glass, sleeve/forearm raised wiping inner surface with visible cleared patch through which opposite wooden rack/bowl/plant details read while surrounding droplets remain (inside-fog/outside-rain layering); wiping motion not knocking; no third photographer, no horror, no readable text. Residual: irregular-semicircle wipe shape readability and P02 top hue under warm light (gray vs beige reading) - recorded for frame_semantic_review critic and human check. decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:02:01+08:00",
+        "note": "G2 delegated_auto_review frame-08 off-scene candidate; single content repair anchored to frozen storyboard row 08",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "09": {
       "number": 9,
@@ -3003,8 +3524,8 @@
     },
     "10": {
       "number": 10,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [],
       "attempts": [
         {
@@ -3069,26 +3590,121 @@
             "kind": "original",
             "attempt_id": "f66f45336cd4"
           }
+        },
+        {
+          "attempt_id": "c1e61ab4eeed",
+          "started_at": "2026-09-08T15:58:02+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "10",
+            "kind": "repair",
+            "prompt_sha256": "7f821059eec1d5c17e86995a5f80bafc0e32cc27edf7c4c0a20b0e4f7ab41638",
+            "prompt_chars": 177,
+            "prompt_bytes": 475,
+            "capture_id": "scheduler-10",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/10.json",
+              "contract_sha256": "4c71fba7104024058f8544d65914aac298ec9e9f05af3a05b673a75a5078a350"
+            },
+            "frame_contract_sha256": "4c71fba7104024058f8544d65914aac298ec9e9f05af3a05b673a75a5078a350",
+            "batch_id": null
+          },
+          "request_fingerprint": "1b7d70e5038c8d2d221e0c74f45d44cf0308113d3a84f7296e0c085a2e34a264",
+          "notes": "phase6 scheduler item=c87468d114a6 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "bf18370acd8f4c30a21325c0c91511b9",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/10-1788854394.json",
+            "sha256": "0ef6de98cd2139f37bc7504713fdf43635476e3aaa9bd087c4251e539a0e6dac",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T15:59:55+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/10-c87468d114a6-a1.png",
+            "sha256": "7f4b23dc7fe6553663c474f0f18e869f7286bf2aeb845629ce74829421c16811",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T15:59:55+08:00",
+            "kind": "repair",
+            "attempt_id": "c1e61ab4eeed"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/10-a7f86678c6fa-a1.png",
-        "sha256": "b6b0da04c61afb182fdbcfc78aa68c6c9daac5f75035b9f034cdde0d0616bd07",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/10-c87468d114a6-a1.png",
+        "sha256": "7f4b23dc7fe6553663c474f0f18e869f7286bf2aeb845629ce74829421c16811",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T12:44:09+08:00",
-        "kind": "original",
-        "attempt_id": "f66f45336cd4"
+        "recorded_at": "2026-09-08T15:59:55+08:00",
+        "kind": "repair",
+        "attempt_id": "c1e61ab4eeed"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/10.png",
+        "sha256": "7f4b23dc7fe6553663c474f0f18e869f7286bf2aeb845629ce74829421c16811",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T16:06:32+08:00",
+        "source_sha256": "7f4b23dc7fe6553663c474f0f18e869f7286bf2aeb845629ce74829421c16811"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:57:19+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-10 candidate=10-a7f86678c6fa-a1.png sha=b6b0da04c61afb18 obsolete production prompt (route-parking/car scene); current frame goal: new-evidence close-up: half of an ordinary adult face peering from opposite space behind dark cloth, wary eye; wood rack/bowl/wet cloth/stool life layers. decision=repair"
+        },
+        {
+          "at": "2026-09-08T16:06:29+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-10 candidate=10-c87468d114a6-a1 sha=7f4b23dc7fe6553663c474f0f18e869f7286bf2aeb845629ce74829421c16811 contract=storyboard S5/Z5; agreements: half adult face + vigilant eye behind dark coarse cloth, wet glass droplets/reflection preserved, wooden shelf/bowl/towel/low stool layered behind opposite figure, P02 this-side tilting head near glass, night homestay window with town lights outside, no text/UI/ghost full-face; residual: far-side background reads as town-night lights behind opposite room (plausible mountain town), final pixel/semantic pass left to frame_semantic_review critic/human; decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:57:37+08:00",
+        "note": "delegated_auto_review frame-10 content-failed scene mismatch; repair prompt prompts/repair/10-contract-anchor.txt bound to frozen storyboard",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "11": {
       "number": 11,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
-      "technical_failures": [],
+      "status": "PASSED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-09-08T16:10:18+08:00",
+          "attempt_id": "8f9264912cf0",
+          "code": "RAW_CANDIDATE_BUDGET_EXHAUSTED",
+          "message": "RAW_CANDIDATE_BUDGET_EXHAUSTED: {'frame': '11', 'kind': 'repair', 'used': 0, 'limit': 2, 'episode_used': 35, 'episode_limit': 35, 'decision': 'EPISODE_IMAGE_LOOP_GUARD', 'token': '5fb2c372d712'}"
+        }
+      ],
       "attempts": [
         {
           "attempt_id": "714b941b3cef",
@@ -3152,26 +3768,164 @@
             "kind": "original",
             "attempt_id": "714b941b3cef"
           }
+        },
+        {
+          "attempt_id": "8f9264912cf0",
+          "started_at": "2026-09-08T16:10:18+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "11",
+            "kind": "repair",
+            "prompt_sha256": "6bcca534db85caf78912eda1d4a547705bbe3674fdcc6b69bf93a28748a362a8",
+            "prompt_chars": 160,
+            "prompt_bytes": 432,
+            "capture_id": "scheduler-11",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/11.json",
+              "contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d"
+            },
+            "frame_contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d",
+            "batch_id": null
+          },
+          "request_fingerprint": "a14ed08f795f4a75396ba4c6dad0f57bf0c7f498e2bf0e5d7298f1d5b1be2d77",
+          "notes": "phase6 scheduler item=5fb2c372d712 scope=repair",
+          "result": "technical_failure",
+          "runtime_transaction_id": "9ae18f003e6b4b899e9b8f9c04f695b4",
+          "completed_at": "2026-09-08T16:10:18+08:00",
+          "error": {
+            "code": "RAW_CANDIDATE_BUDGET_EXHAUSTED",
+            "message": "RAW_CANDIDATE_BUDGET_EXHAUSTED: {'frame': '11', 'kind': 'repair', 'used': 0, 'limit': 2, 'episode_used': 35, 'episode_limit': 35, 'decision': 'EPISODE_IMAGE_LOOP_GUARD', 'token': '5fb2c372d712'}"
+          }
+        },
+        {
+          "attempt_id": "5ab2a8c544b8",
+          "started_at": "2026-09-08T16:20:20+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "11",
+            "kind": "repair",
+            "prompt_sha256": "6bcca534db85caf78912eda1d4a547705bbe3674fdcc6b69bf93a28748a362a8",
+            "prompt_chars": 160,
+            "prompt_bytes": 432,
+            "capture_id": "scheduler-11",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/11.json",
+              "contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d"
+            },
+            "frame_contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d",
+            "batch_id": null
+          },
+          "request_fingerprint": "a14ed08f795f4a75396ba4c6dad0f57bf0c7f498e2bf0e5d7298f1d5b1be2d77",
+          "notes": "phase6 scheduler item=e4373ca6e609 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "9fb47445c68242a983335011d4a98af5",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/11-1788855751.json",
+            "sha256": "9226a090198f3c0fbcede790d8ce4ab93e92324ecd789b0f1641b2405fb9e0de",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T16:22:32+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/11-e4373ca6e609-a1.png",
+            "sha256": "52ccd4eff64b2cfa64a310ddfd40276afdaecdbb60bd7475214fd6172a390bdd",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T16:22:32+08:00",
+            "kind": "repair",
+            "attempt_id": "5ab2a8c544b8"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/11-b6bb3abab6c4-a1.png",
-        "sha256": "cc27bb62674ba9796d344dd1d153a5e20500312aa365cfc7b50698188754bc1b",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/11-e4373ca6e609-a1.png",
+        "sha256": "52ccd4eff64b2cfa64a310ddfd40276afdaecdbb60bd7475214fd6172a390bdd",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T12:47:00+08:00",
-        "kind": "original",
-        "attempt_id": "714b941b3cef"
+        "recorded_at": "2026-09-08T16:22:32+08:00",
+        "kind": "repair",
+        "attempt_id": "5ab2a8c544b8"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/11.png",
+        "sha256": "52ccd4eff64b2cfa64a310ddfd40276afdaecdbb60bd7475214fd6172a390bdd",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T16:28:18+08:00",
+        "source_sha256": "52ccd4eff64b2cfa64a310ddfd40276afdaecdbb60bd7475214fd6172a390bdd"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:57:20+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-11 candidate=11-b6bb3abab6c4-a1.png sha=cc27bb62674ba979 obsolete production prompt (route-parking/car scene); current frame goal: P01 first-person raises phone high to film glass, lit screen reflection sweeps; opposite adult retreats lifting dark coarse cloth as shield. decision=repair"
+        },
+        {
+          "at": "2026-09-08T16:27:54+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-11 candidate=11-e4373ca6e609-a1 sha=52ccd4eff64b2cfa64a310ddfd40276afdaecdbb60bd7475214fd6172a390bdd contract=storyboard S6/Z5; agreements: across adult steps back and pulls coarse woven cloth up over mouth/nose, wary eyes over the cloth (ordinary defensive human, no horror face), cloth stays on far side of wet glass (no crossing artifact), P02 this side by window in homestay room with bed/curtains, night rainy glass reflections present, no text/UI; residual: bright-screen sweep reads as soft lit reflection on glass (source lamp vs phone screen not pixel-provable), across adult young-female gray-top presentation may echo P02 anchor (hair/pose distinct, adult holds cloth and remains across), composition uses multi-pane exterior gap/tree view on right, final pixel/semantic pass left to frame_semantic_review critic/human; decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:57:38+08:00",
+        "note": "delegated_auto_review frame-11 content-failed scene mismatch; repair prompt prompts/repair/11-contract-anchor.txt bound to frozen storyboard",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "12": {
       "number": 12,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
-      "technical_failures": [],
+      "status": "PASSED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-09-08T16:45:58+08:00",
+          "attempt_id": "5df63488de24",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\12-dc1b3520bce7-a1.jsonl"
+        }
+      ],
       "attempts": [
         {
           "attempt_id": "cbefac2f712d",
@@ -3235,25 +3989,156 @@
             "kind": "original",
             "attempt_id": "cbefac2f712d"
           }
+        },
+        {
+          "attempt_id": "5df63488de24",
+          "started_at": "2026-09-08T16:39:39+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "12",
+            "kind": "repair",
+            "prompt_sha256": "e7fe709f54d6f98480878e4f93031bea1a11099e68d7f7d8bbc623a46f00ff44",
+            "prompt_chars": 159,
+            "prompt_bytes": 411,
+            "capture_id": "scheduler-12",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/12.json",
+              "contract_sha256": "955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354"
+            },
+            "frame_contract_sha256": "955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354",
+            "batch_id": null
+          },
+          "request_fingerprint": "e44f282e65284cf0b7f73c078080402d31bde1c90f34e8e65ccf61399b352a5b",
+          "notes": "phase6 scheduler item=dc1b3520bce7 scope=repair",
+          "result": "technical_failure",
+          "runtime_transaction_id": "8260983a66934c2189279814a246682d",
+          "completed_at": "2026-09-08T16:45:58+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\meta\\image-workers\\12-dc1b3520bce7-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "3fb5103cac7b",
+          "started_at": "2026-09-08T16:57:43+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "12",
+            "kind": "repair",
+            "prompt_sha256": "e7fe709f54d6f98480878e4f93031bea1a11099e68d7f7d8bbc623a46f00ff44",
+            "prompt_chars": 159,
+            "prompt_bytes": 411,
+            "capture_id": "scheduler-12",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/12.json",
+              "contract_sha256": "955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354"
+            },
+            "frame_contract_sha256": "955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354",
+            "batch_id": null
+          },
+          "request_fingerprint": "e44f282e65284cf0b7f73c078080402d31bde1c90f34e8e65ccf61399b352a5b",
+          "notes": "phase6 scheduler item=dc1b3520bce7 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "8260983a66934c2189279814a246682d",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/12-1788857996.json",
+            "sha256": "fc79c0a362bfd7d34b936e02217b5d02d31d21fa0e0f8606098d51394eb98f01",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T16:59:58+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/12-dc1b3520bce7-a2.png",
+            "sha256": "78498f09c16e450c88fb300cc1e329c95bc486102bcfc0b31b02f62144fa6e54",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T16:59:58+08:00",
+            "kind": "repair",
+            "attempt_id": "3fb5103cac7b"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/12-c93e4c98ecea-a1.png",
-        "sha256": "36012b520ce24fb6f237ef52a7c804018a3140cbdbd34010da11714e14cf6870",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/12-dc1b3520bce7-a2.png",
+        "sha256": "78498f09c16e450c88fb300cc1e329c95bc486102bcfc0b31b02f62144fa6e54",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T12:49:20+08:00",
-        "kind": "original",
-        "attempt_id": "cbefac2f712d"
+        "recorded_at": "2026-09-08T16:59:58+08:00",
+        "kind": "repair",
+        "attempt_id": "3fb5103cac7b"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/12.png",
+        "sha256": "78498f09c16e450c88fb300cc1e329c95bc486102bcfc0b31b02f62144fa6e54",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T17:40:18+08:00",
+        "source_sha256": "78498f09c16e450c88fb300cc1e329c95bc486102bcfc0b31b02f62144fa6e54"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:57:20+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-12 candidate=12-c93e4c98ecea-a1.png sha=36012b520ce24fb6 obsolete production prompt (route-parking/car scene); current frame goal: P02 hand presses P01 wrist down from side, phone lowered, frame tilts; opposite adult lowers cloth still half-visible. decision=repair"
+        },
+        {
+          "at": "2026-09-08T17:40:14+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-12 repair candidate 12-dc1b3520bce7-a2.png sha=78498f09c16e450c88fb300cc1e329c95bc486102bcfc0b31b02f62144fa6e54 contract_sha=955bf36a6eaf8786714037b47e2b4742cbbbc559baa7eaea37960db35d2c3354: P02 侧后方灰上衣，一只手按压/压低 P01 握机手腕、手机放下，前景手势与 F11 连续；夜间民宿室内；湿玻璃外对面成年人放低粗布后仍半可见，无第二人物；全图与手部裁剪无文字。residual: 手部接触细读（按压 vs 松手瞬间）留语义 critic 复核。decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:57:38+08:00",
+        "note": "delegated_auto_review frame-12 content-failed scene mismatch; repair prompt prompts/repair/12-contract-anchor.txt bound to frozen storyboard",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "13": {
       "number": 13,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "NEEDS_USER",
+      "content_repairs_used": 1,
       "technical_failures": [
         {
           "at": "2026-09-08T12:55:31+08:00",
@@ -3368,20 +4253,101 @@
             "kind": "original",
             "attempt_id": "189d7e583b27"
           }
+        },
+        {
+          "attempt_id": "aadb2c6d74fa",
+          "started_at": "2026-09-08T16:28:23+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "13",
+            "kind": "repair",
+            "prompt_sha256": "396a8b27a868b718dcb1f06715ee842edd74e081fc098028a8646013c66be47b",
+            "prompt_chars": 155,
+            "prompt_bytes": 409,
+            "capture_id": "scheduler-13",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/13.json",
+              "contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53"
+            },
+            "frame_contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53",
+            "batch_id": null
+          },
+          "request_fingerprint": "c6c645780b7e20c220819ebf17fba571dad2aec7333f5c235ea6101d8f8b26ce",
+          "notes": "phase6 scheduler item=292d55a20e05 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "f04a4f97d01f497fbd05cbf7d2d6a219",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/13-1788856331.json",
+            "sha256": "cbc3c2046c24c379378fd24efaf9d217c1cb380cb1b61e3ae604880f2b14f5d8",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T16:32:13+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/13-292d55a20e05-a1.png",
+            "sha256": "8ef5ed9990c20802a614164b920070e07581a2651beeeb2be20e43ea15def958",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T16:32:13+08:00",
+            "kind": "repair",
+            "attempt_id": "aadb2c6d74fa"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/13-3979017ac688-a2.png",
-        "sha256": "c4fe3309c5f98cdd5c0994cc176c2ec4f44aa21768a4c609aef2898db9657700",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/13-292d55a20e05-a1.png",
+        "sha256": "8ef5ed9990c20802a614164b920070e07581a2651beeeb2be20e43ea15def958",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T13:01:38+08:00",
-        "kind": "original",
-        "attempt_id": "189d7e583b27"
+        "recorded_at": "2026-09-08T16:32:13+08:00",
+        "kind": "repair",
+        "attempt_id": "aadb2c6d74fa"
       },
       "approved_asset": null,
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:57:21+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-13 candidate=13-3979017ac688-a2.png sha=c4fe3309c5f98cdd obsolete production prompt (route-parking/car scene); current frame goal: child half-face and small hand emerges behind opposite adult gripping clothing side, curious not scary; P02 holds still. decision=repair"
+        },
+        {
+          "at": "2026-09-08T16:39:11+08:00",
+          "decision": "needs_user",
+          "notes": "delegated_auto_review frame-13 candidate=13-292d55a20e05-a1 sha=8ef5ed9990c20802a614164b920070e07581a2651beeeeb2be20e43ea15def958 contract=storyboard S6/Z6; failure: adult+child pair reads as THIS-side foreground (large crisp torso in gray top with folded hands, child gripping that same garment with one eye up, no wet-glass film between camera and faces; our luggage/charger/white plastic bag on same floor plane) instead of required opposite-side adult with child emerging behind them through the glass; would introduce an unexplained this-side child and loses the across-space depth; adult-facing-camera pose also conflicts with adult-not-turned-back beat. content_repairs_used=1; needs user review/exception repair with prompt emphasizing: adult with back/side to camera across the glass, child half-face+small hand gripping adult clothing behind them, wet-glass film over the pair, our luggage only as soft foreground. decision=needs_user"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:57:39+08:00",
+        "note": "delegated_auto_review frame-13 content-failed scene mismatch; repair prompt prompts/repair/13-contract-anchor.txt bound to frozen storyboard",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "14": {
       "number": 14,
@@ -4083,9 +5049,16 @@
     },
     "15": {
       "number": 15,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
-      "technical_failures": [],
+      "status": "PASSED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-09-08T16:06:37+08:00",
+          "attempt_id": "d32553d95f9b",
+          "code": "EPISODE_IMAGE_LOOP_GUARD",
+          "message": "RAW_CANDIDATE_BUDGET_EXHAUSTED: {'frame': '15', 'kind': 'repair', 'used': 0, 'limit': 2, 'episode_used': 35, 'episode_limit': 35, 'decision': 'EPISODE_IMAGE_LOOP_GUARD', 'token': 'eaf9deafd5cc'}"
+        }
+      ],
       "attempts": [
         {
           "attempt_id": "1b1fd5fc23db",
@@ -4149,25 +5122,156 @@
             "kind": "original",
             "attempt_id": "1b1fd5fc23db"
           }
+        },
+        {
+          "attempt_id": "d32553d95f9b",
+          "started_at": "2026-09-08T16:06:37+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "15",
+            "kind": "repair",
+            "prompt_sha256": "426c59601d8268bc7c5d0c878b99187c21982230a3a49a7ff526241dc3c7e8eb",
+            "prompt_chars": 151,
+            "prompt_bytes": 405,
+            "capture_id": "scheduler-15",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/15.json",
+              "contract_sha256": "74eab8cbcd953150f4fece690c1351639c44c7871d216ff82f723b6c033809b8"
+            },
+            "frame_contract_sha256": "74eab8cbcd953150f4fece690c1351639c44c7871d216ff82f723b6c033809b8",
+            "batch_id": null
+          },
+          "request_fingerprint": "88f0663ece203a112bb66e54da6a36fb8ea16dc76e9c539ce748e1edabe98935",
+          "notes": "phase6 scheduler item=eaf9deafd5cc scope=repair",
+          "result": "technical_failure",
+          "runtime_transaction_id": "d11ad67381e7472cb133839e40fffe23",
+          "completed_at": "2026-09-08T16:06:37+08:00",
+          "error": {
+            "code": "EPISODE_IMAGE_LOOP_GUARD",
+            "message": "RAW_CANDIDATE_BUDGET_EXHAUSTED: {'frame': '15', 'kind': 'repair', 'used': 0, 'limit': 2, 'episode_used': 35, 'episode_limit': 35, 'decision': 'EPISODE_IMAGE_LOOP_GUARD', 'token': 'eaf9deafd5cc'}"
+          }
+        },
+        {
+          "attempt_id": "7fede05041b9",
+          "started_at": "2026-09-08T16:12:00+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "15",
+            "kind": "repair",
+            "prompt_sha256": "426c59601d8268bc7c5d0c878b99187c21982230a3a49a7ff526241dc3c7e8eb",
+            "prompt_chars": 151,
+            "prompt_bytes": 405,
+            "capture_id": "scheduler-15",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/15.json",
+              "contract_sha256": "74eab8cbcd953150f4fece690c1351639c44c7871d216ff82f723b6c033809b8"
+            },
+            "frame_contract_sha256": "74eab8cbcd953150f4fece690c1351639c44c7871d216ff82f723b6c033809b8",
+            "batch_id": null
+          },
+          "request_fingerprint": "88f0663ece203a112bb66e54da6a36fb8ea16dc76e9c539ce748e1edabe98935",
+          "notes": "phase6 scheduler item=91d2baf2ccb8 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "8ae8f42a9ebb42e98395acb02c88c694",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/15-1788855407.json",
+            "sha256": "5862fc262da924a951273786564e3ec81de6f20ce008f49a730a6011757cde6a",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T16:16:49+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/15-91d2baf2ccb8-a1.png",
+            "sha256": "8095586ad6757bf79a7974bf8b95626411d341b50672cddede0ba1fa7695225b",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T16:16:49+08:00",
+            "kind": "repair",
+            "attempt_id": "7fede05041b9"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/15-1159f9819c2d-a1.png",
-        "sha256": "9ac8c690054887506da1b090906527cc4128f1c7bee0c1e5127580ab4cf64439",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/15-91d2baf2ccb8-a1.png",
+        "sha256": "8095586ad6757bf79a7974bf8b95626411d341b50672cddede0ba1fa7695225b",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T13:04:31+08:00",
-        "kind": "original",
-        "attempt_id": "1b1fd5fc23db"
+        "recorded_at": "2026-09-08T16:16:49+08:00",
+        "kind": "repair",
+        "attempt_id": "7fede05041b9"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/15.png",
+        "sha256": "8095586ad6757bf79a7974bf8b95626411d341b50672cddede0ba1fa7695225b",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T16:20:15+08:00",
+        "source_sha256": "8095586ad6757bf79a7974bf8b95626411d341b50672cddede0ba1fa7695225b"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:57:21+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-15 candidate=15-1159f9819c2d-a1.png sha=9ac8c69005488750 obsolete production prompt (route-parking/car scene); current frame goal: last frame before stop: low tilted camera; adult shields child with one arm and covers glass with dark cloth; phone screen dark in reflection. decision=repair"
+        },
+        {
+          "at": "2026-09-08T16:20:12+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-15 candidate=15-91d2baf2ccb8-a1 sha=8095586ad6757bf79a7974bf8b95626411d341b50672cddede0ba1fa7695225b contract=storyboard S7/Z7 low-camera falling composition; agreements: opposite adult shields child with one arm and pulls coarse woven cloth across glass (cloth stays in opposite space, no crossing artifact into room foreground), child partially visible behind glass, dark blurred composition with slight downward tilt, our-side reflection shows P01 with phone lowered and no bright screen UI, night homestay/window lights; residual: across-adult gray top + dark hair may echo P02 anchor (mother+child reading grounds it), child partially visible vs caption nuance, final pixel/semantic pass left to frame_semantic_review critic/human; decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:57:39+08:00",
+        "note": "delegated_auto_review frame-15 content-failed scene mismatch; repair prompt prompts/repair/15-contract-anchor.txt bound to frozen storyboard",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "16": {
       "number": 16,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [],
       "attempts": [
         {
@@ -4232,25 +5336,113 @@
             "kind": "original",
             "attempt_id": "aacdd192e213"
           }
+        },
+        {
+          "attempt_id": "edc83a5d3045",
+          "started_at": "2026-09-08T16:57:43+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "16",
+            "kind": "repair",
+            "prompt_sha256": "a873afb501c2de2b81c7a3db211d86952aff7f9a35698dfef38eaa4383ca4745",
+            "prompt_chars": 149,
+            "prompt_bytes": 389,
+            "capture_id": "scheduler-16",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/16.json",
+              "contract_sha256": "9d8c86cfcfca8f05c17ba0b519c59542871bd5c7b66ddced9020abe1b478fa26"
+            },
+            "frame_contract_sha256": "9d8c86cfcfca8f05c17ba0b519c59542871bd5c7b66ddced9020abe1b478fa26",
+            "batch_id": null
+          },
+          "request_fingerprint": "b762d73156fd95cf41efad441ca19b6cc06c31d8683c2a615ce0eec4fb96e5d9",
+          "notes": "phase6 scheduler item=24a7c72346c7 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "30a6f5d1cffe4b51917026434cbf1bb1",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/16-1788858000.json",
+            "sha256": "c325a2a7614535372489085a3f4eed3eaa9a86495925edaa6ebfdc5397f2d5f9",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T17:00:02+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/16-24a7c72346c7-a1.png",
+            "sha256": "de3a1c821fbe40941984ff5bb56631645347b58bbc472b70b10d4229fa5bc6f9",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T17:00:02+08:00",
+            "kind": "repair",
+            "attempt_id": "edc83a5d3045"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/16-f531fb27202b-a1.png",
-        "sha256": "31b16a451dfe1a235e7ec14562ab616fc74c03065cb3fad526a90a0c327b5243",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/16-24a7c72346c7-a1.png",
+        "sha256": "de3a1c821fbe40941984ff5bb56631645347b58bbc472b70b10d4229fa5bc6f9",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T13:06:46+08:00",
-        "kind": "original",
-        "attempt_id": "aacdd192e213"
+        "recorded_at": "2026-09-08T17:00:02+08:00",
+        "kind": "repair",
+        "attempt_id": "edc83a5d3045"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/16.png",
+        "sha256": "de3a1c821fbe40941984ff5bb56631645347b58bbc472b70b10d4229fa5bc6f9",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T17:40:27+08:00",
+        "source_sha256": "de3a1c821fbe40941984ff5bb56631645347b58bbc472b70b10d4229fa5bc6f9"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:57:21+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-16 candidate=16-f531fb27202b-a1.png sha=31b16a451dfe1a23 obsolete production prompt (route-parking/car scene); current frame goal: final frame: camera lowered to bed edge; glass only rain film and inside fog, opposite sealed empty; P02 releases wrist. decision=repair"
+        },
+        {
+          "at": "2026-09-08T17:40:24+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-16 repair candidate 16-24a7c72346c7-a1.png sha=de3a1c821fbe40941984ff5bb56631645347b58bbc472b70b10d4229fa5bc6f9 contract_sha=9d8c86cfcfca8f05c17ba0b519c59542871bd5c7b66ddced9020abe1b478fa26: 机位压低到床边，P02 床沿灰上衣；手部不再握压 P01 手腕，处于松手/收手瞬间；手机置于床边；窗外仅雨膜与内侧雾，对面无人影；桌面屏幕反光为房内电子设备，非异常；全图与手部局部检查无文字。residual: 两手仍贴近，若语义 critic 判读为仍攥握需人工复核。decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:57:39+08:00",
+        "note": "delegated_auto_review frame-16 content-failed scene mismatch; repair prompt prompts/repair/16-contract-anchor.txt bound to frozen storyboard",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "17": {
       "number": 17,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [],
       "attempts": [
         {
@@ -4322,25 +5514,113 @@
             "kind": "original",
             "attempt_id": "dd6a0fefcf35"
           }
+        },
+        {
+          "attempt_id": "a03745249b5e",
+          "started_at": "2026-09-08T16:57:43+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "17",
+            "kind": "repair",
+            "prompt_sha256": "77573f3f7c814e925bd718f242aa2a63b7a1dc5c9ffdb1f43a3c91261c732672",
+            "prompt_chars": 153,
+            "prompt_bytes": 403,
+            "capture_id": "scheduler-17",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/17.json",
+              "contract_sha256": "3c5a017dae877395ee60cd22e3ff8b9f98bfd15394124d8885a9eb9883da1899"
+            },
+            "frame_contract_sha256": "3c5a017dae877395ee60cd22e3ff8b9f98bfd15394124d8885a9eb9883da1899",
+            "batch_id": null
+          },
+          "request_fingerprint": "86e0534761dcbecb2debb8fc75088c7e33476fe8ed6d55f6dea84eb9be5b5738",
+          "notes": "phase6 scheduler item=38c12c2a14a7 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "a33f77f9770846f8aa692ab6f7d92711",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/17-1788858050.json",
+            "sha256": "7432e7cc6e82458bff5cb4f11f44e6b05e608504f9caa926dabbf390f0f3d9df",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T17:00:51+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/17-38c12c2a14a7-a1.png",
+            "sha256": "79e3d7d0e0947138db43036bad3c08d5133b4ef8a92fa6101ec3f1ec68c1456a",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T17:00:51+08:00",
+            "kind": "repair",
+            "attempt_id": "a03745249b5e"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/17-d45f2feae5f1-a1.png",
-        "sha256": "0c41cd39c36d7527e2eee6684a877b4cebbfe44bd39a0fbe0d080292020f2afa",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/17-38c12c2a14a7-a1.png",
+        "sha256": "79e3d7d0e0947138db43036bad3c08d5133b4ef8a92fa6101ec3f1ec68c1456a",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T13:08:57+08:00",
-        "kind": "original",
-        "attempt_id": "dd6a0fefcf35"
+        "recorded_at": "2026-09-08T17:00:51+08:00",
+        "kind": "repair",
+        "attempt_id": "a03745249b5e"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/17.png",
+        "sha256": "79e3d7d0e0947138db43036bad3c08d5133b4ef8a92fa6101ec3f1ec68c1456a",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T17:40:37+08:00",
+        "source_sha256": "79e3d7d0e0947138db43036bad3c08d5133b4ef8a92fa6101ec3f1ec68c1456a"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:57:22+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-17 candidate=17-d45f2feae5f1-a1.png sha=0c41cd39c36d7527 obsolete production prompt (route-parking/car scene); current frame goal: minutes later normal travel photo inside room: P01 hands water to P02 seated on bed edge; charger/takeout/wet coat present. decision=repair"
+        },
+        {
+          "at": "2026-09-08T17:40:33+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-17 repair candidate 17-38c12c2a14a7-a1.png sha=79e3d7d0e0947138db43036bad3c08d5133b4ef8a92fa6101ec3f1ec68c1456a contract_sha=3c5a017dae877395ee60cd22e3ff8b9f98bfd15394124d8885a9eb9883da1899: 几分钟后普通旅行房间照；P01 从床侧递水，P02 坐床沿接过透明瓶装水；床面手机+白色充电线，椅背搭深色潮湿外套，桌边有行李/杂物密度；情绪克制，无追窗取证、无文字。residual: 外卖袋在该图局部不够可读，交语义 critic 复核。decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:57:40+08:00",
+        "note": "delegated_auto_review frame-17 content-failed scene mismatch; repair prompt prompts/repair/17-contract-anchor.txt bound to frozen storyboard",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "18": {
       "number": 18,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [],
       "attempts": [
         {
@@ -4405,25 +5685,113 @@
             "kind": "original",
             "attempt_id": "b81b1ebe1772"
           }
+        },
+        {
+          "attempt_id": "1bbb03925b63",
+          "started_at": "2026-09-08T16:59:58+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "18",
+            "kind": "repair",
+            "prompt_sha256": "af1fd9d10c805a7e821b7acb24214da94dc702400f8a4c620342d11b457b3586",
+            "prompt_chars": 150,
+            "prompt_bytes": 394,
+            "capture_id": "scheduler-18",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/18.json",
+              "contract_sha256": "5a582856771610c153d0afe4b259d8d7ec3a037945a08b8c2d692df963f1ead1"
+            },
+            "frame_contract_sha256": "5a582856771610c153d0afe4b259d8d7ec3a037945a08b8c2d692df963f1ead1",
+            "batch_id": null
+          },
+          "request_fingerprint": "fc10774818c8214dd0dc870e0034e05da556a76e8624570d1dd2f6b3c01ab8bc",
+          "notes": "phase6 scheduler item=ac79264a7454 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "abe8f04f03d240f7af621575b78801b3",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/18-1788858110.json",
+            "sha256": "4a63b0e4568af73f4a8892aca97662bc8c333112f58e3ec3d593072490bb4a0a",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T17:01:51+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/18-ac79264a7454-a1.png",
+            "sha256": "b1ea1d70d6a091bcdbb023943760681de4f494ef8ea50fd38cf47ecad84f5d7b",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T17:01:51+08:00",
+            "kind": "repair",
+            "attempt_id": "1bbb03925b63"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/18-d788501b64dd-a1.png",
-        "sha256": "b1ec3bb62582bada2b2948d51a487dfd1d863e31deb314b3a2c9390100d5d1e9",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/18-ac79264a7454-a1.png",
+        "sha256": "b1ea1d70d6a091bcdbb023943760681de4f494ef8ea50fd38cf47ecad84f5d7b",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T13:14:12+08:00",
-        "kind": "original",
-        "attempt_id": "b81b1ebe1772"
+        "recorded_at": "2026-09-08T17:01:51+08:00",
+        "kind": "repair",
+        "attempt_id": "1bbb03925b63"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/18.png",
+        "sha256": "b1ea1d70d6a091bcdbb023943760681de4f494ef8ea50fd38cf47ecad84f5d7b",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T17:40:47+08:00",
+        "source_sha256": "b1ea1d70d6a091bcdbb023943760681de4f494ef8ea50fd38cf47ecad84f5d7b"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:57:22+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-18 candidate=18-d788501b64dd-a1.png sha=b1ec3bb62582bada obsolete production prompt (route-parking/car scene); current frame goal: next day daytime outside: full outer wall, high window position, gray concrete wall and steep downward slope; no ledge/tracks. decision=repair"
+        },
+        {
+          "at": "2026-09-08T17:40:42+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-18 repair candidate 18-ac79264a7454-a1.png sha=b1ea1d70d6a091bcdbb023943760681de4f494ef8ea50fd38cf47ecad84f5d7b contract_sha=5a582856771610c153d0afe4b259d8d7ec3a037945a08b8c2d692df963f1ead1: 次日白天室外，P01 拍民宿侧面完整外墙与高窗位，P02 在安全处指认昨夜窗位；窗外无平台/脚印/结构通道，墙身直落湿土草坡；地形与 Frame 02 对应（灰色外墙、陡坡、谷地建筑/河流）；全图与窗下裁剪无文字。decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:57:40+08:00",
+        "note": "delegated_auto_review frame-18 content-failed scene mismatch; repair prompt prompts/repair/18-contract-anchor.txt bound to frozen storyboard",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "19": {
       "number": 19,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [],
       "attempts": [
         {
@@ -4495,25 +5863,113 @@
             "kind": "original",
             "attempt_id": "3b8fdc3d4058"
           }
+        },
+        {
+          "attempt_id": "09d85eff65b9",
+          "started_at": "2026-09-08T17:00:02+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "19",
+            "kind": "repair",
+            "prompt_sha256": "aee7a25e799794f740b82ae33404b3ea8f6751d7af50f340fce46d1b4c8e4eb6",
+            "prompt_chars": 151,
+            "prompt_bytes": 397,
+            "capture_id": "scheduler-19",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/19.json",
+              "contract_sha256": "289117db5bb6c7e493941475468ff3e38f5c02c97949aecb173cedb6bdecb54b"
+            },
+            "frame_contract_sha256": "289117db5bb6c7e493941475468ff3e38f5c02c97949aecb173cedb6bdecb54b",
+            "batch_id": null
+          },
+          "request_fingerprint": "07ca6f0618a63611ee5391045b06e1e0ab9d6bb1d86346cfd8ff151e8e90fe92",
+          "notes": "phase6 scheduler item=a6d428743ff7 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "5ea935c16f564280bba531edd0dbdd65",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/19-1788858271.json",
+            "sha256": "8ed3ac57712eb45d862780c55836418587af0b7852dd95f62b813a63b2d48004",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T17:04:32+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/19-a6d428743ff7-a1.png",
+            "sha256": "cb8ab67c932c2341600a7cec78bfdc227271060642bc7b7e85b1ed91b94b7102",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T17:04:32+08:00",
+            "kind": "repair",
+            "attempt_id": "09d85eff65b9"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/19-066dd935385a-a1.png",
-        "sha256": "6c8ce685b70193c1cad43a385f0d4e8d224b89fffe0f1d81265ef9e57e77c6af",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/19-a6d428743ff7-a1.png",
+        "sha256": "cb8ab67c932c2341600a7cec78bfdc227271060642bc7b7e85b1ed91b94b7102",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T13:18:23+08:00",
-        "kind": "original",
-        "attempt_id": "3b8fdc3d4058"
+        "recorded_at": "2026-09-08T17:04:32+08:00",
+        "kind": "repair",
+        "attempt_id": "09d85eff65b9"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/19.png",
+        "sha256": "cb8ab67c932c2341600a7cec78bfdc227271060642bc7b7e85b1ed91b94b7102",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T17:40:56+08:00",
+        "source_sha256": "cb8ab67c932c2341600a7cec78bfdc227271060642bc7b7e85b1ed91b94b7102"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:57:23+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-19 candidate=19-066dd935385a-a1.png sha=6c8ce685b70193c1 obsolete production prompt (route-parking/car scene); current frame goal: daytime room close view: clean ordinary glass no prints/threads; P01 reviews short video, P02 with travel backpack stands by. decision=repair"
+        },
+        {
+          "at": "2026-09-08T17:40:52+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-19 repair candidate 19-a6d428743ff7-a1.png sha=cb8ab67c932c2341600a7cec78bfdc227271060642bc7b7e85b1ed91b94b7102 contract_sha=289117db5bb6c7e493941475468ff3e38f5c02c97949aecb173cedb6bdecb54b: 白天空房近景；P01 低头回看停录前短视频，P02 背旅行包立于窗旁；玻璃普通无掌印/线头/血迹，雨痕为窗外天气自然残留；房间/行李物件连续；全图与玻璃裁剪无文字。decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:57:41+08:00",
+        "note": "delegated_auto_review frame-19 content-failed scene mismatch; repair prompt prompts/repair/19-contract-anchor.txt bound to frozen storyboard",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     },
     "20": {
       "number": 20,
-      "status": "ORIGINAL_READY",
-      "content_repairs_used": 0,
+      "status": "PASSED",
+      "content_repairs_used": 1,
       "technical_failures": [],
       "attempts": [
         {
@@ -4585,20 +6041,108 @@
             "kind": "original",
             "attempt_id": "e453de5a4ed9"
           }
+        },
+        {
+          "attempt_id": "00fd3cb43aee",
+          "started_at": "2026-09-08T17:00:51+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "20",
+            "kind": "repair",
+            "prompt_sha256": "f5e0d96eb4252c597fd1e2f8684904b31c03d9d0fe11a78ca5750e85589b3d03",
+            "prompt_chars": 140,
+            "prompt_bytes": 364,
+            "capture_id": "scheduler-20",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/20.json",
+              "contract_sha256": "82a6598ebc23536a892fcf0f3f19bffa6c26564378c60165ae6ff2f5dcdaa05f"
+            },
+            "frame_contract_sha256": "82a6598ebc23536a892fcf0f3f19bffa6c26564378c60165ae6ff2f5dcdaa05f",
+            "batch_id": null
+          },
+          "request_fingerprint": "2e9a5d04aca49c047d7f639e1486032008255abe4b718f9220a22e28e283bac6",
+          "notes": "phase6 scheduler item=575f25e07df8 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "4d644248bb274e82a03e9feac4f3696e",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/meta/provider-receipts/20-1788858313.json",
+            "sha256": "e9ead1be1c4c8b6cbea4c93aacaa311302aaab57714671e8cd13f76368968afe",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-08T17:05:14+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/20-575f25e07df8-a1.png",
+            "sha256": "3612ab40f434f6f5bb91423f4f7f1563cf2c53a680e732a9a8b48cee4094df2d",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-08T17:05:14+08:00",
+            "kind": "repair",
+            "attempt_id": "00fd3cb43aee"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/20-c959cb95acd7-a1.png",
-        "sha256": "bfad361180585509354f00e5d6bd6c6772bae1d1c0f7ef5715233745f8ad942c",
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/20-575f25e07df8-a1.png",
+        "sha256": "3612ab40f434f6f5bb91423f4f7f1563cf2c53a680e732a9a8b48cee4094df2d",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-08T13:21:55+08:00",
-        "kind": "original",
-        "attempt_id": "e453de5a4ed9"
+        "recorded_at": "2026-09-08T17:05:14+08:00",
+        "kind": "repair",
+        "attempt_id": "00fd3cb43aee"
       },
-      "approved_asset": null,
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/approved/20.png",
+        "sha256": "3612ab40f434f6f5bb91423f4f7f1563cf2c53a680e732a9a8b48cee4094df2d",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-08T17:41:05+08:00",
+        "source_sha256": "3612ab40f434f6f5bb91423f4f7f1563cf2c53a680e732a9a8b48cee4094df2d"
+      },
       "lock": null,
-      "reviews": []
+      "reviews": [
+        {
+          "at": "2026-09-08T15:57:23+08:00",
+          "decision": "repair",
+          "notes": "delegated_auto_review frame-20 candidate=20-c959cb95acd7-a1.png sha=bfad361180585509 obsolete production prompt (route-parking/car scene); current frame goal: daytime checkout travel shot: car body with hostel wall in frame, P02 opens door glancing back at ordinary upper window. decision=repair"
+        },
+        {
+          "at": "2026-09-08T17:41:01+08:00",
+          "decision": "pass",
+          "notes": "delegated_auto_review frame-20 repair candidate 20-575f25e07df8-a1.png sha=3612ab40f434f6f5bb91423f4f7f1563cf2c53a680e732a9a8b48cee4094df2d contract_sha=82a6598ebc23536a892fcf0f3f19bffa6c26564378c60165ae6ff2f5dcdaa05f: 白天离店普通旅行照；P02 拉开车门回望楼上普通窗，车身与民宿外墙同框，门内行李可见；无新异常、无文字。decision=pass"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-08T15:57:41+08:00",
+        "note": "delegated_auto_review frame-20 content-failed scene mismatch; repair prompt prompts/repair/20-contract-anchor.txt bound to frozen storyboard",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
     }
   },
   "batches": []

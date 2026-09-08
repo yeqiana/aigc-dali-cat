@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "frame": "13",
-  "scene_prompt": "普通相册照片视角，P01和P02站在山路旁短暂停留。P02举手机回看照片，P01没有意识到异常。环境保持真实阴雨天气，异常只通过背景玻璃、水面或反射出现。",
-  "scene_prompt_sha256": "05832bc891a7b25939bbcf9784d4e83e391015d7a2eff43b4cc559225d09fdba",
+  "scene_prompt": "Frame 13 返修：夜间民宿落地窗内侧，P01 第一人称拍摄：对面成年人身后探出一个孩子，只露半张脸与一只小手扶住其衣侧想靠近，普通好奇非恐怖；P02 在旁屏住动作，成年人尚未回头。硬禁：孩子全脸特写、恐怖化、身份指向、文字。P02 沿用 EP001 女主身份：锁骨黑发低马尾、浅灰圆领卫衣、深色直筒长裤。",
+  "scene_prompt_sha256": "396a8b27a868b718dcb1f06715ee842edd74e081fc098028a8646013c66be47b",
   "frame_contract_sha256": "e63a7440b40758433ba81a7551ed062802e02f6c5f34ad559e9c43c2fbfb2b53",
   "image_model": {
     "provider": "openai",
@@ -12,7 +12,7 @@
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\13.txt",
-  "package_sha256": "d0b15e910683792a59cbd7f7b0693680863f1073bacb070330606cddf8929b8d",
-  "compiled_at": "2026-09-08T12:55:32+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\13-contract-anchor.txt",
+  "package_sha256": "a2c56861ebc2afd419f270af3eb6a7e31c44d815a3a6e987979b0b20b7490281",
+  "compiled_at": "2026-09-08T16:28:23+08:00"
 }

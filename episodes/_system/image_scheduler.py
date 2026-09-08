@@ -343,42 +343,77 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
         product_runtime_adapter.print_request(request)
         return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
     max_workers=max(1,min(MAX_SUPPORTED_WORKERS,max_workers))
-    if any(x.get("kind")=="repair" for x in ready):
-        max_workers=1
+    initial_workers=max_workers
+
+    # STORY_OS_EP002_G2_REPAIR_CONCURRENCY (image lane only):
+    # Repair items are independent, already-authorized one-shot content repairs.
+    # They share the same first-completed lane as original items, bounded by
+    # MAX_SUPPORTED_WORKERS (max_inflight_images).  Protections of the old
+    # serial path are kept: a single ledger writer (event loop under the queue
+    # OS lock), no duplicate dispatch (admission consumes queued rows), the raw
+    # candidate budget claims in-flight inside each worker, per-item dependency
+    # gating, and 3->2->1 degradation after technical failures in this run.
     has_block=False
     has_failure=False
+    inflight=0
+    worker_cap=initial_workers
+    total_tech_failures=0
+
     async def handler(item:dict)->dict:
         return await async_backend_worker(ep,item,timeout,codex)
 
-    q=load_queue(ep)
-    byid={x["id"]:x for x in q.get("items") or []}
-    started={}
-    for item in ready[:max_workers]:
-        row=byid[item["id"]]
-        production_recovery.prepare_execution(ep,row)
-        save_queue(ep,q)
-        ok,msg=ledger_begin(ep,row)
-        if not ok:
-            has_block=True
-            row["status"]="blocked"
-            row["last_error"]=msg[-1000:]
-            production_recovery.mark_terminal(ep,row,"BEGIN_REJECTED",reason=row["last_error"])
-            save_queue(ep,q)
-            continue
-        row["status"]="running"
-        row["attempts"]=int(row.get("attempts") or 0)+1
-        row["started_at"]=now()
-        production_recovery.mark_worker_pending(ep,row)
-        started[row["id"]]=row
-        save_queue(ep,q)
+    async def admit_more(limit:int)->list:
+        """Admit up to `limit` newly ready items into this run.
 
-    async def consume(event):
-        nonlocal has_block, has_failure
+        Called before the first wave and again after every completion so a
+        freed worker slot is refilled first-completed instead of waiting for
+        the rest of a wave. Returns only items admitted by this call.
+        """
+        nonlocal has_block,inflight
+        if limit<=0:
+            return []
+        q=load_queue(ep)
+        ready,_=ready_items(ep,q)
+        admitted=[]
+        for item in ready:
+            if len(admitted)>=limit:
+                break
+            row=next((x for x in q.get("items") or [] if x["id"]==item["id"]),None)
+            if row is None or row.get("status")!="queued":
+                continue
+            production_recovery.prepare_execution(ep,row)
+            save_queue(ep,q)
+            ok,msg=ledger_begin(ep,row)
+            if not ok:
+                has_block=True
+                row["status"]="blocked"
+                row["last_error"]=msg[-1000:]
+                production_recovery.mark_terminal(ep,row,"BEGIN_REJECTED",reason=row["last_error"])
+                save_queue(ep,q)
+                continue
+            row["status"]="running"
+            row["attempts"]=int(row.get("attempts") or 0)+1
+            row["started_at"]=now()
+            production_recovery.mark_worker_pending(ep,row)
+            inflight+=1
+            admitted.append(row)
+            q.setdefault("waves",[]).append({
+                "event":1,"mode":"continuous_first_completed","at":now(),
+                "frame":int(row["frame"]),"status":"dispatched",
+                "inflight_after":inflight,"next_parallel":worker_cap,
+                "item_id":row["id"],
+            })
+            save_queue(ep,q)
+        return admitted
+
+    async def consume(event)->str:
+        """Consume one TaskEvent; return the terminal queue status."""
+        nonlocal has_block,has_failure
         image_event=runtime_event_collector.collect(event)
         q=load_queue(ep)
         item=next((x for x in q.get("items") or [] if x["id"]==image_event.item_id),None)
         if not item:
-            return
+            return ""
         if image_event.event=="IMAGE_SUCCESS":
             result=image_event.payload.get("result") or image_event.payload
             msg=str(result.get("stdout") or result.get("error") or "")
@@ -424,10 +459,47 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             production_recovery.mark_terminal(ep,item,"BLOCKED" if item["status"]=="blocked" else "TECH_FAILED", code=code)
         q.setdefault("runtime_events",[]).append({"event":image_event.event,"task_id":image_event.item_id,"payload":runtime_event_collector.json_safe(image_event.payload),"at":now()})
         save_queue(ep,q)
+        return str(item.get("status") or "")
 
-    await scheduler_core.run_execution_loop(
-        list(started.values()), handler, consume, workers=max_workers,
-        stream=async_scheduler_adapter.stream_tasks)
+    from async_task_runtime import AsyncTaskRuntime
+    runtime_pool=AsyncTaskRuntime(workers=max_workers)
+    events_q=asyncio.Queue()
+    async def route(event):
+        await events_q.put(event)
+    runner=asyncio.create_task(runtime_pool.run(route))
+    remaining=0
+    try:
+        admitted=await admit_more(initial_workers)
+        for row in admitted:
+            await runtime_pool.submit(row,handler)
+            remaining+=1
+        while remaining:
+            event=await events_q.get()
+            remaining-=1
+            status=await consume(event)
+            inflight=max(0,inflight-1)
+            if status=="tech_failed":
+                total_tech_failures+=1
+                worker_cap=max(1,initial_workers-total_tech_failures)
+            q=load_queue(ep)
+            row=next((x for x in q.get("items") or [] if x["id"]==event.task_id),None)
+            q.setdefault("waves",[]).append({
+                "event":2,"mode":"continuous_first_completed","at":now(),
+                "frame":int(row["frame"]) if row else None,
+                "status":status or "unknown",
+                "inflight_after":inflight,"next_parallel":worker_cap,
+                "item_id":event.task_id,
+            })
+            save_queue(ep,q)
+            if inflight<worker_cap:
+                for row in await admit_more(worker_cap-inflight):
+                    await runtime_pool.submit(row,handler)
+                    remaining+=1
+        await runtime_pool.queue.join()
+    finally:
+        await runtime_pool.stop()
+        runner.cancel()
+        await asyncio.gather(runner,return_exceptions=True)
 
     return 22 if has_block and not ready_items(ep,load_queue(ep))[0] else (21 if has_failure else 0)
 

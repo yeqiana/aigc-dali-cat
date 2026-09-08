@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "recorded_at_epoch": 1788858110,
+  "frame": "18",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "generation_route": "codex_subscription",
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "requested_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": 0.8
+  },
+  "provider_raw_canvas": {
+    "width": 1122,
+    "height": 1402,
+    "aspect_ratio": 0.800285307,
+    "exact_requested_canvas": false,
+    "resize_direction_to_release": "downscale"
+  },
+  "ratio_delta": 0.000356633,
+  "normalize_decision": "AUTO_NORMALIZE",
+  "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\raw\\18-1788857998.png",
+  "raw_sha256": "a9ec92caea6aa5111d72468ba3e055f2e81cc5dac8f1f083f18a551b6d89d02a",
+  "provider_attestation": false,
+  "exact_raw_canvas_guaranteed": false,
+  "receipt_is_evidence_not_authority": true,
+  "normalization": {
+    "operation": "RESIZE_LANCZOS",
+    "ratio_delta": 0.000357,
+    "crop_applied": false,
+    "reencoded": true,
+    "local_attempts": 1
+  },
+  "release_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\media\\candidates\\scheduled\\18-ac79264a7454-a1.png",
+    "sha256": "b1ea1d70d6a091bcdbb023943760681de4f494ef8ea50fd38cf47ecad84f5d7b"
+  }
+}

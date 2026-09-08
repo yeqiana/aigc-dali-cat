@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "frame": "16",
-  "scene_prompt": "真实手机照片，P02站在车边重新拍摄玻璃反射。P01在背景中保持普通动作，异常手影藏在透明表面和光线交界处。画面不要夸张，不出现超自然解释。",
-  "scene_prompt_sha256": "2477c4c035a4ed10281e439a2cd741f89f3c4e050a6a00210f2d8531d680250b",
+  "scene_prompt": "Frame 16 返修：录像停止前最后一帧，民宿房内机位已压到床沿高度：落地窗只剩雨水与内侧雾，对面已封住无人物；P02 的手松开 P01 手腕收回，手机放低。安静收束不追窗。硬禁：窗外异常再现、冲出房间、呼叫、文字。P02 沿用 EP001 女主身份：锁骨黑发低马尾、浅灰圆领卫衣、深色直筒长裤。",
+  "scene_prompt_sha256": "a873afb501c2de2b81c7a3db211d86952aff7f9a35698dfef38eaa4383ca4745",
   "frame_contract_sha256": "9d8c86cfcfca8f05c17ba0b519c59542871bd5c7b66ddced9020abe1b478fa26",
   "image_model": {
     "provider": "openai",
@@ -12,7 +12,7 @@
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\16.txt",
-  "package_sha256": "9aa6d81b06c27d583d446150212cce53d47f1ad86a3c28b730ff4b9e36cd4579",
-  "compiled_at": "2026-09-08T13:04:31+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\16-contract-anchor.txt",
+  "package_sha256": "bb4b68cb7f2d1db7a3aeef95d05dead155030a4a2ef1174294ac0e7ed2d4529e",
+  "compiled_at": "2026-09-08T16:57:43+08:00"
 }

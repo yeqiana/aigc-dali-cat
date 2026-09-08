@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "frame": "18",
-  "scene_prompt": "真实手机抓拍，离开前的最后一个旅行瞬间。P02从车外拍摄车窗、雨水和两人的倒影关系，画面保持日常旅行照片质感，隐藏异常作为视觉线索。",
-  "scene_prompt_sha256": "6c9821a40f949c7908cede834393730a50020459fee928b6708551c6235eeb09",
+  "scene_prompt": "Frame 18 返修：次日白天，P01 站在民宿侧面的安全位置拍摄完整外墙：昨夜那扇落地窗的高窗位、下方灰混凝土外墙与向下陡坡同框，无平台无脚印无通道；P02 在远处安全处指认窗位。硬禁：窗下可站平台、脚印通道、文字。P02 沿用 EP001 女主身份：锁骨黑发低马尾、浅灰圆领卫衣、深色直筒长裤。",
+  "scene_prompt_sha256": "af1fd9d10c805a7e821b7acb24214da94dc702400f8a4c620342d11b457b3586",
   "frame_contract_sha256": "5a582856771610c153d0afe4b259d8d7ec3a037945a08b8c2d692df963f1ead1",
   "image_model": {
     "provider": "openai",
@@ -12,7 +12,7 @@
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\18.txt",
-  "package_sha256": "837e2b0aa00ab618f6842d2b5101da597e35a2d562024ad2a3be0a0be483ddf5",
-  "compiled_at": "2026-09-08T13:08:57+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\18-contract-anchor.txt",
+  "package_sha256": "ec67fbd065b182b875b0946e10d73a1f0f4736a8c1125a4677c55c347288c75b",
+  "compiled_at": "2026-09-08T16:59:58+08:00"
 }

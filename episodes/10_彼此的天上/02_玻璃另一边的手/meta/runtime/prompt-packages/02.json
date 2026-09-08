@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "frame": "02",
-  "scene_prompt": "普通手机照片视角，情侣自驾途中在雨天山路临时停车。P01站在车旁查看雨雾中的道路，P02从车内拍摄，玻璃上的雨滴遮挡部分画面。远处山谷和护栏保持真实尺度，画面重点是普通旅行中突然停留的瞬间，不解释原因，不刻意制造恐怖氛围。",
-  "scene_prompt_sha256": "e24a36d0db8e86387b95ae6310a4e7a151109588d4ff01c79ab0c0729ef8fa8c",
+  "scene_prompt": "Frame 02 返修：窗外重画为狭窄灰色外墙与向下陡坡，无阳台、护栏、走道、楼梯或可站立面，外墙陡坡清晰可读。其余保持民宿房间记录：P01 在房门附近拍房间，P02 把深色湿外套搭在椅背、回头提醒充电，床、木家具、旅行杂物、充电线，普通民宿。P02 沿用 EP001 女主身份：锁骨黑发、浅灰圆领卫衣、深色直筒长裤、普通运动鞋。",
+  "scene_prompt_sha256": "6e8f40374ed658c31729c593e561c697f2fe1c27a3a517ea3730a032453fdc97",
   "frame_contract_sha256": "3e6055802d2488bdbdf7a6c388a7856a8f8ce18802d1fef5271aad32b32b743d",
   "image_model": {
     "provider": "openai",
@@ -12,7 +12,7 @@
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\02.txt",
-  "package_sha256": "3b2ebc71c9a6b00b2587eaec310eb0fd855be3dc7c72583d1b943f0f33610846",
-  "compiled_at": "2026-09-08T12:04:48+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\02-contract-anchor.txt",
+  "package_sha256": "c945e0f3856c68d83030a72af211ab93b5c20d7454d4695b16487ad233b28fd9",
+  "compiled_at": "2026-09-08T14:52:02+08:00"
 }

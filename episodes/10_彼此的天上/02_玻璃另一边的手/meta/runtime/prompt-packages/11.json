@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "frame": "11",
-  "scene_prompt": "手机随手拍，夜晚车内停车状态。仪表盘微光照亮两个人，P02查看相册，P01看向窗外。玻璃反射中的人物关系出现轻微错位感，保持真实摄影而不是恐怖海报。",
-  "scene_prompt_sha256": "48cc11cd3b27335076f172ab870c727b3a1de6870fe836f94f0c88d834815a84",
+  "scene_prompt": "Frame 11 返修：整场重画回夜间民宿房内窗侧，停车点画面作废。P01 第一人称把手机抬高并稳住拍玻璃，亮屏光在湿玻璃上形成一道反光；对面成年人后退并举起深色粗织布挡在身前。硬禁：亮屏只是刺激不开启异象、粗布只在对侧空间、恐怖脸、文字。P02 沿用 EP001 女主身份：锁骨黑发低马尾、浅灰圆领卫衣、深色直筒长裤。",
+  "scene_prompt_sha256": "6bcca534db85caf78912eda1d4a547705bbe3674fdcc6b69bf93a28748a362a8",
   "frame_contract_sha256": "26f6484d98ecf189e33ec54f8811492e35d270765d9f0779255dded2a57f2b9d",
   "image_model": {
     "provider": "openai",
@@ -12,7 +12,7 @@
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\11.txt",
-  "package_sha256": "ae3a6e3be6e8f35ef4d3c81d691ea823da6ee654d7b76178a8ef6e82079e5886",
-  "compiled_at": "2026-09-08T12:44:09+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\11-contract-anchor.txt",
+  "package_sha256": "90dc0db7ef7fc3d8a06f722594479af79ffac6131823f348f4f14096b610dbbd",
+  "compiled_at": "2026-09-08T16:20:20+08:00"
 }

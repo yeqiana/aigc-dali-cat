@@ -13,6 +13,7 @@ import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/runtime/raw-candidate-budget.json")
+OVERRIDE_REL = Path("meta/runtime/raw-candidate-budget-override.json")
 CFG = ROOT / "runtimes/runtime-fast-path-v251.json"
 KINDS = {"original", "repair", "exception"}
 
@@ -52,7 +53,14 @@ def episode_limit(ep: Path) -> int:
     if isinstance(fixed, int) and fixed > 0:
         return fixed
     count = frame_count(Path(ep))
-    return min(60, max(20, count + 15))
+    default = min(60, max(20, count + 15))
+    # Per-episode recorded raise (never a global runtime change). The override
+    # file is audit evidence only; it may raise the derived cap, never lower it.
+    override = _read_json(Path(ep).resolve() / OVERRIDE_REL)
+    raw = (override or {}).get("max_total_content_candidates")
+    if isinstance(raw, int) and raw > default:
+        return raw
+    return default
 
 def default_state() -> dict:
     return {

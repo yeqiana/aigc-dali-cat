@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "frame": "08",
-  "scene_prompt": "真实旅行照片视角，车窗内向外拍摄山谷道路。雨雾、玻璃水痕、远处树林和路牌组成普通场景，异常藏在玻璃反光层里，比例很小，像照片回看时才发现的细节。",
-  "scene_prompt_sha256": "628bff0dfaddddf3a7b360159bafde78f56e31fceaf2e38d5b94c82be8f8137d",
+  "scene_prompt": "Frame 08 返修：整场重画回民宿房内，车内镜头画面作废。P01 侧后方第一人称拍摄：P02 嫌内侧雾挡眼，用灰色卫衣袖口在落地窗内侧擦出自然不规则半圆并凑近看；内雾外雨膜层次真实，动作清楚、非敲击。P02 沿用 EP001 女主身份：锁骨黑发低马尾、浅灰圆领卫衣、深色直筒长裤、普通运动鞋。",
+  "scene_prompt_sha256": "0f1cec46ee3667007832c703bf2d8ad4bd8d57fe7daff14575e70ee037399b01",
   "frame_contract_sha256": "f099552cc514c2768f556153ef543334ff907043754eba3824bc0aecec642a9c",
   "image_model": {
     "provider": "openai",
@@ -12,7 +12,7 @@
     "strict_model": false,
     "reproducible_snapshot": false
   },
-  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\production\\08.txt",
-  "package_sha256": "c7e8e85c139758fb079cd0ae64c30a7e5cb9121a38b1227da1082b2d8e3278d2",
-  "compiled_at": "2026-09-08T12:27:22+08:00"
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\02_玻璃另一边的手\\prompts\\repair\\08-contract-anchor.txt",
+  "package_sha256": "11e91dfaa2f9cbb943bc07d61d425029c1c5abdb2eb4e3c6f56a287ecff86b27",
+  "compiled_at": "2026-09-08T15:38:46+08:00"
 }
