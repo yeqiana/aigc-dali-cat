@@ -23,7 +23,6 @@ import product_review_adapter
 import resource_library
 import runtime_portability
 import production_batch_review
-import async_scheduler_adapter
 import runtime_event_collector
 import production_recovery
 import production_ledger
@@ -188,7 +187,7 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
         return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
     if provider["provider"]=="codex_subscription" and not verified_image_lane(ep):
         max_workers=1
-    max_workers=min(max_workers,int(q.get("adaptive_parallel") or max_workers))
+    # adaptive_parallel is historical evidence, not a restart control.
     batch_items = ready[:batch_runtime_config.images_per_batch()] if provider["provider"]!="codex_subscription" or verified_image_lane(ep) else ready[:1]
     if provider["provider"]=="openai_images_api":
         planned=batch_contract.build(ep,batch_items)
@@ -303,9 +302,25 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
         })
         save_queue(ep,q)
 
+        return str(item.get("status") or "") if item else ""
+
+    async def record_event(item_id,status,active,cap):
+        q=load_queue(ep)
+        q.setdefault("waves",[]).append({"mode":"continuous_first_completed",
+            "batch_id":batch_id,"at":now(),"item_id":item_id,"status":status,
+            "inflight_after":active,"next_parallel":cap})
+        q["adaptive_parallel"]=cap  # historical last-run evidence only
+        save_queue(ep,q)
+
+    async def dispatched(row,active,cap):
+        await record_event(row["id"],"dispatched",active,cap)
+
+    async def completed(event,status,active,cap):
+        await record_event(event.task_id,status,active,cap)
+
     await scheduler_core.run_execution_loop(
         started, handler, consume, workers=max_workers,
-        stream=async_scheduler_adapter.stream_tasks)
+        dispatched=dispatched,completed=completed)
 
     # A logical Codex batch is concurrent single-image work.  Do not let its
     # successful frames claim native multi-image/provider-request capability.
@@ -368,9 +383,6 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     if has_human_block and not ready_items(ep,load_queue(ep)):
         return HUMAN_REQUIRED
     if has_technical_failure:
-        q=load_queue(ep)
-        q["adaptive_parallel"]=max(1,max_workers-1)
-        save_queue(ep,q)
         return RECOVERABLE_FAILURE
     return SUCCESS
 

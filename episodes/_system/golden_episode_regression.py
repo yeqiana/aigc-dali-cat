@@ -15,6 +15,8 @@ import story_json
 ROOT=Path(__file__).resolve().parents[2]
 REG=ROOT/"reports/golden-episode-registry.json"
 REPORT=ROOT/"reports/golden-episode-regression.json"
+REQUIRED_METRICS=("density_error_count","voice_error_count","capture_event_error_count",
+                  "world_state_error_count","lineage_error_count","propagation_core_error_count","text_hard_errors")
 
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read_json(p):
@@ -51,11 +53,24 @@ def metrics(ep):
       "attempt_count":attempts
     }
 
-def register(ep,tags):
+def register(ep,tags,curator=None):
     ep=Path(ep).resolve();d=registry();path=rel(ep)
+    baseline=metrics(ep)
+    if not curator or not str(curator).strip():
+        raise ValueError("Golden registration requires explicit curator confirmation")
+    state=read_json(ep/"meta/episode-state.json")
+    if state.get("current_state") not in {"PUBLISH_READY","PUBLISHED","DATA_REVIEWED"}:
+        raise ValueError("Golden sample requires completed official release gates")
+    import final_candidate_snapshot
+    snapshot_errors=final_candidate_snapshot.verify(ep)
+    if snapshot_errors:
+        raise ValueError("Golden sample snapshot invalid: "+"; ".join(snapshot_errors[:5]))
+    invalid=[k for k in REQUIRED_METRICS if type(baseline.get(k)) is not int or baseline[k]!=0]
+    if invalid:
+        raise ValueError("Golden sample is not qualified: "+", ".join(invalid))
     rows=d.setdefault("episodes",[])
     current=next((x for x in rows if x.get("path")==path),None)
-    row={"path":path,"tags":tags,"registered_at":now(),"baseline":metrics(ep)}
+    row={"path":path,"tags":tags,"registered_at":now(),"curator":str(curator),"baseline":baseline}
     if current: rows[rows.index(current)]=row
     else: rows.append(row)
     write_json(REG,d);return row
@@ -65,14 +80,16 @@ def run_all():
     for item in d.get("episodes") or []:
         ep=ROOT/item["path"]
         cur=metrics(ep);base=item.get("baseline") or {};errs=[]
-        for k in ("density_error_count","voice_error_count","capture_event_error_count","world_state_error_count","lineage_error_count","propagation_core_error_count","text_hard_errors"):
-            if cur.get(k) is not None and int(cur.get(k) or 0)>0:errs.append(f"{k}={cur[k]}")
+        for k in REQUIRED_METRICS:
+            if type(cur.get(k)) is not int or cur[k]!=0:errs.append(f"{k}={cur.get(k)} (required zero)")
         if cur.get("repair_rate") is not None and base.get("repair_rate") is not None and cur["repair_rate"]>base["repair_rate"]+0.10:
             errs.append(f"repair_rate regression {base['repair_rate']} -> {cur['repair_rate']}")
         row={"path":item["path"],"tags":item.get("tags") or [],"baseline":base,"current":cur,"errors":errs,"passed":not errs}
         results.append(row)
         if errs:failures.append(item["path"])
-    out={"schema_version":1,"generated_at":now(),"registered":len(results),"failed":len(failures),"results":results}
+    out={"schema_version":1,"generated_at":now(),"registered":len(results),"failed":len(failures),"results":results,
+         "passed":bool(results) and not failures,
+         "status":"EMPTY_REGISTRY" if not results else ("FAILED" if failures else "PASSED")}
     write_json(REPORT,out);return out
 
 def self_test():
@@ -81,11 +98,11 @@ def self_test():
 
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)
-    p=sub.add_parser("register");p.add_argument("episode_dir");p.add_argument("--tag",action="append",default=[])
+    p=sub.add_parser("register");p.add_argument("episode_dir");p.add_argument("--tag",action="append",default=[]);p.add_argument("--curator",required=True)
     sub.add_parser("run");sub.add_parser("show");sub.add_parser("self-test");a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0
-    if a.cmd=="register":print(json.dumps(register(a.episode_dir,a.tag),ensure_ascii=False,indent=2));return 0
+    if a.cmd=="register":print(json.dumps(register(a.episode_dir,a.tag,a.curator),ensure_ascii=False,indent=2));return 0
     if a.cmd=="run":
-        out=run_all();print(json.dumps(out,ensure_ascii=False,indent=2));return 2 if out["failed"] else 0
+        out=run_all();print(json.dumps(out,ensure_ascii=False,indent=2));return 0 if out["passed"] else 2
     print((REPORT if REPORT.is_file() else REG).read_text(encoding="utf-8-sig") if (REPORT.is_file() or REG.is_file()) else "{}");return 0
 if __name__=="__main__":raise SystemExit(main())

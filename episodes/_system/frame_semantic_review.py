@@ -246,6 +246,27 @@ def phase3_context_hashes(ep: Path, frame: str) -> dict:
         out["frame_contract_sha256"] = contract["contract_sha256"]
     return out
 
+
+def source_binding(ep: Path, frame: str) -> dict:
+    """Stable Story/Storyboard source footprint used by frame reviews."""
+    if not phase4_contract.required(ep):
+        return {}
+    return phase4_contract.source_binding(ep, frame)
+
+
+def review_source_bindings(ep: Path, frames: list[dict]) -> dict:
+    """Freeze semantic inputs, not regenerated cache files with wall-clock stamps."""
+    return {
+        "story_os_version": episode_contract_version(ep),
+        "contexts": context_hashes(ep),
+        "frames": {row["frame"]: {
+            "asset_path": row["path_rel"], "asset_sha256": row["sha256"],
+            **phase3_context_hashes(ep, row["frame"]),
+            "source_binding": source_binding(ep, row["frame"]),
+        } for row in frames},
+    }
+
+
 def phase4_binding_errors(ep: Path, frames: list[dict]) -> list[str]:
     if not phase4_contract.required(ep):
         return []
@@ -399,7 +420,7 @@ def validate_candidate_rows(rows: object, expected_frames: list[dict], version: 
     return errors
 
 
-def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: str, metadata_only: bool, phase3_contexts: dict | None = None, directing_v3: bool = False) -> list[str]:
+def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: str, metadata_only: bool, phase3_contexts: dict | None = None, directing_v3: bool = False, ep: Path | None = None) -> list[str]:
     errors: list[str] = []
     key = frame["frame"]
     if data.get("schema_version") != SCHEMA_VERSION:
@@ -418,6 +439,9 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
     for field, expected in (phase3_contexts or {}).items():
         if str(data.get(field) or "").lower() != str(expected).lower():
             errors.append(f"frame {key} {field} mismatch")
+    expected_binding = source_binding(ep, frame["frame"]) if ep is not None else None
+    if expected_binding and data.get("source_binding") != expected_binding:
+        errors.append(f"frame {key} source_binding mismatch")
     provenance = data.get("critic_provenance") or {}
     for error in runtime_provenance.validate_critic_provenance(provenance):
         errors.append(f"frame {key} {error}")
@@ -500,10 +524,9 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
             continue
         try:
             data = read_json(path)
+            errors.extend(validate_bound_review(data, frame=frame, contexts=contexts, version=expected_version, metadata_only=metadata_only, phase3_contexts=phase3_context_hashes(ep, frame["frame"]), directing_v3=directing_v3, ep=ep))
         except Exception as exc:
-            errors.append(str(exc))
-            continue
-        errors.extend(validate_bound_review(data, frame=frame, contexts=contexts, version=expected_version, metadata_only=metadata_only, phase3_contexts=phase3_context_hashes(ep, frame["frame"]), directing_v3=directing_v3))
+            errors.append(f"frame {frame['frame']} review source validation failed: {exc}")
 
     phashes: list[dict] = []
     duplicates: list[dict] = []
@@ -666,7 +689,10 @@ def _persist_candidate(
     contexts: dict,
     phashes: list[dict],
     provenance: dict,
+    frozen_sources: dict,
 ) -> int:
+    if review_source_bindings(ep, current) != frozen_sources:
+        raise RuntimeError("frame semantic review sources drifted during review; candidate cannot be rebound")
     version = episode_contract_version(ep)
     directing_v3 = directing_v3_required(ep)
     candidate_errors = validate_candidate_rows(data.get("frames"), current, version=version, directing_v3=directing_v3)
@@ -691,7 +717,7 @@ def _persist_candidate(
             "asset_path": frame["path_rel"],
             "asset_sha256": frame["sha256"],
             **contexts,
-            **phase3_context_hashes(ep, frame["frame"]),
+            **frozen_sources["frames"][frame["frame"]],
             "critic_provenance": provenance,
             "checks": source.get("checks") or {},
             "issue_codes": source.get("issue_codes") if isinstance(source.get("issue_codes"), list) else ["FRAME_SCENE_MISMATCH"],
@@ -729,6 +755,7 @@ def _persist_candidate(
 def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
     frames = frame_records(ep, require_files=True)
     contexts = context_hashes(ep)
+    frozen_sources = review_source_bindings(ep, frames)
     binding_errors = phase4_binding_errors(ep, frames)
     if binding_errors:
         for error in binding_errors:
@@ -747,6 +774,7 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
         runtime=runtime,
         attempt=attempt,
         candidate_path=candidate,
+        source_bindings=frozen_sources,
     )
     provenance["review_scope"] = "FULL_FRAME_SET"
     rc = _persist_candidate(
@@ -756,6 +784,7 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
         contexts=contexts,
         phashes=phashes,
         provenance=provenance,
+        frozen_sources=frozen_sources,
     )
     if rc == 0:
         product_review_adapter.mark_complete(ep, "frame-semantic", attempt=attempt, final_path=ep / SUMMARY_REL)
@@ -767,6 +796,9 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         timeout = runtime_timeout_policy.seconds("deep_semantic_review")
     if attempt not in {1, 2}:
         raise RuntimeError("attempt must be 1 or 2; only one automatic content-repair round is permitted")
+    if (ep / SUMMARY_REL).is_file() and review_required(ep) and not verify_episode(ep):
+        print("FRAME SEMANTIC REVIEW REUSED: current assets, contracts and critic evidence verified")
+        return 0
     frames = frame_records(ep, require_files=True)
     contexts = context_hashes(ep)
     binding_errors = phase4_binding_errors(ep, frames)
@@ -795,7 +827,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         return 2
 
     candidate = ep / CANDIDATE_REL
-    candidate.unlink(missing_ok=True)
+    frozen_sources = review_source_bindings(ep, frames)
     before = {row["frame"]: sha256_file(row["path"]) for row in frames}
     story, storyboard = episode_files(ep)
     stable_before = {
@@ -824,10 +856,12 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
             prompt=critic_prompt(ep, frames, candidate, attempt),
             source_paths=sources,
             candidate_path=candidate,
+            source_bindings=frozen_sources,
         )
         print(json.dumps(request, ensure_ascii=False, indent=2))
         return product_review_adapter.HOST_ACTION_REQUIRED_RC
 
+    candidate.unlink(missing_ok=True)
     codex = resolve_codex(codex_raw)
     log = ep / "meta" / f"frame-semantic-critic-attempt-{attempt}.jsonl"
     completed = critic_runner.launch(
@@ -868,6 +902,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         contexts=contexts,
         phashes=phashes,
         provenance=provenance,
+        frozen_sources=frozen_sources,
     )
 
 
@@ -890,6 +925,7 @@ def self_test() -> None:
         "checks": {key: True for key in checks_for_version(story_os_version())},
         "issue_codes": [],
         "decision": "pass",
+        "source_binding": {},
     }
     assert validate_bound_review(payload, frame=frame, contexts=contexts, version=story_os_version(), metadata_only=True) == []
     payload["asset_sha256"] = "e" * 64

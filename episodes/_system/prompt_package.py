@@ -6,6 +6,7 @@ import argparse, datetime as dt, hashlib, json
 from pathlib import Path
 import frame_contract
 import image_model_policy
+import story_json
 
 REL=Path("meta/runtime/prompt-packages")
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -13,20 +14,29 @@ def h(data): return hashlib.sha256(data).hexdigest()
 def compile_frame(ep,frame,prompt_file,write=True):
     prompt_file=Path(prompt_file).resolve()
     scene=prompt_file.read_text(encoding="utf-8-sig").strip()
-    contract=frame_contract.compile_frame(ep,int(frame),write_cache=True)
+    if not scene:
+        raise ValueError(f"frame {int(frame):02d} prompt empty")
+    contract=frame_contract.compile_frame(ep,int(frame),write_cache=write)
+    previous=story_json.read_json(ep/REL/f"{int(frame):02d}.json",default={})
+    scene_sha=h(scene.encode("utf-8"))
+    if (previous.get("scene_prompt_sha256")==scene_sha
+            and previous.get("frame_contract_sha256")
+            and previous["frame_contract_sha256"]!=contract["contract_sha256"]):
+        raise ValueError("PROMPT_SOURCE_DRIFT: unchanged scene prompt belongs to an older Frame Contract; rebuild scene from current storyboard before generation")
     model=image_model_policy.for_episode(ep)
     material={
       "schema_version":1,"frame":f"{int(frame):02d}","scene_prompt":scene,
-      "scene_prompt_sha256":h(scene.encode("utf-8")),
+      "scene_prompt_sha256":scene_sha,
+      "storyboard_source":contract.get("storyboard_frame") or {},
       "frame_contract_sha256":contract["contract_sha256"],
+      "frame_prompt_contract":contract.get("prompt_contract", ""),
       "image_model":model,
       "source_prompt":str(prompt_file),
     }
     raw=json.dumps(material,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
     data={**material,"package_sha256":h(raw),"compiled_at":now()}
     if write:
-        p=ep/REL/f"{int(frame):02d}.json"; p.parent.mkdir(parents=True,exist_ok=True)
-        p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+        story_json.write_json(ep/REL/f"{int(frame):02d}.json",data)
     return data
 def self_test():
     assert REL.as_posix()=="meta/runtime/prompt-packages"

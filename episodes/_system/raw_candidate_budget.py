@@ -47,20 +47,54 @@ def frame_count(ep: Path) -> int:
         return len(frames)
     return 20
 
-def episode_limit(ep: Path) -> int:
+def _authorized_episode_override(ep: Path) -> int | None:
+    """Return an episode budget raise only when it carries an explicit decision.
+
+    This file is an authorized execution decision, not audit-only evidence.
+    Legacy named authorizations remain readable without rewriting history.
+    """
+    override = _read_json(Path(ep).resolve() / OVERRIDE_REL)
+    if not isinstance(override, dict):
+        return None
+    raw = override.get("max_total_content_candidates")
+    auth = override.get("authorization")
+    legacy_auth = override.get("authorized_by")
+    authorized = (
+        isinstance(auth, dict) and auth.get("approved") is True
+        and isinstance(auth.get("source"), str) and bool(auth["source"].strip())
+    ) or (isinstance(legacy_auth, str) and bool(legacy_auth.strip()))
+    if authorized and type(raw) is int and raw > 0:
+        return raw
+    return None
+
+
+def resolve_limit(ep: Path) -> dict:
+    """Fixed global cap wins; otherwise an authorized raise beats the formula."""
     cfg = _read_json(CFG)
     fixed = ((cfg.get("episode_candidate_budget") or {}).get("max_total_content_candidates"))
-    if isinstance(fixed, int) and fixed > 0:
-        return fixed
+    if type(fixed) is int and fixed > 0:
+        return {"limit": fixed, "source": "global_fixed", "override_applied": False}
     count = frame_count(Path(ep))
     default = min(60, max(20, count + 15))
-    # Per-episode recorded raise (never a global runtime change). The override
-    # file is audit evidence only; it may raise the derived cap, never lower it.
-    override = _read_json(Path(ep).resolve() / OVERRIDE_REL)
-    raw = (override or {}).get("max_total_content_candidates")
-    if isinstance(raw, int) and raw > default:
-        return raw
-    return default
+    override_limit = _authorized_episode_override(Path(ep))
+    if override_limit is not None and override_limit > default:
+        return {"limit": override_limit, "source": OVERRIDE_REL.as_posix(), "override_applied": True}
+    return {"limit": default, "source": "derived_frame_count_plus_15", "override_applied": False}
+
+def episode_limit(ep: Path) -> int:
+    return resolve_limit(ep)["limit"]
+
+def summary(ep: Path, *, pending: int = 0) -> dict:
+    state = load(ep)
+    claims = [row for *_prefix, row in _all_claims(state) if isinstance(row, dict)]
+    committed = sum(row.get("committed") is True for row in claims)
+    resolution = resolve_limit(ep)
+    available = max(0, resolution["limit"] - len(claims))
+    return {**resolution, "committed": committed, "inflight_reserved": len(claims)-committed,
+            "available": available, "pending_generation": pending,
+            "episode_capacity": min(pending, available),
+            "additional_capacity_needed": max(0, pending-available),
+            "per_frame_limits_still_apply": True}
 
 def default_state() -> dict:
     return {
@@ -126,6 +160,9 @@ def claim(ep, frame, kind, reason="", token=None):
         found = _find_token(d, token)
         if found:
             f, k, bucket, _, row = found
+            if f != key or k != kind:
+                result.update({"decision": "TOKEN_CONTEXT_MISMATCH", "token": token})
+                return
             result.update({
                 "frame": f, "kind": k, "used": int(bucket.get("used") or 0),
                 "limit": int(limits().get(k, 2)), "decision": "REUSE_CLAIM",
@@ -247,7 +284,7 @@ def main():
     sub.add_parser("self-test")
     a = ap.parse_args()
     if a.cmd == "self-test": self_test(); return 0
-    if a.cmd == "show": print(json.dumps(load(Path(a.episode_dir)), ensure_ascii=False, indent=2)); return 0
+    if a.cmd == "show": print(json.dumps({**load(Path(a.episode_dir)), "effective_budget": summary(Path(a.episode_dir))}, ensure_ascii=False, indent=2)); return 0
     if a.cmd == "claim":
         ok, row = claim(a.episode_dir, a.frame, a.kind, a.reason, a.token)
     elif a.cmd == "commit":

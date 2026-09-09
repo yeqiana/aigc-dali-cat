@@ -108,7 +108,7 @@ def execute(ep,item,timeout,codex):
         except Exception as exc:
             scout={"decision":"UNCERTAIN","reason":"scout_technical_failure","error":str(exc),"candidate_committed":True}
     runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="PASS",started_monotonic=trace_started,attrs={"frame":frame,"backend":payload.get("backend"),"candidate_committed":True})
-    result={"returncode":0,"stdout":"","payload":payload,"output":out,"log":log,"attempt":attempt,"scout":scout,"candidate_budget":commit_row,"prompt_package":{"package_sha256":package["package_sha256"],"frame_contract_sha256":package["frame_contract_sha256"]},"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
+    result={"returncode":0,"stdout":"","payload":payload,"output":out,"log":log,"attempt":attempt,"scout":scout,"candidate_budget":commit_row,"prompt_package":{"package_sha256":package["package_sha256"],"scene_prompt_sha256":package["scene_prompt_sha256"],"frame_contract_sha256":package["frame_contract_sha256"]},"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
     production_recovery.write_lifecycle(ep, item, "SUCCEEDED", worker_pid=os.getpid(), result=result)
     return result
 

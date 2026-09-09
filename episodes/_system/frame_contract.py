@@ -285,6 +285,22 @@ def resolved_references(ep: Path, frame: int) -> list[dict]:
     return out
 
 
+def source_binding(ep: Path, frame: int | str) -> dict:
+    """Stable derived footprint of the locked source material feeding one frame.
+
+    This binding is review evidence, not part of the Frame Contract hash on
+    purpose: adding it to hash_material would invalidate every historical
+    contract SHA without changing the authoritative storyboard.
+    """
+    contract = compile_frame(ep, frame, write_cache=False)
+    return contract.get("source_binding") or {
+        "story": contract.get("source_trace", {}).get("story") or {},
+        "storyboard": contract.get("source_trace", {}).get("storyboard") or {},
+        "extraction_mode": (contract.get("storyboard_frame") or {}).get("mode"),
+        "frame_sha256": (contract.get("storyboard_frame") or {}).get("sha256"),
+    }
+
+
 def _compact_json(value: object, limit: int = 1800) -> str:
     text = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return text if len(text) <= limit else text[:limit] + "…"
@@ -469,6 +485,12 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "generated_at": now(),
         "source_trace": source_trace,
         "storyboard_frame": excerpt,
+        "source_binding": {
+            "story": {"path": repo_rel(story_path), "sha256": source_trace["story"]["sha256"]},
+            "storyboard": {"path": repo_rel(storyboard_path), "sha256": source_trace["storyboard"]["sha256"]},
+            "extraction_mode": excerpt["mode"],
+            "frame_sha256": excerpt["sha256"],
+        },
         "hash_material": hash_material,
         "contract_sha256": contract_sha,
         "prompt_contract": "\n".join(prompt_lines),

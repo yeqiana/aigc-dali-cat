@@ -190,6 +190,13 @@ def _context_match(data: dict, contexts: dict) -> bool:
     return all(str(data.get(k) or "").lower() == str(v).lower() for k, v in contexts.items())
 
 
+def _binding_match(data: dict, ep: Path, frame: str) -> bool:
+    expected = base.source_binding(ep, frame)
+    if not expected:
+        return True
+    return data.get("source_binding") == expected
+
+
 def _scope_ok(data: dict) -> bool:
     p = data.get("critic_provenance") or {}
     return not runtime_provenance.validate_critic_provenance(p) and p.get("review_scope") in {
@@ -209,7 +216,10 @@ def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, capt
         reasons.append("asset_path_changed")
     if not _context_match(data, contexts):
         reasons.append("story_visual_context_changed")
-    for field, expected in base.phase3_context_hashes(ep, frame["frame"]).items():
+    if not _binding_match(data, ep, frame["frame"]):
+        reasons.append("story_source_binding_changed")
+    phase3 = base.phase3_context_hashes(ep, frame["frame"])
+    for field, expected in phase3.items():
         if str(data.get(field) or "").lower() != str(expected).lower():
             reasons.append("phase3_frame_context_changed")
             break
@@ -223,6 +233,9 @@ def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, capt
     for name in base.checks_for_version(version, directing_v3):
         if checks.get(name) is not True:
             reasons.append(f"check_failed:{name}")
+    if base.validate_bound_review(data, frame=frame, contexts=contexts, version=version,
+                                  metadata_only=True, phase3_contexts=phase3, directing_v3=directing_v3):
+        reasons.append("bound_review_invalid")
     return not reasons, reasons
 
 
@@ -257,7 +270,7 @@ def build_plan(ep: Path) -> dict:
         if not clean:
             dirty.append(frame["frame"])
             reasons[frame["frame"]] = why
-            if "story_visual_context_changed" in why or "review_version_changed" in why:
+            if {"story_visual_context_changed", "review_version_changed", "story_source_binding_changed"}.intersection(why):
                 context_change = True
     if not dirty:
         return {
@@ -346,6 +359,7 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
     selected = [by_key[k] for k in plan["context_frames"]]
     contexts = base.context_hashes(ep)
     captions = caption_state(ep, all_frames)
+    frozen_sources = base.review_source_bindings(ep, all_frames)
 
     phashes = base.perceptual_rows(all_frames)
     duplicates = base.duplicate_pairs(phashes)
@@ -375,6 +389,8 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
     current = base.frame_records(ep, require_files=True)
     if {r["frame"]: base.sha256_file(r["path"]) for r in current} != before:
         raise RuntimeError("incremental critic modified approved image assets")
+    if base.review_source_bindings(ep, current) != frozen_sources:
+        raise RuntimeError("incremental critic sources drifted during review; candidate cannot be rebound")
     data = read_json(candidate)
     version = base.episode_contract_version(ep)
     directing_v3 = base.directing_v3_required(ep)
@@ -408,7 +424,7 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
             "asset_path": frame["path_rel"],
             "asset_sha256": frame["sha256"],
             **contexts,
-            **base.phase3_context_hashes(ep, frame["frame"]),
+            **frozen_sources["frames"][frame["frame"]],
             "caption_sha256": captions["frame_sha256"][frame["frame"]],
             "critic_provenance": provenance,
             "checks": source.get("checks") or {},

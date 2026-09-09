@@ -2,7 +2,6 @@
 from __future__ import annotations
 from pathlib import Path
 
-import frame_contract
 import prompt_package
 from visual_profile_bridge_v224 import compile_prompt_contract
 
@@ -17,10 +16,6 @@ def compile_batch(ep:Path,contract:dict,items_by_id:dict,*,model:str,quality:str
         item=items_by_id[row["queue_item_id"]]
         frame=int(row["frame"])
         prompt_path=(ROOT/item["prompt_file"]).resolve()
-        scene=prompt_path.read_text(encoding="utf-8").strip()
-        if not scene:
-            raise ValueError(f"frame {frame:02d} prompt empty")
-        resolved=frame_contract.compile_frame(ep,frame,write_cache=True)
         package=prompt_package.compile_frame(ep,frame,prompt_path,write=True)
         packages.append({
             "frame":f"{frame:02d}",
@@ -29,8 +24,8 @@ def compile_batch(ep:Path,contract:dict,items_by_id:dict,*,model:str,quality:str
         })
         slots.append(
             f"<image_slot index=\"{int(row['output_index'])}\" frame=\"{frame:02d}\">\n"
-            f"<frame_contract>\n{resolved['prompt_contract']}\n</frame_contract>\n"
-            f"<scene>\n{scene}\n</scene>\n"
+            f"<frame_contract>\n{package['frame_prompt_contract']}\n</frame_contract>\n"
+            f"<scene>\n{package['scene_prompt']}\n</scene>\n"
             f"</image_slot>"
         )
     refs="\n".join(f"- {x}" for x in reference_names) or "- no reference images"

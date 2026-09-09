@@ -98,6 +98,7 @@ def _request_fingerprint(
     prompt: str,
     sources: list[dict],
     candidate_path: str,
+    source_bindings: dict | None = None,
 ) -> str:
     payload = {
         "review_kind": kind,
@@ -107,6 +108,8 @@ def _request_fingerprint(
         "source_files": sources,
         "candidate_path": candidate_path,
     }
+    if source_bindings is not None:
+        payload["source_bindings"] = source_bindings
     raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
@@ -120,6 +123,7 @@ def prepare(
     prompt: str,
     source_paths: list[Path],
     candidate_path: Path,
+    source_bindings: dict | None = None,
 ) -> dict:
     base = runtime_provenance.normalize_base_runtime(runtime)
     if base not in {"WORK", "WEB"}:
@@ -148,6 +152,7 @@ def prepare(
         prompt=prompt,
         sources=sources,
         candidate_path=candidate_rel,
+        source_bindings=source_bindings,
     )
     request_id = f"{kind}-a{attempt}-{fingerprint[:16]}"
     req = {
@@ -172,6 +177,8 @@ def prepare(
         ],
         "prompt": prompt,
     }
+    if source_bindings is not None:
+        req["source_bindings"] = source_bindings
     attempt_path = request_path(ep, kind, attempt=attempt)
     if attempt_path.is_file():
         existing = _read_json(attempt_path)
@@ -187,9 +194,10 @@ def prepare(
     # Compatibility/current pointer. This alias may move, the attempt file may not.
     current = {**req, "attempt_request_path": _repo_rel(attempt_path)}
     _write_json(request_path(ep, kind), current)
-    episode_performance.safe_begin_named_span(
-        ep, f"PRODUCT_REVIEW_{kind}", source="product_review_adapter",
-        metadata={"request_id": req.get("request_id"), "attempt": attempt, "runtime": base})
+    if req.get("status") != "FINALIZED":
+        episode_performance.safe_begin_named_span(
+            ep, f"PRODUCT_REVIEW_{kind}", source="product_review_adapter",
+            metadata={"request_id": req.get("request_id"), "attempt": attempt, "runtime": base})
     return {
         **req,
         "request_path": _repo_rel(attempt_path),
@@ -217,6 +225,7 @@ def finalize_candidate(
     runtime: str,
     attempt: int,
     candidate_path: Path,
+    source_bindings: dict | None = None,
 ) -> tuple[dict, dict]:
     base = runtime_provenance.normalize_base_runtime(runtime)
     path, req = _resolve_request(ep, kind, attempt)
@@ -226,6 +235,8 @@ def finalize_candidate(
         raise ProductReviewError("review runtime mismatch")
     if req.get("attempt") != attempt:
         raise ProductReviewError("review attempt mismatch")
+    if req.get("source_bindings") != source_bindings:
+        raise ProductReviewError("review source bindings missing or drifted; prepare a new review attempt")
     expected_candidate = (ROOT / str(req.get("candidate_path") or "")).resolve()
     if expected_candidate != candidate_path.resolve():
         raise ProductReviewError("candidate path mismatch")

@@ -192,8 +192,8 @@ def _reference_proxy(source: Path, workdir: Path, index: int) -> Path:
         return target
 
 
-def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False) -> float:
-    scene = prompt_path.read_text(encoding='utf-8').strip()
+def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None) -> float:
+    scene = scene_text if scene_text is not None else prompt_path.read_text(encoding='utf-8-sig').strip()
     if not scene:
         raise BackendError('prompt is empty')
     codex = resolve_codex(codex_raw)
@@ -282,8 +282,12 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     width, height, aspect = read_canvas(ep)
     visual = compile_prompt_contract(ep)
     frame_contract = None
+    scene_text = None
     if resolved_frame_contract.required(ep):
-        frame_contract = resolved_frame_contract.compile_frame(ep, int(args.frame), write_cache=True)
+        import prompt_package
+        package = prompt_package.compile_frame(ep, int(args.frame), prompt_path)
+        scene_text = package['scene_prompt']
+        frame_contract = {'contract_sha256': package['frame_contract_sha256'], 'prompt_contract': package['frame_prompt_contract']}
     size = provider_size(width, height)
     raw_dir = ep / 'media' / 'raw'
     raw_dir.mkdir(parents=True, exist_ok=True)
@@ -309,7 +313,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         elapsed = 0.0
         backend_name = 'codex_desktop_interface_imagegen'
     else:
-        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'])
+        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'], scene_text=scene_text)
         backend_name = 'codex_subscription'
     provider_receipt_info = provider_capability.write_receipt(
         ep, int(args.frame),

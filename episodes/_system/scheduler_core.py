@@ -30,18 +30,59 @@ def now() -> str:
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
 
-async def run_execution_loop(tasks, handler, consume, *, workers, stream=None):
-    """Execute one admitted wave and serialize all lane result mutations.
+async def run_execution_loop(tasks, handler, consume, *, workers,
+                             admit=None, completed=None, dispatched=None):
+    """Single execution owner; lane callbacks own admission and ledger policy.
 
-    The caller owns admission and the queue lock. Batch post-processing must
-    run only after this function returns, when every submitted event has been
-    consumed. Lane callbacks retain their existing result/return-code policy.
+    A fixed task list is a batch barrier. Dynamic admission may unlock new
+    dependencies after consumption. Technical failures lower this run's cap,
+    never the next run's configured limit. All callbacks execute serially.
     """
-    import async_scheduler_adapter
+    import asyncio
+    from async_task_runtime import AsyncTaskRuntime
 
-    source = stream or async_scheduler_adapter.stream_tasks
-    async for event in source(tasks, handler, workers=workers):
-        await consume(event)
+    workers = max(1, min(3, int(workers)))
+    pending = list(tasks)
+    async def fixed_admit(limit):
+        rows = pending[:limit]
+        del pending[:limit]
+        return rows
+    admission = admit or fixed_admit
+    pool = AsyncTaskRuntime(workers=workers)
+    events = asyncio.Queue()
+    runner = asyncio.create_task(pool.run(events.put))
+    inflight = 0
+    failures = 0
+    seen = set()
+    try:
+        while True:
+            cap = max(1, workers - failures)
+            for row in await admission(max(0, cap - inflight)):
+                key = str(row['id'])
+                if key in seen:
+                    raise ValueError(f'duplicate scheduler dispatch: {key}')
+                seen.add(key)
+                await pool.submit(row, handler)
+                inflight += 1
+                if dispatched:
+                    await dispatched(row, inflight, cap)
+            if not inflight:
+                break
+            event = await events.get()
+            status = await consume(event)
+            inflight -= 1
+            if status == 'tech_failed':
+                failures += 1
+            if completed:
+                await completed(event, status, inflight, max(1, workers - failures))
+        await pool.queue.join()
+    finally:
+        # Drain submitted work before releasing resources, including on a
+        # consumer exception. Never stop workers with pending queue entries.
+        await pool.queue.join()
+        await pool.stop()
+        runner.cancel()
+        await asyncio.gather(runner, return_exceptions=True)
 
 
 def read_json(path: Path) -> dict:
@@ -93,6 +134,36 @@ def load_queue(ep: Path, *, max_parallel: int | None = None) -> dict:
 def save_queue(ep: Path, q: dict) -> None:
     q["updated_at"] = now()
     write_json(Path(ep).resolve() / QUEUE_REL, q)
+
+
+def progress(ep: Path, q: dict, *, requested_workers: int = 3) -> dict:
+    """Read-only common interpretation; historical caps never control a run."""
+    import storyos_config
+    import raw_candidate_budget
+    import story_json
+    configured = min(3, int(storyos_config.get_path(storyos_config.load_config(),
+                                                  "production.max_inflight_images")))
+    rows = list((ledger(ep).get("frames") or {}).values())
+    pending = sum(x.get("status") == "queued" for x in q.get("items") or [])
+    stage = story_json.read_json(ep / "meta/episode-state.json", default={})
+    manifest = story_json.read_json(ep / "meta/release-manifest.json", default={})
+    last = next((w for w in reversed(q.get("waves") or []) if "inflight_after" in w), {})
+    return {
+        "configured_limit": configured,
+        "next_run_limit": max(1, min(configured, requested_workers)),
+        "last_reported_inflight": last.get("inflight_after", 0),
+        "last_run_effective_limit": last.get("next_parallel"),
+        "historical_adaptive_parallel": q.get("adaptive_parallel"),
+        "adaptive_parallel_semantics": "history_only",
+        "generated_frames": sum(any(a.get("result") == "success" for a in r.get("attempts") or []) for r in rows),
+        "content_passed_frames": sum(r.get("status") in {"PASSED", "LOCKED"} for r in rows),
+        "pending_review_frames": sum(r.get("status") in {"ORIGINAL_READY", "REPAIR_READY"} for r in rows),
+        "pending_decision_frames": sum(r.get("status") == "NEEDS_USER" for r in rows),
+        "canonical_stage": stage.get("current_state"),
+        "formal_gates": manifest.get("quality") or {},
+        "publication": manifest.get("publication") or {},
+        "budget": raw_candidate_budget.summary(ep, pending=pending),
+    }
 
 
 class QueueMutationBusy(RuntimeError):
@@ -193,6 +264,25 @@ def _ledger_references(item: dict) -> list[str]:
 def ledger_begin(ep: Path, item: dict, *, notes: str | None = None,
                  batch_id: str | None = None) -> tuple[bool, str]:
     import ledger_call
+    import frame_contract
+    import prompt_package
+
+    if frame_contract.required(ep):
+        try:
+            package = prompt_package.compile_frame(ep, int(item["frame"]), _prompt_path(item))
+            queued_sha = (item.get("frame_contract") or {}).get("contract_sha256")
+            if queued_sha != package["frame_contract_sha256"]:
+                return False, "PROMPT_SOURCE_DRIFT: queue contract changed; rebuild derived queue item"
+            frozen = item.get("prompt_package")
+            if isinstance(frozen, dict) and frozen.get("scene_prompt_sha256"):
+                # Admission-time freeze: whatever was queued must be exactly what
+                # is about to be sent. This closes the first-package case (no
+                # on-disk history to compare) and the simultaneous scene+contract
+                # change case; prompt edits require re-admission (replace).
+                if frozen.get("scene_prompt_sha256") != package["scene_prompt_sha256"]:
+                    return False, "PROMPT_SOURCE_DRIFT: queue scene prompt changed after admission; rebuild queue item"
+        except (ValueError, OSError) as exc:
+            return False, str(exc)
 
     return ledger_call.begin(
         ep,

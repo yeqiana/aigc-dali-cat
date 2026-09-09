@@ -35,7 +35,6 @@ import runtime_router
 import product_runtime_adapter
 import resource_library
 import runtime_portability
-import async_scheduler_adapter
 import runtime_event_collector
 import production_recovery
 import production_ledger
@@ -56,6 +55,7 @@ NON_REGENERATING_FAILURE_CODES = {
     "EPISODE_IMAGE_LOOP_GUARD",
     "RUNTIME_CIRCUIT_OPEN",
     "CANDIDATE_COMMIT_FAILED",  # STORY_OS_V2_6_0_PERFORMANCE_RUNTIME
+    "PROMPT_SOURCE_DRIFT",
 }
 
 READY_LEDGER_STATES = production_ledger.READY_LEDGER_STATES
@@ -167,6 +167,16 @@ def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:
             replaceable=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed","blocked","scout_repair"}]
             for x in replaceable:x["status"]="superseded"
         contract=frame_contract.provenance(ep,frame)
+        if frame_contract.required(ep):
+            import prompt_package
+            package=prompt_package.compile_frame(ep,frame,prompt_file)
+            admission_snapshot={
+                "package_sha256":package["package_sha256"],
+                "scene_prompt_sha256":package["scene_prompt_sha256"],
+                "frame_contract_sha256":package["frame_contract_sha256"],
+            }
+        else:
+            admission_snapshot=None
         item={
             "id":uuid.uuid4().hex[:12],
             "frame":frame,
@@ -183,6 +193,7 @@ def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:
             "narrative_escalation_from":narrative_escalation_from(ep,frame),
             "priority":risk_priority(ep,frame,scope),
             "frame_contract":contract,
+            "prompt_package":admission_snapshot,
             "attempts":0,
             "output_path":None,
             "log_path":None,
@@ -303,13 +314,6 @@ async def async_backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->di
     return result
 
 
-def run_async_backend_batch(tasks:list[dict],ep:Path,timeout:int,codex:str|None,workers:int)->list[async_scheduler_adapter.TaskEvent]:
-    async def handler(task:dict)->dict:
-        return await async_backend_worker(ep,task,timeout,codex)
-
-    return asyncio.run(async_scheduler_adapter.run_tasks(tasks,handler,workers=workers))
-
-
 def run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     """V2.7 async scheduler entry.
 
@@ -357,7 +361,6 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
     has_failure=False
     inflight=0
     worker_cap=initial_workers
-    total_tech_failures=0
 
     async def handler(item:dict)->dict:
         return await async_backend_worker(ep,item,timeout,codex)
@@ -375,9 +378,12 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
         q=load_queue(ep)
         ready,_=ready_items(ep,q)
         admitted=[]
+        busy_frames={int(x["frame"]) for x in q.get("items") or [] if x.get("status")=="running"}
         for item in ready:
             if len(admitted)>=limit:
                 break
+            if int(item["frame"]) in busy_frames:
+                continue
             row=next((x for x in q.get("items") or [] if x["id"]==item["id"]),None)
             if row is None or row.get("status")!="queued":
                 continue
@@ -397,6 +403,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             production_recovery.mark_worker_pending(ep,row)
             inflight+=1
             admitted.append(row)
+            busy_frames.add(int(row["frame"]))
             q.setdefault("waves",[]).append({
                 "event":1,"mode":"continuous_first_completed","at":now(),
                 "frame":int(row["frame"]),"status":"dispatched",
@@ -461,45 +468,22 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
         save_queue(ep,q)
         return str(item.get("status") or "")
 
-    from async_task_runtime import AsyncTaskRuntime
-    runtime_pool=AsyncTaskRuntime(workers=max_workers)
-    events_q=asyncio.Queue()
-    async def route(event):
-        await events_q.put(event)
-    runner=asyncio.create_task(runtime_pool.run(route))
-    remaining=0
-    try:
-        admitted=await admit_more(initial_workers)
-        for row in admitted:
-            await runtime_pool.submit(row,handler)
-            remaining+=1
-        while remaining:
-            event=await events_q.get()
-            remaining-=1
-            status=await consume(event)
-            inflight=max(0,inflight-1)
-            if status=="tech_failed":
-                total_tech_failures+=1
-                worker_cap=max(1,initial_workers-total_tech_failures)
-            q=load_queue(ep)
-            row=next((x for x in q.get("items") or [] if x["id"]==event.task_id),None)
-            q.setdefault("waves",[]).append({
-                "event":2,"mode":"continuous_first_completed","at":now(),
-                "frame":int(row["frame"]) if row else None,
-                "status":status or "unknown",
-                "inflight_after":inflight,"next_parallel":worker_cap,
-                "item_id":event.task_id,
-            })
-            save_queue(ep,q)
-            if inflight<worker_cap:
-                for row in await admit_more(worker_cap-inflight):
-                    await runtime_pool.submit(row,handler)
-                    remaining+=1
-        await runtime_pool.queue.join()
-    finally:
-        await runtime_pool.stop()
-        runner.cancel()
-        await asyncio.gather(runner,return_exceptions=True)
+    async def completed(event,status,active,cap):
+        nonlocal inflight,worker_cap
+        inflight,worker_cap=active,cap
+        q=load_queue(ep)
+        row=next((x for x in q.get("items") or [] if x["id"]==event.task_id),None)
+        q.setdefault("waves",[]).append({
+            "event":2,"mode":"continuous_first_completed","at":now(),
+            "frame":int(row["frame"]) if row else None,
+            "status":status or "unknown",
+            "inflight_after":inflight,"next_parallel":worker_cap,
+            "item_id":event.task_id,
+        })
+        save_queue(ep,q)
+
+    await scheduler_core.run_execution_loop(
+        [],handler,consume,workers=max_workers,admit=admit_more,completed=completed)
 
     return 22 if has_block and not ready_items(ep,load_queue(ep))[0] else (21 if has_failure else 0)
 
@@ -577,7 +561,7 @@ def main()->int:
         if a.cmd=="import-batch":print(json.dumps(import_batch(ep,Path(a.prompt_dir).resolve()),ensure_ascii=False,indent=2));return 0
         if a.cmd=="plan":
             q=load_queue(ep);ready,blocked=ready_items(ep,q)
-            print(json.dumps({"ready":[{"frame":x["frame"],"priority":x["priority"],"scope":x["scope"]} for x in ready],"blocked":[{"frame":x["frame"],"depends_on":x["depends_on"]} for x in blocked],"adaptive_parallel":q.get("adaptive_parallel",3)},ensure_ascii=False,indent=2));return 0
+            print(json.dumps({"ready":[{"frame":x["frame"],"priority":x["priority"],"scope":x["scope"]} for x in ready],"blocked":[{"frame":x["frame"],"depends_on":x["depends_on"]} for x in blocked],"progress":scheduler_core.progress(ep,q)},ensure_ascii=False,indent=2));return 0
         if a.cmd=="run":
             run_timeout=runtime_timeout_policy.resolve("image_lane_run", a.timeout)
             if batch_scheduler.should_use(ep):
