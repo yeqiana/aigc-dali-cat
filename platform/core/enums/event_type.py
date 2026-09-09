@@ -1,0 +1,17 @@
+from enum import Enum
+
+
+class EventType(str, Enum):
+    """Phase 0 平台事件类型。
+
+    Event 只记录已经发生的事实，不承担状态推进职责。
+    """
+
+    EPISODE_CREATED = "EPISODE_CREATED"
+    WORKFLOW_STARTED = "WORKFLOW_STARTED"
+    TASK_STARTED = "TASK_STARTED"
+    TASK_COMPLETED = "TASK_COMPLETED"
+    TASK_FAILED = "TASK_FAILED"
+    ARTIFACT_CREATED = "ARTIFACT_CREATED"
+    REVIEW_COMPLETED = "REVIEW_COMPLETED"
+    RELEASE_CREATED = "RELEASE_CREATED"
