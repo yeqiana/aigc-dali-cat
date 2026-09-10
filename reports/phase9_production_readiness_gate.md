@@ -22,9 +22,9 @@ Phase8/Phase9 Code Acceptance 已完成。
 
 测试证据：
 
-- tests/platform: 322 passed
+- tests/platform: 329 passed
 - tests/system: 186 passed + 16 subtests
-- Total: 508 passed + 16 subtests
+- Total: 515 passed + 16 subtests
 
 2026-09-10 追加：本批交付常驻 Runtime Worker 命令载体，tests/platform 由 211 增至 234（+23）。
 
@@ -43,6 +43,8 @@ Phase8/Phase9 Code Acceptance 已完成。
 2026-09-10 追加：本批交付 schtasks 部署脚本（P9.34.1），tests/platform 由 305 增至 310（+5：deploy 离线 5 例）。
 
 2026-09-10 追加：本批交付自愈自动触发接线（P9.34.2），tests/platform 由 310 增至 322（+12：编排离线 6 例 + Worker 接线离线 6 例）。
+
+2026-09-10 追加：本批交付生产归属切换执行器（P9.34.3），tests/platform 由 322 增至 329（+7：switch 离线 7 例）。
 
 ## 3. Validation Status
 
@@ -158,7 +160,7 @@ scripts/phase9_canary_drill.py  一次真实执行 47/47 步 0 失败，退出�
 🟡 1. Real Runtime Environment —— 部署脚本已交付（scripts/phase9_runtime_deploy.py，2026-09-10，dry-run 验证），注册计划任务仍待授权
 🟡 5. Real Metrics Pipeline —— /metrics 采集端点已交付并真机 E2E 验证（P9.33）；真实 Prometheus / Grafana 采集实例待接
 🟡 6. Real Alert Channel —— WebhookAlertChannel + 本地接收器已交付并真机 E2E 验证（P9.32）；真实外部端点待操作者提供 URL 接入
-⏸ 7. Production Ownership Switch —— 演练只产出决策证据，未执行归属切换
+🟡 7. Production Ownership Switch —— 切换执行器已交付（P9.34.3，dry-run 验证），执行切换待授权
 🟡 8. Recovery 自动执行 —— 自动触发已接线（--auto-recover 默认关闭，P9.34.2），开启待授权
 
 ## 5. Decision
@@ -190,3 +192,5 @@ Phase10 Enterprise Runtime Platform 暂缓，等待 Production Readiness Gate �
 2026-09-10 更新（部署脚本）：新增 schtasks 部署脚本（P9.34.1），install / uninstall / status 默认 dry-run 只打印命令，--apply 才执行；dry-run 命令构造正确，status --apply 只读查询确认任务当前未注册。第 1 项由「可部署单元已交付、注册待授权」收敛为「部署脚本已交付，授权后一条命令即可注册」。
 
 2026-09-10 更新（自愈自动触发）：新增自愈编排 runtime_auto_recovery（P9.34.2），Worker 挂 --auto-recover 与 --restart-agent-command（默认关闭）；真机 E2E 在真实 Redis 下注入 agent/workflow 失败触发 CRITICAL runtime_unhealthy，自动执行 RESTART_AGENT 且 auto_recovery_result 落盘 EXECUTED。第 8 项由「tick 内自动触发未开启」收敛为「自动触发已接线（默认关闭），开启待授权」。
+
+2026-09-10 更新（生产归属切换）：新增 runtime_primary_persistence + phase9_production_switch（P9.34.3），status / switch 默认 dry-run，--apply 才落盘 meta/runtime/runtime-primary.json；dry-run 确认当前 V2_RUNTIME，切换动作正确但未执行。第 7 项由「未执行归属切换」收敛为「切换执行器已交付，执行切换待授权」。
