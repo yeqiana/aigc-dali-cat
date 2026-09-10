@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import asdict, replace
-from datetime import datetime
 from typing import Any, Callable
 
 from platform.agent.runtime.contracts import AgentExecutionPlan, AgentExecutionResult
 from platform.agent.runtime.execution_recorder import ExecutionRecorder
 from platform.agent.runtime.mcp_tool_adapter import McpToolAdapter
 from platform.agent.runtime.skill_runtime_adapter import SkillRuntimeAdapter
+from platform.core.clock import utc_now
 from platform.core.contracts.trace_contract import TraceContract
 from platform.core.enums.trace_status import TraceStatus
 from platform.observer.trace_observer import TraceObserver
@@ -179,7 +179,7 @@ class AgentRuntime:
         outputs: dict[str, Any],
         error: str | None = None,
     ) -> TraceContract:
-        ended_at = datetime.utcnow()
+        ended_at = utc_now()
         duration_ms = max(0, int((ended_at - trace.started_at).total_seconds() * 1000))
         completed = replace(
             trace,

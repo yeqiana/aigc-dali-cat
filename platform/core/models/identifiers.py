@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from uuid import uuid4
 
+from platform.core.clock import utc_now
+
 
 @dataclass(frozen=True)
 class Identifier:
@@ -25,5 +27,5 @@ class PlatformContext:
     def create() -> "PlatformContext":
         return PlatformContext(
             request_id=Identifier.create("req").value,
-            created_at=datetime.utcnow(),
+            created_at=utc_now(),
         )

@@ -17,6 +17,16 @@ class RedisRuntimeStateStore(RuntimeStateStore):
         if self.client:
             self.client.set(key, json.dumps(value), ex=expire_seconds)
 
+    def set_if_absent(self, key, value, expire_seconds=None):
+        """原子写入（SET NX）。分布式锁依赖它避免 get-then-set 竞争（P9.27）。
+
+        返回 True 表示本次写入成功（即拿到锁）。
+        """
+        if not self.client:
+            return False
+        result = self.client.set(key, json.dumps(value), ex=expire_seconds, nx=True)
+        return bool(result)
+
     def get_state(self, key):
         if not self.client:
             return None

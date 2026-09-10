@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
-from datetime import datetime
+
+from platform.core.clock import utc_now
 
 
 class EpRuntimeObservationProbe:
@@ -22,7 +23,7 @@ class EpRuntimeObservationProbe:
 
         result = {
             "episode": str(root),
-            "checked_at": datetime.utcnow().isoformat(),
+            "checked_at": utc_now().isoformat(),
             "read_only": True,
             "facts": {},
         }

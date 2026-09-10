@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from datetime import datetime, timezone
 from threading import RLock
 from typing import Any
 from uuid import uuid4
 
+from platform.core.clock import utc_now_iso
+
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="milliseconds")
+    return utc_now_iso("milliseconds")
 
 
 class ExecutionRecorder:
