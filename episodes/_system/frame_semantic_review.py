@@ -587,6 +587,13 @@ def critic_prompt(ep: Path, frames: list[dict], candidate: Path, attempt: int) -
     rel_gates = (ep / "meta/story-gates.json").relative_to(ROOT).as_posix()
     rel_out = candidate.relative_to(ROOT).as_posix()
     mapping = "\n".join(f"- attachment/frame {row['frame']}: {row['path_rel']}" for row in frames)
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    # STORY_OS_V221_PROMPT_ALIGN: the Required-shape sample must list exactly the
+    # checks enforced by validate_* for this episode version, otherwise every
+    # critic attempt fails with "checks.X must be true" for keys never requested.
+    required_checks = checks_for_version(version, directing_v3)
+    checks_block = ",\n".join(f'        "{name}": true' for name in required_checks)
     return f"""You are an adversarial Production Frame Semantic Critic in a FRESH isolated session.
 Do NOT generate or edit images. Do NOT rewrite the story. Do NOT trust previous PASS labels.
 You are reviewing the COMPLETE final approved frame set for exactly {rel_ep}.
@@ -642,32 +649,7 @@ Required shape:
     {{
       "frame": "01",
       "checks": {{
-        "scene_storyboard_fidelity": true,
-        "story_beat_fidelity": true,
-        "key_prop_fidelity": true,
-        "character_identity": true,
-        "wardrobe_continuity": true,
-        "pov_photographer_legality": true,
-        "spatial_continuity": true,
-        "temporal_continuity": true,
-        "anomaly_readability": true,
-        "caption_image_support": true,
-        "actual_information_gain": true,
-        "environment_physics_fidelity": true,
-        "anomaly_escalation_fidelity": true,
-        "scale_reference_fidelity": true,
-        "camera_authorship_physical": true,
-        "moment_capture_credibility": true,
-        "narrative_evidence_gain": true,
-        "shot_grammar_diversity": true,
-        "camera_defect_physics": true,
-        "screen_content_physics": true,
-        "visual_memory_continuity": true,
-        "shot_scale_fidelity": true,
-        "scene_position_uniqueness_fidelity": true,
-        "cinematic_structure_translation_fidelity": true,
-        "practical_lighting_design_fidelity": true,
-        "anomaly_concealment_fidelity": true
+{checks_block}
       }},
       "issue_codes": [],
       "notes": "specific pixel-level evidence",
@@ -679,6 +661,30 @@ Required shape:
 }}
 Return one row for EVERY attached frame. If any hard check fails, mark it false, add the specific issue code, set that frame decision=fail and summary.passed=false.
 """
+
+
+def _rebind_incremental_captions(ep: Path) -> None:
+    """Keep the V2.0.3.4 caption binding fresh for frame semantic evidence.
+
+    Both writers below (full critic rewrite and the reuse path) leave the
+    per-frame reviews and the summary without caption SHAs, which the delivery
+    machine gate rejects.  The rebind only rewrites those derived fields and the
+    incremental helper refuses to run while assets/contracts are dirty, so this
+    stays a bookkeeping step and never turns a stale review into a passing one.
+    """
+    try:
+        import incremental_frame_review as incremental
+
+        if not incremental.review_required(ep):
+            return
+        result = incremental.rebind_captions(ep)
+        if not result.get("rebound"):
+            print(f"WARN: incremental caption rebind skipped ({result.get('reason')})")
+        elif result.get("errors"):
+            for error in result["errors"]:
+                print("WARN: incremental caption rebind verify:", error)
+    except Exception as exc:  # pragma: no cover - defensive, never fails the review
+        print(f"WARN: incremental caption rebind failed: {exc}")
 
 
 def _persist_candidate(
@@ -740,6 +746,7 @@ def _persist_candidate(
     }
     write_json(ep / SUMMARY_REL, summary)
     (ep / CANDIDATE_REL).unlink(missing_ok=True)
+    _rebind_incremental_captions(ep)
 
     verify_errors = verify_episode(ep, metadata_only=False, write_audit=True)
     errors = candidate_errors + [x for x in verify_errors if x not in candidate_errors]
@@ -797,6 +804,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     if attempt not in {1, 2}:
         raise RuntimeError("attempt must be 1 or 2; only one automatic content-repair round is permitted")
     if (ep / SUMMARY_REL).is_file() and review_required(ep) and not verify_episode(ep):
+        _rebind_incremental_captions(ep)
         print("FRAME SEMANTIC REVIEW REUSED: current assets, contracts and critic evidence verified")
         return 0
     frames = frame_records(ep, require_files=True)

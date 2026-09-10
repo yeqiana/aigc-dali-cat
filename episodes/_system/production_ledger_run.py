@@ -172,12 +172,28 @@ def cmd_authorize_repair(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
     key, frame = frame_obj(data, args.frame)
-    if frame["status"] != "CONTENT_FAILED":
+    delegated = bool(getattr(args, "delegated_auto", False))
+    # STORY_OS_DELEGATED_LOCKED_REPAIR (additive): an authorized full-set semantic
+    # critic can still find a real content defect after the release lock. That
+    # repair is content-bearing, so it still consumes the ordinary repair budget,
+    # but it must be recorded as delegated auto review. Reopening a locked frame
+    # without --delegated-auto remains reserved for the direct-user lanes.
+    if frame["status"] == "LOCKED":
+        if not delegated:
+            raise SystemExit("locked frame repair requires --delegated-auto or authorize-user-locked-repair")
+        if not str(getattr(args, "note", "") or "").strip():
+            raise SystemExit("locked frame delegated repair requires an evidence note")
+        frame.setdefault("superseded_locks", []).append({
+            "at": now_iso(),
+            "lock": frame.get("lock"),
+            "approved_asset": frame.get("approved_asset"),
+            "reason": "delegated auto review found a content defect after lock",
+        })
+    elif frame["status"] != "CONTENT_FAILED":
         raise SystemExit(f"repair authorization requires CONTENT_FAILED, got {frame['status']}")
     if frame.get("content_repairs_used", 0) >= content_repair_limit(data):
         raise SystemExit("content repair limit reached")
     frame["status"] = "REPAIR_AUTHORIZED"
-    delegated = bool(getattr(args, "delegated_auto", False))
     frame["repair_authorization"] = {
         "at": now_iso(),
         "note": args.note,

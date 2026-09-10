@@ -77,18 +77,25 @@ def cmd_authorize_authority_refresh(args: argparse.Namespace) -> None:
     This path is audit-only and does not consume the single content-repair budget.
     It exists for cases such as Frame Contract / authenticity / continuity authority
     updates where existing pixels must be regenerated against the new provenance.
+
+    A LOCKED frame is admitted here too: a shared authority/contract repair that lands
+    after the release lock still only re-renders the same content decision, so it must
+    not consume the ordinary content-repair counter. The superseded lock is preserved.
     """
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
     key, frame = frame_obj(data, args.frame)
-    if frame["status"] not in {"PASSED", "ORIGINAL_READY", "REPAIR_READY"}:
-        raise SystemExit(f"authority refresh requires PASSED/ORIGINAL_READY/REPAIR_READY, got {frame['status']}")
+    if frame["status"] not in {"PASSED", "ORIGINAL_READY", "REPAIR_READY", "LOCKED"}:
+        raise SystemExit(f"authority refresh requires PASSED/ORIGINAL_READY/REPAIR_READY/LOCKED, got {frame['status']}")
     approval = args.approval_text.strip()
     if not approval:
         raise SystemExit("direct user approval text is required")
     current_contract = current_frame_contract_provenance(ep, key)
     if not current_contract:
         raise SystemExit("current frame contract provenance missing")
+    prior_lock = frame.get("lock") if frame["status"] == "LOCKED" else None
+    if prior_lock:
+        frame.setdefault("superseded_locks", []).append({"at": now_iso(), "lock": prior_lock, "approved_asset": frame.get("approved_asset")})
     frame.setdefault("authority_refresh_history", []).append({
         "at": now_iso(),
         "previous_status": frame.get("status"),

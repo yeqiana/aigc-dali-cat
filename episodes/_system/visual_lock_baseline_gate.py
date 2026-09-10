@@ -6,6 +6,7 @@ import argparse, datetime as dt, hashlib, json, shutil, subprocess, sys, tempfil
 from pathlib import Path
 import character_visual_contract
 import frame_contract
+import codex_critic_runner
 import episode_performance
 import product_review_adapter
 import runtime_provenance
@@ -152,9 +153,14 @@ def run_codex_critic(ep,attempt=1,codex_raw=None,timeout=None):
     asset=repo_file(draft["asset_path"]);before=sha_file(asset)
     staging=Path(tempfile.mkdtemp(prefix="story-os-baseline-"));staged=staging/("baseline"+asset.suffix.lower())
     shutil.copy2(asset,staged)
-    cfg=storyos_config.load_config();model=str(storyos_config.get_path(cfg,"runtime.codex_image_controller_model"));effort=str(storyos_config.get_path(cfg,"runtime.codex_image_reasoning_effort"))
+    # STORY_OS_CRITIC_MODEL_OVERRIDE: see visual_lock_v21.py. The pinned image
+    # controller model is for image generation; a vision critic uses the optional
+    # dedicated critic key when configured, else the Codex CLI default model.
+    cfg=storyos_config.load_config()
+    model=str(storyos_config.get_path(cfg,"runtime.codex_critic_model") or "") or None
+    effort=str(storyos_config.get_path(cfg,"runtime.codex_critic_reasoning_effort") or storyos_config.get_path(cfg,"runtime.codex_image_reasoning_effort"))
     codex=resolve_codex(codex_raw);log=ep/"meta"/f"visual-lock-baseline-critic-attempt-{attempt}.jsonl"
-    cmd=command_prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-m",model,"-c",f'model_reasoning_effort="{effort}"',"-s","workspace-write","-C",str(ROOT),"--json","-i",str(staged),"-"]
+    cmd=command_prefix(codex)+["exec","--skip-git-repo-check","--ephemeral"]+(["-m",model] if model else [])+["-c",f'model_reasoning_effort="{effort}"',"-s",codex_critic_runner.default_sandbox(),"-C",str(ROOT),"--json","-i",str(staged),"-"]
     try:
         with log.open("w",encoding="utf-8",newline="\n") as handle:
             done=subprocess.run(cmd,input=critic_prompt(ep).encode("utf-8"),stdout=handle,stderr=subprocess.STDOUT,timeout=timeout,check=False)
