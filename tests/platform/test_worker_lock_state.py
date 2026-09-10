@@ -6,7 +6,7 @@ class FakeStateStore:
     def __init__(self):
         self.data = {}
 
-    def set_state(self, key, value):
+    def set_state(self, key, value, expire_seconds=None):
         self.data[key] = value
 
     def get_state(self, key):

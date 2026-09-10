@@ -7,25 +7,54 @@ from platform.repository.trace.mysql_trace_repository import MySqlTraceRepositor
 
 class FakeConnection:
     def __init__(self):
-        self.records = []
+        self.executed = []
+        self.queried = []
+        self.one = None
 
-    def insert_trace(self, data):
-        self.records.append(data)
+    def execute(self, sql, params=None):
+        self.executed.append((sql, params))
+        return 1
+
+    def query_one(self, sql, params=None):
+        self.queried.append((sql, params))
+        return self.one
+
+    def query_all(self, sql, params=None):
+        return []
+
+
+def _trace():
+    return TraceContract(
+        trace_id="trace_001",
+        span_id="span_001",
+        operation="image_generation",
+        status=TraceStatus.SUCCESS,
+        started_at=datetime.utcnow(),
+        inputs={"model": "gpt-image-2"},
+    )
 
 
 def test_mysql_trace_repository_save():
     connection = FakeConnection()
     repository = MySqlTraceRepository(connection)
 
-    trace = TraceContract(
-        trace_id="trace_001",
-        span_id="span_001",
-        operation="image_generation",
-        status=TraceStatus.SUCCESS,
-        started_at=datetime.utcnow(),
-    )
+    repository.save(_trace())
 
-    repository.save(trace)
+    assert len(connection.executed) == 1
+    sql, params = connection.executed[0]
+    assert "INSERT INTO trace_span" in sql
+    assert params[0] == "trace_001"
+    assert params[1] == "span_001"
+    assert params[3] == "SUCCESS"
 
-    assert len(connection.records) == 1
-    assert connection.records[0]["trace_id"] == "trace_001"
+
+def test_mysql_trace_repository_get():
+    connection = FakeConnection()
+    connection.one = {"trace_id": "trace_001", "span_id": "span_001"}
+    repository = MySqlTraceRepository(connection)
+
+    row = repository.get("trace_001", "span_001")
+
+    assert row is not None
+    assert row["trace_id"] == "trace_001"
+    assert connection.queried[-1][1] == ("trace_001", "span_001")
