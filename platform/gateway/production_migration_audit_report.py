@@ -7,7 +7,7 @@ from platform.gateway.canary_migration_final_evidence import CanaryMigrationFina
 from platform.gateway.ep002_production_runtime_verification import (
     EP002ProductionRuntimeVerificationResult,
 )
-from platform.gateway.runtime_primary_registry import RuntimePrimaryState
+from platform.gateway.runtime_primary_registry import RuntimePrimaryRecord
 
 
 AuditStatus = str
@@ -33,7 +33,7 @@ class ProductionMigrationAuditReportBuilder:
         self,
         *,
         final_evidence: CanaryMigrationFinalEvidence,
-        runtime_state: RuntimePrimaryState,
+        runtime_state: RuntimePrimaryRecord,
         ep002_verification: EP002ProductionRuntimeVerificationResult,
     ) -> ProductionMigrationAuditReport:
         evidence_items: list[str] = [
@@ -45,7 +45,7 @@ class ProductionMigrationAuditReportBuilder:
         verified = (
             final_evidence.current_runtime == "V3_RUNTIME"
             and runtime_state.primary_runtime == "V3_RUNTIME"
-            and ep002_verification.verified
+            and ep002_verification.status == "VERIFIED"
         )
 
         return ProductionMigrationAuditReport(

@@ -6,7 +6,7 @@ from platform.gateway.ep002_production_runtime_verification import (
 from platform.gateway.production_migration_audit_report import (
     ProductionMigrationAuditReportBuilder,
 )
-from platform.gateway.runtime_primary_registry import RuntimePrimaryState
+from platform.gateway.runtime_primary_registry import RuntimePrimaryRecord
 
 
 class FakeEvidence:
@@ -17,7 +17,7 @@ class FakeEvidence:
 def test_audit_report_verified_when_all_evidence_ready():
     report = ProductionMigrationAuditReportBuilder().build(
         final_evidence=FakeEvidence(),
-        runtime_state=RuntimePrimaryState(
+        runtime_state=RuntimePrimaryRecord(
             primary_runtime="V3_RUNTIME",
             previous_runtime="V2_RUNTIME",
             reason="migration",
@@ -25,8 +25,9 @@ def test_audit_report_verified_when_all_evidence_ready():
         ),
         ep002_verification=EP002ProductionRuntimeVerificationResult(
             episode_id="10-02",
-            verified=True,
-            reasons=("all_checks_passed",),
+            status="VERIFIED",
+            checks=("all_checks_passed",),
+            failures=(),
         ),
     )
 

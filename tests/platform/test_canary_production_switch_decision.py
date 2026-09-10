@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from platform.gateway.canary_production_switch_decision import (
     CanaryProductionSwitchDecision,
     ProductionSwitchPolicy,
@@ -13,7 +15,8 @@ def evidence(stage=100, requests=200, error=0):
         reasons=("healthy",),
         request_count=requests,
         error_rate=error,
-        latency_ms=100,
+        avg_latency_ms=100,
+        generated_at=datetime.now(timezone.utc),
     )
 
 

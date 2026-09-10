@@ -33,6 +33,9 @@ episodes/**/meta/scoped-workers/
 __pycache__/
 *.pyc
 
+# Web console / Node build artifacts
+web-console/node_modules/
+
 # Codex tool output
 .codex/
 .playwright-cli/
