@@ -329,12 +329,22 @@ Phase 6
 ✅
 
 Phase 7
-🟡 开始实施
+✅ 完成
+
+Phase 8
+🟢 Code Accepted（Canary Migration；生产切换未闭环）
+
+Phase 9
+🟢 Code Accepted / Runtime Smoke Executed / 常驻 Runtime Worker 载体已交付（未部署为系统服务）/ 真实 Recovery 与 Canary 演练已执行（2026-09-10）/ Worker 存活观察者已交付（P9.30，名册内失联转 CRITICAL）/ 恢复决策执行器已交付（P9.31，RESTART_AGENT 真实执行）/ 真实告警通道已交付（P9.32，CRITICAL 告警经 WebhookAlertChannel 真机送达本地接收器）/ 真实 Metrics 采集端点已交付（P9.33，/metrics + /healthz 真机 E2E）/ 常驻 Runtime 编排入口已交付（P9.34，Worker + Metrics 统一编排，真机 E2E）/ schtasks 部署脚本已交付（P9.34.1，dry-run 验证）/ 自愈自动触发已接线（P9.34.2，--auto-recover 默认关闭，真机 E2E）
+
+Phase 10
+⏸ 未启动
 ```
 
 下一阶段：
 
 ```
-Phase 7-P7.1
-数据库模型落地
+Phase 8 / Phase 9 生产化收尾
+常驻 Runtime 可部署单元注册为系统服务（编排入口 P9.34 与部署脚本 P9.34.1 已交付，注册待授权）、真实 Metrics 采集后端与 Alert Channel、Canary 生产归属切换决策（演练与决策证据已完成；归属切换未执行）
+Worker 失联告警已闭环（P9.30 存活观察者）；恢复决策执行器已交付并真机执行 RESTART_AGENT（P9.31，finding recovery_decision_has_no_executor 已 CLOSED）；真实告警通道已交付（P9.32，WebhookAlertChannel 真机 E2E 送达）；真实 Metrics 采集端点已交付（P9.33，/metrics + /healthz 真机 E2E）；常驻 Runtime 编排入口已交付（P9.34，Worker + Metrics 统一编排真机 E2E）；schtasks 部署脚本已交付（P9.34.1，dry-run 验证）；自愈自动触发已接线（P9.34.2，--auto-recover 默认关闭，开启待授权）；真实 Prometheus / Grafana 采集实例与告警外部端点仍待接入。
 ```

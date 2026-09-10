@@ -58,7 +58,7 @@ Execution Result
 
 Commit:
 
-f4cbed8ec433c53fe60936f3319eb6a5e0493dfd
+273c048（story-platform-v3，改动仍在工作树未提交）
 
 Current branch:
 
@@ -159,15 +159,24 @@ skill:
 
 当前状态：
 
-⏳ Waiting for Runtime Staging Execution
+✅ Executed（2026-09-10，真实 MySQL + Redis）
 
-待填充：
+实测值：
 
-- execution_id
-- trace_id
-- event_id
-- artifact_id
-- execution status
+- execution_id       exec_5e02eec2e62e4974b913d203804a7795
+- trace_id           trace_3b2acb8bc90546f597170e292f1127ac
+- span_id            span_494c40e551d94a23a50952b8b943420a（duration_ms=153）
+- event_id           evt_c386b4ef8a53457ebe72043f0b44ac74（WORKFLOW_STARTED）
+-                    evt_a074bced98264362a18dde188bac0325（TASK_STARTED）
+-                    evt_5135e8d71be84a3ebb1ce6ae63e4e2da（TASK_COMPLETED）
+-                    evt_68869eb5f4144453b134c94fe603bf47（TASK_FAILED，越权拒绝路径）
+-                    evt_3f07e4a17002433a82da159209a9bf84（ARTIFACT_CREATED）
+- artifact_id        artifact_2adde73cc4c54a7b95e620a7b1fdc318
+- execution status   SUCCESS
+- run_id             smoke_20260910T141515Z_60f827f4
+- 汇总                55 PASS / 0 FAIL / 0 SKIPPED，退出码 0，2122 ms
+
+证据：reports/phase9_runtime_smoke_execution_evidence.md
 
 ---
 
@@ -188,7 +197,7 @@ Prepared
 
 真实连接：
 
-Pending
+✅ 127.0.0.1:6379（8.10.1，AOF aof_enabled=1，无密码）
 
 
 ## MySQL
@@ -199,7 +208,7 @@ Pending
 
 真实连接：
 
-Pending
+✅ 121.89.82.216:9000 / story_os_runtime（8.0.46，utf8mb4）
 
 ---
 
@@ -208,9 +217,10 @@ Pending
 当前结论：
 
 ```
-Runtime Smoke Path Prepared
+Runtime Smoke Executed
 
-Execution Evidence Pending
+Real Execution Evidence Collected
 ```
 
-代码路径已确认，等待真实 Runtime Staging 环境执行。
+代码路径与真实外部依赖（MySQL + Redis）均已执行取证；仍需常驻 Runtime Worker 与
+真实 Metrics / Alert 通道补位。

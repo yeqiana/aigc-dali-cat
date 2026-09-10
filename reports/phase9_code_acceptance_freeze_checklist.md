@@ -35,6 +35,12 @@ feat: 完成Phase8/9代码验收并修复生产切换契约漂移
 
 ✅ Code Acceptance Baseline
 
+基线推进说明（2026-09-10 追加，不追溯改写本清单原有数值）：
+
+工作树已推进至 273c048，并叠加 P9.26/P9.27 数据基础设施与 Runtime Smoke 未提交改动。
+tests/platform 现为 199 passed / 0 failed；tests/system 186 passed + 16 subtests；合计 385 passed + 16 subtests。
+本清单第 2 节记录的 118 passed / 304 passed 为 f4cbed8 冻结时点数值。
+
 
 
 ---

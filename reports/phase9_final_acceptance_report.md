@@ -65,3 +65,15 @@ Phase 8「生产切换」与 Phase 9「运行治理」在本地契约层面可�
 ## 7. Phase 10 交接
 
 Phase 10 Enterprise Runtime Platform 方向（多租户 / 权限 / 计费 / 插件市场 / Agent 市场 / Runtime Federation / 外部 API / SaaS 部署）状态：暂缓，待 Phase 8 生产切换闭环与 Phase 9 真实环境验证后再启动。
+
+---
+
+## 8. 基线推进说明（2026-09-10 追加，不追溯改写上文数值）
+
+本报告记录的 118 passed / 304 passed 为 f4cbed8 冻结时点数值。工作树随后叠加
+P9.26/P9.27 数据基础设施与 Runtime Smoke 改动，当前 tests/platform 199 passed / 0 failed、
+tests/system 186 passed + 16 subtests，合计 385 passed + 16 subtests。
+
+第 5 节「无真实 runtime、数据库端到端验证」已被部分解除：MySQL 与 Redis 已真实接入并执行取证
+（Runtime Smoke 55 PASS / 0 FAIL / 0 SKIPPED，证据 reports/phase9_runtime_smoke_execution_evidence.md）；
+常驻 Runtime Worker、真实 Metrics / Alert 通道仍待接入。

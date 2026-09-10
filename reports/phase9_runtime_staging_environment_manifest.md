@@ -54,6 +54,12 @@ f4cbed8ec433c53fe60936f3319eb6a5e0493dfd
 
 Phase8 Production Migration 与 Phase9 Runtime Operations 已完成代码验收。
 
+基线推进（2026-09-10）：
+
+工作树已推进至 273c048，并叠加 P9.26 Data Foundation / P9.27 Persistence 与
+Runtime Smoke 未提交改动；tests/platform 现为 199 passed，tests/system 186 passed + 16 subtests。
+本节 Commit 为代码验收冻结时点记录。
+
 ---
 
 # 3. Runtime Components

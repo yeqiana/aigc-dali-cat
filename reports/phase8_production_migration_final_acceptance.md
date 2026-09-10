@@ -63,3 +63,15 @@ Phase 8 - Production Canary Migration，从 Canary Runtime Gateway 到生产切�
 Phase 8 在**本地契约与代码层**验收通过：生产切换、迁移审计、发布包的契约漂移已全部修复，全量平台测试绿。
 
 真实 Production Ownership 切换仍需真实环境验证后单独决策，不随本次代码验收自动发生。
+
+---
+
+## 7. 基线推进说明（2026-09-10 追加，不追溯改写上文数值）
+
+本报告记录的 118 passed / 304 passed 为 f4cbed8 冻结时点数值。工作树随后叠加
+P9.26/P9.27 数据基础设施与 Runtime Smoke 改动，当前 tests/platform 199 passed / 0 failed、
+tests/system 186 passed + 16 subtests，合计 385 passed + 16 subtests。
+
+第 5 节「无真实 runtime、数据库、云链路端到端验证」已被部分解除：MySQL（121.89.82.216:9000）
+与 Redis（127.0.0.1:6379）已真实接入并执行取证（55 PASS / 0 FAIL / 0 SKIPPED）；
+常驻 Runtime Worker、真实 Metrics / Alert 通道与 Canary 真实流量仍未接入。

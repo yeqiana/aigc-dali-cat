@@ -28,7 +28,7 @@ Phase9 Runtime Staging Validation。
 
 Code Acceptance Commit:
 
-f4cbed8ec433c53fe60936f3319eb6a5e0493dfd
+273c048（story-platform-v3，改动仍在工作树未提交）
 
 状态：
 
@@ -71,13 +71,32 @@ f4cbed8ec433c53fe60936f3319eb6a5e0493dfd
 
 说明：
 
-代码层依赖已具备，真实外部服务连接等待 Staging 环境。
+真实外部服务已接入并验证：
+
+Redis  127.0.0.1:6379（8.10.1，AOF aof_enabled=1，无密码，本机）
+
+MySQL  121.89.82.216:9000 / story_os_runtime（8.0.46，utf8mb4，远端）
+
+Env 变量入口：STORYOS_REDIS_HOST/PORT/DB/PASSWORD、STORYOS_MYSQL_HOST/PORT/USER/PWD/DB。
+凭据只经环境变量传入，不写入仓库与 Episode Evidence。
 
 ---
 
 ## Runtime Smoke Validation
 
-状态：🟡 Pending Execution Evidence
+状态：✅ Executed — Real Evidence
+
+入口：scripts/phase9_runtime_smoke.py
+
+结果：55 PASS / 0 FAIL / 0 SKIPPED，退出码 0，2122 ms（真实 MySQL + Redis）。
+
+离线路径 --mode jsonl --no-redis：19 PASS / 0 FAIL / 13 SKIPPED，退出码 0，91 ms。
+
+执行事实：execution_id exec_5e02eec2e62e4974b913d203804a7795（SUCCESS）、trace trace_3b2acb8bc90546f597170e292f1127ac、artifact artifact_2adde73cc4c54a7b95e620a7b1fdc318。
+
+证据：reports/phase9_runtime_smoke_execution_evidence.md
+
+边界：本脚本以 in-process AgentRuntime 取证，不证明常驻 Runtime Worker 已部署。
 
 已确认链路：
 
@@ -148,12 +167,12 @@ Trace/Event/Artifact Evidence
 
 当前未完成：
 
-- Real Runtime Worker
-- Redis Instance
-- MySQL Instance
-- Metrics Backend
-- Alert Channel
-- Real Canary Traffic
+⏸ Real Runtime Worker（常驻进程载体仍缺，冒烟为 in-process）
+✅ Redis Instance（127.0.0.1:6379 已接入并验证）
+✅ MySQL Instance（121.89.82.216:9000 已接入并验证）
+⏸ Metrics Backend（仍缺真实 metrics 管道）
+⏸ Alert Channel（仍缺真实告警通道）
+⏸ Real Canary Traffic（仍未接入真实流量）
 
 ---
 
@@ -179,7 +198,7 @@ Trace/Event/Artifact Evidence
 
 Runtime Staging：
 
-🟡 Pending Real Environment Execution
+🟡 Code Path Verified / Persistent Worker Pending
 
 Production Switch：
 
@@ -196,7 +215,7 @@ Phase9 Production Runtime Validation
 前置：
 
 1. 准备真实 Staging 环境
-2. 执行 Runtime Smoke
+2. 执行 Runtime Smoke（已完成：55 PASS / 0 FAIL / 0 SKIPPED）
 3. 执行 Recovery Drill
 4. 执行 Canary Traffic Simulation
 5. 输出 Production Readiness Decision

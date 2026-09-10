@@ -44,14 +44,14 @@ Phase9 Runtime Staging Validation 用于验证 Story OS V3 在接近生产环境
 Commit:
 
 ```
-f4cbed8ec433c53fe60936f3319eb6a5e0493dfd
+273c048（story-platform-v3，改动仍在工作树未提交）
 ```
 
 状态：
 
 - Phase8 Code Acceptance ✅
 - Phase9 Code Acceptance ✅
-- Runtime Staging Validation ⏳
+- Runtime Staging Validation 🟡 进行中（Environment Bootstrap ✅ / Runtime Smoke ✅ 已真实执行 / Recovery 与 Canary 演练待做）
 
 
 ---
