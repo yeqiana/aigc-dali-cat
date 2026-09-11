@@ -11,6 +11,7 @@ Usage:
   python -m pre_production experience save  --feedback PFB-*.json [--store DIR] [--observation OBS|FILE] [--similarity SIMILARITY_REPORT] [--dry-run]
   python -m pre_production experience query [--episode ID] [--story-dna REF] [--risk-type TYPE] [--token T]... [--limit N] [--json]
   python -m pre_production experience list  [--kind all|experience|pattern|decision] [--episode ID] [--json]
+  python -m pre_production experience stats [--store DIR] [--feedback-store DIR] [--ledger PATH] [--json]
   python -m pre_production validate <yaml_file> --kind dna|similarity|advisor|review|feedback|observation
 """
 from __future__ import annotations
@@ -27,6 +28,8 @@ from .memory_adapter import (
     KIND_PATTERN,
     KINDS,
     JsonlExperienceStore,
+    collect_stats,
+    format_stats,
     ingest_feedback,
     pattern_from_evidence,
     validate_risk_pattern,
@@ -366,8 +369,24 @@ def cmd_experience(args) -> int:
         return _experience_query(args)
     if args.experience_cmd == "list":
         return _experience_list(args)
+    if args.experience_cmd == "stats":
+        return _experience_stats(args)
     print("ERROR: unknown experience action:", args.experience_cmd)
     return 2
+
+
+def _experience_stats(args) -> int:
+    """Read-only accumulation statistics; writes nothing, ranks nothing."""
+    store = _experience_store(args)
+    payload = collect_stats(store,
+                            feedback_dir=getattr(args, "feedback_store", None),
+                            ledger_path=getattr(args, "ledger", None))
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        return 0
+    for line in format_stats(payload):
+        print(line)
+    return 0
 
 
 def cmd_validate(args) -> int:
@@ -487,6 +506,13 @@ def build_parser() -> argparse.ArgumentParser:
     l.add_argument("--store", default=None)
     l.add_argument("--json", action="store_true")
     l.set_defaults(func=cmd_experience)
+
+    st = exp.add_parser("stats", help="read-only accumulation statistics (no score, no verdict)")
+    st.add_argument("--store", default=None, help="experience store directory")
+    st.add_argument("--feedback-store", default=None, help="advisor feedback directory")
+    st.add_argument("--ledger", default=None, help="observation ledger path")
+    st.add_argument("--json", action="store_true")
+    st.set_defaults(func=cmd_experience)
 
     return parser
 
