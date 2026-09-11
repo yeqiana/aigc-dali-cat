@@ -70,7 +70,11 @@ pre_production/
     risk_assessor.py    只有 MEDIUM/HIGH 才成为风险，并保留证据
     recommendation.py   风险 -> 非约束性建议
     report_generator.py decision / confidence / boundaries
-  memory_adapter/       只做接口：读历史经验、写 Review Reference
+  memory_adapter/       只做接口：读历史经验、写 Review Reference、Experience Store 接口
+    adapter.py          MemoryAdapter（读历史 Story Lock、写 Review Reference）
+    experience_schema.py Experience / Risk Pattern / Creator Decision 契约与校验
+    experience_store.py  ExperienceStoreRepository 接口 + 记录构造器（不含数据库实现）
+    tests/               Experience 契约、接口、向后兼容测试
   observation/          Shadow Observation（观察记录 + 账本 + 人工反馈，不接 Runtime）
     schema.py           Episode Observation Record / Advisor Feedback 契约
     ledger.py           Episode Observation Ledger（append-only JSONL，生命周期）
@@ -175,15 +179,19 @@ OBSERVED -> FEEDBACK_PENDING -> COMPLETED
 边界：Feedback 不修改 Advisor、不修改 Story Lock、不变成硬规则、不引入评分；
 它只是后续 Experience Store 的数据入口。反馈与账本都在生产之外，失败也不影响生产。
 
+Experience Store 的定位、数据模型与接口（Design Only，尚无数据库实现）见
+`docs/Story_OS_PreProduction_Intelligence_Experience_Store_Integration_V1.0.md`。
+
 ---
 
 ## 八、测试
 
 ```powershell
-python -m pytest pre_production/tests pre_production/observation/tests -q
+python -m pytest pre_production/tests pre_production/observation/tests pre_production/memory_adapter/tests -q
 ```
 
 覆盖：Story DNA 单元测试、Schema Validator 契约测试、Similarity Evidence 测试、
 Advisor Report 契约测试、EP003 回归、Shadow Mode 非阻断性，以及 Shadow Observation
-（Observation Ledger Schema、Feedback Contract、人工反馈入口、Runner 生命周期、EP003 观察回归）。
-
+（Observation Ledger Schema、Feedback Contract、人工反馈入口、Runner 生命周期、EP003 观察回归），
+以及 Experience Store 接口层（Episode Experience / Risk Pattern / Creator Decision 契约、
+`ExperienceStoreRepository` 接口形态、Memory Adapter 向后兼容）。
