@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-11T13:02:02+08:00",
+  "evidence_only": true,
+  "direct_creative_authority": false,
+  "sample_size": 0,
+  "recent_limit": 5,
+  "account_baseline": {
+    "median_rates": {},
+    "median_views": null,
+    "note": "Account-relative descriptive baseline; not a platform universal threshold."
+  },
+  "top_observed": {
+    "views": [],
+    "save_rate": [],
+    "comment_rate": [],
+    "share_rate": [],
+    "completion_rate": []
+  },
+  "recent_episodes": [],
+  "next_story_input": {
+    "use": "Evidence for topic/concept selection and mechanism diversity.",
+    "do_not": [
+      "Do not mechanically repeat the top-view episode.",
+      "Do not treat one weak post as proof that high-ambition concepts are bad.",
+      "Do not override Story/Concept gates with engagement data."
+    ]
+  }
+}
