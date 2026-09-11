@@ -36,6 +36,12 @@ SYSTEM = Path(__file__).resolve().parent
 _CONFIG = storyos_config.load_config()
 CONTRACT = ROOT / str(storyos_config.get_path(_CONFIG, "paths.workflow_contract"))
 
+# STORY_OS_V2_6_2_CONTINUOUS_HOST_LOOP: `runtime.continuous_host_loop` used to have no reader
+# anywhere, so on WORK/WEB the DAG returned HOST_WAIT (rc=20) for every scoped step and the
+# image dispatch chain stayed manual (`image_scheduler.py run` by hand). The bound below keeps
+# the loop finite: only locally executable actions run, and only until the DAG stops asking.
+HOST_LOOP_MAX_CYCLES = 12
+
 
 def resolve_episode(raw: str) -> Path:
     ep = Path(raw).resolve()
@@ -75,6 +81,46 @@ def record_checkpoint_step(ep: Path, step: str, status: str, elapsed: float, not
     run([sys.executable, SYSTEM / "runtime_checkpoint.py", "record-step", ep, "--step", step, "--status", status, "--finished-at", perf.now(), "--note", f"{note} elapsed={elapsed:.3f}s"])
 
 
+def continuous_host_loop_enabled() -> bool:
+    return bool(storyos_config.get_path(_CONFIG, "runtime.continuous_host_loop", False))
+
+
+def host_loop_step(ep: Path) -> tuple[bool, str]:
+    """Run at most one locally executable host action.
+
+    Returns ``(progressed, detail)``; ``progressed=False`` means the pending action needs the
+    real host (Codex/ChatGPT Work), so the DAG result must be handed back unchanged.
+    """
+    import episode_runner
+    action = next_action.write(ep)
+    name = episode_runner.local_image_action(action)
+    if name is None:
+        return False, str(action.get("action") or "UNKNOWN")
+    rc = episode_runner.run_local_image_action(ep, action)
+    return True, f"{name} rc={rc}"
+
+
+def advance_host_loop(ep: Path, *, codex: str | None, timeout: int, run_id: str, trace_id: str,
+                      max_cycles: int | None = None) -> tuple[int, str]:
+    """Drain locally executable host actions, resuming the DAG between them.
+
+    Stops on the first DAG return code that is not HOST_WAIT, when no local executor owns the
+    pending action, or at the cycle cap. Never turns a required host decision into a PASS.
+    """
+    cap = int(max_cycles or HOST_LOOP_MAX_CYCLES)
+    rc = product_runtime_adapter.HOST_ACTION_REQUIRED_RC
+    note = ""
+    for cycle in range(1, cap + 1):
+        progressed, detail = host_loop_step(ep)
+        if not progressed:
+            return rc, f"{note} stop_cycle={cycle} host_owns={detail}".strip()
+        note = f"{note} cycle={cycle} {detail};".strip()
+        rc = runtime_dag.execute(ep, codex=codex, timeout=timeout, run_id=run_id, trace_id=trace_id)
+        if rc != product_runtime_adapter.HOST_ACTION_REQUIRED_RC:
+            return rc, f"{note} dag_rc={rc}".strip()
+    return rc, f"{note} max_cycles={cap}".strip()
+
+
 def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeout: int, request_file: str | None = None) -> int:
     if not full_auto:
         raise SystemExit("run/resume requires explicit --full-auto")
@@ -106,6 +152,14 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         execution_mode = str(((request_data or {}).get("runtime") or {}).get("execution_mode") or storyos_config.get_path(_CONFIG,"runtime.execution_mode"))
         if runtime in {"WORK", "WEB"} or execution_mode == "dag":
             rc = runtime_dag.execute(ep, codex=codex, timeout=timeout, run_id=run_id, trace_id=trace_id)
+            host_loop_note = ""
+            if rc == product_runtime_adapter.HOST_ACTION_REQUIRED_RC and continuous_host_loop_enabled():
+                t_loop = time.monotonic()
+                rc, host_loop_note = advance_host_loop(ep, codex=codex, timeout=timeout, run_id=run_id, trace_id=trace_id)
+                loop_elapsed = time.monotonic() - t_loop
+                loop_status = "HOST_WAIT" if rc == product_runtime_adapter.HOST_ACTION_REQUIRED_RC else ("PASS" if rc == 0 else "FAILED")
+                perf.record_step(ep, run_id, "HOST_LOOP", loop_status, loop_elapsed, host_loop_note[:500])
+                record_checkpoint_step(ep, "HOST_LOOP", loop_status, loop_elapsed, host_loop_note[:400])
             total = time.monotonic() - started
             final_status = "COMPLETE" if rc == 0 else ("HOST_WAIT" if rc == product_runtime_adapter.HOST_ACTION_REQUIRED_RC else "BLOCKED")
             perf.finish_run(ep, run_id, final_status, total)
@@ -117,7 +171,7 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
                 pass
             try: next_action.write(ep)
             except Exception: pass
-            runtime_trace.finish_run(ep, trace_id, run_id, final_status, note="runtime_dag")
+            runtime_trace.finish_run(ep, trace_id, run_id, final_status, note=f"runtime_dag {host_loop_note}".strip())
             return rc  # RUNTIME_DAG_V1
         t0 = time.monotonic()
         p = plan(ep)

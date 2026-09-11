@@ -124,6 +124,9 @@ def main():
     p = sub.add_parser("lineage"); p.add_argument("lineage_cmd", choices=["record","verify","show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("golden"); p.add_argument("golden_cmd", choices=["register","run","show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--resume", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None); p.add_argument("--request-file")
+    # STORY_OS_V2_6_2_CONTINUOUS_HOST_LOOP: the bounded recovery coordinator previously had no
+    # CLI entry, so next-action/image dispatch could only be reached by calling the script by path.
+    p = sub.add_parser("runner"); p.add_argument("episode_dir"); p.add_argument("--interval", type=int, default=10); p.add_argument("--resume", action="store_true")
     p = sub.add_parser("image-backend"); p.add_argument("backend_cmd", choices=["generate", "generate-for-frame", "self-test"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("delegated-delivery"); p.add_argument("episode_dir"); p.add_argument("delivery_cmd", choices=["build", "verify", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("delegated-approval"); p.add_argument("episode_dir"); p.add_argument("approval_cmd", choices=["record", "verify", "show"]); p.add_argument("kind", nargs="?", choices=["story_lock", "visual_lock", "release_lock"]); p.add_argument("extra", nargs=argparse.REMAINDER)
@@ -147,6 +150,10 @@ def main():
     if args.cmd == "golden": return forward("golden_episode_regression.py", [args.golden_cmd, *args.extra])
     if args.cmd == "resource" and args.resource_cmd=="register": return forward("resource_library.py", ["register", *args.extra])
     ep = Path(args.episode_dir).resolve()
+    if args.cmd == "runner":
+        extra = [str(ep), "--interval", str(args.interval)]
+        if args.resume: extra.append("--resume")
+        return forward("episode_runner.py", extra)
     if args.cmd in {"run","plan"}:
         subprocess.call([sys.executable, str(SYSTEM_DIR / "runtime_fast_path.py"), "prepare", str(ep)], cwd=ROOT)
     if args.cmd == "dag":

@@ -15,6 +15,11 @@ import runtime_timeout_policy
 
 TERMINAL = {"PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED"}
 
+# STORY_OS_V2_6_2_CONTINUOUS_HOST_LOOP: the image dispatch chain is a local executor, so the
+# workflow runner (not only a human) must be able to recognize and run it. Keep the action
+# list in one place instead of duplicating the set in every caller.
+LOCAL_IMAGE_ACTIONS = {"GENERATE_IMAGES", "RETRY_TECHNICAL_FAILURES", "REPAIR_FAILED_IMAGES"}
+
 
 def record_event(episode, event):
     # Merge lifecycle evidence without overwriting DAG checkpoints/step runs.
@@ -26,24 +31,44 @@ def record_event(episode, event):
     update_json(episode / runtime_checkpoint.REL, dict, mutate)
 
 
+def local_image_action(action: dict) -> str | None:
+    """Return the locally executable image action name, or None when the host owns it.
+
+    Pure decision helper: callers must not need to spawn anything to know whether the
+    pending action is image work that this machine executes itself.
+    """
+    if not isinstance(action, dict):
+        return None
+    if str(action.get("executor") or "") != "CODEX_IMAGE":
+        return None
+    name = str(action.get("action") or "")
+    return name if name in LOCAL_IMAGE_ACTIONS else None
+
+
+def run_local_image_action(episode: Path, action: dict) -> int:
+    """Execute the local image action and refresh next-action evidence afterwards."""
+    name = local_image_action(action)
+    if name is None:
+        raise ValueError(f"not a local image action: {action.get('action') if isinstance(action, dict) else action}")
+    import image_scheduler
+    import batch_scheduler
+    import storyos_config
+    if name == "RETRY_TECHNICAL_FAILURES":
+        image_scheduler.retry_tech(episode)
+    workers = int(storyos_config.get_path(storyos_config.load_config(), "production.max_inflight_images"))
+    worker_timeout = runtime_timeout_policy.seconds("image_worker_request")
+    try:
+        if batch_scheduler.should_use(episode):
+            return batch_scheduler.run(episode, workers, worker_timeout, None)
+        return image_scheduler.run_scheduler_async(episode, workers, worker_timeout, None)
+    finally:
+        next_action.write(episode)
+
+
 def execute_cycle(episode: Path) -> int:
     action = next_action.write(episode)
-    if action.get("executor") == "CODEX_IMAGE" and action.get("action") in {
-        "GENERATE_IMAGES", "RETRY_TECHNICAL_FAILURES", "REPAIR_FAILED_IMAGES"
-    }:
-        import image_scheduler
-        import batch_scheduler
-        import storyos_config
-        if action["action"] == "RETRY_TECHNICAL_FAILURES":
-            image_scheduler.retry_tech(episode)
-        workers = int(storyos_config.get_path(storyos_config.load_config(), "production.max_inflight_images"))
-        worker_timeout = runtime_timeout_policy.seconds("image_worker_request")
-        try:
-            if batch_scheduler.should_use(episode):
-                return batch_scheduler.run(episode, workers, worker_timeout, None)
-            return image_scheduler.run_scheduler_async(episode, workers, worker_timeout, None)
-        finally:
-            next_action.write(episode)
+    if local_image_action(action) is not None:
+        return run_local_image_action(episode, action)
     return runtime_dag.execute(episode)
 
 

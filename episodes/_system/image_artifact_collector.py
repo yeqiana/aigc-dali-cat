@@ -56,13 +56,37 @@ def _local_fallback_allowed(workdir: Path) -> bool:
     return Path(workdir).name.startswith("story-os-image-")
 
 
+def codex_home() -> Path:
+    """Resolve the Codex home used by the image worker.
+
+    The Codex image tool writes into ``$CODEX_HOME/generated_images/<thread_id>``.
+    Recovery must read the same root; otherwise a successfully generated image is
+    reported as a silent technical failure and the frame is regenerated for nothing.
+    """
+    override = str(os.environ.get("CODEX_HOME") or "").strip()
+    return Path(override).expanduser() if override else Path.home() / ".codex"
+
+
+def generated_images_root() -> Path:
+    return codex_home() / "generated_images"
+
+
+def _call_ids(text: str) -> list[str]:
+    out: list[str] = []
+    for raw in re.findall(r"call_id=([A-Za-z0-9._-]+)", text or ""):
+        if raw and raw not in out:
+            out.append(raw)
+    return out
+
+
 def recover_codex_generated(log: Path, workdir: Path) -> Path | None:
     candidates: list[Path] = []
     if log.is_file():
         text = log.read_text(encoding="utf-8", errors="replace")
+        root = generated_images_root()
         # Primary recovery: use the exact Codex thread directory so parallel workers cannot cross-pick images.
         for thread_id in _thread_ids(text):
-            thread_dir = Path.home() / ".codex" / "generated_images" / thread_id
+            thread_dir = root / thread_id
             if not thread_dir.is_dir():
                 continue
             try:
@@ -71,13 +95,24 @@ def recover_codex_generated(log: Path, workdir: Path) -> Path | None:
                         candidates.append(probe.resolve())
             except OSError:
                 pass
+        # Secondary recovery: the image tool names the artifact after its call_id. When the
+        # save landed outside the parsed thread directory, recover it by that exact id so a
+        # real picture is not thrown away and regenerated.
+        if root.is_dir():
+            for call_id in _call_ids(text):
+                try:
+                    for probe in root.rglob(call_id + ".*"):
+                        if probe.is_file() and probe.suffix.lower() in {".png", ".jpg", ".jpeg"} and valid_image(probe):
+                            candidates.append(probe.resolve())
+                except OSError:
+                    pass
         # Compatibility recovery for logs that contain an explicit generated image path.
         for raw in re.findall(r'(?i)(?:[A-Za-z]:)?[^"\'\r\n]*?\.codex[\\/]+generated_images[\\/]+[^"\'\r\n]+?\.(?:png|jpe?g)', text):
             cleaned = raw.strip().replace("\\\\", "\\")
             p = Path(cleaned)
             probes = [p]
             if not p.is_absolute():
-                probes += [workdir / p, Path.home() / p]
+                probes += [workdir / p, Path.home() / p, root / p.name]
             for probe in probes:
                 try:
                     if valid_image(probe.resolve()):
@@ -104,7 +139,19 @@ def self_test() -> None:
     assert _thread_ids(sample) == ["abc-123"]
     assert _local_fallback_allowed(Path("story-os-image-abc")) is True
     assert _local_fallback_allowed(Path("repository-root")) is False
-    print("IMAGE ARTIFACT COLLECTOR V2.6.1 THREAD-SCOPED SELF-TEST PASS")
+    assert _call_ids("WARN failed to save generated image call_id=exec-1234 output_dir=X") == ["exec-1234"]
+    previous = os.environ.get("CODEX_HOME")
+    try:
+        os.environ["CODEX_HOME"] = str(tempfile.gettempdir())
+        assert generated_images_root() == Path(tempfile.gettempdir()) / "generated_images"
+        os.environ.pop("CODEX_HOME", None)
+        assert generated_images_root() == Path.home() / ".codex" / "generated_images"
+    finally:
+        if previous is None:
+            os.environ.pop("CODEX_HOME", None)
+        else:
+            os.environ["CODEX_HOME"] = previous
+    print("IMAGE ARTIFACT COLLECTOR V2.6.2 CODEX_HOME THREAD-SCOPED SELF-TEST PASS")
 
 if __name__ == "__main__":
     self_test()

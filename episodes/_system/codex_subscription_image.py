@@ -223,10 +223,19 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             cmd.extend(['-i', str(ref)])
         cmd.append('-')
         log.parent.mkdir(parents=True, exist_ok=True)
+        # 每个图片 worker 使用独立 CODEX_HOME，避免多个并发 worker 共享
+        # ~/.codex/generated_images 导致 provider artifact save collision。
+        # 该目录只影响 Codex CLI 临时产物，不改变 Story OS 资产权威路径。
+        worker_env = os.environ.copy()
+        worker_env.setdefault("STORY_OS_WORKER_ID", str(uuid.uuid4()))
+        worker_codex_home = workdir / "codex-home"
+        worker_codex_home.mkdir(parents=True, exist_ok=True)
+        worker_env["CODEX_HOME"] = str(worker_codex_home)
         with log.open('w', encoding='utf-8', newline='\n') as log_handle:
             try:
                 completed = subprocess.run(
                     cmd,
+                    env=worker_env,
                     input=worker_prompt(scene, local_refs, size, visual_contract, frame_contract_text, image_model, image_quality, strict_model),
                     text=True,
                     encoding="utf-8",
