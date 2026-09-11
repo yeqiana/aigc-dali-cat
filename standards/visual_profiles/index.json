@@ -1,0 +1,62 @@
+{
+  "schema_version": 2,
+  "registry_version": "1.2",
+  "platform_min_version": "2.8.0",
+  "default_profile": "M00",
+  "profiles": [
+    {
+      "id": "M00",
+      "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+      "status": "active",
+      "format": "legacy_v1",
+      "default_when_unspecified": true,
+      "note": "账号默认母版的原始锁定资产；字节不变，历史 profile_sha256 仍指向本文件。治理化表达见 M00_REAL_WORLD_DOCUMENTARY_V1。"
+    },
+    {
+      "id": "M00_REAL_WORLD_DOCUMENTARY_V1",
+      "path": "standards/visual_profiles/profiles/M00_REAL_WORLD_DOCUMENTARY_V1.json",
+      "status": "active",
+      "format": "governed_v2",
+      "legacy_locked_asset": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json"
+    },
+    {
+      "id": "M01_ANCIENT_MUNDANE_LIFE_V1",
+      "path": "standards/visual_profiles/profiles/M01_ANCIENT_MUNDANE_LIFE_V1.json",
+      "status": "active",
+      "format": "governed_v2"
+    },
+    {
+      "id": "M02_HEAVEN_MUNDANE_WORKER_V1",
+      "path": "standards/visual_profiles/profiles/M02_HEAVEN_MUNDANE_WORKER_V1.json",
+      "status": "active",
+      "format": "governed_v2"
+    },
+    {
+      "id": "M03_JIANGNAN_IMMERSIVE_LIFE_V1",
+      "path": "standards/visual_profiles/profiles/M03_JIANGNAN_IMMERSIVE_LIFE_V1.json",
+      "status": "active",
+      "format": "governed_v2"
+    },
+    {
+      "id": "SPIRITED_AWAY_LIVE_ACTION_V1",
+      "path": "standards/visual_profiles/SPIRITED_AWAY_LIVE_ACTION_V1.json",
+      "status": "active",
+      "format": "legacy_v1",
+      "note": "单集显式锁定的历史资产；production 的 profile_sha256 仍指向本文件，Phase 2.2 不迁移、不改写。"
+    }
+  ],
+  "aliases": [
+    {
+      "old_id": "M00_ANCIENT_DAILY_LIFE_V1",
+      "status": "deprecated",
+      "replacement": "M01_ANCIENT_MUNDANE_LIFE_V1",
+      "note": "从未发布 Profile 资产的占位 id（历史 runtime-request 曾引用）；禁止继续佼用，但保留记录以便审计。"
+    },
+    {
+      "old_id": "M00_HEAVEN_WORKER_DAILY_V1",
+      "status": "deprecated",
+      "replacement": "M02_HEAVEN_MUNDANE_WORKER_V1",
+      "note": "从未发布 Profile 资产的占位 id；禁止继续佼用，仅保留映射记录。"
+    }
+  ]
+}

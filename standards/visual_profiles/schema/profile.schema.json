@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "storyos://standards/visual_profiles/schema/profile.schema.json",
+  "title": "Story OS Visual Profile",
+  "description": "Visual Profile contract. Existence is decided by standards/visual_profiles/index.json, never by a directory glob and never by a silent default. Two branches keep shipped profiles legal without rewriting them: legacy profiles (no profile_schema_version >= 2) keep their shipped key spellings, governed profiles must carry the full Visual Profile Governance V1.0 field set.",
+  "type": "object",
+  "properties": {
+    "profile_schema_version": { "type": "integer", "minimum": 1 },
+    "schema_version": { "type": "integer", "minimum": 1 },
+    "profile_version": { "type": ["string", "number"] },
+    "platform_min_version": { "type": "string" },
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "profile_id": { "type": "string", "minLength": 1 },
+    "profile_name": { "type": "string", "minLength": 1 },
+    "profile_name_en": { "type": "string" },
+    "scope": { "type": "string", "minLength": 1 },
+    "reality_basis": { "type": ["string", "object"] },
+    "capture_philosophy": { "type": ["string", "array", "object"] },
+    "camera_language": { "type": ["string", "array", "object"] },
+    "realism_level": { "type": ["string", "number", "object"] },
+    "lighting_rules": { "type": ["string", "array", "object"] },
+    "prohibited_patterns": { "type": "array", "items": { "type": "string" } },
+    "compatible_story_types": { "type": "array", "items": { "type": "string" } },
+    "default_when_unspecified": { "type": "boolean" },
+    "principle": { "type": "string" },
+    "precedence": { "type": "array" },
+    "visual_dna": { "type": "object" },
+    "texture_translation": { "type": "object" },
+    "must_keep": { "type": "array" },
+    "forbidden": { "type": "array" },
+    "anti_homogeneity": { "type": "object" },
+    "anchors": { "type": "array" }
+  },
+  "allOf": [
+    {
+      "$comment": "GOVERNED BRANCH: a profile that declares profile_schema_version >= 2 must carry the Visual Profile Governance V1.0 field set.",
+      "if": {
+        "required": ["profile_schema_version"],
+        "properties": {
+          "profile_schema_version": { "type": "integer", "minimum": 2 }
+        }
+      },
+      "then": {
+        "required": [
+          "id",
+          "name",
+          "scope",
+          "reality_basis",
+          "capture_philosophy",
+          "camera_language",
+          "realism_level",
+          "lighting_rules",
+          "prohibited_patterns",
+          "compatible_story_types"
+        ]
+      }
+    },
+    {
+      "$comment": "LEGACY BRANCH: shipped schema_version-1 profiles keep profile_id / profile_name spellings and are not rewritten by this phase.",
+      "if": {
+        "not": {
+          "required": ["profile_schema_version"],
+          "properties": {
+            "profile_schema_version": { "type": "integer", "minimum": 2 }
+          }
+        }
+      },
+      "then": {
+        "required": ["profile_id", "profile_name", "scope"]
+      }
+    }
+  ]
+}

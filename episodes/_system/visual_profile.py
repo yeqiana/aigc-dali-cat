@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import storyos_config
 import story_json
+import visual_profile_registry as registry
 
 SYSTEM_DIR = Path(__file__).resolve().parent
 ROOT = SYSTEM_DIR.parents[1]
@@ -51,7 +52,39 @@ def default_profile() -> dict:
 
 
 def list_registered_profiles() -> list[dict]:
-    """Enumerate visual profiles registered under standards/visual_profiles."""
+    """Enumerate Visual Profiles from the registry (single source of truth).
+
+    Governance Phase 2.1 moved existence out of a directory glob and into
+    standards/visual_profiles/index.json. The legacy glob is kept only as a
+    read-only fallback when the registry itself is unavailable, so a listing
+    command still works on an unmigrated tree.
+    """
+    try:
+        entries = registry.registry_entries(ROOT)
+    except registry.VisualProfileError:
+        return _glob_registered_profiles()
+    profiles = []
+    for entry in entries:
+        pid = str(entry["id"]).strip()
+        rel = str(entry["path"]).strip()
+        name = Path(rel).stem
+        try:
+            data = load_json(ROOT / rel)
+        except (SystemExit, OSError):
+            data = {}
+        if isinstance(data, dict):
+            name = str(data.get("profile_name") or data.get("name") or "").strip() or name
+        profiles.append({
+            "profile_id": pid,
+            "profile_name": name,
+            "profile_path": rel,
+            "status": entry.get("status"),
+        })
+    return profiles
+
+
+def _glob_registered_profiles() -> list[dict]:
+    """Legacy fallback: enumerate profile documents by directory glob."""
     profiles = []
     profile_dir = ROOT / "standards" / "visual_profiles"
     if profile_dir.is_dir():
@@ -60,12 +93,13 @@ def list_registered_profiles() -> list[dict]:
                 data = load_json(p)
             except SystemExit:
                 continue
-            pid = str(data.get("profile_id") or "").strip()
+            pid = str(data.get("profile_id") or data.get("id") or "").strip()
             if pid:
                 profiles.append({
                     "profile_id": pid,
-                    "profile_name": str(data.get("profile_name") or "").strip() or p.stem,
+                    "profile_name": str(data.get("profile_name") or data.get("name") or "").strip() or p.stem,
                     "profile_path": p.relative_to(ROOT).as_posix(),
+                    "status": None,
                 })
     return profiles
 
