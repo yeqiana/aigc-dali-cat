@@ -123,6 +123,7 @@ def main():
     p = sub.add_parser("quality"); p.add_argument("quality_cmd", choices=["enable","verify-story","verify-preimage","verify-release","show"]); p.add_argument("episode_dir")
     p = sub.add_parser("lineage"); p.add_argument("lineage_cmd", choices=["record","verify","show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("golden"); p.add_argument("golden_cmd", choices=["register","run","show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("create"); p.add_argument("request_text"); p.add_argument("--visual-profile", default="M00"); p.add_argument("--full-auto", action="store_true")
     p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--resume", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None); p.add_argument("--request-file")
     # STORY_OS_V2_6_2_CONTINUOUS_HOST_LOOP: the bounded recovery coordinator previously had no
     # CLI entry, so next-action/image dispatch could only be reached by calling the script by path.
@@ -132,6 +133,19 @@ def main():
     p = sub.add_parser("delegated-approval"); p.add_argument("episode_dir"); p.add_argument("approval_cmd", choices=["record", "verify", "show"]); p.add_argument("kind", nargs="?", choices=["story_lock", "visual_lock", "release_lock"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     args = ap.parse_args()
 
+    if args.cmd == "create":
+        from story_creator import create_episode
+        episode = create_episode(ROOT, args.request_text, args.visual_profile)
+        print(str(episode))
+        if args.full_auto:
+            from create_pipeline import CreatePipeline
+            result = CreatePipeline(ROOT).run(
+                episode,
+                {"request": args.request_text, "visual_profile": args.visual_profile},
+            )
+            print({"pipeline": result.steps, "status": result.status})
+            return forward("workflow_runner.py", ["run", str(episode), "--full-auto"])
+        return 0
     if args.cmd == "evidence": return forward("evidence_tool.py", args.extra)
     if args.cmd == "config": return forward("storyos_config.py", [args.config_cmd])
     if args.cmd == "doctor": return forward("story_os_doctor.py", [])
