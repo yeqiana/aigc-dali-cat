@@ -22,9 +22,11 @@
 ## 目录
 
 - `documentary-realism/`：现实侵入式伪纪录片通用提示词模板。
+- `visual-experience/`：4 份 `standards/` 视觉经验规范的 **引用式 Pattern Source**（非权威摘要 + 权威指针）。
 
 ## 边界说明
 
 `standards/` 中仍在 `AUTHORITY_INDEX.json` 登记为 `active_subordinate` 的规范
 （导演镜头光影、环境物理与异常放大、真实性与共享风格锚点、设备物理档案与参考预算）
-本目录仅登记其“经验来源”定位，物理文件仍保留在 `standards/`，未被移动。
+采用**方案 B（Pattern Source 引用式）**：`visual-experience/` 仅登记「经验来源 + 非权威摘要 + 权威指针」，
+物理文件仍保留在 `standards/`，未被移动；门禁与权威判定仍从 `standards/` 取。

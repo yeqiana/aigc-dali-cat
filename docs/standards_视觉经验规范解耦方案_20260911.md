@@ -4,7 +4,7 @@
 
 定位：仓库治理第 4 步交付物。原计划把视觉经验类规范从 `standards/` 迁往 `library/visual-patterns/`，执行前扫描发现存在生产代码硬引用，按治理规则 5.2「当前生产代码引用 → 停止并报告」暂停，改为先交付解耦方案。
 
-状态：Prepared（本文件只是方案，未改动任何代码或规范）。
+状态：Executed（方案 B 已执行，2026-09-11）。`standards/` 原文件与代码均未改动。
 
 ---
 
@@ -71,6 +71,16 @@
 1. 本轮采用方案 B：`library/visual-patterns/` 建立引用式 Pattern Source，`standards/` 原文件不动。
 2. 方案 C 延后，等出现独立授权窗口且愿意承担契约回归成本时再评估。
 
+### 执行记录（2026-09-11）
+
+已按方案 B 执行：
+
+1. 新增 `library/visual-patterns/visual-experience/README.md`：4 份 `standards/` 视觉经验规范的引用式 Pattern Source（经验来源 + 非权威摘要 + 权威指针），另登记 `documentary-realism/` 实体模板。
+2. 更新 `library/visual-patterns/README.md`：目录新增 `visual-experience/`，边界说明写明采用方案 B。
+3. 未改动 `standards/AUTHORITY_INDEX.json`、`contract_sync.py`、`story_os_doctor.py`、`standards/制作规范_正式版.md` 与 4 份原规范。
+
+回归：`contract_sync.py` PASS、`story_os_doctor.py` errors=0。方案 C 仍为待授权项。
+
 ---
 
 ## 五、禁止操作（本轮）
@@ -80,4 +90,3 @@
 - 修改 `contract_sync.py` / `story_os_doctor.py`。
 - 修改 `standards/制作规范_正式版.md` 正文。
 - 修改 `episodes/**` 与 EP003 生产状态。
-
