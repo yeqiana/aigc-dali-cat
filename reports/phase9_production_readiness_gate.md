@@ -2,7 +2,7 @@
 
 更新时间：
 
-2026-09-10
+2026-09-11
 
 ## 1. Gate Purpose
 
@@ -22,9 +22,11 @@ Phase8/Phase9 Code Acceptance 已完成。
 
 测试证据：
 
-- tests/platform: 329 passed
-- tests/system: 186 passed + 16 subtests
-- Total: 515 passed + 16 subtests
+- tests/platform: 333 passed
+- tests/system: 190 passed + 1 failed + 16 subtests
+- Total: 523 passed + 1 failed + 16 subtests
+
+口径修正（2026-09-11 二次实测）：本节此前记 329 / 186、合计 515 全绿，与二次实测不符，现按实测改写。tests/platform 已排除 8 个 Production Learning Loop 测试文件（其实现与测试存在 API 漂移，本轮不纳入冻结，详见 phase9_final_freeze_scope.md）；未排除时全树为 336 passed / 3 failed / 3 collection errors。tests/system 的 1 项失败为 HEAD 既有（test_governance_convergence.py::EvidenceRecovery::test_formal_review_reuses_only_verified_summary，已用 git stash 单独移除本次 episodes/_system 改动复跑确认）。下方带日期的递增记录沿用当时计数口径，不回填。
 
 2026-09-10 追加：本批交付常驻 Runtime Worker 命令载体，tests/platform 由 211 增至 234（+23）。
 
@@ -158,7 +160,7 @@ scripts/phase9_canary_drill.py  一次真实执行 47/47 步 0 失败，退出�
 ✅ 3. Redis Instance Validation —— 已接入验证（127.0.0.1:6379，8.10.1，AOF aof_enabled=1）
 ✅ 4. MySQL Repository Validation —— 已接入验证（121.89.82.216:9000 / story_os_runtime / 8.0.46 / utf8mb4）
 🟡 1. Real Runtime Environment —— 部署脚本已交付（scripts/phase9_runtime_deploy.py，2026-09-10，dry-run 验证），注册计划任务仍待授权
-🟡 5. Real Metrics Pipeline —— /metrics 采集端点已交付并真机 E2E 验证（P9.33）；真实 Prometheus / Grafana 采集实例待接
+🟡 5. Real Metrics Pipeline —— /metrics 采集端点已交付并真机 E2E 验证（P9.33）；Prometheus scrape 配置与 Grafana dashboard 已交付（P9.34.4）；真实 Prometheus / Grafana 采集实例待接
 🟡 6. Real Alert Channel —— WebhookAlertChannel + 本地接收器已交付并真机 E2E 验证（P9.32）；真实外部端点待操作者提供 URL 接入
 🟡 7. Production Ownership Switch —— 切换执行器已交付（P9.34.3，dry-run 验证），执行切换待授权
 🟡 8. Recovery 自动执行 —— 自动触发已接线（--auto-recover 默认关闭，P9.34.2），开启待授权
@@ -194,3 +196,7 @@ Phase10 Enterprise Runtime Platform 暂缓，等待 Production Readiness Gate �
 2026-09-10 更新（自愈自动触发）：新增自愈编排 runtime_auto_recovery（P9.34.2），Worker 挂 --auto-recover 与 --restart-agent-command（默认关闭）；真机 E2E 在真实 Redis 下注入 agent/workflow 失败触发 CRITICAL runtime_unhealthy，自动执行 RESTART_AGENT 且 auto_recovery_result 落盘 EXECUTED。第 8 项由「tick 内自动触发未开启」收敛为「自动触发已接线（默认关闭），开启待授权」。
 
 2026-09-10 更新（生产归属切换）：新增 runtime_primary_persistence + phase9_production_switch（P9.34.3），status / switch 默认 dry-run，--apply 才落盘 meta/runtime/runtime-primary.json；dry-run 确认当前 V2_RUNTIME，切换动作正确但未执行。第 7 项由「未执行归属切换」收敛为「切换执行器已交付，执行切换待授权」。
+
+2026-09-11 更新（Metrics 采集配置）：新增 config/monitoring/prometheus/prometheus.yml（job storyos-runtime，target 127.0.0.1:18081）与 config/monitoring/grafana/storyos-runtime-dashboard.json（10 面板，与 render_metrics 20 组指标契约对齐，Python json.load 校验通过）。本批纯配置资产，无运行时代码改动。第 5 项由「端点已交付、采集实例待接」收敛为「采集侧配置已交付，真实 Prometheus / Grafana 实例接入待操作者」。
+
+2026-09-11 更新（授权就绪清单 + 全量回归复核）：新增 reports/phase9_production_authorization_ready.md（P9.35），把 #1/#5/#6/#7/#8 五项收敛为「授权」或「外部资产」两类，并列出每项精确命令与回滚方式。当日重新跑全量回归：tests/platform 333 passed、tests/system 190 passed + 1 failed + 16 subtests（合计 523 passed + 1 failed + 16 subtests；1 项失败为 HEAD 既有，见第 2 节口径修正）。Phase9 代码与配置侧交付到此完成，剩余仅授权与外部资产接入。

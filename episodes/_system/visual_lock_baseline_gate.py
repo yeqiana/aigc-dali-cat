@@ -20,7 +20,7 @@ ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
 REL=Path("meta/visual-lock-baseline-review.json")
 CANDIDATE_REL=Path("meta/.visual-lock-baseline-review.candidate.json")
-CHECKS=("visual_profile_match","reality_first","ordinary_life_density","unposed_capture","not_cinematic","capture_credibility","identity_usable","group_members_distinct")
+CHECKS=("visual_profile_match","reality_first","ordinary_life_density","unposed_capture","not_cinematic","capture_credibility","identity_usable","group_members_distinct","identity_anchor_usable")
 
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read_json(p):
@@ -115,8 +115,9 @@ def critic_prompt(ep):
 Inspect the attached baseline image itself. This PASS unlocks the parallel-three Visual Lock images and may create the provisional character pixel master, so fail closed on visible identity/capture/style problems.
 Required checks: {list(CHECKS)}
 The target is an ordinary believable phone/photo baseline: reality-first, unposed, non-cinematic, usable identity, distinct group members where applicable.
+For core characters, this baseline is also Frame01 Character Identity Anchor evidence. The image must be usable as a later identity reference: clear face visibility, recognizable person, not only back view, not too distant, and suitable for Character Master creation.
 Write ONLY JSON to {repo_rel(candidate)}:
-{{"decision":"PASS|FAIL","checks":{{"visual_profile_match":"PASS|FAIL","reality_first":"PASS|FAIL","ordinary_life_density":"PASS|FAIL","unposed_capture":"PASS|FAIL","not_cinematic":"PASS|FAIL","capture_credibility":"PASS|FAIL","identity_usable":"PASS|FAIL","group_members_distinct":"PASS|FAIL"}},"face_boxes":[{{"character_id":"P01","x":0.0,"y":0.0,"w":0.1,"h":0.1}}],"note":"actual-pixel evidence"}}
+{{"decision":"PASS|FAIL","checks":{{"visual_profile_match":"PASS|FAIL","reality_first":"PASS|FAIL","ordinary_life_density":"PASS|FAIL","unposed_capture":"PASS|FAIL","not_cinematic":"PASS|FAIL","capture_credibility":"PASS|FAIL","identity_usable":"PASS|FAIL","group_members_distinct":"PASS|FAIL","identity_anchor_usable":"PASS|FAIL"}},"face_boxes":[{{"character_id":"P01","x":0.0,"y":0.0,"w":0.1,"h":0.1}}],"note":"actual-pixel evidence"}}
 Face boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.
 Do not modify source files or the image.
 """

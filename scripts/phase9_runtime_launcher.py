@@ -58,6 +58,8 @@ def build_children(
     alert_webhook_format="json",
     metrics_host="127.0.0.1",
     metrics_port=18081,
+    auto_recover=False,
+    restart_agent_command=None,
 ) -> list[ChildSpec]:
     """构造 Worker 与 Metrics 端点的子进程命令；两者共享同一个 metrics 文件。"""
     run_root = Path(run_root)
@@ -83,6 +85,10 @@ def build_children(
             "--alert-webhook", alert_webhook,
             "--alert-webhook-format", alert_webhook_format,
         ]
+    if auto_recover:
+        worker_cmd += ["--auto-recover"]
+    if restart_agent_command:
+        worker_cmd += ["--restart-agent-command", restart_agent_command]
 
     exporter_cmd = [
         sys.executable, str(EXPORTER_SCRIPT),
@@ -188,6 +194,8 @@ def _parse_args(argv):
     parser.add_argument("--run-root", default=str(PROJECT_ROOT / ".storyos" / "runtime-launcher"))
     parser.add_argument("--alert-webhook", default=None)
     parser.add_argument("--alert-webhook-format", default="json", choices=("json", "dingtalk"))
+    parser.add_argument("--auto-recover", action="store_true")
+    parser.add_argument("--restart-agent-command", default=None)
     parser.add_argument("--metrics-port", type=int, default=18081)
     parser.add_argument(
         "--evidence-file",
@@ -212,6 +220,8 @@ def main(argv=None) -> int:
         alert_webhook=args.alert_webhook,
         alert_webhook_format=args.alert_webhook_format,
         metrics_port=args.metrics_port,
+        auto_recover=args.auto_recover,
+        restart_agent_command=args.restart_agent_command,
     )
     env = dict(os.environ)
     launcher = RuntimeLauncher()

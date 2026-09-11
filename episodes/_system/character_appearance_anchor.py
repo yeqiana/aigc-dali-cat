@@ -50,6 +50,36 @@ def required(ep: Path) -> bool:
     return world_identity_contract.required(ep)
 
 
+def verify_frame01_identity_anchor(ep: Path) -> list[str]:
+    """Verify that character-driven episodes have a Frame01 identity entry point.
+
+    Frame01 is the preferred character identity anchor. This check only enforces
+    the production contract; it does not require every story to expose a face
+    when the story has no explicit character protagonist.
+    """
+    ep = Path(ep).resolve()
+    errors = []
+    char_path = ep / CHAR_REL
+    if not char_path.is_file():
+        return ["FRAME01_IDENTITY_ANCHOR_CHARACTER_CONTRACT_MISSING"]
+
+    contract = read_json(char_path)
+    members = ((contract.get("cast") or {}).get("members") or [])
+    if not members:
+        return []
+
+    anchor_path = ep / REL
+    if not anchor_path.is_file():
+        errors.append("FRAME01_IDENTITY_ANCHOR_MISSING")
+        return errors
+
+    anchor = read_json(anchor_path)
+    if not (anchor.get("members") or {}):
+        errors.append("FRAME01_IDENTITY_ANCHOR_ZERO_MEMBERS")
+
+    return errors
+
+
 def _source_errors(ep: Path) -> list[str]:
     errors = []
     cp = ep / CHAR_REL

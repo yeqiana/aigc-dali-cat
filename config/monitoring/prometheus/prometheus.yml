@@ -1,0 +1,27 @@
+# Story OS V3 Phase9 — Prometheus 采集配置（阻塞项 #5 配置侧交付）
+# 说明：本文件是采集侧配置模板；真实 Prometheus 实例由操作者部署后启用。
+# 采集目标：scripts/phase9_metrics_exporter.py 暴露的 /metrics（默认 127.0.0.1:18081）。
+# 指标名与标签以 scripts/phase9_runtime_worker.py 的 render_metrics 为准（20 组指标）。
+#
+# 接入真实实例时：
+#   1. 确认 exporter 已随 RuntimeLauncher 启动（--metrics-port 默认 18081）。
+#   2. 将本文件作为 Prometheus 的 scrape_configs 来源（或直接替换 prometheus.yml）。
+#   3. 将 config/monitoring/grafana/storyos-runtime-dashboard.json 导入 Grafana，
+#      数据源选择本 Prometheus 实例。
+
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+  scrape_timeout: 10s
+
+scrape_configs:
+  - job_name: storyos-runtime
+    metrics_path: /metrics
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    static_configs:
+      - targets:
+          - 127.0.0.1:18081
+        labels:
+          service: storyos-runtime
+          runtime: V3_RUNTIME

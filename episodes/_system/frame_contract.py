@@ -340,7 +340,10 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         # the same file once per compile/verify frame is redundant and can trigger
         # Windows file/path failures during verify_all's second compile pass.
         ca_errors = character_appearance_anchor.verify(ep)
-        character_anchor = character_appearance_anchor.build(ep, write=bool(ca_errors))
+        ca_errors.extend(character_appearance_anchor.verify_frame01_identity_anchor(ep))
+        if ca_errors:
+            raise ValueError("; ".join(ca_errors))
+        character_anchor = character_appearance_anchor.build(ep, write=False)
     excerpt = extract_frame_excerpt(storyboard_path, n)
     refs = resolved_references(ep, n)
 
