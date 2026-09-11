@@ -666,12 +666,12 @@ Return one row for EVERY attached frame. If any hard check fails, mark it false,
 def _rebind_incremental_captions(ep: Path) -> None:
     """Keep the V2.0.3.4 caption binding fresh for frame semantic evidence.
 
-    Both writers below (full critic rewrite and the reuse path) leave the
-    per-frame reviews and the summary without caption SHAs, which the delivery
-    machine gate rejects.  The rebind only rewrites those derived fields and the
-    incremental helper refuses to run while assets/contracts are dirty, so this
-    stays a bookkeeping step and never turns a stale review into a passing one.
+    Caption binding is a release/delivery concern. A verified formal review may
+    exist before ``release-manifest.json`` is created; in that state the reuse
+    path must stay metadata-only and must not rescan frame assets.
     """
+    if not (ep / "meta/release-manifest.json").is_file():
+        return
     try:
         import incremental_frame_review as incremental
 
