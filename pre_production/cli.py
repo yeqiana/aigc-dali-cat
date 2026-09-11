@@ -8,6 +8,9 @@ Usage:
   python -m pre_production observe record   [episode_dir] [--report ADVISOR_REPORT] [--ledger LEDGER] [--dry-run]
   python -m pre_production observe feedback --report ADVISOR_REPORT --creator-decision D --recommendation-result R --risk-acknowledged yes|no [--dry-run]
   python -m pre_production observe list     [--ledger LEDGER] [--episode ID] [--json]
+  python -m pre_production experience save  --feedback PFB-*.json [--store DIR] [--observation OBS|FILE] [--similarity SIMILARITY_REPORT] [--dry-run]
+  python -m pre_production experience query [--episode ID] [--story-dna REF] [--risk-type TYPE] [--token T]... [--limit N] [--json]
+  python -m pre_production experience list  [--kind all|experience|pattern|decision] [--episode ID] [--json]
   python -m pre_production validate <yaml_file> --kind dna|similarity|advisor|review|feedback|observation
 """
 from __future__ import annotations
@@ -18,12 +21,23 @@ from pathlib import Path
 
 import yaml
 
+from .memory_adapter import (
+    KIND_DECISION,
+    KIND_EXPERIENCE,
+    KIND_PATTERN,
+    KINDS,
+    JsonlExperienceStore,
+    ingest_feedback,
+    pattern_from_evidence,
+    validate_risk_pattern,
+)
 from .observation import (
     CREATOR_DECISIONS,
     DEFAULT_LEDGER_PATH,
     RECOMMENDATION_RESULTS,
     apply_feedback,
     build_feedback,
+    find_record,
     read_records,
     run_observation,
     save_feedback,
@@ -194,6 +208,168 @@ def cmd_observe(args) -> int:
     return 2
 
 
+def _load_json(path):
+    """Load one JSON mapping; an unreadable or malformed file yields None."""
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def _experience_store(args) -> JsonlExperienceStore:
+    return JsonlExperienceStore(getattr(args, "store", None))
+
+
+def _resolve_observation(args):
+    """Resolve --observation to a record: a JSON file path, else an observation id."""
+    value = getattr(args, "observation", None)
+    if not value:
+        return None
+    path = Path(value)
+    if path.is_file():
+        return _load_json(path)
+    ledger = Path(args.ledger) if args.ledger else DEFAULT_LEDGER_PATH
+    record = find_record(ledger, value)
+    if record is None:
+        print("warning    : observation not found in the ledger, keeping the reference only:", value)
+        return {"observation_id": value}
+    return record
+
+
+def _record_line(kind: str, record: dict) -> str:
+    """One plain read-only line for the CLI; no sort, no score, no judgement."""
+    if kind == KIND_PATTERN:
+        return " ".join([
+            str(record.get("pattern_id")),
+            str(record.get("risk_type")),
+            str(record.get("pattern_description")),
+            "episodes=" + ",".join(str(item) for item in record.get("related_episode") or []),
+        ])
+    if kind == KIND_DECISION:
+        return " ".join([
+            str(record.get("decision_experience_id")),
+            str(record.get("episode_id")),
+            str(record.get("advisor_decision")),
+            "->",
+            str(record.get("creator_action")),
+            str(record.get("recommendation_result")),
+        ])
+    return " ".join([
+        str(record.get("experience_id")),
+        str(record.get("episode_id")),
+        str(record.get("advisor_report_reference")),
+    ])
+
+
+def _patterns_from_similarity(similarity: dict) -> list:
+    """Risk patterns from a similarity report; incomplete evidence is skipped."""
+    records: list = []
+    for item in similarity.get("evidence") or []:
+        if not isinstance(item, dict) or not item.get("matched_features"):
+            continue
+        record = pattern_from_evidence(item)
+        if not validate_risk_pattern(record):
+            records.append(record)
+    return records
+
+
+def _experience_save(args) -> int:
+    feedback = _load_json(args.feedback)
+    if not feedback:
+        print("ERROR: could not load advisor feedback:", args.feedback)
+        return 1
+    patterns = []
+    if args.similarity:
+        similarity = _load_yaml(args.similarity)
+        if not similarity:
+            print("ERROR: could not load similarity report:", args.similarity)
+            return 1
+        patterns = _patterns_from_similarity(similarity)
+    store = _experience_store(args)
+    try:
+        payload = ingest_feedback(
+            feedback,
+            store=store,
+            observation=_resolve_observation(args),
+            story_dna_reference=args.story_dna_reference or "",
+            production_outcome=args.production_outcome,
+            dry_run=args.dry_run,
+        )
+        pattern_status = []
+        for record in patterns:
+            pattern_status.append("DRY_RUN" if args.dry_run
+                                  else store.save_risk_pattern(record)["status"])
+    except (ValueError, OSError) as exc:
+        # The store raises on a rejected record; the CLI reports it and stops.
+        print("ERROR:", type(exc).__name__ + ":", exc)
+        return 1
+    print("episode_id            :", payload["episode_id"])
+    print("experience_id         :", payload["experience_id"], "->", payload["experience_status"])
+    print("decision_experience_id:", payload["decision_experience_id"], "->", payload["decision_status"])
+    if patterns:
+        print("risk_patterns         :", len(patterns), "->", ",".join(pattern_status))
+    print("advisor_report_ref    :", payload["advisor_report_reference"])
+    print("observation_ref       :", payload["observation_reference"])
+    print("feedback_ref          :", payload["feedback_reference"])
+    print("store_dir             :", payload["store_dir"])
+    if payload["dry_run"]:
+        print("dry-run               : nothing written")
+    print("note                  : advisory only; blocks_production =", payload["blocks_production"])
+    return 0
+
+
+def _experience_query(args) -> int:
+    store = _experience_store(args)
+    tokens = tuple(args.token or ())
+    if args.risk_type or tokens:
+        kind = KIND_PATTERN
+        records = store.query_pattern(risk_type=args.risk_type, tokens=tokens, limit=args.limit)
+    else:
+        kind = KIND_EXPERIENCE
+        records = store.get_related_experience(story_dna=args.story_dna,
+                                               episode_id=args.episode, limit=args.limit)
+    if args.json:
+        print(json.dumps({"kind": kind, "records": records}, ensure_ascii=False, indent=2))
+        return 0
+    print("store     :", store.store_dir)
+    print("kind      :", kind, "| candidates:", len(records))
+    for record in records:
+        print("  ", _record_line(kind, record))
+    return 0
+
+
+def _experience_list(args) -> int:
+    store = _experience_store(args)
+    kinds = list(KINDS) if args.kind == "all" else [args.kind]
+    records = {kind: store.list_records(kind, episode_id=args.episode) for kind in kinds}
+    if args.json:
+        print(json.dumps({"summary": store.summarize(), "records": records},
+                         ensure_ascii=False, indent=2))
+        return 0
+    summary = store.summarize()
+    print("store     :", store.store_dir)
+    print("counts    :", summary["counts"], "| malformed:", summary["malformed"])
+    if args.episode:
+        print("episode   :", args.episode)
+    for kind in kinds:
+        print("--", kind, "(" + str(len(records[kind])) + ")")
+        for record in records[kind]:
+            print("  ", _record_line(kind, record))
+    return 0
+
+
+def cmd_experience(args) -> int:
+    if args.experience_cmd == "save":
+        return _experience_save(args)
+    if args.experience_cmd == "query":
+        return _experience_query(args)
+    if args.experience_cmd == "list":
+        return _experience_list(args)
+    print("ERROR: unknown experience action:", args.experience_cmd)
+    return 2
+
+
 def cmd_validate(args) -> int:
     if not Path(args.file).is_file():
         print("ERROR: file not found:", args.file)
@@ -278,6 +454,39 @@ def build_parser() -> argparse.ArgumentParser:
     l.add_argument("--episode", default=None)
     l.add_argument("--json", action="store_true")
     l.set_defaults(func=cmd_observe)
+
+    p = sub.add_parser("experience", help="Experience Store: store and read creative experience (advisory only)")
+    exp = p.add_subparsers(dest="experience_cmd", required=True)
+
+    s = exp.add_parser("save", help="turn one human feedback record into stored experience")
+    s.add_argument("--feedback", required=True, help="path to a stored advisor feedback JSON")
+    s.add_argument("--store", default=None, help="experience store directory")
+    s.add_argument("--observation", default=None,
+                   help="observation JSON path or an observation id already in the ledger")
+    s.add_argument("--ledger", default=None)
+    s.add_argument("--similarity", default=None,
+                   help="optional similarity_report.yaml; its evidence becomes risk patterns")
+    s.add_argument("--story-dna-reference", default="")
+    s.add_argument("--production-outcome", default=None)
+    s.add_argument("--dry-run", action="store_true")
+    s.set_defaults(func=cmd_experience)
+
+    q = exp.add_parser("query", help="read candidate experience / risk patterns (no ranking)")
+    q.add_argument("--episode", default=None)
+    q.add_argument("--story-dna", default=None, help="story_dna_reference or a Story DNA YAML path")
+    q.add_argument("--risk-type", default=None, help="switch to risk pattern query, e.g. similarity")
+    q.add_argument("--token", action="append", default=[], help="token that must appear in a pattern")
+    q.add_argument("--limit", type=int, default=None)
+    q.add_argument("--store", default=None)
+    q.add_argument("--json", action="store_true")
+    q.set_defaults(func=cmd_experience)
+
+    l = exp.add_parser("list", help="list stored experience records (read-only)")
+    l.add_argument("--kind", default="all", choices=["all"] + list(KINDS))
+    l.add_argument("--episode", default=None)
+    l.add_argument("--store", default=None)
+    l.add_argument("--json", action="store_true")
+    l.set_defaults(func=cmd_experience)
 
     return parser
 

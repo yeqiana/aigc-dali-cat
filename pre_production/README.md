@@ -32,6 +32,9 @@ Shadow Mode               -> 只出报告，继续原生产流程
    |
    v
 Shadow Observation        -> 观察记录 + 人工反馈（可选，不接 Runtime）
+   |
+   v
+Experience Store          -> 经验事实存储（JSONL；只存不学）
 ```
 
 入口：`pre_production/shadow_mode.py` 的 `run_shadow()`（永不抛异常、永不影响生产）；
@@ -73,8 +76,10 @@ pre_production/
   memory_adapter/       只做接口：读历史经验、写 Review Reference、Experience Store 接口
     adapter.py          MemoryAdapter（读历史 Story Lock、写 Review Reference）
     experience_schema.py Experience / Risk Pattern / Creator Decision 契约与校验
-    experience_store.py  ExperienceStoreRepository 接口 + 记录构造器（不含数据库实现）
-    tests/               Experience 契约、接口、向后兼容测试
+    experience_store.py  ExperienceStoreRepository 接口 + 记录构造器
+    experience_store_jsonl.py  JSONL 实现（append-only 事实存储，Runtime MVP）
+    experience_ingest.py  Feedback -> Experience 转换与 ingest_feedback()
+    tests/               Experience 契约、接口、JSONL 存储、写路径、读路径、EP001-EP003 fixture
   observation/          Shadow Observation（观察记录 + 账本 + 人工反馈，不接 Runtime）
     schema.py           Episode Observation Record / Advisor Feedback 契约
     ledger.py           Episode Observation Ledger（append-only JSONL，生命周期）
@@ -90,6 +95,8 @@ pre_production/
 Review Reference 写到 `reports/pre-production/review-references/`；
 Observation Ledger 写到 `reports/pre-production/observation-ledger.jsonl`；
 Advisor Feedback 写到 `reports/pre-production/advisor-feedback/`。
+Experience Store 写到 reports/pre-production/experience-store/
+（experience-records.jsonl / risk-patterns.jsonl / creator-decisions.jsonl）。
 
 ---
 
@@ -112,6 +119,11 @@ python -m pre_production validate <yaml> --kind dna|similarity|advisor|review|fe
 python -m pre_production observe record [episode_dir] [--report <advisor_report.yaml>] [--ledger PATH] [--dry-run]
 python -m pre_production observe feedback --report <advisor_report.yaml> --creator-decision ACCEPT|REVISE|IGNORE --recommendation-result USEFUL|PARTIAL|NOT_USEFUL --risk-acknowledged yes|no [--revision-direction TEXT] [--final-effect TEXT] [--notes TEXT] [--dry-run]
 python -m pre_production observe list [--ledger PATH] [--episode ID] [--json]
+
+# Experience Store（人工触发的经验存储；读取只返回候选，不排序、不评分）
+python -m pre_production experience save --feedback <PFB-*.json> [--observation <OBS ID|observation.json>] [--similarity <similarity_report.yaml>] [--production-outcome TEXT] [--store DIR] [--dry-run]
+python -m pre_production experience query [--episode ID] [--story-dna REF] [--risk-type TYPE] [--token TOKEN]... [--limit N] [--store DIR] [--json]
+python -m pre_production experience list [--kind all|experience|pattern|decision] [--episode ID] [--store DIR] [--json]
 ```
 
 常用参数：`--history <episode_dir|story_lock.md>`（补充历史样本）、`--limit N`、`--repo-root`。
@@ -179,12 +191,65 @@ OBSERVED -> FEEDBACK_PENDING -> COMPLETED
 边界：Feedback 不修改 Advisor、不修改 Story Lock、不变成硬规则、不引入评分；
 它只是后续 Experience Store 的数据入口。反馈与账本都在生产之外，失败也不影响生产。
 
-Experience Store 的定位、数据模型与接口（Design Only，尚无数据库实现）见
-`docs/Story_OS_PreProduction_Intelligence_Experience_Store_Integration_V1.0.md`。
+Experience Store 的定位与数据模型见
+`docs/Story_OS_PreProduction_Intelligence_Experience_Store_Integration_V1.0.md`；
+JSONL 事实存储的实现与用法见第八节。
 
 ---
 
-## 八、测试
+## 八、Experience Store Runtime（经验存储）
+
+Shadow Observation 的下一层是**经验存储**：把人工反馈与观察结果落成可审计的历史事实，
+供未来的 Advisor 读取上下文。它是事实存储，不是学习系统。
+
+```
+Observation Ledger
+   |
+   v
+Advisor Feedback
+   |
+   v
+Experience Store          -> reports/pre-production/experience-store/*.jsonl
+   |
+   v
+Future Advisor Context    -> 只读取候选经验（当前阶段只提供接口，未接入 Advisor）
+```
+
+默认目录 reports/pre-production/experience-store/，三个 append-only JSONL 文件：
+
+| 文件 | 内容 | 关键字段 |
+| --- | --- | --- |
+| experience-records.jsonl | Episode Experience | experience_id / episode_id / story_dna_reference / advisor_report_reference / observation_reference / feedback_reference / production_outcome / audience_feedback |
+| risk-patterns.jsonl | Risk Pattern | pattern_id / risk_type / pattern_description / related_episode / evidence / risk_level |
+| creator-decisions.jsonl | Creator Decision Experience | decision_experience_id / episode_id / advisor_decision / creator_action / recommendation_result / final_assessment / feedback_reference |
+
+当前支持：
+
+- **JSONL persistence**：append-only，一行一个独立 JSON，历史不可覆盖、不可重排；
+  同一个 experience_id 重复保存返回 REUSED 并跳过写入，重复 ingest 因此是幂等的。
+- **manual feedback ingestion**：由人执行 experience save（或在代码中调用 ingest_feedback()），
+  一次同时生成 Creator Decision Experience 与 Episode Experience；可选 --similarity 会把
+  similarity report 的每条 evidence 落成一条 Risk Pattern。经验记录只保留 reference，
+  不复制 advisor report / Story DNA 全文。
+- **read-only retrieval**：get_related_experience() 按 episode_id / story_dna_reference 过滤候选；
+  query_pattern() 按 risk_type + token 子串匹配。两者都不排序、不评分、不做风险判断。
+
+明确不支持（当前阶段）：
+
+- 自动学习，自动调整 Advisor / Lexicon / Similarity 权重；Feedback 不会变成硬规则。
+- ranking、相似度计算、embedding、向量数据库、RAG。
+- 任何评分字段：契约会直接拒绝带 score / rating / percent / rank / threshold 的键。
+- 阻断生产：所有记录恒为 advisory_only=true、blocks_production=false、
+  authority=derived_non_authority。
+
+失败语义与边界：记录不合法抛明确的 ValueError，写入失败抛 OSError，都不吞错，
+一次被拒绝的写入不会留下半条记录；读取遇到损坏行只计入 malformed，不抛异常。
+Experience Store 只写自己目录内的三个文件，不触碰 episode-state.json、
+story-gates.json 或 Runtime。
+
+---
+
+## 九、测试
 
 ```powershell
 python -m pytest pre_production/tests pre_production/observation/tests pre_production/memory_adapter/tests -q
@@ -195,3 +260,7 @@ Advisor Report 契约测试、EP003 回归、Shadow Mode 非阻断性，以及 S
 （Observation Ledger Schema、Feedback Contract、人工反馈入口、Runner 生命周期、EP003 观察回归），
 以及 Experience Store 接口层（Episode Experience / Risk Pattern / Creator Decision 契约、
 `ExperienceStoreRepository` 接口形态、Memory Adapter 向后兼容）。
+Experience Store Runtime 覆盖：JSONL append-only 与重复保护、契约校验先于写入、
+损坏行只报告不抛异常、Feedback -> Creator Decision / Episode Experience 写路径、
+引用链完整性（不复制报告）、失败隔离与 dry-run、读路径过滤与 limit，
+以及 EP001 / EP002 / EP003 fixture 的写入、读取与生产状态零改动校验。
