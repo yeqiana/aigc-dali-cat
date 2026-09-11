@@ -185,6 +185,8 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
                 "provider_request_size":provider_evidence.get("provider_request_size"),
                 "secrets_persisted":False,
             }
+            # W-21: record the reference files really handed to this provider call.
+            receipt_data["references"]=provider_capability.reference_evidence(refs)
             receipt=provider_capability.write_receipt(ep,frame,receipt_data)
             try:
                 norm=normalize(row["path"],out,width,height)

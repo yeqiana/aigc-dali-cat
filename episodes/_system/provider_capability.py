@@ -71,6 +71,27 @@ def _rel(path:Path)->str:
     try:return path.relative_to(ROOT).as_posix()
     except ValueError:return str(path)
 
+def reference_evidence(references)->list[dict]:
+    """W-21 execution evidence: reference files actually handed to the provider.
+
+    A story-gates reference registry only proves intent. The provider receipt
+    must record the raw source files that were really sent, with their SHA-256,
+    so a later gate can prove execution instead of only a declaration. Worker
+    JPEG proxies are disposable and never recorded here; source authority wins.
+    """
+    rows=[]
+    for index,ref in enumerate(references or [],1):
+        raw=ref.get("path") if isinstance(ref,dict) else ref
+        if not raw:continue
+        path=Path(str(raw))
+        path=path.resolve() if path.is_absolute() else (ROOT/str(raw)).resolve()
+        rows.append({
+            "order":index,
+            "path":_rel(path),
+            "sha256":sha256_file(path) if path.is_file() else None,
+        })
+    return rows
+
 def write_receipt(ep:Path,frame:int,receipt:dict)->dict:
     path=receipt_path(ep,frame,receipt.get("recorded_at_epoch"));path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")

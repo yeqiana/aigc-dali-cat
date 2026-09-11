@@ -28,6 +28,8 @@ import wardrobe_contract
 import visual_narrative_core_v22  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
 import character_appearance_anchor  # STORY_OS_V221_CHARACTER_CONTINUITY
+import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
+import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -346,6 +348,10 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         character_anchor = character_appearance_anchor.build(ep, write=False)
     excerpt = extract_frame_excerpt(storyboard_path, n)
     refs = resolved_references(ep, n)
+    # P1-1: per-frame identity requirement is derived review evidence. It is
+    # deliberately excluded from hash_material so publishing it cannot invalidate
+    # historical contract SHAs (same policy as source_binding).
+    identity_requirements = identity_continuity.contract_requirements(ep, n, refs)
 
     source_trace = {
         "story": {"path": repo_rel(story_path), "sha256": sha256_file(story_path)},
@@ -369,6 +375,12 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "world_identity_override": {"path":world_identity_contract.OVERRIDE_REL.as_posix(),"sha256":sha256_file(ep/world_identity_contract.OVERRIDE_REL) if world_identity_active and (ep/world_identity_contract.OVERRIDE_REL).is_file() else None},
         "character_appearance_anchor": {"path":character_appearance_anchor.REL.as_posix(),"sha256":sha256_file(ep/character_appearance_anchor.REL) if world_identity_active and (ep/character_appearance_anchor.REL).is_file() else None},
     }
+
+    # W-22: per-frame story semantic requirement is derived review evidence. Like
+    # source_binding it is deliberately excluded from hash_material so publishing
+    # it cannot invalidate historical contract SHAs.
+    story_semantic_requirements = story_semantic_trace.contract_requirements(
+        ep, n, source_trace["story"])
 
     # Hash material is deliberately per-frame where possible.
     # storyboard source SHA is trace-only; localized excerpt SHA avoids all-frame invalidation.
@@ -494,6 +506,8 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
             "extraction_mode": excerpt["mode"],
             "frame_sha256": excerpt["sha256"],
         },
+        "identity_requirements": identity_requirements,
+        "story_semantic_requirements": story_semantic_requirements,
         "hash_material": hash_material,
         "contract_sha256": contract_sha,
         "prompt_contract": "\n".join(prompt_lines),

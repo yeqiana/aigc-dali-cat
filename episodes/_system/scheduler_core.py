@@ -257,8 +257,16 @@ def _prompt_path(item: dict) -> Path:
 
 
 def _ledger_references(item: dict) -> list[str]:
-    return [f"{(ROOT / ref['path']).resolve()}::{ref['role']}::{ref['kind']}"
-            for ref in item.get("references") or []]
+    # W-21: keep the declared anchor/id with the reference so production ledger
+    # execution evidence stays attributable to one identity anchor.
+    out = []
+    for ref in item.get("references") or []:
+        value = f"{(ROOT / ref['path']).resolve()}::{ref['role']}::{ref['kind']}"
+        anchor = str(ref.get("anchor") or ref.get("id") or "").strip()
+        if anchor:
+            value = f"{value}::{anchor}"
+        out.append(value)
+    return out
 
 
 def ledger_begin(ep: Path, item: dict, *, notes: str | None = None,

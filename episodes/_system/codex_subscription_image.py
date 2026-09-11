@@ -334,10 +334,14 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     else:
         elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'], scene_text=scene_text)
         backend_name = 'codex_subscription'
-    provider_receipt_info = provider_capability.write_receipt(
-        ep, int(args.frame),
-        provider_capability.inspect(raw_output, width, height, model=model_policy["model"], route=backend_name, frame=int(args.frame)),
-    )
+    receipt_data = provider_capability.inspect(raw_output, width, height, model=model_policy["model"], route=backend_name, frame=int(args.frame))
+    # W-21: the receipt carries the reference files really sent to the provider, so
+    # the production ledger can record execution evidence, not only a declaration.
+    # A manual desktop import never attaches them to a provider call, so it must not
+    # claim reference delivery it did not perform.
+    receipt_data["reference_transport"] = "manual_desktop_import" if manual_src else "codex_subscription_cli_attachment"
+    receipt_data["references"] = [] if manual_src else provider_capability.reference_evidence(refs)
+    provider_receipt_info = provider_capability.write_receipt(ep, int(args.frame), receipt_data)
     if output.exists() and args.overwrite:
         output.unlink()
     try:

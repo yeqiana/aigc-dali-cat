@@ -287,20 +287,26 @@ def parse_references(values: list[str] | None) -> list[dict]:
     out = []
     for value in values or []:
         parts = value.split("::")
-        if len(parts) != 3:
-            raise SystemExit("--reference format must be PATH::ROLE::KIND")
-        raw_path, role, kind = (x.strip() for x in parts)
+        # W-21: an optional 4th field carries the declared anchor/id (for example
+        # protagonist_identity) so reference execution evidence stays attributable.
+        if len(parts) not in {3, 4}:
+            raise SystemExit("--reference format must be PATH::ROLE::KIND[::ANCHOR]")
+        raw_path, role, kind = (x.strip() for x in parts[:3])
+        anchor = parts[3].strip() if len(parts) == 4 else ""
         if kind not in REFERENCE_KINDS:
             raise SystemExit(f"invalid reference kind {kind!r}; choose {sorted(REFERENCE_KINDS)}")
         p = Path(raw_path).resolve()
         if not p.is_file():
             raise SystemExit(f"reference file not found: {p}")
-        out.append({
+        row = {
             "path": repo_relative(p),
             "role": role,
             "kind": kind,
             "sha256": sha256_file(p),
-        })
+        }
+        if anchor:
+            row["id"] = anchor
+        out.append(row)
     if len(out) > 2:
         raise SystemExit("formal request supports at most 2 references by default; reduce references or split continuity anchors")
     return out

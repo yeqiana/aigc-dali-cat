@@ -140,18 +140,18 @@ def _import_frame_locked(ep: Path, frame: int, raw: Path, *, item_id: str | None
         output = ep / "media/candidates/scheduled" / f"{frame:02d}-{item['id']}-product.png"
         output.parent.mkdir(parents=True, exist_ok=True)
 
-        receipt_info = provider_capability.write_receipt(
-            ep,
-            frame,
-            provider_capability.inspect(
-                raw_store,
-                width,
-                height,
-                model=policy["model"],
-                route=f"{base_runtime.lower()}_product_runtime_image",
-                frame=frame,
-            ),
+        receipt_data = provider_capability.inspect(
+            raw_store,
+            width,
+            height,
+            model=policy["model"],
+            route=f"{base_runtime.lower()}_product_runtime_image",
+            frame=frame,
         )
+        # W-21: the host runtime got the queue item references in its image request;
+        # record those source files on the same receipt contract as the provider lanes.
+        receipt_data["references"] = provider_capability.reference_evidence(item.get("references") or [])
+        receipt_info = provider_capability.write_receipt(ep, frame, receipt_data)
         try:
             norm = normalize(raw_store, output, width, height)
         except NormalizeError as exc:

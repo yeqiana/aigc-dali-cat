@@ -12,6 +12,8 @@ from story_os_contract import canonical_stages
 from story_os_contract import FOUR_ADMISSION_V21_POLICY
 from incremental_frame_review import review_required as semantic_frame_review_required, verify_episode as verify_frame_semantic_episode
 from final_acceptance import valid as acceptance_valid
+import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
+import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
 
 STATES = canonical_stages()
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
@@ -319,6 +321,218 @@ def check_references(repo_root: Path, gates: dict, findings: list[Finding], *, m
             pass
 
 
+def accepted_frame_attempt(frame: dict) -> dict | None:
+    """The generation attempt whose pixels the frame currently accepts."""
+    attempts = [a for a in (frame.get("attempts") or []) if isinstance(a, dict)]
+    approved = frame.get("approved_asset") if isinstance(frame.get("approved_asset"), dict) else {}
+    candidate = frame.get("current_candidate") if isinstance(frame.get("current_candidate"), dict) else {}
+    for sha in (approved.get("source_sha256"), candidate.get("sha256")):
+        token = str(sha or "")
+        if not token:
+            continue
+        for attempt in reversed(attempts):
+            if str((attempt.get("candidate") or {}).get("sha256") or "") == token:
+                return attempt
+    attempt_id = str(candidate.get("attempt_id") or "")
+    if attempt_id:
+        for attempt in reversed(attempts):
+            if str(attempt.get("attempt_id") or "") == attempt_id:
+                return attempt
+    for attempt in reversed(attempts):
+        if attempt.get("result") == "success":
+            return attempt
+    return None
+
+
+def check_reference_execution_evidence(repo_root: Path, episode_dir: Path, gates: dict, findings: list[Finding], *, metadata_only: bool) -> None:
+    """W-21: prove the declared identity anchor actually reached the provider.
+
+    A reference registry only proves intent. This check reads the production ledger
+    execution evidence and rejects a frame whose accepted attempt declared a
+    reference anchor without proof that the same file (same SHA-256) was sent to the
+    image provider and returned a receipt.
+
+    Backward compatibility: only episodes whose story-gates declare
+    references.required=true are in scope, and only attempts recorded after the
+    ledger became reference-execution aware. Historical episodes keep passing.
+    """
+    visual = gates.get("visual") if isinstance(gates.get("visual"), dict) else {}
+    registry = visual.get("references")
+    if not isinstance(registry, dict) or registry.get("required") is not True:
+        return
+    ledger_path = episode_dir / "meta/production-ledger.json"
+    if not ledger_path.is_file() or metadata_only:
+        return
+    try:
+        ledger = json.loads(ledger_path.read_text(encoding="utf-8-sig"))
+    except Exception:
+        findings.append(Finding("FAIL", "reference_execution_ledger", "production ledger invalid JSON"))
+        return
+    if not isinstance(ledger, dict):
+        return
+    marker = ledger.get("reference_execution_evidence")
+    if not isinstance(marker, dict) or marker.get("schema_version") != 1:
+        # Ledger produced before reference execution evidence existed: legacy scope.
+        return
+    enforced_from = str(marker.get("enforced_from") or "")
+    authority: dict[str, str] = {}
+    for item in registry.get("items") or []:
+        if isinstance(item, dict) and item.get("path"):
+            authority[str(item["path"])] = str(item.get("sha256") or "").lower()
+    for key, frame in (ledger.get("frames") or {}).items():
+        if not isinstance(frame, dict):
+            continue
+        attempt = accepted_frame_attempt(frame)
+        if not isinstance(attempt, dict):
+            continue
+        declared = [row for row in ((attempt.get("request") or {}).get("references") or [])
+                    if isinstance(row, dict) and row.get("path")]
+        if not declared:
+            continue
+        started_at = str(attempt.get("started_at") or "")
+        if enforced_from and started_at and started_at < enforced_from:
+            continue
+        evidence = attempt.get("reference_execution")
+        if not isinstance(evidence, dict):
+            findings.append(Finding("FAIL", "missing_reference_execution_receipt",
+                                    f"frame {key}: reference-declared generation attempt has no reference_execution record"))
+            continue
+        if evidence.get("required") is not True:
+            findings.append(Finding("FAIL", "reference_execution_not_required",
+                                    f"frame {key}: reference_execution.required must be true"))
+        if evidence.get("passed_to_provider") is not True:
+            findings.append(Finding("FAIL", "reference_execution_not_passed",
+                                    f"frame {key}: reference was not recorded as passed to the provider"))
+        if not nonempty(evidence.get("provider_receipt_id")):
+            findings.append(Finding("FAIL", "reference_execution_receipt_missing",
+                                    f"frame {key}: reference_execution.provider_receipt_id required"))
+        if evidence.get("verified") is not True:
+            findings.append(Finding("FAIL", "reference_execution_not_verified",
+                                    f"frame {key}: reference execution evidence is not verified"))
+        executed: dict[str, str] = {}
+        for row in evidence.get("selected_references") or []:
+            if isinstance(row, dict) and row.get("path"):
+                executed[str(row["path"])] = str(row.get("sha256") or "").lower()
+        for row in declared:
+            path = str(row["path"])
+            expected = str(row.get("sha256") or "").lower()
+            if path not in executed:
+                findings.append(Finding("FAIL", "reference_execution_missing_anchor",
+                                        f"frame {key}: declared reference {path} absent from provider execution evidence"))
+                continue
+            actual = executed[path]
+            if actual != expected:
+                findings.append(Finding("FAIL", "reference_execution_hash_drift",
+                                        f"frame {key}: declared sha {expected[:12]} != executed sha {actual[:12]} for {path}"))
+            elif authority.get(path) and authority[path] != actual:
+                findings.append(Finding("FAIL", "reference_execution_hash_drift",
+                                        f"frame {key}: current authority sha {authority[path][:12]} != executed sha {actual[:12]} for {path}"))
+
+
+def check_identity_continuity_evidence(repo_root: Path, episode_dir: Path, gates: dict, findings: list[Finding], *, metadata_only: bool) -> None:
+    """P1-1: prove the declared identity anchor is preserved in the generated pixels.
+
+    W-21 proved the reference file reached the provider. This check consumes the
+    frame review identity_evidence to prove the frame was judged against the same
+    anchor, with provenance. It never accepts "character-contract.json exists" as
+    evidence; config presence alone does not pass.
+
+    Backward compatibility mirrors W-21: only episodes whose story-gates declare
+    references.required=true are in scope, and only attempts recorded after the
+    ledger became identity-evidence aware. Historical episodes keep passing.
+    """
+    if metadata_only:
+        return
+    if not identity_continuity.identity_contract(episode_dir).get("required"):
+        return
+    ledger_path = episode_dir / "meta/production-ledger.json"
+    if not ledger_path.is_file():
+        return
+    try:
+        ledger = json.loads(ledger_path.read_text(encoding="utf-8-sig"))
+    except Exception:
+        findings.append(Finding("FAIL", "identity_continuity_ledger", "production ledger invalid JSON"))
+        return
+    if not isinstance(ledger, dict):
+        return
+    marker = ledger.get("identity_continuity_evidence")
+    if not isinstance(marker, dict) or marker.get("schema_version") != 1:
+        # Ledger produced before identity continuity evidence existed: legacy scope.
+        return
+    enforced_from = str(marker.get("enforced_from") or "")
+    authority = identity_continuity.anchor_authority(episode_dir)
+    frames = ledger.get("frames") if isinstance(ledger.get("frames"), dict) else {}
+    for key in sorted(frames):
+        frame = frames.get(key)
+        if not isinstance(frame, dict):
+            continue
+        attempt = accepted_frame_attempt(frame)
+        if not isinstance(attempt, dict):
+            continue
+        requirements = identity_continuity.attempt_identity_requirements(attempt, episode_dir)
+        if not requirements:
+            continue
+        started_at = str(attempt.get("started_at") or "")
+        if enforced_from and started_at and started_at < enforced_from:
+            continue
+        review = load_json(review_path(repo_root, episode_dir, gates, key), findings, required=False)
+        evidence = identity_continuity.evidence_from_review(review)
+        for code, message in identity_continuity.validate_frame(evidence, requirements, authority):
+            findings.append(Finding("FAIL", code, f"frame {key}: {message}"))
+
+def check_story_semantic_trace(repo_root: Path, episode_dir: Path, gates: dict, findings: list[Finding], *, metadata_only: bool) -> None:
+    """W-22: prove each frame exists because of its declared story role.
+
+    The Frame Contract publishes story_semantic_requirements per frame. This check
+    consumes the frame review story_semantic_trace to prove the frame was judged
+    against that role and the same Story Lock, with provenance. It never accepts
+    "story-gates.story has a role map" as evidence; config presence alone does not
+    pass.
+
+    Backward compatibility mirrors W-21/P1-1: only episodes whose ledger was marked
+    story-semantic-trace aware are in scope, and only attempts recorded after the
+    marker. Historical episodes keep passing.
+    """
+    if metadata_only:
+        return
+    if not story_semantic_trace.required(episode_dir):
+        return
+    ledger_path = episode_dir / "meta/production-ledger.json"
+    if not ledger_path.is_file():
+        return
+    try:
+        ledger = json.loads(ledger_path.read_text(encoding="utf-8-sig"))
+    except Exception:
+        findings.append(Finding("FAIL", "story_semantic_trace_ledger", "production ledger invalid JSON"))
+        return
+    if not isinstance(ledger, dict):
+        return
+    marker = ledger.get("story_semantic_trace_evidence")
+    if not isinstance(marker, dict) or marker.get("schema_version") != 1:
+        # Ledger produced before the semantic trace existed: legacy scope.
+        return
+    enforced_from = str(marker.get("enforced_from") or "")
+    frames = ledger.get("frames") if isinstance(ledger.get("frames"), dict) else {}
+    for key in sorted(frames):
+        frame = frames.get(key)
+        if not isinstance(frame, dict):
+            continue
+        attempt = accepted_frame_attempt(frame)
+        if not isinstance(attempt, dict):
+            continue
+        requirement = story_semantic_trace.frame_requirements(episode_dir, int(key))
+        if not isinstance(requirement, dict) or requirement.get("required") is not True:
+            continue
+        started_at = str(attempt.get("started_at") or "")
+        if enforced_from and started_at and started_at < enforced_from:
+            continue
+        review = load_json(review_path(repo_root, episode_dir, gates, key), findings, required=False)
+        trace = story_semantic_trace.trace_from_review(review)
+        expected_contract = story_semantic_trace.attempt_contract_sha(attempt)
+        for code, message in story_semantic_trace.validate_frame(trace, requirement, expected_contract):
+            findings.append(Finding("FAIL", code, f"frame {key}: {message}"))
+
+
 def review_path(repo_root: Path, episode_dir: Path, gates: dict, key: str) -> Path:
     evidence = gates.get("production_evidence") if isinstance(gates.get("production_evidence"), dict) else {}
     raw = evidence.get("frame_review_dir", "meta/frame-reviews")
@@ -439,6 +653,9 @@ def validate(episode_dir: Path, target: str, *, metadata_only: bool = False) -> 
         check_calibration(repo_root, gates, manifest, findings, metadata_only=metadata_only)
         check_references(repo_root, gates, findings, metadata_only=metadata_only)
     if idx >= STATE_MIN["PRODUCTION_PASSED"]:
+        check_reference_execution_evidence(repo_root, episode_dir, gates, findings, metadata_only=metadata_only)
+        check_identity_continuity_evidence(repo_root, episode_dir, gates, findings, metadata_only=metadata_only)
+        check_story_semantic_trace(repo_root, episode_dir, gates, findings, metadata_only=metadata_only)
         check_production(repo_root, episode_dir, gates, manifest, findings, metadata_only=metadata_only)
     return findings
 
