@@ -1,0 +1,13 @@
+EVIDENCE GATE FAIL | target=PUBLISH_READY
+FAIL: story_lock: direct: story_lock approval missing or not explicitly user-approved
+FAIL: story_lock: delegated: story_lock: SHA256 drift episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md; story_lock: SHA256 drift episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md
+FAIL: story_semantic_review: story_sha256 mismatch
+FAIL: story_semantic_review: storyboard_sha256 mismatch
+FAIL: visual_lock: direct: visual_lock approval missing or not explicitly user-approved
+FAIL: visual_lock: delegated: visual_lock: SHA256 drift episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/04_婚礼前夜_视觉规范_V2.0.md; visual profile review failed: ordinary_baseline frame contract stale
+FAIL: visual_profile_review: ordinary_baseline frame contract stale
+FAIL: release_semantic: release semantic artifact SHA set is stale or mismatched
+FAIL: text audit stale: captions SHA256 drift
+FAIL: subtitle_layout: subtitle layout audit is stale: caption source changed
+FAIL: release_lock direct: release-package.json missing
+FAIL: release_lock delegated: release_lock: SHA256 drift episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitles.yaml; release_lock: SHA256 drift episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/contracts/frame-contract-index.json

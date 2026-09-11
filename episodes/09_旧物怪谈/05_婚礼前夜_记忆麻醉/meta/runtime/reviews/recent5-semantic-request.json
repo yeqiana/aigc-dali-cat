@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "request_id": "recent5-semantic-a1-436e660a573ad648",
+  "request_fingerprint": "436e660a573ad64852de632d34c985f005e1ce50eb5ea4aad340b91d8aa9820d",
+  "created_at": "2026-09-08T23:44:13+08:00",
+  "status": "FINALIZED",
+  "review_kind": "recent5-semantic",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/episode-fingerprint.json",
+      "sha256": "7756afa1d03091a7983e5427cb18655ec3cb85b9eb6bd6c1621321e91a8ff176"
+    },
+    {
+      "path": "reports/account-pattern-registry.json",
+      "sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64"
+    }
+  ],
+  "candidate_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.recent5-semantic-review.candidate.json",
+  "prompt_sha256": "fb6df90cc1c96552685bfb2d443602722756fac67efbbce567aa273e85e47b3c",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are an adversarial semantic de-duplication critic in a fresh isolated session.\n\nGoal:\nDetect whether the CURRENT episode reuses the same underlying story mechanism as each recent historical episode even when the wording, nouns, location, era, or props are changed.\n\nDo NOT edit any repository file except the requested candidate JSON.\nDo NOT score anything yourself. Python computes scores from your booleans.\nDo NOT mark a dimension equivalent merely because both stories share the same genre or mood.\n\nCurrent episode:\n{\n  \"episode_id\": \"09-05\",\n  \"title\": \"婚礼前夜·记忆麻醉\",\n  \"dimensions\": {\n    \"core_anomaly_mechanism\": \"记忆被无标签药物与角色扮演替换，婚鞋铁环金镯锁孔土房把婚房伪造成囚室\",\n    \"story_engine\": \"新娘含药不咽、翻转婚鞋检查金镯撕开喜字后摘下金镯逼问并趁乱出逃\",\n    \"entry_mode\": \"2007年西北农村土房婚房被安排成亲的新娘第一人称数码记录\",\n    \"anomaly_carrier\": \"无标签药瓶、焊铁环婚鞋、带锁孔金镯、从外焊死的土房\",\n    \"primary_visual_space\": \"西北农村土房婚房与伪装成喜事的禁锢空间\",\n    \"middle_escalation\": \"婚礼彩排背恋爱六年、没人叫出名字、货车上同款嫁衣女孩扩成体系\",\n    \"climax_form\": \"摘下金镯逼问并趁乱撞开后门赤脚逃出，以失去全部身份记忆为代价获救\",\n    \"relationship\": \"被安排成亲的新娘与控制/表演她的男方和陌生母亲\",\n    \"reality_residue\": \"检查站获救却想不起名字，陌生女人喊出她名字，最后的试婚鞋梦重读真实与梦\"\n  }\n}\n\nRecent historical fingerprints:\n[\n  {\n    \"episode_id\": \"09-04\",\n    \"title\": \"瓶中世界\",\n    \"dimensions\": {\n      \"core_anomaly_mechanism\": \"玻璃容器实时映射并控制现实重力\",\n      \"story_engine\": \"为父亲手术费清厂估价时主动转动异常玻璃瓶\",\n      \"entry_mode\": \"2008年县玻璃厂旧物清点的第一人称数码记录\",\n      \"anomaly_carrier\": \"装着同步县城的玻璃瓶与水泥底座刻线\",\n      \"primary_visual_space\": \"待拆县玻璃厂旧办公室和同步倾斜的县城\",\n      \"middle_escalation\": \"瓶身裂纹映射道路裂缝，父亲被困医院\",\n      \"climax_form\": \"冒着瓶裂城毁风险受控旋转复位并放弃交易\",\n      \"relationship\": \"女儿与等待手术的父亲\",\n      \"reality_residue\": \"天空白弧证明现实也处于更大容器\"\n    }\n  },\n  {\n    \"episode_id\": \"10-01\",\n    \"title\": \"鳌太线·热汤\",\n    \"dimensions\": {\n      \"core_anomaly_mechanism\": \"失温下由同一组装备与地形触发的错误感知重组\",\n      \"story_engine\": \"为完成上次退线遗憾而在脚崴后硬撑，最终下撤判断失真\",\n      \"entry_mode\": \"当代鳌太高寒雪坡的第一人称胸前运动相机记录\",\n      \"anomaly_carrier\": \"橙色保温毯、头灯、金属杯、保温杯、背包、黑石和红绳\",\n      \"primary_visual_space\": \"风雪中的同一处黑石背风点与下撤雪坡\",\n      \"middle_escalation\": \"红绳在左而灯在右，无脚印的灯逐渐被误认成温暖饭棚\",\n      \"climax_form\": \"阿川伸手接应时主角推开他并坐回虚构热汤前\",\n      \"relationship\": \"受伤主角与持续接应、劝其下撤的队友阿川\",\n      \"reality_residue\": \"路过者视角显示黄色羽绒服仍坐雪地，所有暖棚物回到现实装备\"\n    }\n  }\n]\n\nInterpret each dimension by underlying audience-facing role:\n- core_anomaly_mechanism: what impossible rule/event actually drives the story.\n- story_engine: the causal storytelling engine, not the surface setting.\n- entry_mode: how the protagonist enters/encounters the abnormal situation.\n- anomaly_carrier: the object/person/place/system that carries the abnormality.\n- primary_visual_space: the dominant visual environment/function, not just place name.\n- middle_escalation: how the anomaly escalates through the middle.\n- climax_form: what irreversible/highest-intensity reveal/action forms the climax.\n- relationship: the protagonist/other-person relationship structure driving decisions.\n- reality_residue: what evidence/consequence remains in ordinary reality afterward.\n\nFor every historical episode and every dimension, return true only when the underlying function/mechanism is substantially the same despite paraphrase or skin-swap. Return false when similarity is only genre, tone, broad setting, or incidental vocabulary.\n\nImportant examples:\n- \"进入地图上不存在的村子\" vs \"沿着一条导航里没有的路走进陌生村落\" can be equivalent entry/anomaly mechanisms even though text differs.\n- \"旧手机提前出现明天的照片\" vs \"MP4里出现未来影像\" can be semantically equivalent anomaly carriers/mechanisms depending on their actual role.\n- \"都发生在山里\" is NOT enough to mark primary_visual_space or mechanism equivalent by itself.\n- If core_anomaly_mechanism + middle_escalation + climax_form are all equivalent, this is a likely skin-swap and Python will veto it.\n\nWrite ONLY valid JSON to episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.recent5-semantic-review.candidate.json in this exact shape:\n{\n  \"comparisons\": [\n    {\n      \"episode_id\": \"<one exact historical episode_id>\",\n      \"equivalent_dimensions\": {\n        \"core_anomaly_mechanism\": false,\n        \"story_engine\": false,\n        \"entry_mode\": false,\n        \"anomaly_carrier\": false,\n        \"primary_visual_space\": false,\n        \"middle_escalation\": false,\n        \"climax_form\": false,\n        \"relationship\": false,\n        \"reality_residue\": false\n      },\n      \"match_reasons\": {\n        \"<only keys marked true>\": \"brief concrete reason\"\n      }\n    }\n  ]\n}\n\nRepository evidence being compared:\n- current fingerprint: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/episode-fingerprint.json\n- account registry: reports/account-pattern-registry.json\n- episode: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉\n\nRequirements:\n- Include exactly one comparison for every supplied historical episode_id.\n- Keep every equivalent_dimensions value strictly boolean.\n- match_reasons may contain only dimensions marked true; if none are true, use an empty object.\n- Never invent a historical episode or change an episode_id.\n",
+  "attempt_request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/recent5-semantic-attempt-1-request.json",
+  "finalized_at": "2026-09-08T23:44:29+08:00",
+  "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/recent5-semantic-review.json"
+}

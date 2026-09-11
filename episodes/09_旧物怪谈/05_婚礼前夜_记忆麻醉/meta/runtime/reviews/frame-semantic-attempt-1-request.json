@@ -1,0 +1,133 @@
+{
+  "schema_version": 2,
+  "request_id": "frame-semantic-a1-ccca27a36fd07156",
+  "request_fingerprint": "ccca27a36fd07156269ef031886bba8f63e4fb95884e1bc0d5c88c46131580e1",
+  "created_at": "2026-09-09T10:30:41+08:00",
+  "status": "FINALIZED",
+  "review_kind": "frame-semantic",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md",
+      "sha256": "baba06a1f3b22336b70d2ce489ea95b01ad504a8673f4ebd1ef081a6ae8cce2f"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md",
+      "sha256": "b6d886b5467dfc41afb76e2d66945e003197c538ac324c6c1d00b34ca0444cde"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/story-gates.json",
+      "sha256": "0e20e77d348d883ee1aec3be67754e0b0d4ea63201dad895b5f49ae5ed6a0f80"
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "4e27706f639473dd7ee1c811a6beeb328c1bc4c0e08edc5a3850571713f37485"
+    },
+    {
+      "path": "standards/生产帧语义强制规范_V1.0.md",
+      "sha256": "9520cdd866b01a8a1c052f8f5af48ec85b2aeceed8c5f00c30ff705a8c113e9a"
+    },
+    {
+      "path": "standards/Resolved_Frame_Contract规范_V1.0.md",
+      "sha256": "2bbcaeac083a2dff391e1700737fd94d89699877dc5fec52f522e7517f9f3caf"
+    },
+    {
+      "path": "standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md",
+      "sha256": "cc8053886ae8eca0499f94107dec657cedb9e376c0098b84715cced3d4c2d933"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/01.png",
+      "sha256": "3f5878e147571004e78083446376615a8637433cd52251f561aa3072e1f342dc"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/02.png",
+      "sha256": "7d7a766c9ca6f7c3cb33422e8e40807a807b80bba13b8b02b4aa92d4ae4685a5"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/03.png",
+      "sha256": "37ea93337f3daa4aa79507af8a80b0609d03bf0c268c4f0ea3fa4ce670db3b56"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/04.png",
+      "sha256": "416e8f7cb455c2483acc312f3843f19ee57766c443840b9ecd1ba0d467a60e22"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/05.png",
+      "sha256": "a9aef7d8c285aba0b601b28ba3d118c90ad91b7f657496b74956f8ea693f84f7"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/06.png",
+      "sha256": "9263333d4f1f02c6fca7c381a5e41e26b3c6be6da682882b92e69aa3f5733b89"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/07.png",
+      "sha256": "f00552b85d98a874553cd02dfb3aa06b158cdf1519e6c54a58dc4ce33d66ed59"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/08.png",
+      "sha256": "7931ee91faae580a5b6ae473b727839fbab7e48dbef66a7bf475e55c54bf2ce0"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/09.png",
+      "sha256": "757c5d8b4afdfc18a0ebcc325a6e4e028081a4f230694098483a750a1e1c8211"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/10.png",
+      "sha256": "3c58e789e0411bf58be93c3ca979e5c28f6f77c2ab6aaf67e33f3e90804f97ce"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/11.png",
+      "sha256": "94793dbccb608c883435baeeb82695ff100fe5cb7770f9ab20c5448cbb05acd5"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/12.png",
+      "sha256": "08b2f1806cff2d578981a2cca391dad2db168862acb4139a8f5560f8fb3e319a"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/13.png",
+      "sha256": "1bf246eb70d5c245bb96c30a9a774488d6f0cc65ef52141b36b8142b28abd5af"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/14.png",
+      "sha256": "3be85ac7b73e0716f91dfb95bcdba9779e14825efe113caba0a1d1a6f9816df3"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/15.png",
+      "sha256": "a543e86e63ed8fa622a0171d0ff89d32a426be8d1f25d953366647a9175688f8"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/16.png",
+      "sha256": "78563f08c1669674602233be19eca6a839fcd97c0b6d3e9374ba177fa530ab02"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/17.png",
+      "sha256": "a3136d067de922f4a092ded8c201b1fdef9bb21df18a99a48f2b348e967756c0"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/18.png",
+      "sha256": "43b8422ee700911577d1afc189bb3fb9fb06a2c949cb2e29fc6bf4f1dc60c8f7"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/19.png",
+      "sha256": "4d26e1601f3f541df574c9dd2e781a4812df7064e65261f654dc28a34d2750a7"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/20.png",
+      "sha256": "3ce867b2cf715e337b94b7a92efbb707ab989e76dff353230733c9d9096a9395"
+    }
+  ],
+  "candidate_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.frame-semantic-review.candidate.json",
+  "prompt_sha256": "d52acc85838b4b79425a684115c1cfa1a7286729b4a4507f9091d1aa326841c4",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are an adversarial Production Frame Semantic Critic in a FRESH isolated session.\nDo NOT generate or edit images. Do NOT rewrite the story. Do NOT trust previous PASS labels.\nYou are reviewing the COMPLETE final approved frame set for exactly episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉.\n\nRead these locked sources before judging:\n- episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md\n- episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md\n- episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/story-gates.json\n- standards/制作规范_正式版.md\n- standards/生产帧语义强制规范_V1.0.md\n- standards/Resolved_Frame_Contract规范_V1.0.md\n- standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md\nFast Scout evidence is triage only. Do NOT trust PASS_FAST as a final pass; independently judge every supplied actual frame.\nResolved Frame Contracts: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/contracts/frames/NN.json. The frame review must honor the SAME contract SHA used by the generation attempt.\n\nAttached images are in numeric order and map as follows:\n- attachment/frame 01: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/01.png\n- attachment/frame 02: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/02.png\n- attachment/frame 03: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/03.png\n- attachment/frame 04: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/04.png\n- attachment/frame 05: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/05.png\n- attachment/frame 06: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/06.png\n- attachment/frame 07: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/07.png\n- attachment/frame 08: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/08.png\n- attachment/frame 09: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/09.png\n- attachment/frame 10: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/10.png\n- attachment/frame 11: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/11.png\n- attachment/frame 12: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/12.png\n- attachment/frame 13: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/13.png\n- attachment/frame 14: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/14.png\n- attachment/frame 15: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/15.png\n- attachment/frame 16: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/16.png\n- attachment/frame 17: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/17.png\n- attachment/frame 18: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/18.png\n- attachment/frame 19: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/19.png\n- attachment/frame 20: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/20.png\n\nThis is critic attempt 1. Judge the ACTUAL pixels against Story Lock + storyboard + authenticity/continuity anchors.\nEpisode contract version: 2.6.1. V2.2-only Visual Narrative checks and issue codes apply ONLY when version >= 2.2.0. Earlier episodes must not fail on V2.2-only criteria.\nThe visual-profile critic is a different job. A frame can look perfectly M00 and STILL FAIL here if it depicts the wrong person, wrong wardrobe, wrong timeline, illegal camera viewpoint, wrong prop, unreadable anomaly, or merely lets the caption claim evidence that the pixels do not show.\n\nHard rules for EVERY frame:\n1. scene_storyboard_fidelity: the actual place/action/composition must be the storyboarded scene, not a generic substitute.\n2. story_beat_fidelity: the image must visibly carry the intended narrative beat. Do not let prose rescue a missing event.\n3. key_prop_fidelity: locked prop structure, material, scale, count and state must match. A generic green beer bottle cannot stand in for a locked thick micro-city glass vessel if the story depends on the city being visibly inside it.\n4. character_identity + wardrobe_continuity: character age/sex/identity/garment anchors must not drift. If a frame suddenly shows another protagonist, FAIL.\n5. pov_photographer_legality: obey the authenticity card. If the first-person photographer is fully visible or both hands are occupied while no legal second capture source exists, FAIL. Unexplained third-person coverage is a hard failure.\n6. spatial_continuity + temporal_continuity: location relationships and timeline must agree with neighboring frames. A father who already left for hospital cannot silently reappear in the factory.\n7. anomaly_readability: the abnormal fact the frame is supposed to prove must be visually legible. If the caption says a river tilted, a red mark aligned with a chimney, or old photos all contain one white arc, those relationships must actually be readable in pixels.\n8. caption_image_support: planned text may add context but must not invent the core visual evidence.\n9. actual_information_gain: compare ACTUAL adjacent images, not just storyboard descriptions.\n10. environment_physics_fidelity: V2.1 weather/environment must obey the resolved physical conditions; weather is not a blanket filter.\n11. anomaly_escalation_fidelity: impact 3-4 / anomaly_amplified / climax_impact must visibly exceed escalation_from; caption-only escalation fails.\n12. scale_reference_fidelity: high-impact frames must visibly use the locked real-world scale reference so abnormal size is readable.\n13. camera_authorship_physical: photographer/camera source must exist physically; ghost/floating/omniscient coverage is a hard failure.\n14. moment_capture_credibility: frame must feel captured during an action with a plausible save reason, not posed after the event.\n15. narrative_evidence_gain: each frame after the opening must add real story/evidence information; another angle of the same unchanged fact is NARRATIVE_REDUNDANCY.\n16. shot_grammar_diversity: first-person is diegetic camera logic, not a repeated hand+phone+distant-anomaly template.\n17. camera_defect_physics: blur/noise/reflection/underexposure must have a plausible physical cause.\n18. screen_content_physics: phone/map/dashboard/time/camera UI must be internally, perspectivally and narratively coherent.\n19. visual_memory_continuity: character/wardrobe/vehicle/props/route/weather/light/anomaly evidence must persist unless explicitly changed.\n20. For shot-progression schema_version >=3 only: shot_scale_fidelity must match the locked shot_scale; scene_position_uniqueness_fidelity must not collapse different planned positions into visibly repeated camera setups; cinematic_structure_translation_fidelity must use the locked structural technique without becoming an exact film-still recreation; practical_lighting_design_fidelity must honor the declared real light source/contrast/suspense function; anomaly_concealment_fidelity must visibly use the locked mirror/water/glass/fog/light-shadow/screen/occlusion carrier when declared.\n21. PASS only if all required checks are true, issue_codes is empty and decision=pass.\n\nUse issue codes only from this set:\nACTUAL_INFORMATION_GAIN_MISSING, ANOMALY_CONCEALMENT_MISSING, ANOMALY_SCALE_UNDERDELIVERED, ANOMALY_UNREADABLE, CAMERA_DEFECT_UNMOTIVATED, CAMERA_OWNER_UNRESOLVED, CAPTION_DEPENDENCY, CHARACTER_APPEARANCE_DRIFT, CINEMATIC_TRANSLATION_FAILED, CULTURAL_CONTEXT_DRIFT, FRAME_SCENE_MISMATCH, GHOST_CAMERA, IDENTITY_DRIFT, KEY_PROP_DRIFT, LIGHTING_DESIGN_MISMATCH, MOMENT_RESULT_ONLY, NARRATIVE_REDUNDANCY, NEAR_DUPLICATE_ACTUAL_FRAMES, POV_ILLEGAL, SCALE_REFERENCE_MISSING, SCENE_POSITION_VISUAL_REPEAT, SCREEN_CONTENT_PHYSICS_BROKEN, SHOT_GRAMMAR_REPEAT, SHOT_SCALE_MISMATCH, SPATIAL_CONTINUITY_BROKEN, STORY_BEAT_NOT_VISIBLE, TEMPORAL_CONTRADICTION, UNEXPLAINED_THIRD_PERSON, UNPLANNED_RECORDER, VISUAL_MEMORY_BROKEN, WARDROBE_DRIFT, WEATHER_CONTINUITY_BROKEN, WEATHER_PHYSICS_MISMATCH, WORLD_IDENTITY_DRIFT\n\nWrite ONLY valid JSON to episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.frame-semantic-review.candidate.json. Do not modify any other repository file.\nRequired shape:\n{\n  \"frames\": [\n    {\n      \"frame\": \"01\",\n      \"checks\": {\n        \"scene_storyboard_fidelity\": true,\n        \"story_beat_fidelity\": true,\n        \"key_prop_fidelity\": true,\n        \"character_identity\": true,\n        \"wardrobe_continuity\": true,\n        \"pov_photographer_legality\": true,\n        \"spatial_continuity\": true,\n        \"temporal_continuity\": true,\n        \"anomaly_readability\": true,\n        \"caption_image_support\": true,\n        \"actual_information_gain\": true,\n        \"environment_physics_fidelity\": true,\n        \"anomaly_escalation_fidelity\": true,\n        \"scale_reference_fidelity\": true,\n        \"camera_authorship_physical\": true,\n        \"moment_capture_credibility\": true,\n        \"narrative_evidence_gain\": true,\n        \"shot_grammar_diversity\": true,\n        \"camera_defect_physics\": true,\n        \"screen_content_physics\": true,\n        \"visual_memory_continuity\": true,\n        \"shot_scale_fidelity\": true,\n        \"scene_position_uniqueness_fidelity\": true,\n        \"cinematic_structure_translation_fidelity\": true,\n        \"practical_lighting_design_fidelity\": true,\n        \"anomaly_concealment_fidelity\": true\n      },\n      \"issue_codes\": [],\n      \"notes\": \"specific pixel-level evidence\",\n      \"decision\": \"pass\"\n    }\n  ],\n  \"issue_codes\": [],\n  \"summary\": {\"passed\": true, \"notes\": \"overall continuity/payoff judgment\"}\n}\nReturn one row for EVERY attached frame. If any hard check fails, mark it false, add the specific issue code, set that frame decision=fail and summary.passed=false.\n",
+  "finalized_at": "2026-09-09T10:34:52+08:00",
+  "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-review.json"
+}

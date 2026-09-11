@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "04",
+  "scene_prompt": "昏暗木板间，手脚拴着铁链，一只白瓶正往她嘴里灌药；画面偏糊、暗部压、对焦犹豫，梦里的窒息。 2007西北农村土房婚房，深秋夜，白炽灯/窗洞天光/手电/车灯；23岁新娘第一人称手持廉价卡片机竖拍4:5，构图随手偏位、现场光、低动态、边缘略软、相册感；主角只露手/脚/局部不露清晰正脸（高潮帧可露45°侧脸传递表情）；碎花长袖+深色长裤+旧布鞋。禁止恐怖电影布光/HDR/文字水印/清晰正脸。",
+  "scene_prompt_sha256": "4c8615611c34fb1da2e49bdd9a5dc33041e4e1f4f5ae4aa30648c144e87caf0e",
+  "frame_contract_sha256": "0d9d90c98479570d4921148671b3fa179cf838ac9a92d4085cb81d1d330e5b35",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\batch\\prompts\\04.txt",
+  "package_sha256": "1a463f6143a8c652be888a8ab7334c601a4563dbf7e2c58c121f937a4bbfaf73",
+  "compiled_at": "2026-09-09T10:21:05+08:00"
+}

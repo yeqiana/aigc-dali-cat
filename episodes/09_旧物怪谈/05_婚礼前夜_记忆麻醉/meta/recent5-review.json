@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "episode_id": "09-05",
+  "generated_at": "2026-09-10T12:07:56+08:00",
+  "candidate_fingerprint_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "7756afa1d03091a7983e5427cb18655ec3cb85b9eb6bd6c1621321e91a8ff176",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "comparison_count": 2,
+  "compared": [
+    {
+      "episode_id": "10-01",
+      "title": "鳌太线·热汤",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 0,
+      "similarity_score": 0,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [],
+      "matched_dimensions": []
+    },
+    {
+      "episode_id": "09-04",
+      "title": "瓶中世界",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 0,
+      "similarity_score": 0,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [],
+      "matched_dimensions": []
+    }
+  ],
+  "max_similarity_score": 0,
+  "mechanism_veto": false,
+  "decision": "pass",
+  "scoring_policy": "effective=max(exact_string,semantic_equivalence); veto=exact_veto OR semantic_veto",
+  "note": "V2.0.3.6 uses a fresh isolated semantic equivalence matrix so paraphrased/skin-swapped fingerprints cannot bypass Recent-5 by changing wording. Python, not the critic, computes scores.",
+  "semantic_review_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/recent5-semantic-review.json",
+  "semantic_review_sha256": "5471d186959a371b7e92cd2551f75870770f4dd1838281be8eabdca6cbb1c06e"
+}

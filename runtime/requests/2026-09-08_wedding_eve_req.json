@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "request_id": "20260908_232946_3b80e421",
+  "created_at": "2026-09-08T23:29:46+08:00",
+  "mode": "full_auto",
+  "repository": {
+    "branch": "story",
+    "source": "user_explicit"
+  },
+  "topic": {
+    "title": "婚礼前夜",
+    "raw": "婚礼前夜"
+  },
+  "story_input": {
+    "mode": "user_seed",
+    "raw": "明天就是婚礼，我却一夜梦见自己被人锁着；醒来后婚鞋还在，只是变成了铁环，手镯也变成了镣铐。记忆被药物与角色扮演替换。恋爱六年、明天婚礼是被灌输的剧本；梦是被压抑的真实记忆返涌；婚礼日=交货日。",
+    "constraints": [],
+    "rewrite_policy": "strengthen_and_rewrite",
+    "preserve_core_intent": true,
+    "allow_structure_rewrite": true
+  },
+  "intent": {
+    "intent": "CREATE_EPISODE",
+    "source": "deterministic_rules",
+    "confidence": 1.0,
+    "reason_codes": [
+      "DEFAULT_CREATE"
+    ],
+    "normalized_request_sha256": "721b97e603b83bd361be3d5803ef4053ed7200e4880792dc8fce4932dd0dba05",
+    "normalized_request": "读取 story 分支。全自动做一篇「婚礼前夜」。\n剧情大概是:\n明天就是婚礼,我却一夜梦见自己被人锁着;醒来后婚鞋还在,只是变成了铁环,手镯也变成了镣铐。记忆被药物与角色扮演替换。恋爱六年、明天婚礼是被灌输的剧本;梦是被压抑的真实记忆返涌;婚礼日=交货日。",
+    "requires_llm_rewrite": false,
+    "requires_clarification": false
+  },
+  "creative_hints": [],
+  "image_model": "gpt-image-2",
+  "image_quality": "high",
+  "image": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "source": "system_default",
+    "strict_model": false,
+    "quality": "high"
+  },
+  "runtime": {
+    "execution_mode": "dag",
+    "continuous_execution": true,
+    "resume": true,
+    "max_image_workers": 3,
+    "fail_soft": true,
+    "incremental_reuse": true
+  },
+  "delivery": {
+    "mode": "auto",
+    "zip_required_for_completion": false
+  },
+  "user_intent": {
+    "full_auto_authorized": true,
+    "allow_story_strengthening": true,
+    "allow_story_rewrite": true,
+    "ask_before_each_step": false
+  },
+  "provenance": {
+    "source": "natural_language",
+    "original_request": "读取 story 分支。全自动做一篇「婚礼前夜」。\n剧情大概是：\n明天就是婚礼，我却一夜梦见自己被人锁着；醒来后婚鞋还在，只是变成了铁环，手镯也变成了镣铐。记忆被药物与角色扮演替换。恋爱六年、明天婚礼是被灌输的剧本；梦是被压抑的真实记忆返涌；婚礼日=交货日。"
+  }
+}

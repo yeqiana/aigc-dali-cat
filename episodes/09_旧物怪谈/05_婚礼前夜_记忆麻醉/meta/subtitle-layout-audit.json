@@ -1,0 +1,427 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "engine": "story_os_subtitle_layout_v1",
+  "canonical_renderer": true,
+  "source": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitles.yaml",
+  "source_sha256": "e15ac3b906c30a495325876add2218c0c823137e0c02545e8c01648a389cecf5",
+  "policy": {
+    "punctuation_only_second_line": "drop_entire_second_line",
+    "max_lines": 2,
+    "font": "Microsoft YaHei Bold",
+    "font_size": 42,
+    "stroke_width": 4,
+    "left_margin": 72,
+    "horizontal_alignment": "left",
+    "default_y_ratio": 0.52,
+    "preferred_vertical_zone": [
+      0.42,
+      0.62
+    ],
+    "outside_zone_requires_reason": true
+  },
+  "frames": {
+    "01": {
+      "caption": "明天就要结婚了，我却想不起他求婚的样子。",
+      "lines": [
+        "明天就要结婚了，我却想不起他求婚的样子。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/01.png",
+      "base_sha256": "cef5b7b929e12b720b6becdbfcded43d3b0f34d0a2f82070741097af5fd812f6",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/01.png",
+      "output_sha256": "fb8f99e147fc427feadce4c4946aa2bcbf2a169262bcdf29c6dbbf8dd0efeee5",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "02": {
+      "caption": "他说这药能让我睡好。那晚忙乱，就漏了那一粒。",
+      "lines": [
+        "他说这药能让我睡好。那晚忙乱，就漏了那一粒。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/02.png",
+      "base_sha256": "1d54666bffe058a86595f2ca7c943ffb85d4a64f02a0e6105da98301f5e8bf76",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/02.png",
+      "output_sha256": "66c6221e660b1616faa1088358d2053dfa881b69d3e5dd447a23f587bc810894",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "03": {
+      "caption": "梦里，我一抬脚，床底就响了一声。",
+      "lines": [
+        "梦里，我一抬脚，床底就响了一声。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/03.png",
+      "base_sha256": "10e5cfdcdd0f96d2829b25f254f8a6f78c6bbc0f76c370c5222fc26318f6157e",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/03.png",
+      "output_sha256": "7eb962c1d6fa9111f53f25781379c0904298d0703238876045a18738e4cb67a9",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "04": {
+      "caption": "有人按住我的手，叫我别动。他的脸，我看不清。",
+      "lines": [
+        "有人按住我的手，叫我别动。他的脸，我看不清。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/04.png",
+      "base_sha256": "dbabdd5aa480645ec7b18e0989aa33d8a76137e32f4666410e915ff93dd06326",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/04.png",
+      "output_sha256": "8a2d219e2767dffd6db22787ba098f1ff07003daa145e870efb064f890c164a8",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "05": {
+      "caption": "醒来，脚踝还红着。",
+      "lines": [
+        "醒来，脚踝还红着。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/05.png",
+      "base_sha256": "b43c66ac373f1d206e15476f447bcde2a1ad6c6cc2ea40301e646066ac66e7bb",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/05.png",
+      "output_sha256": "45dbcead2d9de99b8c3baea62a9932081195a47f65ccc2472450968dc7de71c2",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "06": {
+      "caption": "婚礼彩排，他让我把六年恋爱背成台词。",
+      "lines": [
+        "婚礼彩排，他让我把六年恋爱背成台词。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/06.png",
+      "base_sha256": "3ec29035dfcd9b79175d5557b4b87c6a7762a3e680d7d47781c59cfeaef32e8b",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/06.png",
+      "output_sha256": "fc8b279b9b737cf2599ff8eb12cd14f8ff9daee2fbcc4bb433eb11f33f87ffb7",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "07": {
+      "caption": "他们只叫我新娘子。",
+      "lines": [
+        "他们只叫我新娘子。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/07.png",
+      "base_sha256": "e30531dbac44759d3878f2edaf6b445178ec7ffb03eec336713cf7c22f94962f",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/07.png",
+      "output_sha256": "394cebbbabcda73e3e04af6e7d7ee7ca0e2c3373f3d12751d881bebe79cf12c7",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "08": {
+      "caption": "镜子里的妈，我不认识。",
+      "lines": [
+        "镜子里的妈，我不认识。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/08.png",
+      "base_sha256": "c85d271a917a790ccdda6a7f6e167d6945adae6d36858da4ad334d1ab74d6170",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/08.png",
+      "output_sha256": "282f342e87b8221ad539b0e06417cd867ea1726aa661802ae5546720d0ba0ad4",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "09": {
+      "caption": "婚鞋好沉。翻过来，鞋底焊着铁环。",
+      "lines": [
+        "婚鞋好沉。翻过来，鞋底焊着铁环。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/09.png",
+      "base_sha256": "fc3bd579aec2b5d1d1b5a65f82bd8e82a43d3b81b706333b672676b77de47ccf",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/09.png",
+      "output_sha256": "cee3b89ed9d2477d1cd25a2fedb77637af05962e9ffe42ea071140c655bc94f1",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "10": {
+      "caption": "金镯里头有一道合缝，尽头是个小锁孔。",
+      "lines": [
+        "金镯里头有一道合缝，尽头是个小锁孔。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/10.png",
+      "base_sha256": "8e859b710d4330bb85c72103906d98c8352de50048e8203394c17a34827e341c",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/10.png",
+      "output_sha256": "3c2085e389c488da1dc31f9756c4dc9bef49b1675a7eab55c0dba908e37298c5",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "11": {
+      "caption": "红布后面，是一排封死的铁栏。",
+      "lines": [
+        "红布后面，是一排封死的铁栏。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/11.png",
+      "base_sha256": "4c178dc31a0a3bf56ccf732e5e4d8a87d1a9674d4bdfc74ca681053df25905a3",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/11.png",
+      "output_sha256": "9c040b3f1178668713d37fe75449af338cf3b722560cb8e64c91a894d06133ff",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "12": {
+      "caption": "车里还有新娘，脚上也带着铁。",
+      "lines": [
+        "车里还有新娘，脚上也带着铁。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/12.png",
+      "base_sha256": "946b643d1759ad662f8e9d362bba673925caa000c9fa9f5a3c982822a851a525",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/12.png",
+      "output_sha256": "70ed0b3a54267ab885c1f97ae1096b3a377af06d3689c8aea9c0297e7a6fd309",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "13": {
+      "caption": "又是这药：“吃完，明天就什么都不用想了。”",
+      "lines": [
+        "又是这药：“吃完，明天就什么都不用想了。”"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/13.png",
+      "base_sha256": "ca45d70aae2e118d3d6bbbb9f606732be05a6305e224ee7e129690905048e00e",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/13.png",
+      "output_sha256": "59bde9912807e9506d19a6988c2564449a68bdb69dbb3d170a571249922ad30d",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "14": {
+      "caption": "他一转身，我把含着的药吐进了花盆。",
+      "lines": [
+        "他一转身，我把含着的药吐进了花盆。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/14.png",
+      "base_sha256": "f686c92a24defba09809097fdd77524dcb1f9c1fea8ef058b012d98ff2ad6427",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/14.png",
+      "output_sha256": "288842e1e69a4739759dc5c4c2afc848d7f99059793624f53dabc8f3a6acfcd4",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "15": {
+      "caption": "我举起还没扣上的金镯：“你是要拿这个锁我？”",
+      "lines": [
+        "我举起还没扣上的金镯：“你是要拿这个锁我？”"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/15.png",
+      "base_sha256": "99050f3d25f8f4ce4c8dae83703f719a3a899bde97df654b2116fa8819e08c41",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/15.png",
+      "output_sha256": "aec66c21650e635a3fb75f0461cb94a0015d9b958aea773117e4ab2a589440d5",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "16": {
+      "caption": "他伸手来抢。我一把推倒凳子，撞开后门就跑。",
+      "lines": [
+        "他伸手来抢。我一把推倒凳子，撞开后门就跑。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/16.png",
+      "base_sha256": "9582dc97b9d40b792ec57ecf89d9ae6d96fce340ac7cfd4830749ccfa77f4e92",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/16.png",
+      "output_sha256": "17b3b90e12f56eb0ecffd53d20178dd05c81d67f1d21eb0bfd9097dff818ffad",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "17": {
+      "caption": "六年恋爱的每个细节我都背得出。名字，想不起来了。",
+      "lines": [
+        "六年恋爱的每个细节我都背得出。名字，想不起来",
+        "了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/17.png",
+      "base_sha256": "87b8f91849b438be84b13de86bb0da9005e142ffedb6e765e782237bededacb3",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/17.png",
+      "output_sha256": "7d65fba48e89e54bb173eccb6a5630767e41f36a1ed4f42de448a4a8e17fde0b",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "18": {
+      "caption": "窗外有人喊了个名字，我没想就回了头。",
+      "lines": [
+        "窗外有人喊了个名字，我没想就回了头。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/18.png",
+      "base_sha256": "167f2b46f1ba5026deb2149ca35eebd0f03314e8d688232def5b26b4186cfbef",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/18.png",
+      "output_sha256": "992f4cc614838acb9a30b65394d8575e84aef81f267be6b59bc89f60d73c2385",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "19": {
+      "caption": "后来我又梦见自己试婚鞋。鞋底干干净净。",
+      "lines": [
+        "后来我又梦见自己试婚鞋。鞋底干干净净。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/19.png",
+      "base_sha256": "406ca4c8d89a3fdff990cf43fd824d1c27823b5a3af05b1ab73823237d9513cd",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/19.png",
+      "output_sha256": "27a21a08dffba12b06989c88f198fb249a5f96e85554e07b0f7bb36aa5d73a29",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "20": {
+      "caption": "",
+      "lines": [],
+      "dropped_punctuation_only_second_line": false,
+      "silent": true,
+      "x": 72,
+      "y": 702,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "base_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/20.png",
+      "base_sha256": "177c430364c9b3dc0bf48029e7e28ee183cfe9be5495ea1c19e1485c986f0ffd",
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/20.png",
+      "output_sha256": "9b4ea3937e39bb7110a73980ead3d78bd4f92de60fb3aa2130b88b309522fbc4",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    }
+  },
+  "summary": {
+    "passed": true,
+    "frame_count": 20
+  }
+}

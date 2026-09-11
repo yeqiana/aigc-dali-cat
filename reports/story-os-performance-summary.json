@@ -1,13 +1,26 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-04T12:18:17.509+08:00",
-  "corrected_at": "2026-09-04T13:41:25+08:00",
-  "sample_size": 1,
-  "p50_total_seconds": 43385.7,
-  "p90_total_seconds": 43385.7,
-  "average_total_seconds": 43385.7,
-  "total_wall_basis": "active run wall excluding idle waits >= 600s and pre-run no-activity days; see episode meta/episode-performance-ledger.json run_wall",
+  "generated_at": "2026-09-09T11:10:58.590+08:00",
+  "sample_size": 2,
+  "p50_total_seconds": 42715.471,
+  "p90_total_seconds": 43251.654,
+  "average_total_seconds": 42715.471,
   "episodes": [
+    {
+      "episode": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉",
+      "total_wall_seconds": 42045.243,
+      "final_status": "PUBLISH_READY",
+      "images": {
+        "attempts": 0,
+        "successful_attempts": 0,
+        "repair_attempts": 0,
+        "technical_failures_or_retries": 0,
+        "image_backend_seconds": 0,
+        "average_attempt_seconds": null,
+        "max_attempt_seconds": null
+      },
+      "stage_wall": {}
+    },
     {
       "episode": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳",
       "total_wall_seconds": 43385.7,

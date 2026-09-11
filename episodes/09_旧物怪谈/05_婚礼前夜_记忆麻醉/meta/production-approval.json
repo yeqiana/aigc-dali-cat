@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "approval_basis": "delegated_auto_review",
+  "user_approved": false,
+  "approved_at": "2026-09-09T10:50:10+08:00",
+  "reviews": {
+    "production": "passed",
+    "continuity": "passed",
+    "subtitle": "passed"
+  },
+  "basis": "frame-semantic-review.json summary.passed + shot-progression LOCKED + text-audit passed + sound card",
+  "production_review_doc": "docs/05_婚礼前夜_终审_V2.0.md",
+  "production_review_doc_sha256": "cf22e39a6c6c98a7b72adee3720338972fd442d4abcbc6a14a966939ddc4bc5e",
+  "note": "Delegated auto review: full-frame-set actual pixels PASS, continuity PASS, subtitle PASS. No direct user review fabricated."
+}

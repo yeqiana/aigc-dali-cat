@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "reconciled_at": "2026-09-10T17:04:30+08:00",
+  "rows": [
+    {
+      "item_id": "6459cf94f1bc",
+      "frame": 3,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "41bc7e659614",
+      "frame": 5,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "2e6a2adf413a",
+      "frame": 7,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "90429a50efaa",
+      "frame": 8,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "fcba0d1d6d43",
+      "frame": 9,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "4c6194480918",
+      "frame": 10,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "292d18f4452c",
+      "frame": 11,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "FAILED"
+    },
+    {
+      "item_id": "56f12f4498f9",
+      "frame": 13,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "2948a8febcfa",
+      "frame": 14,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "4d2d23482356",
+      "frame": 15,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "5c3b9b29e437",
+      "frame": 16,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "4fffc1acb827",
+      "frame": 18,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "5703e2d8eb77",
+      "frame": 19,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "79c4dd97a815",
+      "frame": 20,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "e631da805486",
+      "frame": 3,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "65286fe41789",
+      "frame": 5,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "5c78acef4e0b",
+      "frame": 7,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "23bfa990b6d5",
+      "frame": 8,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "d2b7e4909510",
+      "frame": 9,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "45330cccab60",
+      "frame": 10,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "ea4953d784ef",
+      "frame": 11,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "f4c8aa0413e0",
+      "frame": 13,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "ad50f802f5bf",
+      "frame": 14,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "1e63d6ffb150",
+      "frame": 15,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "c4e1ff0c63ea",
+      "frame": 16,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "a7fa4eff8609",
+      "frame": 18,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "23639bde9217",
+      "frame": 19,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "1670206e74bf",
+      "frame": 20,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "27228cb1d00a",
+      "frame": 2,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "c6896ae27dfa",
+      "frame": 4,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "9bd499bada2e",
+      "frame": 6,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "100e40533e81",
+      "frame": 17,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "ef634aef4e89",
+      "frame": 12,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    }
+  ]
+}

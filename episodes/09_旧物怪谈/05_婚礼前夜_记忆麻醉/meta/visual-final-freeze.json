@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "module_version": "2.6.0",
+  "authority": "visual evidence only; captions are deliberately excluded",
+  "caption_changes_invalidate_visual_freeze": false,
+  "accepted_known_defects": false,
+  "frames": [
+    {
+      "frame": "01",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/01.png",
+      "asset_sha256": "cef5b7b929e12b720b6becdbfcded43d3b0f34d0a2f82070741097af5fd812f6",
+      "frame_contract_sha256": "551c1be47c9686277276019958185a6bce70c1a52232d5dea796c7344f0e1203",
+      "visual_context": {
+        "environment_frame_sha256": "8fd0183c0696969d49a059e6fd47f1b0679eafb5151a5123f6ad98777ee6ba3b",
+        "frame_directive_sha256": "9050dacedd6a7d0fe37d1c2ddb95541c14ecd771de1edb61a20b4f68c99778b2",
+        "frame_contract_sha256": "551c1be47c9686277276019958185a6bce70c1a52232d5dea796c7344f0e1203"
+      }
+    },
+    {
+      "frame": "02",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/02.png",
+      "asset_sha256": "1d54666bffe058a86595f2ca7c943ffb85d4a64f02a0e6105da98301f5e8bf76",
+      "frame_contract_sha256": "44bd4e5f1199d416eb3f19bc7ca7b61381d8b5330d91f30c64e866adb8b3a74a",
+      "visual_context": {
+        "environment_frame_sha256": "8fd0183c0696969d49a059e6fd47f1b0679eafb5151a5123f6ad98777ee6ba3b",
+        "frame_directive_sha256": "682182e4f3161e8db78d50c8d39c55ae1b9cf9e841310a56e97a024781877126",
+        "frame_contract_sha256": "44bd4e5f1199d416eb3f19bc7ca7b61381d8b5330d91f30c64e866adb8b3a74a"
+      }
+    },
+    {
+      "frame": "03",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/03.png",
+      "asset_sha256": "10e5cfdcdd0f96d2829b25f254f8a6f78c6bbc0f76c370c5222fc26318f6157e",
+      "frame_contract_sha256": "16a5f36eee9f93086c95543a4b346ab1964c23c1aacbfbce32d569d589ae6011",
+      "visual_context": {
+        "environment_frame_sha256": "fdd2cd971af3c6464b867f64ba989ec90dfe3619a8bf2828e8b5f4714874298d",
+        "frame_directive_sha256": "67684f502161ced369cf69d20682bf35d21fd05f9792f6dd942786e71b3c8158",
+        "frame_contract_sha256": "16a5f36eee9f93086c95543a4b346ab1964c23c1aacbfbce32d569d589ae6011"
+      }
+    },
+    {
+      "frame": "04",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/04.png",
+      "asset_sha256": "dbabdd5aa480645ec7b18e0989aa33d8a76137e32f4666410e915ff93dd06326",
+      "frame_contract_sha256": "a0c20d2b46b7991fd5d673bd84864d6e559d49a4717704aa847f3b21ca7af674",
+      "visual_context": {
+        "environment_frame_sha256": "fdd2cd971af3c6464b867f64ba989ec90dfe3619a8bf2828e8b5f4714874298d",
+        "frame_directive_sha256": "953635901ae336992ea96d2df3cd6c7b9743548aaeea3029abc3fa3a585c98db",
+        "frame_contract_sha256": "a0c20d2b46b7991fd5d673bd84864d6e559d49a4717704aa847f3b21ca7af674"
+      }
+    },
+    {
+      "frame": "05",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/05.png",
+      "asset_sha256": "b43c66ac373f1d206e15476f447bcde2a1ad6c6cc2ea40301e646066ac66e7bb",
+      "frame_contract_sha256": "e13d00f00878019401f885e1c395cd8431c8d739409a0bb61db571a0dca56286",
+      "visual_context": {
+        "environment_frame_sha256": "1a13388a4c82ae2eb7c5fff14fb97472968b7d5e6f8a3985f21ac47ace033604",
+        "frame_directive_sha256": "5eb2aa2e777b111dcce607c285ce9c0b13ab7f76ce81183c3ec8e2db0cd0e126",
+        "frame_contract_sha256": "e13d00f00878019401f885e1c395cd8431c8d739409a0bb61db571a0dca56286"
+      }
+    },
+    {
+      "frame": "06",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/06.png",
+      "asset_sha256": "3ec29035dfcd9b79175d5557b4b87c6a7762a3e680d7d47781c59cfeaef32e8b",
+      "frame_contract_sha256": "a1591c8b5b8ff4855548a1905d7d06a8d55811cf013c5b2090267a9c758926c5",
+      "visual_context": {
+        "environment_frame_sha256": "1a13388a4c82ae2eb7c5fff14fb97472968b7d5e6f8a3985f21ac47ace033604",
+        "frame_directive_sha256": "d8e851a748b38d7eb97c61fb7d9811924328cb2cd6c93d9cca8b0a3923f2a021",
+        "frame_contract_sha256": "a1591c8b5b8ff4855548a1905d7d06a8d55811cf013c5b2090267a9c758926c5"
+      }
+    },
+    {
+      "frame": "07",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/07.png",
+      "asset_sha256": "e30531dbac44759d3878f2edaf6b445178ec7ffb03eec336713cf7c22f94962f",
+      "frame_contract_sha256": "19e845095ba9643b5f09e25e909e672c6a7f9b98e986e00cddf5a7732da3bf44",
+      "visual_context": {
+        "environment_frame_sha256": "1a13388a4c82ae2eb7c5fff14fb97472968b7d5e6f8a3985f21ac47ace033604",
+        "frame_directive_sha256": "5a57db3c7eb547526720acb13e58753b1d114a1ec3d218c8082965c219057b23",
+        "frame_contract_sha256": "19e845095ba9643b5f09e25e909e672c6a7f9b98e986e00cddf5a7732da3bf44"
+      }
+    },
+    {
+      "frame": "08",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/08.png",
+      "asset_sha256": "c85d271a917a790ccdda6a7f6e167d6945adae6d36858da4ad334d1ab74d6170",
+      "frame_contract_sha256": "620196d8a2d252a68c56934e95537a1af8c5c90d748269557c85370a4bc7a579",
+      "visual_context": {
+        "environment_frame_sha256": "1a13388a4c82ae2eb7c5fff14fb97472968b7d5e6f8a3985f21ac47ace033604",
+        "frame_directive_sha256": "112070d5ecef226602ceb175dec0c6db7f3171b974fe834d23060e26ccc9d9e6",
+        "frame_contract_sha256": "620196d8a2d252a68c56934e95537a1af8c5c90d748269557c85370a4bc7a579"
+      }
+    },
+    {
+      "frame": "09",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/09.png",
+      "asset_sha256": "fc3bd579aec2b5d1d1b5a65f82bd8e82a43d3b81b706333b672676b77de47ccf",
+      "frame_contract_sha256": "1d64674fa573344f14bfdce98727772fb70514185a07178b0d8a65dbd8d5ba40",
+      "visual_context": {
+        "environment_frame_sha256": "0e1f4be442e092b31ec89c18500523dc64a37d01fcb8ee6470fd2c259e2adca2",
+        "frame_directive_sha256": "37e500d6a6210c4df0e8608885daa42d6ca06bcd14415d6a9365ec1736f61b9c",
+        "frame_contract_sha256": "1d64674fa573344f14bfdce98727772fb70514185a07178b0d8a65dbd8d5ba40"
+      }
+    },
+    {
+      "frame": "10",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/10.png",
+      "asset_sha256": "8e859b710d4330bb85c72103906d98c8352de50048e8203394c17a34827e341c",
+      "frame_contract_sha256": "610e219a9636eb3ad3651d41fbfabe11a134918a668d57534097cccff3f6e808",
+      "visual_context": {
+        "environment_frame_sha256": "0e1f4be442e092b31ec89c18500523dc64a37d01fcb8ee6470fd2c259e2adca2",
+        "frame_directive_sha256": "12627f5e0106c49e779346fc80bf4a269e8fa5d4963e2243f97a2a1c0758eb68",
+        "frame_contract_sha256": "610e219a9636eb3ad3651d41fbfabe11a134918a668d57534097cccff3f6e808"
+      }
+    },
+    {
+      "frame": "11",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/11.png",
+      "asset_sha256": "4c178dc31a0a3bf56ccf732e5e4d8a87d1a9674d4bdfc74ca681053df25905a3",
+      "frame_contract_sha256": "2b47f6abd5f2d713786cc1f821a2ec89192bb838687db3fda48767ffe1fea05e",
+      "visual_context": {
+        "environment_frame_sha256": "0e1f4be442e092b31ec89c18500523dc64a37d01fcb8ee6470fd2c259e2adca2",
+        "frame_directive_sha256": "9f1b5a36427c0bac677bcf2815c28c27d82fc257514a67af4f45bc42c44f96f8",
+        "frame_contract_sha256": "2b47f6abd5f2d713786cc1f821a2ec89192bb838687db3fda48767ffe1fea05e"
+      }
+    },
+    {
+      "frame": "12",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/12.png",
+      "asset_sha256": "946b643d1759ad662f8e9d362bba673925caa000c9fa9f5a3c982822a851a525",
+      "frame_contract_sha256": "d7c69d3a4c1c1ea4564c5a7e64301bb156043270e421fd80ee285430ffb3811e",
+      "visual_context": {
+        "environment_frame_sha256": "96ebcb79b18da2c645201c029172637b572cce6d2f238aebbac5c6b34f1465ee",
+        "frame_directive_sha256": "33c3ff5a5ff4435a7776935241b4200e0d441a19d342dbc434fbf2693cd6c57a",
+        "frame_contract_sha256": "d7c69d3a4c1c1ea4564c5a7e64301bb156043270e421fd80ee285430ffb3811e"
+      }
+    },
+    {
+      "frame": "13",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/13.png",
+      "asset_sha256": "ca45d70aae2e118d3d6bbbb9f606732be05a6305e224ee7e129690905048e00e",
+      "frame_contract_sha256": "5a63bfbf0f2b370be284342438adee43f84cd4daeee04392f83230d2c423c440",
+      "visual_context": {
+        "environment_frame_sha256": "96ebcb79b18da2c645201c029172637b572cce6d2f238aebbac5c6b34f1465ee",
+        "frame_directive_sha256": "7c07528e1aa4b214f0e7b7cee39c22c0df711b2ffbc52e050fdcf1af5318064c",
+        "frame_contract_sha256": "5a63bfbf0f2b370be284342438adee43f84cd4daeee04392f83230d2c423c440"
+      }
+    },
+    {
+      "frame": "14",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/14.png",
+      "asset_sha256": "f686c92a24defba09809097fdd77524dcb1f9c1fea8ef058b012d98ff2ad6427",
+      "frame_contract_sha256": "8c63216e572273c7291b70656268dea188ab13247ed7e40f39d66d5492c80246",
+      "visual_context": {
+        "environment_frame_sha256": "006c30fee09f07eac5ee7e11d17f35401e44292305898eb02dc3079b691c61ed",
+        "frame_directive_sha256": "ed22028a41458ea86c9436f5cb8d84a47d02916c4e6afa3140f16e193abaa5f1",
+        "frame_contract_sha256": "8c63216e572273c7291b70656268dea188ab13247ed7e40f39d66d5492c80246"
+      }
+    },
+    {
+      "frame": "15",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/15.png",
+      "asset_sha256": "99050f3d25f8f4ce4c8dae83703f719a3a899bde97df654b2116fa8819e08c41",
+      "frame_contract_sha256": "dc8432fd1b88dcd66d9ba4b00a17ffdb9d81c126524a8524b306c941445a6eda",
+      "visual_context": {
+        "environment_frame_sha256": "006c30fee09f07eac5ee7e11d17f35401e44292305898eb02dc3079b691c61ed",
+        "frame_directive_sha256": "a872fa683e18e3a7d08fd11e3b754cbc834c6d50e9a3067d3f8c17e2a66b3595",
+        "frame_contract_sha256": "dc8432fd1b88dcd66d9ba4b00a17ffdb9d81c126524a8524b306c941445a6eda"
+      }
+    },
+    {
+      "frame": "16",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/16.png",
+      "asset_sha256": "9582dc97b9d40b792ec57ecf89d9ae6d96fce340ac7cfd4830749ccfa77f4e92",
+      "frame_contract_sha256": "87755ec6f997818b96cbafeb014f0061bcf25544ebbac49fa17ed242c72d9bd0",
+      "visual_context": {
+        "environment_frame_sha256": "e6104121edaeea23f63da20f6722c962cd6a87953b4534e99212e493b65ff26e",
+        "frame_directive_sha256": "26326d17eb0691ab072b36d0ee8ce82d8ea7d4c1f74592aca4b51ecc99bdb53d",
+        "frame_contract_sha256": "87755ec6f997818b96cbafeb014f0061bcf25544ebbac49fa17ed242c72d9bd0"
+      }
+    },
+    {
+      "frame": "17",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/17.png",
+      "asset_sha256": "87b8f91849b438be84b13de86bb0da9005e142ffedb6e765e782237bededacb3",
+      "frame_contract_sha256": "84e795fece128e56b25f9f1b892aab8ae13ae28e0d01677db8ba204b57b2bd46",
+      "visual_context": {
+        "environment_frame_sha256": "e6104121edaeea23f63da20f6722c962cd6a87953b4534e99212e493b65ff26e",
+        "frame_directive_sha256": "9a129d2ecfccb5f4e3fee09e007a8b7b3036261558718b13ce83e60c9a82c14d",
+        "frame_contract_sha256": "84e795fece128e56b25f9f1b892aab8ae13ae28e0d01677db8ba204b57b2bd46"
+      }
+    },
+    {
+      "frame": "18",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/18.png",
+      "asset_sha256": "167f2b46f1ba5026deb2149ca35eebd0f03314e8d688232def5b26b4186cfbef",
+      "frame_contract_sha256": "e939f5954d5fe97ba14c20336a15cdcff6271504d898dcd18d1e1c1b32628c7f",
+      "visual_context": {
+        "environment_frame_sha256": "e6104121edaeea23f63da20f6722c962cd6a87953b4534e99212e493b65ff26e",
+        "frame_directive_sha256": "bcaed5b2e33d7e9ef9e530c7d2ef7368a0330634f3c660e5202d89373718c88b",
+        "frame_contract_sha256": "e939f5954d5fe97ba14c20336a15cdcff6271504d898dcd18d1e1c1b32628c7f"
+      }
+    },
+    {
+      "frame": "19",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/19.png",
+      "asset_sha256": "406ca4c8d89a3fdff990cf43fd824d1c27823b5a3af05b1ab73823237d9513cd",
+      "frame_contract_sha256": "80a6a7949f5d3d9aa6fca3be8cc135cb2f56b1a3314e85d862b94a6984e12f38",
+      "visual_context": {
+        "environment_frame_sha256": "bb9573b4e1588deaaf62692fcdcb2c68369d4c01a3dff24287533b7d9d9634a1",
+        "frame_directive_sha256": "7ca019008dc86cee1337122f1d3aa51b14e76b72a1d8028fb0b17e1f666caed1",
+        "frame_contract_sha256": "80a6a7949f5d3d9aa6fca3be8cc135cb2f56b1a3314e85d862b94a6984e12f38"
+      }
+    },
+    {
+      "frame": "20",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/20.png",
+      "asset_sha256": "177c430364c9b3dc0bf48029e7e28ee183cfe9be5495ea1c19e1485c986f0ffd",
+      "frame_contract_sha256": "c68b0baf5d0358d42827690cf3206a6143e00bd3c3c5b231dc3431787700a288",
+      "visual_context": {
+        "environment_frame_sha256": "bb9573b4e1588deaaf62692fcdcb2c68369d4c01a3dff24287533b7d9d9634a1",
+        "frame_directive_sha256": "1c5b1566a1fe2a98cc30244050c5cb1001cb6981af7310169c38077bffedaaeb",
+        "frame_contract_sha256": "c68b0baf5d0358d42827690cf3206a6143e00bd3c3c5b231dc3431787700a288"
+      }
+    }
+  ],
+  "summary": {
+    "passed": true,
+    "frame_count": 20,
+    "accepted_known_defects": false
+  }
+}

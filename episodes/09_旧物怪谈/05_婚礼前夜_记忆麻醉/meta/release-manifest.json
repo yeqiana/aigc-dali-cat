@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode": {
+    "id": "09-05",
+    "series": "09_旧物怪谈",
+    "title": "婚礼前夜",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "4:5"
+  },
+  "release": {
+    "version": "V2.0",
+    "body_frame_count": 20,
+    "publish_dir": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish",
+    "body_glob": "[0-9][0-9].png",
+    "cover_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/cover/cover.png",
+    "contact_sheet_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/contact-sheets/publish-final.jpg"
+  },
+  "artifacts": {
+    "story": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md",
+    "storyboard": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md",
+    "visual_spec": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/04_婚礼前夜_视觉规范_V2.0.md",
+    "captions": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitles.yaml",
+    "publish_copy": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/06_婚礼前夜_最终发布文案_V2.0.md",
+    "production_review": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/05_婚礼前夜_终审_V2.0.md",
+    "propagation_card": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/recommendation-fit.json"
+  },
+  "quality": {
+    "production_gate": "pass",
+    "propagation_score": 8.8,
+    "s_min_score": 8.5,
+    "propagation_decision": "publishable",
+    "publish_decision": "go",
+    "decision_note": "Story OS V2.6.1 全自动终审通过；图20保持静默。"
+  },
+  "publication": {
+    "platform": "douyin",
+    "actual_title": "2007年，我被安排了一门亲事。婚礼前夜，我发现婚鞋底下焊着铁环。",
+    "description": "2007 年，我被带到西北农村一间土房，说是明天就成亲。他说这药能让我睡好，平时总会提醒我吃。那晚忙乱，桌上的药留着，我漏吃了一次。睡着后，我梦见自己一抬脚，床底就响了一声——有人按住我的手，叫我别动。我看不清他的脸，醒来时脚踝还红着。婚礼彩排，他让我把“恋爱六年”背下来，可满屋亲戚只叫我“新娘子”，连镜子里的妈我都陌生。我翻过婚鞋，鞋底焊着铁环；金镯内侧留着合缝和锁孔；红布后面，是封死的铁栏。他递来药和水，挡住门：“吃完，明天就什么都不用想了。”我把药含住，趁他转身吐进花盆，举起还没扣上的金镯问他，是不是要拿它锁我。他伸手来抢，我推倒矮凳，撞开后门跑进田里，在省道检查站被救下。我能背出六年恋爱的每一个细节，却想不起自己的名字。窗外有人喊了一个名字，我没想就回了头。人物、地点、情节均为虚构；内容由 AI 生成。",
+    "topics": [
+      "AI故事",
+      "旧物怪谈",
+      "农村故事",
+      "细思极恐",
+      "第一人称悬疑",
+      "抖音图文"
+    ],
+    "pinned_comment": "那瓶药一共只出现过三次：02 桌角那瓶漏吃的药，13 他递到面前的那一剂，20 睁眼时又回到远处桌角的小白瓶。还有鞋底焊着的铁环、金镯内侧的锁孔、红布后面封死的铁栏——回头看，它们从来不是在提示“布置得很用心”。如果第 19 张里明亮的卧室才是“真”的，那第 17 张的获救，又是发生在哪一层？",
+    "published_at": null,
+    "timing_window": null,
+    "post_url": null
+  },
+  "data_review": {
+    "report_path": "reports/数据验收报告.md",
+    "completed_checkpoints": [],
+    "first_hour_metrics": {
+      "captured_at": null,
+      "exposure": null,
+      "plays": null,
+      "likes": null,
+      "comments": null,
+      "saves": null,
+      "shares": null,
+      "followers_gained": null,
+      "profile_visits": null,
+      "avg_images_viewed": null,
+      "swipe_away_rate": null,
+      "caption_expand_rate": null
+    }
+  }
+}

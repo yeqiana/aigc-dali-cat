@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "audited_at": "2026-09-09T18:16:41+08:00",
+  "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\meta\\subtitles.yaml",
+  "caption_count": 19,
+  "silent_frames": [
+    20
+  ],
+  "hard_errors": [],
+  "warnings": [],
+  "summary": {
+    "hard_error_count": 0,
+    "warning_count": 0,
+    "passed": true
+  },
+  "voice_contract_sha256": null,
+  "source_sha256": "e15ac3b906c30a495325876add2218c0c823137e0c02545e8c01648a389cecf5"
+}

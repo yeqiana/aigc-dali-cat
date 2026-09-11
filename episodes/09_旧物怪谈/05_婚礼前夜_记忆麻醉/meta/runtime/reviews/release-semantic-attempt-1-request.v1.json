@@ -1,0 +1,77 @@
+{
+  "schema_version": 2,
+  "request_id": "release-semantic-a1-5aefc6a990450328",
+  "request_fingerprint": "5aefc6a990450328d2a7b6852cf3a4c6fc42bc3edfdfc078da245e54b79322ae",
+  "created_at": "2026-09-09T11:03:38+08:00",
+  "status": "FINALIZED",
+  "review_kind": "release-semantic",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/cover/cover.png",
+      "sha256": "b273b59a7d2226f5b2e8036f5a85d56d1fd1075bce55e30cc9d19f0c8c6030b8"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/01.png",
+      "sha256": "b273b59a7d2226f5b2e8036f5a85d56d1fd1075bce55e30cc9d19f0c8c6030b8"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/02.png",
+      "sha256": "9e905400b5323b18a4b15fbede3f4c6b49b718579c21ac3670d0d464f36b3e6e"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/03.png",
+      "sha256": "8f1761f1b748e598039824d29cf0859088671629c19eb31fd98e6f45bd73c073"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/15.png",
+      "sha256": "59d4c9b2a77759f2d5e15e30bf39e06c1d0527e6020487591248bd41c015ecda"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/20.png",
+      "sha256": "5832c6491fb6a42b0c19934fbffba33b518cf67a0c42b7412b5f1a72d758e40e"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitles.yaml",
+      "sha256": "388d560903b3f3cde9fd3f3ac67600beeebda1842b3fa8d178b5acf2ac4e8788"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/06_婚礼前夜_最终发布文案_V2.0.md",
+      "sha256": "62b47869d31cc64051dd83fde4d7f169277fa01a75db6bf1f9495c20693cede9"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/recommendation-fit.json",
+      "sha256": "ce55105ab7d27b256b449fd99f28dcf2c06333f0b8422987291a3f1a70182d5f"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitle-layout-audit.json",
+      "sha256": "93522bb2a87681a70fb46379cd66e5f697f50153bffa926293aadbf732dc725c"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json",
+      "sha256": "b35fea43cdf54b36a48ab8162d7d13d8edb3906dff10f34ccb4f26aa0c017fcc"
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "4e27706f639473dd7ee1c811a6beeb328c1bc4c0e08edc5a3850571713f37485"
+    },
+    {
+      "path": "standards/release_preflight_guard_V2.0.3.5.md",
+      "sha256": "e4e628ac36ac8bb37b453414ee2e5d55ddb10f4736d42d1c27c3803b8afb9aae"
+    }
+  ],
+  "candidate_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.release-semantic-review.candidate.json",
+  "prompt_sha256": "a775907a1b9af0719d423b4ec10cb3daf38eafa996aba9eaf426a5e60c61f9e2",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are an adversarial FINAL RELEASE Semantic + Governance Critic in a fresh isolated session.\nDo NOT edit any file except the requested candidate JSON.\nEpisode: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉\n\nInspect the ACTUAL final publish assets, not prompts:\n- cover: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/cover/cover.png\n- body01: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/01.png\n- body02: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/02.png\n- body03: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/03.png\n- climax: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/15.png\n- payoff: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/20.png\n- captions: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitles.yaml\n- publish_copy: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/06_婚礼前夜_最终发布文案_V2.0.md\n- propagation_card: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/recommendation-fit.json\n\nActual title:\n2007年，我被安排了一门亲事。婚礼前夜，我发现婚鞋底下焊着铁环。\n\nDescription:\n2007 年，我被带到西北农村一间土房，说是明天就成亲。那瓶没有标签的药，他每天盯着我吃。彩排时我要背“恋爱六年”，可满屋亲友没有一个人叫得出我的名字。婚礼前夜，我翻过婚鞋——鞋底焊着铁环；金镯子上留着锁孔；喜字下面露出的，是土坯。我问他：你送我镯子说过能锁住一辈子，你是来锁我的吗？后门被撞开，我赤脚跑进田里，在省道检查站被救下。可他们做笔录时，我背得出“恋爱六年”的每一个细节，却想不起自己的名字。直到一个花白头发的女人喊出了我的名字。人物、地点、情节均为虚构；内容由 AI 生成。\n\nTopics:\n[\"AI故事\", \"旧物怪谈\", \"农村故事\", \"细思极恐\", \"第一人称悬疑\", \"抖音图文\"]\n\nRead:\n- standards/制作规范_正式版.md\n- standards/release_preflight_guard_V2.0.3.5.md\n- episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitle-layout-audit.json (deterministic all-frame placement/line-count/hash audit)\n- episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json (all final publish frames reviewed in SHA-bound chunks of up to 5 for caption support + actual subtitle obstruction)\n- the episode Story Lock / storyboard / captions / publish copy / propagation card.\n\nHard release checks:\n1. cover_title_match: cover and actual title promise the same core story/anomaly.\n2. cover_frame01_handoff: body01 immediately continues or concretely supports the cover promise; no bait-and-switch.\n3. first3_coherence: body01-03 form one readable entry path, not three disconnected hooks.\n4. climax_upgrade: the actual climax frame is meaningfully stronger/more irreversible than the first hook.\n5. payoff_honesty: the payoff is earned by earlier evidence and does not add a brand-new mechanism.\n6. description_consistency: description/topics do not claim official fact, real case, or evidence absent from the story.\n7. no_caption_invented_core_evidence: final text may add context, but may not invent the core visual evidence.\n8. subtitle_left_middle_and_unobstructed: require BOTH SHA-bound all-frame audits above to PASS. subtitle-layout-audit proves left/middle geometry, line count and current publish-output hashes; caption-image-audit proves every final publish frame was pixel-reviewed in chunks and subtitle_unobstructed=true. Do not reopen every body image here; fail if either audit is missing/stale/failed.\n9. caption_conversational_hook_quality: captions must sound like a real first-person immediate record, stay concise/eye-catching, avoid novel narration/AI boilerplate, and perform one clear narrative function per frame. Two rendered lines is the hard maximum.\n\nGovernance checks:\n- This is AI-generated realistic fictional story content.\n- Real locations may be used as story backgrounds, but the release must not present invented events as official/verified real incidents.\n- No unverifiable dangerous accusation against a real region, ethnicity, religion, organization, or identifiable person.\n- Platform AI-generation declaration/label must be planned and not intentionally stripped.\n- A fiction-context notice is appropriate for this Story OS format.\n\nPASS only when every release and governance check is true.\nWrite ONLY valid JSON to episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.release-semantic-review.candidate.json:\n{\n  \"release_checks\": {\n    \"cover_title_match\": true,\n    \"cover_frame01_handoff\": true,\n    \"first3_coherence\": true,\n    \"climax_upgrade\": true,\n    \"payoff_honesty\": true,\n    \"description_consistency\": true,\n    \"no_caption_invented_core_evidence\": true,\n    \"subtitle_left_middle_and_unobstructed\": true,\n    \"caption_conversational_hook_quality\": true\n  },\n  \"governance_checks\": {\n    \"ai_generated_declared\": true,\n    \"platform_ai_label_planned\": true,\n    \"fiction_context_not_misrepresented_as_official_fact\": true,\n    \"no_unverifiable_real_group_accusation\": true,\n    \"real_location_handled_as_fictional_story_context\": true\n  },\n  \"issue_codes\": [],\n  \"notes\": [\"specific final-release evidence\"],\n  \"summary\": {\"passed\": true}\n}\n",
+  "finalized_at": "2026-09-09T11:04:07+08:00",
+  "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/release-semantic-review.json"
+}

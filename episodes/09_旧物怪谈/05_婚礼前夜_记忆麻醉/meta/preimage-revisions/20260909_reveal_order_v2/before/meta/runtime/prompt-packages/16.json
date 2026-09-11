@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "16",
+  "scene_prompt": "后门被撞开，同款红嫁衣女孩跌出车、赤脚跑进田里；她泥脚回头看红字与车灯；剧烈晃糊、高光溢出。 2007西北农村土房婚房，深秋夜，白炽灯/窗洞天光/手电/车灯；23岁新娘第一人称手持廉价卡片机竖拍4:5，构图随手偏位、现场光、低动态、边缘略软、相册感；主角只露手/脚/局部不露清晰正脸（高潮帧可露45°侧脸传递表情）；碎花长袖+深色长裤+旧布鞋。禁止恐怖电影布光/HDR/文字水印/清晰正脸。",
+  "scene_prompt_sha256": "30e133a94613f0031c5e8cb98bb0b8ae8bc4282d9e4c5346035b63f0d9c90515",
+  "frame_contract_sha256": "5f3874609d4ccb6edeadcd1f25107a30e59b73a3415ac8497ee431faf2842faa",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\batch\\prompts\\16.txt",
+  "package_sha256": "dbe22744e0ed78a13f7e13911132745f38f51ae7e1d9b685370d00393b83ee83",
+  "compiled_at": "2026-09-09T10:21:18+08:00"
+}

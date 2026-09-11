@@ -1,0 +1,151 @@
+{
+  "release_checks": {
+    "cover_title_match": true,
+    "cover_frame01_handoff": true,
+    "first3_coherence": true,
+    "climax_upgrade": true,
+    "payoff_honesty": true,
+    "description_consistency": true,
+    "no_caption_invented_core_evidence": true,
+    "subtitle_left_middle_and_unobstructed": true,
+    "caption_conversational_hook_quality": true
+  },
+  "governance_checks": {
+    "ai_generated_declared": true,
+    "platform_ai_label_planned": true,
+    "fiction_context_not_misrepresented_as_official_fact": true,
+    "no_unverifiable_real_group_accusation": true,
+    "real_location_handled_as_fictional_story_context": true
+  },
+  "issue_codes": [],
+  "notes": [
+    "实际像素终审（本次 host 复核 + 既有 SHA 绑定证据）：cover.png 与 body01 为同一 V2 帧（sha d1e33040…），封面承诺\"婚鞋底下焊着铁环\"由 body01 的婚房门口第一人称直接承接，无 bait-and-switch；01—03 一条\"记忆缺口→漏服→床底铁链\"入口链，非三个断裂钩子。",
+    "climax=15 为举起未扣合金镯当面逼问+男人抢夺的动作/关系决裂帧，相对 01 记忆缺口与 03 梦境铁链形成不可逆升级；payoff=20 静默回收斑驳天花板、红布窗与远处小白瓶，只复用前文已建立的房间细节与药瓶符号，不新增异常机制，双解释由 19 干净鞋底梦与 09 铁环互文完成。",
+    "字幕为第一人称即时所见、每帧单一叙事职能，无旁白腔/AI 套话；02\"他说这药能让我睡好。那晚忙乱，我漏吃了一次。\"补漏服因果，09—11 只陈述像素内物证（鞋底铁环/镯内锁孔/红布后铁栏），13/15 引语均与画面动作一致；第 20 张字幕为空（静默），符合 docs06 发布顺序约定。",
+    "SHA 绑定审计证据：meta/subtitle-layout-audit.json（f0b603d3…）全 20 帧左对齐 x=72、y=702、垂直区 0.42–0.62、最大 1–2 行全部通过；meta/caption-image-audit.json（79d10cf2…）summary.passed=true，19 帧逐帧像素 critic（final_publish_pixel_critic, attempt 2, 15:37）subtitle_unobstructed=true，含 01/02/03/15/20 像素评语；本次再抽查 01/02/03/15/20 原图：字幕行位于中下区未压脸/关键证据（02 药粒与远侧小瓶、03 铁链、15 镯与手），20 无字幕。",
+    "发布文案一致性：docs06 封面文案/平台标题/简介与 V2 揭露顺序（漏服→梦链→验鞋镯栏→递药堵门→吐药→逼问→逃跑→检查站获救→失名→喊名回头→第二梦）一致；简介尾注明\"人物、地点、情节均为虚构；内容由 AI 生成。\"，话题含 #AI故事 且无任何真实案件/地域指控表述；置顶评论只引导回顾药瓶三现与双解释，不虚构发布层不存在的证据。",
+    "governance 全部满足：AI 生成已在文案内声明、平台 AI 标签计划保留、虚构背景处理为故事上下文（西北农村土房为泛化场景、不指真实地点事件）、无对真实群体/组织的不可验证指控。"
+  ],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "artifacts": {
+    "cover": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/cover/cover.png",
+      "sha256": "d1e33040c39fd6de15191a6b453309b1ff29f051cfb761700d5ef17c287cd820"
+    },
+    "body01": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/01.png",
+      "sha256": "d1e33040c39fd6de15191a6b453309b1ff29f051cfb761700d5ef17c287cd820"
+    },
+    "body02": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/02.png",
+      "sha256": "7e3251ee58119c311929bfcc0f8b84d6eda324bd39c7302683d995d9c165611d"
+    },
+    "body03": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/03.png",
+      "sha256": "7eb962c1d6fa9111f53f25781379c0904298d0703238876045a18738e4cb67a9"
+    },
+    "body04": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/04.png",
+      "sha256": "be4674c514794f78febd5cb0b0c4a144b0e0992c2ea0e59274b5da5151a6ad28"
+    },
+    "body05": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/05.png",
+      "sha256": "45dbcead2d9de99b8c3baea62a9932081195a47f65ccc2472450968dc7de71c2"
+    },
+    "body06": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/06.png",
+      "sha256": "e10ca614004b83c0da91bea4c82f5f7ff78dc608961f72c0675517f7e9558e67"
+    },
+    "body07": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/07.png",
+      "sha256": "394cebbbabcda73e3e04af6e7d7ee7ca0e2c3373f3d12751d881bebe79cf12c7"
+    },
+    "body08": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/08.png",
+      "sha256": "282f342e87b8221ad539b0e06417cd867ea1726aa661802ae5546720d0ba0ad4"
+    },
+    "body09": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/09.png",
+      "sha256": "cee3b89ed9d2477d1cd25a2fedb77637af05962e9ffe42ea071140c655bc94f1"
+    },
+    "body10": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/10.png",
+      "sha256": "3c2085e389c488da1dc31f9756c4dc9bef49b1675a7eab55c0dba908e37298c5"
+    },
+    "body11": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/11.png",
+      "sha256": "e56ce0423c1ad47dd5014a58ed04a16026bce8a948f884f46c08f2f7b0fa0df6"
+    },
+    "body12": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/12.png",
+      "sha256": "c3af8a79ec81ecbe6b5a842b7d5b4a77051ff0faf588414169342834c84dea71"
+    },
+    "body13": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/13.png",
+      "sha256": "71e2c61bdb11d730e17f5aea487cd0e6fee0313c1d702d25031002c5fc6d1c43"
+    },
+    "body14": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/14.png",
+      "sha256": "288842e1e69a4739759dc5c4c2afc848d7f99059793624f53dabc8f3a6acfcd4"
+    },
+    "body15": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/15.png",
+      "sha256": "aec66c21650e635a3fb75f0461cb94a0015d9b958aea773117e4ab2a589440d5"
+    },
+    "body16": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/16.png",
+      "sha256": "0c6698beb37e7d3367f6b13aa22a360a83c7e7cf170f22ae58cb6186523ab3a3"
+    },
+    "body17": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/17.png",
+      "sha256": "b22565a1a0be0bfcc7602b8e096a25db58553624124eb90f1969bb89001e8f92"
+    },
+    "body18": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/18.png",
+      "sha256": "992f4cc614838acb9a30b65394d8575e84aef81f267be6b59bc89f60d73c2385"
+    },
+    "body19": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/19.png",
+      "sha256": "27a21a08dffba12b06989c88f198fb249a5f96e85554e07b0f7bb36aa5d73a29"
+    },
+    "body20": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/20.png",
+      "sha256": "9b4ea3937e39bb7110a73980ead3d78bd4f92de60fb3aa2130b88b309522fbc4"
+    },
+    "climax": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/15.png",
+      "sha256": "aec66c21650e635a3fb75f0461cb94a0015d9b958aea773117e4ab2a589440d5"
+    },
+    "payoff": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/20.png",
+      "sha256": "9b4ea3937e39bb7110a73980ead3d78bd4f92de60fb3aa2130b88b309522fbc4"
+    },
+    "captions": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitles.yaml",
+      "sha256": "4bfc7d907de71263ed3254ceb0384e0bedcc2bdffea9fc630b7086fc35e79845"
+    },
+    "publish_copy": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/06_婚礼前夜_最终发布文案_V2.0.md",
+      "sha256": "43f8197ab3655c00efaecb93ef7e0e7e7fba89ce4d45b1e0f2315c6664d1acbf"
+    },
+    "propagation_card": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/recommendation-fit.json",
+      "sha256": "ce55105ab7d27b256b449fd99f28dcf2c06333f0b8422987291a3f1a70182d5f"
+    }
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-09T16:26:06+08:00",
+    "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/release-semantic-attempt-1-request.json",
+    "request_id": "release-semantic-a1-fc8933fa65c7268a",
+    "request_fingerprint": "fc8933fa65c7268a2fab83a03aeb5e40deadfd259168b8d899510824a62b3268"
+  }
+}

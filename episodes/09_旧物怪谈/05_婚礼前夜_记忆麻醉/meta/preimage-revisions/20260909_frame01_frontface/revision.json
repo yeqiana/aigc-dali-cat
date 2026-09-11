@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "revision": "20260909_frame01_frontface",
+  "created_at": "2026-09-09T13:22:59.048Z",
+  "user_instruction": "图01换成女主正脸（正面看向相机）",
+  "selected_variant": "A: 女主在婚房门口对镜头正面看向相机；院里男方用她的卡片机拍婚前夜留影（同行者持机，全篇唯一露脸帧）",
+  "scope": "frame 01 only；02—20 分镜与像素内容不变，仅因全文档 SHA 漂移需重编译并复核",
+  "changed_inputs": [
+    "docs/03_婚礼前夜_20张正式分镜_V2.0.md (全局约束+图01块)",
+    "docs/04_婚礼前夜_视觉规范_V2.0.md (全局约束)",
+    "meta/story-gates.json (visual.continuity/protagonist, authenticity_card, frame_directives.01)",
+    "meta/shot-progression-review.json (frames[0]: camera_position/action/pov_mode)",
+    "docs/prompts/reveal-order-v2/01.txt"
+  ],
+  "before_backup": "meta/preimage-revisions/20260909_frame01_frontface/before/",
+  "camera_handoff_reason": "婚前夜留影给老人看；男方短暂持P01卡片机在院里拍摄，P01在门口正面看镜头；02—20仍由P01自持机",
+  "status": "inputs revised; contracts recompile+verify pending; regen+review pending"
+}

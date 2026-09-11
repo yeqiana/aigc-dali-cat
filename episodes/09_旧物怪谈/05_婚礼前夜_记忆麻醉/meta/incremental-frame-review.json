@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "planned_at": "2026-09-09T17:53:29+08:00",
+  "action": "NOOP",
+  "dirty_frames": [],
+  "context_frames": [],
+  "reasons": {},
+  "caption_mode": "per_frame"
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "15",
+  "scene_prompt": "她把金镯摘下来递到他面前，眼神直直：你送我这镯子说过能锁住一辈子，那现在你是来给我锁上的吗？他愣住。高潮对抗。23 岁新娘近景只露手/半身/眼神，碎花长袖；男方 30 多岁深色外套愣住半身。西北土房婚房，无标签药、旧花盆、金镯、绣鞋，白炽灯偏硬，深秋夜。2007 廉价卡片机手持竖拍 4:5，近景对峙，现场灯下生活感仍在，随手偏位、低动态、边缘略软。禁止电影布光/HDR/文字水印/清晰正脸/可仿效药名剂量/锁具结构解说明细。",
+  "scene_prompt_sha256": "d59115aa26b0f07ed68680f896fe13b5ac3c658381615333b6b6b51500e21e90",
+  "frame_contract_sha256": "f56a300068804959132eef565cedf63a70974ea511c7253e6ed820c82004750f",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\visual-lock\\prompts\\15.txt",
+  "package_sha256": "feca64f4e088132b75b8ae35e42a78d4d1a176916343426dbd106bdab596b7fe",
+  "compiled_at": "2026-09-09T09:40:43+08:00"
+}

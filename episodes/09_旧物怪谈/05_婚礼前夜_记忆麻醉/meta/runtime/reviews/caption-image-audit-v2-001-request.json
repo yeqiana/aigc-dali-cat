@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "request_id": "caption-image-audit-v2-001-a2-37a967252826193a",
+  "request_fingerprint": "37a967252826193a4c7683bb6d79acf15702066014834a5e470488da60c6350e",
+  "created_at": "2026-09-09T15:23:08+08:00",
+  "status": "FINALIZED",
+  "review_kind": "caption-image-audit-v2-001",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 2,
+  "source_files": [
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/01.png",
+      "sha256": "d1e33040c39fd6de15191a6b453309b1ff29f051cfb761700d5ef17c287cd820"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/02.png",
+      "sha256": "7e3251ee58119c311929bfcc0f8b84d6eda324bd39c7302683d995d9c165611d"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/03.png",
+      "sha256": "7eb962c1d6fa9111f53f25781379c0904298d0703238876045a18738e4cb67a9"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/04.png",
+      "sha256": "be4674c514794f78febd5cb0b0c4a144b0e0992c2ea0e59274b5da5151a6ad28"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/05.png",
+      "sha256": "45dbcead2d9de99b8c3baea62a9932081195a47f65ccc2472450968dc7de71c2"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitles.yaml",
+      "sha256": "4bfc7d907de71263ed3254ceb0384e0bedcc2bdffea9fc630b7086fc35e79845"
+    }
+  ],
+  "candidate_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.caption-image-audit-candidate-001.json",
+  "prompt_sha256": "d41d6d33f3127cda54eb02bafcff1296f7fc8655a624beaec55b3ec5e75883dc",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are the Story OS final-publish Caption ↔ Image + Subtitle Obstruction Critic.\nReview ONLY the supplied FINAL publish pixels after subtitle rendering.\nFor each frame judge two things:\n1. supported: the caption is honestly supported by the underlying photographed/generated scene; it must not invent a core event, prop, person, UI text, anomaly, action, or causal fact absent from the scene. The rendered subtitle text itself is NEVER visual evidence for supported=true; mentally ignore the overlay when judging support.\n2. subtitle_unobstructed: rendered text does not cover a face, anomaly evidence, hand/action, key prop, native text, or causal clue. Left/middle geometry and line-count are checked deterministically elsewhere; here judge actual pixel obstruction.\nDo not re-review overall story quality, character continuity, or visual style. Empty captions automatically pass both checks.\nMappings:\n- frame 01: final_publish_image=episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/01.png | caption=\"明天就要结婚了，我却想不起他求婚的样子。\"\n- frame 02: final_publish_image=episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/02.png | caption=\"他说这药能让我睡好。那晚忙乱，我漏吃了一次。\"\n- frame 03: final_publish_image=episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/03.png | caption=\"梦里，我一抬脚，床底就响了一声。\"\n- frame 04: final_publish_image=episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/04.png | caption=\"有人按住我的手，叫我别动。我看不清他的脸。\"\n- frame 05: final_publish_image=episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/05.png | caption=\"醒来，脚踝还红着。\"\n\nWrite ONLY JSON to episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.caption-image-audit-candidate-001.json:\n{\"frames\":[{\"frame\":\"01\",\"supported\":true,\"subtitle_unobstructed\":true,\"notes\":\"specific pixel evidence\"}],\"summary\":{\"passed\":true}}\nReturn one row for every attached frame. summary.passed=false if any supported=false or subtitle_unobstructed=false.\n",
+  "attempt_request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-001-attempt-2-request.json",
+  "finalized_at": "2026-09-09T15:37:55+08:00",
+  "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json"
+}

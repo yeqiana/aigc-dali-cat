@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "06",
+  "scene_prompt": "她拿着纸/旧手机逐句背台词，眼神茫然；满屋红喜字婚房背景；现场光、纪实。 2007西北农村土房婚房，深秋夜，白炽灯/窗洞天光/手电/车灯；23岁新娘第一人称手持廉价卡片机竖拍4:5，构图随手偏位、现场光、低动态、边缘略软、相册感；主角只露手/脚/局部不露清晰正脸（高潮帧可露45°侧脸传递表情）；碎花长袖+深色长裤+旧布鞋。禁止恐怖电影布光/HDR/文字水印/清晰正脸。",
+  "scene_prompt_sha256": "1bf336218b97640971b25c0718cea6655072b943c31f91ba2f3e0f7dfe01a8d1",
+  "frame_contract_sha256": "ec31f7b9912c742b2795a6a29c6b33612d845260a6caa4c494294ff74209a799",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\batch\\prompts\\06.txt",
+  "package_sha256": "b4a9e5b5c46e8bc2db574995c81f276966c3d64e8eeeed887b4d494cf4ba09cf",
+  "compiled_at": "2026-09-09T10:21:08+08:00"
+}

@@ -1,0 +1,267 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "creative_doctrine": "概念不要克制，镜头必须真实；真实性约束怎么拍，不限制发生什么。",
+  "candidates": [
+    {
+      "id": "C01",
+      "title": "凌晨四点有人在数嫁妆",
+      "one_line_hook": "凌晨四点，床底传来一句句数嫁妆的声音，数的每一件都跟我箱子里的对得上。",
+      "concept_class": "家庭/身份替换",
+      "anomaly_ceiling": {
+        "initial": "凌晨四点，床底传来数嫁妆声",
+        "middle": "隔壁喜房嫁妆一件件凭空少掉",
+        "climax": "数到最后一件：还差新娘，声音贴上床沿"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "深夜土房，床底缝隙透出一点光",
+          "why_stop": "黑暗中有人在床底报数"
+        },
+        "mid": {
+          "visual": "嫁妆箱被一件件打开，东西在消失",
+          "why_stop": "它数的正是我箱子里的东西"
+        },
+        "climax": {
+          "visual": "一根手指贴上床板，声音贴着耳边",
+          "why_stop": "还差新娘"
+        }
+      },
+      "discussion_question": "它到底在数什么？"
+    },
+    {
+      "id": "C02",
+      "title": "梳头的没有影子",
+      "one_line_hook": "母亲替我梳头，镜子里的她却没有影子。",
+      "concept_class": "身份替换/血缘",
+      "anomaly_ceiling": {
+        "initial": "梳头时镜中母亲无影",
+        "middle": "母亲开始说不出我小时候的事",
+        "climax": "她转身，后脑勺是另一张脸"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "旧木梳子一下下梳过头发，镜面发黄",
+          "why_stop": "镜里人没有影子"
+        },
+        "mid": {
+          "visual": "母亲答错我的生日，脸上却笑着",
+          "why_stop": "她开始忘记我的事"
+        },
+        "climax": {
+          "visual": "母亲缓缓回头，后脑是一张陌生女人脸",
+          "why_stop": "你不是我妈"
+        }
+      },
+      "discussion_question": "血缘能被替换吗？"
+    },
+    {
+      "id": "C03",
+      "title": "拜堂前的三炷香自己断了",
+      "one_line_hook": "拜堂前点的三炷香，齐刷刷立断，断口全部朝门外。",
+      "concept_class": "旧俗/反噬",
+      "anomaly_ceiling": {
+        "initial": "三炷香同时从中间折断",
+        "middle": "香灰拼出两个字：别拜",
+        "climax": "门外锣鼓越来越近，断香自己重新燃烧"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "供桌上三炷香齐断，断口朝屋外",
+          "why_stop": "香自己断了"
+        },
+        "mid": {
+          "visual": "香灰在地上聚成两个字",
+          "why_stop": "香灰写出别拜"
+        },
+        "climax": {
+          "visual": "门外锣鼓迎亲，断香自燃",
+          "why_stop": "他们还是要拜堂"
+        }
+      },
+      "discussion_question": "香在警示谁？"
+    },
+    {
+      "id": "C04",
+      "title": "每一把锁都朝着床",
+      "one_line_hook": "回娘家发现家里每把锁的锁眼，都正好对着我的婚床。",
+      "concept_class": "空间/囚禁",
+      "anomaly_ceiling": {
+        "initial": "门锁、柜锁、箱锁的锁眼全朝床",
+        "middle": "锁眼在夜里透出一点光",
+        "climax": "所有锁眼同时睁开，床上只剩喜字"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "土房墙上挂着一排锁，锁眼齐刷刷朝床",
+          "why_stop": "锁眼都对着床"
+        },
+        "mid": {
+          "visual": "夜里锁眼透光，像一只只眼睛",
+          "why_stop": "锁眼里有光"
+        },
+        "climax": {
+          "visual": "满屋锁眼同时睁开，床上没了人",
+          "why_stop": "喜字还在，人没了"
+        }
+      },
+      "discussion_question": "被锁住的到底是人还是床？"
+    },
+    {
+      "id": "C05",
+      "title": "喜被上的鸳鸯会换位",
+      "one_line_hook": "新婚喜被上绣的鸳鸯，一夜之间换了位置，龙凤转头盯着屋门。",
+      "concept_class": "旧物/活物化",
+      "anomaly_ceiling": {
+        "initial": "喜被鸳鸯换了位",
+        "middle": "龙凤绣面转头盯门",
+        "climax": "整床被子自己拱起来，底下是土"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "红色喜被上的鸳鸯绣样",
+          "why_stop": "鸳鸯换位了"
+        },
+        "mid": {
+          "visual": "被面龙凤齐齐转向屋门",
+          "why_stop": "它们在看门"
+        },
+        "climax": {
+          "visual": "喜被隆起，掀开是半床黄土",
+          "why_stop": "被子里是土"
+        }
+      },
+      "discussion_question": "被面是绣给谁看的？"
+    },
+    {
+      "id": "C06",
+      "title": "撕开喜字露出另一个院子",
+      "one_line_hook": "婚礼这天，我撕开墙上的喜字，底下墙皮掉光，露出一扇从来没见过的院门。",
+      "concept_class": "空间嵌套",
+      "anomaly_ceiling": {
+        "initial": "喜字下有另一扇门",
+        "middle": "门后是另一个院子，也在办婚礼",
+        "climax": "两个院子的婚礼同步，连唢呐都一样"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "喜字一角翘起，底下是土坯与旧门",
+          "why_stop": "喜字下有门"
+        },
+        "mid": {
+          "visual": "推开旧门，另一个院子张灯结彩",
+          "why_stop": "里面也在办婚礼"
+        },
+        "climax": {
+          "visual": "两院唢呐同响，新人同时回头",
+          "why_stop": "两场婚礼是一场的两半"
+        }
+      },
+      "discussion_question": "哪个院子是真的？"
+    },
+    {
+      "id": "C07",
+      "title": "花轿里坐着我",
+      "one_line_hook": "迎亲花轿走过村口，帘子被风掀起，里面坐着穿嫁衣的我，而我还站在路边。",
+      "concept_class": "分身/时间循环",
+      "anomaly_ceiling": {
+        "initial": "花轿里一张熟悉的脸",
+        "middle": "轿里的我朝我笑，还招手",
+        "climax": "第二顶花轿从雾里出来，轿上写着的名字是我"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "旧花轿停在村口，帘角掀起",
+          "why_stop": "轿里坐着我自己"
+        },
+        "mid": {
+          "visual": "轿里的我抬起手朝我示意",
+          "why_stop": "她在叫我过去"
+        },
+        "climax": {
+          "visual": "雾里又来一顶花轿，红绸上绣着我的名字",
+          "why_stop": "我是要嫁多少次"
+        }
+      },
+      "discussion_question": "被抬走的是哪一层的我？"
+    },
+    {
+      "id": "C08",
+      "title": "洞房的灯一开就亮不了",
+      "one_line_hook": "婚礼洞房的灯怎么都点不亮，一开灯，满屋墙上就映出很多人影。",
+      "concept_class": "空间/群体",
+      "anomaly_ceiling": {
+        "initial": "洞房灯点不亮",
+        "middle": "墙上一开灯就映出人影",
+        "climax": "人影越来越多，最后围在床边"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "房梁吊灯，拉绳却拉不亮",
+          "why_stop": "灯亮了又灭"
+        },
+        "mid": {
+          "visual": "电筒一照墙上全是人影",
+          "why_stop": "墙上都是人"
+        },
+        "climax": {
+          "visual": "人影围拢到床沿，灯突然全亮",
+          "why_stop": "它们一直在屋里"
+        }
+      },
+      "discussion_question": "这些影子是谁的？"
+    },
+    {
+      "id": "C09",
+      "title": "明天的我在今晚回头",
+      "one_line_hook": "婚礼前夜我透过窗玻璃看见明天的自己，穿着嫁衣站在院子里，正回头看我。",
+      "concept_class": "时间/预知",
+      "anomaly_ceiling": {
+        "initial": "窗玻璃映出明天的我",
+        "middle": "明天的我摇头，像在劝我别嫁",
+        "climax": "我冲出去，院子空无一人，只剩一双冰冷绣鞋"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "深夜窗玻璃映出一个穿嫁衣的人影",
+          "why_stop": "那是明天的我"
+        },
+        "mid": {
+          "visual": "玻璃里的我拼命摇头，眼泪直流",
+          "why_stop": "她在劝我别嫁"
+        },
+        "climax": {
+          "visual": "空院子地上只剩一双绣花鞋，鞋尖朝外",
+          "why_stop": "明天的我还在门外"
+        }
+      },
+      "discussion_question": "现在是哪天？"
+    },
+    {
+      "id": "C10",
+      "title": "婚礼前夜·记忆麻醉",
+      "one_line_hook": "明天就是婚礼，我却在一夜之间被喂药、被灌输六年恋爱剧本，醒来发现婚鞋焊着铁环、金镯带着锁孔，新房其实是一座土房。",
+      "concept_class": "禁锢/记忆替换/表演犯罪",
+      "anomaly_ceiling": {
+        "initial": "无标签药瓶被盯着吃，不吃就乱想",
+        "middle": "婚礼彩排背恋爱六年，亲戚没人叫我名字",
+        "climax": "厢式货车里蹲着同款嫁衣的女孩，她们脚上也戴着铁环"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "土房婚房，喜字下一角露土坯，无标签药瓶在手心",
+          "why_stop": "明天婚礼却像被关着"
+        },
+        "mid": {
+          "visual": "镜子里母亲梳头，满屋亲戚没一人叫出我名字",
+          "why_stop": "没人认识我"
+        },
+        "climax": {
+          "visual": "货车后门打开，几个穿红嫁衣的女孩同时抬头，脚踝都是铁环",
+          "why_stop": "货在看出货的车"
+        }
+      },
+      "discussion_question": "如果被灌输的记忆才是真实，我此刻醒在哪一层？"
+    }
+  ]
+}

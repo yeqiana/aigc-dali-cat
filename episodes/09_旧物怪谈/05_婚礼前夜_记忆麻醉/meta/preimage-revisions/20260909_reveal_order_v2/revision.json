@@ -1,0 +1,56 @@
+{
+  "revision_id": "20260909_reveal_order_v2",
+  "not_episode_stage": true,
+  "user_scope": "处理1-3，先不跑图",
+  "image_generation_allowed": false,
+  "independent_review": "PENDING",
+  "source_files": {
+    "docs/02_婚礼前夜_StoryLock_V2.0.md": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752",
+    "docs/03_婚礼前夜_20张正式分镜_V2.0.md": "91ddf6115b39b4de559f45cb2e3b963cf63a34de2d890bb90bb7820325c6621e",
+    "docs/04_婚礼前夜_视觉规范_V2.0.md": "e650259f1cad879a012aedfc03106ece5ba51c1df555b10cb89743f32625ef34",
+    "meta/subtitles.yaml": "4bfc7d907de71263ed3254ceb0384e0bedcc2bdffea9fc630b7086fc35e79845",
+    "meta/shot-progression-review.json": "bc4dc6cb45a22b4d96f41633f7155157168f82784fdfe8e4687de963299de29b",
+    "meta/story-gates.json": "2eb9a52d056f29a5375e4a53c37385399e274b0085bb9b2f39334ef5f2f03d15",
+    "docs/prompts/reveal-order-v2/01.txt": "fb226f2376ba068f4adad2c158a1228f106bf35f52f27f92ee85b6882b10eed9",
+    "docs/prompts/reveal-order-v2/02.txt": "bc725a147e1fb020343048d3476298a39bffaa0beba87df6f3f3f07a16e803e9",
+    "docs/prompts/reveal-order-v2/03.txt": "fe90ed44a7217578393d2a799c381f9f0f6f0e8411e8a11681072d74c4a99f90",
+    "docs/prompts/reveal-order-v2/04.txt": "200964f070470741220ebcac0891010c0cc6e50180daac9481c4a0c08dcce5d2",
+    "docs/prompts/reveal-order-v2/05.txt": "5c952d2a16d0ff1043ab0bb2cec7f658641825a42babf40ebd20946cfed13bb7",
+    "docs/prompts/reveal-order-v2/06.txt": "4d31b795b99c7ce227edc9a93d8ccad392a74b9baedd3e84c4849512e331ca60",
+    "docs/prompts/reveal-order-v2/07.txt": "116436f3a8f8dad1e42b13e98c717ba1150bd96f1c22f72a41dfc198c42f53db",
+    "docs/prompts/reveal-order-v2/08.txt": "9bb2bcaa8ac5fb3687ca2219e56c3a9d2135a255b24196a6711931d7adc1cfc8",
+    "docs/prompts/reveal-order-v2/09.txt": "43fed94a7ef90fe2a531f070dbadd8c85e4cb20f5780bf1a60e25e9dcedd16e4",
+    "docs/prompts/reveal-order-v2/10.txt": "5fc68c9c42e0f82d072e67c588f81534a04ce805e1f6d7f1e31276ae7093e97d",
+    "docs/prompts/reveal-order-v2/11.txt": "8b663890ba7d51ac6569665cebf9d95d10def7749155426b8805c4cf16714fa2",
+    "docs/prompts/reveal-order-v2/12.txt": "2c83863eb9e62cfe00519a2a5415b58919921620b6663aa3bd9042671bd1e073",
+    "docs/prompts/reveal-order-v2/13.txt": "bbe4266bbd6157bfc893d43532c3b4979bbef40136d66da61de2e97a542ce58a",
+    "docs/prompts/reveal-order-v2/14.txt": "2a1a5f8b25e56fbab0125efe05835bc7764c72b731ac219ef0dd2adc625e4581",
+    "docs/prompts/reveal-order-v2/15.txt": "d2a8fab90bd567ba12d4cf3cb424bb2981fc74ba1e72b303538884497a93889a",
+    "docs/prompts/reveal-order-v2/16.txt": "dac24793d47aad0fa85328f9516aab708a3ea7107f685139a7defa88457b0cc4",
+    "docs/prompts/reveal-order-v2/17.txt": "5b077efc36bd734c902082cae89e236fb754fc67d7407ff9c4898fe061576d67",
+    "docs/prompts/reveal-order-v2/18.txt": "33bcaa05a2c37fc0e77dfdca7cb94944ecd89f6d903ed32dff21f30961b57e19",
+    "docs/prompts/reveal-order-v2/19.txt": "f77d9820f2397cbd0de6f4d71e1995a1ca3979193ef37b853ea188eef8d86cb1",
+    "docs/prompts/reveal-order-v2/20.txt": "0d02777776c5e5a76bffa10da618ba01bb3873ed42f8740a38d4a677a61f0bb6"
+  },
+  "compiled_contracts": 20,
+  "compiled_prompt_packages": 20,
+  "contract_verify_errors": [],
+  "checks": [
+    {
+      "command": "text_audit.py",
+      "returncode": 0
+    },
+    {
+      "command": "evidence_gate.py",
+      "returncode": 2
+    }
+  ],
+  "old_evidence_untouched_except_source_contract_sections": true,
+  "old_release_gate": "FAIL_EXPECTED_SOURCE_DRIFT",
+  "resume_policy": "不得以旧PUBLISH_READY/旧队列直接生图或交付。本版先完成独立评审；用户授权生图后重建队列，读取docs/prompts/reveal-order-v2。所有合同因Story SHA漂移须重新核验，不能据此直接判定所有图片须重生。",
+  "historical_assets": "原图片、ZIP、production-ledger、production-queue、immutable runtime-request、episode-state、release-manifest和snapshot均未主动修改。",
+  "prompt_hardening": {
+    "note": "新增逐帧药瓶范围与全局排除词，2026-09-09 复核后发现首版短提示词缺排除项",
+    "global_exclusions": "清晰正脸/第三人称/电影布光/HDR/文字/水印"
+  }
+}

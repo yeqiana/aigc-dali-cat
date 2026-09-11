@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "max_total_content_candidates": 55,
+  "authorization": {
+    "approved": true,
+    "source": "delegated_continuous_execution (runtime-checkpoint) + revision 20260909_reveal_order_v2: authorized full regeneration after frame-contract drift; exceeded default derived budget 20+15 by design",
+    "authorized_at": "2026-09-09T14:30:00+08:00"
+  },
+  "note": "official override file read by raw_candidate_budget.py; no ledger/pass rewrite",
+  "per_frame_authorizations": [
+    {
+      "frame": "01",
+      "kind": "repair",
+      "additional": 1,
+      "reason": "user-directed frame-01 appearance authority update 2026-09-10: 图01女主需漂亮、年轻; storyboard frame 01 + docs/prompts/reveal-order-v2/01.txt updated, frame contract d5d272ca -> c67f7205. The two ordinary repair candidates for frame 01 were already committed against the previous contract, so the authorized regeneration against the new contract needs one raised slot instead of a loop retry.",
+      "authorization": {
+        "approved": true,
+        "source": "user direct instruction 2026-09-10: \"有正脸，女生要漂亮、年轻\" + \"你再生成一次\"; recorded in meta/production-ledger.json frame 01 authority_refresh_authorization (approval_basis=direct_user_authority_contract_refresh)",
+        "authorized_at": "2026-09-10T10:05:00+08:00"
+      },
+      "restore_defaults_by": "remove this entry (module falls back to the fixed per-frame limit)"
+    },
+    {
+      "frame": "01",
+      "kind": "repair",
+      "additional": 2,
+      "reason": "frame-contract scope fix 2026-09-10: the 3 shared hash_material fields (authenticity_card.camera_rules.photographer_visibility_explanation, authenticity_card.secondary_source_explanation, continuity.anchors.protagonist) were restored so the 19 approved frames 02-20 re-bind their recorded contracts; frame 01 keeps the user-directed front-face authority, so its contract moved c67f7205 -> 551c1be4 and the approved pixels must be regenerated once. Slot 1 = scope-fix regeneration; slot 2 = reserve for one in-spec content repair of that candidate (face/identity/wardrobe defect) before the episode budget stops the loop.",
+      "authorization": {
+        "approved": true,
+        "source": "user direct instruction 2026-09-10: \"有正脸，女生要漂亮、年轻\" + \"你再生成一次\" + \"全自动做到 PUBLISH_READY\"; scope fix keeps that authority and only re-renders it against the corrected shared contract",
+        "authorized_at": "2026-09-10T11:20:00+08:00"
+      },
+      "restore_defaults_by": "remove this entry (module falls back to the fixed per-frame limit)"
+    },
+    {
+      "frame": "01",
+      "kind": "repair",
+      "additional": 1,
+      "reason": "user-directed frame-01 framing fix 2026-09-10: the approved frame 01 reads as a full-length doorway snapshot, not the requested front-face / selfie-like portrait. Prompt-only change (docs/prompts/reveal-order-v2/01.txt -> close-up front face); Story / Storyboard / Frame Contract stay frozen (contract 551c1be4), so the approved pixels are regenerated once against the same contract.",
+      "authorization": {
+        "approved": true,
+        "source": "user direct instruction 2026-09-10: \"还有一个问题，就是第一张不是我想要的人物正脸或者自拍之类的\"",
+        "authorized_at": "2026-09-10T17:03:20+08:00"
+      },
+      "restore_defaults_by": "remove this entry (module falls back to the fixed per-frame limit)"
+    }
+  ]
+}

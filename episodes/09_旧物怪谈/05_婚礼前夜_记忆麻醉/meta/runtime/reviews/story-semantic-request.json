@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "request_id": "story-semantic-a1-f59040b9faecc2c7",
+  "request_fingerprint": "f59040b9faecc2c7f3ebf00f35bdb6ea9ed6cabc707ed2dee1574b54a8ae2bf4",
+  "created_at": "2026-09-09T16:20:53+08:00",
+  "status": "FINALIZED",
+  "review_kind": "story-semantic",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md",
+      "sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md",
+      "sha256": "91ddf6115b39b4de559f45cb2e3b963cf63a34de2d890bb90bb7820325c6621e"
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "4e27706f639473dd7ee1c811a6beeb328c1bc4c0e08edc5a3850571713f37485"
+    },
+    {
+      "path": "standards/创作执行强制规范_V2.0.3.2.md",
+      "sha256": "8d768548f8086328612ddd2e30285388de722286d8374f35fc1b40a615b73695"
+    },
+    {
+      "path": "standards/story_regressions/cases.json",
+      "sha256": "92203e7d710b401e0e507f06c0897139e7722616956a99d1193a7123cc85551b"
+    },
+    {
+      "path": "standards/传播核与动作回应链规范_V1.0.md",
+      "sha256": "a9850316fb512274ab052e281ae72933f2594d333539bdea662f6316e618f4c8"
+    }
+  ],
+  "candidate_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.story-semantic-review.candidate.json",
+  "prompt_sha256": "bd651ff164bd4c47dd9d285f1e4698f557a57155afaf823fec54fabd099af5be",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are an adversarial Story Critic in a fresh isolated session.\nDo NOT rewrite the story. Do NOT score it politely. Your job is to find reasons it should NOT enter production.\nRead:\n- episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md\n- episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md\n- standards/制作规范_正式版.md\n- standards/创作执行强制规范_V2.0.3.2.md\n- standards/story_regressions/cases.json\n- standards/传播核与动作回应链规范_V1.0.md\n\nThis is critic attempt 1. Ignore propagation scores and author self-evaluation.\n\nHard rules:\n1. A viewer must be able to explain protagonist, why they are here, their personal stake, the ONE core anomaly rule, trigger, direct consequence, midpoint reframe, climax choice/cost, result and aftermath.\n2. The main events must be explainable by one coherent underlying anomaly mechanism. If an object first returns by itself, later guides people, then suddenly \"marks the next person\" without one established rule explaining all three, mechanism_consistency=false.\n3. Causality must read as reality goal -> rule/setup -> meaningful choice/violation -> direct consequence -> forced next action -> climax choice/cost -> result -> aftermath. A warning revealed only after the violation cannot retroactively create a meaningful choice unless the story established the rule another way.\n4. \"I found them\", \"the door opened\", \"the monster appeared\", \"the photo changed\" are discoveries/setup, not a climax by themselves. The climax needs choice, cost, relationship change, rule payoff, identity turn or irreversible consequence.\n5. The ending must recontextualize at least THREE concrete earlier facts. Introducing a brand-new anomaly behavior at the end is not payoff.\n6. In any run of 5 storyboard frames, at least one frame must add new evidence, causal turn or cognitive upgrade. Apply the delete-frame test.\n7. Perform a BLIND RETELL from your own understanding. If you need \"maybe / perhaps / unclear\" to explain the core mechanism or climax, clarity/mechanism_consistency must fail.\n8. PASS only when every hard check is true and issue_codes is empty.\n9. V2.5 PROPAGATION CORE: identify one ordinary protagonist action that causes a direct abnormal response and a visible consequence.\n10. Write a <=10-second retell sentence; avoid lore-heavy explanation.\n11. Bind trigger_frame, response_frame and payoff_frame to actual storyboard frames. Default trigger <=50%; if later, explain why.\n12. Golden examples are structural references only; do not copy location + prop + trigger action + climax surface together.\n<!-- STORY_OS_V2_5_PROPAGATION_CORE -->\n\nWrite ONLY valid JSON to episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.story-semantic-review.candidate.json. Do not modify any other repository file.\nRequired JSON shape:\n{\n  \"contract\": {\n    \"protagonist\": \"...\",\n    \"presence_reason\": \"...\",\n    \"personal_stake\": \"...\",\n    \"core_anomaly\": \"...\",\n    \"rule\": \"...\",\n    \"trigger\": \"...\",\n    \"direct_consequence\": \"...\",\n    \"midpoint_reframe\": \"...\",\n    \"climax_choice\": \"...\",\n    \"ending_recontextualization\": [\"earlier fact 1\", \"earlier fact 2\", \"earlier fact 3\"]\n  },\n  \"propagation_core\": {\n    \"retell_sentence\": \"...\",\n    \"protagonist_action\": \"...\",\n    \"abnormal_response\": \"...\",\n    \"consequence\": \"...\",\n    \"response_latency\": \"immediate\",\n    \"visual_causality\": \"strong\",\n    \"retellable_in_10s\": true,\n    \"social_send_impulse\": \"strong\",\n    \"trigger_frame\": 9,\n    \"response_frame\": 10,\n    \"payoff_frame\": 14,\n    \"late_trigger_exception_reason\": \"\",\n    \"surface_copy_guard\": {\n      \"structural_reference_only\": true,\n      \"copied_surface_elements\": []\n    }\n  },\n  \"blind_retell\": {\n    \"protagonist_and_reason\": \"...\",\n    \"core_anomaly_rule\": \"...\",\n    \"worsening_choice\": \"...\",\n    \"climax_resolution\": \"...\",\n    \"ending_reinterpretation\": \"...\"\n  },\n  \"hard_checks\": {\n    \"clarity\": true,\n    \"causal_chain\": true,\n    \"mechanism_consistency\": true,\n    \"motivation_stake\": true,\n    \"trigger_consequence\": true,\n    \"midpoint_reframe\": true,\n    \"climax_payoff\": true,\n    \"ending_payoff\": true,\n    \"storyboard_information_gain\": true,\n    \"delete_frame_test\": true\n  },\n  \"issue_codes\": [],\n  \"notes\": [\"specific evidence or failure notes\"],\n  \"summary\": {\"passed\": true}\n}\nIf any hard rule fails, set its boolean false, add specific codes such as STORY_COMPREHENSION_FAIL, CAUSAL_CHAIN_BROKEN, MECHANISM_CONTRADICTION, CLIMAX_DISCOVERY_ONLY, ENDING_PAYOFF_TOO_WEAK, STORYBOARD_STALL, and set summary.passed=false.\nEpisode: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉\n",
+  "attempt_request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/story-semantic-attempt-1-request.json",
+  "finalized_at": "2026-09-09T16:22:37+08:00",
+  "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/story-semantic-review.json"
+}
