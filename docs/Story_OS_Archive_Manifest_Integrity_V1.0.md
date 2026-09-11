@@ -54,6 +54,8 @@ W-22 Story Semantic Trace 验证时发现：EP003 归档之后，`meta/release-m
 1. Archive Relocation Manifest：`episodes/_archive/relocations.json`，记录 `from` / `to` / `prefix_map` / 完整性锚点。
 2. Resolver：把仓库相对路径先按原样解析，失败再按 `prefix_map` 映射到新位置。direct 优先，保证未搬动的兄弟集引用不受影响。
 3. Verifier：只对**已声明的锚点** fail closed —— Story Lock、分镜、视觉规范、字幕、制作复盘、核心证据文件；重新计算 sha256，并与 pre-move 哈希清单交叉核对。
+
+   哈希口径（2026-09-11 修正）：取**仓库规范形态**的内容摘要，文本文件先归一化行尾为 LF，而不是工作树原始字节。`.gitattributes` 声明 `* text=auto eol=lf`，LF 才是 git 存取的形态；若按原始字节取哈希，同一个证据文件在作者机器（CRLF 工作树）与干净检出 / CI（LF）会算出两个值，校验就只在写出它的那台机器上通过——恰好把 fail closed 反过来。pre-move 清单交叉核对只在清单记录的**字节长度**与当前规范长度一致时才判 fail：长度不一致说明该条记录的是 CRLF 展开后的工作树字节（EP003 清单里 `meta/story-gates.json` 就是这样一条），任何检出都无法复现那些字节，因而无从证伪；此时以锚点摘要为准，它同样 fail closed。
 4. 自由文本引用只做 advisory 统计，不作为硬失败。
 
 新增代码：`episodes/_system/archive_relocation.py`（`build` / `resolve` / `scan` / `verify` / `self-test` CLI）。
@@ -112,10 +114,11 @@ python episodes/_system/archive_relocation.py scan <archived_episode_dir>
 
 ## 六、验证结果（EP003）
 
-- `verify --all`：PASS。
+- `verify --all`：PASS（在 CRLF 工作树与干净 LF 检出两种环境下均 PASS）。
 - Story Lock 锚点：`status=relocated`，解析到 `episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md`，sha256 `2ed0c8c9...`，与 pre-move 哈希清单完全一致。
-- 分镜 / 视觉规范 / 字幕 / 制作复盘 / 核心证据文件：全部一致。
-- 测试：`tests/system/test_archive_relocation.py` 15 项通过；`tests/system` 306 通过；`episodes/_system` 121 通过。
+- 分镜 / 视觉规范 / 字幕 / 制作复盘 / 核心证据文件：规范摘要全部一致。
+- 例外一条：`meta/story-gates.json` 的 pre-move 清单条目记录的是 CRLF 工作树字节（清单 `22273` 字节 / `6ccede86...`），规范形态为 `21715` 字节 / `d6dc3186...`。两者字节数不同，该条目无法在任何检出中复现，因此不参与交叉核对；其内容由锚点摘要 `d6dc3186...` fail closed 覆盖。上面「全部一致」的旧表述据此更正。
+- 测试（干净 LF 检出、commit `f82596b` + 本次修正）：`tests/system/test_archive_relocation.py` 19 项通过；`python -m unittest discover -s tests/system` 302 项通过、0 失败；`contract_sync.py` 与 `story_os.py doctor` 均 PASS。
 
 ## 七、边界（本阶段不做什么）
 

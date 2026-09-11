@@ -28,6 +28,13 @@ Nothing here scores anything and nothing rewrites history: a relocation entry
 proves a move happened and that the moved bytes still match the hash recorded
 before the move.
 
+Hashes are taken over the repository's canonical content (LF line endings for
+text, see sha256_file), not over raw working-tree bytes, so a check gives the same
+answer in a clean checkout as on the machine that wrote it. The committed pre-move
+EP003 manifest, however, records digests of the CRLF working tree it was written
+from -- bytes no checkout reproduces. Its entries are therefore cross-checked only
+where the recorded byte length matches the canonical one; see verify.
+
 The reference scan is advisory by design. Frozen evidence also contains free
 prose and runtime temp references, so unresolved tokens are reported, never
 treated as a hard failure on their own. Only the declared anchors fail closed.
@@ -95,12 +102,73 @@ def write_json(path, data) -> None:
     story_json.write_json(path, data)
 
 
-def sha256_file(path) -> str:
+def _is_binary(path) -> bool:
+    """git's own heuristic: a NUL byte within the first 8000 bytes means binary."""
+    with Path(path).open("rb") as handle:
+        return b"\x00" in handle.read(8000)
+
+
+def _canonical_blocks(handle, newline):
+    """Yield a stream's content with text line endings rewritten to ``newline``.
+
+    ``newline=None`` yields the bytes untouched. Rewriting is incremental because a
+    CR sitting on a block boundary does not yet prove it is a line ending: it is
+    held back until the next block shows whether an LF follows. A CR that never
+    gets its LF is content, and is emitted as-is.
+    """
+    if newline is None:
+        yield from iter(lambda: handle.read(1024 * 1024), b"")
+        return
+    pending_cr = False
+    for block in iter(lambda: handle.read(1024 * 1024), b""):
+        if pending_cr:
+            block = b"\r" + block
+        pending_cr = block.endswith(b"\r")
+        if pending_cr:
+            block = block[:-1]
+        block = block.replace(b"\r\n", b"\n")
+        if newline != b"\n":
+            block = block.replace(b"\n", newline)
+        if block:
+            yield block
+    if pending_cr:
+        yield b"\r"
+
+
+def _digest(path, newline) -> str:
     digest = hashlib.sha256()
     with Path(path).open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
+        for block in _canonical_blocks(handle, newline):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _canonical_size(path, newline) -> int:
+    with Path(path).open("rb") as handle:
+        return sum(len(block) for block in _canonical_blocks(handle, newline))
+
+
+def sha256_file(path) -> str:
+    """Digest of a file's content in the repository's canonical form.
+
+    ``.gitattributes`` declares ``* text=auto eol=lf``, so LF is the form git stores
+    and checks out. A Windows working tree with ``core.autocrlf=true`` holds CRLF
+    instead, so digesting raw bytes would make one and the same evidence file hash
+    one way on the author's machine and another way in a clean checkout or in CI --
+    the integrity check would pass only for whoever wrote it. Normalising first
+    keeps the digest a property of the content rather than of the checkout.
+    """
+    return _digest(path, None if _is_binary(path) else b"\n")
+
+
+def canonical_size(path) -> int:
+    """Byte length of the canonical content, for the same reason as sha256_file."""
+    return _canonical_size(path, None if _is_binary(path) else b"\n")
+
+
+def short(digest) -> str:
+    """First 12 hex chars, for findings that a human reads."""
+    return str(digest or "")[:12]
 
 
 def repo_rel(path, root=None) -> str:
@@ -192,8 +260,13 @@ def marker_for(episode_dir):
     return None, {}
 
 
-def file_manifest_hashes(root, entry) -> dict:
-    """Parse the pre-move archive hash manifest into {episode-relative path: sha}."""
+def file_manifest_rows(root, entry) -> dict:
+    """Parse the pre-move archive hash manifest into {episode-relative path: row}.
+
+    Each row keeps the digest and the byte length the manifest recorded. The length
+    matters: it is what tells a canonical entry apart from one describing the CRLF
+    working tree the manifest was written from.
+    """
     raw = (entry or {}).get("file_manifest") if isinstance(entry, dict) else None
     if not isinstance(raw, str) or not raw.strip():
         return {}
@@ -208,9 +281,14 @@ def file_manifest_hashes(root, entry) -> dict:
         parts = line.split(None, 2)
         if len(parts) != 3:
             continue
-        digest, _size, name = parts
-        out[name.strip()] = digest.lower()
+        digest, size, name = parts
+        out[name.strip()] = {"sha256": digest.lower(), "bytes": int(size) if size.isdigit() else None}
     return out
+
+
+def file_manifest_hashes(root, entry) -> dict:
+    """Parse the pre-move archive hash manifest into {episode-relative path: sha}."""
+    return {name: row["sha256"] for name, row in file_manifest_rows(root, entry).items()}
 
 
 def _iter_strings(obj):
@@ -262,7 +340,7 @@ def _anchor_row(root, episode_dir, name, source, recorded, entry) -> dict:
     target = (Path(root or ROOT) / resolved["path"]) if resolved["path"] else None
     if target is not None and target.is_file():
         row["sha256"] = sha256_file(target)
-        row["bytes"] = target.stat().st_size
+        row["bytes"] = canonical_size(target)
     return row
 
 
@@ -362,7 +440,7 @@ def verify(root, entry) -> list:
         if str(item.get("to") or "").rstrip("/") != to_rel.rstrip("/"):
             findings.append(("prefix_map_mismatch",
                              "prefix_map.to " + repr(item.get("to")) + " != entry.to " + repr(entry.get("to"))))
-    manifest = file_manifest_hashes(base, entry)
+    manifest = file_manifest_rows(base, entry)
     for anchor in entry.get("anchors") or []:
         if not isinstance(anchor, dict):
             continue
@@ -382,9 +460,20 @@ def verify(root, entry) -> list:
         except ValueError:
             rel_in_ep = None
         want = manifest.get(rel_in_ep) if rel_in_ep else None
-        if want and want != actual:
+        if not want:
+            continue
+        recorded = str(want.get("sha256") or "")
+        if not recorded or recorded == actual:
+            continue
+        # The digest disagrees. That is only a content finding if the manifest was
+        # describing the repository's canonical bytes. When it recorded a different
+        # byte length it was describing an expanded (CRLF) working tree instead --
+        # the pre-move EP003 manifest has one such entry -- and no checkout can
+        # reproduce those bytes, so there is nothing here to disprove. The anchor
+        # digest above is the checkout-independent, fail-closed guarantee.
+        if want.get("bytes") == canonical_size(path):
             findings.append(("file_manifest_hash_mismatch",
-                             name + ": " + actual[:12] + " != archive manifest " + want[:12]))
+                             name + ": " + short(actual) + " != archive manifest " + short(recorded)))
     return findings
 
 

@@ -82,8 +82,8 @@
           "recorded_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/story-gates.json",
           "resolved_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/story-gates.json",
           "status": "direct",
-          "sha256": "6ccede86807e708912a94a922d84dff252b63ff04823d437ce959904ce4cc6cd",
-          "bytes": 22273
+          "sha256": "d6dc31865b5b51023cb1e6fe760af427bb7037d9714123fc6460d62dcdcceae5",
+          "bytes": 21715
         },
         {
           "name": "production-ledger.json",
