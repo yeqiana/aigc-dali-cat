@@ -210,7 +210,7 @@ workbench 临时日志
 
 - Runtime debug 归档
 
-状态：进行中
+状态：完成（提交 `e573d86`）
 
 ## Phase 3
 
@@ -219,12 +219,33 @@ workbench 临时日志
 - V2 文档归档
 - Visual Pattern 整理
 
+状态：部分完成
+
+- V2 文档归档：完成（20 份 `Story_OS_V2*` 迁入 `docs/archive/v2-evolution/`）。
+- Visual Pattern：`library/visual-patterns/` 已建立；4 份 `standards/` 视觉经验规范因生产代码硬引用暂停，方案见 `docs/standards_视觉经验规范解耦方案_20260911.md`。
+
 ## Phase 4
 
 执行：
 
 - 引用扫描
 - 生命周期检查
+
+状态：进行中
+
+---
+
+# 七之二、后续执行顺序（2026-09-11 修订）
+
+```
+1. Runtime Debug 剩余日志归档        ✅ 已完成
+2. 根目录治理清单                    ✅ docs/仓库根目录治理清单_20260911.md
+3. .storyos_tmp / cache 分类          ✅ docs/运行时临时目录与缓存分类_20260911.md
+4. standards 解耦方案                ✅ docs/standards_视觉经验规范解耦方案_20260911.md
+5. 根目录移动                        ⏸ 待确认
+```
+
+第 5 步的候选与建议归档位置见 `docs/仓库根目录治理清单_20260911.md` 第四节。
 
 ---
 

@@ -43,6 +43,13 @@
 
 至此原「未纳入迁移」清单已全部归档，本目录不存在挂起项。
 
+### 批次 5（会话临时目录，2026-09-11 追加）
+
+- 原根目录 `.storyos_tmp/` 整目录迁入本目录下 `session-tmp/`（55 个文件，11.66 MB）。
+- 内容为历史会话探针脚本（probe_/show_/release_/patch_ 等）、评审预览图（release-critic 6 张、a01/p01_prev.jpg）与辅助文本，均非 Runtime 依赖。
+- 引用扫描：全仓只有 `workbench/_rel_critic.py`、`_rel_critic2.py`、`_rel_stage.py` 提到 `.storyos_tmp/release-critic`，且这 3 个脚本的 root 指向另一仓库（aigc-dali-cat），与本仓库该目录无关，故无需改动任何脚本。
+- 迁移方式：`git mv` 目录级重命名，55 个文件 100% rename，内容与 SHA-256 不变。
+
 版本库边界（2026-09-11 起）：
 
 - 本目录内的归档物通过 `!/.storyos/archive/**` 豁免，保留跟踪（该豁免需排在全局 `_tmp_*` 规则之后）。

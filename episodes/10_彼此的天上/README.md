@@ -59,7 +59,7 @@
 5. `05_无人机里的旧记录`：回看 / 生活余波
 
 > 2026-09-11：`03_雾中的另一座生活区`（EP003）由用户直接指令标为废弃，不再推进 PUBLISH_READY，也不再进入 Release / 发布流程。废弃决定记录见
-> `03_雾中的另一座生活区/meta/episode-abandoned.json`。该集已产出的 Story / Visual / Production 证据、SHA 与本地媒体原样保留，`episode-state.json` 的
+> `../_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/episode-abandoned.json`。该集已产出的 Story / Visual / Production 证据、SHA 与本地媒体原样保留，`episode-state.json` 的
 > `current_state` 保持 `PRODUCTION_PASSED` 未被修改。系列其余四集不受影响。
 
 ## 系列内核
