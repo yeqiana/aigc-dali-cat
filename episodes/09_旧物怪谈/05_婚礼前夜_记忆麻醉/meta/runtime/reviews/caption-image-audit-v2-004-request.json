@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "request_id": "caption-image-audit-v2-004-a2-de5145599b5325c0",
+  "request_fingerprint": "de5145599b5325c089aed417adfcbf0cde1f7d62986ecab7f079d1724f46b319",
+  "created_at": "2026-09-09T15:23:09+08:00",
+  "status": "FINALIZED",
+  "review_kind": "caption-image-audit-v2-004",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 2,
+  "source_files": [
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/16.png",
+      "sha256": "0c6698beb37e7d3367f6b13aa22a360a83c7e7cf170f22ae58cb6186523ab3a3"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/17.png",
+      "sha256": "b22565a1a0be0bfcc7602b8e096a25db58553624124eb90f1969bb89001e8f92"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/18.png",
+      "sha256": "992f4cc614838acb9a30b65394d8575e84aef81f267be6b59bc89f60d73c2385"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/19.png",
+      "sha256": "27a21a08dffba12b06989c88f198fb249a5f96e85554e07b0f7bb36aa5d73a29"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitles.yaml",
+      "sha256": "4bfc7d907de71263ed3254ceb0384e0bedcc2bdffea9fc630b7086fc35e79845"
+    }
+  ],
+  "candidate_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.caption-image-audit-candidate-004.json",
+  "prompt_sha256": "373fc794dcc768ca9ce99e30023a100c85790ab159dcd21d89a5576cbecfc56e",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are the Story OS final-publish Caption ↔ Image + Subtitle Obstruction Critic.\nReview ONLY the supplied FINAL publish pixels after subtitle rendering.\nFor each frame judge two things:\n1. supported: the caption is honestly supported by the underlying photographed/generated scene; it must not invent a core event, prop, person, UI text, anomaly, action, or causal fact absent from the scene. The rendered subtitle text itself is NEVER visual evidence for supported=true; mentally ignore the overlay when judging support.\n2. subtitle_unobstructed: rendered text does not cover a face, anomaly evidence, hand/action, key prop, native text, or causal clue. Left/middle geometry and line-count are checked deterministically elsewhere; here judge actual pixel obstruction.\nDo not re-review overall story quality, character continuity, or visual style. Empty captions automatically pass both checks.\nMappings:\n- frame 16: final_publish_image=episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/16.png | caption=\"他伸手抢镯子。我推倒凳子，撞开后门就跑。\"\n- frame 17: final_publish_image=episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/17.png | caption=\"我背得出恋爱六年的每一个细节，却想不起自己的名字。\"\n- frame 18: final_publish_image=episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/18.png | caption=\"窗外有人喊了个名字，我没想就回了头。\"\n- frame 19: final_publish_image=episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/19.png | caption=\"后来我又梦见自己试婚鞋。鞋底干干净净。\"\n\nWrite ONLY JSON to episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.caption-image-audit-candidate-004.json:\n{\"frames\":[{\"frame\":\"01\",\"supported\":true,\"subtitle_unobstructed\":true,\"notes\":\"specific pixel evidence\"}],\"summary\":{\"passed\":true}}\nReturn one row for every attached frame. summary.passed=false if any supported=false or subtitle_unobstructed=false.\n",
+  "attempt_request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-004-attempt-2-request.json",
+  "finalized_at": "2026-09-09T15:37:55+08:00",
+  "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json"
+}

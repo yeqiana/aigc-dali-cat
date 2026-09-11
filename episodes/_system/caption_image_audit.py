@@ -14,6 +14,7 @@ from pathlib import Path
 
 import frame_semantic_review as base
 import incremental_frame_review as inc
+import codex_critic_runner
 import runtime_command
 import runtime_router
 import product_review_adapter
@@ -217,7 +218,7 @@ def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str
     cmd = base.command_prefix(codex) + [
         "exec", "--skip-git-repo-check", "--ephemeral",
         "-c", 'model_reasoning_effort="low"',
-        "-s", "workspace-write", "-C", str(ROOT), "--json",
+        "-s", codex_critic_runner.default_sandbox(), "-C", str(ROOT), "--json",
     ]
     for row in rows:
         cmd += ["-i", str(row["path"])]

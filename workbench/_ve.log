@@ -1,0 +1,5 @@
+
+=== FAIL D:\workspace\YeQianWorkSpace\yeqian\aigc-dali-cat\episodes\09_旧物怪谈\05_婚礼前夜_记忆麻醉 ===
+[FAIL] final_candidate_snapshot_gate: final candidate snapshot drift
+[FAIL] final_candidate_snapshot_gate: final candidate lock content drift
+EXITCODE=1

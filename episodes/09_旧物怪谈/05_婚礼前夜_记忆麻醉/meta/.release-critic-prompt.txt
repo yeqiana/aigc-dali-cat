@@ -1,0 +1,74 @@
+You are an adversarial FINAL RELEASE Semantic + Governance Critic in a fresh isolated session.
+Do NOT edit any file except the requested candidate JSON.
+Episode: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉
+
+Inspect the ACTUAL final publish assets, not prompts:
+- cover: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/cover/cover.png
+- body01: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/01.png
+- body02: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/02.png
+- body03: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/03.png
+- climax: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/15.png
+- payoff: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/20.png
+- captions: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitles.yaml
+- publish_copy: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/06_婚礼前夜_最终发布文案_V2.0.md
+- propagation_card: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/recommendation-fit.json
+
+Actual title:
+2007年，我被安排了一门亲事。婚礼前夜，我发现婚鞋底下焊着铁环。
+
+Description:
+2007 年，我被带到西北农村一间土房，说是明天就成亲。他说这药能让我睡好，平时总会提醒我吃。那晚忙乱，桌上的药留着，我漏吃了一次。睡着后，我梦见自己一抬脚，床底就响了一声——有人按住我的手，叫我别动。我看不清他的脸，醒来时脚踝还红着。婚礼彩排，他让我把“恋爱六年”背下来，可满屋亲戚只叫我“新娘子”，连镜子里的妈我都陌生。我翻过婚鞋，鞋底焊着铁环；金镯内侧留着合缝和锁孔；红布后面，是封死的铁栏。他递来药和水，挡住门：“吃完，明天就什么都不用想了。”我把药含住，趁他转身吐进花盆，举起还没扣上的金镯问他，是不是要拿它锁我。他伸手来抢，我推倒矮凳，撞开后门跑进田里，在省道检查站被救下。我能背出六年恋爱的每一个细节，却想不起自己的名字。窗外有人喊了一个名字，我没想就回了头。人物、地点、情节均为虚构；内容由 AI 生成。
+
+Topics:
+["AI故事", "旧物怪谈", "农村故事", "细思极恐", "第一人称悬疑", "抖音图文"]
+
+Read:
+- standards/制作规范_正式版.md
+- standards/release_preflight_guard_V2.0.3.5.md
+- episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitle-layout-audit.json (deterministic all-frame placement/line-count/hash audit)
+- episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json (all final publish frames reviewed in SHA-bound chunks of up to 5 for caption support + actual subtitle obstruction)
+- the episode Story Lock / storyboard / captions / publish copy / propagation card.
+
+Hard release checks:
+1. cover_title_match: cover and actual title promise the same core story/anomaly.
+2. cover_frame01_handoff: body01 immediately continues or concretely supports the cover promise; no bait-and-switch.
+3. first3_coherence: body01-03 form one readable entry path, not three disconnected hooks.
+4. climax_upgrade: the actual climax frame is meaningfully stronger/more irreversible than the first hook.
+5. payoff_honesty: the payoff is earned by earlier evidence and does not add a brand-new mechanism.
+6. description_consistency: description/topics do not claim official fact, real case, or evidence absent from the story.
+7. no_caption_invented_core_evidence: final text may add context, but may not invent the core visual evidence.
+8. subtitle_left_middle_and_unobstructed: require BOTH SHA-bound all-frame audits above to PASS. subtitle-layout-audit proves left/middle geometry, line count and current publish-output hashes; caption-image-audit proves every final publish frame was pixel-reviewed in chunks and subtitle_unobstructed=true. Do not reopen every body image here; fail if either audit is missing/stale/failed.
+9. caption_conversational_hook_quality: captions must sound like a real first-person immediate record, stay concise/eye-catching, avoid novel narration/AI boilerplate, and perform one clear narrative function per frame. Two rendered lines is the hard maximum.
+
+Governance checks:
+- This is AI-generated realistic fictional story content.
+- Real locations may be used as story backgrounds, but the release must not present invented events as official/verified real incidents.
+- No unverifiable dangerous accusation against a real region, ethnicity, religion, organization, or identifiable person.
+- Platform AI-generation declaration/label must be planned and not intentionally stripped.
+- A fiction-context notice is appropriate for this Story OS format.
+
+PASS only when every release and governance check is true.
+Write ONLY valid JSON to episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.release-semantic-review.candidate.json:
+{
+  "release_checks": {
+    "cover_title_match": true,
+    "cover_frame01_handoff": true,
+    "first3_coherence": true,
+    "climax_upgrade": true,
+    "payoff_honesty": true,
+    "description_consistency": true,
+    "no_caption_invented_core_evidence": true,
+    "subtitle_left_middle_and_unobstructed": true,
+    "caption_conversational_hook_quality": true
+  },
+  "governance_checks": {
+    "ai_generated_declared": true,
+    "platform_ai_label_planned": true,
+    "fiction_context_not_misrepresented_as_official_fact": true,
+    "no_unverifiable_real_group_accusation": true,
+    "real_location_handled_as_fictional_story_context": true
+  },
+  "issue_codes": [],
+  "notes": ["specific final-release evidence"],
+  "summary": {"passed": true}
+}

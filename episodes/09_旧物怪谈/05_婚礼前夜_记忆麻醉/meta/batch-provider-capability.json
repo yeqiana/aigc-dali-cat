@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "recorded_at": "2026-09-09T10:09:51+08:00",
+  "provider": "codex_subscription",
+  "transport": "logical_parallel_fanout",
+  "requested_images": 1,
+  "returned_images": 1,
+  "runtime_succeeded": true,
+  "native_multi_image_supported": false,
+  "native_multi_image": false,
+  "single_http_request": false,
+  "deterministic_output_count": true,
+  "mapping_requires_per_frame_review": true,
+  "batch_id": "BATCH_83a8768aa0be",
+  "reason": "REAL_FRAME_SUCCEEDED",
+  "provider_runtime_snapshot": {
+    "schema_version": 1,
+    "openai_images_api": {
+      "configured": true,
+      "credential_available": false,
+      "native_n_supported": true,
+      "native_n_max": 10,
+      "base_url": "https://api.openai.com/v1"
+    },
+    "image_execution_runtime": "CODEX",
+    "product_runtime_image": {
+      "configured": true,
+      "runtime_eligible": false,
+      "host_action_required": true,
+      "local_codex_fallback": false
+    },
+    "codex_subscription": {
+      "configured": true,
+      "runtime_eligible": true,
+      "native_multi_output_supported": false,
+      "logical_parallel_fallback": true,
+      "logical_batch_api_key_required": false
+    },
+    "secret_values_persisted": false
+  },
+  "provider_evidence": {},
+  "evidence_not_authority": true,
+  "secrets_persisted": false
+}

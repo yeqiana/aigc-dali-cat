@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "recorded_at_epoch": 1788935113,
+  "frame": "01",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "generation_route": "codex_subscription",
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "requested_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": 0.8
+  },
+  "provider_raw_canvas": {
+    "width": 1092,
+    "height": 1440,
+    "aspect_ratio": 0.758333333,
+    "exact_requested_canvas": false,
+    "resize_direction_to_release": "downscale"
+  },
+  "ratio_delta": 0.052083333,
+  "normalize_decision": "ASPECT_RATIO_MISMATCH",
+  "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\01-1788935011.png",
+  "raw_sha256": "ba450891b376e91f593347e5f73c4ad57c95b4d9b40e9fddec8b8ba945583773",
+  "provider_attestation": false,
+  "exact_raw_canvas_guaranteed": false,
+  "receipt_is_evidence_not_authority": true
+}

@@ -62,6 +62,19 @@ def default_sandbox():
     return "danger-full-access" if os.name == "nt" else "workspace-write"
 
 
+def resolve_sandbox(requested=None):
+    """Resolve the nested-Codex sandbox flag for this platform.
+
+    Windows cannot start the nested CLI under workspace-write
+    (CreateProcessWithLogonW fails with 1385), so a workspace-write request
+    degrades to the platform default there.  Other platforms keep the
+    requested value, and non-workspace-write requests are never rewritten.
+    """
+    if os.name == "nt" and requested in (None, "workspace-write"):
+        return default_sandbox()
+    return requested or default_sandbox()
+
+
 def default_log_path(root, tag="critic"):
     directory = Path(root).resolve() / "meta"
     directory.mkdir(parents=True, exist_ok=True)
@@ -96,7 +109,7 @@ def build_command(
         cmd += ["-c", reasoning_effort_literal]
     elif reasoning_effort:
         cmd += ["-c", f'model_reasoning_effort="{reasoning_effort}"']
-    cmd += ["-s", sandbox or default_sandbox(), "-C", str(root), "--json"]
+    cmd += ["-s", resolve_sandbox(sandbox), "-C", str(root), "--json"]
     if output_path is not None:
         cmd += ["-o", str(output_path)]
     for attachment in attachments or []:

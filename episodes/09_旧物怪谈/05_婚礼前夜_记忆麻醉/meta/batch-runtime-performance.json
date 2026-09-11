@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "batches": [
+    {
+      "batch_id": "BATCH_83a8768aa0be",
+      "planned_count": 1,
+      "returned_count": 1,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 1,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-09T10:09:51+08:00"
+    }
+  ],
+  "kind": "batch_runtime_performance",
+  "generated_at": "2026-09-09T10:09:51+08:00"
+}

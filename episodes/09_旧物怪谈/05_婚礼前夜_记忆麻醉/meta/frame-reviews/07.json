@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "07",
+  "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/07.png",
+  "asset_sha256": "e30531dbac44759d3878f2edaf6b445178ec7ffb03eec336713cf7c22f94962f",
+  "story_sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752",
+  "storyboard_sha256": "6b1bb6e97b32b55dbb648554afdca5d5dc1e96330c9889133be372da6b8f1f31",
+  "visual_contract_sha256": "52eed9d5001518961bbe7b598d07aa6a288855b45f26f600d47a93113404bcdc",
+  "environment_frame_sha256": "1a13388a4c82ae2eb7c5fff14fb97472968b7d5e6f8a3985f21ac47ace033604",
+  "frame_directive_sha256": "5a57db3c7eb547526720acb13e58753b1d114a1ec3d218c8082965c219057b23",
+  "frame_contract_sha256": "19e845095ba9643b5f09e25e909e672c6a7f9b98e986e00cddf5a7732da3bf44",
+  "source_binding": {
+    "story": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md",
+      "sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752"
+    },
+    "storyboard": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md",
+      "sha256": "6b1bb6e97b32b55dbb648554afdca5d5dc1e96330c9889133be372da6b8f1f31"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "1ebcb9973cecefe8df753f22c0d0767f339fcdcc7c7621b18861a8af80af391e"
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 2,
+    "reviewed_at": "2026-09-10T12:00:32+08:00",
+    "log": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-critic-attempt-2.jsonl",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "梳妆镜前：镜中仅到坐姿女主的碎花肩袖与披落长发背影，左右亲友各理发绳喜被；镜面为第二信息区，画面无人名文字。",
+  "decision": "pass",
+  "caption_sha256": "2db453ee1879358291a238a84a49ded8cdf41c9ef76880f175be67187c6426c8"
+}

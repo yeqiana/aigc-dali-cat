@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "request_id": "visual-lock-baseline-a2-b0a219d65fa6a511",
+  "request_fingerprint": "b0a219d65fa6a511c2ce42f9fab27443d646a136223b12920dc7c2fed30c5e4d",
+  "created_at": "2026-09-10T11:28:04+08:00",
+  "status": "FINALIZED",
+  "review_kind": "visual-lock-baseline",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 2,
+  "source_files": [
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-0d0b9814d146-a1.png",
+      "sha256": "cef5b7b929e12b720b6becdbfcded43d3b0f34d0a2f82070741097af5fd812f6"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/story-gates.json",
+      "sha256": "6fd802c75d1f8dc4669a7ef64745a51bb9e7bd4b9df8691ca8ec97a8dedc975e"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/character-visual-contract.json",
+      "sha256": "2c2dbc9ad9f1882d371f210bc686cd9b0d41f17070238faedbab86ec4fb2707f"
+    },
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/contracts/frames/01.json",
+      "sha256": "d74e323444ba66392be093b6d8d0c34781d480fb816c0509d73e191055ffb7a7"
+    }
+  ],
+  "candidate_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.visual-lock-baseline-review.candidate.json",
+  "prompt_sha256": "0dff99227e25a82c215a018b2001352949ba9e01461162ee86a52941524ead12",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are a fresh isolated Story OS Visual Lock ordinary-baseline actual-pixel reviewer.\nInspect the attached baseline image itself. This PASS unlocks the parallel-three Visual Lock images and may create the provisional character pixel master, so fail closed on visible identity/capture/style problems.\nRequired checks: ['visual_profile_match', 'reality_first', 'ordinary_life_density', 'unposed_capture', 'not_cinematic', 'capture_credibility', 'identity_usable', 'group_members_distinct']\nThe target is an ordinary believable phone/photo baseline: reality-first, unposed, non-cinematic, usable identity, distinct group members where applicable.\nWrite ONLY JSON to episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.visual-lock-baseline-review.candidate.json:\n{\"decision\":\"PASS|FAIL\",\"checks\":{\"visual_profile_match\":\"PASS|FAIL\",\"reality_first\":\"PASS|FAIL\",\"ordinary_life_density\":\"PASS|FAIL\",\"unposed_capture\":\"PASS|FAIL\",\"not_cinematic\":\"PASS|FAIL\",\"capture_credibility\":\"PASS|FAIL\",\"identity_usable\":\"PASS|FAIL\",\"group_members_distinct\":\"PASS|FAIL\"},\"face_boxes\":[{\"character_id\":\"P01\",\"x\":0.0,\"y\":0.0,\"w\":0.1,\"h\":0.1}],\"note\":\"actual-pixel evidence\"}\nFace boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.\nDo not modify source files or the image.\n",
+  "finalized_at": "2026-09-10T11:40:01+08:00",
+  "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/visual-lock-baseline-review.json"
+}

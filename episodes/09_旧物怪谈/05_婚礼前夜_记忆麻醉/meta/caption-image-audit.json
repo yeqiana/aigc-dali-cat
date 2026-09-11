@@ -1,0 +1,420 @@
+{
+  "schema_version": 2,
+  "module_version": "2.6.1",
+  "frames": {
+    "20": {
+      "schema_version": 2,
+      "frame": "20",
+      "image_sha256": "9b4ea3937e39bb7110a73980ead3d78bd4f92de60fb3aa2130b88b309522fbc4",
+      "caption_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "empty_caption",
+      "notes": "no caption to validate"
+    },
+    "01": {
+      "schema_version": 2,
+      "frame": "01",
+      "image_sha256": "fb8f99e147fc427feadce4c4946aa2bcbf2a169262bcdf29c6dbbf8dd0efeee5",
+      "caption_sha256": "0752557518ec3b9e0ee5847f4a70947d999318c549ca8de2927d153830d1866f",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "Scene is a wedding-decorated room: large red 囍 on the back wall, red floral bedding, a red-fabric-covered cabinet with enamel bowls and a red lidded container; a young woman faces camera with a second person at left. This supports an imminent wedding, and the second clause is an internal memory statement, not a claimed depicted event. The subtitle band sits at y~705-760 over her torso/waist only; her face (upper frame) and her clasped hands with a small ring (y~790-830, confirmed in a 760-920 crop) stay fully uncovered, and no anomaly evidence, native text, or causal clue is occluded.",
+      "critic_provenance": null
+    },
+    "02": {
+      "schema_version": 2,
+      "frame": "02",
+      "image_sha256": "66c6221e660b1616faa1088358d2053dfa881b69d3e5dd447a23f587bc810894",
+      "caption_sha256": "002616695934357670e460f54c652f46ca626ca573febd7dae083064a98e2a81",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "字幕带约y711-752位于中下部背景区：下方为床沿与桌面纵深，桌角半杯水、一粒白药片与纸巾在字幕带下缘以下清晰可见，条带未覆盖脸/手部动作/药瓶道具；支持性：白药片+水杯+桌角收纳在像素内，与“这药/漏了那一粒”同语义",
+      "critic_provenance": {
+        "runtime": "WORK",
+        "base_runtime": "WORK",
+        "isolated_session": false,
+        "execution_source": "codex_desktop_session_delegated_auto_review",
+        "attempt": 1,
+        "reviewed_at": "2026-09-09T17:55:00+08:00",
+        "note": "本地codex worker多图评审通道故障（OpenCodex网关deepseek多图触发未声明view_image断流）后，按delegated_auto_review授权由本Codex会话逐帧直接像素评审；未伪装产品宿主"
+      }
+    },
+    "03": {
+      "schema_version": 2,
+      "frame": "03",
+      "image_sha256": "7eb962c1d6fa9111f53f25781379c0904298d0703238876045a18738e4cb67a9",
+      "caption_sha256": "8b72398136eacfb20e9e8d421c5ee6e518f437fba0c423ec27d78a6d25e05586",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "字幕行(y711-752)位于画面中上部，铁链主体在行下方与右侧延续（绕床脚下沿拉直伸向床底、两端出画），链环上下连续未被遮蔽；支持性：俯视裤脚布鞋+床底铁链连接清晰",
+      "critic_provenance": {
+        "runtime": "WORK_ISOLATED",
+        "base_runtime": "WORK",
+        "isolated_session": true,
+        "execution_source": "product_runtime",
+        "attempt": 2,
+        "reviewed_at": "2026-09-09T15:37:55+08:00",
+        "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-001-attempt-2-request.json",
+        "request_id": "caption-image-audit-v2-001-a2-37a967252826193a",
+        "request_fingerprint": "37a967252826193a4c7683bb6d79acf15702066014834a5e470488da60c6350e"
+      }
+    },
+    "04": {
+      "schema_version": 2,
+      "frame": "04",
+      "image_sha256": "8a2d219e2767dffd6db22787ba098f1ff07003daa145e870efb064f890c164a8",
+      "caption_sha256": "f6fe995dd33091b5bce4daba24c7d76b14e9ea7a240d9fafb19fc678ac599f1f",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "按压手与手臂位于画面上部偏右（约y600-690），在字幕带上方未被覆盖；画面无脸，字幕“他的脸我看不清”与无脸画面一致；支持性：陌生成年人前臂/手按压自己碎花袖手腕动作在像素内，无袖口身份线索",
+      "critic_provenance": {
+        "runtime": "WORK",
+        "base_runtime": "WORK",
+        "isolated_session": false,
+        "execution_source": "codex_desktop_session_delegated_auto_review",
+        "attempt": 1,
+        "reviewed_at": "2026-09-09T17:55:00+08:00",
+        "note": "本地codex worker多图评审通道故障（OpenCodex网关deepseek多图触发未声明view_image断流）后，按delegated_auto_review授权由本Codex会话逐帧直接像素评审；未伪装产品宿主"
+      }
+    },
+    "05": {
+      "schema_version": 2,
+      "frame": "05",
+      "image_sha256": "45dbcead2d9de99b8c3baea62a9932081195a47f65ccc2472450968dc7de71c2",
+      "caption_sha256": "84edd1d59cccb0ec93e1532fa1959296806f99dd759c8361fd268afe0f3b53e7",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "字幕行短(约x73-420)偏左，裸踝红痕在画面右侧掀被角处，完全不重叠；支持性：踝部浅红线性压痕可辨",
+      "critic_provenance": {
+        "runtime": "WORK_ISOLATED",
+        "base_runtime": "WORK",
+        "isolated_session": true,
+        "execution_source": "product_runtime",
+        "attempt": 2,
+        "reviewed_at": "2026-09-09T15:37:55+08:00",
+        "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-001-attempt-2-request.json",
+        "request_id": "caption-image-audit-v2-001-a2-37a967252826193a",
+        "request_fingerprint": "37a967252826193a4c7683bb6d79acf15702066014834a5e470488da60c6350e"
+      }
+    },
+    "06": {
+      "schema_version": 2,
+      "frame": "06",
+      "image_sha256": "fc8b279b9b737cf2599ff8eb12cd14f8ff9daee2fbcc4bb433eb11f33f87ffb7",
+      "caption_sha256": "31be1904f55b2899da3ac27517e59f41c4715cd289fdc9f7fdfd6ce63508962a",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "字幕带覆盖桌面上部杂物/纸面纵深区，指纸手在画面右缘（x>800）未被覆盖，纸面字迹带位于字幕带下方前景；无脸；支持性：白纸多行字迹+男人侧身食指指行在像素内，与“把恋爱背成台词”的排练指令同情境",
+      "critic_provenance": {
+        "runtime": "WORK",
+        "base_runtime": "WORK",
+        "isolated_session": false,
+        "execution_source": "codex_desktop_session_delegated_auto_review",
+        "attempt": 1,
+        "reviewed_at": "2026-09-09T17:55:00+08:00",
+        "note": "本地codex worker多图评审通道故障（OpenCodex网关deepseek多图触发未声明view_image断流）后，按delegated_auto_review授权由本Codex会话逐帧直接像素评审；未伪装产品宿主"
+      }
+    },
+    "07": {
+      "schema_version": 2,
+      "frame": "07",
+      "image_sha256": "394cebbbabcda73e3e04af6e7d7ee7ca0e2c3373f3d12751d881bebe79cf12c7",
+      "caption_sha256": "2db453ee1879358291a238a84a49ded8cdf41c9ef76880f175be67187c6426c8",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "字幕行位于镜前背影腰部以下区域（背部衣物非脸非异常物），画面无任何面部入镜；支持性：镜中P01碎花背影与房内多名亲友忙碌场景成立",
+      "critic_provenance": {
+        "runtime": "WORK_ISOLATED",
+        "base_runtime": "WORK",
+        "isolated_session": true,
+        "execution_source": "product_runtime",
+        "attempt": 2,
+        "reviewed_at": "2026-09-09T15:37:55+08:00",
+        "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-002-attempt-2-request.json",
+        "request_id": "caption-image-audit-v2-002-a2-a568a15ecdff4798",
+        "request_fingerprint": "a568a15ecdff4798e0d7c3139cf8e944cac96af1dc9b98f0c6992e83ed7689c0"
+      }
+    },
+    "08": {
+      "schema_version": 2,
+      "frame": "08",
+      "image_sha256": "282f342e87b8221ad539b0e06417cd867ea1726aa661802ae5546720d0ba0ad4",
+      "caption_sha256": "ea77bdd19c42fe20396ed8b8be52dc0ebf534221a1e4857624a349756ec03833",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "镜中母亲面部与梳子位于y<700上部区域，字幕行在镜面下部/桌面区，未遮脸；支持性：镜中中年女人持宽梳梳发、脸与梳可辨",
+      "critic_provenance": {
+        "runtime": "WORK_ISOLATED",
+        "base_runtime": "WORK",
+        "isolated_session": true,
+        "execution_source": "product_runtime",
+        "attempt": 2,
+        "reviewed_at": "2026-09-09T15:37:55+08:00",
+        "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-002-attempt-2-request.json",
+        "request_id": "caption-image-audit-v2-002-a2-a568a15ecdff4798",
+        "request_fingerprint": "a568a15ecdff4798e0d7c3139cf8e944cac96af1dc9b98f0c6992e83ed7689c0"
+      }
+    },
+    "09": {
+      "schema_version": 2,
+      "frame": "09",
+      "image_sha256": "cee3b89ed9d2477d1cd25a2fedb77637af05962e9ffe42ea071140c655bc94f1",
+      "caption_sha256": "f438799bca3c64c06f66fab6424dbe8e234b4a200c456aeb4c36eba457457562",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "字幕行位于画面上中部，鞋与鞋底铁环在行下方完整清晰；支持性：左手翻红绣鞋，鞋底趾/跟金属环固定可辨",
+      "critic_provenance": {
+        "runtime": "WORK_ISOLATED",
+        "base_runtime": "WORK",
+        "isolated_session": true,
+        "execution_source": "product_runtime",
+        "attempt": 2,
+        "reviewed_at": "2026-09-09T15:37:55+08:00",
+        "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-002-attempt-2-request.json",
+        "request_id": "caption-image-audit-v2-002-a2-a568a15ecdff4798",
+        "request_fingerprint": "a568a15ecdff4798e0d7c3139cf8e944cac96af1dc9b98f0c6992e83ed7689c0"
+      }
+    },
+    "10": {
+      "schema_version": 2,
+      "frame": "10",
+      "image_sha256": "3c2085e389c488da1dc31f9756c4dc9bef49b1675a7eab55c0dba908e37298c5",
+      "caption_sha256": "77927c7bcacc8447a4268fa7a328bea55e4d872dc3dca8a8fefc47d303067280",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "合缝与小锁孔位于掌中镯体上端，字幕行在其下方掌缘与桌面区，未遮蔽关键证据；支持性：镯内侧合缝+端部小锁孔像素可辨",
+      "critic_provenance": {
+        "runtime": "WORK_ISOLATED",
+        "base_runtime": "WORK",
+        "isolated_session": true,
+        "execution_source": "product_runtime",
+        "attempt": 2,
+        "reviewed_at": "2026-09-09T15:37:55+08:00",
+        "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-002-attempt-2-request.json",
+        "request_id": "caption-image-audit-v2-002-a2-a568a15ecdff4798",
+        "request_fingerprint": "a568a15ecdff4798e0d7c3139cf8e944cac96af1dc9b98f0c6992e83ed7689c0"
+      }
+    },
+    "11": {
+      "schema_version": 2,
+      "frame": "11",
+      "image_sha256": "9c040b3f1178668713d37fe75449af338cf3b722560cb8e64c91a894d06133ff",
+      "caption_sha256": "2e6078576a9ebd479ae8fd592c9667347848e66492786deff35b6d0c328343e9",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "字幕带横跨窗洞中带，与横贯铁栏网格部分交叠但铁栏为连续水平网格，行上/行下均可见，证据未被整段盖没；新字幕较旧版更短，覆盖宽度收窄；支持性：掀起的红布一角+封死锈铁栏固定在窗框内清晰成立，无脸",
+      "critic_provenance": {
+        "runtime": "WORK",
+        "base_runtime": "WORK",
+        "isolated_session": false,
+        "execution_source": "codex_desktop_session_delegated_auto_review",
+        "attempt": 1,
+        "reviewed_at": "2026-09-09T17:55:00+08:00",
+        "note": "本地codex worker多图评审通道故障（OpenCodex网关deepseek多图触发未声明view_image断流）后，按delegated_auto_review授权由本Codex会话逐帧直接像素评审；未伪装产品宿主"
+      }
+    },
+    "12": {
+      "schema_version": 2,
+      "frame": "12",
+      "image_sha256": "70ed0b3a54267ab885c1f97ae1096b3a377af06d3689c8aea9c0297e7a6fd309",
+      "caption_sha256": "e779612068bcb337597f5894beefa7fa90d34e34e8e6820136703076215b4bfd",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "Night village yard, open truck rear doors on dirt ground; three women in matching red satin gold-embroidered traditional wedding dresses sit on the truck bed edge with bare lower legs hanging down, dark metal shackles and chains visibly attached at their ankles; a man in dark clothing stands facing away at the truck's right rear. Caption '车里还有新娘，脚上也带着铁。' matches these photographed elements (brides + iron shackles on feet); the overlay text is not used as evidence. Rendered subtitle occupies a single line in rows y~712-757, x~74-630 (lower-left to center) over dark curtain/doorframe and dirt ground only; the hanging bare feet, ankle cuffs and chains sit higher in the frame (y~600-700, x~250-700) and the text box does not cross them.",
+      "critic_provenance": null
+    },
+    "13": {
+      "schema_version": 2,
+      "frame": "13",
+      "image_sha256": "59bde9912807e9506d19a6988c2564449a68bdb69dbb3d170a571249922ad30d",
+      "caption_sha256": "95f348e435cc2ed9b11fbbc0eaec3854dd4d3556fad23b8bbd59962291a29760",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "递药手与掌中药片/水杯位于画面中上（约y590-690），在字幕带（y711-752）上方未被覆盖；字幕下方为衣身与前景凳面；无脸；支持性：掌中一粒药+半杯水+白盖小药瓶在像素内，引语“又是这药”由画面道具直接支撑",
+      "critic_provenance": {
+        "runtime": "WORK",
+        "base_runtime": "WORK",
+        "isolated_session": false,
+        "execution_source": "codex_desktop_session_delegated_auto_review",
+        "attempt": 1,
+        "reviewed_at": "2026-09-09T17:55:00+08:00",
+        "note": "本地codex worker多图评审通道故障（OpenCodex网关deepseek多图触发未声明view_image断流）后，按delegated_auto_review授权由本Codex会话逐帧直接像素评审；未伪装产品宿主"
+      }
+    },
+    "14": {
+      "schema_version": 2,
+      "frame": "14",
+      "image_sha256": "288842e1e69a4739759dc5c4c2afc848d7f99059793624f53dabc8f3a6acfcd4",
+      "caption_sha256": "220f370f04330ffbb976a34ddbaf8e2e4402c58c6b574040107fdbdcf489fa69",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "字幕行位于花盆上缘带，湿土与白色药点在行下方土面(约y850-980)清晰可读；支持性：4x复核湿土面小粒白药点+枯叶在像素内",
+      "critic_provenance": {
+        "runtime": "WORK_ISOLATED",
+        "base_runtime": "WORK",
+        "isolated_session": true,
+        "execution_source": "product_runtime",
+        "attempt": 2,
+        "reviewed_at": "2026-09-09T15:37:55+08:00",
+        "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-003-attempt-2-request.json",
+        "request_id": "caption-image-audit-v2-003-a2-e6a1b91a275e6052",
+        "request_fingerprint": "e6a1b91a275e605257b75931d4e01042338d592b37b2936226e53e97cca86391"
+      }
+    },
+    "15": {
+      "schema_version": 2,
+      "frame": "15",
+      "image_sha256": "aec66c21650e635a3fb75f0461cb94a0015d9b958aea773117e4ab2a589440d5",
+      "caption_sha256": "a2f84d2057eb763f3f7379af204e339694cea3c40adf57172813d3b7153dbd01",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "金镯开口/锁孔与抢镯手在画面中上(y约560-700)，字幕行(y711-752)位于其下与胸襟前，关键证据未被覆盖；支持性：未扣合金镯开口朝男人+伸手抢夺动作在像素内",
+      "critic_provenance": {
+        "runtime": "WORK_ISOLATED",
+        "base_runtime": "WORK",
+        "isolated_session": true,
+        "execution_source": "product_runtime",
+        "attempt": 2,
+        "reviewed_at": "2026-09-09T15:37:55+08:00",
+        "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-003-attempt-2-request.json",
+        "request_id": "caption-image-audit-v2-003-a2-e6a1b91a275e6052",
+        "request_fingerprint": "e6a1b91a275e605257b75931d4e01042338d592b37b2936226e53e97cca86391"
+      }
+    },
+    "16": {
+      "schema_version": 2,
+      "frame": "16",
+      "image_sha256": "17b3b90e12f56eb0ecffd53d20178dd05c81d67f1d21eb0bfd9097dff818ffad",
+      "caption_sha256": "04f1d04aef77d34c4678d7a59b6d7c6b6c9dff6a172d7c0055893e2ad453bcc4",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "字幕带横贯门区中下部，其上方门洞远景中可见男人绊蹲于翻倒矮凳旁（约y300-600），未被覆盖；自己跨门槛的裤脚泥鞋在字幕带下缘以下；右缘推门碎花袖（x>900）未被覆盖；支持性：翻倒矮凳+追来男人+推开的木后门+门槛外泥路在像素内，承接15帧抢镯动作",
+      "critic_provenance": {
+        "runtime": "WORK",
+        "base_runtime": "WORK",
+        "isolated_session": false,
+        "execution_source": "codex_desktop_session_delegated_auto_review",
+        "attempt": 1,
+        "reviewed_at": "2026-09-09T17:55:00+08:00",
+        "note": "本地codex worker多图评审通道故障（OpenCodex网关deepseek多图触发未声明view_image断流）后，按delegated_auto_review授权由本Codex会话逐帧直接像素评审；未伪装产品宿主"
+      }
+    },
+    "17": {
+      "schema_version": 2,
+      "frame": "17",
+      "image_sha256": "7d65fba48e89e54bb173eccb6a5630767e41f36a1ed4f42de448a4a8e17fde0b",
+      "caption_sha256": "9e81f2bf7b70c9da3daecac24fa5eca49936181f72817a2f5bf0c97967aa20c0",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "两行字幕覆盖桌面后缘文件带上方边缘区，女主手在桌面前缘仍清晰可见，记录员书写手与桌面文件未被整段遮蔽；无脸；支持性：记录员+桌面文件/对讲机+问询登记情境在像素内，名字丢失为内心陈述不要求道具",
+      "critic_provenance": {
+        "runtime": "WORK",
+        "base_runtime": "WORK",
+        "isolated_session": false,
+        "execution_source": "codex_desktop_session_delegated_auto_review",
+        "attempt": 1,
+        "reviewed_at": "2026-09-09T17:55:00+08:00",
+        "note": "本地codex worker多图评审通道故障（OpenCodex网关deepseek多图触发未声明view_image断流）后，按delegated_auto_review授权由本Codex会话逐帧直接像素评审；未伪装产品宿主"
+      }
+    },
+    "18": {
+      "schema_version": 2,
+      "frame": "18",
+      "image_sha256": "992f4cc614838acb9a30b65394d8575e84aef81f267be6b59bc89f60d73c2385",
+      "caption_sha256": "ff0deeb57f2587b2fab634e401b3508670a7fbf2b889fd5ac58c9fddfd5a37c0",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "老妇面部与搀扶者在y<700窗台区，字幕行在其下方窗台下沿，未遮脸；支持性：窗外花白短发老妇神情急切探窗+身后人搀扶在像素内",
+      "critic_provenance": {
+        "runtime": "WORK_ISOLATED",
+        "base_runtime": "WORK",
+        "isolated_session": true,
+        "execution_source": "product_runtime",
+        "attempt": 2,
+        "reviewed_at": "2026-09-09T15:37:55+08:00",
+        "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-004-attempt-2-request.json",
+        "request_id": "caption-image-audit-v2-004-a2-de5145599b5325c0",
+        "request_fingerprint": "de5145599b5325c089aed417adfcbf0cde1f7d62986ecab7f079d1724f46b319"
+      }
+    },
+    "19": {
+      "schema_version": 2,
+      "frame": "19",
+      "image_sha256": "27a21a08dffba12b06989c88f198fb249a5f96e85554e07b0f7bb36aa5d73a29",
+      "caption_sha256": "8021826c889bf41dcf805a45df53f7c46d8ca98e9a82038c6534bf021d374295",
+      "supported": true,
+      "subtitle_unobstructed": true,
+      "passed": true,
+      "mode": "final_publish_pixel_critic",
+      "notes": "字幕行位于画面上部，手持翻起的红鞋在行下方完整可见；低位镜反射仅裤腿/红鞋/凳脚无环；支持性：鞋底浅棕旧底+矩形后跟片、无铁环可辨",
+      "critic_provenance": {
+        "runtime": "WORK_ISOLATED",
+        "base_runtime": "WORK",
+        "isolated_session": true,
+        "execution_source": "product_runtime",
+        "attempt": 2,
+        "reviewed_at": "2026-09-09T15:37:55+08:00",
+        "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/caption-image-audit-v2-004-attempt-2-request.json",
+        "request_id": "caption-image-audit-v2-004-a2-de5145599b5325c0",
+        "request_fingerprint": "de5145599b5325c089aed417adfcbf0cde1f7d62986ecab7f079d1724f46b319"
+      }
+    }
+  },
+  "caption_source": {
+    "source_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitles.yaml",
+    "mode": "per_frame",
+    "source_sha256": "e15ac3b906c30a495325876add2218c0c823137e0c02545e8c01648a389cecf5",
+    "review_image": {
+      "mode": "final_publish_with_subtitle",
+      "layout_current": true,
+      "layout_errors": [],
+      "layout_audit_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitle-layout-audit.json",
+      "layout_audit_sha256": "250998b178769dcc1f8b574cea9e7d1253cd7544cd9fad0fa28860a9f164524f"
+    }
+  },
+  "summary": {
+    "passed": true,
+    "reviewed_dirty_frames": 0,
+    "reused_frames": 20,
+    "total_frames": 20,
+    "visual_review_invalidated": false
+  }
+}

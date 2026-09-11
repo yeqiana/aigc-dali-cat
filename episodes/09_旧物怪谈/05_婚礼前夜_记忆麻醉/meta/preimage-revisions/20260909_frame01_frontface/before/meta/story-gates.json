@@ -1,0 +1,626 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "09-05",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_profile": "auto",
+    "override_reason": null
+  },
+  "story": {
+    "recent5_checked": true,
+    "four_locks_diff_count": 4,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      15,
+      16
+    ],
+    "climax_frame": 15,
+    "payoff_frame": 20,
+    "semantic_review_path": "meta/story-semantic-review.json"
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [
+      1,
+      3,
+      12,
+      15
+    ],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "23岁碎花长袖上衣+深色长裤+旧布鞋，只露手/脚/局部，不露清晰正脸",
+        "location": "西北农村土房婚房，土坯墙、白纸糊窗、红纸喜字、木床、搪瓷盆、窗外土路农田",
+        "key_prop": "小白药瓶只在02/13/20按逐帧限制出现；红绣鞋09翻起但不穿；金镯10—15未扣合；红布01—10遮住窗栏，11掀布后才显露。",
+        "wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。",
+        "weather_time": "深秋，黄昏入夜到第二天凌晨；白炽灯/窗洞天光/手电/车灯"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "2007年前后，中国西北农村",
+      "location": "西北农村土房婚房",
+      "photographer": "23岁被安排成亲的新娘（第一人称）",
+      "shooting_reason": "给老人看嫁妆/留个纪念，也顺手把看到的不对劲拍下来",
+      "primary_capture": {
+        "id": "CP03",
+        "device": "2007年前后廉价卡片数码相机"
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": "全部画面均由主角手持旧数码相机记录，无第二来源",
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "婚房布置、婚礼彩排等平稳场景，手持正常，画面相对稳",
+        "restricted": "深夜摸黑、看货车、她被迫服药时，手抖、对焦犹豫、构图偏位",
+        "lost_control": "撞开后门逃进田里时，画面剧烈晃动、糊片、高光溢出"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": "第一人称手持记录，不主动展示相机全貌",
+        "photographer_may_be_fully_visible": true,
+        "photographer_visibility_explanation": "主角作为摄影者可以局部入画（手、脚步、半身、镜中反射），避免露清晰正脸"
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "worst_condition": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "first_major_anomaly": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "schema_version": 2,
+      "policy": "four_admission_v21",
+      "items": [
+        {
+          "id": "V-B",
+          "role": "ordinary_baseline",
+          "frame": 1,
+          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-2c7bd4b0bb37-a1.png",
+          "sha256": "1e55fcfa064fb1e867925847bed03c1dea43cd190f904970286ca436952a2c1a",
+          "decision": "passed",
+          "frame_contract_sha256": "3d6729188017faefab576a4adc02d0a8a1232fea9df4dd0ba6cec255faa6d902",
+          "note": "baseline separately PASS; parallel-three may start"
+        },
+        {
+          "id": "V-W",
+          "role": "worst_capture_condition",
+          "frame": 12,
+          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-83d12f914c02-a1.png",
+          "sha256": "aef856deaf0c032ab97e64694a2f3baece5ca1c1dde016da45dd4b01ad9f6cf6",
+          "decision": "passed",
+          "frame_contract_sha256": "d7c69d3a4c1c1ea4564c5a7e64301bb156043270e421fd80ee285430ffb3811e",
+          "note": ""
+        },
+        {
+          "id": "V-A",
+          "role": "first_major_anomaly",
+          "frame": 3,
+          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-e631da805486-a1.png",
+          "sha256": "10e5cfdcdd0f96d2829b25f254f8a6f78c6bbc0f76c370c5222fc26318f6157e",
+          "decision": "passed",
+          "frame_contract_sha256": "16a5f36eee9f93086c95543a4b346ab1964c23c1aacbfbce32d569d589ae6011",
+          "note": ""
+        },
+        {
+          "id": "V-H",
+          "role": "high_impact_admission",
+          "frame": 15,
+          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/15-1e63d6ffb150-a1.png",
+          "sha256": "99050f3d25f8f4ce4c8dae83703f719a3a899bde97df654b2116fa8819e08c41",
+          "decision": "passed",
+          "frame_contract_sha256": "dc8432fd1b88dcd66d9ba4b00a17ffdb9d81c126524a8524b306c941445a6eda",
+          "note": ""
+        }
+      ]
+    },
+    "calibration_contact_sheet": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/review/contact-sheets/visual-lock-calibration.jpg",
+      "sha256": "3ccdf37dbe786e5908fc16b41abac6fb685405c10d446876a106c79139caf610"
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "深秋",
+      "baseline": {
+        "condition": "干冷晴夜转深夜，婚房室内白炽灯与窗洞天光",
+        "time_of_day": "黄昏入夜到第二天凌晨",
+        "temperature_feel": "干冷，夜越深越凉，室外农田更冷",
+        "ground_state": "室内夯土地面+红纸碎屑，室外土路与农田",
+        "visibility": "夜间弱光，靠白炽灯、窗洞与手电，暗部易糊",
+        "wind": "微风干燥",
+        "precipitation": "无降水",
+        "physical_cues": [
+          "白炽灯暖光溢出偏低",
+          "暗部噪点与边缘偏软",
+          "窗洞冷光与室内暖光并存",
+          "土坯墙纹理与红纸喜字",
+          "手电光斑在黑暗中割裂"
+        ]
+      },
+      "segments": [
+        {
+          "id": "S1",
+          "start_frame": 1,
+          "end_frame": 2,
+          "condition": "婚房布置完成，室内白炽灯，黄昏入夜",
+          "physical_cues": [
+            "现场可用光照亮关键证据",
+            "衣着与空间连续",
+            "具体人物和道具严格按本帧指令，不跨帧提前加入"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "白炽灯下红纸颜色偏艳但周围发灰",
+              "when": [
+                "室内",
+                "贴近红纸"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S2",
+          "start_frame": 3,
+          "end_frame": 4,
+          "condition": "睡梦空间，昏暗土墙，仅门缝与微弱光",
+          "physical_cues": [
+            "梦境木床边缘与土墙",
+            "暗部轻噪点，关键铁链和手部仍清楚"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S3",
+          "start_frame": 5,
+          "end_frame": 8,
+          "condition": "惊醒回婚房，室内白炽灯稳定，夜",
+          "physical_cues": [
+            "现场可用光照亮关键证据",
+            "衣着与空间连续",
+            "具体人物和道具严格按本帧指令，不跨帧提前加入"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "镜子反射亮度略低于实景",
+              "when": [
+                "镜面",
+                "反射"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S4",
+          "start_frame": 9,
+          "end_frame": 11,
+          "condition": "深夜床边白炽灯仍亮，窗边只接收室内漏光，11栏杆与窗框固定关系须可读",
+          "physical_cues": [
+            "现场可用光照亮关键证据",
+            "衣着与空间连续",
+            "具体人物和道具严格按本帧指令，不跨帧提前加入"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S5",
+          "start_frame": 12,
+          "end_frame": 13,
+          "condition": "院门口深夜，货车车灯白花花，手电补光",
+          "physical_cues": [
+            "现场可用光照亮关键证据",
+            "衣着与空间连续",
+            "具体人物和道具严格按本帧指令，不跨帧提前加入"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "车灯方向性拖影与高光溢出",
+              "when": [
+                "车灯",
+                "背光"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S6",
+          "start_frame": 14,
+          "end_frame": 15,
+          "condition": "对峙，室内白炽灯，紧张",
+          "physical_cues": [
+            "现场可用光照亮关键证据",
+            "衣着与空间连续",
+            "具体人物和道具严格按本帧指令，不跨帧提前加入"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "灯光在白炽灯下偏硬，人物半身更清楚",
+              "when": [
+                "近景",
+                "对峙"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S7",
+          "start_frame": 16,
+          "end_frame": 18,
+          "condition": "出逃，深夜室外，月光/车灯/检查站灯光",
+          "physical_cues": [
+            "沾泥的原布鞋和深色裤脚",
+            "院外车灯与检查站灯光"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "室外冷光与检查站白光更硬",
+              "when": [
+                "室外",
+                "检查站"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S8",
+          "start_frame": 19,
+          "end_frame": 20,
+          "condition": "最后梦空间与清晨留白，明亮干净或斑驳天花板",
+          "physical_cues": [
+            "现场可用光照亮关键证据",
+            "衣着与空间连续",
+            "具体人物和道具严格按本帧指令，不跨帧提前加入"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "明亮房间与土房留白形成级差",
+              "when": [
+                "梦",
+                "天花板"
+              ]
+            }
+          ]
+        }
+      ],
+      "frame_overrides": {}
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "P01站在婚房门口向内看，左手扶门框，男人侧后身铺红被，亲友整理搪瓷盆与红绸。土墙可见，窗上红布完整遮住结构。无药瓶、药片、铁栏或锁链。"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "reveal_boundary": "只建立婚前记忆缺口，不能指向药物控制。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "02": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "P01坐在床边，左手正在收拾针线，桌角有普通水杯、纸巾和一粒未动的药。小白瓶放在桌角远侧，男人在背景搬被褥；没有递瓶、盯视或按住她。"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "reveal_boundary": "交代日常服药理由与漏服；药物作用尚未确认。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "桌角远侧，瓶高≤画高6%，面积≤1%，无递药或盯视"
+      },
+      "03": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "梦境主观向下看自己的深色裤脚和旧布鞋：脚边一截短铁链被扯直伸入床底，链条两端都在画外。链与床脚接触处清晰，无法判断连着什么。无脚镣全貌、无药、无看守脸。"
+        ],
+        "scale_reference": "床脚与短铁链，链的两端不入画",
+        "escalation_from": null,
+        "reveal_boundary": "首次明确视觉异常是被扯直的铁链；来源、连接对象与梦的真假未知。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "04": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "同一梦境，P01俯视碎花袖口，一只陌生成年人的手压住她的左手，木床沿可见；来者全身与脸均在画外，袖口也不露。没有瓶杯、嘴部、灌药或完整锁链。"
+        ],
+        "scale_reference": "手掌与床沿",
+        "escalation_from": null,
+        "reveal_boundary": "只确认梦里被阻止行动，不确认强灌或男人身份。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "05": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "现实醒来，P01坐在床沿低头，左手掀开一角被子，自己裸露脚踝上有一圈浅红压痕；同一深色裤脚，旧布鞋在床边。门口男人背影在忙，无药无铁环，不做梦中动作匹配。"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "reveal_boundary": "梦与现实有压痕呼应，也可能是睡姿；不替观众下结论。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "06": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "P01从座位向前看，左手拿着纸，男人在桌对面侧身指向纸张，纸面只有失焦笔迹；婚房布置连续。不能从背后拍女主，也不出现她的脸。"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "reveal_boundary": "关系叙述需要排练，恋爱记忆开始可疑。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "07": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "P01坐在梳妆镜前，左右亲友整理发绳与喜被，交谈各做各事；镜子只带到女主碎花肩袖与发尾。她的姓名不在画面中，禁止生成人物对话文字。"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "reveal_boundary": "亲密关系缺少真实称呼。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "08": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "从P01眼位看梳妆镜，陌生中年女人站在身后梳头，镜中可辨女人脸与梳子；P01自己的脸被镜面上缘裁出，仅见同一碎花肩袖、红绳黑发。"
+        ],
+        "scale_reference": "镜框与脸",
+        "escalation_from": null,
+        "reveal_boundary": "所谓母亲陌生，身份疑点累积。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "09": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "P01坐在床边左手翻转红绣鞋，使鞋底两道铁环朝向镜头；右手持机不入画，碎花袖、深色裤和自己的旧布鞋连续。铁环只在鞋上，不套在她脚上。"
+        ],
+        "scale_reference": "婚鞋与脚",
+        "escalation_from": null,
+        "reveal_boundary": "第一次在清醒现实看见婚礼物件的束缚证据。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "10": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "P01左掌托着一只尚未扣合的金色手镯，内侧合缝与小锁孔清晰，另一只放桌上；碎花袖口可见。不是已锁在手腕上的镯子，不展示开锁步骤。"
+        ],
+        "scale_reference": "金镯与手指",
+        "escalation_from": null,
+        "reveal_boundary": "第二件物证互证，婚礼饰物具有锁的功能。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "11": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "P01左手掀起窗上的红布一角，布后露出横贯窗洞、固定在窗框内的铁栏，栏与窗框连接关系清晰；完整红布在其余区域仍遮挡。一次发现动作，无回头蒙太奇，不以土墙为新证据。"
+        ],
+        "scale_reference": "窗户与墙、人体尺度",
+        "escalation_from": 9,
+        "reveal_boundary": "首次确认房间是囚禁空间；新增的是隐藏铁栏，不是土墙。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "12": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "P01站在屋内门缝后向院里看，前景只有门框和一点碎花袖。男人在货车后门旁，车厢内几个成年女孩穿红嫁衣，脚踝铁环能看清；女主始终在屋里，不坐车厢，不穿红嫁衣。"
+        ],
+        "scale_reference": "车厢与人、车灯",
+        "escalation_from": 11,
+        "reveal_boundary": "囚禁从自己扩展到车厢内多人。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "13": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "P01站在屋内床侧，男人的手把一粒药与水杯递近，小白瓶在他另一手里；他侧身挡住前门方向。此时才把药与控制关系明确并置，不做仰头强灌。"
+        ],
+        "scale_reference": "药瓶与手、门框",
+        "escalation_from": 12,
+        "reveal_boundary": "男人主动递药并堵住出路，控制关系至此坐实；具体记忆机制仍不讲解。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "男人递药并堵前门，瓶高≤画高15%"
+      },
+      "14": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "P01从自己的眼位俯向床头旧花盆，左手扶盆沿，刚吐出的药落在湿土表面；背景男人侧后身转向前门。女主嘴脸不入画，不画手指把药丢进盆里。"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "reveal_boundary": "主动拒绝下一剂，保持行动能力；不能倒写成此前发现的原因。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "15": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 4,
+        "required_visual_cues": [
+          "P01左手举起那只未扣合金镯对着男人，镯口与锁孔可见；男人停下并伸手来抢，身后前门被挡住，左侧通后门的窄道和矮凳清楚。无女主正脸，无凭空解锁。"
+        ],
+        "scale_reference": "未扣合金镯与女主左手、男人伸来的手",
+        "escalation_from": 13,
+        "reveal_boundary": "举证逼问引发男人抢夺，为下一张逃跑提供直接触发。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "16": {
+        "narrative_role": "transition",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "P01从后门门槛向田路冲出，画面下缘同一深色裤脚与旧布鞋沾泥，碎花袖左手推门，回侧余光见翻倒的矮凳挡在追来的男人脚前。无第三人称跑步全身，无换装、无突然赤脚、无救场女孩。"
+        ],
+        "scale_reference": "田埂与院门、车灯",
+        "escalation_from": 15,
+        "reveal_boundary": "女主制造障碍并逃出；无巧合救援。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "17": {
+        "narrative_role": "payoff",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "P01坐在检查站桌边，从自己眼位看记录人员和桌面，低处可见同一沾泥旧布鞋与深色裤脚，碎花袖左手停在桌沿。无白婚纱，无脚镣，无女主面部。"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "reveal_boundary": "逃生获得外部确认，失名代价留下。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "18": {
+        "narrative_role": "payoff",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "检查站同一座位，P01转向窗外，自己碎花左袖扶窗沿，花白头发女人被人搀着走来，神情急切；无女主脸，无白婚纱，不声称她已完整恢复记忆。"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "reveal_boundary": "身体对名字有反应但记忆尚未恢复。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "19": {
+        "narrative_role": "residue",
+        "frame_mode": "payoff",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "另一梦境，P01坐在明亮普通卧室的凳子上，第一人称俯视左手翻起红绣鞋鞋底，没有铁环。低位镜子仅反射同一坐姿的深色裤腿、碎花袖与红鞋，左右按镜面对应，脸和持机手在镜框外。"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "reveal_boundary": "明确另一梦境，婚鞋物理状态反转。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "禁止药瓶入画"
+      },
+      "20": {
+        "narrative_role": "residue",
+        "frame_mode": "payoff",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "P01躺在床上主观仰视斑驳天花板，侧下缘一点碎花袖和红被；与先前婚房相同的墙角裂痕和红布窗边可辨。小白瓶在远侧床头桌边，无标签，静默；不新增锁链、不替观众断言获救全是假。"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "reveal_boundary": "旧房间细节返回，保留获救真实或仍被困的竞争解释。",
+        "pov_and_wardrobe": "P01浅色碎花长袖、深色裤、旧布鞋；01—18不换装，16—18布鞋沾泥；19梦里同衣同姿态，20同碎花袖；男方深色外套。 P01第一人称，不能出现自己的脸；镜内外同人同衣同姿态。",
+        "medicine_visibility": "远桌角小瓶高≤画高5%，面积≤0.5%，不抢主体"
+      }
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": true,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "passed",
+    "subtitle": "passed",
+    "production": "passed",
+    "recommendation_fit": "passed",
+    "publish": "passed"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 2,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true
+  },
+  "release": {
+    "final_candidate_snapshot": {
+      "schema_version": 1,
+      "enabled": true,
+      "delivery_must_consume_snapshot": true,
+      "snapshot_is_authority": false
+    }
+  }
+}

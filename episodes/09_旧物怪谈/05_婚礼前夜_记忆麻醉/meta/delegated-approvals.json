@@ -1,0 +1,516 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "approvals": {
+    "story_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "story_lock",
+      "approved_at": "2026-09-09T16:22:42+08:00",
+      "artifacts": [
+        {
+          "role": "story",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md",
+          "sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752"
+        },
+        {
+          "role": "storyboard",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md",
+          "sha256": "91ddf6115b39b4de559f45cb2e3b963cf63a34de2d890bb90bb7820325c6621e"
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/story-semantic-review.json",
+          "sha256": "e3b05de9341ac9951b2a86b0ba5dedbdf700d1034f103a1647141cc570f3dc83"
+        }
+      ],
+      "note": "V2 reveal-order story/storyboard + story semantic PASS (delegated_auto_review)"
+    },
+    "visual_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "visual_lock",
+      "approved_at": "2026-09-09T16:22:44+08:00",
+      "artifacts": [
+        {
+          "role": "visual_spec",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/04_婚礼前夜_视觉规范_V2.0.md",
+          "sha256": "e650259f1cad879a012aedfc03106ece5ba51c1df555b10cb89743f32625ef34"
+        },
+        {
+          "role": "calibration_contact_sheet",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/review/contact-sheets/visual-lock-calibration.jpg",
+          "sha256": "3ccdf37dbe786e5908fc16b41abac6fb685405c10d446876a106c79139caf610"
+        },
+        {
+          "role": "visual_profile:M00",
+          "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+          "sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/visual-profile-review.json",
+          "sha256": "8e8163cdf50db5d4e585c64e9e67cb467bb6f132084baf7e631ad53b88ef9eb0"
+        }
+      ],
+      "note": "V2 Visual Lock 4-admission PASS; calibration 01/12/03/15 (delegated_auto_review)",
+      "resolved_visual_profile": {
+        "selection": "default",
+        "profile_id": "M00",
+        "profile_name": "现实生活纪实母版",
+        "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+        "capture_profile": "auto",
+        "override_reason": null,
+        "rule": "默认视觉母风格只约束视觉语言；具体年代/设备物理表现优先。",
+        "authority_source": "story-gates/default"
+      }
+    },
+    "release_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "release_lock",
+      "approved_at": "2026-09-10T12:29:31+08:00",
+      "artifacts": [
+        {
+          "role": "release_manifest",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/release-manifest.json",
+          "archive_path": "release-manifest.json",
+          "sha256": "7f07022d0adf6f4738ee2fc833342de2f7bdecd96006e036593a048043c3051c",
+          "bytes": 4102
+        },
+        {
+          "role": "body:01",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/01.png",
+          "archive_path": "publish/01.png",
+          "sha256": "fb8f99e147fc427feadce4c4946aa2bcbf2a169262bcdf29c6dbbf8dd0efeee5",
+          "bytes": 2115012
+        },
+        {
+          "role": "body:02",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/02.png",
+          "archive_path": "publish/02.png",
+          "sha256": "66c6221e660b1616faa1088358d2053dfa881b69d3e5dd447a23f587bc810894",
+          "bytes": 1985739
+        },
+        {
+          "role": "body:03",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/03.png",
+          "archive_path": "publish/03.png",
+          "sha256": "7eb962c1d6fa9111f53f25781379c0904298d0703238876045a18738e4cb67a9",
+          "bytes": 1838001
+        },
+        {
+          "role": "body:04",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/04.png",
+          "archive_path": "publish/04.png",
+          "sha256": "8a2d219e2767dffd6db22787ba098f1ff07003daa145e870efb064f890c164a8",
+          "bytes": 1542130
+        },
+        {
+          "role": "body:05",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/05.png",
+          "archive_path": "publish/05.png",
+          "sha256": "45dbcead2d9de99b8c3baea62a9932081195a47f65ccc2472450968dc7de71c2",
+          "bytes": 1919505
+        },
+        {
+          "role": "body:06",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/06.png",
+          "archive_path": "publish/06.png",
+          "sha256": "fc8b279b9b737cf2599ff8eb12cd14f8ff9daee2fbcc4bb433eb11f33f87ffb7",
+          "bytes": 1914109
+        },
+        {
+          "role": "body:07",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/07.png",
+          "archive_path": "publish/07.png",
+          "sha256": "394cebbbabcda73e3e04af6e7d7ee7ca0e2c3373f3d12751d881bebe79cf12c7",
+          "bytes": 1878731
+        },
+        {
+          "role": "body:08",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/08.png",
+          "archive_path": "publish/08.png",
+          "sha256": "282f342e87b8221ad539b0e06417cd867ea1726aa661802ae5546720d0ba0ad4",
+          "bytes": 1879643
+        },
+        {
+          "role": "body:09",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/09.png",
+          "archive_path": "publish/09.png",
+          "sha256": "cee3b89ed9d2477d1cd25a2fedb77637af05962e9ffe42ea071140c655bc94f1",
+          "bytes": 1957491
+        },
+        {
+          "role": "body:10",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/10.png",
+          "archive_path": "publish/10.png",
+          "sha256": "3c2085e389c488da1dc31f9756c4dc9bef49b1675a7eab55c0dba908e37298c5",
+          "bytes": 1969933
+        },
+        {
+          "role": "body:11",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/11.png",
+          "archive_path": "publish/11.png",
+          "sha256": "9c040b3f1178668713d37fe75449af338cf3b722560cb8e64c91a894d06133ff",
+          "bytes": 2044253
+        },
+        {
+          "role": "body:12",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/12.png",
+          "archive_path": "publish/12.png",
+          "sha256": "70ed0b3a54267ab885c1f97ae1096b3a377af06d3689c8aea9c0297e7a6fd309",
+          "bytes": 2108118
+        },
+        {
+          "role": "body:13",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/13.png",
+          "archive_path": "publish/13.png",
+          "sha256": "59bde9912807e9506d19a6988c2564449a68bdb69dbb3d170a571249922ad30d",
+          "bytes": 1765181
+        },
+        {
+          "role": "body:14",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/14.png",
+          "archive_path": "publish/14.png",
+          "sha256": "288842e1e69a4739759dc5c4c2afc848d7f99059793624f53dabc8f3a6acfcd4",
+          "bytes": 2013675
+        },
+        {
+          "role": "body:15",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/15.png",
+          "archive_path": "publish/15.png",
+          "sha256": "aec66c21650e635a3fb75f0461cb94a0015d9b958aea773117e4ab2a589440d5",
+          "bytes": 1953114
+        },
+        {
+          "role": "body:16",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/16.png",
+          "archive_path": "publish/16.png",
+          "sha256": "17b3b90e12f56eb0ecffd53d20178dd05c81d67f1d21eb0bfd9097dff818ffad",
+          "bytes": 2038855
+        },
+        {
+          "role": "body:17",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/17.png",
+          "archive_path": "publish/17.png",
+          "sha256": "7d65fba48e89e54bb173eccb6a5630767e41f36a1ed4f42de448a4a8e17fde0b",
+          "bytes": 2035842
+        },
+        {
+          "role": "body:18",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/18.png",
+          "archive_path": "publish/18.png",
+          "sha256": "992f4cc614838acb9a30b65394d8575e84aef81f267be6b59bc89f60d73c2385",
+          "bytes": 1853024
+        },
+        {
+          "role": "body:19",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/19.png",
+          "archive_path": "publish/19.png",
+          "sha256": "27a21a08dffba12b06989c88f198fb249a5f96e85554e07b0f7bb36aa5d73a29",
+          "bytes": 2010349
+        },
+        {
+          "role": "body:20",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/publish/20.png",
+          "archive_path": "publish/20.png",
+          "sha256": "9b4ea3937e39bb7110a73980ead3d78bd4f92de60fb3aa2130b88b309522fbc4",
+          "bytes": 2087117
+        },
+        {
+          "role": "cover",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/production/cover/cover.png",
+          "archive_path": "cover.png",
+          "sha256": "adeea84ec2aa21832c92e87d1771e31f4b13307f5448d82161858deae470b9af",
+          "bytes": 2074537
+        },
+        {
+          "role": "captions",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitles.yaml",
+          "archive_path": "text/subtitles.yaml",
+          "sha256": "e15ac3b906c30a495325876add2218c0c823137e0c02545e8c01648a389cecf5",
+          "bytes": 2043
+        },
+        {
+          "role": "publish_copy",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/06_婚礼前夜_最终发布文案_V2.0.md",
+          "archive_path": "text/06_婚礼前夜_最终发布文案_V2.0.md",
+          "sha256": "c2fad02b05b56f751f642a499e4234d75c36478ce4c77e78c4b41018ccb03477",
+          "bytes": 2544
+        },
+        {
+          "role": "propagation_card",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/recommendation-fit.json",
+          "archive_path": "text/recommendation-fit.json",
+          "sha256": "ce55105ab7d27b256b449fd99f28dcf2c06333f0b8422987291a3f1a70182d5f",
+          "bytes": 2134
+        },
+        {
+          "role": "production_ledger",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/production-ledger.json",
+          "archive_path": "evidence/production-ledger.json",
+          "sha256": "27086356d054545fb1c9236af070bcb809d37a14385db5e327063e18deb786ca",
+          "bytes": 256466
+        },
+        {
+          "role": "frame_semantic_review",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-review.json",
+          "archive_path": "qa/frame-semantic-review.json",
+          "sha256": "ed027069b1696cc393e8e267a1490eb33e9a39c9632bc5f610913c9ea3d41b60",
+          "bytes": 11991
+        },
+        {
+          "role": "frame_semantic_audit",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-audit.json",
+          "archive_path": "qa/frame-semantic-audit.json",
+          "sha256": "16cb822a5cf8f3a4ab58900319295abb428662dc90fa956c910a225674af3b41",
+          "bytes": 6163
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/story-semantic-review.json",
+          "archive_path": "qa/story-semantic-review.json",
+          "sha256": "e3b05de9341ac9951b2a86b0ba5dedbdf700d1034f103a1647141cc570f3dc83",
+          "bytes": 8265
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/visual-profile-review.json",
+          "archive_path": "qa/visual-profile-review.json",
+          "sha256": "5511c7937dfd25ad7f5cedf01b8a8739e309702c4d8a5ab1fcadf0915c088e03",
+          "bytes": 8296
+        },
+        {
+          "role": "subtitle_layout_audit",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/subtitle-layout-audit.json",
+          "archive_path": "qa/subtitle-layout-audit.json",
+          "sha256": "250998b178769dcc1f8b574cea9e7d1253cd7544cd9fad0fa28860a9f164524f",
+          "bytes": 17674
+        },
+        {
+          "role": "text_audit",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/text-audit.json",
+          "archive_path": "qa/text-audit.json",
+          "sha256": "373ac94984203a86f6233bdf44772e43661371e09c29bb64ff0ee2e02c32a625",
+          "bytes": 542
+        },
+        {
+          "role": "release_semantic_review",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/release-semantic-review.json",
+          "archive_path": "qa/release-semantic-review.json",
+          "sha256": "35316bd78a27439f77a20476739533505416701fab3b0c569ba4e8cc8f0d018f",
+          "bytes": 12493
+        },
+        {
+          "role": "publish_compliance",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/publish-compliance.json",
+          "archive_path": "qa/publish-compliance.json",
+          "sha256": "7155c3605628b836ecaa10339af73e6ca8a8404cb05c122fcb6fefe0b8b2b813",
+          "bytes": 435
+        },
+        {
+          "role": "recent5_review",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/recent5-review.json",
+          "archive_path": "qa/recent5-review.json",
+          "sha256": "b559da8b60985327b2cd5f29036b28ee486916fae09749eda1d601f9e8ef5457",
+          "bytes": 1930
+        },
+        {
+          "role": "recent5_semantic_review",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/recent5-semantic-review.json",
+          "archive_path": "qa/recent5-semantic-review.json",
+          "sha256": "5471d186959a371b7e92cd2551f75870770f4dd1838281be8eabdca6cbb1c06e",
+          "bytes": 2163
+        },
+        {
+          "role": "frame_contract_index",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/contracts/frame-contract-index.json",
+          "archive_path": "evidence/frame-contract-index.json",
+          "sha256": "8cca8723eb2422640e9d53c78a54aa8978e67ac0e64d4049a438a2e3bb1930e9",
+          "bytes": 9933
+        },
+        {
+          "role": "visual_lock_baseline_review",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/visual-lock-baseline-review.json",
+          "archive_path": "qa/visual-lock-baseline-review.json",
+          "sha256": "d24fbd82ccdb1521c0e27006a7b0943cb4fed4cf7d6b06930970c24fa1cc9135",
+          "bytes": 2704
+        },
+        {
+          "role": "visual_final_freeze",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/visual-final-freeze.json",
+          "archive_path": "qa/visual-final-freeze.json",
+          "sha256": "b240d870a1ba6a871685fe85040c9eeee8d02f4a7f294e756a3ab9b35cf94bd3",
+          "bytes": 13575
+        },
+        {
+          "role": "caption_image_audit",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json",
+          "archive_path": "qa/caption-image-audit.json",
+          "sha256": "21c50e005665f41f8659d44778244194afa3c8ad21895ef15e27a829d6e5a892",
+          "bytes": 23348
+        },
+        {
+          "role": "frame_review:01",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/01.json",
+          "archive_path": "qa/frame-reviews/01.json",
+          "sha256": "b4a20c32055b12dff1c70364b0d52b3646a938829b6e60488da717eb3d2f9277",
+          "bytes": 3315
+        },
+        {
+          "role": "frame_review:02",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/02.json",
+          "archive_path": "qa/frame-reviews/02.json",
+          "sha256": "48146d8ff8c8817052dd5425e076cab2ad4f3d8ed050724fd85cc4ccec64fa88",
+          "bytes": 3249
+        },
+        {
+          "role": "frame_review:03",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/03.json",
+          "archive_path": "qa/frame-reviews/03.json",
+          "sha256": "b1cce0512f6089a209983f963e50ace31657a97afef42e6b3c3f7130fc7f23bc",
+          "bytes": 3228
+        },
+        {
+          "role": "frame_review:04",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/04.json",
+          "archive_path": "qa/frame-reviews/04.json",
+          "sha256": "510b5944dda069a49f2e3f400793eb2a1ea3bc797ee6ab800aa312650a095870",
+          "bytes": 3228
+        },
+        {
+          "role": "frame_review:05",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/05.json",
+          "archive_path": "qa/frame-reviews/05.json",
+          "sha256": "326630a4940c0e95ab971fcebc129655e0b4b2b687cc4543ccfb25d6c4f8eca8",
+          "bytes": 3249
+        },
+        {
+          "role": "frame_review:06",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/06.json",
+          "archive_path": "qa/frame-reviews/06.json",
+          "sha256": "e0a268f82fdd8ea91bb199a70fba781133f99c582971155e124f313c0efeec2d",
+          "bytes": 3222
+        },
+        {
+          "role": "frame_review:07",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/07.json",
+          "archive_path": "qa/frame-reviews/07.json",
+          "sha256": "429331893b3f84cbbf1fa4b7cbbf3dcf3b0add72b4fb767d26a620994470b769",
+          "bytes": 3231
+        },
+        {
+          "role": "frame_review:08",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/08.json",
+          "archive_path": "qa/frame-reviews/08.json",
+          "sha256": "feb8cb72db5f3cfeebbb6633b2c1e5189a4153ef73903e1eaf7a86dab3e103b3",
+          "bytes": 3237
+        },
+        {
+          "role": "frame_review:09",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/09.json",
+          "archive_path": "qa/frame-reviews/09.json",
+          "sha256": "c801e8cc7e8187f45a9ad9580fa09d86470960ee4888f4089c3f56064c15c129",
+          "bytes": 3246
+        },
+        {
+          "role": "frame_review:10",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/10.json",
+          "archive_path": "qa/frame-reviews/10.json",
+          "sha256": "b332c7f5a74b4f5c2ea9a8bbb9f15c32ffebce8a2c4d5add0925fe6d351fea2b",
+          "bytes": 3225
+        },
+        {
+          "role": "frame_review:11",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/11.json",
+          "archive_path": "qa/frame-reviews/11.json",
+          "sha256": "20c632a3a6387aecebaa9accb9eb3cb879b6c35d294657ab2d49f93bda12c3cd",
+          "bytes": 3240
+        },
+        {
+          "role": "frame_review:12",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/12.json",
+          "archive_path": "qa/frame-reviews/12.json",
+          "sha256": "59479dcbf62b0341ac0acff6726b42e54bc4e8291039005aceeed5af8318380b",
+          "bytes": 3285
+        },
+        {
+          "role": "frame_review:13",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/13.json",
+          "archive_path": "qa/frame-reviews/13.json",
+          "sha256": "553bd3d8d8403bc12a9e01fae9b656e8a7befaa13a7becafaf2b8a60813dd07f",
+          "bytes": 3282
+        },
+        {
+          "role": "frame_review:14",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/14.json",
+          "archive_path": "qa/frame-reviews/14.json",
+          "sha256": "583c664c4a85e7ecd130f7374ce6ffb4910197312e049916ea45b6013a5c5e19",
+          "bytes": 3252
+        },
+        {
+          "role": "frame_review:15",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/15.json",
+          "archive_path": "qa/frame-reviews/15.json",
+          "sha256": "87dfd2a02e9fa8ed4d6762a47f4339b93766f66b094292b2e265db0275326bbb",
+          "bytes": 3255
+        },
+        {
+          "role": "frame_review:16",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/16.json",
+          "archive_path": "qa/frame-reviews/16.json",
+          "sha256": "fd857aef281b86b19c54c198a84474f4a31e950dbab7b4933ce9f152744b1957",
+          "bytes": 3258
+        },
+        {
+          "role": "frame_review:17",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/17.json",
+          "archive_path": "qa/frame-reviews/17.json",
+          "sha256": "6dc0a2a3ddf9526303df98a65462799f3bf341ad129660e6a42ec2cf6dd067e8",
+          "bytes": 3279
+        },
+        {
+          "role": "frame_review:18",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/18.json",
+          "archive_path": "qa/frame-reviews/18.json",
+          "sha256": "1c2469d36ca394c939602376734dd179c7dfc92fa9723fd0ecad5262df1ef133",
+          "bytes": 3273
+        },
+        {
+          "role": "frame_review:19",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/19.json",
+          "archive_path": "qa/frame-reviews/19.json",
+          "sha256": "090544f08cb07935312a63ab4730686827365a3852a2478ab7ddc16e39267075",
+          "bytes": 3267
+        },
+        {
+          "role": "frame_review:20",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-reviews/20.json",
+          "archive_path": "qa/frame-reviews/20.json",
+          "sha256": "8bb1b00938d84813923a838c720d02f2b3f08a6338637688f494303dcb6c0729",
+          "bytes": 3255
+        },
+        {
+          "role": "final_candidate_snapshot",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/final-candidate-snapshot.json",
+          "archive_path": "evidence/final-candidate-snapshot.json",
+          "sha256": "3782e90a89761742cb9ed238eeccb12e028f0fdb991566a7f8de762c06d82eae",
+          "bytes": 40703
+        },
+        {
+          "role": "delegated_zip",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/deliveries/05_婚礼前夜_记忆麻醉_DELEGATED_AUTO_F01FACE.zip",
+          "sha256": "0e823e5ff3b12b13e0f8d7ffbd7b674197fbc5fac27075919dd7220b2bc17b14"
+        }
+      ],
+      "note": "F01 正脸重生成+F12 内容返修+封面按 doc06 三行文案重建；snapshot/delivery 重建；delegated_auto_review"
+    }
+  }
+}

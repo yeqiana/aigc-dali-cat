@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "01",
+  "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/01.png",
+  "asset_sha256": "cef5b7b929e12b720b6becdbfcded43d3b0f34d0a2f82070741097af5fd812f6",
+  "story_sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752",
+  "storyboard_sha256": "6b1bb6e97b32b55dbb648554afdca5d5dc1e96330c9889133be372da6b8f1f31",
+  "visual_contract_sha256": "52eed9d5001518961bbe7b598d07aa6a288855b45f26f600d47a93113404bcdc",
+  "environment_frame_sha256": "8fd0183c0696969d49a059e6fd47f1b0679eafb5151a5123f6ad98777ee6ba3b",
+  "frame_directive_sha256": "9050dacedd6a7d0fe37d1c2ddb95541c14ecd771de1edb61a20b4f68c99778b2",
+  "frame_contract_sha256": "551c1be47c9686277276019958185a6bce70c1a52232d5dea796c7344f0e1203",
+  "source_binding": {
+    "story": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md",
+      "sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752"
+    },
+    "storyboard": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md",
+      "sha256": "6b1bb6e97b32b55dbb648554afdca5d5dc1e96330c9889133be372da6b8f1f31"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "5b6260318fe10ba735a1adf15d5996676629385f81a629abee929a7bfc91b250"
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 2,
+    "reviewed_at": "2026-09-10T12:00:32+08:00",
+    "log": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-critic-attempt-2.jsonl",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "婚房门口P01正面留影（全篇唯一露脸帧）：黑发红绳、浅底碎花长袖、深色裤与深色鞋；身后红被木床、桌边搪瓷盆与红绸、喜字与完整红布窗、土墙可见；无药瓶、药片、铁栏或锁链。",
+  "decision": "pass",
+  "caption_sha256": "0752557518ec3b9e0ee5847f4a70947d999318c549ca8de2927d153830d1866f"
+}

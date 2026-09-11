@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "17",
+  "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/17.png",
+  "asset_sha256": "87b8f91849b438be84b13de86bb0da9005e142ffedb6e765e782237bededacb3",
+  "story_sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752",
+  "storyboard_sha256": "6b1bb6e97b32b55dbb648554afdca5d5dc1e96330c9889133be372da6b8f1f31",
+  "visual_contract_sha256": "52eed9d5001518961bbe7b598d07aa6a288855b45f26f600d47a93113404bcdc",
+  "environment_frame_sha256": "e6104121edaeea23f63da20f6722c962cd6a87953b4534e99212e493b65ff26e",
+  "frame_directive_sha256": "9a129d2ecfccb5f4e3fee09e007a8b7b3036261558718b13ce83e60c9a82c14d",
+  "frame_contract_sha256": "84e795fece128e56b25f9f1b892aab8ae13ae28e0d01677db8ba204b57b2bd46",
+  "source_binding": {
+    "story": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md",
+      "sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752"
+    },
+    "storyboard": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md",
+      "sha256": "6b1bb6e97b32b55dbb648554afdca5d5dc1e96330c9889133be372da6b8f1f31"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "dce69ef13eaa143c071915017fdfed8a1c5c070fef92581959c40714c6b13bfb"
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 2,
+    "reviewed_at": "2026-09-10T12:00:32+08:00",
+    "log": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-critic-attempt-2.jsonl",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "检查站桌前：对面制服记录人员低头用笔在表格上书写；前景左手搭桌沿（浅底蓝花袖），桌下同款深色裤与沾泥旧布鞋；桌上暖瓶、搪瓷缸、对讲机与纸册。",
+  "decision": "pass",
+  "caption_sha256": "9e81f2bf7b70c9da3daecac24fa5eca49936181f72817a2f5bf0c97967aa20c0"
+}

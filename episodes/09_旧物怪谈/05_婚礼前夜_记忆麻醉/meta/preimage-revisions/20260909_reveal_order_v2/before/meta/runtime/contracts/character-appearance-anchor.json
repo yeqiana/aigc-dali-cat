@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "contract_version": "2.2.1",
+  "derived_cache": true,
+  "world_identity_profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+  "world_identity_effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b",
+  "character_contract_path": "meta/character-contract.json",
+  "character_contract_sha256": "9f459c38e8b3553c9809b38cdc90457d5117b8cf211c3b21dd2fed7cb661cdde",
+  "character_visual_contract_path": "meta/character-visual-contract.json",
+  "character_visual_contract_sha256": "2c2dbc9ad9f1882d371f210bc686cd9b0d41f17070238faedbab86ec4fb2707f",
+  "members": {
+    "P01": {
+      "character_id": "P01",
+      "nationality_context": "Chinese",
+      "resident_context": "mainland Chinese local residents",
+      "gender": "female",
+      "age": 23,
+      "build": "普通年轻女性，略瘦",
+      "body_build": "slim_proportionate_natural",
+      "hair": {
+        "character_contract_anchor": "普通黑色齐肩发，一根红绳简单扎起",
+        "haircut_anchor": "普通黑发，齐肩，低马尾，红绳简单扎起，发尾自然微翘",
+        "hair_length_anchor": "齐肩到锁骨长度，普通直发，不染不烫"
+      },
+      "clothing_anchor": "浅色碎花长袖上衣+深色长裤+旧布鞋（嫁衣下衬）",
+      "device_anchor": "2007年前后廉价家用数码相机/旧功能手机（仅记录用）",
+      "visual_priority": "primary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_visible_texture",
+        "allowed_variation": [
+          "wet",
+          "windblown",
+          "messy",
+          "hood_up",
+          "tied_or_untied_with_story_reason"
+        ],
+        "forbidden_unmotivated_drift": [
+          "nationality/cultural identity",
+          "apparent age",
+          "face identity",
+          "haircut or hair length",
+          "body build",
+          "character role",
+          "clothing anchor unless wardrobe contract changes it"
+        ]
+      }
+    }
+  },
+  "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+  "anchor_sha256": "97811807b969408e78d7d364c49244fc1a10a4fcd5ff5139691125a83062c5db"
+}

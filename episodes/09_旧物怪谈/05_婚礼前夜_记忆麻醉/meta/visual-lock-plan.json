@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "generated_at": "2026-09-10T12:01:07+08:00",
+  "policy": {
+    "baseline_first": true,
+    "remaining_three_parallelizable": true,
+    "calibration_count": 4,
+    "baseline_selection": "ordinary_fallback",
+    "baseline_frame": 1,
+    "opening_social_anchor_machine_priority": true
+  },
+  "items": [
+    {
+      "id": "V-B",
+      "frame": 1,
+      "mode": "normal_record",
+      "role": "ordinary_baseline",
+      "impact": 0,
+      "scale_reference": "",
+      "environment_severity": 10,
+      "contract_sha256": "551c1be47c9686277276019958185a6bce70c1a52232d5dea796c7344f0e1203",
+      "depends_on": []
+    },
+    {
+      "id": "V-W",
+      "frame": 12,
+      "mode": "anomaly_amplified",
+      "role": "worst_capture_condition",
+      "impact": 3,
+      "scale_reference": "车厢与人、车灯",
+      "environment_severity": 10,
+      "contract_sha256": "d7c69d3a4c1c1ea4564c5a7e64301bb156043270e421fd80ee285430ffb3811e",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-A",
+      "frame": 3,
+      "mode": "anomaly_reveal",
+      "role": "first_major_anomaly",
+      "impact": 2,
+      "scale_reference": "床脚与短铁链，链的两端不入画",
+      "environment_severity": 8,
+      "contract_sha256": "16a5f36eee9f93086c95543a4b346ab1964c23c1aacbfbce32d569d589ae6011",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-H",
+      "frame": 15,
+      "mode": "climax_impact",
+      "role": "high_impact_admission",
+      "impact": 4,
+      "scale_reference": "未扣合金镯与女主左手、男人伸来的手",
+      "environment_severity": 8,
+      "contract_sha256": "dc8432fd1b88dcd66d9ba4b00a17ffdb9d81c126524a8524b306c941445a6eda",
+      "depends_on": [
+        1
+      ]
+    }
+  ]
+}

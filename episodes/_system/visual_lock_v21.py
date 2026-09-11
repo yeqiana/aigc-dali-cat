@@ -795,7 +795,15 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         staged = staging / f"{row['id']}-{int(row['frame']):02d}{Path(row['path']).suffix.lower()}"
         shutil.copy2(row["path"], staged)
         staged_assets.append(staged)
-    cfg=storyos_config.load_config();model=str(storyos_config.get_path(cfg,"runtime.codex_image_controller_model"));effort=str(storyos_config.get_path(cfg,"runtime.codex_image_reasoning_effort"))
+    # STORY_OS_CRITIC_MODEL_OVERRIDE: the image controller model is pinned for image
+    # GENERATION. A vision critic must run on a model that can actually read attached
+    # images, so use the optional dedicated critic key when configured and otherwise
+    # let the Codex CLI choose its default model (same behaviour as the frame semantic
+    # and caption audits). Without this, a controller model whose vision sidecar
+    # rejects attachments silently yields an all-false "no pixel evidence" sentinel.
+    cfg=storyos_config.load_config()
+    model=str(storyos_config.get_path(cfg,"runtime.codex_critic_model") or "") or None
+    effort=str(storyos_config.get_path(cfg,"runtime.codex_critic_reasoning_effort") or storyos_config.get_path(cfg,"runtime.codex_image_reasoning_effort"))
     log = ep / "meta" / f"visual-lock-critic-attempt-{attempt}.jsonl"
     try:
         done = critic_runner.launch(

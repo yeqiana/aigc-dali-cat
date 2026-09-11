@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "runtime": "Story OS V2.7",
+  "generated_at": "2026-09-09T16:20:38.208557+08:00",
+  "stage": "VISUAL_LOCK_FINAL_VERIFY",
+  "episode": "05_婚礼前夜_记忆麻醉",
+  "decision": "PASS",
+  "checks": {
+    "baseline_review": true,
+    "four_admission_roles": true,
+    "visual_lock_plan_exists": true
+  },
+  "frames": [
+    {
+      "frame": 1,
+      "role": "ordinary_baseline",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-2c7bd4b0bb37-a1.png",
+      "sha256": "1e55fcfa064fb1e867925847bed03c1dea43cd190f904970286ca436952a2c1a",
+      "contract_sha256": "3d6729188017faefab576a4adc02d0a8a1232fea9df4dd0ba6cec255faa6d902",
+      "frame_contract_sha256": "3d6729188017faefab576a4adc02d0a8a1232fea9df4dd0ba6cec255faa6d902"
+    },
+    {
+      "frame": 12,
+      "role": "worst_capture_condition",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-83d12f914c02-a1.png",
+      "sha256": "aef856deaf0c032ab97e64694a2f3baece5ca1c1dde016da45dd4b01ad9f6cf6",
+      "contract_sha256": "d7c69d3a4c1c1ea4564c5a7e64301bb156043270e421fd80ee285430ffb3811e",
+      "frame_contract_sha256": "d7c69d3a4c1c1ea4564c5a7e64301bb156043270e421fd80ee285430ffb3811e"
+    },
+    {
+      "frame": 3,
+      "role": "first_major_anomaly",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-e631da805486-a1.png",
+      "sha256": "10e5cfdcdd0f96d2829b25f254f8a6f78c6bbc0f76c370c5222fc26318f6157e",
+      "contract_sha256": "16a5f36eee9f93086c95543a4b346ab1964c23c1aacbfbce32d569d589ae6011",
+      "frame_contract_sha256": "16a5f36eee9f93086c95543a4b346ab1964c23c1aacbfbce32d569d589ae6011"
+    },
+    {
+      "frame": 15,
+      "role": "high_impact_admission",
+      "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/15-1e63d6ffb150-a1.png",
+      "sha256": "99050f3d25f8f4ce4c8dae83703f719a3a899bde97df654b2116fa8819e08c41",
+      "contract_sha256": "dc8432fd1b88dcd66d9ba4b00a17ffdb9d81c126524a8524b306c941445a6eda",
+      "frame_contract_sha256": "dc8432fd1b88dcd66d9ba4b00a17ffdb9d81c126524a8524b306c941445a6eda"
+    }
+  ],
+  "next_stage": "VISUAL_CALIBRATED"
+}

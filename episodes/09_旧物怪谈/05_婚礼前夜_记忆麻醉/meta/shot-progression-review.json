@@ -1,0 +1,1014 @@
+{
+  "schema_version": 3,
+  "status": "LOCKED",
+  "genre_family": "general_reality_crack",
+  "anomaly_applicable": true,
+  "anomaly_exception_reason": "",
+  "interaction_applicable": false,
+  "interaction_exception_reason": "单人第一人称POV记录，他人是环境与对手戏元素而非群像摄影；把控制与逃离作为主角自身行动链。",
+  "rules": {
+    "max_identical_setup_consecutive": 2,
+    "min_unique_setups_in_5_frames": 3,
+    "frame10_requires_new_question_or_evidence": true,
+    "scale_only_escalation_is_not_enough": true,
+    "max_passive_human_frames_after_confirmation": 2,
+    "emotion_intensity_range": [
+      0,
+      4
+    ],
+    "emotion_trigger_required_at_intensity_gte": 2,
+    "synchronized_theatrical_reaction_forbidden": true,
+    "max_consecutive_urgent_frames": 2,
+    "min_meaningful_interaction_per_5_human_frames": 1,
+    "max_meaningful_interaction_ratio": 0.75,
+    "opening_social_natural_interaction_required": true,
+    "require_large_and_small_scene": true,
+    "exact_scene_position_reuse_forbidden": true,
+    "min_cinematic_reference_frames": 2,
+    "practical_lighting_required": true,
+    "suspense_genre_requires_concealed_anomaly": true
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "camera_position": "门口留影机位：院中男方持P01的卡片机，P01在门口面向镜头",
+      "subject_distance": "近中景",
+      "primary_subject": "婚礼前夜",
+      "action": "P01站在婚房门口对镜头，正面看向相机（持机者为院里男方，用她的卡片机拍婚前夜留影）；黑发红绳、浅色碎花长袖、深色裤、旧布鞋，神情平和微怔。身后婚房红彤彤：红被铺好的木床、桌边亲友整理搪瓷盆与红绸，喜字与红布窗完整，土墙可见。无药瓶、药片、铁栏或锁链。",
+      "visual_function": "只建立婚前记忆缺口，不能指向药物控制。",
+      "capture_purpose": "只建立婚前记忆缺口，不能指向药物控制。",
+      "pov_mode": "P01正面看向相机（图01全篇唯一露脸帧；同行者持机记录）",
+      "location_zone": "门口中位",
+      "shot_scale": "medium",
+      "scene_position_id": "door_entrance_01",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "none",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "只建立婚前记忆缺口，不能指向药物控制。",
+        "physical_anchor": "婚礼前夜",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "02",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近中景",
+      "primary_subject": "漏掉的一次药",
+      "action": "P01坐在床边，左手正在收拾针线，桌角有普通水杯、纸巾和一粒未动的药。小白瓶放在桌角远侧，男人在背景搬被褥；没有递瓶、盯视或按住她。",
+      "visual_function": "交代日常服药理由与漏服；药物作用尚未确认。",
+      "capture_purpose": "交代日常服药理由与漏服；药物作用尚未确认。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "床边左侧",
+      "shot_scale": "close",
+      "scene_position_id": "bedside_handoff_02",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "none",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "交代日常服药理由与漏服；药物作用尚未确认。",
+        "physical_anchor": "漏掉的一次药",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 1,
+        "trigger": "交代日常服药理由与漏服；药物作用尚未确认。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "男方",
+        "target": "P01",
+        "action": "P01坐在床边，左手正在收拾针线，桌角有普通水杯、纸巾和一粒未动的药。小白瓶放在桌角远侧，男人在背景搬被褥；没有递瓶、盯视或按住她。",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "03",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近景",
+      "primary_subject": "床底的响声",
+      "action": "梦境主观向下看自己的深色裤脚和旧布鞋：脚边一截短铁链被扯直伸入床底，链条两端都在画外。链与床脚接触处清晰，无法判断连着什么。无脚镣全貌、无药、无看守脸。",
+      "visual_function": "首次明确视觉异常是被扯直的铁链；来源、连接对象与梦的真假未知。",
+      "capture_purpose": "首次明确视觉异常是被扯直的铁链；来源、连接对象与梦的真假未知。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "梦里土墙",
+      "shot_scale": "wide",
+      "scene_position_id": "dream_wall_iron_03",
+      "cinematic_reference": {
+        "reference_id": "FRAME_WITHIN_FRAME",
+        "technique_translation": "用真实门框把门缝外那双眼睛限制在小块信息区，仍是P01梦里第一人称可拍的墙边画面",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "window_light",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "hide_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "foreground_occlusion",
+        "purpose": "首次明确视觉异常是被扯直的铁链；来源、连接对象与梦的真假未知。",
+        "physical_anchor": "床底的响声",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "notice",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "首次明确视觉异常是被扯直的铁链；来源、连接对象与梦的真假未知。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": "明确梦境，人物衣着与镜像物理仍连续"
+    },
+    {
+      "frame": "04",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近景",
+      "primary_subject": "看不清的人",
+      "action": "同一梦境，P01俯视碎花袖口，一只陌生成年人的手压住她的左手，木床沿可见；来者全身与脸均在画外，袖口也不露。没有瓶杯、嘴部、灌药或完整锁链。",
+      "visual_function": "只确认梦里被阻止行动，不确认强灌或男人身份。",
+      "capture_purpose": "只确认梦里被阻止行动，不确认强灌或男人身份。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "梦里木板",
+      "shot_scale": "close",
+      "scene_position_id": "dream_board_force_04",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "hide_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "只确认梦里被阻止行动，不确认强灌或男人身份。",
+        "physical_anchor": "看不清的人",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "只确认梦里被阻止行动，不确认强灌或男人身份。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": "明确梦境，人物衣着与镜像物理仍连续"
+    },
+    {
+      "frame": "05",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近中景",
+      "primary_subject": "醒后的红痕",
+      "action": "现实醒来，P01坐在床沿低头，左手掀开一角被子，自己裸露脚踝上有一圈浅红压痕；同一深色裤脚，旧布鞋在床边。门口男人背影在忙，无药无铁环，不做梦中动作匹配。",
+      "visual_function": "梦与现实有压痕呼应，也可能是睡姿；不替观众下结论。",
+      "capture_purpose": "梦与现实有压痕呼应，也可能是睡姿；不替观众下结论。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "床沿中侧",
+      "shot_scale": "detail",
+      "scene_position_id": "bedside_same_pose_05",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "梦与现实有压痕呼应，也可能是睡姿；不替观众下结论。",
+        "physical_anchor": "醒后的红痕",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "梦与现实有压痕呼应，也可能是睡姿；不替观众下结论。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "男方",
+        "target": "P01",
+        "action": "现实醒来，P01坐在床沿低头，左手掀开一角被子，自己裸露脚踝上有一圈浅红压痕；同一深色裤脚，旧布鞋在床边。门口男人背影在忙，无药无铁环，不做梦中动作匹配。",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "06",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "广角",
+      "primary_subject": "背六年",
+      "action": "P01从座位向前看，左手拿着纸，男人在桌对面侧身指向纸张，纸面只有失焦笔迹；婚房布置连续。不能从背后拍女主，也不出现她的脸。",
+      "visual_function": "关系叙述需要排练，恋爱记忆开始可疑。",
+      "capture_purpose": "关系叙述需要排练，恋爱记忆开始可疑。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "婚房中侧",
+      "shot_scale": "wide",
+      "scene_position_id": "hall_script_rehearsal_06",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "none",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "关系叙述需要排练，恋爱记忆开始可疑。",
+        "physical_anchor": "背六年",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 1,
+        "trigger": "关系叙述需要排练，恋爱记忆开始可疑。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "男方",
+        "target": "P01",
+        "action": "P01从座位向前看，左手拿着纸，男人在桌对面侧身指向纸张，纸面只有失焦笔迹；婚房布置连续。不能从背后拍女主，也不出现她的脸。",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "07",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "中景",
+      "primary_subject": "没人叫名字",
+      "action": "P01坐在梳妆镜前，左右亲友整理发绳与喜被，交谈各做各事；镜子只带到女主碎花肩袖与发尾。她的姓名不在画面中，禁止生成人物对话文字。",
+      "visual_function": "亲密关系缺少真实称呼。",
+      "capture_purpose": "亲密关系缺少真实称呼。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "人群边角",
+      "shot_scale": "medium",
+      "scene_position_id": "crowd_mirror_brush_07",
+      "cinematic_reference": {
+        "reference_id": "NEGATIVE_SPACE_SUSPENSE",
+        "technique_translation": "把她自身挤在画面一边，把镜面留作第二信息区，仍是人群里实拍站位",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "create_negative_space",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "mirror",
+        "purpose": "亲密关系缺少真实称呼。",
+        "physical_anchor": "没人叫名字",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "亲密关系缺少真实称呼。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "08",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近景",
+      "primary_subject": "陌生的妈",
+      "action": "从P01眼位看梳妆镜，陌生中年女人站在身后梳头，镜中可辨女人脸与梳子；P01自己的脸被镜面上缘裁出，仅见同一碎花肩袖、红绳黑发。",
+      "visual_function": "所谓母亲陌生，身份疑点累积。",
+      "capture_purpose": "所谓母亲陌生，身份疑点累积。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "镜子前沿",
+      "shot_scale": "detail",
+      "scene_position_id": "mirror_unfamiliar_face_08",
+      "cinematic_reference": {
+        "reference_id": "FRAME_WITHIN_FRAME",
+        "technique_translation": "用真实镜框把陌生母亲脸框在第二层信息区，反射亮度略低于实景，仍是P01镜前可拍到的近贴画面",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "partial_illumination",
+        "suspense_function": "make_reflection_legible",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "mirror",
+        "purpose": "所谓母亲陌生，身份疑点累积。",
+        "physical_anchor": "陌生的妈",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "所谓母亲陌生，身份疑点累积。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "09",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近景",
+      "primary_subject": "翻转婚鞋",
+      "action": "P01坐在床边左手翻转红绣鞋，使鞋底两道铁环朝向镜头；右手持机不入画，碎花袖、深色裤和自己的旧布鞋连续。铁环只在鞋上，不套在她脚上。",
+      "visual_function": "第一次在清醒现实看见婚礼物件的束缚证据。",
+      "capture_purpose": "第一次在清醒现实看见婚礼物件的束缚证据。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "床边低位",
+      "shot_scale": "close",
+      "scene_position_id": "shoes_iron_sole_09",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "flashlight",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "第一次在清醒现实看见婚礼物件的束缚证据。",
+        "physical_anchor": "翻转婚鞋",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "第一次在清醒现实看见婚礼物件的束缚证据。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "10",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "detail",
+      "primary_subject": "未扣上的金镯",
+      "action": "P01左掌托着一只尚未扣合的金色手镯，内侧合缝与小锁孔清晰，另一只放桌上；碎花袖口可见。不是已锁在手腕上的镯子，不展示开锁步骤。",
+      "visual_function": "第二件物证互证，婚礼饰物具有锁的功能。",
+      "capture_purpose": "第二件物证互证，婚礼饰物具有锁的功能。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "手腕前沿",
+      "shot_scale": "detail",
+      "scene_position_id": "bracelet_lock_hole_10",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "flashlight",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "第二件物证互证，婚礼饰物具有锁的功能。",
+        "physical_anchor": "未扣上的金镯",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "第二件物证互证，婚礼饰物具有锁的功能。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "11",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近中景",
+      "primary_subject": "红布后的铁栏",
+      "action": "P01左手掀起窗上的红布一角，布后露出横贯窗洞、固定在窗框内的铁栏，栏与窗框连接关系清晰；完整红布在其余区域仍遮挡。一次发现动作，无回头蒙太奇，不以土墙为新证据。",
+      "visual_function": "首次确认房间是囚禁空间；新增的是隐藏铁栏，不是土墙。",
+      "capture_purpose": "首次确认房间是囚禁空间；新增的是隐藏铁栏，不是土墙。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "墙边中位",
+      "shot_scale": "medium",
+      "scene_position_id": "wall_strip_window_weld_11",
+      "cinematic_reference": {
+        "reference_id": "FRAME_WITHIN_FRAME",
+        "technique_translation": "用真实窗框和墙皮把土坯与焊死窗条框成第二信息层，仍是P01可拍到的站位",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "flashlight",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "foreground_occlusion",
+        "purpose": "首次确认房间是囚禁空间；新增的是隐藏铁栏，不是土墙。",
+        "physical_anchor": "红布后的铁栏",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "首次确认房间是囚禁空间；新增的是隐藏铁栏，不是土墙。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "12",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近中景",
+      "primary_subject": "车厢里的人",
+      "action": "P01站在屋内门缝后向院里看，前景只有门框和一点碎花袖。男人在货车后门旁，车厢内几个成年女孩穿红嫁衣，脚踝铁环能看清；女主始终在屋里，不坐车厢，不穿红嫁衣。",
+      "visual_function": "囚禁从自己扩展到车厢内多人。",
+      "capture_purpose": "囚禁从自己扩展到车厢内多人。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "门缝内侧",
+      "shot_scale": "wide",
+      "scene_position_id": "truck_girls_peek_12",
+      "cinematic_reference": {
+        "reference_id": "FRAME_WITHIN_FRAME",
+        "technique_translation": "用门缝与车灯把货车里的同款嫁衣女孩框在后景小区域，车灯扫过才透出信息",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "vehicle_headlight",
+        "contrast_mode": "backlit_silhouette",
+        "suspense_function": "hide_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "foreground_occlusion",
+        "purpose": "囚禁从自己扩展到车厢内多人。",
+        "physical_anchor": "车厢里的人",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "observe",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "囚禁从自己扩展到车厢内多人。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "13",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近中景",
+      "primary_subject": "再次递药",
+      "action": "P01站在屋内床侧，男人的手把一粒药与水杯递近，小白瓶在他另一手里；他侧身挡住前门方向。此时才把药与控制关系明确并置，不做仰头强灌。",
+      "visual_function": "男人主动递药并堵住出路，控制关系至此坐实；具体记忆机制仍不讲解。",
+      "capture_purpose": "男人主动递药并堵住出路，控制关系至此坐实；具体记忆机制仍不讲解。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "门口对峙位",
+      "shot_scale": "close",
+      "scene_position_id": "approach_medicine_13",
+      "cinematic_reference": {
+        "reference_id": "NEGATIVE_SPACE_SUSPENSE",
+        "technique_translation": "把拿药走近的他偏置到一侧，另一侧留作门缝阴影负空间，仍是门口对峙可拍到的画面",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "partial_illumination",
+        "suspense_function": "separate_foreground_background",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "男人主动递药并堵住出路，控制关系至此坐实；具体记忆机制仍不讲解。",
+        "physical_anchor": "再次递药",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "男人主动递药并堵住出路，控制关系至此坐实；具体记忆机制仍不讲解。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "14",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近中景",
+      "primary_subject": "吐进花盆",
+      "action": "P01从自己的眼位俯向床头旧花盆，左手扶盆沿，刚吐出的药落在湿土表面；背景男人侧后身转向前门。女主嘴脸不入画，不画手指把药丢进盆里。",
+      "visual_function": "主动拒绝下一剂，保持行动能力；不能倒写成此前发现的原因。",
+      "capture_purpose": "主动拒绝下一剂，保持行动能力；不能倒写成此前发现的原因。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "床头低位",
+      "shot_scale": "detail",
+      "scene_position_id": "spit_medicine_plant_14",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "主动拒绝下一剂，保持行动能力；不能倒写成此前发现的原因。",
+        "physical_anchor": "吐进花盆",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "主动拒绝下一剂，保持行动能力；不能倒写成此前发现的原因。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "15",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近中景",
+      "primary_subject": "举镯逼问",
+      "action": "P01左手举起那只未扣合金镯对着男人，镯口与锁孔可见；男人停下并伸手来抢，身后前门被挡住，左侧通后门的窄道和矮凳清楚。无女主正脸，无凭空解锁。",
+      "visual_function": "举证逼问引发男人抢夺，为下一张逃跑提供直接触发。",
+      "capture_purpose": "举证逼问引发男人抢夺，为下一张逃跑提供直接触发。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "对峙中位",
+      "shot_scale": "medium",
+      "scene_position_id": "bracelet_confront_15",
+      "cinematic_reference": {
+        "reference_id": "NEGATIVE_SPACE_SUSPENSE",
+        "technique_translation": "把金镯和她的手偏置到一侧，另一侧留给他站的位置和他愣住的空档，仍是正面手持",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "hard_directional",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "举证逼问引发男人抢夺，为下一张逃跑提供直接触发。",
+        "physical_anchor": "举镯逼问",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 4,
+        "trigger": "举证逼问引发男人抢夺，为下一张逃跑提供直接触发。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "P01",
+        "target": "男方",
+        "action": "P01左手举起那只未扣合金镯对着男人，镯口与锁孔可见；男人停下并伸手来抢，身后前门被挡住，左侧通后门的窄道和矮凳清楚。无女主正脸，无凭空解锁。",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "16",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "广角",
+      "primary_subject": "自己制造逃跑机会",
+      "action": "P01从后门门槛向田路冲出，画面下缘同一深色裤脚与旧布鞋沾泥，碎花袖左手推门，回侧余光见翻倒的矮凳挡在追来的男人脚前。无第三人称跑步全身，无换装、无突然赤脚、无救场女孩。",
+      "visual_function": "女主制造障碍并逃出；无巧合救援。",
+      "capture_purpose": "女主制造障碍并逃出；无巧合救援。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "后门外",
+      "shot_scale": "extreme_wide",
+      "scene_position_id": "escape_field_back_16",
+      "cinematic_reference": {
+        "reference_id": "FRAME_WITHIN_FRAME",
+        "technique_translation": "用后门框和车灯把院门红字与田埂框住，她回头时在框内透出",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "vehicle_headlight",
+        "contrast_mode": "backlit_silhouette",
+        "suspense_function": "separate_foreground_background",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "女主制造障碍并逃出；无巧合救援。",
+        "physical_anchor": "自己制造逃跑机会",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 4,
+        "trigger": "女主制造障碍并逃出；无巧合救援。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "17",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近中景",
+      "primary_subject": "获救却失名",
+      "action": "P01坐在检查站桌边，从自己眼位看记录人员和桌面，低处可见同一沾泥旧布鞋与深色裤脚，碎花袖左手停在桌沿。无白婚纱，无脚镣，无女主面部。",
+      "visual_function": "逃生获得外部确认，失名代价留下。",
+      "capture_purpose": "逃生获得外部确认，失名代价留下。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "检查站谈话位",
+      "shot_scale": "medium",
+      "scene_position_id": "checkpoint_name_17",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fluorescent",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "逃生获得外部确认，失名代价留下。",
+        "physical_anchor": "获救却失名",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "consequence",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "逃生获得外部确认，失名代价留下。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "警察",
+        "target": "P01",
+        "action": "P01坐在检查站桌边，从自己眼位看记录人员和桌面，低处可见同一沾泥旧布鞋与深色裤脚，碎花袖左手停在桌沿。无白婚纱，无脚镣，无女主面部。",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "18",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近中景",
+      "primary_subject": "身体先认出名字",
+      "action": "检查站同一座位，P01转向窗外，自己碎花左袖扶窗沿，花白头发女人被人搀着走来，神情急切；无女主脸，无白婚纱，不声称她已完整恢复记忆。",
+      "visual_function": "身体对名字有反应但记忆尚未恢复。",
+      "capture_purpose": "身体对名字有反应但记忆尚未恢复。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "检查站窗口",
+      "shot_scale": "close",
+      "scene_position_id": "window_caller_name_18",
+      "cinematic_reference": {
+        "reference_id": "FRAME_WITHIN_FRAME",
+        "technique_translation": "用真实窗框把窗口外跑来的女人框成第二信息层，反射与遮挡物理成立",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fluorescent",
+        "contrast_mode": "soft_directional",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "身体对名字有反应但记忆尚未恢复。",
+        "physical_anchor": "身体先认出名字",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "observe",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "身体对名字有反应但记忆尚未恢复。",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "19",
+      "camera_position": "P01坐姿俯视，低位镜面仅反射腿手",
+      "subject_distance": "近中景",
+      "primary_subject": "另一个试鞋梦",
+      "action": "另一梦境，P01坐在明亮普通卧室的凳子上，第一人称俯视左手翻起红绣鞋鞋底，没有铁环。低位镜子仅反射同一坐姿的深色裤腿、碎花袖与红鞋，左右按镜面对应，脸和持机手在镜框外。",
+      "visual_function": "明确另一梦境，婚鞋物理状态反转。",
+      "capture_purpose": "明确另一梦境，婚鞋物理状态反转。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "明亮房间镜前",
+      "shot_scale": "wide",
+      "scene_position_id": "bright_room_shoes_19",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "window_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "make_reflection_legible",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "mirror",
+        "purpose": "明确另一梦境，婚鞋物理状态反转。",
+        "physical_anchor": "另一个试鞋梦",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "consequence",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": "明确梦境，人物衣着与镜像物理仍连续"
+    },
+    {
+      "frame": "20",
+      "camera_position": "P01主观眼位，单手操作另一手持机",
+      "subject_distance": "近中景",
+      "primary_subject": "醒后的天花板",
+      "action": "P01躺在床上主观仰视斑驳天花板，侧下缘一点碎花袖和红被；与先前婚房相同的墙角裂痕和红布窗边可辨。小白瓶在远侧床头桌边，无标签，静默；不新增锁链、不替观众断言获救全是假。",
+      "visual_function": "旧房间细节返回，保留获救真实或仍被困的竞争解释。",
+      "capture_purpose": "旧房间细节返回，保留获救真实或仍被困的竞争解释。",
+      "pov_mode": "P01第一人称主观眼位；仅手脚肩袖局部",
+      "location_zone": "床头仰视",
+      "shot_scale": "close",
+      "scene_position_id": "ceiling_blank_20",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "window_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "create_negative_space",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "旧房间细节返回，保留获救真实或仍被困的竞争解释。",
+        "physical_anchor": "醒后的天花板",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "consequence",
+      "human_present": true,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    }
+  ],
+  "revision_note": "修订规格固定以编译合同；不授予独立评审PASS，不批准旧图片，本轮禁止生图。"
+}

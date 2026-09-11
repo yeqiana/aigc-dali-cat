@@ -1,0 +1,581 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "06",
+  "derived_cache": true,
+  "authority": "Story + Storyboard + Character Contract + Character Visual + Shot Progression + Visual Narrative Core V2.2 + World Identity V2.2.1 + Character Appearance Anchor + Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile",
+  "generated_at": "2026-09-09T11:11:18+08:00",
+  "source_trace": {
+    "story": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md",
+      "sha256": "baba06a1f3b22336b70d2ce489ea95b01ad504a8673f4ebd1ef081a6ae8cce2f"
+    },
+    "storyboard": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md",
+      "sha256": "b6d886b5467dfc41afb76e2d66945e003197c538ac324c6c1d00b34ca0444cde"
+    },
+    "story_gates": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/story-gates.json",
+      "sha256": "ede80936e245b7f0f1447fe8823a6594eda007479d9b9dd039ca1d2b881d45d0"
+    },
+    "visual_profile": {
+      "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+      "sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+    },
+    "character_contract": {
+      "path": "meta/character-contract.json",
+      "sha256": "9f459c38e8b3553c9809b38cdc90457d5117b8cf211c3b21dd2fed7cb661cdde"
+    },
+    "capture_event_contract": {
+      "path": "meta/capture-event-contract.json",
+      "sha256": null
+    },
+    "world_state": {
+      "path": "meta/world-state.json",
+      "sha256": null
+    },
+    "character_visual_contract": {
+      "path": "meta/character-visual-contract.json",
+      "sha256": "2c2dbc9ad9f1882d371f210bc686cd9b0d41f17070238faedbab86ec4fb2707f"
+    },
+    "shot_progression": {
+      "path": "meta/shot-progression-review.json",
+      "sha256": "e3fe5cd9cb73ded379a13ebb1adcafc18ab02b819056e049f25005efa977247b"
+    },
+    "temporal_continuity": {
+      "path": "meta/temporal-continuity.json",
+      "sha256": null
+    },
+    "wardrobe_contract": {
+      "path": "meta/wardrobe-contract.json",
+      "sha256": null
+    },
+    "world_identity_default": {
+      "path": "config/profiles/world_identity/default.json",
+      "sha256": "6abdb8eb90bc79fc983e3d045fb25eb8a894501d44d5576b9ce1d099cdfe01a9"
+    },
+    "world_identity_override": {
+      "path": "meta/world-identity.json",
+      "sha256": null
+    },
+    "character_appearance_anchor": {
+      "path": "meta/runtime/contracts/character-appearance-anchor.json",
+      "sha256": "5835db852ee71b2a0bfe2d5e4c3ae81b58ded05b802c0f01616cd299d4a6b914"
+    }
+  },
+  "storyboard_frame": {
+    "mode": "text_frame",
+    "text": "### 06｜婚礼彩排：背六年\n\n- 画面：他拿着纸/手机，逐句教她背\"怎么认识、追了几年、第一次旅行\"；她重复着，眼神茫然；背景是布置好的婚房。\n- 字幕：婚礼彩排，他要我把恋爱六年背下来。\n- 功能：记忆是被灌输的，不是真实的。",
+    "sha256": "2869b01d5b09b3d659d93c5f32b3dbb209a31a962fdd8cfcde5c7005e0a6d72c"
+  },
+  "hash_material": {
+    "schema_version": 1,
+    "frame": "06",
+    "story_sha256": "baba06a1f3b22336b70d2ce489ea95b01ad504a8673f4ebd1ef081a6ae8cce2f",
+    "storyboard_frame_sha256": "2869b01d5b09b3d659d93c5f32b3dbb209a31a962fdd8cfcde5c7005e0a6d72c",
+    "storyboard_extraction_mode": "text_frame",
+    "visual_profile": {
+      "profile_id": "M00",
+      "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+      "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+      "capture_profile": "auto"
+    },
+    "authenticity_card": {
+      "story_era": "2007年前后，中国西北农村",
+      "location": "西北农村土房婚房",
+      "photographer": "23岁被安排成亲的新娘（第一人称）",
+      "shooting_reason": "给老人看嫁妆/留个纪念，也顺手把看到的不对劲拍下来",
+      "primary_capture": {
+        "id": "CP03",
+        "device": "2007年前后廉价卡片数码相机"
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": "全部画面均由主角手持旧数码相机记录，无第二来源",
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "婚房布置、婚礼彩排等平稳场景，手持正常，画面相对稳",
+        "restricted": "深夜摸黑、看货车、她被迫服药时，手抖、对焦犹豫、构图偏位",
+        "lost_control": "撞开后门逃进田里时，画面剧烈晃动、糊片、高光溢出"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": "第一人称手持记录，不主动展示相机全貌",
+        "photographer_may_be_fully_visible": true,
+        "photographer_visibility_explanation": "主角作为摄影者可以局部入画（手、脚步、半身、镜中反射），避免露清晰正脸"
+      }
+    },
+    "character_contract": {
+      "schema_version": 1,
+      "status": "LOCKED",
+      "derived_from_pools": true,
+      "not_episode_stage": true,
+      "created_at": "2026-09-08T23:30:52+08:00",
+      "locked_at": "2026-09-09T00:05:00+08:00",
+      "selection_seed": 8861162704493245224,
+      "era": {
+        "bucket": "2004_2010",
+        "year": 2007,
+        "source": "user_text"
+      },
+      "world_identity": {
+        "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+        "country": "China",
+        "region": "Mainland China",
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents",
+        "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+      },
+      "cast": {
+        "type": "single_female",
+        "size": 1,
+        "relationship": "单人",
+        "members": [
+          {
+            "id": "P01",
+            "pov": true,
+            "gender": "female",
+            "age": 23,
+            "build": "普通年轻女性，略瘦",
+            "hair": "普通黑色齐肩发，一根红绳简单扎起",
+            "clothing_anchor": "浅色碎花长袖上衣+深色长裤+旧布鞋（嫁衣下衬）",
+            "device_anchor": "2007年前后廉价家用数码相机/旧功能手机（仅记录用）",
+            "nationality_context": "Chinese",
+            "resident_context": "mainland Chinese local residents"
+          }
+        ]
+      },
+      "pov": {
+        "character_id": "P01",
+        "first_person": true
+      },
+      "entry": {
+        "type": "return_home",
+        "label": "回家/回老家",
+        "source": "user_hint",
+        "reason": "以被安排成亲的新娘身份进入，本应在出嫁前夜完成家中布置与婚礼彩排"
+      },
+      "scene": {
+        "primary_category": "village_home",
+        "primary_place": "西北农村土房婚房"
+      },
+      "role_policy": {
+        "protagonist_role": "普通年轻人/普通朋友小团体",
+        "career_function": "arrival_only",
+        "solves_anomaly_professionally": false
+      },
+      "no_anomaly_test": {
+        "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+        "ordinary_day_plan": "婚前夜在布置好的土房新房中，亲友帮忙缝喜被、彩排婚礼流程，正常吃住后睡下",
+        "pass": true,
+        "must_be_rechecked_before_story_lock": true,
+        "rechecked_against_final_story": true
+      },
+      "continuity_policy": {
+        "member_count_changes_require_story_event": true,
+        "pov_character_id_stable": true,
+        "clothing_and_device_anchors_propagate_to_frame_contract": true
+      },
+      "ordinary_person_score": 100,
+      "forbidden_role_check": {
+        "pass": true,
+        "hits": []
+      },
+      "story_build_note": "新娘第一人称 POV。身份锚点：被安排成亲的新娘；主角不承担任何专业破题功能，只靠普通人的反应与逃离。"
+    },
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "23岁碎花长袖上衣+深色长裤+旧布鞋，只露手/脚/局部，不露清晰正脸",
+        "location": "西北农村土房婚房，土坯墙、白纸糊窗、红纸喜字、木床、搪瓷盆、窗外土路农田",
+        "key_prop": "无标签白色小药瓶；大红绣花婚鞋（鞋底焊两道铁环）；一对金镯（内侧合缝小锁孔）；从外焊死的木窗",
+        "wardrobe": "主角碎花长袖上衣+深色长裤+旧布鞋；嫁衣内衬同款；男方干净深色外套",
+        "weather_time": "深秋，黄昏入夜到第二天凌晨；白炽灯/窗洞天光/手电/车灯"
+      }
+    },
+    "environment": {
+      "condition": "惊醒回婚房，室内白炽灯稳定，夜",
+      "time_of_day": "黄昏入夜到第二天凌晨",
+      "temperature_feel": "干冷，夜越深越凉，室外农田更冷",
+      "ground_state": "室内夯土地面+红纸碎屑，室外土路与农田",
+      "visibility": "夜间弱光，靠白炽灯、窗洞与手电，暗部易糊",
+      "wind": "微风干燥",
+      "precipitation": "无降水",
+      "physical_cues": [
+        "他从床边递药",
+        "满屋亲友",
+        "镜子反射",
+        "镜中母亲陌生脸"
+      ],
+      "conditional_effects": [
+        {
+          "effect": "镜子反射亮度略低于实景",
+          "when": [
+            "镜面",
+            "反射"
+          ]
+        }
+      ]
+    },
+    "active_environment_segments": [
+      "S3"
+    ],
+    "environment_frame_sha256": "b426364d1df6c7a16ce5a40a2d7116a7496e429b1774b2ba214ae5c75e293ead",
+    "frame_directive": {
+      "narrative_role": "evidence",
+      "frame_mode": "normal_record",
+      "impact_level": 0,
+      "required_visual_cues": [
+        "纸/手机逐句背词",
+        "她眼神茫然",
+        "婚房背景"
+      ],
+      "scale_reference": "",
+      "escalation_from": null
+    },
+    "frame_directive_sha256": "d55be32c81ff09fd20b47d5173ad3887e8f107909c5b9563e4cefc3dc6e84c74",
+    "capture_event": {},
+    "capture_event_sha256": null,
+    "world_state": {},
+    "world_state_sha256": null,
+    "character_visual_contract": {
+      "schema_version": 2,
+      "status": "LOCKED",
+      "created_at": "2026-09-08T23:53:31+08:00",
+      "lock_model": "identity_spec__provisional_baseline_master__final_visual_lock_master",
+      "primary_cast_ids": [
+        "P01"
+      ],
+      "members": {
+        "P01": {
+          "visual_priority": "primary",
+          "attractiveness": "moderately_above_average_but_real",
+          "body_build": "slim_proportionate_natural",
+          "body_build_story_override_reason": "",
+          "face_identity": {
+            "original_character": true,
+            "independently_distinct_face": true,
+            "celebrity_likeness": false,
+            "influencer_face": false,
+            "fashion_model_styling": false,
+            "reference_similarity_target": "low",
+            "skin_texture": "natural_visible_texture",
+            "slight_asymmetry": true,
+            "identity_spec_locked": true
+          },
+          "hair": {
+            "haircut_anchor": "普通黑发，齐肩，低马尾，红绳简单扎起，发尾自然微翘",
+            "hair_length_anchor": "齐肩到锁骨长度，普通直发，不染不烫",
+            "allowed_state_variation": [
+              "wet",
+              "windblown",
+              "messy",
+              "hood_up",
+              "tied_or_untied_with_story_reason"
+            ],
+            "exact_reference_hairstyle_copy": false
+          },
+          "world_identity": {
+            "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+            "nationality_context": "Chinese",
+            "resident_context": "mainland Chinese local residents",
+            "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+          },
+          "presentation": {
+            "heavy_makeup": false,
+            "porcelain_skin": false,
+            "excessive_face_symmetry": false,
+            "ai_beauty_face": false,
+            "camera_friendly_but_believable": true
+          }
+        }
+      },
+      "reference_policy": {
+        "allowed_reference_roles": [
+          "age_vibe",
+          "attractiveness_range",
+          "realism",
+          "capture_style",
+          "clothing_direction",
+          "color_mood"
+        ],
+        "must_not_copy": [
+          "exact_face_geometry",
+          "exact_eye_nose_mouth_combination",
+          "exact_hairstyle",
+          "distinctive_personal_markers",
+          "celebrity_identity"
+        ],
+        "reference_is_not_identity_master": true,
+        "real_person_exact_likeness_forbidden": true
+      },
+      "master_policy": {
+        "preferred_identity_source": [
+          "character_individual_crop",
+          "character_pixel_master",
+          "ordinary_baseline_group_selfie",
+          "original_character_library_asset"
+        ],
+        "preproduction_only_must_not_generate_master_images": true,
+        "ordinary_baseline_can_become_group_identity_master": true,
+        "pixel_master_artifact": "meta/character-pixel-master.json",
+        "crop_manifest_artifact": "meta/character-master-crops.json",
+        "provisional_master_after_baseline_review_pass": true,
+        "final_master_after_four_admission_pass": true,
+        "derived_crops_are_not_new_identity_generation": true
+      },
+      "realism_priority": true,
+      "note": "Story Lock 只锁规格；baseline 单独 PASS 后建立临时像素母版，四项 Visual Lock 全 PASS 后升级为正式母版。"
+    },
+    "shot_progression": {
+      "frame": "06",
+      "camera_position": "婚房正中偏侧",
+      "subject_distance": "广角",
+      "primary_subject": "他持纸逐句背词与P01空洞眼神",
+      "action": "他拿纸逐句教她背恋爱六年细节，她重复但眼神茫然",
+      "visual_function": "建立记忆被灌输",
+      "capture_purpose": "记录婚礼彩排流程",
+      "pov_mode": "P01第一人称持机",
+      "location_zone": "婚房中侧",
+      "shot_scale": "wide",
+      "scene_position_id": "hall_script_rehearsal_06",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "none",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 1,
+        "trigger": "她重复却像背台词",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "男方",
+        "target": "P01",
+        "action": "男方逐句教背恋爱六年",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    "temporal_state": {},
+    "wardrobe": {},
+    "references": [],
+    "visual_narrative": {
+      "core_id": "VISUAL_NARRATIVE_CORE_V2.2",
+      "activation_mode": "production",
+      "authority": "PREPRODUCTION_DERIVED_CONTRACT",
+      "frame": "06",
+      "camera_authorship": {
+        "owner_class": "primary_photographer",
+        "pov_mode": "P01第一人称持机",
+        "camera_position": "婚房正中偏侧",
+        "ghost_camera_forbidden": true,
+        "camera_owner_must_be_physically_explainable": true
+      },
+      "moment": {
+        "action_in_progress": "他拿纸逐句教她背恋爱六年细节，她重复但眼神茫然",
+        "save_reason": "记录婚礼彩排流程",
+        "must_not_be_result_only_showcase": true
+      },
+      "shot_grammar": {
+        "family": "other:婚房正中偏侧",
+        "subject_distance": "广角",
+        "location_zone": "婚房中侧",
+        "first_person_is_logic_not_fixed_composition": true,
+        "repeated_hand_phone_distant_anomaly_template_forbidden": true
+      },
+      "narrative_evidence": {
+        "new_information": true,
+        "new_information_this_frame": "建立记忆被灌输",
+        "anomaly_logic_stage": "ordinary",
+        "human_action_stage": "move",
+        "narrative_redundancy_forbidden": true,
+        "continuity_exception_reason": ""
+      },
+      "human_response": {
+        "human_present": true,
+        "emotion": {
+          "state": "uneasy",
+          "intensity": 1,
+          "trigger": "她重复却像背台词",
+          "response_sync": "asynchronous"
+        },
+        "interaction": {
+          "type": "talk",
+          "actor": "男方",
+          "target": "P01",
+          "action": "男方逐句教背恋爱六年",
+          "meaningful": true
+        }
+      },
+      "camera_roster_policy": {
+        "primary_photographer_required": true,
+        "primary_photographer_preferred_share": "70-80%",
+        "secondary_photographer_allowed": true,
+        "secondary_requires_reason": true,
+        "allowed_handoffs": [
+          "phone_handed_to_companion",
+          "companion_records_primary",
+          "selfie_when_story_requires",
+          "timer_or_fixed_mount_when_explicit",
+          "third_companion_when_present_in_story"
+        ],
+        "all_known_participants_visible_rule": "若所有已知同行者都完整入镜，必须能解释相机来源；否则视为幽灵摄影机。"
+      },
+      "sequence_grammar": {
+        "selection": "global_default",
+        "sequence_grammar_id": "SG01_PERSONAL_EVIDENCE_SEQUENCE_V1",
+        "sequence_grammar_path": "standards/sequence_grammars/SG01_personal_evidence_sequence.json",
+        "authority_source": "global_default_sequence_grammar"
+      },
+      "camera_defect_physics": {
+        "defects_must_have_physical_cause": true,
+        "forbid_decorative_fake_damage": true,
+        "forbid_every_night_frame_equally_blurred": true
+      },
+      "visual_memory_continuity": {
+        "time_of_day_must_progress_plausibly": true,
+        "time_reversal_requires_explicit_flashback_or_jump": true,
+        "persist": [
+          "character_appearance",
+          "wardrobe",
+          "vehicle",
+          "carried_props",
+          "route_and_location",
+          "weather",
+          "lighting_direction_when_same_scene",
+          "anomaly_evidence"
+        ],
+        "no_independent_beauty_time_selection_per_frame": true
+      },
+      "screen_content_physics": {
+        "must_be_internally_consistent": true,
+        "must_match_scene_time_route_and_action_when_story_critical": true,
+        "screen_reflection_and_orientation_must_be_physical": true,
+        "forbid_fake_impossible_camera_ui": true,
+        "critical_text_should_be_verified_or_added_in_post": true
+      }
+    },
+    "visual_narrative_sha256": "263c55e0fa646485d6b854c26933b76adebc4c30223317d5bb2539a029e6ebc4",
+    "world_identity": {
+      "schema_version": 1,
+      "contract_version": "2.2.1",
+      "source": "GLOBAL_DEFAULT",
+      "inherit_default": true,
+      "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+      "world": {
+        "country": "China",
+        "region": "Mainland China",
+        "culture_context": "contemporary_mainland_chinese_daily_life",
+        "language_context": "Simplified Chinese / Mandarin-context daily life",
+        "architecture_context": "location-appropriate mainland Chinese residential/commercial/rural/urban built environment",
+        "traffic_context": "mainland China road, vehicle and plate conventions when visible",
+        "consumer_goods_context": "ordinary mainland Chinese daily-life objects appropriate to era and location"
+      },
+      "population": {
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents",
+        "default_protagonist_age_range": [
+          19,
+          30
+        ],
+        "default_protagonist_identity": "ordinary Chinese young adult",
+        "ethnicity_policy": "do_not_force_ethnicity; use natural Chinese diversity unless Story explicitly specifies",
+        "foreign_character_policy": "do_not_introduce foreign characters unless Story/episode override explicitly requires them"
+      },
+      "visual_rules": {
+        "visible_text_context": "Chinese context when environmental text is naturally visible; do not force readable text into images",
+        "do_not_import_foreign_architecture_by_default": true,
+        "do_not_import_foreign_population_by_default": true,
+        "do_not_import_foreign_cultural_props_by_default": true,
+        "preserve_location_specific_chinese_regional_detail": true
+      },
+      "default_config_path": "config/profiles/world_identity/default.json",
+      "default_config_sha256": "6abdb8eb90bc79fc983e3d045fb25eb8a894501d44d5576b9ce1d099cdfe01a9",
+      "override_path": null,
+      "override_sha256": null,
+      "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+    },
+    "world_identity_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b",
+    "character_appearance_anchor": {
+      "schema_version": 1,
+      "contract_version": "2.2.1",
+      "derived_cache": true,
+      "world_identity_profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+      "world_identity_effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b",
+      "character_contract_path": "meta/character-contract.json",
+      "character_contract_sha256": "9f459c38e8b3553c9809b38cdc90457d5117b8cf211c3b21dd2fed7cb661cdde",
+      "character_visual_contract_path": "meta/character-visual-contract.json",
+      "character_visual_contract_sha256": "2c2dbc9ad9f1882d371f210bc686cd9b0d41f17070238faedbab86ec4fb2707f",
+      "members": {
+        "P01": {
+          "character_id": "P01",
+          "nationality_context": "Chinese",
+          "resident_context": "mainland Chinese local residents",
+          "gender": "female",
+          "age": 23,
+          "build": "普通年轻女性，略瘦",
+          "body_build": "slim_proportionate_natural",
+          "hair": {
+            "character_contract_anchor": "普通黑色齐肩发，一根红绳简单扎起",
+            "haircut_anchor": "普通黑发，齐肩，低马尾，红绳简单扎起，发尾自然微翘",
+            "hair_length_anchor": "齐肩到锁骨长度，普通直发，不染不烫"
+          },
+          "clothing_anchor": "浅色碎花长袖上衣+深色长裤+旧布鞋（嫁衣下衬）",
+          "device_anchor": "2007年前后廉价家用数码相机/旧功能手机（仅记录用）",
+          "visual_priority": "primary",
+          "identity_rules": {
+            "same_person_across_frames": true,
+            "original_character": true,
+            "independently_distinct_face": true,
+            "reference_similarity_target": "low",
+            "natural_skin_texture": "natural_visible_texture",
+            "allowed_variation": [
+              "wet",
+              "windblown",
+              "messy",
+              "hood_up",
+              "tied_or_untied_with_story_reason"
+            ],
+            "forbidden_unmotivated_drift": [
+              "nationality/cultural identity",
+              "apparent age",
+              "face identity",
+              "haircut or hair length",
+              "body build",
+              "character role",
+              "clothing anchor unless wardrobe contract changes it"
+            ]
+          }
+        }
+      },
+      "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+      "anchor_sha256": "97811807b969408e78d7d364c49244fc1a10a4fcd5ff5139691125a83062c5db"
+    },
+    "character_appearance_anchor_sha256": "97811807b969408e78d7d364c49244fc1a10a4fcd5ff5139691125a83062c5db"
+  },
+  "contract_sha256": "ec31f7b9912c742b2795a6a29c6b33612d845260a6caa4c494294ff74209a799",
+  "prompt_contract": "RESOLVED FRAME CONTRACT | frame=06 | sha256=ec31f7b9912c742b2795a6a29c6b33612d845260a6caa4c494294ff74209a799\nThis derived contract is mandatory. Locked sources outrank ad-hoc prompt wording.\n\n[STORYBOARD FRAME]\n### 06｜婚礼彩排：背六年\n\n- 画面：他拿着纸/手机，逐句教她背\"怎么认识、追了几年、第一次旅行\"；她重复着，眼神茫然；背景是布置好的婚房。\n- 字幕：婚礼彩排，他要我把恋爱六年背下来。\n- 功能：记忆是被灌输的，不是真实的。\n\n[VISUAL DNA]\nprofile=M00 | 现实生活纪实母版\nauthority=story-gates/default\nprinciple=宁可普通一点、乱一点，也不能精致得像广告、电影剧照或者 AI 概念图；具体年代与设备物理表现优先。\nreality_first=true\ncolor=environment_driven_low_to_medium_saturation\ntexture=causal_controlled_imperfection\npeople=ordinary_unprepared_not_actor_like\nordinary_chinese_life_density=high\nsubject_awareness=mostly_unaware_or_natural\npractical_available_light=true\ncinematic_lighting=forbidden_by_default\ncommercial_hdr=forbidden\nportrait_bokeh=not_default\ncamera_perfection=not_default\nhero_shot=not_default\nsymmetrical_composition=not_default\nbeautification=forbidden\nskin_rendering=natural\nglobal_vintage_lut=forbidden\ncinematic_color_grading=forbidden_by_default\nwhite_balance=environment_driven\ncontrast=natural_device_limited\ndynamic_range=device_and_scene_driven\nnoise=device_environment_driven\nmotion_blur=cause_required\nlens_artifacts=cause_required\nscene_cleaning=forbidden_by_default\nlife_clutter=preserve\nenvironment_imperfection=preserve\nvisual_polish_ceiling=documentary_realism\nanomaly=embedded_in_reality_before_spectacle\nanomaly_environment_binding=required\nspectacle_first=forbidden_by_default\nscale_reference=required_for_large_anomaly\nscreen_ui_physics=required_when_present\ncamera_authorship=required\nghost_camera=forbidden\ncapture_reason=required\nsave_reason=required\nnarrative_information_gain=required_after_frame_01\nnarrative_redundancy=forbidden_by_default\ncontinuity=strict\nreference_assets=preferred_when_identity_matters\nseed_dependency=none\ncomposition=unposed_imperfect_personal_record\n----- GLOBAL CAPTURE GRAMMAR -----\ncapture_grammar=FIRST_PERSON_CASUAL_SNAPSHOT_V1\nsequence_grammar=SG01_PERSONAL_EVIDENCE_SEQUENCE_V1\nCAPTURE GRAMMAR HAS HIGHER PRIORITY THAN VISUAL PROFILE composition/photography when they conflict.\nprinciple=摄影者必须属于事件现场，而不是全知导演镜头。默认采用第一人称或同行者持机的私人记录语法，人物非摆拍、构图有生活性缺陷。\nCAMERA AUTHORSHIP:\ncamera_operator=participant_or_companion_inside_event\nviewpoint=first_person_or_companion_eye\ncamera_position=physically_plausible_human_position\nfloating_omniscient_camera=false\nghost_camera_forbidden=true\neach_frame_must_resolve_camera_owner=true\nSEQUENCE CAMERA ROSTER:\nprimary_photographer_required=true\nprimary_photographer_preferred_share=70-80%\nsecondary_requires_reason=true\nall_participants_visible_rule=若所有已知同行者都完整入镜，必须能解释相机来源；否则视为幽灵摄影机。\nSNAPSHOT LANGUAGE:\nhandheld=true\nunposed=true\nimperfect_framing=true\nfirst_person_is_logic_not_fixed_composition=true\nphone_in_frame_not_required=true\nsubjects do not need to face camera; avoid arranging people for the image\nallow partial occlusion and foreground body/hand/doorframe/vehicle edge when physically natural\nMOMENT:\nmust_express_ongoing_action=true\nmust_have_save_reason=true\navoid_result_only_showcase=true\nSEQUENCE OPENING MEMORY:\nopening_goal=先建立关系、同行状态、正常生活和情感资产，再让异常侵入。\nlarge_group_photo_rule=优先非正式广角自拍、定时、同行者随手拍或反射；允许不看镜头、裁切和正在动作中。\nSEQUENCE SHOT DIVERSITY:\nshot_diversity_rule=第一人称是摄影逻辑，不是固定的手+手机+远景模板。\navoid_same_shot_family_more_than_consecutive=2\nten_frame_distinct_shot_families_min=4\nrepeated_hand_phone_distant_anomaly_template_forbidden=true\nCAMERA DEFECT PHYSICS:\ndefects_must_have_physical_cause=true\nforbid_decorative_fake_damage=true\nforbid_every_night_frame_equally_blurred=true\nSEQUENCE VISUAL MEMORY:\ntime_of_day_must_progress_plausibly=true\ntime_reversal_requires_explicit_flashback_or_jump=true\nno_independent_beauty_time_selection_per_frame=true\npersist_continuity=character_appearance; wardrobe; vehicle; carried_props; route_and_location; weather; lighting_direction_when_same_scene; anomaly_evidence\nSEQUENCE SCREEN CONTENT PHYSICS:\nscreen_must_be_internally_consistent=true\nscreen_must_match_scene_when_story_critical=true\nscreen_reflection_and_orientation_must_be_physical=true\nforbid_fake_impossible_camera_ui=true\nsubject_visibility_rule=若核心主角必须出现在画面中，默认由同行者/现场另一人持机记录；仍禁止全知第三人称和导演式机位。\nselfie_rule=自拍不是默认。只有剧情/Frame Contract明确要求自拍时才使用自拍构图。\nvisual profile supplies texture/era/color/light; capture grammar supplies per-frame camera authorship, moment and camera physics; sequence grammar supplies multi-frame pacing and continuity\ndo not convert film/cinematic texture into staged movie-still blocking\ncapture_forbidden=omniscient_third_person_camera; director_blocking; staged_group_lineup; symmetrical_hero_framing; poster_composition; commercial_promo_composition; characters_arranged_for_camera; floating_camera_outside_human_position\ncapture_review_questions=谁拍的？ | 为什么此刻拍？ | 摄影者在哪里？ | 相机为什么在这个人手里？ | 正在发生什么？ | 为什么这张会被保存？ | 有没有幽灵摄影机？ | 和前后帧人物/衣服/车/时间/天气是否连续？ | 摄影缺陷是否有真实物理原因？ | 屏幕/UI 是否成立？ | 是否又重复“手 + 手机 + 远景异常”？\n----- END GLOBAL CAPTURE GRAMMAR -----\ncapture physics and story era override decorative texture\ndo not silently substitute another visual profile or capture grammar\n\n[CAPTURE / AUTHENTICITY]\n{\"aspect_ratio\":\"4:5\",\"camera_rules\":{\"current_device_may_be_fully_visible\":false,\"current_device_visibility_explanation\":\"第一人称手持记录，不主动展示相机全貌\",\"photographer_may_be_fully_visible\":true,\"photographer_visibility_explanation\":\"主角作为摄影者可以局部入画（手、脚步、半身、镜中反射），避免露清晰正脸\"},\"capture_states\":{\"lost_control\":\"撞开后门逃进田里时，画面剧烈晃动、糊片、高光溢出\",\"restricted\":\"深夜摸黑、看货车、她被迫服药时，手抖、对焦犹豫、构图偏位\",\"stable\":\"婚房布置、婚礼彩排等平稳场景，手持正常，画面相对稳\"},\"location\":\"西北农村土房婚房\",\"photographer\":\"23岁被安排成亲的新娘（第一人称）\",\"primary_capture\":{\"device\":\"2007年前后廉价卡片数码相机\",\"id\":\"CP03\"},\"secondary_captures\":[],\"secondary_source_explanation\":\"全部画面均由主角手持旧数码相机记录，无第二来源\",\"shooting_reason\":\"给老人看嫁妆/留个纪念，也顺手把看到的不对劲拍下来\",\"story_era\":\"2007年前后，中国西北农村\"}\n\n[CHARACTER / POV CONTRACT]\n{\"cast\":{\"members\":[{\"age\":23,\"build\":\"普通年轻女性，略瘦\",\"clothing_anchor\":\"浅色碎花长袖上衣+深色长裤+旧布鞋（嫁衣下衬）\",\"device_anchor\":\"2007年前后廉价家用数码相机/旧功能手机（仅记录用）\",\"gender\":\"female\",\"hair\":\"普通黑色齐肩发，一根红绳简单扎起\",\"id\":\"P01\",\"nationality_context\":\"Chinese\",\"pov\":true,\"resident_context\":\"mainland Chinese local residents\"}],\"relationship\":\"单人\",\"size\":1,\"type\":\"single_female\"},\"continuity_policy\":{\"clothing_and_device_anchors_propagate_to_frame_contract\":true,\"member_count_changes_require_story_event\":true,\"pov_character_id_stable\":true},\"created_at\":\"2026-09-08T23:30:52+08:00\",\"derived_from_pools\":true,\"entry\":{\"label\":\"回家/回老家\",\"reason\":\"以被安排成亲的新娘身份进入，本应在出嫁前夜完成家中布置与婚礼彩排\",\"source\":\"user_hint\",\"type\":\"return_home\"},\"era\":{\"bucket\":\"2004_2010\",\"source\":\"user_text\",\"year\":2007},\"forbidden_role_check\":{\"hits\":[],\"pass\":true},\"locked_at\":\"2026-09-09T00:05:00+08:00\",\"no_anomaly_test\":{\"must_be_rechecked_before_story_lock\":true,\"ordinary_day_plan\":\"婚前夜在布置好的土房新房中，亲友帮忙缝喜被、彩排婚礼流程，正常吃住后睡下\",\"pass\":true,\"question\":\"如果删掉所有异常，这一天是否仍像真实生活？\",\"rechecked_against_final_story\":true},\"not_episode_stage\":true,\"ordinary_person_score\":100,\"pov\":{\"character_id\":\"P01\",\"first_person\":true},\"role_policy\":{\"career_function\":\"arrival_only\",\"protagonist_role\":\"普通年轻人/普通朋友小团体\",\"solves_anomaly_professionally\":false},\"scene\":{\"primary_category\":\"village_home\",\"primary_place\":\"西北农村土房婚房\"},\"schema_version\":1,\"selection_seed\":8861162704493245224,\"status\":\"LOCKED\",\"story_build_note\":\"新娘第一人称 POV。身份锚点：被安排成亲的新娘；主角不承担任何专业破题功能，只靠普通人的反应与逃离。\",\"world_identity\":{\"country\":\"China\",\"effective_sha256\":\"f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b\",\"nationality_context\":\"Chinese\",\"profile_id\":\"CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1\",\"region\":\"Mainland China\",\"resident_context\":\"mainland Chinese local residents\"}}\n\n[WORLD IDENTITY V2.2.1]\nWORLD_IDENTITY_PROFILE=CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1\ncountry=China\nregion=Mainland China\nculture_context=contemporary_mainland_chinese_daily_life\nlanguage_context=Simplified Chinese / Mandarin-context daily life\narchitecture_context=location-appropriate mainland Chinese residential/commercial/rural/urban built environment\npopulation=mainland Chinese local residents\ndefault_character=ordinary Chinese young adult\nnationality_context=Chinese\nDo not introduce a foreign population, foreign architecture, foreign traffic convention or foreign cultural props unless the Episode world identity explicitly overrides the default.\nDo not force ethnicity inside China; preserve natural Chinese regional/ethnic diversity unless Story explicitly specifies it.\n\n[CHARACTER APPEARANCE ANCHOR V2.2.1]\n{\"members\":{\"P01\":{\"age\":23,\"body_build\":\"slim_proportionate_natural\",\"build\":\"普通年轻女性，略瘦\",\"character_id\":\"P01\",\"clothing_anchor\":\"浅色碎花长袖上衣+深色长裤+旧布鞋（嫁衣下衬）\",\"device_anchor\":\"2007年前后廉价家用数码相机/旧功能手机（仅记录用）\",\"gender\":\"female\",\"hair\":{\"character_contract_anchor\":\"普通黑色齐肩发，一根红绳简单扎起\",\"hair_length_anchor\":\"齐肩到锁骨长度，普通直发，不染不烫\",\"haircut_anchor\":\"普通黑发，齐肩，低马尾，红绳简单扎起，发尾自然微翘\"},\"identity_rules\":{\"allowed_variation\":[\"wet\",\"windblown\",\"messy\",\"hood_up\",\"tied_or_untied_with_story_reason\"],\"forbidden_unmotivated_drift\":[\"nationality/cultural identity\",\"apparent age\",\"face identity\",\"haircut or hair length\",\"body build\",\"character role\",\"clothing anchor unless wardrobe contract changes it\"],\"independently_distinct_face\":true,\"natural_skin_texture\":\"natural_visible_texture\",\"original_character\":true,\"reference_similarity_target\":\"low\",\"same_person_across_frames\":true},\"nationality_context\":\"Chinese\",\"resident_context\":\"mainland Chinese local residents\",\"visual_priority\":\"primary\"}},\"rule\":\"Keep the same person across frames. Natural changes in expression, pose, sweat, wetness, lighting and story-motivated hair state are allowed; unmotivated face/age/nationality/haircut/body drift is forbidden.\",\"world_identity_profile_id\":\"CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1\"}\n\n[CONTINUITY]\n{\"anchors\":{\"key_prop\":\"无标签白色小药瓶；大红绣花婚鞋（鞋底焊两道铁环）；一对金镯（内侧合缝小锁孔）；从外焊死的木窗\",\"location\":\"西北农村土房婚房，土坯墙、白纸糊窗、红纸喜字、木床、搪瓷盆、窗外土路农田\",\"protagonist\":\"23岁碎花长袖上衣+深色长裤+旧布鞋，只露手/脚/局部，不露清晰正脸\",\"wardrobe\":\"主角碎花长袖上衣+深色长裤+旧布鞋；嫁衣内衬同款；男方干净深色外套\",\"weather_time\":\"深秋，黄昏入夜到第二天凌晨；白炽灯/窗洞天光/手电/车灯\"},\"required\":[\"location\",\"key_prop\",\"weather_time\"]}\n\n[ENVIRONMENT PHYSICS]\n{\"condition\":\"惊醒回婚房，室内白炽灯稳定，夜\",\"conditional_effects\":[{\"effect\":\"镜子反射亮度略低于实景\",\"when\":[\"镜面\",\"反射\"]}],\"ground_state\":\"室内夯土地面+红纸碎屑，室外土路与农田\",\"physical_cues\":[\"他从床边递药\",\"满屋亲友\",\"镜子反射\",\"镜中母亲陌生脸\"],\"precipitation\":\"无降水\",\"temperature_feel\":\"干冷，夜越深越凉，室外农田更冷\",\"time_of_day\":\"黄昏入夜到第二天凌晨\",\"visibility\":\"夜间弱光，靠白炽灯、窗洞与手电，暗部易糊\",\"wind\":\"微风干燥\"}\n\n[CAPTURE EVENT]\n{}\n\n[PERSISTENT WORLD STATE]\n{}\n\n[CHARACTER VISUAL / ORIGINAL IDENTITY]\n{\"created_at\":\"2026-09-08T23:53:31+08:00\",\"lock_model\":\"identity_spec__provisional_baseline_master__final_visual_lock_master\",\"master_policy\":{\"crop_manifest_artifact\":\"meta/character-master-crops.json\",\"derived_crops_are_not_new_identity_generation\":true,\"final_master_after_four_admission_pass\":true,\"ordinary_baseline_can_become_group_identity_master\":true,\"pixel_master_artifact\":\"meta/character-pixel-master.json\",\"preferred_identity_source\":[\"character_individual_crop\",\"character_pixel_master\",\"ordinary_baseline_group_selfie\",\"original_character_library_asset\"],\"preproduction_only_must_not_generate_master_images\":true,\"provisional_master_after_baseline_review_pass\":true},\"members\":{\"P01\":{\"attractiveness\":\"moderately_above_average_but_real\",\"body_build\":\"slim_proportionate_natural\",\"body_build_story_override_reason\":\"\",\"face_identity\":{\"celebrity_likeness\":false,\"fashion_model_styling\":false,\"identity_spec_locked\":true,\"independently_distinct_face\":true,\"influencer_face\":false,\"original_character\":true,\"reference_similarity_target\":\"low\",\"skin_texture\":\"natural_visible_texture\",\"slight_asymmetry\":true},\"hair\":{\"allowed_state_variation\":[\"wet\",\"windblown\",\"messy\",\"hood_up\",\"tied_or_untied_with_story_reason\"],\"exact_reference_hairstyle_copy\":false,\"hair_length_anchor\":\"齐肩到锁骨长度，普通直发，不染不烫\",\"haircut_anchor\":\"普通黑发，齐肩，低马尾，红绳简单扎起，发尾自然微翘\"},\"presentation\":{\"ai_beauty_face\":false,\"camera_friendly_but_believable\":true,\"excessive_face_symmetry\":false,\"heavy_makeup\":false,\"porcelain_skin\":false},\"visual_priority\":\"primary\",\"world_identity\":{\"effective_sha256\":\"f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b\",\"nationality_context\":\"Chinese\",\"profile_id\":\"CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1\",\"resident_context\":\"mainland Chinese local residents\"}}},\"note\":\"Story Lock 只锁规格；baseline 单独 PASS 后建立临时像素母版，四项 Visual Lock 全 PASS 后升级为正式母版。\",\"primary_cast_ids\":[\"P01\"],\"realism_priority\":true,\"reference_policy\":{\"allowed_reference_roles\":[\"age_vibe\",\"attractiveness_range\",\"realism\",\"capture_style\",\"clothing_direction\",\"color_mood\"],\"must_not_copy\":[\"exact_face_geometry\",\"exact_eye_nose_mouth_combination\",\"exact_hairstyle\",\"distinctive_personal_markers\",\"celebrity_identity\"],\"real_person_exact_likeness_forbidden\":true,\"reference_is_not_identity_master\":true},\"schema_version\":2,\"status\":\"LOCKED\"}\n\n[SHOT PROGRESSION / ACTION / ANOMALY LOGIC]\n{\"action\":\"他拿纸逐句教她背恋爱六年细节，她重复但眼神茫然\",\"anomaly_concealment\":{\"adds_information\":false,\"carrier\":\"direct_visible\",\"physical_anchor\":\"\",\"purpose\":\"\"},\"anomaly_logic_stage\":\"ordinary\",\"camera_position\":\"婚房正中偏侧\",\"capture_purpose\":\"记录婚礼彩排流程\",\"cinematic_reference\":{\"exact_shot_recreation\":false,\"reference_id\":\"\",\"technique_translation\":\"\"},\"continuity_exception_reason\":\"\",\"emotion\":{\"intensity\":1,\"response_sync\":\"asynchronous\",\"state\":\"uneasy\",\"trigger\":\"她重复却像背台词\"},\"frame\":\"06\",\"human_action_stage\":\"move\",\"human_present\":true,\"interaction\":{\"action\":\"男方逐句教背恋爱六年\",\"actor\":\"男方\",\"meaningful\":true,\"target\":\"P01\",\"type\":\"talk\"},\"lighting_design\":{\"contrast_mode\":\"flat_natural\",\"invented_cinematic_light\":false,\"physically_motivated\":true,\"practical_source\":\"bare_bulb\",\"suspense_function\":\"none\"},\"location_zone\":\"婚房中侧\",\"new_information\":true,\"pov_mode\":\"P01第一人称持机\",\"primary_subject\":\"他持纸逐句背词与P01空洞眼神\",\"scene_position_id\":\"hall_script_rehearsal_06\",\"shot_scale\":\"wide\",\"subject_distance\":\"广角\",\"visual_function\":\"建立记忆被灌输\"}\n\n[TEMPORAL CONTINUITY]\n{}\n\n[SCENE-AWARE WARDROBE]\n{}\n\n[VISUAL NARRATIVE CORE V2.2]\n{\"activation_mode\":\"production\",\"authority\":\"PREPRODUCTION_DERIVED_CONTRACT\",\"camera_authorship\":{\"camera_owner_must_be_physically_explainable\":true,\"camera_position\":\"婚房正中偏侧\",\"ghost_camera_forbidden\":true,\"owner_class\":\"primary_photographer\",\"pov_mode\":\"P01第一人称持机\"},\"camera_defect_physics\":{\"defects_must_have_physical_cause\":true,\"forbid_decorative_fake_damage\":true,\"forbid_every_night_frame_equally_blurred\":true},\"camera_roster_policy\":{\"all_known_participants_visible_rule\":\"若所有已知同行者都完整入镜，必须能解释相机来源；否则视为幽灵摄影机。\",\"allowed_handoffs\":[\"phone_handed_to_companion\",\"companion_records_primary\",\"selfie_when_story_requires\",\"timer_or_fixed_mount_when_explicit\",\"third_companion_when_present_in_story\"],\"primary_photographer_preferred_share\":\"70-80%\",\"primary_photographer_required\":true,\"secondary_photographer_allowed\":true,\"secondary_requires_reason\":true},\"core_id\":\"VISUAL_NARRATIVE_CORE_V2.2\",\"frame\":\"06\",\"human_response\":{\"emotion\":{\"intensity\":1,\"response_sync\":\"asynchronous\",\"state\":\"uneasy\",\"trigger\":\"她重复却像背台词\"},\"human_present\":true,\"interaction\":{\"action\":\"男方逐句教背恋爱六年\",\"actor\":\"男方\",\"meaningful\":true,\"target\":\"P01\",\"type\":\"talk\"}},\"moment\":{\"action_in_progress\":\"他拿纸逐句教她背恋爱六年细节，她重复但眼神茫然\",\"must_not_be_result_only_showcase\":true,\"save_reason\":\"记录婚礼彩排流程\"},\"narrative_evidence\":{\"anomaly_logic_stage\":\"ordinary\",\"continuity_exception_reason\":\"\",\"human_action_stage\":\"move\",\"narrative_redundancy_forbidden\":true,\"new_information\":true,\"new_information_this_frame\":\"建立记忆被灌输\"},\"screen_content_physics\":{\"critical_text_should_be_verified_or_added_in_post\":true,\"forbid_fake_impossible_camera_ui\":true,\"must_be_internally_consistent\":true,\"must_match_scene_time_route_and_action_when_story_critical\":true,\"screen_reflection_and_orientation_must_be_physical\":true},\"sequence_grammar\":{\"authority_source\":\"global_default_sequence_grammar\",\"selection\":\"global_default\",\"sequence_grammar_id\":\"SG01_PERSONAL_EVIDENCE_SEQUENCE_V1\",\"sequence_grammar_path\":\"standards/sequence_grammars/SG01_personal_evidence_sequence.json\"},\"shot_grammar\":{\"family\":\"other:婚房正中偏侧\",\"first_person_is_logic_not_fixed_composition\":true,\"location_zone\":\"婚房中侧\",\"repeated_hand_phone_distant_anomaly_template_forbidden\":true,\"subject_distance\":\"广角\"},\"visual_memory_continuity\":{\"no_independent_beauty_time_selection_per_frame\":true,\"persist\":[\"character_appearance\",\"wardrobe\",\"vehicle\",\"carried_props\",\"route_and_location\",\"weather\",\"lighting_direction_when_same_scene\",\"anomaly_evidence\"],\"time_of_day_must_progress_plausibly\":true,\"time_reversal_requires_explicit_flashback_or_jump\":true}}\n\n[FRAME DIRECTIVE]\n{\"escalation_from\":null,\"frame_mode\":\"normal_record\",\"impact_level\":0,\"narrative_role\":\"evidence\",\"required_visual_cues\":[\"纸/手机逐句背词\",\"她眼神茫然\",\"婚房背景\"],\"scale_reference\":\"\"}\n\n[REFERENCES CONTRACT]\n[]\n\nHard rule: reality constrains capture physics, not anomaly scale. Do not weaken impact_level or remove required scale references to make the scene easier."
+}

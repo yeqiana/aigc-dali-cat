@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "revision": "20260910_frame01_shared_field_restore",
+  "created_at": "2026-09-10T11:10:04+08:00",
+  "user_instruction": "图01女主正脸授权保留；全篇做到 PUBLISH_READY（自动审核与规范内返修已授权）",
+  "problem": "revision 20260909_frame01_frontface edited two episode-wide hash_material fields, so all 20 frame contracts drifted and the 19 approved frames 02-20 could no longer bind their generation provenance.",
+  "fix": "restore the three shared fields byte-for-byte to their pre-revision text (photographer_visibility_explanation / secondary_source_explanation / continuity.anchors.protagonist); keep the frame-01 exception only in frame-scoped authority (story-gates visual.frame_directives.01, docs/03 frame 01 block, shot-progression frame 1, docs/prompts/reveal-order-v2/01.txt).",
+  "scope": "shared hash_material fields only; frame 01 contract moves c67f7205 -> 551c1be4 and is regenerated once; frames 02-20 pixels untouched",
+  "changed_inputs": [
+    "meta/story-gates.json (visual.authenticity_card.camera_rules.photographer_visibility_explanation, visual.authenticity_card.secondary_source_explanation, visual.continuity.anchors.protagonist, visual.frame_directives.01.pov_and_wardrobe)"
+  ],
+  "before_backup": "meta/preimage-revisions/20260910_frame01_shared_field_restore/before/",
+  "contract_result": {
+    "frames_02_20": "restored to recorded generation contracts (verified)",
+    "frame_01": "551c1be47c9686277276019958185a6bce70c1a52232d5dea796c7344f0e1203"
+  },
+  "status": "shared fields restored; contracts recompiled; frame 01 regeneration + downstream gates pending"
+}

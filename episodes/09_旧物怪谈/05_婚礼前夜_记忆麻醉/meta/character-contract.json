@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "derived_from_pools": true,
+  "not_episode_stage": true,
+  "created_at": "2026-09-08T23:30:52+08:00",
+  "locked_at": "2026-09-09T00:05:00+08:00",
+  "selection_seed": 8861162704493245224,
+  "era": {
+    "bucket": "2004_2010",
+    "year": 2007,
+    "source": "user_text"
+  },
+  "world_identity": {
+    "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+    "country": "China",
+    "region": "Mainland China",
+    "nationality_context": "Chinese",
+    "resident_context": "mainland Chinese local residents",
+    "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+  },
+  "cast": {
+    "type": "single_female",
+    "size": 1,
+    "relationship": "单人",
+    "members": [
+      {
+        "id": "P01",
+        "pov": true,
+        "gender": "female",
+        "age": 23,
+        "build": "普通年轻女性，略瘦",
+        "hair": "普通黑色齐肩发，一根红绳简单扎起",
+        "clothing_anchor": "浅色碎花长袖上衣+深色长裤+旧布鞋（嫁衣下衬）",
+        "device_anchor": "2007年前后廉价家用数码相机/旧功能手机（仅记录用）",
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents"
+      }
+    ]
+  },
+  "pov": {
+    "character_id": "P01",
+    "first_person": true
+  },
+  "entry": {
+    "type": "return_home",
+    "label": "回家/回老家",
+    "source": "user_hint",
+    "reason": "以被安排成亲的新娘身份进入，本应在出嫁前夜完成家中布置与婚礼彩排"
+  },
+  "scene": {
+    "primary_category": "village_home",
+    "primary_place": "西北农村土房婚房"
+  },
+  "role_policy": {
+    "protagonist_role": "普通年轻人/普通朋友小团体",
+    "career_function": "arrival_only",
+    "solves_anomaly_professionally": false
+  },
+  "no_anomaly_test": {
+    "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+    "ordinary_day_plan": "婚前夜在布置好的土房新房中，亲友帮忙缝喜被、彩排婚礼流程，正常吃住后睡下",
+    "pass": true,
+    "must_be_rechecked_before_story_lock": true,
+    "rechecked_against_final_story": true
+  },
+  "continuity_policy": {
+    "member_count_changes_require_story_event": true,
+    "pov_character_id_stable": true,
+    "clothing_and_device_anchors_propagate_to_frame_contract": true
+  },
+  "ordinary_person_score": 100,
+  "forbidden_role_check": {
+    "pass": true,
+    "hits": []
+  },
+  "story_build_note": "新娘第一人称 POV。身份锚点：被安排成亲的新娘；主角不承担任何专业破题功能，只靠普通人的反应与逃离。"
+}

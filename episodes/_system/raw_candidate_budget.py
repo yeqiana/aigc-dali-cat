@@ -68,6 +68,50 @@ def _authorized_episode_override(ep: Path) -> int | None:
     return None
 
 
+def _authorization_ok(node: dict) -> bool:
+    """A raise is honored only when it carries an explicit decision."""
+    node = node or {}
+    auth = node.get("authorization")
+    legacy_auth = node.get("authorized_by")
+    return (
+        isinstance(auth, dict) and auth.get("approved") is True
+        and isinstance(auth.get("source"), str) and bool(auth["source"].strip())
+    ) or (isinstance(legacy_auth, str) and bool(legacy_auth.strip()))
+
+
+def authorized_frame_raise(ep: Path, frame_key: str, kind: str) -> dict:
+    """Authorized per-frame raise above the fixed per-kind candidate limit.
+
+    The fixed limit stops image loops. A frame can still need one more
+    candidate when its own authority changed after the budget was spent (for
+    example a direct-user appearance update that forces regeneration against a
+    new Frame Contract). Only an entry in the same authorized override file,
+    carrying its own authorization source, can raise that one frame; without
+    such an entry the fixed per-kind limit applies unchanged.
+    """
+    override = _read_json(Path(ep).resolve() / OVERRIDE_REL)
+    if not isinstance(override, dict):
+        return {"extra": 0, "sources": []}
+    total = 0
+    sources: list[str] = []
+    for row in override.get("per_frame_authorizations") or []:
+        if not isinstance(row, dict):
+            continue
+        if str(row.get("frame") or "").zfill(2) != frame_key:
+            continue
+        if str(row.get("kind") or "") != kind:
+            continue
+        extra = row.get("additional")
+        if type(extra) is not int or extra <= 0:
+            continue
+        if not _authorization_ok(row):
+            continue
+        total += extra
+        source = (row.get("authorization") or {}).get("source") or row.get("authorized_by") or ""
+        sources.append(str(source)[:200])
+    return {"extra": total, "sources": sources}
+
+
 def resolve_limit(ep: Path) -> dict:
     """Fixed global cap wins; otherwise an authorized raise beats the formula."""
     cfg = _read_json(CFG)
@@ -172,11 +216,15 @@ def claim(ep, frame, kind, reason="", token=None):
 
         bucket = d["frames"].setdefault(key, {}).setdefault(kind, {"used": 0, "claims": {}})
         bucket.setdefault("claims", {})
-        per_kind_limit = int(limits().get(kind, 2))
+        base_limit = int(limits().get(kind, 2))
+        raise_row = authorized_frame_raise(ep, key, kind)
+        per_kind_limit = base_limit + int(raise_row["extra"])
         if int(bucket.get("used") or 0) >= per_kind_limit:
             result.update({
                 "frame": key, "kind": kind, "used": int(bucket.get("used") or 0),
-                "limit": per_kind_limit, "decision": "STOP_IMAGE_LOOP", "token": token,
+                "limit": per_kind_limit, "base_limit": base_limit,
+                "authorized_raise": int(raise_row["extra"]),
+                "decision": "STOP_IMAGE_LOOP", "token": token,
             })
             return
 
@@ -194,10 +242,17 @@ def claim(ep, frame, kind, reason="", token=None):
         bucket["claims"][token] = {
             "claimed_at": now(), "reason": reason, "committed": False, "committed_at": None
         }
+        if raise_row["extra"]:
+            bucket["claims"][token]["authorized_raise"] = int(raise_row["extra"])
+            bucket["claims"][token]["authorization_sources"] = list(raise_row["sources"])
         d["updated_at"] = now()
-        d["events"].append({"at": now(), "event": "claim", "frame": key, "kind": kind, "token": token})
+        event = {"at": now(), "event": "claim", "frame": key, "kind": kind, "token": token}
+        if raise_row["extra"]:
+            event["authorized_raise"] = int(raise_row["extra"])
+        d["events"].append(event)
         result.update({
             "frame": key, "kind": kind, "used": bucket["used"], "limit": per_kind_limit,
+            "authorized_raise": int(raise_row["extra"]),
             "episode_used": total_now + 1, "episode_limit": total_limit,
             "decision": "ALLOW", "token": token, "committed": False,
         })

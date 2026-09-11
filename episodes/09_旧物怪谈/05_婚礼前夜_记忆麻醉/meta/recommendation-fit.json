@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "recommendation_fit": {
+    "audience": {
+      "core": [
+        "90后旧物怪谈",
+        "现实窒息感",
+        "农村土房",
+        "旧数码相册"
+      ],
+      "adjacent": [
+        "记忆题材",
+        "身份悬疑",
+        "拐卖警示（虚构声明）",
+        "第一人称悬疑"
+      ],
+      "mismatch": [
+        "血腥猎奇",
+        "纯推理",
+        "怪兽爽文",
+        "仙侠特效"
+      ],
+      "score": 8.8
+    },
+    "diversity": {
+      "compared_recent_works": [
+        {
+          "title": "09-04 瓶中世界",
+          "similarity_score": 36
+        },
+        {
+          "title": "10-01 鳌太线·热汤",
+          "similarity_score": 22
+        },
+        {
+          "title": "09-01 回村中巴捡MP4",
+          "similarity_score": 41
+        },
+        {
+          "title": "09-02 QQ面基_中元节",
+          "similarity_score": 33
+        },
+        {
+          "title": "09-03 纸扎铺",
+          "similarity_score": 35
+        }
+      ],
+      "max_similarity_score": 41,
+      "risk_level": "light",
+      "mechanism_copy_veto": false,
+      "notes": [
+        "旧物与2000年代属于账号品牌连续；核心机制为记忆被药物与角色扮演替换，recent5语义等价矩阵 max_similarity_score=0，与容器映射/失温/民俗机制均不同"
+      ]
+    },
+    "search": {
+      "primary_intents": [
+        "旧物怪谈",
+        "记忆替换故事",
+        "农村婚礼悬疑"
+      ],
+      "core_entities": [
+        "2000年代",
+        "农村土房",
+        "婚鞋",
+        "金镯",
+        "无标签药瓶",
+        "旧相机"
+      ],
+      "long_tail_queries": [
+        "被安排的婚礼",
+        "想不起自己名字",
+        "农村土房怪谈",
+        "旧物怪谈90年代"
+      ],
+      "score": 8.5
+    },
+    "governance": {
+      "status": "PASS",
+      "risks": [],
+      "disclosure": "人物、地点、情节均为虚构；内容由AI生成"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "02",
+  "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/02.png",
+  "asset_sha256": "1d54666bffe058a86595f2ca7c943ffb85d4a64f02a0e6105da98301f5e8bf76",
+  "story_sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752",
+  "storyboard_sha256": "6b1bb6e97b32b55dbb648554afdca5d5dc1e96330c9889133be372da6b8f1f31",
+  "visual_contract_sha256": "52eed9d5001518961bbe7b598d07aa6a288855b45f26f600d47a93113404bcdc",
+  "environment_frame_sha256": "8fd0183c0696969d49a059e6fd47f1b0679eafb5151a5123f6ad98777ee6ba3b",
+  "frame_directive_sha256": "682182e4f3161e8db78d50c8d39c55ae1b9cf9e841310a56e97a024781877126",
+  "frame_contract_sha256": "44bd4e5f1199d416eb3f19bc7ca7b61381d8b5330d91f30c64e866adb8b3a74a",
+  "source_binding": {
+    "story": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md",
+      "sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752"
+    },
+    "storyboard": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md",
+      "sha256": "6b1bb6e97b32b55dbb648554afdca5d5dc1e96330c9889133be372da6b8f1f31"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "b1e2ac83dd418b1e8883fb8be69247638cfb5c4ee18d743de3189a5f64f5aa51"
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 2,
+    "reviewed_at": "2026-09-10T12:00:32+08:00",
+    "log": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-critic-attempt-2.jsonl",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "床边局部：白底碎花袖与深色裤，左手压粉色被面上的红针线；背景男方背影整理被褥；桌角物件为远侧小陪衬，无递瓶、盯视或按住。",
+  "decision": "pass",
+  "caption_sha256": "002616695934357670e460f54c652f46ca626ca573febd7dae083064a98e2a81"
+}

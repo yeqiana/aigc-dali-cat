@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "01",
+  "scene_prompt": "第一人称站在土房婚房门口，屋内红彤彤：喜字、红绸、木床、搪瓷盆；男方在旁忙碌；她手里攥着一个白色小药瓶（无标签）。普通相册基线，无异常。2007 西北农村土房婚房，深秋黄昏入夜，白炽灯+窗洞天光；23 岁新娘只露手/脚/局部，碎花长袖+深色长裤+旧布鞋，黑发齐肩低马尾。2007 廉价卡片机手持竖拍 4:5，随手偏位、现场光、低动态、边缘略软，相册感。禁止恐怖/电影布光/HDR/文字水印/清晰正脸。",
+  "scene_prompt_sha256": "2f182a5b0b7a3b73bd9343cdfa226bb515888b5fe98abd3b044983b6d698ac2d",
+  "frame_contract_sha256": "5e117c7b408b18ef4af5a270d7599f8e7e714b4a8625f901a0f349ee6d923e90",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\visual-lock\\prompts\\01.txt",
+  "package_sha256": "ab2b2347c08fcc1981c5774f6bb629201c5a08f590d35a4d5451e274a19a0dd0",
+  "compiled_at": "2026-09-09T09:33:58+08:00"
+}

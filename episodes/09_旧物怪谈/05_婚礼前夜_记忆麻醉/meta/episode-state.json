@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "09-05",
+  "series": "09_旧物怪谈",
+  "title": "婚礼前夜",
+  "current_state": "PUBLISH_READY",
+  "updated_at": "2026-09-09T11:10:58+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-08T23:30:13+08:00",
+      "note": "候选迁移：2026-09-07_02 story_v1，user_seed 强化重写"
+    },
+    {
+      "state": "STORYBOARD_LOCKED",
+      "at": "2026-09-08T23:44:52+08:00",
+      "mode": "advance",
+      "note": "Story+Storyboard 20帧完成，concept/story/propagation/recent5 gate PASS"
+    },
+    {
+      "state": "VISUAL_CALIBRATED",
+      "at": "2026-09-09T09:49:20+08:00",
+      "mode": "advance",
+      "note": "Visual Lock 4帧全PASS(ordinary_baseline01/worst_condition11/first_anomaly03/high_impact15); schema_v2 review 18checks; authenticity=passed; visual_spec doc 已生成; delegated_auto_review"
+    },
+    {
+      "state": "PRODUCTION_PASSED",
+      "at": "2026-09-09T10:50:38+08:00",
+      "mode": "advance",
+      "note": "全自动：20帧Production全PASS，逐帧语义审核full-frame-set PASS，continuity/subtitle PASS，终审文档已登记，delegated_auto_review"
+    },
+    {
+      "state": "PUBLISH_READY",
+      "at": "2026-09-09T11:10:58+08:00",
+      "mode": "advance",
+      "note": "release preflight + snapshot + delegated approval all PASS; snapshot sha 603b3c...; zip sha 33fba5...; publish_decision=go; delegated_auto_review; user not directly approved"
+    }
+  ]
+}

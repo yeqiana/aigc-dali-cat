@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "candidates_sha256": "075db596f4025a4a1893492cef1eae53685f91bb548f48d0d8b1943f7b555223",
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-08T23:55:00+08:00"
+  },
+  "candidates": [
+    {
+      "id": "C01",
+      "ambition_band": "A2",
+      "scores": {
+        "one_line_hook": 13,
+        "hero_frame": 12,
+        "escalation_ceiling": 12,
+        "climax_visual_payoff": 8,
+        "mechanism_novelty": 9,
+        "discussion_space": 7
+      },
+      "concept_voltage": 61,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "暗夜床底数物结构克制",
+        "嫁妆一物一数代入感强"
+      ],
+      "risks": [
+        "物证推进稍慢",
+        "高潮依赖单一声音"
+      ]
+    },
+    {
+      "id": "C02",
+      "ambition_band": "A2",
+      "scores": {
+        "one_line_hook": 12,
+        "hero_frame": 12,
+        "escalation_ceiling": 11,
+        "climax_visual_payoff": 9,
+        "mechanism_novelty": 9,
+        "discussion_space": 6
+      },
+      "concept_voltage": 59,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "血缘替换惊吓点明确",
+        "静默家庭场景有张力"
+      ],
+      "risks": [
+        "影子命题偏常见",
+        "后期解释耗字幕"
+      ]
+    },
+    {
+      "id": "C03",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 14,
+        "hero_frame": 13,
+        "escalation_ceiling": 14,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 70,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "香断自燃视觉强",
+        "旧俗禁忌贴合系列"
+      ],
+      "risks": [
+        "警示命题偏既定",
+        "反派动机弱"
+      ]
+    },
+    {
+      "id": "C04",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 13,
+        "hero_frame": 12,
+        "escalation_ceiling": 13,
+        "climax_visual_payoff": 9,
+        "mechanism_novelty": 10,
+        "discussion_space": 7
+      },
+      "concept_voltage": 64,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "锁眼朝床构图单一却压迫",
+        "囚禁立意贴旧物"
+      ],
+      "risks": [
+        "高潮依赖锁眼开合",
+        "主角能动性弱"
+      ]
+    },
+    {
+      "id": "C05",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 16,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 14,
+        "discussion_space": 9
+      },
+      "concept_voltage": 83,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "喜被活物化机制新鲜",
+        "绣样转头有真实老物载体"
+      ],
+      "risks": [
+        "被子拱起略喜感",
+        "需控制不滑向搞笑"
+      ]
+    },
+    {
+      "id": "C06",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 15,
+        "hero_frame": 16,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 81,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "双院嵌套空间感强",
+        "喜字门缝进入极致"
+      ],
+      "risks": [
+        "两院明暗需一致",
+        "闭环解释稍绕"
+      ]
+    },
+    {
+      "id": "C07",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 15,
+        "hero_frame": 15,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 80,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "分身花轿视觉冲击",
+        "多重嫁的递归错觉"
+      ],
+      "risks": [
+        "分身易与已有重复",
+        "结局需明确分层"
+      ]
+    },
+    {
+      "id": "C08",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 13,
+        "hero_frame": 12,
+        "escalation_ceiling": 12,
+        "climax_visual_payoff": 9,
+        "mechanism_novelty": 10,
+        "discussion_space": 7
+      },
+      "concept_voltage": 63,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "灯影人群营造被围观",
+        "新房环境贴合"
+      ],
+      "risks": [
+        "影子来历较空",
+        "缺少核心实动作"
+      ]
+    },
+    {
+      "id": "C09",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 14,
+        "hero_frame": 13,
+        "escalation_ceiling": 14,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 70,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "明天的自己摇头劝逃",
+        "绣鞋留白好"
+      ],
+      "risks": [
+        "预知命题偏熟",
+        "动作仅一次回头"
+      ]
+    },
+    {
+      "id": "C10",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 15,
+        "discussion_space": 10
+      },
+      "concept_voltage": 93,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "记忆被药物与角色扮演替换的机制强",
+        "婚鞋铁环/金镯锁孔/新房土房构成层层夺回真实",
+        "货车同款嫁衣女孩把个体恐惧扩成体系",
+        "梦境与真相双层留白",
+        "M00旧数码与90s-00s农村土房天然契合"
+      ],
+      "risks": [
+        "题材涉及禁锢需保持虚构声明",
+        "药名/剂量/锁具解法不可写实",
+        "需避免教唆性细节"
+      ]
+    }
+  ],
+  "selected_id": "C10",
+  "selection_reason": "记忆被药物与角色扮演替换的核心机制在多层旧物证据（无标签药瓶/婚鞋铁环/金镯锁孔/土房/同款嫁衣女孩）中可视化成立，三张前置图均可无字停顿，且终局梦境与真相的留白给出至少两种并行解释；是池中唯一同时兼顾题材现实性与传播力的高野心方向。",
+  "issue_codes": [],
+  "summary": {
+    "passed": true
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "11",
+  "scene_prompt": "她撕开墙上喜字，墙皮一片片掉露出土坯；回头，木窗从外焊死、旧铁条加固。中点重构囚室伪装立现，最差拍摄条件校准。23 岁新娘只露手/局部，碎花长袖+深色长裤。西北土房婚房：红纸喜字下露土坯、墙皮剥落、焊死木窗；深秋深夜弱光，靠手电与窗洞微光。2007 廉价卡片机手持竖拍 4:5，最差弱光：光斑割裂、偏糊、低动态、暗部噪点、边缘略软。禁止精致焊窗/电影布光/HDR/文字水印/清晰正脸。",
+  "scene_prompt_sha256": "46e999d846f59186931745d0721f71fef2db3f0d98bef788d6e81a8ef1780344",
+  "frame_contract_sha256": "2912966d8f903d3d5be4f04e0fe50cbdc04b0df4dd6f2eb521ebf912870b60ce",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\visual-lock\\prompts\\11.txt",
+  "package_sha256": "55d938504df0b96b18364e2e54f5048ba7ef2d6cab5676003e85299c5e57152a",
+  "compiled_at": "2026-09-09T09:42:59+08:00"
+}

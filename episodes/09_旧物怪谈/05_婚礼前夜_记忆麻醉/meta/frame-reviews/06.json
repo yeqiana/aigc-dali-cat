@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "06",
+  "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/06.png",
+  "asset_sha256": "3ec29035dfcd9b79175d5557b4b87c6a7762a3e680d7d47781c59cfeaef32e8b",
+  "story_sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752",
+  "storyboard_sha256": "6b1bb6e97b32b55dbb648554afdca5d5dc1e96330c9889133be372da6b8f1f31",
+  "visual_contract_sha256": "52eed9d5001518961bbe7b598d07aa6a288855b45f26f600d47a93113404bcdc",
+  "environment_frame_sha256": "1a13388a4c82ae2eb7c5fff14fb97472968b7d5e6f8a3985f21ac47ace033604",
+  "frame_directive_sha256": "d8e851a748b38d7eb97c61fb7d9811924328cb2cd6c93d9cca8b0a3923f2a021",
+  "frame_contract_sha256": "a1591c8b5b8ff4855548a1905d7d06a8d55811cf013c5b2090267a9c758926c5",
+  "source_binding": {
+    "story": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md",
+      "sha256": "c5e3a4a9494b3807834adc71e736250177cb97e309e047e55640edb719b15752"
+    },
+    "storyboard": {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/03_婚礼前夜_20张正式分镜_V2.0.md",
+      "sha256": "6b1bb6e97b32b55dbb648554afdca5d5dc1e96330c9889133be372da6b8f1f31"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "fe1bd84450b565dd7502d6966ff160f33e0c86d8b8de3ea7808a9e5408fdf770"
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 2,
+    "reviewed_at": "2026-09-10T12:00:32+08:00",
+    "log": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-critic-attempt-2.jsonl",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "从座位前视：左手持纸、纸面为失焦笔迹，桌对面深衣男子侧身指点纸张；婚房布置连续，无女主脸、无背后机位。",
+  "decision": "pass",
+  "caption_sha256": "31be1904f55b2899da3ac27517e59f41c4715cd289fdc9f7fdfd6ce63508962a"
+}

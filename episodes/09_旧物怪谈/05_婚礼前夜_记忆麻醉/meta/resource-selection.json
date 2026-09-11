@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "resolver_version": 3,
+  "catalog_sha": "20ecd1817b3dc4f9ffb01873307f32aa5c354b21831d463764473d588e8d3dc4",
+  "primary_place": "西北农村土房婚房",
+  "source_tags": [
+    "2004_2010",
+    "return_home",
+    "village_home",
+    "夜",
+    "西北农村土房婚房"
+  ],
+  "selected": [
+    {
+      "id": "LOC_NORTHWEST_VILLAGE",
+      "type": "location_descriptor",
+      "path": "library/locations/scene-presets.json",
+      "tags": [
+        "village_home",
+        "西北农村",
+        "return_home",
+        "county_town"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0,
+      "match_score": 5
+    },
+    {
+      "id": "CAPTURE_DIGICAM_2008",
+      "type": "capture_descriptor",
+      "path": "library/capture/capture-presets.json",
+      "tags": [
+        "2004_2010",
+        "digicam",
+        "first_person",
+        "realistic"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.2,
+      "match_score": 1
+    },
+    {
+      "id": "ERA_2004_2010_YOUTH",
+      "type": "character_era_descriptor",
+      "path": "library/characters/era-presets.json",
+      "tags": [
+        "2004_2010",
+        "young_people",
+        "ordinary",
+        "digicam",
+        "feature_phone"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0,
+      "match_score": 1
+    },
+    {
+      "id": "PROP_2008_DIGICAM",
+      "type": "prop_descriptor",
+      "path": "library/props/prop-presets.json",
+      "tags": [
+        "2004_2010",
+        "digicam",
+        "数码相机"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0,
+      "match_score": 1
+    }
+  ],
+  "policy": {
+    "reference_only": true,
+    "reuse_final_episode_images": false
+  },
+  "cache_hit": false
+}

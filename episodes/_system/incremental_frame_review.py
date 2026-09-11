@@ -347,6 +347,34 @@ def _decorate_full(ep: Path) -> None:
     write_json(summary_path, summary)
 
 
+def rebind_captions(ep: Path, *, allow_dirty: bool = False) -> dict:
+    """Re-bind current caption SHAs onto an already-current frame semantic review.
+
+    V2.0.3.4 binds captions into both the per-frame reviews and the summary.
+    A full critic rewrite (frame_semantic_review._persist_candidate) writes those
+    files without the caption binding, and build_plan() intentionally ignores
+    caption drift because asset drift is what triggers a re-review.  This helper
+    heals only the caption binding, and refuses to bind unless the plan says the
+    assets/contracts themselves are still current.
+    """
+    if not review_required(ep):
+        return {"rebound": False, "reason": "legacy_contract"}
+    plan = build_plan(ep)
+    if plan["action"] != "NOOP" and not allow_dirty:
+        return {"rebound": False, "reason": "review_dirty", "plan": plan}
+    _decorate_full(ep)
+    frames = base.frame_records(ep, require_files=True)
+    captions = caption_state(ep, frames)
+    errors = verify_episode(ep, metadata_only=False, write_audit=True)
+    return {
+        "rebound": True,
+        "plan_action": plan["action"],
+        "caption_source": captions["source_path"],
+        "caption_source_sha256": captions["source_sha256"],
+        "errors": errors,
+    }
+
+
 def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
     all_frames = base.frame_records(ep, require_files=True)
     binding_errors = base.phase4_binding_errors(ep, all_frames)
@@ -566,6 +594,7 @@ def main() -> int:
     p = sub.add_parser("review"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None)
     p = sub.add_parser("verify"); p.add_argument("episode_dir"); p.add_argument("--metadata-only", action="store_true")
     p = sub.add_parser("audit"); p.add_argument("episode_dir")
+    p = sub.add_parser("rebind-captions"); p.add_argument("episode_dir"); p.add_argument("--allow-dirty", action="store_true")
     sub.add_parser("self-test")
     args = ap.parse_args()
     if args.cmd == "self-test":
@@ -580,6 +609,20 @@ def main() -> int:
             return run_review(ep, attempt=args.attempt, codex_raw=args.codex, timeout=args.timeout)
         except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
             print("INCREMENTAL FRAME REVIEW ERROR:", exc); return 3
+    if args.cmd == "rebind-captions":
+        result = rebind_captions(ep, allow_dirty=args.allow_dirty)
+        print(json.dumps({k: v for k, v in result.items() if k != "plan"}, ensure_ascii=False, indent=2))
+        if not result.get("rebound"):
+            print("INCREMENTAL CAPTION REBIND SKIPPED")
+            return 3
+        errors = result.get("errors") or []
+        if errors:
+            for e in errors:
+                print("FAIL:", e)
+            print("INCREMENTAL CAPTION REBIND FAIL")
+            return 2
+        print("INCREMENTAL CAPTION REBIND PASS")
+        return 0
     errors = verify_episode(ep, metadata_only=(args.cmd == "verify" and args.metadata_only), write_audit=(args.cmd == "audit"))
     if errors:
         for e in errors: print("FAIL:", e)

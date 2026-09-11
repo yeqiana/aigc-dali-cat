@@ -1,0 +1,486 @@
+{
+  "schema_version": 1,
+  "kind": "episode_performance",
+  "generated_at": "2026-09-08T23:30:13.199+08:00",
+  "telemetry_only": true,
+  "not_stage_gate": true,
+  "fail_soft": true,
+  "episode_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉",
+  "started_at": "2026-09-08T23:30:13.199+08:00",
+  "updated_at": "2026-09-10T12:24:11.851+08:00",
+  "finalized_at": "2026-09-09T11:10:58.442+08:00",
+  "final_status": "PUBLISH_READY",
+  "total_wall_seconds": 42045.243,
+  "stages": {},
+  "named_spans": {
+    "PRODUCT_REVIEW_RECENT5-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "d2fcdf61c7a8",
+          "started_at": "2026-09-08T23:44:13.282+08:00",
+          "ended_at": "2026-09-08T23:44:29.175+08:00",
+          "duration_seconds": 15.893,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "recent5-semantic-a1-436e660a573ad648",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/recent5-semantic-review.json"
+          }
+        }
+      ]
+    },
+    "VISUAL_LOCK_BASELINE_REVIEW": {
+      "runs": [
+        {
+          "run_id": "cbf17dee3918",
+          "started_at": "2026-09-09T09:35:06.316+08:00",
+          "ended_at": "2026-09-09T09:35:25.174+08:00",
+          "duration_seconds": 18.858,
+          "status": "PASS",
+          "source": "visual_lock_baseline_gate",
+          "metadata": {
+            "frame": 1,
+            "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-6f20114d6fb9-a2.png",
+            "pixel_master_status": null
+          }
+        },
+        {
+          "run_id": "033eab98e114",
+          "started_at": "2026-09-09T16:04:23.090+08:00",
+          "ended_at": "2026-09-09T16:06:11.460+08:00",
+          "duration_seconds": 108.37,
+          "status": "PASS",
+          "source": "visual_lock_baseline_gate",
+          "metadata": {
+            "frame": 1,
+            "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-2c7bd4b0bb37-a1.png",
+            "pixel_master_status": null
+          }
+        },
+        {
+          "run_id": "c6e2edbb42fa",
+          "started_at": "2026-09-10T11:24:54.535+08:00",
+          "ended_at": "2026-09-10T11:40:01.289+08:00",
+          "duration_seconds": 906.754,
+          "status": "PASS",
+          "source": "visual_lock_baseline_gate",
+          "metadata": {
+            "frame": 1,
+            "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-0d0b9814d146-a1.png",
+            "pixel_master_status": null
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_FRAME-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "483701815f21",
+          "started_at": "2026-09-09T10:30:41.412+08:00",
+          "ended_at": "2026-09-09T10:34:52.753+08:00",
+          "duration_seconds": 251.341,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "frame-semantic-a1-ccca27a36fd07156",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-review.json"
+          }
+        },
+        {
+          "run_id": "9d9da5a4d6ee",
+          "started_at": "2026-09-09T15:05:04.820+08:00",
+          "ended_at": "2026-09-09T15:19:01.664+08:00",
+          "duration_seconds": 836.844,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "frame-semantic-a2-e74663394f43ec34",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-001": {
+      "runs": [
+        {
+          "run_id": "69398d632c93",
+          "started_at": "2026-09-09T10:57:42.705+08:00",
+          "ended_at": "2026-09-09T10:57:48.895+08:00",
+          "duration_seconds": 6.19,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-001-a1-e122f99ae22d1806",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json"
+          }
+        },
+        {
+          "run_id": "1226593d3f63",
+          "started_at": "2026-09-09T15:23:08.947+08:00",
+          "ended_at": "2026-09-09T15:37:55.408+08:00",
+          "duration_seconds": 886.461,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-001-a2-37a967252826193a",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-002": {
+      "runs": [
+        {
+          "run_id": "8ac12cc0318c",
+          "started_at": "2026-09-09T10:57:42.737+08:00",
+          "ended_at": "2026-09-09T10:57:48.910+08:00",
+          "duration_seconds": 6.173,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-002-a1-d6d7c3cece90427e",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json"
+          }
+        },
+        {
+          "run_id": "5b5f620f0757",
+          "started_at": "2026-09-09T15:23:08.983+08:00",
+          "ended_at": "2026-09-09T15:37:55.423+08:00",
+          "duration_seconds": 886.44,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-002-a2-a568a15ecdff4798",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-003": {
+      "runs": [
+        {
+          "run_id": "1d8c56bb2d44",
+          "started_at": "2026-09-09T10:57:42.770+08:00",
+          "ended_at": "2026-09-09T10:57:48.925+08:00",
+          "duration_seconds": 6.155,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-003-a1-5c0427e9e2838092",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json"
+          }
+        },
+        {
+          "run_id": "bbcb522040ba",
+          "started_at": "2026-09-09T15:23:09.018+08:00",
+          "ended_at": "2026-09-09T15:37:55.435+08:00",
+          "duration_seconds": 886.417,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-003-a2-e6a1b91a275e6052",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-004": {
+      "runs": [
+        {
+          "run_id": "728c8603024a",
+          "started_at": "2026-09-09T10:57:42.799+08:00",
+          "ended_at": "2026-09-09T10:57:48.939+08:00",
+          "duration_seconds": 6.14,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-004-a1-ac8a966628c7ff60",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json"
+          }
+        },
+        {
+          "run_id": "c5eeec64bef1",
+          "started_at": "2026-09-09T15:23:09.050+08:00",
+          "ended_at": "2026-09-09T15:37:55.452+08:00",
+          "duration_seconds": 886.402,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-004-a2-de5145599b5325c0",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/caption-image-audit.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_RELEASE-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "449db4834f9c",
+          "started_at": "2026-09-09T11:03:38.028+08:00",
+          "ended_at": "2026-09-09T11:04:07.543+08:00",
+          "duration_seconds": 29.515,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "release-semantic-a1-5aefc6a990450328",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/release-semantic-review.json"
+          }
+        },
+        {
+          "run_id": "1c8608c0a4b8",
+          "started_at": "2026-09-09T16:24:07.542+08:00",
+          "ended_at": "2026-09-09T16:26:06.947+08:00",
+          "duration_seconds": 119.405,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "release-semantic-a1-1a20ab15c721a93c",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/release-semantic-review.json"
+          }
+        },
+        {
+          "run_id": "73a78bb3ade8",
+          "started_at": "2026-09-09T18:05:28.476+08:00",
+          "ended_at": "2026-09-09T18:15:01.612+08:00",
+          "duration_seconds": 573.136,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "release-semantic-a2-ddfe792515975e3d",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/release-semantic-review.json"
+          }
+        },
+        {
+          "run_id": "4701f3f56ef1",
+          "started_at": "2026-09-09T18:49:53.152+08:00",
+          "ended_at": "2026-09-09T18:50:19.774+08:00",
+          "duration_seconds": 26.622,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "release-semantic-a2-ee4d6035c2af6c3b",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/release-semantic-review.json"
+          }
+        },
+        {
+          "run_id": "c44107aca119",
+          "started_at": "2026-09-10T12:10:18.807+08:00",
+          "ended_at": "2026-09-10T12:24:11.851+08:00",
+          "duration_seconds": 833.044,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "release-semantic-a1-20229de720227519",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/release-semantic-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_VISUAL-LOCK-BASELINE": {
+      "runs": [
+        {
+          "run_id": "8acd5bc5fc2c",
+          "started_at": "2026-09-09T16:05:53.214+08:00",
+          "ended_at": "2026-09-09T16:06:11.470+08:00",
+          "duration_seconds": 18.256,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-baseline-a1-3b55f5efd2eb8c73",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/visual-lock-baseline-review.json"
+          }
+        },
+        {
+          "run_id": "9f9b3b358339",
+          "started_at": "2026-09-10T11:28:04.072+08:00",
+          "ended_at": "2026-09-10T11:40:01.300+08:00",
+          "duration_seconds": 717.228,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-baseline-a2-b0a219d65fa6a511",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/visual-lock-baseline-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_VISUAL-LOCK": {
+      "runs": [
+        {
+          "run_id": "4b54a6bdbd7a",
+          "started_at": "2026-09-09T16:06:17.567+08:00",
+          "ended_at": "2026-09-09T16:10:46.204+08:00",
+          "duration_seconds": 268.637,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-a1-115f4c2a9baf00d1",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/visual-profile-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_STORY-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "99265194a60e",
+          "started_at": "2026-09-09T16:20:53.143+08:00",
+          "ended_at": "2026-09-09T16:22:37.533+08:00",
+          "duration_seconds": 104.39,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "story-semantic-a1-f59040b9faecc2c7",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/story-semantic-review.json"
+          }
+        }
+      ]
+    }
+  },
+  "state_transitions": [
+    {
+      "from": "IDEA_LOCKED",
+      "to": "STORYBOARD_LOCKED",
+      "at": "2026-09-08T23:44:52+08:00"
+    },
+    {
+      "from": "STORYBOARD_LOCKED",
+      "to": "VISUAL_CALIBRATED",
+      "at": "2026-09-09T09:49:20+08:00"
+    },
+    {
+      "from": "VISUAL_CALIBRATED",
+      "to": "PRODUCTION_PASSED",
+      "at": "2026-09-09T10:50:38+08:00"
+    },
+    {
+      "from": "PRODUCTION_PASSED",
+      "to": "PUBLISH_READY",
+      "at": "2026-09-09T11:10:31+08:00"
+    },
+    {
+      "from": "PRODUCTION_PASSED",
+      "to": "PUBLISH_READY",
+      "at": "2026-09-09T11:10:58+08:00"
+    }
+  ],
+  "image_attempts": [],
+  "summary": {
+    "stage_wall": {},
+    "named_span_wall": {
+      "PRODUCT_REVIEW_RECENT5-SEMANTIC": {
+        "wall_seconds": 15.893,
+        "runs": 1
+      },
+      "VISUAL_LOCK_BASELINE_REVIEW": {
+        "wall_seconds": 1033.982,
+        "runs": 3
+      },
+      "PRODUCT_REVIEW_FRAME-SEMANTIC": {
+        "wall_seconds": 1088.185,
+        "runs": 2
+      },
+      "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-001": {
+        "wall_seconds": 892.651,
+        "runs": 2
+      },
+      "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-002": {
+        "wall_seconds": 892.613,
+        "runs": 2
+      },
+      "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-003": {
+        "wall_seconds": 892.572,
+        "runs": 2
+      },
+      "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-004": {
+        "wall_seconds": 892.542,
+        "runs": 2
+      },
+      "PRODUCT_REVIEW_RELEASE-SEMANTIC": {
+        "wall_seconds": 1581.722,
+        "runs": 5
+      },
+      "PRODUCT_REVIEW_VISUAL-LOCK-BASELINE": {
+        "wall_seconds": 735.484,
+        "runs": 2
+      },
+      "PRODUCT_REVIEW_VISUAL-LOCK": {
+        "wall_seconds": 268.637,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_STORY-SEMANTIC": {
+        "wall_seconds": 104.39,
+        "runs": 1
+      }
+    },
+    "critical_path": {
+      "kind": "observed_end_to_end_wall",
+      "critical_path_seconds": 42045.243,
+      "image_backend_union_wall_seconds": 0.0,
+      "image_backend_resource_seconds": 0.0,
+      "parallel_saved_seconds": 0.0,
+      "dependency_chain": [],
+      "note": "End-to-end wall is the user-visible critical path; image resource time is overlap-aware and is not added to stage wall."
+    },
+    "performance_slo": {
+      "health": "RED",
+      "active_wall_seconds": 42045.243,
+      "green_max_seconds": 5400,
+      "yellow_max_seconds": 7200,
+      "gate": false
+    },
+    "images": {
+      "attempts": 0,
+      "successful_attempts": 0,
+      "repair_attempts": 0,
+      "technical_failures_or_retries": 0,
+      "image_backend_seconds": 0,
+      "average_attempt_seconds": null,
+      "max_attempt_seconds": null
+    },
+    "note": "stage wall time and image backend resource time can overlap; do not add them together."
+  },
+  "start_sources": [
+    "episode_state.init"
+  ]
+}

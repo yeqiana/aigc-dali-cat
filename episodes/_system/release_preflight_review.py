@@ -12,6 +12,7 @@ import subprocess
 import sys
 from pathlib import Path
 import caption_image_audit
+import codex_critic_runner
 import subtitle_layout
 import runtime_router
 import runtime_provenance
@@ -245,7 +246,7 @@ def cmd_run_release_critic(args: argparse.Namespace) -> int:
     cmd = prefix(codex) + [
         "exec", "--skip-git-repo-check", "--ephemeral",
         "-c", 'model_reasoning_effort="high"',
-        "-s", "workspace-write", "-C", str(ROOT), "--json", "-"
+        "-s", codex_critic_runner.default_sandbox(), "-C", str(ROOT), "--json", "-"
     ]
     log = ep / "meta/release-critic.jsonl"
     before = {role: row["sha256"] for role, row in rows.items()}
@@ -271,4 +272,3 @@ def cmd_run_release_critic(args: argparse.Namespace) -> int:
         "CODEX", attempt=1, log=repo_rel(log)
     )
     return _finalize_release_review(ep, data, provenance)
-

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "episode_id": "09-05",
+  "reviewed_at": "2026-09-08T23:44:29+08:00",
+  "candidate_fingerprint_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "7756afa1d03091a7983e5427cb18655ec3cb85b9eb6bd6c1621321e91a8ff176",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "history_episode_ids": [
+    "09-04",
+    "10-01"
+  ],
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-08T23:44:29+08:00",
+    "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/recent5-semantic-attempt-1-request.json",
+    "request_id": "recent5-semantic-a1-436e660a573ad648",
+    "request_fingerprint": "436e660a573ad64852de632d34c985f005e1ce50eb5ea4aad340b91d8aa9820d"
+  },
+  "comparisons": [
+    {
+      "episode_id": "09-04",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    },
+    {
+      "episode_id": "10-01",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    }
+  ]
+}

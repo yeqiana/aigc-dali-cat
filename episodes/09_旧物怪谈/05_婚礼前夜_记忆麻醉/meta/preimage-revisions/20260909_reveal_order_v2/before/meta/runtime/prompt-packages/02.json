@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "frame": "02",
+  "scene_prompt": "对方把无标签白药瓶递到她面前，眼神温和却紧盯；背景亲友在缝喜被。她手接药瓶，只露手。 2007西北农村土房婚房，深秋夜，白炽灯/窗洞天光/手电/车灯；23岁新娘第一人称手持廉价卡片机竖拍4:5，构图随手偏位、现场光、低动态、边缘略软、相册感；主角只露手/脚/局部不露清晰正脸（高潮帧可露45°侧脸传递表情）；碎花长袖+深色长裤+旧布鞋。禁止恐怖电影布光/HDR/文字水印/清晰正脸。",
+  "scene_prompt_sha256": "c50f491dce1b41f5b5adc6707cca384fe3ec7f57172bf4ad28e89a2a418fe80c",
+  "frame_contract_sha256": "11e66ff7c3480b7a90c7d725da684d739863d4db574387fe366f6376c0be3e58",
+  "image_model": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "quality": "high",
+    "source": "system_default",
+    "strict_model": false,
+    "reproducible_snapshot": false
+  },
+  "source_prompt": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\batch\\prompts\\02.txt",
+  "package_sha256": "0a3343b943dd0e565b01a624be916891fa01aff17b49b04674dce96cb12ea1ba",
+  "compiled_at": "2026-09-09T10:09:49+08:00"
+}
