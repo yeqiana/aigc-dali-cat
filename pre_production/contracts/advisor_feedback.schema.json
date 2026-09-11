@@ -1,0 +1,30 @@
+{
+  "schema_id": "advisor_feedback",
+  "schema_version": 1,
+  "status": "mvp",
+  "judgement_sources": ["human"],
+  "creator_decisions": ["pending", "accepted", "revised", "ignored"],
+  "advisor_accuracy_levels": ["correct", "partially_correct", "incorrect", "unknown"],
+  "required": [
+    "feedback_id",
+    "advisor_report_id",
+    "episode_id",
+    "judgement_source",
+    "creator_decision",
+    "advisor_accuracy",
+    "confirmed_evidence",
+    "refuted_evidence",
+    "missed_risks",
+    "notes",
+    "created_time"
+  ],
+  "list_fields": ["confirmed_evidence", "refuted_evidence", "missed_risks"],
+  "forbidden_key_patterns": ["score", "rating", "percent", "percentage", "points", "grade", "rank", "stars"],
+  "policy": {
+    "human_only": "Advisor feedback records a human judgement; automated judgement is not allowed in this phase.",
+    "no_pseudo_scoring": "Accuracy is one of four qualitative labels, never a number and never a weighted score.",
+    "evidence_bound": "confirmed_evidence and refuted_evidence must reference evidence_id values from the advisor report.",
+    "separation": "Feedback never mutates the advisor report, the Story Lock, episode state or story gates."
+  }
+}
+

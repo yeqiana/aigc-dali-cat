@@ -164,6 +164,76 @@ def validate_review_reference(ref: dict) -> list[str]:
     return issues
 
 
+def validate_advisor_feedback(feedback: dict) -> list[str]:
+    """Validate one Advisor Feedback record (a human judgement of the advisor)."""
+    contract = load_contract("advisor_feedback.schema.json")
+    issues: list[str] = []
+    if not isinstance(feedback, dict):
+        return ["advisor_feedback: root must be a mapping"]
+
+    for key in contract["required"]:
+        if key not in feedback:
+            issues.append("advisor_feedback: missing required key '" + key + "'")
+
+    checks = (
+        ("judgement_source", "judgement_sources"),
+        ("creator_decision", "creator_decisions"),
+        ("advisor_accuracy", "advisor_accuracy_levels"),
+    )
+    for field, table in checks:
+        value = feedback.get(field)
+        if value is not None and value not in contract[table]:
+            issues.append("advisor_feedback: '" + field + "' value '" + str(value)
+                          + "' not in " + str(contract[table]))
+
+    for field in contract["list_fields"]:
+        if field in feedback and not isinstance(feedback[field], list):
+            issues.append("advisor_feedback: '" + field + "' must be a list")
+
+    issues.extend(_forbidden_key_issues(feedback, tuple(contract["forbidden_key_patterns"]),
+                                       "advisor_feedback"))
+    return issues
+
+
+def validate_observation_entry(entry: dict) -> list[str]:
+    """Validate one Episode Observation Ledger entry."""
+    contract = load_contract("observation_ledger_entry.schema.json")
+    issues: list[str] = []
+    if not isinstance(entry, dict):
+        return ["observation_ledger_entry: root must be a mapping"]
+
+    for key in contract["required"]:
+        if key not in entry:
+            issues.append("observation_ledger_entry: missing required key '" + key + "'")
+
+    enum_fields = (
+        ("run_mode", "run_modes"),
+        ("decision", "decisions"),
+        ("confidence", "confidence_levels"),
+        ("highest_risk_level", "risk_levels"),
+        ("authority", "authority"),
+    )
+    for field, table in enum_fields:
+        value = entry.get(field)
+        if value is not None and value not in contract[table]:
+            issues.append("observation_ledger_entry: '" + field + "' value '" + str(value)
+                          + "' not in " + str(contract[table]))
+
+    for flag in contract["must_be_false"]:
+        if entry.get(flag) is not False:
+            issues.append("observation_ledger_entry: '" + flag
+                          + "' must stay false in shadow observation")
+
+    for flag in contract["must_be_true"]:
+        if entry.get(flag) is not True:
+            issues.append("observation_ledger_entry: '" + flag
+                          + "' must stay true in shadow observation")
+
+    issues.extend(_forbidden_key_issues(entry, tuple(contract["forbidden_key_patterns"]),
+                                       "observation_ledger_entry"))
+    return issues
+
+
 def is_valid(issues: list[str]) -> bool:
     return not issues
 
@@ -179,7 +249,8 @@ __all__ = [
     "validate_similarity_report",
     "validate_advisor_report",
     "validate_review_reference",
+    "validate_advisor_feedback",
+    "validate_observation_entry",
     "is_valid",
     "require_valid",
 ]
-

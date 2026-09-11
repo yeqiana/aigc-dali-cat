@@ -29,6 +29,9 @@ Memory Adapter            -> Review Reference（经验沉淀）
    |
    v
 Shadow Mode               -> 只出报告，继续原生产流程
+   |
+   v
+Shadow Observation        -> 人工记账 + 人工反馈（可选，不接 Runtime）
 ```
 
 入口：`pre_production/shadow_mode.py` 的 `run_shadow()`（永不抛异常、永不影响生产）。
@@ -66,8 +69,12 @@ pre_production/
     recommendation.py   风险 -> 非约束性建议
     report_generator.py decision / confidence / boundaries
   memory_adapter/       只做接口：读历史经验、写 Review Reference
-  contracts/            四份 JSON 契约（唯一契约来源）
-  tests/                unit / contract / EP003 回归 / Shadow Mode
+  shadow_observation/   人工影子观察层（账本 + 人工反馈，不接 Runtime）
+    ledger.py           Episode Observation Ledger（append-only JSONL）
+    feedback.py         Advisor Feedback（人工判断，非评分）
+    README.md           人工反馈入口说明
+  contracts/            六份 JSON 契约（唯一契约来源）
+  tests/                unit / contract / EP003 回归 / Shadow Mode / Shadow Observation
 ```
 
 产物默认写到 `<episode>/meta/pre-production/`：`story_fingerprint.yaml`、
@@ -89,7 +96,12 @@ python -m pre_production analyze <episode_dir> --out-dir <dir>
 python -m pre_production shadow <episode_dir> [--dry-run] [--no-memory]
 
 # 校验任意 artifact
-python -m pre_production validate <yaml> --kind dna|similarity|advisor|review
+python -m pre_production validate <yaml> --kind dna|similarity|advisor|review|feedback|observation
+
+# Shadow Observation（人工影子观察层，纯手动）
+python -m pre_production observe record <episode_dir> [--ledger PATH] [--dry-run]
+python -m pre_production observe feedback --report <advisor_report.yaml> [--decision D] [--accuracy A]
+python -m pre_production observe list [--episode ID] [--json]
 ```
 
 常用参数：`--history <episode_dir|story_lock.md>`（补充历史样本）、`--limit N`、`--repo-root`。
@@ -128,12 +140,28 @@ Advisor decision：
 
 ---
 
-## 七、测试
+## 七、Shadow Observation（人工影子观察层）
+
+Shadow Mode 之后的一层**可选人工动作**：把每次观察记进账本，并写下人对报告的人工判断。
+生产 Runtime 从不调用它，删除它也只会丢经验历史，不动任何生产事实。详见
+`pre_production/shadow_observation/README.md`。
+
+- **Episode Observation Ledger**：append-only JSONL，默认
+  `reports/pre-production/observation-ledger.jsonl`；去重键 `(run_mode, episode_id, story_lock_sha256)`，
+  同一 Story Lock 版本重复观察返回 `REUSED`。每行 `authority: derived_non_authority`。
+- **Advisor Feedback**：默认 `reports/pre-production/advisor-feedback/PFB-<report_id>.json`；
+  `judgement_source` 恒为 `human`，准确度只有 `correct/partially_correct/incorrect/unknown` 四个标签，
+  并记录 `advisor_report_sha256` 绑定精确报告版本。
+- 契约：`contracts/observation_ledger_entry.schema.json`、`contracts/advisor_feedback.schema.json`。
+
+---
+
+## 八、测试
 
 ```powershell
 python -m pytest pre_production/tests -q
 ```
 
 覆盖：Story DNA 单元测试、Schema Validator 契约测试、Similarity Evidence 测试、
-Advisor Report 契约测试、EP003 回归、Shadow Mode 非阻断性。
-
+Advisor Report 契约测试、EP003 回归、Shadow Mode 非阻断性、Shadow Observation
+（账本追加/去重、人工反馈边界、未知证据 warning、无分数键）。
