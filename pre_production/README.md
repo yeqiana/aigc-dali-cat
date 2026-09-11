@@ -35,6 +35,9 @@ Shadow Observation        -> 观察记录 + 人工反馈（可选，不接 Runti
    |
    v
 Experience Store          -> 经验事实存储（JSONL；只存不学）
+   |
+   v
+Experience Accumulation   -> 只读统计 + 人工观察（验证 Advisor 是否有用，不接 Runtime）
 ```
 
 入口：`pre_production/shadow_mode.py` 的 `run_shadow()`（永不抛异常、永不影响生产）；
@@ -79,6 +82,7 @@ pre_production/
     experience_store.py  ExperienceStoreRepository 接口 + 记录构造器
     experience_store_jsonl.py  JSONL 实现（append-only 事实存储，Runtime MVP）
     experience_ingest.py  Feedback -> Experience 转换与 ingest_feedback()
+    experience_stats.py  只读积累统计（counts / labels；不写文件、不评分、不下结论）
     tests/               Experience 契约、接口、JSONL 存储、写路径、读路径、EP001-EP003 fixture
   observation/          Shadow Observation（观察记录 + 账本 + 人工反馈，不接 Runtime）
     schema.py           Episode Observation Record / Advisor Feedback 契约
@@ -124,6 +128,9 @@ python -m pre_production observe list [--ledger PATH] [--episode ID] [--json]
 python -m pre_production experience save --feedback <PFB-*.json> [--observation <OBS ID|observation.json>] [--similarity <similarity_report.yaml>] [--production-outcome TEXT] [--store DIR] [--dry-run]
 python -m pre_production experience query [--episode ID] [--story-dna REF] [--risk-type TYPE] [--token TOKEN]... [--limit N] [--store DIR] [--json]
 python -m pre_production experience list [--kind all|experience|pattern|decision] [--episode ID] [--store DIR] [--json]
+
+# Experience Accumulation（只读统计：不写文件、不改 JSONL、不碰 Runtime）
+python -m pre_production experience stats [--store DIR] [--feedback-store DIR] [--ledger PATH] [--json]
 ```
 
 常用参数：`--history <episode_dir|story_lock.md>`（补充历史样本）、`--limit N`、`--repo-root`。
@@ -264,3 +271,37 @@ Experience Store Runtime 覆盖：JSONL append-only 与重复保护、契约校�
 损坏行只报告不抛异常、Feedback -> Creator Decision / Episode Experience 写路径、
 引用链完整性（不复制报告）、失败隔离与 dry-run、读路径过滤与 limit，
 以及 EP001 / EP002 / EP003 fixture 的写入、读取与生产状态零改动校验。
+Experience Accumulation 覆盖：只读统计不修改任何 JSONL 字节、不创建 store 目录、
+不触碰 Runtime 文件（episode-state.json / story-gates.json 的 SHA 与所在目录清单不变）、
+Good / Bad Experience 完整性判定与 missing_by_field、标签计数输出不含任何 score / percent / rate 字样。
+
+---
+
+## 十、Experience Accumulation（经验积累与只读统计）
+
+Experience Store 之后是**经验积累期**：用真实 Episode 验证 Advisor 是否有用。
+这一层只**读**已经存下的经验，输出计数与标签，不写文件、不排序、不评分、不下结论。
+
+```
+Episode -> Advisor Report -> Observation -> Human Feedback -> Experience Store -> Evaluation
+                                                                                      |
+                                              只读统计 + 人工观察报告 <----------------+
+```
+
+- **只读统计（`experience stats`）**：数量、Episode 覆盖、经验完整性、Feedback / Observation 计数、
+  Advisor decision / creator action / recommendation result / risk level 的标签分布，以及登记在案的
+  Pattern Learning 前置条件现状。全部是 counts 和 labels，没有百分比、没有等级、没有是否达标的判定。
+- **经验质量标准**：四要素齐全（Story DNA 引用 + Advisor Report 引用 + Human Feedback 引用 +
+  Production Outcome）才算 complete；缺任一引用即为 incomplete，并按字段列出缺什么。
+  incomplete 记录不删除、不补造，只是不进入未来的 Pattern Learning 样本集。
+- **观察周期**：第一批为 EP004 – EP020；EP001 / EP002 / EP003 已作为回归 fixture 定版，不再改动。
+- **评审方式**：人工，按单集 / 每 5 集 / 批次三种节奏写观察报告，结论只允许定性（证据支持 /
+  证据不足 / 样本不足），不允许百分比或换算等级。
+
+设计文档：`docs/Story_OS_PreProduction_Intelligence_Experience_Accumulation_Plan_V1.0.md`（积累什么、
+够不够进入 Pattern Learning）、`docs/Story_OS_PreProduction_Intelligence_Experience_Evaluation_V1.0.md`
+（怎么人工评估 Advisor）。
+
+明确不做：Pattern Learning、自动训练、自动调参、RAG、Embedding、向量检索、任何评分字段、
+任何生产阻断。统计命令不写文件，因此重复运行结果一致；所有输出恒为
+`advisory_only=true`、`blocks_production=false`、`authority=derived_non_authority`。
