@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "profile_schema_version": 2,
+  "id": "M00_REAL_WORLD_DOCUMENTARY_V1",
+  "profile_id": "M00_REAL_WORLD_DOCUMENTARY_V1",
+  "name": "现实生活纪实母版",
+  "profile_name": "现实生活纪实母版",
+  "profile_name_en": "Reality-First Everyday Documentary Master",
+  "profile_version": "3.0",
+  "platform_min_version": "2.8.0",
+  "scope": "account_default_visual_mother_style",
+  "default_when_unspecified": true,
+  "reality_basis": "real_world",
+  "capture_philosophy": "real_life_documentary",
+  "camera_language": {
+    "operator": "participant_or_companion_inside_event",
+    "viewpoint": "first_person_or_companion_eye",
+    "capture_grammar_ref": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "capture_profile_ref": "CP01",
+    "who_records": "事件里的本人或同行的人，不是摄影师。",
+    "how_recorded": "手里正好有台手机，随手拍，不摆姿势，不补光。",
+    "why_exists": "把今天记下来，发给家里或朋友看；不是创作，不是接单。",
+    "ghost_camera": "forbidden"
+  },
+  "realism_level": "maximum",
+  "lighting_rules": {
+    "source": "practical_and_available_only",
+    "allowed": [
+      "available_light",
+      "practical_light",
+      "overcast_daylight",
+      "mixed_indoor_fluorescent"
+    ],
+    "forbidden": [
+      "studio_lighting",
+      "three_point_setup",
+      "beauty_dish",
+      "cinematic_lighting"
+    ]
+  },
+  "prohibited_patterns": [
+    "电影布光",
+    "广告/海报感",
+    "完美构图与英雄机位",
+    "AI 概念图质感",
+    "磨皮与美化皮肤",
+    "商业 HDR",
+    "全局复古 LUT",
+    "虚假做旧噪点或假低分辨率",
+    "幽灵机位（没有持机者的拍摄视角）"
+  ],
+  "compatible_story_types": [
+    "contemporary_ordinary_life",
+    "everyday_anomaly",
+    "folk_life_density",
+    "personal_photo_record"
+  ],
+  "derived_from": {
+    "legacy_profile_id": "M00",
+    "legacy_locked_asset": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "legacy_locked_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+    "rule": "本文件是 M00 治理化表达，逐字保留原锁定资产的视觉 DNA、约束与锚点；原资产 SHALL 保持字节不变，历史 Frame Contract 的 profile_sha256 仍指向它。"
+  },
+  "principle": "宁可普通一点、乱一点，也不能精致得像广告、电影剧照或者 AI 概念图；具体年代与设备物理表现优先。",
+  "precedence": [
+    "explicit_episode_or_series_visual_profile",
+    "capture_physics_and_story_era",
+    "M00_visual_language"
+  ],
+  "visual_dna": {
+    "reality_first": true,
+    "ordinary_chinese_life_density": "high",
+    "composition": "unposed_imperfect_personal_record",
+    "people": "ordinary_unprepared_not_actor_like",
+    "subject_awareness": "mostly_unaware_or_natural",
+    "practical_available_light": true,
+    "cinematic_lighting": "forbidden_by_default",
+    "commercial_hdr": "forbidden",
+    "portrait_bokeh": "not_default",
+    "camera_perfection": "not_default",
+    "hero_shot": "not_default",
+    "symmetrical_composition": "not_default",
+    "beautification": "forbidden",
+    "skin_rendering": "natural",
+    "color": "environment_driven_low_to_medium_saturation",
+    "global_vintage_lut": "forbidden",
+    "cinematic_color_grading": "forbidden_by_default",
+    "white_balance": "environment_driven",
+    "contrast": "natural_device_limited",
+    "dynamic_range": "device_and_scene_driven",
+    "texture": "causal_controlled_imperfection",
+    "noise": "device_environment_driven",
+    "motion_blur": "cause_required",
+    "lens_artifacts": "cause_required",
+    "scene_cleaning": "forbidden_by_default",
+    "life_clutter": "preserve",
+    "environment_imperfection": "preserve",
+    "visual_polish_ceiling": "documentary_realism",
+    "anomaly": "embedded_in_reality_before_spectacle",
+    "anomaly_environment_binding": "required",
+    "spectacle_first": "forbidden_by_default",
+    "scale_reference": "required_for_large_anomaly",
+    "screen_ui_physics": "required_when_present",
+    "camera_authorship": "required",
+    "ghost_camera": "forbidden",
+    "capture_reason": "required",
+    "save_reason": "required",
+    "narrative_information_gain": "required_after_frame_01",
+    "narrative_redundancy": "forbidden_by_default",
+    "continuity": "strict",
+    "reference_assets": "preferred_when_identity_matters",
+    "seed_dependency": "none"
+  },
+  "texture_translation": {
+    "old_digital_or_cheap_camera": [
+      "limited_dynamic_range",
+      "edge_softness",
+      "jpeg_compression_when_causal",
+      "weak_low_light",
+      "focus_hesitation",
+      "mixed_white_balance"
+    ],
+    "modern_phone": [
+      "keep_real_device_dynamic_range",
+      "avoid_commercial_polish",
+      "avoid_fake_old_noise_or_fake_low_resolution",
+      "preserve_handheld_snapshot_behavior",
+      "allow_realistic_highlight_or_motion_imperfection"
+    ]
+  },
+  "anchors": [
+    {
+      "id": "F01",
+      "name": "流水席",
+      "role": "warm_crowd_folk_life_density",
+      "source": "episodes/07_误入/中元节误入流水席/docs/03_画风锁定.md"
+    },
+    {
+      "id": "F02",
+      "name": "MP4",
+      "role": "old_digital_object_and_private_album_texture",
+      "source": "episodes/09_旧物怪谈/01_回村中巴捡MP4/docs/03_画风锁定.md"
+    },
+    {
+      "id": "F03",
+      "name": "误入小镇",
+      "role": "county_town_reality_intrusion_and_unposed_capture",
+      "source": "episodes/07_误入/下山误入旧镇/docs/03_画风锁定.md"
+    },
+    {
+      "id": "F04",
+      "name": "网吧",
+      "role": "cheap_indoor_digital_low_light_mixed_fluorescent_texture",
+      "source_status": "user_locked_semantic_anchor",
+      "note": "V1.8 由用户明确指定为主画风组成；待仓库存在正式校准资产时可补 source + SHA，不伪造哈希。"
+    }
+  ],
+  "anti_homogeneity": {
+    "lock_texture_not_scene": true,
+    "do_not_force_recurring_props": [
+      "CRT",
+      "MP4",
+      "plastic_stool",
+      "dirt_road",
+      "old_house",
+      "internet_cafe"
+    ],
+    "rule": "统一现实密度、拍摄行为、现场光和非电影化，不统一剧情空间、异常载体和关键道具。"
+  }
+}
