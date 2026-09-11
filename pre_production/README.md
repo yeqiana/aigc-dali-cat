@@ -305,3 +305,32 @@ Episode -> Advisor Report -> Observation -> Human Feedback -> Experience Store -
 明确不做：Pattern Learning、自动训练、自动调参、RAG、Embedding、向量检索、任何评分字段、
 任何生产阻断。统计命令不写文件，因此重复运行结果一致；所有输出恒为
 `advisory_only=true`、`blocks_production=false`、`authority=derived_non_authority`。
+
+---
+
+## 十一、EP004 – EP020 Observation Runbook（每集执行规范）
+
+EP004 – EP020 的真实生产观察按 Runbook 执行：它只规定人怎么用已有命令，不新增能力、
+不接入 Runtime、不改 Advisor 规则与 Lexicon。
+
+固定五步：
+
+```
+Step 1 Story Lock
+   -> Step 2 Advisor Analysis           (analyze --out-dir，落三份 YAML)
+   -> Step 3 Observation Record         (observe record，追加账本)
+   -> Step 4 Production Outcome         (人写结果，未生产则留空)
+   -> Step 5 Feedback + Experience Save (observe feedback + experience save)
+```
+
+- **每集必产出六件**：`story_fingerprint.yaml`、`similarity_report.yaml`、`advisor_report.yaml`、
+  observation record、feedback record、experience record；缺一件如实记 `incomplete`，禁止补造。
+- **每集复盘**：复制 `docs/templates/episode_observation_template.md` 填写五问——Advisor 是否发现问题 /
+  风险是否真实 / 建议是否采用 / 最终结果如何 / 哪些经验值得保存。
+- **阶段节奏**：EP004–EP008 接入验证、EP009–EP014 中期观察、EP015–EP020 收敛；
+  阶段只是评审节奏，不是门禁。
+- **进入 Pattern Learning**：不自动进入；需人工评审同时满足 30–50 条完整 Experience、
+  重复 Pattern、人工确认有效三个条件。
+
+规范：`docs/Story_OS_PreProduction_Intelligence_EP004_EP020_Observation_Runbook_V1.0.md`；
+模板：`docs/templates/episode_observation_template.md`。
