@@ -43,7 +43,11 @@ from .story_dna.validator import (
 
 
 def _load_yaml(path: Path | str) -> dict:
-    data = yaml.safe_load(Path(path).read_text(encoding="utf-8-sig"))
+    """Load one YAML mapping; an unreadable or malformed file yields {}."""
+    try:
+        data = yaml.safe_load(Path(path).read_text(encoding="utf-8-sig"))
+    except (OSError, yaml.YAMLError):
+        return {}
     return data if isinstance(data, dict) else {}
 
 
@@ -191,6 +195,9 @@ def cmd_observe(args) -> int:
 
 
 def cmd_validate(args) -> int:
+    if not Path(args.file).is_file():
+        print("ERROR: file not found:", args.file)
+        return 1
     data = _load_yaml(args.file)
     validators = {
         "dna": validate_dna,
@@ -283,4 +290,3 @@ def main(argv=None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
