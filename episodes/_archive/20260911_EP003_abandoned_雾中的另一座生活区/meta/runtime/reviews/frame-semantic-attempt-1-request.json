@@ -1,0 +1,523 @@
+{
+  "schema_version": 2,
+  "request_id": "frame-semantic-a1-978ab1494158df54",
+  "request_fingerprint": "978ab1494158df543b6915c35553a60fc516895336206962f177a4ebec86ecdc",
+  "created_at": "2026-09-11T17:36:53+08:00",
+  "status": "FINALIZED",
+  "review_kind": "frame-semantic",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+      "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/story-gates.json",
+      "sha256": "f6e8fc206c31a3ded5b1cf1489bc6120a3936fc5d487efd1af1f063a2eab8cbe"
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "1bd41fc05fa342885dc4f3f84a40a6735c9551b710a0fd669f2a8189e8169746"
+    },
+    {
+      "path": "standards/生产帧语义强制规范_V1.0.md",
+      "sha256": "9520cdd866b01a8a1c052f8f5af48ec85b2aeceed8c5f00c30ff705a8c113e9a"
+    },
+    {
+      "path": "standards/Resolved_Frame_Contract规范_V1.0.md",
+      "sha256": "2bbcaeac083a2dff391e1700737fd94d89699877dc5fec52f522e7517f9f3caf"
+    },
+    {
+      "path": "standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md",
+      "sha256": "cc8053886ae8eca0499f94107dec657cedb9e376c0098b84715cced3d4c2d933"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/01.png",
+      "sha256": "3666919bd9f18e7232c977f11ab67ad7652ca1cb6fff478f8dc107eb98e160cc"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/02.png",
+      "sha256": "f8dad54e9b4cba926fe08928e2e7b84fe92234778b98c9e8872ce5ad3874e940"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/03.png",
+      "sha256": "01754866e6146ef74da5dbd7880eec49fcc21074039ac5579e954506c45b2d27"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/04.png",
+      "sha256": "ea91aff3a92e74d05991e3b3d99e2fc38e1d0669b0b1322ff311ba75021d1e0a"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/05.png",
+      "sha256": "0d42343407ae3c3df45f5cc3a6b5f980dd72d43fd62b3e1c5598063411536aff"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/06.png",
+      "sha256": "b1dc85c53ca220d6ddd87723dbc46a62a9a3cb864c0e08241998d8e52992a99a"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/07.png",
+      "sha256": "c1e45c81f3ca25bbb7b0446f9fcc18243f11cc7dd493420f4308091589156c1b"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/08.png",
+      "sha256": "6fe028c1761861d5c9a3d8b1518ed4026c6e299a95f15e9b0656b5f86e1643c4"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/09.png",
+      "sha256": "dbf60f3d8ae70ff8373c0a87f93ab21126a41eb79c4ca40335aea21e4f457fdd"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/10.png",
+      "sha256": "083763496d98a7b06c2b47fa933ace54b2731f6e8a1cc8ea568701394ed74380"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/11.png",
+      "sha256": "7d300149ec08ad158c4a7b87afb2f4245c85a646bee082b98fa11f4782a63325"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/12.png",
+      "sha256": "93862f0be8bdbde96a60436bc4261235fdfae99ce88c1836816792b665c5ebbe"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/13.png",
+      "sha256": "a0841585fcbbbfbe091a9b66d2038f79b77d35715600c3ab8ad26c42b29f3d63"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/14.png",
+      "sha256": "54c0c828b0d58b7eb1e0dc3a99de9e660811a63cbca51eedc6502bb2bf3e2fb1"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/15.png",
+      "sha256": "7cc01cc3ed9ce3674b7a547b531f3b66c24908651ea18a94df2cfae7ec89789d"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/16.png",
+      "sha256": "5e0ddd818dbe321085f3a0c203344672c365b7a82c05af47a23f4dc4b122fcd4"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/17.png",
+      "sha256": "6a3d2deeb59581e8b81e058e554b3b08a5f1d68bc7576c0e91af38b7ea0d97e7"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/18.png",
+      "sha256": "47cc8a688701146ff76efff3a8466637d5aa4e8dbcb76609a8f96f04bc302491"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/19.png",
+      "sha256": "5ee72e97858da506d77a6afc4ef21ff8d7d6735e01ecbb5364540fbcf01a0e28"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/20.png",
+      "sha256": "826e06b7d3c038687f79cad6962dc2ee1d49a967fb9959cb9b6dafffd8a68202"
+    }
+  ],
+  "candidate_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.frame-semantic-review.candidate.json",
+  "prompt_sha256": "ed7fac92564b3951adff2c5bdd1f178e88a0ff9575528e4c300c7ab2eba3f17a",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are an adversarial Production Frame Semantic Critic in a FRESH isolated session.\nDo NOT generate or edit images. Do NOT rewrite the story. Do NOT trust previous PASS labels.\nYou are reviewing the COMPLETE final approved frame set for exactly episodes/10_彼此的天上/03_雾中的另一座生活区.\n\nRead these locked sources before judging:\n- episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md\n- episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md\n- episodes/10_彼此的天上/03_雾中的另一座生活区/meta/story-gates.json\n- standards/制作规范_正式版.md\n- standards/生产帧语义强制规范_V1.0.md\n- standards/Resolved_Frame_Contract规范_V1.0.md\n- standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md\nFast Scout evidence is triage only. Do NOT trust PASS_FAST as a final pass; independently judge every supplied actual frame.\nResolved Frame Contracts: episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/contracts/frames/NN.json. The frame review must honor the SAME contract SHA used by the generation attempt.\n\nAttached images are in numeric order and map as follows:\n- attachment/frame 01: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/01.png\n- attachment/frame 02: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/02.png\n- attachment/frame 03: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/03.png\n- attachment/frame 04: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/04.png\n- attachment/frame 05: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/05.png\n- attachment/frame 06: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/06.png\n- attachment/frame 07: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/07.png\n- attachment/frame 08: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/08.png\n- attachment/frame 09: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/09.png\n- attachment/frame 10: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/10.png\n- attachment/frame 11: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/11.png\n- attachment/frame 12: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/12.png\n- attachment/frame 13: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/13.png\n- attachment/frame 14: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/14.png\n- attachment/frame 15: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/15.png\n- attachment/frame 16: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/16.png\n- attachment/frame 17: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/17.png\n- attachment/frame 18: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/18.png\n- attachment/frame 19: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/19.png\n- attachment/frame 20: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/20.png\n\nThis is critic attempt 1. Judge the ACTUAL pixels against Story Lock + storyboard + authenticity/continuity anchors.\nEpisode contract version: 2.6.1. V2.2-only Visual Narrative checks and issue codes apply ONLY when version >= 2.2.0. Earlier episodes must not fail on V2.2-only criteria.\nThe visual-profile critic is a different job. A frame can look perfectly M00 and STILL FAIL here if it depicts the wrong person, wrong wardrobe, wrong timeline, illegal camera viewpoint, wrong prop, unreadable anomaly, or merely lets the caption claim evidence that the pixels do not show.\n\nHard rules for EVERY frame:\n1. scene_storyboard_fidelity: the actual place/action/composition must be the storyboarded scene, not a generic substitute.\n2. story_beat_fidelity: the image must visibly carry the intended narrative beat. Do not let prose rescue a missing event.\n3. key_prop_fidelity: locked prop structure, material, scale, count and state must match. A generic green beer bottle cannot stand in for a locked thick micro-city glass vessel if the story depends on the city being visibly inside it.\n4. character_identity + wardrobe_continuity: character age/sex/identity/garment anchors must not drift. If a frame suddenly shows another protagonist, FAIL.\n5. pov_photographer_legality: obey the authenticity card. If the first-person photographer is fully visible or both hands are occupied while no legal second capture source exists, FAIL. Unexplained third-person coverage is a hard failure.\n6. spatial_continuity + temporal_continuity: location relationships and timeline must agree with neighboring frames. A father who already left for hospital cannot silently reappear in the factory.\n7. anomaly_readability: the abnormal fact the frame is supposed to prove must be visually legible. If the caption says a river tilted, a red mark aligned with a chimney, or old photos all contain one white arc, those relationships must actually be readable in pixels.\n8. caption_image_support: planned text may add context but must not invent the core visual evidence.\n9. actual_information_gain: compare ACTUAL adjacent images, not just storyboard descriptions.\n10. environment_physics_fidelity: V2.1 weather/environment must obey the resolved physical conditions; weather is not a blanket filter.\n11. anomaly_escalation_fidelity: impact 3-4 / anomaly_amplified / climax_impact must visibly exceed escalation_from; caption-only escalation fails.\n12. scale_reference_fidelity: high-impact frames must visibly use the locked real-world scale reference so abnormal size is readable.\n13. camera_authorship_physical: photographer/camera source must exist physically; ghost/floating/omniscient coverage is a hard failure.\n14. moment_capture_credibility: frame must feel captured during an action with a plausible save reason, not posed after the event.\n15. narrative_evidence_gain: each frame after the opening must add real story/evidence information; another angle of the same unchanged fact is NARRATIVE_REDUNDANCY.\n16. shot_grammar_diversity: first-person is diegetic camera logic, not a repeated hand+phone+distant-anomaly template.\n17. camera_defect_physics: blur/noise/reflection/underexposure must have a plausible physical cause.\n18. screen_content_physics: phone/map/dashboard/time/camera UI must be internally, perspectivally and narratively coherent.\n19. visual_memory_continuity: character/wardrobe/vehicle/props/route/weather/light/anomaly evidence must persist unless explicitly changed.\n20. For shot-progression schema_version >=3 only: shot_scale_fidelity must match the locked shot_scale; scene_position_uniqueness_fidelity must not collapse different planned positions into visibly repeated camera setups; cinematic_structure_translation_fidelity must use the locked structural technique without becoming an exact film-still recreation; practical_lighting_design_fidelity must honor the declared real light source/contrast/suspense function; anomaly_concealment_fidelity must visibly use the locked mirror/water/glass/fog/light-shadow/screen/occlusion carrier when declared.\n21. PASS only if all required checks are true, issue_codes is empty and decision=pass.\n\nUse issue codes only from this set:\nACTUAL_INFORMATION_GAIN_MISSING, ANOMALY_CONCEALMENT_MISSING, ANOMALY_SCALE_UNDERDELIVERED, ANOMALY_UNREADABLE, CAMERA_DEFECT_UNMOTIVATED, CAMERA_OWNER_UNRESOLVED, CAPTION_DEPENDENCY, CHARACTER_APPEARANCE_DRIFT, CINEMATIC_TRANSLATION_FAILED, CULTURAL_CONTEXT_DRIFT, FRAME_SCENE_MISMATCH, GHOST_CAMERA, IDENTITY_DRIFT, KEY_PROP_DRIFT, LIGHTING_DESIGN_MISMATCH, MOMENT_RESULT_ONLY, NARRATIVE_REDUNDANCY, NEAR_DUPLICATE_ACTUAL_FRAMES, POV_ILLEGAL, SCALE_REFERENCE_MISSING, SCENE_POSITION_VISUAL_REPEAT, SCREEN_CONTENT_PHYSICS_BROKEN, SHOT_GRAMMAR_REPEAT, SHOT_SCALE_MISMATCH, SPATIAL_CONTINUITY_BROKEN, STORY_BEAT_NOT_VISIBLE, TEMPORAL_CONTRADICTION, UNEXPLAINED_THIRD_PERSON, UNPLANNED_RECORDER, VISUAL_MEMORY_BROKEN, WARDROBE_DRIFT, WEATHER_CONTINUITY_BROKEN, WEATHER_PHYSICS_MISMATCH, WORLD_IDENTITY_DRIFT\n\nWrite ONLY valid JSON to episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.frame-semantic-review.candidate.json. Do not modify any other repository file.\nRequired shape:\n{\n  \"frames\": [\n    {\n      \"frame\": \"01\",\n      \"checks\": {\n        \"scene_storyboard_fidelity\": true,\n        \"story_beat_fidelity\": true,\n        \"key_prop_fidelity\": true,\n        \"character_identity\": true,\n        \"wardrobe_continuity\": true,\n        \"pov_photographer_legality\": true,\n        \"spatial_continuity\": true,\n        \"temporal_continuity\": true,\n        \"anomaly_readability\": true,\n        \"caption_image_support\": true,\n        \"actual_information_gain\": true,\n        \"environment_physics_fidelity\": true,\n        \"anomaly_escalation_fidelity\": true,\n        \"scale_reference_fidelity\": true,\n        \"camera_authorship_physical\": true,\n        \"moment_capture_credibility\": true,\n        \"narrative_evidence_gain\": true,\n        \"shot_grammar_diversity\": true,\n        \"camera_defect_physics\": true,\n        \"screen_content_physics\": true,\n        \"visual_memory_continuity\": true,\n        \"world_identity_fidelity\": true,\n        \"character_appearance_anchor_fidelity\": true,\n        \"cultural_environment_fidelity\": true,\n        \"shot_scale_fidelity\": true,\n        \"scene_position_uniqueness_fidelity\": true,\n        \"cinematic_structure_translation_fidelity\": true,\n        \"practical_lighting_design_fidelity\": true,\n        \"anomaly_concealment_fidelity\": true\n      },\n      \"issue_codes\": [],\n      \"notes\": \"specific pixel-level evidence\",\n      \"decision\": \"pass\"\n    }\n  ],\n  \"issue_codes\": [],\n  \"summary\": {\"passed\": true, \"notes\": \"overall continuity/payoff judgment\"}\n}\nReturn one row for EVERY attached frame. If any hard check fails, mark it false, add the specific issue code, set that frame decision=fail and summary.passed=false.\n",
+  "source_bindings": {
+    "story_os_version": "2.6.1",
+    "contexts": {
+      "story_sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f",
+      "storyboard_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6",
+      "visual_contract_sha256": "97c9bef6f39dfbc156bacd247f33d6b543f18adbe268709c28d94ae4ba99ae4b"
+    },
+    "frames": {
+      "01": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/01.png",
+        "asset_sha256": "3666919bd9f18e7232c977f11ab67ad7652ca1cb6fff478f8dc107eb98e160cc",
+        "environment_frame_sha256": "3cd8a6f38170025a28698a43bb171f6cdb212633884646bc22e3b9b8b79889c4",
+        "frame_directive_sha256": "82cb25889fcbe79a82f36348d9d6c8ebc5b61902f7a31608239641710d574025",
+        "frame_contract_sha256": "db91b9b929238588dd2bed43a39b7bcb12df29bf4cee4a0f5373388ed1bc3e1d",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "02": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/02.png",
+        "asset_sha256": "f8dad54e9b4cba926fe08928e2e7b84fe92234778b98c9e8872ce5ad3874e940",
+        "environment_frame_sha256": "3cd8a6f38170025a28698a43bb171f6cdb212633884646bc22e3b9b8b79889c4",
+        "frame_directive_sha256": "f234a5d13866947b818ddce4c6f3837046196266956bd06e1ef5e4eb4dbf577a",
+        "frame_contract_sha256": "8f05f93cdefd17add64fa4658908b06c2280f03e7bbdf926647e24c862d40c4a",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "03": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/03.png",
+        "asset_sha256": "01754866e6146ef74da5dbd7880eec49fcc21074039ac5579e954506c45b2d27",
+        "environment_frame_sha256": "522d576e3991190d14179de976e6f56fb1b30b32f11e7dd31b66fcce00b8d76b",
+        "frame_directive_sha256": "f33b100c553def135f3fc6b910e74b887158ef28409c525606fcb70aec8abeda",
+        "frame_contract_sha256": "0d279988f7524512b48d38500934dd915989ac384c4b8a09b5a6139984f83260",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "04": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/04.png",
+        "asset_sha256": "ea91aff3a92e74d05991e3b3d99e2fc38e1d0669b0b1322ff311ba75021d1e0a",
+        "environment_frame_sha256": "522d576e3991190d14179de976e6f56fb1b30b32f11e7dd31b66fcce00b8d76b",
+        "frame_directive_sha256": "0d61e614bab9cc64fd1750a50319c86fc1a915406aae5dd7115f52fa0ea16e0e",
+        "frame_contract_sha256": "572d39f0764114f5e5a0741cadc96b25ebe01f8c031781d94e7ec5baae6a08c6",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "05": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/05.png",
+        "asset_sha256": "0d42343407ae3c3df45f5cc3a6b5f980dd72d43fd62b3e1c5598063411536aff",
+        "environment_frame_sha256": "522d576e3991190d14179de976e6f56fb1b30b32f11e7dd31b66fcce00b8d76b",
+        "frame_directive_sha256": "91acf2aabd0d613bf220501d92c7d40cfd6acbd0dc7a73b17212ead50dcb9b55",
+        "frame_contract_sha256": "034a7db5778f3622b90004c06a598b5df5370bd1991b5c2d4a80ac0d775fc91b",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "06": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/06.png",
+        "asset_sha256": "b1dc85c53ca220d6ddd87723dbc46a62a9a3cb864c0e08241998d8e52992a99a",
+        "environment_frame_sha256": "522d576e3991190d14179de976e6f56fb1b30b32f11e7dd31b66fcce00b8d76b",
+        "frame_directive_sha256": "30761fb1d82b178b3d173e9d596c89684fbc6017fdf0d81d9729af70d37e401a",
+        "frame_contract_sha256": "fe3e925b671f5334750bece321b8e3cc8fa6b65baa7814fda1908a4e3ac38886",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "07": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/07.png",
+        "asset_sha256": "c1e45c81f3ca25bbb7b0446f9fcc18243f11cc7dd493420f4308091589156c1b",
+        "environment_frame_sha256": "522d576e3991190d14179de976e6f56fb1b30b32f11e7dd31b66fcce00b8d76b",
+        "frame_directive_sha256": "4d9de20d1b50694fe3447577debb8f0092164d0d172f1dec51ba241b1e936783",
+        "frame_contract_sha256": "1c5e26f8069f008d4a82795b8b2aebd82769cbd90eac3d5fd3720d753df341d0",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "08": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/08.png",
+        "asset_sha256": "6fe028c1761861d5c9a3d8b1518ed4026c6e299a95f15e9b0656b5f86e1643c4",
+        "environment_frame_sha256": "522d576e3991190d14179de976e6f56fb1b30b32f11e7dd31b66fcce00b8d76b",
+        "frame_directive_sha256": "031ed877f5931e375b5c40d333fd4a146090521cc1f0d5ab7d1a50156e9e8ae0",
+        "frame_contract_sha256": "2bed72b7d6b05117bde1b9bf7bcd4fe986e588c010f8760ffbdaab915672007c",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "09": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/09.png",
+        "asset_sha256": "dbf60f3d8ae70ff8373c0a87f93ab21126a41eb79c4ca40335aea21e4f457fdd",
+        "environment_frame_sha256": "522d576e3991190d14179de976e6f56fb1b30b32f11e7dd31b66fcce00b8d76b",
+        "frame_directive_sha256": "6dc79a9fc01d42eeee38c8df18bb6e9c415c9585f34bd9c5f0b2b9fcfcacd214",
+        "frame_contract_sha256": "b41ba41e804b33751e5ff08a9e96439b53a8e349b72f72f157aec8a8a56c301b",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "10": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/10.png",
+        "asset_sha256": "083763496d98a7b06c2b47fa933ace54b2731f6e8a1cc8ea568701394ed74380",
+        "environment_frame_sha256": "522d576e3991190d14179de976e6f56fb1b30b32f11e7dd31b66fcce00b8d76b",
+        "frame_directive_sha256": "7e74b8295054896b9c4b761c5f4be32aa5c8ec1965c54a9535ea7b1982cd663c",
+        "frame_contract_sha256": "969f79afe780605023cd008772a11514595c207b267190efb02999532c4ce386",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "11": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/11.png",
+        "asset_sha256": "7d300149ec08ad158c4a7b87afb2f4245c85a646bee082b98fa11f4782a63325",
+        "environment_frame_sha256": "522d576e3991190d14179de976e6f56fb1b30b32f11e7dd31b66fcce00b8d76b",
+        "frame_directive_sha256": "12beceb1ac2fbba3774aed685527953053da48816e12bf571ea193e395e8a997",
+        "frame_contract_sha256": "b0d590a4a3c75848813de88542df774d1c5de7bd8aeacabadfe5c9729edb7506",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "12": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/12.png",
+        "asset_sha256": "93862f0be8bdbde96a60436bc4261235fdfae99ce88c1836816792b665c5ebbe",
+        "environment_frame_sha256": "522d576e3991190d14179de976e6f56fb1b30b32f11e7dd31b66fcce00b8d76b",
+        "frame_directive_sha256": "e56164e6b99486ee18d73ea1a13fdc7113ff016252051a11141f6aece57b3f6d",
+        "frame_contract_sha256": "2fe6589de72a5c2985536db3213652db52a675920c0bc74d58b7f4ec9cb4893f",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "13": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/13.png",
+        "asset_sha256": "a0841585fcbbbfbe091a9b66d2038f79b77d35715600c3ab8ad26c42b29f3d63",
+        "environment_frame_sha256": "75f3ed22a9957d50a00fb8d77f7408a10da4d47e4ee60465db6bc468f87c8be5",
+        "frame_directive_sha256": "90fcc6b5cdf564f3daffd82947a21b6845bd5ad4230d3273ec47bebc640e67ab",
+        "frame_contract_sha256": "00fe726997e58a35e20048949a30dd0b97bb9c45ed39355a0d2b5242b79e9b6d",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "14": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/14.png",
+        "asset_sha256": "54c0c828b0d58b7eb1e0dc3a99de9e660811a63cbca51eedc6502bb2bf3e2fb1",
+        "environment_frame_sha256": "75f3ed22a9957d50a00fb8d77f7408a10da4d47e4ee60465db6bc468f87c8be5",
+        "frame_directive_sha256": "237fd51fc43f945bcb912abf2a1470101fc181de755ba6ce72a167681e41ec36",
+        "frame_contract_sha256": "37b8d387012b40c034e82430cd453aef887947bc0ab7b017bf7bcd646384f4e2",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "15": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/15.png",
+        "asset_sha256": "7cc01cc3ed9ce3674b7a547b531f3b66c24908651ea18a94df2cfae7ec89789d",
+        "environment_frame_sha256": "75f3ed22a9957d50a00fb8d77f7408a10da4d47e4ee60465db6bc468f87c8be5",
+        "frame_directive_sha256": "90cceb96fb179009cb84368a9bab14de66dca7db5ba25cbf96101d543ffc6f88",
+        "frame_contract_sha256": "deeaea4d346faaa2b0df92f1c11f54904a6866c57744a0fbdd6a064826c6e100",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "16": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/16.png",
+        "asset_sha256": "5e0ddd818dbe321085f3a0c203344672c365b7a82c05af47a23f4dc4b122fcd4",
+        "environment_frame_sha256": "ce7792c05ecfb0158ad7174fd3fa30ef260caa3769e14f4800df699a52f908af",
+        "frame_directive_sha256": "e69dce32b8a0fb54f90184517ff747cd362856ab39512a5af40fa9e598844ae2",
+        "frame_contract_sha256": "c8edcfeefaa361217800ce99428af1f66e34af6447756300c18260ac441039f3",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "17": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/17.png",
+        "asset_sha256": "6a3d2deeb59581e8b81e058e554b3b08a5f1d68bc7576c0e91af38b7ea0d97e7",
+        "environment_frame_sha256": "54927b2fd810f7a437d2624826d86a2d5a3682e34fbe9b107be3f34bea1d6764",
+        "frame_directive_sha256": "31fbbb9bff584698ee8c2114c5e472d9fc4542ef66524b360bd0e509a43b4950",
+        "frame_contract_sha256": "f00b0c1819d3354bbe7824b48891141b3d7198081dc2e59355344bfe0cb73635",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "18": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/18.png",
+        "asset_sha256": "47cc8a688701146ff76efff3a8466637d5aa4e8dbcb76609a8f96f04bc302491",
+        "environment_frame_sha256": "a4382993480f50bb810e9e7517272d586ed76a093a53773cb5aec1744562c09f",
+        "frame_directive_sha256": "ebdf8534439ee29fbb71da8e541889775b430502ee723c8b98edb95a88c6f823",
+        "frame_contract_sha256": "bc5eaa15dcdbff2a75c9c32e031800ff484072a204d6eb64a03d9b49806e63e9",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "19": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/19.png",
+        "asset_sha256": "5ee72e97858da506d77a6afc4ef21ff8d7d6735e01ecbb5364540fbcf01a0e28",
+        "environment_frame_sha256": "028c98c3814d83b0551d1d273233d9925c245ee1743819cb6bfe76fe6d97899e",
+        "frame_directive_sha256": "ba2a7161b0468d9af88932a6c08c194e4332571f75264934e08969f3b44dab98",
+        "frame_contract_sha256": "bc7272b6996f6bad69590fe241337e9f745415496434669cac8532a28d767295",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      },
+      "20": {
+        "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/20.png",
+        "asset_sha256": "826e06b7d3c038687f79cad6962dc2ee1d49a967fb9959cb9b6dafffd8a68202",
+        "environment_frame_sha256": "8916f2e19cec713cb1f9c78a91c583cedaddf8bf3b5ad27db7f1ebc022148ca4",
+        "frame_directive_sha256": "360d5d3cca01931db9fd825ecb5a9e3dc89df5aa50dc07c0eaf2c3592f56b3bd",
+        "frame_contract_sha256": "e15877b9ec0a6de31a9dcf3dc2c3408fd4f91ccc4013b023f4c4aa535d38e063",
+        "source_binding": {
+          "story": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+            "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+          },
+          "storyboard": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+            "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+          },
+          "extraction_mode": "whole_storyboard_fallback",
+          "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        }
+      }
+    }
+  },
+  "finalized_at": "2026-09-11T17:38:02+08:00",
+  "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-semantic-review.json"
+}

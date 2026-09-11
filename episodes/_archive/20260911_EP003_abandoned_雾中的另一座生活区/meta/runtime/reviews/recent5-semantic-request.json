@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "request_id": "recent5-semantic-a1-eda71d8376adf26e",
+  "request_fingerprint": "eda71d8376adf26e7d223fe84b8a2b2005c44c4e05885ff06f2516fa930f0aab",
+  "created_at": "2026-09-11T13:03:05+08:00",
+  "status": "FINALIZED",
+  "review_kind": "recent5-semantic",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/episode-fingerprint.json",
+      "sha256": "7e7620693aee7c21558ae3ce5cb97cd53e7f9279d05b78de181035c898914f8a"
+    },
+    {
+      "path": "reports/account-pattern-registry.json",
+      "sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64"
+    }
+  ],
+  "candidate_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.recent5-semantic-review.candidate.json",
+  "prompt_sha256": "d73d20b4d78f4edf4feb5b9c92e99aaa8ea27828fb4bd74cb0e5781595e45b16",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are an adversarial semantic de-duplication critic in a fresh isolated session.\n\nGoal:\nDetect whether the CURRENT episode reuses the same underlying story mechanism as each recent historical episode even when the wording, nouns, location, era, or props are changed.\n\nDo NOT edit any repository file except the requested candidate JSON.\nDo NOT score anything yourself. Python computes scores from your booleans.\nDo NOT mark a dimension equivalent merely because both stories share the same genre or mood.\n\nCurrent episode:\n{\n  \"episode_id\": \"10-03\",\n  \"title\": \"雾中的另一座生活区\",\n  \"dimensions\": {\n    \"core_anomaly_mechanism\": \"雨后低云与山谷短暂重叠出另一边仍在正常生活的完整社会空间\",\n    \"story_engine\": \"普通情侣旅行记录中，男主因求证欲多停留几秒，让消费级无人机从观察升级为越界并付出失联代价\",\n    \"entry_mode\": \"川西情侣自驾旅行，雨停后停车休息并补拍普通山谷风景\",\n    \"anomaly_carrier\": \"低云雾缝、山谷地形、消费级无人机图传与本地缓存\",\n    \"primary_visual_space\": \"雨后川西山谷观景停车点 + 雾后另一边低矮住宅、土路、农田、院落和小市场\",\n    \"middle_escalation\": \"从单个屋顶逐步确认道路、农田、牲畜、家庭、市场构成完整社会，并出现居民对无人机的非同步反应\",\n    \"climax_form\": \"无人机图传偏移并失联；最后缓存同时出现另一边年轻女人与远处现实停车点上的自己的车和两个人影\",\n    \"relationship\": \"普通情侣从共同确认异常升级为围绕是否继续靠近发生第一次明确冲突，最终选择一起离开\",\n    \"reality_residue\": \"无人机真实失联、缓存末帧保留、两人没有下山寻找而继续旅行但关系和选择被改变\"\n  }\n}\n\nRecent historical fingerprints:\n[\n  {\n    \"episode_id\": \"09-04\",\n    \"title\": \"瓶中世界\",\n    \"dimensions\": {\n      \"core_anomaly_mechanism\": \"玻璃容器实时映射并控制现实重力\",\n      \"story_engine\": \"为父亲手术费清厂估价时主动转动异常玻璃瓶\",\n      \"entry_mode\": \"2008年县玻璃厂旧物清点的第一人称数码记录\",\n      \"anomaly_carrier\": \"装着同步县城的玻璃瓶与水泥底座刻线\",\n      \"primary_visual_space\": \"待拆县玻璃厂旧办公室和同步倾斜的县城\",\n      \"middle_escalation\": \"瓶身裂纹映射道路裂缝，父亲被困医院\",\n      \"climax_form\": \"冒着瓶裂城毁风险受控旋转复位并放弃交易\",\n      \"relationship\": \"女儿与等待手术的父亲\",\n      \"reality_residue\": \"天空白弧证明现实也处于更大容器\"\n    }\n  },\n  {\n    \"episode_id\": \"10-01\",\n    \"title\": \"鳌太线·热汤\",\n    \"dimensions\": {\n      \"core_anomaly_mechanism\": \"失温下由同一组装备与地形触发的错误感知重组\",\n      \"story_engine\": \"为完成上次退线遗憾而在脚崴后硬撑，最终下撤判断失真\",\n      \"entry_mode\": \"当代鳌太高寒雪坡的第一人称胸前运动相机记录\",\n      \"anomaly_carrier\": \"橙色保温毯、头灯、金属杯、保温杯、背包、黑石和红绳\",\n      \"primary_visual_space\": \"风雪中的同一处黑石背风点与下撤雪坡\",\n      \"middle_escalation\": \"红绳在左而灯在右，无脚印的灯逐渐被误认成温暖饭棚\",\n      \"climax_form\": \"阿川伸手接应时主角推开他并坐回虚构热汤前\",\n      \"relationship\": \"受伤主角与持续接应、劝其下撤的队友阿川\",\n      \"reality_residue\": \"路过者视角显示黄色羽绒服仍坐雪地，所有暖棚物回到现实装备\"\n    }\n  }\n]\n\nInterpret each dimension by underlying audience-facing role:\n- core_anomaly_mechanism: what impossible rule/event actually drives the story.\n- story_engine: the causal storytelling engine, not the surface setting.\n- entry_mode: how the protagonist enters/encounters the abnormal situation.\n- anomaly_carrier: the object/person/place/system that carries the abnormality.\n- primary_visual_space: the dominant visual environment/function, not just place name.\n- middle_escalation: how the anomaly escalates through the middle.\n- climax_form: what irreversible/highest-intensity reveal/action forms the climax.\n- relationship: the protagonist/other-person relationship structure driving decisions.\n- reality_residue: what evidence/consequence remains in ordinary reality afterward.\n\nFor every historical episode and every dimension, return true only when the underlying function/mechanism is substantially the same despite paraphrase or skin-swap. Return false when similarity is only genre, tone, broad setting, or incidental vocabulary.\n\nImportant examples:\n- \"进入地图上不存在的村子\" vs \"沿着一条导航里没有的路走进陌生村落\" can be equivalent entry/anomaly mechanisms even though text differs.\n- \"旧手机提前出现明天的照片\" vs \"MP4里出现未来影像\" can be semantically equivalent anomaly carriers/mechanisms depending on their actual role.\n- \"都发生在山里\" is NOT enough to mark primary_visual_space or mechanism equivalent by itself.\n- If core_anomaly_mechanism + middle_escalation + climax_form are all equivalent, this is a likely skin-swap and Python will veto it.\n\nWrite ONLY valid JSON to episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.recent5-semantic-review.candidate.json in this exact shape:\n{\n  \"comparisons\": [\n    {\n      \"episode_id\": \"<one exact historical episode_id>\",\n      \"equivalent_dimensions\": {\n        \"core_anomaly_mechanism\": false,\n        \"story_engine\": false,\n        \"entry_mode\": false,\n        \"anomaly_carrier\": false,\n        \"primary_visual_space\": false,\n        \"middle_escalation\": false,\n        \"climax_form\": false,\n        \"relationship\": false,\n        \"reality_residue\": false\n      },\n      \"match_reasons\": {\n        \"<only keys marked true>\": \"brief concrete reason\"\n      }\n    }\n  ]\n}\n\nRepository evidence being compared:\n- current fingerprint: episodes/10_彼此的天上/03_雾中的另一座生活区/meta/episode-fingerprint.json\n- account registry: reports/account-pattern-registry.json\n- episode: episodes/10_彼此的天上/03_雾中的另一座生活区\n\nRequirements:\n- Include exactly one comparison for every supplied historical episode_id.\n- Keep every equivalent_dimensions value strictly boolean.\n- match_reasons may contain only dimensions marked true; if none are true, use an empty object.\n- Never invent a historical episode or change an episode_id.\n",
+  "attempt_request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/recent5-semantic-attempt-1-request.json",
+  "finalized_at": "2026-09-11T13:03:40+08:00",
+  "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/recent5-semantic-review.json"
+}

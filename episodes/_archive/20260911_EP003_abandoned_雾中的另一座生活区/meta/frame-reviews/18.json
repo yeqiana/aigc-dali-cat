@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "18",
+  "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/18.png",
+  "asset_sha256": "47cc8a688701146ff76efff3a8466637d5aa4e8dbcb76609a8f96f04bc302491",
+  "story_sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f",
+  "storyboard_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6",
+  "visual_contract_sha256": "97c9bef6f39dfbc156bacd247f33d6b543f18adbe268709c28d94ae4ba99ae4b",
+  "environment_frame_sha256": "a4382993480f50bb810e9e7517272d586ed76a093a53773cb5aec1744562c09f",
+  "frame_directive_sha256": "ebdf8534439ee29fbb71da8e541889775b430502ee723c8b98edb95a88c6f823",
+  "frame_contract_sha256": "bc5eaa15dcdbff2a75c9c32e031800ff484072a204d6eb64a03d9b49806e63e9",
+  "source_binding": {
+    "story": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+      "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+    },
+    "storyboard": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 2,
+    "reviewed_at": "2026-09-11T17:57:06+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/frame-semantic-attempt-2-request.json",
+    "request_id": "frame-semantic-a2-bed592b8e617b152",
+    "request_fingerprint": "bed592b8e617b152cd405d0b79608dc09884cb54bfa1226164efea6dfd1ed37c",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "无人机失控：远处真实公路护栏与比例正确的小白车嵌入远景，近处他侧前景仍物理连续。",
+  "decision": "pass",
+  "caption_sha256": "5e8d1bebef1f919e62cce072395f5f18686327e3f3230f1a9693652921ebc6b6"
+}

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "generated_at": "2026-09-11T13:20:10+08:00",
+  "policy": {
+    "baseline_first": true,
+    "remaining_three_parallelizable": true,
+    "calibration_count": 4,
+    "baseline_selection": "opening_social_anchor",
+    "baseline_frame": 1,
+    "opening_social_anchor_machine_priority": true
+  },
+  "items": [
+    {
+      "id": "V-B",
+      "frame": 1,
+      "mode": "normal_record",
+      "role": "ordinary_baseline",
+      "impact": 0,
+      "scale_reference": "",
+      "environment_severity": 11,
+      "contract_sha256": "db91b9b929238588dd2bed43a39b7bcb12df29bf4cee4a0f5373388ed1bc3e1d",
+      "depends_on": []
+    },
+    {
+      "id": "V-W",
+      "frame": 6,
+      "mode": "anomaly_amplified",
+      "role": "worst_capture_condition",
+      "impact": 3,
+      "scale_reference": "known road width and mountain slope",
+      "environment_severity": 12,
+      "contract_sha256": "fe3e925b671f5334750bece321b8e3cc8fa6b65baa7814fda1908a4e3ac38886",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-A",
+      "frame": 3,
+      "mode": "anomaly_reveal",
+      "role": "first_major_anomaly",
+      "impact": 2,
+      "scale_reference": "roof/person versus valley slope",
+      "environment_severity": 12,
+      "contract_sha256": "0d279988f7524512b48d38500934dd915989ac384c4b8a09b5a6139984f83260",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-H",
+      "frame": 19,
+      "mode": "climax_impact",
+      "role": "high_impact_admission",
+      "impact": 4,
+      "scale_reference": "human body, house, road, car and two far figures across one depth stack",
+      "environment_severity": 6,
+      "contract_sha256": "bc7272b6996f6bad69590fe241337e9f745415496434669cac8532a28d767295",
+      "depends_on": [
+        1
+      ]
+    }
+  ]
+}

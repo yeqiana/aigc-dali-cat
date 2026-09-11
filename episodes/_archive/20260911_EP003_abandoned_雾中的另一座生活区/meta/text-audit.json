@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "audited_at": "2026-09-11T18:12:14+08:00",
+  "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\10_彼此的天上\\03_雾中的另一座生活区\\meta\\subtitles.yaml",
+  "caption_count": 18,
+  "silent_frames": [
+    10,
+    17
+  ],
+  "hard_errors": [],
+  "warnings": [],
+  "summary": {
+    "hard_error_count": 0,
+    "warning_count": 0,
+    "passed": true
+  },
+  "voice_contract_sha256": "1a2225c100863429102d9a3f28e6de7d8ad90623b49d21fea61aa7afa0ff7b73",
+  "source_sha256": "bfa352da206a99d8a01ca1f74874e94ee96d76bf71a0053aa2162a4a820c6465"
+}

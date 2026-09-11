@@ -1,0 +1,860 @@
+{
+  "schema_version": 1,
+  "kind": "episode_performance",
+  "generated_at": "2026-09-11T12:56:43.494+08:00",
+  "telemetry_only": true,
+  "not_stage_gate": true,
+  "fail_soft": true,
+  "episode_path": "episodes/10_彼此的天上/03_雾中的另一座生活区",
+  "started_at": "2026-09-11T12:56:43.494+08:00",
+  "updated_at": "2026-09-11T18:27:31.592+08:00",
+  "finalized_at": null,
+  "final_status": null,
+  "total_wall_seconds": null,
+  "stages": {
+    "INCREMENTAL_PLAN": {
+      "runs": [
+        {
+          "run_id": "6fcb7090638d",
+          "started_at": "2026-09-11T12:57:50.413+08:00",
+          "ended_at": "2026-09-11T12:57:50.616+08:00",
+          "duration_seconds": 0.203,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 1
+          }
+        },
+        {
+          "run_id": "c6f027b397b7",
+          "started_at": "2026-09-11T13:13:51.372+08:00",
+          "ended_at": "2026-09-11T13:13:51.718+08:00",
+          "duration_seconds": 0.346,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 2
+          }
+        },
+        {
+          "run_id": "64c64fcde355",
+          "started_at": "2026-09-11T14:22:57.607+08:00",
+          "ended_at": "2026-09-11T14:22:58.456+08:00",
+          "duration_seconds": 0.849,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 3
+          }
+        },
+        {
+          "run_id": "788f4f413af6",
+          "started_at": "2026-09-11T14:27:08.012+08:00",
+          "ended_at": "2026-09-11T14:27:09.342+08:00",
+          "duration_seconds": 1.33,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 4
+          }
+        },
+        {
+          "run_id": "d5eead39ede2",
+          "started_at": "2026-09-11T14:28:21.482+08:00",
+          "ended_at": "2026-09-11T14:28:22.151+08:00",
+          "duration_seconds": 0.669,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 5
+          }
+        },
+        {
+          "run_id": "909b252d465a",
+          "started_at": "2026-09-11T14:28:58.604+08:00",
+          "ended_at": "2026-09-11T14:28:59.208+08:00",
+          "duration_seconds": 0.604,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 6
+          }
+        },
+        {
+          "run_id": "adeb17a3b7f7",
+          "started_at": "2026-09-11T14:30:47.800+08:00",
+          "ended_at": "2026-09-11T14:30:48.697+08:00",
+          "duration_seconds": 0.897,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 7
+          }
+        }
+      ]
+    },
+    "CREATIVE_STORY": {
+      "runs": [
+        {
+          "run_id": "818acad20705",
+          "started_at": "2026-09-11T12:57:50.639+08:00",
+          "ended_at": "2026-09-11T13:13:52.439+08:00",
+          "duration_seconds": 961.8,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "STORYBOARD_LOCKED",
+            "reused": true
+          }
+        },
+        {
+          "run_id": "087ed2be83e3",
+          "started_at": "2026-09-11T14:23:00.130+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "STORYBOARD_LOCKED"
+          },
+          "ended_at": "2026-09-11T14:23:00.130+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "cb32f1eec7aa",
+          "started_at": "2026-09-11T14:27:10.570+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "STORYBOARD_LOCKED"
+          },
+          "ended_at": "2026-09-11T14:27:10.570+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "fc08f841190b",
+          "started_at": "2026-09-11T14:28:23.318+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "STORYBOARD_LOCKED"
+          },
+          "ended_at": "2026-09-11T14:28:23.318+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "0011c74230a4",
+          "started_at": "2026-09-11T14:29:00.234+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "STORYBOARD_LOCKED"
+          },
+          "ended_at": "2026-09-11T14:29:00.234+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "f6487e3761fd",
+          "started_at": "2026-09-11T14:30:50.139+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "STORYBOARD_LOCKED"
+          },
+          "ended_at": "2026-09-11T14:30:50.139+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    "PREIMAGE_COMPILE": {
+      "runs": [
+        {
+          "run_id": "556e64d5735e",
+          "started_at": "2026-09-11T13:13:52.447+08:00",
+          "ended_at": "2026-09-11T14:23:00.345+08:00",
+          "duration_seconds": 4147.898,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": null,
+            "reused": true,
+            "reason": "preproduction handoff already valid"
+          }
+        },
+        {
+          "run_id": "cded39dbc611",
+          "started_at": "2026-09-11T14:27:10.752+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "reason": "preproduction handoff already valid"
+          },
+          "ended_at": "2026-09-11T14:27:10.752+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "b0dd31410a7b",
+          "started_at": "2026-09-11T14:28:23.478+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "reason": "preproduction handoff already valid"
+          },
+          "ended_at": "2026-09-11T14:28:23.478+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "c701c45b0bfd",
+          "started_at": "2026-09-11T14:29:00.363+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "reason": "preproduction handoff already valid"
+          },
+          "ended_at": "2026-09-11T14:29:00.363+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "c09c3ef7c2dd",
+          "started_at": "2026-09-11T14:30:50.311+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "reason": "preproduction handoff already valid"
+          },
+          "ended_at": "2026-09-11T14:30:50.311+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    "VISUAL_LOCK": {
+      "runs": [
+        {
+          "run_id": "deb3ef4678e0",
+          "started_at": "2026-09-11T14:23:00.511+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "VISUAL_CALIBRATED"
+          }
+        },
+        {
+          "run_id": "87de1b199a19",
+          "started_at": "2026-09-11T14:27:10.906+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "VISUAL_CALIBRATED"
+          }
+        },
+        {
+          "run_id": "9fb8d98c7207",
+          "started_at": "2026-09-11T14:28:23.631+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "VISUAL_CALIBRATED"
+          }
+        },
+        {
+          "run_id": "0ab44164647a",
+          "started_at": "2026-09-11T14:29:00.489+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "VISUAL_CALIBRATED"
+          }
+        },
+        {
+          "run_id": "3ae58f16a4b0",
+          "started_at": "2026-09-11T14:30:50.515+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "VISUAL_CALIBRATED"
+          }
+        }
+      ]
+    }
+  },
+  "named_spans": {
+    "CONTEXT_RECOVERY": {
+      "runs": [
+        {
+          "run_id": "a99ec39dd008",
+          "started_at": "2026-09-11T12:57:49.990+08:00",
+          "ended_at": "2026-09-11T12:57:50.025+08:00",
+          "duration_seconds": 0.035,
+          "status": "PASS",
+          "source": "runtime_fast_path_v251",
+          "metadata": {
+            "fast_path": "2.6.0"
+          }
+        },
+        {
+          "run_id": "3e8931679eeb",
+          "started_at": "2026-09-11T13:13:50.962+08:00",
+          "ended_at": "2026-09-11T13:13:50.981+08:00",
+          "duration_seconds": 0.019,
+          "status": "PASS",
+          "source": "runtime_fast_path_v251",
+          "metadata": {
+            "fast_path": "2.6.0"
+          }
+        }
+      ]
+    },
+    "HOST_ACTION_CREATIVE_STORY": {
+      "runs": [
+        {
+          "run_id": "cdd49adec844",
+          "started_at": "2026-09-11T12:57:50.665+08:00",
+          "ended_at": "2026-09-11T13:13:51.731+08:00",
+          "duration_seconds": 961.066,
+          "status": "PASS",
+          "source": "runtime_dag:CREATIVE_STORY",
+          "metadata": {
+            "request_id": "host-184a9a3e9392e9f3",
+            "runtime": "WORK",
+            "next_step": "CREATIVE_STORY"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_CONCEPT-AMBITION": {
+      "runs": [
+        {
+          "run_id": "4499e4c5a026",
+          "started_at": "2026-09-11T13:01:08.680+08:00",
+          "ended_at": "2026-09-11T13:01:37.268+08:00",
+          "duration_seconds": 28.588,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "concept-ambition-a1-e8d4decfb3408a3b",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/concept-ambition-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_RECENT5-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "673b350f2a92",
+          "started_at": "2026-09-11T13:03:05.850+08:00",
+          "ended_at": "2026-09-11T13:03:40.416+08:00",
+          "duration_seconds": 34.566,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "recent5-semantic-a1-eda71d8376adf26e",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/recent5-semantic-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_STORY-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "9d61ae0217f4",
+          "started_at": "2026-09-11T13:12:09.736+08:00",
+          "ended_at": "2026-09-11T13:13:09.204+08:00",
+          "duration_seconds": 59.468,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "story-semantic-a1-202b2c4451a86aeb",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/story-semantic-review.json"
+          }
+        }
+      ]
+    },
+    "HOST_ACTION_PREIMAGE_COMPILE": {
+      "runs": [
+        {
+          "run_id": "f2b4298e4049",
+          "started_at": "2026-09-11T13:13:52.484+08:00",
+          "ended_at": "2026-09-11T14:22:57.372+08:00",
+          "duration_seconds": 4144.888,
+          "status": "PASS",
+          "source": "runtime_dag:PREIMAGE_COMPILE",
+          "metadata": {
+            "request_id": "host-385a7b5ab954d5f2",
+            "runtime": "WORK",
+            "next_step": "PREIMAGE_COMPILE"
+          }
+        }
+      ]
+    },
+    "VISUAL_LOCK_BASELINE_REVIEW": {
+      "runs": [
+        {
+          "run_id": "ec1d67242168",
+          "started_at": "2026-09-11T13:50:41.410+08:00",
+          "ended_at": "2026-09-11T13:56:23.911+08:00",
+          "duration_seconds": 342.501,
+          "status": "PASS",
+          "source": "visual_lock_baseline_gate",
+          "metadata": {
+            "frame": 1,
+            "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-9ae48137181c-a2.png",
+            "pixel_master_status": "PROVISIONAL"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_VISUAL-LOCK-BASELINE": {
+      "runs": [
+        {
+          "run_id": "985d2dade122",
+          "started_at": "2026-09-11T13:55:27.667+08:00",
+          "ended_at": "2026-09-11T13:56:23.922+08:00",
+          "duration_seconds": 56.255,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-baseline-a1-6d9ec2fd8a8fc6bf",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/visual-lock-baseline-review.json"
+          }
+        }
+      ]
+    },
+    "HOST_ACTION_VISUAL_LOCK": {
+      "runs": [
+        {
+          "run_id": "13ad865b4282",
+          "started_at": "2026-09-11T14:23:00.592+08:00",
+          "ended_at": "2026-09-11T17:19:17.458+08:00",
+          "duration_seconds": 10576.866,
+          "status": "PASS",
+          "source": "runtime_dag:VISUAL_LOCK",
+          "metadata": {
+            "request_id": "host-a962125ad7087f06",
+            "runtime": "WORK",
+            "next_step": "VISUAL_LOCK"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_VISUAL-LOCK": {
+      "runs": [
+        {
+          "run_id": "0e31f107cfb0",
+          "started_at": "2026-09-11T14:50:32.738+08:00",
+          "ended_at": "2026-09-11T14:51:05.342+08:00",
+          "duration_seconds": 32.604,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-a1-943ed5d43192e75e",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/visual-profile-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_FRAME-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "4cd1af7650cd",
+          "started_at": "2026-09-11T17:36:53.477+08:00",
+          "ended_at": "2026-09-11T17:38:02.342+08:00",
+          "duration_seconds": 68.865,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "frame-semantic-a1-978ab1494158df54",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-semantic-review.json"
+          }
+        },
+        {
+          "run_id": "e9a6d95cf42b",
+          "started_at": "2026-09-11T17:55:58.004+08:00",
+          "ended_at": "2026-09-11T17:57:23.464+08:00",
+          "duration_seconds": 85.46,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "frame-semantic-a2-bed592b8e617b152",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-semantic-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-001": {
+      "runs": [
+        {
+          "run_id": "1b51b24b7bf0",
+          "started_at": "2026-09-11T18:27:31.592+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-001-a1-34087fc631892fdd",
+            "attempt": 1,
+            "runtime": "WORK"
+          }
+        }
+      ]
+    }
+  },
+  "state_transitions": [
+    {
+      "from": "IDEA_LOCKED",
+      "to": "STORYBOARD_LOCKED",
+      "at": "2026-09-11T13:13:42+08:00"
+    },
+    {
+      "from": "STORYBOARD_LOCKED",
+      "to": "VISUAL_CALIBRATED",
+      "at": "2026-09-11T14:55:22+08:00"
+    },
+    {
+      "from": "VISUAL_CALIBRATED",
+      "to": "PRODUCTION_PASSED",
+      "at": "2026-09-11T18:14:49+08:00"
+    }
+  ],
+  "image_attempts": [],
+  "summary": {
+    "stage_wall": {
+      "INCREMENTAL_PLAN": {
+        "wall_seconds": 4.898,
+        "runs": 7
+      },
+      "CREATIVE_STORY": {
+        "wall_seconds": 961.8,
+        "runs": 6
+      },
+      "PREIMAGE_COMPILE": {
+        "wall_seconds": 4147.898,
+        "runs": 5
+      },
+      "VISUAL_LOCK": {
+        "wall_seconds": 0,
+        "runs": 5
+      }
+    },
+    "named_span_wall": {
+      "CONTEXT_RECOVERY": {
+        "wall_seconds": 0.054,
+        "runs": 2
+      },
+      "HOST_ACTION_CREATIVE_STORY": {
+        "wall_seconds": 961.066,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_CONCEPT-AMBITION": {
+        "wall_seconds": 28.588,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_RECENT5-SEMANTIC": {
+        "wall_seconds": 34.566,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_STORY-SEMANTIC": {
+        "wall_seconds": 59.468,
+        "runs": 1
+      },
+      "HOST_ACTION_PREIMAGE_COMPILE": {
+        "wall_seconds": 4144.888,
+        "runs": 1
+      },
+      "VISUAL_LOCK_BASELINE_REVIEW": {
+        "wall_seconds": 342.501,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_VISUAL-LOCK-BASELINE": {
+        "wall_seconds": 56.255,
+        "runs": 1
+      },
+      "HOST_ACTION_VISUAL_LOCK": {
+        "wall_seconds": 10576.866,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_VISUAL-LOCK": {
+        "wall_seconds": 32.604,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_FRAME-SEMANTIC": {
+        "wall_seconds": 154.325,
+        "runs": 2
+      },
+      "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-001": {
+        "wall_seconds": 0,
+        "runs": 1
+      }
+    },
+    "critical_path": {
+      "kind": "observed_end_to_end_wall",
+      "critical_path_seconds": 5646.817,
+      "image_backend_union_wall_seconds": 0.0,
+      "image_backend_resource_seconds": 0.0,
+      "parallel_saved_seconds": 0.0,
+      "dependency_chain": [
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "6fcb7090638d",
+          "status": "PASS",
+          "started_at": "2026-09-11T12:57:50.413+08:00",
+          "ended_at": "2026-09-11T12:57:50.616+08:00",
+          "duration_seconds": 0.203
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "818acad20705",
+          "status": "PASS",
+          "started_at": "2026-09-11T12:57:50.639+08:00",
+          "ended_at": "2026-09-11T13:13:52.439+08:00",
+          "duration_seconds": 961.8
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "c6f027b397b7",
+          "status": "PASS",
+          "started_at": "2026-09-11T13:13:51.372+08:00",
+          "ended_at": "2026-09-11T13:13:51.718+08:00",
+          "duration_seconds": 0.346
+        },
+        {
+          "stage": "PREIMAGE_COMPILE",
+          "run_id": "556e64d5735e",
+          "status": "PASS",
+          "started_at": "2026-09-11T13:13:52.447+08:00",
+          "ended_at": "2026-09-11T14:23:00.345+08:00",
+          "duration_seconds": 4147.898
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "64c64fcde355",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:22:57.607+08:00",
+          "ended_at": "2026-09-11T14:22:58.456+08:00",
+          "duration_seconds": 0.849
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "087ed2be83e3",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:23:00.130+08:00",
+          "ended_at": "2026-09-11T14:23:00.130+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "VISUAL_LOCK",
+          "run_id": "deb3ef4678e0",
+          "status": "RUNNING",
+          "started_at": "2026-09-11T14:23:00.511+08:00",
+          "ended_at": null,
+          "duration_seconds": null
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "788f4f413af6",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:27:08.012+08:00",
+          "ended_at": "2026-09-11T14:27:09.342+08:00",
+          "duration_seconds": 1.33
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "cb32f1eec7aa",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:27:10.570+08:00",
+          "ended_at": "2026-09-11T14:27:10.570+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "PREIMAGE_COMPILE",
+          "run_id": "cded39dbc611",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:27:10.752+08:00",
+          "ended_at": "2026-09-11T14:27:10.752+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "VISUAL_LOCK",
+          "run_id": "87de1b199a19",
+          "status": "RUNNING",
+          "started_at": "2026-09-11T14:27:10.906+08:00",
+          "ended_at": null,
+          "duration_seconds": null
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "d5eead39ede2",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:28:21.482+08:00",
+          "ended_at": "2026-09-11T14:28:22.151+08:00",
+          "duration_seconds": 0.669
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "fc08f841190b",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:28:23.318+08:00",
+          "ended_at": "2026-09-11T14:28:23.318+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "PREIMAGE_COMPILE",
+          "run_id": "b0dd31410a7b",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:28:23.478+08:00",
+          "ended_at": "2026-09-11T14:28:23.478+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "VISUAL_LOCK",
+          "run_id": "9fb8d98c7207",
+          "status": "RUNNING",
+          "started_at": "2026-09-11T14:28:23.631+08:00",
+          "ended_at": null,
+          "duration_seconds": null
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "909b252d465a",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:28:58.604+08:00",
+          "ended_at": "2026-09-11T14:28:59.208+08:00",
+          "duration_seconds": 0.604
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "0011c74230a4",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:29:00.234+08:00",
+          "ended_at": "2026-09-11T14:29:00.234+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "PREIMAGE_COMPILE",
+          "run_id": "c701c45b0bfd",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:29:00.363+08:00",
+          "ended_at": "2026-09-11T14:29:00.363+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "VISUAL_LOCK",
+          "run_id": "0ab44164647a",
+          "status": "RUNNING",
+          "started_at": "2026-09-11T14:29:00.489+08:00",
+          "ended_at": null,
+          "duration_seconds": null
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "adeb17a3b7f7",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:30:47.800+08:00",
+          "ended_at": "2026-09-11T14:30:48.697+08:00",
+          "duration_seconds": 0.897
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "f6487e3761fd",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:30:50.139+08:00",
+          "ended_at": "2026-09-11T14:30:50.139+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "PREIMAGE_COMPILE",
+          "run_id": "c09c3ef7c2dd",
+          "status": "PASS",
+          "started_at": "2026-09-11T14:30:50.311+08:00",
+          "ended_at": "2026-09-11T14:30:50.311+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "VISUAL_LOCK",
+          "run_id": "3ae58f16a4b0",
+          "status": "RUNNING",
+          "started_at": "2026-09-11T14:30:50.515+08:00",
+          "ended_at": null,
+          "duration_seconds": null
+        }
+      ],
+      "note": "End-to-end wall is the user-visible critical path; image resource time is overlap-aware and is not added to stage wall."
+    },
+    "performance_slo": {
+      "health": "UNKNOWN",
+      "active_wall_seconds": null,
+      "gate": false
+    },
+    "images": {
+      "attempts": 0,
+      "successful_attempts": 0,
+      "repair_attempts": 0,
+      "technical_failures_or_retries": 0,
+      "image_backend_seconds": 0,
+      "average_attempt_seconds": null,
+      "max_attempt_seconds": null
+    },
+    "note": "stage wall time and image backend resource time can overlap; do not add them together."
+  },
+  "start_sources": [
+    "episode_state.init"
+  ]
+}

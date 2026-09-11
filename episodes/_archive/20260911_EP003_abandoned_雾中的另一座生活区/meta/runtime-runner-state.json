@@ -1,0 +1,9 @@
+{
+  "status": "HOST_WAIT",
+  "pid": 48744,
+  "resume_enabled": true,
+  "heartbeat": "2026-09-11T14:30:50+08:00",
+  "return_code": 20,
+  "attempt": 1,
+  "last_action": "WAIT_HOST"
+}

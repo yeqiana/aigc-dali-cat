@@ -1,0 +1,49 @@
+{
+  "schema_version": 2,
+  "request_id": "story-semantic-a1-202b2c4451a86aeb",
+  "request_fingerprint": "202b2c4451a86aeb1090ebacd4ef9d04f04b5b16ff169212717756f40ddfc7a3",
+  "created_at": "2026-09-11T13:12:09+08:00",
+  "status": "FINALIZED",
+  "review_kind": "story-semantic",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+      "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "1bd41fc05fa342885dc4f3f84a40a6735c9551b710a0fd669f2a8189e8169746"
+    },
+    {
+      "path": "standards/创作执行强制规范_V2.0.3.2.md",
+      "sha256": "8d768548f8086328612ddd2e30285388de722286d8374f35fc1b40a615b73695"
+    },
+    {
+      "path": "standards/story_regressions/cases.json",
+      "sha256": "92203e7d710b401e0e507f06c0897139e7722616956a99d1193a7123cc85551b"
+    },
+    {
+      "path": "standards/传播核与动作回应链规范_V1.0.md",
+      "sha256": "a9850316fb512274ab052e281ae72933f2594d333539bdea662f6316e618f4c8"
+    }
+  ],
+  "candidate_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.story-semantic-review.candidate.json",
+  "prompt_sha256": "6e0b5e9ff72d8e39a390b6cc418a30aaf6522a0567c0461db705eafdb34ee986",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are an adversarial Story Critic in a fresh isolated session.\nDo NOT rewrite the story. Do NOT score it politely. Your job is to find reasons it should NOT enter production.\nRead:\n- episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md\n- episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md\n- standards/制作规范_正式版.md\n- standards/创作执行强制规范_V2.0.3.2.md\n- standards/story_regressions/cases.json\n- standards/传播核与动作回应链规范_V1.0.md\n\nThis is critic attempt 1. Ignore propagation scores and author self-evaluation.\n\nHard rules:\n1. A viewer must be able to explain protagonist, why they are here, their personal stake, the ONE core anomaly rule, trigger, direct consequence, midpoint reframe, climax choice/cost, result and aftermath.\n2. The main events must be explainable by one coherent underlying anomaly mechanism. If an object first returns by itself, later guides people, then suddenly \"marks the next person\" without one established rule explaining all three, mechanism_consistency=false.\n3. Causality must read as reality goal -> rule/setup -> meaningful choice/violation -> direct consequence -> forced next action -> climax choice/cost -> result -> aftermath. A warning revealed only after the violation cannot retroactively create a meaningful choice unless the story established the rule another way.\n4. \"I found them\", \"the door opened\", \"the monster appeared\", \"the photo changed\" are discoveries/setup, not a climax by themselves. The climax needs choice, cost, relationship change, rule payoff, identity turn or irreversible consequence.\n5. The ending must recontextualize at least THREE concrete earlier facts. Introducing a brand-new anomaly behavior at the end is not payoff.\n6. In any run of 5 storyboard frames, at least one frame must add new evidence, causal turn or cognitive upgrade. Apply the delete-frame test.\n7. Perform a BLIND RETELL from your own understanding. If you need \"maybe / perhaps / unclear\" to explain the core mechanism or climax, clarity/mechanism_consistency must fail.\n8. PASS only when every hard check is true and issue_codes is empty.\n9. V2.5 PROPAGATION CORE: identify one ordinary protagonist action that causes a direct abnormal response and a visible consequence.\n10. Write a <=10-second retell sentence; avoid lore-heavy explanation.\n11. Bind trigger_frame, response_frame and payoff_frame to actual storyboard frames. Default trigger <=50%; if later, explain why.\n12. Golden examples are structural references only; do not copy location + prop + trigger action + climax surface together.\n<!-- STORY_OS_V2_5_PROPAGATION_CORE -->\n\nWrite ONLY valid JSON to episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.story-semantic-review.candidate.json. Do not modify any other repository file.\nRequired JSON shape:\n{\n  \"contract\": {\n    \"protagonist\": \"...\",\n    \"presence_reason\": \"...\",\n    \"personal_stake\": \"...\",\n    \"core_anomaly\": \"...\",\n    \"rule\": \"...\",\n    \"trigger\": \"...\",\n    \"direct_consequence\": \"...\",\n    \"midpoint_reframe\": \"...\",\n    \"climax_choice\": \"...\",\n    \"ending_recontextualization\": [\"earlier fact 1\", \"earlier fact 2\", \"earlier fact 3\"]\n  },\n  \"propagation_core\": {\n    \"retell_sentence\": \"...\",\n    \"protagonist_action\": \"...\",\n    \"abnormal_response\": \"...\",\n    \"consequence\": \"...\",\n    \"response_latency\": \"immediate\",\n    \"visual_causality\": \"strong\",\n    \"retellable_in_10s\": true,\n    \"social_send_impulse\": \"strong\",\n    \"trigger_frame\": 9,\n    \"response_frame\": 10,\n    \"payoff_frame\": 14,\n    \"late_trigger_exception_reason\": \"\",\n    \"surface_copy_guard\": {\n      \"structural_reference_only\": true,\n      \"copied_surface_elements\": []\n    }\n  },\n  \"blind_retell\": {\n    \"protagonist_and_reason\": \"...\",\n    \"core_anomaly_rule\": \"...\",\n    \"worsening_choice\": \"...\",\n    \"climax_resolution\": \"...\",\n    \"ending_reinterpretation\": \"...\"\n  },\n  \"hard_checks\": {\n    \"clarity\": true,\n    \"causal_chain\": true,\n    \"mechanism_consistency\": true,\n    \"motivation_stake\": true,\n    \"trigger_consequence\": true,\n    \"midpoint_reframe\": true,\n    \"climax_payoff\": true,\n    \"ending_payoff\": true,\n    \"storyboard_information_gain\": true,\n    \"delete_frame_test\": true\n  },\n  \"issue_codes\": [],\n  \"notes\": [\"specific evidence or failure notes\"],\n  \"summary\": {\"passed\": true}\n}\nIf any hard rule fails, set its boolean false, add specific codes such as STORY_COMPREHENSION_FAIL, CAUSAL_CHAIN_BROKEN, MECHANISM_CONTRADICTION, CLIMAX_DISCOVERY_ONLY, ENDING_PAYOFF_TOO_WEAK, STORYBOARD_STALL, and set summary.passed=false.\nEpisode: episodes/10_彼此的天上/03_雾中的另一座生活区\n",
+  "finalized_at": "2026-09-11T13:13:09+08:00",
+  "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/story-semantic-review.json"
+}

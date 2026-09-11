@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "recorded_at_epoch": 1789117439,
+  "frame": "15",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "generation_route": "codex_subscription",
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "requested_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": 0.8
+  },
+  "provider_raw_canvas": {
+    "width": 100,
+    "height": 100,
+    "aspect_ratio": 1.0,
+    "exact_requested_canvas": false,
+    "resize_direction_to_release": "upscale"
+  },
+  "ratio_delta": 0.25,
+  "normalize_decision": "ASPECT_RATIO_MISMATCH",
+  "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\10_彼此的天上\\03_雾中的另一座生活区\\media\\raw\\15-1789117076.png",
+  "raw_sha256": "d0a230b1a79b71b858b7c215a0fbb0768d6459c14ea4ef80c61592629bf0e605",
+  "provider_attestation": false,
+  "exact_raw_canvas_guaranteed": false,
+  "receipt_is_evidence_not_authority": true
+}

@@ -1,0 +1,111 @@
+{
+  "schema_version": 2,
+  "handoff_type": "preproduction_to_image",
+  "source_runtime": "chatgpt",
+  "authority_boundary_version": 2,
+  "created_at_stage": "STORYBOARD_LOCKED",
+  "authority_assets": [
+    {
+      "kind": "file",
+      "path": "meta/runtime-request.json",
+      "sha256": "c8f1122051105495ecf64a28c86df51d07998053127b5e640a815ac0639dea41",
+      "bytes": 3775
+    },
+    {
+      "kind": "file",
+      "path": "meta/character-contract.json",
+      "sha256": "95241302efae7822d3d79275c1f0ae49c67a3cc88c9e83d7bfcb634d287a4842",
+      "bytes": 3259
+    },
+    {
+      "kind": "file",
+      "path": "meta/resource-selection.json",
+      "sha256": "2e4886ab74c9d4de4a38920b977dc863e3f79e0b11b46c1d012e0f3564602fd0",
+      "bytes": 1200
+    },
+    {
+      "kind": "file",
+      "path": "meta/intro-policy.json",
+      "sha256": "5c532ff294a5992250a89c5226be8109de3b9d1d2f30694b8e74cc1217184e90",
+      "bytes": 912
+    },
+    {
+      "kind": "file",
+      "path": "meta/directing-quality.json",
+      "sha256": "669b01d93f37333883f312fd4cef03e16d091e9b2e2792a4fff34a739cf68239",
+      "bytes": 759
+    },
+    {
+      "kind": "file",
+      "path": "meta/voice-contract.json",
+      "sha256": "1a2225c100863429102d9a3f28e6de7d8ad90623b49d21fea61aa7afa0ff7b73",
+      "bytes": 1928
+    },
+    {
+      "kind": "file",
+      "path": "meta/storyboard-density-review.json",
+      "sha256": "04db9184e228b3c9c35716ea1559a1d0792f861de67e28122d41883dc2ca8389",
+      "bytes": 6975
+    },
+    {
+      "kind": "file",
+      "path": "meta/opening-social-anchor.json",
+      "sha256": "67d2c621c99b6cf98c11272e676db3289ff5c92693b6d8e93b9187ddc373c321",
+      "bytes": 1145
+    },
+    {
+      "kind": "file",
+      "path": "meta/character-visual-contract.json",
+      "sha256": "e46c4af6d29840c4156428ee537f4ca46894c710fe5048cd37d62aa7571a0b8b",
+      "bytes": 4803
+    },
+    {
+      "kind": "file",
+      "path": "meta/shot-progression-review.json",
+      "sha256": "60d7e751d001d65191acb7cfe7adb0207691dedbed68ff3801cd26a9d3d78b04",
+      "bytes": 26584
+    },
+    {
+      "kind": "file",
+      "path": "meta/capture-event-contract.json",
+      "sha256": "bcbd77ff3d48987aa74542fc5bf78f6469af414c88264b57604c02d2e07b29ff",
+      "bytes": 9952
+    },
+    {
+      "kind": "file",
+      "path": "meta/world-state.json",
+      "sha256": "51fc58f45721b12a03802ee0966f716796d0a0844758f41c5a1311c62349efb3",
+      "bytes": 4842
+    },
+    {
+      "kind": "file",
+      "path": "meta/temporal-continuity.json",
+      "sha256": "971befb3860c342f07611bcce057bba87701e5198aa6008ffb2cdf4b0bd58040",
+      "bytes": 4975
+    },
+    {
+      "kind": "file",
+      "path": "meta/wardrobe-contract.json",
+      "sha256": "56e92d2e5b78d68ee5ddf08d62533be27882f59e227ee50540e6a39300de3637",
+      "bytes": 19248
+    }
+  ],
+  "authority_subsets": [
+    {
+      "kind": "json_subset",
+      "path": "meta/story-gates.json",
+      "name": "stable_preproduction_subset",
+      "sha256": "a3f89abcbe93e77c0a64d2a4f5a091deccdeb853a67fa98dacfbc395e74a5218"
+    }
+  ],
+  "derived_rebuildable": [
+    "meta/runtime/execution-capsules",
+    "meta/runtime/contracts",
+    "meta/runtime/prompt-packages"
+  ],
+  "quality_contracts_enabled": true,
+  "story_rewrite_allowed": false,
+  "next_mode": "image_continue",
+  "handoff_ready": true,
+  "manifest_sha256": "3e2190665a0cd710ddd7450a055091a23c7a435246807e840e1ae9fb63faed64"
+}

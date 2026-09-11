@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "20",
+  "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/20.png",
+  "asset_sha256": "826e06b7d3c038687f79cad6962dc2ee1d49a967fb9959cb9b6dafffd8a68202",
+  "story_sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f",
+  "storyboard_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6",
+  "visual_contract_sha256": "97c9bef6f39dfbc156bacd247f33d6b543f18adbe268709c28d94ae4ba99ae4b",
+  "environment_frame_sha256": "8916f2e19cec713cb1f9c78a91c583cedaddf8bf3b5ad27db7f1ebc022148ca4",
+  "frame_directive_sha256": "360d5d3cca01931db9fd825ecb5a9e3dc89df5aa50dc07c0eaf2c3592f56b3bd",
+  "frame_contract_sha256": "e15877b9ec0a6de31a9dcf3dc2c3408fd4f91ccc4013b023f4c4aa535d38e063",
+  "source_binding": {
+    "story": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+      "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+    },
+    "storyboard": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 2,
+    "reviewed_at": "2026-09-11T17:57:06+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/frame-semantic-attempt-2-request.json",
+    "request_id": "frame-semantic-a2-bed592b8e617b152",
+    "request_fingerprint": "bed592b8e617b152cd405d0b79608dc09884cb54bfa1226164efea6dfd1ed37c",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "现实侧收尾：车尾遥控器与手机屏幕显示19缓存缩略图，P02关车门上车，无人机物理缺席。",
+  "decision": "pass",
+  "caption_sha256": "63c23eda29d80b7de9709b8e1d8d1dcce4bb92025e3972ef077d7750aa80af9c"
+}

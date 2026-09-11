@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "initial_state": {
+    "time": "2023年夏季雨后下午，整集约发生在同一小时内",
+    "location": "川西山谷公路旁合法可停车观景位置；现实侧与雾后生活区保持空间对照",
+    "weather": "阵雨刚停，路面湿，低云压在半山，持续阴天散射光，无新降雨",
+    "characters": {
+      "P01": {"gender":"male","age":24,"build":"普通年轻人体型","hair":"自然黑色短碎发，顶部轻微蓬松","clothing_anchor":"深灰/灰色轻薄防风外套或卫衣+深色休闲长裤+普通运动鞋","device_anchor":"普通智能手机+普通消费级折叠无人机","status":"present"},
+      "P02": {"gender":"female","age":24,"build":"普通年轻人体型","hair":"锁骨长度自然黑发，低马尾或自然披发","clothing_anchor":"浅灰轻薄防风外套或卫衣+深色直筒长裤+普通运动鞋","status":"present"}
+    },
+    "recorder": {"photographer_id":"P02","active_device":"普通智能手机前置摄像头"},
+    "props": {
+      "vehicle":"普通白色中国大陆家用自驾车，同一辆车贯穿现实侧与Frame18/19远景线索",
+      "drone":"普通消费级折叠无人机，旅行拍风景用途，Frame03起飞，Frame19后未返回",
+      "controller":"普通消费级无人机遥控器，Frame15与Frame20现实侧可见",
+      "phone":"P01普通智能手机，Frame01由P02自拍设备可为同类手机，Frame20显示Frame19缓存缩略图",
+      "other_side_cloth":"浅色粗织布，只作为另一边生活用品材质彩蛋"
+    },
+    "anomaly": {"phase":"ordinary","mechanism":"雨后低云覆盖的同一山谷短暂与另一边正常生活社会发生可观察、可被设备越入的空间重叠"}
+  },
+  "frames": {
+    "01":{"delta":{},"story_event":"P02在车内完成情侣自拍，建立同一对人物和普通旅行基线。"},
+    "02":{"delta":{"recorder":{"photographer_id":"P01","active_device":"普通智能手机后置摄像头"}},"story_event":"P01下车用手机拍雨停山谷并从后备箱拿出旅行用无人机。"},
+    "03":{"delta":{"recorder":{"photographer_id":"P01","active_device":"普通消费级折叠无人机相机"},"anomaly":{"phase":"discovery"}},"story_event":"无人机起飞后第一次在雾缝下拍到有人维护的陌生屋顶。"},
+    "04":{"delta":{"anomaly":{"phase":"confirmation_partial"}},"story_event":"农田和耕作活动证明异常不是孤立屋顶。"},
+    "05":{"delta":{},"story_event":"土路、牲畜与木料补足长期生活系统。"},
+    "06":{"delta":{"anomaly":{"phase":"spatial_continuity_hint"}},"story_event":"陌生道路弯折与EP01异常山路形成空间连续性线索。"},
+    "07":{"delta":{},"story_event":"普通家庭和孩子出现。"},
+    "08":{"delta":{},"story_event":"小市场、交换和争执出现。"},
+    "09":{"delta":{},"story_event":"浅色粗织布材质回收EP02视觉记忆。"},
+    "10":{"delta":{"anomaly":{"phase":"complete_society_confirmed"}},"story_event":"无人机高位第一次证明零散证据组成完整生活社会。"},
+    "11":{"delta":{},"story_event":"远端大型旧石建筑增加另一边社会时间深度。"},
+    "12":{"delta":{},"story_event":"浅色头巾年轻女人与孩子作为普通居民进入连续性。"},
+    "13":{"delta":{"anomaly":{"phase":"reciprocal_observation"}},"story_event":"老人第一个抬头并指出无人机，双方观察关系变成双向。"},
+    "14":{"delta":{},"story_event":"居民以非同步方式拉孩子、收摊、关窗。"},
+    "15":{"delta":{"recorder":{"photographer_id":"P02","active_device":"P01普通智能手机后置摄像头"}},"story_event":"P02接过手机记录P01，抓住他袖口要求返航；P01仍多看几秒。"},
+    "16":{"delta":{"recorder":{"photographer_id":"P01","active_device":"普通消费级折叠无人机相机"},"anomaly":{"phase":"device_boundary_drift"}},"story_event":"P01执行返航后，无人机实际运动却继续靠近生活区。"},
+    "17":{"delta":{"anomaly":{"phase":"reverse_view_hint"}},"story_event":"年轻女人护住孩子，远处出现自然曝光更亮的现实方向线索。"},
+    "18":{"delta":{},"story_event":"亮区中逐渐可辨现实护栏与白车。"},
+    "19":{"delta":{"props":{"drone":"普通消费级折叠无人机；信号断开，最后缓存保留，之后未返回"},"anomaly":{"phase":"reverse_view_evidence"}},"story_event":"最后缓存疑似同时拍到另一边年轻女人和现实停车点白车、两个人影，无人机失联。"},
+    "20":{"delta":{"recorder":{"photographer_id":"P01","active_device":"普通智能手机后置摄像头"},"anomaly":{"phase":"aftermath"}},"story_event":"P01用手机留下无人机未归和缓存证据的现实后果照，两人选择上车离开。"}
+  }
+}

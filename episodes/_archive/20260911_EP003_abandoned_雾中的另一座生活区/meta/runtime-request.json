@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "request_id": "20260911_125712_659679a4",
+  "created_at": "2026-09-11T12:57:12+08:00",
+  "mode": "full_auto",
+  "repository": {
+    "branch": "story",
+    "source": "system_default"
+  },
+  "topic": {
+    "title": "雾中的另一座生活区",
+    "raw": "雾中的另一座生活区"
+  },
+  "story_input": {
+    "mode": "user_seed",
+    "raw": "沿用当前已有 EP003 Story Lock candidate：川西自驾旅行、雨后山谷、无人机误入另一边完整生活区、对方发现无人机、最后缓存里从另一边看见现实中的车。保留五集系列主线与 EP001/EP002/EP004/EP005 连续性，仅按账号规范强化，不做大改。\n男女主必须延续 EP001 已批准人物身份，不换脸；服装可按天气和场景变化。图1必须用人物自拍或清晰正脸建立本集人物身份。\n完整连续推进到发布候选，不逐步询问。未指定图片参数时使用仓库默认 gpt-image-2、high、4:5。",
+    "constraints": [],
+    "rewrite_policy": "strengthen_and_rewrite",
+    "preserve_core_intent": true,
+    "allow_structure_rewrite": true
+  },
+  "intent": {
+    "intent": "CREATE_EPISODE",
+    "source": "deterministic_rules",
+    "confidence": 1.0,
+    "reason_codes": [
+      "DEFAULT_CREATE"
+    ],
+    "normalized_request_sha256": "61ed771deff0b26a527d57d9b8dfaa7dce1351fef4e94bff1803bd7306cfb34a",
+    "normalized_request": "开始生产彼此的天上 EP003《雾中的另一座生活区》。\n剧情大概沿用当前已有 EP003 Story Lock candidate:川西自驾旅行、雨后山谷、无人机误入另一边完整生活区、对方发现无人机、最后缓存里从另一边看见现实中的车。保留五集系列主线与 EP001/EP002/EP004/EP005 连续性,仅按账号规范强化,不做大改。\n男女主必须延续 EP001 已批准人物身份,不换脸;服装可按天气和场景变化。图1必须用人物自拍或清晰正脸建立本集人物身份。\n完整连续推进到发布候选,不逐步询问。未指定图片参数时使用仓库默认 gpt-image-2、high、4:5。",
+    "requires_llm_rewrite": false,
+    "requires_clarification": false
+  },
+  "creative_hints": [
+    "男女主必须延续 EP001 已批准人物身份，不换脸；服装可按天气和场景变化。图1必须用人物自拍或清晰正脸建立本集人物身份。"
+  ],
+  "image_model": "gpt-image-2",
+  "image_quality": "high",
+  "image": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "source": "system_default",
+    "strict_model": false,
+    "quality": "high"
+  },
+  "runtime": {
+    "execution_mode": "dag",
+    "continuous_execution": true,
+    "resume": true,
+    "max_image_workers": 3,
+    "fail_soft": true,
+    "incremental_reuse": true
+  },
+  "delivery": {
+    "mode": "auto",
+    "zip_required_for_completion": false
+  },
+  "user_intent": {
+    "full_auto_authorized": true,
+    "allow_story_strengthening": true,
+    "allow_story_rewrite": true,
+    "ask_before_each_step": false
+  },
+  "provenance": {
+    "source": "natural_language",
+    "original_request": "开始生产彼此的天上 EP003《雾中的另一座生活区》。\n剧情大概沿用当前已有 EP003 Story Lock candidate：川西自驾旅行、雨后山谷、无人机误入另一边完整生活区、对方发现无人机、最后缓存里从另一边看见现实中的车。保留五集系列主线与 EP001/EP002/EP004/EP005 连续性，仅按账号规范强化，不做大改。\n男女主必须延续 EP001 已批准人物身份，不换脸；服装可按天气和场景变化。图1必须用人物自拍或清晰正脸建立本集人物身份。\n完整连续推进到发布候选，不逐步询问。未指定图片参数时使用仓库默认 gpt-image-2、high、4:5。"
+  }
+}

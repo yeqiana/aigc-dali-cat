@@ -1,0 +1,367 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.0",
+  "last_completed": "RUNTIME_INITIALIZED",
+  "next_action": "READ_EPISODE_STATE",
+  "locked_frames": [],
+  "failed_frames": [],
+  "step_runs": [
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "1297f4072dd54fa36de317a34196c04a8e922fb983b0a7902dbb0c04e96ade82",
+      "output_hash": "aeb584a422043a75a386246727eb936a6bb196c154c1c4510587cbeed9103245",
+      "attempt": 1,
+      "started_at": null,
+      "finished_at": "2026-09-11T12:57:50+08:00",
+      "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/03_���е���һ��������\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "HOST_WAIT",
+      "input_hash": "232fc3abe2f33feece5a707ec86697814fb2cafc9776c296cde681d19d2c5752",
+      "output_hash": "0ac7efef3d8f850c8f0389e30fab9a396c1964b4e3440315040a28e5548a5a14",
+      "attempt": 1,
+      "started_at": null,
+      "finished_at": "2026-09-11T12:57:50+08:00",
+      "note": "ration/repair only, not CODEX full-auto.\", \"Read config/profiles/account_creative/default.json as the account default topic/style profile, without overriding explicit user constraints or recent-5 anti-homogeneity evidence.\", \"For new/unlocked work author meta/shot-progression-review.json schema_version=3 using standards/directing_grammar_v1.json: large+small shot scales, globally unique scene_position_id, at least two translated classic shot-structure references, practical-light narrative design, and at least one physically valid concealed anomaly carrier for suspense/strange genres. Run shot_progression_gate.py validate before completing CREATIVE_STORY.\"], \"schema_version\": 2, \"request_id\": \"host-184a9a3e9392e9f3\", \"request_fingerprint\": \"184a9a3e9392e9f3c9e31f7e7ef57e5923cfecfb0678ddcec1b6b17d0fd4b8a3\", \"created_at\": \"2026-09-11T12:57:50+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-184a9a3e9392e9f3.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "f4c4a2a92a231333f9ab9b0ee763529d09974d163f6d1319d6d50a2de3390736",
+      "output_hash": "1a37a99bbe7162622423c9ea63f24cf7884e7ed9da0d316f55d37a8444d8feb6",
+      "attempt": 2,
+      "started_at": null,
+      "finished_at": "2026-09-11T13:13:51+08:00",
+      "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/03_���е���һ��������\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "9136369172c848a5fbdbb8c6fa32e458973e2f5eb6549fec6f577a9ca6b4a287",
+      "output_hash": "9858f0a7775426c8c7b30444d4db6a0538fc1991c15f550cec0ea0387ed4f396",
+      "attempt": 2,
+      "started_at": null,
+      "finished_at": "2026-09-11T13:13:52+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "HOST_WAIT",
+      "input_hash": "5d5738bda5837cef0918c025669a2f99c42252f51b4daec40a5decf174420eab",
+      "output_hash": "a3b078c6cc71fdf18cee5e8df4d89bc1f39841d12022476bff9a57d63ecd60e4",
+      "attempt": 1,
+      "started_at": null,
+      "finished_at": "2026-09-11T13:13:52+08:00",
+      "note": "ocally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-385a7b5ab954d5f2\", \"request_fingerprint\": \"385a7b5ab954d5f2731744e928206c5bc98b5fb16df1bee6814d67904764b22e\", \"created_at\": \"2026-09-11T13:13:52+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-385a7b5ab954d5f2.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "d8c1ab72fb8f35de5e6823dfcebcb59e4ae3b529335febfd9bdb252fe7786e08",
+      "output_hash": "74366c6c8bfd4e6129ec02c7a587764b4f13748fb2b23e674b1a8ae1459daedf",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:22:58+08:00",
+      "note": "BOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"DIRTY\",\n  \"frame_plan\": {\n    \"action\": \"ERROR\",\n    \"raw\": \"Traceback (most recent call last):\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 635, in <module>\\n    raise SystemExit(main())\\n                     ^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 606, in main\\n    print(json.dumps(build_plan(ep), ensure_ascii=False, indent=2)); return 0\\n                     ^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 259, in build_plan\\n    frames = base.frame_records(ep, require_files=True)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\frame_semantic_review.py\\\", line 294, in frame_records\\n    raise ValueError(f\\\"frame {key} approved_asset missing\\\")\\nValueError: frame 01 approved_asset missing\\n\"\n  },\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"PRODUCTION_INCREMENTAL_REQUIRED\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "9f33ed75e7e9981a074c2e640ee91fc0c2c1f883740c8bdf2719afd924d5b066",
+      "output_hash": "24a6b1166ceb1b7c1f1fbebc757a5c5669c47a0837d72637c0473b43707f91e9",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:22:59+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "REUSED",
+      "input_hash": "6660c1cc6be5b7502f8a999c178ad957198be6a124cc2fdac292a9d444cc3c75",
+      "output_hash": "ffa1dd0e19bc0583981f79ce27029a2ab361466377db481a7ce179aac5b2deb0",
+      "attempt": 2,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:23:00+08:00",
+      "note": "preproduction handoff already valid"
+    },
+    {
+      "step": "VISUAL_LOCK",
+      "status": "HOST_WAIT",
+      "input_hash": "6cea18a9157bd8e59d9a7be0bb2975c33ac1e4c27fb57f6265c46f418de536c2",
+      "output_hash": "69d520586fd68f497f8d73dabda5a5ce193bd0202ec70766c03fb88b072d07e0",
+      "attempt": 1,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:23:00+08:00",
+      "note": "ocally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-a962125ad7087f06\", \"request_fingerprint\": \"a962125ad7087f060256e4d4b9c777bc631cfc03aa4a357d7c297ec68d21205b\", \"created_at\": \"2026-09-11T14:23:00+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-a962125ad7087f06.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "2fb773e614b8518eed442edf3d978e6e30be3815016ca4006e0a55eb6a877bac",
+      "output_hash": "e04c247ca630b3bdb4ca38aa102e9ce411cda538024b152ad850a23acb2eecf4",
+      "attempt": 4,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:27:09+08:00",
+      "note": "BOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"DIRTY\",\n  \"frame_plan\": {\n    \"action\": \"ERROR\",\n    \"raw\": \"Traceback (most recent call last):\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 635, in <module>\\n    raise SystemExit(main())\\n                     ^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 606, in main\\n    print(json.dumps(build_plan(ep), ensure_ascii=False, indent=2)); return 0\\n                     ^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 259, in build_plan\\n    frames = base.frame_records(ep, require_files=True)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\frame_semantic_review.py\\\", line 294, in frame_records\\n    raise ValueError(f\\\"frame {key} approved_asset missing\\\")\\nValueError: frame 01 approved_asset missing\\n\"\n  },\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"PRODUCTION_INCREMENTAL_REQUIRED\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "9f33ed75e7e9981a074c2e640ee91fc0c2c1f883740c8bdf2719afd924d5b066",
+      "output_hash": "24a6b1166ceb1b7c1f1fbebc757a5c5669c47a0837d72637c0473b43707f91e9",
+      "attempt": 4,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:27:10+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "REUSED",
+      "input_hash": "6660c1cc6be5b7502f8a999c178ad957198be6a124cc2fdac292a9d444cc3c75",
+      "output_hash": "ffa1dd0e19bc0583981f79ce27029a2ab361466377db481a7ce179aac5b2deb0",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:27:10+08:00",
+      "note": "preproduction handoff already valid"
+    },
+    {
+      "step": "VISUAL_LOCK",
+      "status": "HOST_WAIT",
+      "input_hash": "6cea18a9157bd8e59d9a7be0bb2975c33ac1e4c27fb57f6265c46f418de536c2",
+      "output_hash": "69d520586fd68f497f8d73dabda5a5ce193bd0202ec70766c03fb88b072d07e0",
+      "attempt": 2,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:27:10+08:00",
+      "note": "ocally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-a962125ad7087f06\", \"request_fingerprint\": \"a962125ad7087f060256e4d4b9c777bc631cfc03aa4a357d7c297ec68d21205b\", \"created_at\": \"2026-09-11T14:23:00+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-a962125ad7087f06.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "2154d99ccebf7966ba37fbae4b55656a4a53a41794f64c82272bb7c637ac9e44",
+      "output_hash": "5c64df2ece78b01d3ef643979d420262fdeb9b484e7e762dbdcd618bb12bf79a",
+      "attempt": 5,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:28:22+08:00",
+      "note": "BOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"DIRTY\",\n  \"frame_plan\": {\n    \"action\": \"ERROR\",\n    \"raw\": \"Traceback (most recent call last):\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 635, in <module>\\n    raise SystemExit(main())\\n                     ^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 606, in main\\n    print(json.dumps(build_plan(ep), ensure_ascii=False, indent=2)); return 0\\n                     ^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 259, in build_plan\\n    frames = base.frame_records(ep, require_files=True)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\frame_semantic_review.py\\\", line 294, in frame_records\\n    raise ValueError(f\\\"frame {key} approved_asset missing\\\")\\nValueError: frame 01 approved_asset missing\\n\"\n  },\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"PRODUCTION_INCREMENTAL_REQUIRED\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "9f33ed75e7e9981a074c2e640ee91fc0c2c1f883740c8bdf2719afd924d5b066",
+      "output_hash": "24a6b1166ceb1b7c1f1fbebc757a5c5669c47a0837d72637c0473b43707f91e9",
+      "attempt": 5,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:28:23+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "REUSED",
+      "input_hash": "6660c1cc6be5b7502f8a999c178ad957198be6a124cc2fdac292a9d444cc3c75",
+      "output_hash": "ffa1dd0e19bc0583981f79ce27029a2ab361466377db481a7ce179aac5b2deb0",
+      "attempt": 4,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:28:23+08:00",
+      "note": "preproduction handoff already valid"
+    },
+    {
+      "step": "VISUAL_LOCK",
+      "status": "HOST_WAIT",
+      "input_hash": "6cea18a9157bd8e59d9a7be0bb2975c33ac1e4c27fb57f6265c46f418de536c2",
+      "output_hash": "69d520586fd68f497f8d73dabda5a5ce193bd0202ec70766c03fb88b072d07e0",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:28:23+08:00",
+      "note": "ocally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-a962125ad7087f06\", \"request_fingerprint\": \"a962125ad7087f060256e4d4b9c777bc631cfc03aa4a357d7c297ec68d21205b\", \"created_at\": \"2026-09-11T14:23:00+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-a962125ad7087f06.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "9c2918dbe40d664fcbe4cf7349a44349f46caadedc01c57f6c395c1389f710b2",
+      "output_hash": "16fcf36773647cac9e8774383a92ff2dc11bede73ccbf39ae2ac759f05e4e4e6",
+      "attempt": 6,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:28:59+08:00",
+      "note": "BOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"DIRTY\",\n  \"frame_plan\": {\n    \"action\": \"ERROR\",\n    \"raw\": \"Traceback (most recent call last):\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 635, in <module>\\n    raise SystemExit(main())\\n                     ^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 606, in main\\n    print(json.dumps(build_plan(ep), ensure_ascii=False, indent=2)); return 0\\n                     ^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 259, in build_plan\\n    frames = base.frame_records(ep, require_files=True)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\frame_semantic_review.py\\\", line 294, in frame_records\\n    raise ValueError(f\\\"frame {key} approved_asset missing\\\")\\nValueError: frame 01 approved_asset missing\\n\"\n  },\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"PRODUCTION_INCREMENTAL_REQUIRED\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "9f33ed75e7e9981a074c2e640ee91fc0c2c1f883740c8bdf2719afd924d5b066",
+      "output_hash": "24a6b1166ceb1b7c1f1fbebc757a5c5669c47a0837d72637c0473b43707f91e9",
+      "attempt": 6,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:29:00+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "REUSED",
+      "input_hash": "6660c1cc6be5b7502f8a999c178ad957198be6a124cc2fdac292a9d444cc3c75",
+      "output_hash": "ffa1dd0e19bc0583981f79ce27029a2ab361466377db481a7ce179aac5b2deb0",
+      "attempt": 5,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:29:00+08:00",
+      "note": "preproduction handoff already valid"
+    },
+    {
+      "step": "VISUAL_LOCK",
+      "status": "HOST_WAIT",
+      "input_hash": "6cea18a9157bd8e59d9a7be0bb2975c33ac1e4c27fb57f6265c46f418de536c2",
+      "output_hash": "69d520586fd68f497f8d73dabda5a5ce193bd0202ec70766c03fb88b072d07e0",
+      "attempt": 4,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:29:00+08:00",
+      "note": "ocally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-a962125ad7087f06\", \"request_fingerprint\": \"a962125ad7087f060256e4d4b9c777bc631cfc03aa4a357d7c297ec68d21205b\", \"created_at\": \"2026-09-11T14:23:00+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-a962125ad7087f06.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "3b7dbf46bca3b9cbae1499eb5b0f1b383dbd7b35aef23c9870172d02217b70f9",
+      "output_hash": "43333f20deca9d35fba94c7550765c20f620c776753faa257158463e97aec1b0",
+      "attempt": 7,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:30:48+08:00",
+      "note": "BOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"DIRTY\",\n  \"frame_plan\": {\n    \"action\": \"ERROR\",\n    \"raw\": \"Traceback (most recent call last):\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 635, in <module>\\n    raise SystemExit(main())\\n                     ^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 606, in main\\n    print(json.dumps(build_plan(ep), ensure_ascii=False, indent=2)); return 0\\n                     ^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\incremental_frame_review.py\\\", line 259, in build_plan\\n    frames = base.frame_records(ep, require_files=True)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\_system\\\\frame_semantic_review.py\\\", line 294, in frame_records\\n    raise ValueError(f\\\"frame {key} approved_asset missing\\\")\\nValueError: frame 01 approved_asset missing\\n\"\n  },\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"PRODUCTION_INCREMENTAL_REQUIRED\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "9f33ed75e7e9981a074c2e640ee91fc0c2c1f883740c8bdf2719afd924d5b066",
+      "output_hash": "24a6b1166ceb1b7c1f1fbebc757a5c5669c47a0837d72637c0473b43707f91e9",
+      "attempt": 7,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:30:49+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "REUSED",
+      "input_hash": "6660c1cc6be5b7502f8a999c178ad957198be6a124cc2fdac292a9d444cc3c75",
+      "output_hash": "ffa1dd0e19bc0583981f79ce27029a2ab361466377db481a7ce179aac5b2deb0",
+      "attempt": 6,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:30:50+08:00",
+      "note": "preproduction handoff already valid"
+    },
+    {
+      "step": "VISUAL_LOCK",
+      "status": "HOST_WAIT",
+      "input_hash": "6cea18a9157bd8e59d9a7be0bb2975c33ac1e4c27fb57f6265c46f418de536c2",
+      "output_hash": "69d520586fd68f497f8d73dabda5a5ce193bd0202ec70766c03fb88b072d07e0",
+      "attempt": 5,
+      "started_at": null,
+      "finished_at": "2026-09-11T14:30:50+08:00",
+      "note": "ocally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-a962125ad7087f06\", \"request_fingerprint\": \"a962125ad7087f060256e4d4b9c777bc631cfc03aa4a357d7c297ec68d21205b\", \"created_at\": \"2026-09-11T14:23:00+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-a962125ad7087f06.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+    }
+  ],
+  "note": "Recovery evidence only; NOT a stage source.",
+  "runtime": "WORK",
+  "continuous_execution_authorized": true,
+  "approval_basis": "delegated_continuous_execution",
+  "updated_at": "2026-09-11T14:30:50+08:00",
+  "runner_events": [
+    {
+      "at": "2026-09-11T14:22:57+08:00",
+      "type": "resume",
+      "token": {}
+    },
+    {
+      "at": "2026-09-11T14:23:00+08:00",
+      "type": "cycle",
+      "return_code": 20,
+      "cycle": 1,
+      "category": "HOST_WAIT"
+    },
+    {
+      "at": "2026-09-11T14:27:07+08:00",
+      "type": "resume",
+      "token": {
+        "schema_version": 1,
+        "episode": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\10_彼此的天上\\03_雾中的另一座生活区",
+        "stage": "STORYBOARD_LOCKED",
+        "step": "WAIT_HOST",
+        "attempt": 1,
+        "failure_category": "HOST_WAIT",
+        "last_event": "host action pending",
+        "resume_action": "WAIT_HOST",
+        "updated_at": "2026-09-11T14:23:00+08:00"
+      }
+    },
+    {
+      "at": "2026-09-11T14:27:11+08:00",
+      "type": "cycle",
+      "return_code": 20,
+      "cycle": 1,
+      "category": "HOST_WAIT"
+    },
+    {
+      "at": "2026-09-11T14:28:21+08:00",
+      "type": "resume",
+      "token": {
+        "schema_version": 1,
+        "episode": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\10_彼此的天上\\03_雾中的另一座生活区",
+        "stage": "STORYBOARD_LOCKED",
+        "step": "WAIT_HOST",
+        "attempt": 1,
+        "failure_category": "HOST_WAIT",
+        "last_event": "host action pending",
+        "resume_action": "WAIT_HOST",
+        "updated_at": "2026-09-11T14:27:11+08:00"
+      }
+    },
+    {
+      "at": "2026-09-11T14:28:23+08:00",
+      "type": "cycle",
+      "return_code": 20,
+      "cycle": 1,
+      "category": "HOST_WAIT"
+    },
+    {
+      "at": "2026-09-11T14:28:58+08:00",
+      "type": "resume",
+      "token": {
+        "schema_version": 1,
+        "episode": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\10_彼此的天上\\03_雾中的另一座生活区",
+        "stage": "STORYBOARD_LOCKED",
+        "step": "WAIT_HOST",
+        "attempt": 1,
+        "failure_category": "HOST_WAIT",
+        "last_event": "host action pending",
+        "resume_action": "WAIT_HOST",
+        "updated_at": "2026-09-11T14:28:23+08:00"
+      }
+    },
+    {
+      "at": "2026-09-11T14:29:00+08:00",
+      "type": "cycle",
+      "return_code": 20,
+      "cycle": 1,
+      "category": "HOST_WAIT"
+    },
+    {
+      "at": "2026-09-11T14:30:47+08:00",
+      "type": "resume",
+      "token": {
+        "schema_version": 1,
+        "episode": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\10_彼此的天上\\03_雾中的另一座生活区",
+        "stage": "STORYBOARD_LOCKED",
+        "step": "WAIT_HOST",
+        "attempt": 1,
+        "failure_category": "HOST_WAIT",
+        "last_event": "host action pending",
+        "resume_action": "WAIT_HOST",
+        "updated_at": "2026-09-11T14:29:00+08:00"
+      }
+    },
+    {
+      "at": "2026-09-11T14:30:50+08:00",
+      "type": "cycle",
+      "return_code": 20,
+      "cycle": 1,
+      "category": "HOST_WAIT"
+    }
+  ]
+}

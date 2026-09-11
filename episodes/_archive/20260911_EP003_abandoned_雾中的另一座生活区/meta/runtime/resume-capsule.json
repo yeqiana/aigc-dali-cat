@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "module_version": "2.5.1",
+  "generated_at": "2026-09-11T13:13:50+08:00",
+  "episode": "episodes/10_彼此的天上/03_雾中的另一座生活区",
+  "current_state": "STORYBOARD_LOCKED",
+  "next_target": "VISUAL_CALIBRATED",
+  "runtime_step": "VISUAL_LOCK",
+  "source_fingerprint": "f19aee9d4670cb1734a7cdd3d9d9e21cfb79baecdd933d5c05814618de199080",
+  "source_files": [
+    {
+      "path": "meta/episode-state.json",
+      "sha256": "21f683366745ae6e4c0a1c6d75dad4edc5b3b96c90b9d34f33aeed3b719ba1f7"
+    },
+    {
+      "path": "meta/production-ledger.json",
+      "sha256": null
+    },
+    {
+      "path": "meta/production-queue.json",
+      "sha256": null
+    },
+    {
+      "path": "meta/runtime-request.json",
+      "sha256": "c8f1122051105495ecf64a28c86df51d07998053127b5e640a815ac0639dea41"
+    },
+    {
+      "path": "meta/story-gates.json",
+      "sha256": "62700ec7363dd31e0c61a2067abc5525523aa64004794a728a738630eb2f41f6"
+    },
+    {
+      "path": "meta/runtime-checkpoint.json",
+      "sha256": "e1513e4296b79532391914c493bfc9c0a2ab08b9b71ba3eed55d93a3deb5463c"
+    },
+    {
+      "path": "meta/final-acceptance.json",
+      "sha256": null
+    }
+  ],
+  "ledger": {
+    "frame_count": 0,
+    "status_counts": {},
+    "blocking_frames": [],
+    "tech_retry_frames": [],
+    "ready_frames": []
+  },
+  "queue_status_counts": {},
+  "runtime_capabilities": {
+    "schema_version": 1,
+    "module_version": "2.5.1",
+    "generated_at": "2026-09-11T12:57:49+08:00",
+    "expires_after_seconds": 21600,
+    "platform": "nt",
+    "codex_path": "D:\\soft\\nvm-setup\\nodejs\\codex.CMD",
+    "text_worker": "available",
+    "vision_review": "unverified",
+    "image_generation_route": "unknown",
+    "sandbox_risk": "windows_1385_possible",
+    "source": "cheap_auto_detect_no_model_probe",
+    "note": "Set/record vision_review=verified only after a real pixel-vision probe succeeds."
+  },
+  "next_actions": [
+    "continue Visual Lock from existing evidence"
+  ],
+  "read_policy": "Read this capsule first after context loss. Do not broad-rescan repository authority unless a listed SHA changed, a required detail is missing, or a gate reports drift.",
+  "authority_policy": "Derived cache only; source authority always wins."
+}

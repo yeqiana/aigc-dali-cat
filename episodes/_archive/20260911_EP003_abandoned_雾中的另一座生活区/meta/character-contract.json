@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "derived_from_pools": true,
+  "not_episode_stage": true,
+  "created_at": "2026-09-11T12:57:50+08:00",
+  "selection_seed": 15071184966874336236,
+  "era": {
+    "bucket": "modern_2020s",
+    "year": 2023,
+    "source": "explicit_hint_or_weighted"
+  },
+  "world_identity": {
+    "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+    "country": "China",
+    "region": "Mainland China",
+    "nationality_context": "Chinese",
+    "resident_context": "mainland Chinese local residents",
+    "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+  },
+  "cast": {
+    "type": "pair",
+    "size": 2,
+    "relationship": "普通情侣",
+    "members": [
+      {
+        "id": "P01",
+        "pov": true,
+        "gender": "male",
+        "age": 24,
+        "build": "普通年轻人体型",
+        "hair": "黑色短碎发，耳上长度，日常自然蓬松",
+        "clothing_anchor": "雨后川西旅行的普通轻薄外套或卫衣+休闲长裤+运动鞋",
+        "device_anchor": "普通智能手机；车内另有普通消费级无人机作为旅行拍风景工具",
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents"
+      },
+      {
+        "id": "P02",
+        "pov": false,
+        "gender": "female",
+        "age": 24,
+        "build": "普通年轻人体型",
+        "hair": "锁骨长度自然黑发，旅行时可低马尾或自然披发",
+        "clothing_anchor": "雨后川西旅行的普通轻薄外套或卫衣+深色长裤+运动鞋",
+        "device_anchor": null,
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents"
+      }
+    ]
+  },
+  "pov": {
+    "character_id": "P01",
+    "first_person": true
+  },
+  "entry": {
+    "type": "travel",
+    "label": "旅行/出游",
+    "source": "user_hint",
+    "reason": "承接 EP001/EP002 的情侣川西自驾；雨停后在山谷观景停车点休息并补拍普通旅行风景素材"
+  },
+  "scene": {
+    "primary_category": "mountain_road_valley",
+    "primary_place": "川西山谷公路旁可停车观景位置与雨后低云山谷"
+  },
+  "role_policy": {
+    "protagonist_role": "普通年轻人/普通朋友小团体",
+    "career_function": "arrival_only",
+    "solves_anomaly_professionally": false
+  },
+  "no_anomaly_test": {
+    "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+    "ordinary_day_plan": "原本只是继续情侣川西自驾，在雨停后的山谷停车休息，用手机和消费级无人机补拍普通旅行风景后继续上路",
+    "pass": true,
+    "must_be_rechecked_before_story_lock": true,
+    "rechecked_against_final_story": true
+  },
+  "continuity_policy": {
+    "member_count_changes_require_story_event": true,
+    "pov_character_id_stable": true,
+    "clothing_and_device_anchors_propagate_to_frame_contract": true
+  },
+  "ordinary_person_score": 100,
+  "forbidden_role_check": {
+    "pass": true,
+    "hits": []
+  },
+  "story_build_note": "这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。"
+}

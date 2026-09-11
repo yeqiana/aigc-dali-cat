@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "runtime": "Story OS V2.7",
+  "generated_at": "2026-09-11T14:54:35.762850+08:00",
+  "stage": "VISUAL_LOCK_FINAL_VERIFY",
+  "episode": "03_雾中的另一座生活区",
+  "decision": "PASS",
+  "checks": {
+    "baseline_review": true,
+    "four_admission_roles": true,
+    "visual_lock_plan_exists": true
+  },
+  "frames": [
+    {
+      "frame": 1,
+      "role": "ordinary_baseline",
+      "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-9ae48137181c-a2.png",
+      "sha256": "3666919bd9f18e7232c977f11ab67ad7652ca1cb6fff478f8dc107eb98e160cc",
+      "contract_sha256": "db91b9b929238588dd2bed43a39b7bcb12df29bf4cee4a0f5373388ed1bc3e1d",
+      "frame_contract_sha256": "db91b9b929238588dd2bed43a39b7bcb12df29bf4cee4a0f5373388ed1bc3e1d"
+    },
+    {
+      "frame": 6,
+      "role": "worst_capture_condition",
+      "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/06-9681b74863df-a2.png",
+      "sha256": "b1dc85c53ca220d6ddd87723dbc46a62a9a3cb864c0e08241998d8e52992a99a",
+      "contract_sha256": "fe3e925b671f5334750bece321b8e3cc8fa6b65baa7814fda1908a4e3ac38886",
+      "frame_contract_sha256": "fe3e925b671f5334750bece321b8e3cc8fa6b65baa7814fda1908a4e3ac38886"
+    },
+    {
+      "frame": 3,
+      "role": "first_major_anomaly",
+      "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/03-e0447e36a876-a2.png",
+      "sha256": "01754866e6146ef74da5dbd7880eec49fcc21074039ac5579e954506c45b2d27",
+      "contract_sha256": "0d279988f7524512b48d38500934dd915989ac384c4b8a09b5a6139984f83260",
+      "frame_contract_sha256": "0d279988f7524512b48d38500934dd915989ac384c4b8a09b5a6139984f83260"
+    },
+    {
+      "frame": 19,
+      "role": "high_impact_admission",
+      "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/19-90ef429163b5-a2.png",
+      "sha256": "5ee72e97858da506d77a6afc4ef21ff8d7d6735e01ecbb5364540fbcf01a0e28",
+      "contract_sha256": "bc7272b6996f6bad69590fe241337e9f745415496434669cac8532a28d767295",
+      "frame_contract_sha256": "bc7272b6996f6bad69590fe241337e9f745415496434669cac8532a28d767295"
+    }
+  ],
+  "next_stage": "VISUAL_CALIBRATED"
+}

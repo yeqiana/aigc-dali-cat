@@ -1,0 +1,490 @@
+{
+  "schema_version": 1,
+  "transactions": {
+    "e7c7b320421a4df2a14c8e264095c65a": {
+      "transaction_id": "e7c7b320421a4df2a14c8e264095c65a",
+      "created_at": "2026-09-11T13:41:58+08:00",
+      "phase": "BEGIN_REJECTED",
+      "updated_at": "2026-09-11T13:41:58+08:00",
+      "item_id": "5f8366f11acc",
+      "frame": 1,
+      "reason": "prompt budget exceeded: 317 chars/923 bytes; limit=260 chars/900 bytes. Shorten the per-frame prompt or use --allow-long-prompt with an explicit reason in notes."
+    },
+    "0dc8275bbc424759875cb16a6d0494ba": {
+      "transaction_id": "0dc8275bbc424759875cb16a6d0494ba",
+      "created_at": "2026-09-11T13:42:32+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "9ae48137181c",
+      "frame": 1,
+      "lifecycle": "meta/image-workers/01-9ae48137181c-a2.lifecycle.json",
+      "code": "IMAGE_BACKEND_ERROR",
+      "recovery": "ledger_ready_replayed"
+    },
+    "ae6445c4c1b74e9a98876855e76cd7c6": {
+      "transaction_id": "ae6445c4c1b74e9a98876855e76cd7c6",
+      "created_at": "2026-09-11T14:38:48+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "90ef429163b5",
+      "frame": 19,
+      "lifecycle": "meta/image-workers/19-90ef429163b5-a2.lifecycle.json",
+      "code": "RATE_LIMIT_429",
+      "recovery": "ledger_ready_replayed"
+    },
+    "1e854957e6c14175a6cd34c3164a897f": {
+      "transaction_id": "1e854957e6c14175a6cd34c3164a897f",
+      "created_at": "2026-09-11T14:38:48+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "9681b74863df",
+      "frame": 6,
+      "lifecycle": "meta/image-workers/06-9681b74863df-a2.lifecycle.json",
+      "code": "RATE_LIMIT_429",
+      "recovery": "ledger_ready_replayed"
+    },
+    "011c5bc570b742ff8a26eb8ec0f9e2b2": {
+      "transaction_id": "011c5bc570b742ff8a26eb8ec0f9e2b2",
+      "created_at": "2026-09-11T14:38:49+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "e0447e36a876",
+      "frame": 3,
+      "lifecycle": "meta/image-workers/03-e0447e36a876-a2.lifecycle.json",
+      "code": "RATE_LIMIT_429",
+      "recovery": "ledger_ready_replayed"
+    },
+    "a7144b61cc3c4a5191bb9bc5789c67fa": {
+      "transaction_id": "a7144b61cc3c4a5191bb9bc5789c67fa",
+      "created_at": "2026-09-11T15:03:14+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T15:09:23+08:00",
+      "item_id": "f876584fb2b1",
+      "frame": 2,
+      "lifecycle": "meta/image-workers/02-f876584fb2b1-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "532793d28ccf47a2b022c60e437e8aa6": {
+      "transaction_id": "532793d28ccf47a2b022c60e437e8aa6",
+      "created_at": "2026-09-11T15:13:22+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "f229465c5c07",
+      "frame": 2,
+      "lifecycle": "meta/image-workers/02-f229465c5c07-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "2fd82540360441e29175a0da9803ef28": {
+      "transaction_id": "2fd82540360441e29175a0da9803ef28",
+      "created_at": "2026-09-11T15:16:17+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T15:22:15+08:00",
+      "item_id": "f53389829990",
+      "frame": 4,
+      "lifecycle": "meta/image-workers/04-f53389829990-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "85c0e3d2a2fb4c8698af9aec1f0cc11e": {
+      "transaction_id": "85c0e3d2a2fb4c8698af9aec1f0cc11e",
+      "created_at": "2026-09-11T15:16:17+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "e56b86cee286",
+      "frame": 5,
+      "lifecycle": "meta/image-workers/05-e56b86cee286-a2.lifecycle.json",
+      "code": "WORKER_FAILED",
+      "recovery": "ledger_ready_replayed"
+    },
+    "8385eafea6054e27b4a54acce221dc26": {
+      "transaction_id": "8385eafea6054e27b4a54acce221dc26",
+      "created_at": "2026-09-11T15:16:18+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T15:22:31+08:00",
+      "item_id": "75f3d1519477",
+      "frame": 7,
+      "lifecycle": "meta/image-workers/07-75f3d1519477-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "eee440a2869f44cfb4b411e87268b0b9": {
+      "transaction_id": "eee440a2869f44cfb4b411e87268b0b9",
+      "created_at": "2026-09-11T15:16:18+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T15:28:14+08:00",
+      "item_id": "b6538e48b48f",
+      "frame": 8,
+      "lifecycle": "meta/image-workers/08-b6538e48b48f-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "8dfc96edbb69407cb267dd5f90dde7e1": {
+      "transaction_id": "8dfc96edbb69407cb267dd5f90dde7e1",
+      "created_at": "2026-09-11T15:16:18+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "79b8ff68ce79",
+      "frame": 9,
+      "lifecycle": "meta/image-workers/09-79b8ff68ce79-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "540cb194b0394d4ba5b2d37bb5e043fd": {
+      "transaction_id": "540cb194b0394d4ba5b2d37bb5e043fd",
+      "created_at": "2026-09-11T15:28:43+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T15:34:36+08:00",
+      "item_id": "4b5c54bc3602",
+      "frame": 4,
+      "lifecycle": "meta/image-workers/04-4b5c54bc3602-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "c3690ebb24124b1fb702011f2047ff5a": {
+      "transaction_id": "c3690ebb24124b1fb702011f2047ff5a",
+      "created_at": "2026-09-11T15:35:55+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "79befbb026bd",
+      "frame": 4,
+      "lifecycle": "meta/image-workers/04-79befbb026bd-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "41d4bb9b091944009b018f734ce65bef": {
+      "transaction_id": "41d4bb9b091944009b018f734ce65bef",
+      "created_at": "2026-09-11T15:37:26+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T15:42:49+08:00",
+      "item_id": "ed96663158a9",
+      "frame": 7,
+      "lifecycle": "meta/image-workers/07-ed96663158a9-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "43d701cee5504ab2adf924d06ff5ce91": {
+      "transaction_id": "43d701cee5504ab2adf924d06ff5ce91",
+      "created_at": "2026-09-11T15:37:26+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T15:43:24+08:00",
+      "item_id": "c2047c5de1b9",
+      "frame": 8,
+      "lifecycle": "meta/image-workers/08-c2047c5de1b9-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "05f3b480b9e74f1fa0f43963ab672443": {
+      "transaction_id": "05f3b480b9e74f1fa0f43963ab672443",
+      "created_at": "2026-09-11T15:37:26+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T15:45:19+08:00",
+      "item_id": "c762a80787fc",
+      "frame": 10,
+      "lifecycle": "meta/image-workers/10-c762a80787fc-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "d5292280042241ea996b3e66fa496c50": {
+      "transaction_id": "d5292280042241ea996b3e66fa496c50",
+      "created_at": "2026-09-11T15:37:27+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "b873edfd52dd",
+      "frame": 11,
+      "lifecycle": "meta/image-workers/11-b873edfd52dd-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "4d864d75df4141df812de78036bc8ffd": {
+      "transaction_id": "4d864d75df4141df812de78036bc8ffd",
+      "created_at": "2026-09-11T15:45:23+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T15:50:32+08:00",
+      "item_id": "ad9e0e47691d",
+      "frame": 7,
+      "lifecycle": "meta/image-workers/07-ad9e0e47691d-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "c34079697a2f4e6285f24465fd85a335": {
+      "transaction_id": "c34079697a2f4e6285f24465fd85a335",
+      "created_at": "2026-09-11T15:50:34+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T15:56:30+08:00",
+      "item_id": "464e9db2b744",
+      "frame": 7,
+      "lifecycle": "meta/image-workers/07-464e9db2b744-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "f37b79f7bd1f4701a65dbe2ec56be414": {
+      "transaction_id": "f37b79f7bd1f4701a65dbe2ec56be414",
+      "created_at": "2026-09-11T15:56:32+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T16:02:26+08:00",
+      "item_id": "d69c4aacf475",
+      "frame": 7,
+      "lifecycle": "meta/image-workers/07-d69c4aacf475-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "2fdeb54f9a0a4e2cac909ca566f3df5b": {
+      "transaction_id": "2fdeb54f9a0a4e2cac909ca566f3df5b",
+      "created_at": "2026-09-11T16:02:27+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T16:08:28+08:00",
+      "item_id": "90865be3ae36",
+      "frame": 7,
+      "lifecycle": "meta/image-workers/07-90865be3ae36-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "d1eaaefdd2e7462d9b62bdc20184f505": {
+      "transaction_id": "d1eaaefdd2e7462d9b62bdc20184f505",
+      "created_at": "2026-09-11T16:08:31+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T16:14:32+08:00",
+      "item_id": "930a8a2db93a",
+      "frame": 7,
+      "lifecycle": "meta/image-workers/07-930a8a2db93a-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "7e7cfaedb44c46f6979fa9d93d56d8e3": {
+      "transaction_id": "7e7cfaedb44c46f6979fa9d93d56d8e3",
+      "created_at": "2026-09-11T16:14:33+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "6c61a94100cc",
+      "frame": 7,
+      "lifecycle": "meta/image-workers/07-6c61a94100cc-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "e0693c35d6584ddb84c927d37606e53b": {
+      "transaction_id": "e0693c35d6584ddb84c927d37606e53b",
+      "created_at": "2026-09-11T16:17:28+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "acf6edda3097",
+      "frame": 8,
+      "lifecycle": "meta/image-workers/08-acf6edda3097-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "9ab0b8553bb549cba73034033da5685d": {
+      "transaction_id": "9ab0b8553bb549cba73034033da5685d",
+      "created_at": "2026-09-11T16:17:28+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "f159c1032fcd",
+      "frame": 10,
+      "lifecycle": "meta/image-workers/10-f159c1032fcd-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "ba32ba19539445b69ccd70df530906a8": {
+      "transaction_id": "ba32ba19539445b69ccd70df530906a8",
+      "created_at": "2026-09-11T16:17:28+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "112a6d3ac884",
+      "frame": 12,
+      "lifecycle": "meta/image-workers/12-112a6d3ac884-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "fbf85a44b9624baea97a6cb16a4fc37a": {
+      "transaction_id": "fbf85a44b9624baea97a6cb16a4fc37a",
+      "created_at": "2026-09-11T16:17:28+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T16:25:15+08:00",
+      "item_id": "cfac6499c9fb",
+      "frame": 13,
+      "lifecycle": "meta/image-workers/13-cfac6499c9fb-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "3e694ad86da74ca4b12fd5c5e17fbaa6": {
+      "transaction_id": "3e694ad86da74ca4b12fd5c5e17fbaa6",
+      "created_at": "2026-09-11T16:17:28+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T16:28:29+08:00",
+      "item_id": "4c360abab737",
+      "frame": 14,
+      "lifecycle": "meta/image-workers/14-4c360abab737-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "e61c38aa26d144549278c6f0a2e9426c": {
+      "transaction_id": "e61c38aa26d144549278c6f0a2e9426c",
+      "created_at": "2026-09-11T16:28:31+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T16:34:46+08:00",
+      "item_id": "3b83cc446f34",
+      "frame": 13,
+      "lifecycle": "meta/image-workers/13-3b83cc446f34-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "c612e800db1a41cfb156ec592c887099": {
+      "transaction_id": "c612e800db1a41cfb156ec592c887099",
+      "created_at": "2026-09-11T16:34:50+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "7413ff8eff7d",
+      "frame": 13,
+      "lifecycle": "meta/image-workers/13-7413ff8eff7d-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "ef2b255c0d6446d39660a4b181f4091a": {
+      "transaction_id": "ef2b255c0d6446d39660a4b181f4091a",
+      "created_at": "2026-09-11T16:36:58+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T16:42:25+08:00",
+      "item_id": "a6367d416ff6",
+      "frame": 14,
+      "lifecycle": "meta/image-workers/14-a6367d416ff6-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "b959f7445ca74bddadce15df5c9d1326": {
+      "transaction_id": "b959f7445ca74bddadce15df5c9d1326",
+      "created_at": "2026-09-11T16:36:59+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T16:42:05+08:00",
+      "item_id": "a8b226926aab",
+      "frame": 15,
+      "lifecycle": "meta/image-workers/15-a8b226926aab-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "984827cbd3474b1a8768e8fac30294f6": {
+      "transaction_id": "984827cbd3474b1a8768e8fac30294f6",
+      "created_at": "2026-09-11T16:36:59+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "7e112731b6ce",
+      "frame": 16,
+      "lifecycle": "meta/image-workers/16-7e112731b6ce-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "73ac3621701e41448099b4c90f7f3545": {
+      "transaction_id": "73ac3621701e41448099b4c90f7f3545",
+      "created_at": "2026-09-11T16:36:59+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T16:44:33+08:00",
+      "item_id": "3c40bd51f6d8",
+      "frame": 17,
+      "lifecycle": "meta/image-workers/17-3c40bd51f6d8-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "a1a980c48c6f432ca9bdee3cb0b0a24c": {
+      "transaction_id": "a1a980c48c6f432ca9bdee3cb0b0a24c",
+      "created_at": "2026-09-11T16:37:00+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T16:48:05+08:00",
+      "item_id": "754d77868734",
+      "frame": 18,
+      "lifecycle": "meta/image-workers/18-754d77868734-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "9e73515e1ce64b4e80f80a45d9326b1c": {
+      "transaction_id": "9e73515e1ce64b4e80f80a45d9326b1c",
+      "created_at": "2026-09-11T16:48:08+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T16:54:08+08:00",
+      "item_id": "d034d1746fdf",
+      "frame": 14,
+      "lifecycle": "meta/image-workers/14-d034d1746fdf-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "9e70e4a9ce324760ab73d16df46eb08b": {
+      "transaction_id": "9e70e4a9ce324760ab73d16df46eb08b",
+      "created_at": "2026-09-11T16:54:10+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "95173ef44081",
+      "frame": 14,
+      "lifecycle": "meta/image-workers/14-95173ef44081-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "68105102260c4bca86e93cf9bf05b5eb": {
+      "transaction_id": "68105102260c4bca86e93cf9bf05b5eb",
+      "created_at": "2026-09-11T16:57:55+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T17:03:59+08:00",
+      "item_id": "8432a3964d54",
+      "frame": 15,
+      "lifecycle": "meta/image-workers/15-8432a3964d54-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "d638b1d4b97c404089e13565d1c9bd0d": {
+      "transaction_id": "d638b1d4b97c404089e13565d1c9bd0d",
+      "created_at": "2026-09-11T16:57:55+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T17:03:59+08:00",
+      "item_id": "7062f87a621a",
+      "frame": 17,
+      "lifecycle": "meta/image-workers/17-7062f87a621a-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "8ab5e5d70ae04d459fdf765b76c4eaee": {
+      "transaction_id": "8ab5e5d70ae04d459fdf765b76c4eaee",
+      "created_at": "2026-09-11T16:57:55+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T17:03:54+08:00",
+      "item_id": "c060fc652b56",
+      "frame": 18,
+      "lifecycle": "meta/image-workers/18-c060fc652b56-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "e3443592ea2f42e2b98ca4ab18d47fac": {
+      "transaction_id": "e3443592ea2f42e2b98ca4ab18d47fac",
+      "created_at": "2026-09-11T16:57:55+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "a4f2a4dc0b7e",
+      "frame": 20,
+      "lifecycle": "meta/image-workers/20-a4f2a4dc0b7e-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "7447f750302a4eeea9ad481b22dc29a2": {
+      "transaction_id": "7447f750302a4eeea9ad481b22dc29a2",
+      "created_at": "2026-09-11T17:08:12+08:00",
+      "phase": "BEGIN_REJECTED",
+      "updated_at": "2026-09-11T18:03:10+08:00",
+      "item_id": "45ba86856971",
+      "frame": 15,
+      "lifecycle": "meta/image-workers/15-45ba86856971-a1.lifecycle.json",
+      "recovery": "ledger_tech_failed_replayed",
+      "reason": "ledger begin failed: cannot begin original from PASSED"
+    },
+    "88d65d4f100b4985981740fc501be92c": {
+      "transaction_id": "88d65d4f100b4985981740fc501be92c",
+      "created_at": "2026-09-11T17:09:57+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "985aaa617329",
+      "frame": 17,
+      "lifecycle": "meta/image-workers/17-985aaa617329-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "1d8b9b5b410541449bdf1ab356d9228b": {
+      "transaction_id": "1d8b9b5b410541449bdf1ab356d9228b",
+      "created_at": "2026-09-11T17:09:57+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T17:15:34+08:00",
+      "item_id": "b5629cb1eb93",
+      "frame": 18,
+      "lifecycle": "meta/image-workers/18-b5629cb1eb93-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "f9ada23f091e42a7af8b632b5e2d2388": {
+      "transaction_id": "f9ada23f091e42a7af8b632b5e2d2388",
+      "created_at": "2026-09-11T17:15:36+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "8d7540956bf7",
+      "frame": 18,
+      "lifecycle": "meta/image-workers/18-8d7540956bf7-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "5e4a665db559461d9082a90edcd5f14a": {
+      "transaction_id": "5e4a665db559461d9082a90edcd5f14a",
+      "created_at": "2026-09-11T17:42:38+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-11T17:47:47+08:00",
+      "item_id": "bb324ffe02f8",
+      "frame": 15,
+      "lifecycle": "meta/image-workers/15-bb324ffe02f8-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH"
+    },
+    "99df7ca3034547e3b6a1c359aa176140": {
+      "transaction_id": "99df7ca3034547e3b6a1c359aa176140",
+      "created_at": "2026-09-11T17:48:58+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-11T18:03:09+08:00",
+      "item_id": "970724f54a98",
+      "frame": 15,
+      "lifecycle": "meta/image-workers/15-970724f54a98-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    }
+  }
+}

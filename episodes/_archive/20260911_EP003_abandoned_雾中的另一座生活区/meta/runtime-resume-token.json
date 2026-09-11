@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "episode": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\10_彼此的天上\\03_雾中的另一座生活区",
+  "stage": "STORYBOARD_LOCKED",
+  "step": "WAIT_HOST",
+  "attempt": 1,
+  "failure_category": "HOST_WAIT",
+  "last_event": "host action pending",
+  "resume_action": "WAIT_HOST",
+  "updated_at": "2026-09-11T14:30:50+08:00"
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "checked_at": "2026-09-11T18:14:05+08:00",
+  "metadata_only": false,
+  "errors": [],
+  "summary": {
+    "passed": true
+  }
+}

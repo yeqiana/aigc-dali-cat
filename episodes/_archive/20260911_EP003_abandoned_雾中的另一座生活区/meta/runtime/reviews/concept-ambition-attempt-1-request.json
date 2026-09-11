@@ -1,0 +1,29 @@
+{
+  "schema_version": 2,
+  "request_id": "concept-ambition-a1-e8d4decfb3408a3b",
+  "request_fingerprint": "e8d4decfb3408a3b52a0d76a6ee35db6465d8cea5ec66ae7a807882c76a58f5e",
+  "created_at": "2026-09-11T13:01:08+08:00",
+  "status": "FINALIZED",
+  "review_kind": "concept-ambition",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/concept-candidates.json",
+      "sha256": "a2f4d225e46534bee2a78823ea41fa4281c836c455c35d85c952d7d8fba56cc7"
+    }
+  ],
+  "candidate_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.concept-ambition-review.candidate.json",
+  "prompt_sha256": "a63fbb548d656a199c36fda3b99982c5e3e63c18212606aef01ded2327c1d8c6",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are the independent Story OS V2.1 Concept Ambition + Image-first Propagation Critic.\nReview ALL 8-12 concepts in episodes/10_彼此的天上/03_雾中的另一座生活区/meta/concept-candidates.json. This is a fresh isolated review.\n\nDOCTRINE:\n- Concept ambition comes BEFORE capture realism.\n- Do NOT lower a concept because its place, creature, ruin, dream-space, anomaly scale, case phenomenon, geography or world rule cannot exist in reality.\n- Reality-first constrains HOW the later image is captured, not WHAT may happen.\n- Reward concepts whose Cover/Mid/Climax images work before captions.\n- Penalize generic unease, text-dependent reveals, tiny escalation, discovery-only climaxes and visually ordinary payoffs.\n- Fictional cases, impossible ruins, dream intrusion, cosmic anomalies, giant-scale anomalies and surreal geography are valid.\n- The pool must include at least 3 genuinely high-ambition A4/A5 directions.\n\nBands: A1 restrained oddity; A2 clear anomaly; A3 strong anomaly; A4 large/high-impact anomaly; A5 world-rule loss/overwhelming anomaly.\n\nScores: one_line_hook 0-20; hero_frame 0-20; escalation_ceiling 0-20; climax_visual_payoff 0-15; mechanism_novelty 0-15; discussion_space 0-10.\nconcept_voltage = exact sum.\n\nWordless test: stop_scroll, escalation_readable, curiosity_gap.\nSelect exactly ONE concept. Winner must score >=80 and pass all 3 wordless checks.\nIf no valid winner exists, summary.passed=false.\n\nWrite ONLY JSON to episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.concept-ambition-review.candidate.json:\n{\n  \"candidates\":[{\n    \"id\":\"C01\",\"ambition_band\":\"A4\",\n    \"scores\":{\"one_line_hook\":18,\"hero_frame\":19,\"escalation_ceiling\":18,\"climax_visual_payoff\":14,\"mechanism_novelty\":13,\"discussion_space\":9},\n    \"concept_voltage\":91,\n    \"wordless_test\":{\"stop_scroll\":true,\"escalation_readable\":true,\"curiosity_gap\":true},\n    \"strengths\":[\"...\"],\"risks\":[\"...\"]\n  }],\n  \"selected_id\":\"C01\",\n  \"selection_reason\":\"...\",\n  \"issue_codes\":[],\n  \"summary\":{\"passed\":true}\n}\nEpisode: episodes/10_彼此的天上/03_雾中的另一座生活区\nAttempt: 1\n",
+  "finalized_at": "2026-09-11T13:01:37+08:00",
+  "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/concept-ambition-review.json"
+}

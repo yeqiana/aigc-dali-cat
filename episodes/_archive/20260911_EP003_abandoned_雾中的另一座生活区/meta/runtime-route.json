@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "route_id": "RT_7a196ca11cc04ae4",
+  "created_at": "2026-09-11T13:13:51+08:00",
+  "source": "deterministic_rules",
+  "route_is_stage_authority": false,
+  "request_id": "20260911_125712_659679a4",
+  "request_sha256": "5cf68be3ccef0da8129c46fbca516e99a35365d016162906d74401ccbab56d6c",
+  "episode_state_at_decision": "STORYBOARD_LOCKED",
+  "intent": "CREATE_EPISODE",
+  "workflow_mode": "full_auto",
+  "entry_step": "INCREMENTAL_PLAN",
+  "target": "PUBLISH_READY",
+  "allow_image_generation": true,
+  "allow_story_rewrite": true,
+  "preserve": [],
+  "invalidate": [],
+  "reason_codes": [
+    "MODE_FULL_AUTO",
+    "INTENT_CREATE_EPISODE",
+    "DETERMINISTIC_ROUTE"
+  ]
+}

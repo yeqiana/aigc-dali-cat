@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-11T13:13:52.600+08:00",
+  "diagnostic_only": true,
+  "stage_authority": false,
+  "latest_trace_id": "ST_300998464b174764",
+  "event_count": 16,
+  "span_end_count": 5,
+  "status_counts": {
+    "PASS": 2,
+    "HOST_WAIT": 2,
+    "REUSED": 1
+  },
+  "elapsed_ms_by_category": {
+    "workflow_step": 766.0
+  },
+  "slowest_spans": [
+    {
+      "name": "INCREMENTAL_PLAN",
+      "category": "workflow_step",
+      "status": "PASS",
+      "elapsed_ms": 343.0,
+      "span_id": "SP_d84aef7163454f87"
+    },
+    {
+      "name": "INCREMENTAL_PLAN",
+      "category": "workflow_step",
+      "status": "PASS",
+      "elapsed_ms": 188.0,
+      "span_id": "SP_11a420e1734c4737"
+    },
+    {
+      "name": "CREATIVE_STORY",
+      "category": "workflow_step",
+      "status": "HOST_WAIT",
+      "elapsed_ms": 110.0,
+      "span_id": "SP_ee6fad57d457472d"
+    },
+    {
+      "name": "PREIMAGE_COMPILE",
+      "category": "workflow_step",
+      "status": "HOST_WAIT",
+      "elapsed_ms": 109.0,
+      "span_id": "SP_f00b4dabcc114fb8"
+    },
+    {
+      "name": "CREATIVE_STORY",
+      "category": "workflow_step",
+      "status": "REUSED",
+      "elapsed_ms": 16.0,
+      "span_id": "SP_17e32b2b1d6c49c8"
+    }
+  ]
+}

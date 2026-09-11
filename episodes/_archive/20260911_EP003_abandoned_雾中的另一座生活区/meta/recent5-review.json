@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "episode_id": "10-03",
+  "generated_at": "2026-09-11T13:03:40+08:00",
+  "candidate_fingerprint_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "7e7620693aee7c21558ae3ce5cb97cd53e7f9279d05b78de181035c898914f8a",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "comparison_count": 2,
+  "compared": [
+    {
+      "episode_id": "10-01",
+      "title": "鳌太线·热汤",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 0,
+      "similarity_score": 0,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [],
+      "matched_dimensions": []
+    },
+    {
+      "episode_id": "09-04",
+      "title": "瓶中世界",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 0,
+      "similarity_score": 0,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [],
+      "matched_dimensions": []
+    }
+  ],
+  "max_similarity_score": 0,
+  "mechanism_veto": false,
+  "decision": "pass",
+  "scoring_policy": "effective=max(exact_string,semantic_equivalence); veto=exact_veto OR semantic_veto",
+  "note": "V2.0.3.6 uses a fresh isolated semantic equivalence matrix so paraphrased/skin-swapped fingerprints cannot bypass Recent-5 by changing wording. Python, not the critic, computes scores.",
+  "semantic_review_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/recent5-semantic-review.json",
+  "semantic_review_sha256": "58167411c5a0be6e98c8b2d5d8f42feea1bfd076c932245ea1625a33008d712f"
+}

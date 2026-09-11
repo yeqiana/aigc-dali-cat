@@ -1,0 +1,261 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "story_sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f",
+  "storyboard_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6",
+  "visual_contract_sha256": "97c9bef6f39dfbc156bacd247f33d6b543f18adbe268709c28d94ae4ba99ae4b",
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 2,
+    "reviewed_at": "2026-09-11T17:57:06+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/frame-semantic-attempt-2-request.json",
+    "request_id": "frame-semantic-a2-bed592b8e617b152",
+    "request_fingerprint": "bed592b8e617b152cd405d0b79608dc09884cb54bfa1226164efea6dfd1ed37c",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "asset_sha256": "3666919bd9f18e7232c977f11ab67ad7652ca1cb6fff478f8dc107eb98e160cc"
+    },
+    {
+      "frame": "02",
+      "asset_sha256": "f8dad54e9b4cba926fe08928e2e7b84fe92234778b98c9e8872ce5ad3874e940"
+    },
+    {
+      "frame": "03",
+      "asset_sha256": "01754866e6146ef74da5dbd7880eec49fcc21074039ac5579e954506c45b2d27"
+    },
+    {
+      "frame": "04",
+      "asset_sha256": "ea91aff3a92e74d05991e3b3d99e2fc38e1d0669b0b1322ff311ba75021d1e0a"
+    },
+    {
+      "frame": "05",
+      "asset_sha256": "0d42343407ae3c3df45f5cc3a6b5f980dd72d43fd62b3e1c5598063411536aff"
+    },
+    {
+      "frame": "06",
+      "asset_sha256": "b1dc85c53ca220d6ddd87723dbc46a62a9a3cb864c0e08241998d8e52992a99a"
+    },
+    {
+      "frame": "07",
+      "asset_sha256": "c1e45c81f3ca25bbb7b0446f9fcc18243f11cc7dd493420f4308091589156c1b"
+    },
+    {
+      "frame": "08",
+      "asset_sha256": "6fe028c1761861d5c9a3d8b1518ed4026c6e299a95f15e9b0656b5f86e1643c4"
+    },
+    {
+      "frame": "09",
+      "asset_sha256": "dbf60f3d8ae70ff8373c0a87f93ab21126a41eb79c4ca40335aea21e4f457fdd"
+    },
+    {
+      "frame": "10",
+      "asset_sha256": "083763496d98a7b06c2b47fa933ace54b2731f6e8a1cc8ea568701394ed74380"
+    },
+    {
+      "frame": "11",
+      "asset_sha256": "7d300149ec08ad158c4a7b87afb2f4245c85a646bee082b98fa11f4782a63325"
+    },
+    {
+      "frame": "12",
+      "asset_sha256": "93862f0be8bdbde96a60436bc4261235fdfae99ce88c1836816792b665c5ebbe"
+    },
+    {
+      "frame": "13",
+      "asset_sha256": "a0841585fcbbbfbe091a9b66d2038f79b77d35715600c3ab8ad26c42b29f3d63"
+    },
+    {
+      "frame": "14",
+      "asset_sha256": "54c0c828b0d58b7eb1e0dc3a99de9e660811a63cbca51eedc6502bb2bf3e2fb1"
+    },
+    {
+      "frame": "15",
+      "asset_sha256": "129aed42b908d2659598c5d1bc5778a2a8bf457a8c5fb0f1d48da18d516bb55a"
+    },
+    {
+      "frame": "16",
+      "asset_sha256": "5e0ddd818dbe321085f3a0c203344672c365b7a82c05af47a23f4dc4b122fcd4"
+    },
+    {
+      "frame": "17",
+      "asset_sha256": "6a3d2deeb59581e8b81e058e554b3b08a5f1d68bc7576c0e91af38b7ea0d97e7"
+    },
+    {
+      "frame": "18",
+      "asset_sha256": "47cc8a688701146ff76efff3a8466637d5aa4e8dbcb76609a8f96f04bc302491"
+    },
+    {
+      "frame": "19",
+      "asset_sha256": "5ee72e97858da506d77a6afc4ef21ff8d7d6735e01ecbb5364540fbcf01a0e28"
+    },
+    {
+      "frame": "20",
+      "asset_sha256": "826e06b7d3c038687f79cad6962dc2ee1d49a967fb9959cb9b6dafffd8a68202"
+    }
+  ],
+  "perceptual_hashes": [
+    {
+      "frame": "01",
+      "asset_sha256": "3666919bd9f18e7232c977f11ab67ad7652ca1cb6fff478f8dc107eb98e160cc",
+      "dhash256": "f27c6d980ce11e635f305f31f63acf3c9f0cfe88beca7a7484ec91f973f34761",
+      "ahash256": "c000fc00f980f8cffc07fc00e060007100790013000700ef01fb03f207c64fcf"
+    },
+    {
+      "frame": "02",
+      "asset_sha256": "f8dad54e9b4cba926fe08928e2e7b84fe92234778b98c9e8872ce5ad3874e940",
+      "dhash256": "6cf21c19c35e318b87df135612c7424f70742cfa93d91b1b339b038f032709b1",
+      "ahash256": "ffe7fff3fff8fffe1e38063c07d8de90c1c001e00630363066300e387e1cfe0f"
+    },
+    {
+      "frame": "03",
+      "asset_sha256": "01754866e6146ef74da5dbd7880eec49fcc21074039ac5579e954506c45b2d27",
+      "dhash256": "3236c5e691381030c094a87090c6958685b003308dc833a9feb1c79027886fd4",
+      "ahash256": "ffffffffffff1fff01830087000c010f0103000308016003c0078c030e00fc00"
+    },
+    {
+      "frame": "04",
+      "asset_sha256": "ea91aff3a92e74d05991e3b3d99e2fc38e1d0669b0b1322ff311ba75021d1e0a",
+      "dhash256": "200f6067311ea81371135216409aec92e39264733199c9ae6c851ce80677e394",
+      "ahash256": "ffffffff07ff01ffe1ffc5fd01b000050000e00400100000c000318000e00420"
+    },
+    {
+      "frame": "05",
+      "asset_sha256": "0d42343407ae3c3df45f5cc3a6b5f980dd72d43fd62b3e1c5598063411536aff",
+      "dhash256": "68132c670b1f186cb94c631ad6793913f339262fcc2fc46586e506c404c60dc2",
+      "ahash256": "ffffffff3ffc01c00000006000f3007f007700f800fe01de07df1ddf3f9fff1f"
+    },
+    {
+      "frame": "06",
+      "asset_sha256": "b1dc85c53ca220d6ddd87723dbc46a62a9a3cb864c0e08241998d8e52992a99a",
+      "dhash256": "b7791defc7fb73213ce787df64cd62a7b2111f80078597e4972d0f9e2bf6f4fc",
+      "ahash256": "ffffffffffffefff7fff1ff00598000c000618001e003c003c003c0000008000"
+    },
+    {
+      "frame": "07",
+      "asset_sha256": "c1e45c81f3ca25bbb7b0446f9fcc18243f11cc7dd493420f4308091589156c1b",
+      "dhash256": "661b7e86f139a07c826371931f2ef722b694740c8667996de9aeec8f80bbb03e",
+      "ahash256": "ffffffffffff03ff00ff0004000000400003003900dc0358c818c97803f001f0"
+    },
+    {
+      "frame": "08",
+      "asset_sha256": "6fe028c1761861d5c9a3d8b1518ed4026c6e299a95f15e9b0656b5f86e1643c4",
+      "dhash256": "ee6fdeff39dad25c59d88cb2110e73b4d4dd1cd6f8d4a44d094d881c206800dc",
+      "ahash256": "fffffff8ffc0d681000108e03f7fff00c780f98080a801f801f001f101f30380"
+    },
+    {
+      "frame": "09",
+      "asset_sha256": "dbf60f3d8ae70ff8373c0a87f93ab21126a41eb79c4ca40335aea21e4f457fdd",
+      "dhash256": "bc9f25bc230f8f463f537619f79cc1cb10e17f8c4ced5e63904cda4d0b087c00",
+      "ahash256": "fffffffffffffffffe1ffc02fe20ff96ffcff801080010000018001200030003"
+    },
+    {
+      "frame": "10",
+      "asset_sha256": "083763496d98a7b06c2b47fa933ace54b2731f6e8a1cc8ea568701394ed74380",
+      "dhash256": "21e020b0000320060a2f0991c685e6ddea1cdbced9c3d678b798b5ab3b636e8c",
+      "ahash256": "ffffffff1fff01ff007c0000840a803a8021d010920e84002400200020004800"
+    },
+    {
+      "frame": "11",
+      "asset_sha256": "7d300149ec08ad158c4a7b87afb2f4245c85a646bee082b98fa11f4782a63325",
+      "dhash256": "079f7c7e7bf3a7ab1f621e2f3c646732c4a399b3eb9990565e12bc8bc2d84a4c",
+      "ahash256": "ffffffffffeeffc0fe0038007000e000810c0004800300890024800000000000"
+    },
+    {
+      "frame": "12",
+      "asset_sha256": "93862f0be8bdbde96a60436bc4261235fdfae99ce88c1836816792b665c5ebbe",
+      "dhash256": "a1374c49a6179c33e2e3663b66366e079f01618262c23446e4c7264b624181d4",
+      "ahash256": "07ff00ff00ff006700070cc0cc78403e001f030f0387019f05ff04df0fff07ff"
+    },
+    {
+      "frame": "13",
+      "asset_sha256": "a0841585fcbbbfbe091a9b66d2038f79b77d35715600c3ab8ad26c42b29f3d63",
+      "dhash256": "007ae4f97f99c4d8b3421a46a85f9c09cc094e49640dcd23892a912b29a9619d",
+      "ahash256": "fffffff3fff28fa38204001c00fc987298fac8f20cfe087c027d007c00000000"
+    },
+    {
+      "frame": "14",
+      "asset_sha256": "54c0c828b0d58b7eb1e0dc3a99de9e660811a63cbca51eedc6502bb2bf3e2fb1",
+      "dhash256": "030701e7807f43c71bb41b12832d4f31dd5f9b4eeb9bc31fd2172c06ccbc91d9",
+      "ahash256": "ffffffff0fff061ff263780f0040186090309038803e0030007808f809e10000"
+    },
+    {
+      "frame": "15",
+      "asset_sha256": "129aed42b908d2659598c5d1bc5778a2a8bf457a8c5fb0f1d48da18d516bb55a",
+      "dhash256": "4bcf062ced117119703ce4438e6362106d1a634e67931c1d2d279d13b800e900",
+      "ahash256": "ffff1cff807fe07fe0ffc0bf008e4023c020c218ce2ef878f87cf03fe03fc007"
+    },
+    {
+      "frame": "16",
+      "asset_sha256": "5e0ddd818dbe321085f3a0c203344672c365b7a82c05af47a23f4dc4b122fcd4",
+      "dhash256": "0c380e078301f0cc1c0f0303a731065448ac6cd211869a871a390924052012b2",
+      "ahash256": "ffff7fff9fffe7ff7dfe061f040f0c00404000a0000000080002000100000020"
+    },
+    {
+      "frame": "17",
+      "asset_sha256": "6a3d2deeb59581e8b81e058e554b3b08a5f1d68bc7576c0e91af38b7ea0d97e7",
+      "dhash256": "001a880fcc076787270d81c710f50137853b8f9e0e9c01948d2a8b0b4f098e0c",
+      "ahash256": "03ff01ffd87f003c0e000f883fe00fe00ff01ff01c381e390054000000000000"
+    },
+    {
+      "frame": "18",
+      "asset_sha256": "47cc8a688701146ff76efff3a8466637d5aa4e8dbcb76609a8f96f04bc302491",
+      "dhash256": "019e6207463f00d923b763b74699959a3aca2cc9c36cf24710a3a9f1c8b98c1e",
+      "ahash256": "ffffffffffff7ff20fe047800400000000000100020000080104030019003830"
+    },
+    {
+      "frame": "19",
+      "asset_sha256": "5ee72e97858da506d77a6afc4ef21ff8d7d6735e01ecbb5364540fbcf01a0e28",
+      "dhash256": "499880c3b201c81816794718cc839a309932718900f8193818fd5c5f581fd886",
+      "ahash256": "dfff1fff03ff00ff24e31c31000e10070004030203c303e001f000f0d0f8c1fc"
+    },
+    {
+      "frame": "20",
+      "asset_sha256": "826e06b7d3c038687f79cad6962dc2ee1d49a967fb9959cb9b6dafffd8a68202",
+      "dhash256": "365b40b6246890e803da12331a700e7217731e614b6944695c78f064a9b1581d",
+      "ahash256": "7ffeffffffc3ffc0023000663fe73fc73fc73fc60fc300c3000380c300000070"
+    }
+  ],
+  "near_duplicate_pairs": [],
+  "issue_codes": [],
+  "critic_summary": {
+    "passed": true,
+    "notes": "Frame 15 regenerated through the official user-authorized repair lane; the remaining 19 approved assets are byte-identical (same SHA) so their attempt-1 judgments stand."
+  },
+  "summary": {
+    "passed": true
+  },
+  "caption_source": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/subtitles.yaml",
+  "caption_source_sha256": "bfa352da206a99d8a01ca1f74874e94ee96d76bf71a0053aa2162a4a820c6465",
+  "caption_mode": "per_frame",
+  "caption_frame_sha256": {
+    "01": "bfabddcdf4d6da4b28ab3b73353d568188142e5464ad31d4982fcd6791a64612",
+    "02": "0c6222a07dd7b7bd985e3f1ba29d9a19e551182f14198717c64db310e9c30f66",
+    "03": "4570db22381221e10f944ffbf8cbfd64fd86c9f00c9c8b228efe531f87b7fd62",
+    "04": "16db590b8dc424d104daf64d4a75f9c51dc08136cdb64c7aff5aefd7cc98eb3a",
+    "05": "fc1c011b6459cef8ce0d1071a54c00b0f2e1959f1d74e2ec5219fd3d1bf04217",
+    "06": "5775489f4b7428b3a93958b86d715c481ad8b727c89d32a5446de8baa9f8abff",
+    "07": "d90535a340e3f0f83a5f85c41217894808e89fac05bc51194c073ad373f8a351",
+    "08": "13dbb9da5191d8fb5685259f04f639a0f2cf9de25f2c847e24ff535c497ac472",
+    "09": "c113f0b61014d82e5fa2593885f106b53b1a81b0b8f5b80f0341b63cd4920aa9",
+    "10": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "11": "a71786ccbff59462393c7f13a593de249c286caec6db9d0a0fa6938639d7ec10",
+    "12": "fb02363a0153e287fd0ffd151ff696333169bdba60b0f761829aee887cf4aaec",
+    "13": "136d2a73dfa440e8c281477ef76c9d20b2a6f4609c40b9fec19fcae1cd1d7261",
+    "14": "6fa7286e2f5da178a1e4e552c7a80a07f009df1873522daab9614f0a5029647e",
+    "15": "70274cf341b0933b98fd9007f97bf65e1c10a76974b5633f378ca09fbbbbf239",
+    "16": "54d837a64c0a840e0cd4067cea8e5d5050ff906ba5de9faf1de69450303d0e2e",
+    "17": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "18": "5e8d1bebef1f919e62cce072395f5f18686327e3f3230f1a9693652921ebc6b6",
+    "19": "03869713ed469a160ea754e6583ecaeb52d0eb04481bef1fc3ed2848878b830c",
+    "20": "63c23eda29d80b7de9709b8e1d8d1dcce4bb92025e3972ef077d7750aa80af9c"
+  },
+  "incremental_contract": {
+    "version": 1,
+    "mode": "full_baseline"
+  }
+}

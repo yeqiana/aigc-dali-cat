@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "marker": "EPISODE_ABANDONED",
+  "is_stage_source": false,
+  "stage_authority": "meta/episode-state.json",
+  "stage_untouched": true,
+  "episode_id": "10-03",
+  "series": "10_彼此的天上",
+  "title": "雾中的另一座生活区",
+  "abandoned": true,
+  "abandoned_at": "2026-09-11T18:40:47+08:00",
+  "abandoned_by": "direct_user_instruction",
+  "user_instruction": "将EP003标为废弃",
+  "stage_at_abandonment": "PRODUCTION_PASSED",
+  "official_exit": null,
+  "official_exit_note": "Story OS V2.6.1 的状态机只有 IDEA_LOCKED / STORYBOARD_LOCKED / VISUAL_CALIBRATED / PRODUCTION_PASSED / PUBLISH_READY / PUBLISHED / DATA_REVIEWED，没有官方 ABANDONED/void 出口；因此本标记是旁路决定记录，不是第二状态机，也不得被当作 stage 使用。",
+  "automation_hazard": "meta/runtime/next-action.json 由 next_action.py 纯按 current_state 派生：只要 stage 停在 PRODUCTION_PASSED，它就会继续输出 action=RELEASE / work_pending=true / continue_without_user_prompt=true。任何 host loop / Runtime DAG 在自动恢复本集前，必须先读本文件；本标记不修改也被不修改该派生缓存。彻底停掉自动推进需要官方 abandon/void 出口（见 reports/Story_OS_稳定生产闭环_暴露问题清单_20260911.md 的 W-08）。",
+  "reason_code": "direct_user_decision",
+  "consequences": [
+    "本集不再推进 PUBLISH_READY，也不再进入 Release / 发布流程。",
+    "episode-state.json 的 current_state 保持 PRODUCTION_PASSED，本标记不修改、不回退、不越级推进阶段。",
+    "已产出的 Story / Visual / Production 证据、SHA 与本地媒体一律原样保留，不删除、不重写、不伪造。",
+    "本集不计入《彼此的天上》系列的后续交付；系列其余四集不受影响。"
+  ],
+  "preserved": {
+    "authority": [
+      "meta/episode-state.json",
+      "meta/story-gates.json"
+    ],
+    "evidence": [
+      "meta/production-ledger.json",
+      "meta/frame-reviews/",
+      "meta/frame-semantic-review.json",
+      "meta/text-audit.json",
+      "meta/temporal-continuity.json",
+      "meta/visual-final-freeze.json",
+      "meta/provider-receipts/"
+    ],
+    "human_readable": [
+      "meta/FINAL_CHECKLIST.md",
+      "release/production-review.md"
+    ],
+    "local_media": "production/ 与 images/ 等本地像素资产按 .gitignore 保留在工作区，未删除、未迁移。"
+  },
+  "reactivation": "仅人工直接指令可撤销；撤销时删除本文件，并按官方 gate 重新推进，不得直接手写 episode-state.json。"
+}

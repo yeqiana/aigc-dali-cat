@@ -1,0 +1,573 @@
+{
+  "schema_version": 1,
+  "story_os": "2.1",
+  "step": "PREIMAGE_COMPILE",
+  "current_state": "STORYBOARD_LOCKED",
+  "runtime_request": {
+    "schema_version": 1,
+    "request_id": "20260911_125712_659679a4",
+    "created_at": "2026-09-11T12:57:12+08:00",
+    "mode": "full_auto",
+    "repository": {
+      "branch": "story",
+      "source": "system_default"
+    },
+    "topic": {
+      "title": "雾中的另一座生活区",
+      "raw": "雾中的另一座生活区"
+    },
+    "story_input": {
+      "mode": "user_seed",
+      "raw": "沿用当前已有 EP003 Story Lock candidate：川西自驾旅行、雨后山谷、无人机误入另一边完整生活区、对方发现无人机、最后缓存里从另一边看见现实中的车。保留五集系列主线与 EP001/EP002/EP004/EP005 连续性，仅按账号规范强化，不做大改。\n男女主必须延续 EP001 已批准人物身份，不换脸；服装可按天气和场景变化。图1必须用人物自拍或清晰正脸建立本集人物身份。\n完整连续推进到发布候选，不逐步询问。未指定图片参数时使用仓库默认 gpt-image-2、high、4:5。",
+      "constraints": [],
+      "rewrite_policy": "strengthen_and_rewrite",
+      "preserve_core_intent": true,
+      "allow_structure_rewrite": true
+    },
+    "intent": {
+      "intent": "CREATE_EPISODE",
+      "source": "deterministic_rules",
+      "confidence": 1.0,
+      "reason_codes": [
+        "DEFAULT_CREATE"
+      ],
+      "normalized_request_sha256": "61ed771deff0b26a527d57d9b8dfaa7dce1351fef4e94bff1803bd7306cfb34a",
+      "normalized_request": "开始生产彼此的天上 EP003《雾中的另一座生活区》。\n剧情大概沿用当前已有 EP003 Story Lock candidate:川西自驾旅行、雨后山谷、无人机误入另一边完整生活区、对方发现无人机、最后缓存里从另一边看见现实中的车。保留五集系列主线与 EP001/EP002/EP004/EP005 连续性,仅按账号规范强化,不做大改。\n男女主必须延续 EP001 已批准人物身份,不换脸;服装可按天气和场景变化。图1必须用人物自拍或清晰正脸建立本集人物身份。\n完整连续推进到发布候选,不逐步询问。未指定图片参数时使用仓库默认 gpt-image-2、high、4:5。",
+      "requires_llm_rewrite": false,
+      "requires_clarification": false
+    },
+    "creative_hints": [
+      "男女主必须延续 EP001 已批准人物身份，不换脸；服装可按天气和场景变化。图1必须用人物自拍或清晰正脸建立本集人物身份。"
+    ],
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "image": {
+      "provider": "openai",
+      "model": "gpt-image-2",
+      "source": "system_default",
+      "strict_model": false,
+      "quality": "high"
+    },
+    "runtime": {
+      "execution_mode": "dag",
+      "continuous_execution": true,
+      "resume": true,
+      "max_image_workers": 3,
+      "fail_soft": true,
+      "incremental_reuse": true
+    },
+    "delivery": {
+      "mode": "auto",
+      "zip_required_for_completion": false
+    },
+    "user_intent": {
+      "full_auto_authorized": true,
+      "allow_story_strengthening": true,
+      "allow_story_rewrite": true,
+      "ask_before_each_step": false
+    },
+    "provenance": {
+      "source": "natural_language",
+      "original_request": "开始生产彼此的天上 EP003《雾中的另一座生活区》。\n剧情大概沿用当前已有 EP003 Story Lock candidate：川西自驾旅行、雨后山谷、无人机误入另一边完整生活区、对方发现无人机、最后缓存里从另一边看见现实中的车。保留五集系列主线与 EP001/EP002/EP004/EP005 连续性，仅按账号规范强化，不做大改。\n男女主必须延续 EP001 已批准人物身份，不换脸；服装可按天气和场景变化。图1必须用人物自拍或清晰正脸建立本集人物身份。\n完整连续推进到发布候选，不逐步询问。未指定图片参数时使用仓库默认 gpt-image-2、high、4:5。"
+    }
+  },
+  "runtime_execution": null,
+  "effective_execution_mode": "full_auto",
+  "runtime_fast_path": {
+    "schema_version": 1,
+    "module_version": "2.6.0",
+    "enabled": true,
+    "goal": "runtime_fast_path_without_creative_rule_changes",
+    "capability_cache_ttl_seconds": 21600,
+    "resume_capsule_required_on_context_restore": true,
+    "rolling_review_requires_verified_vision": true,
+    "raw_candidate_budget": {
+      "original": 2,
+      "repair": 2,
+      "exception": 2
+    },
+    "performance_slo": {
+      "green_seconds": 5400,
+      "yellow_seconds": 7200,
+      "red_above_seconds": 7200,
+      "gate": false,
+      "incident_above_seconds": 10800
+    },
+    "policies": {
+      "no_broad_repository_rescan_when_resume_capsule_fresh": true,
+      "technical_failure_does_not_consume_raw_candidate_budget": true,
+      "rolling_review_without_verified_vision": "UNCERTAIN",
+      "rolling_review_without_verified_vision_may_emit_repair_now": false,
+      "fast_path_fail_soft": true,
+      "source_authority_wins_on_sha_mismatch": true,
+      "candidate_budget_enforced_at_generation_entrypoints": true,
+      "queue_item_token_is_idempotent": true,
+      "technical_failure_releases_candidate_budget": true,
+      "budget_exhaustion_is_non_regenerating_block": true,
+      "atomic_candidate_budget": true,
+      "candidate_commit_before_review": true,
+      "review_failure_may_release_committed_candidate": false,
+      "caption_change_invalidates_visual_review": false,
+      "cross_shell_safe_argv_only": true,
+      "bash_heredoc_allowed": false,
+      "powershell_here_string_allowed": false,
+      "shell_true_allowed": false
+    },
+    "episode_candidate_budget": {
+      "formula": "min(60,max(20,frame_count+15))"
+    }
+  },
+  "runtime_capabilities": {
+    "schema_version": 1,
+    "module_version": "2.5.1",
+    "generated_at": "2026-09-11T12:57:49+08:00",
+    "expires_after_seconds": 21600,
+    "platform": "nt",
+    "codex_path": "D:\\soft\\nvm-setup\\nodejs\\codex.CMD",
+    "text_worker": "available",
+    "vision_review": "unverified",
+    "image_generation_route": "unknown",
+    "sandbox_risk": "windows_1385_possible",
+    "source": "cheap_auto_detect_no_model_probe",
+    "note": "Set/record vision_review=verified only after a real pixel-vision probe succeeds."
+  },
+  "resume_capsule": {
+    "schema_version": 1,
+    "module_version": "2.5.1",
+    "generated_at": "2026-09-11T13:13:50+08:00",
+    "episode": "episodes/10_彼此的天上/03_雾中的另一座生活区",
+    "current_state": "STORYBOARD_LOCKED",
+    "next_target": "VISUAL_CALIBRATED",
+    "runtime_step": "VISUAL_LOCK",
+    "source_fingerprint": "f19aee9d4670cb1734a7cdd3d9d9e21cfb79baecdd933d5c05814618de199080",
+    "source_files": [
+      {
+        "path": "meta/episode-state.json",
+        "sha256": "21f683366745ae6e4c0a1c6d75dad4edc5b3b96c90b9d34f33aeed3b719ba1f7"
+      },
+      {
+        "path": "meta/production-ledger.json",
+        "sha256": null
+      },
+      {
+        "path": "meta/production-queue.json",
+        "sha256": null
+      },
+      {
+        "path": "meta/runtime-request.json",
+        "sha256": "c8f1122051105495ecf64a28c86df51d07998053127b5e640a815ac0639dea41"
+      },
+      {
+        "path": "meta/story-gates.json",
+        "sha256": "62700ec7363dd31e0c61a2067abc5525523aa64004794a728a738630eb2f41f6"
+      },
+      {
+        "path": "meta/runtime-checkpoint.json",
+        "sha256": "e1513e4296b79532391914c493bfc9c0a2ab08b9b71ba3eed55d93a3deb5463c"
+      },
+      {
+        "path": "meta/final-acceptance.json",
+        "sha256": null
+      }
+    ],
+    "ledger": {
+      "frame_count": 0,
+      "status_counts": {},
+      "blocking_frames": [],
+      "tech_retry_frames": [],
+      "ready_frames": []
+    },
+    "queue_status_counts": {},
+    "runtime_capabilities": {
+      "schema_version": 1,
+      "module_version": "2.5.1",
+      "generated_at": "2026-09-11T12:57:49+08:00",
+      "expires_after_seconds": 21600,
+      "platform": "nt",
+      "codex_path": "D:\\soft\\nvm-setup\\nodejs\\codex.CMD",
+      "text_worker": "available",
+      "vision_review": "unverified",
+      "image_generation_route": "unknown",
+      "sandbox_risk": "windows_1385_possible",
+      "source": "cheap_auto_detect_no_model_probe",
+      "note": "Set/record vision_review=verified only after a real pixel-vision probe succeeds."
+    },
+    "next_actions": [
+      "continue Visual Lock from existing evidence"
+    ],
+    "read_policy": "Read this capsule first after context loss. Do not broad-rescan repository authority unless a listed SHA changed, a required detail is missing, or a gate reports drift.",
+    "authority_policy": "Derived cache only; source authority always wins."
+  },
+  "character_contract": {
+    "schema_version": 1,
+    "status": "LOCKED",
+    "derived_from_pools": true,
+    "not_episode_stage": true,
+    "created_at": "2026-09-11T12:57:50+08:00",
+    "selection_seed": 15071184966874336236,
+    "era": {
+      "bucket": "modern_2020s",
+      "year": 2023,
+      "source": "explicit_hint_or_weighted"
+    },
+    "world_identity": {
+      "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+      "country": "China",
+      "region": "Mainland China",
+      "nationality_context": "Chinese",
+      "resident_context": "mainland Chinese local residents",
+      "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+    },
+    "cast": {
+      "type": "pair",
+      "size": 2,
+      "relationship": "普通情侣",
+      "members": [
+        {
+          "id": "P01",
+          "pov": true,
+          "gender": "male",
+          "age": 24,
+          "build": "普通年轻人体型",
+          "hair": "黑色短碎发，耳上长度，日常自然蓬松",
+          "clothing_anchor": "雨后川西旅行的普通轻薄外套或卫衣+休闲长裤+运动鞋",
+          "device_anchor": "普通智能手机；车内另有普通消费级无人机作为旅行拍风景工具",
+          "nationality_context": "Chinese",
+          "resident_context": "mainland Chinese local residents"
+        },
+        {
+          "id": "P02",
+          "pov": false,
+          "gender": "female",
+          "age": 24,
+          "build": "普通年轻人体型",
+          "hair": "锁骨长度自然黑发，旅行时可低马尾或自然披发",
+          "clothing_anchor": "雨后川西旅行的普通轻薄外套或卫衣+深色长裤+运动鞋",
+          "device_anchor": null,
+          "nationality_context": "Chinese",
+          "resident_context": "mainland Chinese local residents"
+        }
+      ]
+    },
+    "pov": {
+      "character_id": "P01",
+      "first_person": true
+    },
+    "entry": {
+      "type": "travel",
+      "label": "旅行/出游",
+      "source": "user_hint",
+      "reason": "承接 EP001/EP002 的情侣川西自驾；雨停后在山谷观景停车点休息并补拍普通旅行风景素材"
+    },
+    "scene": {
+      "primary_category": "mountain_road_valley",
+      "primary_place": "川西山谷公路旁可停车观景位置与雨后低云山谷"
+    },
+    "role_policy": {
+      "protagonist_role": "普通年轻人/普通朋友小团体",
+      "career_function": "arrival_only",
+      "solves_anomaly_professionally": false
+    },
+    "no_anomaly_test": {
+      "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+      "ordinary_day_plan": "原本只是继续情侣川西自驾，在雨停后的山谷停车休息，用手机和消费级无人机补拍普通旅行风景后继续上路",
+      "pass": true,
+      "must_be_rechecked_before_story_lock": true,
+      "rechecked_against_final_story": true
+    },
+    "continuity_policy": {
+      "member_count_changes_require_story_event": true,
+      "pov_character_id_stable": true,
+      "clothing_and_device_anchors_propagate_to_frame_contract": true
+    },
+    "ordinary_person_score": 100,
+    "forbidden_role_check": {
+      "pass": true,
+      "hits": []
+    },
+    "story_build_note": "这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。"
+  },
+  "invariants": {
+    "zip_is_delivery_adapter_not_stage_gate": true,
+    "codex_production_complete_at_publish_ready": true,
+    "concept_ambition_before_story_lock": true,
+    "image_first_propagation_gate": true,
+    "reality_limits_capture_not_concept": true,
+    "environment_is_physics_not_filter": true,
+    "resolved_frame_contract_is_derived_cache": true,
+    "generation_and_review_bind_same_frame_contract_sha": true,
+    "visual_lock_four_admissions": true,
+    "max_parallel_image_workers": 3,
+    "production_ledger_single_writer": true,
+    "technical_failure_does_not_consume_content_repair": true,
+    "scheduler_fail_soft": true,
+    "fast_scout_never_final_pass": true,
+    "final_candidate_snapshot_before_publish_ready": true,
+    "delivery_consumes_verified_snapshot": true,
+    "runtime_request_immutable_after_bind": true,
+    "auto_create_story_when_missing": true,
+    "user_seed_requires_strengthen_and_rewrite": true,
+    "default_image_model": "gpt-image-2",
+    "default_image_quality": "high",
+    "explicit_image_model_no_silent_fallback": true,
+    "current_visual_lock_calibration_count": 4,
+    "visual_lock_real_1_plus_3_barrier": true,
+    "visual_lock_dependents_require_baseline_review_pass": true,
+    "reference_arbitration_max_refs": 2,
+    "final_snapshot_locks_character_master_assets": true,
+    "human_response_interaction_enabled": true,
+    "emotion_intensity_max": 4,
+    "interaction_density_min_one_per_5_human_frames": true,
+    "performance_telemetry_fail_soft": true
+  },
+  "authority_files": [
+    {
+      "path": "config/storyos.yaml",
+      "exists": true,
+      "sha256": "dca7d1852c4c9e2ba2e31cd2bb4e84a9fe1187d358d4834d965ecf94dc25153c",
+      "bytes": 8447
+    },
+    {
+      "path": "config/index.yaml",
+      "exists": true,
+      "sha256": "727f10c89f69a7724f3a26082aa86e85d43e589becf97374e1b8d5b25fdd60fc",
+      "bytes": 8286
+    },
+    {
+      "path": "START_HERE.md",
+      "exists": true,
+      "sha256": "9dc918f4f08a44fbec4930b55312f7575f60ed35cab26517293f0f9c5e9695d8",
+      "bytes": 21851
+    },
+    {
+      "path": "SKILL.md",
+      "exists": true,
+      "sha256": "739ab18b6f16e6f745b83a536688a64938a2335295ad8f7c09c78a9a485075fb",
+      "bytes": 28400
+    },
+    {
+      "path": "AGENTS.md",
+      "exists": true,
+      "sha256": "6feceb46849bb65ada13b908d609d453a2713618b8c0aa0d4d3b29c778201a6f",
+      "bytes": 20040
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "exists": true,
+      "sha256": "1bd41fc05fa342885dc4f3f84a40a6735c9551b710a0fd669f2a8189e8169746",
+      "bytes": 65309
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "exists": true,
+      "sha256": "d68ad4c09eefaac04a0a7552d10add17c37b3ac09a826363387f9988a297e69c",
+      "bytes": 18816
+    },
+    {
+      "path": "standards/Character_And_Entry_Pool_V1.0.md",
+      "exists": true,
+      "sha256": "6cc077f723c33d427bcf9bf73910b2e7e6fc0e08cf354b83aa7414086d84cd77",
+      "bytes": 2771
+    },
+    {
+      "path": "standards/character-pools.json",
+      "exists": true,
+      "sha256": "e4a13a6579cd286d71124d985ddb21a4ac281a66851223811b6f988a2ec9c061",
+      "bytes": 2769
+    },
+    {
+      "path": "standards/entry-motivation-pools.json",
+      "exists": true,
+      "sha256": "e968f2c0068f1c698426a566424374d47f524269e379a3e0fd704b066ec2939e",
+      "bytes": 4210
+    },
+    {
+      "path": "standards/scene-pools.json",
+      "exists": true,
+      "sha256": "31b8aeb7b2c368b82cdb30c27b906b1e5c3a3a15964cc36d657d012658767185",
+      "bytes": 2168
+    },
+    {
+      "path": "standards/forbidden-character-roles.json",
+      "exists": true,
+      "sha256": "c0b18e39cd4141f999a4b30bc190fa0bb59c5eb84bfe8b67828cde6ad2eb5459",
+      "bytes": 1179
+    },
+    {
+      "path": "runtimes/runtime-mode-contract-r2.json",
+      "exists": true,
+      "sha256": "0e14ce9d20a177fafafc2b76c146f31022793278560005376ddbfdfa8c5c47af",
+      "bytes": 1249
+    },
+    {
+      "path": "runtimes/runtime-fast-path-v251.json",
+      "exists": true,
+      "sha256": "dc6de81f01121080057ebf765b0ce86aa0626bc8010e57e9ee9ea7e3b7cfedae",
+      "bytes": 1567
+    },
+    {
+      "path": "library/catalog.json",
+      "exists": true,
+      "sha256": "20ecd1817b3dc4f9ffb01873307f32aa5c354b21831d463764473d588e8d3dc4",
+      "bytes": 3167
+    },
+    {
+      "path": "library/copy/intro-openers.json",
+      "exists": true,
+      "sha256": "b5b2b0bbc16329c0369f75040fe4fdde4a8d0d304b513ebcd7ab9463f9347f3f",
+      "bytes": 2572
+    },
+    {
+      "path": "standards/AIGC_Directing_Quality_V1.0.md",
+      "exists": true,
+      "sha256": "c7dc75dabe8ce6820a6637751cf48aadb1b5ebb17039682fb65bd77581446e33",
+      "bytes": 4525
+    },
+    {
+      "path": "standards/Character_Visual_And_Wardrobe_V1.0.md",
+      "exists": true,
+      "sha256": "8a372a254e4256a9eaa1cd085f9a28218827c9719ddf71112104c1d3dac179e7",
+      "bytes": 3036
+    },
+    {
+      "path": "standards/Character_Master_Final_Closure_V1.0.md",
+      "exists": true,
+      "sha256": "a8c741fa93e4ccc745bc64a4d888bf35579983c054498181f0c65693da339de5",
+      "bytes": 2241
+    },
+    {
+      "path": "standards/Human_Response_Interaction_V1.0.md",
+      "exists": true,
+      "sha256": "60f0e393bd11eaec516340e142e4bf30a6f5fc76f965abb74befb1b0d0cc7023",
+      "bytes": 2806
+    },
+    {
+      "path": "standards/wardrobe-scenario-profiles.json",
+      "exists": true,
+      "sha256": "e2a519a8378f140e98b3e4f7f9189a34d331e136b214b17adc707435b25bf689",
+      "bytes": 2553
+    },
+    {
+      "path": "config/profiles/account_creative/default.json",
+      "exists": true,
+      "sha256": "63b23f526c11601f5692718d4a9f7749f1908a96fcf274548d6f7396c52cbad9",
+      "bytes": 2358
+    },
+    {
+      "path": "standards/directing_grammar_v1.json",
+      "exists": true,
+      "sha256": "908456e0a314e7133308121853da2d3cec26b55b7c32098ec3db0c19b8222990",
+      "bytes": 5147
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "config/storyos.yaml",
+      "exists": true,
+      "sha256": "dca7d1852c4c9e2ba2e31cd2bb4e84a9fe1187d358d4834d965ecf94dc25153c",
+      "bytes": 8447
+    },
+    {
+      "path": "meta/runtime-execution.json",
+      "exists": false
+    },
+    {
+      "path": "meta/runtime-request.json",
+      "exists": true,
+      "sha256": "c8f1122051105495ecf64a28c86df51d07998053127b5e640a815ac0639dea41",
+      "bytes": 3775
+    },
+    {
+      "path": "meta/episode-state.json",
+      "exists": true,
+      "sha256": "21f683366745ae6e4c0a1c6d75dad4edc5b3b96c90b9d34f33aeed3b719ba1f7",
+      "bytes": 588
+    },
+    {
+      "path": "meta/resource-selection.json",
+      "exists": true,
+      "sha256": "6fcddac11b151e2368c24556af2accfe40ed28d540e4b87bac19b3699c2649b5",
+      "bytes": 1201
+    },
+    {
+      "path": "meta/intro-policy.json",
+      "exists": true,
+      "sha256": "5c532ff294a5992250a89c5226be8109de3b9d1d2f30694b8e74cc1217184e90",
+      "bytes": 912
+    },
+    {
+      "path": "meta/directing-quality.json",
+      "exists": true,
+      "sha256": "669b01d93f37333883f312fd4cef03e16d091e9b2e2792a4fff34a739cf68239",
+      "bytes": 759
+    },
+    {
+      "path": "meta/voice-contract.json",
+      "exists": true,
+      "sha256": "1a2225c100863429102d9a3f28e6de7d8ad90623b49d21fea61aa7afa0ff7b73",
+      "bytes": 1928
+    },
+    {
+      "path": "meta/storyboard-density-review.json",
+      "exists": true,
+      "sha256": "04db9184e228b3c9c35716ea1559a1d0792f861de67e28122d41883dc2ca8389",
+      "bytes": 6975
+    },
+    {
+      "path": "meta/opening-social-anchor.json",
+      "exists": true,
+      "sha256": "67d2c621c99b6cf98c11272e676db3289ff5c92693b6d8e93b9187ddc373c321",
+      "bytes": 1145
+    },
+    {
+      "path": "meta/story-gates.json",
+      "exists": true,
+      "sha256": "62700ec7363dd31e0c61a2067abc5525523aa64004794a728a738630eb2f41f6",
+      "bytes": 3228
+    },
+    {
+      "path": "meta/story-semantic-review.json",
+      "exists": true,
+      "sha256": "4a1f985399a134cc622f39ccdb4a540fa18f7c710caf198992c0096c5d2d1292",
+      "bytes": 6014
+    },
+    {
+      "path": "meta/character-contract.json",
+      "exists": true,
+      "sha256": "95241302efae7822d3d79275c1f0ae49c67a3cc88c9e83d7bfcb634d287a4842",
+      "bytes": 3259
+    },
+    {
+      "path": "meta/character-visual-contract.json",
+      "exists": true,
+      "sha256": "e46c4af6d29840c4156428ee537f4ca46894c710fe5048cd37d62aa7571a0b8b",
+      "bytes": 4803
+    },
+    {
+      "path": "meta/shot-progression-review.json",
+      "exists": true,
+      "sha256": "60d7e751d001d65191acb7cfe7adb0207691dedbed68ff3801cd26a9d3d78b04",
+      "bytes": 26584
+    },
+    {
+      "path": "meta/capture-event-contract.json",
+      "exists": false
+    },
+    {
+      "path": "meta/world-state.json",
+      "exists": false
+    },
+    {
+      "path": "meta/temporal-continuity.json",
+      "exists": false
+    },
+    {
+      "path": "meta/wardrobe-contract.json",
+      "exists": false
+    }
+  ],
+  "authority_policy": "Derived cache only. If capsule conflicts with source authority, source authority wins.",
+  "read_policy": "Fast Path: consume resume_capsule + runtime_capabilities + this step capsule first. Do not broad-rescan repository files while source SHA is unchanged; open source authority only for missing details, SHA drift, or conflict resolution.",
+  "source_sha256": "d6d4d18a27332238b773a1da65c0cc2a17b3dc5680e4d9caf3e2d2954b7f4fb9",
+  "compiled_at": "2026-09-11T13:13:52+08:00"
+}

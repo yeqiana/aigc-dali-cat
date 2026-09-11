@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "note": "Performance evidence only; NOT a stage source.",
+  "runs": [
+    {
+      "run_id": "1789102670-work",
+      "runtime": "WORK",
+      "mode": "resume",
+      "started_at": "2026-09-11T12:57:50+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.11,
+          "recorded_at": "2026-09-11T12:57:50+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/03_���е���һ��������\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.031,
+          "recorded_at": "2026-09-11T12:57:50+08:00",
+          "note": " \"host-184a9a3e9392e9f3\", \"request_fingerprint\": \"184a9a3e9392e9f3c9e31f7e7ef57e5923cfecfb0678ddcec1b6b17d0fd4b8a3\", \"created_at\": \"2026-09-11T12:57:50+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-184a9a3e9392e9f3.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        }
+      ],
+      "status": "HOST_WAIT",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 0.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.0
+      },
+      "finished_at": "2026-09-11T12:57:50+08:00",
+      "total_seconds": 0.437,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.11,
+          "recorded_at": "2026-09-11T12:57:50+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/03_���е���һ��������\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.031,
+          "recorded_at": "2026-09-11T12:57:50+08:00",
+          "note": " \"host-184a9a3e9392e9f3\", \"request_fingerprint\": \"184a9a3e9392e9f3c9e31f7e7ef57e5923cfecfb0678ddcec1b6b17d0fd4b8a3\", \"created_at\": \"2026-09-11T12:57:50+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-184a9a3e9392e9f3.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        }
+      ]
+    },
+    {
+      "run_id": "1789103631-work",
+      "runtime": "WORK",
+      "mode": "resume",
+      "started_at": "2026-09-11T13:13:51+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.265,
+          "recorded_at": "2026-09-11T13:13:51+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/03_���е���һ��������\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-11T13:13:52+08:00",
+          "note": "target already valid"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.031,
+          "recorded_at": "2026-09-11T13:13:52+08:00",
+          "note": " \"host-385a7b5ab954d5f2\", \"request_fingerprint\": \"385a7b5ab954d5f2731744e928206c5bc98b5fb16df1bee6814d67904764b22e\", \"created_at\": \"2026-09-11T13:13:52+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-385a7b5ab954d5f2.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        }
+      ],
+      "status": "HOST_WAIT",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 1.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.704
+      },
+      "finished_at": "2026-09-11T13:13:52+08:00",
+      "total_seconds": 1.297,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.265,
+          "recorded_at": "2026-09-11T13:13:51+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_�˴˵�����/03_���е���һ��������\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.031,
+          "recorded_at": "2026-09-11T13:13:52+08:00",
+          "note": " \"host-385a7b5ab954d5f2\", \"request_fingerprint\": \"385a7b5ab954d5f2731744e928206c5bc98b5fb16df1bee6814d67904764b22e\", \"created_at\": \"2026-09-11T13:13:52+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-385a7b5ab954d5f2.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-11T13:13:52+08:00",
+          "note": "target already valid"
+        }
+      ]
+    }
+  ],
+  "updated_at": "2026-09-11T13:13:52+08:00",
+  "generated_at": "2026-09-11T12:57:50+08:00",
+  "kind": "workflow_performance",
+  "performance_budget_updated_at": "2026-09-11T14:30:50+08:00"
+}
