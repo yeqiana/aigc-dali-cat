@@ -4,6 +4,13 @@
 
 状态：Design + MVP Implemented（人工影子观察层，不接入 Runtime）
 
+> 状态更新（2026-09-11）：本文件描述的 `pre_production/shadow_observation/` 模块已由
+> `pre_production/observation/`（schema / ledger / feedback / observation runner）取代，
+> 权威设计见 `docs/Story_OS_PreProduction_Intelligence_Shadow_Observation_Plan_V1.0.md`、
+> `..._Advisor_Feedback_Model_V1.0.md`、`..._Episode_Observation_Ledger_V1.0.md`、
+> `..._Human_Feedback_Entry_V1.0.md`。本文件保留为设计演进记录（Design History），
+> 不作为当前实现契约。
+
 ---
 
 # 一、定位
@@ -267,4 +274,3 @@ highest_risk_level    : MEDIUM/HIGH（以真实证据为准）
 
 Shadow Observation 的长期价值：让 Advisor 的准不准**有据可查**，
 而不是靠主观感觉宣称“Advisor 有用”。
-
