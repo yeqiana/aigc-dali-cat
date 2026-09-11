@@ -61,7 +61,7 @@ def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],tim
                 raise BatchBackendError(f"TIMEOUT: batch image worker timeout after {timeout}s; log={log}") from exc
         if done.returncode!=0:
             tail=log.read_text(encoding="utf-8",errors="replace")[-6000:] if log.is_file() else ""
-            code=image_model_policy.classify_backend_error(tail)
+            code=image_model_policy.classify_backend_error(tail, source="image_backend")
             raise BatchBackendError(f"{code or 'BATCH_IMAGE_BACKEND_ERROR'}: rc={done.returncode}; log={log}")
         mapped=batch_result_mapper.map_outputs(workdir,contract)
         persisted=[]

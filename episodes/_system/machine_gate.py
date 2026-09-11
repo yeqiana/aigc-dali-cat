@@ -301,6 +301,23 @@ def check_references(repo_root: Path, gates: dict, findings: list[Finding], *, m
                 if anchor not in passed_anchors:
                     findings.append(Finding("FAIL", "missing_reference_anchor", f"required reference anchor not passed: {anchor}"))
 
+    # W-17: declaration-only validation is insufficient. Runtime queue evidence must
+    # carry the same anchor contract when available.
+    queue_path = Path(gates.get("production_queue") or "meta/production-queue.json")
+    if not queue_path.is_absolute():
+        queue_path = repo_root / queue_path
+    if queue_path.exists():
+        try:
+            queue = json.loads(queue_path.read_text(encoding="utf-8-sig"))
+            for item in queue.get("items") or []:
+                contract = item.get("reference_execution_contract") or {}
+                roles = set(str(x) for x in contract.get("selected_roles") or [])
+                for anchor in refs.get("required_anchors") or []:
+                    if str(anchor) not in roles:
+                        findings.append(Finding("FAIL", "missing_execution_reference_anchor", f"runtime reference missing required anchor: {anchor}"))
+        except Exception:
+            pass
+
 
 def review_path(repo_root: Path, episode_dir: Path, gates: dict, key: str) -> Path:
     evidence = gates.get("production_evidence") if isinstance(gates.get("production_evidence"), dict) else {}

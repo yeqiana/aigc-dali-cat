@@ -145,6 +145,17 @@ def narrative_escalation_from(ep:Path,frame:int)->int|None:
 
 def contract_references(ep:Path,frame:int,scope:str="batch")->list[dict]:
     refs,_=reference_arbitrator.select(ep,frame,scope=scope)
+    # Required reference anchors are execution contracts, not documentation only.
+    gates_path=ep / "meta" / "story-gates.json"
+    gates={}
+    try:
+        if gates_path.exists():
+            gates=json.loads(gates_path.read_text(encoding="utf-8"))
+    except Exception:
+        gates={}
+    check=reference_arbitrator.validate_required_anchor_execution(ep,frame,refs,gates)
+    if not check.get("ok"):
+        raise RuntimeError("REQUIRED_REFERENCE_ANCHOR_MISSING:" + ",".join(check.get("missing_anchors") or []))
     return refs
 
 
@@ -185,6 +196,13 @@ def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:
             "status":"queued",
             "prompt_file":repo_rel(prompt_file),
             "references":references,
+            # W-17: persist the exact execution contract instead of only the declaration.
+            "reference_execution_contract":{
+                "selected_at_enqueue":now(),
+                "selected_references":references,
+                "selected_roles":[str(x.get("role") or "") for x in references if isinstance(x,dict)],
+                "selected_kinds":[str(x.get("kind") or "") for x in references if isinstance(x,dict)],
+            },
             "capture_id":capture_id,
             "model":model,
             "quality":quality,
@@ -288,10 +306,9 @@ def ledger_tech_fail(ep:Path,item:dict,code:str,message:str)->None:
 def classify_error(text:str)->str:
     for code in NON_REGENERATING_FAILURE_CODES:
         if code in text:return code
-    model_code=image_model_policy.classify_backend_error(text)
+    model_code=image_model_policy.classify_backend_error(text, source="image_backend")
     if model_code:return model_code
     low=text.lower()
-    if "429" in low:return "RATE_LIMIT_429"
     if "timeout" in low:return "TIMEOUT"
     if "500" in low or "502" in low or "503" in low or "5xx" in low:return "BACKEND_5XX"
     if "contract" in low and "drift" in low:return "CONTRACT_DRIFT"

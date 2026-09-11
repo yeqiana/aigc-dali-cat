@@ -18,21 +18,29 @@ REPRODUCIBLE_SNAPSHOT="gpt-image-2-2026-04-21"
 MODEL_UNAVAILABLE="MODEL_UNAVAILABLE"
 BACKEND_5XX="BACKEND_5XX"
 RATE_LIMIT_429="RATE_LIMIT_429"
+AUTH_401="AUTH_401"
+PERMISSION_403="PERMISSION_403"
 ARTIFACT_SAVE_COLLISION="PROVIDER_ARTIFACT_SAVE_COLLISION"
 MODEL_UNAVAILABLE_PATTERNS=("model_unavailable","model unavailable","model is not available","requested model is not available","unknown model","unsupported model","model not found","does not exist","cannot honor the requested model")
 BACKEND_5XX_PATTERNS=("500 internal server error","502 bad gateway","503 service unavailable","504 gateway timeout","upstream_server_error","server_error")
 RATE_LIMIT_PATTERNS=("429","too many requests","rate limit")
+AUTH_401_PATTERNS=("401 unauthorized","http 401","status code 401","authentication required")
+PERMISSION_403_PATTERNS=("403 forbidden","http 403","permission denied")
 # STORY_OS_V2_6_2_ARTIFACT_COLLISION: the Codex image tool can generate a real picture and
 # still fail its own local save (Windows os error 183 / ERROR_ALREADY_EXISTS). Story OS only
 # observes "no valid image", so this signature must stay a technical failure that never
 # consumes content repair and must never be mistaken for a model or content rejection.
 ARTIFACT_SAVE_COLLISION_PATTERNS=("failed to save generated image","os error 183","error_already_exists","cannot create a file when that file already exists","当文件已存在时")
 
-def classify_backend_error(text):
+def classify_backend_error(text, *, source="image_backend"):
     low=str(text or "").lower()
+    if source != "image_backend":
+        return None
+    if any(x in low for x in AUTH_401_PATTERNS): return AUTH_401
+    if any(x in low for x in PERMISSION_403_PATTERNS): return PERMISSION_403
     if any(x in low for x in MODEL_UNAVAILABLE_PATTERNS): return MODEL_UNAVAILABLE
-    if any(x in low for x in RATE_LIMIT_PATTERNS): return RATE_LIMIT_429
     if any(x in low for x in ARTIFACT_SAVE_COLLISION_PATTERNS): return ARTIFACT_SAVE_COLLISION
+    if any(x in low for x in RATE_LIMIT_PATTERNS): return RATE_LIMIT_429
     if any(x in low for x in BACKEND_5XX_PATTERNS): return BACKEND_5XX
     return None
 

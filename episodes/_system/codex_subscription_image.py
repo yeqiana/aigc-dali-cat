@@ -230,6 +230,16 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
         worker_env.setdefault("STORY_OS_WORKER_ID", str(uuid.uuid4()))
         worker_codex_home = workdir / "codex-home"
         worker_codex_home.mkdir(parents=True, exist_ok=True)
+        # The isolated CODEX_HOME exists to stop concurrent workers sharing
+        # ~/.codex/generated_images. An empty CODEX_HOME also drops the operator's
+        # ChatGPT/Codex sign-in, which makes every worker unauthenticated
+        # (HTTP 401) and produces zero images. Seed only the credentials the CLI
+        # needs; the reference/generated_images isolation stays intact.
+        source_home = Path(os.environ.get("CODEX_HOME") or (Path.home() / ".codex"))
+        for name in ("auth.json", "config.toml"):
+            src = source_home / name
+            if src.is_file() and not (worker_codex_home / name).exists():
+                shutil.copy2(src, worker_codex_home / name)
         worker_env["CODEX_HOME"] = str(worker_codex_home)
         with log.open('w', encoding='utf-8', newline='\n') as log_handle:
             try:
@@ -261,7 +271,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
                 tail=log.read_text(encoding='utf-8',errors='replace')[-6000:]
             except Exception:
                 tail=''
-            machine_code=image_model_policy.classify_backend_error(tail)
+            machine_code=image_model_policy.classify_backend_error(tail, source="image_backend")
             if machine_code:
                 raise BackendError(f'{machine_code}: requested={image_model}; log={log}')
             raise BackendError(f'Codex image worker failed rc={completed.returncode}; no_valid_image=true; log={log}')
