@@ -22,6 +22,11 @@ desktop.ini
 _tmp_*
 episodes/_system/_tmp_*
 
+# 归档豁免：.storyos/archive/ 下是有据可查的正式归档资产（带 README、走 git mv、
+# 逐文件 SHA-256 校验），不受上面 _tmp_* 等全局临时规则约束。
+# 注意：本行必须排在 _tmp_* 之后，并排在下方 v2-runtime backups/smoke 忽略规则之前。
+!/.storyos/archive/**
+
 # Story OS high-volume raw runtime logs are local/derived evidence.
 # Formal review JSON and SHA-bound critic evidence remain trackable.
 episodes/**/meta/**/*.jsonl
@@ -107,6 +112,10 @@ episodes/**/*.zip
 .storyos/backups/
 .storyos/history/
 
+# V2 runtime archive（2026-09-11 从 .storyos/backups 与 .storyos/smoke 归档迁移，内容不提交）
+.storyos/archive/v2-runtime/backups/
+.storyos/archive/v2-runtime/smoke/
+
 # Local scratch only; formal episode evidence remains tracked selectively.
 /NUL
 /.storyos/smoke/
@@ -117,6 +126,22 @@ episodes/**/*.zip
 /.storyos/metrics/
 /.storyos/runtime-launcher/
 /.storyos/auto-recovery/
+
+# .storyos 工作台 / 版面探查产物为本地派生证据，不入库。
+# 有意归档物在 .storyos/archive/ 下独立跟踪（见各 archive README）。
+# 2026-09-11：这批曾被测图/并发进程误暂存（55 张 PNG 共 54.7MB），故在此硬拦截。
+/.storyos/*.log
+/.storyos/*.png
+/.storyos/layout_final.json
+/.storyos/layoutprobe.json
+/.storyos/bands/
+/.storyos/strip/
+/.storyos/under/
+/.storyos/zbox/
+/.storyos/bandpreview/
+
+# Chromium / crashpad 杂项日志（reports/ 下只保留正式报告）
+/reports/debug.log
 
 # Root-level production runtime queue/reconciliation outputs are regenerated locally.
 /meta/production-queue.json

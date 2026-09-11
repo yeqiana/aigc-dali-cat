@@ -1,0 +1,14 @@
+﻿State=Ready
+PrincipalUserId=SYSTEM
+LogonType=ServiceAccount
+RunLevel=Highest
+Trigger=Enabled            : True
+EndBoundary        : 
+ExecutionTimeLimit : 
+Id                 : 
+Repetition         : MSFT_TaskRepetitionPattern
+StartBoundary      : 
+Delay              : 
+PSComputerName     :
+Execute=C:\Users\79873\AppData\Local\Programs\Python\Python312\python.exe
+Arguments="D:\workspace\YeQianWorkSpace\yeqian\storyOS\scripts\phase9_runtime_launcher.py" --run-root "D:\workspace\YeQianWorkSpace\yeqian\storyOS\.storyos\runtime-launcher" --metrics-port 18081 --auto-recover --restart-agent-command "story restart"

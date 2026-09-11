@@ -1,0 +1,82 @@
+# HELP storyos_runtime_worker_up 常驻 Worker 是否在本次 tick 正常运行
+# TYPE storyos_runtime_worker_up gauge
+storyos_runtime_worker_up{worker_id="runtime-worker"} 1
+# HELP storyos_runtime_worker_ticks_total 本进程累计 tick 数
+# TYPE storyos_runtime_worker_ticks_total counter
+storyos_runtime_worker_ticks_total{worker_id="runtime-worker"} 4
+# HELP storyos_runtime_worker_alerts_total 本进程累计 WARNING/CRITICAL 告警数
+# TYPE storyos_runtime_worker_alerts_total counter
+storyos_runtime_worker_alerts_total{worker_id="runtime-worker"} 0
+# HELP storyos_runtime_worker_open_incidents 当前未消解的 CRITICAL 事件数
+# TYPE storyos_runtime_worker_open_incidents gauge
+storyos_runtime_worker_open_incidents{worker_id="runtime-worker"} 0
+# HELP storyos_runtime_worker_consistency_scans_total 本进程累计一致性巡次数
+# TYPE storyos_runtime_worker_consistency_scans_total counter
+storyos_runtime_worker_consistency_scans_total{worker_id="runtime-worker"} 2
+# HELP storyos_runtime_worker_last_tick_timestamp_seconds 最近一次 tick 的 Unix 时间戳（用于识别陈旧文件）
+# TYPE storyos_runtime_worker_last_tick_timestamp_seconds gauge
+storyos_runtime_worker_last_tick_timestamp_seconds{worker_id="runtime-worker"} 1789099577
+# HELP storyos_runtime_worker_heartbeat_ok 本次 tick 心跳是否写入成功（0/1）
+# TYPE storyos_runtime_worker_heartbeat_ok gauge
+storyos_runtime_worker_heartbeat_ok{worker_id="runtime-worker"} 1
+# HELP storyos_runtime_probe_ok 依赖探针是否成功（0/1；SKIPPED 记 0）
+# TYPE storyos_runtime_probe_ok gauge
+storyos_runtime_probe_ok{worker_id="runtime-worker",dependency="redis"} 1
+storyos_runtime_probe_ok{worker_id="runtime-worker",dependency="mysql"} 1
+# HELP storyos_runtime_store_rows MySQL 侧表行数
+# TYPE storyos_runtime_store_rows gauge
+storyos_runtime_store_rows{worker_id="runtime-worker",table="event_log"} 0
+storyos_runtime_store_rows{worker_id="runtime-worker",table="trace_span"} 0
+storyos_runtime_store_rows{worker_id="runtime-worker",table="artifact_index"} 0
+# HELP storyos_runtime_health_score 运行健康分（0-100）
+# TYPE storyos_runtime_health_score gauge
+storyos_runtime_health_score{runtime="V3_RUNTIME"} 100
+# HELP storyos_runtime_alert_level 当前健康模型告警等级（one-hot）
+# TYPE storyos_runtime_alert_level gauge
+storyos_runtime_alert_level{runtime="V3_RUNTIME",level="INFO"} 1
+storyos_runtime_alert_level{runtime="V3_RUNTIME",level="WARNING"} 0
+storyos_runtime_alert_level{runtime="V3_RUNTIME",level="CRITICAL"} 0
+# HELP storyos_runtime_traces_total Trace 事实计数（最近一次成功推导的窗口）
+# TYPE storyos_runtime_traces_total gauge
+storyos_runtime_traces_total{runtime="V3_RUNTIME"} 0
+# HELP storyos_runtime_traces_success_total Trace 事实计数（最近一次成功推导的窗口）
+# TYPE storyos_runtime_traces_success_total gauge
+storyos_runtime_traces_success_total{runtime="V3_RUNTIME"} 0
+# HELP storyos_runtime_traces_failed_total Trace 事实计数（最近一次成功推导的窗口）
+# TYPE storyos_runtime_traces_failed_total gauge
+storyos_runtime_traces_failed_total{runtime="V3_RUNTIME"} 0
+# HELP storyos_runtime_traces_running Trace 事实计数（最近一次成功推导的窗口）
+# TYPE storyos_runtime_traces_running gauge
+storyos_runtime_traces_running{runtime="V3_RUNTIME"} 0
+# HELP storyos_runtime_traces_stuck Trace 事实计数（最近一次成功推导的窗口）
+# TYPE storyos_runtime_traces_stuck gauge
+storyos_runtime_traces_stuck{runtime="V3_RUNTIME"} 0
+# HELP storyos_runtime_agent_success_rate 按 operation 前缀分组的成功率（无终结 span 时记 1）
+# TYPE storyos_runtime_agent_success_rate gauge
+storyos_runtime_agent_success_rate{runtime="V3_RUNTIME"} 1
+# HELP storyos_runtime_workflow_success_rate 按 operation 前缀分组的成功率（无终结 span 时记 1）
+# TYPE storyos_runtime_workflow_success_rate gauge
+storyos_runtime_workflow_success_rate{runtime="V3_RUNTIME"} 1
+# HELP storyos_runtime_consistency_entities 最近一次一致性巡检的实体计数
+# TYPE storyos_runtime_consistency_entities gauge
+storyos_runtime_consistency_entities{entity="event",verdict="match"} 0
+storyos_runtime_consistency_entities{entity="event",verdict="mismatch"} 0
+storyos_runtime_consistency_entities{entity="event",verdict="legacy_only"} 0
+storyos_runtime_consistency_entities{entity="event",verdict="mysql_only"} 0
+storyos_runtime_consistency_entities{entity="event",verdict="both_missing"} 0
+storyos_runtime_consistency_entities{entity="trace",verdict="match"} 0
+storyos_runtime_consistency_entities{entity="trace",verdict="mismatch"} 0
+storyos_runtime_consistency_entities{entity="trace",verdict="legacy_only"} 0
+storyos_runtime_consistency_entities{entity="trace",verdict="mysql_only"} 0
+storyos_runtime_consistency_entities{entity="trace",verdict="both_missing"} 0
+storyos_runtime_consistency_entities{entity="artifact",verdict="match"} 0
+storyos_runtime_consistency_entities{entity="artifact",verdict="mismatch"} 0
+storyos_runtime_consistency_entities{entity="artifact",verdict="legacy_only"} 0
+storyos_runtime_consistency_entities{entity="artifact",verdict="mysql_only"} 0
+storyos_runtime_consistency_entities{entity="artifact",verdict="both_missing"} 0
+# HELP storyos_runtime_health_state 运行健康状态（one-hot；UNKNOWN=信号不足未评估）
+# TYPE storyos_runtime_health_state gauge
+storyos_runtime_health_state{runtime="V3_RUNTIME",status="HEALTHY"} 1
+storyos_runtime_health_state{runtime="V3_RUNTIME",status="DEGRADED"} 0
+storyos_runtime_health_state{runtime="V3_RUNTIME",status="UNHEALTHY"} 0
+storyos_runtime_health_state{runtime="V3_RUNTIME",status="UNKNOWN"} 0
