@@ -62,7 +62,7 @@ python episodes/_system/story_os.py config show
 - 新篇像素资产（`media/`、`release/` 等）默认不入 Git；正式剧集的 Git 只跟踪路径与 SHA 索引。
 - 历史剧集的旧版目录不做破坏式重排；重新进入制作需要迁移本地媒体时，
   走 `episodes/_system/media_workspace.py` 的 copy → SHA verify → reference rewrite → remove-old 流程。
-- 图像提示词治理模板见根目录 `现实侵入式伪纪录片_通用提示词模板_V1.0.md`（参考材料，冲突以唯一权威规范为准）。
+- 图像提示词治理模板见 `library/visual-patterns/documentary-realism/现实侵入式伪纪录片_通用提示词模板_V1.0.md`（Visual Pattern Source，参考材料，冲突以唯一权威规范为准）。
 - `.codex/`、`.idea/`、`.playwright-cli/`、`.storyos_cache/` 等是本地工具或运行状态目录，不属于发布资产。
 
 ## 新篇执行
