@@ -240,6 +240,20 @@ def test_tick_alerts_on_dependency_failures(tmp_path):
     assert len(result.open_incidents) == 1
 
 
+def test_mysql_failure_degrades_exported_health(tmp_path):
+    worker = _worker(tmp_path, connection=FakeConnection(fail=True))
+    result = worker.tick(1)
+
+    assert result.health["status"] == "UNHEALTHY"
+    assert result.health["health_score"] == 0
+    assert "mysql_unreachable" in result.health["reasons"]
+    assert {alert["reason"] for alert in result.alerts} == {"mysql_unreachable"}
+
+    metrics = (tmp_path / "metrics.prom").read_text(encoding="utf-8")
+    assert "storyos_runtime_health_score{runtime=\"V3_RUNTIME\"} 0" in metrics
+    assert "storyos_runtime_health_state{runtime=\"V3_RUNTIME\",status=\"UNHEALTHY\"} 1" in metrics
+
+
 def test_incident_is_resolved_when_condition_clears(tmp_path):
     worker = _worker(tmp_path, connection=FakeConnection(fail=True))
     first = worker.tick(1)

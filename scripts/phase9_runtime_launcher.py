@@ -38,6 +38,41 @@ EXPORTER_SCRIPT = PROJECT_ROOT / "scripts" / "phase9_metrics_exporter.py"
 
 EXIT_OK = 0
 EXIT_CHILD_FAILED = 4
+RUNTIME_ENV_KEYS = {
+    "STORYOS_MYSQL_HOST",
+    "STORYOS_MYSQL_PORT",
+    "STORYOS_MYSQL_USER",
+    "STORYOS_MYSQL_PWD",
+    "STORYOS_MYSQL_DB",
+    "STORYOS_REDIS_HOST",
+    "STORYOS_REDIS_PORT",
+    "STORYOS_REDIS_DB",
+    "STORYOS_REDIS_PASSWORD",
+}
+
+
+def load_runtime_env_file(path: Path, env: dict[str, str]) -> tuple[dict[str, str], tuple[str, ...]]:
+    """Load local runtime connection settings without exposing values in evidence.
+
+    The default location lives under ``.storyos/runtime-launcher`` which is
+    git-ignored. Only the explicit allowlist above is accepted.
+    """
+    if not path.is_file():
+        return env, ()
+    loaded: list[str] = []
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" not in line:
+            raise ValueError(f"invalid runtime env line: {raw!r}")
+        key, value = line.split("=", 1)
+        key = key.strip()
+        if key not in RUNTIME_ENV_KEYS:
+            raise ValueError(f"unsupported runtime env key: {key}")
+        env[key] = value.strip()
+        loaded.append(key)
+    return env, tuple(sorted(set(loaded)))
 
 
 @dataclass
@@ -198,6 +233,11 @@ def _parse_args(argv):
     parser.add_argument("--restart-agent-command", default=None)
     parser.add_argument("--metrics-port", type=int, default=18081)
     parser.add_argument(
+        "--runtime-env-file",
+        default=None,
+        help="本地运行环境文件；默认 <run-root>/runtime.env（目录已 git-ignore）",
+    )
+    parser.add_argument(
         "--evidence-file",
         default=str(PROJECT_ROOT / ".storyos" / "runtime-launcher" / "launcher-evidence.json"),
     )
@@ -224,6 +264,8 @@ def main(argv=None) -> int:
         restart_agent_command=args.restart_agent_command,
     )
     env = dict(os.environ)
+    runtime_env_path = Path(args.runtime_env_file) if args.runtime_env_file else run_root / "runtime.env"
+    env, loaded_env_keys = load_runtime_env_file(runtime_env_path, env)
     launcher = RuntimeLauncher()
     if not args.quiet:
         print("Story OS V3 Phase9 常驻 Runtime 编排入口")
@@ -244,6 +286,8 @@ def main(argv=None) -> int:
             "jsonl_root": args.jsonl_root,
             "metrics_port": args.metrics_port,
             "alert_webhook_configured": bool(args.alert_webhook),
+            "runtime_env_file": str(runtime_env_path) if runtime_env_path.is_file() else None,
+            "runtime_env_keys": list(loaded_env_keys),
         },
     }
     tmp = evidence_path.with_name(evidence_path.name + ".tmp")

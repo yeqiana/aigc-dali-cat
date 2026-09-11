@@ -676,10 +676,19 @@ class RuntimeOperationsWorker:
             memory_health=inputs["memory_health"],
         )
         alert = self.alert_manager.evaluate(snapshot)
+        status = snapshot.status
+        health_score = snapshot.health_score
+        reasons = list(snapshot.reasons)
+        mysql_status = (probes.get("mysql") or {}).get("status")
+        if mysql_status == "ERROR":
+            status = "UNHEALTHY"
+            health_score = 0
+            if "mysql_unreachable" not in reasons:
+                reasons.append("mysql_unreachable")
         return {
-            "status": snapshot.status,
-            "health_score": snapshot.health_score,
-            "reasons": list(snapshot.reasons),
+            "status": status,
+            "health_score": health_score,
+            "reasons": reasons,
             "level": alert.level,
             "alert_reason": alert.reason,
             "inputs": inputs,

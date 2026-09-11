@@ -20,6 +20,7 @@ from scripts.phase9_runtime_launcher import (  # noqa: E402
     ChildSpec,
     RuntimeLauncher,
     build_children,
+    load_runtime_env_file,
 )
 
 
@@ -76,6 +77,34 @@ def _spawn_from(registry, early=None):
         return proc
 
     return spawn
+
+
+def test_runtime_env_file_loads_only_allowed_storyos_keys(tmp_path):
+    path = tmp_path / "runtime.env"
+    path.write_text(
+        "STORYOS_MYSQL_HOST=db.internal\n"
+        "STORYOS_MYSQL_PORT=9000\n"
+        "STORYOS_MYSQL_PWD=secret\n",
+        encoding="utf-8",
+    )
+    env, keys = load_runtime_env_file(path, {"KEEP": "1"})
+
+    assert env["KEEP"] == "1"
+    assert env["STORYOS_MYSQL_HOST"] == "db.internal"
+    assert env["STORYOS_MYSQL_PWD"] == "secret"
+    assert keys == ("STORYOS_MYSQL_HOST", "STORYOS_MYSQL_PORT", "STORYOS_MYSQL_PWD")
+
+
+def test_runtime_env_file_rejects_unknown_keys(tmp_path):
+    path = tmp_path / "runtime.env"
+    path.write_text("NOT_ALLOWED=value\n", encoding="utf-8")
+
+    try:
+        load_runtime_env_file(path, {})
+    except ValueError as exc:
+        assert "unsupported runtime env key" in str(exc)
+    else:
+        raise AssertionError("unknown key must be rejected")
 
 
 def test_build_children_shares_metrics_file(tmp_path):
