@@ -47,7 +47,8 @@
   "data_health": [
     "text_encoding_health.py",
     "runtime_portability.py",
-    "episode_discovery.py"
+    "episode_discovery.py",
+    "archive_relocation.py"
   ],
   "legacy_or_migration_patterns": [
     "*_v20*.py",

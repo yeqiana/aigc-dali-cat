@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "purpose": "Archive relocation registry: records physical moves of Episodes so frozen evidence paths stay resolvable and hash-verifiable. One entry per archived Episode keyed by current directory; rebuilding the same Episode replaces its own entry only.",
+  "relocations": [
+    {
+      "schema_version": 1,
+      "episode_id": "10-03",
+      "series": "10_彼此的天上",
+      "title": "雾中的另一座生活区",
+      "kind": "abandoned_episode_archive",
+      "reason": "EP003（10-03 雾中的另一座生活区）废弃归档：保留全部证据原样，不参与 Episode 扫描、门禁与生产推进",
+      "archived_at": "2026-09-11",
+      "relocated_at": "2026-09-11T23:25:38+08:00",
+      "from": "episodes/10_彼此的天上/03_雾中的另一座生活区",
+      "to": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区",
+      "evidence_state": "frozen",
+      "file_manifest": "episodes/_archive/EP003_abandoned_manifest_20260911.txt",
+      "prefix_map": [
+        {
+          "from": "episodes/10_彼此的天上/03_雾中的另一座生活区/",
+          "to": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "story",
+          "source": "release-manifest.artifacts.story",
+          "recorded_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+          "resolved_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+          "status": "relocated",
+          "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f",
+          "bytes": 5784
+        },
+        {
+          "name": "storyboard",
+          "source": "release-manifest.artifacts.storyboard",
+          "recorded_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+          "resolved_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+          "status": "relocated",
+          "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6",
+          "bytes": 11136
+        },
+        {
+          "name": "visual_spec",
+          "source": "release-manifest.artifacts.visual_spec",
+          "recorded_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/04_雾中的另一座生活区_视觉规范_DRAFT_V1.0.md",
+          "resolved_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/docs/04_雾中的另一座生活区_视觉规范_DRAFT_V1.0.md",
+          "status": "relocated",
+          "sha256": "5092e00fb4857e77e6a45bdd2c5b5c2c84d0876fe20a738e0a5d305022d0be36",
+          "bytes": 1716
+        },
+        {
+          "name": "captions",
+          "source": "release-manifest.artifacts.captions",
+          "recorded_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/subtitles.yaml",
+          "resolved_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/subtitles.yaml",
+          "status": "relocated",
+          "sha256": "bfa352da206a99d8a01ca1f74874e94ee96d76bf71a0053aa2162a4a820c6465",
+          "bytes": 2840
+        },
+        {
+          "name": "production_review",
+          "source": "release-manifest.artifacts.production_review",
+          "recorded_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/release/production-review.md",
+          "resolved_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/release/production-review.md",
+          "status": "relocated",
+          "sha256": "1b62f5e33a761021d6c82139f4fd8eafc996b9381e94f73d362b8f6ac033d30a",
+          "bytes": 2334
+        },
+        {
+          "name": "release-manifest.json",
+          "source": "episode-relative:meta/release-manifest.json",
+          "recorded_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/release-manifest.json",
+          "resolved_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/release-manifest.json",
+          "status": "direct",
+          "sha256": "19e681a2f38f1c0643c7277e08acafc1130163abc874672e1811105c280d2f05",
+          "bytes": 2027
+        },
+        {
+          "name": "story-gates.json",
+          "source": "episode-relative:meta/story-gates.json",
+          "recorded_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/story-gates.json",
+          "resolved_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/story-gates.json",
+          "status": "direct",
+          "sha256": "6ccede86807e708912a94a922d84dff252b63ff04823d437ce959904ce4cc6cd",
+          "bytes": 22273
+        },
+        {
+          "name": "production-ledger.json",
+          "source": "episode-relative:meta/production-ledger.json",
+          "recorded_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/production-ledger.json",
+          "resolved_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/production-ledger.json",
+          "status": "direct",
+          "sha256": "ea4ed6973748808711430d6a53c95712d2b299ef955a631bf4f500b984865a1d",
+          "bytes": 210783
+        },
+        {
+          "name": "visual-final-freeze.json",
+          "source": "episode-relative:meta/visual-final-freeze.json",
+          "recorded_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/visual-final-freeze.json",
+          "resolved_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/visual-final-freeze.json",
+          "status": "direct",
+          "sha256": "dab8f8dad832b20fc858532d441456a1992901b0001e2520d83f6a6bea2595d7",
+          "bytes": 13675
+        }
+      ],
+      "reference_health": {
+        "total": 1510,
+        "direct": 399,
+        "relocated": 1054,
+        "unresolved": 57
+      }
+    }
+  ]
+}

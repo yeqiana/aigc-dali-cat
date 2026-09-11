@@ -151,3 +151,23 @@ V2.0.3.3 新剧集的 `meta/frame-reviews/NN.json` 使用 schema 2，绑定实�
 多行/结构化内容必须走 UTF-8 文件、stdin 或仓库 file edit/write API；路径作为 argv 元素传递，不手工拼引号。
 Final Visual Freeze 只绑定视觉 SHA，Caption 变化只触发 Caption ↔ Image Audit，不得重新拉起全量 Visual Critic。
 <!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_END -->
+
+<!-- STORY_OS_ARCHIVE_RELOCATION_BEGIN -->
+## Archive Relocation（归档重定位完整性）
+
+Episode 被物理移入 `episodes/_archive/` 之后，冻结证据里的仓库相对路径仍指向归档前位置：文件本身没有损坏，但 `meta/release-manifest.json` 的 `artifacts.story`（以及 story-gates / production-ledger / visual-final-freeze / frame-reviews 里的同类引用）不再可解析，Story Lock / Visual Lock / reference / production evidence 因此失去可验证性。
+
+`archive_relocation.py` 用一份增量注册表记录这次移动，并把旧前缀映射到新位置：
+
+```bash
+python episodes/_system/archive_relocation.py build <archived_episode_dir> --write
+python episodes/_system/archive_relocation.py verify --all
+python episodes/_system/archive_relocation.py resolve <repo-relative-path>
+python episodes/_system/archive_relocation.py scan <archived_episode_dir>
+```
+
+- `episodes/_archive/relocations.json` 是移动事实（from/to + 前缀映射 + 完整性锚点 SHA），只记录不改写被归档 Episode 自身冻结记录。
+- 严格只校验已声明的完整性锚点（Story Lock / 分镜 / 视觉规范 / 字幕 / 制作复盘 + 核心证据文件），并与归档时的 pre-move hash manifest 交叉核对；哈希漂移或文件缺失 fail closed。
+- 自由文本里无法解析的引用只做 advisory 统计，不硬失败。
+- 不修改 Runtime、生产流程、machine gate，也不参与 Episode 扫描与阶段推进。
+<!-- STORY_OS_ARCHIVE_RELOCATION_END -->
