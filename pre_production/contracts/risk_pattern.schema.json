@@ -1,0 +1,41 @@
+{
+  "schema_id": "risk_pattern",
+  "schema_version": 1,
+  "status": "design",
+  "authority_values": ["derived_non_authority"],
+  "risk_types": ["similarity", "hook"],
+  "risk_levels": ["LOW", "MEDIUM", "HIGH"],
+  "required": [
+    "schema",
+    "schema_version",
+    "pattern_id",
+    "risk_type",
+    "pattern_description",
+    "related_episode",
+    "evidence",
+    "created_time",
+    "advisory_only",
+    "blocks_production",
+    "authority"
+  ],
+  "non_empty_required": ["pattern_description", "related_episode", "evidence"],
+  "must_be_true": ["advisory_only"],
+  "must_be_false": ["blocks_production"],
+  "forbidden_key_patterns": [
+    "score",
+    "rating",
+    "percent",
+    "percentage",
+    "points",
+    "grade",
+    "rank",
+    "stars",
+    "threshold"
+  ],
+  "policy": {
+    "descriptive": "A pattern describes what was observed; it is not a rule and never triggers an action.",
+    "evidence_required": "Every pattern keeps at least one evidence reference back to a real finding.",
+    "no_score": "A pattern carries tokens and evidence, never a similarity score or a threshold.",
+    "advisory_only": "A pattern never blocks production."
+  }
+}

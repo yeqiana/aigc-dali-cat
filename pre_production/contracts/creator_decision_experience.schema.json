@@ -1,0 +1,43 @@
+{
+  "schema_id": "creator_decision_experience",
+  "schema_version": 1,
+  "status": "design",
+  "authority_values": ["derived_non_authority"],
+  "advisor_decisions": ["PASS", "WARNING", "NEEDS_REVISION"],
+  "creator_actions": ["ACCEPT", "REVISE", "IGNORE"],
+  "recommendation_results": ["USEFUL", "PARTIAL", "NOT_USEFUL"],
+  "required": [
+    "schema",
+    "schema_version",
+    "decision_experience_id",
+    "episode_id",
+    "feedback_reference",
+    "advisor_decision",
+    "creator_action",
+    "recommendation_result",
+    "final_assessment",
+    "created_time",
+    "advisory_only",
+    "blocks_production",
+    "authority"
+  ],
+  "must_be_true": ["advisory_only"],
+  "must_be_false": ["blocks_production"],
+  "forbidden_key_patterns": [
+    "score",
+    "rating",
+    "percent",
+    "percentage",
+    "points",
+    "grade",
+    "rank",
+    "stars",
+    "threshold"
+  ],
+  "policy": {
+    "human_source": "creator_action and recommendation_result come from a human feedback record.",
+    "no_auto_rule": "A recorded decision never edits the advisor, the lexicon or a similarity weight.",
+    "no_score": "final_assessment is free text; it is never a grade or a numeric judgement.",
+    "advisory_only": "A recorded decision never blocks production."
+  }
+}
