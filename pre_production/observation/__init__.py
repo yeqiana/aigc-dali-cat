@@ -3,10 +3,10 @@
 """Shadow Observation module (advisory only, production zero-touch).
 
 Sub-modules:
-- ``schema``      stable contracts for the observation record and feedback;
-- ``ledger``      Episode Observation Ledger (per-episode lifecycle);
-- ``feedback``    Advisor Feedback Model (human judgement of one advisor run);
-- ``observation`` Shadow Observation Runner (record an advisor run, never raise).
+- schema      stable contracts for the observation record and feedback;
+- ledger      Episode Observation Ledger (per-episode lifecycle);
+- feedback    Advisor Feedback Model (human judgement of one advisor run);
+- observation Shadow Observation Runner (record an advisor run, never raise).
 """
 from __future__ import annotations
 
@@ -35,6 +35,13 @@ from .ledger import (
     summarize,
     transition,
 )
+from .observation import (
+    apply_feedback,
+    observation_id_for,
+    report_reference,
+    run_observation,
+    story_dna_reference,
+)
 from .schema import (
     ADVISOR_DECISIONS,
     AUTHORITY,
@@ -58,6 +65,7 @@ __all__ = [
     "OBSERVATION_STATUSES",
     "RECOMMENDATION_RESULTS",
     "append_record",
+    "apply_feedback",
     "build_feedback",
     "build_observation",
     "collapse_latest",
@@ -71,11 +79,15 @@ __all__ = [
     "load_feedback",
     "mark_feedback_pending",
     "observation_id",
+    "observation_id_for",
     "read_records",
+    "report_reference",
     "report_sha256",
     "require_valid",
+    "run_observation",
     "save_feedback",
     "scan_ledger",
+    "story_dna_reference",
     "summarize",
     "transition",
     "validate_feedback",
