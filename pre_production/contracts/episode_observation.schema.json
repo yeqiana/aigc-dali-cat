@@ -1,0 +1,35 @@
+{
+  "schema_id": "episode_observation",
+  "schema_version": 1,
+  "status": "mvp",
+  "observation_statuses": ["OBSERVED", "FEEDBACK_PENDING", "COMPLETED"],
+  "authority_values": ["derived_non_authority"],
+  "required": [
+    "schema",
+    "schema_version",
+    "observation_id",
+    "episode_id",
+    "story_dna_reference",
+    "advisor_report_reference",
+    "observation_status",
+    "creator_feedback_reference",
+    "production_outcome",
+    "learning_summary",
+    "created_time",
+    "updated_time",
+    "advisory_only",
+    "blocks_production",
+    "authority"
+  ],
+  "must_be_true": ["advisory_only"],
+  "must_be_false": ["blocks_production"],
+  "forbidden_key_patterns": ["score", "rating", "percent", "percentage", "points", "grade", "rank", "stars"],
+  "policy": {
+    "advisory_only": "An observation only records what the advisor said; it never blocks production.",
+    "not_authority": "An observation record is derived experience, never episode state or story gate authority.",
+    "lifecycle": "OBSERVED -> FEEDBACK_PENDING -> COMPLETED; a transition is a new ledger row, not an edit.",
+    "no_score": "The ledger records status, references and free text; it never records a similarity score.",
+    "human_triggered": "Rows are written only when a human runs the observation runner or the feedback entry."
+  }
+}
+
