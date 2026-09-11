@@ -1,0 +1,25 @@
+{
+  "schema_id": "similarity_evidence",
+  "schema_version": 1,
+  "status": "mvp",
+  "risk_levels": ["LOW", "MEDIUM", "HIGH"],
+  "risk_types": ["similarity"],
+  "required": [
+    "evidence_id",
+    "current_story_id",
+    "related_episode_id",
+    "risk_type",
+    "risk_level",
+    "matched_dimensions",
+    "matched_features",
+    "explanation"
+  ],
+  "high_requires_non_empty": ["matched_features", "explanation"],
+  "forbidden_key_patterns": ["similarity_score", "score", "percent", "percentage", "points", "grade", "rank"],
+  "policy": {
+    "risk_level_only": "Risk is expressed only as LOW/MEDIUM/HIGH.",
+    "no_numeric_similarity": "Never emit a percentage, an 87/92 style score or any pseudo-precise number.",
+    "evidence_required": "Any HIGH risk must carry matched features and a plain-language explanation."
+  }
+}
+
