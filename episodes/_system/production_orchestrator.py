@@ -65,6 +65,7 @@ import runtime_request as runtime_request_contract  # noqa: E402
 import visual_profile_lock_adapter as adapter  # noqa: E402
 import visual_profile_lock_lifecycle as lifecycle  # noqa: E402
 import visual_profile_selector  # noqa: E402
+import failure_memory  # noqa: E402
 from story_os_contract import canonical_stages  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -135,6 +136,7 @@ DELEGATED_CONFIRMATION_REASON = (
 # Runtime owned repair tasks that map onto an existing canonical repair lane.
 REPAIR_DISPATCH_ACTIONS = (
     repair_engine.ACTION_REGENERATE_FRAME,
+    repair_engine.ACTION_REPAIR_VISUAL_REALITY,
     repair_engine.ACTION_REBIND_FRAME_CONTRACT,
 )
 
@@ -285,6 +287,11 @@ def plan(
         },
         "story_lock": {"state": "IDEA_LOCKED", "path": None, "status": "pending_confirmation"},
         "frames": {"count": int(frames), "planned": False, "source": "orchestrator_default"},
+        "failure_memory": {
+            "source": failure_memory.REL.as_posix(),
+            "records_read": failure_memory.guidance(root=repo),
+            "note": "historical failures are advisory prompt/repair context, never an approval",
+        },
         "pipeline": [
             {"stage": stage, "status": state, "module": module}
             for stage, state, module in PIPELINE
@@ -479,7 +486,8 @@ def _dispatch_repairs(episode, tasks) -> dict:
         action = str(task.get("action") or "")
         frame = str(task.get("target") or "")
         reason = "; ".join(str(item) for item in (task.get("reasons") or [])) or action
-        if action == repair_engine.ACTION_REGENERATE_FRAME and frame.isdigit():
+        if action in (repair_engine.ACTION_REGENERATE_FRAME,
+                      repair_engine.ACTION_REPAIR_VISUAL_REALITY) and frame.isdigit():
             ok, message = batch_repair_arbiter.authorize_single_repair(
                 Path(episode), int(frame), reason)
             row = {"task_id": task.get("task_id"), "action": action, "frame": frame,

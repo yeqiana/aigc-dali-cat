@@ -251,3 +251,31 @@ Learning Loop
 最终达到：
 
 不是“能生成20张图片”，而是“稳定生成符合账号规律的20张故事图片”。
+
+---
+
+# 九、2026-09-12 Production Hardening 验收状态
+
+| 编号 | 状态 | 已验证的闭环 |
+|---|---|---|
+| E001 | DONE | Frame Contract 的参考要求写入 Generation Attempt；Provider Receipt、参考 SHA 与资产候选必须匹配。 |
+| E002 | DONE | `machine_gate.py` 不再以“required reference 文件存在”判定成功；缺 receipt、未验证、锚点/哈希漂移均为 FAIL。 |
+| E003 | DONE | `story_dna_trace.py` 生成 Story Intent/Beat/Frame Contract 映射；逐帧 Contract 绑定且核心 required frames 未覆盖时阻断 `PUBLISH_READY`。 |
+| E004 | DONE | `failure_memory.py` 只接受受控失败分类，Repair Task 要求在实际终态调用 `record_repair_outcome`；编排启动时读取历史经验，计划阶段不伪造结果。 |
+| E005 | DONE | `visual_reality_score.py` 提供六维图片真实性评分入口；低分进入现有 Repair 路径，不替代人工审核。 |
+| E006 | DONE | `standards/style-registry.json` 注册 M00、古风、天界日常、旧 DV，并映射既有 Visual Profile Registry 的执行权威。 |
+| E007 | DONE | 证据门禁要求执行记录、provider receipt、资产/锚点绑定和 verified 结果，不把文件存在视为生产成功。 |
+
+## 修改文件
+
+`episodes/_system/story_dna_trace.py`、`failure_memory.py`、`visual_reality_score.py`、`style_registry.py`、`frame_contract.py`、`machine_gate.py`、`incremental_frame_review.py`、`production_orchestrator.py`、`repair_engine.py`、`standards/style-registry.json`、`tests/system/test_v3_production_hardening.py`、`reports/EP003_Production_Hardening_Report_20260912.md`。
+
+## 测试证据
+
+- `pytest tests/system/test_v3_production_hardening.py -v`：5 passed。
+- `pytest tests/system/test_reference_execution_evidence.py -v`：18 passed。
+- `pytest tests/system/test_story_semantic_trace.py -v`：26 passed。
+
+## EP003 回归
+
+归档对象 `episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区` 只读验证结果为：Story DNA、Visual Reality Score、Reference Execution Receipt 均缺失；机器门禁另报告历史媒体/语义评审缺失。结果为 `Historical Evidence Missing`/FAIL，不补写任何 approval、Gate PASS 或 episode state。W-17 由 receipt 锚点与哈希漂移用例覆盖，W-20 保持既有真实错误分类链，W-21 缺 receipt 明确 FAIL。

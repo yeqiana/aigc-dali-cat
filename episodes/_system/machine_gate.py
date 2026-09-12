@@ -14,6 +14,8 @@ from incremental_frame_review import review_required as semantic_frame_review_re
 from final_acceptance import valid as acceptance_valid
 import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
 import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
+import story_dna_trace  # STORY_OS_V3_E003_STORY_DNA_TRACE
+import visual_reality_score  # STORY_OS_V3_E005_VISUAL_REALITY_SCORE
 import visual_profile_closure as visual_profile_closure  # STORY_OS_PHASE46_VISUAL_PROFILE_CLOSURE
 import visual_profile_gate as visual_profile_gate  # STORY_OS_PHASE46_VISUAL_PROFILE_CLOSURE
 
@@ -717,6 +719,16 @@ def validate(episode_dir: Path, target: str, *, metadata_only: bool = False) -> 
         check_story_semantic_trace(repo_root, episode_dir, gates, findings, metadata_only=metadata_only)
         check_visual_profile_for_production(repo_root, episode_dir, findings, metadata_only=metadata_only)
         check_production(repo_root, episode_dir, gates, manifest, findings, metadata_only=metadata_only)
+    if idx >= STATE_MIN["PUBLISH_READY"] and not metadata_only:
+        # New evidence gates activate only once the production has opted in by
+        # creating its evidence file. Historical episodes are audited by the
+        # dedicated regression command; we never create a compatibility PASS.
+        if (episode_dir / story_dna_trace.REL).is_file():
+            for error in story_dna_trace.verify(episode_dir):
+                findings.append(Finding("FAIL", "story_dna_trace", error))
+        if (episode_dir / visual_reality_score.REL).is_file():
+            for error in visual_reality_score.verify(episode_dir):
+                findings.append(Finding("FAIL", "visual_reality_score", error))
     return findings
 
 

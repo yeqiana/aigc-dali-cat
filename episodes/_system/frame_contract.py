@@ -30,6 +30,7 @@ import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
 import character_appearance_anchor  # STORY_OS_V221_CHARACTER_CONTINUITY
 import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
 import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
+import story_dna_trace  # STORY_OS_V3_E003_STORY_DNA_TRACE
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -381,6 +382,14 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     # it cannot invalidate historical contract SHAs.
     story_semantic_requirements = story_semantic_trace.contract_requirements(
         ep, n, source_trace["story"])
+    dna = story_json.read_json(ep / story_dna_trace.REL, default={}) or {}
+    story_dna_mapping = ((dna.get("frame_mapping") or {}).get(key)
+                         if isinstance(dna, dict) else None)
+    if not isinstance(story_dna_mapping, dict):
+        # No intent is invented. This visible pending block makes missing DNA
+        # evidence detectable at PUBLISH_READY without changing contract SHA.
+        story_dna_mapping = {"story_goal": None, "emotional_goal": None,
+                             "reversal_contribution": None, "required": False}
 
     # Hash material is deliberately per-frame where possible.
     # storyboard source SHA is trace-only; localized excerpt SHA avoids all-frame invalidation.
@@ -508,6 +517,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         },
         "identity_requirements": identity_requirements,
         "story_semantic_requirements": story_semantic_requirements,
+        "story_dna_mapping": story_dna_mapping,
         "hash_material": hash_material,
         "contract_sha256": contract_sha,
         "prompt_contract": "\n".join(prompt_lines),
@@ -519,6 +529,13 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
 
 
 def compile_all(ep: Path) -> dict:
+    ep = Path(ep).resolve()
+    # E003 is created at the same canonical boundary as the resolved frame
+    # contracts. It is a gate-evidence document, never a stage/state document.
+    # Missing editorial fields remain visibly invalid at PUBLISH_READY rather
+    # than being inferred or filled with a fabricated PASS.
+    if not (ep / story_dna_trace.REL).is_file():
+        story_dna_trace.build(ep)
     if required(ep):
         errors = environment_contract.verify(ep)
         if errors:

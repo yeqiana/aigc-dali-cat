@@ -17,6 +17,7 @@ import runtime_router
 import runtime_provenance
 import story_json
 import runtime_timeout_policy
+import visual_reality_score
 
 ROOT = Path(__file__).resolve().parents[2]
 STATE_REL = Path("meta/incremental-frame-review.json")
@@ -518,6 +519,11 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
     errors = list(base.verify_episode(ep, metadata_only=metadata_only, write_audit=False))
     if not review_required(ep):
         return errors
+    # E005 is an automated risk detector only. If present, a low score makes
+    # the review dirty/repairable; it does not manufacture a visual PASS.
+    score_path = Path(ep) / visual_reality_score.REL
+    if score_path.is_file() and not metadata_only:
+        errors.extend(visual_reality_score.verify(ep))
     version = base.episode_contract_version(ep)
     if version_tuple(version) < TARGET:
         if write_audit:

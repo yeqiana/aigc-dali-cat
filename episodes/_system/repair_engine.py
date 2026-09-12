@@ -66,6 +66,7 @@ ACTION_REBIND_FRAME_CONTRACT = "rebind_frame_contract"
 ACTION_REQUEST_VISUAL_LOCK_CONFIRMATION = "request_human_visual_lock_confirmation"
 ACTION_REPAIR_DECLARED_ARTIFACT = "repair_declared_artifact"
 ACTION_MANUAL_REVIEW = "manual_review"
+ACTION_REPAIR_VISUAL_REALITY = "repair_visual_reality"
 
 OWNER_HUMAN = "human"
 OWNER_RUNTIME = "runtime"
@@ -81,6 +82,7 @@ SOURCE_STORY_SEMANTIC_TRACE = "story_semantic_trace"
 SOURCE_IDENTITY_CONTINUITY = "identity_continuity"
 SOURCE_VISUAL_PROFILE_GATE = "visual_profile_gate"
 SOURCE_REPAIR_ENGINE = "repair_engine"
+SOURCE_VISUAL_REALITY_SCORE = "visual_reality_score"
 
 # Mutation whitelist: what a repair task is allowed to touch.
 ALLOWED_MUTATION_PREFIXES = (
@@ -112,6 +114,9 @@ def _rule(category, action, owner, repairable, reason, source) -> dict:
 
 
 ISSUE_RULES = {
+    "visual_reality_score_missing_or_low": _rule(
+        CATEGORY_ASSET_FAILURE, ACTION_REPAIR_VISUAL_REALITY, OWNER_RUNTIME, True,
+        "visual_reality_below_threshold", SOURCE_VISUAL_REALITY_SCORE),
     # W-22 story semantic trace
     "story_semantic_trace_missing": _rule(
         CATEGORY_SEMANTIC, ACTION_ATTACH_SEMANTIC_TRACE, OWNER_HUMAN, True,
@@ -230,6 +235,7 @@ DEFAULT_RULE = _rule(
     "unclassified_issue", SOURCE_REPAIR_ENGINE)
 
 REPAIR_REASONS = {
+    ACTION_REPAIR_VISUAL_REALITY: "visual_reality_score_requires_repair",
     ACTION_REGENERATE_FRAME: "frame_pixels_must_be_regenerated",
     ACTION_ATTACH_IDENTITY_EVIDENCE: "identity_evidence_must_be_recorded",
     ACTION_ATTACH_SEMANTIC_TRACE: "story_semantic_trace_must_be_recorded",
@@ -271,7 +277,7 @@ def mutations_for(action: str, frame) -> list:
         return []
     if action in (ACTION_ATTACH_SEMANTIC_TRACE, ACTION_ATTACH_IDENTITY_EVIDENCE):
         return ["meta/frame-reviews/" + str(frame) + ".json"]
-    if action == ACTION_REGENERATE_FRAME:
+    if action in (ACTION_REGENERATE_FRAME, ACTION_REPAIR_VISUAL_REALITY):
         return ["media/frames/" + str(frame), "meta/production-ledger.json"]
     if action == ACTION_REBIND_FRAME_CONTRACT:
         return ["meta/runtime/contracts/frames/" + str(frame) + ".json"]
@@ -342,6 +348,11 @@ def plan_repairs(report) -> dict:
             "mutates": mutations_for(action, frame),
             "source": sorted({rule["source"] for rule in rules})[0],
             "guards": {"story_lock": "untouched", "visual_lock": "untouched"},
+            "failure_memory": {
+                "record_required_when_terminal": True,
+                "record_api": "failure_memory.record_repair_outcome",
+                "final_result": None,
+            },
         })
 
     violations = validate_tasks(tasks)
@@ -379,6 +390,7 @@ def plan_repairs(report) -> dict:
         },
         "notes": [
             "plan only: every task is proposed, not executed",
+            "Failure Memory is written only with an observed repair terminal result; planning is not a PASS",
             "Story Lock and Visual Lock are never repair targets; a lock problem is a human decision",
         ],
     }

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "authority": "Style Registry is an alias layer. Visual Profile Registry remains the executable authority.",
+  "styles": {
+    "M00_REAL_LIFE": {"visual_profile_id": "M00_REAL_WORLD_DOCUMENTARY_V1", "visual_dna": "unposed everyday documentary", "camera_rules": ["available light", "phone or causal consumer camera"], "forbidden_rules": ["commercial HDR", "cinematic polish"], "applicable_scenes": ["modern daily life", "ordinary anomaly"]},
+    "ANCIENT_DAILY": {"visual_profile_id": "M01_ANCIENT_MUNDANE_LIFE_V1", "visual_dna": "lived-in historical daily life", "camera_rules": ["era-consistent capture explanation"], "forbidden_rules": ["modern props", "costume-drama polish"], "applicable_scenes": ["ancient daily life"]},
+    "CELESTIAL_DAILY": {"visual_profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1", "visual_dna": "celestial work rendered as ordinary life", "camera_rules": ["documentary observation"], "forbidden_rules": ["generic fantasy poster"], "applicable_scenes": ["heaven daily work"]},
+    "OLD_DV": {"visual_profile_id": "M00", "visual_dna": "causal old consumer digital texture", "camera_rules": ["device limitation must be story-causal"], "forbidden_rules": ["global fake vintage LUT"], "applicable_scenes": ["found footage", "old personal record"]}
+  }
+}
