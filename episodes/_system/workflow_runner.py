@@ -22,6 +22,8 @@ import workflow_observability as obs
 import runtime_request as runtime_request_contract
 import image_model_policy
 import runtime_dag
+import runtime_node_registry
+import runtime_scheduler
 import runtime_execution
 import performance_guard_v211  # STORY_OS_V211_PERF_RECOVERY
 import storyos_config
@@ -74,7 +76,11 @@ def plan(ep: Path) -> dict:
         raise SystemExit(cp.stdout[-2500:])
     data = json.loads(cp.stdout)
     runtime, reason = detect()
-    return {"story_os_version": story_os_version(), "workflow_version": load_contract()["workflow_version"], "runtime": runtime, "runtime_reason": reason, "closure": data}
+    # This is an inspectable plan only. Actual execution remains runtime_dag.execute,
+    # whose existing composite steps are released through the same scheduler.
+    dag_nodes = runtime_node_registry.runtime_step_nodes(runtime_dag.spec_rows())
+    scheduler = runtime_scheduler.schedule(dag_nodes, max_workers=1)
+    return {"story_os_version": story_os_version(), "workflow_version": load_contract()["workflow_version"], "runtime": runtime, "runtime_reason": reason, "closure": data, "scheduler": scheduler}
 
 
 def record_checkpoint_step(ep: Path, step: str, status: str, elapsed: float, note: str = "") -> None:

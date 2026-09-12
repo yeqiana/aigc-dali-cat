@@ -28,6 +28,9 @@ import product_runtime_adapter
 import next_action
 import episode_performance
 import runtime_timeout_policy
+import runtime_node_registry
+import runtime_node_evidence
+import runtime_scheduler
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -103,6 +106,78 @@ def spec_rows():
             evidence_paths=tuple(x.get("evidence_paths") or []),expensive=bool(x.get("expensive"))))
     return rows
 
+
+def normalize_node_contracts(nodes):
+    """Validate scheduling-only nodes without reading or writing Episode state."""
+    if isinstance(nodes, dict):
+        nodes = nodes.get("nodes")
+    if not isinstance(nodes, list):
+        raise ValueError("node contract must contain a nodes list")
+    result = []
+    ids = set()
+    for index, raw in enumerate(nodes):
+        if not isinstance(raw, dict):
+            raise ValueError(f"node at index {index} must be an object")
+        node_id = str(raw.get("node_id") or "").strip()
+        if not node_id or node_id in ids:
+            raise ValueError(f"node_id must be unique and non-empty: {node_id!r}")
+        depends_on = raw.get("depends_on") or []
+        if not isinstance(depends_on, list) or any(not str(x).strip() for x in depends_on):
+            raise ValueError(f"node {node_id} has invalid depends_on")
+        item = dict(raw)
+        item["node_id"] = node_id
+        item["depends_on"] = [str(x) for x in depends_on]
+        item["_order"] = index
+        result.append(item)
+        ids.add(node_id)
+    unknown = sorted({dep for item in result for dep in item["depends_on"] if dep not in ids})
+    if unknown:
+        raise ValueError("unknown node dependencies: " + ", ".join(unknown))
+    return result
+
+
+def resolve_node_dependencies(nodes, *, completed=(), failed=()):
+    """Return ready, waiting and downstream-blocked nodes for one scheduling pass.
+
+    This is deliberately a pure function.  It neither executes a node nor records
+    a runtime status, so it cannot become an Episode stage authority.
+    """
+    rows = normalize_node_contracts(nodes)
+    completed = {str(value) for value in completed}
+    failed = {str(value) for value in failed}
+    known = {row["node_id"] for row in rows}
+    unknown_outcomes = (completed | failed) - known
+    if unknown_outcomes:
+        raise ValueError("unknown completed/failed nodes: " + ", ".join(sorted(unknown_outcomes)))
+    if completed & failed:
+        raise ValueError("a node cannot be both completed and failed")
+
+    blocked = set()
+    changed = True
+    while changed:
+        changed = False
+        for row in rows:
+            node_id = row["node_id"]
+            if node_id in completed or node_id in failed or node_id in blocked:
+                continue
+            if any(dep in failed or dep in blocked for dep in row["depends_on"]):
+                blocked.add(node_id)
+                changed = True
+
+    ready = []
+    waiting = []
+    for row in rows:
+        node_id = row["node_id"]
+        if node_id in completed or node_id in failed or node_id in blocked:
+            continue
+        if set(row["depends_on"]).issubset(completed):
+            ready.append(row)
+        else:
+            waiting.append(row)
+    return {"ready": ready, "waiting": waiting, "blocked": [
+        row for row in rows if row["node_id"] in blocked
+    ]}
+
 def plan(ep):
     cur=state(ep); saved=proto.load_state(ep)
     out=[]
@@ -146,11 +221,32 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
         resource_library.resolve(ep,write=True)
     provisional_future=None
     background=cf.ThreadPoolExecutor(max_workers=1,thread_name_prefix="story-os-release-prep")
-    for s in specs:
+    # V3 V2.1: retain existing executors and evidence/Gate behavior, but let the
+    # scheduler release the next real Runtime step from its declared dependencies.
+    # max_workers remains 1 because these composite legacy steps are not yet safe
+    # to execute concurrently.
+    step_by_id={spec.step_id: spec for spec in specs}
+    completed_nodes=set()
+    node_contract=runtime_node_registry.runtime_step_nodes(specs)
+    while len(completed_nodes)<len(specs):
+        wave=runtime_scheduler.schedule(node_contract,completed=completed_nodes,max_workers=1)
+        if not wave["dispatch"]:
+            background.shutdown(wait=False,cancel_futures=True)
+            print("RUNTIME DAG SCHEDULER BLOCKED", json.dumps({
+                "waiting":[x["node_id"] for x in wave["waiting"]],
+                "blocked":[x["node_id"] for x in wave["blocked"]],
+            },ensure_ascii=True))
+            return 2
+        s=step_by_id[wave["dispatch"][0]["node_id"]]
         cur=state(ep)
         if s.step_id=="CREATIVE_STORY" and not stage_at_least(cur,"STORYBOARD_LOCKED"):
             directing_quality.before_step(ep,s.step_id)
+            preparation_started=proto.now()
             character_contract.prepare(ep,force=False)
+            runtime_node_evidence.record(
+                ep,node_id="character_prepare",start_time=preparation_started,end_time=proto.now(),
+                status="PASS",attempt=1,output="character_contract.prepare completed",
+                evidence=["meta/character-contract.json"])
         prior=(proto.load_state(ep).get("steps") or {}).get(s.step_id) or {}
         attempt=int(prior.get("attempt") or 0)+1
         input_hash=proto.evidence_hash(ep,["meta/runtime-request.json","meta/episode-state.json",*s.evidence_paths])
@@ -168,6 +264,10 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
                 if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,reason)
                 episode_performance.safe_end_stage(ep,s.step_id,status="PASS",metadata={"reused":True,"reason":reason})
                 next_action.write(ep)
+                runtime_node_evidence.record(
+                    ep,node_id=s.step_id,start_time=res.started_at,end_time=res.finished_at,
+                    status="REUSED",attempt=attempt,output=reason,evidence=s.evidence_paths)
+                completed_nodes.add(s.step_id)
                 if mode=="preproduction_only":
                     background.shutdown(wait=False,cancel_futures=True)
                     return 0
@@ -183,6 +283,10 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
                 _t=time.monotonic()
                 _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"reused":True})
                 runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=run_id,attrs={"target_state":s.target_state})
+                runtime_node_evidence.record(
+                    ep,node_id=s.step_id,start_time=res.started_at,end_time=res.finished_at,
+                    status="REUSED",attempt=attempt,output="target already valid",evidence=s.evidence_paths)
+                completed_nodes.add(s.step_id)
                 continue
         started_at=proto.now(); t0=time.monotonic(); rc=0; note=""
         episode_performance.safe_begin_stage(ep,s.step_id,source="runtime_dag",metadata={"executor":s.executor,"target_state":s.target_state})
@@ -255,6 +359,9 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
         out_hash=proto.evidence_hash(ep,["meta/episode-state.json",*s.evidence_paths])
         res=proto.StepResult(s.step_id,status,attempt,started_at,proto.now(),elapsed,input_hash,out_hash,note,rc)
         proto.save_result(ep,res); checkpoint(ep,s.step_id,status,elapsed,note[-1200:],attempt,input_hash,out_hash)
+        runtime_node_evidence.record(
+            ep,node_id=s.step_id,start_time=started_at,end_time=res.finished_at,status=status,
+            attempt=attempt,output=note[-1200:],evidence=s.evidence_paths)
         if run_id: perf.record_step(ep,run_id,s.step_id,status,elapsed,note[-500:])
         runtime_trace.end_span(ep,trace_span,name=s.step_id,category="workflow_step",status=status,started_monotonic=t0,trace_id=trace_id,run_id=run_id,attrs={"rc":rc,"attempt":attempt})
         if status != "HOST_WAIT":
@@ -277,6 +384,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
                     if run_id: perf.record_step(ep,run_id,"SPECULATIVE_PRODUCTION","FAILED",0.0,str(exc)[:500])
             background.shutdown(wait=False,cancel_futures=True)
             return rc
+        completed_nodes.add(s.step_id)
         if mode=="preproduction_only" and s.step_id=="PREIMAGE_COMPILE":
             try:
                 # 900s was the historical review-critic default; build() now owns that default.
