@@ -12,6 +12,14 @@ Flow:
 
 This module only coordinates existing modules. It does not create a second
 workflow state machine.
+
+Status (Phase 5.6): this is a legacy planning shim. ``story_os.py create`` no longer
+calls it; the canonical one sentence entry is ``production_orchestrator.run_full_auto``,
+which hands the Episode to workflow_runner.py. It is kept because it writes placeholder
+``status: PREPARED`` documents and never produced a real Story Lock, Storyboard,
+Character Contract or Visual Lock. Calling ``run`` on a real Episode would write a
+placeholder ``meta/character-contract.json`` that later blocks
+``character_contract.prepare``, so do not route production through it.
 """
 from __future__ import annotations
 

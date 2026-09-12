@@ -123,7 +123,14 @@ def main():
     p = sub.add_parser("quality"); p.add_argument("quality_cmd", choices=["enable","verify-story","verify-preimage","verify-release","show"]); p.add_argument("episode_dir")
     p = sub.add_parser("lineage"); p.add_argument("lineage_cmd", choices=["record","verify","show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("golden"); p.add_argument("golden_cmd", choices=["register","run","show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
-    p = sub.add_parser("create"); p.add_argument("request_text"); p.add_argument("--visual-profile", default="M00"); p.add_argument("--full-auto", action="store_true")
+    p = sub.add_parser("create", help="one sentence request -> canonical full-auto production")
+    p.add_argument("request_text")
+    p.add_argument("--visual-profile", default=None, help="force a registered Visual Profile id (default: the Selector decides from the Story Intent)")
+    p.add_argument("--full-auto", action="store_true", help="authorize the delegated continuous run")
+    p.add_argument("--dry-run", action="store_true", help="resolve intent + profile only; write nothing")
+    p.add_argument("--title", default=None, help="Episode title (defaults to the request text)")
+    p.add_argument("--timeout", type=int, default=None)
+    p.add_argument("--json", action="store_true", help="print the full status document")
     p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--resume", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None); p.add_argument("--request-file")
     # STORY_OS_V2_6_2_CONTINUOUS_HOST_LOOP: the bounded recovery coordinator previously had no
     # CLI entry, so next-action/image dispatch could only be reached by calling the script by path.
@@ -134,18 +141,26 @@ def main():
     args = ap.parse_args()
 
     if args.cmd == "create":
-        from story_creator import create_episode
-        episode = create_episode(ROOT, args.request_text, args.visual_profile)
-        print(str(episode))
-        if args.full_auto:
-            from create_pipeline import CreatePipeline
-            result = CreatePipeline(ROOT).run(
-                episode,
-                {"request": args.request_text, "visual_profile": args.visual_profile},
-            )
-            print({"pipeline": result.steps, "status": result.status})
-            return forward("workflow_runner.py", ["run", str(episode), "--full-auto"])
-        return 0
+        # Canonical one sentence entry (Phase 5.6). This handler only wires existing
+        # modules: Story Intent -> Episode -> Visual Lock -> the Runtime DAG
+        # (workflow_runner + runtime_dag + image_scheduler) -> auto_review_loop ->
+        # repair_engine -> the canonical repair lane -> Release Candidate. The runtime
+        # DAG, the ledger, the gates and meta/episode-state.json stay authoritative;
+        # this CLI never forks a second production chain.
+        import production_orchestrator
+
+        document = production_orchestrator.run_full_auto(
+            ROOT,
+            args.request_text,
+            title=args.title,
+            forced_profile_id=args.visual_profile,
+            full_auto=args.full_auto,
+            dry_run=args.dry_run,
+            timeout=args.timeout,
+        )
+        print(json.dumps(document, ensure_ascii=False, indent=2) if args.json
+              else production_orchestrator.format_full_auto(document))
+        return production_orchestrator.full_auto_exit_code(document.get("status"))
     if args.cmd == "evidence": return forward("evidence_tool.py", args.extra)
     if args.cmd == "config": return forward("storyos_config.py", [args.config_cmd])
     if args.cmd == "doctor": return forward("story_os_doctor.py", [])
