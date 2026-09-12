@@ -23,6 +23,15 @@ TECHNICAL_CODES = {
     "WINDOWS_SANDBOX_1385",
     "VISION_ATTACHMENT_UNAVAILABLE",
     "CRITIC_BACKEND_UNAVAILABLE",
+    # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE: Codex reachability and identity
+    # failures are infrastructure, never content judgment.
+    "CODEX_USER_RUNNER_UNAVAILABLE",
+    "CODEX_USER_RUNNER_WRONG_IDENTITY",
+    "CODEX_USER_RUNNER_AUTH_FAILED",
+    "CODEX_USER_RUNNER_TIMEOUT",
+    "CODEX_USER_RUNNER_TASK_REJECTED",
+    "CODEX_USER_RUNNER_WORKSPACE_UNAVAILABLE",
+    "CODEX_EXEC_FAILED",
 }
 OPEN_AFTER = 2
 
@@ -82,7 +91,8 @@ def classify_issue_codes(codes) -> list[str]:
             continue
         if code in TECHNICAL_CODES or any(token in code for token in (
             "INPUT_IMAGE", "ATTACHMENT_UNAVAILABLE", "SANDBOX", "BACKEND_UNAVAILABLE",
-            "CRITIC_TIMEOUT", "VISION_UNAVAILABLE"
+            "CRITIC_TIMEOUT", "VISION_UNAVAILABLE", "CODEX_USER_RUNNER",
+            "CODEX_EXEC_FAILED"
         )):
             out.append(code)
     return sorted(set(out))

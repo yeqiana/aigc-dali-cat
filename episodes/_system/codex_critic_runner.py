@@ -20,6 +20,7 @@ attempt/technical-failure bookkeeping and their own prompts.
 from __future__ import annotations
 
 import argparse
+import codex_user_runner
 import json
 import os
 import shutil
@@ -54,6 +55,12 @@ def prefix(codex):
     if codex.suffix.lower() == ".py":
         return [sys.executable, str(codex)]
     if os.name == "nt" and codex.suffix.lower() in {".cmd", ".bat"}:
+        # The user-mode bridge owns the Windows .cmd driver. Sending an outer
+        # ``cmd.exe /c`` wrapper across the bridge makes older runner processes
+        # treat /c as a Codex argument. Keep direct-mode compatibility while
+        # sending the bridge a normalized Codex argv.
+        if codex_user_runner.bridge_required():
+            return [str(codex)]
         return ["cmd.exe", "/d", "/c", str(codex)]
     return [str(codex)]
 
@@ -152,13 +159,17 @@ def launch(
         extra=extra,
     )
     with resolved_log.open("w", encoding="utf-8", newline="\n") as handle:
-        done = subprocess.run(
+        # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE: one execution contract for every
+        # critic lane. Direct when Story OS already runs as the interactive user,
+        # otherwise the same declarative task is forwarded to the user-mode runner.
+        done = codex_user_runner.run_codex(
             cmd,
             input=prompt.encode("utf-8"),
             stdout=handle,
             stderr=subprocess.STDOUT,
             timeout=timeout,
             check=False,
+            task_type="critic",
         )
     log_text = resolved_log.read_text(encoding="utf-8-sig", errors="replace")
     return LaunchResult(returncode=done.returncode, log_path=resolved_log,

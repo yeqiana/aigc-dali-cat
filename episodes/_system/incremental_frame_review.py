@@ -12,6 +12,7 @@ import codex_critic_runner as critic_runner
 import frame_semantic_review as base
 # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 from story_os_contract import story_os_version
+import final_acceptance
 import runtime_router
 import runtime_provenance
 import story_json
@@ -263,11 +264,20 @@ def build_plan(ep: Path) -> dict:
     directing_v3 = base.directing_v3_required(ep)
     dirty: list[str] = []
     reasons: dict[str, list[str]] = {}
+    accepted: list[str] = []
+    accepted_reasons: dict[str, list[str]] = {}
     context_change = False
     for frame in frames:
         data = _review_data(ep, frame["frame"])
         clean, why = _review_clean(ep, data, frame, contexts, captions["frame_sha256"][frame["frame"]], version, directing_v3)
         if not clean:
+            # A direct-user final acceptance (meta/final-acceptance.json) converts a
+            # known-defect frame into an accepted one so it does not re-enter the repair
+            # queue forever. It is recorded explicitly, never silently treated as clean.
+            if final_acceptance.covers(ep, frame["frame"]):
+                accepted.append(frame["frame"])
+                accepted_reasons[frame["frame"]] = why
+                continue
             dirty.append(frame["frame"])
             reasons[frame["frame"]] = why
             if {"story_visual_context_changed", "review_version_changed", "story_source_binding_changed"}.intersection(why):
@@ -278,6 +288,8 @@ def build_plan(ep: Path) -> dict:
             "dirty_frames": [],
             "context_frames": [],
             "reasons": {},
+            "accepted_known_defect_frames": accepted,
+            "accepted_reasons": accepted_reasons,
             "caption_mode": captions["mode"],
         }
     ratio = len(dirty) / max(1, len(frames))
@@ -287,6 +299,8 @@ def build_plan(ep: Path) -> dict:
         "dirty_frames": dirty,
         "context_frames": [row["frame"] for row in frames] if action == "FULL" else _context_frames([r["frame"] for r in frames], dirty),
         "reasons": reasons,
+        "accepted_known_defect_frames": accepted,
+        "accepted_reasons": accepted_reasons,
         "dirty_ratio": round(ratio, 4),
         "caption_mode": captions["mode"],
     }

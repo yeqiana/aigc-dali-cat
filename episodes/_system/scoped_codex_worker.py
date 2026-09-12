@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 import argparse, json, os, shutil, subprocess, sys
+import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import execution_capsule
 import character_contract
 import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
@@ -196,7 +197,7 @@ def run_step(ep,step,codex_raw=None,timeout=None):
         cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"--json","-"]
         with log.open("a",encoding="utf-8",newline="\n") as h:
             try:
-                cp=subprocess.run(cmd,input=prompt(ep,step),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+                cp=codex_user_runner.run_codex(cmd,input=prompt(ep,step),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="scoped_step")
                 rc=cp.returncode
             except subprocess.TimeoutExpired:
                 rc=124

@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import argparse
+import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import json
 import os
 import shutil
@@ -251,7 +252,7 @@ def cmd_run_release_critic(args: argparse.Namespace) -> int:
     log = ep / "meta/release-critic.jsonl"
     before = {role: row["sha256"] for role, row in rows.items()}
     with log.open("w", encoding="utf-8", newline="\n") as handle:
-        completed = subprocess.run(
+        completed = codex_user_runner.run_codex(
             cmd,
             input=release_critic_prompt(ep, candidate, rows),
             text=True,
@@ -259,6 +260,7 @@ def cmd_run_release_critic(args: argparse.Namespace) -> int:
             stderr=subprocess.STDOUT,
             timeout=args.timeout,
             check=False,
+            task_type="review",
         )
     if completed.returncode != 0:
         raise RuntimeError(f"release critic failed rc={completed.returncode}; log={log}")

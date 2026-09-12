@@ -26,6 +26,10 @@ TECH_KEYWORDS = (
     "connection",
     "network",
     "rate limit",
+    # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE: the Codex user-mode bridge reports
+    # infrastructure reachability/identity codes, not content verdicts.
+    "codex_user_runner",
+    "codex_exec_failed",
 )
 
 CONTENT_KEYWORDS = (

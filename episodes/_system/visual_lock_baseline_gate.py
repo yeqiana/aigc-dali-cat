@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, shutil, subprocess, sys, tempfile
 from pathlib import Path
 import character_visual_contract
+import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import frame_contract
 import codex_critic_runner
 import episode_performance
@@ -164,7 +165,7 @@ def run_codex_critic(ep,attempt=1,codex_raw=None,timeout=None):
     cmd=command_prefix(codex)+["exec","--skip-git-repo-check","--ephemeral"]+(["-m",model] if model else [])+["-c",f'model_reasoning_effort="{effort}"',"-s",codex_critic_runner.default_sandbox(),"-C",str(ROOT),"--json","-i",str(staged),"-"]
     try:
         with log.open("w",encoding="utf-8",newline="\n") as handle:
-            done=subprocess.run(cmd,input=critic_prompt(ep).encode("utf-8"),stdout=handle,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+            done=codex_user_runner.run_codex(cmd,input=critic_prompt(ep).encode("utf-8"),stdout=handle,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="critic")
     finally:
         shutil.rmtree(staging,ignore_errors=True)
     if done.returncode!=0:raise ValueError(f"baseline Codex critic failed rc={done.returncode}; log={repo_rel(log)}")

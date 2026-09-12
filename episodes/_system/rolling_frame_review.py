@@ -8,6 +8,7 @@ UNCERTAIN always defers to the formal final frame review.
 from __future__ import annotations
 import json, os, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
+import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import frame_contract
 import runtime_capability_cache  # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
 import runtime_router
@@ -59,7 +60,7 @@ REPAIR_NOW only for clear visible defects. UNCERTAIN if evidence is ambiguous.
     codex=resolve_codex(codex_raw)
     # Codex's image sidecar can fail to resolve Windows paths containing Chinese
     # characters. Stage a byte-identical ASCII-only temporary attachment.
-    staging=Path(tempfile.mkdtemp(prefix="story-os-rolling-"))
+    staging=codex_user_runner.workspace_path(prefix="story-os-rolling-")
     staged_image=staging/("frame-"+f"{int(frame):02d}"+image.suffix.lower())
     shutil.copy2(image,staged_image)
     cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"-i",str(staged_image),"--json","-"]
@@ -69,7 +70,7 @@ REPAIR_NOW only for clear visible defects. UNCERTAIN if evidence is ambiguous.
             try:
                 # On Windows, text=True encodes stdin through the active console code page.
                 # Codex expects UTF-8, and frame contracts routinely contain Chinese text.
-                cp=subprocess.run(cmd,input=prompt.encode("utf-8"),stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+                cp=codex_user_runner.run_codex(cmd,input=prompt.encode("utf-8"),stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="review")
             except subprocess.TimeoutExpired: return {"decision":"UNCERTAIN","reason":"timeout","returncode":124}
     finally:
         shutil.rmtree(staging,ignore_errors=True)

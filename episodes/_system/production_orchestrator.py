@@ -674,6 +674,11 @@ def run_full_auto(root, idea, *, title=None, frames: int = DEFAULT_FRAME_COUNT,
         story_creator.create_episode(root, episode_title, selector_input=payload)
         created = True
 
+    story_creator.ensure_episode_core_documents(
+        Path(root), episode_dir, episode_title,
+        profile_id=str(selection.get("selected_profile") or "") or None,
+        frame_count=frames,
+    )
     _ensure_canonical_runtime_request(episode_dir, idea, episode_title)
 
     lock, _lock_source = adapter.read_lock(episode_dir)

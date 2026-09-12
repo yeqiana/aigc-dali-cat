@@ -40,7 +40,7 @@ def state(ep: Path) -> str:
     return str(read_json(ep / "meta/episode-state.json").get("current_state") or "UNKNOWN")
 
 
-def pending_product_review(ep: Path) -> dict | None:
+def pending_product_review(ep: Path, *, current_state: str | None = None) -> dict | None:
     root = ep / REVIEW_DIR
     if not root.is_dir():
         return None
@@ -49,6 +49,15 @@ def pending_product_review(ep: Path) -> dict | None:
         if "-attempt-" in p.name:
             continue
         d = read_json(p)
+        kind = str(d.get("review_kind") or "")
+        # Episode stage is the canonical authority. Once Visual Lock has already
+        # advanced to VISUAL_CALIBRATED (or beyond), an older unfinished product
+        # review request for that same gate is stale runtime residue and must not
+        # pull the DAG backwards into PRODUCT_REVIEW.
+        if current_state in {"VISUAL_CALIBRATED", "PRODUCTION_PASSED", "PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED"} and kind in {
+            "visual-lock-baseline", "visual-lock", "visual-profile-legacy"
+        }:
+            continue
         if d.get("status") == "AWAITING_PRODUCT_REVIEW":
             rows.append((str(d.get("created_at") or ""), p, d))
     if not rows:
@@ -61,31 +70,74 @@ def queue_summary(ep: Path) -> dict:
     q = read_json(ep / QUEUE_REL)
     counts: dict[str, int] = {}
     queued_frames = []
-    for row in q.get("items") or []:
-        if not isinstance(row, dict):
-            continue
+    items = [row for row in (q.get("items") or []) if isinstance(row, dict)]
+    for row in items:
         status = str(row.get("status") or "unknown")
         counts[status] = counts.get(status, 0) + 1
         if status == "queued":
             queued_frames.append(int(row.get("frame") or 0))
+
     # Technical failures are attempt history, not automatically the current
-    # production truth. A later successful candidate/commit must win over an
-    # earlier backend timeout, otherwise a recovered frame can permanently
-    # block the pipeline.
+    # production truth. A later generated candidate or ready ledger state for the
+    # same frame wins over an earlier backend timeout; otherwise recovered frames
+    # can permanently poison next_action with RETRY_TECHNICAL_FAILURES.
+    successful_frames = {
+        int(row.get("frame") or 0)
+        for row in items
+        if row.get("status") == "generated" and int(row.get("frame") or 0) > 0
+    }
+    ledger = read_json(ep / "meta/production-ledger.json").get("frames") or {}
+    successful_frames.update(
+        int(key)
+        for key, value in ledger.items()
+        if str(key).isdigit()
+        and isinstance(value, dict)
+        and value.get("status") in production_ledger.READY_LEDGER_STATES
+    )
+
     tech_failed = []
-    for row in q.get("items") or []:
-        if not isinstance(row, dict) or row.get("status") != "tech_failed":
+    for row in items:
+        if row.get("status") != "tech_failed":
+            continue
+        frame = int(row.get("frame") or 0)
+        if frame in successful_frames:
             continue
         attempts = row.get("attempts") or []
         if not isinstance(attempts, list):
             attempts = []
         recovered = any(isinstance(a, dict) and a.get("result") in {"success", "PASSED"} for a in attempts)
-        # Some legacy queue entries only contain counters/ids instead of an
-        # attempt list. They cannot prove recovery, so keep the technical retry
-        # requirement for those entries.
         if not recovered:
             tech_failed.append(row)
     counts["tech_failed"] = len(tech_failed)
+
+    # ``interrupted_unknown`` is also execution history, not necessarily the
+    # current production truth. A later ledger candidate (or an approved asset)
+    # for the same frame supersedes an older interrupted row.  Keep the queue row
+    # for audit, but only count unresolved interruptions whose queued time is
+    # newer than the current ledger candidate and which therefore still need
+    # recovery evidence.
+    unresolved_interrupted = []
+    for row in items:
+        if row.get("status") != "interrupted_unknown":
+            continue
+        frame_no = int(row.get("frame") or 0)
+        frame = ledger.get(f"{frame_no:02d}") or ledger.get(str(frame_no)) or {}
+        approved = frame.get("approved_asset") if isinstance(frame, dict) else None
+        if isinstance(approved, dict) and approved.get("sha256"):
+            continue
+        current = frame.get("current_candidate") if isinstance(frame, dict) else None
+        if isinstance(current, dict) and current.get("sha256"):
+            row_output = str(row.get("output_path") or "")
+            current_path = str(current.get("path") or current.get("asset_path") or "")
+            if row_output and current_path and row_output == current_path:
+                continue
+            queued_at = str(row.get("queued_at") or "")
+            recorded_at = str(current.get("recorded_at") or "")
+            if queued_at and recorded_at and recorded_at >= queued_at:
+                continue
+        unresolved_interrupted.append(row)
+    counts["interrupted_unknown"] = len(unresolved_interrupted)
+
     return {"counts": counts, "queued_frames": sorted(x for x in queued_frames if x > 0), "raw": q}
 
 
@@ -105,7 +157,7 @@ def derive(ep: Path) -> dict:
     image_runtime, _ = runtime_router.image_execution_runtime()
     mode = runtime_execution.effective_mode(ep)
     cur = state(ep)
-    review = pending_product_review(ep)
+    review = pending_product_review(ep, current_state=cur)
     try:
         product_runtime_adapter.reconcile(ep)
     except Exception:
@@ -179,6 +231,22 @@ def derive(ep: Path) -> dict:
                     frames=qs["queued_frames"],
                     reason="production queue has ready/pending image work; scheduler enforces dependencies and concurrency")
 
+    ledger_frames = read_json(ep / "meta/production-ledger.json").get("frames") or {}
+    needs_user_frames = sorted(
+        int(key) for key, value in ledger_frames.items()
+        if str(key).isdigit() and isinstance(value, dict) and value.get("status") == "NEEDS_USER"
+    )
+    if needs_user_frames:
+        return action_result(
+            action="USER_DECISION_REQUIRED",
+            executor=runtime,
+            frames=needs_user_frames,
+            work_pending=True,
+            auto_recoverable=False,
+            hard_stop=True,
+            reason="production frames exhausted automatic/authorized repair lanes and require an explicit user decision",
+        )
+
     if review:
         return action_result(action="PRODUCT_REVIEW", executor=runtime,
                 request_path=review.get("path"), review_kind=review.get("review_kind"),
@@ -215,7 +283,7 @@ def apply_runtime_block_semantics(data: dict) -> dict:
     Keep legacy ``blocking`` for compatibility, but expose explicit semantics.
     """
     action = str(data.get("action") or "")
-    hard_stop_actions = {"REPAIR_STATE", "RECOVER_INTERRUPTED_IMAGES"}
+    hard_stop_actions = {"REPAIR_STATE", "RECOVER_INTERRUPTED_IMAGES", "USER_DECISION_REQUIRED"}
     recoverable_actions = {
         "GENERATE_IMAGES",
         "RETRY_TECHNICAL_FAILURES",

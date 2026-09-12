@@ -17,6 +17,7 @@ import storyos_config
 _CONFIG = storyos_config.load_config()
 AUTO_RATIO_DELTA_MAX = float(storyos_config.get_path(_CONFIG, 'normalize.automatic_ratio_delta_max'))
 REVIEW_RATIO_DELTA_MAX = float(storyos_config.get_path(_CONFIG, 'normalize.review_ratio_delta_max'))
+EXCEPTION_CROP_RATIO_DELTA_MAX = float(storyos_config.get_path(_CONFIG, 'normalize.exception_crop_ratio_delta_max', 0.06))
 LOCAL_RETRIES = int(storyos_config.get_path(_CONFIG, 'normalize.local_retries'))
 
 
@@ -108,6 +109,62 @@ def _normalize_once(src: Path, dst: Path, width: int, height: int) -> dict:
         'reencoded': reencoded,
         'crop_applied': False,
         'policy': 'NP01',
+    }
+
+
+def normalize_provider_crop_exception(src: Path, dst: Path, width: int, height: int, *, reason: str) -> dict:
+    """Explicit provider-size compatibility path; never used by default normalize().
+
+    This preserves the provider RAW and only permits a small center crop when the
+    generation request was already for the canonical canvas but the provider returned
+    a nearby unsupported ratio. The caller must opt in explicitly and records the
+    exception reason in the returned normalization evidence.
+    """
+    Image = require_pillow()
+    if not src.is_file():
+        raise NormalizeError('NORMALIZE_INPUT_MISSING', f'input missing: {src}')
+    if dst.exists():
+        raise NormalizeError('NORMALIZE_OUTPUT_EXISTS', f'output exists: {dst}')
+    if dst.suffix.lower() != '.png':
+        raise NormalizeError('NORMALIZE_OUTPUT_FORMAT', f'formal output must use .png: {dst}')
+    with Image.open(src) as im:
+        source_size = im.size
+        source_ratio = source_size[0] / source_size[1]
+        target_ratio = width / height
+        ratio_delta = abs(source_ratio - target_ratio) / target_ratio
+        if ratio_delta > EXCEPTION_CROP_RATIO_DELTA_MAX:
+            raise NormalizeError('ASPECT_RATIO_MISMATCH', f'provider exception refused: source={source_size[0]}x{source_size[1]}, target={width}x{height}, ratio_delta={ratio_delta:.6f} > exception_max={EXCEPTION_CROP_RATIO_DELTA_MAX:.6f}')
+        if source_ratio < target_ratio:
+            crop_h = max(1, round(source_size[0] / target_ratio))
+            top = max(0, (source_size[1] - crop_h) // 2)
+            box = (0, top, source_size[0], top + crop_h)
+        else:
+            crop_w = max(1, round(source_size[1] * target_ratio))
+            left = max(0, (source_size[0] - crop_w) // 2)
+            box = (left, 0, left + crop_w, source_size[1])
+        out = im.convert('RGB').crop(box).resize((width, height), resample=Image.Resampling.LANCZOS)
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        tmp = dst.with_name(f'.{dst.name}.normalize-tmp')
+        try:
+            out.save(tmp, 'PNG', optimize=True)
+            tmp.replace(dst)
+        finally:
+            if tmp.exists():
+                tmp.unlink()
+    return {
+        'source': str(src),
+        'output': str(dst),
+        'source_size': list(source_size),
+        'target_size': [width, height],
+        'ratio_delta': round(ratio_delta, 6),
+        'operation': 'CENTER_CROP_THEN_RESIZE_LANCZOS',
+        'reencoded': True,
+        'crop_applied': True,
+        'crop_box': list(box),
+        'policy': 'NP01_PROVIDER_EXCEPTION',
+        'exception_reason': str(reason),
+        'exception_ratio_delta_max': EXCEPTION_CROP_RATIO_DELTA_MAX,
+        'local_attempts': 1,
     }
 
 

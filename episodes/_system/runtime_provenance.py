@@ -72,8 +72,12 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
             and provenance.get("extended_source_drift_review") is True
             and base in {"WORK", "WEB"}
         )
-        if attempt not in {1, 2} and not extended:
-            errors.append("critic attempt must be 1 or 2 unless this is a validated WORK/WEB source-drift re-review")
+        user_exception = (
+            attempt == 3
+            and provenance.get("direct_user_exception_review") is True
+        )
+        if attempt not in {1, 2} and not extended and not user_exception:
+            errors.append("critic attempt must be 1 or 2 unless this is a validated source-drift or direct-user-exception re-review")
     return errors
 
 
@@ -84,12 +88,15 @@ def build_critic_provenance(
     log: str | None = None,
     request_path: str | None = None,
     allow_extended_attempt: bool = False,
+    allow_user_exception_attempt: bool = False,
 ) -> dict:
     base = normalize_base_runtime(base_runtime)
     if attempt < 1:
         raise ValueError("attempt must be >= 1")
-    if attempt > 2 and not (allow_extended_attempt and base in {"WORK", "WEB"}):
-        raise ValueError("attempt must be 1 or 2 unless this is a validated WORK/WEB source-drift re-review")
+    allowed_extended = allow_extended_attempt and base in {"WORK", "WEB"}
+    allowed_user_exception = allow_user_exception_attempt and attempt == 3
+    if attempt > 2 and not (allowed_extended or allowed_user_exception):
+        raise ValueError("attempt must be 1 or 2 unless this is a validated source-drift or direct-user-exception re-review")
     data = {
         "runtime": isolated_runtime(base),
         "base_runtime": base,
@@ -99,7 +106,10 @@ def build_critic_provenance(
         "reviewed_at": now(),
     }
     if attempt > 2:
-        data["extended_source_drift_review"] = True
+        if allowed_user_exception:
+            data["direct_user_exception_review"] = True
+        else:
+            data["extended_source_drift_review"] = True
     if log:
         data["log"] = log
     if request_path:
@@ -111,6 +121,7 @@ def self_test() -> None:
     assert validate_critic_provenance(build_critic_provenance("CODEX", attempt=1)) == []
     assert validate_critic_provenance(build_critic_provenance("WORK", attempt=2)) == []
     assert validate_critic_provenance(build_critic_provenance("WORK", attempt=3, allow_extended_attempt=True)) == []
+    assert validate_critic_provenance(build_critic_provenance("CODEX", attempt=3, allow_user_exception_attempt=True)) == []
     bad = build_critic_provenance("WEB", attempt=1)
     bad["execution_source"] = "local_codex_cli"
     assert validate_critic_provenance(bad)

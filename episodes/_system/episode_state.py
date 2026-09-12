@@ -177,29 +177,30 @@ def new_gates(episode_id: str, *, aspect_ratio: str | None = None, strict: bool 
     return enable_machine_contract(gates, strict=strict, aspect_ratio=aspect_ratio)
 
 
-def init_cmd(args: argparse.Namespace) -> None:
-    episode_dir = ensure_episode_dir(args.episode_dir)
-    state_path = episode_dir / STATE_FILE
-    manifest_path = episode_dir / MANIFEST_FILE
-    gates_path = episode_dir / GATES_FILE
-    if state_path.exists() or manifest_path.exists() or gates_path.exists():
-        raise SystemExit("meta already exists; refusing to overwrite")
+def initial_documents(*, episode_id: str, series: str, title: str, frame_count: int = 20,
+                      format_name: str = "douyin_photo_carousel",
+                      aspect_ratio: str = DEFAULT_ASPECT_RATIO, note: str | None = None,
+                      strict: bool = True) -> tuple[dict, dict, dict]:
+    """Build the canonical initial state / manifest / story-gates triplet.
 
+    This is the single constructor shared by the CLI initializer and the one-sentence
+    story_creator bootstrap. It is pure: callers own persistence and overwrite policy.
+    """
     at = now_iso()
-    canvas = resolve_canvas_spec(args.aspect_ratio)
+    canvas = resolve_canvas_spec(aspect_ratio)
     state = {
         "schema_version": 1,
         "tool_version": SYSTEM_VERSION,
-        "episode_id": args.id,
-        "series": args.series,
-        "title": args.title,
+        "episode_id": episode_id,
+        "series": series,
+        "title": title,
         "current_state": "IDEA_LOCKED",
         "updated_at": at,
         "history": [
             {
                 "state": "IDEA_LOCKED",
                 "at": at,
-                "note": args.note or "项目已完成选题与核心故事锁定",
+                "note": note or "项目已完成选题与核心故事锁定",
             }
         ],
     }
@@ -207,15 +208,15 @@ def init_cmd(args: argparse.Namespace) -> None:
         "schema_version": 1,
         "tool_version": SYSTEM_VERSION,
         "episode": {
-            "id": args.id,
-            "series": args.series,
-            "title": args.title,
-            "format": args.format,
+            "id": episode_id,
+            "series": series,
+            "title": title,
+            "format": format_name,
             "aspect_ratio": canvas.aspect_ratio,
         },
         "release": {
             "version": None,
-            "body_frame_count": args.frame_count,
+            "body_frame_count": int(frame_count),
             "publish_dir": None,
             "body_glob": "[0-9][0-9].png",
             "cover_path": None,
@@ -267,9 +268,31 @@ def init_cmd(args: argparse.Namespace) -> None:
             },
         },
     }
+    gates = new_gates(episode_id, aspect_ratio=canvas.aspect_ratio, strict=strict)
+    return state, manifest, gates
+
+
+def init_cmd(args: argparse.Namespace) -> None:
+    episode_dir = ensure_episode_dir(args.episode_dir)
+    state_path = episode_dir / STATE_FILE
+    manifest_path = episode_dir / MANIFEST_FILE
+    gates_path = episode_dir / GATES_FILE
+    if state_path.exists() or manifest_path.exists() or gates_path.exists():
+        raise SystemExit("meta already exists; refusing to overwrite")
+
+    state, manifest, gates = initial_documents(
+        episode_id=args.id,
+        series=args.series,
+        title=args.title,
+        frame_count=args.frame_count,
+        format_name=args.format,
+        aspect_ratio=args.aspect_ratio,
+        note=args.note,
+        strict=True,
+    )
     save_json(state_path, state)
     save_json(manifest_path, manifest)
-    save_json(gates_path, new_gates(args.id, aspect_ratio=canvas.aspect_ratio, strict=True))
+    save_json(gates_path, gates)
     episode_performance.safe_start_episode(episode_dir,source="episode_state.init")
     print(f"initialized: {episode_dir}")
     print(f"state   : {state_path}")

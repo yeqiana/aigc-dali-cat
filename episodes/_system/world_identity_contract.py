@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REL = Path("config/profiles/world_identity/default.json")
 OVERRIDE_REL = Path("meta/world-identity.json")
 MIN_VERSION = (2, 2, 1)
+M02_HEAVEN_PROFILE = "M02_HEAVEN_MUNDANE_WORKER_V1"
 
 
 def read_json(path: Path) -> dict:
@@ -243,6 +244,54 @@ def prompt_block(ep: Path) -> str:
             ),
         ]
     )
+
+
+def ensure_visual_profile_override(ep: Path, profile_id: str | None) -> dict | None:
+    """Install the canonical Episode world identity implied by a governed visual world.
+
+    Only M02 currently requires replacing the real-world Mainland-China default. The
+    helper is idempotent and never overwrites an existing explicit Episode override.
+    Other profiles return None and keep the normal default/Story-authored behavior.
+    """
+    ep = Path(ep).resolve()
+    if str(profile_id or "").strip() != M02_HEAVEN_PROFILE:
+        return None
+    target = ep / OVERRIDE_REL
+    if target.is_file():
+        return read_json(target)
+    data = {
+        "schema_version": 1,
+        "inherit_default": False,
+        "profile_id": "CELESTIAL_MUNDANE_WORLD_V1",
+        "description": "M02 天界普通工作人员世界身份；虚构世界，不继承现实国家默认值。",
+        "world": {
+            "country": "天界（虚构世界）",
+            "region": "云海公共生活与基层工作区",
+            "culture_context": "东方天界的普通居民生活与基层单位文化；强调通勤、食堂、交接、工单和下班等日常秩序，不做神话英雄叙事",
+            "language_context": "作品可读文字使用简体中文呈现，世界内视为天界通用文字",
+            "architecture_context": "自洽的东方天界基层公共设施：朴素石木工作站、云桥、通勤站台、宿舍与食堂；禁止宏大神殿宣传片化",
+            "traffic_context": "天界本地通勤与工作运输规则",
+            "consumer_goods_context": "天界普通居民与基层单位的朴素日用品",
+        },
+        "population": {
+            "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+            "resident_context": "天界普通本地居民与基层工作人员",
+            "default_protagonist_age_range": [19, 30],
+            "default_protagonist_identity": "二十多岁的普通天界基层工作人员，东方式自然年轻人外貌，不英雄化",
+            "ethnicity_policy": "fictional_world_local_population",
+            "foreign_character_policy": "story_defined",
+        },
+        "visual_rules": {
+            "visible_text_context": "简体中文可读呈现",
+            "do_not_import_foreign_architecture_by_default": False,
+            "do_not_import_foreign_population_by_default": False,
+            "do_not_import_foreign_cultural_props_by_default": False,
+            "preserve_location_specific_chinese_regional_detail": False,
+        },
+        "note": "Canonical M02 world identity override generated from the governed Visual Profile; Story may further specify the fictional locality without reverting to a real-world country default.",
+    }
+    write_json(target, data)
+    return data
 
 
 def set_override(

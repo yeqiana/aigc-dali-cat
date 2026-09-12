@@ -9,8 +9,9 @@
     "next_action.py"
   ],
   "runtime": [
-    "runtime_router.py",
-    "product_runtime_adapter.py",
+  "runtime_router.py",
+  "codex_user_runner.py",
+  "product_runtime_adapter.py",
     "product_review_adapter.py",
     "runtime_checkpoint.py",
     "runtime_trace.py",

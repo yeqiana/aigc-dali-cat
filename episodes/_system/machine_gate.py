@@ -494,6 +494,11 @@ def check_story_semantic_trace(repo_root: Path, episode_dir: Path, gates: dict, 
     Backward compatibility mirrors W-21/P1-1: only episodes whose ledger was marked
     story-semantic-trace aware are in scope, and only attempts recorded after the
     marker. Historical episodes keep passing.
+
+    W-23: an Episode that carries a valid meta/final-acceptance.json and lists a
+    frame in known_defect_frames has already had that defect accepted directly by
+    the user. Those frames are reported as WARN so the acceptance record, and not
+    a silent edit of the evidence, is what lets production advance.
     """
     if metadata_only:
         return
@@ -515,6 +520,14 @@ def check_story_semantic_trace(repo_root: Path, episode_dir: Path, gates: dict, 
         return
     enforced_from = str(marker.get("enforced_from") or "")
     frames = ledger.get("frames") if isinstance(ledger.get("frames"), dict) else {}
+    acceptance = acceptance_valid(episode_dir)
+    accepted_defect_frames: set[str] = set()
+    if acceptance is not None:
+        for raw in acceptance.get("known_defect_frames") or []:
+            try:
+                accepted_defect_frames.add(f"{int(raw):02d}")
+            except (TypeError, ValueError):
+                continue
     for key in sorted(frames):
         frame = frames.get(key)
         if not isinstance(frame, dict):
@@ -532,7 +545,13 @@ def check_story_semantic_trace(repo_root: Path, episode_dir: Path, gates: dict, 
         trace = story_semantic_trace.trace_from_review(review)
         expected_contract = story_semantic_trace.attempt_contract_sha(attempt)
         for code, message in story_semantic_trace.validate_frame(trace, requirement, expected_contract):
-            findings.append(Finding("FAIL", code, f"frame {key}: {message}"))
+            if key in accepted_defect_frames:
+                findings.append(Finding(
+                    "WARN", "story_semantic_trace_accepted",
+                    f"frame {key}: {code}: {message} accepted as known defect "
+                    "(meta/final-acceptance.json)"))
+            else:
+                findings.append(Finding("FAIL", code, f"frame {key}: {message}"))
 
 
 def review_path(repo_root: Path, episode_dir: Path, gates: dict, key: str) -> Path:

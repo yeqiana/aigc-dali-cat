@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import codex_critic_runner
 import datetime as dt
 import hashlib
 import json
@@ -404,21 +405,23 @@ def run_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history
         )
         raise ProductReviewHostAction(request)
     codex = resolve_codex(codex_raw)
-    cmd = prefix(codex) + [
-        "exec", "--skip-git-repo-check", "--ephemeral",
-        "-c", 'model_reasoning_effort="high"',
-        "-s", "workspace-write", "-C", str(root), "--json", "-"
-    ]
-    with log_path.open("w", encoding="utf-8", newline="\n") as handle:
-        completed = subprocess.run(
-            cmd,
-            input=critic_prompt(root, ep, fp_path, registry_path, current, history, candidate),
-            text=True,
-            stdout=handle,
-            stderr=subprocess.STDOUT,
-            timeout=timeout,
-            check=False,
-        )
+    direct_prompt = critic_prompt(root, ep, fp_path, registry_path, current, history, candidate) + """
+
+DIRECT CODEX EXECUTION OVERRIDE:
+Do not edit or write any repository file in this execution.
+Return ONLY the exact candidate JSON object as your final answer, with no prose,
+no Markdown fences and no status summary. The parent process persists it.
+"""
+    completed = codex_critic_runner.launch(
+        direct_prompt,
+        codex=codex,
+        root=root,
+        timeout=timeout,
+        output_path=candidate,
+        reasoning_effort="high",
+        sandbox="workspace-write",
+        log_path=log_path,
+    )
     if completed.returncode != 0:
         raise RuntimeError(f"semantic recent5 critic failed rc={completed.returncode}; log={log_path}")
     if before_fp != sha256_file(fp_path) or before_reg != sha256_file(registry_path):

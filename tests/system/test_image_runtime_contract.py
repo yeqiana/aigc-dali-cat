@@ -222,6 +222,21 @@ class BackendAndLedgerContractTests(unittest.TestCase):
 
 
 class ModelFallbackConvergenceTests(unittest.TestCase):
+    def test_bridged_windows_image_worker_uses_disposable_no_os_sandbox_lane(self):
+        with mock.patch.object(codex_subscription_image.os, "name", "nt"):
+            self.assertEqual(
+                codex_subscription_image.image_worker_sandbox_mode(bridged=True, has_references=False),
+                "workspace-write",
+            )
+            self.assertEqual(
+                codex_subscription_image.image_worker_sandbox_mode(bridged=False, has_references=True),
+                "danger-full-access",
+            )
+            self.assertEqual(
+                codex_subscription_image.image_worker_sandbox_mode(bridged=False, has_references=False),
+                "workspace-write",
+            )
+
     def test_subscription_worker_defaults_follow_yaml_policy(self):
         import inspect
         for func in (codex_subscription_image.worker_prompt, codex_subscription_image.invoke_codex):

@@ -7,6 +7,7 @@ import json
 import os
 import shutil
 import subprocess
+import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import sys
 import tempfile
 import time
@@ -15,7 +16,7 @@ import tomllib
 from pathlib import Path
 from PIL import Image
 
-from canvas_normalize import NormalizeError, normalize, read_canvas
+from canvas_normalize import NormalizeError, normalize, normalize_provider_crop_exception, read_canvas
 from visual_profile_bridge_v224 import compile_prompt_contract
 import frame_contract as resolved_frame_contract
 import image_model_policy
@@ -192,23 +193,37 @@ def _reference_proxy(source: Path, workdir: Path, index: int) -> Path:
         return target
 
 
+def image_worker_sandbox_mode(*, bridged: bool, has_references: bool) -> str:
+    """Choose the Codex sandbox for the narrow disposable image worker.
+
+    On Windows, a user-mode bridged worker must read the interactive user's real
+    CODEX_HOME while its disposable working directory is owned by Story OS. The
+    native workspace-write sandbox can reject that cross-root bootstrap with
+    os error 5 before the model starts. Keep the no-OS-sandbox lane only for this
+    narrow image subprocess; Story OS still owns queue/budget/output/gate policy.
+    """
+    if os.name == 'nt' and (bridged or has_references):
+        return 'danger-full-access'
+    return 'workspace-write'
+
+
 def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None) -> float:
     scene = scene_text if scene_text is not None else prompt_path.read_text(encoding='utf-8-sig').strip()
     if not scene:
         raise BackendError('prompt is empty')
     codex = resolve_codex(codex_raw)
     started = time.monotonic()
-    with tempfile.TemporaryDirectory(prefix='story-os-image-') as raw_dir:
+    bridged = codex_user_runner.bridge_required()
+    with codex_user_runner.workspace(prefix='story-os-image-') as raw_dir:
         workdir = Path(raw_dir)
         local_refs = []
         for index, source in enumerate(refs, 1):
             local_refs.append(_reference_proxy(source, workdir, index))
-        # Windows Codex sandbox can intermittently fail to read attached images with
-        # CreateProcessWithLogonW(1385), even after refs are copied into an ASCII-only
-        # temporary workdir. For reference-bound image workers only, disable that OS
-        # sandbox layer while still constraining the process cwd to the disposable
-        # workdir and preserving Story OS SHA/reference contracts.
-        sandbox_mode = 'danger-full-access' if os.name == 'nt' and local_refs else 'workspace-write'
+        # Windows reference-bound workers and bridged isolated-home workers cannot
+        # reliably bootstrap the native workspace-write sandbox. Both remain narrow
+        # image-only tasks in this disposable workdir; Story OS retains contract,
+        # queue and ledger authority around the generated artifact.
+        sandbox_mode = image_worker_sandbox_mode(bridged=bridged, has_references=bool(local_refs))
         # Image workers are intentionally narrow: Story OS already embeds the complete
         # visual/frame contracts in the prompt. Muting the Codex skills catalog prevents
         # the controller from spending a turn loading imagegen/SKILL.md before it can
@@ -228,22 +243,27 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
         # 该目录只影响 Codex CLI 临时产物，不改变 Story OS 资产权威路径。
         worker_env = os.environ.copy()
         worker_env.setdefault("STORY_OS_WORKER_ID", str(uuid.uuid4()))
-        worker_codex_home = workdir / "codex-home"
-        worker_codex_home.mkdir(parents=True, exist_ok=True)
-        # The isolated CODEX_HOME exists to stop concurrent workers sharing
-        # ~/.codex/generated_images. An empty CODEX_HOME also drops the operator's
-        # ChatGPT/Codex sign-in, which makes every worker unauthenticated
-        # (HTTP 401) and produces zero images. Seed only the credentials the CLI
-        # needs; the reference/generated_images isolation stays intact.
-        source_home = Path(os.environ.get("CODEX_HOME") or (Path.home() / ".codex"))
-        for name in ("auth.json", "config.toml"):
-            src = source_home / name
-            if src.is_file() and not (worker_codex_home / name).exists():
-                shutil.copy2(src, worker_codex_home / name)
-        worker_env["CODEX_HOME"] = str(worker_codex_home)
+        # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE: across the interactive-user
+        # bridge the runner owns the real Codex home. The caller never reads or
+        # copies credentials; runner-side thread-id scoped artifact export keeps
+        # concurrent image results isolated without creating a fresh CODEX_HOME.
+        if not bridged:
+            worker_codex_home = workdir / "codex-home"
+            worker_codex_home.mkdir(parents=True, exist_ok=True)
+            # The isolated CODEX_HOME exists to stop concurrent workers sharing
+            # ~/.codex/generated_images. An empty CODEX_HOME also drops the operator's
+            # ChatGPT/Codex sign-in, which makes every worker unauthenticated
+            # (HTTP 401) and produces zero images. Seed only the credentials the CLI
+            # needs; the reference/generated_images isolation stays intact.
+            source_home = Path(os.environ.get("CODEX_HOME") or (Path.home() / ".codex"))
+            for name in ("auth.json", "config.toml"):
+                src = source_home / name
+                if src.is_file() and not (worker_codex_home / name).exists():
+                    shutil.copy2(src, worker_codex_home / name)
+            worker_env["CODEX_HOME"] = str(worker_codex_home)
         with log.open('w', encoding='utf-8', newline='\n') as log_handle:
             try:
-                completed = subprocess.run(
+                completed = codex_user_runner.run_codex(
                     cmd,
                     env=worker_env,
                     input=worker_prompt(scene, local_refs, size, visual_contract, frame_contract_text, image_model, image_quality, strict_model),
@@ -252,8 +272,11 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
                     errors="strict",
                     stdout=log_handle,
                     stderr=subprocess.STDOUT,
+                    cwd=workdir,
                     timeout=timeout,
                     check=False,
+                    task_type="image",
+                    codex_home_mode="inherit",
                 )
             except subprocess.TimeoutExpired as exc:
                 raise BackendError(f'image worker timeout after {timeout}s; log={log}') from exc
@@ -262,10 +285,22 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             alternatives = [p for p in workdir.glob('*.png') if not p.name.startswith('reference-')]
             if alternatives:
                 candidate = max(alternatives, key=lambda p: p.stat().st_mtime)
-        if not valid_image(candidate):
+        if not valid_image(candidate) and not bridged:
+            # The recovery root lives inside the Codex home, which belongs to the
+            # runner user once the task crossed the bridge.
             recovered = image_artifact_collector.recover_codex_generated(log, workdir)
             if recovered is not None:
                 candidate = recovered
+        if not valid_image(candidate) and bridged:
+            # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE: the throwaway Codex home now
+            # lives in the runner user's profile, so the runner mirrors provider
+            # artifacts into this shared workdir instead.
+            staged = codex_user_runner.exported_artifacts_dir(workdir)
+            if staged.is_dir():
+                exported = [p for p in sorted(staged.rglob('*'))
+                            if p.is_file() and valid_image(p)]
+                if exported:
+                    candidate = max(exported, key=lambda p: p.stat().st_mtime)
         if completed.returncode != 0 or not valid_image(candidate):
             try:
                 tail=log.read_text(encoding='utf-8',errors='replace')[-6000:]
@@ -317,6 +352,11 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         model_policy = dict(internal_policy)
     else:
         model_policy = image_model_policy.for_episode(ep, explicit=getattr(args, 'image_model', None), explicit_quality=getattr(args, 'image_quality', None))
+    recovered_codex_raw = getattr(args, '_recovered_codex_raw', None)
+    recovered_src = Path(str(recovered_codex_raw)).expanduser().resolve() if recovered_codex_raw else None
+    recovered_request_id = str(getattr(args, '_recovered_runner_request_id', '') or '').strip()
+    if recovered_src is not None and not valid_image(recovered_src):
+        raise BackendError(f'recovered Codex raw invalid: {recovered_src}')
     manual_dir = os.environ.get('STORY_OS_MANUAL_RAW_DIR')
     manual_src = None
     if manual_dir:
@@ -326,7 +366,12 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         manual_src = matches[-1]
         if not valid_image(manual_src):
             raise BackendError(f'manual raw invalid: {manual_src}')
-    if manual_src:
+    if recovered_src is not None:
+        raw_output.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(recovered_src, raw_output)
+        elapsed = 0.0
+        backend_name = 'codex_subscription'
+    elif manual_src:
         raw_output.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(manual_src, raw_output)
         elapsed = 0.0
@@ -341,13 +386,29 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     # claim reference delivery it did not perform.
     receipt_data["reference_transport"] = "manual_desktop_import" if manual_src else "codex_subscription_cli_attachment"
     receipt_data["references"] = [] if manual_src else provider_capability.reference_evidence(refs)
+    if recovered_src is not None:
+        receipt_data["recovery"] = {
+            "kind": "interrupted_user_runner_success",
+            "runner_request_id": recovered_request_id or None,
+            "source_artifact": str(recovered_src),
+        }
     provider_receipt_info = provider_capability.write_receipt(ep, int(args.frame), receipt_data)
     if output.exists() and args.overwrite:
         output.unlink()
     try:
         norm = normalize(raw_output, output, width, height)
     except NormalizeError as exc:
-        raise BackendError(f'{exc.code}: raw preserved at {raw_output}; provider_receipt={provider_receipt_info.get("path")}; {exc}') from exc
+        allow_provider_crop = str(os.environ.get('STORY_OS_PROVIDER_RATIO_CROP_EXCEPTION') or '').strip().lower() in {'1','true','on','yes'}
+        if exc.code == 'ASPECT_RATIO_MISMATCH' and allow_provider_crop:
+            norm = normalize_provider_crop_exception(
+                raw_output, output, width, height,
+                reason=(
+                    f'explicit provider-size compatibility exception; requested={width}x{height}; '
+                    f'provider capability does not guarantee exact raw canvas; receipt={provider_receipt_info.get("path")}'
+                ),
+            )
+        else:
+            raise BackendError(f'{exc.code}: raw preserved at {raw_output}; provider_receipt={provider_receipt_info.get("path")}; {exc}') from exc
     receipt_path = Path(provider_receipt_info["path"])
     if not receipt_path.is_absolute():
         receipt_path = ROOT / receipt_path
@@ -440,6 +501,11 @@ def main() -> int:
         assert 'save or copy the actual generated candidate to ./out.png' not in smoke_prompt
         assert provider_size(1080, 1350) == '1080x1350'
         assert provider_size(1080, 1920) == '1080x1920'
+        if os.name == 'nt':
+            assert image_worker_sandbox_mode(bridged=True, has_references=False) == 'danger-full-access'
+            assert image_worker_sandbox_mode(bridged=False, has_references=True) == 'danger-full-access'
+        else:
+            assert image_worker_sandbox_mode(bridged=True, has_references=False) == 'workspace-write'
         from unittest.mock import patch
         with patch.dict(os.environ, {'STORY_OS_IMAGE_PROVIDER_ROUTE': 'subscription'}):
             assert controller_args() == [

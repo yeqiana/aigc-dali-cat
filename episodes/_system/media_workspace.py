@@ -107,6 +107,8 @@ def classify(ep: Path, src: Path) -> Path:
     if "cover" in name or "封面" in name:
         return ep / "release" / src.name
     if "publish" in low or "subtitled" in low or "字幕" in low:
+        # 统一发布资产出口：生产阶段不再创建旧 production/publish。
+        # release-manifest.publish_dir 作为唯一发布目录权威。
         return ep / "media/publish" / src.name
     if "production/raw" in low or "/raw/" in f"/{low}/":
         return ep / "media/raw" / src.name

@@ -11,10 +11,12 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime, timezone
 from pathlib import Path
 
+import episode_state
+import story_json
 import visual_profile_selector
+import world_identity_contract
 from visual_profile_lock_adapter import (
     build_selector_input,
     create_visual_lock_draft,
@@ -29,6 +31,67 @@ from visual_profile_resolver import infer_profile, resolve_profile
 def slugify(title: str) -> str:
     title = re.sub(r"[^\w\u4e00-\u9fff]+", "_", title).strip("_")
     return title or "untitled_episode"
+
+
+def ensure_episode_core_documents(
+    root: Path,
+    episode: Path,
+    title: str,
+    *,
+    profile_id: str | None = None,
+    frame_count: int = 20,
+) -> dict:
+    """Ensure canonical state/manifest/story-gates exist without overwriting valid facts.
+
+    The one-sentence bootstrap used to create only episode-state.json, leaving the
+    canonical Runtime DAG without release-manifest.json and story-gates.json. Reuse
+    episode_state.initial_documents so CLI init and Story Creator share one schema.
+    Existing files are never replaced; this also repairs an interrupted old bootstrap.
+    """
+    root = Path(root)
+    episode = Path(episode)
+    meta = episode / "meta"
+    meta.mkdir(parents=True, exist_ok=True)
+    state, manifest, gates = episode_state.initial_documents(
+        episode_id=slugify(title),
+        series="",
+        title=title,
+        frame_count=frame_count,
+        note="一句话入口创建 Episode；后续阶段只由 canonical state transition 推进",
+        strict=True,
+    )
+    if profile_id:
+        resolved = resolve_profile(profile_id, episode=episode, story_root=root)
+        source = Path(resolved["source"])
+        try:
+            profile_path = source.resolve().relative_to(root.resolve()).as_posix()
+        except ValueError:
+            profile_path = source.as_posix()
+        gates["visual_profile"] = {
+            "mode": "explicit" if profile_id != "M00" else "default",
+            "profile_id": resolved["profile_id"],
+            "profile_path": profile_path,
+            "capture_profile": "auto",
+            "override_reason": "visual_profile_selector" if profile_id != "M00" else None,
+        }
+    paths = {
+        "state": meta / "episode-state.json",
+        "manifest": meta / "release-manifest.json",
+        "gates": meta / "story-gates.json",
+    }
+    documents = {"state": state, "manifest": manifest, "gates": gates}
+    created = []
+    for key, path in paths.items():
+        if path.is_file():
+            continue
+        story_json.write_json(path, documents[key])
+        created.append(path.relative_to(episode).as_posix())
+    world_override = world_identity_contract.ensure_visual_profile_override(episode, profile_id)
+    return {
+        "created": created,
+        "paths": {key: value.as_posix() for key, value in paths.items()},
+        "world_identity_override": bool(world_override),
+    }
 
 
 def create_episode(
@@ -102,16 +165,14 @@ def create_episode(
         lock_report["lock_path"] = "meta/visual-profile.json"
 
     meta = episode / "meta"
-    meta.mkdir(parents=True, exist_ok=True)
-
-    now = datetime.now(timezone.utc).isoformat()
-
-    (meta / "episode-state.json").write_text(json.dumps({
-        "episode_id": slugify(title),
-        "title": title,
-        "current_state": "IDEA_LOCKED",
-        "created_at": now
-    }, ensure_ascii=False, indent=2), encoding="utf-8")
+    effective_profile_id = ((resolved or {}).get("profile_id") or lock_report.get("profile_id"))
+    ensure_episode_core_documents(
+        root,
+        episode,
+        title,
+        profile_id=effective_profile_id,
+    )
+    world_identity_contract.ensure_visual_profile_override(episode, effective_profile_id)
 
     request = {
         "schema_version": 1,

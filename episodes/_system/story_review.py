@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import codex_critic_runner
 import datetime as dt
 import hashlib
 import json
@@ -405,24 +406,25 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         return product_review_adapter.HOST_ACTION_REQUIRED_RC
 
     codex = resolve_codex(codex_raw)
-    cmd = command_prefix(codex) + [
-        "exec", "--skip-git-repo-check", "--ephemeral",
-        "-c", 'model_reasoning_effort="high"',
-        "-s", "workspace-write", "-C", str(ROOT), "--json", "-"
-    ]
     log = ep / "meta" / f"story-critic-attempt-{attempt}.jsonl"
     log.parent.mkdir(parents=True, exist_ok=True)
-    with log.open("w", encoding="utf-8", newline="\n") as handle:
-        completed = subprocess.run(
-            cmd,
-            input=critic_prompt(ep, story, storyboard, candidate, attempt),
-            text=True,
-            encoding="utf-8",
-            stdout=handle,
-            stderr=subprocess.STDOUT,
-            timeout=timeout,
-            check=False,
-        )
+    direct_prompt = critic_prompt(ep, story, storyboard, candidate, attempt) + """
+
+DIRECT CODEX EXECUTION OVERRIDE:
+Do not edit or write any repository file in this execution.
+Return ONLY the exact candidate JSON object as your final answer, with no prose,
+no Markdown fences and no status summary. The parent process persists it.
+"""
+    completed = codex_critic_runner.launch(
+        direct_prompt,
+        codex=codex,
+        root=ROOT,
+        timeout=timeout,
+        output_path=candidate,
+        reasoning_effort="high",
+        sandbox="workspace-write",
+        log_path=log,
+    )
     if completed.returncode != 0:
         raise RuntimeError(f"isolated story critic failed rc={completed.returncode}; log={log}")
     if sha256_file(story) != before_story or sha256_file(storyboard) != before_board:

@@ -9,7 +9,9 @@ unknown evidence, never permission to regenerate a frame.
 """
 from __future__ import annotations
 
+import argparse
 import datetime as dt
+import hashlib
 import json
 import uuid
 from pathlib import Path
@@ -332,3 +334,173 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
         ledger = _read(ep / LEDGER_REL)
     atomic_write_json(ep / "meta/runtime/production-reconciliation.json", report)
     return report
+
+
+def recover_user_runner_success(ep: Path, frame: int, request_id: str) -> dict:
+    """Recover a real Codex image when the scheduler died after provider success.
+
+    This is deliberately fail-closed.  It accepts only an ``interrupted_unknown``
+    queue row, a successful image task from the authenticated user runner, an exact
+    request hash match, and a real provider artifact.  It does not call the image
+    provider again and it preserves ``codex_subscription`` provenance.
+
+    Current recovery supports reference-free image tasks because temporary proxy
+    reference paths are intentionally destroyed with the interrupted worker.  A
+    reference-bound interrupted task remains unknown rather than guessing.
+    """
+    import codex_subscription_image as backend
+    import codex_user_runner
+    import image_model_policy
+    import prompt_package
+    import raw_candidate_budget
+
+    ep = Path(ep).resolve()
+    queue = _read(ep / QUEUE_REL)
+    rows = [x for x in queue.get("items") or []
+            if isinstance(x, dict) and int(x.get("frame") or 0) == int(frame)
+            and x.get("status") in {"interrupted_unknown", "running"}]
+    if not rows:
+        raise RuntimeError(f"RECOVERY_ITEM_MISSING: frame={int(frame):02d}")
+
+    runner_log = codex_user_runner.runtime_dir() / codex_user_runner.LOG_NAME
+    runner_row = None
+    if runner_log.is_file():
+        for raw in runner_log.read_text(encoding="utf-8-sig").splitlines():
+            try:
+                row = json.loads(raw)
+            except Exception:
+                continue
+            if isinstance(row, dict) and str(row.get("request_id") or "") == str(request_id):
+                runner_row = row
+                break
+    if not runner_row:
+        raise RuntimeError(f"RECOVERY_RUNNER_REQUEST_MISSING: {request_id}")
+    runner_rc = runner_row.get("returncode")
+    if runner_row.get("task_type") != "image" or runner_rc is None or int(runner_rc) != 0:
+        raise RuntimeError("RECOVERY_RUNNER_REQUEST_NOT_SUCCESSFUL_IMAGE")
+    artifacts = runner_row.get("generated_artifacts") or []
+    if not isinstance(artifacts, list) or len(artifacts) != 1:
+        raise RuntimeError(f"RECOVERY_ARTIFACT_COUNT_INVALID: {len(artifacts) if isinstance(artifacts, list) else 'non-list'}")
+
+    visual = backend.compile_prompt_contract(ep)
+    width, height, _ = backend.read_canvas(ep)
+    size = backend.provider_size(width, height)
+    episode_policy = image_model_policy.for_episode(ep)
+    runner_sha = str(runner_row.get("stdin_sha256") or "").lower()
+    matches = []
+    for candidate in rows:
+        if candidate.get("references"):
+            continue
+        candidate_prompt = (ROOT / str(candidate.get("prompt_file") or "")).resolve()
+        if not candidate_prompt.is_file():
+            continue
+        candidate_package = prompt_package.compile_frame(ep, int(frame), candidate_prompt, write=False)
+        candidate_model = str(candidate.get("model") or episode_policy["model"])
+        candidate_quality = str(candidate.get("quality") or episode_policy["quality"])
+        candidate_strict = bool(candidate.get("strict_model", episode_policy.get("strict_model")))
+        candidate_stdin = backend.worker_prompt(
+            candidate_package["scene_prompt"], [], size, visual["text"], candidate_package["frame_prompt_contract"],
+            candidate_model, candidate_quality, candidate_strict,
+        ).encode("utf-8")
+        candidate_sha = hashlib.sha256(candidate_stdin).hexdigest()
+        if candidate_sha.lower() == runner_sha:
+            if candidate.get("status") == "running":
+                lifecycle = _read(lifecycle_path(ep, candidate))
+                worker_pid = lifecycle.get("worker_pid") if isinstance(lifecycle, dict) else None
+                if worker_pid and codex_user_runner._pid_alive(worker_pid):
+                    raise RuntimeError(f"RECOVERY_WORKER_STILL_ALIVE: pid={worker_pid}")
+            matches.append((candidate, candidate_prompt, candidate_package, candidate_model,
+                            candidate_quality, candidate_strict, candidate_sha))
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"RECOVERY_REQUEST_MATCH_NOT_UNIQUE: frame={int(frame):02d} matches={len(matches)} runner_sha={runner_sha}"
+        )
+    item, prompt_path, package, model, quality, strict_model, expected_sha = matches[0]
+
+    home, _ = codex_user_runner.codex_home()
+    artifact = (home / "generated_images" / str(artifacts[0])).resolve()
+    try:
+        artifact.relative_to((home / "generated_images").resolve())
+    except ValueError as exc:
+        raise RuntimeError("RECOVERY_ARTIFACT_OUTSIDE_CODEX_GENERATED_IMAGES") from exc
+    if not backend.valid_image(artifact):
+        raise RuntimeError(f"RECOVERY_ARTIFACT_INVALID: {artifact}")
+
+    attempt = max(1, int(item.get("attempts") or 1))
+    output = ep / "media/candidates/scheduled" / f"{int(frame):02d}-{item['id']}-a{attempt}.png"
+    log = ep / "meta/image-workers" / f"{int(frame):02d}-{item['id']}-a{attempt}.jsonl"
+    policy = {**episode_policy, "model": model, "quality": quality, "strict_model": strict_model}
+    ns = SimpleNamespace(
+        episode_dir=ep, frame=f"{int(frame):02d}", prompt_file=prompt_path, output=output, log=log,
+        reference=[], timeout=1, codex=None, image_model=model, image_quality=quality,
+        # Recovery never calls the provider again. If the interrupted worker had
+        # already written the normalized candidate before dying, rebuild the same
+        # file from the hash-matched recovered provider artifact and overwrite it
+        # deterministically so queue/ledger commit can finish.
+        overwrite=True, _image_model_policy=policy,
+        _recovered_codex_raw=artifact, _recovered_runner_request_id=str(request_id),
+    )
+    payload = backend.generate_for_frame(ns)
+
+    token = str(item["id"])
+    committed, budget_row = raw_candidate_budget.commit(
+        ep, token, reason="recovered_interrupted_user_runner_success"
+    )
+    if not committed:
+        raise RuntimeError(f"RECOVERY_CANDIDATE_BUDGET_COMMIT_FAILED: {budget_row}")
+    result = {
+        "returncode": 0,
+        "stdout": "",
+        "payload": payload,
+        "output": output,
+        "log": log,
+        "attempt": attempt,
+        "scout": None,
+        "candidate_budget": budget_row,
+        "prompt_package": {
+            "package_sha256": package["package_sha256"],
+            "scene_prompt_sha256": package["scene_prompt_sha256"],
+            "frame_contract_sha256": package["frame_contract_sha256"],
+        },
+        "worker_pool": {"mode": "user_runner_success_recovery", "codex_session_reuse": False},
+        "recovery": {"runner_request_id": str(request_id), "stdin_sha256": expected_sha},
+    }
+    write_lifecycle(ep, item, "SUCCEEDED", worker_pid=None, result=result,
+                    recovery="interrupted_user_runner_success")
+    ok, note = _commit_success(ep, item, _read(lifecycle_path(ep, item)))
+    if not ok:
+        raise RuntimeError(f"RECOVERY_LEDGER_COMMIT_FAILED: {note}")
+    atomic_write_json(ep / QUEUE_REL, queue)
+    return {
+        "ok": True,
+        "frame": f"{int(frame):02d}",
+        "item_id": item.get("id"),
+        "runner_request_id": str(request_id),
+        "stdin_sha256": expected_sha,
+        "artifact": str(artifact),
+        "output": str(output),
+        "provider_receipt": (payload.get("provider_receipt") or {}).get("path"),
+    }
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    p = sub.add_parser("recover-user-runner-success")
+    p.add_argument("episode_dir", type=Path)
+    p.add_argument("--frame", type=int, required=True)
+    p.add_argument("--request-id", required=True)
+    args = ap.parse_args()
+    if args.cmd == "recover-user-runner-success":
+        try:
+            result = recover_user_runner_success(args.episode_dir, args.frame, args.request_id)
+        except Exception as exc:
+            print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False, indent=2))
+            return 2
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

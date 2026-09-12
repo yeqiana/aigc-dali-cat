@@ -55,6 +55,14 @@ class RecoveryTests(unittest.TestCase):
             self.assertEqual(action["action"],"GENERATE_IMAGES")
             self.assertEqual(action["frames"],[2])
 
+    def test_recovered_same_frame_does_not_leave_stale_tech_retry(self):
+        atomic_write_json(self.ep / batch.QUEUE_REL, {"items": [
+            {"id": "old", "frame": 3, "scope": "batch", "kind": "original", "status": "tech_failed", "attempts": 2, "depends_on": []},
+            {"id": "new", "frame": 3, "scope": "repair", "kind": "repair", "status": "generated", "attempts": 1, "depends_on": []},
+        ]})
+        summary = runner.next_action.queue_summary(self.ep)
+        self.assertEqual(summary["counts"]["tech_failed"], 0)
+
     def test_baseline_still_blocks_dependent_images(self):
         self.queue()
         with patch.object(runner.next_action,"ROOT",self.ep.parent), patch.object(runner.next_action,"pending_product_review",return_value=None), patch.object(runner.next_action.visual_lock_baseline_gate,"awaiting_review",return_value=True), patch.object(runner.next_action.visual_lock_baseline_gate,"baseline_frame",return_value=1), patch.object(runner.next_action.product_runtime_adapter,"reconcile"):

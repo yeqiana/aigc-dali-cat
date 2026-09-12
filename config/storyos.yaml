@@ -97,6 +97,11 @@ normalize:
   automatic_ratio_delta_max: 0.01
   review_ratio_delta_max: 0.03
 
+  # 仅供显式 provider 尺寸兼容例外使用。默认链路仍禁止裁切；
+  # 只有调用方显式声明技术例外且比例偏差不超过该值时，才允许
+  # 轻量中心裁切后再缩放到正式画布，并必须在归一化证据中记录。
+  exception_crop_ratio_delta_max: 0.06
+
   # Normalize I/O 失败只在本地重试。重试耗尽后保留 RAW 并阻断，
   # 禁止为了后处理失败再次调用图片生成。
   local_retries: 2

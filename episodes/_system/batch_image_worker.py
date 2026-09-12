@@ -3,6 +3,7 @@ from __future__ import annotations
 import shutil, subprocess, tempfile, time
 from pathlib import Path
 
+import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 from canvas_normalize import NormalizeError, normalize, read_canvas
 import batch_prompt_compiler
 import batch_result_mapper
@@ -39,7 +40,7 @@ def _shared_refs(items:list[dict])->list[Path]:
 def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],timeout:int,codex_raw:str|None,log:Path)->tuple[list[dict],float]:
     codex=single_backend.resolve_codex(codex_raw)
     started=time.monotonic()
-    with tempfile.TemporaryDirectory(prefix="story-os-batch-image-") as raw_dir:
+    with codex_user_runner.workspace(prefix="story-os-batch-image-") as raw_dir:
         workdir=Path(raw_dir)
         local_refs=[]
         for idx,source in enumerate(refs,1):
@@ -55,8 +56,8 @@ def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],tim
         log.parent.mkdir(parents=True,exist_ok=True)
         with log.open("w",encoding="utf-8",newline="\n") as h:
             try:
-                done=subprocess.run(cmd,input=prompt_text,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,
-                    timeout=timeout,check=False)
+                done=codex_user_runner.run_codex(cmd,input=prompt_text,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,
+                    timeout=timeout,check=False,task_type="image")
             except subprocess.TimeoutExpired as exc:
                 raise BatchBackendError(f"TIMEOUT: batch image worker timeout after {timeout}s; log={log}") from exc
         if done.returncode!=0:

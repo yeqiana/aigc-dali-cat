@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T11:10:58.590+08:00",
-  "sample_size": 2,
-  "p50_total_seconds": 42715.471,
-  "p90_total_seconds": 43251.654,
-  "average_total_seconds": 42715.471,
+  "generated_at": "2026-09-12T22:00:53.751+08:00",
+  "sample_size": 3,
+  "p50_total_seconds": 43385.7,
+  "p90_total_seconds": 46552.038,
+  "average_total_seconds": 44258.188,
   "episodes": [
     {
       "episode": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉",
@@ -35,6 +35,42 @@
         "max_attempt_seconds": 512.0
       },
       "stage_wall": {}
+    },
+    {
+      "episode": "episodes/天界普通人的一天",
+      "total_wall_seconds": 47343.622,
+      "final_status": "PUBLISH_READY",
+      "images": {
+        "attempts": 0,
+        "successful_attempts": 0,
+        "repair_attempts": 0,
+        "technical_failures_or_retries": 0,
+        "image_backend_seconds": 0,
+        "average_attempt_seconds": null,
+        "max_attempt_seconds": null
+      },
+      "stage_wall": {
+        "INCREMENTAL_PLAN": {
+          "wall_seconds": 25.964,
+          "runs": 16
+        },
+        "CREATIVE_STORY": {
+          "wall_seconds": 67848.452,
+          "runs": 13
+        },
+        "PREIMAGE_COMPILE": {
+          "wall_seconds": 13174.983,
+          "runs": 14
+        },
+        "VISUAL_LOCK": {
+          "wall_seconds": 9084.292,
+          "runs": 13
+        },
+        "PRODUCTION": {
+          "wall_seconds": 0,
+          "runs": 14
+        }
+      }
     }
   ],
   "telemetry_policy": "fail-soft; never a Story/Release gate"

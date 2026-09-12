@@ -19,6 +19,7 @@ import caption_image_audit
 import codex_subscription_image
 import image_provider_runtime
 import image_worker_pool
+import next_action
 import product_image_import
 import product_review_adapter
 import product_runtime_adapter
@@ -261,6 +262,22 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             self.assertEqual(final["status"], "FINALIZED")
             current = json.loads((ep / product_runtime_adapter.REQUEST_REL).read_text(encoding="utf-8"))
             self.assertEqual(current["status"], "FINALIZED")
+
+    def test_stale_visual_product_review_is_ignored_after_visual_calibrated(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            review_dir = ep / "meta/runtime/reviews"
+            review_dir.mkdir(parents=True, exist_ok=True)
+            request = {
+                "status": "AWAITING_PRODUCT_REVIEW",
+                "review_kind": "visual-lock-baseline",
+                "created_at": "2026-09-12T13:05:05+08:00",
+            }
+            (review_dir / "visual-lock-baseline-request.json").write_text(
+                json.dumps(request), encoding="utf-8"
+            )
+            self.assertIsNotNone(next_action.pending_product_review(ep, current_state="STORYBOARD_LOCKED"))
+            self.assertIsNone(next_action.pending_product_review(ep, current_state="VISUAL_CALIBRATED"))
 
     def test_product_review_attempt_is_immutable(self) -> None:
         with self.temp_episode() as td:

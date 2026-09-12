@@ -37,6 +37,11 @@ def request(ep):
     p=ep/"meta/runtime-request.json"
     return read_json(p) if p.is_file() else {}
 
+def visual_profile_id(ep):
+    r=request(ep)
+    return str(r.get("visual_profile") or "").strip()
+
+
 def source_text(ep):
     r=request(ep)
     bits=[
@@ -134,12 +139,28 @@ def prepare(ep,force=False):
     target=ep/REL
     if target.is_file() and not force:return read_json(target)
     p=pools(); text=source_text(ep); rng=random.Random(seed_for(ep))
+    profile_id=visual_profile_id(ep)
+    fictional_mundane_worker = profile_id == "M02_HEAVEN_MUNDANE_WORKER_V1"
     era,year,era_source=choose_era(text,rng,p)
-    cast_type,size=choose_cast(text,rng,p)
-    entry,entry_source=choose_entry(text,rng,p)
-    scene_cat,scene_place=choose_scene(entry,rng,p)
+    if fictional_mundane_worker:
+        # M02 is a fictional-world workplace profile. Reuse the modern pool only as a
+        # human age/body baseline; do not route the character into the real-world
+        # travel/abandoned-place entry engine.
+        era="modern_2020s"; year=2026; era_source="fictional_world_human_baseline"
+        cast_type=rng.choice(["single_male","single_female"]); size=1
+        entry="casual_work"; entry_source="visual_profile:M02_HEAVEN_MUNDANE_WORKER_V1"
+        scene_cat="casual_work_site"; scene_place="天界普通基层工作站"
+    else:
+        cast_type,size=choose_cast(text,rng,p)
+        entry,entry_source=choose_entry(text,rng,p)
+        scene_cat,scene_place=choose_scene(entry,rng,p)
     rel=rng.choice(p["characters"]["relationship_pool"]) if size>1 else "单人"
     members=member_rows(era,cast_type,size,rng,p)
+    if fictional_mundane_worker:
+        for member in members:
+            member["clothing_anchor"] = "朴素耐磨的米白灰蓝天界基层工作服，真实布料褶皱与使用痕迹，无华丽仙袍"
+            if member.get("pov"):
+                member["device_anchor"] = "随身上岗记录牌（自带留影功能）"
     world_identity = world_identity_contract.effective(ep) if world_identity_contract.required(ep) else None
     if world_identity is not None:
         population = world_identity.get("population") or {}
@@ -164,20 +185,27 @@ def prepare(ep,force=False):
         "not_episode_stage":True,
         "created_at":now(),
         "selection_seed":seed_for(ep),
-        "era":{"bucket":era,"year":year,"source":era_source},
+        "era":{"bucket":era,"year":year,"source":era_source,
+               "world_era":"fictional" if fictional_mundane_worker else None},
         "world_identity":world_identity_summary,
+        "fictional_world": ({
+            "profile_id": profile_id,
+            "reality_basis": "fictional_world_mundane",
+            "ordinary_life_rule": "天界基层岗位按普通工作流程运转，人物是普通工作人员而非英雄/神仙主角",
+            "capture_device": "随身上岗记录牌（自带留影功能）",
+        } if fictional_mundane_worker else None),
         "cast":{"type":cast_type,"size":size,"relationship":rel,"members":members},
         "pov":{"character_id":"P01","first_person":True},
         "entry":{"type":entry,"label":p["entries"]["entries"][entry]["label"],"source":entry_source,"reason":"由 Story Build 基于该生活化动机具体化"},
         "scene":{"primary_category":scene_cat,"primary_place":scene_place},
         "role_policy":{
-            "protagonist_role":"普通年轻人/普通朋友小团体",
-            "career_function":"arrival_only",
+            "protagonist_role":("天界普通基层工作人员" if fictional_mundane_worker else "普通年轻人/普通朋友小团体"),
+            "career_function":"none" if fictional_mundane_worker else "arrival_only",
             "solves_anomaly_professionally":False
         },
         "no_anomaly_test":{
             "question":"如果删掉所有异常，这一天是否仍像真实生活？",
-            "ordinary_day_plan":no_plan,
+            "ordinary_day_plan":("正常上班、交接、处理工单、吃饭、收尾后下班" if fictional_mundane_worker else no_plan),
             "pass":True,
             "must_be_rechecked_before_story_lock":True,
             "rechecked_against_final_story":False
@@ -189,7 +217,7 @@ def prepare(ep,force=False):
         },
         "ordinary_person_score":100,
         "forbidden_role_check":{"pass":True,"hits":[]},
-        "story_build_note":"这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。"
+        "story_build_note":("这是 M02 天界普通工作人员 Story Build Input Contract。工作是故事日常本身，不得升级成神仙英雄任务；Story Lock 前锁定具体岗位并复核 NO-ANOMALY TEST。" if fictional_mundane_worker else "这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。")
     }
     write_json(target,data)
     return data
