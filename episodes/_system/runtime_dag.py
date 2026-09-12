@@ -35,6 +35,39 @@ DAG_FILE=ROOT/"runtimes/runtime-dag.json"
 from story_os_contract import canonical_stages
 STAGES=tuple(canonical_stages())
 
+# STORY_OS_PHASE461_VISUAL_PROFILE_CLOSURE: returned when the pre-resume Visual Profile
+# reconciliation refuses to continue (a committed production asset exists on a profile that
+# nobody has confirmed).
+RECONCILE_BLOCKED_RC=9
+
+
+def reconcile_visual_profile_closure(ep):
+    """Phase 4.6.1: reconcile the Visual Profile closure before the DAG resumes.
+
+    A promote hook only runs at a promotion, so a production asset committed while the profile
+    was not yet LOCKED can leave LOCKED + committed asset + not FROZEN with no later trigger.
+    This is the single runtime recovery point for that state. It only *consumes*
+    visual_profile_closure.reconcile_episode: no registry, lifecycle or asset-commit rule is
+    re-implemented here, and nothing is confirmed.
+
+    Returns None when the runtime may continue (frozen / noop / skipped), or a list of blocking
+    lines when it may not. A refused recovery (VISUAL_PROFILE_NOT_LOCKED) must not be turned
+    into a pass, so this returns a block rather than a diagnostic.
+    """
+    try:
+        import visual_profile_closure as closure
+        report=closure.reconcile_episode(ep)
+    except Exception as exc:
+        return ["visual profile closure reconcile unavailable: "+type(exc).__name__+": "+str(exc)]
+    status=str(report.get("status") or "")
+    if status!=closure.RESULT_FAIL:
+        return None
+    return [
+        "visual profile closure reconcile refused: "+str(report.get("code")),
+        "lifecycle_state="+str(report.get("lifecycle_state")),
+        str(report.get("detail") or ""),
+    ]
+
 def run(cmd):
     return subprocess.run([str(x) for x in cmd],cwd=ROOT,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
 def load_dag():
@@ -85,6 +118,13 @@ def plan(ep):
     return {"current_state":cur,"steps":out}
 
 def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
+    blocked=reconcile_visual_profile_closure(ep)
+    if blocked is not None:
+        # Phase 4.6.1: an unreconcilable Visual Profile closure fails closed. It is never
+        # reported as a pass, and no production step is started.
+        print("VISUAL PROFILE CLOSURE RECONCILE BLOCKED")
+        for line in blocked: print(line)
+        return RECONCILE_BLOCKED_RC
     dag=load_dag(); specs=spec_rows(); total_start=time.monotonic()
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("codex_supervisor_run")
