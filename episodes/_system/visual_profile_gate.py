@@ -40,9 +40,9 @@ Boundaries
 - It does not re-run Phase 3.5 logic by copying it: the registry, path, evidence
   and confirmation checks share the Phase 3.5 contract constants so the two gates
   cannot drift apart.
-- machine_gate.py is NOT modified and does NOT call this module yet. An audit
-  found no visual hook in machine_gate, so Phase 4.3 ships the validator only.
-  Wiring it into the production gate is a separate, deliberate step.
+ - Phase 4.3 shipped the validator without a consumer. Phase 4.6-A wires it into
+   machine_gate, which now only carries this module's answer into a Finding: no
+   registry, lifecycle, evidence or confirmation rule is duplicated there.
 - Historical compatibility: an Episode with no Visual Lock and no governance
   opt-in is reported as legacy_unmanaged and does NOT block production.
 

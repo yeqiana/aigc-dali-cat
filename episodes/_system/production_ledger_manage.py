@@ -7,6 +7,31 @@ are imported from production_ledger_core; the CLI facade re-exports these.
 from __future__ import annotations
 
 from production_ledger_core import *  # noqa: F401,F403  (shared ledger globals)
+import sys
+
+
+def _freeze_visual_profile_after_promote(ep: Path, key: str) -> None:
+    """Phase 4.6-B: the first formal production asset freezes the Visual Profile.
+
+    Promotion is the one place where a reviewed frame candidate becomes the Episode
+    approved asset, so it is the only honest moment to ask the canonical lifecycle
+    for LOCKED -> FROZEN. The closure is advisory: any failure is reported and never
+    aborts the promotion.
+    """
+    try:
+        import visual_profile_closure as closure
+        report = closure.freeze_on_first_asset_commit(ep, frame=key)
+    except Exception as exc:  # a closure failure is never a production failure
+        print(f"WARN: visual profile freeze hook failed for {key}: {type(exc).__name__}: {exc}",
+              file=sys.stderr)
+        return
+    status = report.get("status")
+    if status == closure.RESULT_FROZEN:
+        print(f"visual-profile: FROZEN by frame {key} ({closure.FREEZE_TRIGGER})")
+    elif status == closure.RESULT_FAIL:
+        print(f"WARN: visual profile freeze not applied for {key}: {report.get('code')} "
+              f"{report.get('detail')}", file=sys.stderr)
+
 
 def cmd_init(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
@@ -235,6 +260,7 @@ def cmd_promote(args: argparse.Namespace) -> None:
     data["updated_at"] = now_iso()
     save_json(path, data)
     print(f"{key}: approved -> {dst}")
+    _freeze_visual_profile_after_promote(ep, key)
 
 
 def cmd_lock(args: argparse.Namespace) -> None:

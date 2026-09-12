@@ -14,6 +14,8 @@ from incremental_frame_review import review_required as semantic_frame_review_re
 from final_acceptance import valid as acceptance_valid
 import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
 import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
+import visual_profile_closure as visual_profile_closure  # STORY_OS_PHASE46_VISUAL_PROFILE_CLOSURE
+import visual_profile_gate as visual_profile_gate  # STORY_OS_PHASE46_VISUAL_PROFILE_CLOSURE
 
 STATES = canonical_stages()
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
@@ -630,6 +632,44 @@ def check_production(repo_root: Path, episode_dir: Path, gates: dict, manifest: 
                     findings.append(Finding("FAIL", "frame_semantic_review", error))
 
 
+def check_visual_profile_for_production(repo_root: Path, episode_dir: Path, findings: list[Finding], *, metadata_only: bool) -> None:
+    """Phase 4.6-A: consume the canonical Visual Profile production gate.
+
+    Phase 4.3 already owns the question "may this Episode be produced with the profile
+    it declared?" as visual_profile_gate. This check only carries that answer into
+    machine_gate: it never reads the registry, never re-implements the lifecycle state
+    machine, never re-checks selection evidence, and never confirms or freezes anything
+    itself.
+
+    Scope and backward compatibility: an Episode with no governed Visual Lock is
+    reported as legacy_unmanaged by the gate and adds no finding, so a historical
+    Episode cannot be retroactively failed. A governed Episode is asked for LOCKED
+    (production stage) and, once a formal production asset has been committed, for
+    FROZEN (release stage) through the same canonical gate. Metadata-only mode skips
+    the check entirely, like the other execution-evidence checks.
+    """
+    if metadata_only:
+        return
+    errors = visual_profile_gate.verify_visual_profile_for_production(
+        episode_dir, stage=visual_profile_gate.STAGE_PRODUCTION)
+    for error in errors:
+        code, _sep, detail = str(error).partition(": ")
+        findings.append(Finding("FAIL", code.lower(), f"visual profile: {detail or code}"))
+
+    if not visual_profile_closure.required_for_production(episode_dir):
+        # Nothing is owed yet: either the Episode is unmanaged, or no formal
+        # production asset has been committed, so FROZEN is not required.
+        return
+    result = visual_profile_gate.validate_visual_profile_for_production(
+        episode=episode_dir, stage="release")
+    for error in result.get("errors") or []:
+        if error.get("code") != visual_profile_gate.ERROR_NOT_FROZEN:
+            continue
+        findings.append(Finding(
+            "FAIL", "visual_profile_not_frozen",
+            f"visual profile: committed production assets exist, {error.get('detail')}"))
+
+
 def validate(episode_dir: Path, target: str, *, metadata_only: bool = False) -> list[Finding]:
     findings: list[Finding] = []
     gates = load_json(episode_dir / "meta/story-gates.json", findings)
@@ -656,6 +696,7 @@ def validate(episode_dir: Path, target: str, *, metadata_only: bool = False) -> 
         check_reference_execution_evidence(repo_root, episode_dir, gates, findings, metadata_only=metadata_only)
         check_identity_continuity_evidence(repo_root, episode_dir, gates, findings, metadata_only=metadata_only)
         check_story_semantic_trace(repo_root, episode_dir, gates, findings, metadata_only=metadata_only)
+        check_visual_profile_for_production(repo_root, episode_dir, findings, metadata_only=metadata_only)
         check_production(repo_root, episode_dir, gates, manifest, findings, metadata_only=metadata_only)
     return findings
 

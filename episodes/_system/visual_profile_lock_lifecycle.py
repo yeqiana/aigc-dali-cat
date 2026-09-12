@@ -325,8 +325,13 @@ def _apply_confirmation(lock, *, profile_id, actor, mode, reason, at, story_root
     return lock
 
 
-def _apply_freeze(lock, *, actor, reason, at) -> dict:
-    """Freeze a locked profile. Inherits, never rewrites, the confirmation record."""
+def _apply_freeze(lock, *, actor, reason, at, evidence=None) -> dict:
+    """Freeze a locked profile. Inherits, never rewrites, the confirmation record.
+
+    evidence is optional trigger provenance recorded alongside the canonical freeze
+    fields (Phase 4.6-B: which committed production asset tripped the freeze). It may
+    only add keys; it can never overwrite frozen_by / frozen_at / inherits_confirmation_by.
+    """
     record = confirmation_of(lock)
     if record["mode"] not in CONFIRMATION_MODES or not record["confirmed_at"]:
         raise VisualProfileLifecycleError(
@@ -338,19 +343,27 @@ def _apply_freeze(lock, *, actor, reason, at) -> dict:
             f"confirmation mode {record['mode']!r} requires confirmed_by before freezing",
             ERROR_CONFIRMATION_INVALID,
         )
-    lock["confirmation"] = {
+    inherited = lock.get("confirmation")
+    inherited = dict(inherited) if isinstance(inherited, dict) else {}
+    inherited.update({
         "mode": record["mode"],
         "confirmed_by": record["confirmed_by"] or None,
         "confirmed_at": record["confirmed_at"],
         "reason": record["reason"],
-    }
+    })
+    lock["confirmation"] = inherited
     frozen_by = str(actor or "").strip() or record["confirmed_by"] or record["mode"]
-    lock["frozen"] = {
+    frozen = {
         "frozen_by": frozen_by,
         "frozen_at": at,
         "reason": reason,
         "inherits_confirmation_by": record["confirmed_by"] or None,
     }
+    if isinstance(evidence, dict) and evidence:
+        for key, value in evidence.items():
+            if key not in frozen:
+                frozen[key] = value
+    lock["frozen"] = frozen
     lock["frozen_by"] = frozen_by
     lock["frozen_at"] = at
     lock["lifecycle_state"] = LIFECYCLE_FROZEN
@@ -360,12 +373,14 @@ def _apply_freeze(lock, *, actor, reason, at) -> dict:
 
 
 def transition_lock_state(target, next_state, *, profile_id=None, actor=None, mode=None,
-                          reason=None, at=None, story_root=None, write: bool = True) -> dict:
+                          reason=None, at=None, story_root=None, write: bool = True,
+                          evidence=None) -> dict:
     """Advance a Visual Lock to next_state. Returns {lock, from, to, written, path}.
 
     target      Episode directory (writes meta/visual-profile.json) or a lock
                 document (pure: write is ignored because there is no file).
     next_state  LOCKED or FROZEN.
+    evidence    optional freeze provenance merged into lock["frozen"] (FROZEN only).
     Raises VisualProfileLifecycleError with an explicit code on an illegal
     transition. The document is only written once the transition is accepted.
     """
@@ -387,7 +402,7 @@ def transition_lock_state(target, next_state, *, profile_id=None, actor=None, mo
                                       mode=mode, reason=reason, at=stamped,
                                       story_root=_root(story_root))
     else:
-        updated = _apply_freeze(updated, actor=actor, reason=reason, at=stamped)
+        updated = _apply_freeze(updated, actor=actor, reason=reason, at=stamped, evidence=evidence)
 
     written = False
     if write and lock_file is not None:
@@ -413,11 +428,16 @@ def confirm_visual_lock(target, *, confirmed_by, confirmed_at=None, reason=None,
 
 
 def freeze_visual_lock(target, *, frozen_by=None, frozen_at=None, reason=None,
-                       story_root=None, write: bool = True) -> dict:
-    """Freeze a LOCKED profile. A FROZEN lock can never be modified again."""
+                       story_root=None, write: bool = True, evidence=None) -> dict:
+    """Freeze a LOCKED profile. A FROZEN lock can never be modified again.
+
+    evidence carries optional trigger provenance (e.g. the committed production asset
+    that caused the freeze); it is recorded inside lock["frozen"] and never replaces the
+    inherited confirmation evidence.
+    """
     return transition_lock_state(
         target, LIFECYCLE_FROZEN, actor=frozen_by, reason=reason, at=frozen_at,
-        story_root=story_root, write=write,
+        story_root=story_root, write=write, evidence=evidence,
     )
 
 
@@ -520,4 +540,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
