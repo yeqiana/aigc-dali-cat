@@ -296,10 +296,33 @@ Story OS 下一阶段重点不是继续增加功能，而是将 Runtime 从“�
 | Scheduler | DONE | `runtime_scheduler.py` 计算 dispatch、queued、waiting、blocked，并受 `max_workers` 限制。 |
 | Node Registry | DONE | 已登记 story_lock、前期准备、合同编译、图片、评审、返修、Release 的逻辑拓扑，并适配既有 Runtime Step。 |
 | Smart Scheduler | DONE | 支持 HIGH/MEDIUM/LOW 分数排序、稳定同分顺序、全局/类型资源槽位和失败下游隔离。 |
+| Failure Strategy | DONE | 只输出 failure_type、strategy、retry_allowed、next_action；不执行重试、不授予 Gate。 |
+| Resource Awareness | DONE | Runtime Resource Manager 按 worker、资源类别与节点并发上限分配内存槽位；图片上限读取正式 `production.max_inflight_images`。 |
+| Node Evidence | DONE | 节点执行事实为 append-only JSONL，记录 attempt 与 Evidence 路径，不代表 PASS。 |
 | Production Integration | DONE | `runtime_dag.execute()` 经 Scheduler 释放既有 Runtime Step；`workflow_runner plan` 可展示真实 Runtime Step 调度计划。既有复合执行器仍单槽运行。 |
 | Dry Run Plan | DONE | `production_plan.py` 只输出拓扑、波次、并发估计与风险；只有显式 `--write` 才写派生计划文件。 |
-| 前期资产真实并发执行 | DESIGN | 尚未将 Story、Character、Environment 等真实执行器接入 Scheduler。 |
+| Safe Preimage Parallelism | DONE（协议/集成测试） | Story Lock 后拆为 Character Finalize、Environment、World、Visual Narrative 四个独立 Candidate Host Task；只有 Candidate 验证、单写者 Commit 与 Barrier 后才进入 Frame Contract。尚未在全新 Episode 做端到端性能基准。 |
 | 图片链动态扩容 / Worker 调度 | DESIGN | 保持现有 `image_scheduler.py` / `batch_scheduler.py` 的独立生产边界。 |
+| Dynamic Global Worker | NOT STARTED | 未新增全局 Worker Pool。 |
+| Runtime Worker Hostless | NOT STARTED | WORK/WEB Host Action 与 HOST_WAIT 边界保持不变。 |
 | 多 Episode 队列与持久化 | DESIGN | 未创建新队列、数据库或状态存储。 |
+| Preimage Composite Split | DONE | `PREIMAGE_COMPILE` 保留为兼容编排入口；WORK/WEB 请求拆为四个独立 Host Request，本地显式 CODEX 路径调用四个独立 scoped Worker。 |
+| Authority Snapshot | DONE | Story Lock 后的 SHA 绑定 Snapshot 写为派生执行证据；漂移则 STALE。 |
+| Single Writer Authority Commit | DONE | Candidate 通过 scope collision、expected SHA、进程锁和原子替换后，才由 `authority_commit.py` 提交；旧 SHA 返回 STALE。 |
+| Parallel Frame Contract Compile | DONE | 帧缓存最多 6 个派生 Worker 并行计算，Index 在全部成功且 Snapshot 未漂移后单写提交。 |
+| Observed Worker Concurrency | DONE（集成测试） | PREIMAGE 协议集成测试经过 Request → Candidate → Verify → Commit → Barrier，观察到 peak > 1；**NOT YET BENCHMARKED IN NEW EPISODE**。 |
+| Fallback Strategy | DONE | Snapshot 漂移、Authority 冲突或帧失败 fail-closed，不提交 Index；兼容前期复合步骤保持串行。 |
+
+### PREIMAGE 安全收口（2026-09-13）
+
+| 能力 | 状态 | 证据边界 |
+|---|---|---|
+| PREIMAGE Host Protocol Split | DONE | `PREIMAGE_COMPILE` 仅为兼容编排；四个独立 Host Task 各自 Request、Candidate 与 Resume。 |
+| Independent Host Tasks | DONE | Character Finalize、Environment、World、Visual Narrative 共享 Snapshot A，但拥有互不重叠的 patch scope。 |
+| Candidate Protocol / Resume Protocol | DONE | payload scope 严格匹配、任务级 verifier、成功 REUSED、失败 RETRY、SHA 漂移 STALE。 |
+| Safe Preimage Parallelism | DONE | active-worker enter/exit 指标；Authority 池配置 4，不把 queued future 算作运行。 |
+| Authority Transaction Commit | DONE | 锁内 SHA 检查、全量 preview、一次 atomic replace；失败/STale 均不写入部分 Authority。 |
+| Candidate Semantic Validation | DONE | Character、Environment、World、Visual 的最低结构/语义 verifier 在 Candidate 阶段执行。 |
+| Production New-Episode Benchmark | NOT STARTED | 集成测试并发不是外部模型整集性能基准。 |
 
 本阶段 Scheduler 不写 `episode-state.json`、不写 `story-gates.json`，也不生成或判定 Evidence/Gate PASS。实际 Runtime 仍通过既有复合 Executor 执行，并将每次调度写为 append-only node execution facts；独立的 Character/Environment Worker 与图片 Worker 动态扩容尚未迁移，不得把逻辑并发图表述为已获得的真实生产并发。
