@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "01",
+  "asset_path": "episodes/天界普通人的一天/media/approved/01.png",
+  "asset_sha256": "4c9e1b1c1468de131a83c9147111504c667a18291d54a41645abfc327f602cbf",
+  "story_sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d",
+  "storyboard_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11",
+  "visual_contract_sha256": "d8622218004e091e2be58256a42a346bdfb1904df673ba032e205a96a2e9bbac",
+  "environment_frame_sha256": "e7a07be32f64df45ab98d6752e35196f3f960f9d120aac8eae8b0c9386cea560",
+  "frame_directive_sha256": "2d2eec756c6ebb7354c980910d1f407bf824c482025fee4ac1fe9a8d8fedc363",
+  "frame_contract_sha256": "8c4ded6043cd712458417e803d812d1091333811c81a819339d20fa8557d4e05",
+  "source_binding": {
+    "story": {
+      "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+      "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+    },
+    "storyboard": {
+      "path": "episodes/天界普通人的一天/docs/03_天界普通人的一天_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 2,
+    "reviewed_at": "2026-09-12T19:36:01+08:00",
+    "review_scope": "FULL_FRAME_SET",
+    "recovered_after_parent_timeout": true,
+    "candidate_sha256": "d7637a654793ce731c384ca0853a3cd3a55d3d8d55e78c08c4607e9e0d818226",
+    "critic_stdout_log_empty_after_parent_timeout": true
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "1080x1350。开工打卡场景与分镜一致：排班板「今日上岗人员」分清扫/转运/设备/机动四栏，P01 写在机动栏并加红框（与 world-state 一致），工牌与登记表同框；室内只有普通顶灯，无神圣光柱、无第二异常层；俯拍机位只见手与笔，拍摄者未自入镜。软性观察：板上「日期：10.18」与 Frame 02 工单、Frame 09 记录牌日期读数互不一致（单源 OCR，仅记录，不据此判 FAIL）。",
+  "decision": "pass",
+  "caption_sha256": "b24398680530ac531a15e00d169230f9bc4c54aa39ac596a07837fe7474e76d8"
+}

@@ -1,0 +1,523 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "approvals": {
+    "story_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "story_lock",
+      "approved_at": "2026-09-12T11:35:53+08:00",
+      "artifacts": [
+        {
+          "role": "story",
+          "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+          "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+        },
+        {
+          "role": "storyboard",
+          "path": "episodes/天界普通人的一天/docs/03_天界普通人的一天_20张正式分镜_DRAFT_V1.0.md",
+          "sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/天界普通人的一天/meta/story-semantic-review.json",
+          "sha256": "30c42c3450f9de75bad66fd8305092bdc80f9b1c75f2a0cf49f646e2b69580b1"
+        }
+      ],
+      "note": "Full-auto delegated Story Lock after independent story semantic review PASS and Recent-5 PASS"
+    },
+    "visual_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "visual_lock",
+      "approved_at": "2026-09-12T13:28:46+08:00",
+      "artifacts": [
+        {
+          "role": "visual_spec",
+          "path": "episodes/天界普通人的一天/docs/04_天界普通人的一天_视觉规范_V1.0.md",
+          "sha256": "81d2ca3618f3d72d47f5a7110bd5cfa6a776877a1275f0a005e2e7c9b018a5df"
+        },
+        {
+          "role": "calibration_contact_sheet",
+          "path": "episodes/天界普通人的一天/media/review/contact-sheets/visual-lock-admission.jpg",
+          "sha256": "20035afe99420f8eda650494b0dde309c8cc8953e3db74a921fd0cc145d89b40"
+        },
+        {
+          "role": "visual_profile:M02_HEAVEN_MUNDANE_WORKER_V1",
+          "path": "standards/visual_profiles/profiles/M02_HEAVEN_MUNDANE_WORKER_V1.json",
+          "sha256": "3a537011cb8e36512d6bf0d61492748c59fa3a5cd71d9d23c97f2cb2826f70fc"
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/天界普通人的一天/meta/visual-profile-review.json",
+          "sha256": "8bc661728a74b176a02cacd743b9f47ab3a04621a7d5e896510b71118e7ed311"
+        }
+      ],
+      "note": "Delegated auto review of the four-admission Visual Lock: V-B f01 baseline PASS, V-W f10, V-A f03 (one delegated content repair), V-H f14; isolated CODEX visual critic PASS (attempt 2). Not a direct user approval.",
+      "resolved_visual_profile": {
+        "selection": "episode_meta+story_gates",
+        "profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1",
+        "profile_name": "天界普通工作人员日常",
+        "profile_path": "standards/visual_profiles/profiles/M02_HEAVEN_MUNDANE_WORKER_V1.json",
+        "capture_profile": "auto",
+        "override_reason": "visual_profile_selector",
+        "rule": "显式单集/系列风格优先；具体年代/设备物理表现仍高于母风格质感。",
+        "authority_source": "meta/visual-profile.json + meta/story-gates.json"
+      }
+    },
+    "release_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "release_lock",
+      "approved_at": "2026-09-12T21:59:48+08:00",
+      "artifacts": [
+        {
+          "role": "release_manifest",
+          "path": "episodes/天界普通人的一天/meta/release-manifest.json",
+          "archive_path": "release-manifest.json",
+          "sha256": "aef14d33e1e1d5ccd7b5e7435fa2ca076dc01a952f52ed1dafdf7858e13500c0",
+          "bytes": 3751
+        },
+        {
+          "role": "body:01",
+          "path": "episodes/天界普通人的一天/production/publish/01.png",
+          "archive_path": "publish/01.png",
+          "sha256": "5d84385b70ce79fcacdbc22f239990479c8ffeb94bff572988d0123f8536e3d0",
+          "bytes": 2059693
+        },
+        {
+          "role": "body:02",
+          "path": "episodes/天界普通人的一天/production/publish/02.png",
+          "archive_path": "publish/02.png",
+          "sha256": "c84ca42cee11eb6cfc96bbbd7322b9cd971c362f3881cc7d37f5ac9f0293ead5",
+          "bytes": 2102352
+        },
+        {
+          "role": "body:03",
+          "path": "episodes/天界普通人的一天/production/publish/03.png",
+          "archive_path": "publish/03.png",
+          "sha256": "a0098b03893c57ba9563fb71c899d71ae59b9f75bab4078597ec03612a0d01b9",
+          "bytes": 2031124
+        },
+        {
+          "role": "body:04",
+          "path": "episodes/天界普通人的一天/production/publish/04.png",
+          "archive_path": "publish/04.png",
+          "sha256": "232535fd98a89dd4ddca528ca299965d46643448a74c2d7279f9b7bca0771b8f",
+          "bytes": 2126878
+        },
+        {
+          "role": "body:05",
+          "path": "episodes/天界普通人的一天/production/publish/05.png",
+          "archive_path": "publish/05.png",
+          "sha256": "b3eb84b1be8dbd04ec52e1cea19ff0a9da60a3c2f73064c1a862059e21499b35",
+          "bytes": 2384942
+        },
+        {
+          "role": "body:06",
+          "path": "episodes/天界普通人的一天/production/publish/06.png",
+          "archive_path": "publish/06.png",
+          "sha256": "a3645170aa16cbf6d573723e24bff649ec73593966489faadf435e53065fc2e5",
+          "bytes": 2321544
+        },
+        {
+          "role": "body:07",
+          "path": "episodes/天界普通人的一天/production/publish/07.png",
+          "archive_path": "publish/07.png",
+          "sha256": "dece57c8811219b91a86b403060f0788f683ee29f66bf781593ba7424ffe6860",
+          "bytes": 2704762
+        },
+        {
+          "role": "body:08",
+          "path": "episodes/天界普通人的一天/production/publish/08.png",
+          "archive_path": "publish/08.png",
+          "sha256": "959dff6d8cdd69e8377b90a4aec5318e3827e7e832d4cffc89dc482ddebff562",
+          "bytes": 2592839
+        },
+        {
+          "role": "body:09",
+          "path": "episodes/天界普通人的一天/production/publish/09.png",
+          "archive_path": "publish/09.png",
+          "sha256": "03b62e0536282f6ddda090580808c361d751c8a5034c7362bf32e0935b45f41c",
+          "bytes": 2206843
+        },
+        {
+          "role": "body:10",
+          "path": "episodes/天界普通人的一天/production/publish/10.png",
+          "archive_path": "publish/10.png",
+          "sha256": "4c83e89ed5b53ea56f06f0d600c51338b0ad40b67a48106e2d1b6db2e2c50963",
+          "bytes": 2295798
+        },
+        {
+          "role": "body:11",
+          "path": "episodes/天界普通人的一天/production/publish/11.png",
+          "archive_path": "publish/11.png",
+          "sha256": "6b44e1346c1d314d16523aa8607f6027bd657b4bf82c33b2dd9e9c2d09d85a35",
+          "bytes": 2759445
+        },
+        {
+          "role": "body:12",
+          "path": "episodes/天界普通人的一天/production/publish/12.png",
+          "archive_path": "publish/12.png",
+          "sha256": "e944d5054d03dcb19db92c33e156a69d8a959fe06de9104d673cb8fb400c6c56",
+          "bytes": 2391685
+        },
+        {
+          "role": "body:13",
+          "path": "episodes/天界普通人的一天/production/publish/13.png",
+          "archive_path": "publish/13.png",
+          "sha256": "0c95f2e44653892275cfe2cf252552c960b2d5852fec324c2e7e8f4848c6120f",
+          "bytes": 2565903
+        },
+        {
+          "role": "body:14",
+          "path": "episodes/天界普通人的一天/production/publish/14.png",
+          "archive_path": "publish/14.png",
+          "sha256": "913e7152723aa1a89d955d82d9a9641905794cc1526b016c412b2cca27b6948c",
+          "bytes": 2579191
+        },
+        {
+          "role": "body:15",
+          "path": "episodes/天界普通人的一天/production/publish/15.png",
+          "archive_path": "publish/15.png",
+          "sha256": "2e1b438aa5c658287c86f1395f547fbb933639f04a0248c305ee0d95d8e4d07b",
+          "bytes": 2680255
+        },
+        {
+          "role": "body:16",
+          "path": "episodes/天界普通人的一天/production/publish/16.png",
+          "archive_path": "publish/16.png",
+          "sha256": "f0f8ca5c537e8199d3bb397f1a4260179fea186ec060a383081f17aa06d237fa",
+          "bytes": 2322704
+        },
+        {
+          "role": "body:17",
+          "path": "episodes/天界普通人的一天/production/publish/17.png",
+          "archive_path": "publish/17.png",
+          "sha256": "752dcec0bb0f6b17078b162aa2c0984280b67de34ad6ca82d4b75878b1d7a7f6",
+          "bytes": 2337261
+        },
+        {
+          "role": "body:18",
+          "path": "episodes/天界普通人的一天/production/publish/18.png",
+          "archive_path": "publish/18.png",
+          "sha256": "1c728f25ddb5257c46f21e0c9128bace0c16c167fdcec9eac3cff3981d5ce1c0",
+          "bytes": 1919585
+        },
+        {
+          "role": "body:19",
+          "path": "episodes/天界普通人的一天/production/publish/19.png",
+          "archive_path": "publish/19.png",
+          "sha256": "1efd51efabb2cc45a853371dd6a3804a14bad14c50a7545090a5452ac49ef7e3",
+          "bytes": 2469901
+        },
+        {
+          "role": "body:20",
+          "path": "episodes/天界普通人的一天/production/publish/20.png",
+          "archive_path": "publish/20.png",
+          "sha256": "99e2d1ead3bd94556a7ad38339242de07c9f3d5f8823a08f886346e169201fdd",
+          "bytes": 2538083
+        },
+        {
+          "role": "cover",
+          "path": "episodes/天界普通人的一天/production/publish/13.png",
+          "archive_path": "cover.png",
+          "sha256": "0c95f2e44653892275cfe2cf252552c960b2d5852fec324c2e7e8f4848c6120f",
+          "bytes": 2565903
+        },
+        {
+          "role": "captions",
+          "path": "episodes/天界普通人的一天/meta/subtitles.yaml",
+          "archive_path": "text/subtitles.yaml",
+          "sha256": "c6b6f729302f076781ff8711c7cb813c3dfc95c907e80ce161c8207dbd6d46f4",
+          "bytes": 2893
+        },
+        {
+          "role": "publish_copy",
+          "path": "episodes/天界普通人的一天/release/publish-copy.md",
+          "archive_path": "text/publish-copy.md",
+          "sha256": "865fb72246dc16985a3036c149bcfcc690956dcaad973da9e459aa5d2ae58839",
+          "bytes": 1587
+        },
+        {
+          "role": "propagation_card",
+          "path": "episodes/天界普通人的一天/release/propagation-card.md",
+          "archive_path": "text/propagation-card.md",
+          "sha256": "08c2761ef9342741184679cd68c78509613238ea055d3a93a727f48d2c8d8287",
+          "bytes": 3723
+        },
+        {
+          "role": "production_ledger",
+          "path": "episodes/天界普通人的一天/meta/production-ledger.json",
+          "archive_path": "evidence/production-ledger.json",
+          "sha256": "edc18728c7551edc2dcd25f84b47cf15d273e31f544b7e06af4e8a56bf0f9883",
+          "bytes": 214556
+        },
+        {
+          "role": "frame_semantic_review",
+          "path": "episodes/天界普通人的一天/meta/frame-semantic-review.json",
+          "archive_path": "qa/frame-semantic-review.json",
+          "sha256": "70e087d50d836a95a6f15b4247c7bc9318a4c5d2dc0dc0eaefd0bb080f678bb9",
+          "bytes": 7735
+        },
+        {
+          "role": "frame_semantic_audit",
+          "path": "episodes/天界普通人的一天/meta/frame-semantic-audit.json",
+          "archive_path": "qa/frame-semantic-audit.json",
+          "sha256": "6e6fd1e4846f76e6e819183c988858c2ac0be8092581d069f5879826d3ebf2b4",
+          "bytes": 773
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/天界普通人的一天/meta/story-semantic-review.json",
+          "archive_path": "qa/story-semantic-review.json",
+          "sha256": "30c42c3450f9de75bad66fd8305092bdc80f9b1c75f2a0cf49f646e2b69580b1",
+          "bytes": 13445
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/天界普通人的一天/meta/visual-profile-review.json",
+          "archive_path": "qa/visual-profile-review.json",
+          "sha256": "8bc661728a74b176a02cacd743b9f47ab3a04621a7d5e896510b71118e7ed311",
+          "bytes": 6875
+        },
+        {
+          "role": "subtitle_layout_audit",
+          "path": "episodes/天界普通人的一天/meta/subtitle-layout-audit.json",
+          "archive_path": "qa/subtitle-layout-audit.json",
+          "sha256": "68c87c7c809009ecf30f9044c5a6be37ad124f5617519120cc0207180e7f00f2",
+          "bytes": 17971
+        },
+        {
+          "role": "text_audit",
+          "path": "episodes/天界普通人的一天/meta/text-audit.json",
+          "archive_path": "qa/text-audit.json",
+          "sha256": "9baef70bff60eae469a7cb45d56d0d3ad6916349225020ba236c38cb54c96d7e",
+          "bytes": 577
+        },
+        {
+          "role": "release_semantic_review",
+          "path": "episodes/天界普通人的一天/meta/release-semantic-review.json",
+          "archive_path": "qa/release-semantic-review.json",
+          "sha256": "1e36a7231345d2a4a7d720d65cd7827347b3e6e7cd43f6e70c32ddb5822140f8",
+          "bytes": 9415
+        },
+        {
+          "role": "publish_compliance",
+          "path": "episodes/天界普通人的一天/meta/publish-compliance.json",
+          "archive_path": "qa/publish-compliance.json",
+          "sha256": "4ac102897f377458b10d79112edb367204213c1ab758a18407112fce8a1a7a6a",
+          "bytes": 435
+        },
+        {
+          "role": "recent5_review",
+          "path": "episodes/天界普通人的一天/meta/recent5-review.json",
+          "archive_path": "qa/recent5-review.json",
+          "sha256": "f625019e39c600ac7ee876a4fdbbc337f5e12774a9d926a1c9d9eb78b457d26b",
+          "bytes": 1909
+        },
+        {
+          "role": "recent5_semantic_review",
+          "path": "episodes/天界普通人的一天/meta/recent5-semantic-review.json",
+          "archive_path": "qa/recent5-semantic-review.json",
+          "sha256": "1936751bd79061ad3463b6b4893894c0ceba718ad44a4fbd3b79f60f2bbdcdff",
+          "bytes": 2042
+        },
+        {
+          "role": "frame_scout_summary",
+          "path": "episodes/天界普通人的一天/meta/frame-scout-summary.json",
+          "archive_path": "qa/frame-scout-summary.json",
+          "sha256": "c89a50a096e71dc7262041145c95db96ff326c7a8f5562603311e6c4c44c673c",
+          "bytes": 3797
+        },
+        {
+          "role": "frame_contract_index",
+          "path": "episodes/天界普通人的一天/meta/runtime/contracts/frame-contract-index.json",
+          "archive_path": "evidence/frame-contract-index.json",
+          "sha256": "5e9d5c8194614e32e39938b7debed4399b29a17f9a74189cf51abe8f389af50b",
+          "bytes": 9933
+        },
+        {
+          "role": "visual_lock_baseline_review",
+          "path": "episodes/天界普通人的一天/meta/visual-lock-baseline-review.json",
+          "archive_path": "qa/visual-lock-baseline-review.json",
+          "sha256": "6992dca49ca902fa68810edf7e11d49d21b60e47cde5294f1a1793c906fbad7b",
+          "bytes": 3069
+        },
+        {
+          "role": "visual_final_freeze",
+          "path": "episodes/天界普通人的一天/meta/visual-final-freeze.json",
+          "archive_path": "qa/visual-final-freeze.json",
+          "sha256": "6ff0acfb109d02c629512d967f9917e84e1477ac5b0a42725adeb538ca6601b0",
+          "bytes": 13173
+        },
+        {
+          "role": "caption_image_audit",
+          "path": "episodes/天界普通人的一天/meta/caption-image-audit.json",
+          "archive_path": "qa/caption-image-audit.json",
+          "sha256": "0978ac8381ec3dd6aaaaca350f60d0495ffc52aade658464004fb670e70efa79",
+          "bytes": 18617
+        },
+        {
+          "role": "frame_review:01",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/01.json",
+          "archive_path": "qa/frame-reviews/01.json",
+          "sha256": "0bde3206df32d08af78ec9b5c215f80261af9cc8ccd28b6cfa58b17670650b12",
+          "bytes": 3628
+        },
+        {
+          "role": "frame_review:02",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/02.json",
+          "archive_path": "qa/frame-reviews/02.json",
+          "sha256": "cfdb1ee97472044275ff74c259301ac7f4f9a3af67def758aba271d1d064527e",
+          "bytes": 3590
+        },
+        {
+          "role": "frame_review:03",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/03.json",
+          "archive_path": "qa/frame-reviews/03.json",
+          "sha256": "741a0f8ec7eba956e059f996c033d32f6445204148c52d971ba4a034fb348a0c",
+          "bytes": 5207
+        },
+        {
+          "role": "frame_review:04",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/04.json",
+          "archive_path": "qa/frame-reviews/04.json",
+          "sha256": "442a51ba1586f812601b417d33baf5d91d32312962cb39338d99a8a686f50a4b",
+          "bytes": 4426
+        },
+        {
+          "role": "frame_review:05",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/05.json",
+          "archive_path": "qa/frame-reviews/05.json",
+          "sha256": "6a547480cfff3e3b267e9a9485c95ec123afca5210fed2b9ae3de870cfea61b0",
+          "bytes": 5949
+        },
+        {
+          "role": "frame_review:06",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/06.json",
+          "archive_path": "qa/frame-reviews/06.json",
+          "sha256": "d8973851e31b5decbfb48319559d158b7052b196731b48935f56f10a23c60e30",
+          "bytes": 3633
+        },
+        {
+          "role": "frame_review:07",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/07.json",
+          "archive_path": "qa/frame-reviews/07.json",
+          "sha256": "e6eb4560d9355acd2a7c9af41a13ba7eb62f3c5fbf1954f4dd55eb3c05fba1d0",
+          "bytes": 3497
+        },
+        {
+          "role": "frame_review:08",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/08.json",
+          "archive_path": "qa/frame-reviews/08.json",
+          "sha256": "9715191beba69ba17830fce9bef1a1ede91daae067857cf5591d74873e6bfc36",
+          "bytes": 4298
+        },
+        {
+          "role": "frame_review:09",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/09.json",
+          "archive_path": "qa/frame-reviews/09.json",
+          "sha256": "c2fa7f99ca236dcaacd310b4fa20511de4bf25fec42e83fd4daece848abc6918",
+          "bytes": 4351
+        },
+        {
+          "role": "frame_review:10",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/10.json",
+          "archive_path": "qa/frame-reviews/10.json",
+          "sha256": "fec04f33cd0d06201d4f7746fda8752921a6a4db810729b2ab04fffd74656af4",
+          "bytes": 4428
+        },
+        {
+          "role": "frame_review:11",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/11.json",
+          "archive_path": "qa/frame-reviews/11.json",
+          "sha256": "2554217b8e295e236c990d0f329f5c762e398257778848f083340c646a996a0a",
+          "bytes": 4533
+        },
+        {
+          "role": "frame_review:12",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/12.json",
+          "archive_path": "qa/frame-reviews/12.json",
+          "sha256": "a269b8ad8284c08662011486bf9af3ea985e62a22ee5610c7ca9d9be914774ae",
+          "bytes": 4542
+        },
+        {
+          "role": "frame_review:13",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/13.json",
+          "archive_path": "qa/frame-reviews/13.json",
+          "sha256": "6f088e679e5ed4e6745749c942fd22de9c392f1466b831b9bc6476da89745191",
+          "bytes": 4436
+        },
+        {
+          "role": "frame_review:14",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/14.json",
+          "archive_path": "qa/frame-reviews/14.json",
+          "sha256": "814a1ecdd322d6cf53dbc6075e7a3c5f85321fcc788f2bef315db6951c67e924",
+          "bytes": 4360
+        },
+        {
+          "role": "frame_review:15",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/15.json",
+          "archive_path": "qa/frame-reviews/15.json",
+          "sha256": "0cb8cc2f460f877a73ff7abc8679143a447828cf3cbc5cffdb5c9c9fad4e9743",
+          "bytes": 4474
+        },
+        {
+          "role": "frame_review:16",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/16.json",
+          "archive_path": "qa/frame-reviews/16.json",
+          "sha256": "9f76d97d874479e1171c11a8525e2bdbb83163736d86379d029cb90a160cbeea",
+          "bytes": 3426
+        },
+        {
+          "role": "frame_review:17",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/17.json",
+          "archive_path": "qa/frame-reviews/17.json",
+          "sha256": "aa64a95583c63253e4aac2cac519d68b142acda9737be910a145272e5baa9970",
+          "bytes": 3425
+        },
+        {
+          "role": "frame_review:18",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/18.json",
+          "archive_path": "qa/frame-reviews/18.json",
+          "sha256": "bddea15147a959200863b74610243aa7015e83e93a59775e87a0ca4078d54de3",
+          "bytes": 3524
+        },
+        {
+          "role": "frame_review:19",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/19.json",
+          "archive_path": "qa/frame-reviews/19.json",
+          "sha256": "a61ef37a1fe55fd03fe225f859f57c94dae124e3b8036d384f28516beb4bc3ed",
+          "bytes": 3731
+        },
+        {
+          "role": "frame_review:20",
+          "path": "episodes/天界普通人的一天/meta/frame-reviews/20.json",
+          "archive_path": "qa/frame-reviews/20.json",
+          "sha256": "37f860a2a67e8a8efc159fe8f031fdba4dfb62ec9c996c22a6914ca4ff8c2823",
+          "bytes": 4382
+        },
+        {
+          "role": "final_candidate_snapshot",
+          "path": "episodes/天界普通人的一天/meta/final-candidate-snapshot.json",
+          "archive_path": "evidence/final-candidate-snapshot.json",
+          "sha256": "7911caf31ca0792541bcd22243e5d6ae8075b652f6b0dbc0519f3e7935d7c192",
+          "bytes": 38302
+        },
+        {
+          "role": "delegated_zip",
+          "path": "episodes/天界普通人的一天/deliveries/天界普通人的一天_v1.0.zip",
+          "sha256": "a2167064fe92614718ddaa7dfe2d9dd367e3055a9b77251484ed32b31a7a2f33"
+        }
+      ],
+      "note": "Full-auto release closure: final-candidate-snapshot verified + delegated delivery ZIP built from real publish assets; user's recorded direct final acceptance (meta/final-acceptance.json) reproduced as delegated release_lock evidence."
+    }
+  }
+}

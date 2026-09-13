@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "contract_version": "2.2.1",
+  "derived_cache": true,
+  "world_identity_profile_id": "CELESTIAL_MUNDANE_WORLD_V1",
+  "world_identity_effective_sha256": "cf4829b2a2d1a1215700b60692b8c9bd1b0449949ffbca26295a562a09c88581",
+  "character_contract_path": "meta/character-contract.json",
+  "character_contract_sha256": "df5dd09e9fc48602901c0d18a43d9d737a48dda7717a380e966842da7c15ae42",
+  "character_visual_contract_path": "meta/character-visual-contract.json",
+  "character_visual_contract_sha256": "3b79283db5b8fa296804b6f3fad0e7605548c7283fcc499a80adde5285727340",
+  "members": {
+    "P01": {
+      "character_id": "P01",
+      "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+      "resident_context": "天界普通本地居民与基层工作人员",
+      "gender": "male",
+      "age": 25,
+      "build": "普通年轻人体型",
+      "body_build": "lean_proportionate_natural",
+      "hair": {
+        "character_contract_anchor": "普通黑色日常发型",
+        "haircut_anchor": "自然黑色日常短发，顶部略蓬松，鬓角利落干净，无烫染无造型感",
+        "hair_length_anchor": "耳上短发，后颈不过领"
+      },
+      "clothing_anchor": "朴素耐磨的米白灰蓝天界基层工作服，真实布料褶皱与使用痕迹，无华丽仙袍",
+      "device_anchor": "随身上岗记录牌（自带留影功能）",
+      "visual_priority": "primary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_visible_texture",
+        "allowed_variation": [
+          "sweaty",
+          "windblown",
+          "messy",
+          "hair_flat_under_hat_line"
+        ],
+        "forbidden_unmotivated_drift": [
+          "nationality/cultural identity",
+          "apparent age",
+          "face identity",
+          "haircut or hair length",
+          "body build",
+          "character role",
+          "clothing anchor unless wardrobe contract changes it"
+        ]
+      }
+    }
+  },
+  "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+  "anchor_sha256": "30e6bf4fc5eb2a49295acc48ed94bf94eeccba38c9859b5c5351cbc5f67c0341"
+}

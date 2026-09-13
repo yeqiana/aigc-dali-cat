@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "authority": "Story Build Voice Contract",
+  "voice_card": {
+    "person": "P01",
+    "role": "天界基层清扫员/当事人",
+    "age": 25,
+    "education_and_knowledge_boundary": "普通基层劳动者的日常常识：会看试岗工单、清扫路段、装袋、过秤、交接和看排班；能判断两种砂外观与颗粒是否相同，但不懂星砂成因，也没有任何岗位技能可以解释异常。",
+    "recording_reason": "用随身上岗记录牌按规程记录作业过程与交接；异常出现后只是顺手把画面留着，不以调查、取证或传播为目的。",
+    "knows_now": "亲眼确认星砂铺在地上会亮，被扫拢、离地或装袋就熄灭，天亮后剩余部分也会自然熄灭；熄光后的星砂与天街原有铺砂是同一种材料，并在清运点作为普通路面回填料回收。自己完成三袋与全段清扫后，试岗通过并转为固定落星街早班。",
+    "does_not_know": "不知道星砂为什么会亮、为什么清扫后熄灭，也不知道最初从哪里来；他只知道基层单位一直把熄光后的砂当普通回填料使用，不能把这个工作事实上升成星砂来源解释。",
+    "stress_language": "短句、停顿、自我修正和干活时的碎念；压力上来时只说还剩哪一段、第三袋装到哪、试岗时间还剩多少，不用励志口号和报告腔。",
+    "fear_language_change": "本集不是恐惧叙事。第一次看见熄光时只是短暂停顿和确认；试岗时限压上来以后语句更短、更实际，围绕扫完、装袋、过秤，不喊不叫、不把星砂妖魔化。",
+    "ordinary_vocabulary": "星砂、扫帚、簸箕、袋子、台阶、工单、试岗、机动、排班、过秤、交接、回填料、早班、下班",
+    "forbidden_technical_terms": "能量场、粒子、量子、维度、频率、磁场、结界、法术、灵气、修仙、封印"
+  },
+  "subtitle_policy": {
+    "max_visible_chars": 48,
+    "continuous_three_frame_test": true,
+    "read_aloud_test": true,
+    "delete_subtitle_test": true,
+    "do_not_repeat_visible_anomaly": true,
+    "allow_short_fragments_and_self_correction": true
+  }
+}

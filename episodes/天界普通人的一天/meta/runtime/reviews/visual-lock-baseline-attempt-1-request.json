@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "request_id": "visual-lock-baseline-a1-4d13ceba5412a01c",
+  "request_fingerprint": "4d13ceba5412a01cf6d63bf2083c942d415157cfad619f691073049853feae1b",
+  "created_at": "2026-09-12T13:05:05+08:00",
+  "status": "AWAITING_PRODUCT_REVIEW",
+  "review_kind": "visual-lock-baseline",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/天界普通人的一天/media/candidates/scheduled/01-ebfba88a16bd-a2.png",
+      "sha256": "4c9e1b1c1468de131a83c9147111504c667a18291d54a41645abfc327f602cbf"
+    },
+    {
+      "path": "episodes/天界普通人的一天/meta/story-gates.json",
+      "sha256": "4706875e38a18e1a321b6148a28c1a4b6130a6100196ae6d108e0600b8314cba"
+    },
+    {
+      "path": "episodes/天界普通人的一天/meta/character-visual-contract.json",
+      "sha256": "3b79283db5b8fa296804b6f3fad0e7605548c7283fcc499a80adde5285727340"
+    },
+    {
+      "path": "episodes/天界普通人的一天/meta/runtime/contracts/frames/01.json",
+      "sha256": "f218e6bf5091f77d66d264a04e6f073374f28c3de8909d891dd0c0a79c949635"
+    }
+  ],
+  "candidate_path": "episodes/天界普通人的一天/meta/.visual-lock-baseline-review.candidate.json",
+  "prompt_sha256": "4f8621b0fe1bd62faaf32619f834d79f1e051304c6dc3042bcf7dfd795d3ef6f",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are a fresh isolated Story OS Visual Lock ordinary-baseline actual-pixel reviewer.\nInspect the attached baseline image itself. This PASS unlocks the parallel-three Visual Lock images and may create the provisional character pixel master, so fail closed on visible identity/capture/style problems.\nRequired checks: ['visual_profile_match', 'reality_first', 'ordinary_life_density', 'unposed_capture', 'not_cinematic', 'capture_credibility', 'identity_usable', 'group_members_distinct', 'identity_anchor_usable']\nThe target is an ordinary believable phone/photo baseline: reality-first, unposed, non-cinematic, usable identity, distinct group members where applicable.\nFor core characters, this baseline is also Frame01 Character Identity Anchor evidence. The image must be usable as a later identity reference: clear face visibility, recognizable person, not only back view, not too distant, and suitable for Character Master creation.\nWrite ONLY JSON to episodes/天界普通人的一天/meta/.visual-lock-baseline-review.candidate.json:\n{\"decision\":\"PASS|FAIL\",\"checks\":{\"visual_profile_match\":\"PASS|FAIL\",\"reality_first\":\"PASS|FAIL\",\"ordinary_life_density\":\"PASS|FAIL\",\"unposed_capture\":\"PASS|FAIL\",\"not_cinematic\":\"PASS|FAIL\",\"capture_credibility\":\"PASS|FAIL\",\"identity_usable\":\"PASS|FAIL\",\"group_members_distinct\":\"PASS|FAIL\",\"identity_anchor_usable\":\"PASS|FAIL\"},\"face_boxes\":[{\"character_id\":\"P01\",\"x\":0.0,\"y\":0.0,\"w\":0.1,\"h\":0.1}],\"note\":\"actual-pixel evidence\"}\nFace boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.\nDo not modify source files or the image.\n"
+}

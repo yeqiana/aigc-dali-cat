@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "recorded_at_epoch": 1789202324,
+  "frame": "09",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "generation_route": "codex_subscription",
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "requested_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": 0.8
+  },
+  "provider_raw_canvas": {
+    "width": 1092,
+    "height": 1440,
+    "aspect_ratio": 0.758333333,
+    "exact_requested_canvas": false,
+    "resize_direction_to_release": "downscale"
+  },
+  "ratio_delta": 0.052083333,
+  "normalize_decision": "ASPECT_RATIO_MISMATCH",
+  "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通人的一天\\media\\raw\\09-1789202209.png",
+  "raw_sha256": "f63c920fedec3ee6fc8708b913363f0b4303f5c3d9c7a328ba24ce59882a8560",
+  "provider_attestation": false,
+  "exact_raw_canvas_guaranteed": false,
+  "receipt_is_evidence_not_authority": true,
+  "reference_transport": "codex_subscription_cli_attachment",
+  "references": [],
+  "normalization": {
+    "operation": "CENTER_CROP_THEN_RESIZE_LANCZOS",
+    "ratio_delta": 0.052083,
+    "crop_applied": true,
+    "reencoded": true,
+    "local_attempts": 1
+  },
+  "release_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通人的一天\\media\\candidates\\scheduled\\09-cf8023d33840-a1.png",
+    "sha256": "45fa07849bffda77b1450a615b0b80149799a22d960bb0349310c211010d80ab"
+  }
+}

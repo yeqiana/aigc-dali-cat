@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "principle": "A frame must first be a credible capture event, then a narrative image.",
+  "max_causal_defects_per_frame": 2,
+  "frames": {
+    "01": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "上岗打卡时按规程开始随走随录，顺手把排班板和自己名字留在画面里",
+      "device_position": "胸前佩挂的记录牌随低头略微俯拍",
+      "subject_awareness": "partial",
+      "operator_state": "按规程例行记录，状态平稳",
+      "framing_constraint": "胸前固定机位受低头角度限制，工牌与排班板同框但不追求端正",
+      "retained_reason": "保留因为这是人物处境与机动排班的开场证据",
+      "causal_defects": []
+    },
+    "02": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "开工前顺手拍下今天的独立试岗工单与三只空袋",
+      "device_position": "胸前记录牌俯向别在车把上的工单",
+      "subject_awareness": "partial",
+      "operator_state": "确认今天的任务与代价",
+      "framing_constraint": "近距俯拍边缘略虚，工单文字为简体中文",
+      "retained_reason": "保留因为明确试岗目标与通过代价",
+      "causal_defects": []
+    },
+    "03": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "推门进街后记录牌继续随走随录，整条落星街自然进入画面",
+      "device_position": "胸前记录牌平视前方街面",
+      "subject_awareness": "not_applicable",
+      "operator_state": "第一次见到满街星砂，短暂站定",
+      "framing_constraint": "凌晨低照度与云海冷光限制曝光，允许轻微噪点",
+      "retained_reason": "保留因为首次把天界奇观摆在普通清扫工作面前",
+      "causal_defects": []
+    },
+    "04": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "第一帚落下时记录牌正对帚尖与星砂带",
+      "device_position": "胸前记录牌随手臂前倾下压",
+      "subject_awareness": "not_applicable",
+      "operator_state": "专注在清扫动作本身",
+      "framing_constraint": "低位近距，只拍动作发生前，不提前出现熄灭结果",
+      "retained_reason": "保留因为把触发动作单独拍清，给下一帧留出回应",
+      "causal_defects": []
+    },
+    "05": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "同一小段的结果就近再拍一次，作为清扫效果记录",
+      "device_position": "胸前记录牌稍退半步拍下砂堆与亮暗分界",
+      "subject_awareness": "not_applicable",
+      "operator_state": "停一秒确认规则",
+      "framing_constraint": "机位稍退，需要同时读到灰白砂堆与仍微亮的边缘",
+      "retained_reason": "保留因为这是清扫致熄的直接回应",
+      "causal_defects": []
+    },
+    "06": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "住户出来搭话时记录牌仍在录，顺手记下门口的活",
+      "device_position": "胸前记录牌随抬头看向住户与门槛",
+      "subject_awareness": "aware",
+      "operator_state": "让路并应下门口的活",
+      "framing_constraint": "住户只建立日常互动，不建立身份也不围观",
+      "retained_reason": "保留因为当地人把星砂当普通路面问题的社会信息",
+      "causal_defects": []
+    },
+    "07": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "低头用帚尖拨开路缝看砂时记录牌跟着俯下",
+      "device_position": "胸前记录牌俯向台阶缝",
+      "subject_awareness": "not_applicable",
+      "operator_state": "有点疑惑但继续干活",
+      "framing_constraint": "缝隙细节需要贴近，粗颗粒可能略虚",
+      "retained_reason": "保留因为埋下中点材质线索",
+      "causal_defects": []
+    },
+    "08": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "早市开始后边让路边补扫，记录牌一直挂着",
+      "device_position": "胸前记录牌随身体转向人群与路面",
+      "subject_awareness": "unaware",
+      "operator_state": "动作明显加快，注意力在路面上",
+      "framing_constraint": "宽景被人流与推车部分遮挡，构图偏乱",
+      "retained_reason": "保留因为人流上涨使工作量动态增加",
+      "causal_defects": []
+    },
+    "09": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "看一眼时间与第二、三只回收袋时记录牌自然同框",
+      "device_position": "胸前记录牌随转头俯视袋口",
+      "subject_awareness": "not_applicable",
+      "operator_state": "开始担心试岗超时",
+      "framing_constraint": "近景要同时读到时间、袋子与只装半满的第三袋",
+      "retained_reason": "保留因为个人时间压力第一次明确升级",
+      "causal_defects": []
+    },
+    "10": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "蹲下并拢两种砂对照时记录牌贴近地面",
+      "device_position": "胸前记录牌随蹲下贴近指尖",
+      "subject_awareness": "not_applicable",
+      "operator_state": "专注比对外观与颗粒",
+      "framing_constraint": "贴地近距景深浅，可能只有指尖附近清楚",
+      "retained_reason": "保留因为这是熄光星砂与铺砂同材的中点证据",
+      "causal_defects": []
+    },
+    "11": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "抬头确认天亮与街面变化时记录牌仰起",
+      "device_position": "胸前记录牌随抬头朝云桥方向",
+      "subject_awareness": "not_applicable",
+      "operator_state": "确认天亮后马上低头继续干活",
+      "framing_constraint": "光源只来自日出，曝光随晨光推进变化",
+      "retained_reason": "保留因为世界状态变化同时加重了工作量",
+      "causal_defects": []
+    },
+    "12": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "连续补扫两段时记录牌随身体摆动",
+      "device_position": "胸前记录牌随挥帚前后摆动",
+      "subject_awareness": "not_applicable",
+      "operator_state": "埋头加快，工作服出现汗渍与褶皱",
+      "framing_constraint": "摆动带来轻微运动模糊，允许构图不稳",
+      "retained_reason": "保留因为劳动升级推动了完成标准",
+      "causal_defects": []
+    },
+    "13": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "走到最后一片背光微亮处时记录牌停住",
+      "device_position": "胸前记录牌停在转角石缝前",
+      "subject_awareness": "not_applicable",
+      "operator_state": "把扫帚伸过去又停住，回头看一眼时间",
+      "framing_constraint": "需要让微亮、石缝与工单勾选框同框",
+      "retained_reason": "保留因为真正的选择在此建立",
+      "causal_defects": []
+    },
+    "14": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "扫帚真正压下去时记录牌记录接触瞬间",
+      "device_position": "胸前记录牌随下压动作贴近地面",
+      "subject_awareness": "not_applicable",
+      "operator_state": "做出选择，动作果断",
+      "framing_constraint": "只表现接触动作，不提前展示熄灭结果",
+      "retained_reason": "保留因为这是为试岗与固定排班付出的高潮动作",
+      "causal_defects": []
+    },
+    "15": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "扎袋并在工单最后一格打勾时记录牌挂在胸前",
+      "device_position": "胸前记录牌平视前方已清空的路面",
+      "subject_awareness": "not_applicable",
+      "operator_state": "平静收尾，确认全段清完",
+      "framing_constraint": "需要同时读到封口第三袋与身后无发光残留的路面",
+      "retained_reason": "保留因为结果与高潮动作构成清晰回应",
+      "causal_defects": []
+    },
+    "16": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "清运点过秤交接时记录牌仍在录",
+      "device_position": "胸前记录牌平视料斗与磅秤",
+      "subject_awareness": "aware",
+      "operator_state": "按普通交接流程办事",
+      "framing_constraint": "普通基层手续视角，读数为作业标识",
+      "retained_reason": "保留因为第一次独立试岗客观通过",
+      "causal_defects": []
+    },
+    "17": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "看到料斗标签停半步时记录牌同框",
+      "device_position": "胸前记录牌侧向料斗侧面",
+      "subject_awareness": "not_applicable",
+      "operator_state": "原本准备离开，看到标签后停半步",
+      "framing_constraint": "标签与旁边同类灰砂要同时可辨",
+      "retained_reason": "保留因为清运垃圾其实会回到路面",
+      "causal_defects": []
+    },
+    "18": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "回站改排班表时记录牌挂在胸前",
+      "device_position": "胸前记录牌平视排班板",
+      "subject_awareness": "aware",
+      "operator_state": "重新别好工牌，安静听完排班",
+      "framing_constraint": "排班板名字栏与值班员同框，情绪克制",
+      "retained_reason": "保留因为这是人物真正的现实回报",
+      "causal_defects": []
+    },
+    "19": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "下班经过维护点时顺手录到",
+      "device_position": "胸前记录牌随走动扫过维护工与台阶缝",
+      "subject_awareness": "unaware",
+      "operator_state": "下班路过，脚步恢复正常节奏",
+      "framing_constraint": "维护工只作背景，不升级为第二主角",
+      "retained_reason": "保留因为路缝材料的因果在此得到解释",
+      "causal_defects": []
+    },
+    "20": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "走下石阶时记录牌继续随走随录",
+      "device_position": "胸前记录牌随下楼平视前方街口",
+      "subject_awareness": "unaware",
+      "operator_state": "普通下班节奏，不再停留",
+      "framing_constraint": "远景需要读到没有发光异常的普通通勤街面",
+      "retained_reason": "保留因为终局回到普通生活且不再追加异常",
+      "causal_defects": []
+    }
+  }
+}

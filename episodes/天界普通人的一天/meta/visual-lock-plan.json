@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "generated_at": "2026-09-12T12:43:23+08:00",
+  "policy": {
+    "baseline_first": true,
+    "remaining_three_parallelizable": true,
+    "calibration_count": 4,
+    "baseline_selection": "ordinary_fallback",
+    "baseline_frame": 1,
+    "opening_social_anchor_machine_priority": true
+  },
+  "items": [
+    {
+      "id": "V-B",
+      "frame": 1,
+      "mode": "normal_record",
+      "role": "ordinary_baseline",
+      "impact": 0,
+      "scale_reference": "",
+      "environment_severity": 4,
+      "contract_sha256": "8c4ded6043cd712458417e803d812d1091333811c81a819339d20fa8557d4e05",
+      "depends_on": []
+    },
+    {
+      "id": "V-W",
+      "frame": 10,
+      "mode": "anomaly_reveal",
+      "role": "worst_capture_condition",
+      "impact": 2,
+      "scale_reference": "两种砂都只看指尖到掌心的小尺度",
+      "environment_severity": 6,
+      "contract_sha256": "af411ac1cd7fc227fcabf5ce6c88a0181baffdab99de944f9576b18039a1cb4a",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-A",
+      "frame": 3,
+      "mode": "anomaly_reveal",
+      "role": "first_major_anomaly",
+      "impact": 1,
+      "scale_reference": "亮光只贴在石阶表面薄薄一层，不铺满画面",
+      "environment_severity": 6,
+      "contract_sha256": "9c36aabda7aa834957fd09138f46ea069a065e48f71b8d8cb395e00b2c771e75",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-H",
+      "frame": 14,
+      "mode": "climax_impact",
+      "role": "high_impact_admission",
+      "impact": 3,
+      "scale_reference": "扫帚头与一小片微光形成明确大小对照",
+      "environment_severity": 3,
+      "contract_sha256": "5a41227f4e56069030d3edd0443e6fa01432024235fa165d8eea319b86542807",
+      "depends_on": [
+        1
+      ]
+    }
+  ]
+}

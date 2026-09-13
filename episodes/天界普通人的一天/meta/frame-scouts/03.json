@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "03",
+  "risk_level": "HIGH",
+  "risk_score": 63,
+  "risk_tags": [
+    "first_anomaly",
+    "pov_recorder"
+  ],
+  "frame_contract_sha256": "9c36aabda7aa834957fd09138f46ea069a065e48f71b8d8cb395e00b2c771e75",
+  "asset_path": "episodes/天界普通人的一天/media/approved/03.png",
+  "asset_sha256": "80ca55a1cefe516b04b1bac6b9c72540662c7e99fdae544bc6e67840d8fb894d",
+  "scouted_at": "2026-09-12T21:46:35+08:00",
+  "final_critic_still_required": true,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "实际像素证据：第一人称从昏暗后勤间门内向外看，前景左手+袖口握住手推车横把，车上有三格米白布袋、黑色方斗和斜放的竹扫帚，室内灰金属柜与挂布；门外是陡峭石阶街、栏杆、暖黄灯笼与云海薄雾。无面部入镜，无幽灵机位，POV/记录牌可解释；道具（手推车/扫帚/回收袋）与合同一致。不确定项：石阶读取为反光偏湿（合同要求干燥、无降水），暖灯笼低照度偏暖（合同为云海冷光低照 dawn），且未见可确认的“石阶表面薄薄一层微亮星砂”这一本帧核心视觉钩子。星砂按 concealment 设计本就极弱，需相邻帧/整篇上下文与更近距离像素才能判定是否真的欠交付，故不下 REPAIR_NOW。",
+  "confidence": 0.4,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/天界普通人的一天/meta/frame-scouts/03.jsonl"
+}

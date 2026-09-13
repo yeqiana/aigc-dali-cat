@@ -1,0 +1,579 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "天界普通人的一天",
+  "visual_profile": {
+    "mode": "override",
+    "profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1",
+    "profile_path": "standards/visual_profiles/profiles/M02_HEAVEN_MUNDANE_WORKER_V1.json",
+    "capture_profile": "auto",
+    "override_reason": "visual_profile_selector"
+  },
+  "story": {
+    "recent5_checked": true,
+    "four_locks_diff_count": 3,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      3,
+      4,
+      5
+    ],
+    "escalation_frames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "climax_frame": 14,
+    "payoff_frame": 15,
+    "semantic_review_path": "meta/story-semantic-review.json",
+    "recent5_evidence_note": "账号历史注册表 reports/account-pattern-registry.json 当前只有 2 条真实历史指纹（09-04 瓶中世界、10-01 鳌太线·热汤），均为既有真实分集，不做伪造扩充。当前返修稿以独立试岗、扫拢即熄、星砂回收为路面回填料的市政循环为核心；重新执行 Recent-5 语义比较后，两篇历史相似度均为 0，未触发换皮否决。"
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [
+      1,
+      10,
+      3,
+      14
+    ],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "P01，25 岁天界基层清扫员（男），自然黑色日常短发，米白灰蓝朴素耐磨基层工作服，随身佩带上岗记录牌；全片唯一主要人物与第一人称拍摄者",
+        "location": "天界云海基层工作站后勤间与器械间、天街石阶（上/中/下段）、早市摊位边、台阶下排水沟口、基层清运点、基层食堂；白天石阶必须与凌晨同一材质与坡度",
+        "key_prop": "随身上岗记录牌、工单、扫帚、簸箕、手推车、清运袋、星砂（铺地发光、扫拢/离地/装袋即熄成灰白细砂）",
+        "wardrobe": "米白灰蓝朴素耐磨基层工作服，全天不更换，只按劳动强度出现汗渍与褶皱",
+        "weather_time": "落星夜后的凌晨（天未亮、云海未散冷光）→ 第一缕晨光越过云桥 → 白天上午，户外石面干燥无降水"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "虚构东方天界的当代基层日常生活，不映射现实年代与国家",
+      "location": "天界云海公共生活与基层工作区的天街石阶与基层单位",
+      "photographer": "P01 本人；用随身上岗记录牌第一人称随走随录，没有第二名固定持机者",
+      "shooting_reason": "按上岗规程记录作业过程与交接；星砂异常出现后只是顺手把画面留着，不以调查、取证或传播为目的",
+      "primary_capture": {
+        "id": "P01_record_badge",
+        "device": "随身上岗记录牌（自带留影功能）"
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": null,
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "体力和光线充足时的清扫、比对、过秤段落，画面挂点稳定、构图可读",
+        "restricted": "凌晨低照度、云海冷光、沟口贴地与摊位边狭窄机位造成曝光和构图受限",
+        "lost_control": "全街熄光与最后一撮清走时身体动作变大，允许短暂倾斜与运动模糊，但不出现表演式甩镜"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": null,
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": null
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "worst_condition": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "first_major_anomaly": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "schema_version": 2,
+      "policy": "four_admission_v21",
+      "items": [
+        {
+          "id": "V-B",
+          "role": "ordinary_baseline",
+          "frame": 1,
+          "asset_path": "episodes/天界普通人的一天/media/candidates/scheduled/01-ebfba88a16bd-a2.png",
+          "sha256": "4c9e1b1c1468de131a83c9147111504c667a18291d54a41645abfc327f602cbf",
+          "decision": "passed",
+          "frame_contract_sha256": "8c4ded6043cd712458417e803d812d1091333811c81a819339d20fa8557d4e05",
+          "note": "baseline separately PASS; parallel-three may start",
+          "contract_sha256": "8c4ded6043cd712458417e803d812d1091333811c81a819339d20fa8557d4e05"
+        },
+        {
+          "id": "V-W",
+          "role": "worst_capture_condition",
+          "frame": 10,
+          "asset_path": "episodes/天界普通人的一天/media/candidates/scheduled/10-2007cf1a02f2-a1.png",
+          "sha256": "c24697d6b7fdeb17cfe6b62e199b22494e87d7c9d59ce339614ce9ed033504d0",
+          "decision": "passed",
+          "frame_contract_sha256": "af411ac1cd7fc227fcabf5ce6c88a0181baffdab99de944f9576b18039a1cb4a",
+          "note": "",
+          "contract_sha256": "af411ac1cd7fc227fcabf5ce6c88a0181baffdab99de944f9576b18039a1cb4a"
+        },
+        {
+          "id": "V-A",
+          "role": "first_major_anomaly",
+          "frame": 3,
+          "asset_path": "episodes/天界普通人的一天/media/candidates/scheduled/03-d7326a4f98da-a1.png",
+          "sha256": "e47556f41bb9007e06a633379b6639071bc412fe461c4a1d5bbf82a3c5c0a78b",
+          "decision": "passed",
+          "frame_contract_sha256": "9c36aabda7aa834957fd09138f46ea069a065e48f71b8d8cb395e00b2c771e75",
+          "note": "",
+          "contract_sha256": "9c36aabda7aa834957fd09138f46ea069a065e48f71b8d8cb395e00b2c771e75"
+        },
+        {
+          "id": "V-H",
+          "role": "high_impact_admission",
+          "frame": 14,
+          "asset_path": "episodes/天界普通人的一天/media/candidates/scheduled/14-37d3d0420ce0-a1.png",
+          "sha256": "3246806d89013592f48d45027a99f88fbfc3d6875a23210e3ebb5319e9db44e8",
+          "decision": "passed",
+          "frame_contract_sha256": "5a41227f4e56069030d3edd0443e6fa01432024235fa165d8eea319b86542807",
+          "note": "",
+          "contract_sha256": "5a41227f4e56069030d3edd0443e6fa01432024235fa165d8eea319b86542807"
+        }
+      ],
+      "finalizer_reconciled": true,
+      "finalizer_source": "meta/visual-lock-final-report.json"
+    },
+    "calibration_contact_sheet": {
+      "path": "episodes/天界普通人的一天/media/review/contact-sheets/visual-lock-admission.jpg",
+      "sha256": "20035afe99420f8eda650494b0dde309c8cc8953e3db74a921fd0cc145d89b40"
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "落星夜之后的凌晨到上午",
+      "baseline": {
+        "condition": "天界云海基层工作区的普通早班；站内顶灯、云海冷光、第一缕晨光和摊位原生灯是全部光源，不额外制造电影灯光",
+        "time_of_day": "pre_dawn_to_late_morning",
+        "temperature_feel": "凌晨云海冷光偏凉，天亮后户外转温和；全天无降水",
+        "ground_state": "天街石阶表面干燥并铺有落星夜留下的极细微星砂，清扫后露出干燥石面",
+        "visibility": "凌晨受云海冷光与低照度限制，天亮后自然光充足；站内为普通基层照明",
+        "wind": "云海间弱风到间歇冷风",
+        "precipitation": "全天无降水，石面干燥",
+        "physical_cues": [
+          "星砂铺地时只有极细微的亮，被扫拢、离地或装袋即当场熄灭成灰白细砂",
+          "天亮后尚未清扫的星砂从远到近自然熄灭，不出现裂缝、法阵或第二世界",
+          "全部光源只来自站内灯、云海冷光、日出晨光和摊位原生灯",
+          "清运斗是带“路面回填料”字样的普通基层作业标识"
+        ]
+      },
+      "segments": [
+        {
+          "id": "station_pre_dawn",
+          "start_frame": 1,
+          "end_frame": 2,
+          "condition": "天未亮时的基层工作站后勤间与器械区",
+          "physical_cues": [
+            "站内普通顶灯照明",
+            "工牌、排班板与工单同框",
+            "窗外是未散的云海冷光"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "室内只是普通基层顶灯，不出现神圣光柱或舞台灯",
+              "when": [
+                "indoor",
+                "pre_dawn"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "street_pre_dawn",
+          "start_frame": 3,
+          "end_frame": 10,
+          "condition": "云海未散的天街石阶上段与中段，落星夜星砂铺地",
+          "physical_cues": [
+            "石阶表面细砂微亮",
+            "云海冷光低照度",
+            "户外石面干燥"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "星砂只在被清扫接触的局部熄灭，未触碰区域保持微亮",
+              "when": [
+                "frame>=3",
+                "frame<=10"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "first_dawn_light",
+          "start_frame": 11,
+          "end_frame": 15,
+          "condition": "第一缕晨光越过云桥后的天街石阶中段下段与早市边",
+          "physical_cues": [
+            "自然晨光沿街面推进",
+            "剩余星砂自然熄灭",
+            "摊位原生灯与晨光并存"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "daytime_handover",
+          "start_frame": 16,
+          "end_frame": 20,
+          "condition": "上午的基层清运点、回站排班板与白天天街维护点",
+          "physical_cues": [
+            "自然日光充足",
+            "料斗与回填料作业标识",
+            "白天普通通勤人流"
+          ],
+          "conditional_effects": []
+        }
+      ],
+      "frame_overrides": {
+        "04": {
+          "visibility_priority": "帚尖压向仍完整发亮的星砂带，熄灭结果不得提前出现"
+        },
+        "14": {
+          "visibility_priority": "最后一片背光微亮被扫帚压住的接触瞬间必须清楚可读，结果留到 15"
+        },
+        "17": {
+          "visibility_priority": "清运斗上的“路面回填料”作业标识与旁边同类灰砂同时可辨"
+        }
+      }
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "03": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "脚下石阶铺着极细微的微亮星砂",
+          "云海未散的低照度冷光",
+          "没有裂缝、法阵或第二世界"
+        ],
+        "scale_reference": "亮光只贴在石阶表面薄薄一层，不铺满画面",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "04": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "05": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "被扫拢的一堆已经灰白不再发亮",
+          "旁边未碰到的边缘仍保持微亮",
+          "两者之间明暗分界清晰可读"
+        ],
+        "scale_reference": "灰白砂堆与仍亮的边缘都只占路面一小段",
+        "escalation_from": 4,
+        "generation_depends_on": []
+      },
+      "06": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "07": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "台阶缝里原本就填着灰白细砂",
+          "旁边刚扫灭的一小堆颗粒粗细与颜色接近"
+        ],
+        "scale_reference": "路缝细节只看脚尖附近一小片",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "08": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "09": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "10": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "并拢在指尖的路缝原有灰砂",
+          "刚熄灭的落星砂",
+          "两者颗粒、颜色、粗细一致"
+        ],
+        "scale_reference": "两种砂都只看指尖到掌心的小尺度",
+        "escalation_from": 7,
+        "generation_depends_on": []
+      },
+      "11": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "第一缕晨光越过云桥推进街面",
+          "尚未清扫的星砂从远到近失去微光",
+          "人群不再绕行"
+        ],
+        "scale_reference": "晨光沿整条街面由远及近推进，星砂成片自然熄灭",
+        "escalation_from": 10,
+        "generation_depends_on": []
+      },
+      "12": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "被鞋和车轮压进石缝的灰砂需要用帚尖挑出",
+          "第三只回收袋逐渐变满"
+        ],
+        "scale_reference": "",
+        "escalation_from": 11,
+        "generation_depends_on": []
+      },
+      "13": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "转角石缝最后一小片因背光仍微亮",
+          "工单上“全段清完”的勾选框",
+          "扫帚伸过去又停住"
+        ],
+        "scale_reference": "最后一片微亮只占转角一小段并与工单同框",
+        "escalation_from": 11,
+        "generation_depends_on": []
+      },
+      "14": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "扫帚真正压向最后一片微光的接触瞬间",
+          "背光石缝的暗部与微亮形成对照",
+          "只表现动作不出现熄灭结果"
+        ],
+        "scale_reference": "扫帚头与一小片微光形成明确大小对照",
+        "escalation_from": 13,
+        "generation_depends_on": []
+      },
+      "15": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "原先唯一亮点变成灰白细砂",
+          "第三只回收袋封口",
+          "身后整段天街第一次完全没有发光残留"
+        ],
+        "scale_reference": "封口袋子与清空路面在同一视野",
+        "escalation_from": 14,
+        "generation_depends_on": []
+      },
+      "16": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "三袋依次过秤读数达到工单要求",
+          "基层工作人员在交接记录上盖章"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "17": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "清运斗侧面“路面回填料”作业标识",
+          "旁边另一辆小车装着更早回收的同类灰砂"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "18": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "名字从机动栏移到落星街早班",
+          "P01 重新别好工牌"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "19": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "20": {
+        "narrative_role": "residue",
+        "frame_mode": "payoff",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      }
+    },
+    "fast_frame_scout": {
+      "schema_version": 1,
+      "enabled": true,
+      "policy": "risk_based_v21",
+      "final_critic_still_required": true,
+      "decisions": [
+        "PASS_FAST",
+        "REPAIR_NOW",
+        "DEFER_TO_FINAL"
+      ],
+      "high_risk_required": true
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": false,
+    "layout_audit_path": "meta/subtitle-layout-audit.json",
+    "status_note": "声音卡 meta/voice-contract.json 已是 LOCKED；sound_card_completed 保持 false 不冒充完成，由 meta/final-acceptance.json 受控例外放行。"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "passed",
+    "subtitle": "waived",
+    "production": "waived",
+    "recommendation_fit": "passed",
+    "publish": "passed"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 2,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true
+  },
+  "approvals": {
+    "visual_lock": {
+      "approved": true,
+      "user_approved": true,
+      "approved_at": "2026-09-12T20:27:08+08:00",
+      "artifacts": [
+        {
+          "role": "visual_spec",
+          "path": "episodes/天界普通人的一天/docs/04_天界普通人的一天_视觉规范_V1.0.md",
+          "sha256": "81d2ca3618f3d72d47f5a7110bd5cfa6a776877a1275f0a005e2e7c9b018a5df"
+        },
+        {
+          "role": "calibration_contact_sheet",
+          "path": "episodes/天界普通人的一天/media/review/contact-sheets/visual-lock-admission.jpg",
+          "sha256": "20035afe99420f8eda650494b0dde309c8cc8953e3db74a921fd0cc145d89b40"
+        },
+        {
+          "role": "visual_profile:M02_HEAVEN_MUNDANE_WORKER_V1",
+          "path": "standards/visual_profiles/profiles/M02_HEAVEN_MUNDANE_WORKER_V1.json",
+          "sha256": "3a537011cb8e36512d6bf0d61492748c59fa3a5cd71d9d23c97f2cb2826f70fc"
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/天界普通人的一天/meta/visual-profile-review.json",
+          "sha256": "8bc661728a74b176a02cacd743b9f47ab3a04621a7d5e896510b71118e7ed311"
+        }
+      ],
+      "note": "用户确认Frame03问题已知，按人工决策接受当前Frame03，不再消耗返修额度，继续后续生产流程",
+      "resolved_visual_profile": {
+        "selection": "episode_meta+story_gates",
+        "profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1",
+        "profile_name": "天界普通工作人员日常",
+        "profile_path": "standards/visual_profiles/profiles/M02_HEAVEN_MUNDANE_WORKER_V1.json",
+        "capture_profile": "auto",
+        "override_reason": "visual_profile_selector",
+        "rule": "显式单集/系列风格优先；具体年代/设备物理表现仍高于母风格质感。",
+        "authority_source": "meta/visual-profile.json + meta/story-gates.json"
+      }
+    }
+  },
+  "release": {
+    "final_candidate_snapshot": {
+      "schema_version": 1,
+      "enabled": true,
+      "delivery_must_consume_snapshot": true,
+      "snapshot_is_authority": false
+    }
+  }
+}

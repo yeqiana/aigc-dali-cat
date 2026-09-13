@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "episode_id": "天界普通人的一天",
+  "generated_at": "2026-09-12T11:25:23+08:00",
+  "candidate_fingerprint_path": "episodes/天界普通人的一天/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "664f9758e38a6f2d1a3fdebd9e194c313aed8f687b7bbaa2ad8066772b03a47b",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "comparison_count": 2,
+  "compared": [
+    {
+      "episode_id": "10-01",
+      "title": "鳌太线·热汤",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 0,
+      "similarity_score": 0,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [],
+      "matched_dimensions": []
+    },
+    {
+      "episode_id": "09-04",
+      "title": "瓶中世界",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 0,
+      "similarity_score": 0,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [],
+      "matched_dimensions": []
+    }
+  ],
+  "max_similarity_score": 0,
+  "mechanism_veto": false,
+  "decision": "pass",
+  "scoring_policy": "effective=max(exact_string,semantic_equivalence); veto=exact_veto OR semantic_veto",
+  "note": "V2.0.3.6 uses a fresh isolated semantic equivalence matrix so paraphrased/skin-swapped fingerprints cannot bypass Recent-5 by changing wording. Python, not the critic, computes scores.",
+  "semantic_review_path": "episodes/天界普通人的一天/meta/recent5-semantic-review.json",
+  "semantic_review_sha256": "1936751bd79061ad3463b6b4893894c0ceba718ad44a4fbd3b79f60f2bbdcdff"
+}

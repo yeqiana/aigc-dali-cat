@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "16",
+  "asset_path": "episodes/天界普通人的一天/media/approved/16.png",
+  "asset_sha256": "a7e89a8aee551c8c1382b4fbd0c760dcc946606abfb4599bf1c13d6fed45b924",
+  "story_sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d",
+  "storyboard_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11",
+  "visual_contract_sha256": "d8622218004e091e2be58256a42a346bdfb1904df673ba032e205a96a2e9bbac",
+  "environment_frame_sha256": "eefa1b709a77b548f59597f2dae6c2e98e67506055337c5e5f3fd36fc7ce9bdf",
+  "frame_directive_sha256": "d502e6ec614d0e81c7a60bf31153be6697add8719f099ee6f78dbaecc0ec74f3",
+  "frame_contract_sha256": "c7960794bcc0f8cb8b7ddcac5317decddac6138a238e396f8a3bf69d9e141e56",
+  "source_binding": {
+    "story": {
+      "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+      "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+    },
+    "storyboard": {
+      "path": "episodes/天界普通人的一天/docs/03_天界普通人的一天_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 2,
+    "reviewed_at": "2026-09-12T19:36:01+08:00",
+    "review_scope": "FULL_FRAME_SET",
+    "recovered_after_parent_timeout": true,
+    "candidate_sha256": "d7637a654793ce731c384ca0853a3cd3a55d3d8d55e78c08c4607e9e0d818226",
+    "critic_stdout_log_empty_after_parent_timeout": true
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "清运点过秤近中景与分镜一致：一只回收袋压在蓝色平台秤上，读数可读（27.6 kg），工作人员在「回收物交接单」上盖红色「已完成」章，工作闭环（三袋过秤、读数达标、盖章）成立；无口头夸奖或授勋式表达。",
+  "decision": "pass",
+  "caption_sha256": "ff4da4e99b16a09bbe3a52857d8d592801f75a18a0e42518703c61fdca95318a"
+}

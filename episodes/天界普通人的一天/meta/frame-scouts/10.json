@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "10",
+  "risk_level": "HIGH",
+  "risk_score": 106,
+  "risk_tags": [
+    "first_anomaly",
+    "impact_2",
+    "pov_recorder",
+    "reveal"
+  ],
+  "frame_contract_sha256": "af411ac1cd7fc227fcabf5ce6c88a0181baffdab99de944f9576b18039a1cb4a",
+  "asset_path": "episodes/天界普通人的一天/media/candidates/scheduled/10-2007cf1a02f2-a1.png",
+  "asset_sha256": "c24697d6b7fdeb17cfe6b62e199b22494e87d7c9d59ce339614ce9ed033504d0",
+  "scouted_at": "2026-09-12T13:19:12+08:00",
+  "final_critic_still_required": true,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "WORK product runtime: Fast Scout is non-blocking and does not launch local Codex; defer actual-pixel authority to product/final review.",
+  "model_called": false,
+  "scout_status": "product_runtime_defer"
+}

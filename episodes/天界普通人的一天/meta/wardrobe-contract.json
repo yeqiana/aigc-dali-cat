@@ -1,0 +1,558 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_temporal_sha256": "6ce6bf88f4ee092f58064ade13f64d2d008f55d412167239f652fe1c8ac3b741",
+  "rules": {
+    "wardrobe_changes_follow_scene_weather_temperature_activity": true,
+    "female_lead_default_body": "slim_proportionate_natural",
+    "pretty_clothes_allowed_when_physical_context_supports_them": true,
+    "camisole_in_cold_outdoor_requires_warm_outer_layer": true,
+    "skirt_in_cold_requires_thick_tights_and_warm_layer": true,
+    "high_altitude_outdoor_requires_wind_or_insulation_layer": true,
+    "outfit_change_requires_reason": true,
+    "no_eroticized_framing_requirement": true
+  },
+  "frames": {
+    "01": {
+      "scene_context": "celestial_station_office",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "站内普通顶灯，窗外云海冷光",
+      "activity": "打卡并领取试岗工单",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "02": {
+      "scene_context": "celestial_station_office",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "站内普通顶灯，窗外云海冷光",
+      "activity": "检查空袋并确认工单",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "03": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "cool",
+      "weather": "云海未散冷光低照，石面干燥",
+      "activity": "推车进入落星街并观察街面",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "04": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "cool",
+      "weather": "云海未散冷光低照，石面干燥",
+      "activity": "落下第一帚清扫",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "05": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "cool",
+      "weather": "云海未散冷光低照，石面干燥",
+      "activity": "连续清扫并确认结果",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "06": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "cool",
+      "weather": "云海未散冷光低照，石面干燥",
+      "activity": "给住户让路并清理门口",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "07": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "cool",
+      "weather": "云海未散冷光低照，石面干燥",
+      "activity": "低头拨看台阶缝",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "08": {
+      "scene_context": "celestial_street_market",
+      "location_type": "outdoor",
+      "temperature_band": "cool",
+      "weather": "云海未散冷光低照，早市人流上来",
+      "activity": "边让路边加快补扫",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "09": {
+      "scene_context": "celestial_street_market",
+      "location_type": "outdoor",
+      "temperature_band": "cool",
+      "weather": "云海未散冷光低照，早市人流上来",
+      "activity": "查看时间并赶剩余路段",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "10": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "cool",
+      "weather": "云海未散冷光低照，石面干燥",
+      "activity": "蹲下并拢对照两种砂",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "11": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "晨光越过云桥，云海渐散",
+      "activity": "抬头确认天亮后继续清扫",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "12": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "晨光推进街面，无降水",
+      "activity": "连续挑砂并装满第三袋",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "13": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "晨光推进街面，无降水",
+      "activity": "在最后一片微亮前停住",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "14": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "晨光推进街面，无降水",
+      "activity": "压下扫帚做出最后选择",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "15": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "晨光推进街面，无降水",
+      "activity": "扎袋并在工单打勾",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "16": {
+      "scene_context": "celestial_collection_point",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "白天自然光充足，无降水",
+      "activity": "三袋过秤并完成交接",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "17": {
+      "scene_context": "celestial_collection_point",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "白天自然光充足，无降水",
+      "activity": "查看清运斗作业标识",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "18": {
+      "scene_context": "celestial_station_roster",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "站内普通照明，白天自然光",
+      "activity": "回站确认固定排班",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "19": {
+      "scene_context": "celestial_street_maintenance",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "白天自然日光，无降水",
+      "activity": "下班路过维护点",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "20": {
+      "scene_context": "celestial_street_exit",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "白天自然日光，无降水",
+      "activity": "按普通下班节奏离开天街",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "11",
+  "risk_level": "HIGH",
+  "risk_score": 81,
+  "risk_tags": [
+    "first_anomaly",
+    "impact_2",
+    "pov_recorder"
+  ],
+  "frame_contract_sha256": "f30475ab00222a23ad78de3d6b17236aa67266ccd12c5685b7f8ebdef4abd1a8",
+  "asset_path": "episodes/天界普通人的一天/media/candidates/scheduled/11-a7fa8102cd4d-a1.png",
+  "asset_sha256": "52394132d18bc73070881dc6c674351d70d82d084b397dae7de8f2105da96935",
+  "scouted_at": "2026-09-12T18:08:39+08:00",
+  "final_critic_still_required": true,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "Dawn-lit extreme-wide descending stone-stair market with crowds in muted gray/blue/beige/brown robes; paving shows scattered small golden and blue reflective flecks consistent with residual star-sand, and the top-of-stairs downward vantage is physically plausible for the record-badge first-person POV (no ghost camera, no visible illegal recorder). No obvious identity/prop/weather/POV break. But a single still cannot confirm the required far-to-near dimming of uncleaned star-sand or that the crowd has stopped detouring; first-anomaly impact-2 scale needs neighboring frames plus final critic.",
+  "confidence": 0.55,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/天界普通人的一天/meta/frame-scouts/11.jsonl"
+}

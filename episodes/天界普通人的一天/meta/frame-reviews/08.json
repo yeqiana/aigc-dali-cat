@@ -1,0 +1,91 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "08",
+  "asset_path": "episodes/天界普通人的一天/media/approved/08.png",
+  "asset_sha256": "7c7749dbbe64255b83b3d7d0f39a5ca4bbf4ae98059cc46b5a7667bb6b1ca8a7",
+  "story_sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d",
+  "storyboard_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11",
+  "visual_contract_sha256": "d8622218004e091e2be58256a42a346bdfb1904df673ba032e205a96a2e9bbac",
+  "environment_frame_sha256": "fcf0b63864b4f603471e36d9af38478b79a966a8cae98ade9813bc40e602997e",
+  "frame_directive_sha256": "0c091e8a95cabb0b7523e3d898aac9c80baa1f01321df88a1e3fc8d962bc52b4",
+  "frame_contract_sha256": "256e384d1cd0721e0d0ec55c68fecec61329c975df14b8a27684fddaee1ab94c",
+  "source_binding": {
+    "story": {
+      "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+      "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+    },
+    "storyboard": {
+      "path": "episodes/天界普通人的一天/docs/03_天界普通人的一天_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 2,
+    "reviewed_at": "2026-09-12T19:36:01+08:00",
+    "review_scope": "FULL_FRAME_SET",
+    "recovered_after_parent_timeout": true,
+    "candidate_sha256": "d7637a654793ce731c384ca0853a3cd3a55d3d8d55e78c08c4607e9e0d818226",
+    "critic_stdout_log_empty_after_parent_timeout": true
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "早市宽景：帚与簸箕在推车与人流之间作业，可见手推车车轮与鞋底压过未清区、人流把砂带回已扫段的画面逻辑，分镜「刚扫出来又被带回去」的因果成立；无靠异常升级制造戏剧性，无第二主角。",
+  "decision": "pass",
+  "story_semantic_trace": {
+    "required": true,
+    "story_role": "escalation",
+    "story_lock": {
+      "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+      "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+    },
+    "frame_contract_sha256": "256e384d1cd0721e0d0ec55c68fecec61329c975df14b8a27684fddaee1ab94c",
+    "evaluation": {
+      "beat_delivered": true,
+      "confidence": 0.9,
+      "method": "isolated CODEX attempt-2 frame semantic critic (review_scope=FULL_FRAME_SET) judged checks.story_beat_fidelity=true on the approved pixels for this escalation frame; the trace records that reviewer judgement, not an inferred pass."
+    },
+    "provenance": {
+      "source": "auto_review",
+      "reviewer": "codex_isolated_semantic_critic",
+      "reviewed_at": "2026-09-12T21:03:24+08:00"
+    }
+  },
+  "caption_sha256": "591521c3c487a605407015250237403f3d8f3c3aeb1e15d62416385800952275"
+}

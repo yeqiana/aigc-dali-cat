@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-12T20:54:43+08:00",
+  "run_id": "1789217676-work",
+  "context": "DAG_FINISH",
+  "elapsed_seconds": 7.0,
+  "elapsed_minutes": 0.12,
+  "performance_status": "WITHIN_BUDGET",
+  "budgets_seconds": {
+    "diagnostic": 3600,
+    "warning": 5400,
+    "exceeded": 7200,
+    "critical": 9000
+  },
+  "image_backend_resource_seconds": 0.0,
+  "generation_utilization_upper_bound": 0.0,
+  "generation_utilization_target_floor": 0.25,
+  "orchestration_bottleneck": false,
+  "classified_step_seconds": 2.172,
+  "unclassified_wall_seconds": 4.828,
+  "unclassified_wall_ratio": 0.6897
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "recorded_at_epoch": 1789209506,
+  "frame": "12",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "generation_route": "codex_subscription",
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "requested_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": 0.8
+  },
+  "provider_raw_canvas": {
+    "width": 1122,
+    "height": 1402,
+    "aspect_ratio": 0.800285307,
+    "exact_requested_canvas": false,
+    "resize_direction_to_release": "downscale"
+  },
+  "ratio_delta": 0.000356633,
+  "normalize_decision": "AUTO_NORMALIZE",
+  "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通人的一天\\media\\raw\\12-1789209506.png",
+  "raw_sha256": "5771ff54dbdd6a8313baa5ead58043fb37e739e74330d7d5b9eaa55c342b7455",
+  "provider_attestation": false,
+  "exact_raw_canvas_guaranteed": false,
+  "receipt_is_evidence_not_authority": true,
+  "reference_transport": "codex_subscription_cli_attachment",
+  "references": [],
+  "recovery": {
+    "kind": "interrupted_user_runner_success",
+    "runner_request_id": "82de70c8bbe447ea9b84751a8137f2db",
+    "source_artifact": "D:\\codex-img\\01a09518-0d41-7ed2-8bf7-68254c73e515\\exec-f503b9ea-68f7-48da-9e35-b889759053b9.png"
+  },
+  "normalization": {
+    "operation": "RESIZE_LANCZOS",
+    "ratio_delta": 0.000357,
+    "crop_applied": false,
+    "reencoded": true,
+    "local_attempts": 1
+  },
+  "release_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通人的一天\\media\\candidates\\scheduled\\12-02e3c84263b7-a1.png",
+    "sha256": "9312e599c4be644b54913786e23bf2f444f4de1b91f35410af777b4fac385216"
+  }
+}

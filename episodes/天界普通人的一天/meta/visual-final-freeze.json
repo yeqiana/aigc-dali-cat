@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "module_version": "2.6.0",
+  "authority": "visual evidence only; captions are deliberately excluded",
+  "caption_changes_invalidate_visual_freeze": false,
+  "accepted_known_defects": true,
+  "frames": [
+    {
+      "frame": "01",
+      "asset_path": "episodes/天界普通人的一天/media/approved/01.png",
+      "asset_sha256": "4c9e1b1c1468de131a83c9147111504c667a18291d54a41645abfc327f602cbf",
+      "frame_contract_sha256": "8c4ded6043cd712458417e803d812d1091333811c81a819339d20fa8557d4e05",
+      "visual_context": {
+        "environment_frame_sha256": "e7a07be32f64df45ab98d6752e35196f3f960f9d120aac8eae8b0c9386cea560",
+        "frame_directive_sha256": "2d2eec756c6ebb7354c980910d1f407bf824c482025fee4ac1fe9a8d8fedc363",
+        "frame_contract_sha256": "8c4ded6043cd712458417e803d812d1091333811c81a819339d20fa8557d4e05"
+      }
+    },
+    {
+      "frame": "02",
+      "asset_path": "episodes/天界普通人的一天/media/approved/02.png",
+      "asset_sha256": "c1bd281058fda2822aea26ba355de76316ed8c46685e1753750654ac17eeaca2",
+      "frame_contract_sha256": "8ab216d0176cb67ed43821685eac02852c0092d9a1f530ef64ff862bfccd7117",
+      "visual_context": {
+        "environment_frame_sha256": "e7a07be32f64df45ab98d6752e35196f3f960f9d120aac8eae8b0c9386cea560",
+        "frame_directive_sha256": "2d2eec756c6ebb7354c980910d1f407bf824c482025fee4ac1fe9a8d8fedc363",
+        "frame_contract_sha256": "8ab216d0176cb67ed43821685eac02852c0092d9a1f530ef64ff862bfccd7117"
+      }
+    },
+    {
+      "frame": "03",
+      "asset_path": "episodes/天界普通人的一天/media/approved/03.png",
+      "asset_sha256": "80ca55a1cefe516b04b1bac6b9c72540662c7e99fdae544bc6e67840d8fb894d",
+      "frame_contract_sha256": "9c36aabda7aa834957fd09138f46ea069a065e48f71b8d8cb395e00b2c771e75",
+      "visual_context": {
+        "environment_frame_sha256": "fcf0b63864b4f603471e36d9af38478b79a966a8cae98ade9813bc40e602997e",
+        "frame_directive_sha256": "82cd3e161d400393a26d253e67dd0b26ff3a1a8a000a779ed41c80448f4fe811",
+        "frame_contract_sha256": "9c36aabda7aa834957fd09138f46ea069a065e48f71b8d8cb395e00b2c771e75"
+      }
+    },
+    {
+      "frame": "04",
+      "asset_path": "episodes/天界普通人的一天/media/approved/04.png",
+      "asset_sha256": "a08ae795dc508456ae707672705de299f889dbf405116d9bf19322e54e2d13c3",
+      "frame_contract_sha256": "ed37a3ff3d3b79fb9e905cf79095815116681848d79dfc486c39f9558e268758",
+      "visual_context": {
+        "environment_frame_sha256": "396666d0d641a3796302ac6e60aa3769f979f2ce2886184242b4779b18aa9eb9",
+        "frame_directive_sha256": "2d2eec756c6ebb7354c980910d1f407bf824c482025fee4ac1fe9a8d8fedc363",
+        "frame_contract_sha256": "ed37a3ff3d3b79fb9e905cf79095815116681848d79dfc486c39f9558e268758"
+      }
+    },
+    {
+      "frame": "05",
+      "asset_path": "episodes/天界普通人的一天/media/approved/05.png",
+      "asset_sha256": "c4315f834a9393d2add9465b895ce711d3bbc22353a13c28488afd6b755e1c7f",
+      "frame_contract_sha256": "e6b224650203be94f131bbaf30995c2a77c7b9c8dab8a9cb74b0d222bfda8f12",
+      "visual_context": {
+        "environment_frame_sha256": "fcf0b63864b4f603471e36d9af38478b79a966a8cae98ade9813bc40e602997e",
+        "frame_directive_sha256": "2683c07c49d20838cae90ec36339a34a484a2cc2448bb0ff97d571327e39296b",
+        "frame_contract_sha256": "e6b224650203be94f131bbaf30995c2a77c7b9c8dab8a9cb74b0d222bfda8f12"
+      }
+    },
+    {
+      "frame": "06",
+      "asset_path": "episodes/天界普通人的一天/media/approved/06.png",
+      "asset_sha256": "0d57ef64bd4c80ad95108aaf948ee5b700653444f8db4230c33d8fc606735b2a",
+      "frame_contract_sha256": "9345a104c57cb3622bc710b0dfa5fce02faf04332ae94f0bebb5b0cc71a1fb86",
+      "visual_context": {
+        "environment_frame_sha256": "fcf0b63864b4f603471e36d9af38478b79a966a8cae98ade9813bc40e602997e",
+        "frame_directive_sha256": "2d2eec756c6ebb7354c980910d1f407bf824c482025fee4ac1fe9a8d8fedc363",
+        "frame_contract_sha256": "9345a104c57cb3622bc710b0dfa5fce02faf04332ae94f0bebb5b0cc71a1fb86"
+      }
+    },
+    {
+      "frame": "07",
+      "asset_path": "episodes/天界普通人的一天/media/approved/07.png",
+      "asset_sha256": "04959cd9487f46d375f19e793e13af6903f25a8ce4c0acf0d948684d1e0c2584",
+      "frame_contract_sha256": "5b960455eba27f07d98479d4b8001a4ccd8732e7a2c1df654cad4dd4e9a08ad4",
+      "visual_context": {
+        "environment_frame_sha256": "fcf0b63864b4f603471e36d9af38478b79a966a8cae98ade9813bc40e602997e",
+        "frame_directive_sha256": "c2335e1009bf5c8a6538c98c8bb18fd7d7cb2f64dbd3ef4cf39302316aa8a8d6",
+        "frame_contract_sha256": "5b960455eba27f07d98479d4b8001a4ccd8732e7a2c1df654cad4dd4e9a08ad4"
+      }
+    },
+    {
+      "frame": "08",
+      "asset_path": "episodes/天界普通人的一天/media/approved/08.png",
+      "asset_sha256": "7c7749dbbe64255b83b3d7d0f39a5ca4bbf4ae98059cc46b5a7667bb6b1ca8a7",
+      "frame_contract_sha256": "256e384d1cd0721e0d0ec55c68fecec61329c975df14b8a27684fddaee1ab94c",
+      "visual_context": {
+        "environment_frame_sha256": "fcf0b63864b4f603471e36d9af38478b79a966a8cae98ade9813bc40e602997e",
+        "frame_directive_sha256": "0c091e8a95cabb0b7523e3d898aac9c80baa1f01321df88a1e3fc8d962bc52b4",
+        "frame_contract_sha256": "256e384d1cd0721e0d0ec55c68fecec61329c975df14b8a27684fddaee1ab94c"
+      }
+    },
+    {
+      "frame": "09",
+      "asset_path": "episodes/天界普通人的一天/media/approved/09.png",
+      "asset_sha256": "45fa07849bffda77b1450a615b0b80149799a22d960bb0349310c211010d80ab",
+      "frame_contract_sha256": "9f3f87212b11fee39da9b141e3c70d0014e48ea94e981b1214ad8161010544a3",
+      "visual_context": {
+        "environment_frame_sha256": "fcf0b63864b4f603471e36d9af38478b79a966a8cae98ade9813bc40e602997e",
+        "frame_directive_sha256": "2d2eec756c6ebb7354c980910d1f407bf824c482025fee4ac1fe9a8d8fedc363",
+        "frame_contract_sha256": "9f3f87212b11fee39da9b141e3c70d0014e48ea94e981b1214ad8161010544a3"
+      }
+    },
+    {
+      "frame": "10",
+      "asset_path": "episodes/天界普通人的一天/media/approved/10.png",
+      "asset_sha256": "c24697d6b7fdeb17cfe6b62e199b22494e87d7c9d59ce339614ce9ed033504d0",
+      "frame_contract_sha256": "af411ac1cd7fc227fcabf5ce6c88a0181baffdab99de944f9576b18039a1cb4a",
+      "visual_context": {
+        "environment_frame_sha256": "fcf0b63864b4f603471e36d9af38478b79a966a8cae98ade9813bc40e602997e",
+        "frame_directive_sha256": "d839f8bef38868906e07e21faef2bc138ea435ddf9a1f74b2c9401773c74d5f1",
+        "frame_contract_sha256": "af411ac1cd7fc227fcabf5ce6c88a0181baffdab99de944f9576b18039a1cb4a"
+      }
+    },
+    {
+      "frame": "11",
+      "asset_path": "episodes/天界普通人的一天/media/approved/11.png",
+      "asset_sha256": "52394132d18bc73070881dc6c674351d70d82d084b397dae7de8f2105da96935",
+      "frame_contract_sha256": "f30475ab00222a23ad78de3d6b17236aa67266ccd12c5685b7f8ebdef4abd1a8",
+      "visual_context": {
+        "environment_frame_sha256": "a339e1544b45acb835cdaf2e47d71c2954b6c01ee2a30ac008890db94c8b3e65",
+        "frame_directive_sha256": "5cafb70f62254be9c5540c9d86efb67db29019977c1b0b79644e8d0e10f8f496",
+        "frame_contract_sha256": "f30475ab00222a23ad78de3d6b17236aa67266ccd12c5685b7f8ebdef4abd1a8"
+      }
+    },
+    {
+      "frame": "12",
+      "asset_path": "episodes/天界普通人的一天/media/approved/12.png",
+      "asset_sha256": "9312e599c4be644b54913786e23bf2f444f4de1b91f35410af777b4fac385216",
+      "frame_contract_sha256": "611dcd6167e060dff42f35d33706b1c9001e7718b4b4037ab081bd5553c8f5e9",
+      "visual_context": {
+        "environment_frame_sha256": "a339e1544b45acb835cdaf2e47d71c2954b6c01ee2a30ac008890db94c8b3e65",
+        "frame_directive_sha256": "af50cea9a73041f118ea636312cb7a3c90799638ec53b00543a7dfb8c1eb5cd4",
+        "frame_contract_sha256": "611dcd6167e060dff42f35d33706b1c9001e7718b4b4037ab081bd5553c8f5e9"
+      }
+    },
+    {
+      "frame": "13",
+      "asset_path": "episodes/天界普通人的一天/media/approved/13.png",
+      "asset_sha256": "7a0ce27f070fbe9db00f49aea257256ca5828800d4bd4097ebf212eea8478d6a",
+      "frame_contract_sha256": "ac3a34f3f4b5680c57a83db59d583b7bac0969af86c748494da27c3e8ba7a1b0",
+      "visual_context": {
+        "environment_frame_sha256": "a339e1544b45acb835cdaf2e47d71c2954b6c01ee2a30ac008890db94c8b3e65",
+        "frame_directive_sha256": "874525bb9abbdbb0a130f12e5cec52b1818ffce484a4daae2514b3973d0b36f8",
+        "frame_contract_sha256": "ac3a34f3f4b5680c57a83db59d583b7bac0969af86c748494da27c3e8ba7a1b0"
+      }
+    },
+    {
+      "frame": "14",
+      "asset_path": "episodes/天界普通人的一天/media/approved/14.png",
+      "asset_sha256": "3246806d89013592f48d45027a99f88fbfc3d6875a23210e3ebb5319e9db44e8",
+      "frame_contract_sha256": "5a41227f4e56069030d3edd0443e6fa01432024235fa165d8eea319b86542807",
+      "visual_context": {
+        "environment_frame_sha256": "080766d7c31bedec23786541cbc6924d2ea87271aefd1f6c5553c2d179688f1b",
+        "frame_directive_sha256": "a5956b30c30519793457f717df0fb9a2a58b689f94aaceae71881e96b8836fe4",
+        "frame_contract_sha256": "5a41227f4e56069030d3edd0443e6fa01432024235fa165d8eea319b86542807"
+      }
+    },
+    {
+      "frame": "15",
+      "asset_path": "episodes/天界普通人的一天/media/approved/15.png",
+      "asset_sha256": "0cf0bb1bf52682cd42bf51088939e24608bf388cd4c7b95d599889b88f3f3c69",
+      "frame_contract_sha256": "10c7ca6d3b1bbe41f5800b93f9622584985aea368f703c3a6c9684742ea17352",
+      "visual_context": {
+        "environment_frame_sha256": "a339e1544b45acb835cdaf2e47d71c2954b6c01ee2a30ac008890db94c8b3e65",
+        "frame_directive_sha256": "df5243862ef6cfee99c98c17c9aa5ed6b1f69157bf5d533babed1b6a3416e99e",
+        "frame_contract_sha256": "10c7ca6d3b1bbe41f5800b93f9622584985aea368f703c3a6c9684742ea17352"
+      }
+    },
+    {
+      "frame": "16",
+      "asset_path": "episodes/天界普通人的一天/media/approved/16.png",
+      "asset_sha256": "a7e89a8aee551c8c1382b4fbd0c760dcc946606abfb4599bf1c13d6fed45b924",
+      "frame_contract_sha256": "c7960794bcc0f8cb8b7ddcac5317decddac6138a238e396f8a3bf69d9e141e56",
+      "visual_context": {
+        "environment_frame_sha256": "eefa1b709a77b548f59597f2dae6c2e98e67506055337c5e5f3fd36fc7ce9bdf",
+        "frame_directive_sha256": "d502e6ec614d0e81c7a60bf31153be6697add8719f099ee6f78dbaecc0ec74f3",
+        "frame_contract_sha256": "c7960794bcc0f8cb8b7ddcac5317decddac6138a238e396f8a3bf69d9e141e56"
+      }
+    },
+    {
+      "frame": "17",
+      "asset_path": "episodes/天界普通人的一天/media/approved/17.png",
+      "asset_sha256": "6d7d44d88dc74ee0c5daa67e4bed6d1318725ad4f32660d67474c1f6dceb0930",
+      "frame_contract_sha256": "06aa863b57f8752128569a26d143bab03aa2e805742db378142a1ed20a5ade8e",
+      "visual_context": {
+        "environment_frame_sha256": "ddd33ccdcb70f7554e440276a1d1b6045285463304b31d555f7a28bd9adab170",
+        "frame_directive_sha256": "c048ed454c72fb43a918db792885eb1ca896ab3808908533ccc08cd14355e185",
+        "frame_contract_sha256": "06aa863b57f8752128569a26d143bab03aa2e805742db378142a1ed20a5ade8e"
+      }
+    },
+    {
+      "frame": "18",
+      "asset_path": "episodes/天界普通人的一天/media/approved/18.png",
+      "asset_sha256": "0c233aa2826705c338b14f99ebb79a5778f6eb8d502d11668f3cbfbc5d56aa9b",
+      "frame_contract_sha256": "e61f65ce8f1489ff1a5b0131376ead27cf2b43dec67321603f43d842e88f6f57",
+      "visual_context": {
+        "environment_frame_sha256": "eefa1b709a77b548f59597f2dae6c2e98e67506055337c5e5f3fd36fc7ce9bdf",
+        "frame_directive_sha256": "871750fd6a55c3cec262f54e08cb0f184ec7ab0aeb9fbbf6500f1729ee601c87",
+        "frame_contract_sha256": "e61f65ce8f1489ff1a5b0131376ead27cf2b43dec67321603f43d842e88f6f57"
+      }
+    },
+    {
+      "frame": "19",
+      "asset_path": "episodes/天界普通人的一天/media/approved/19.png",
+      "asset_sha256": "a5b3d8b5b3be440728e0156f2fe0f104ad554e2a60805c22c33b9ec17f2e54d6",
+      "frame_contract_sha256": "f1a9635b3eb09efd821b5f39b08d0d0ae31263ea9daffae5d8d223cad6643e88",
+      "visual_context": {
+        "environment_frame_sha256": "eefa1b709a77b548f59597f2dae6c2e98e67506055337c5e5f3fd36fc7ce9bdf",
+        "frame_directive_sha256": "12dcc836452dab863987b56c38472ff8f534b98bfe9407f2cce9efc1555d3d1b",
+        "frame_contract_sha256": "f1a9635b3eb09efd821b5f39b08d0d0ae31263ea9daffae5d8d223cad6643e88"
+      }
+    },
+    {
+      "frame": "20",
+      "asset_path": "episodes/天界普通人的一天/media/approved/20.png",
+      "asset_sha256": "de68f30e777f3f50739ae29ce68b16537f453d755caebc6dc0efe4dfb562a364",
+      "frame_contract_sha256": "5e3ad4a81d844a1f51d952835d04d392546239313802222c67662866263cf26b",
+      "visual_context": {
+        "environment_frame_sha256": "eefa1b709a77b548f59597f2dae6c2e98e67506055337c5e5f3fd36fc7ce9bdf",
+        "frame_directive_sha256": "3e6c8be78ef7829c0a65a6d62e8b359c5f7592538175206e049287bc0dd58762",
+        "frame_contract_sha256": "5e3ad4a81d844a1f51d952835d04d392546239313802222c67662866263cf26b"
+      }
+    }
+  ],
+  "summary": {
+    "passed": true,
+    "frame_count": 20,
+    "accepted_known_defects": true
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "05",
+  "risk_level": "HIGH",
+  "risk_score": 63,
+  "risk_tags": [
+    "first_anomaly",
+    "pov_recorder"
+  ],
+  "frame_contract_sha256": "e6b224650203be94f131bbaf30995c2a77c7b9c8dab8a9cb74b0d222bfda8f12",
+  "asset_path": "episodes/天界普通人的一天/media/candidates/scheduled/05-258cb9c5a0bc-a1.png",
+  "asset_sha256": "c4315f834a9393d2add9465b895ce711d3bbc22353a13c28488afd6b755e1c7f",
+  "scouted_at": "2026-09-12T19:42:36+08:00",
+  "final_critic_still_required": true,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "Actual pixels (1080x1350): low first-person view, gloved hand + gray patterned sleeve holding a straw broom pressed to ground, gray gravel/rubble and dark metal dustpan at lower-right, small warm golden gleams on pavement to the right of the swept area. Swept zone reads gray vs nearby glowing specks, so the extinguish cue is present but the required 'gray dead pile vs still-lit untouched edge with a clearly readable light/dark boundary' is only weakly legible, and the near ground reads asphalt/curb rather than carved stone steps. Sky is bright pale-blue to pink-gold (reads sunset-like), brighter and warmer than the contract's 天未亮/云海冷光低照 pre-dawn cold low light. Both points are plausible but not obvious defects; confirming them needs neighbor frame 04 and sequence timing. No visible identity drift, no illegal ghost camera (P01 first-person record badge holds), broom/dustpan/star-sand props present.",
+  "confidence": 0.4,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/天界普通人的一天/meta/frame-scouts/05.jsonl"
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "13",
+  "risk_level": "HIGH",
+  "risk_score": 81,
+  "risk_tags": [
+    "first_anomaly",
+    "impact_2",
+    "pov_recorder"
+  ],
+  "frame_contract_sha256": "ac3a34f3f4b5680c57a83db59d583b7bac0969af86c748494da27c3e8ba7a1b0",
+  "asset_path": "episodes/天界普通人的一天/media/candidates/scheduled/13-e49e671bdc64-a1.png",
+  "asset_sha256": "7a0ce27f070fbe9db00f49aea257256ca5828800d4bd4097ebf212eea8478d6a",
+  "scouted_at": "2026-09-12T18:08:22+08:00",
+  "final_critic_still_required": true,
+  "decision": "PASS_FAST",
+  "issue_codes": [],
+  "notes": "Pixels match Frame 13: first-person record-badge POV at the corner, worn wooden broom laid/extended diagonally by the weathered wall ('扫帚伸过去又停住'), and a lower-left clipboard with a blurred paper form showing an empty checkbox + Chinese text (reads as the '全段清完' work-order tick cue). No people visible is consistent with P01 being the chest-badge photographer (photographer_may_be_fully_visible=false); no illegal/ghost visible recorder beyond own held clipboard/badge edge. Dry sunlit stone street, warm morning light, no precipitation -> matches environment/temporal contract. Anomaly impact_level=2 is a deliberately subtle backlit corner glow ('最后一片微亮只占转角一小段'); no obvious identity/prop/POV/weather/continuity defect and no obvious scale underdelivery readable at this scope.",
+  "confidence": 0.62,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/天界普通人的一天/meta/frame-scouts/13.jsonl"
+}

@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_world_state_sha256": "263885cbbc4223ff386bd4e0e941808dca39a7dae1a2d0fc6a52416829c911af",
+  "world_state_synced": true,
+  "frames": [
+    {
+      "frame": "01",
+      "elapsed_minutes_from_prev": 0,
+      "daypart": "night",
+      "weather": "云海未散冷光低照，石面干燥",
+      "precipitation": "none",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "02",
+      "elapsed_minutes_from_prev": 3,
+      "daypart": "night",
+      "weather": "云海未散冷光低照，石面干燥",
+      "precipitation": "none",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "03",
+      "elapsed_minutes_from_prev": 5,
+      "daypart": "dawn",
+      "weather": "云海未散冷光低照，石面干燥",
+      "precipitation": "none",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": "打卡领单后推门进入落星街，天光仍未亮"
+    },
+    {
+      "frame": "04",
+      "elapsed_minutes_from_prev": 2,
+      "daypart": "dawn",
+      "weather": "云海未散冷光低照，石面干燥",
+      "precipitation": "none",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "05",
+      "elapsed_minutes_from_prev": 2,
+      "daypart": "dawn",
+      "weather": "云海未散冷光低照，石面干燥",
+      "precipitation": "none",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "06",
+      "elapsed_minutes_from_prev": 3,
+      "daypart": "dawn",
+      "weather": "云海未散冷光低照，石面干燥",
+      "precipitation": "none",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "07",
+      "elapsed_minutes_from_prev": 2,
+      "daypart": "dawn",
+      "weather": "云海未散冷光低照，石面干燥",
+      "precipitation": "none",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "08",
+      "elapsed_minutes_from_prev": 20,
+      "daypart": "dawn",
+      "weather": "云海未散冷光低照，石面干燥",
+      "precipitation": "none",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": "早市开始人流增加，同一路段持续往返补扫"
+    },
+    {
+      "frame": "09",
+      "elapsed_minutes_from_prev": 15,
+      "daypart": "dawn",
+      "weather": "云海未散冷光低照，石面干燥",
+      "precipitation": "none",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "10",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dawn",
+      "weather": "云海未散冷光低照，石面干燥",
+      "precipitation": "none",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "11",
+      "elapsed_minutes_from_prev": 25,
+      "daypart": "morning",
+      "weather": "晨光越过云桥后转晴，云海渐散，无降水",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "第一缕晨光越过云桥照进街面，剩余星砂自然熄灭"
+    },
+    {
+      "frame": "12",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "morning",
+      "weather": "晨光越过云桥后转晴，云海渐散，无降水",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "13",
+      "elapsed_minutes_from_prev": 8,
+      "daypart": "morning",
+      "weather": "晨光越过云桥后转晴，云海渐散，无降水",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "14",
+      "elapsed_minutes_from_prev": 1,
+      "daypart": "morning",
+      "weather": "晨光越过云桥后转晴，云海渐散，无降水",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "15",
+      "elapsed_minutes_from_prev": 1,
+      "daypart": "morning",
+      "weather": "晨光越过云桥后转晴，云海渐散，无降水",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "16",
+      "elapsed_minutes_from_prev": 20,
+      "daypart": "morning",
+      "weather": "晨光越过云桥后转晴，云海渐散，无降水",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "清扫收尾后推车前往基层清运点过秤交接"
+    },
+    {
+      "frame": "17",
+      "elapsed_minutes_from_prev": 3,
+      "daypart": "morning",
+      "weather": "晨光越过云桥后转晴，云海渐散，无降水",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "18",
+      "elapsed_minutes_from_prev": 25,
+      "daypart": "morning",
+      "weather": "晨光越过云桥后转晴，云海渐散，无降水",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "交秤后回站确认次日固定排班"
+    },
+    {
+      "frame": "19",
+      "elapsed_minutes_from_prev": 40,
+      "daypart": "day",
+      "weather": "晨光越过云桥后转晴，云海渐散，无降水",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "换班之后天光完全放开，进入上午后半段的白天天街"
+    },
+    {
+      "frame": "20",
+      "elapsed_minutes_from_prev": 15,
+      "daypart": "day",
+      "weather": "晨光越过云桥后转晴，云海渐散，无降水",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    }
+  ]
+}

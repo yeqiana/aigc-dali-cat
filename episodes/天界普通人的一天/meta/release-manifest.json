@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode": {
+    "id": "天界普通人的一天",
+    "series": "天界普通人的一天",
+    "title": "天界普通人的一天",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "4:5"
+  },
+  "release": {
+    "version": "v1.0",
+    "body_frame_count": 20,
+    "publish_dir": "episodes/天界普通人的一天/production/publish",
+    "body_glob": "[0-9][0-9].png",
+    "cover_path": "episodes/天界普通人的一天/production/publish/13.png",
+    "contact_sheet_path": "episodes/天界普通人的一天/production/contact-sheets/publish-final.jpg"
+  },
+  "artifacts": {
+    "story": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+    "storyboard": "episodes/天界普通人的一天/docs/03_天界普通人的一天_20张正式分镜_DRAFT_V1.0.md",
+    "visual_spec": "episodes/天界普通人的一天/docs/04_天界普通人的一天_视觉规范_V1.0.md",
+    "captions": "episodes/天界普通人的一天/meta/subtitles.yaml",
+    "publish_copy": "episodes/天界普通人的一天/release/publish-copy.md",
+    "production_review": "episodes/天界普通人的一天/release/production-review.md",
+    "propagation_card": "episodes/天界普通人的一天/release/propagation-card.md"
+  },
+  "quality": {
+    "production_gate": "pending",
+    "propagation_score": 8.8,
+    "s_min_score": 8.5,
+    "propagation_decision": "publishable",
+    "publish_decision": "go",
+    "decision_note": "直接用户终稿接受（meta/final-acceptance.json）受控例外放行：meta/frame-semantic-review.json 保持 summary.passed=false，Frame 03 hook 缺失可读星砂为已接受已知缺陷，证据原样保留不冒充通过；production_gate 保持 pending；详见 release/production-review.md。"
+  },
+  "publication": {
+    "platform": "douyin",
+    "actual_title": "我在天界扫街：这条路的星光，是我扫灭的",
+    "description": "天界云海边的基层清扫站，今天是我第一次独立试岗：落星街主路、三袋回收料，规定时间前完成记录和交秤。石阶上铺着一层极细的星砂，天没亮的时候整条街像撒了星光；扫拢、离地、装袋，那点光当场就没了。天亮后没扫的砂自己暗了，人流直接踩过去，被压进石缝的灰砂得用帚尖一点点挑出来。最后一片还亮着的时候，工单只剩“全段清完”这一格——我还是把扫帚压了下去。三袋过秤，试岗通过。真正让我愣住的是清运斗侧面那行字：路面回填料。我早上扫走的东西，过完秤又被铺回台阶的裂缝里。\n\n人物、地点、情节均为虚构；内容由 AI 生成。",
+    "topics": [
+      "#天界日常",
+      "#第一视角",
+      "#普通人视角",
+      "#奇幻",
+      "#细思极恐",
+      "#环卫",
+      "#AI图文故事"
+    ],
+    "pinned_comment": "回头看图17：料斗侧面写着“路面回填料”，旁边那辆小车装的也是同一种灰白砂。所以图07里路缝的砂，本来就是上一场落星夜扫下来的。虚构故事，AI 生成。",
+    "published_at": null,
+    "timing_window": null,
+    "post_url": null
+  },
+  "data_review": {
+    "report_path": "reports/数据验收报告.md",
+    "completed_checkpoints": [],
+    "first_hour_metrics": {
+      "captured_at": null,
+      "exposure": null,
+      "plays": null,
+      "likes": null,
+      "comments": null,
+      "saves": null,
+      "shares": null,
+      "followers_gained": null,
+      "profile_visits": null,
+      "avg_images_viewed": null,
+      "swipe_away_rate": null,
+      "caption_expand_rate": null
+    }
+  }
+}

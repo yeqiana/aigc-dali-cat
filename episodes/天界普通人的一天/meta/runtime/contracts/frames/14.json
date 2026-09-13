@@ -1,0 +1,680 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "14",
+  "derived_cache": true,
+  "authority": "Story + Storyboard + Character Contract + Character Visual + Shot Progression + Visual Narrative Core V2.2 + World Identity V2.2.1 + Character Appearance Anchor + Capture Event + World State + Temporal + Wardrobe + story-gates + Visual Profile",
+  "generated_at": "2026-09-12T22:09:21+08:00",
+  "source_trace": {
+    "story": {
+      "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+      "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+    },
+    "storyboard": {
+      "path": "episodes/天界普通人的一天/docs/03_天界普通人的一天_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+    },
+    "story_gates": {
+      "path": "episodes/天界普通人的一天/meta/story-gates.json",
+      "sha256": "bff6f573250bf9d2dc55a7805c020d1ffbac4503c4f1d8e7107160a42009de3b"
+    },
+    "visual_profile": {
+      "path": "standards/visual_profiles/profiles/M02_HEAVEN_MUNDANE_WORKER_V1.json",
+      "sha256": "3a537011cb8e36512d6bf0d61492748c59fa3a5cd71d9d23c97f2cb2826f70fc"
+    },
+    "character_contract": {
+      "path": "meta/character-contract.json",
+      "sha256": "df5dd09e9fc48602901c0d18a43d9d737a48dda7717a380e966842da7c15ae42"
+    },
+    "capture_event_contract": {
+      "path": "meta/capture-event-contract.json",
+      "sha256": "8d2904e0a62b6607170cdd33dfa4ed9e83ef0f22e46e81d3a6128c2c89db88e2"
+    },
+    "world_state": {
+      "path": "meta/world-state.json",
+      "sha256": "263885cbbc4223ff386bd4e0e941808dca39a7dae1a2d0fc6a52416829c911af"
+    },
+    "character_visual_contract": {
+      "path": "meta/character-visual-contract.json",
+      "sha256": "3b79283db5b8fa296804b6f3fad0e7605548c7283fcc499a80adde5285727340"
+    },
+    "shot_progression": {
+      "path": "meta/shot-progression-review.json",
+      "sha256": "fd263ee808c1d9b8e6adbad2252e8dbf7a1f4eda4d9c4463c4f1432d26fe41d5"
+    },
+    "temporal_continuity": {
+      "path": "meta/temporal-continuity.json",
+      "sha256": "6ce6bf88f4ee092f58064ade13f64d2d008f55d412167239f652fe1c8ac3b741"
+    },
+    "wardrobe_contract": {
+      "path": "meta/wardrobe-contract.json",
+      "sha256": "2d5f4c112f0dc082413914f67a02f48557e220e53d167ee90b58a498b7282077"
+    },
+    "world_identity_default": {
+      "path": "config/profiles/world_identity/default.json",
+      "sha256": "6abdb8eb90bc79fc983e3d045fb25eb8a894501d44d5576b9ce1d099cdfe01a9"
+    },
+    "world_identity_override": {
+      "path": "meta/world-identity.json",
+      "sha256": "fe52ef65787d8826eae810d43974bb553d9e9338d3cd84c1b899600fa7733e19"
+    },
+    "character_appearance_anchor": {
+      "path": "meta/runtime/contracts/character-appearance-anchor.json",
+      "sha256": "04d88cf65631da17af508c2e4848a6408f9e4f5f5395e59c96dd9ec11ce25bff"
+    }
+  },
+  "storyboard_frame": {
+    "mode": "whole_storyboard_fallback",
+    "text": "",
+    "sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+  },
+  "source_binding": {
+    "story": {
+      "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+      "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+    },
+    "storyboard": {
+      "path": "episodes/天界普通人的一天/docs/03_天界普通人的一天_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+  },
+  "identity_requirements": [],
+  "story_semantic_requirements": {
+    "required": true,
+    "story_role": "climax",
+    "story_function": null,
+    "story_lock": {
+      "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+      "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+    }
+  },
+  "hash_material": {
+    "schema_version": 1,
+    "frame": "14",
+    "story_sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d",
+    "storyboard_frame_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11",
+    "storyboard_extraction_mode": "whole_storyboard_fallback",
+    "visual_profile": {
+      "profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1",
+      "profile_path": "standards/visual_profiles/profiles/M02_HEAVEN_MUNDANE_WORKER_V1.json",
+      "profile_sha256": "3a537011cb8e36512d6bf0d61492748c59fa3a5cd71d9d23c97f2cb2826f70fc",
+      "capture_profile": "auto"
+    },
+    "authenticity_card": {
+      "story_era": "虚构东方天界的当代基层日常生活，不映射现实年代与国家",
+      "location": "天界云海公共生活与基层工作区的天街石阶与基层单位",
+      "photographer": "P01 本人；用随身上岗记录牌第一人称随走随录，没有第二名固定持机者",
+      "shooting_reason": "按上岗规程记录作业过程与交接；星砂异常出现后只是顺手把画面留着，不以调查、取证或传播为目的",
+      "primary_capture": {
+        "id": "P01_record_badge",
+        "device": "随身上岗记录牌（自带留影功能）"
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": null,
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "体力和光线充足时的清扫、比对、过秤段落，画面挂点稳定、构图可读",
+        "restricted": "凌晨低照度、云海冷光、沟口贴地与摊位边狭窄机位造成曝光和构图受限",
+        "lost_control": "全街熄光与最后一撮清走时身体动作变大，允许短暂倾斜与运动模糊，但不出现表演式甩镜"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": null,
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": null
+      }
+    },
+    "character_contract": {
+      "schema_version": 1,
+      "status": "LOCKED",
+      "derived_from_pools": true,
+      "not_episode_stage": true,
+      "created_at": "2026-09-12T09:05:40+08:00",
+      "selection_seed": 5369321215071765457,
+      "era": {
+        "bucket": "modern_2020s",
+        "year": 2026,
+        "source": "fictional_world_human_baseline",
+        "world_era": "fictional"
+      },
+      "world_identity": {
+        "profile_id": "CELESTIAL_MUNDANE_WORLD_V1",
+        "country": "天界（虚构世界）",
+        "region": "云海公共生活与基层工作区",
+        "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+        "resident_context": "天界普通本地居民与基层工作人员",
+        "effective_sha256": "cf4829b2a2d1a1215700b60692b8c9bd1b0449949ffbca26295a562a09c88581"
+      },
+      "fictional_world": {
+        "profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1",
+        "reality_basis": "fictional_world_mundane",
+        "ordinary_life_rule": "天界基层岗位按普通工作流程运转，人物是普通工作人员而非英雄/神仙主角",
+        "capture_device": "随身上岗记录牌（自带留影功能）"
+      },
+      "cast": {
+        "type": "single_male",
+        "size": 1,
+        "relationship": "单人",
+        "members": [
+          {
+            "id": "P01",
+            "pov": true,
+            "gender": "male",
+            "age": 25,
+            "build": "普通年轻人体型",
+            "hair": "普通黑色日常发型",
+            "clothing_anchor": "朴素耐磨的米白灰蓝天界基层工作服，真实布料褶皱与使用痕迹，无华丽仙袍",
+            "device_anchor": "随身上岗记录牌（自带留影功能）",
+            "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+            "resident_context": "天界普通本地居民与基层工作人员"
+          }
+        ]
+      },
+      "pov": {
+        "character_id": "P01",
+        "first_person": true
+      },
+      "entry": {
+        "type": "casual_work",
+        "label": "生活化工作",
+        "source": "visual_profile:M02_HEAVEN_MUNDANE_WORKER_V1",
+        "reason": "P01 过去两个月一直做机动跟班，本集是第一次独立试岗落星街；按工单完成三袋回收料、全段清扫与交秤后即可转为固定落星街早班。"
+      },
+      "scene": {
+        "primary_category": "casual_work_site",
+        "primary_place": "天界普通基层工作站"
+      },
+      "role_policy": {
+        "protagonist_role": "天界普通基层工作人员",
+        "career_function": "none",
+        "solves_anomaly_professionally": false
+      },
+      "no_anomaly_test": {
+        "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+        "ordinary_day_plan": "凌晨打卡领取独立试岗工单，清扫落星街、应对早市人流、装满三袋回收料、过秤交接、回站确认次日固定排班后下班",
+        "pass": true,
+        "must_be_rechecked_before_story_lock": true,
+        "rechecked_against_final_story": true,
+        "recheck_note": "对第 1 轮语义评审返修后的 Story Lock 复核：删掉星砂发光与熄灭规则后，仍是一个机动清扫员第一次独立试岗的完整早班——领工单、清路段、三袋回收料过秤、交接、确认固定排班，成立。"
+      },
+      "continuity_policy": {
+        "member_count_changes_require_story_event": true,
+        "pov_character_id_stable": true,
+        "clothing_and_device_anchors_propagate_to_frame_contract": true
+      },
+      "ordinary_person_score": 100,
+      "forbidden_role_check": {
+        "pass": true,
+        "hits": []
+      },
+      "story_build_note": "这是 M02 天界普通工作人员 Story Build Input Contract。P01 为天界云海基层工作站普通清扫员，过去两个月做机动跟班，本集第一次独立试岗落星街；通过只获得固定早班路线与稳定作息，不是升官、竞赛或英雄任务。",
+      "locked_at": "2026-09-12T10:06:00+08:00"
+    },
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "P01，25 岁天界基层清扫员（男），自然黑色日常短发，米白灰蓝朴素耐磨基层工作服，随身佩带上岗记录牌；全片唯一主要人物与第一人称拍摄者",
+        "location": "天界云海基层工作站后勤间与器械间、天街石阶（上/中/下段）、早市摊位边、台阶下排水沟口、基层清运点、基层食堂；白天石阶必须与凌晨同一材质与坡度",
+        "key_prop": "随身上岗记录牌、工单、扫帚、簸箕、手推车、清运袋、星砂（铺地发光、扫拢/离地/装袋即熄成灰白细砂）",
+        "wardrobe": "米白灰蓝朴素耐磨基层工作服，全天不更换，只按劳动强度出现汗渍与褶皱",
+        "weather_time": "落星夜后的凌晨（天未亮、云海未散冷光）→ 第一缕晨光越过云桥 → 白天上午，户外石面干燥无降水"
+      }
+    },
+    "environment": {
+      "condition": "第一缕晨光越过云桥后的天街石阶中段下段与早市边",
+      "time_of_day": "pre_dawn_to_late_morning",
+      "temperature_feel": "凌晨云海冷光偏凉，天亮后户外转温和；全天无降水",
+      "ground_state": "天街石阶表面干燥并铺有落星夜留下的极细微星砂，清扫后露出干燥石面",
+      "visibility": "凌晨受云海冷光与低照度限制，天亮后自然光充足；站内为普通基层照明",
+      "wind": "云海间弱风到间歇冷风",
+      "precipitation": "全天无降水，石面干燥",
+      "physical_cues": [
+        "自然晨光沿街面推进",
+        "剩余星砂自然熄灭",
+        "摊位原生灯与晨光并存"
+      ],
+      "conditional_effects": [],
+      "visibility_priority": "最后一片背光微亮被扫帚压住的接触瞬间必须清楚可读，结果留到 15"
+    },
+    "active_environment_segments": [
+      "first_dawn_light"
+    ],
+    "environment_frame_sha256": "080766d7c31bedec23786541cbc6924d2ea87271aefd1f6c5553c2d179688f1b",
+    "frame_directive": {
+      "narrative_role": "climax",
+      "frame_mode": "climax_impact",
+      "impact_level": 3,
+      "required_visual_cues": [
+        "扫帚真正压向最后一片微光的接触瞬间",
+        "背光石缝的暗部与微亮形成对照",
+        "只表现动作不出现熄灭结果"
+      ],
+      "scale_reference": "扫帚头与一小片微光形成明确大小对照",
+      "escalation_from": 13,
+      "generation_depends_on": []
+    },
+    "frame_directive_sha256": "a5956b30c30519793457f717df0fb9a2a58b689f94aaceae71881e96b8836fe4",
+    "capture_event": {
+      "photographer_id": "P01",
+      "capture_device": "随身上岗记录牌（自带留影功能）",
+      "why_capture_now": "扫帚真正压下去时记录牌记录接触瞬间",
+      "device_position": "胸前记录牌随下压动作贴近地面",
+      "subject_awareness": "not_applicable",
+      "operator_state": "做出选择，动作果断",
+      "framing_constraint": "只表现接触动作，不提前展示熄灭结果",
+      "retained_reason": "保留因为这是为试岗与固定排班付出的高潮动作",
+      "causal_defects": []
+    },
+    "capture_event_sha256": "ee9e0eba82939fe6097659e282fa362a81b7919916deaccba9bcd19bcc1295af",
+    "world_state": {
+      "time": "第一缕晨光越过云桥的清晨",
+      "location": "天街石阶上段",
+      "weather": "晨光推进街面，云海渐散，无降水",
+      "characters": {
+        "P01": {
+          "gender": "male",
+          "age": 25,
+          "build": "普通年轻人体型",
+          "hair": "普通黑色日常发型",
+          "clothing_anchor": "朴素耐磨的米白灰蓝天界基层工作服，真实布料褶皱与使用痕迹，无华丽仙袍",
+          "device_anchor": "随身上岗记录牌（自带留影功能）",
+          "status": "present"
+        }
+      },
+      "recorder": {
+        "photographer_id": "P01",
+        "active_device": "随身上岗记录牌（自带留影功能）"
+      },
+      "props": {
+        "work_order": "独立试岗 1/1 工单",
+        "roster_board": "基层排班板，P01 仍在机动栏",
+        "broom": "普通清扫扫帚",
+        "dustpan": "普通簸箕",
+        "hand_cart": "手推清扫车",
+        "collection_bags": "三只空回收袋",
+        "star_sand": "落星夜铺在石阶上的极细微微亮星砂"
+      },
+      "anomaly": {
+        "phase": "final_extinguish",
+        "mechanism": "星砂铺地时微亮，被扫拢、离地或装袋即熄灭成灰白细砂；天亮后剩余部分自然熄灭；熄灭后作为普通灰白路面回填料回收再利用",
+        "rule": "清扫接触即使星砂当场熄灭，不可恢复"
+      }
+    },
+    "world_state_sha256": "04ae93ee53e901cae97925a42d00548f929b0663f1e2a264741c5006b1c9e178",
+    "character_visual_contract": {
+      "schema_version": 2,
+      "status": "LOCKED",
+      "created_at": "2026-09-12T10:08:24+08:00",
+      "lock_model": "identity_spec__provisional_baseline_master__final_visual_lock_master",
+      "primary_cast_ids": [
+        "P01"
+      ],
+      "members": {
+        "P01": {
+          "visual_priority": "primary",
+          "attractiveness": "moderately_above_average_but_real",
+          "body_build": "lean_proportionate_natural",
+          "body_build_story_override_reason": "",
+          "face_identity": {
+            "original_character": true,
+            "independently_distinct_face": true,
+            "celebrity_likeness": false,
+            "influencer_face": false,
+            "fashion_model_styling": false,
+            "reference_similarity_target": "low",
+            "skin_texture": "natural_visible_texture",
+            "slight_asymmetry": true,
+            "identity_spec_locked": true
+          },
+          "hair": {
+            "haircut_anchor": "自然黑色日常短发，顶部略蓬松，鬓角利落干净，无烫染无造型感",
+            "hair_length_anchor": "耳上短发，后颈不过领",
+            "allowed_state_variation": [
+              "sweaty",
+              "windblown",
+              "messy",
+              "hair_flat_under_hat_line"
+            ],
+            "exact_reference_hairstyle_copy": false
+          },
+          "world_identity": {
+            "profile_id": "CELESTIAL_MUNDANE_WORLD_V1",
+            "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+            "resident_context": "天界普通本地居民与基层工作人员",
+            "effective_sha256": "cf4829b2a2d1a1215700b60692b8c9bd1b0449949ffbca26295a562a09c88581"
+          },
+          "presentation": {
+            "heavy_makeup": false,
+            "porcelain_skin": false,
+            "excessive_face_symmetry": false,
+            "ai_beauty_face": false,
+            "camera_friendly_but_believable": true
+          }
+        }
+      },
+      "reference_policy": {
+        "allowed_reference_roles": [
+          "age_vibe",
+          "attractiveness_range",
+          "realism",
+          "capture_style",
+          "clothing_direction",
+          "color_mood"
+        ],
+        "must_not_copy": [
+          "exact_face_geometry",
+          "exact_eye_nose_mouth_combination",
+          "exact_hairstyle",
+          "distinctive_personal_markers",
+          "celebrity_identity"
+        ],
+        "reference_is_not_identity_master": true,
+        "real_person_exact_likeness_forbidden": true
+      },
+      "master_policy": {
+        "preferred_identity_source": [
+          "character_individual_crop",
+          "character_pixel_master",
+          "ordinary_baseline_group_selfie",
+          "original_character_library_asset"
+        ],
+        "preproduction_only_must_not_generate_master_images": true,
+        "ordinary_baseline_can_become_group_identity_master": true,
+        "pixel_master_artifact": "meta/character-pixel-master.json",
+        "crop_manifest_artifact": "meta/character-master-crops.json",
+        "provisional_master_after_baseline_review_pass": true,
+        "final_master_after_four_admission_pass": true,
+        "derived_crops_are_not_new_identity_generation": true
+      },
+      "realism_priority": true,
+      "note": "单人第一人称 Episode：primary_cast_ids 只有 P01，没有第二身份需要锁定。Story Lock 只锁规格；baseline 单独 PASS 后建立临时像素母版，四项 Visual Lock 全 PASS 后升级为正式母版。"
+    },
+    "shot_progression": {
+      "frame": "14",
+      "camera_position": "转角近地面向前压的动作视角",
+      "subject_distance": "近景",
+      "primary_subject": "扫帚压向最后微亮区域的接触瞬间",
+      "action": "P01 做出选择，把扫帚真正压下去",
+      "visual_function": "把高潮从发现转成主动选择动作",
+      "capture_purpose": "记录最后一段清扫动作",
+      "pov_mode": "记录牌前倾第一人称",
+      "location_zone": "落星街末段最后清扫格",
+      "shot_scale": "close",
+      "scene_position_id": "final_broom_choice_action_14",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "partial_illumination",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "light_and_shadow",
+        "purpose": "利用转角真实明暗边界只拍接触动作，结果留给下一帧，避免同一画面把选择和结果压扁。",
+        "physical_anchor": "末段转角阴影与晨光交界",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "P01 已决定以完成试岗为优先，必须清掉最后未完成区域",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    "temporal_state": {
+      "frame": "14",
+      "elapsed_minutes_from_prev": 1,
+      "daypart": "morning",
+      "weather": "晨光越过云桥后转晴，云海渐散，无降水",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    "wardrobe": {
+      "scene_context": "celestial_street_steps",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "晨光推进街面，无降水",
+      "activity": "压下扫帚做出最后选择",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "heaven_worker_duty",
+          "garments": [
+            "米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹",
+            "同款耐磨基层工作长裤"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "普通耐磨工作鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "references": [],
+    "visual_narrative": {
+      "core_id": "VISUAL_NARRATIVE_CORE_V2.2",
+      "activation_mode": "production",
+      "authority": "PREPRODUCTION_DERIVED_CONTRACT",
+      "frame": "14",
+      "camera_authorship": {
+        "owner_class": "primary_photographer",
+        "pov_mode": "记录牌前倾第一人称",
+        "camera_position": "转角近地面向前压的动作视角",
+        "ghost_camera_forbidden": true,
+        "camera_owner_must_be_physically_explainable": true
+      },
+      "moment": {
+        "action_in_progress": "P01 做出选择，把扫帚真正压下去",
+        "save_reason": "记录最后一段清扫动作",
+        "must_not_be_result_only_showcase": true
+      },
+      "shot_grammar": {
+        "family": "other:转角近地面向前压的动作视角",
+        "subject_distance": "近景",
+        "location_zone": "落星街末段最后清扫格",
+        "first_person_is_logic_not_fixed_composition": true,
+        "repeated_hand_phone_distant_anomaly_template_forbidden": true
+      },
+      "narrative_evidence": {
+        "new_information": true,
+        "new_information_this_frame": "把高潮从发现转成主动选择动作",
+        "anomaly_logic_stage": "causal_contradiction",
+        "human_action_stage": "act",
+        "narrative_redundancy_forbidden": true,
+        "continuity_exception_reason": ""
+      },
+      "human_response": {
+        "human_present": true,
+        "emotion": {
+          "state": "urgent",
+          "intensity": 3,
+          "trigger": "P01 已决定以完成试岗为优先，必须清掉最后未完成区域",
+          "response_sync": "single_subject"
+        },
+        "interaction": {
+          "type": "none",
+          "actor": "",
+          "target": "",
+          "action": "",
+          "meaningful": false
+        }
+      },
+      "camera_roster_policy": {
+        "primary_photographer_required": true,
+        "primary_photographer_preferred_share": "70-80%",
+        "secondary_photographer_allowed": true,
+        "secondary_requires_reason": true,
+        "allowed_handoffs": [
+          "phone_handed_to_companion",
+          "companion_records_primary",
+          "selfie_when_story_requires",
+          "timer_or_fixed_mount_when_explicit",
+          "third_companion_when_present_in_story"
+        ],
+        "all_known_participants_visible_rule": "若所有已知同行者都完整入镜，必须能解释相机来源；否则视为幽灵摄影机。"
+      },
+      "sequence_grammar": {
+        "selection": "global_default",
+        "sequence_grammar_id": "SG01_PERSONAL_EVIDENCE_SEQUENCE_V1",
+        "sequence_grammar_path": "standards/sequence_grammars/SG01_personal_evidence_sequence.json",
+        "authority_source": "global_default_sequence_grammar"
+      },
+      "camera_defect_physics": {
+        "defects_must_have_physical_cause": true,
+        "forbid_decorative_fake_damage": true,
+        "forbid_every_night_frame_equally_blurred": true
+      },
+      "visual_memory_continuity": {
+        "time_of_day_must_progress_plausibly": true,
+        "time_reversal_requires_explicit_flashback_or_jump": true,
+        "persist": [
+          "character_appearance",
+          "wardrobe",
+          "vehicle",
+          "carried_props",
+          "route_and_location",
+          "weather",
+          "lighting_direction_when_same_scene",
+          "anomaly_evidence"
+        ],
+        "no_independent_beauty_time_selection_per_frame": true
+      },
+      "screen_content_physics": {
+        "must_be_internally_consistent": true,
+        "must_match_scene_time_route_and_action_when_story_critical": true,
+        "screen_reflection_and_orientation_must_be_physical": true,
+        "forbid_fake_impossible_camera_ui": true,
+        "critical_text_should_be_verified_or_added_in_post": true
+      }
+    },
+    "visual_narrative_sha256": "4eb6a6037da568e83e7843649f458f30e9826b55911e3b6fde750bcb579127e1",
+    "world_identity": {
+      "schema_version": 1,
+      "contract_version": "2.2.1",
+      "source": "EPISODE_OVERRIDE",
+      "inherit_default": false,
+      "profile_id": "CELESTIAL_MUNDANE_WORLD_V1",
+      "world": {
+        "country": "天界（虚构世界）",
+        "region": "云海公共生活与基层工作区",
+        "culture_context": "东方天界的普通居民生活与基层单位文化；强调通勤、食堂、交接、工单和下班等日常秩序，不做神话英雄叙事",
+        "language_context": "作品可读文字使用简体中文呈现，世界内视为天界通用文字",
+        "architecture_context": "自洽的东方天界基层公共设施：朴素石木工作站、云桥、通勤站台、宿舍与食堂；禁止宏大神殿宣传片化",
+        "traffic_context": "天界本地通勤与工作运输规则",
+        "consumer_goods_context": "天界普通居民与基层单位的朴素日用品"
+      },
+      "population": {
+        "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+        "resident_context": "天界普通本地居民与基层工作人员",
+        "default_protagonist_age_range": [
+          19,
+          30
+        ],
+        "default_protagonist_identity": "二十多岁的普通天界基层工作人员，东方式自然年轻人外貌，不英雄化",
+        "ethnicity_policy": "fictional_world_local_population",
+        "foreign_character_policy": "story_defined"
+      },
+      "visual_rules": {
+        "visible_text_context": "简体中文可读呈现",
+        "do_not_import_foreign_architecture_by_default": false,
+        "do_not_import_foreign_population_by_default": false,
+        "do_not_import_foreign_cultural_props_by_default": false,
+        "preserve_location_specific_chinese_regional_detail": false
+      },
+      "default_config_path": "config/profiles/world_identity/default.json",
+      "default_config_sha256": "6abdb8eb90bc79fc983e3d045fb25eb8a894501d44d5576b9ce1d099cdfe01a9",
+      "override_path": "meta/world-identity.json",
+      "override_sha256": "fe52ef65787d8826eae810d43974bb553d9e9338d3cd84c1b899600fa7733e19",
+      "effective_sha256": "cf4829b2a2d1a1215700b60692b8c9bd1b0449949ffbca26295a562a09c88581"
+    },
+    "world_identity_sha256": "cf4829b2a2d1a1215700b60692b8c9bd1b0449949ffbca26295a562a09c88581",
+    "character_appearance_anchor": {
+      "schema_version": 1,
+      "contract_version": "2.2.1",
+      "derived_cache": true,
+      "world_identity_profile_id": "CELESTIAL_MUNDANE_WORLD_V1",
+      "world_identity_effective_sha256": "cf4829b2a2d1a1215700b60692b8c9bd1b0449949ffbca26295a562a09c88581",
+      "character_contract_path": "meta/character-contract.json",
+      "character_contract_sha256": "df5dd09e9fc48602901c0d18a43d9d737a48dda7717a380e966842da7c15ae42",
+      "character_visual_contract_path": "meta/character-visual-contract.json",
+      "character_visual_contract_sha256": "3b79283db5b8fa296804b6f3fad0e7605548c7283fcc499a80adde5285727340",
+      "members": {
+        "P01": {
+          "character_id": "P01",
+          "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+          "resident_context": "天界普通本地居民与基层工作人员",
+          "gender": "male",
+          "age": 25,
+          "build": "普通年轻人体型",
+          "body_build": "lean_proportionate_natural",
+          "hair": {
+            "character_contract_anchor": "普通黑色日常发型",
+            "haircut_anchor": "自然黑色日常短发，顶部略蓬松，鬓角利落干净，无烫染无造型感",
+            "hair_length_anchor": "耳上短发，后颈不过领"
+          },
+          "clothing_anchor": "朴素耐磨的米白灰蓝天界基层工作服，真实布料褶皱与使用痕迹，无华丽仙袍",
+          "device_anchor": "随身上岗记录牌（自带留影功能）",
+          "visual_priority": "primary",
+          "identity_rules": {
+            "same_person_across_frames": true,
+            "original_character": true,
+            "independently_distinct_face": true,
+            "reference_similarity_target": "low",
+            "natural_skin_texture": "natural_visible_texture",
+            "allowed_variation": [
+              "sweaty",
+              "windblown",
+              "messy",
+              "hair_flat_under_hat_line"
+            ],
+            "forbidden_unmotivated_drift": [
+              "nationality/cultural identity",
+              "apparent age",
+              "face identity",
+              "haircut or hair length",
+              "body build",
+              "character role",
+              "clothing anchor unless wardrobe contract changes it"
+            ]
+          }
+        }
+      },
+      "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+      "anchor_sha256": "30e6bf4fc5eb2a49295acc48ed94bf94eeccba38c9859b5c5351cbc5f67c0341"
+    },
+    "character_appearance_anchor_sha256": "30e6bf4fc5eb2a49295acc48ed94bf94eeccba38c9859b5c5351cbc5f67c0341"
+  },
+  "contract_sha256": "5a41227f4e56069030d3edd0443e6fa01432024235fa165d8eea319b86542807",
+  "prompt_contract": "RESOLVED FRAME CONTRACT | frame=14 | sha256=5a41227f4e56069030d3edd0443e6fa01432024235fa165d8eea319b86542807\nThis derived contract is mandatory. Locked sources outrank ad-hoc prompt wording.\n\n[STORYBOARD FRAME]\nlocalized excerpt unavailable; bind storyboard frame hash=dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11\n\n[VISUAL DNA]\nprofile=M02_HEAVEN_MUNDANE_WORKER_V1 | 天界普通工作人员日常\nauthority=meta/visual-profile.json + meta/story-gates.json\nprinciple=拍天界上班族的日常，不是拍神话宣传片；世界物理自洽优先，纪实拍法不放松。\nreality_first=true\nera=fictional_world_mundane\npeople=ordinary_unprepared_not_heroic\nsubject_awareness=mostly_unaware_or_natural\npractical_available_light=true\ncinematic_lighting=forbidden_by_default\ncommercial_hdr=forbidden\nbeautification=forbidden\nscene_cleaning=forbidden_by_default\nlife_clutter=preserve\nenvironment_imperfection=preserve\nvisual_polish_ceiling=documentary_realism\nanomaly=embedded_in_mundane_work_life_before_spectacle\ncamera_authorship=required\nghost_camera=forbidden\ncontinuity=strict\nmust_keep=普通岗位与工作流程; 自洽的世界物理; 非摆拍的手持记录感; 每帧可追溯的持机者与拍摄理由\nforbidden=神仙大战大片; 神话宣传片; 电影级特效\n----- GLOBAL CAPTURE GRAMMAR -----\ncapture_grammar=FIRST_PERSON_CASUAL_SNAPSHOT_V1\nsequence_grammar=SG01_PERSONAL_EVIDENCE_SEQUENCE_V1\nCAPTURE GRAMMAR HAS HIGHER PRIORITY THAN VISUAL PROFILE composition/photography when they conflict.\nprinciple=摄影者必须属于事件现场，而不是全知导演镜头。默认采用第一人称或同行者持机的私人记录语法，人物非摆拍、构图有生活性缺陷。\nCAMERA AUTHORSHIP:\ncamera_operator=participant_or_companion_inside_event\nviewpoint=first_person_or_companion_eye\ncamera_position=physically_plausible_human_position\nfloating_omniscient_camera=false\nghost_camera_forbidden=true\neach_frame_must_resolve_camera_owner=true\nSEQUENCE CAMERA ROSTER:\nprimary_photographer_required=true\nprimary_photographer_preferred_share=70-80%\nsecondary_requires_reason=true\nall_participants_visible_rule=若所有已知同行者都完整入镜，必须能解释相机来源；否则视为幽灵摄影机。\nSNAPSHOT LANGUAGE:\nhandheld=true\nunposed=true\nimperfect_framing=true\nfirst_person_is_logic_not_fixed_composition=true\nphone_in_frame_not_required=true\nsubjects do not need to face camera; avoid arranging people for the image\nallow partial occlusion and foreground body/hand/doorframe/vehicle edge when physically natural\nMOMENT:\nmust_express_ongoing_action=true\nmust_have_save_reason=true\navoid_result_only_showcase=true\nSEQUENCE OPENING MEMORY:\nopening_goal=先建立关系、同行状态、正常生活和情感资产，再让异常侵入。\nlarge_group_photo_rule=优先非正式广角自拍、定时、同行者随手拍或反射；允许不看镜头、裁切和正在动作中。\nSEQUENCE SHOT DIVERSITY:\nshot_diversity_rule=第一人称是摄影逻辑，不是固定的手+手机+远景模板。\navoid_same_shot_family_more_than_consecutive=2\nten_frame_distinct_shot_families_min=4\nrepeated_hand_phone_distant_anomaly_template_forbidden=true\nCAMERA DEFECT PHYSICS:\ndefects_must_have_physical_cause=true\nforbid_decorative_fake_damage=true\nforbid_every_night_frame_equally_blurred=true\nSEQUENCE VISUAL MEMORY:\ntime_of_day_must_progress_plausibly=true\ntime_reversal_requires_explicit_flashback_or_jump=true\nno_independent_beauty_time_selection_per_frame=true\npersist_continuity=character_appearance; wardrobe; vehicle; carried_props; route_and_location; weather; lighting_direction_when_same_scene; anomaly_evidence\nSEQUENCE SCREEN CONTENT PHYSICS:\nscreen_must_be_internally_consistent=true\nscreen_must_match_scene_when_story_critical=true\nscreen_reflection_and_orientation_must_be_physical=true\nforbid_fake_impossible_camera_ui=true\nsubject_visibility_rule=若核心主角必须出现在画面中，默认由同行者/现场另一人持机记录；仍禁止全知第三人称和导演式机位。\nselfie_rule=自拍不是默认。只有剧情/Frame Contract明确要求自拍时才使用自拍构图。\nvisual profile supplies texture/era/color/light; capture grammar supplies per-frame camera authorship, moment and camera physics; sequence grammar supplies multi-frame pacing and continuity\ndo not convert film/cinematic texture into staged movie-still blocking\ncapture_forbidden=omniscient_third_person_camera; director_blocking; staged_group_lineup; symmetrical_hero_framing; poster_composition; commercial_promo_composition; characters_arranged_for_camera; floating_camera_outside_human_position\ncapture_review_questions=谁拍的？ | 为什么此刻拍？ | 摄影者在哪里？ | 相机为什么在这个人手里？ | 正在发生什么？ | 为什么这张会被保存？ | 有没有幽灵摄影机？ | 和前后帧人物/衣服/车/时间/天气是否连续？ | 摄影缺陷是否有真实物理原因？ | 屏幕/UI 是否成立？ | 是否又重复“手 + 手机 + 远景异常”？\n----- END GLOBAL CAPTURE GRAMMAR -----\ncapture physics and story era override decorative texture\ndo not silently substitute another visual profile or capture grammar\n\n[CAPTURE / AUTHENTICITY]\n{\"aspect_ratio\":\"4:5\",\"camera_rules\":{\"current_device_may_be_fully_visible\":false,\"current_device_visibility_explanation\":null,\"photographer_may_be_fully_visible\":false,\"photographer_visibility_explanation\":null},\"capture_states\":{\"lost_control\":\"全街熄光与最后一撮清走时身体动作变大，允许短暂倾斜与运动模糊，但不出现表演式甩镜\",\"restricted\":\"凌晨低照度、云海冷光、沟口贴地与摊位边狭窄机位造成曝光和构图受限\",\"stable\":\"体力和光线充足时的清扫、比对、过秤段落，画面挂点稳定、构图可读\"},\"location\":\"天界云海公共生活与基层工作区的天街石阶与基层单位\",\"photographer\":\"P01 本人；用随身上岗记录牌第一人称随走随录，没有第二名固定持机者\",\"primary_capture\":{\"device\":\"随身上岗记录牌（自带留影功能）\",\"id\":\"P01_record_badge\"},\"secondary_captures\":[],\"secondary_source_explanation\":null,\"shooting_reason\":\"按上岗规程记录作业过程与交接；星砂异常出现后只是顺手把画面留着，不以调查、取证或传播为目的\",\"story_era\":\"虚构东方天界的当代基层日常生活，不映射现实年代与国家\"}\n\n[CHARACTER / POV CONTRACT]\n{\"cast\":{\"members\":[{\"age\":25,\"build\":\"普通年轻人体型\",\"clothing_anchor\":\"朴素耐磨的米白灰蓝天界基层工作服，真实布料褶皱与使用痕迹，无华丽仙袍\",\"device_anchor\":\"随身上岗记录牌（自带留影功能）\",\"gender\":\"male\",\"hair\":\"普通黑色日常发型\",\"id\":\"P01\",\"nationality_context\":\"天界居民（虚构世界身份，不映射现实国籍）\",\"pov\":true,\"resident_context\":\"天界普通本地居民与基层工作人员\"}],\"relationship\":\"单人\",\"size\":1,\"type\":\"single_male\"},\"continuity_policy\":{\"clothing_and_device_anchors_propagate_to_frame_contract\":true,\"member_count_changes_require_story_event\":true,\"pov_character_id_stable\":true},\"created_at\":\"2026-09-12T09:05:40+08:00\",\"derived_from_pools\":true,\"entry\":{\"label\":\"生活化工作\",\"reason\":\"P01 过去两个月一直做机动跟班，本集是第一次独立试岗落星街；按工单完成三袋回收料、全段清扫与交秤后即可转为固定落星街早班。\",\"source\":\"visual_profile:M02_HEAVEN_MUNDANE_WORKER_V1\",\"type\":\"casual_work\"},\"era\":{\"bucket\":\"modern_2020s\",\"source\":\"fictional_world_human_baseline\",\"world_era\":\"fictional\",\"year\":2026},\"fictional_world\":{\"capture_device\":\"随身上岗记录牌（自带留影功能）\",\"ordinary_life_rule\":\"天界基层岗位按普通工作流程运转，人物是普通工作人员而非英雄/神仙主角\",\"profile_id\":\"M02_HEAVEN_MUNDANE_WORKER_V1\",\"reality_basis\":\"fictional_world_mundane\"},\"forbidden_role_check\":{\"hits\":[],\"pass\":true},\"locked_at\":\"2026-09-12T10:06:00+08:00\",\"no_anomaly_test\":{\"must_be_rechecked_before_story_lock\":true,\"ordinary_day_plan\":\"凌晨打卡领取独立试岗工单，清扫落星街、应对早市人流、装满三袋回收料、过秤交接、回站确认次日固定排班后下班\",\"pass\":true,\"question\":\"如果删掉所有异常，这一天是否仍像真实生活？\",\"recheck_note\":\"对第 1 轮语义评审返修后的 Story Lock 复核：删掉星砂发光与熄灭规则后，仍是一个机动清扫员第一次独立试岗的完整早班——领工单、清路段、三袋回收料过秤、交接、确认固定排班，成立。\",\"rechecked_against_final_story\":true},\"not_episode_stage\":true,\"ordinary_person_score\":100,\"pov\":{\"character_id\":\"P01\",\"first_person\":true},\"role_policy\":{\"career_function\":\"none\",\"protagonist_role\":\"天界普通基层工作人员\",\"solves_anomaly_professionally\":false},\"scene\":{\"primary_category\":\"casual_work_site\",\"primary_place\":\"天界普通基层工作站\"},\"schema_version\":1,\"selection_seed\":5369321215071765457,\"status\":\"LOCKED\",\"story_build_note\":\"这是 M02 天界普通工作人员 Story Build Input Contract。P01 为天界云海基层工作站普通清扫员，过去两个月做机动跟班，本集第一次独立试岗落星街；通过只获得固定早班路线与稳定作息，不是升官、竞赛或英雄任务。\",\"world_identity\":{\"country\":\"天界（虚构世界）\",\"effective_sha256\":\"cf4829b2a2d1a1215700b60692b8c9bd1b0449949ffbca26295a562a09c88581\",\"nationality_context\":\"天界居民（虚构世界身份，不映射现实国籍）\",\"profile_id\":\"CELESTIAL_MUNDANE_WORLD_V1\",\"region\":\"云海公共生活与基层工作区\",\"resident_context\":\"天界普通本地居民与基层工作人员\"}}\n\n[WORLD IDENTITY V2.2.1]\nWORLD_IDENTITY_PROFILE=CELESTIAL_MUNDANE_WORLD_V1\ncountry=天界（虚构世界）\nregion=云海公共生活与基层工作区\nculture_context=东方天界的普通居民生活与基层单位文化；强调通勤、食堂、交接、工单和下班等日常秩序，不做神话英雄叙事\nlanguage_context=作品可读文字使用简体中文呈现，世界内视为天界通用文字\narchitecture_context=自洽的东方天界基层公共设施：朴素石木工作站、云桥、通勤站台、宿舍与食堂；禁止宏大神殿宣传片化\npopulation=天界普通本地居民与基层工作人员\ndefault_character=二十多岁的普通天界基层工作人员，东方式自然年轻人外貌，不英雄化\nnationality_context=天界居民（虚构世界身份，不映射现实国籍）\nFollow the explicit Episode world identity.\nDo not force ethnicity inside China; preserve natural Chinese regional/ethnic diversity unless Story explicitly specifies it.\n\n[CHARACTER APPEARANCE ANCHOR V2.2.1]\n{\"members\":{\"P01\":{\"age\":25,\"body_build\":\"lean_proportionate_natural\",\"build\":\"普通年轻人体型\",\"character_id\":\"P01\",\"clothing_anchor\":\"朴素耐磨的米白灰蓝天界基层工作服，真实布料褶皱与使用痕迹，无华丽仙袍\",\"device_anchor\":\"随身上岗记录牌（自带留影功能）\",\"gender\":\"male\",\"hair\":{\"character_contract_anchor\":\"普通黑色日常发型\",\"hair_length_anchor\":\"耳上短发，后颈不过领\",\"haircut_anchor\":\"自然黑色日常短发，顶部略蓬松，鬓角利落干净，无烫染无造型感\"},\"identity_rules\":{\"allowed_variation\":[\"sweaty\",\"windblown\",\"messy\",\"hair_flat_under_hat_line\"],\"forbidden_unmotivated_drift\":[\"nationality/cultural identity\",\"apparent age\",\"face identity\",\"haircut or hair length\",\"body build\",\"character role\",\"clothing anchor unless wardrobe contract changes it\"],\"independently_distinct_face\":true,\"natural_skin_texture\":\"natural_visible_texture\",\"original_character\":true,\"reference_similarity_target\":\"low\",\"same_person_across_frames\":true},\"nationality_context\":\"天界居民（虚构世界身份，不映射现实国籍）\",\"resident_context\":\"天界普通本地居民与基层工作人员\",\"visual_priority\":\"primary\"}},\"rule\":\"Keep the same person across frames. Natural changes in expression, pose, sweat, wetness, lighting and story-motivated hair state are allowed; unmotivated face/age/nationality/haircut/body drift is forbidden.\",\"world_identity_profile_id\":\"CELESTIAL_MUNDANE_WORLD_V1\"}\n\n[CONTINUITY]\n{\"anchors\":{\"key_prop\":\"随身上岗记录牌、工单、扫帚、簸箕、手推车、清运袋、星砂（铺地发光、扫拢/离地/装袋即熄成灰白细砂）\",\"location\":\"天界云海基层工作站后勤间与器械间、天街石阶（上/中/下段）、早市摊位边、台阶下排水沟口、基层清运点、基层食堂；白天石阶必须与凌晨同一材质与坡度\",\"protagonist\":\"P01，25 岁天界基层清扫员（男），自然黑色日常短发，米白灰蓝朴素耐磨基层工作服，随身佩带上岗记录牌；全片唯一主要人物与第一人称拍摄者\",\"wardrobe\":\"米白灰蓝朴素耐磨基层工作服，全天不更换，只按劳动强度出现汗渍与褶皱\",\"weather_time\":\"落星夜后的凌晨（天未亮、云海未散冷光）→ 第一缕晨光越过云桥 → 白天上午，户外石面干燥无降水\"},\"required\":[\"location\",\"key_prop\",\"weather_time\"]}\n\n[ENVIRONMENT PHYSICS]\n{\"condition\":\"第一缕晨光越过云桥后的天街石阶中段下段与早市边\",\"conditional_effects\":[],\"ground_state\":\"天街石阶表面干燥并铺有落星夜留下的极细微星砂，清扫后露出干燥石面\",\"physical_cues\":[\"自然晨光沿街面推进\",\"剩余星砂自然熄灭\",\"摊位原生灯与晨光并存\"],\"precipitation\":\"全天无降水，石面干燥\",\"temperature_feel\":\"凌晨云海冷光偏凉，天亮后户外转温和；全天无降水\",\"time_of_day\":\"pre_dawn_to_late_morning\",\"visibility\":\"凌晨受云海冷光与低照度限制，天亮后自然光充足；站内为普通基层照明\",\"visibility_priority\":\"最后一片背光微亮被扫帚压住的接触瞬间必须清楚可读，结果留到 15\",\"wind\":\"云海间弱风到间歇冷风\"}\n\n[CAPTURE EVENT]\n{\"capture_device\":\"随身上岗记录牌（自带留影功能）\",\"causal_defects\":[],\"device_position\":\"胸前记录牌随下压动作贴近地面\",\"framing_constraint\":\"只表现接触动作，不提前展示熄灭结果\",\"operator_state\":\"做出选择，动作果断\",\"photographer_id\":\"P01\",\"retained_reason\":\"保留因为这是为试岗与固定排班付出的高潮动作\",\"subject_awareness\":\"not_applicable\",\"why_capture_now\":\"扫帚真正压下去时记录牌记录接触瞬间\"}\n\n[PERSISTENT WORLD STATE]\n{\"anomaly\":{\"mechanism\":\"星砂铺地时微亮，被扫拢、离地或装袋即熄灭成灰白细砂；天亮后剩余部分自然熄灭；熄灭后作为普通灰白路面回填料回收再利用\",\"phase\":\"final_extinguish\",\"rule\":\"清扫接触即使星砂当场熄灭，不可恢复\"},\"characters\":{\"P01\":{\"age\":25,\"build\":\"普通年轻人体型\",\"clothing_anchor\":\"朴素耐磨的米白灰蓝天界基层工作服，真实布料褶皱与使用痕迹，无华丽仙袍\",\"device_anchor\":\"随身上岗记录牌（自带留影功能）\",\"gender\":\"male\",\"hair\":\"普通黑色日常发型\",\"status\":\"present\"}},\"location\":\"天街石阶上段\",\"props\":{\"broom\":\"普通清扫扫帚\",\"collection_bags\":\"三只空回收袋\",\"dustpan\":\"普通簸箕\",\"hand_cart\":\"手推清扫车\",\"roster_board\":\"基层排班板，P01 仍在机动栏\",\"star_sand\":\"落星夜铺在石阶上的极细微微亮星砂\",\"work_order\":\"独立试岗 1/1 工单\"},\"recorder\":{\"active_device\":\"随身上岗记录牌（自带留影功能）\",\"photographer_id\":\"P01\"},\"time\":\"第一缕晨光越过云桥的清晨\",\"weather\":\"晨光推进街面，云海渐散，无降水\"}\n\n[CHARACTER VISUAL / ORIGINAL IDENTITY]\n{\"created_at\":\"2026-09-12T10:08:24+08:00\",\"lock_model\":\"identity_spec__provisional_baseline_master__final_visual_lock_master\",\"master_policy\":{\"crop_manifest_artifact\":\"meta/character-master-crops.json\",\"derived_crops_are_not_new_identity_generation\":true,\"final_master_after_four_admission_pass\":true,\"ordinary_baseline_can_become_group_identity_master\":true,\"pixel_master_artifact\":\"meta/character-pixel-master.json\",\"preferred_identity_source\":[\"character_individual_crop\",\"character_pixel_master\",\"ordinary_baseline_group_selfie\",\"original_character_library_asset\"],\"preproduction_only_must_not_generate_master_images\":true,\"provisional_master_after_baseline_review_pass\":true},\"members\":{\"P01\":{\"attractiveness\":\"moderately_above_average_but_real\",\"body_build\":\"lean_proportionate_natural\",\"body_build_story_override_reason\":\"\",\"face_identity\":{\"celebrity_likeness\":false,\"fashion_model_styling\":false,\"identity_spec_locked\":true,\"independently_distinct_face\":true,\"influencer_face\":false,\"original_character\":true,\"reference_similarity_target\":\"low\",\"skin_texture\":\"natural_visible_texture\",\"slight_asymmetry\":true},\"hair\":{\"allowed_state_variation\":[\"sweaty\",\"windblown\",\"messy\",\"hair_flat_under_hat_line\"],\"exact_reference_hairstyle_copy\":false,\"hair_length_anchor\":\"耳上短发，后颈不过领\",\"haircut_anchor\":\"自然黑色日常短发，顶部略蓬松，鬓角利落干净，无烫染无造型感\"},\"presentation\":{\"ai_beauty_face\":false,\"camera_friendly_but_believable\":true,\"excessive_face_symmetry\":false,\"heavy_makeup\":false,\"porcelain_skin\":false},\"visual_priority\":\"primary\",\"world_identity\":{\"effective_sha256\":\"cf4829b2a2d1a1215700b60692b8c9bd1b0449949ffbca26295a562a09c88581\",\"nationality_context\":\"天界居民（虚构世界身份，不映射现实国籍）\",\"profile_id\":\"CELESTIAL_MUNDANE_WORLD_V1\",\"resident_context\":\"天界普通本地居民与基层工作人员\"}}},\"note\":\"单人第一人称 Episode：primary_cast_ids 只有 P01，没有第二身份需要锁定。Story Lock 只锁规格；baseline 单独 PASS 后建立临时像素母版，四项 Visual Lock 全 PASS 后升级为正式母版。\",\"primary_cast_ids\":[\"P01\"],\"realism_priority\":true,\"reference_policy\":{\"allowed_reference_roles\":[\"age_vibe\",\"attractiveness_range\",\"realism\",\"capture_style\",\"clothing_direction\",\"color_mood\"],\"must_not_copy\":[\"exact_face_geometry\",\"exact_eye_nose_mouth_combination\",\"exact_hairstyle\",\"distinctive_personal_markers\",\"celebrity_identity\"],\"real_person_exact_likeness_forbidden\":true,\"reference_is_not_identity_master\":true},\"schema_version\":2,\"status\":\"LOCKED\"}\n\n[SHOT PROGRESSION / ACTION / ANOMALY LOGIC]\n{\"action\":\"P01 做出选择，把扫帚真正压下去\",\"anomaly_concealment\":{\"adds_information\":true,\"carrier\":\"light_and_shadow\",\"physical_anchor\":\"末段转角阴影与晨光交界\",\"purpose\":\"利用转角真实明暗边界只拍接触动作，结果留给下一帧，避免同一画面把选择和结果压扁。\"},\"anomaly_logic_stage\":\"causal_contradiction\",\"camera_position\":\"转角近地面向前压的动作视角\",\"capture_purpose\":\"记录最后一段清扫动作\",\"cinematic_reference\":{\"exact_shot_recreation\":false,\"reference_id\":\"\",\"technique_translation\":\"\"},\"continuity_exception_reason\":\"\",\"emotion\":{\"intensity\":3,\"response_sync\":\"single_subject\",\"state\":\"urgent\",\"trigger\":\"P01 已决定以完成试岗为优先，必须清掉最后未完成区域\"},\"frame\":\"14\",\"human_action_stage\":\"act\",\"human_present\":true,\"interaction\":{\"action\":\"\",\"actor\":\"\",\"meaningful\":false,\"target\":\"\",\"type\":\"none\"},\"lighting_design\":{\"contrast_mode\":\"partial_illumination\",\"invented_cinematic_light\":false,\"physically_motivated\":true,\"practical_source\":\"sky_light\",\"suspense_function\":\"reveal_partial_information\"},\"location_zone\":\"落星街末段最后清扫格\",\"new_information\":true,\"pov_mode\":\"记录牌前倾第一人称\",\"primary_subject\":\"扫帚压向最后微亮区域的接触瞬间\",\"scene_position_id\":\"final_broom_choice_action_14\",\"shot_scale\":\"close\",\"subject_distance\":\"近景\",\"visual_function\":\"把高潮从发现转成主动选择动作\"}\n\n[TEMPORAL CONTINUITY]\n{\"ambient_light\":\"daylight\",\"daypart\":\"morning\",\"elapsed_minutes_from_prev\":1,\"frame\":\"14\",\"large_transition\":false,\"precipitation\":\"none\",\"transition_reason\":\"\",\"weather\":\"晨光越过云桥后转晴，云海渐散，无降水\"}\n\n[SCENE-AWARE WARDROBE]\n{\"activity\":\"压下扫帚做出最后选择\",\"location_type\":\"outdoor\",\"outfits\":{\"P01\":{\"activity_fit\":\"PASS\",\"aesthetic_fit\":\"pretty_realistic\",\"change_reason\":\"\",\"footwear\":\"普通耐磨工作鞋\",\"garments\":[\"米白灰蓝朴素耐磨基层工作服上衣，真实布料褶皱与使用痕迹\",\"同款耐磨基层工作长裤\"],\"headwear\":\"\",\"identity_consistent\":true,\"leg_layer\":\"\",\"look_id\":\"heaven_worker_duty\",\"outer_layer\":\"\",\"present\":true,\"temperature_fit\":\"PASS\",\"weather_fit\":\"PASS\"}},\"scene_context\":\"celestial_street_steps\",\"temperature_band\":\"mild\",\"weather\":\"晨光推进街面，无降水\"}\n\n[VISUAL NARRATIVE CORE V2.2]\n{\"activation_mode\":\"production\",\"authority\":\"PREPRODUCTION_DERIVED_CONTRACT\",\"camera_authorship\":{\"camera_owner_must_be_physically_explainable\":true,\"camera_position\":\"转角近地面向前压的动作视角\",\"ghost_camera_forbidden\":true,\"owner_class\":\"primary_photographer\",\"pov_mode\":\"记录牌前倾第一人称\"},\"camera_defect_physics\":{\"defects_must_have_physical_cause\":true,\"forbid_decorative_fake_damage\":true,\"forbid_every_night_frame_equally_blurred\":true},\"camera_roster_policy\":{\"all_known_participants_visible_rule\":\"若所有已知同行者都完整入镜，必须能解释相机来源；否则视为幽灵摄影机。\",\"allowed_handoffs\":[\"phone_handed_to_companion\",\"companion_records_primary\",\"selfie_when_story_requires\",\"timer_or_fixed_mount_when_explicit\",\"third_companion_when_present_in_story\"],\"primary_photographer_preferred_share\":\"70-80%\",\"primary_photographer_required\":true,\"secondary_photographer_allowed\":true,\"secondary_requires_reason\":true},\"core_id\":\"VISUAL_NARRATIVE_CORE_V2.2\",\"frame\":\"14\",\"human_response\":{\"emotion\":{\"intensity\":3,\"response_sync\":\"single_subject\",\"state\":\"urgent\",\"trigger\":\"P01 已决定以完成试岗为优先，必须清掉最后未完成区域\"},\"human_present\":true,\"interaction\":{\"action\":\"\",\"actor\":\"\",\"meaningful\":false,\"target\":\"\",\"type\":\"none\"}},\"moment\":{\"action_in_progress\":\"P01 做出选择，把扫帚真正压下去\",\"must_not_be_result_only_showcase\":true,\"save_reason\":\"记录最后一段清扫动作\"},\"narrative_evidence\":{\"anomaly_logic_stage\":\"causal_contradiction\",\"continuity_exception_reason\":\"\",\"human_action_stage\":\"act\",\"narrative_redundancy_forbidden\":true,\"new_information\":true,\"new_information_this_frame\":\"把高潮从发现转成主动选择动作\"},\"screen_content_physics\":{\"critical_text_should_be_verified_or_added_in_post\":true,\"forbid_fake_impossible_camera_ui\":true,\"must_be_internally_consistent\":true,\"must_match_scene_time_route_and_action_when_story_critical\":true,\"screen_reflection_and_orientation_must_be_physical\":true},\"sequence_grammar\":{\"authority_source\":\"global_default_sequence_grammar\",\"selection\":\"global_default\",\"sequence_grammar_id\":\"SG01_PERSONAL_EVIDENCE_SEQUENCE_V1\",\"sequence_grammar_path\":\"standards/sequence_grammars/SG01_personal_evidence_sequence.json\"},\"shot_grammar\":{\"family\":\"other:转角近地面向前压的动作视角\",\"first_person_is_logic_not_fixed_composition\":true,\"location_zone\":\"落星街末段最后清扫格\",\"repeated_hand_phone_distant_anomaly_template_forbidden\":true,\"subject_distance\":\"近景\"},\"visual_memory_continuity\":{\"no_independent_beauty_time_selection_per_frame\":true,\"persist\":[\"character_appearance\",\"wardrobe\",\"vehicle\",\"carried_props\",\"route_and_location\",\"weather\",\"lighting_direction_when_same_scene\",\"anomaly_evidence\"],\"time_of_day_must_progress_plausibly\":true,\"time_reversal_requires_explicit_flashback_or_jump\":true}}\n\n[FRAME DIRECTIVE]\n{\"escalation_from\":13,\"frame_mode\":\"climax_impact\",\"generation_depends_on\":[],\"impact_level\":3,\"narrative_role\":\"climax\",\"required_visual_cues\":[\"扫帚真正压向最后一片微光的接触瞬间\",\"背光石缝的暗部与微亮形成对照\",\"只表现动作不出现熄灭结果\"],\"scale_reference\":\"扫帚头与一小片微光形成明确大小对照\"}\n\n[REFERENCES CONTRACT]\n[]\n\nHard rule: reality constrains capture physics, not anomaly scale. Do not weaken impact_level or remove required scale references to make the scene easier."
+}

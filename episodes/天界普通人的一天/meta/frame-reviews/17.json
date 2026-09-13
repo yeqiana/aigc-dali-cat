@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "17",
+  "asset_path": "episodes/天界普通人的一天/media/approved/17.png",
+  "asset_sha256": "6d7d44d88dc74ee0c5daa67e4bed6d1318725ad4f32660d67474c1f6dceb0930",
+  "story_sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d",
+  "storyboard_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11",
+  "visual_contract_sha256": "d8622218004e091e2be58256a42a346bdfb1904df673ba032e205a96a2e9bbac",
+  "environment_frame_sha256": "ddd33ccdcb70f7554e440276a1d1b6045285463304b31d555f7a28bd9adab170",
+  "frame_directive_sha256": "c048ed454c72fb43a918db792885eb1ca896ab3808908533ccc08cd14355e185",
+  "frame_contract_sha256": "06aa863b57f8752128569a26d143bab03aa2e805742db378142a1ed20a5ade8e",
+  "source_binding": {
+    "story": {
+      "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+      "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+    },
+    "storyboard": {
+      "path": "episodes/天界普通人的一天/docs/03_天界普通人的一天_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 2,
+    "reviewed_at": "2026-09-12T19:36:01+08:00",
+    "review_scope": "FULL_FRAME_SET",
+    "recovered_after_parent_timeout": true,
+    "candidate_sha256": "d7637a654793ce731c384ca0853a3cd3a55d3d8d55e78c08c4607e9e0d818226",
+    "critic_stdout_log_empty_after_parent_timeout": true
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "料斗侧面细节与分镜一致：清运斗侧面「路面回填料」字样清晰可读，旁边另一辆小车已装着同类灰白砂，结尾第一重重读（这些「垃圾」重新成为街道材料）在画面里成立；标签是普通作业标识，未引入新异常。",
+  "decision": "pass",
+  "caption_sha256": "c474ae3eb620a5eba13d10fd598dbc716edab03cb163e72307d4f8293a33a51f"
+}

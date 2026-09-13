@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "19",
+  "risk_level": "HIGH",
+  "risk_score": 71,
+  "risk_tags": [
+    "ending",
+    "payoff",
+    "pov_recorder"
+  ],
+  "frame_contract_sha256": "f1a9635b3eb09efd821b5f39b08d0d0ae31263ea9daffae5d8d223cad6643e88",
+  "asset_path": "episodes/天界普通人的一天/media/approved/19.png",
+  "asset_sha256": "a5b3d8b5b3be440728e0156f2fe0f104ad554e2a60805c22c33b9ec17f2e54d6",
+  "scouted_at": "2026-09-12T21:44:27+08:00",
+  "final_critic_still_required": true,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "Daylight 4:5 first-person frame at the 落星街 daytime maintenance point: the mid-right worker (white cap, white-blue jacket, gloves) tips a metal scoop of pale-gray aggregate into a cracked step joint, and the gray two-wheeled hopper beside him carries black text 路面回填料, so the frame-19 primary action and key-prop cue are present. Dry unlit stone, clearing daylight, no glow or star-sand residue - consistent with payoff impact_level 1 (no anomaly owed here) plus the temporal/weather lock. Open POV item: the extreme-left edge holds a heavily cropped, soft-focus profile close-up of a man's face wearing a gray-white jacket with blue panels, a dark shirt and a black body strap - the same uniform family as P01 - and no second full body explains the camera. If that foreground person is P01, the chest 记录牌 could not record his own face (photographer self-visibility is false and each frame must resolve a physically explainable camera owner). frame-reviews/19.json raised the same ambiguity and left it for manual confirmation, so this needs neighbor/full-story context and cannot be settled from this single frame.",
+  "confidence": 0.45,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/天界普通人的一天/meta/frame-scouts/19.jsonl"
+}

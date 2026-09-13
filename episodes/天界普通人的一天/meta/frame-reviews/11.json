@@ -1,0 +1,91 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "11",
+  "asset_path": "episodes/天界普通人的一天/media/approved/11.png",
+  "asset_sha256": "52394132d18bc73070881dc6c674351d70d82d084b397dae7de8f2105da96935",
+  "story_sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d",
+  "storyboard_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11",
+  "visual_contract_sha256": "d8622218004e091e2be58256a42a346bdfb1904df673ba032e205a96a2e9bbac",
+  "environment_frame_sha256": "a339e1544b45acb835cdaf2e47d71c2954b6c01ee2a30ac008890db94c8b3e65",
+  "frame_directive_sha256": "5cafb70f62254be9c5540c9d86efb67db29019977c1b0b79644e8d0e10f8f496",
+  "frame_contract_sha256": "f30475ab00222a23ad78de3d6b17236aa67266ccd12c5685b7f8ebdef4abd1a8",
+  "source_binding": {
+    "story": {
+      "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+      "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+    },
+    "storyboard": {
+      "path": "episodes/天界普通人的一天/docs/03_天界普通人的一天_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 2,
+    "reviewed_at": "2026-09-12T19:36:01+08:00",
+    "review_scope": "FULL_FRAME_SET",
+    "recovered_after_parent_timeout": true,
+    "candidate_sha256": "d7637a654793ce731c384ca0853a3cd3a55d3d8d55e78c08c4607e9e0d818226",
+    "critic_stdout_log_empty_after_parent_timeout": true
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "晨光推进宽景：暖阳已照到石阶，街面近处仍可见细碎金色反光颗粒，通勤人流直接踩在石阶上通过、不再绕行，「天亮使剩余星砂自然熄灭 + 人流更直接踩散它」的世界状态变化可见；光源只来自天空与晨光，无额外电影灯。软性观察：「从远到近逐段失去微光」的过渡只是弱可读（金色反光主要集中在中下段近处，未见清晰熄灭分界），建议作为文本/视觉审计的复核点。",
+  "decision": "pass",
+  "story_semantic_trace": {
+    "required": true,
+    "story_role": "escalation",
+    "story_lock": {
+      "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+      "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+    },
+    "frame_contract_sha256": "f30475ab00222a23ad78de3d6b17236aa67266ccd12c5685b7f8ebdef4abd1a8",
+    "evaluation": {
+      "beat_delivered": true,
+      "confidence": 0.9,
+      "method": "isolated CODEX attempt-2 frame semantic critic (review_scope=FULL_FRAME_SET) judged checks.story_beat_fidelity=true on the approved pixels for this escalation frame; the trace records that reviewer judgement, not an inferred pass."
+    },
+    "provenance": {
+      "source": "auto_review",
+      "reviewer": "codex_isolated_semantic_critic",
+      "reviewed_at": "2026-09-12T21:03:24+08:00"
+    }
+  },
+  "caption_sha256": "573f491276c17d731c26a108ff529af9a44f0377e24289df3fec22116dcdfa37"
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "天界普通人的一天",
+  "series": "天界普通人的一天",
+  "title": "天界普通人的一天",
+  "current_state": "PUBLISH_READY",
+  "updated_at": "2026-09-12T22:00:53+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-12T00:49:29.702882+00:00",
+      "note": "一句话入口创建 Episode（auto_create）。本次仅按 canonical episode_state.initial_documents 形状补全 schema_version/series/updated_at/history，stage 仍为 IDEA_LOCKED，未做任何门禁越级。"
+    },
+    {
+      "state": "STORYBOARD_LOCKED",
+      "at": "2026-09-12T11:36:02+08:00",
+      "mode": "advance",
+      "note": "Delegated Story Lock after verified story semantic review and Recent-5 pass"
+    },
+    {
+      "state": "VISUAL_CALIBRATED",
+      "at": "2026-09-12T13:28:56+08:00",
+      "mode": "advance",
+      "note": "Delegated Visual Lock closure: four-admission review PASS (isolated CODEX visual critic, attempt 2) after one delegated content repair on frames 03 and 10; baseline gate PASS."
+    },
+    {
+      "state": "PRODUCTION_PASSED",
+      "at": "2026-09-12T21:13:04+08:00",
+      "mode": "advance",
+      "note": "Full-auto production closure: 20/20 frames LOCKED with approved assets; subtitle layout + text audit re-rendered from final approved pixels; frame-semantic evidence preserved honestly (only frame 03 hook fails, accepted by user in meta/final-acceptance.json). validate_episode/machine_gate/evidence_gate all PASS at PRODUCTION_PASSED."
+    },
+    {
+      "state": "PUBLISH_READY",
+      "at": "2026-09-12T22:00:53+08:00",
+      "mode": "advance",
+      "note": "Full-auto production closure: final candidate snapshot b079b377 LOCKED+verified; release semantic review PASS; release package fd2a7de5 LOCKED+verified; delegated-delivery build+verify PASS; release_lock delegated auto-locked. validate_episode/machine_gate/evidence_gate PASS at PUBLISH_READY. Frame 03 known defect accepted by user (meta/final-acceptance.json)."
+    }
+  ]
+}

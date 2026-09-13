@@ -1,0 +1,77 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "20",
+  "asset_path": "episodes/天界普通人的一天/media/approved/20.png",
+  "asset_sha256": "de68f30e777f3f50739ae29ce68b16537f453d755caebc6dc0efe4dfb562a364",
+  "story_sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d",
+  "storyboard_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11",
+  "visual_contract_sha256": "d8622218004e091e2be58256a42a346bdfb1904df673ba032e205a96a2e9bbac",
+  "environment_frame_sha256": "eefa1b709a77b548f59597f2dae6c2e98e67506055337c5e5f3fd36fc7ce9bdf",
+  "frame_directive_sha256": "3e6c8be78ef7829c0a65a6d62e8b359c5f7592538175206e049287bc0dd58762",
+  "frame_contract_sha256": "5e3ad4a81d844a1f51d952835d04d392546239313802222c67662866263cf26b",
+  "source_binding": {
+    "story": {
+      "path": "episodes/天界普通人的一天/docs/02_天界普通人的一天_StoryLock_DRAFT_V1.0.md",
+      "sha256": "9b68911fb4aa6e049555ad4b9e8851de8d5d761d3e4c13aba9c29ba10dc1110d"
+    },
+    "storyboard": {
+      "path": "episodes/天界普通人的一天/docs/03_天界普通人的一天_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "dc22f2564584b88be0f328a64ee3bc0baeb25fa978c22134feff93cd767f9e11"
+  },
+  "critic_provenance": {
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 3,
+    "reviewed_at": "2026-09-12T19:59:34+08:00",
+    "direct_user_exception_review": true,
+    "review_scope": "INCREMENTAL_CONTEXT_SET",
+    "direct_user_exception_frames": [
+      "05",
+      "20"
+    ],
+    "recovered_after_parent_timeout": true,
+    "candidate_sha256": "d7295bc30356c64fe1b765182a5d5aada9f942ee19e61a8b625f9e7fc478d0f4",
+    "critic_stdout_log_empty_after_parent_timeout": true
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "TARGET (repaired candidate). The attempt-2 world-identity drift is cleared: the upper-left vertical hanging sign and the gateway plaque both read 落星街 in simplified characters (2.4x and 1.8x crops, four stacked characters each, dark on cream stone with decorative motifs), so the ending re-read of the street keeps its locked name. Frame is an ordinary daylight street: commuters walking both directions, produce stall, lanterns, red banners and a municipal sweeper in the orange reflective uniform; nothing glows. Measured: the bottom two step bands y1150-1350 hold 7,523 warm px at 3.5% density with mean (196,177,157) spread across the full width - diffuse sunlit stone tint - versus 17-20% clustered glow density in frames 04/05, so no star-sand residue survives. Daylight is the only source (invented_cinematic_light=false), the vertical 4:5 wide framing matches shot_scale=wide and '沿石阶向上的回望远景', the exit path leaving at the frame edge matches the capture event, and no visible text contradicts the world identity; the saturated sky and cliff structures are the 天界 云海 world itself.",
+  "decision": "pass",
+  "caption_sha256": "0431cc2ed67d31d378feee9e4d55e29af88fdb0ceb1bf9ecd5a0c7371ae5bd4b"
+}

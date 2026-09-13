@@ -1,0 +1,427 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "engine": "story_os_subtitle_layout_v1",
+  "canonical_renderer": true,
+  "source": "episodes/天界普通人的一天/meta/subtitles.yaml",
+  "source_sha256": "c6b6f729302f076781ff8711c7cb813c3dfc95c907e80ce161c8207dbd6d46f4",
+  "policy": {
+    "punctuation_only_second_line": "drop_entire_second_line",
+    "max_lines": 2,
+    "font": "Microsoft YaHei Bold",
+    "font_size": 42,
+    "stroke_width": 4,
+    "left_margin": 72,
+    "horizontal_alignment": "left",
+    "default_y_ratio": 0.52,
+    "preferred_vertical_zone": [
+      0.42,
+      0.62
+    ],
+    "outside_zone_requires_reason": true
+  },
+  "frames": {
+    "01": {
+      "caption": "这两个月我每天都不知道明天会被派去哪。",
+      "lines": [
+        "这两个月我每天都不知道明天会被派去哪。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/01.png",
+      "base_sha256": "4c9e1b1c1468de131a83c9147111504c667a18291d54a41645abfc327f602cbf",
+      "output_path": "episodes/天界普通人的一天/production/publish/01.png",
+      "output_sha256": "5d84385b70ce79fcacdbc22f239990479c8ffeb94bff572988d0123f8536e3d0",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "02": {
+      "caption": "今天扫完这条路，明天我就不用再等临时派班了。",
+      "lines": [
+        "今天扫完这条路，明天我就不用再等临时派班了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 1220,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/02.png",
+      "base_sha256": "c1bd281058fda2822aea26ba355de76316ed8c46685e1753750654ac17eeaca2",
+      "output_path": "episodes/天界普通人的一天/production/publish/02.png",
+      "output_sha256": "c84ca42cee11eb6cfc96bbbd7322b9cd971c362f3881cc7d37f5ac9f0293ead5",
+      "y_ratio": 0.9037,
+      "safe_zone_override_reason": "帧02是独立试岗工单特写：左侧中部安全区（Y 42%-62%）在像素上被工单原生文字（x≈490-950、y≈600-1150 的“天桥市公共事务局/环境卫生作业单/三袋回收料/作业项/工号 A3187”等）与握夹子的手（x≈220-470、y≈550-760）完全占用；画面上部背景带另有“值班表”板与“清洁工具/耗材”货架标签等原生文字。按《制作规范_正式版》第五章，仅该帧把字幕避让到画面下部无文字无手部的深色织物/装备带（y=1220-1276，v>200 白纸像素≈0.5%、肤色≈1.5%、均值≈59），避免遮挡原生文字、手部动作与关键道具。"
+    },
+    "03": {
+      "caption": "第一次看见落星街，我差点忘了自己是来扫地的。",
+      "lines": [
+        "第一次看见落星街，我差点忘了自己是来扫地的。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/03.png",
+      "base_sha256": "80ca55a1cefe516b04b1bac6b9c72540662c7e99fdae544bc6e67840d8fb894d",
+      "output_path": "episodes/天界普通人的一天/production/publish/03.png",
+      "output_sha256": "a0098b03893c57ba9563fb71c899d71ae59b9f75bab4078597ec03612a0d01b9",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "04": {
+      "caption": "我先从最上面这一段开始。",
+      "lines": [
+        "我先从最上面这一段开始。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/04.png",
+      "base_sha256": "a08ae795dc508456ae707672705de299f889dbf405116d9bf19322e54e2d13c3",
+      "output_path": "episodes/天界普通人的一天/production/publish/04.png",
+      "output_sha256": "232535fd98a89dd4ddca528ca299965d46643448a74c2d7279f9b7bca0771b8f",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "05": {
+      "caption": "扫帚一拢，光就没了。",
+      "lines": [
+        "扫帚一拢，光就没了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/05.png",
+      "base_sha256": "c4315f834a9393d2add9465b895ce711d3bbc22353a13c28488afd6b755e1c7f",
+      "output_path": "episodes/天界普通人的一天/production/publish/05.png",
+      "output_sha256": "b3eb84b1be8dbd04ec52e1cea19ff0a9da60a3c2f73064c1a862059e21499b35",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "06": {
+      "caption": "她让我先把她家门口扫干净。",
+      "lines": [
+        "她让我先把她家门口扫干净。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/06.png",
+      "base_sha256": "0d57ef64bd4c80ad95108aaf948ee5b700653444f8db4230c33d8fc606735b2a",
+      "output_path": "episodes/天界普通人的一天/production/publish/06.png",
+      "output_sha256": "a3645170aa16cbf6d573723e24bff649ec73593966489faadf435e53065fc2e5",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "07": {
+      "caption": "缝里的砂，跟刚扫暗那堆很像。",
+      "lines": [
+        "缝里的砂，跟刚扫暗那堆很像。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/07.png",
+      "base_sha256": "04959cd9487f46d375f19e793e13af6903f25a8ce4c0acf0d948684d1e0c2584",
+      "output_path": "episodes/天界普通人的一天/production/publish/07.png",
+      "output_sha256": "dece57c8811219b91a86b403060f0788f683ee29f66bf781593ba7424ffe6860",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "08": {
+      "caption": "人一多，刚扫出来的又被带回去了。",
+      "lines": [
+        "人一多，刚扫出来的又被带回去了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/08.png",
+      "base_sha256": "7c7749dbbe64255b83b3d7d0f39a5ca4bbf4ae98059cc46b5a7667bb6b1ca8a7",
+      "output_path": "episodes/天界普通人的一天/production/publish/08.png",
+      "output_sha256": "959dff6d8cdd69e8377b90a4aec5318e3827e7e832d4cffc89dc482ddebff562",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "09": {
+      "caption": "这会儿怕的不是砂，是今天这条线会超时。",
+      "lines": [
+        "这会儿怕的不是砂，是今天这条线会超时。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/09.png",
+      "base_sha256": "45fa07849bffda77b1450a615b0b80149799a22d960bb0349310c211010d80ab",
+      "output_path": "episodes/天界普通人的一天/production/publish/09.png",
+      "output_sha256": "03b62e0536282f6ddda090580808c361d751c8a5034c7362bf32e0935b45f41c",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "10": {
+      "caption": "原来这条路，本来就用这种砂填着。",
+      "lines": [
+        "原来这条路，本来就用这种砂填着。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/10.png",
+      "base_sha256": "c24697d6b7fdeb17cfe6b62e199b22494e87d7c9d59ce339614ce9ed033504d0",
+      "output_path": "episodes/天界普通人的一天/production/publish/10.png",
+      "output_sha256": "4c83e89ed5b53ea56f06f0d600c51338b0ad40b67a48106e2d1b6db2e2c50963",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "11": {
+      "caption": "天一亮，它们自己暗了，人也更不躲了。",
+      "lines": [
+        "天一亮，它们自己暗了，人也更不躲了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/11.png",
+      "base_sha256": "52394132d18bc73070881dc6c674351d70d82d084b397dae7de8f2105da96935",
+      "output_path": "episodes/天界普通人的一天/production/publish/11.png",
+      "output_sha256": "6b44e1346c1d314d16523aa8607f6027bd657b4bf82c33b2dd9e9c2d09d85a35",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "12": {
+      "caption": "这段比前面两段加起来还慢。",
+      "lines": [
+        "这段比前面两段加起来还慢。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/12.png",
+      "base_sha256": "9312e599c4be644b54913786e23bf2f444f4de1b91f35410af777b4fac385216",
+      "output_path": "episodes/天界普通人的一天/production/publish/12.png",
+      "output_sha256": "e944d5054d03dcb19db92c33e156a69d8a959fe06de9104d673cb8fb400c6c56",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "13": {
+      "caption": "留着它，今天这条路就不算清完。",
+      "lines": [
+        "留着它，今天这条路就不算清完。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/13.png",
+      "base_sha256": "7a0ce27f070fbe9db00f49aea257256ca5828800d4bd4097ebf212eea8478d6a",
+      "output_path": "episodes/天界普通人的一天/production/publish/13.png",
+      "output_sha256": "0c95f2e44653892275cfe2cf252552c960b2d5852fec324c2e7e8f4848c6120f",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "14": {
+      "caption": "我还是把扫帚压了下去。",
+      "lines": [
+        "我还是把扫帚压了下去。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/14.png",
+      "base_sha256": "3246806d89013592f48d45027a99f88fbfc3d6875a23210e3ebb5319e9db44e8",
+      "output_path": "episodes/天界普通人的一天/production/publish/14.png",
+      "output_sha256": "913e7152723aa1a89d955d82d9a9641905794cc1526b016c412b2cca27b6948c",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "15": {
+      "caption": "",
+      "lines": [],
+      "dropped_punctuation_only_second_line": false,
+      "silent": true,
+      "x": 72,
+      "y": 702,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "base_path": "episodes/天界普通人的一天/media/approved/15.png",
+      "base_sha256": "0cf0bb1bf52682cd42bf51088939e24608bf388cd4c7b95d599889b88f3f3c69",
+      "output_path": "episodes/天界普通人的一天/production/publish/15.png",
+      "output_sha256": "2e1b438aa5c658287c86f1395f547fbb933639f04a0248c305ee0d95d8e4d07b",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "16": {
+      "caption": "三袋，重量刚够。",
+      "lines": [
+        "三袋，重量刚够。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 1220,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/16.png",
+      "base_sha256": "a7e89a8aee551c8c1382b4fbd0c760dcc946606abfb4599bf1c13d6fed45b924",
+      "output_path": "episodes/天界普通人的一天/production/publish/16.png",
+      "output_sha256": "f0f8ca5c537e8199d3bb397f1a4260179fea186ec060a383081f17aa06d237fa",
+      "y_ratio": 0.9037,
+      "safe_zone_override_reason": "帧16是回收物交秤特写：默认左中安全区（Y 42%-62%）在像素上被前景透明回收袋的印刷标识与“可回收物”原生文字（x≈69-383、y≈707-757）占用，字幕会整段盖住袋面印刷文字；画面上半部另有推车板“天界更洁净”、货架标牌与墙面“环卫同行/清洁天界/人人有责”“分类收集/共建美好”等原生文字。按《制作规范_正式版》第五章，仅该帧把字幕避让到画面下部无原生文字、无面部、无手部动作的深色石板/木台带（y=1220-1272；x 72-408 内高对比边缘像素≈1.4%、纯白像素 0.0%），避免遮挡原生文字与关键道具。"
+    },
+    "17": {
+      "caption": "我一直以为扫走以后，它们就算没了。",
+      "lines": [
+        "我一直以为扫走以后，它们就算没了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/17.png",
+      "base_sha256": "6d7d44d88dc74ee0c5daa67e4bed6d1318725ad4f32660d67474c1f6dceb0930",
+      "output_path": "episodes/天界普通人的一天/production/publish/17.png",
+      "output_sha256": "752dcec0bb0f6b17078b162aa2c0984280b67de34ad6ca82d4b75878b1d7a7f6",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "18": {
+      "caption": "明早还是这个点。",
+      "lines": [
+        "明早还是这个点。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/18.png",
+      "base_sha256": "0c233aa2826705c338b14f99ebb79a5778f6eb8d502d11668f3cbfbc5d56aa9b",
+      "output_path": "episodes/天界普通人的一天/production/publish/18.png",
+      "output_sha256": "1c728f25ddb5257c46f21e0c9128bace0c16c167fdcec9eac3cff3981d5ce1c0",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "19": {
+      "caption": "早上扫走的，下午又回了这条路。",
+      "lines": [
+        "早上扫走的，下午又回了这条路。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/19.png",
+      "base_sha256": "a5b3d8b5b3be440728e0156f2fe0f104ad554e2a60805c22c33b9ec17f2e54d6",
+      "output_path": "episodes/天界普通人的一天/production/publish/19.png",
+      "output_sha256": "1efd51efabb2cc45a853371dd6a3804a14bad14c50a7545090a5452ac49ef7e3",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "20": {
+      "caption": "昨晚是星光，今早是垃圾，过完秤以后，又成了这条路。",
+      "lines": [
+        "昨晚是星光，今早是垃圾，过完秤以后，又成了这",
+        "条路。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/天界普通人的一天/media/approved/20.png",
+      "base_sha256": "de68f30e777f3f50739ae29ce68b16537f453d755caebc6dc0efe4dfb562a364",
+      "output_path": "episodes/天界普通人的一天/production/publish/20.png",
+      "output_sha256": "99e2d1ead3bd94556a7ad38339242de07c9f3d5f8823a08f886346e169201fdd",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    }
+  },
+  "summary": {
+    "passed": true,
+    "frame_count": 20
+  }
+}

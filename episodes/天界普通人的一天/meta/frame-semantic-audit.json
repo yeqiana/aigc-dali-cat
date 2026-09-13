@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "checked_at": "2026-09-12T21:11:31+08:00",
+  "metadata_only": false,
+  "frame_count": 20,
+  "perceptual_hashes": [],
+  "near_duplicate_pairs": [],
+  "errors": [
+    "frame semantic summary is not PASS",
+    "frame semantic summary issue_codes not empty: ['ANOMALY_CONCEALMENT_MISSING', 'ANOMALY_UNREADABLE', 'STORY_BEAT_NOT_VISIBLE']",
+    "frame 03 checks.story_beat_fidelity must be true",
+    "frame 03 checks.anomaly_readability must be true",
+    "frame 03 checks.anomaly_concealment_fidelity must be true",
+    "frame 03 issue_codes not empty: ['ANOMALY_UNREADABLE', 'STORY_BEAT_NOT_VISIBLE', 'ANOMALY_CONCEALMENT_MISSING']",
+    "frame 03 decision must be pass"
+  ],
+  "summary": {
+    "passed": false
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "rules": {
+    "delete_frame_test": true,
+    "max_frames_without_strong_progress": 5,
+    "max_repeated_visual_without_new_information": 2
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "necessity": {"causal_loss": false, "evidence_loss": false, "suspense_loss": false, "spatial_orientation_loss": true, "emotional_state_change_loss": true},
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "建立 P01 仍在机动名单、作息和路线不稳定的现实处境；删除后试岗回报没有基准。"
+    },
+    {
+      "frame": "02",
+      "necessity": {"causal_loss": true, "evidence_loss": true, "suspense_loss": false, "spatial_orientation_loss": false, "emotional_state_change_loss": false},
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "独立试岗、三袋、全段清完和时限成为全片现实目标与代价。"
+    },
+    {
+      "frame": "03",
+      "necessity": {"causal_loss": false, "evidence_loss": true, "suspense_loss": false, "spatial_orientation_loss": true, "emotional_state_change_loss": true},
+      "progress_type": "NEW_SPACE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "首次建立满街微亮星砂的奇观尺度以及主角第一次亲眼看见的反应。"
+    },
+    {
+      "frame": "04",
+      "necessity": {"causal_loss": true, "evidence_loss": false, "suspense_loss": true, "spatial_orientation_loss": false, "emotional_state_change_loss": false},
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "单独保留清扫动作触发帧，为 05 的异常回应建立可读因果。"
+    },
+    {
+      "frame": "05",
+      "necessity": {"causal_loss": true, "evidence_loss": true, "suspense_loss": true, "spatial_orientation_loss": false, "emotional_state_change_loss": false},
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "被扫区域熄灭、未触碰边缘仍亮，首次完整证明星砂的动作回应规则。"
+    },
+    {
+      "frame": "06",
+      "necessity": {"causal_loss": false, "evidence_loss": true, "suspense_loss": false, "spatial_orientation_loss": false, "emotional_state_change_loss": true},
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "住户要求顺手清门口，证明当地人把星砂当常见生活问题，主角才是新来者。"
+    },
+    {
+      "frame": "07",
+      "necessity": {"causal_loss": false, "evidence_loss": true, "suspense_loss": true, "spatial_orientation_loss": false, "emotional_state_change_loss": false},
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "提前埋下路缝原有灰砂与熄光星砂相似的材质线索，为中点和结尾回填闭环服务。"
+    },
+    {
+      "frame": "08",
+      "necessity": {"causal_loss": true, "evidence_loss": false, "suspense_loss": false, "spatial_orientation_loss": true, "emotional_state_change_loss": false},
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "早市人流把未清区域重新带散，工作量开始动态增长，冲突从异常观察转向现实劳动。"
+    },
+    {
+      "frame": "09",
+      "necessity": {"causal_loss": true, "evidence_loss": true, "suspense_loss": true, "spatial_orientation_loss": false, "emotional_state_change_loss": true},
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "第二袋完成但第三袋未满、试岗时间逼近，主角明确从好奇切换到担心超时。"
+    },
+    {
+      "frame": "10",
+      "necessity": {"causal_loss": true, "evidence_loss": true, "suspense_loss": true, "spatial_orientation_loss": false, "emotional_state_change_loss": false},
+      "progress_type": "REVERSAL",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "中点新证据：熄光星砂与天街原有铺砂完全同质，重写观众对这条路的理解。"
+    },
+    {
+      "frame": "11",
+      "necessity": {"causal_loss": true, "evidence_loss": true, "suspense_loss": false, "spatial_orientation_loss": true, "emotional_state_change_loss": false},
+      "progress_type": "ANOMALY_ESCALATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "天亮让剩余星砂自然熄灭，同时使行人不再绕行，异常状态变化反而扩大现实清扫难度。"
+    },
+    {
+      "frame": "12",
+      "necessity": {"causal_loss": true, "evidence_loss": false, "suspense_loss": false, "spatial_orientation_loss": false, "emotional_state_change_loss": true},
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "被踩进缝里的灰砂需要逐个挑出，第三袋变满，劳动难度和试岗压力同时推进。"
+    },
+    {
+      "frame": "13",
+      "necessity": {"causal_loss": true, "evidence_loss": false, "suspense_loss": true, "spatial_orientation_loss": false, "emotional_state_change_loss": true},
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "最后微亮区域与‘全段清完’要求同框，第一次建立真正不能兼得的现实选择。"
+    },
+    {
+      "frame": "14",
+      "necessity": {"causal_loss": true, "evidence_loss": false, "suspense_loss": true, "spatial_orientation_loss": false, "emotional_state_change_loss": true},
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "P01 主动把扫帚压向最后亮点，高潮从‘发现’变成明确人物选择。"
+    },
+    {
+      "frame": "15",
+      "necessity": {"causal_loss": true, "evidence_loss": true, "suspense_loss": false, "spatial_orientation_loss": false, "emotional_state_change_loss": true},
+      "progress_type": "PAYOFF",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "最后亮点熄灭、第三袋封口、路线清空，兑现 13–14 的选择和 02 的试岗目标。"
+    },
+    {
+      "frame": "16",
+      "necessity": {"causal_loss": true, "evidence_loss": true, "suspense_loss": false, "spatial_orientation_loss": true, "emotional_state_change_loss": false},
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "三袋过秤达到要求并盖章，提供客观试岗通过证据，而非口头自我宣告。"
+    },
+    {
+      "frame": "17",
+      "necessity": {"causal_loss": true, "evidence_loss": true, "suspense_loss": true, "spatial_orientation_loss": false, "emotional_state_change_loss": true},
+      "progress_type": "REVERSAL",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "料斗‘路面回填料’标签首次证明扫走的星砂并未作为废物消失，而进入城市维护循环。"
+    },
+    {
+      "frame": "18",
+      "necessity": {"causal_loss": true, "evidence_loss": true, "suspense_loss": false, "spatial_orientation_loss": false, "emotional_state_change_loss": true},
+      "progress_type": "PAYOFF",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "排班板从机动变为落星街早班，兑现主角从开场就建立的现实个人目标。"
+    },
+    {
+      "frame": "19",
+      "necessity": {"causal_loss": true, "evidence_loss": true, "suspense_loss": false, "spatial_orientation_loss": true, "emotional_state_change_loss": false},
+      "progress_type": "REVERSAL",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "维护工把回收灰砂重新填进台阶缝，回答 07/10 的材质线索并把回收循环拍成实体证据。"
+    },
+    {
+      "frame": "20",
+      "necessity": {"causal_loss": false, "evidence_loss": false, "suspense_loss": false, "spatial_orientation_loss": true, "emotional_state_change_loss": true},
+      "progress_type": "PAYOFF",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "白天天街和下班离场完成终局重读：昨夜星光、今早垃圾、过秤回填最终都成为普通街道的一部分。"
+    }
+  ]
+}

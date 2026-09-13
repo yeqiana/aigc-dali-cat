@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "15",
+  "risk_level": "HIGH",
+  "risk_score": 71,
+  "risk_tags": [
+    "impact_2",
+    "payoff",
+    "pov_recorder"
+  ],
+  "frame_contract_sha256": "10c7ca6d3b1bbe41f5800b93f9622584985aea368f703c3a6c9684742ea17352",
+  "asset_path": "episodes/天界普通人的一天/media/candidates/scheduled/15-6e47498f13f4-a1.png",
+  "asset_sha256": "0cf0bb1bf52682cd42bf51088939e24608bf388cd4c7b95d599889b88f3f3c69",
+  "scouted_at": "2026-09-12T18:08:28+08:00",
+  "final_critic_still_required": true,
+  "decision": "PASS_FAST",
+  "issue_codes": [],
+  "notes": "Payoff frame reads as contracted: two hands in the same worn blue-beige work sleeves tie the black cord on a large white woven collection sack (third bag sealing), sibling filled white sacks sit in the lower/left foreground, and the cleared stone steps behind carry no glowing star-sand residue, satisfying the three required cues (extinguished gray sand, sealed third bag, glow-free route). Broom, dustpan and gray wheeled bin mark the same work site; the clipboard with a lined form matches the work-order 'tick the last box' action. First-person record-badge POV holds: only own sleeves/hands enter frame, no floating/ghost camera and no illegal visible recorder. Daylight morning, dry stone, cloud sea thinning, no precipitation, matching environment/temporal contract. No obvious identity, prop, POV, weather or scale defect; anomaly stage is final extinguish so no scale underdelivery applies.",
+  "confidence": 0.72,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/天界普通人的一天/meta/frame-scouts/15.jsonl"
+}

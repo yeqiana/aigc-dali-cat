@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "12",
+  "risk_level": "HIGH",
+  "risk_score": 63,
+  "risk_tags": [
+    "first_anomaly",
+    "pov_recorder"
+  ],
+  "frame_contract_sha256": "611dcd6167e060dff42f35d33706b1c9001e7718b4b4037ab081bd5553c8f5e9",
+  "asset_path": "episodes/天界普通人的一天/media/approved/12.png",
+  "asset_sha256": "9312e599c4be644b54913786e23bf2f444f4de1b91f35410af777b4fac385216",
+  "scouted_at": "2026-09-12T21:40:07+08:00",
+  "final_critic_still_required": true,
+  "decision": "PASS_FAST",
+  "issue_codes": [],
+  "notes": "Frame 12 pixels show a low, tight first-person close-up on dry weathered stone steps: the bristles of a straw/twig broom pressed onto loose grit and chipped stone, a gloved forearm and beige sleeve entering from the right, and a shallow metal-edged pan/basket holding rubble at lower right, with pale stone railing and lit gold finials blurred behind. That matches the locked key props (扫帚/簸箕/手推车) and the required cue that grit must be worked out with the broom tip, with no result-only showcase. Stone surface is dry with no wet sheen or drizzle, matching the locked no-precipitation morning weather; light is hard directional daylight from the upper left consistent with 晨光越过云桥 and physically motivated sunlight, not invented cinematic lighting. Frame is human_consequence at dawn_extinguish, so the extinguished gray-white grit showing no glow is correct rather than an underdelivered anomaly. The visible hand/forearm and low badge-height viewpoint are consistent with P01's 随身上岗记录牌 first-person authorship, and no ghost-camera, second photographer, or impossible recorder is implied, so no POV violation. No face is in frame, so identity drift is not assessable and nothing contradicts the Frame Contract obviously.",
+  "confidence": 0.6,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/天界普通人的一天/meta/frame-scouts/12.jsonl"
+}
