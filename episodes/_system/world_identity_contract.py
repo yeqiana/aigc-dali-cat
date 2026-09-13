@@ -22,7 +22,10 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REL = Path("config/profiles/world_identity/default.json")
 OVERRIDE_REL = Path("meta/world-identity.json")
 MIN_VERSION = (2, 2, 1)
-M02_HEAVEN_PROFILE = "M02_HEAVEN_MUNDANE_WORKER_V1"
+CELESTIAL_HEAVEN_PROFILES = {
+    "M02_HEAVEN_MUNDANE_WORKER_V1",
+    "M04_HEAVEN_MUNDANE_LIFE_V1",
+}
 
 
 def read_json(path: Path) -> dict:
@@ -254,30 +257,48 @@ def ensure_visual_profile_override(ep: Path, profile_id: str | None) -> dict | N
     Other profiles return None and keep the normal default/Story-authored behavior.
     """
     ep = Path(ep).resolve()
-    if str(profile_id or "").strip() != M02_HEAVEN_PROFILE:
+    pid = str(profile_id or "").strip()
+    if pid not in CELESTIAL_HEAVEN_PROFILES:
         return None
     target = ep / OVERRIDE_REL
     if target.is_file():
         return read_json(target)
+    resident_mode = pid == "M04_HEAVEN_MUNDANE_LIFE_V1"
     data = {
         "schema_version": 1,
         "inherit_default": False,
         "profile_id": "CELESTIAL_MUNDANE_WORLD_V1",
-        "description": "M02 天界普通工作人员世界身份；虚构世界，不继承现实国家默认值。",
+        "description": (
+            "M04 天界普通居民生活世界身份；虚构世界，不继承现实国家默认值。"
+            if resident_mode else
+            "M02 天界普通工作人员世界身份；虚构世界，不继承现实国家默认值。"
+        ),
         "world": {
             "country": "天界（虚构世界）",
-            "region": "云海公共生活与基层工作区",
-            "culture_context": "东方天界的普通居民生活与基层单位文化；强调通勤、食堂、交接、工单和下班等日常秩序，不做神话英雄叙事",
+            "region": "云海普通居民区、公共生活区与基层设施",
+            "culture_context": (
+                "东方天界普通居民生活；强调吃饭、逛街、朋友相处、通勤与回家等日常秩序，不强制岗位流程，不做神话英雄叙事"
+                if resident_mode else
+                "东方天界的普通居民生活与基层单位文化；强调通勤、食堂、交接、工单和下班等日常秩序，不做神话英雄叙事"
+            ),
             "language_context": "作品可读文字使用简体中文呈现，世界内视为天界通用文字",
-            "architecture_context": "自洽的东方天界基层公共设施：朴素石木工作站、云桥、通勤站台、宿舍与食堂；禁止宏大神殿宣传片化",
-            "traffic_context": "天界本地通勤与工作运输规则",
-            "consumer_goods_context": "天界普通居民与基层单位的朴素日用品",
+            "architecture_context": (
+                "自洽的东方天界普通生活设施：朴素石木住宅、云街、云桥、食肆、旧市与公共休息区；禁止宏大神殿宣传片化"
+                if resident_mode else
+                "自洽的东方天界基层公共设施：朴素石木工作站、云桥、通勤站台、宿舍与食堂；禁止宏大神殿宣传片化"
+            ),
+            "traffic_context": "天界本地居民通行与生活运输规则",
+            "consumer_goods_context": "天界普通居民使用的朴素日用品",
         },
         "population": {
             "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
-            "resident_context": "天界普通本地居民与基层工作人员",
+            "resident_context": "天界普通本地居民" if resident_mode else "天界普通本地居民与基层工作人员",
             "default_protagonist_age_range": [19, 30],
-            "default_protagonist_identity": "二十多岁的普通天界基层工作人员，东方式自然年轻人外貌，不英雄化",
+            "default_protagonist_identity": (
+                "二十多岁的普通天界居民，东方式自然年轻人外貌，不英雄化"
+                if resident_mode else
+                "二十多岁的普通天界基层工作人员，东方式自然年轻人外貌，不英雄化"
+            ),
             "ethnicity_policy": "fictional_world_local_population",
             "foreign_character_policy": "story_defined",
         },
@@ -288,7 +309,7 @@ def ensure_visual_profile_override(ep: Path, profile_id: str | None) -> dict | N
             "do_not_import_foreign_cultural_props_by_default": False,
             "preserve_location_specific_chinese_regional_detail": False,
         },
-        "note": "Canonical M02 world identity override generated from the governed Visual Profile; Story may further specify the fictional locality without reverting to a real-world country default.",
+        "note": f"Canonical {pid} world identity override generated from the governed Visual Profile; Story may further specify the fictional locality without reverting to a real-world country default.",
     }
     write_json(target, data)
     return data

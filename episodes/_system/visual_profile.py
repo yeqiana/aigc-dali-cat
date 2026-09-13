@@ -118,8 +118,14 @@ def resolve_base_profile(ep: Path) -> dict:
         if str(cfg.get('capture_profile') or '').strip():
             resolved['capture_profile'] = str(cfg['capture_profile']).strip()
         return resolved
+    # Selector-produced V2.6+ episodes may persist mode=explicit to mean an
+    # explicit governed profile selection. Treat it as the existing override
+    # contract without mutating Episode authority, so PREIMAGE snapshots remain
+    # SHA-stable and older/newer producers can interoperate.
+    if mode == 'explicit':
+        mode = 'override'
     if mode != 'override':
-        raise SystemExit(f'invalid visual_profile.mode={mode!r}; expected default|override')
+        raise SystemExit(f'invalid visual_profile.mode={mode!r}; expected default|override|explicit')
     profile_path = str(cfg.get('profile_path') or '').strip()
     profile_id = str(cfg.get('profile_id') or '').strip()
     reason = str(cfg.get('override_reason') or '').strip()

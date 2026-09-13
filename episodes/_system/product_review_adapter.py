@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Prepare/finalize independent review work for WORK/WEB product runtimes.
+"""Prepare/finalize independent review work for the WORK product runtime.
 
 Local Python never calls a model here. It freezes source hashes and writes an
-attempt-scoped review request. The surrounding ChatGPT product runtime authors
-only the requested candidate JSON. Finalization rechecks source hashes and
-supplies auditable WORK_ISOLATED / WEB_ISOLATED provenance.
+attempt-scoped review request. New reviews must be executed by the surrounding
+ChatGPT WORK runtime using DevSpace for repository access, in a fresh bounded
+review turn. Finalization rechecks source hashes and supplies auditable
+WORK_ISOLATED provenance. Historical WEB evidence remains readable elsewhere,
+but new Product Review requests do not route to WebCodex.
 
 V2.6.1.1: requests are immutable per attempt. A current alias is maintained for
 compatibility, but historical attempt files are never silently overwritten.
@@ -22,6 +24,8 @@ import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 HOST_ACTION_REQUIRED_RC = 20
+NEW_REVIEW_RUNTIME = "WORK"
+WORKSPACE_TRANSPORT = "DEVSPACE"
 
 
 class ProductReviewError(RuntimeError):
@@ -60,6 +64,22 @@ def request_path(ep: Path, kind: str, *, attempt: int | None = None) -> Path:
     if attempt is None:
         return root / f"{kind}-request.json"
     return root / f"{kind}-attempt-{int(attempt)}-request.json"
+
+
+def _devspace_bounded_allowed(ep: Path) -> bool:
+    """Allow same-WORK bounded review only for explicitly full-auto ordinary-life episodes.
+
+    This is an honest fallback, not an isolated-session claim. Suspense/anomaly
+    episodes continue to require a genuinely isolated critic.
+    """
+    try:
+        runtime_request = _read_json(ep / "meta/runtime-request.json")
+        authorized = ((runtime_request.get("user_intent") or {}).get("full_auto_authorized")) is True
+        shot = _read_json(ep / "meta/shot-progression-review.json")
+        ordinary = shot.get("anomaly_applicable") is False and bool(str(shot.get("anomaly_exception_reason") or "").strip())
+        return authorized and ordinary
+    except Exception:
+        return False
 
 
 _EXTENDED_SOURCE_DRIFT_KINDS = {"visual-lock", "visual-lock-baseline"}
@@ -126,8 +146,11 @@ def prepare(
     source_bindings: dict | None = None,
 ) -> dict:
     base = runtime_provenance.normalize_base_runtime(runtime)
-    if base not in {"WORK", "WEB"}:
-        raise ProductReviewError("product review adapter supports WORK/WEB only")
+    if base != NEW_REVIEW_RUNTIME:
+        raise ProductReviewError(
+            "new product reviews require WORK runtime with DevSpace workspace access; "
+            "WEB/WebCodex and local CODEX review routes are disabled"
+        )
     sources = []
     for path in source_paths:
         p = path.resolve()
@@ -156,7 +179,7 @@ def prepare(
     )
     request_id = f"{kind}-a{attempt}-{fingerprint[:16]}"
     req = {
-        "schema_version": 2,
+        "schema_version": 3,
         "request_id": request_id,
         "request_fingerprint": fingerprint,
         "created_at": runtime_provenance.now(),
@@ -164,13 +187,29 @@ def prepare(
         "review_kind": kind,
         "runtime": base,
         "critic_runtime": runtime_provenance.isolated_runtime(base),
+        "workspace_transport": WORKSPACE_TRANSPORT,
+        "review_execution_contract": {
+            "runtime": NEW_REVIEW_RUNTIME,
+            "critic_runtime": "WORK_ISOLATED",
+            "workspace_transport": WORKSPACE_TRANSPORT,
+            "fresh_product_review_turn_required": True,
+            "devspace_bounded_fallback_allowed": _devspace_bounded_allowed(ep),
+            "bounded_fallback_runtime": runtime_provenance.DEVSPACE_BOUNDED_RUNTIME,
+            "source_access": "read_only",
+            "candidate_write_scope": "candidate_path_only",
+            "webcodex_allowed": False,
+            "local_codex_review_allowed": False,
+        },
         "attempt": attempt,
         "source_files": sources,
         "candidate_path": candidate_rel,
         "prompt_sha256": _sha256_text(prompt),
         "local_codex_spawn_allowed": False,
         "instructions": [
-            "Run this as a fresh adversarial review pass in the product runtime.",
+            "Run this as a fresh adversarial WORK_ISOLATED review turn when an isolated turn is available.",
+            "For an explicitly full-auto anomaly_applicable=false episode only, a bounded same-WORK DevSpace review may be used if review_execution_contract.devspace_bounded_fallback_allowed=true; it must be recorded as WORK_DEVSPACE_BOUNDED, never WORK_ISOLATED.",
+            "Use DevSpace/workspace tools as the only repository access path.",
+            "Do not use WebCodex and do not spawn local Codex for review.",
             "Do not modify source files.",
             "Write only the requested candidate JSON to candidate_path.",
             "Do not claim PASS if any hard check fails.",
@@ -226,9 +265,31 @@ def finalize_candidate(
     attempt: int,
     candidate_path: Path,
     source_bindings: dict | None = None,
+    bounded_devspace: bool = False,
 ) -> tuple[dict, dict]:
     base = runtime_provenance.normalize_base_runtime(runtime)
     path, req = _resolve_request(ep, kind, attempt)
+    # Historical schema <=2 WORK requests can still be finalized after the
+    # migration; new schema 3 requests are WORK+DevSpace only. WEB history is
+    # readable but cannot be used to finalize a new/current review.
+    if base != NEW_REVIEW_RUNTIME:
+        raise ProductReviewError(
+            "product review finalization requires WORK runtime; WEB/WebCodex review is disabled"
+        )
+    contract = req.get("review_execution_contract") or {}
+    if int(req.get("schema_version") or 1) >= 3:
+        if str(req.get("workspace_transport") or "").upper() != WORKSPACE_TRANSPORT:
+            raise ProductReviewError("product review workspace_transport must be DEVSPACE")
+        if contract.get("fresh_product_review_turn_required") is not True:
+            raise ProductReviewError("product review requires a fresh isolated product review turn")
+        if contract.get("webcodex_allowed") is not False:
+            raise ProductReviewError("WebCodex must be disabled for product review")
+        if contract.get("local_codex_review_allowed") is not False:
+            raise ProductReviewError("local Codex review must be disabled")
+    if bounded_devspace:
+        request_allows = contract.get("devspace_bounded_fallback_allowed") is True if contract else _devspace_bounded_allowed(ep)
+        if not request_allows or not _devspace_bounded_allowed(ep):
+            raise ProductReviewError("bounded DevSpace review is allowed only for full-auto anomaly_applicable=false episodes")
     if req.get("review_kind") != kind:
         raise ProductReviewError("review kind mismatch")
     if str(req.get("runtime") or "").upper() != base:
@@ -249,12 +310,18 @@ def finalize_candidate(
     if not candidate_path.is_file():
         raise ProductReviewError(f"product review candidate missing: {candidate_path}")
     candidate = _read_json(candidate_path)
-    provenance = runtime_provenance.build_critic_provenance(
-        base,
-        attempt=attempt,
-        request_path=_repo_rel(path),
-        allow_extended_attempt=(attempt > 2 and kind in _EXTENDED_SOURCE_DRIFT_KINDS),
-    )
+    if bounded_devspace:
+        provenance = runtime_provenance.build_devspace_bounded_provenance(
+            attempt=attempt,
+            request_path=_repo_rel(path),
+        )
+    else:
+        provenance = runtime_provenance.build_critic_provenance(
+            base,
+            attempt=attempt,
+            request_path=_repo_rel(path),
+            allow_extended_attempt=(attempt > 2 and kind in _EXTENDED_SOURCE_DRIFT_KINDS),
+        )
     provenance["request_id"] = req.get("request_id")
     provenance["request_fingerprint"] = req.get("request_fingerprint")
     return candidate, provenance
@@ -292,7 +359,10 @@ def mark_complete(ep: Path, kind: str, *, final_path: Path, attempt: int | None 
 
 
 def self_test() -> None:
+    assert NEW_REVIEW_RUNTIME == "WORK"
+    assert WORKSPACE_TRANSPORT == "DEVSPACE"
     assert runtime_provenance.isolated_runtime("WORK") == "WORK_ISOLATED"
+    assert runtime_provenance.DEVSPACE_BOUNDED_RUNTIME == "WORK_DEVSPACE_BOUNDED"
     assert request_path(Path("ep"), "story", attempt=2).as_posix().endswith("story-attempt-2-request.json")
     assert request_path(Path("ep"), "visual-lock", attempt=3).as_posix().endswith("visual-lock-attempt-3-request.json")
     print("PRODUCT REVIEW ADAPTER V2.6.1.1 SELF-TEST PASS")

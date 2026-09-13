@@ -14,7 +14,7 @@ sys.path.insert(0, str(SYSTEM))
 import runtime_scheduler
 
 
-def node(node_id, *, depends_on=None, priority="MEDIUM", node_type="story"):
+def node(node_id, *, depends_on=None, priority="MEDIUM", node_type="story", parallel_safe=True):
     return {
         "node_id": node_id,
         "node_type": node_type,
@@ -24,6 +24,8 @@ def node(node_id, *, depends_on=None, priority="MEDIUM", node_type="story"):
         "retry_policy": {},
         "priority": priority,
         "evidence_required": [],
+        "execution_policy": {"mode": "parallel_safe" if parallel_safe else "serial",
+                             "parallel_safe": parallel_safe, "resource_class": "text", "max_concurrency": 4},
     }
 
 

@@ -157,6 +157,19 @@ def _ledger_frame(ledger: dict, frame: int) -> dict:
     return ((ledger.get("frames") or {}).get(f"{frame:02d}") or {})
 
 
+def _latest_ledger_attempt(frame_row: dict) -> dict:
+    attempts = [x for x in (frame_row.get("attempts") or []) if isinstance(x, dict)]
+    return attempts[-1] if attempts else {}
+
+
+def _active_ledger_attempt(frame_row: dict) -> dict:
+    """Return the currently open ledger attempt, if one is durably identifiable."""
+    for attempt in reversed([x for x in (frame_row.get("attempts") or []) if isinstance(x, dict)]):
+        if attempt.get("result") in {None, "pending"}:
+            return attempt
+    return {}
+
+
 def _safe_output(ep: Path, raw: object) -> Path | None:
     if not raw:
         return None
@@ -195,8 +208,17 @@ def _current_contract_sha(ep: Path, frame: int) -> str | None:
 
 def _commit_success(ep: Path, item: dict, lifecycle: dict) -> tuple[bool, str]:
     """Commit a worker's durable success through the normal ledger verifier."""
-    if lifecycle.get("transaction_id") != (item.get("execution") or {}).get("transaction_id"):
+    item_tx = str((item.get("execution") or {}).get("transaction_id") or "")
+    if lifecycle.get("transaction_id") != item_tx:
         return False, "lifecycle transaction does not match queue item"
+    frame_row = _ledger_frame(_read(Path(ep) / LEDGER_REL), int(item.get("frame") or 0))
+    active = _active_ledger_attempt(frame_row)
+    if active:
+        active_tx = str(active.get("runtime_transaction_id") or "")
+        if active_tx and item_tx and active_tx != item_tx:
+            return False, "ledger active attempt transaction does not match queue item"
+        if str(active.get("kind") or "") != str(item.get("kind") or ""):
+            return False, "ledger active attempt kind does not match queue item"
     result = lifecycle.get("result") or {}
     if not isinstance(result, dict):
         return False, "lifecycle result is missing"
@@ -252,7 +274,16 @@ def _mark_technical_failure(ep: Path, item: dict, code: str, message: str) -> No
         item["last_error"] = f"RECOVERY_LEDGER_CLOSE_FAILED: {exc}"
         mark_terminal(ep, item, "RECONCILE_PENDING", reason=item["last_error"])
         return
+    # A crash before candidate commit must release its provisional raw-candidate
+    # claim; technical retry is the same content-repair round, not a new budget use.
+    try:
+        import raw_candidate_budget
+        raw_candidate_budget.release(ep, str(item.get("id") or ""), reason=f"recovery_technical_failure:{code}")
+    except Exception:
+        pass
     item["status"] = "tech_failed"
+    item["technical_failure_code"] = str(code or "IMAGE_BACKEND_ERROR")
+    item.setdefault("technical_failures", []).append({"at": now(), "attempt": int(item.get("attempts") or 0), "code": str(code or "IMAGE_BACKEND_ERROR"), "recovery": True})
     item["completed_at"] = now()
     item["last_error"] = message[:1000]
     mark_terminal(ep, item, "TECH_FAILED", code=code)
@@ -276,6 +307,42 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
         lifecycle = _read(lifecycle_path(ep, item))
         lifecycle_state = str(lifecycle.get("state") or "MISSING")
         outcome = "UNCHANGED"
+
+        # A historical queue row can coexist with a newer repair attempt in any
+        # terminal or active ledger state. Never project the newest ledger state
+        # backwards onto that older row. Ownership is transaction-bound, not just
+        # frame-bound.
+        latest = _latest_ledger_attempt(frame_row)
+        latest_tx = str(latest.get("runtime_transaction_id") or "")
+        item_tx = str((item.get("execution") or {}).get("transaction_id") or "")
+        if latest_tx and item_tx and latest_tx != item_tx:
+            if item.get("status") == "running":
+                item["status"] = "superseded"
+                item["last_error"] = None
+                mark_terminal(ep, item, "SUPERSEDED", recovery="newer_ledger_attempt_owns_frame")
+            outcome = "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT"
+            report["rows"].append({"item_id": item.get("id"), "frame": frame, "outcome": outcome,
+                                   "ledger_status": ledger_status, "lifecycle_state": lifecycle_state})
+            ledger = _read(ep / LEDGER_REL)
+            continue
+
+        # A committed candidate remains a valid historical queue row after its
+        # pixels are reviewed. Review/authorization states belong to the Ledger,
+        # not to Queue execution. Keep the generated row intact when it is still
+        # the ledger's SHA/path-bound current candidate; otherwise a subsequent
+        # scheduler run would misclassify a reviewed candidate as an interruption.
+        if ledger_status in {"CONTENT_FAILED", "REPAIR_AUTHORIZED", "AUTHORITY_REFRESH_AUTHORIZED", "EXCEPTION_REPAIR_AUTHORIZED", "NEEDS_USER"}:
+            candidate = frame_row.get("current_candidate") or {}
+            candidate_path = _safe_output(ep, candidate.get("path"))
+            item_output = _safe_output(ep, item.get("output_path"))
+            if candidate_path is not None and item_output is not None and candidate_path == item_output:
+                item["status"] = "generated"
+                item["last_error"] = None
+                outcome = "REVIEWED_CANDIDATE_RETAINED"
+                report["rows"].append({"item_id": item.get("id"), "frame": frame, "outcome": outcome,
+                                       "ledger_status": ledger_status, "lifecycle_state": lifecycle_state})
+                ledger = _read(ep / LEDGER_REL)
+                continue
 
         if ledger_status in READY_LEDGER_STATES:
             candidate = frame_row.get("current_candidate") or {}
@@ -311,6 +378,69 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
                 failure = str(lifecycle.get("error") or "worker failed before scheduler commit")
                 _mark_technical_failure(ep, item, "WORKER_INTERRUPTED_FAILURE", failure)
                 outcome = "WORKER_FAILURE_REPLAYED"
+            elif lifecycle_state in {"WORKER_STARTED", "BACKEND_INVOKED"}:
+                # Resume is allowed to classify an abandoned worker as a
+                # technical failure only after inspecting durable evidence:
+                # the recorded worker PID is dead and no candidate output was
+                # written. If an output exists, keep fail-closed because provider
+                # success may have happened without a terminal receipt.
+                worker_pid = lifecycle.get("worker_pid")
+                worker_alive = False
+                if worker_pid:
+                    try:
+                        import codex_user_runner
+                        worker_alive = codex_user_runner._pid_alive(worker_pid)
+                    except Exception:
+                        worker_alive = True
+                output = _safe_output(ep, lifecycle.get("expected_output"))
+                runner_request_id = str(
+                    lifecycle.get("runner_request_id")
+                    or ((item.get("execution") or {}).get("runner_request_id"))
+                    or ""
+                ).strip()
+                if worker_pid and not worker_alive and output is None and runner_request_id:
+                    try:
+                        recovered = recover_user_runner_success(
+                            ep, frame, runner_request_id,
+                            queue_override=queue,
+                            write_queue=False,
+                        )
+                        outcome = "USER_RUNNER_SUCCESS_RECOVERED"
+                        item["recovery"] = {
+                            "runner_request_id": runner_request_id,
+                            "recovered_at": now(),
+                            "output": recovered.get("output"),
+                        }
+                    except Exception as exc:
+                        persisted = None
+                        try:
+                            import codex_user_runner
+                            persisted = codex_user_runner.read_task_result(runner_request_id)
+                        except Exception:
+                            persisted = None
+                        if persisted:
+                            _mark_technical_failure(
+                                ep, item, "RUNNER_RESULT_RECOVERY_FAILED",
+                                f"runner request {runner_request_id} had durable result but recovery failed: {exc}"
+                            )
+                            outcome = "RUNNER_RESULT_RECOVERY_FAILED"
+                        else:
+                            _mark_technical_failure(
+                                ep, item, "WORKER_PROCESS_LOST",
+                                f"worker pid={worker_pid} disappeared before terminal receipt; runner request={runner_request_id} has no durable result"
+                            )
+                            outcome = "DEAD_WORKER_NO_RUNNER_RESULT_RETRYABLE"
+                elif worker_pid and not worker_alive and output is None:
+                    _mark_technical_failure(
+                        ep, item, "WORKER_PROCESS_LOST",
+                        f"worker pid={worker_pid} disappeared before terminal receipt and produced no candidate"
+                    )
+                    outcome = "DEAD_WORKER_NO_OUTPUT_RETRYABLE"
+                else:
+                    item["status"] = "interrupted_unknown"
+                    item["last_error"] = "RECOVERY_UNKNOWN_RUNNING_WORKER: lifecycle has no terminal receipt"
+                    mark_terminal(ep, item, "RECONCILE_PENDING", reason=item["last_error"])
+                    outcome = "UNKNOWN_RUNNING_WORKER"
             elif lifecycle_state == "MISSING" and str((item.get("execution") or {}).get("phase") or "") in {"BEGIN_PREPARED", "WORKER_PENDING"}:
                 _mark_technical_failure(ep, item, "SCHEDULER_INTERRUPTED_BEFORE_WORKER", "scheduler stopped before worker lifecycle began")
                 outcome = "PRE_WORKER_INTERRUPTION_RETRYABLE"
@@ -336,7 +466,7 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
     return report
 
 
-def recover_user_runner_success(ep: Path, frame: int, request_id: str) -> dict:
+def recover_user_runner_success(ep: Path, frame: int, request_id: str, *, queue_override: dict | None = None, write_queue: bool = True) -> dict:
     """Recover a real Codex image when the scheduler died after provider success.
 
     This is deliberately fail-closed.  It accepts only an ``interrupted_unknown``
@@ -355,24 +485,30 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str) -> dict:
     import raw_candidate_budget
 
     ep = Path(ep).resolve()
-    queue = _read(ep / QUEUE_REL)
+    queue = queue_override if isinstance(queue_override, dict) else _read(ep / QUEUE_REL)
     rows = [x for x in queue.get("items") or []
             if isinstance(x, dict) and int(x.get("frame") or 0) == int(frame)
-            and x.get("status") in {"interrupted_unknown", "running"}]
+            and x.get("status") in {"interrupted_unknown", "running", "tech_failed", "external_blocked"}]
     if not rows:
         raise RuntimeError(f"RECOVERY_ITEM_MISSING: frame={int(frame):02d}")
 
-    runner_log = codex_user_runner.runtime_dir() / codex_user_runner.LOG_NAME
     runner_row = None
-    if runner_log.is_file():
-        for raw in runner_log.read_text(encoding="utf-8-sig").splitlines():
-            try:
-                row = json.loads(raw)
-            except Exception:
-                continue
-            if isinstance(row, dict) and str(row.get("request_id") or "") == str(request_id):
-                runner_row = row
-                break
+    persisted = codex_user_runner.read_task_result(str(request_id))
+    if isinstance(persisted, dict):
+        evidence = persisted.get("evidence") or {}
+        if isinstance(evidence, dict) and str(evidence.get("request_id") or "") == str(request_id):
+            runner_row = evidence
+    if runner_row is None:
+        runner_log = codex_user_runner.runtime_dir() / codex_user_runner.LOG_NAME
+        if runner_log.is_file():
+            for raw in runner_log.read_text(encoding="utf-8-sig").splitlines():
+                try:
+                    row = json.loads(raw)
+                except Exception:
+                    continue
+                if isinstance(row, dict) and str(row.get("request_id") or "") == str(request_id):
+                    runner_row = row
+                    break
     if not runner_row:
         raise RuntimeError(f"RECOVERY_RUNNER_REQUEST_MISSING: {request_id}")
     runner_rc = runner_row.get("returncode")
@@ -387,9 +523,19 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str) -> dict:
     size = backend.provider_size(width, height)
     episode_policy = image_model_policy.for_episode(ep)
     runner_sha = str(runner_row.get("stdin_sha256") or "").lower()
+    runner_inputs = [x for x in (runner_row.get("input_images") or []) if isinstance(x, dict)]
     matches = []
     for candidate in rows:
-        if candidate.get("references"):
+        lifecycle = _read(lifecycle_path(ep, candidate))
+        bound_request_id = str(
+            lifecycle.get("runner_request_id")
+            or ((candidate.get("execution") or {}).get("runner_request_id"))
+            or ""
+        ).strip()
+        if bound_request_id and bound_request_id != str(request_id):
+            continue
+        refs = candidate.get("references") or []
+        if len(refs) != len(runner_inputs):
             continue
         candidate_prompt = (ROOT / str(candidate.get("prompt_file") or "")).resolve()
         if not candidate_prompt.is_file():
@@ -398,17 +544,25 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str) -> dict:
         candidate_model = str(candidate.get("model") or episode_policy["model"])
         candidate_quality = str(candidate.get("quality") or episode_policy["quality"])
         candidate_strict = bool(candidate.get("strict_model", episode_policy.get("strict_model")))
+        # The image worker prompt names only the disposable proxy basename, not
+        # its absolute path. Recreate those names from runner evidence so legacy
+        # reference-bound tasks can still be matched exactly by stdin SHA.
+        proxy_refs = []
+        for index, row in enumerate(runner_inputs, 1):
+            raw = str(row.get("source") or row.get("staged") or "").strip()
+            name = Path(raw).name if raw else f"reference-{index:02d}.jpg"
+            proxy_refs.append(Path(name))
         candidate_stdin = backend.worker_prompt(
-            candidate_package["scene_prompt"], [], size, visual["text"], candidate_package["frame_prompt_contract"],
+            candidate_package["scene_prompt"], proxy_refs, size, visual["text"], candidate_package["frame_prompt_contract"],
             candidate_model, candidate_quality, candidate_strict,
         ).encode("utf-8")
         candidate_sha = hashlib.sha256(candidate_stdin).hexdigest()
-        if candidate_sha.lower() == runner_sha:
-            if candidate.get("status") == "running":
-                lifecycle = _read(lifecycle_path(ep, candidate))
-                worker_pid = lifecycle.get("worker_pid") if isinstance(lifecycle, dict) else None
-                if worker_pid and codex_user_runner._pid_alive(worker_pid):
-                    raise RuntimeError(f"RECOVERY_WORKER_STILL_ALIVE: pid={worker_pid}")
+        # New workers bind request_id before provider invocation. Legacy workers
+        # without that binding must still match the exact stdin contract.
+        if bound_request_id or candidate_sha.lower() == runner_sha:
+            worker_pid = lifecycle.get("worker_pid") if isinstance(lifecycle, dict) else None
+            if candidate.get("status") == "running" and worker_pid and codex_user_runner._pid_alive(worker_pid):
+                raise RuntimeError(f"RECOVERY_WORKER_STILL_ALIVE: pid={worker_pid}")
             matches.append((candidate, candidate_prompt, candidate_package, candidate_model,
                             candidate_quality, candidate_strict, candidate_sha))
     if len(matches) != 1:
@@ -416,6 +570,15 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str) -> dict:
             f"RECOVERY_REQUEST_MATCH_NOT_UNIQUE: frame={int(frame):02d} matches={len(matches)} runner_sha={runner_sha}"
         )
     item, prompt_path, package, model, quality, strict_model, expected_sha = matches[0]
+    original_refs = [
+        (ROOT / str(ref.get("path") or "")).resolve()
+        for ref in (item.get("references") or [])
+        if isinstance(ref, dict) and ref.get("path")
+    ]
+    if len(original_refs) != len(runner_inputs):
+        raise RuntimeError("RECOVERY_REFERENCE_COUNT_MISMATCH")
+    if any(not ref.is_file() for ref in original_refs):
+        raise RuntimeError("RECOVERY_REFERENCE_SOURCE_MISSING")
 
     home, _ = codex_user_runner.codex_home()
     artifact = (home / "generated_images" / str(artifacts[0])).resolve()
@@ -432,7 +595,7 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str) -> dict:
     policy = {**episode_policy, "model": model, "quality": quality, "strict_model": strict_model}
     ns = SimpleNamespace(
         episode_dir=ep, frame=f"{int(frame):02d}", prompt_file=prompt_path, output=output, log=log,
-        reference=[], timeout=1, codex=None, image_model=model, image_quality=quality,
+        reference=original_refs, timeout=1, codex=None, image_model=model, image_quality=quality,
         # Recovery never calls the provider again. If the interrupted worker had
         # already written the normalized candidate before dying, rebuild the same
         # file from the hash-matched recovered provider artifact and overwrite it
@@ -443,6 +606,14 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str) -> dict:
     payload = backend.generate_for_frame(ns)
 
     token = str(item["id"])
+    budget_kind = raw_candidate_budget.kind_for_queue_item(item)
+    claimed, claim_row = raw_candidate_budget.claim(
+        ep, int(frame), budget_kind,
+        reason="recover_durable_user_runner_success",
+        token=token,
+    )
+    if not claimed:
+        raise RuntimeError(f"RECOVERY_CANDIDATE_BUDGET_CLAIM_FAILED: {claim_row}")
     committed, budget_row = raw_candidate_budget.commit(
         ep, token, reason="recovered_interrupted_user_runner_success"
     )
@@ -466,11 +637,37 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str) -> dict:
         "recovery": {"runner_request_id": str(request_id), "stdin_sha256": expected_sha},
     }
     write_lifecycle(ep, item, "SUCCEEDED", worker_pid=None, result=result,
-                    recovery="interrupted_user_runner_success")
-    ok, note = _commit_success(ep, item, _read(lifecycle_path(ep, item)))
-    if not ok:
-        raise RuntimeError(f"RECOVERY_LEDGER_COMMIT_FAILED: {note}")
-    atomic_write_json(ep / QUEUE_REL, queue)
+                    recovery="interrupted_user_runner_success", runner_request_id=str(request_id))
+    frame_row = _ledger_frame(_read(ep / LEDGER_REL), int(frame))
+    latest = _latest_ledger_attempt(frame_row)
+    if latest.get("result") == "technical_failure":
+        correction_args = SimpleNamespace(
+            episode_dir=str(ep), frame=f"{int(frame):02d}", path=str(output),
+            provider_receipt=str((payload.get("provider_receipt") or {}).get("path") or ""),
+            transaction_id=str((item.get("execution") or {}).get("transaction_id") or ""),
+            runner_request_id=str(request_id),
+        )
+        try:
+            production_ledger.cmd_recover_success(correction_args)
+        except (SystemExit, OSError, ValueError) as exc:
+            raise RuntimeError(f"RECOVERY_LEDGER_CORRECTION_FAILED: {exc}") from exc
+        item["status"] = "generated"
+        item["output_path"] = output.relative_to(ROOT.resolve()).as_posix()
+        item["completed_at"] = now()
+        item["last_error"] = None
+        item["prompt_package"] = result.get("prompt_package")
+        item.pop("technical_failure_code", None)
+        item.pop("retry_exhausted", None)
+        item.pop("external_block_reason", None)
+        if log.is_file():
+            item["log_path"] = log.resolve().relative_to(ROOT.resolve()).as_posix()
+        mark_terminal(ep, item, "COMMITTED", recovery="late_user_runner_success_corrected")
+    else:
+        ok, note = _commit_success(ep, item, _read(lifecycle_path(ep, item)))
+        if not ok:
+            raise RuntimeError(f"RECOVERY_LEDGER_COMMIT_FAILED: {note}")
+    if write_queue:
+        atomic_write_json(ep / QUEUE_REL, queue)
     return {
         "ok": True,
         "frame": f"{int(frame):02d}",

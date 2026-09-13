@@ -50,6 +50,28 @@ class VisualProfileRegistryTests(unittest.TestCase):
             self.assertEqual(vp["profile_path"], PROFILE_REL)
             self.assertEqual(vp["override_reason"], "test auto lookup")
 
+    def test_selector_explicit_mode_resolves_as_override_without_mutation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ep = Path(tmp)
+            meta = ep / "meta"
+            meta.mkdir(parents=True, exist_ok=True)
+            original = {
+                "schema_version": 1,
+                "visual_profile": {
+                    "mode": "explicit",
+                    "profile_id": PROFILE_ID,
+                    "profile_path": PROFILE_REL,
+                    "capture_profile": "auto",
+                    "override_reason": "selector"
+                }
+            }
+            path = meta / "story-gates.json"
+            path.write_text(json.dumps(original), encoding="utf-8")
+            resolved = visual_profile.resolve_base_profile(ep)
+            self.assertEqual(resolved["selection"], "override")
+            self.assertEqual(resolved["profile_id"], PROFILE_ID)
+            self.assertEqual(json.loads(path.read_text(encoding="utf-8")), original)
+
     def test_set_override_explicit_path_still_works(self):
         with tempfile.TemporaryDirectory() as tmp:
             ep = Path(tmp)

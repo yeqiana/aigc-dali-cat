@@ -18,7 +18,7 @@ TERMINAL = {"PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED"}
 # STORY_OS_V2_6_2_CONTINUOUS_HOST_LOOP: the image dispatch chain is a local executor, so the
 # workflow runner (not only a human) must be able to recognize and run it. Keep the action
 # list in one place instead of duplicating the set in every caller.
-LOCAL_IMAGE_ACTIONS = {"GENERATE_IMAGES", "RETRY_TECHNICAL_FAILURES", "REPAIR_FAILED_IMAGES"}
+LOCAL_IMAGE_ACTIONS = {"GENERATE_IMAGES", "RETRY_TECHNICAL_FAILURES", "REPAIR_FAILED_IMAGES", "REFRESH_AUTHORITY_IMAGES"}
 
 
 def record_event(episode, event):
@@ -54,7 +54,19 @@ def run_local_image_action(episode: Path, action: dict) -> int:
     import batch_scheduler
     import storyos_config
     if name == "RETRY_TECHNICAL_FAILURES":
-        image_scheduler.retry_tech(episode)
+        retry = image_scheduler.retry_tech(episode) or {}
+        if int(retry.get("requeued") or 0) == 0 and (retry.get("exhausted_frames") or retry.get("non_retryable_frames")):
+            next_action.write(episode)
+            return 21
+    elif name == "REPAIR_FAILED_IMAGES":
+        import auto_repair_enqueue
+        auto_repair_enqueue.enqueue_marked_repairs(episode)
+    elif name == "REFRESH_AUTHORITY_IMAGES":
+        import auto_repair_enqueue
+        refreshed = auto_repair_enqueue.enqueue_authority_refreshes(episode)
+        if int(refreshed.get("enqueued") or 0) == 0 and not refreshed.get("frames"):
+            next_action.write(episode)
+            return 21
     workers = int(storyos_config.get_path(storyos_config.load_config(), "production.max_inflight_images"))
     worker_timeout = runtime_timeout_policy.seconds("image_worker_request")
     try:
@@ -65,10 +77,81 @@ def run_local_image_action(episode: Path, action: dict) -> int:
         next_action.write(episode)
 
 
-def execute_cycle(episode: Path) -> int:
-    action = next_action.write(episode)
+def local_host_action(action: dict) -> str | None:
+    """Return a deliberately allowlisted local host action, if one exists."""
+    name = local_image_action(action)
+    if name is not None:
+        return name
+    import vision_review_executor
+    name = vision_review_executor.local_vision_action(action)
+    if name is not None:
+        return name
+    import machine_action_executor
+    name = machine_action_executor.local_machine_action(action)
+    if name is not None:
+        return name
+    # Legacy migration fallback only. Golden Path WORK actions are consumed by
+    # the current ChatGPT WORK host through DevSpace, not by spawning providers.
+    import work_host_action_executor
+    return work_host_action_executor.local_work_action(action)
+
+
+def run_local_host_action(episode: Path, action: dict) -> int:
     if local_image_action(action) is not None:
         return run_local_image_action(episode, action)
+    import vision_review_executor
+    if vision_review_executor.local_vision_action(action) is not None:
+        try:
+            result = vision_review_executor.execute(episode, action)
+            status = str(result.get("status") or "FAIL").upper()
+            record_event(episode, {"type": "vision_host_action", "action": action.get("action"), "status": status})
+            # A content FAIL that has been converted into a bounded repair is
+            # successful host-loop progress. NEEDS_USER is also a completed
+            # review action; next_action owns the subsequent hard stop.
+            if status in {"PASS", "REUSED", "REPAIR_ENQUEUED", "NEEDS_USER", "FAIL"}:
+                # Content FAIL is a completed review outcome, not an infrastructure
+                # failure. The review has already persisted SHA-bound findings;
+                # next_action owns bounded candidate/repair selection or the final
+                # NEEDS_USER hard stop. Returning a process failure here used to
+                # misclassify valid content review results as host technical faults.
+                return 0
+            if status in {"TECHNICAL_FAILURE", "TECH_FAILED"}:
+                return 21
+            return 2
+        except vision_review_executor.VisionReviewError as exc:
+            record_event(episode, {"type": "vision_host_action_failed", "action": action.get("action"), "error": str(exc)})
+            return 21
+        finally:
+            next_action.write(episode)
+    import machine_action_executor
+    if machine_action_executor.local_machine_action(action) is not None:
+        try:
+            result = machine_action_executor.execute(episode, action)
+            status = str(result.get("status") or "FAIL").upper()
+            record_event(episode, {"type": "machine_host_action", "action": action.get("action"), "status": status})
+            return 0 if status in {"PASS", "REUSED"} else 2
+        except machine_action_executor.MachineActionError as exc:
+            record_event(episode, {"type": "machine_host_action_failed", "action": action.get("action"), "error": str(exc)})
+            return 21
+        finally:
+            next_action.write(episode)
+    import work_host_action_executor
+    if work_host_action_executor.local_work_action(action) is None:
+        raise ValueError(f"not a locally executable host action: {action}")
+    try:
+        result = work_host_action_executor.execute(episode, action)
+        return 0 if str((result.get("result") or {}).get("status") or "PASS") == "PASS" else 2
+    except work_host_action_executor.WorkHostActionError as exc:
+        record_event(episode, {"type": "work_host_action_failed", "action": action.get("action"), "error": str(exc)})
+        return 21
+    finally:
+        next_action.write(episode)
+
+
+def execute_cycle(episode: Path) -> int:
+    action = next_action.write(episode)
+    if local_host_action(action) is not None:
+        return run_local_host_action(episode, action)
     return runtime_dag.execute(episode)
 
 

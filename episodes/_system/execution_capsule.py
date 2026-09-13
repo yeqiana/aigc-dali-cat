@@ -75,6 +75,15 @@ def compile_capsule(ep,step,write=True):
         p=(ep/rel) if local else (ROOT/rel)
         base=ep if local else ROOT
         evidence.append(file_row(p,base))
+    preimage_task = None
+    if step.startswith("PREIMAGE_") and step != "PREIMAGE_COMPILE":
+        try:
+            import preimage_task_contract
+            snapshot = story_json.read_json(ep/"meta/runtime/preimage-authority-snapshot.json", default={}) or {}
+            kind = step.removeprefix("PREIMAGE_")
+            preimage_task = preimage_task_contract.task_contract(ep, kind, snapshot) if snapshot else None
+        except Exception:
+            preimage_task = None
     material={
       "schema_version":1,"story_os":"2.1","step":step,"current_state":current_state(ep),
       "runtime_request":request,
@@ -84,6 +93,7 @@ def compile_capsule(ep,step,write=True):
       "runtime_capabilities":runtime_capabilities,
       "resume_capsule":resume_capsule,
       "character_contract":read_json(ep/"meta/character-contract.json"),
+      "preimage_task": preimage_task,
       "invariants":{k:rules.get(k) for k in RULE_KEYS if k in rules},
       "authority_files":authority,
       "evidence_files":evidence,
@@ -99,6 +109,7 @@ def compile_capsule(ep,step,write=True):
 def self_test():
     assert "default_image_model" in RULE_KEYS
     assert "default_image_quality" in RULE_KEYS
+    assert "PREIMAGE_ENVIRONMENT" in STEP_EVIDENCE
     print("EXECUTION CAPSULE SELF-TEST PASS")
 def main():
     ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True)

@@ -204,8 +204,8 @@ def verify(ep: Path) -> list[str]:
         storyboard_sha=sha256_file(storyboard),
         version=episode_contract_version(ep),
     )
-    if version_tuple(episode_contract_version(ep)) >= (2, 5, 0):
-        errors.extend(propagation_core_gate.verify(ep, force=True))
+    if propagation_core_gate.required(ep):
+        errors.extend(propagation_core_gate.verify(ep))
     return errors
 
 
@@ -232,6 +232,15 @@ def critic_prompt(ep: Path, story: Path, storyboard: Path, candidate: Path, atte
     rel_story = story.relative_to(ROOT).as_posix()
     rel_board = storyboard.relative_to(ROOT).as_posix()
     rel_out = candidate.relative_to(ROOT).as_posix()
+    ordinary_life_override = "" if propagation_core_gate.anomaly_applicable(ep) else """
+ORDINARY-LIFE OVERRIDE (takes precedence over anomaly-specific rules below):
+- This Episode is explicitly locked as anomaly_applicable=false. Do NOT invent horror, mystery, paranormal behavior, investigation, anomaly rules, or an abnormal response merely to satisfy generic schema wording.
+- Evaluate whether the ordinary-day arc, relationships, spatial progression, midpoint route change, emotional/visual peak, ending payoff and delete-frame density are coherent and production-worthy.
+- contract.core_anomaly / rule / trigger / direct_consequence and blind_retell.core_anomaly_rule must be non-empty explicit NOT_APPLICABLE statements explaining that the no-anomaly design is intentional.
+- hard_checks.mechanism_consistency means the Episode remains consistently non-anomalous; hard_checks.trigger_consequence means ordinary actions have readable ordinary responses/consequences rather than an abnormal mechanism.
+- ending_recontextualization may pay off at least three earlier ordinary-life facts, objects, or relationship beats; it does not need a twist.
+- V2.5 anomaly propagation_core is NOT required for this explicitly ordinary-life Episode. Omit it rather than fabricating an abnormal_response.
+"""
     return f"""You are an adversarial Story Critic in a fresh isolated session.
 Do NOT rewrite the story. Do NOT score it politely. Your job is to find reasons it should NOT enter production.
 Read:
@@ -243,7 +252,7 @@ Read:
 - standards/传播核与动作回应链规范_V1.0.md
 
 This is critic attempt {attempt}. Ignore propagation scores and author self-evaluation.
-
+{ordinary_life_override}
 Hard rules:
 1. A viewer must be able to explain protagonist, why they are here, their personal stake, the ONE core anomaly rule, trigger, direct consequence, midpoint reframe, climax choice/cost, result and aftermath.
 2. The main events must be explainable by one coherent underlying anomaly mechanism. If an object first returns by itself, later guides people, then suddenly "marks the next person" without one established rule explaining all three, mechanism_consistency=false.
@@ -336,8 +345,8 @@ def _finalize_review(ep: Path, data: dict, *, attempt: int, before_story: str, b
     final = ep / REVIEW_REL
     write_json(final, data)
     (ep / CANDIDATE_REL).unlink(missing_ok=True)
-    if version_tuple(episode_contract_version(ep)) >= (2, 5, 0):
-        errors.extend(propagation_core_gate.verify(ep, force=True))
+    if propagation_core_gate.required(ep):
+        errors.extend(propagation_core_gate.verify(ep))
     if errors:
         print("STORY SEMANTIC REVIEW FAIL")
         for error in errors:
@@ -349,7 +358,7 @@ def _finalize_review(ep: Path, data: dict, *, attempt: int, before_story: str, b
     return 0
 
 
-def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
+def finalize_product_review(ep: Path, *, attempt: int, runtime: str, bounded_devspace: bool = False) -> int:
     story, storyboard = story_paths(ep)
     candidate = ep / CANDIDATE_REL
     data, provenance = product_review_adapter.finalize_candidate(
@@ -358,6 +367,7 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
         runtime=runtime,
         attempt=attempt,
         candidate_path=candidate,
+        bounded_devspace=bounded_devspace,
     )
     rc = _finalize_review(
         ep,
@@ -465,6 +475,15 @@ def self_test() -> None:
     assert validate_payload(data, story_sha=h, storyboard_sha=h, version=story_os_version()) == []
     data["hard_checks"]["mechanism_consistency"] = False
     assert any("mechanism_consistency" in x for x in validate_payload(data, story_sha=h, storyboard_sha=h, version=story_os_version()))
+    old=propagation_core_gate.anomaly_applicable
+    propagation_core_gate.anomaly_applicable=lambda _ep:False
+    try:
+        prompt=critic_prompt(ROOT,ROOT/"dummy-story.md",ROOT/"dummy-board.md",ROOT/"dummy-candidate.json",1)
+        assert "ORDINARY-LIFE OVERRIDE" in prompt
+        assert "Do NOT invent horror" in prompt
+        assert "propagation_core is NOT required" in prompt
+    finally:
+        propagation_core_gate.anomaly_applicable=old
     print("STORY SEMANTIC REVIEW SELF-TEST PASS")
 
 
@@ -480,6 +499,7 @@ def main() -> int:
     p.add_argument("episode_dir")
     p.add_argument("--attempt", type=int, default=1)
     p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
+    p.add_argument("--bounded-devspace", action="store_true")
     p = sub.add_parser("verify")
     p.add_argument("episode_dir")
     p = sub.add_parser("show")
@@ -501,7 +521,7 @@ def main() -> int:
             return 3
     if args.cmd == "finalize-review":
         try:
-            return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime)
+            return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime, bounded_devspace=args.bounded_devspace)
         except (OSError, RuntimeError, ValueError) as exc:
             print("STORY SEMANTIC REVIEW FINALIZE ERROR:", exc)
             return 3

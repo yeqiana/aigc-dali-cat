@@ -31,7 +31,24 @@ def episode_version(ep):
         except Exception:pass
     return max(versions,key=lambda x:x[0])[1] if versions else story_os_version()
 
-def required(ep):return version_tuple(episode_version(ep))>=FORMAL_MIN_VERSION
+def anomaly_applicable(ep):
+    """Whether this Episode is governed by the anomaly action-response contract.
+
+    Story OS supports explicit ordinary-life Episodes.  A locked Shot Progression
+    may opt out only by setting anomaly_applicable=false with a concrete reason;
+    absence of that evidence keeps the historical strict anomaly behavior.
+    """
+    p=Path(ep)/"meta/shot-progression-review.json"
+    if not p.is_file():return True
+    try:
+        d=read_json(p)
+        if d.get("anomaly_applicable") is False and text(d.get("anomaly_exception_reason")):
+            return False
+    except Exception:
+        pass
+    return True
+
+def required(ep):return version_tuple(episode_version(ep))>=FORMAL_MIN_VERSION and anomaly_applicable(ep)
 
 def frame_count(ep):
     p=Path(ep)/"meta/release-manifest.json"
@@ -98,6 +115,16 @@ def self_test():
     assert validate_payload(good,20)==[]
     late=dict(good);late["trigger_frame"]=13;late["response_frame"]=14;late["payoff_frame"]=15
     assert any(x.startswith("TRIGGER_TOO_LATE") for x in validate_payload(late,20))
+    import tempfile
+    with tempfile.TemporaryDirectory() as raw:
+        ep=Path(raw);(ep/"meta").mkdir(parents=True)
+        story_json.write_json(ep/"meta/episode-state.json",{"tool_version":"2.6.1"})
+        story_json.write_json(ep/"meta/shot-progression-review.json",{
+            "anomaly_applicable":False,"anomaly_exception_reason":"explicit ordinary-life story"
+        })
+        assert anomaly_applicable(ep) is False
+        assert required(ep) is False
+        assert verify(ep)==[]
     print("PROPAGATION CORE V2.5 SELF-TEST PASS")
 
 def main():

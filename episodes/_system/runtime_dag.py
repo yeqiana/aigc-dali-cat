@@ -30,6 +30,7 @@ import episode_performance
 import runtime_timeout_policy
 import runtime_node_registry
 import runtime_node_evidence
+import storyos_config
 import runtime_scheduler
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -300,10 +301,47 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
             execution_capsule.compile_capsule(ep,s.step_id,write=True)
             active_runtime,_=runtime_router.detect()
             if active_runtime in {"WORK","WEB"} and not codex:
-                request=product_runtime_adapter.build_request(
-                    ep,runtime=active_runtime,mode=mode,resume=True,source=f"runtime_dag:{s.step_id}")
-                rc=product_runtime_adapter.HOST_ACTION_REQUIRED_RC
-                note=json.dumps(request,ensure_ascii=True)
+                deterministic_preimage_step=None
+                if s.step_id=="PREIMAGE_COMPILE":
+                    host_step,_=product_runtime_adapter.next_host_step(ep,mode)
+                    if host_step=="PREIMAGE_FRAME_CONTRACT_COMPILE":
+                        import frame_contract
+                        try:
+                            index=frame_contract.compile_all(ep)
+                            deterministic_preimage_step=host_step
+                            note=json.dumps({"deterministic_step":host_step,"frame_contract_index_sha256":index.get("index_sha256")},ensure_ascii=True)
+                        except Exception as exc:
+                            rc=4
+                            note=f"PREIMAGE FRAME CONTRACT COMPILE FAIL: {exc}"
+                    elif host_step=="PREIMAGE_VERIFY":
+                        deterministic_preimage_step=host_step
+                        note=json.dumps({"deterministic_step":host_step,"reason":"current authority exists; verify/build handoff locally"},ensure_ascii=True)
+                if deterministic_preimage_step is not None:
+                    rc=0
+                elif rc==0:
+                    request=product_runtime_adapter.build_request(
+                        ep,runtime=active_runtime,mode=mode,resume=True,source=f"runtime_dag:{s.step_id}")
+                    rc=product_runtime_adapter.HOST_ACTION_REQUIRED_RC
+                    note=json.dumps(request,ensure_ascii=True)
+            elif s.step_id=="PREIMAGE_COMPILE":
+                # A local explicit CODEX run executes four bounded workers.  It
+                # is not a threaded wrapper around the legacy composite prompt.
+                import preimage_protocol
+                workers=int(storyos_config.get_path(storyos_config.load_config(),"runtime.workers.authority") or 4)
+                def _worker(task):
+                    execution_capsule.compile_capsule(ep,"PREIMAGE_"+task["task_type"],write=True)
+                    value, _log=scoped_codex_worker.run_step(ep,"PREIMAGE_"+task["task_type"],codex_raw=codex,timeout=timeout)
+                    return value
+                outcome=preimage_protocol.execute_local(ep,_worker,max_workers=workers)
+                rc=0 if outcome.get("status")=="PASS" else 4
+                if rc == 0:
+                    import frame_contract
+                    try:
+                        index=frame_contract.compile_all(ep)
+                        outcome["frame_contract_index_sha256"]=index.get("index_sha256")
+                    except Exception as exc:
+                        rc=4; outcome["frame_contract_compile_error"]=str(exc)
+                note=(note+" "+json.dumps(outcome,ensure_ascii=True))[-5000:]
             else:
                 if s.step_id=="RELEASE" and provisional_future is not None:
                     try:

@@ -7,25 +7,43 @@ from pathlib import Path
 import runtime_node_registry
 import runtime_resource_manager
 import runtime_scheduler
+import storyos_config
 
 REL = Path("meta/runtime/production-plan.json")
 
 def build(episode: Path, *, max_workers: int = 2) -> dict:
     """Return a topology/slot estimate only. No node, Gate, or state is executed."""
     nodes = runtime_node_registry.first_batch_nodes()
+    config=storyos_config.load_config()
+    image_limit = int(storyos_config.get_path(config, "production.max_inflight_images", 3))
+    pools={"authority":int(storyos_config.get_path(config,"runtime.workers.authority",4)),
+           "derived":int(storyos_config.get_path(config,"runtime.workers.derived",6)),
+           "review":int(storyos_config.get_path(config,"runtime.workers.review",3)),"image":image_limit}
     completed, waves = set(), []
+    planning_workers=max(pools["authority"], pools["derived"], pools["review"])
     while len(completed) < len(nodes):
-        result = runtime_scheduler.schedule(nodes, completed=completed, max_workers=max_workers,
-            resource_snapshot={"max_workers": max_workers, "runtime_capacity": {"text": max_workers, "image": 1}})
+        result = runtime_scheduler.schedule(nodes, completed=completed, max_workers=planning_workers,
+            resource_snapshot={"max_workers": planning_workers, "runtime_capacity": pools})
         dispatch = result["dispatch"]
         if not dispatch:
             break
         waves.append([item["node_id"] for item in dispatch])
         completed.update(item["node_id"] for item in dispatch)
     return {"schema_version": 1, "episode": str(Path(episode)), "dry_run": True,
-            "node_count": len(nodes), "nodes": nodes, "estimated_waves": waves,
-            "estimated_parallelism": {"max_workers": max_workers, "image_workers": 1,
-                "parallel_preparation": ["character_prepare", "environment_prepare"]},
+            "node_count": len(nodes), "nodes": nodes,
+            "dependency_graph": {node["node_id"]: node["depends_on"] for node in nodes},
+            "parallel_groups": waves, "estimated_waves": waves,
+            "serial_groups": [[node["node_id"]] for node in nodes if not (node.get("execution_policy") or {}).get("parallel_safe")],
+            "authority_barriers": ["PREIMAGE_AUTHORITY_READY", "frame-contract-index single writer"],
+            "preimage_host_protocol": {"kind": "PREIMAGE_TASK_SET", "tasks": ["CHARACTER_FINALIZE", "ENVIRONMENT_PREPARE", "WORLD_PREPARE", "VISUAL_NARRATIVE_PREPARE"], "commit": "single_transaction"},
+            "configured_workers": pools,
+            "safe_parallel_nodes": ["character_finalize", "environment_prepare", "world_prepare", "visual_narrative_prepare", "frame_contract_compile:frames"],
+            "observed": {"preimage_parallelism_peak": None, "derived_parallelism_peak": None,
+                         "note": "dry-run contains no observed execution metrics"},
+            "estimated_parallelism": {"max_workers": planning_workers, "image_workers": image_limit,
+                "parallel_preparation": ["character_finalize", "environment_prepare", "world_prepare", "visual_narrative_prepare"], "safe_preimage_parallelism": "PREIMAGE_TASK_SET candidate protocol"},
+            "estimated_workers": {"max_workers": max_workers, "image_workers": image_limit},
+            "risk_nodes": ["image_generation", "repair", "release"],
             "estimated_risks": ["image_generation remains governed by the existing image scheduler",
                                 "repair/release require existing evidence and Gate decisions"],
             "authority": {"episode_state_mutated": False, "gate_decision": False, "node_executed": False}}

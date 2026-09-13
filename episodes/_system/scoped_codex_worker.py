@@ -124,6 +124,15 @@ TARGET: reach PUBLISH_READY and stop there.
 DO NOT mark PUBLISHED or fabricate metrics.
 """}
 
+# PREIMAGE protocol split: each invocation is forbidden from writing authority.
+# The parent single-writer commit validates the returned candidate separately.
+STEP_DIRECTIVES.update({
+"PREIMAGE_CHARACTER_FINALIZE": """TARGET: produce only the CHARACTER_FINALIZE Candidate declared by the execution capsule/request. Read the locked Story and Character Seed Contract. Validate final identity, wardrobe baseline, POV and textual appearance anchor. Do not rewrite Story or create pixel masters. Write only the declared candidate JSON; never modify shared authority, episode-state or gates.""",
+"PREIMAGE_ENVIRONMENT": """TARGET: produce only the ENVIRONMENT_PREPARE Candidate declared by the execution capsule/request. Cover physical environment, weather, impact and environment frame directives. Do not change Character, Story, World or other visual authority. Write only the declared candidate JSON; never modify shared authority, episode-state or gates.""",
+"PREIMAGE_WORLD": """TARGET: produce only the WORLD_PREPARE Candidate declared by the execution capsule/request. Cover world identity/state, capture-event physical continuity, temporal continuity and wardrobe constraints. Do not rewrite Story or generate images. Write only the declared candidate JSON; never modify shared authority, episode-state or gates.""",
+"PREIMAGE_VISUAL_NARRATIVE": """TARGET: produce only the VISUAL_NARRATIVE_PREPARE Candidate declared by the execution capsule/request. Cover visual narrative core, shot progression, capture grammar and anomaly progression. Do not own environment physics or character identity. Write only the declared candidate JSON; never modify shared authority, episode-state or gates.""",
+})
+
 def resolve_codex(raw):
     value=raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
     if not value: raise RuntimeError("Codex CLI not found on PATH")
@@ -207,7 +216,7 @@ def run_step(ep,step,codex_raw=None,timeout=None):
                                            metadata={"timeout_seconds":timeout,"log":str(log)})
 
 def self_test():
-    assert set(STEP_DIRECTIVES)=={"CREATIVE_STORY","PREIMAGE_COMPILE","VISUAL_LOCK","PRODUCTION","RELEASE"}
+    assert {"CREATIVE_STORY","PREIMAGE_COMPILE","PREIMAGE_ENVIRONMENT","PREIMAGE_WORLD","PREIMAGE_CHARACTER_FINALIZE","PREIMAGE_VISUAL_NARRATIVE","VISUAL_LOCK","PRODUCTION","RELEASE"}.issubset(STEP_DIRECTIVES)
     print("SCOPED CODEX WORKER SELF-TEST PASS")
 
 def main():

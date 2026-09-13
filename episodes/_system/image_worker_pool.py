@@ -9,6 +9,7 @@ persistent image-generation daemon/session contract.
 from __future__ import annotations
 import argparse
 import os
+import uuid
 from pathlib import Path
 
 import codex_subscription_image as backend
@@ -73,16 +74,20 @@ def execute(ep,item,timeout,codex):
         result={"returncode":98,"stdout":"RAW_CANDIDATE_BUDGET_EXHAUSTED: "+str(budget_row),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None,"budget":budget_row}
         production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=result["stdout"], result=result)
         return result
+    runner_request_id = uuid.uuid4().hex
+    item.setdefault("execution", {})["runner_request_id"] = runner_request_id
     ns=argparse.Namespace(
         episode_dir=ep,frame=f"{frame:02d}",prompt_file=prompt,output=out,log=log,
         reference=refs,timeout=timeout,codex=codex,image_model=model,image_quality=quality,overwrite=False,
         _image_model_policy=effective_model_policy,
-        _raw_candidate_budget_preclaimed=True,_raw_candidate_token=budget_token,candidate_kind=budget_kind)
+        _raw_candidate_budget_preclaimed=True,_raw_candidate_token=budget_token,candidate_kind=budget_kind,
+        _runner_request_id=runner_request_id)
     trace_span=runtime_trace.start_span(ep,f"image.generate.frame.{frame:02d}",category="image_generation",attrs={"frame":frame,"model":model,"quality":quality})
     trace_started=time.monotonic()
     try:
         production_recovery.write_lifecycle(ep, item, "BACKEND_INVOKED", worker_pid=os.getpid(),
-                                            expected_output=str(out), expected_log=str(log))
+                                            expected_output=str(out), expected_log=str(log),
+                                            runner_request_id=runner_request_id)
         payload=backend.generate_for_frame(ns)
     except Exception as exc:
         code=runtime_circuit_breaker.classify_text(str(exc))

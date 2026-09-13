@@ -233,26 +233,26 @@ class CodexUserRunnerBridgeTests(unittest.TestCase):
         self.assertFalse(bridge.is_codex_basename(str(evil)))
 
         task = bridge.CodexTask(argv=[str(evil), "exec", "--json", "-"],
-                               working_directory=str(ROOT))
+                                working_directory=str(ROOT))
         with self.stub_codex(), \
                 mock.patch.object(bridge.subprocess, "run",
                                   return_value=FakeCompleted(0, b"ok")) as run:
-            result = bridge.execute_task(task)
-        self.assertEqual(result.returncode, 0)
-        self.assertEqual(result.remote["codex_executable"], str(self.codex_stub))
-        cmd = run.call_args[0][0]
-        self.assertEqual(cmd[0], str(self.codex_stub))
-        self.assertNotIn(str(evil), cmd)
+            with self.assertRaises(bridge.CodexUserRunnerRejected) as ctx:
+                bridge.execute_task(task)
+        self.assertEqual(bridge.error_code(ctx.exception),
+                         "CODEX_USER_RUNNER_TASK_REJECTED")
+        run.assert_not_called()
 
         cmd_task = bridge.CodexTask(argv=["cmd.exe", "/c", "calc.exe"],
                                    working_directory=str(ROOT))
         with self.stub_codex(), \
                 mock.patch.object(bridge.subprocess, "run",
                                   return_value=FakeCompleted(0, b"ok")) as run2:
-            bridge.execute_task(cmd_task)
-        cmd2 = run2.call_args[0][0]
-        self.assertEqual(cmd2[0], str(self.codex_stub))
-        self.assertTrue(bridge.is_codex_basename(cmd2[0]))
+            with self.assertRaises(bridge.CodexUserRunnerRejected) as ctx:
+                bridge.execute_task(cmd_task)
+        self.assertEqual(bridge.error_code(ctx.exception),
+                         "CODEX_USER_RUNNER_TASK_REJECTED")
+        run2.assert_not_called()
 
     # ------------------------------------------------------------------
     # Case 6: arbitrary executables / task types / home modes are rejected
@@ -493,7 +493,12 @@ class CodexUserRunnerBridgeTests(unittest.TestCase):
         self.assertIs(completed.stdout, run.return_value.stdout)
         self.assertTrue(run.call_args.kwargs["text"])
         self.assertIsNone(run.call_args.kwargs["timeout"])
-        self.assertEqual(run.call_args.args[0], ["codex", "exec"])
+        command = run.call_args.args[0]
+        self.assertEqual(command[0], "codex")
+        self.assertIn("exec", command)
+        self.assertEqual(command[-1], "exec")
+        if os.name == "nt":
+            self.assertIn("windows.sandbox='unelevated'", command)
 
 
 if __name__ == "__main__":

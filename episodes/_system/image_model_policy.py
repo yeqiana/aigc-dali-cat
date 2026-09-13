@@ -20,12 +20,14 @@ BACKEND_5XX="BACKEND_5XX"
 RATE_LIMIT_429="RATE_LIMIT_429"
 AUTH_401="AUTH_401"
 PERMISSION_403="PERMISSION_403"
+NETWORK_ERROR="NETWORK_ERROR"
 ARTIFACT_SAVE_COLLISION="PROVIDER_ARTIFACT_SAVE_COLLISION"
 MODEL_UNAVAILABLE_PATTERNS=("model_unavailable","model unavailable","model is not available","requested model is not available","unknown model","unsupported model","model not found","does not exist","cannot honor the requested model")
 BACKEND_5XX_PATTERNS=("500 internal server error","502 bad gateway","503 service unavailable","504 gateway timeout","upstream_server_error","server_error")
 RATE_LIMIT_PATTERNS=("429","too many requests","rate limit")
 AUTH_401_PATTERNS=("401 unauthorized","http 401","status code 401","authentication required")
 PERMISSION_403_PATTERNS=("403 forbidden","http 403","permission denied")
+NETWORK_ERROR_PATTERNS=("network error","error sending request","connection reset","connection aborted","connection refused","connection closed","transport channel closed")
 # STORY_OS_V2_6_2_ARTIFACT_COLLISION: the Codex image tool can generate a real picture and
 # still fail its own local save (Windows os error 183 / ERROR_ALREADY_EXISTS). Story OS only
 # observes "no valid image", so this signature must stay a technical failure that never
@@ -38,6 +40,7 @@ def classify_backend_error(text, *, source="image_backend"):
         return None
     if any(x in low for x in AUTH_401_PATTERNS): return AUTH_401
     if any(x in low for x in PERMISSION_403_PATTERNS): return PERMISSION_403
+    if any(x in low for x in NETWORK_ERROR_PATTERNS): return NETWORK_ERROR
     if any(x in low for x in MODEL_UNAVAILABLE_PATTERNS): return MODEL_UNAVAILABLE
     if any(x in low for x in ARTIFACT_SAVE_COLLISION_PATTERNS): return ARTIFACT_SAVE_COLLISION
     if any(x in low for x in RATE_LIMIT_PATTERNS): return RATE_LIMIT_429
@@ -68,6 +71,7 @@ def self_test():
     assert classify_backend_error("unknown model")=="MODEL_UNAVAILABLE"
     assert classify_backend_error("502 Bad Gateway upstream_server_error")=="BACKEND_5XX"
     assert classify_backend_error("429 Too Many Requests")=="RATE_LIMIT_429"
+    assert classify_backend_error("image generation failed: network error: error sending request")=="NETWORK_ERROR"
     assert classify_backend_error("failed to save generated image: cannot create a file when that file already exists. (os error 183)")=="PROVIDER_ARTIFACT_SAVE_COLLISION"
     print("IMAGE MODEL POLICY V2.1 SELF-TEST PASS")
 

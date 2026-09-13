@@ -117,6 +117,8 @@ def cmd_begin(args: argparse.Namespace) -> None:
         raise SystemExit(f"cannot begin original from {status}")
     if kind == "repair" and status not in {"REPAIR_AUTHORIZED", "AUTHORITY_REFRESH_AUTHORIZED", "EXCEPTION_REPAIR_AUTHORIZED", "TECH_FAILED"}:
         raise SystemExit(f"repair requires REPAIR_AUTHORIZED, AUTHORITY_REFRESH_AUTHORIZED, EXCEPTION_REPAIR_AUTHORIZED, or TECH_FAILED retry; got {status}")
+    if kind == "baseline_candidate" and status not in {"NEEDS_USER", "TECH_FAILED"}:
+        raise SystemExit(f"baseline candidate requires NEEDS_USER or TECH_FAILED retry; got {status}")
     if kind == "repair" and status == "REPAIR_AUTHORIZED":
         if frame.get("content_repairs_used", 0) >= content_repair_limit(data):
             raise SystemExit("content repair limit reached")
@@ -259,6 +261,94 @@ def cmd_success(args: argparse.Namespace) -> None:
     print(f"{key}: {frame['status']} {dims[0]}脳{dims[1]} sha256={candidate_info['sha256']}")
 
 
+def cmd_recover_success(args: argparse.Namespace) -> None:
+    """Correct a closed technical-failure attempt when durable provider success arrives late.
+
+    This is not a generic reopen. The latest attempt must be the exact transaction that
+    was previously closed as ``technical_failure``. Candidate/receipt validation is the
+    same as normal success, and the correction is retained in the attempt audit trail.
+    """
+    ep = episode_dir(args.episode_dir)
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, args.frame)
+    attempts = frame.get("attempts") or []
+    if not attempts:
+        raise SystemExit("frame has no generation attempt")
+    attempt = attempts[-1]
+    if attempt.get("result") != "technical_failure":
+        raise SystemExit(f"late success correction requires technical_failure; got {attempt.get('result')}")
+    tx = str(getattr(args, "transaction_id", "") or "")
+    if not tx or str(attempt.get("runtime_transaction_id") or "") != tx:
+        raise SystemExit("late success correction transaction mismatch")
+    verify_attempt_visual_provenance(ep, attempt)
+    verify_attempt_frame_contract_provenance(ep, key, attempt)
+    candidate = Path(args.path).resolve()
+    if not candidate.is_file():
+        raise SystemExit(f"candidate not found: {candidate}")
+    dims = image_dimensions(candidate)
+    expected = (data["canvas"]["width"], data["canvas"]["height"])
+    if dims is None:
+        raise SystemExit("candidate image dimensions cannot be parsed")
+    if dims != expected:
+        raise SystemExit(f"candidate size {dims[0]}x{dims[1]} != expected {expected[0]}x{expected[1]}")
+    candidate_info = {
+        "path": repo_relative(candidate),
+        "sha256": sha256_file(candidate),
+        "width": dims[0],
+        "height": dims[1],
+        "recorded_at": now_iso(),
+        "kind": attempt["kind"],
+        "attempt_id": attempt["attempt_id"],
+    }
+    provider_receipt = None
+    if getattr(args, "provider_receipt", None):
+        receipt_path = Path(args.provider_receipt).resolve()
+        if not receipt_path.is_file():
+            raise SystemExit(f"provider receipt not found: {receipt_path}")
+        receipt_data = json.loads(receipt_path.read_text(encoding="utf-8-sig"))
+        if not isinstance(receipt_data, dict):
+            raise SystemExit("provider receipt root must be object")
+        if str(receipt_data.get("frame") or "") not in {"", key}:
+            raise SystemExit(f"provider receipt frame mismatch: {receipt_data.get('frame')} != {key}")
+        release_canvas = receipt_data.get("release_canvas") or {}
+        if release_canvas and (release_canvas.get("width"), release_canvas.get("height")) != expected:
+            raise SystemExit("provider receipt release canvas mismatch")
+        provider_receipt = {
+            "path": repo_relative(receipt_path),
+            "sha256": sha256_file(receipt_path),
+            "capability_id": receipt_data.get("capability_id"),
+            "provider_raw_canvas": receipt_data.get("provider_raw_canvas"),
+            "ratio_delta": receipt_data.get("ratio_delta"),
+            "normalize_decision": receipt_data.get("normalize_decision"),
+            "provider_attestation": receipt_data.get("provider_attestation"),
+        }
+        attempt["provider_receipt"] = provider_receipt
+        if isinstance(attempt.get("reference_execution"), dict):
+            attempt["reference_execution"] = merge_provider_reference_evidence(attempt, receipt_data, provider_receipt)
+    previous_error = attempt.get("error")
+    attempt["recovery_correction"] = {
+        "at": now_iso(),
+        "previous_result": "technical_failure",
+        "previous_error": previous_error,
+        "reason": "durable_user_runner_success_arrived_after_parent_exit",
+        "runner_request_id": str(getattr(args, "runner_request_id", "") or "") or None,
+        "runtime_transaction_id": tx,
+    }
+    attempt["result"] = "success"
+    attempt["completed_at"] = now_iso()
+    attempt["candidate"] = candidate_info
+    frame["current_candidate"] = candidate_info
+    frame["status"] = "ORIGINAL_READY" if attempt["kind"] == "original" else "REPAIR_READY"
+    for failure in reversed(frame.get("technical_failures") or []):
+        if failure.get("attempt_id") == attempt.get("attempt_id") and not failure.get("recovered_at"):
+            failure["recovered_at"] = now_iso()
+            failure["recovered_runner_request_id"] = str(getattr(args, "runner_request_id", "") or "") or None
+            break
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    print(f"{key}: {frame['status']} late-success-corrected sha256={candidate_info['sha256']}")
+
+
 def cmd_tech_fail(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
@@ -353,7 +443,7 @@ def cmd_restore_evidence_gap_review(args: argparse.Namespace) -> None:
     if not candidate_path.is_file() or sha256_file(candidate_path) != str(candidate.get("sha256") or "").lower():
         raise SystemExit("current candidate missing or hash drifted")
     kind = str(candidate.get("kind") or "")
-    if kind not in {"original", "repair"}:
+    if kind not in {"original", "repair", "baseline_candidate"}:
         raise SystemExit("candidate kind is not restorable")
     frame.setdefault("review_evidence_gaps", []).append({
         "at": now_iso(), "reason": args.reason, "restored_from": "CONTENT_FAILED",

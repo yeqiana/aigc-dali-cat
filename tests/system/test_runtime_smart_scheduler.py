@@ -18,23 +18,26 @@ import runtime_scheduler
 class SmartSchedulerTest(unittest.TestCase):
     def test_registry_contains_complete_logical_production_chain(self):
         nodes = {row["node_id"]: row for row in runtime_node_registry.first_batch_nodes()}
-        self.assertEqual(set(nodes), {"story_lock", "character_prepare", "environment_prepare",
-                         "frame_contract_compile", "image_generation", "review", "repair", "release"})
+        self.assertEqual(set(nodes), {"story_lock", "character_finalize", "environment_prepare", "world_prepare",
+                         "visual_narrative_prepare", "preimage_authority_commit", "frame_contract_compile",
+                         "image_generation", "review", "repair", "release"})
         self.assertEqual(nodes["release"]["depends_on"], ["review", "repair"])
 
-    def test_parallel_release_and_priority_score_are_deterministic(self):
+    def test_parallel_safe_wave_and_priority_score_are_deterministic(self):
         rows = runtime_node_registry.first_batch_nodes()
-        result = runtime_scheduler.schedule(rows, completed=["story_lock"], max_workers=2)
-        self.assertEqual([x["node_id"] for x in result["dispatch"]], ["character_prepare", "environment_prepare"])
-        tasks = [dict(rows[1], depends_on=[], priority="MEDIUM", priority_score=60),
-                 dict(rows[2], depends_on=[], priority="MEDIUM", priority_score=70)]
+        tasks = [dict(rows[1], node_id="safe-a", depends_on=[], priority="MEDIUM", priority_score=60,
+                      execution_policy={"mode": "parallel_safe", "parallel_safe": True, "resource_class": "preimage", "max_concurrency": 2}),
+                 dict(rows[2], node_id="safe-b", depends_on=[], priority="MEDIUM", priority_score=70,
+                      execution_policy={"mode": "parallel_safe", "parallel_safe": True, "resource_class": "preimage", "max_concurrency": 2})]
         self.assertEqual([x["node_id"] for x in runtime_scheduler.schedule(tasks, max_workers=2)["dispatch"]],
-                         ["environment_prepare", "character_prepare"])
+                         ["safe-b", "safe-a"])
+        self.assertEqual(runtime_scheduler.schedule_next(tasks, max_workers=2)["node_id"], "safe-b")
 
     def test_failure_isolated_and_resource_slots_limit_dispatch(self):
         independent = {"node_id": "independent", "node_type": "review", "depends_on": [],
                        "priority": "LOW", "executor": "review", "evidence_required": [],
-                       "input_contract": {}, "output_contract": {}, "retry_policy": {}}
+                       "input_contract": {}, "output_contract": {}, "retry_policy": {},
+                       "execution_policy": {"mode": "parallel_safe", "parallel_safe": True, "resource_class": "text", "max_concurrency": 2}}
         result = runtime_scheduler.schedule(runtime_node_registry.first_batch_nodes() + [independent],
                                             failed=["story_lock"], max_workers=2)
         self.assertEqual([x["node_id"] for x in result["dispatch"]], ["independent"])
@@ -43,6 +46,15 @@ class SmartSchedulerTest(unittest.TestCase):
             resource_snapshot={"max_workers": 3, "runtime_capacity": {"text": 2, "image": 1}})
         self.assertEqual([x["node_id"] for x in limited["dispatch"]], ["a", "b"])
         self.assertEqual([x["node_id"] for x in limited["queued"]], ["c"])
+
+    def test_authority_wave_is_parallel_but_commit_and_image_remain_specialized(self):
+        nodes = runtime_node_registry.first_batch_nodes()
+        result = runtime_scheduler.schedule(nodes, completed=["story_lock"], max_workers=3)
+        self.assertEqual([row["node_id"] for row in result["dispatch"]], ["character_finalize", "environment_prepare", "world_prepare"])
+        commit = {row["node_id"]: row for row in nodes}["preimage_authority_commit"]
+        self.assertFalse(commit["execution_policy"]["parallel_safe"])
+        image = {row["node_id"]: row for row in nodes}["image_generation"]
+        self.assertEqual(image["execution_policy"]["mode"], "image_managed")
 
     def test_execution_evidence_and_dry_run_do_not_change_state(self):
         with tempfile.TemporaryDirectory() as raw:
@@ -57,8 +69,11 @@ class SmartSchedulerTest(unittest.TestCase):
 
     def test_failure_strategy_is_advice_not_gate(self):
         resolved = runtime_failure_strategy.resolve("identity_failure")
-        self.assertEqual(resolved["action"], "reference_repair")
-        self.assertIn("no_episode_state", resolved["authority"])
+        self.assertEqual(resolved["strategy"], "reference_repair")
+        self.assertFalse(resolved["retry_allowed"])
+        self.assertEqual(resolved["next_action"], "reference_repair")
+        self.assertFalse(resolved["authority"]["episode_state_mutated"])
+        self.assertFalse(resolved["authority"]["gate_decision"])
 
 
 if __name__ == "__main__": unittest.main()

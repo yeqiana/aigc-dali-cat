@@ -75,6 +75,10 @@
     ]
   },
   "entry_to_scene_preferences": {
+    "daily_life": [
+      "modern_indoor",
+      "county_town"
+    ],
     "travel": [
       "travel_road",
       "county_town",

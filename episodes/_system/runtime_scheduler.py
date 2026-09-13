@@ -10,6 +10,7 @@ from pathlib import Path
 
 import runtime_dag
 import runtime_resource_manager
+import runtime_failure_strategy
 import task_priority
 
 NODE_TYPES = {
@@ -33,6 +34,13 @@ def load_node_contract(source) -> list[dict]:
                 raise ValueError(f"node {row['node_id']} {field} must be an object")
         if "evidence_required" in row and not isinstance(row["evidence_required"], list):
             raise ValueError(f"node {row['node_id']} evidence_required must be a list")
+        policy = row.get("execution_policy") or {}
+        if not isinstance(policy, dict) or policy.get("mode", "serial") not in {"serial", "parallel_safe", "image_managed"}:
+            raise ValueError(f"node {row['node_id']} has invalid execution_policy")
+        row["execution_policy"] = {"mode": policy.get("mode", "serial"),
+            "parallel_safe": bool(policy.get("parallel_safe", False)),
+            "resource_class": str(policy.get("resource_class") or "text"),
+            "max_concurrency": int(policy.get("max_concurrency", 1)), **policy}
     return rows
 
 
@@ -45,12 +53,18 @@ def schedule(source, *, completed=(), failed=(), max_workers: int = 1, resource_
     resolved = runtime_dag.resolve_node_dependencies(rows, completed=completed, failed=failed)
     ready = task_priority.stable_sort(resolved["ready"])
     resources = runtime_resource_manager.normalize(resource_snapshot, max_workers=workers)
-    allocation = runtime_resource_manager.allocate(ready, resources)
+    # A serial node never shares a Runtime wave. Image-managed work remains a
+    # single delegated Runtime step; its internal concurrency belongs to image_scheduler.
+    serial = [row for row in ready if not row["execution_policy"]["parallel_safe"]]
+    eligible = [row for row in ready if row["execution_policy"]["parallel_safe"]]
+    candidates = [serial[0]] if serial else eligible
+    allocation = runtime_resource_manager.allocate(candidates, resources)
+    deferred = [row for row in ready if row not in candidates]
     return {
         "schema_version": 1,
         "max_workers": resources["max_workers"],
         "dispatch": allocation["dispatch"],
-        "queued": allocation["queued"],
+        "queued": allocation["queued"] + deferred,
         "waiting": resolved["waiting"],
         "blocked": resolved["blocked"],
         "authority": {
@@ -61,3 +75,21 @@ def schedule(source, *, completed=(), failed=(), max_workers: int = 1, resource_
         },
         "resources": allocation["resources"],
     }
+
+
+def schedule_batch(source, *, completed=(), failed=(), max_workers: int = 1, resource_snapshot=None) -> list[dict]:
+    """Return every node eligible for this in-memory scheduling wave."""
+    return schedule(source, completed=completed, failed=failed, max_workers=max_workers,
+                    resource_snapshot=resource_snapshot)["dispatch"]
+
+
+def schedule_next(source, *, completed=(), failed=(), max_workers: int = 1, resource_snapshot=None):
+    """Return the highest-priority eligible node, or ``None`` when none can run."""
+    batch = schedule_batch(source, completed=completed, failed=failed, max_workers=max_workers,
+                           resource_snapshot=resource_snapshot)
+    return batch[0] if batch else None
+
+
+def failure_route(failure_type: str) -> dict:
+    """Return advice only; callers retain all retry, evidence, and Gate decisions."""
+    return runtime_failure_strategy.resolve(failure_type)

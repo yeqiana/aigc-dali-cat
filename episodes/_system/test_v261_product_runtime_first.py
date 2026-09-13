@@ -72,12 +72,17 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         self.assertEqual(caps["codex_image_controller_model"], "gpt-5.6-luna")
         self.assertEqual(caps["codex_image_reasoning_effort"], "medium")
         self.assertTrue(caps["local_codex_image_spawn_allowed"])
+        self.assertEqual(caps["text_review_runtime"], "WORK")
+        self.assertEqual(caps["vision_review_runtime"], "CODEX")
+        self.assertEqual(caps["governance_review_runtime"], "WORK")
+        self.assertTrue(caps["local_codex_vision_spawn_allowed"])
 
     def test_codex_requires_explicit_runtime_or_explicit_call(self) -> None:
         os.environ["STORY_OS_RUNTIME"] = "WORK"
         self.assertFalse(runtime_router.local_codex_allowed())
         self.assertTrue(runtime_router.local_codex_allowed(explicit=True))
         self.assertTrue(runtime_router.local_codex_image_allowed())
+        self.assertTrue(runtime_router.local_codex_vision_allowed())
         os.environ["STORY_OS_RUNTIME"] = "CODEX"
         runtime, _ = runtime_router.detect()
         self.assertEqual(runtime, "CODEX")
@@ -263,7 +268,69 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             current = json.loads((ep / product_runtime_adapter.REQUEST_REL).read_text(encoding="utf-8"))
             self.assertEqual(current["status"], "FINALIZED")
 
-    def test_stale_visual_product_review_is_ignored_after_visual_calibrated(self) -> None:
+    def test_stale_preimage_committed_snapshot_routes_back_to_task_set(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            (ep / "meta/runtime").mkdir(parents=True, exist_ok=True)
+            (ep / "meta/episode-state.json").write_text(
+                json.dumps({"current_state": "STORYBOARD_LOCKED"}), encoding="utf-8"
+            )
+            (ep / "meta/runtime/preimage-task-state.json").write_text(
+                json.dumps({"snapshot_id": "old", "tasks": {}}), encoding="utf-8"
+            )
+            (ep / "meta/runtime/preimage-committed-snapshot.json").write_text(
+                json.dumps({"snapshot_id": "old", "authority_sha256": {}}), encoding="utf-8"
+            )
+            with mock.patch.object(product_runtime_adapter.preproduction_handoff, "verify", return_value=["stale handoff"]), \
+                    mock.patch.object(product_runtime_adapter.preimage_authority_snapshot, "stale", return_value=True):
+                step, target = product_runtime_adapter.next_host_step(ep)
+            self.assertEqual((step, target), ("PREIMAGE_TASK_SET", None))
+
+    def test_stale_frame_contract_index_routes_to_deterministic_recompile(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            (ep / "meta/runtime/contracts").mkdir(parents=True, exist_ok=True)
+            (ep / "meta/episode-state.json").write_text(
+                json.dumps({"current_state": "STORYBOARD_LOCKED"}), encoding="utf-8"
+            )
+            (ep / "meta/runtime/preimage-authority-barrier.json").write_text("{}", encoding="utf-8")
+            (ep / "meta/runtime/contracts/frame-contract-index.json").write_text("{}", encoding="utf-8")
+            (ep / "meta/preproduction-handoff.json").write_text("{}", encoding="utf-8")
+            with mock.patch.object(product_runtime_adapter.preproduction_handoff, "verify", return_value=["stale handoff"]), \
+                    mock.patch.object(product_runtime_adapter.frame_contract, "verify_all", return_value=["frame 02 stale"]):
+                step, target = product_runtime_adapter.next_host_step(ep)
+            self.assertEqual((step, target), ("PREIMAGE_FRAME_CONTRACT_COMPILE", None))
+            with mock.patch.object(product_runtime_adapter.preproduction_handoff, "verify", return_value=["stale handoff"]), \
+                    mock.patch.object(product_runtime_adapter.frame_contract, "verify_all", return_value=[]):
+                step, target = product_runtime_adapter.next_host_step(ep)
+            self.assertEqual((step, target), ("PREIMAGE_VERIFY", None))
+
+    def test_preimage_verify_host_request_reconciles_from_valid_handoff(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            meta = ep / "meta"
+            history = ep / product_runtime_adapter.REQUEST_HISTORY_REL
+            history.mkdir(parents=True, exist_ok=True)
+            (meta / "episode-state.json").write_text(
+                json.dumps({"current_state": "STORYBOARD_LOCKED"}), encoding="utf-8"
+            )
+            (meta / "preproduction-handoff.json").write_text("{}", encoding="utf-8")
+            request_id = "host-preimage-verify-test"
+            request = {
+                "request_id": request_id,
+                "status": "HOST_ACTION_REQUIRED",
+                "next_step": "PREIMAGE_VERIFY",
+                "target_state": None,
+            }
+            (history / f"{request_id}.json").write_text(json.dumps(request), encoding="utf-8")
+            (ep / product_runtime_adapter.REQUEST_REL).write_text(json.dumps(request), encoding="utf-8")
+            with mock.patch.object(product_runtime_adapter.preproduction_handoff, "verify", return_value=[]):
+                reconciled = product_runtime_adapter.reconcile(ep)
+            self.assertEqual(reconciled["status"], "FINALIZED")
+            current = json.loads((ep / product_runtime_adapter.REQUEST_REL).read_text(encoding="utf-8"))
+            self.assertEqual(current["status"], "FINALIZED")
+
+    def test_visual_product_review_is_legacy_residue_when_codex_vision_owns_pixels(self) -> None:
         with self.temp_episode() as td:
             ep = Path(td)
             review_dir = ep / "meta/runtime/reviews"
@@ -276,8 +343,131 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             (review_dir / "visual-lock-baseline-request.json").write_text(
                 json.dumps(request), encoding="utf-8"
             )
-            self.assertIsNotNone(next_action.pending_product_review(ep, current_state="STORYBOARD_LOCKED"))
+            self.assertIsNone(next_action.pending_product_review(ep, current_state="STORYBOARD_LOCKED"))
             self.assertIsNone(next_action.pending_product_review(ep, current_state="VISUAL_CALIBRATED"))
+
+    def test_product_runtime_request_is_work_devspace_only(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True, exist_ok=True)
+            (ep / "meta/episode-state.json").write_text(
+                json.dumps({"current_state": "IDEA_LOCKED"}), encoding="utf-8"
+            )
+            req = product_runtime_adapter.build_request(
+                ep, runtime="WORK", mode="full_auto", resume=False, source="test"
+            )
+            self.assertEqual(req["runtime"], "WORK")
+            self.assertEqual(req["host_contract"]["workspace_transport"], "DEVSPACE")
+            self.assertFalse(req["host_contract"]["webcodex_allowed"])
+            with self.assertRaises(ValueError):
+                product_runtime_adapter.build_request(
+                    ep, runtime="WEB", mode="full_auto", resume=False, source="test"
+                )
+
+    def test_product_review_request_is_work_devspace_only(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True, exist_ok=True)
+            source = ep / "source.txt"
+            source.write_text("frozen", encoding="utf-8")
+            candidate = ep / "meta/candidate.json"
+            req = product_review_adapter.prepare(
+                ep,
+                kind="devspace-review",
+                runtime="WORK",
+                attempt=1,
+                prompt="review frozen source",
+                source_paths=[source],
+                candidate_path=candidate,
+            )
+            self.assertEqual(req["runtime"], "WORK")
+            self.assertEqual(req["critic_runtime"], "WORK_ISOLATED")
+            self.assertEqual(req["workspace_transport"], "DEVSPACE")
+            self.assertFalse(req["review_execution_contract"]["webcodex_allowed"])
+            self.assertTrue(req["review_execution_contract"]["fresh_product_review_turn_required"])
+            with self.assertRaises(product_review_adapter.ProductReviewError):
+                product_review_adapter.prepare(
+                    ep,
+                    kind="web-review-disabled",
+                    runtime="WEB",
+                    attempt=1,
+                    prompt="must reject web",
+                    source_paths=[source],
+                    candidate_path=ep / "meta/web-candidate.json",
+                )
+
+    def test_product_review_finalize_emits_devspace_provenance(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True, exist_ok=True)
+            source = ep / "source.txt"
+            source.write_text("frozen", encoding="utf-8")
+            candidate = ep / "meta/candidate.json"
+            product_review_adapter.prepare(
+                ep,
+                kind="devspace-finalize",
+                runtime="WORK",
+                attempt=1,
+                prompt="review frozen source",
+                source_paths=[source],
+                candidate_path=candidate,
+            )
+            candidate.write_text(json.dumps({"summary": {"passed": True}}), encoding="utf-8")
+            payload, provenance = product_review_adapter.finalize_candidate(
+                ep,
+                kind="devspace-finalize",
+                runtime="WORK",
+                attempt=1,
+                candidate_path=candidate,
+            )
+            self.assertTrue(payload["summary"]["passed"])
+            self.assertEqual(provenance["runtime"], "WORK_ISOLATED")
+            self.assertEqual(provenance["workspace_transport"], "DEVSPACE")
+            self.assertEqual(provenance["isolation_mode"], "fresh_product_review_turn")
+            self.assertFalse(provenance["webcodex_used"])
+            self.assertEqual(runtime_provenance.validate_critic_provenance(provenance), [])
+
+    def test_product_review_bounded_devspace_is_honest_and_daily_life_only(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True, exist_ok=True)
+            (ep / "meta/runtime-request.json").write_text(json.dumps({
+                "user_intent": {"full_auto_authorized": True}
+            }), encoding="utf-8")
+            (ep / "meta/shot-progression-review.json").write_text(json.dumps({
+                "anomaly_applicable": False,
+                "anomaly_exception_reason": "pure daily life episode"
+            }), encoding="utf-8")
+            source = ep / "source.txt"
+            source.write_text("frozen", encoding="utf-8")
+            candidate = ep / "meta/candidate.json"
+            req = product_review_adapter.prepare(
+                ep,
+                kind="bounded-review",
+                runtime="WORK",
+                attempt=1,
+                prompt="review frozen source",
+                source_paths=[source],
+                candidate_path=candidate,
+            )
+            self.assertTrue(req["review_execution_contract"]["devspace_bounded_fallback_allowed"])
+            candidate.write_text(json.dumps({"summary": {"passed": True}}), encoding="utf-8")
+            payload, provenance = product_review_adapter.finalize_candidate(
+                ep,
+                kind="bounded-review",
+                runtime="WORK",
+                attempt=1,
+                candidate_path=candidate,
+                bounded_devspace=True,
+            )
+            self.assertTrue(payload["summary"]["passed"])
+            self.assertEqual(provenance["runtime"], "WORK_DEVSPACE_BOUNDED")
+            self.assertFalse(provenance["isolated_session"])
+            self.assertEqual(provenance["workspace_transport"], "DEVSPACE")
+            self.assertEqual(provenance["isolation_mode"], "bounded_request_only")
+            self.assertTrue(provenance["full_auto_user_authorized"])
+            self.assertTrue(provenance["ordinary_life_only"])
+            self.assertEqual(runtime_provenance.validate_critic_provenance(provenance), [])
 
     def test_product_review_attempt_is_immutable(self) -> None:
         with self.temp_episode() as td:

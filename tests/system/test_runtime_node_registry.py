@@ -19,27 +19,30 @@ import runtime_scheduler
 class RuntimeNodeRegistryTest(unittest.TestCase):
     def test_first_batch_nodes_are_registered_with_declared_dependencies(self):
         nodes = {item["node_id"]: item for item in runtime_node_registry.first_batch_nodes()}
-        self.assertEqual(nodes["character_prepare"]["depends_on"], ["story_lock"])
+        self.assertEqual(nodes["character_finalize"]["depends_on"], ["story_lock"])
         self.assertEqual(nodes["environment_prepare"]["depends_on"], ["story_lock"])
         self.assertEqual(nodes["frame_contract_compile"]["depends_on"],
-                         ["character_prepare", "environment_prepare"])
+                         ["preimage_authority_commit"])
         self.assertEqual(nodes["image_generation"]["depends_on"], ["frame_contract_compile"])
 
-    def test_scheduler_releases_parallel_preparation_after_story_lock(self):
+    def test_split_preimage_preparation_is_parallel_safe(self):
         result = runtime_scheduler.schedule(
             runtime_node_registry.first_batch_nodes(), completed=["story_lock"], max_workers=2)
-        self.assertEqual([item["node_id"] for item in result["dispatch"]],
-                         ["character_prepare", "environment_prepare"])
+        self.assertEqual([item["node_id"] for item in result["dispatch"]], ["character_finalize", "environment_prepare"])
+        policies = {row["node_id"]: row["execution_policy"] for row in runtime_node_registry.first_batch_nodes()}
+        self.assertTrue(policies["character_finalize"]["parallel_safe"])
+        self.assertTrue(policies["environment_prepare"]["parallel_safe"])
 
     def test_failed_node_does_not_block_independent_node(self):
         contract = runtime_node_registry.first_batch_nodes() + [{
             "node_id": "independent_review", "node_type": "review", "depends_on": [],
             "priority": "LOW", "executor": "review", "evidence_required": [],
             "input_contract": {}, "output_contract": {}, "retry_policy": {},
+            "execution_policy": {"mode": "parallel_safe", "parallel_safe": True, "resource_class": "text", "max_concurrency": 1},
         }]
         result = runtime_scheduler.schedule(contract, failed=["story_lock"], max_workers=2)
         self.assertEqual([item["node_id"] for item in result["dispatch"]], ["independent_review"])
-        self.assertIn("character_prepare", [item["node_id"] for item in result["blocked"]])
+        self.assertIn("character_finalize", [item["node_id"] for item in result["blocked"]])
 
     def test_execution_evidence_is_fact_only_and_preserves_episode_state(self):
         with tempfile.TemporaryDirectory() as temp:

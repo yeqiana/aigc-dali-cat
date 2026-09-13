@@ -182,13 +182,30 @@ def prefix(codex):
     if os.name=="nt" and codex.suffix.lower() in {".cmd",".bat"}: return ["cmd.exe","/d","/c",str(codex)]
     return [str(codex)]
 
+def ordinary_life_mode(ep):
+    p=Path(ep)/"meta/shot-progression-review.json"
+    if not p.is_file():return False
+    try:
+        d=read_json(p)
+        return d.get("anomaly_applicable") is False and bool(text(d.get("anomaly_exception_reason")))
+    except Exception:
+        return False
+
 def critic_prompt(ep, cp, out, attempt):
     rel_ep=ep.relative_to(ROOT).as_posix()
     rel_cp=cp.relative_to(ROOT).as_posix()
     rel_out=out.relative_to(ROOT).as_posix()
+    ordinary_override="" if not ordinary_life_mode(ep) else """
+ORDINARY-LIFE AMBITION OVERRIDE (takes precedence over anomaly-band wording below):
+- This Episode is explicitly anomaly_applicable=false. Do NOT add horror, mystery, investigation, paranormal behavior or an anomaly merely to raise concept_voltage.
+- Interpret ambition bands by image/world/social scale for this Episode: A1 restrained everyday moment; A2 clear setting contrast; A3 strong celestial-life visual contrast; A4 large/high-impact world-scale daily-life image; A5 overwhelming world-scale daily-life image that still preserves ordinary behavior.
+- Reward realistic celestial scale, character appeal, friendship chemistry, ordinary-life specificity, visual state change and wordless Cover/Mid/Climax readability.
+- mechanism_novelty means novelty of the everyday-life visual/story engine, not an anomaly mechanism.
+- At least 3 A4/A5 directions are still required, but they must achieve that through peaceful celestial-world scale and ordinary-life contrast, never through anomaly injection.
+"""
     return f"""You are the independent Story OS V2.1 Concept Ambition + Image-first Propagation Critic.
 Review ALL 8-12 concepts in {rel_cp}. This is a fresh isolated review.
-
+{ordinary_override}
 DOCTRINE:
 - Concept ambition comes BEFORE capture realism.
 - Do NOT lower a concept because its place, creature, ruin, dream-space, anomaly scale, case phenomenon, geography or world rule cannot exist in reality.
@@ -240,10 +257,11 @@ def _finalize_review(ep, review, before, provenance):
     print("CONCEPT AMBITION REVIEW PASS"); return 0
 
 
-def finalize_product_review(ep, attempt, runtime):
+def finalize_product_review(ep, attempt, runtime, bounded_devspace=False):
     cp=ep/CANDIDATES_REL; candidate=ep/CANDIDATE_REVIEW_REL
     review,provenance=product_review_adapter.finalize_candidate(
-        ep,kind="concept-ambition",runtime=runtime,attempt=attempt,candidate_path=candidate)
+        ep,kind="concept-ambition",runtime=runtime,attempt=attempt,candidate_path=candidate,
+        bounded_devspace=bounded_devspace)
     rc=_finalize_review(ep,review,sha256_file(cp),provenance)
     if rc==0: product_review_adapter.mark_complete(ep,"concept-ambition",attempt=attempt,final_path=ep/REVIEW_REL)
     return rc
@@ -303,13 +321,22 @@ def self_test():
                      "discussion_question":"x"})
     assert validate_candidates({"candidates":rows}) == []
     assert validate_candidates({"candidates":rows[:7]})
+    old=ordinary_life_mode
+    globals()["ordinary_life_mode"]=lambda _ep:True
+    try:
+        prompt=critic_prompt(ROOT,ROOT/"dummy-concepts.json",ROOT/"dummy-review.json",1)
+        assert "ORDINARY-LIFE AMBITION OVERRIDE" in prompt
+        assert "Do NOT add horror" in prompt
+        assert "peaceful celestial-world scale" in prompt
+    finally:
+        globals()["ordinary_life_mode"]=old
     print("CONCEPT AMBITION V2.1 SELF-TEST PASS")
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("init"); p.add_argument("episode_dir")
     p=sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=None)
-    p=sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK")
+    p=sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK"); p.add_argument("--bounded-devspace",action="store_true")
     p=sub.add_parser("verify"); p.add_argument("episode_dir")
     p=sub.add_parser("show"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
@@ -326,7 +353,7 @@ def main():
         except (OSError,RuntimeError,ValueError,subprocess.TimeoutExpired) as exc:
             print("CONCEPT AMBITION ERROR:",exc); return 3
     if a.cmd=="finalize-review":
-        try: return finalize_product_review(ep,a.attempt,a.runtime)
+        try: return finalize_product_review(ep,a.attempt,a.runtime,a.bounded_devspace)
         except (OSError,RuntimeError,ValueError) as exc:
             print("CONCEPT AMBITION FINALIZE ERROR:",exc); return 3
     errs=verify(ep)

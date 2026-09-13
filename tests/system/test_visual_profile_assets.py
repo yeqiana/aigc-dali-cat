@@ -39,6 +39,7 @@ GOVERNED = (
     "M01_ANCIENT_MUNDANE_LIFE_V1",
     "M02_HEAVEN_MUNDANE_WORKER_V1",
     "M03_JIANGNAN_IMMERSIVE_LIFE_V1",
+    "M04_HEAVEN_MUNDANE_LIFE_V1",
 )
 
 # Pinned hash of the pre-Phase-2.2 locked asset. If this moves, every historical

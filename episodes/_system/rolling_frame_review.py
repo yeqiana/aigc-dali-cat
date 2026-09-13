@@ -36,11 +36,12 @@ def review(ep,frame,image,codex_raw=None,timeout=None):
     if not runtime_capability_cache.vision_verified(caps):
         return {"decision":"UNCERTAIN","reason":"vision_capability_not_verified","fast_path_deferred":True,"final_pass_authority":False,"returncode":0}
     active_runtime,_=runtime_router.detect()
-    if active_runtime in {"WORK","WEB"} and not codex_raw:
+    vision_runtime,_=runtime_router.vision_review_runtime()
+    if vision_runtime != "CODEX" and not codex_raw:
         return {
             "decision":"UNCERTAIN",
-            "reason":"product_runtime_defers_to_final_review_without_local_codex",
-            "runtime":active_runtime,
+            "reason":"vision_runtime_defers_to_final_review",
+            "runtime":vision_runtime,
             "final_pass_authority":False,
             "returncode":0,
         }
@@ -63,7 +64,7 @@ REPAIR_NOW only for clear visible defects. UNCERTAIN if evidence is ambiguous.
     staging=codex_user_runner.workspace_path(prefix="story-os-rolling-")
     staged_image=staging/("frame-"+f"{int(frame):02d}"+image.suffix.lower())
     shutil.copy2(image,staged_image)
-    cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"-i",str(staged_image),"--json","-"]
+    cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-m",runtime_router.vision_review_model(),"-c",f'model_reasoning_effort="{runtime_router.vision_review_effort("fast")}"',"-s","workspace-write","-C",str(ROOT),"-i",str(staged_image),"--json","-"]
     log=ep/"meta/rolling-review-workers"/f"{int(frame):02d}-{int(time.time())}.jsonl"; log.parent.mkdir(parents=True,exist_ok=True)
     try:
         with log.open("w",encoding="utf-8",newline="\n") as h:

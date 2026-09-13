@@ -8,6 +8,7 @@ Files under meta/runtime/contracts are derived caches only.
 from __future__ import annotations
 
 import argparse
+import concurrent.futures as cf
 import datetime as dt
 import hashlib
 import json
@@ -32,6 +33,9 @@ import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
 import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
 import story_dna_trace  # STORY_OS_V3_E003_STORY_DNA_TRACE
 import story_json
+import preimage_authority_snapshot
+import runtime_node_execution
+import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
@@ -551,9 +555,48 @@ def compile_all(ep: Path) -> dict:
             ca_errors = character_appearance_anchor.verify(ep)
             if ca_errors:
                 raise ValueError("V2.2.1 Character Appearance Anchor must PASS before Frame Contract compile: " + "; ".join(ca_errors[:12]))
+    # The split PREIMAGE protocol has a distinct committed snapshot.  Derived
+    # frame work must never start while Candidate authority is still pending.
+    task_state = story_json.read_json(ep / "meta/runtime/preimage-task-state.json", default={}) or {}
+    if task_state:
+        import preimage_protocol
+        committed_path = ep / "meta/runtime/preimage-committed-snapshot.json"
+        if not preimage_protocol.barrier_ready(ep) or not committed_path.is_file():
+            raise ValueError("PREIMAGE_AUTHORITY_READY required before Frame Contract compile")
+        snapshot = story_json.read_json(committed_path, default={}) or {}
+        if not snapshot or preimage_authority_snapshot.stale(ep, snapshot):
+            raise ValueError("STALE PREIMAGE_COMMITTED_SNAPSHOT before Frame Contract compile")
+    else:
+        snapshot=preimage_authority_snapshot.build(ep,write=True)
+    total=frame_count(ep)
+    workers=int(storyos_config.get_path(storyos_config.load_config(),"runtime.workers.derived",6))
+    failures=[]; compiled={}
+    def one(n):
+        started=runtime_node_execution.now()
+        try:
+            row=compile_frame(ep,n,write_cache=True)
+            stale=preimage_authority_snapshot.stale(ep,snapshot)
+            runtime_node_execution.record(ep,node_id="frame_contract_compile",task_id=f"frame-{n:02d}",snapshot_id=snapshot["snapshot_id"],worker_id=f"frame-{n:02d}",start_time=started,end_time=runtime_node_execution.now(),status="STALE" if stale else "PASS",stale=stale,output_sha=row["contract_sha256"],evidence=[(CACHE_ROOT/f"{n:02d}.json").as_posix()])
+            if stale: raise ValueError("STALE authority snapshot")
+            return row
+        except Exception as exc:
+            runtime_node_execution.record(ep,node_id="frame_contract_compile",task_id=f"frame-{n:02d}",snapshot_id=snapshot["snapshot_id"],worker_id=f"frame-{n:02d}",start_time=started,end_time=runtime_node_execution.now(),status="FAILED",failure_type="technical_failure",output=str(exc)[:500])
+            raise
+    if storyos_config.get_path(storyos_config.load_config(),"runtime.preimage_parallel_enabled",False):
+        with cf.ThreadPoolExecutor(max_workers=workers,thread_name_prefix="storyos-frame") as pool:
+            futures={pool.submit(one,n):n for n in range(1,total+1)}
+            for future,n in [(f,futures[f]) for f in cf.as_completed(futures)]:
+                try: compiled[n]=future.result()
+                except Exception as exc: failures.append(f"frame {n:02d}: {exc}")
+    else:
+        for n in range(1,total+1):
+            try: compiled[n]=one(n)
+            except Exception as exc: failures.append(f"frame {n:02d}: {exc}")
+    if failures: raise ValueError("Frame Contract compile failures: "+"; ".join(failures))
+    if preimage_authority_snapshot.stale(ep,snapshot): raise ValueError("STALE authority snapshot before frame index commit")
     rows = []
-    for n in range(1, frame_count(ep) + 1):
-        row = compile_frame(ep, n, write_cache=True)
+    for n in range(1,total + 1):
+        row=compiled[n]
         rows.append({
             "frame": row["frame"],
             "path": (CACHE_ROOT / f"{row['frame']}.json").as_posix(),

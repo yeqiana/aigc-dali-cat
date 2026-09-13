@@ -84,6 +84,7 @@ def classify_text(text: str) -> str | None:
     if "model_unavailable" in low or "model unavailable" in low: return "MODEL_UNAVAILABLE"
     if "image tool" in low and ("unavailable" in low or "not available" in low): return "IMAGE_TOOL_UNAVAILABLE"
     if "sandbox" in low and ("denied" in low or "forbidden" in low): return "SANDBOX_DENIED"
+    if "network_error" in low or "network error" in low or "error sending request" in low: return "NETWORK_ERROR"
     return None
 
 def self_test():
@@ -97,6 +98,7 @@ def self_test():
         assert blocking(ep, "image") is not None
         record_success(ep, "image")
         assert blocking(ep, "image") is None
+        assert classify_text("NETWORK_ERROR: error sending request") == "NETWORK_ERROR"
     print("RUNTIME CIRCUIT BREAKER V2.6.0 SELF-TEST PASS")
 
 def main():

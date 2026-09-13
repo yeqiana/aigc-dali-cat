@@ -34,6 +34,7 @@ M00 = selector.M00
 M01 = selector.M01
 M02 = selector.M02
 M03 = selector.M03
+M04 = selector.M04
 DEPRECATED = "M00_ANCIENT_DAILY_LIFE_V1"
 
 EVIDENCE_REQUIRED = (
@@ -71,6 +72,12 @@ class SelectorCaseTest(unittest.TestCase):
                    "audience_expectation": {"fantasy_level": "high"}})
         self.assertEqual(out["status"], "selected")
         self.assertEqual(out["selected_profile"], M02)
+
+    def test_case3b_heaven_daily_life_selects_m04(self) -> None:
+        out = run({"story_intent": {"world": "fictional", "theme": "daily_life"},
+                   "audience_expectation": {"fantasy_level": "high"}})
+        self.assertEqual(out["status"], "selected")
+        self.assertEqual(out["selected_profile"], M04)
 
     def test_case4_jiangnan_immersive_selects_m03(self) -> None:
         out = run({"story_intent": {"world": "real", "location": "江南",
@@ -188,7 +195,7 @@ class SelectorGovernanceTest(unittest.TestCase):
     def test_every_rule_target_is_registered(self) -> None:
         coverage = selector.rule_coverage(ROOT)
         self.assertEqual(coverage["unregistered"], [])
-        self.assertEqual(sorted(coverage["registered"]), sorted([M00, M01, M02, M03]))
+        self.assertEqual(sorted(coverage["registered"]), sorted([M00, M01, M02, M03, M04]))
 
     def test_selector_never_returns_an_unregistered_profile(self) -> None:
         registered = set(registry.registry_ids(ROOT))

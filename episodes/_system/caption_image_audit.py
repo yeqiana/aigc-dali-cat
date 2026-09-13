@@ -16,6 +16,7 @@ import frame_semantic_review as base
 import incremental_frame_review as inc
 import codex_critic_runner
 import runtime_command
+import runtime_provenance
 import runtime_router
 import product_review_adapter
 import subtitle_layout
@@ -183,7 +184,8 @@ Return one row for every attached frame. summary.passed=false if any supported=f
 def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str | None, timeout: int, index: int) -> dict:
     out = ep / "meta" / f".caption-image-audit-candidate-{index:03d}.json"
     active_runtime, _ = runtime_router.detect()
-    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+    vision_runtime, _ = runtime_router.vision_review_runtime()
+    if vision_runtime != "CODEX" and not codex_raw:
         kind = _review_kind(index)
         request_file = product_review_adapter.request_path(ep, kind)
         if out.is_file() and request_file.is_file():
@@ -217,7 +219,8 @@ def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str
     codex = base.resolve_codex(codex_raw)
     cmd = base.command_prefix(codex) + [
         "exec", "--skip-git-repo-check", "--ephemeral",
-        "-c", 'model_reasoning_effort="low"',
+        "-m", runtime_router.vision_review_model(),
+        "-c", f'model_reasoning_effort="{runtime_router.vision_review_effort("fast")}"',
         "-s", codex_critic_runner.default_sandbox(), "-C", str(ROOT), "--json",
     ]
     for row in rows:
@@ -230,7 +233,14 @@ def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str
         raise RuntimeError(f"caption image critic failed rc={cp.returncode}; log={log}")
     data = json.loads(out.read_text(encoding="utf-8-sig"))
     out.unlink(missing_ok=True)
-    return data if isinstance(data, dict) else {}
+    if not isinstance(data, dict):
+        return {}
+    data["critic_provenance"] = runtime_provenance.build_vision_critic_provenance(
+        attempt=1,
+        log=log.resolve().relative_to(ROOT.resolve()).as_posix(),
+        review_scope="CAPTION_IMAGE_SUBTITLE_PIXELS",
+    )
+    return data
 
 def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -> tuple[bool, dict]:
     ep = Path(ep).resolve()
@@ -299,7 +309,8 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
     _write(ep, evidence)
 
     active_runtime, _ = runtime_router.detect()
-    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+    vision_runtime, _ = runtime_router.vision_review_runtime()
+    if vision_runtime != "CODEX" and not codex_raw:
         chunk_count = (len(nonempty) + CHUNK - 1) // CHUNK
         for index in range(1, chunk_count + 1):
             kind = _review_kind(index)

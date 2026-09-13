@@ -174,7 +174,15 @@ def load(ep: Path) -> dict:
     return _upgrade_state(d)
 
 def kind_for_queue_item(item: dict) -> str:
-    return "repair" if str((item or {}).get("kind") or "").lower() == "repair" else "original"
+    kind = str((item or {}).get("kind") or "").lower()
+    if kind == "repair":
+        return "repair"
+    if kind == "baseline_candidate":
+        # Baseline candidate competition is a bounded bootstrap lane, not an
+        # ordinary content repair. Reuse the existing exception candidate bucket
+        # so the one-shot repair budget remains semantically intact.
+        return "exception"
+    return "original"
 
 def _all_claims(d: dict):
     for frame, kinds in (d.get("frames") or {}).items():

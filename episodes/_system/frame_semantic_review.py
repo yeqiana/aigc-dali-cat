@@ -1139,7 +1139,8 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     }
 
     active_runtime, _ = runtime_router.detect()
-    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+    vision_runtime, _ = runtime_router.vision_review_runtime()
+    if vision_runtime != "CODEX" and not codex_raw:
         sources = [
             story,
             storyboard,
@@ -1173,7 +1174,8 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         root=ROOT,
         timeout=timeout,
         sandbox="workspace-write",
-        reasoning_effort_literal='model_reasoning_effort="high"',
+        model=runtime_router.vision_review_model(),
+        reasoning_effort=runtime_router.vision_review_effort("final"),
         attachments=[row["path"] for row in frames],
         log_path=log,
     )
@@ -1194,10 +1196,9 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         raise RuntimeError("frame semantic critic modified Story Lock / storyboard / visual continuity context")
 
     data = read_json(candidate)
-    provenance = runtime_provenance.build_critic_provenance(
-        "CODEX", attempt=attempt, log=log.relative_to(ROOT).as_posix()
+    provenance = runtime_provenance.build_vision_critic_provenance(
+        attempt=attempt, log=log.relative_to(ROOT).as_posix(), review_scope="FULL_FRAME_SET"
     )
-    provenance["review_scope"] = "FULL_FRAME_SET"
     if candidate_gate:
         return _apply_candidate_gate(
             ep,
@@ -1463,7 +1464,8 @@ def run_exception_critic(ep: Path, *, targets: list[str], codex_raw: str | None,
         root=ROOT,
         timeout=timeout,
         sandbox="workspace-write",
-        reasoning_effort_literal='model_reasoning_effort="high"',
+        model=runtime_router.vision_review_model(),
+        reasoning_effort=runtime_router.vision_review_effort("final"),
         attachments=[row["path"] for row in rows],
         log_path=log,
     )

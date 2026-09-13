@@ -65,8 +65,10 @@ RUNTIME_REL = Path("runtime/codex-user-runner")
 ENDPOINT_NAME = "endpoint.json"
 TOKEN_NAME = "token"
 LOG_NAME = "runner-log.jsonl"
+RESULT_DIR_NAME = "task-results"
 RUNNER_TMP_NAME = "tmp"
 RUNNER_TASK_HOME_NAME = "codex-task-homes"
+RUNNER_INPUT_DIR_NAME = "codex-inputs"
 # Provider artifacts are minted inside the runner user's throwaway CODEX_HOME,
 # which the caller cannot read; the runner mirrors them into the caller-owned
 # task workdir under this name so cross-bridge image recovery still works.
@@ -306,6 +308,18 @@ def _read_json(path: Path) -> dict:
 
 def _write_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
+
+
+def task_result_path(request_id: str) -> Path:
+    rid = str(request_id or "").strip()
+    if not rid or any(ch not in "0123456789abcdefABCDEF-" for ch in rid):
+        raise ValueError(f"invalid runner request_id: {request_id!r}")
+    return runtime_dir() / RESULT_DIR_NAME / f"{rid}.json"
+
+
+def read_task_result(request_id: str) -> dict:
+    path = task_result_path(request_id)
+    return _read_json(path) if path.is_file() else {}
 
 
 def _pid_alive(pid) -> bool:
@@ -601,6 +615,7 @@ def build_task(
     cwd: str | Path | None = None,
     task_type: str = "generic_codex",
     codex_home_mode: str = "inherit",
+    request_id: str | None = None,
 ) -> CodexTask:
     _, _ = split_argv(argv)
     if task_type not in ALLOWED_TASK_TYPES:
@@ -628,7 +643,7 @@ def build_task(
             ) from exc
         if seconds <= 0:
             seconds = None
-    return CodexTask(
+    task = CodexTask(
         argv=[str(x) for x in argv],
         task_type=task_type,
         working_directory=str(Path(cwd).resolve()) if cwd is not None else str(ROOT),
@@ -638,11 +653,71 @@ def build_task(
         codex_home_mode=codex_home_mode,
         client={"user": current_identity(), "pid": os.getpid(), "transport": transport_name()},
     )
+    if request_id:
+        task.request_id = str(request_id)
+    return task
 
 
 # ---------------------------------------------------------------------------
 # Runner side
 # ---------------------------------------------------------------------------
+def runner_input_root() -> Path:
+    """Runner-user-owned staging root for Codex `-i` attachments.
+
+    The caller may be SYSTEM while Codex and its vision sidecar run as the
+    interactive user. Copy attachments into the runner user's own profile tree
+    before launching Codex so the sidecar never dereferences a SYSTEM-only or
+    sandbox-incompatible path.
+    """
+    local_app_data = str(os.environ.get("LOCALAPPDATA") or "").strip()
+    if os.name == "nt" and local_app_data:
+        root = Path(local_app_data) / "StoryOS" / RUNNER_INPUT_DIR_NAME
+    else:
+        root = Path.home() / ".storyos" / RUNNER_INPUT_DIR_NAME
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def _stage_runner_input_images(args: list[str], workdir: Path, request_id: str) -> tuple[list[str], Path | None, list[dict]]:
+    """Mirror `-i/--image` files into runner-user storage and rewrite argv."""
+    rewritten = list(args)
+    indexes: list[int] = []
+    i = 0
+    while i < len(rewritten):
+        if rewritten[i] in {"-i", "--image"} and i + 1 < len(rewritten):
+            indexes.append(i + 1)
+            i += 2
+            continue
+        i += 1
+    if not indexes:
+        return rewritten, None, []
+    staging = Path(tempfile.mkdtemp(prefix=f"{request_id[:12]}-", dir=str(runner_input_root())))
+    evidence: list[dict] = []
+    try:
+        for n, arg_index in enumerate(indexes, start=1):
+            raw = Path(str(rewritten[arg_index]))
+            source = raw.resolve() if raw.is_absolute() else (workdir / raw).resolve()
+            if not source.is_file():
+                raise CodexUserRunnerWorkspaceUnavailable(
+                    "CODEX_USER_RUNNER_WORKSPACE_UNAVAILABLE",
+                    f"Codex input image missing or unreadable: {source}",
+                )
+            suffix = source.suffix.lower() or ".bin"
+            target = staging / f"image-{n:03d}{suffix}"
+            shutil.copy2(source, target)
+            rewritten[arg_index] = str(target)
+            evidence.append({
+                "source": str(source),
+                "staged": str(target),
+                "bytes": target.stat().st_size,
+                "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+            })
+        return rewritten, staging, evidence
+    except Exception:
+        shutil.rmtree(staging, ignore_errors=True)
+        raise
+
+
 def isolated_home_root() -> Path:
     """Private non-TEMP root for per-task Codex homes owned by the runner user.
 
@@ -755,8 +830,8 @@ def execute_task(task: CodexTask) -> ExecResult:
     caller_codex, caller_args = split_argv(task.argv)
     codex_path, resolution = resolve_codex(caller_codex)
     driver = codex_driver(codex_path)
-    codex_args = caller_args
     workdir = Path(str(task.working_directory or ROOT))
+    codex_args, input_staging, input_images = _stage_runner_input_images(caller_args, workdir, task.request_id)
     if not workdir.is_dir():
         raise CodexUserRunnerWorkspaceUnavailable(
             "CODEX_USER_RUNNER_WORKSPACE_UNAVAILABLE", f"working directory missing: {workdir}"
@@ -815,7 +890,8 @@ def execute_task(task: CodexTask) -> ExecResult:
             rc = 124
             output = exc.output or b""
     finally:
-        pass
+        if input_staging is not None:
+            shutil.rmtree(input_staging, ignore_errors=True)
     elapsed = round(time.monotonic() - started, 2)
     evidence = {
         "request_id": task.request_id,
@@ -834,6 +910,7 @@ def execute_task(task: CodexTask) -> ExecResult:
         "stdin_bytes": len(task.stdin_bytes()),
         "output_bytes": len(output),
         "client": task.client,
+        "input_images": input_images,
     }
     if isolated_home is not None:
         evidence["generated_artifacts"] = _export_generated_artifacts(isolated_home, workdir)
@@ -924,6 +1001,37 @@ class RunnerState:
         except Exception:
             pass
 
+    def persist_result(self, result: ExecResult) -> None:
+        """Persist task output before replying to the caller.
+
+        The interactive-user runner can outlive the DevSpace/WORK caller.  A caller
+        timeout must therefore not erase the only copy of Codex stdout/evidence,
+        especially for image tasks where rc=0 with no exported artifact is a real
+        technical failure that needs diagnosis rather than a blind retry.
+        """
+        try:
+            request_id = str((result.remote or {}).get("request_id") or "").strip()
+            if not request_id:
+                return
+            root = runtime_dir() / RESULT_DIR_NAME
+            root.mkdir(parents=True, exist_ok=True)
+            payload = {
+                "schema_version": 1,
+                "request_id": request_id,
+                "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                "returncode": int(result.returncode),
+                "output_sha256": hashlib.sha256(result.output or b"").hexdigest(),
+                "output_bytes": len(result.output or b""),
+                "output_base64": base64.b64encode(result.output or b"").decode("ascii"),
+                "evidence": result.remote or {},
+            }
+            _write_json(root / f"{request_id}.json", payload)
+            rows = sorted(root.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+            for stale in rows[200:]:
+                stale.unlink(missing_ok=True)
+        except Exception:
+            pass
+
 
 class _Handler(BaseHTTPRequestHandler):
     server_version = "StoryOSCodexUserRunner/1"
@@ -997,6 +1105,7 @@ class _Handler(BaseHTTPRequestHandler):
             self.state.log({"event": "error", "code": "CODEX_EXEC_FAILED", "detail": repr(exc)})
             self._send(500, {"ok": False, "code": "CODEX_EXEC_FAILED", "detail": repr(exc)})
             return
+        self.state.persist_result(result)
         self.state.log({"event": "task", **result.remote})
         self._send(200, {
             "ok": True,
@@ -1264,6 +1373,7 @@ def run_codex(
     env=None,
     task_type="generic_codex",
     codex_home_mode="inherit",
+    request_id=None,
 ):
     """Run one Codex task, directly or through the user-mode runner.
 
@@ -1307,6 +1417,7 @@ def run_codex(
         cwd=cwd,
         task_type=task_type,
         codex_home_mode=codex_home_mode,
+        request_id=str(request_id) if request_id else None,
     )
     result = execute_codex(task)
     captured = None

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from production_ledger_core import *  # noqa: F401,F403  (full public library)
 from production_ledger_run import (cmd_authorize_repair, cmd_begin,
-    cmd_restore_evidence_gap_review, cmd_review, cmd_success, cmd_tech_fail)
+    cmd_recover_success, cmd_restore_evidence_gap_review, cmd_review, cmd_success, cmd_tech_fail)
 from production_ledger_manage import (cmd_accept_user_exception_candidate,
     cmd_audit, cmd_authorize_authority_refresh, cmd_authorize_user_exception_repair,
     cmd_authorize_user_locked_repair, cmd_authorize_user_passed_repair,
@@ -31,7 +31,7 @@ def parser() -> argparse.ArgumentParser:
     s = sub.add_parser("begin", help="record generation preflight and request fingerprint")
     s.add_argument("episode_dir")
     s.add_argument("--frame", required=True)
-    s.add_argument("--kind", choices=["original", "repair"], default="original")
+    s.add_argument("--kind", choices=["original", "repair", "baseline_candidate"], default="original")
     s.add_argument("--prompt")
     s.add_argument("--prompt-file")
     s.add_argument("--capture-id", required=True)
@@ -50,6 +50,15 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--path", required=True)
     s.add_argument("--provider-receipt", help="provider RAW dimension receipt JSON")
     s.set_defaults(func=cmd_success)
+
+    s = sub.add_parser("recover-success", help="correct an exact technical-failure transaction after durable runner success is recovered")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--path", required=True)
+    s.add_argument("--provider-receipt")
+    s.add_argument("--transaction-id", required=True)
+    s.add_argument("--runner-request-id")
+    s.set_defaults(func=cmd_recover_success)
 
     s = sub.add_parser("tech-fail", help="record network/timeout/no-candidate failure without consuming content repair")
     s.add_argument("episode_dir")

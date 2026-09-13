@@ -38,6 +38,12 @@
       "format": "governed_v2"
     },
     {
+      "id": "M04_HEAVEN_MUNDANE_LIFE_V1",
+      "path": "standards/visual_profiles/profiles/M04_HEAVEN_MUNDANE_LIFE_V1.json",
+      "status": "active",
+      "format": "governed_v2"
+    },
+    {
       "id": "SPIRITED_AWAY_LIVE_ACTION_V1",
       "path": "standards/visual_profiles/SPIRITED_AWAY_LIVE_ACTION_V1.json",
       "status": "active",

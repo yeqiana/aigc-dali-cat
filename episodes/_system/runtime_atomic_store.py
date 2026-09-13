@@ -104,7 +104,24 @@ def atomic_write_text(path: Path, text: str) -> None:
             handle.write(text)
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(str(tmp), str(path))
+        # Windows can transiently deny an otherwise-valid atomic replace when
+        # antivirus/indexing or another reader briefly holds the destination.
+        # Keep the same-directory atomic commit semantics; retry only transient
+        # sharing/permission failures and surface persistent errors unchanged.
+        last_exc = None
+        for attempt in range(20):
+            try:
+                os.replace(str(tmp), str(path))
+                last_exc = None
+                break
+            except PermissionError as exc:
+                last_exc = exc
+                winerror = getattr(exc, "winerror", None)
+                if os.name != "nt" or winerror not in {5, 32}:
+                    raise
+                time.sleep(min(0.05 * (attempt + 1), 0.25))
+        if last_exc is not None:
+            raise last_exc
     finally:
         tmp.unlink(missing_ok=True)
 

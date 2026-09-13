@@ -207,7 +207,7 @@ def image_worker_sandbox_mode(*, bridged: bool, has_references: bool) -> str:
     return 'workspace-write'
 
 
-def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None) -> float:
+def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None, runner_request_id: str | None = None) -> float:
     scene = scene_text if scene_text is not None else prompt_path.read_text(encoding='utf-8-sig').strip()
     if not scene:
         raise BackendError('prompt is empty')
@@ -277,6 +277,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
                     check=False,
                     task_type="image",
                     codex_home_mode="inherit",
+                    request_id=runner_request_id,
                 )
             except subprocess.TimeoutExpired as exc:
                 raise BackendError(f'image worker timeout after {timeout}s; log={log}') from exc
@@ -377,7 +378,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         elapsed = 0.0
         backend_name = 'codex_desktop_interface_imagegen'
     else:
-        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'], scene_text=scene_text)
+        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None)
         backend_name = 'codex_subscription'
     receipt_data = provider_capability.inspect(raw_output, width, height, model=model_policy["model"], route=backend_name, frame=int(args.frame))
     # W-21: the receipt carries the reference files really sent to the provider, so

@@ -13,12 +13,18 @@ import datetime as dt
 import json
 from pathlib import Path
 
+import baseline_candidate_pool
+import character_visual_contract
+import frame_contract
 import preproduction_handoff
+import production_batch_review
 import production_ledger
 import product_runtime_adapter
 import runtime_execution
 import runtime_router
 import visual_lock_baseline_gate
+import visual_lock_candidate_pool
+import visual_lock_v21
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -50,6 +56,16 @@ def pending_product_review(ep: Path, *, current_state: str | None = None) -> dic
             continue
         d = read_json(p)
         kind = str(d.get("review_kind") or "")
+        # Actual-pixel authority now belongs to CODEX_VISION. Historical WORK
+        # product-review requests for visual tasks are compatibility residue and
+        # must never steal routing back from the vision lane.
+        vision_runtime, _ = runtime_router.vision_review_runtime()
+        if vision_runtime == "CODEX" and (
+            kind in {"visual-lock-baseline", "visual-lock", "visual-profile-legacy", "frame-semantic"}
+            or kind.startswith("production-batch-")
+            or kind.startswith("caption-image-audit-v2-")
+        ):
+            continue
         # Episode stage is the canonical authority. Once Visual Lock has already
         # advanced to VISUAL_CALIBRATED (or beyond), an older unfinished product
         # review request for that same gate is stale runtime residue and must not
@@ -77,37 +93,30 @@ def queue_summary(ep: Path) -> dict:
         if status == "queued":
             queued_frames.append(int(row.get("frame") or 0))
 
-    # Technical failures are attempt history, not automatically the current
-    # production truth. A later generated candidate or ready ledger state for the
-    # same frame wins over an earlier backend timeout; otherwise recovered frames
-    # can permanently poison next_action with RETRY_TECHNICAL_FAILURES.
-    successful_frames = {
-        int(row.get("frame") or 0)
-        for row in items
-        if row.get("status") == "generated" and int(row.get("frame") or 0) > 0
-    }
+    # Technical failures are attempt history only when a *later* success for the
+    # same frame supersedes them. An older original success must not hide a newer
+    # repair failure (the exact failure mode that previously routed back to a
+    # stale WORK review instead of RETRY_TECHNICAL_FAILURES).
     ledger = read_json(ep / "meta/production-ledger.json").get("frames") or {}
-    successful_frames.update(
-        int(key)
-        for key, value in ledger.items()
-        if str(key).isdigit()
-        and isinstance(value, dict)
-        and value.get("status") in production_ledger.READY_LEDGER_STATES
-    )
-
     tech_failed = []
-    for row in items:
+    for idx, row in enumerate(items):
         if row.get("status") != "tech_failed":
             continue
         frame = int(row.get("frame") or 0)
-        if frame in successful_frames:
+        later_success = any(
+            int(other.get("frame") or 0) == frame and other.get("status") == "generated"
+            for other in items[idx + 1:]
+        )
+        if later_success:
             continue
-        attempts = row.get("attempts") or []
-        if not isinstance(attempts, list):
-            attempts = []
-        recovered = any(isinstance(a, dict) and a.get("result") in {"success", "PASSED"} for a in attempts)
-        if not recovered:
-            tech_failed.append(row)
+        ledger_row = ledger.get(f"{frame:02d}") or ledger.get(str(frame)) or {}
+        current = ledger_row.get("current_candidate") if isinstance(ledger_row, dict) else None
+        if ledger_row.get("status") in production_ledger.READY_LEDGER_STATES and isinstance(current, dict):
+            failed_at = str(row.get("completed_at") or row.get("started_at") or row.get("queued_at") or "")
+            recorded_at = str(current.get("recorded_at") or "")
+            if failed_at and recorded_at and recorded_at >= failed_at:
+                continue
+        tech_failed.append(row)
     counts["tech_failed"] = len(tech_failed)
 
     # ``interrupted_unknown`` is also execution history, not necessarily the
@@ -141,6 +150,34 @@ def queue_summary(ep: Path) -> dict:
     return {"counts": counts, "queued_frames": sorted(x for x in queued_frames if x > 0), "raw": q}
 
 
+def _expected_frames(ep: Path) -> int:
+    try:
+        return int(frame_contract.frame_count(ep))
+    except Exception:
+        return 0
+
+
+def _represented_original_frames(q: dict) -> set[int]:
+    return {
+        int(row.get("frame") or 0)
+        for row in (q.get("items") or [])
+        if isinstance(row, dict)
+        and row.get("kind") == "original"
+        and str(row.get("scope") or "") in {"visual_lock", "batch"}
+        and int(row.get("frame") or 0) > 0
+        and row.get("status") != "superseded"
+    }
+
+
+def _final_semantic_attempt(ep: Path) -> int:
+    first = ep / "meta/frame-semantic-candidate-attempt-1.json"
+    if first.is_file():
+        data = read_json(first)
+        if data.get("failed_frames"):
+            return 2
+    return 1
+
+
 def _handoff_valid(ep: Path) -> bool:
     p = ep / "meta/preproduction-handoff.json"
     if not p.is_file():
@@ -155,6 +192,7 @@ def derive(ep: Path) -> dict:
     ep = Path(ep).resolve()
     runtime, _ = runtime_router.detect()
     image_runtime, _ = runtime_router.image_execution_runtime()
+    vision_runtime, _ = runtime_router.vision_review_runtime()
     mode = runtime_execution.effective_mode(ep)
     cur = state(ep)
     review = pending_product_review(ep, current_state=cur)
@@ -191,34 +229,158 @@ def derive(ep: Path) -> dict:
             "blocking": bool(hard_stop),
             **kwargs,
         }
+    # A stale/missing PREIMAGE authority boundary invalidates every downstream
+    # image request derived from it. This canonical freshness check must outrank
+    # queue recovery, including AUTHORITY_REFRESH_AUTHORIZED, otherwise the host
+    # loop can regenerate pixels against the very authority snapshot being
+    # replaced. This is not "stale host request wins": next_host_step derives the
+    # requirement from current authority/frame-contract/handoff evidence.
+    if cur == "STORYBOARD_LOCKED" and not _handoff_valid(ep):
+        try:
+            preimage_step, _ = product_runtime_adapter.next_host_step(ep, mode)
+        except Exception:
+            preimage_step = "PREIMAGE_TASK_SET"
+        if str(preimage_step).startswith("PREIMAGE_"):
+            current_request = read_json(ep / HOST_REL) if (ep / HOST_REL).is_file() else {}
+            return action_result(
+                action="PREIMAGE_COMPILE",
+                executor=runtime,
+                preimage_step=preimage_step,
+                request_path=current_request.get("request_path"),
+                request_id=current_request.get("request_id"),
+                reason="PREIMAGE authority/handoff is stale; refresh authority before any image generation or authority-refresh retry",
+            )
     # Production queue recovery has priority over stale host requests.
     # A previous host request can remain after a worker failure; it must not
     # hide an automatic technical retry action.
     qs = queue_summary(ep)
     q = qs["raw"]
     if q:
+        ledger_frames = read_json(ep / "meta/production-ledger.json").get("frames") or {}
+        authority_refresh_frames = sorted(
+            int(key) for key, row in ledger_frames.items()
+            if isinstance(row, dict) and row.get("status") == "AUTHORITY_REFRESH_AUTHORIZED"
+        )
+        if authority_refresh_frames:
+            # Technical recovery still outranks authority regeneration: if the
+            # freshly refreshed baseline failed at the provider, retry that exact
+            # attempt before considering dependent admissions.
+            if qs["counts"].get("external_blocked"):
+                blocked_frames=sorted({int(x.get("frame") or 0) for x in q.get("items") or [] if x.get("status")=="external_blocked" and int(x.get("frame") or 0)>0})
+                return {**base, "action":"EXTERNAL_IMAGE_PROVIDER_BLOCKED", "executor":"EXTERNAL",
+                        "blocking":True, "work_pending":True, "auto_recoverable":False, "hard_stop":True,
+                        "frames":blocked_frames, "reason":"image provider technical retry epoch exhausted"}
+            if qs["counts"].get("tech_failed"):
+                return action_result(action="RETRY_TECHNICAL_FAILURES", executor="CODEX_IMAGE",
+                        reason="technical image failure must recover before authority-refresh dependents")
+            try:
+                baseline = int(visual_lock_baseline_gate.baseline_frame(ep))
+            except Exception:
+                baseline = None
+            if baseline is not None and baseline not in authority_refresh_frames and character_visual_contract.pixel_master_required(ep):
+                try:
+                    master = character_visual_contract.pixel_master_reference(ep, allow_provisional=True)
+                except Exception:
+                    master = None
+                if master is None:
+                    return action_result(
+                        action="REVIEW_ORDINARY_BASELINE",
+                        executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
+                        frame=baseline,
+                        reason="authority-refreshed baseline must PASS and establish the new Pixel Master before dependent frames regenerate",
+                    )
+            return action_result(
+                action="REFRESH_AUTHORITY_IMAGES",
+                executor="CODEX_IMAGE" if image_runtime=="CODEX" else runtime,
+                frames=authority_refresh_frames,
+                reason="upstream authority/Frame Contract changed; regenerate these frames without consuming content repair budget",
+            )
         try:
             if visual_lock_baseline_gate.awaiting_review(ep, q):
-                return {**base, "action": "REVIEW_ORDINARY_BASELINE", "executor": runtime, "blocking": True,
-                        "frame": visual_lock_baseline_gate.baseline_frame(ep),
-                        "reason": "Visual Lock baseline pixels must PASS before parallel-three generation"}
+                return action_result(action="REVIEW_ORDINARY_BASELINE",
+                        executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
+                        frame=visual_lock_baseline_gate.baseline_frame(ep),
+                        reason="Visual Lock baseline pixels must PASS before parallel-three generation")
         except Exception:
             pass
-        ledger=read_json(ep/"meta/production-ledger.json").get("frames") or {}
-        ready_states=production_ledger.READY_LEDGER_STATES
-        satisfied={int(k) for k,v in ledger.items() if str(k).isdigit() and v.get("status") in ready_states}
-        satisfied.update(int(x.get("frame") or 0) for x in q.get("items") or [] if x.get("status")=="generated")
-        runnable=[int(x["frame"]) for x in q.get("items") or [] if x.get("status")=="queued"
-                  and all(int(d) in satisfied for d in x.get("depends_on") or [])]
+        visual_rows=[x for x in q.get("items") or [] if str(x.get("scope") or "")=="visual_lock"]
+        visual_frames={int(x.get("frame") or 0) for x in visual_rows}
+        if cur=="STORYBOARD_LOCKED":
+            candidate_frames=visual_lock_candidate_pool.prepareable_frames(ep)
+            if candidate_frames:
+                return action_result(action="PREPARE_VISUAL_LOCK_CANDIDATES", executor="MACHINE",
+                        frames=candidate_frames,
+                        reason="Visual Lock admissions exhausted ordinary repair; prepare bounded independent candidates")
+            exhausted=visual_lock_candidate_pool.exhausted_frames(ep)
+            if exhausted:
+                return {**base, "action":"USER_DECISION_REQUIRED", "executor":runtime,
+                        "blocking":True, "work_pending":True, "auto_recoverable":False, "hard_stop":True,
+                        "frames":exhausted,
+                        "reason":"Visual Lock bounded admission candidate pool exhausted after real Codex Vision failures"}
+        visual_repair_active=any(
+            int(x.get("frame") or 0) in visual_frames and x.get("kind") in {"repair","baseline_candidate"}
+            and x.get("status") in {"queued","running","tech_failed","external_blocked","interrupted_unknown"}
+            for x in q.get("items") or []
+        )
+        if cur=="STORYBOARD_LOCKED" and not visual_repair_active and len(visual_rows)==4 and all(x.get("status")=="generated" for x in visual_rows):
+            try:
+                visual_errors=visual_lock_v21.verify(ep,metadata_only=False)
+            except Exception as exc:
+                visual_errors=[str(exc)]
+            if visual_errors:
+                return action_result(action="REVIEW_VISUAL_LOCK",
+                        executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
+                        frames=sorted(int(x.get("frame") or 0) for x in visual_rows),
+                        reason="four Visual Lock admission images exist and require isolated actual-pixel review")
+            return action_result(action="FINALIZE_VISUAL_LOCK", executor="MACHINE",
+                    frames=sorted(int(x.get("frame") or 0) for x in visual_rows),
+                    reason="four-image Codex Vision evidence is valid; deterministic gate/approval/state finalization remains")
+
+        if cur=="VISUAL_CALIBRATED":
+            expected=_expected_frames(ep)
+            represented=_represented_original_frames(q)
+            if expected>0 and len(represented)<expected:
+                return action_result(action="PREPARE_PRODUCTION_BATCH", executor="MACHINE",
+                        represented_frames=sorted(represented), expected_frames=expected,
+                        reason="Visual Lock is calibrated; deterministically materialize missing scene prompts and queue remaining original frames")
+            try:
+                batch_ids=production_batch_review.pending(ep)
+            except Exception:
+                batch_ids=[]
+            if batch_ids:
+                return action_result(action="REVIEW_GENERATED_IMAGES",
+                        executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
+                        batch_ids=batch_ids,
+                        reason="generated Production logical batch awaits isolated actual-pixel review")
+
+        # Reuse the scheduler's dependency authority. In particular, Visual Lock
+        # dependents must wait for baseline *approval*, not merely an older
+        # generated Frame01 candidate. Duplicating dependency logic here caused
+        # 05/16/17 to bypass the baseline gate after Frame01 entered repair.
+        import image_scheduler
+        scheduler_ready, _scheduler_blocked = image_scheduler.ready_items(ep, q)
+        runnable=sorted({int(x["frame"]) for x in scheduler_ready})
         if runnable:
             return action_result(action="GENERATE_IMAGES",executor="CODEX_IMAGE" if image_runtime=="CODEX" else runtime,
-                frames=sorted(runnable),reason="independent ready frames can continue while other frames await repair/review")
-        if qs["counts"].get("review_pending"):
-            return {**base, "action": "REVIEW_GENERATED_IMAGES", "executor": runtime, "blocking": True,
-                    "reason": "generated image batch awaits actual-pixel WORK review"}
+                frames=runnable,reason="scheduler dependency authority reports runnable image work")
+        production_review_pending=[
+            x for x in q.get("items") or []
+            if str(x.get("scope") or "")=="batch" and x.get("status")=="review_pending"
+        ]
+        if cur=="VISUAL_CALIBRATED" and production_review_pending:
+            return action_result(action="REVIEW_GENERATED_IMAGES",
+                    executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
+                    batch_ids=sorted({str(x.get("batch_id")) for x in production_review_pending if x.get("batch_id")}),
+                    reason="Production batch review request remains pending isolated actual-pixel review")
         if qs["counts"].get("scout_repair"):
-            return {**base, "action": "REPAIR_FAILED_IMAGES", "executor": runtime, "blocking": True,
-                    "reason": "actual-pixel review authorized content repair"}
+            return action_result(action="REPAIR_FAILED_IMAGES",
+                    executor="CODEX_IMAGE" if image_runtime=="CODEX" else runtime,
+                    reason="actual-pixel review authorized content repair")
+        if qs["counts"].get("external_blocked"):
+            blocked_frames=sorted({int(x.get("frame") or 0) for x in q.get("items") or [] if x.get("status")=="external_blocked" and int(x.get("frame") or 0)>0})
+            return action_result(action="EXTERNAL_IMAGE_PROVIDER_BLOCKED", executor="EXTERNAL",
+                    frames=blocked_frames,hard_stop=True,auto_recoverable=False,
+                    reason="image provider technical retry budget is exhausted; content/candidate budgets are preserved")
         if qs["counts"].get("tech_failed"):
             return action_result(action="RETRY_TECHNICAL_FAILURES", executor="CODEX_IMAGE",
                     reason="technical image failures remain; successful siblings must be reused")
@@ -226,10 +388,46 @@ def derive(ep: Path) -> dict:
             return {**base, "action": "RECOVER_INTERRUPTED_IMAGES", "executor": runtime, "blocking": True,
                     "work_pending": True, "auto_recoverable": False, "hard_stop": True,
                     "reason": "an interrupted worker has no terminal receipt; inspect reconciliation evidence before retry"}
-        if qs["queued_frames"]:
+        # A stale `running` row after a host/process interruption must enter the
+        # scheduler once so crash reconciliation can inspect lifecycle/ledger
+        # evidence. This does not authorize regeneration by itself.
+        running_frames=sorted({
+            int(x.get("frame") or 0) for x in q.get("items") or []
+            if x.get("status")=="running" and int(x.get("frame") or 0)>0
+        })
+        if running_frames:
             return action_result(action="GENERATE_IMAGES", executor="CODEX_IMAGE" if image_runtime == "CODEX" else runtime,
-                    frames=qs["queued_frames"],
-                    reason="production queue has ready/pending image work; scheduler enforces dependencies and concurrency")
+                    frames=running_frames,
+                    reason="image attempt is marked running; scheduler must reconcile durable worker evidence before any retry")
+
+        if cur=="VISUAL_CALIBRATED":
+            expected=_expected_frames(ep)
+            ledger_frames=read_json(ep/"meta/production-ledger.json").get("frames") or {}
+            ready_statuses=set(production_ledger.READY_LEDGER_STATES) | set(production_ledger.ACCEPTED_LEDGER_STATES)
+            complete_candidates=(
+                expected>0 and len([k for k in ledger_frames if str(k).isdigit()])>=expected
+                and all(
+                    isinstance(ledger_frames.get(f"{frame:02d}"),dict)
+                    and str(ledger_frames[f"{frame:02d}"].get("status") or "") in ready_statuses
+                    for frame in range(1,expected+1)
+                )
+            )
+            all_locked=complete_candidates and all(
+                str(ledger_frames[f"{frame:02d}"].get("status") or "")=="LOCKED"
+                for frame in range(1,expected+1)
+            )
+            if complete_candidates and not all_locked:
+                return action_result(action="REVIEW_FINAL_PRODUCTION",
+                        executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
+                        attempt=_final_semantic_attempt(ep),
+                        frames=list(range(1,expected+1)),
+                        reason="all production candidates exist; final SHA-bound semantic pixel review must PASS and lock every frame")
+            if all_locked:
+                reviews=read_json(ep/"meta/story-gates.json").get("reviews") or {}
+                if reviews.get("production")!="passed" or reviews.get("continuity")!="passed" or reviews.get("authenticity")!="passed":
+                    return action_result(action="FINALIZE_PRODUCTION_IMAGES", executor="MACHINE",
+                            frames=list(range(1,expected+1)),
+                            reason="all production frames are semantic-reviewed and LOCKED; deterministic image-production gate finalization remains")
 
     ledger_frames = read_json(ep / "meta/production-ledger.json").get("frames") or {}
     needs_user_frames = sorted(
@@ -237,6 +435,27 @@ def derive(ep: Path) -> dict:
         if str(key).isdigit() and isinstance(value, dict) and value.get("status") == "NEEDS_USER"
     )
     if needs_user_frames:
+        # Visual Lock baseline is special: after the ordinary one-shot repair is
+        # exhausted, full-auto may still try a bounded candidate competition.
+        # This does not raise content_repairs_used and does not bypass Codex Vision.
+        try:
+            baseline = visual_lock_baseline_gate.baseline_frame(ep)
+        except Exception:
+            baseline = None
+        if (
+            cur == "STORYBOARD_LOCKED"
+            and baseline is not None
+            and int(baseline) in needs_user_frames
+            and baseline_candidate_pool.can_prepare(ep)
+        ):
+            return action_result(
+                action="PREPARE_BASELINE_CANDIDATE",
+                executor="MACHINE",
+                frame=int(baseline),
+                used=baseline_candidate_pool.successful_candidate_slots(ep),
+                max=baseline_candidate_pool.max_additional_candidates(),
+                reason="ordinary baseline repair is exhausted; prepare the next bounded independent baseline candidate",
+            )
         return action_result(
             action="USER_DECISION_REQUIRED",
             executor=runtime,
@@ -283,7 +502,7 @@ def apply_runtime_block_semantics(data: dict) -> dict:
     Keep legacy ``blocking`` for compatibility, but expose explicit semantics.
     """
     action = str(data.get("action") or "")
-    hard_stop_actions = {"REPAIR_STATE", "RECOVER_INTERRUPTED_IMAGES", "USER_DECISION_REQUIRED"}
+    hard_stop_actions = {"REPAIR_STATE", "RECOVER_INTERRUPTED_IMAGES", "USER_DECISION_REQUIRED", "EXTERNAL_IMAGE_PROVIDER_BLOCKED"}
     recoverable_actions = {
         "GENERATE_IMAGES",
         "RETRY_TECHNICAL_FAILURES",
@@ -296,7 +515,14 @@ def apply_runtime_block_semantics(data: dict) -> dict:
         "CREATIVE_STORY",
         "PREIMAGE_COMPILE",
         "REVIEW_ORDINARY_BASELINE",
+        "REVIEW_VISUAL_LOCK",
         "REVIEW_GENERATED_IMAGES",
+        "REVIEW_FINAL_PRODUCTION",
+        "PREPARE_BASELINE_CANDIDATE",
+        "PREPARE_VISUAL_LOCK_CANDIDATES",
+        "FINALIZE_VISUAL_LOCK",
+        "PREPARE_PRODUCTION_BATCH",
+        "FINALIZE_PRODUCTION_IMAGES",
     }
     data["work_pending"] = action != "COMPLETE"
     data["auto_recoverable"] = action in recoverable_actions

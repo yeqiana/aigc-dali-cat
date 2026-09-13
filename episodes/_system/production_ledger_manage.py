@@ -96,6 +96,25 @@ def cmd_authorize_user_passed_repair(args: argparse.Namespace) -> None:
     print(f"{key}: REPAIR_AUTHORIZED (direct-user passed-frame authority change recorded)")
 
 
+def _refresh_authority_derived_caches(ep: Path) -> None:
+    """Rebuild stale derived authority caches before resolving a new frame contract.
+
+    Authority refresh is specifically entered because upstream authority changed.
+    A derived cache must never create a circular prerequisite where the refreshed
+    Frame Contract is required before the cache derived from that authority can be
+    rebuilt. Only deterministic derived caches are touched here; locked source
+    contracts and review evidence are never rewritten.
+    """
+    import character_appearance_anchor
+    errors = character_appearance_anchor.verify(ep)
+    rebuildable = {
+        "CHARACTER_APPEARANCE_ANCHOR_STALE",
+        "CHARACTER_APPEARANCE_ANCHOR_MISSING:run character_appearance_anchor.py build",
+    }
+    if errors and all(error in rebuildable for error in errors):
+        character_appearance_anchor.build(ep, write=True)
+
+
 def cmd_authorize_authority_refresh(args: argparse.Namespace) -> None:
     """Reopen a ready/passed frame after non-content authority or contract drift.
 
@@ -110,11 +129,12 @@ def cmd_authorize_authority_refresh(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
     key, frame = frame_obj(data, args.frame)
-    if frame["status"] not in {"PASSED", "ORIGINAL_READY", "REPAIR_READY", "LOCKED"}:
-        raise SystemExit(f"authority refresh requires PASSED/ORIGINAL_READY/REPAIR_READY/LOCKED, got {frame['status']}")
+    if frame["status"] not in {"PASSED", "ORIGINAL_READY", "REPAIR_READY", "LOCKED", "NEEDS_USER"}:
+        raise SystemExit(f"authority refresh requires PASSED/ORIGINAL_READY/REPAIR_READY/LOCKED/NEEDS_USER, got {frame['status']}")
     approval = args.approval_text.strip()
     if not approval:
         raise SystemExit("direct user approval text is required")
+    _refresh_authority_derived_caches(ep)
     current_contract = current_frame_contract_provenance(ep, key)
     if not current_contract:
         raise SystemExit("current frame contract provenance missing")

@@ -68,6 +68,26 @@ class RecoveryTests(unittest.TestCase):
         with patch.object(runner.next_action,"ROOT",self.ep.parent), patch.object(runner.next_action,"pending_product_review",return_value=None), patch.object(runner.next_action.visual_lock_baseline_gate,"awaiting_review",return_value=True), patch.object(runner.next_action.visual_lock_baseline_gate,"baseline_frame",return_value=1), patch.object(runner.next_action.product_runtime_adapter,"reconcile"):
             self.assertEqual(runner.next_action.derive(self.ep)["action"],"REVIEW_ORDINARY_BASELINE")
 
+    def test_running_baseline_repair_does_not_release_visual_lock_dependents(self):
+        atomic_write_json(self.ep / "meta/episode-state.json", {"current_state":"STORYBOARD_LOCKED"})
+        q={"items":[
+            {"id":"old-01","frame":1,"scope":"visual_lock","kind":"original","status":"generated","attempts":1,"depends_on":[]},
+            {"id":"vl-05","frame":5,"scope":"visual_lock","kind":"original","status":"queued","attempts":0,"depends_on":[1]},
+            {"id":"repair-01","frame":1,"scope":"repair","kind":"repair","status":"running","attempts":1,"depends_on":[]},
+        ]}
+        atomic_write_json(self.ep / batch.QUEUE_REL,q)
+        atomic_write_json(self.ep / "meta/production-ledger.json",{"frames":{"01":{"status":"REPAIRING"},"05":{"status":"PENDING"}}})
+        with patch.object(runner.next_action,"ROOT",self.ep.parent), \
+             patch.object(runner.next_action,"pending_product_review",return_value=None), \
+             patch.object(runner.next_action.visual_lock_baseline_gate,"awaiting_review",return_value=False), \
+             patch.object(runner.next_action.visual_lock_baseline_gate,"is_baseline_dependency",return_value=True), \
+             patch.object(runner.next_action.visual_lock_baseline_gate,"approved",return_value=False), \
+             patch.object(runner.next_action.product_runtime_adapter,"reconcile"):
+            action=runner.next_action.derive(self.ep)
+        self.assertEqual(action["action"],"GENERATE_IMAGES")
+        self.assertEqual(action["frames"],[1])
+        self.assertNotIn(5,action["frames"])
+
     def test_explicit_results_override_contract_words(self):
         for code, category in [(20,"HOST_WAIT"),(21,"TECH_FAILED"),(22,"HUMAN_REQUIRED"),
                                 (23,"HARD_STOP"),(24,"CAPABILITY_WAIT"),(503,"TECH_FAILED")]:
@@ -190,7 +210,7 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(q["items"][0]["status"],"tech_failed")
         self.assertEqual(json.loads((self.ep/"meta/production-ledger.json").read_text())["frames"]["01"]["status"],"TECH_FAILED")
 
-    def test_recovery_never_regenerates_unknown_inflight_worker(self):
+    def test_recovery_never_regenerates_worker_that_may_still_be_alive(self):
         item=self._running_item()
         production_recovery.prepare_execution(self.ep,item)
         production_recovery.mark_worker_pending(self.ep,item)
@@ -198,12 +218,32 @@ class RecoveryTests(unittest.TestCase):
         atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
         atomic_write_json(self.ep / "meta/production-ledger.json",self._active_ledger())
         q=batch.load_queue(self.ep)
-        report=production_recovery.reconcile_locked(self.ep,q)
+        with patch("codex_user_runner._pid_alive", return_value=True):
+            report=production_recovery.reconcile_locked(self.ep,q)
         self.assertEqual(report["rows"][0]["outcome"],"UNKNOWN_RUNNING_WORKER")
         self.assertEqual(q["items"][0]["status"],"interrupted_unknown")
         frame=json.loads((self.ep/"meta/production-ledger.json").read_text())["frames"]["01"]
         self.assertEqual(frame["status"],"GENERATING")
         self.assertEqual(frame["attempts"][-1]["result"],"pending")
+
+    def test_recovery_dead_worker_without_candidate_becomes_retryable_technical_failure(self):
+        item=self._running_item()
+        production_recovery.prepare_execution(self.ep,item)
+        production_recovery.mark_worker_pending(self.ep,item)
+        production_recovery.write_lifecycle(
+            self.ep,item,"BACKEND_INVOKED",worker_pid=99999,
+            expected_output=str(self.ep/"candidate-never-created.png"),
+        )
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json",self._active_ledger())
+        q=batch.load_queue(self.ep)
+        with patch("codex_user_runner._pid_alive", return_value=False):
+            report=production_recovery.reconcile_locked(self.ep,q)
+        self.assertEqual(report["rows"][0]["outcome"],"DEAD_WORKER_NO_OUTPUT_RETRYABLE")
+        self.assertEqual(q["items"][0]["status"],"tech_failed")
+        frame=json.loads((self.ep/"meta/production-ledger.json").read_text())["frames"]["01"]
+        self.assertEqual(frame["status"],"TECH_FAILED")
+        self.assertEqual(frame["attempts"][-1]["result"],"technical_failure")
 
     def test_recovery_replays_ledger_commit_missing_from_queue(self):
         item=self._running_item()
@@ -227,13 +267,75 @@ class RecoveryTests(unittest.TestCase):
                 "frame_contract":{"contract_sha256":"contract-a"}}}
         production_recovery.write_lifecycle(self.ep,item,"SUCCEEDED",worker_pid=123,result=result)
         atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
-        atomic_write_json(self.ep / "meta/production-ledger.json",self._active_ledger())
+        active=self._active_ledger()
+        active["frames"]["01"]["attempts"][-1]["runtime_transaction_id"]=(item.get("execution") or {}).get("transaction_id")
+        atomic_write_json(self.ep / "meta/production-ledger.json",active)
         q=batch.load_queue(self.ep)
         with patch.object(production_recovery.production_ledger,"cmd_success") as success:
             report=production_recovery.reconcile_locked(self.ep,q)
         success.assert_called_once()
         self.assertEqual(report["rows"][0]["outcome"],"WORKER_SUCCESS_REPLAYED")
         self.assertEqual(q["items"][0]["status"],"generated")
+
+    def test_old_original_success_cannot_close_newer_repair_attempt(self):
+        old=self._running_item()
+        production_recovery.prepare_execution(self.ep,old)
+        production_recovery.mark_worker_pending(self.ep,old)
+        old["status"]="generated"
+        candidate=self.ep/"old-original.png"; candidate.write_bytes(b"old")
+        result={"output":str(candidate),"payload":{"image_model":{"model":"gpt-image-2","quality":"high"},
+                "frame_contract":{"contract_sha256":"contract-a"}}}
+        production_recovery.write_lifecycle(self.ep,old,"SUCCEEDED",worker_pid=123,result=result)
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[old]})
+        ledger={"frames":{"01":{"status":"REPAIRING","attempts":[{
+            "attempt_id":"repair-attempt","result":"pending","kind":"repair",
+            "runtime_transaction_id":"new-repair-tx"
+        }]}}}
+        atomic_write_json(self.ep / "meta/production-ledger.json",ledger)
+        q=batch.load_queue(self.ep)
+        with patch.object(production_recovery.production_ledger,"cmd_success") as success:
+            report=production_recovery.reconcile_locked(self.ep,q)
+        success.assert_not_called()
+        self.assertEqual(report["rows"][0]["outcome"],"OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT")
+        self.assertEqual(q["items"][0]["status"],"generated")
+        frame=json.loads((self.ep/"meta/production-ledger.json").read_text())["frames"]["01"]
+        self.assertEqual(frame["status"],"REPAIRING")
+        self.assertEqual(frame["attempts"][-1]["result"],"pending")
+
+    def test_newer_repair_tech_failure_does_not_poison_old_original_queue_row(self):
+        old=self._running_item()
+        production_recovery.prepare_execution(self.ep,old)
+        old["status"]="generated"
+        old["output_path"]="old-original.png"
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[old]})
+        ledger={"frames":{"01":{"status":"TECH_FAILED","attempts":[{
+            "attempt_id":"repair-attempt","result":"technical_failure","kind":"repair",
+            "runtime_transaction_id":"new-repair-tx"
+        }]}}}
+        atomic_write_json(self.ep / "meta/production-ledger.json",ledger)
+        q=batch.load_queue(self.ep)
+        report=production_recovery.reconcile_locked(self.ep,q)
+        self.assertEqual(report["rows"][0]["outcome"],"OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT")
+        self.assertEqual(q["items"][0]["status"],"generated")
+        self.assertEqual(q["items"][0]["output_path"],"old-original.png")
+
+    def test_newer_repair_ready_does_not_rebind_old_original_output(self):
+        old=self._running_item()
+        production_recovery.prepare_execution(self.ep,old)
+        old["status"]="generated"
+        old["output_path"]="old-original.png"
+        repair=self.ep/"repair.png"; repair.write_bytes(b"repair")
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[old]})
+        ledger={"frames":{"01":{"status":"REPAIR_READY","attempts":[{
+            "attempt_id":"repair-attempt","result":"success","kind":"repair",
+            "runtime_transaction_id":"new-repair-tx"
+        }],"current_candidate":{"path":str(repair)}}}}
+        atomic_write_json(self.ep / "meta/production-ledger.json",ledger)
+        q=batch.load_queue(self.ep)
+        report=production_recovery.reconcile_locked(self.ep,q)
+        self.assertEqual(report["rows"][0]["outcome"],"OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT")
+        self.assertEqual(q["items"][0]["status"],"generated")
+        self.assertEqual(q["items"][0]["output_path"],"old-original.png")
 
     def test_ledger_ready_replay_is_idempotent_and_frozen_sources_untouched(self):
         source=self.ep/"story.md"; source.write_bytes(b"frozen story text")

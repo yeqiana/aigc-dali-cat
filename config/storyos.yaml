@@ -116,9 +116,27 @@ production:
   fail_soft: true
   incremental_reuse: true
 
-  # 每帧最多一次内容返修；网络、超时、Normalize 等技术失败不计入。
+  # 每帧最多一次普通内容返修；网络、超时、Normalize 等技术失败不计入。
   max_content_repairs_per_frame: 1
   technical_retry_counts_as_content_repair: false
+
+  # Visual Lock ordinary baseline 在普通返修仍失败后，可再生成有界竞争候选。
+  # 这些候选不增加 content_repairs_used；任意一张经 Codex Vision PASS 即成为 Pixel Master。
+  visual_lock_baseline_pool:
+    enabled: true
+    max_additional_candidates: 2
+
+  # Visual Lock 非 baseline admission 在普通返修仍失败后，也允许有界竞争候选。
+  # 仍不增加 content_repairs_used；每帧最多 2 个候选，全部真实 FAIL 才需要人工。
+  visual_lock_admission_pool:
+    enabled: true
+    max_additional_candidates_per_frame: 2
+
+  # 图片 backend 技术失败独立于内容返修/候选池：同一 queue item 最多 3 次 backend attempt。
+  # 第 1/2 次失败后分别退避 15s/45s；耗尽后进入外部能力阻塞，不伪装成内容 FAIL。
+  technical_retry:
+    max_attempts_per_item: 3
+    backoff_seconds: [15, 45]
 
 agent_runtime:
   # Trace 只记录执行事实，不是第二套 Episode State。
@@ -160,10 +178,52 @@ runtime:
   codex_image_reasoning_effort: medium
   local_codex_fallback: explicit_only
   continuous_host_loop: true
+  host_loop_max_cycles: 64
   next_action_path: meta/runtime/next-action.json
+
+  # Review 按能力拆分：WORK 拥有文本/治理审核权；实际像素审核由独立 Codex Vision critic 执行。
+  # ChatGPT Web/App 只是 UI，不映射为 Story OS WEB Runtime；DevSpace 只是 WORK 的本地工作区工具。
+  review:
+    text:
+      runtime: WORK
+      workspace_transport: DEVSPACE
+      isolated_required: true
+      fresh_turn_required: true
+    vision:
+      runtime: CODEX
+      model: gpt-5.6-sol
+      isolated_required: true
+      ephemeral: true
+      generation_session_reuse: false
+      reasoning_effort_default: medium
+      reasoning_effort_fast: medium
+      reasoning_effort_final: medium
+    governance:
+      runtime: WORK
+      workspace_transport: DEVSPACE
+    allow_web_runtime: false
+
+    # Legacy aliases: existing modules may still read these during the migration.
+    # `allow_local_codex_review=false` now means text/governance review only; vision review uses review.vision.
+    runtime: WORK
+    workspace_transport: DEVSPACE
+    isolated_critic_required: true
+    fresh_product_review_turn_required: true
+    allow_webcodex: false
+    allow_local_codex_review: false
 
   # 新篇默认走分段 DAG；PREIMAGE_COMPILE 是执行节点，不是新的 Episode stage。
   execution_mode: dag
+  # Explicit split protocol switches. The legacy flag remains a compatibility
+  # alias; authority and derived lanes are independently controllable.
+  parallel:
+    authority_enabled: true
+    derived_enabled: true
+  preimage_parallel_enabled: true
+  workers:
+    authority: 4
+    derived: 6
+    review: 3
   canonical_stage_source: meta/episode-state.json
   runtime_request_path: meta/runtime-request.json
 

@@ -325,6 +325,22 @@ class EvidenceRecovery(unittest.TestCase):
             with self.assertRaisesRegex(FileNotFoundError, 'Contract missing'):
                 incr.build_plan(self.ep)
 
+    def test_incremental_plan_defers_authority_refresh_instead_of_treating_it_as_bad_pass(self):
+        batch_review.write_json(self.ep / 'meta/production-ledger.json', {
+            'frames': {
+                '01': {'status': 'AUTHORITY_REFRESH_AUTHORIZED'},
+                '02': {'status': 'PENDING'},
+                '05': {'status': 'AUTHORITY_REFRESH_AUTHORIZED'},
+            }
+        })
+        with patch.object(incr, 'review_required', return_value=True), \
+                patch.object(semantic, 'frame_records', side_effect=AssertionError('final frame reader must not run')):
+            plan = incr.build_plan(self.ep)
+        self.assertEqual(plan['action'], 'AWAITING_AUTHORITY_REFRESH')
+        self.assertEqual(plan['dirty_frames'], ['01', '05'])
+        self.assertEqual(plan['authority_refresh_frames'], ['01', '05'])
+        self.assertEqual(plan['pending_statuses']['02'], 'PENDING')
+
     def batch_fixture(self, batch_id='RESUME'):
         out = self.ep / f'{batch_id}.png'; out.write_bytes(b'candidate')
         row = {'id': batch_id, 'frame': 1, 'status': 'generated',

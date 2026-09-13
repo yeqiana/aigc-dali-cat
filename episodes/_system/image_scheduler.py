@@ -14,6 +14,7 @@ import datetime as dt
 import json
 import os
 import subprocess
+import time
 import uuid
 from pathlib import Path
 
@@ -47,6 +48,12 @@ SCHEDULER_LOCK_REL = Path("meta/runtime-image-scheduler.lock")
 _CONFIG = storyos_config.load_config()
 MAX_SUPPORTED_WORKERS = int(storyos_config.get_path(_CONFIG, "production.max_inflight_images"))
 DEFAULT_IMAGE_QUALITY = str(storyos_config.get_path(_CONFIG, "image.quality"))
+TECH_RETRY_MAX = int(storyos_config.get_path(_CONFIG, "production.technical_retry.max_attempts_per_item"))
+TECH_RETRY_BACKOFF = tuple(int(x) for x in storyos_config.get_path(_CONFIG, "production.technical_retry.backoff_seconds"))
+RETRYABLE_TECH_CODES = {
+    "NETWORK_ERROR", "RATE_LIMIT_429", "BACKEND_5XX", "TIMEOUT", "IMAGE_BACKEND_ERROR",
+    "PROVIDER_ARTIFACT_SAVE_COLLISION", "WORKER_INTERRUPTED_FAILURE",
+}
 NON_REGENERATING_FAILURE_CODES = {
     "NORMALIZE_REVIEW", "ASPECT_RATIO_MISMATCH", "NORMALIZE_TECHNICAL_FAILURE",
     "NORMALIZE_INPUT_MISSING", "NORMALIZE_OUTPUT_EXISTS", "NORMALIZE_OUTPUT_FORMAT",
@@ -240,6 +247,34 @@ def import_visual_lock(ep:Path,prompt_dir:Path)->dict:
         policy=image_model_policy.for_episode(ep)
         added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="visual_lock",references=contract_references(ep,frame,scope="visual_lock"),capture_id=f"visual-lock-{frame:02d}",model=policy["model"],quality=policy["quality"],strict_model=bool(policy.get("strict_model")),depends_on=[int(x) for x in row.get("depends_on") or []],replace=False))
     return {"added":[x["id"] for x in added]}
+
+
+def refresh_queued_visual_lock_references(ep:Path)->dict:
+    """Re-resolve queued 1+3 references after the baseline pixel master exists.
+
+    Visual Lock items are imported before baseline generation, so their initial
+    identity reference set can legitimately be empty. Once baseline PASS creates
+    the provisional pixel master, refresh only still-queued Visual Lock items;
+    never mutate already-started/generated requests.
+    """
+    with queue_transaction(ep):
+        q=load_queue(ep);updated=[]
+        for item in q.get("items") or []:
+            if item.get("status")!="queued" or item.get("scope")!="visual_lock":
+                continue
+            frame=int(item.get("frame") or 0)
+            refs=contract_references(ep,frame,scope="visual_lock")
+            item["references"]=refs
+            item["reference_execution_contract"]={
+                "selected_at_enqueue":now(),
+                "selected_references":refs,
+                "selected_roles":[str(x.get("role") or "") for x in refs if isinstance(x,dict)],
+                "selected_kinds":[str(x.get("kind") or "") for x in refs if isinstance(x,dict)],
+                "refresh_reason":"baseline_pixel_master_available",
+            }
+            updated.append(frame)
+        save_queue(ep,q)
+        return {"updated_frames":sorted(updated),"count":len(updated)}
 
 
 def import_batch(ep:Path,prompt_dir:Path)->dict:
@@ -466,6 +501,8 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
                 code="CANDIDATE_COMMIT_FAILED" if backend_ok else classify_error(msg)
                 if not backend_ok: ledger_tech_fail(ep,item,code,msg)
                 item["status"]="blocked" if code in NON_REGENERATING_FAILURE_CODES else "tech_failed"
+                item["technical_failure_code"]=code
+                item.setdefault("technical_failures",[]).append({"at":now(),"attempt":int(item.get("attempts") or 0),"code":code})
                 has_block=has_block or item["status"]=="blocked"
                 if result.get("output"): item["candidate_output_path"]=str(result["output"])
                 item["completed_at"]=now()
@@ -477,6 +514,8 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             code=classify_error(msg)
             ledger_tech_fail(ep,item,code,msg)
             item["status"]="blocked" if code in NON_REGENERATING_FAILURE_CODES else "tech_failed"
+            item["technical_failure_code"]=code
+            item.setdefault("technical_failures",[]).append({"at":now(),"attempt":int(item.get("attempts") or 0),"code":code})
             has_block=has_block or item["status"]=="blocked"
             item["completed_at"]=now()
             item["last_error"]=runtime_portability.sanitize_diagnostic_text(msg[-1600:])
@@ -514,16 +553,65 @@ def run_scheduler_legacy_removed_path(ep:Path,max_workers:int,timeout:int,codex:
     raise RuntimeError("LEGACY_IMAGE_SCHEDULER_REMOVED_USE_ASYNC_RUNTIME")
 
 
-def retry_tech(ep:Path,frame:int|None=None)->dict:
+def _technical_retry_code(item:dict)->str:
+    code=str(item.get("technical_failure_code") or "").strip().upper()
+    return code or classify_error(str(item.get("last_error") or ""))
+
+
+def _retry_epoch_attempts(item:dict)->int:
+    return max(0,int(item.get("attempts") or 0)-int(item.get("technical_retry_epoch_start_attempt") or 0))
+
+
+def retry_tech(ep:Path,frame:int|None=None,*,reset_exhausted:bool=False,sleep_fn=time.sleep)->dict:
+    ep=Path(ep).resolve()
+    if reset_exhausted:
+        with queue_transaction(ep):
+            q=load_queue(ep)
+            for item in q.get("items") or []:
+                if item.get("status")!="external_blocked" or (frame is not None and int(item.get("frame") or -1)!=int(frame)):
+                    continue
+                item["status"]="tech_failed"
+                item["technical_retry_epoch_start_attempt"]=int(item.get("attempts") or 0)
+                item.pop("external_block",None)
+            save_queue(ep,q)
+
+    preview=load_queue(ep);delays=[]
+    for item in preview.get("items") or []:
+        if item.get("status")!="tech_failed" or (frame is not None and int(item.get("frame") or -1)!=int(frame)):
+            continue
+        code=_technical_retry_code(item);used=_retry_epoch_attempts(item)
+        if code in RETRYABLE_TECH_CODES and used < TECH_RETRY_MAX and used>0:
+            delays.append(TECH_RETRY_BACKOFF[min(used-1,len(TECH_RETRY_BACKOFF)-1)])
+    delay=max(delays or [0])
+    if delay>0:
+        sleep_fn(delay)
+
     with queue_transaction(ep):
-        q=load_queue(ep);count=0
+        q=load_queue(ep);count=0;exhausted=[];non_retryable=[]
         for item in q.get("items") or []:
-            if item.get("status")=="tech_failed" and (frame is None or int(item.get("frame") or -1)==int(frame)):
-                item["status"]="queued"
-                item["last_error"]=None
-                item["retry_pending"]=False
-                count+=1
-        save_queue(ep,q);return {"requeued":count,"frame":frame}
+            if item.get("status")!="tech_failed" or (frame is not None and int(item.get("frame") or -1)!=int(frame)):
+                continue
+            code=_technical_retry_code(item);used=_retry_epoch_attempts(item)
+            if code not in RETRYABLE_TECH_CODES:
+                item["status"]="external_blocked"
+                item["external_block"]={"at":now(),"reason":"non_retryable_technical_failure","code":code,"attempts":used,"max_attempts":TECH_RETRY_MAX}
+                non_retryable.append(int(item.get("frame") or 0));continue
+            if used >= TECH_RETRY_MAX:
+                item["status"]="external_blocked"
+                item["external_block"]={"at":now(),"reason":"technical_retry_exhausted","code":code,"attempts":used,"max_attempts":TECH_RETRY_MAX}
+                exhausted.append(int(item.get("frame") or 0));continue
+            item["status"]="queued"
+            item["last_error"]=None
+            item["retry_pending"]=False
+            item["retry_backoff_seconds"]=delay
+            # A technical retry is a new backend execution transaction even
+            # when it reuses the same queue item/content-repair/candidate round.
+            item.pop("execution",None)
+            item.pop("started_at",None)
+            item.pop("completed_at",None)
+            count+=1
+        save_queue(ep,q)
+        return {"requeued":count,"frame":frame,"backoff_seconds":delay,"exhausted_frames":sorted(set(exhausted)),"non_retryable_frames":sorted(set(non_retryable))}
 
 
 def self_test()->None:
@@ -531,6 +619,8 @@ def self_test()->None:
     assert classify_error("429 Too Many Requests")=="RATE_LIMIT_429"
     assert classify_error("worker timeout")=="TIMEOUT"
     assert classify_error("unknown model")=="MODEL_UNAVAILABLE"
+    assert classify_error("image generation failed: network error: error sending request")=="NETWORK_ERROR"
+    assert TECH_RETRY_MAX == 3 and TECH_RETRY_BACKOFF == (15,45)
     assert classify_error("ASPECT_RATIO_MISMATCH: inspect Generation Request")=="ASPECT_RATIO_MISMATCH"
     assert image_worker_pool.CODEX_SESSION_REUSE is False
     assert rolling_frame_review.VALID == {"PASS_PREVIEW","REPAIR_NOW","UNCERTAIN"}
@@ -546,12 +636,12 @@ def self_test()->None:
 def main()->int:
     ap=argparse.ArgumentParser(description=__doc__);sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("init");p.add_argument("episode_dir");p.add_argument("--force",action="store_true")
-    p=sub.add_parser("add");p.add_argument("episode_dir");p.add_argument("--frame",type=int,required=True);p.add_argument("--kind",choices=["original","repair"],default="original");p.add_argument("--scope",choices=["visual_lock","batch","repair"],default="batch");p.add_argument("--prompt-file",required=True);p.add_argument("--reference",action="append",default=[]);p.add_argument("--capture-id");p.add_argument("--model");p.add_argument("--quality",choices=["high"]);p.add_argument("--depends-on",action="append",default=[]);p.add_argument("--replace",action="store_true")
+    p=sub.add_parser("add");p.add_argument("episode_dir");p.add_argument("--frame",type=int,required=True);p.add_argument("--kind",choices=["original","repair","baseline_candidate"],default="original");p.add_argument("--scope",choices=["visual_lock","batch","repair","baseline_candidate"],default="batch");p.add_argument("--prompt-file",required=True);p.add_argument("--reference",action="append",default=[]);p.add_argument("--capture-id");p.add_argument("--model");p.add_argument("--quality",choices=["high"]);p.add_argument("--depends-on",action="append",default=[]);p.add_argument("--replace",action="store_true")
     p=sub.add_parser("import-visual-lock");p.add_argument("episode_dir");p.add_argument("--prompt-dir",required=True)
     p=sub.add_parser("import-batch");p.add_argument("episode_dir");p.add_argument("--prompt-dir",required=True)
     p=sub.add_parser("plan");p.add_argument("episode_dir")
     p=sub.add_parser("run");p.add_argument("episode_dir");p.add_argument("--max-workers",type=int,default=MAX_SUPPORTED_WORKERS);p.add_argument("--timeout",type=int,default=None);p.add_argument("--codex")
-    p=sub.add_parser("retry-tech");p.add_argument("episode_dir");p.add_argument("--frame",type=int)
+    p=sub.add_parser("retry-tech");p.add_argument("episode_dir");p.add_argument("--frame",type=int);p.add_argument("--reset-exhausted",action="store_true",help="start a new bounded technical-retry epoch after the external provider has recovered")
     p=sub.add_parser("reconcile");p.add_argument("episode_dir")
     p=sub.add_parser("show");p.add_argument("episode_dir")
     sub.add_parser("self-test")
@@ -584,7 +674,7 @@ def main()->int:
             if batch_scheduler.should_use(ep):
                 return batch_scheduler.run(ep,a.max_workers,run_timeout,a.codex)
             return run_scheduler_async(ep,a.max_workers,run_timeout,a.codex)
-        if a.cmd=="retry-tech":print(json.dumps(retry_tech(ep,a.frame),ensure_ascii=False,indent=2));return 0
+        if a.cmd=="retry-tech":print(json.dumps(retry_tech(ep,a.frame,reset_exhausted=a.reset_exhausted),ensure_ascii=False,indent=2));return 0
         print((ep/QUEUE_REL).read_text(encoding="utf-8") if (ep/QUEUE_REL).is_file() else "{}");return 0
     except (OSError,ValueError,RuntimeError,subprocess.TimeoutExpired) as exc:
         print("IMAGE SCHEDULER ERROR:",exc);return 3

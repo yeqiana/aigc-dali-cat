@@ -13,6 +13,17 @@
     "accidental_detour": 0.05
   },
   "entries": {
+    "daily_life": {
+      "label": "普通生活日常",
+      "examples": [
+        "起床吃饭",
+        "和朋友闲逛",
+        "买东西",
+        "散步",
+        "回家休息"
+      ],
+      "no_anomaly_plan": "原本只是过普通一天：吃饭、办生活琐事、和朋友相处、散步后回家"
+    },
     "travel": {
       "label": "旅行/出游",
       "examples": [
@@ -121,6 +132,9 @@
     }
   },
   "keyword_map": {
+    "日常": "daily_life",
+    "普通生活": "daily_life",
+    "生活一天": "daily_life",
     "旅游": "travel",
     "旅行": "travel",
     "自驾": "travel",

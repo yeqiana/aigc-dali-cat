@@ -113,12 +113,30 @@ def review(
     return _invoke(production_ledger.cmd_review, namespace)
 
 
+def authorize_repair(
+    ep: Path,
+    *,
+    frame: int,
+    note: str,
+    delegated_auto: bool = True,
+) -> tuple[bool, str]:
+    """Mirror ``production_ledger.py authorize-repair`` for one bounded repair."""
+    namespace = SimpleNamespace(
+        episode_dir=str(Path(ep).resolve()),
+        frame=f"{int(frame):02d}",
+        note=str(note),
+        delegated_auto=bool(delegated_auto),
+    )
+    return _invoke(production_ledger.cmd_authorize_repair, namespace)
+
+
 def self_test() -> None:
     assert _invoke.__name__ == "_invoke"
     assert begin.__name__ == "begin"
     assert success.__name__ == "success"
     assert tech_fail.__name__ == "tech_fail"
     assert review.__name__ == "review"
+    assert authorize_repair.__name__ == "authorize_repair"
     print("LEDGER CALL SELF-TEST PASS")
 
 

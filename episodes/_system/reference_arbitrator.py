@@ -53,7 +53,7 @@ def _identity_need(ep,hm,contract_refs):
 def _master_identity(ep,frame,scope,character_id):
     series_ref=character_visual_contract.series_identity_reference(ep,character_id)
     if series_ref:return {k:series_ref[k] for k in ("path","role","kind") if k in series_ref},"series_character_identity"
-    allow=scope=="visual_lock";group=character_visual_contract.pixel_master_reference(ep,allow_provisional=allow)
+    allow=scope in {"visual_lock","repair"};group=character_visual_contract.pixel_master_reference(ep,allow_provisional=allow)
     if not group:return None,None
     try:
         if int(str(group.get("frame") or "0"))==int(frame):return None,"self_reference_blocked"
@@ -69,10 +69,10 @@ def select(ep,frame,scope="batch"):
     # historical series assets. Historical assets may supplement continuity but
     # must never override the current calibrated identity.
     series_ref=character_visual_contract.series_identity_reference(ep,identity_cid) if need else None
-    current_master=character_visual_contract.pixel_master_reference(ep,allow_provisional=(scope=="visual_lock")) if need else None
+    current_master=character_visual_contract.pixel_master_reference(ep,allow_provisional=(scope in {"visual_lock","repair"})) if need else None
     if current_master and identity_cid:
         series_ref=None
-    if scope=="visual_lock" and need and not series_ref:
+    if scope in {"visual_lock","repair"} and need and not series_ref:
         try:group=character_visual_contract.pixel_master_reference(ep,allow_provisional=True)
         except Exception:group=None
         if group and int(str(group.get("frame") or "0"))==frame:need=False

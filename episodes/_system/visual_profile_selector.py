@@ -68,7 +68,9 @@ M00 = "M00_REAL_WORLD_DOCUMENTARY_V1"
 M01 = "M01_ANCIENT_MUNDANE_LIFE_V1"
 M02 = "M02_HEAVEN_MUNDANE_WORKER_V1"
 M03 = "M03_JIANGNAN_IMMERSIVE_LIFE_V1"
+M04 = "M04_HEAVEN_MUNDANE_LIFE_V1"
 
+WORKPLACE_THEMES = {"workplace", "worker", "work", "job", "mundane_work", "celestial_workplace"}
 JIANGNAN_TOKENS = ("jiangnan", "江南", "水乡")
 
 
@@ -168,15 +170,23 @@ def _match_m01(data):
 
 
 def _match_m02(data):
-    """Heaven mundane worker: fictional world with a high fantasy level."""
+    """Heaven mundane worker: high-fantasy fiction with explicit workplace intent."""
+    si = _si(data)
+    theme = _text(si.get("theme")).lower()
+    if (_text(si.get("world")) != "fictional"
+            or _text(_aud(data).get("fantasy_level")) != "high"
+            or theme not in WORKPLACE_THEMES):
+        return [], []
+    return ["world=fictional", "fantasy_level=high", "theme=workplace"], [f"theme={theme}"]
+
+
+def _match_m04(data):
+    """Heaven ordinary resident life: default high-fantasy mundane-life profile."""
     si = _si(data)
     if _text(si.get("world")) != "fictional" or _text(_aud(data).get("fantasy_level")) != "high":
         return [], []
-    notes = []
     theme = _text(si.get("theme"))
-    if theme:
-        notes.append(f"theme={theme}")
-    return ["world=fictional", "fantasy_level=high"], notes
+    return ["world=fictional", "fantasy_level=high"], ([f"theme={theme}"] if theme else [])
 
 
 def _match_m03(data):
@@ -198,8 +208,9 @@ def _rules() -> list:
     return [
         {"profile_id": M00, "signals": ("world=real",), "matcher": _match_m00},
         {"profile_id": M01, "signals": ("world=historical_real", "era=ancient"), "matcher": _match_m01},
-        {"profile_id": M02, "signals": ("world=fictional", "fantasy_level=high"), "matcher": _match_m02},
+        {"profile_id": M02, "signals": ("world=fictional", "fantasy_level=high", "theme=workplace"), "matcher": _match_m02},
         {"profile_id": M03, "signals": ("location=jiangnan", "experience_type=immersive_first_person"), "matcher": _match_m03},
+        {"profile_id": M04, "signals": ("world=fictional", "fantasy_level=high"), "matcher": _match_m04},
     ]
 
 

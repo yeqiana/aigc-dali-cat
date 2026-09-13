@@ -216,14 +216,15 @@ Write ONLY JSON to {rel_out}:
 Allowed issue codes: {sorted(ISSUE_CODES)}
 """
     active_runtime,_=runtime_router.detect()
-    if active_runtime in {"WORK","WEB"} and not codex_raw:
+    vision_runtime,_=runtime_router.vision_review_runtime()
+    if vision_runtime != "CODEX" and not codex_raw:
         result={
             **base,
             "decision":"DEFER_TO_FINAL",
             "issue_codes":[],
-            "notes":f"{active_runtime} product runtime: Fast Scout is non-blocking and does not launch local Codex; defer actual-pixel authority to product/final review.",
+            "notes":f"vision runtime={vision_runtime}: Fast Scout defers actual-pixel authority to final review.",
             "model_called":False,
-            "scout_status":"product_runtime_defer",
+            "scout_status":"vision_runtime_defer",
         }
         write_json(_result_path(ep,frame),result)
         return result
@@ -232,7 +233,8 @@ Allowed issue codes: {sorted(ISSUE_CODES)}
         log=ep/"meta/frame-scouts"/f"{frame:02d}.jsonl"
         done=critic_runner.launch(
             prompt,codex=codex,root=ROOT,timeout=timeout,
-            sandbox="workspace-write",reasoning_effort_literal='model_reasoning_effort="low"',
+            sandbox="workspace-write",model=runtime_router.vision_review_model(),
+            reasoning_effort=runtime_router.vision_review_effort("fast"),
             attachments=[image],log_path=log)
         if done.returncode!=0 or not candidate.is_file():
             raise RuntimeError(f"scout critic failed rc={done.returncode}")
