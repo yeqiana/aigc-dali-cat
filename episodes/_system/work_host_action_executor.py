@@ -109,10 +109,13 @@ def _run_devspace_review(ep: Path, request: dict) -> Path:
     deadline = time.monotonic() + runtime_timeout_policy.seconds("review_critic")
     while True:
         try:
+            # Two-level bound: one status RPC gets the probe bound, the wait loop as a
+            # whole gets the review-critic bound (deadline above). Neither is a literal.
             status_call = subprocess.run(
                 [executable, "agents", "show", agent_id, "--json"],
                 cwd=ROOT, check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                text=True, encoding="utf-8", errors="replace", timeout=30,
+                text=True, encoding="utf-8", errors="replace",
+                timeout=runtime_timeout_policy.seconds("review_status_probe"),
             )
         except (OSError, subprocess.TimeoutExpired) as exc:
             log.write_text("\n".join(transcript), encoding="utf-8", newline="\n")

@@ -12,7 +12,7 @@ from production_ledger_core import *  # noqa: F401,F403  (full public library)
 from production_ledger_run import (cmd_authorize_repair, cmd_begin,
     cmd_recover_success, cmd_restore_evidence_gap_review, cmd_review, cmd_success, cmd_tech_fail)
 from production_ledger_manage import (cmd_accept_user_exception_candidate,
-    cmd_audit, cmd_authorize_authority_refresh, cmd_authorize_user_exception_repair,
+    cmd_audit, cmd_authorize_authority_refresh, cmd_authorize_user_continuation_repair, cmd_authorize_user_exception_repair,
     cmd_authorize_user_locked_repair, cmd_authorize_user_passed_repair,
     cmd_batch_begin, cmd_batch_end, cmd_init, cmd_lock, cmd_promote, cmd_show)
 
@@ -58,6 +58,7 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--provider-receipt")
     s.add_argument("--transaction-id", required=True)
     s.add_argument("--runner-request-id")
+    s.add_argument("--recovery-reason", help="auditable correction reason; defaults to late durable user-runner success")
     s.set_defaults(func=cmd_recover_success)
 
     s = sub.add_parser("tech-fail", help="record network/timeout/no-candidate failure without consuming content repair")
@@ -108,6 +109,13 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--approval-text", required=True)
     s.add_argument("--reason", required=True)
     s.set_defaults(func=cmd_authorize_user_exception_repair)
+
+    s = sub.add_parser("authorize-user-continuation-repair", help="authorize exactly one additional candidate after an explicit user continue decision")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--approval-text", required=True)
+    s.add_argument("--reason", required=True)
+    s.set_defaults(func=cmd_authorize_user_continuation_repair)
 
     s = sub.add_parser("accept-user-exception-candidate", help="accept an existing NEEDS_USER exception candidate with direct user approval")
     s.add_argument("episode_dir")

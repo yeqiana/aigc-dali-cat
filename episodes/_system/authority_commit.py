@@ -31,12 +31,18 @@ def _merge_scope(target: dict, scope: str, payload: dict, *, replace_existing_sc
 def commit_transaction(ep: Path, authority_path: str | Path, *, expected_sha: str, snapshot_id: str,
                        task_ids: list[str], node_ids: list[str], patches: list[tuple[str,dict]],
                        candidate_paths: list[str], preview_validator=None, preflight_validator=None,
-                       replace_existing_scopes: set[str] | None = None) -> dict:
+                       replace_existing_scopes: set[str] | None = None, authority_guard=None) -> dict:
     """Atomically commit an entire PREIMAGE authority preview or write nothing.
 
     The read/SHA comparison/preview validation/merge/replace critical section is
     protected by the existing runtime lock.  There is deliberately no
     per-patch replace in this path.
+
+    ``authority_guard`` is an optional zero-argument predicate evaluated *inside*
+    the lock; returning a false value aborts with STALE.  Callers whose binding
+    authority is narrower than the whole file pass their projection check here so
+    the ownership comparison cannot race the merge.  It must not take another
+    lock: the runtime lock is an exclusive lock file and is not reentrant.
     """
     path=Path(ep)/Path(authority_path); started=_now()
     result={"status":"FAILED","snapshot_id":snapshot_id,"committed":False,"atomic":True,"partial_commit":False}
@@ -45,6 +51,8 @@ def commit_transaction(ep: Path, authority_path: str | Path, *, expected_sha: st
             actual=sha(path)
             if actual != expected_sha:
                 result={**result,"status":"STALE","input_sha":actual};
+            elif authority_guard is not None and not authority_guard():
+                result={**result,"status":"STALE","input_sha":actual,"reason":"authority guard rejected"};
             else:
                 current=atomic.read_json(path,{})
                 if not isinstance(current,dict): raise ValueError("authority must be a JSON object")

@@ -115,7 +115,8 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
             and base in {"WORK", "WEB"}
         )
         user_exception = (
-            attempt == 3
+            isinstance(attempt, int)
+            and attempt >= 3
             and provenance.get("direct_user_exception_review") is True
         )
         bounded_visual = (
@@ -158,6 +159,7 @@ def build_vision_critic_provenance(
     log: str | None = None,
     review_scope: str | None = None,
     allow_bounded_candidate_attempt: bool = False,
+    allow_user_exception_attempt: bool = False,
 ) -> dict:
     """Build provenance for an actual-pixel Codex critic.
 
@@ -169,6 +171,7 @@ def build_vision_critic_provenance(
         attempt=attempt,
         log=log,
         allow_bounded_visual_attempt=allow_bounded_candidate_attempt,
+        allow_user_exception_attempt=allow_user_exception_attempt,
     )
     data.update({
         "review_capability": VISION_REVIEW_CAPABILITY,
@@ -194,7 +197,11 @@ def build_critic_provenance(
     if attempt < 1:
         raise ValueError("attempt must be >= 1")
     allowed_extended = allow_extended_attempt and base in {"WORK", "WEB"}
-    allowed_user_exception = allow_user_exception_attempt and attempt == 3
+    # Some review surfaces use a global review-round counter rather than a
+    # per-frame attempt number. A direct-user exception can therefore appear at
+    # round 4+ after bounded candidates were already reviewed. The explicit
+    # flag is the authority; ordinary callers still cannot exceed attempt 2.
+    allowed_user_exception = allow_user_exception_attempt and attempt >= 3
     allowed_bounded_visual = allow_bounded_visual_attempt and base == "CODEX" and 3 <= attempt <= 5
     if attempt > 2 and not (allowed_extended or allowed_user_exception or allowed_bounded_visual):
         raise ValueError("attempt must be 1 or 2 unless this is source-drift, direct-user-exception, or bounded baseline-candidate vision review")
@@ -246,6 +253,9 @@ def self_test() -> None:
     assert validate_critic_provenance(work) == []
     assert validate_critic_provenance(build_critic_provenance("WORK", attempt=3, allow_extended_attempt=True)) == []
     assert validate_critic_provenance(build_critic_provenance("CODEX", attempt=3, allow_user_exception_attempt=True)) == []
+    exception_round = build_vision_critic_provenance(attempt=6, log="vision-a6.jsonl", review_scope="VISUAL_LOCK_FOUR_ADMISSION", allow_user_exception_attempt=True)
+    assert exception_round["direct_user_exception_review"] is True
+    assert validate_critic_provenance(exception_round) == []
     bounded_vision = build_vision_critic_provenance(attempt=3, log="vision-a3.jsonl", review_scope="VISUAL_LOCK_BASELINE", allow_bounded_candidate_attempt=True)
     assert bounded_vision["bounded_visual_candidate_review"] is True
     assert validate_critic_provenance(bounded_vision) == []

@@ -16,6 +16,7 @@ from pathlib import Path
 import baseline_candidate_pool
 import character_visual_contract
 import frame_contract
+import image_blocked_recovery
 import preproduction_handoff
 import production_batch_review
 import production_ledger
@@ -147,7 +148,37 @@ def queue_summary(ep: Path) -> dict:
         unresolved_interrupted.append(row)
     counts["interrupted_unknown"] = len(unresolved_interrupted)
 
-    return {"counts": counts, "queued_frames": sorted(x for x in queued_frames if x > 0), "raw": q}
+    # ``blocked`` rows are non-regenerating technical failures.  Like
+    # ``tech_failed``, an older blocked attempt becomes audit history when a
+    # later candidate for the same frame has already committed.  Only the
+    # unresolved tail may influence routing.
+    unresolved_blocked = []
+    for idx, row in enumerate(items):
+        if row.get("status") != "blocked":
+            continue
+        frame_no = int(row.get("frame") or 0)
+        later_success = any(
+            int(other.get("frame") or 0) == frame_no and other.get("status") == "generated"
+            for other in items[idx + 1:]
+        )
+        if later_success:
+            continue
+        frame = ledger.get(f"{frame_no:02d}") or ledger.get(str(frame_no)) or {}
+        current = frame.get("current_candidate") if isinstance(frame, dict) else None
+        if isinstance(current, dict) and current.get("sha256"):
+            failed_at = str(row.get("completed_at") or row.get("started_at") or row.get("queued_at") or "")
+            recorded_at = str(current.get("recorded_at") or "")
+            if failed_at and recorded_at and recorded_at >= failed_at:
+                continue
+        unresolved_blocked.append(row)
+    counts["blocked"] = len(unresolved_blocked)
+
+    return {
+        "counts": counts,
+        "queued_frames": sorted(x for x in queued_frames if x > 0),
+        "blocked_items": unresolved_blocked,
+        "raw": q,
+    }
 
 
 def _expected_frames(ep: Path) -> int:
@@ -257,6 +288,29 @@ def derive(ep: Path) -> dict:
     q = qs["raw"]
     if q:
         ledger_frames = read_json(ep / "meta/production-ledger.json").get("frames") or {}
+        unresolved_blocked = list(qs.get("blocked_items") or [])
+        if unresolved_blocked:
+            plans = image_blocked_recovery.inspect(ep, unresolved_blocked)
+            if plans and all(bool(row.get("auto_resolvable")) for row in plans):
+                return action_result(
+                    action="RESOLVE_IMAGE_NORMALIZATION",
+                    executor="MACHINE",
+                    frames=sorted({int(row.get("frame") or 0) for row in plans if int(row.get("frame") or 0) > 0}),
+                    reason="preserved provider RAW can be deterministically normalized under the explicit provider-ratio exception; do not regenerate or review stale pixels",
+                )
+            return action_result(
+                action="IMAGE_ATTEMPT_BLOCKED",
+                executor=runtime,
+                frames=sorted({int(row.get("frame") or 0) for row in unresolved_blocked if int(row.get("frame") or 0) > 0}),
+                hard_stop=True,
+                auto_recoverable=False,
+                blocked=[{
+                    "frame": int(row.get("frame") or 0),
+                    "code": str(row.get("code") or ""),
+                    "reason": str(row.get("reason") or "non-regenerating image failure requires explicit inspection"),
+                } for row in plans],
+                reason="non-regenerating image failure must be resolved before any pixel review or further generation",
+            )
         authority_refresh_frames = sorted(
             int(key) for key, row in ledger_frames.items()
             if isinstance(row, dict) and row.get("status") == "AUTHORITY_REFRESH_AUTHORIZED"
@@ -328,10 +382,11 @@ def derive(ep: Path) -> dict:
             except Exception as exc:
                 visual_errors=[str(exc)]
             if visual_errors:
+                dirty_frames = visual_lock_v21.dirty_admission_frames(ep)
                 return action_result(action="REVIEW_VISUAL_LOCK",
                         executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
-                        frames=sorted(int(x.get("frame") or 0) for x in visual_rows),
-                        reason="four Visual Lock admission images exist and require isolated actual-pixel review")
+                        frames=dirty_frames or sorted(int(x.get("frame") or 0) for x in visual_rows),
+                        reason="dirty Visual Lock admissions require isolated actual-pixel review; valid SHA-bound PASS rows are reused")
             return action_result(action="FINALIZE_VISUAL_LOCK", executor="MACHINE",
                     frames=sorted(int(x.get("frame") or 0) for x in visual_rows),
                     reason="four-image Codex Vision evidence is valid; deterministic gate/approval/state finalization remains")
@@ -502,7 +557,7 @@ def apply_runtime_block_semantics(data: dict) -> dict:
     Keep legacy ``blocking`` for compatibility, but expose explicit semantics.
     """
     action = str(data.get("action") or "")
-    hard_stop_actions = {"REPAIR_STATE", "RECOVER_INTERRUPTED_IMAGES", "USER_DECISION_REQUIRED", "EXTERNAL_IMAGE_PROVIDER_BLOCKED"}
+    hard_stop_actions = {"REPAIR_STATE", "RECOVER_INTERRUPTED_IMAGES", "USER_DECISION_REQUIRED", "EXTERNAL_IMAGE_PROVIDER_BLOCKED", "IMAGE_ATTEMPT_BLOCKED"}
     recoverable_actions = {
         "GENERATE_IMAGES",
         "RETRY_TECHNICAL_FAILURES",
@@ -520,6 +575,7 @@ def apply_runtime_block_semantics(data: dict) -> dict:
         "REVIEW_FINAL_PRODUCTION",
         "PREPARE_BASELINE_CANDIDATE",
         "PREPARE_VISUAL_LOCK_CANDIDATES",
+        "RESOLVE_IMAGE_NORMALIZATION",
         "FINALIZE_VISUAL_LOCK",
         "PREPARE_PRODUCTION_BATCH",
         "FINALIZE_PRODUCTION_IMAGES",

@@ -18,6 +18,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import production_ledger
+import runtime_timeout_policy
 from runtime_atomic_store import atomic_write_json, update_json
 
 # Repository root, derived from this module's checked-in location like every
@@ -595,7 +596,13 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str, *, queue_
     policy = {**episode_policy, "model": model, "quality": quality, "strict_model": strict_model}
     ns = SimpleNamespace(
         episode_dir=ep, frame=f"{int(frame):02d}", prompt_file=prompt_path, output=output, log=log,
-        reference=original_refs, timeout=1, codex=None, image_model=model, image_quality=quality,
+        # The namespace mirrors a real worker CLI parse, so its timeout carries the
+        # same policy-resolved default. Recovery itself never invokes the provider
+        # (see _recovered_codex_raw below), so this value is never read here; it
+        # exists so this namespace stays equivalent to the CLI one.
+        reference=original_refs,
+        timeout=runtime_timeout_policy.seconds("image_worker_request"),
+        codex=None, image_model=model, image_quality=quality,
         # Recovery never calls the provider again. If the interrupted worker had
         # already written the normalized candidate before dying, rebuild the same
         # file from the hash-matched recovered provider artifact and overwrite it
@@ -607,10 +614,12 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str, *, queue_
 
     token = str(item["id"])
     budget_kind = raw_candidate_budget.kind_for_queue_item(item)
+    budget_semantic_key = raw_candidate_budget.semantic_key_for_queue_item(item)
     claimed, claim_row = raw_candidate_budget.claim(
         ep, int(frame), budget_kind,
         reason="recover_durable_user_runner_success",
         token=token,
+        semantic_key=budget_semantic_key,
     )
     if not claimed:
         raise RuntimeError(f"RECOVERY_CANDIDATE_BUDGET_CLAIM_FAILED: {claim_row}")

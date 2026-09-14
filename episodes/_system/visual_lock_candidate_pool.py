@@ -15,6 +15,7 @@ from pathlib import Path
 import image_model_policy
 import story_json
 import storyos_config
+import visual_lock_admission_state
 
 QUEUE_REL = Path("meta/production-queue.json")
 LEDGER_REL = Path("meta/production-ledger.json")
@@ -53,6 +54,8 @@ def failed_rows(ep: Path) -> list[dict]:
     rows = []
     for row in review.get("calibration") or []:
         if not isinstance(row, dict):
+            continue
+        if visual_lock_admission_state.valid_pass_for_gate_row(ep, row):
             continue
         checks = row.get("checks") or {}
         failed = row.get("issues") not in ([], None) or any(value is not True for value in checks.values())

@@ -34,7 +34,7 @@ def _contract_rows(ep,frame):
                 "anchor":row.get("anchor") or row.get("id") or row.get("required_anchor")
             })
     return c,hm,refs
-def _identity_need(ep,hm,contract_refs):
+def _identity_need(ep,hm,contract_refs,scope="batch"):
     cv=json.loads((Path(ep)/character_visual_contract.REL).read_text(encoding="utf-8-sig"));ids=[str(x) for x in (cv.get("members") or {}).keys()];primary=str((hm.get("shot_progression") or {}).get("primary_subject") or "");matched=[cid for cid in ids if cid and cid in primary]
     if matched:
         cid=matched[0];idx=primary.find(cid);fragment=primary[max(0,idx-4):idx+len(cid)+12].lower()
@@ -42,6 +42,12 @@ def _identity_need(ep,hm,contract_refs):
             return False,None,"non_face_character_fragment"
         return True,cid,"primary_subject_character_id"
     if any(x.get("kind")=="identity" for x in contract_refs):return True,None,"contract_identity_reference"
+    shot=hm.get("shot_progression") or {}
+    if scope in {"visual_lock","repair"} and shot.get("human_present") is True:
+        # Visual Lock and its repair lanes calibrate recurring character identity.
+        # A human-present frame must not silently lose the Pixel Master merely
+        # because prose says "four people" instead of a token like "friend"/P01.
+        return True,None,"visual_lock_human_present"
     capture=hm.get("capture_event") or {}
     capture_text=" | ".join(str(capture.get(k) or "") for k in ("why_capture_now","device_position"))
     if any(tok.lower() in capture_text.lower() for tok in SELFIE_CAPTURE_TOKENS):
@@ -63,7 +69,7 @@ def _master_identity(ep,frame,scope,character_id):
         if crop:return crop,"individual_crop"
     return {k:group[k] for k in ("path","role","kind") if k in group},"group_master"
 def select(ep,frame,scope="batch"):
-    ep=Path(ep).resolve();frame=int(frame);c,hm,contract_refs=_contract_rows(ep,frame);need,cid,need_reason=_identity_need(ep,hm,contract_refs)
+    ep=Path(ep).resolve();frame=int(frame);c,hm,contract_refs=_contract_rows(ep,frame);need,cid,need_reason=_identity_need(ep,hm,contract_refs,scope=scope)
     identity_cid=None if need_reason=="selfie_capture_event" else cid
     # Character authority policy: current episode pixel master has priority over
     # historical series assets. Historical assets may supplement continuity but

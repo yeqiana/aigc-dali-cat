@@ -33,9 +33,13 @@ def _txt(outfit):
     return " ".join(parts).lower()
 def _has(text,words):return any(w.lower() in text for w in words)
 
-def prepare(ep,force=False):
+def prepare(ep,force=False,destructive_reset=False):
     ep=Path(ep).resolve();target=ep/REL
-    if target.is_file() and not force:return read_json(target)
+    if target.is_file():
+        existing=read_json(target)
+        if not force:return existing
+        if existing.get("status")=="LOCKED" and not destructive_reset:
+            raise ValueError("refusing destructive wardrobe prepare --force on LOCKED authority; use rebind-source or --destructive-reset")
     cp=read_json(ep/"meta/character-contract.json")
     members=((cp.get("cast") or {}).get("members") or [])
     total=frame_count(ep);frames={}
@@ -60,7 +64,7 @@ def prepare(ep,force=False):
        "frames":frames}
     write_json(target,d);return d
 
-def validate(ep,require_locked=True):
+def validate(ep,require_locked=True,ignore_source_binding=False):
     ep=Path(ep).resolve();p=ep/REL
     if not p.is_file():return ["meta/wardrobe-contract.json missing"]
     d=read_json(p);e=[];total=frame_count(ep)
@@ -68,7 +72,7 @@ def validate(ep,require_locked=True):
     if require_locked and d.get("status")!="LOCKED":e.append("wardrobe contract must be LOCKED")
     temporal=ep/"meta/temporal-continuity.json"
     if not temporal.is_file():e.append("temporal continuity missing for wardrobe")
-    elif str(d.get("source_temporal_sha256") or "").lower()!=sha(temporal).lower():e.append("wardrobe source_temporal_sha256 stale")
+    elif not ignore_source_binding and str(d.get("source_temporal_sha256") or "").lower()!=sha(temporal).lower():e.append("wardrobe source_temporal_sha256 stale")
     frames=d.get("frames") or {}
     if len(frames)!=total:e.append(f"wardrobe frame count mismatch {len(frames)} != {total}")
     prev_looks={}
@@ -105,6 +109,26 @@ def validate(ep,require_locked=True):
             if look:prev_looks[cid]=look
     return e
 
+def rebind_source(ep,reason):
+    ep=Path(ep).resolve();target=ep/REL;temporal=ep/"meta/temporal-continuity.json"
+    if not target.is_file():raise ValueError("meta/wardrobe-contract.json missing")
+    if not temporal.is_file():raise ValueError("temporal continuity missing for wardrobe")
+    reason=str(reason or "").strip()
+    if not reason:raise ValueError("rebind-source requires a non-empty reason")
+    d=read_json(target)
+    if d.get("status")!="LOCKED":raise ValueError("rebind-source requires LOCKED wardrobe authority")
+    content_errors=validate(ep,True,ignore_source_binding=True)
+    if content_errors:raise ValueError("wardrobe content invalid; refusing source rebind: "+"; ".join(content_errors[:8]))
+    old=str(d.get("source_temporal_sha256") or "")
+    new=sha(temporal)
+    if old.lower()==new.lower():return d
+    d["source_temporal_sha256"]=new
+    d.setdefault("source_rebind_history",[]).append({"from":old,"to":new,"reason":reason})
+    write_json(target,d)
+    errors=validate(ep,True)
+    if errors:raise ValueError("wardrobe source rebind failed validation: "+"; ".join(errors[:8]))
+    return d
+
 def resolve_frame(ep,frame):
     ep=Path(ep).resolve();d=read_json(ep/REL);key=f"{int(frame):02d}"
     return {"frame":key,"wardrobe":(d.get("frames") or {}).get(key) or {}}
@@ -117,14 +141,16 @@ def self_test():
 
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)
-    p=sub.add_parser("prepare");p.add_argument("episode_dir");p.add_argument("--force",action="store_true")
+    p=sub.add_parser("prepare");p.add_argument("episode_dir");p.add_argument("--force",action="store_true");p.add_argument("--destructive-reset",action="store_true")
+    p=sub.add_parser("rebind-source");p.add_argument("episode_dir");p.add_argument("--reason",required=True)
     p=sub.add_parser("validate");p.add_argument("episode_dir");p.add_argument("--allow-draft",action="store_true")
     p=sub.add_parser("resolve-frame");p.add_argument("episode_dir");p.add_argument("frame",type=int)
     p=sub.add_parser("show");p.add_argument("episode_dir")
     sub.add_parser("self-test");a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0
     ep=Path(a.episode_dir).resolve()
-    if a.cmd=="prepare":print(json.dumps(prepare(ep,a.force),ensure_ascii=False,indent=2));return 0
+    if a.cmd=="prepare":print(json.dumps(prepare(ep,a.force,a.destructive_reset),ensure_ascii=False,indent=2));return 0
+    if a.cmd=="rebind-source":print(json.dumps(rebind_source(ep,a.reason),ensure_ascii=False,indent=2));return 0
     if a.cmd=="validate":
         e=validate(ep,not a.allow_draft)
         if e:[print("FAIL:",x) for x in e];return 2

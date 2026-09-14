@@ -246,6 +246,27 @@ paths:
   reports: reports
   internal_history: .storyos/history
 
+storage:
+  # 数据库与缓存的部署拓扑。这里只写「仓库默认值」；生产 / 本机实际值由运行时
+  # 环境提供。解析优先级（高 → 低）由 episodes/_system/storage_config.py 固定：
+  #     显式构造参数 > 环境变量 > 本文件默认值
+  #
+  # 凭据永不写入本文件：password_env 存的是环境变量「名字」，不是值。
+  # STORYOS_MYSQL_PWD / STORYOS_REDIS_PASSWORD 的真实值只存在于运行时环境，
+  # 与 platform/ 两个连接模块的 docstring 声明一致。
+  mysql:
+    host: 127.0.0.1
+    port: 3306
+    user: root
+    database: story_os_runtime
+    password_env: STORYOS_MYSQL_PWD
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    db: 0
+    timeout_seconds: 5
+    password_env: STORYOS_REDIS_PASSWORD
+
 compatibility:
   # 契约位：历史 JSON 请求/证据可读，但新的人工配置只写本 YAML。
   # read_legacy_json=false 时，任何 legacy JSON 读取必须先经
@@ -266,6 +287,7 @@ timeout_policy:
   visual_baseline_critic: 300
   fast_scout: 240
   review_critic: 900
+  review_status_probe: 30
   image_probe: 900
   deep_semantic_review: 1800
   release_semantic: 1800

@@ -9,11 +9,12 @@ This tool creates/validates/resolves derived per-frame physical context.
 It does NOT create a second episode stage or a second visual authority.
 """
 from __future__ import annotations
-import argparse, hashlib, json
+import argparse, hashlib, json, re
 from pathlib import Path
 
 from story_os_contract import story_os_version
 import story_json
+import visual_profile
 
 ROOT = Path(__file__).resolve().parents[2]
 MIN_VERSION = (2, 1, 0)
@@ -63,6 +64,61 @@ def frame_count(ep: Path) -> int:
     return n
 
 def _s(v: object) -> str:return str(v or "").strip()
+
+_DAYPART_HINTS = (
+    ("dawn", "dawn"),
+    ("morning", "morning"),
+    ("midday", "day"),
+    ("noon", "day"),
+    ("afternoon", "afternoon"),
+    ("sunset", "dusk"),
+    ("dusk", "dusk"),
+    ("early evening", "dusk"),
+    ("night", "night"),
+)
+
+def _implied_daypart(text: object) -> str | None:
+    low=_s(text).lower()
+    for token,value in _DAYPART_HINTS:
+        if re.search(r"(?<![a-z])"+re.escape(token)+r"(?![a-z])",low):return value
+    return None
+
+def _normalized_daypart(text: object) -> str | None:
+    low=_s(text).lower()
+    if not low:return None
+    if low in {"dawn","morning","day","afternoon","dusk","night"}:return low
+    return _implied_daypart(low)
+
+def _merge_environment(env: dict, frame: int) -> dict:
+    merged=dict(env.get("baseline") or {})
+    for seg in env.get("segments") or []:
+        if isinstance(seg,dict) and seg.get("start_frame")<=frame<=seg.get("end_frame"):
+            for k,v in seg.items():
+                if k not in {"id","start_frame","end_frame"}:merged[k]=v
+    override=(env.get("frame_overrides") or {}).get(f"{frame:02d}") or (env.get("frame_overrides") or {}).get(str(frame)) or {}
+    if isinstance(override,dict):merged.update(override)
+    return merged
+
+def _reality_first(ep: Path) -> bool:
+    try:
+        contract=visual_profile.compile_prompt_contract(ep)
+        return str(contract.get("reality_first") or "").lower()=="true" or contract.get("reality_first") is True
+    except Exception:
+        try:
+            resolved=visual_profile.resolve_profile(ep)
+            path=(ROOT/str(resolved.get("profile_path") or "")).resolve()
+            profile=read_json(path) if path.is_file() else {}
+            return ((profile.get("visual_dna") or {}).get("reality_first")) is True
+        except Exception:
+            return False
+
+def _positive_promo_cue(text: object) -> bool:
+    low=_s(text).lower()
+    if not low:return False
+    negative=("no ","not ","avoid ","forbid","forbidden","without ","rather than ","instead of ")
+    if any(token in low for token in negative):return False
+    promo=("golden cloud sea","golden-hour","golden hour","cinematic lighting","hero lighting","commercial hdr","tourism poster","tourism-poster","movie still","movie-still","promotional composition","promo composition")
+    return any(token in low for token in promo)
 
 def _frame_key(raw: object, total: int) -> str:
     if isinstance(raw,bool):raise ValueError("invalid frame key")
@@ -178,12 +234,37 @@ def validate_directives(ep: Path, directives: dict, total: int) -> list[str]:
     except Exception as exc:errors.append(f"cannot validate climax directive: {exc}")
     return errors
 
+def validate_effective_consistency(ep: Path, env: dict, directives: dict, total: int) -> list[str]:
+    errors=[]
+    reality_first=_reality_first(ep)
+    for frame in range(1,total+1):
+        effective=_merge_environment(env,frame)
+        implied=_implied_daypart(effective.get("condition"))
+        actual=_normalized_daypart(effective.get("time_of_day"))
+        if implied and actual != implied:
+            errors.append(
+                f"ENVIRONMENT_TIME_CONFLICT:{frame:02d}:condition implies {implied} but effective time_of_day={_s(effective.get('time_of_day')) or '<missing>'}"
+            )
+        directive=(directives.get(f"{frame:02d}") or directives.get(str(frame)) or {}) if isinstance(directives,dict) else {}
+        impact=directive.get("impact_level")
+        if not reality_first or isinstance(impact,bool) or not isinstance(impact,int) or impact<3:
+            continue
+        cues=[]
+        physical=effective.get("physical_cues")
+        if isinstance(physical,list):cues.extend(physical)
+        required=directive.get("required_visual_cues")
+        if isinstance(required,list):cues.extend(required)
+        for cue in cues:
+            if _positive_promo_cue(cue):
+                errors.append(f"REALITY_FIRST_PROMO_CUE_CONFLICT:{frame:02d}:{_s(cue)}")
+    return errors
+
 def verify(ep: Path) -> list[str]:
     if not required(ep):return []
     try:
         total=frame_count(ep);env,directives=current_contract(ep)
     except Exception as exc:return [str(exc)]
-    return validate_environment(env,total)+validate_directives(ep,directives,total)
+    return validate_environment(env,total)+validate_directives(ep,directives,total)+validate_effective_consistency(ep,env,directives,total)
 
 def init_contract(ep: Path, force: bool=False) -> int:
     gates_path=ep/"meta/story-gates.json";g=read_json(gates_path);visual=g.setdefault("visual",{})
@@ -216,7 +297,7 @@ def resolve_frame(ep: Path, frame: int) -> dict:
     total=frame_count(ep)
     if not 1<=frame<=total:raise ValueError(f"frame out of range: {frame}/{total}")
     env,directives=current_contract(ep)
-    errors=validate_environment(env,total)+validate_directives(ep,directives,total)
+    errors=validate_environment(env,total)+validate_directives(ep,directives,total)+validate_effective_consistency(ep,env,directives,total)
     if errors:raise ValueError("environment contract invalid: "+"; ".join(errors[:8]))
     merged=dict(env.get("baseline") or {})
     active=[]

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -227,6 +228,47 @@ def validate(data: dict | None = None) -> list[str]:
             value = compat.get(key)
             if not isinstance(value, bool):
                 errors.append(f"compatibility.{key} must be a bool")
+    # storage 契约位：只放非敏感部署拓扑，凭据一律只以环境变量「名字」出现。
+    # password_env 的格式校验是「禁止把密码写进仓库」的机器化防线：任何看起来
+    # 像密码字面量的值都匹配不上 STORYOS_* 变量名，会在这里 fail-fast。
+    storage = get_path(cfg, "storage")
+    if not isinstance(storage, dict):
+        errors.append("storage must be a mapping")
+    else:
+        for name, required in (
+            ("mysql", ("host", "port", "user", "database", "password_env")),
+            ("redis", ("host", "port", "db", "timeout_seconds", "password_env")),
+        ):
+            section = storage.get(name)
+            if not isinstance(section, dict):
+                errors.append(f"storage.{name} must be a mapping")
+                continue
+            for key in required:
+                if key not in section:
+                    errors.append(f"storage.{name}.{key} is required")
+            if not isinstance(section.get("host"), str) or not str(section.get("host") or "").strip():
+                errors.append(f"storage.{name}.host must be a non-empty string")
+            port = section.get("port")
+            if type(port) is not int or not 1 <= port <= 65535:
+                errors.append(f"storage.{name}.port must be an int in 1..65535")
+            password_env = section.get("password_env")
+            if not isinstance(password_env, str) or not re.fullmatch(r"STORYOS_[A-Z0-9_]+", password_env):
+                errors.append(
+                    f"storage.{name}.password_env must name a STORYOS_* environment variable; "
+                    "credential literals must never be written into this file"
+                )
+        mysql = storage.get("mysql") if isinstance(storage.get("mysql"), dict) else {}
+        redis = storage.get("redis") if isinstance(storage.get("redis"), dict) else {}
+        if not isinstance(mysql.get("user"), str) or not str(mysql.get("user") or "").strip():
+            errors.append("storage.mysql.user must be a non-empty string")
+        if not isinstance(mysql.get("database"), str) or not str(mysql.get("database") or "").strip():
+            errors.append("storage.mysql.database must be a non-empty string")
+        redis_db = redis.get("db")
+        if type(redis_db) is not int or redis_db < 0:
+            errors.append("storage.redis.db must be a non-negative int")
+        redis_timeout = redis.get("timeout_seconds")
+        if type(redis_timeout) not in (int, float) or isinstance(redis_timeout, bool) or redis_timeout <= 0:
+            errors.append("storage.redis.timeout_seconds must be a positive number")
     return errors
 
 

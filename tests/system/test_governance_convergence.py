@@ -348,8 +348,18 @@ class EvidenceRecovery(unittest.TestCase):
         batch_review.write_json(self.ep / batch_review.QUEUE_REL, {'items': [row]})
         return row
 
+    def test_batch_prepare_rejects_disabled_review_routes(self):
+        # Runtime realignment: a new product review requires WORK with DevSpace. WEB/WebCodex
+        # and local CODEX review routes are disabled, so prepare must fail closed instead of
+        # opening a review the Runtime can never complete.
+        self.batch_fixture('WEB')
+        with patch.object(batch_review.runtime_router, 'detect', return_value=('WEB', 'test')), patch.object(
+                batch_review.frame_contract, 'compile_frame', return_value={'contract_sha256': 'contract', 'prompt_contract': 'locked scene'}):
+            with self.assertRaisesRegex(product_review.ProductReviewError, 'WORK runtime with DevSpace'):
+                batch_review.prepare(self.ep, 'WEB')
+
     def test_batch_prepare_resume_finalize_preserves_request_and_authority(self):
-        for runtime in ('WORK', 'WEB'):
+        for runtime in ('WORK',):
             with self.subTest(runtime=runtime), patch.object(batch_review.runtime_router, 'detect', return_value=(runtime, 'test')), patch.object(
                     batch_review.frame_contract, 'compile_frame', return_value={'contract_sha256': 'contract', 'prompt_contract': 'locked scene'}):
                 row = self.batch_fixture(runtime)
@@ -437,8 +447,12 @@ class EvidenceRecovery(unittest.TestCase):
         with patch.object(semantic, 'review_required', return_value=True), patch.object(semantic, 'verify_episode', return_value=[]), patch.object(semantic, 'frame_records') as frames:
             self.assertEqual(semantic.run_critic(self.ep, attempt=1, codex_raw=None), 0)
             frames.assert_not_called()
-        with patch.object(semantic, 'review_required', return_value=True), patch.object(semantic, 'verify_episode', return_value=['drift']), patch.object(semantic, 'frame_records', side_effect=ValueError('new review required')):
-            with self.assertRaisesRegex(ValueError, 'new review required'):
+        # Drift invalidates the cached summary. run_critic must then rebuild the frame set
+        # from the production ledger instead of reusing it, and a ledger whose frames are
+        # neither approved nor live candidates is a hard failure, never a silent PASS.
+        scheduler_core.write_json(self.ep / 'meta/production-ledger.json', {'frames': {'01': {'status': 'DRAFT'}}})
+        with patch.object(semantic, 'review_required', return_value=True), patch.object(semantic, 'verify_episode', return_value=['drift']):
+            with self.assertRaisesRegex(ValueError, 'no reviewable production asset'):
                 semantic.run_critic(self.ep, attempt=1, codex_raw=None)
 
     def test_semantic_finalize_rejects_contract_drift_before_any_pass_is_written(self):
@@ -456,6 +470,9 @@ class EvidenceRecovery(unittest.TestCase):
             ):
                 stack.enter_context(patch.object(semantic, name, return_value=value))
             stack.enter_context(patch.object(semantic.runtime_router, 'detect', return_value=('WORK', 'test')))
+            # The lane that owns actual-pixel review cannot see pixels here, so run_critic
+            # must open a bounded Host Action instead of launching a local critic.
+            stack.enter_context(patch.object(semantic.runtime_router, 'vision_review_runtime', return_value=('WORK', 'test')))
             stack.enter_context(patch.object(semantic, 'phase3_context_hashes', side_effect=lambda *a: {'frame_contract_sha256': semantic.sha256_file(contract)}))
             # Prepare through the real entrypoint and the real immutable request adapter.
             with patch('builtins.print'):
@@ -597,9 +614,10 @@ class SourceProofEntries(unittest.TestCase):
 
         def fake_invoke(prompt_path, refs, raw_output, log, size, timeout, codex,
                         visual_contract, frame_contract_text, image_model, image_quality,
-                        strict_model, *, scene_text=None):
+                        strict_model, *, scene_text=None, runner_request_id=None):
             calls.append({'scene': scene_text, 'contract': frame_contract_text,
-                          'model': image_model, 'quality': image_quality})
+                          'model': image_model, 'quality': image_quality,
+                          'runner_request_id': runner_request_id})
             return 1.2
 
         ns = argparse.Namespace(episode_dir=self.ep, frame='01', prompt_file=self.prompt,
@@ -668,10 +686,13 @@ class SourceProofEntries(unittest.TestCase):
             state = batch_review.read_json(self.ep / incr.STATE_REL)
             self.assertEqual(state['action'], 'PATCH')
             with patch.object(incr.runtime_router, 'detect', return_value=('WORK', 'test')), \
+                    patch.object(incr.runtime_router, 'vision_review_runtime', return_value=('WORK', 'test')), \
                     patch.object(incr, '_run_patch', return_value=0) as run_patch, \
                     patch.object(semantic, 'run_critic', return_value=0) as run_critic, \
                     patch.object(incr, '_decorate_full') as decorate:
-                # WORK with no explicit codex must escalate PATCH to the full product review.
+                # Escalation is decided by the vision lane, not by the governance runtime:
+                # a lane with no local pixel review must escalate PATCH to the full product
+                # review instead of pretending to judge images it cannot see.
                 self.assertEqual(incr.run_review(self.ep, attempt=1, codex_raw=None), 0)
                 run_critic.assert_called_once()
                 run_patch.assert_not_called()

@@ -172,8 +172,8 @@ def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
     key, frame = frame_obj(data, args.frame)
-    if frame["status"] not in {"NEEDS_USER", "LOCKED"}:
-        raise SystemExit(f"user exception repair requires NEEDS_USER or LOCKED, got {frame['status']}")
+    if frame["status"] not in {"NEEDS_USER", "LOCKED", "PASSED"}:
+        raise SystemExit(f"user exception repair requires NEEDS_USER, LOCKED, or downstream-invalidated PASSED; got {frame['status']}")
     if frame.get("content_repairs_used", 0) != 1:
         raise SystemExit("user exception repair requires exactly one ordinary content repair")
     if frame.get("user_exception_repairs_used", 0) >= 1:
@@ -181,9 +181,26 @@ def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     approval = args.approval_text.strip()
     if not approval:
         raise SystemExit("direct user approval text is required")
-    prior_lock = frame.get("lock") if frame["status"] == "LOCKED" else None
+    prior_status = frame.get("status")
+    prior_lock = frame.get("lock") if prior_status == "LOCKED" else None
     if prior_lock:
         frame.setdefault("superseded_locks", []).append({"at": now_iso(), "lock": prior_lock, "approved_asset": frame.get("approved_asset")})
+        frame["lock"] = None
+    if prior_status == "PASSED":
+        frame.setdefault("superseded_passes", []).append({
+            "at": now_iso(),
+            "current_candidate": frame.get("current_candidate"),
+            "approved_asset": frame.get("approved_asset"),
+            "reviews": list(frame.get("reviews") or []),
+            "reason": args.reason,
+            "invalidation_basis": "later_downstream_actual_pixel_review",
+        })
+    if prior_status in {"PASSED", "LOCKED"}:
+        # The downstream review explicitly invalidated the previously approved
+        # pixels. Keep the old asset only inside superseded_* evidence; leaving
+        # it active would make dependency checks treat a reopened baseline as
+        # still approved and would leak a stale Pixel Master into dependents.
+        frame["approved_asset"] = None
     frame["status"] = "EXCEPTION_REPAIR_AUTHORIZED"
     frame.setdefault("user_exception_authorizations", []).append({
         "at": now_iso(),
@@ -196,6 +213,38 @@ def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     data["updated_at"] = now_iso()
     save_json(path, data)
     print(f"{key}: EXCEPTION_REPAIR_AUTHORIZED (direct user exception recorded)")
+
+
+def cmd_authorize_user_continuation_repair(args: argparse.Namespace) -> None:
+    """Authorize exactly one additional content candidate after an explicit user continue decision.
+
+    This is intentionally separate from the ordinary repair, authority refresh,
+    and the one-shot user exception. It never resets those counters. Each call
+    records the exact direct-user approval and authorizes one continuation
+    generation transaction; another retry requires another explicit user
+    decision plus a separate raw-candidate budget raise.
+    """
+    ep = episode_dir(args.episode_dir)
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, args.frame)
+    if frame["status"] != "NEEDS_USER":
+        raise SystemExit(f"user continuation repair requires NEEDS_USER, got {frame['status']}")
+    approval = args.approval_text.strip()
+    if not approval:
+        raise SystemExit("direct user approval text is required")
+    frame["status"] = "USER_CONTINUATION_REPAIR_AUTHORIZED"
+    frame.setdefault("user_continuation_authorizations", []).append({
+        "at": now_iso(),
+        "approval_text": approval,
+        "reason": args.reason,
+        "user_approved": True,
+        "delegated_auto_review": False,
+        "approval_basis": "direct_user_continuation_after_exhaustion",
+        "continuation_index": int(frame.get("user_continuation_repairs_used") or 0) + 1,
+    })
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    print(f"{key}: USER_CONTINUATION_REPAIR_AUTHORIZED")
 
 
 def cmd_accept_user_exception_candidate(args: argparse.Namespace) -> None:

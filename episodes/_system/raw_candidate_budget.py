@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/runtime/raw-candidate-budget.json")
 OVERRIDE_REL = Path("meta/runtime/raw-candidate-budget-override.json")
 CFG = ROOT / "runtimes/runtime-fast-path-v251.json"
-KINDS = {"original", "repair", "exception"}
+KINDS = {"original", "repair", "exception", "user_exception", "authority_refresh", "user_continuation"}
 
 def now() -> str:
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -24,10 +24,12 @@ def _read_json(path: Path) -> dict:
     return story_json.read_json(path, default={})
 
 def limits() -> dict:
+    defaults = {"original": 2, "repair": 2, "exception": 2, "user_exception": 1, "authority_refresh": 0, "user_continuation": 0}
     try:
-        return _read_json(CFG).get("raw_candidate_budget") or {"original": 2, "repair": 2, "exception": 2}
+        configured = _read_json(CFG).get("raw_candidate_budget") or {}
+        return {**defaults, **configured}
     except Exception:
-        return {"original": 2, "repair": 2, "exception": 2}
+        return defaults
 
 def frame_count(ep: Path) -> int:
     ep = Path(ep)
@@ -175,6 +177,16 @@ def load(ep: Path) -> dict:
 
 def kind_for_queue_item(item: dict) -> str:
     kind = str((item or {}).get("kind") or "").lower()
+    capture_id = str((item or {}).get("capture_id") or "")
+    if kind == "repair" and capture_id.startswith("authority-refresh-"):
+        return "authority_refresh"
+    if kind == "repair" and capture_id.startswith("user-continuation-"):
+        return "user_continuation"
+    if kind == "repair" and capture_id.startswith("user-exception-"):
+        # Direct-user exception repair is independently authorized and must not
+        # collide with the bounded automatic candidate-pool bucket (exception).
+        # Production Ledger separately enforces the one-user-exception limit.
+        return "user_exception"
     if kind == "repair":
         return "repair"
     if kind == "baseline_candidate":
@@ -183,6 +195,46 @@ def kind_for_queue_item(item: dict) -> str:
         # so the one-shot repair budget remains semantically intact.
         return "exception"
     return "original"
+
+def semantic_key_for_queue_item(item: dict) -> str | None:
+    kind = kind_for_queue_item(item)
+    if kind == "authority_refresh":
+        contract = (item or {}).get("frame_contract") or {}
+        key = str(contract.get("contract_sha256") or (item or {}).get("frame_contract_sha256") or "").strip().lower()
+        return key or None
+    if kind == "user_continuation":
+        key = str((item or {}).get("capture_id") or "").strip()
+        return key or None
+    return None
+
+def _authority_refresh_authorization(ep: Path, frame_key: str, semantic_key: str) -> dict:
+    ledger = _read_json(Path(ep).resolve() / "meta/production-ledger.json")
+    frame = (ledger.get("frames") or {}).get(frame_key) or {}
+    auth = frame.get("authority_refresh_authorization") or {}
+    approved = (
+        str(auth.get("frame_contract_sha256") or "").lower() == str(semantic_key or "").lower()
+        and bool(str(auth.get("approval_text") or "").strip())
+        and str(auth.get("approval_basis") or "") == "direct_user_authority_contract_refresh"
+    )
+    return {"approved": approved, "source": str(auth.get("approval_text") or "")[:200]}
+
+def _user_continuation_authorization(ep: Path, frame_key: str, semantic_key: str) -> dict:
+    ledger = _read_json(Path(ep).resolve() / "meta/production-ledger.json")
+    frame = (ledger.get("frames") or {}).get(frame_key) or {}
+    rows = frame.get("user_continuation_authorizations") or []
+    auth = rows[-1] if rows and isinstance(rows[-1], dict) else {}
+    raw_index = str(semantic_key or "").rsplit("-", 1)[-1]
+    try:
+        semantic_index = int(raw_index)
+    except Exception:
+        semantic_index = -1
+    approved = (
+        semantic_index > 0
+        and int(auth.get("continuation_index") or 0) == semantic_index
+        and bool(str(auth.get("approval_text") or "").strip())
+        and str(auth.get("approval_basis") or "") == "direct_user_continuation_after_exhaustion"
+    )
+    return {"approved": approved, "source": str(auth.get("approval_text") or "")[:200]}
 
 def _all_claims(d: dict):
     for frame, kinds in (d.get("frames") or {}).items():
@@ -199,11 +251,12 @@ def _find_token(d: dict, token: str):
 def _reserved_total(d: dict) -> int:
     return sum(1 for *_prefix, row in _all_claims(d) if isinstance(row, dict))
 
-def claim(ep, frame, kind, reason="", token=None):
+def claim(ep, frame, kind, reason="", token=None, semantic_key=None):
     ep = Path(ep).resolve()
     if kind not in KINDS:
         raise ValueError(f"kind must be {sorted(KINDS)}")
     key = f"{int(frame):02d}"
+    semantic_key = str(semantic_key or "").strip().lower() or None
     token = str(token or "").strip() or f"{key}:{kind}:{int(dt.datetime.now().timestamp()*1000000)}"
     result = {}
 
@@ -212,29 +265,54 @@ def claim(ep, frame, kind, reason="", token=None):
         found = _find_token(d, token)
         if found:
             f, k, bucket, _, row = found
-            if f != key or k != kind:
+            same_semantic = kind not in {"authority_refresh", "user_continuation"} or str((row or {}).get("semantic_key") or "").lower() == str(semantic_key or "").lower()
+            if f != key or k != kind or not same_semantic:
                 result.update({"decision": "TOKEN_CONTEXT_MISMATCH", "token": token})
                 return
             result.update({
                 "frame": f, "kind": k, "used": int(bucket.get("used") or 0),
                 "limit": int(limits().get(k, 2)), "decision": "REUSE_CLAIM",
                 "token": token, "committed": bool((row or {}).get("committed")),
+                "semantic_key": (row or {}).get("semantic_key"),
             })
             return
 
         bucket = d["frames"].setdefault(key, {}).setdefault(kind, {"used": 0, "claims": {}})
         bucket.setdefault("claims", {})
         base_limit = int(limits().get(kind, 2))
-        raise_row = authorized_frame_raise(ep, key, kind)
-        per_kind_limit = base_limit + int(raise_row["extra"])
-        if int(bucket.get("used") or 0) >= per_kind_limit:
-            result.update({
-                "frame": key, "kind": kind, "used": int(bucket.get("used") or 0),
-                "limit": per_kind_limit, "base_limit": base_limit,
-                "authorized_raise": int(raise_row["extra"]),
-                "decision": "STOP_IMAGE_LOOP", "token": token,
-            })
-            return
+        raise_row = {"extra": 0, "sources": []}
+        if kind in {"authority_refresh", "user_continuation"}:
+            if not semantic_key:
+                decision = "AUTHORITY_REFRESH_SEMANTIC_KEY_REQUIRED" if kind == "authority_refresh" else "USER_CONTINUATION_SEMANTIC_KEY_REQUIRED"
+                result.update({"frame": key, "kind": kind, "decision": decision, "token": token})
+                return
+            auth = _authority_refresh_authorization(ep, key, semantic_key) if kind == "authority_refresh" else _user_continuation_authorization(ep, key, semantic_key)
+            if not auth["approved"]:
+                decision = "AUTHORITY_REFRESH_NOT_AUTHORIZED" if kind == "authority_refresh" else "USER_CONTINUATION_NOT_AUTHORIZED"
+                result.update({"frame": key, "kind": kind, "decision": decision, "token": token, "semantic_key": semantic_key})
+                return
+            duplicate = next((row for row in bucket["claims"].values() if str((row or {}).get("semantic_key") or "").lower() == semantic_key), None)
+            if duplicate is not None:
+                decision = "AUTHORITY_REFRESH_CONTRACT_ALREADY_CLAIMED" if kind == "authority_refresh" else "USER_CONTINUATION_AUTHORIZATION_ALREADY_CLAIMED"
+                result.update({"frame": key, "kind": kind, "decision": decision, "token": token, "semantic_key": semantic_key})
+                return
+            # These lanes are bounded by one retained candidate per explicit
+            # semantic authorization plus the episode-wide cap. They never
+            # borrow ordinary content-repair slots.
+            per_kind_limit = int(bucket.get("used") or 0) + 1
+            authorization_source = auth["source"]
+        else:
+            raise_row = authorized_frame_raise(ep, key, kind)
+            per_kind_limit = base_limit + int(raise_row["extra"])
+            authorization_source = None
+            if int(bucket.get("used") or 0) >= per_kind_limit:
+                result.update({
+                    "frame": key, "kind": kind, "used": int(bucket.get("used") or 0),
+                    "limit": per_kind_limit, "base_limit": base_limit,
+                    "authorized_raise": int(raise_row["extra"]),
+                    "decision": "STOP_IMAGE_LOOP", "token": token,
+                })
+                return
 
         total_limit = episode_limit(ep)
         total_now = _reserved_total(d)
@@ -247,14 +325,19 @@ def claim(ep, frame, kind, reason="", token=None):
             return
 
         bucket["used"] = int(bucket.get("used") or 0) + 1
-        bucket["claims"][token] = {
-            "claimed_at": now(), "reason": reason, "committed": False, "committed_at": None
-        }
+        claim_row = {"claimed_at": now(), "reason": reason, "committed": False, "committed_at": None}
+        if semantic_key:
+            claim_row["semantic_key"] = semantic_key
+        if authorization_source:
+            claim_row["authorization_source"] = authorization_source
+        bucket["claims"][token] = claim_row
         if raise_row["extra"]:
             bucket["claims"][token]["authorized_raise"] = int(raise_row["extra"])
             bucket["claims"][token]["authorization_sources"] = list(raise_row["sources"])
         d["updated_at"] = now()
         event = {"at": now(), "event": "claim", "frame": key, "kind": kind, "token": token}
+        if semantic_key:
+            event["semantic_key"] = semantic_key
         if raise_row["extra"]:
             event["authorized_raise"] = int(raise_row["extra"])
         d["events"].append(event)
@@ -263,6 +346,7 @@ def claim(ep, frame, kind, reason="", token=None):
             "authorized_raise": int(raise_row["extra"]),
             "episode_used": total_now + 1, "episode_limit": total_limit,
             "decision": "ALLOW", "token": token, "committed": False,
+            "semantic_key": semantic_key,
         })
 
     atomic.update_json(ep / REL, default_state, mutate)
@@ -340,7 +424,7 @@ def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("claim"); p.add_argument("episode_dir"); p.add_argument("--frame", required=True, type=int)
-    p.add_argument("--kind", required=True, choices=sorted(KINDS)); p.add_argument("--reason", default=""); p.add_argument("--token")
+    p.add_argument("--kind", required=True, choices=sorted(KINDS)); p.add_argument("--reason", default=""); p.add_argument("--token"); p.add_argument("--semantic-key")
     p = sub.add_parser("commit"); p.add_argument("episode_dir"); p.add_argument("--token", required=True); p.add_argument("--reason", default="candidate_file_committed")
     p = sub.add_parser("release"); p.add_argument("episode_dir"); p.add_argument("--token", required=True); p.add_argument("--reason", default="technical_failure_before_candidate_commit")
     p = sub.add_parser("show"); p.add_argument("episode_dir")
@@ -349,7 +433,7 @@ def main():
     if a.cmd == "self-test": self_test(); return 0
     if a.cmd == "show": print(json.dumps({**load(Path(a.episode_dir)), "effective_budget": summary(Path(a.episode_dir))}, ensure_ascii=False, indent=2)); return 0
     if a.cmd == "claim":
-        ok, row = claim(a.episode_dir, a.frame, a.kind, a.reason, a.token)
+        ok, row = claim(a.episode_dir, a.frame, a.kind, a.reason, a.token, a.semantic_key)
     elif a.cmd == "commit":
         ok, row = commit(a.episode_dir, a.token, a.reason)
     else:

@@ -145,7 +145,8 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
     try:
         for item in items:
             budget_kind=raw_candidate_budget.kind_for_queue_item(item);token=str(item["id"])
-            ok,row=raw_candidate_budget.claim(ep,int(item["frame"]),budget_kind,reason=f"provider_batch batch={contract['batch_id']}",token=token)
+            budget_semantic_key=raw_candidate_budget.semantic_key_for_queue_item(item)
+            ok,row=raw_candidate_budget.claim(ep,int(item["frame"]),budget_kind,reason=f"provider_batch batch={contract['batch_id']}",token=token,semantic_key=budget_semantic_key)
             if not ok:
                 raise BatchBackendError("RAW_CANDIDATE_BUDGET_EXHAUSTED: "+str(row))
             budget_tokens.append(token)

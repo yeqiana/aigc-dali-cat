@@ -70,7 +70,12 @@ M02 = "M02_HEAVEN_MUNDANE_WORKER_V1"
 M03 = "M03_JIANGNAN_IMMERSIVE_LIFE_V1"
 M04 = "M04_HEAVEN_MUNDANE_LIFE_V1"
 
-WORKPLACE_THEMES = {"workplace", "worker", "work", "job", "mundane_work", "celestial_workplace"}
+# Themes that carry explicit workplace intent. ``work_life`` is the only spelling the
+# canonical one-sentence pipeline can emit (see story_intent_parser.SELECTOR_THEMES and
+# standards/story/schema/story-intent.schema.json); the remaining spellings are accepted
+# from hand-authored selector input. Without ``work_life`` M02 is unreachable from
+# story_creator and a worker story silently falls back to the M04 resident-life profile.
+WORKPLACE_THEMES = {"work_life", "workplace", "worker", "work", "job", "mundane_work", "celestial_workplace"}
 JIANGNAN_TOKENS = ("jiangnan", "江南", "水乡")
 
 

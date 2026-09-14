@@ -44,6 +44,20 @@ STAGES=tuple(canonical_stages())
 # nobody has confirmed).
 RECONCILE_BLOCKED_RC=9
 
+# STORY_OS_V211_INCREMENTAL_PLAN_REUSE: the incremental planner's real input surface,
+# read off incremental_closure.plan(). The generic input_hash cannot be reused for this
+# step: its evidence_paths is meta/runtime-checkpoint.json, which checkpoint() rewrites
+# on every step of every pass, so that hash never repeats and would never hit. These are
+# the files plan() actually inspects -- episode-state, story-gates (via subtitle_required)
+# and the four evidence files. production-ledger.json belongs here because it moves with
+# the pixel assets, which is exactly when the plan does need recomputing.
+INCREMENTAL_PLAN_STEP="INCREMENTAL_PLAN"
+INCREMENTAL_PLAN_INPUTS=[
+    "meta/episode-state.json","meta/story-gates.json","meta/story-semantic-review.json",
+    "meta/visual-profile-review.json","meta/production-ledger.json",
+    "meta/subtitle-layout-audit.json","meta/text-audit.json",
+]
+
 
 def reconcile_visual_profile_closure(ep):
     """Phase 4.6.1: reconcile the Visual Profile closure before the DAG resumes.
@@ -91,6 +105,27 @@ def validate_target(ep,target):
     for script in ("validate_episode.py","machine_gate.py","evidence_gate.py"):
         cp=run([sys.executable,SYSTEM/script,ep,"--target",target]); outputs.append(cp.stdout)
         if cp.returncode!=0: return False,"\n".join(outputs)[-5000:]
+    return True,"PASS"
+
+# STORY_OS_V262_DAG_STOP_TARGET: an explicit --until target lets a bounded pass end on a chosen
+# stage instead of running the whole DAG. It is a caller-imposed stop, never a second stage
+# authority: the stop only counts once the canonical state has advanced AND the same three gates
+# that guard advancement accept that stage, so --until can never report "reached" for a stage the
+# Episode has not actually validated. Default None means every existing caller is unaffected.
+STOP_TARGET_REACHED="STOP_TARGET_REACHED"
+
+def stop_target_reached(ep,target):
+    """Return (reached, detail) for an --until stop target.
+
+    The canonical state read is cheap and happens first, so the three gate subprocesses are
+    spawned only once the Episode has actually arrived at the target.
+    """
+    cur=state(ep)
+    if not stage_at_least(cur,target):
+        return False,"current_state="+str(cur)
+    ok,msg=validate_target(ep,target)
+    if not ok:
+        return False,"gate rejected "+target+": "+str(msg)[-800:]
     return True,"PASS"
 def checkpoint(ep,step,status,elapsed,note,attempt=1,input_hash=None,output_hash=None):
     cmd=[sys.executable,SYSTEM/"runtime_checkpoint.py","record-step",ep,"--step",step,"--status",status,"--attempt",str(attempt),"--finished-at",proto.now(),"--note",note]
@@ -193,7 +228,11 @@ def plan(ep):
         out.append(row)
     return {"current_state":cur,"steps":out}
 
-def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
+def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
+    # STORY_OS_V262_DAG_STOP_TARGET: a stop target is a canonical Episode stage, never a step id.
+    # Reject an unknown target before any reconcile, lock or executor exists.
+    if until is not None and until not in STAGES:
+        raise ValueError("unknown runtime DAG stop target: "+str(until))
     blocked=reconcile_visual_profile_closure(ep)
     if blocked is not None:
         # Phase 4.6.1: an unreconcilable Visual Profile closure fails closed. It is never
@@ -229,6 +268,14 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
     step_by_id={spec.step_id: spec for spec in specs}
     completed_nodes=set()
     node_contract=runtime_node_registry.runtime_step_nodes(specs)
+    if until:
+        # Already at or past the target: stopping is a no-op, so do not spawn INCREMENTAL_PLAN
+        # or any other step merely to arrive back here.
+        reached,detail=stop_target_reached(ep,until)
+        if reached:
+            background.shutdown(wait=False,cancel_futures=True)
+            print(STOP_TARGET_REACHED+" "+until+" (already valid)")
+            return 0
     while len(completed_nodes)<len(specs):
         wave=runtime_scheduler.schedule(node_contract,completed=completed_nodes,max_workers=1)
         if not wave["dispatch"]:
@@ -251,6 +298,8 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
         prior=(proto.load_state(ep).get("steps") or {}).get(s.step_id) or {}
         attempt=int(prior.get("attempt") or 0)+1
         input_hash=proto.evidence_hash(ep,["meta/runtime-request.json","meta/episode-state.json",*s.evidence_paths])
+        if s.step_id==INCREMENTAL_PLAN_STEP:
+            input_hash=proto.evidence_hash(ep,INCREMENTAL_PLAN_INPUTS)
         if s.step_id=="PREIMAGE_COMPILE":
             handoff_valid=False
             try:
@@ -263,7 +312,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
                 res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,reason,0)
                 proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,reason,attempt,input_hash,out_hash)
                 if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,reason)
-                episode_performance.safe_end_stage(ep,s.step_id,status="PASS",metadata={"reused":True,"reason":reason})
+                episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"reason":reason})
                 next_action.write(ep)
                 runtime_node_evidence.record(
                     ep,node_id=s.step_id,start_time=res.started_at,end_time=res.finished_at,
@@ -273,6 +322,26 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
                     background.shutdown(wait=False,cancel_futures=True)
                     return 0
                 continue
+        # STORY_OS_V211_INCREMENTAL_PLAN_REUSE: the planner is a pure function of the files
+        # in INCREMENTAL_PLAN_INPUTS (all four subcommands it spawns are read-only) and
+        # incremental_closure.py:143 returns 0 unconditionally, so re-running it on unchanged
+        # inputs recomputes a verdict this DAG discards anyway. Skip the ~4 subprocess spawns.
+        if (s.step_id==INCREMENTAL_PLAN_STEP and prior.get("status") in {"PASS","REUSED"}
+                and prior.get("input_hash")==input_hash):
+            reason="plan inputs unchanged since last run"
+            out_hash=proto.evidence_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+            res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,reason,0)
+            proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,reason,attempt,input_hash,out_hash)
+            if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,reason)
+            episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"reason":reason})
+            _t=time.monotonic()
+            _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"reused":True})
+            runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=run_id,attrs={"reason":reason})
+            runtime_node_evidence.record(
+                ep,node_id=s.step_id,start_time=res.started_at,end_time=res.finished_at,
+                status="REUSED",attempt=attempt,output=reason,evidence=s.evidence_paths)
+            completed_nodes.add(s.step_id)
+            continue
         if s.target_state and stage_at_least(cur,s.target_state):
             ok,msg=validate_target(ep,s.target_state)
             if ok:
@@ -280,7 +349,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
                 res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,"target already valid",0)
                 proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,"target already valid",attempt,input_hash,out_hash)
                 if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,"target already valid")
-                episode_performance.safe_end_stage(ep,s.step_id,status="PASS",metadata={"reused":True,"target_state":s.target_state})
+                episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"target_state":s.target_state})
                 _t=time.monotonic()
                 _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"reused":True})
                 runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=run_id,attrs={"target_state":s.target_state})
@@ -423,6 +492,14 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
             background.shutdown(wait=False,cancel_futures=True)
             return rc
         completed_nodes.add(s.step_id)
+        if until:
+            reached,detail=stop_target_reached(ep,until)
+            if reached:
+                # The step already wrote its checkpoint, node evidence, trace span and
+                # next-action above, so a clean stop here loses no evidence.
+                background.shutdown(wait=False,cancel_futures=True)
+                print(STOP_TARGET_REACHED+" "+until+" after "+s.step_id)
+                return 0
         if mode=="preproduction_only" and s.step_id=="PREIMAGE_COMPILE":
             try:
                 # 900s was the historical review-critic default; build() now owns that default.
@@ -441,6 +518,14 @@ def self_test():
     rows=spec_rows()
     assert [x.step_id for x in rows]==["INCREMENTAL_PLAN","CREATIVE_STORY","PREIMAGE_COMPILE","VISUAL_LOCK","PRODUCTION","RELEASE"]
     assert rows[-1].target_state=="PUBLISH_READY"
+    # STORY_OS_V262_DAG_STOP_TARGET: --until takes a canonical stage, and every step's
+    # declared target_state must be one, so a stop target and a step target are comparable.
+    assert "PRODUCTION_PASSED" in STAGES, STAGES
+    assert "PRODUCTION" not in STAGES, "a step id is not a stage"
+    for row in rows:
+        assert row.target_state is None or row.target_state in STAGES, row
+    assert stage_at_least("PRODUCTION_PASSED","PRODUCTION_PASSED")
+    assert not stage_at_least("VISUAL_CALIBRATED","PRODUCTION_PASSED")
     print("RUNTIME DAG V1 SELF-TEST PASS")
 
 def main():
@@ -448,13 +533,14 @@ def main():
     p=sub.add_parser("plan"); p.add_argument("episode_dir")
     for n in ("run","resume"):
         p=sub.add_parser(n); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=None)
+        p.add_argument("--until",choices=STAGES,default=None,help="stop cleanly once this canonical stage is reached and validated")
     p=sub.add_parser("show"); p.add_argument("episode_dir")
     sub.add_parser("self-test"); a=ap.parse_args()
     if a.cmd=="self-test": self_test(); return 0
     ep=Path(a.episode_dir).resolve()
     if a.cmd=="plan": print(json.dumps(plan(ep),ensure_ascii=True,indent=2)); return 0
     if a.cmd=="show": print(json.dumps(proto.load_state(ep),ensure_ascii=True,indent=2)); return 0
-    return execute(ep,codex=a.codex,timeout=runtime_timeout_policy.resolve("codex_supervisor_run", a.timeout))
+    return execute(ep,codex=a.codex,timeout=runtime_timeout_policy.resolve("codex_supervisor_run", a.timeout),until=a.until)
 
 if __name__=="__main__": raise SystemExit(main())
 

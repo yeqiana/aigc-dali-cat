@@ -118,12 +118,14 @@ def _import_frame_locked(ep: Path, frame: int, raw: Path, *, item_id: str | None
 
     token = str(item["id"])
     budget_kind = raw_candidate_budget.kind_for_queue_item(item)
+    budget_semantic_key = raw_candidate_budget.semantic_key_for_queue_item(item)
     claimed, budget_row = raw_candidate_budget.claim(
         ep,
         frame,
         budget_kind,
         reason=f"product_runtime_import runtime={base_runtime}",
         token=token,
+        semantic_key=budget_semantic_key,
     )
     if not claimed:
         image_scheduler.ledger_tech_fail(ep, item, "RAW_CANDIDATE_BUDGET_EXHAUSTED", str(budget_row)[:1000])

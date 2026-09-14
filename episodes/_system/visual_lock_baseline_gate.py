@@ -237,6 +237,17 @@ def approve(ep):
 
 def approved(ep):
     ep=Path(ep).resolve()
+    # A later higher-level pixel review may explicitly reopen a previously
+    # PASSED baseline. In that state the historical baseline review/Pixel Master
+    # are superseded evidence only and must not satisfy dependency gates.
+    try:
+        frame = baseline_frame(ep)
+        ledger = read_json(ep/"meta/production-ledger.json")
+        row = ((ledger.get("frames") or {}).get(f"{int(frame):02d}") or {})
+        if str(row.get("status") or "") not in {"PASSED", "LOCKED"}:
+            return False
+    except Exception:
+        return False
     if validate_review(ep):return False
     if character_visual_contract.pixel_master_required(ep):return not character_visual_contract.validate_pixel_master(ep,allow_provisional=True)
     return True
@@ -282,7 +293,10 @@ def awaiting_review(ep,q):
         review=read_json(Path(ep)/REL) if (Path(ep)/REL).is_file() else {}
         if str(review.get("decision") or "").upper()=="FAIL" and str(review.get("sha256") or "").lower()==str(current.get("sha256") or "").lower():
             return False
-        dependents=any(x.get("status")=="queued" and x.get("scope")=="visual_lock" and frame in [int(v) for v in (x.get("depends_on") or [])] for x in (q.get("items") or []))
+        # Visual Lock dependents may have moved into repair/baseline-candidate
+        # scopes after bounded review failures. They still depend on the current
+        # baseline identity anchor and must keep baseline review routable.
+        dependents=any(x.get("status")=="queued" and frame in [int(v) for v in (x.get("depends_on") or [])] for x in (q.get("items") or []))
         return bool(current.get("asset_path")) and dependents
     except Exception:return False
 

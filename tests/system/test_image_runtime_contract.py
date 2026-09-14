@@ -226,7 +226,7 @@ class ModelFallbackConvergenceTests(unittest.TestCase):
         with mock.patch.object(codex_subscription_image.os, "name", "nt"):
             self.assertEqual(
                 codex_subscription_image.image_worker_sandbox_mode(bridged=True, has_references=False),
-                "workspace-write",
+                "danger-full-access",
             )
             self.assertEqual(
                 codex_subscription_image.image_worker_sandbox_mode(bridged=False, has_references=True),

@@ -26,10 +26,8 @@ def commit_candidates(ep: Path, snapshot: dict, task_rows: list[dict]) -> dict:
     returns STALE and stops the barrier; it is never overwritten.
     """
     tasks.validate_patch_scopes(task_rows)
-    current = preimage_authority_snapshot.sha(Path(ep)/"meta/story-gates.json")
-    expected = (snapshot.get("authority_sha256") or {}).get("story_gates")
-    if current != expected:
-        return {"status":"STALE","reason":"input authority SHA changed","committed":False}
+    if preimage_authority_snapshot.stale_owned(ep, snapshot):
+        return {"status":"STALE","reason":"owned authority scope changed","committed":False}
     candidates=[]; patches=[]
     for task in task_rows:
         candidate=tasks.read_candidate(ep,task)
@@ -37,7 +35,10 @@ def commit_candidates(ep: Path, snapshot: dict, task_rows: list[dict]) -> dict:
         if errors: return {"status":"FAILED","reason":"; ".join(errors),"committed":False}
         candidates.append(candidate); patches.extend(_patches(candidate))
     scopes={scope for scope,_ in patches}
-    result=authority_commit.commit_transaction(ep,"meta/story-gates.json",expected_sha=expected,snapshot_id=snapshot["snapshot_id"],
+    result=authority_commit.commit_transaction(ep,"meta/story-gates.json",
+        expected_sha=preimage_authority_snapshot.sha(Path(ep)/"meta/story-gates.json"),
+        authority_guard=lambda: not preimage_authority_snapshot.stale_owned(ep,snapshot),
+        snapshot_id=snapshot["snapshot_id"],
         task_ids=[task["task_id"] for task in task_rows],node_ids=[task["node_id"] for task in task_rows],patches=patches,
         candidate_paths=[task["candidate_output"] for task in task_rows],
         preflight_validator=lambda: [err for task,candidate in zip(task_rows,candidates) for err in tasks.verify_candidate(candidate,task)],

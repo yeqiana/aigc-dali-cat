@@ -9,7 +9,8 @@
   "raw_candidate_budget": {
     "original": 2,
     "repair": 2,
-    "exception": 2
+    "exception": 2,
+    "user_exception": 1
   },
   "performance_slo": {
     "green_seconds": 5400,

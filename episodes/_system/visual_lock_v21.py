@@ -41,6 +41,7 @@ import storyos_config
 import story_json
 import visual_review_schema
 import runtime_timeout_policy
+import visual_lock_admission_state
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path("meta/story-gates.json")
@@ -433,6 +434,40 @@ def calibration_assets(ep: Path, *, metadata_only: bool = False) -> list[dict]:
     return [by_role[x] for x in ROLES]
 
 
+def _dirty_detection_assets(ep: Path) -> list[dict]:
+    """Resolve bindings for routing even when an existing admission is stale.
+
+    Review/verification remains strict through ``calibration_assets``.  Routing,
+    however, must convert an old Frame Contract binding into a dirty admission
+    instead of crashing before the authority-refresh image can be generated.
+    """
+    try:
+        return calibration_assets(ep)
+    except ValueError:
+        rows = calibration_assets(ep, metadata_only=True)
+        for row in rows:
+            current = frame_contract.compile_frame(ep, int(row["frame"]), write_cache=False)
+            row["frame_contract_sha256"] = current["contract_sha256"]
+            row["binding_stale_for_review"] = True
+        return rows
+
+
+def dirty_admission_assets(ep: Path) -> list[dict]:
+    """Return only admissions whose SHA-bound PASS evidence is absent/stale."""
+    contract = compile_prompt_contract(ep)
+    assets = _dirty_detection_assets(ep)
+    return visual_lock_admission_state.dirty_assets(
+        ep,
+        assets,
+        profile_sha256=contract["profile_sha256"],
+        story_os_version=episode_version(ep),
+    )
+
+
+def dirty_admission_frames(ep: Path) -> list[int]:
+    return sorted({int(row["frame"]) for row in dirty_admission_assets(ep)})
+
+
 def bind_from_queue(ep: Path) -> dict:
     qpath = ep / "meta/production-queue.json"
     if not qpath.is_file():
@@ -583,6 +618,7 @@ prefix = critic_runner.prefix
 
 def critic_prompt(ep: Path, contract: dict, assets: list[dict], candidate: Path, attempt: int) -> str:
     rel_out = candidate.relative_to(ROOT).as_posix()
+    count = len(assets)
     listed = "\n".join(
         f"- id={r['id']} role={r['role']} frame={r['frame']:02d} "
         f"mode={r['frame_mode']} impact={r['impact_level']} scale_reference={r['scale_reference']!r} "
@@ -590,7 +626,8 @@ def critic_prompt(ep: Path, contract: dict, assets: list[dict], candidate: Path,
         for r in assets
     )
     return f"""You are the adversarial Story OS V2.1 Visual Lock Critic in a fresh isolated session.
-Review exactly FOUR attached calibration/admission images in the listed order. Do not generate or edit images.
+Review exactly {count} DIRTY calibration/admission image(s) in the listed order. Do not generate or edit images.
+Unchanged admissions with valid SHA-bound PASS evidence are intentionally omitted and MUST NOT be re-judged.
 
 Resolved visual profile:
 <visual_contract>
@@ -655,44 +692,87 @@ Return ONLY valid JSON as your final response. Do not call shell/exec/PowerShell
   "issue_codes": [],
   "summary": {{"passed": true}}
 }}
-PASS only if every check returned by checks_for_version for this Episode version is true on all 4 images. This is attempt {attempt}.
+PASS each returned admission row only if every check returned by checks_for_version for this Episode version is true on that attached image. This is attempt {attempt}.
 """
 
 
-def _mark_decisions(ep: Path, passed: bool) -> None:
+def _row_failed(ep: Path, row: dict) -> bool:
+    checks = row.get("checks") or {}
+    return row.get("issues") not in ([], None) or any(
+        checks.get(k) is not True for k in checks_for_version(episode_version(ep))
+    )
+
+
+def _merge_reused_admissions(ep: Path, *, data: dict, current: list[dict], contract: dict) -> dict:
+    """Merge fresh dirty-row verdicts with still-valid SHA-bound PASS rows."""
+    incoming = {
+        str(row.get("id") or ""): dict(row)
+        for row in (data.get("calibration") or [])
+        if isinstance(row, dict)
+    }
+    reused = visual_lock_admission_state.reusable_review_rows(
+        ep,
+        current,
+        profile_sha256=contract["profile_sha256"],
+        story_os_version=episode_version(ep),
+    )
+    for row in reused:
+        incoming.setdefault(str(row.get("id") or ""), row)
+    data["calibration"] = [incoming.get(str(asset.get("id") or ""), {}) for asset in current]
+    issue_codes: list[str] = []
+    for row in data["calibration"]:
+        if not isinstance(row, dict):
+            continue
+        for code in row.get("issues") or []:
+            if code not in issue_codes:
+                issue_codes.append(code)
+    data["issue_codes"] = issue_codes
+    data["summary"] = {"passed": bool(data["calibration"]) and all(not _row_failed(ep, row) for row in data["calibration"])}
+    return data
+
+
+def _mark_decisions(ep: Path, data: dict) -> None:
     gates_path = ep / GATES_REL
     g = read_json(gates_path)
     items = (((g.get("visual") or {}).get("calibration") or {}).get("items") or [])
+    by_id = {str(row.get("id") or ""): row for row in (data.get("calibration") or []) if isinstance(row, dict)}
     for item in items:
-        if isinstance(item, dict):
-            item["decision"] = "passed" if passed else "failed"
+        if not isinstance(item, dict):
+            continue
+        row = by_id.get(str(item.get("id") or ""))
+        if row is not None:
+            item["decision"] = "failed" if _row_failed(ep, row) else "passed"
     reviews = g.setdefault("reviews", {})
-    reviews["visual_admission"] = "passed" if passed else "failed"
+    reviews["visual_admission"] = "passed" if items and all(x.get("decision") == "passed" for x in items if isinstance(x, dict)) else "failed"
     write_json(gates_path, g)
 
 
-def _record_failed_calibration_frames(ep: Path, data: dict) -> None:
+def _record_calibration_frames(ep: Path, data: dict) -> None:
     # A critic that could not access its image inputs has no content finding to
-    # propagate into the production ledger.
+    # propagate into the production ledger. Reused PASS rows are already bound
+    # and must not be replayed into the ledger.
     if "INPUT_IMAGES_UNAVAILABLE" in (data.get("issue_codes") or []):
         return
     for row in data.get("calibration") or []:
-        checks = row.get("checks") or {}
-        failed = row.get("issues") not in ([], None) or any(checks.get(k) is not True for k in checks_for_version(episode_version(ep)))
-        if not failed:
+        if row.get("admission_reused") is True:
             continue
         try:
             frame = int(row.get("frame"))
         except Exception:
             continue
+        decision = "repair" if _row_failed(ep, row) else "pass"
+        notes = (
+            "Phase5 Visual Lock critic failed actual-pixel admission"
+            if decision == "repair"
+            else "Phase5 Visual Lock per-frame SHA-bound admission PASS"
+        )
         cp = subprocess.run(
             [sys.executable, str(Path(__file__).resolve().parent / "production_ledger.py"),
-             "review", str(ep), "--frame", f"{frame:02d}", "--decision", "repair",
-             "--notes", "Phase5 Visual Lock critic failed actual-pixel admission"],
+             "review", str(ep), "--frame", f"{frame:02d}", "--decision", decision,
+             "--notes", notes],
             cwd=ROOT, check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             text=True, encoding="utf-8", errors="replace"
         )
-        # Do not hide a state mismatch; leave it visible in the Visual Lock review notes.
         if cp.returncode != 0:
             row.setdefault("ledger_review_warnings", []).append(cp.stdout[-1200:])
 
@@ -712,6 +792,12 @@ def _finalize_review_payload(
     data["profile_path"] = contract["profile_path"]
     data["profile_sha256"] = contract["profile_sha256"]
     data["critic_provenance"] = provenance
+    reviewed_ids = {
+        str(row.get("id") or "")
+        for row in (data.get("calibration") or [])
+        if isinstance(row, dict)
+    }
+    data = _merge_reused_admissions(ep, data=data, current=current, contract=contract)
     by_id = {r["id"]: r for r in current}
     for row in data.get("calibration") or []:
         rid = str(row.get("id") or "")
@@ -737,8 +823,21 @@ def _finalize_review_payload(
         return 11
 
     errors = validate_payload(data, contract=contract, assets=current, version=episode_version(ep))
-    if errors:
-        _record_failed_calibration_frames(ep, data)
+    _record_calibration_frames(ep, data)
+    fresh_rows = [
+        row for row in (data.get("calibration") or [])
+        if isinstance(row, dict) and str(row.get("id") or "") in reviewed_ids
+    ]
+    visual_lock_admission_state.record_rows(
+        ep,
+        rows=fresh_rows,
+        assets=current,
+        profile_sha256=contract["profile_sha256"],
+        story_os_version=episode_version(ep),
+        required_checks=checks_for_version(episode_version(ep)),
+        provenance=provenance,
+        attempt=attempt,
+    )
     write_json(ep / REVIEW_REL, data)
     (ep / CANDIDATE_REL).unlink(missing_ok=True)
     critic_runtime_v211.record_content_result(
@@ -748,7 +847,7 @@ def _finalize_review_payload(
         issue_codes=data.get("issue_codes") or [],
         log=str(evidence_ref),
     )
-    _mark_decisions(ep, not errors)
+    _mark_decisions(ep, data)
     if errors:
         print("VISUAL LOCK V2.1 REVIEW FAIL")
         for error in errors:
@@ -796,6 +895,44 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
     return rc
 
 
+def _direct_user_exception_frames(ep: Path, assets: list[dict]) -> list[int]:
+    """Return Visual Lock assets currently backed by a direct-user exception.
+
+    Visual Lock review attempts are global rounds, while the exception authority
+    is per frame. Bind the provenance to the exact SHA/attempt that produced the
+    current calibration asset so an older exception authorization cannot bless a
+    newer unrelated image.
+    """
+    ledger_path = Path(ep) / "meta/production-ledger.json"
+    if not ledger_path.is_file():
+        return []
+    ledger = read_json(ledger_path)
+    result = []
+    for asset in assets:
+        try:
+            frame = int(asset.get("frame"))
+        except Exception:
+            continue
+        row = ((ledger.get("frames") or {}).get(f"{frame:02d}") or {})
+        candidate = row.get("current_candidate") or {}
+        if str(candidate.get("sha256") or "").lower() != str(asset.get("sha256") or "").lower():
+            continue
+        attempt_id = str(candidate.get("attempt_id") or "")
+        accepted = next(
+            (x for x in reversed(row.get("attempts") or []) if str((x or {}).get("attempt_id") or "") == attempt_id),
+            None,
+        )
+        capture_id = str(((accepted or {}).get("request") or {}).get("capture_id") or "")
+        if (
+            accepted
+            and accepted.get("result") == "success"
+            and capture_id.startswith("user-exception-")
+            and int(row.get("user_exception_repairs_used") or 0) == 1
+        ):
+            result.append(frame)
+    return sorted(set(result))
+
+
 def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("review_critic")
@@ -809,19 +946,39 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     if baseline_errors:raise RuntimeError("ordinary_baseline separate review must PASS before final Visual Lock critic: "+"; ".join(baseline_errors[:8]))
     contract = compile_prompt_contract(ep)
     assets = calibration_assets(ep)
+    dirty_assets = visual_lock_admission_state.dirty_assets(
+        ep,
+        assets,
+        profile_sha256=contract["profile_sha256"],
+        story_os_version=episode_version(ep),
+    )
     candidate = ep / CANDIDATE_REL
     candidate.unlink(missing_ok=True)
     before = {r["id"]: r["sha256"] for r in assets}
+    if not dirty_assets:
+        provenance = runtime_provenance.build_vision_critic_provenance(
+            attempt=attempt,
+            log="meta/visual-lock-admissions.json",
+            review_scope="VISUAL_LOCK_REUSED_ADMISSIONS",
+        )
+        return _finalize_review_payload(
+            ep,
+            data={"calibration": [], "issue_codes": [], "summary": {"passed": True}},
+            contract=contract,
+            current=assets,
+            provenance=provenance,
+            attempt=attempt,
+        )
     if vision_runtime != "CODEX" and not codex_raw:
         profile_path = Path(contract["profile_path"])
         profile_path = profile_path.resolve() if profile_path.is_absolute() else (ROOT / profile_path).resolve()
-        sources = [ep / GATES_REL, profile_path, *[r["path"] for r in assets]]
+        sources = [ep / GATES_REL, profile_path, *[r["path"] for r in dirty_assets]]
         request = product_review_adapter.prepare(
             ep,
             kind="visual-lock",
             runtime=active_runtime,
             attempt=attempt,
-            prompt=critic_prompt(ep, contract, assets, candidate, attempt),
+            prompt=critic_prompt(ep, contract, dirty_assets, candidate, attempt),
             source_paths=sources,
             candidate_path=candidate,
         )
@@ -832,7 +989,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     # Supply byte-identical ASCII-only temporary attachments for this review.
     staging = codex_user_runner.workspace_path(prefix="story-os-visual-lock-")
     staged_assets = []
-    for row in assets:
+    for row in dirty_assets:
         staged = staging / f"{row['id']}-{int(row['frame']):02d}{Path(row['path']).suffix.lower()}"
         shutil.copy2(row["path"], staged)
         staged_assets.append(staged)
@@ -847,7 +1004,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     log = ep / "meta" / f"visual-lock-critic-attempt-{attempt}.jsonl"
     try:
         done = critic_runner.launch(
-            critic_prompt(ep, contract, assets, candidate, attempt),
+            critic_prompt(ep, contract, dirty_assets, candidate, attempt),
             codex=codex,
             root=ROOT,
             timeout=timeout,
@@ -861,15 +1018,27 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         )
     finally:
         shutil.rmtree(staging, ignore_errors=True)
-    if done.returncode != 0:
-        log_text = done.log_text
-        codes = critic_runtime_v211.classify_log_text(log_text) or ["CRITIC_PROCESS_ERROR"]
-        health = critic_runtime_v211.record_technical_failure(
-            ep, issue_codes=codes, attempt=attempt,
-            log=log.relative_to(ROOT).as_posix(), source="visual_lock_critic_process")
-        print("VISUAL LOCK CRITIC TECHNICAL FAIL:", ",".join(codes), "status="+health["status"])
-        return 11
-    if not candidate.is_file():
+    data = None
+    recovery_basis = None
+    if candidate.is_file():
+        try:
+            data = read_json(candidate)
+        except Exception:
+            data = None
+    if data is None:
+        recovered = critic_runner.recover_completed_agent_json(done.log_text)
+        if recovered is not None:
+            data = recovered
+            recovery_basis = "agent_message_json_followed_by_turn_completed"
+    if data is None:
+        if done.returncode != 0:
+            log_text = done.log_text
+            codes = critic_runtime_v211.classify_log_text(log_text) or ["CRITIC_PROCESS_ERROR"]
+            health = critic_runtime_v211.record_technical_failure(
+                ep, issue_codes=codes, attempt=attempt,
+                log=log.relative_to(ROOT).as_posix(), source="visual_lock_critic_process")
+            print("VISUAL LOCK CRITIC TECHNICAL FAIL:", ",".join(codes), "status="+health["status"])
+            return 11
         health = critic_runtime_v211.record_technical_failure(
             ep, issue_codes=["CRITIC_OUTPUT_MISSING"], attempt=attempt,
             log=log.relative_to(ROOT).as_posix(), source="visual_lock_critic_output")
@@ -878,13 +1047,20 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     current = calibration_assets(ep)
     if {r["id"]: r["sha256"] for r in current} != before:
         raise RuntimeError("Visual Lock critic modified calibration images")
-    data = read_json(candidate)
+    exception_frames = _direct_user_exception_frames(ep, current)
     provenance = runtime_provenance.build_vision_critic_provenance(
         attempt=attempt,
         log=log.relative_to(ROOT).as_posix(),
-        review_scope="VISUAL_LOCK_FOUR_ADMISSION",
-        allow_bounded_candidate_attempt=attempt > 2,
+        review_scope="VISUAL_LOCK_DIRTY_ADMISSION",
+        allow_bounded_candidate_attempt=attempt > 2 and not exception_frames,
+        allow_user_exception_attempt=bool(exception_frames),
     )
+    if exception_frames:
+        provenance["direct_user_exception_frames"] = exception_frames
+    if recovery_basis:
+        provenance["recovered_from_post_answer_process_failure"] = True
+        provenance["recovery_basis"] = recovery_basis
+        provenance["process_returncode"] = int(done.returncode)
     return _finalize_review_payload(
         ep,
         data=data,
@@ -893,6 +1069,20 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         provenance=provenance,
         attempt=attempt,
     )
+
+
+def reconcile_admissions(ep: Path) -> dict:
+    contract = compile_prompt_contract(ep)
+    assets = calibration_assets(ep)
+    result = visual_lock_admission_state.reconcile_historical_passes(
+        ep,
+        assets=assets,
+        profile_sha256=contract["profile_sha256"],
+        story_os_version=episode_version(ep),
+        required_checks=checks_for_version(episode_version(ep)),
+    )
+    result["gate_projection"] = visual_lock_admission_state.sync_gate_decisions(ep)
+    return result
 
 
 def self_test() -> None:
@@ -912,6 +1102,7 @@ def main() -> int:
     p = sub.add_parser("bind-from-queue"); p.add_argument("episode_dir")
     p = sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None)
     p = sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
+    p = sub.add_parser("reconcile-admissions"); p.add_argument("episode_dir")
     p = sub.add_parser("verify"); p.add_argument("episode_dir")
     p = sub.add_parser("show-plan"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
@@ -935,6 +1126,8 @@ def main() -> int:
             return run_critic(ep, attempt=args.attempt, codex_raw=args.codex, timeout=args.timeout)
         if args.cmd == "finalize-review":
             return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime)
+        if args.cmd == "reconcile-admissions":
+            print(json.dumps(reconcile_admissions(ep), ensure_ascii=False, indent=2)); return 0
         errors = verify(ep)
         if errors:
             for error in errors:

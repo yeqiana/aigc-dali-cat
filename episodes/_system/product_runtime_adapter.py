@@ -12,6 +12,7 @@ pointer.
 """
 from __future__ import annotations
 
+import argparse
 import datetime as dt
 import hashlib
 import json
@@ -106,7 +107,7 @@ def next_host_step(ep: Path, mode: str = "full_auto") -> tuple[str, str | None]:
         committed_path = ep / "meta/runtime/preimage-committed-snapshot.json"
         if task_state:
             committed = _read_json(committed_path) if committed_path.is_file() else {}
-            if not committed or preimage_authority_snapshot.stale(ep, committed):
+            if not committed or preimage_authority_snapshot.stale_owned(ep, committed):
                 return "PREIMAGE_TASK_SET", None
         contract_errors: list[str] = []
         if index.is_file():
@@ -399,5 +400,25 @@ def self_test() -> None:
     print("PRODUCT RUNTIME ADAPTER V2.6.1.1 SELF-TEST PASS")
 
 
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    sub = ap.add_subparsers(dest="cmd")
+    p = sub.add_parser("complete-preimage", help="finalize one validated PREIMAGE host candidate through the canonical adapter")
+    p.add_argument("episode_dir")
+    p.add_argument("--request-id", required=True)
+    p.add_argument("--candidate", required=True, help="candidate JSON path, absolute or episode-relative")
+    sub.add_parser("self-test")
+    args = ap.parse_args()
+    if args.cmd in {None, "self-test"}:
+        self_test(); return 0
+    ep = Path(args.episode_dir).resolve()
+    raw = Path(args.candidate)
+    candidate_path = raw.resolve() if raw.is_absolute() else (ep / raw).resolve()
+    candidate = _read_json(candidate_path)
+    result = complete_preimage_task(ep, args.request_id, candidate)
+    print_request(result)
+    return 0 if result.get("status") == "FINALIZED" else 2
+
+
 if __name__ == "__main__":
-    self_test()
+    raise SystemExit(main())

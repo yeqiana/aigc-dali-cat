@@ -69,7 +69,8 @@ def execute(ep,item,timeout,codex):
         return result
     budget_kind=raw_candidate_budget.kind_for_queue_item(item)
     budget_token=str(item["id"])
-    budget_ok,budget_row=raw_candidate_budget.claim(ep,frame,budget_kind,reason=f"formal_generation_entrypoint scope={item.get('scope')} attempt={attempt}",token=budget_token)
+    budget_semantic_key=raw_candidate_budget.semantic_key_for_queue_item(item)
+    budget_ok,budget_row=raw_candidate_budget.claim(ep,frame,budget_kind,reason=f"formal_generation_entrypoint scope={item.get('scope')} attempt={attempt}",token=budget_token,semantic_key=budget_semantic_key)
     if not budget_ok:
         result={"returncode":98,"stdout":"RAW_CANDIDATE_BUDGET_EXHAUSTED: "+str(budget_row),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None,"budget":budget_row}
         production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=result["stdout"], result=result)

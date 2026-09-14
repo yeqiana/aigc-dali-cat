@@ -9,6 +9,7 @@ import tempfile
 from pathlib import Path
 
 import critic_runtime_v211
+import episode_performance
 import performance_guard_v211
 import preproduction_handoff
 import speculative_production
@@ -118,6 +119,27 @@ def test_critic_technical_failure_circuit_breaker_current_run_only():
         })
         write_json(p, d)
         assert critic_runtime_v211.speculative_allowed(ep, require_current_run=True) is False
+
+
+def test_circuit_breaker_survives_a_dag_pass_between_failures():
+    """The test above pins the ledger at one fixed run_id, so it cannot see this.
+
+    Production runs one DAG pass per critic call, and every pass opens a Visual Lock
+    span. If begin_stage appends a fresh run_id each pass, the binding moves, same_run
+    is never true and consecutive_technical_failures never reaches OPEN_AFTER -- so
+    CIRCUIT_OPEN is unreachable no matter how often the critic fails.
+    """
+    with tempfile.TemporaryDirectory(dir=ROOT / "episodes/_tests") as td:
+        ep = Path(td)
+        episode_performance.begin_stage(ep, "VISUAL_LOCK", source="runtime_dag")
+        d1 = critic_runtime_v211.record_technical_failure(ep, issue_codes=["INPUT_IMAGES_UNAVAILABLE"], attempt=1, log="x")
+        assert d1["status"] == "TECHNICAL_BLOCKED"
+        # Next DAG pass on the same still-open attempt: the binding must not move.
+        episode_performance.begin_stage(ep, "VISUAL_LOCK", source="runtime_dag")
+        d2 = critic_runtime_v211.record_technical_failure(ep, issue_codes=["INPUT_IMAGES_UNAVAILABLE"], attempt=2, log="x")
+        assert d2["status"] == "CIRCUIT_OPEN"
+        assert d2["consecutive_technical_failures"] == 2
+        assert critic_runtime_v211.speculative_allowed(ep, require_current_run=True) is True
 
 
 def test_generation_dependency_is_not_narrative_escalation():

@@ -108,9 +108,12 @@ def enqueue_marked_repairs(ep: Path) -> dict:
     return {"marked": len(marked), "results": results, "repair_items_ready": sum(r.get("status") in {"REPAIR_ENQUEUED", "REPAIR_ALREADY_PENDING"} for r in results)}
 
 
-def authority_refresh_prompt(frame: int) -> str:
+def authority_refresh_prompt(frame: int, frame_contract_sha256: str) -> str:
+    contract_sha = str(frame_contract_sha256 or "").strip().lower()
+    if not contract_sha:
+        raise ValueError("authority refresh requires current frame_contract_sha256")
     text = (
-        f"权威刷新Frame{int(frame):02d}。上游 Visual Profile / World Identity / Frame Contract 已合法更新。"
+        f"权威刷新Frame{int(frame):02d}，合同指纹={contract_sha[:16]}。上游 Visual Profile / World Identity / Frame Contract 已合法更新。"
         "丢弃旧候选的视觉合同语义，严格按当前 Frame Contract 重新生成同一故事帧；不新增剧情、不把权威刷新当内容返修。"
         "保持人物身份与故事连续性，以当前合同中的拍摄者、设备位置、生活动作、环境物理和视觉档案为唯一生成依据。"
     )
@@ -130,10 +133,14 @@ def enqueue_authority_refresh(ep: Path, frame: int) -> dict:
     ledger = _ledger_frame(ep, frame)
     if str(ledger.get("status") or "") != "AUTHORITY_REFRESH_AUTHORIZED":
         return {"status": "NOT_AUTHORITY_REFRESHABLE", "frame": frame, "ledger_status": ledger.get("status")}
+    authority = ledger.get("authority_refresh_authorization") or {}
+    contract_sha = str(authority.get("frame_contract_sha256") or "").strip()
+    if not contract_sha:
+        raise ValueError("authority refresh authorization missing frame_contract_sha256")
     prompt_dir = ep / "prompts" / "authority-refresh"
     prompt_dir.mkdir(parents=True, exist_ok=True)
     prompt_path = prompt_dir / f"{frame:02d}-authority-refresh.txt"
-    prompt_path.write_text(authority_refresh_prompt(frame) + "\n", encoding="utf-8", newline="\n")
+    prompt_path.write_text(authority_refresh_prompt(frame, contract_sha) + "\n", encoding="utf-8", newline="\n")
 
     import image_scheduler
     import visual_lock_baseline_gate
@@ -232,6 +239,19 @@ def _compact_findings(findings: list[str]) -> str:
 
 def repair_prompt(frame: int, findings: list[str]) -> str:
     """Short derived prompt; the locked Frame Contract carries scene authority."""
+    codes = {str(x or "").strip().upper() for x in findings}
+    if codes & {
+        "CINEMATIC_CLIMAX_POSTER", "PROMO_FANTASY_COMPOSITION",
+        "DOCUMENTARY_REALISM_EXCEEDED", "REALITY_FIRST_FAILURE",
+        "SUBJECTS_ARRANGED_FOR_CAMERA", "CINEMATIC_LIGHTING_AND_POLISH",
+        "ORDINARY_LIFE_DENSITY_INSUFFICIENT",
+    }:
+        return (
+            f"返修Frame{frame:02d}。保持当前Frame Contract、身份、服装、地点和事件。"
+            "人物继续合同里的看云海/聊天/趴栏动作，不看镜头、不排队、不为拍照转身；摄影者边缘袖口/手/设备证据保留。"
+            "人物偏在一侧并允许栏杆或衣角遮挡，远景大气雾化减细节；夕阳不要落视觉中心。"
+            "强逆光允许天空过曝、人物欠曝或剪影和轻微眩光，禁止HDR、金色轮廓光、对称海报和旅游宣传片质感。"
+        )
     focus = _compact_findings(findings)
     text = (
         f"返修Frame{frame:02d}。严格保持当前Frame Contract、人物身份/服装/地点/事件与世界设定，不改故事。"
@@ -289,12 +309,19 @@ def enqueue(
             return {"status": "ERROR", "frame": frame, "ledger": msg[-800:]}
         status = str(_ledger_frame(ep, frame).get("status") or "")
 
-    if status != "REPAIR_AUTHORIZED":
+    if status not in {"REPAIR_AUTHORIZED", "EXCEPTION_REPAIR_AUTHORIZED", "USER_CONTINUATION_REPAIR_AUTHORIZED"}:
         return {"status": "NOT_REPAIRABLE", "frame": frame, "ledger_status": status}
 
+    exception_repair = status == "EXCEPTION_REPAIR_AUTHORIZED"
+    continuation_repair = status == "USER_CONTINUATION_REPAIR_AUTHORIZED"
     prompt_dir = ep / "prompts" / "repairs"
     prompt_dir.mkdir(parents=True, exist_ok=True)
-    prompt_path = prompt_dir / f"{frame:02d}-{source.lower().replace('_', '-')}-a2.txt"
+    if continuation_repair:
+        continuation_index = int(ledger.get("user_continuation_repairs_used") or 0) + 1
+        suffix = f"user-continuation-{continuation_index:02d}"
+    else:
+        suffix = "user-exception-a3" if exception_repair else "a2"
+    prompt_path = prompt_dir / f"{frame:02d}-{source.lower().replace('_', '-')}-{suffix}.txt"
     prompt_path.write_text(repair_prompt(frame, findings) + "\n", encoding="utf-8", newline="\n")
 
     # Local import avoids a baseline_gate <-> image_scheduler import cycle.
@@ -310,12 +337,17 @@ def enqueue(
         prompt_file=prompt_path,
         scope="repair",
         references=refs,
-        capture_id=f"auto-repair-{source}-{frame:02d}",
+        capture_id=(
+            f"user-continuation-{source}-{frame:02d}-{continuation_index:02d}" if continuation_repair
+            else (f"user-exception-{source}-{frame:02d}" if exception_repair else f"auto-repair-{source}-{frame:02d}")
+        ),
         model=policy["model"],
         quality=policy["quality"],
         strict_model=bool(policy.get("strict_model")),
         depends_on=[int(x) for x in (source_item.get("depends_on") or [])],
-        replace=False,
+        # A direct-user exception is a distinct third-attempt transaction. Keep
+        # historical repairs as superseded evidence instead of deduping to them.
+        replace=exception_repair or continuation_repair,
     )
     return {
         "status": "REPAIR_ENQUEUED",
@@ -332,9 +364,13 @@ def self_test() -> None:
     assert len(prompt) <= 260
     assert len(prompt.encode("utf-8")) <= 900
     assert "Frame01" in prompt and "不改故事" in prompt
-    refresh = authority_refresh_prompt(5)
+    anti_poster = repair_prompt(17, ["PROMO_FANTASY_COMPOSITION", "SUBJECTS_ARRANGED_FOR_CAMERA"])
+    assert len(anti_poster) <= 260 and len(anti_poster.encode("utf-8")) <= 900
+    assert "不看镜头" in anti_poster and "夕阳不要落视觉中心" in anti_poster and "禁止HDR" in anti_poster
+    refresh = authority_refresh_prompt(5, "abc123")
     assert len(refresh) <= 260 and len(refresh.encode("utf-8")) <= 900
-    assert "Frame05" in refresh and "权威刷新" in refresh
+    assert "Frame05" in refresh and "权威刷新" in refresh and "abc123" in refresh
+    assert authority_refresh_prompt(5, "abc123") != authority_refresh_prompt(5, "def456")
     print("AUTO REPAIR ENQUEUE SELF-TEST PASS")
 
 

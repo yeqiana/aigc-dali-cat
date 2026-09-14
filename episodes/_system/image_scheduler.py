@@ -250,20 +250,21 @@ def import_visual_lock(ep:Path,prompt_dir:Path)->dict:
 
 
 def refresh_queued_visual_lock_references(ep:Path)->dict:
-    """Re-resolve queued 1+3 references after the baseline pixel master exists.
+    """Re-resolve queued Visual Lock lineage references after baseline PASS.
 
-    Visual Lock items are imported before baseline generation, so their initial
-    identity reference set can legitimately be empty. Once baseline PASS creates
-    the provisional pixel master, refresh only still-queued Visual Lock items;
-    never mutate already-started/generated requests.
+    Initial Visual Lock rows, bounded candidates, and repair rows can all be
+    queued before a provisional Pixel Master exists. Once baseline PASS creates
+    that master, refresh every still-queued Visual Lock lineage request; never
+    mutate already-started/generated requests.
     """
     with queue_transaction(ep):
         q=load_queue(ep);updated=[]
         for item in q.get("items") or []:
-            if item.get("status")!="queued" or item.get("scope")!="visual_lock":
+            if item.get("status")!="queued" or item.get("scope") not in {"visual_lock","repair","baseline_candidate"}:
                 continue
             frame=int(item.get("frame") or 0)
-            refs=contract_references(ep,frame,scope="visual_lock")
+            ref_scope="visual_lock" if item.get("scope")=="visual_lock" else "repair"
+            refs=contract_references(ep,frame,scope=ref_scope)
             item["references"]=refs
             item["reference_execution_contract"]={
                 "selected_at_enqueue":now(),
@@ -293,7 +294,10 @@ def import_batch(ep:Path,prompt_dir:Path)->dict:
 
 
 def dependency_satisfied(ep:Path,q:dict,dep:int,scope:str="batch")->bool:
-    if scope=="visual_lock" and visual_lock_baseline_gate.is_baseline_dependency(ep,dep):
+    # Ordinary baseline is the identity bootstrap for every downstream lane,
+    # including repair/baseline-candidate rows. Historical generated pixels must
+    # not satisfy this dependency after a later review reopens the baseline.
+    if visual_lock_baseline_gate.is_baseline_dependency(ep,dep):
         return visual_lock_baseline_gate.approved(ep)
     state=ledger_state(ep,dep)
     if state in READY_LEDGER_STATES:return True

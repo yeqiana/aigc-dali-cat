@@ -15,6 +15,7 @@ import baseline_candidate_pool
 import delegated_approval
 import episode_state
 import frame_semantic_review
+import image_blocked_recovery
 import production_ledger
 import production_prompt_materializer
 import story_json
@@ -23,7 +24,7 @@ import visual_lock_candidate_pool
 import visual_lock_finalizer
 import visual_lock_v21
 
-ALLOWED_ACTIONS = {"PREPARE_BASELINE_CANDIDATE", "PREPARE_VISUAL_LOCK_CANDIDATES", "FINALIZE_VISUAL_LOCK", "PREPARE_PRODUCTION_BATCH", "FINALIZE_PRODUCTION_IMAGES"}
+ALLOWED_ACTIONS = {"PREPARE_BASELINE_CANDIDATE", "PREPARE_VISUAL_LOCK_CANDIDATES", "RESOLVE_IMAGE_NORMALIZATION", "FINALIZE_VISUAL_LOCK", "PREPARE_PRODUCTION_BATCH", "FINALIZE_PRODUCTION_IMAGES"}
 
 
 class MachineActionError(RuntimeError):
@@ -190,6 +191,11 @@ def execute(ep: Path, action: dict) -> dict:
         if status in {"PASS", "REUSED"}:
             return result
         raise MachineActionError(f"visual-lock candidate preparation failed: {result}")
+    if name == "RESOLVE_IMAGE_NORMALIZATION":
+        result = image_blocked_recovery.recover(ep, frames=[int(x) for x in (action.get("frames") or [])])
+        if str(result.get("status") or "").upper() != "PASS":
+            raise MachineActionError(f"image normalization recovery blocked: {result}")
+        return {"status": "PASS", "action": name, "result": result, "state": _state(ep)}
     if name == "FINALIZE_VISUAL_LOCK":
         try:
             return _finalize_visual_lock(ep)
@@ -207,6 +213,7 @@ def execute(ep: Path, action: dict) -> dict:
 def self_test() -> None:
     assert local_machine_action({"action": "PREPARE_BASELINE_CANDIDATE", "executor": "MACHINE"}) == "PREPARE_BASELINE_CANDIDATE"
     assert local_machine_action({"action": "PREPARE_VISUAL_LOCK_CANDIDATES", "executor": "MACHINE"}) == "PREPARE_VISUAL_LOCK_CANDIDATES"
+    assert local_machine_action({"action": "RESOLVE_IMAGE_NORMALIZATION", "executor": "MACHINE"}) == "RESOLVE_IMAGE_NORMALIZATION"
     assert local_machine_action({"action": "FINALIZE_VISUAL_LOCK", "executor": "MACHINE"}) == "FINALIZE_VISUAL_LOCK"
     assert local_machine_action({"action": "PREPARE_PRODUCTION_BATCH", "executor": "MACHINE"}) == "PREPARE_PRODUCTION_BATCH"
     assert local_machine_action({"action": "FINALIZE_PRODUCTION_IMAGES", "executor": "MACHINE"}) == "FINALIZE_PRODUCTION_IMAGES"

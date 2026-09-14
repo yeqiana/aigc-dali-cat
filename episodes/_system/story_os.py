@@ -84,7 +84,10 @@ def main():
     p = sub.add_parser("performance"); p.add_argument("episode_dir")
     # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
     p = sub.add_parser("fast-path"); p.add_argument("fast_cmd", choices=["prepare","resume","capabilities","candidate","slo"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
-    p = sub.add_parser("dag"); p.add_argument("dag_cmd", choices=["plan", "run", "resume", "show"]); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None)
+    # STORY_OS_V262_DAG_STOP_TARGET: --until is passed through unvalidated on purpose. STAGES in
+    # runtime_dag.py is the single source of truth for canonical stage names, and forwarding lets
+    # an invalid value fail there with the real choice list instead of a second copy drifting here.
+    p = sub.add_parser("dag"); p.add_argument("dag_cmd", choices=["plan", "run", "resume", "show"]); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None); p.add_argument("--until")
     p = sub.add_parser("quota"); p.add_argument("quota_cmd", choices=["auto", "snapshot", "report"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("checklist"); p.add_argument("episode_dir"); p.add_argument("--no-validators", action="store_true")
     p = sub.add_parser("audit-text"); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
@@ -189,6 +192,7 @@ def main():
         extra=[args.dag_cmd, str(ep)]
         if args.codex: extra += ["--codex", args.codex]
         if args.dag_cmd in {"run","resume"}: extra += ["--timeout", str(runtime_timeout_policy.resolve("codex_supervisor_run", args.timeout))]
+        if args.until: extra += ["--until", args.until]
         return forward("runtime_dag.py", extra)
     if args.cmd == "run":
         mode = "resume" if args.resume else "run"

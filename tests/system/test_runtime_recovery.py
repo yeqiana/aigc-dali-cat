@@ -77,8 +77,12 @@ class RecoveryTests(unittest.TestCase):
         ]}
         atomic_write_json(self.ep / batch.QUEUE_REL,q)
         atomic_write_json(self.ep / "meta/production-ledger.json",{"frames":{"01":{"status":"REPAIRING"},"05":{"status":"PENDING"}}})
+        # This case is about dependency blocking, not about PREIMAGE authority: the
+        # canonical handoff check is stubbed valid so STORYBOARD_LOCKED does not divert
+        # the cycle into PREIMAGE_COMPILE (covered by test_runner_host_loop_v262).
         with patch.object(runner.next_action,"ROOT",self.ep.parent), \
              patch.object(runner.next_action,"pending_product_review",return_value=None), \
+             patch.object(runner.next_action,"_handoff_valid",return_value=True), \
              patch.object(runner.next_action.visual_lock_baseline_gate,"awaiting_review",return_value=False), \
              patch.object(runner.next_action.visual_lock_baseline_gate,"is_baseline_dependency",return_value=True), \
              patch.object(runner.next_action.visual_lock_baseline_gate,"approved",return_value=False), \

@@ -299,9 +299,14 @@ class VisualLockAdapterBoundaryTest(AdapterBase):
         def snapshot() -> set:
             return {p.relative_to(self.root).as_posix() for p in self.root.rglob("*")}
 
+        # The canonical bootstrap writes episode-state.json plus the two Runtime DAG
+        # authority documents (release-manifest.json, story-gates.json). All of them must
+        # stay inside the new episode; nothing outside episodes/ may be created.
         expected_extra = {
             "episodes", "episodes/scoped_episode", "episodes/scoped_episode/meta",
             "episodes/scoped_episode/meta/episode-state.json",
+            "episodes/scoped_episode/meta/release-manifest.json",
+            "episodes/scoped_episode/meta/story-gates.json",
             "episodes/scoped_episode/meta/visual-profile.json",
             "episodes/scoped_episode/meta/runtime-request.json",
         }

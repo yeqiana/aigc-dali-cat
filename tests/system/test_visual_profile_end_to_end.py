@@ -330,9 +330,13 @@ class GateBoundaryTest(EndToEndBase):
         self.confirm(episode)
         self.freeze(episode)
         added = snapshot() - before
+        # Canonical bootstrap also writes the Runtime DAG authority documents; the point
+        # of this test is that every one of them lands inside the episode.
         self.assertEqual(added, {
             "episodes", "episodes/e2e_scoped", "episodes/e2e_scoped/meta",
             "episodes/e2e_scoped/meta/episode-state.json",
+            "episodes/e2e_scoped/meta/release-manifest.json",
+            "episodes/e2e_scoped/meta/story-gates.json",
             "episodes/e2e_scoped/meta/visual-profile.json",
             "episodes/e2e_scoped/meta/runtime-request.json",
         })

@@ -17,6 +17,7 @@ import baseline_candidate_pool
 import character_appearance_anchor
 import episode_runner
 import image_artifact_collector
+import image_blocked_recovery
 import image_model_policy
 import image_scheduler
 import machine_action_executor
@@ -24,6 +25,7 @@ import next_action
 import production_ledger
 import production_ledger_manage
 import raw_candidate_budget
+import reference_arbitrator
 import ledger_call
 import product_runtime_adapter
 import scheduler_core
@@ -107,7 +109,7 @@ class LocalImageDispatchTests(unittest.TestCase):
         self.assertIsNone(vision_review_executor.local_vision_action({"action": "REVIEW_ORDINARY_BASELINE", "executor": "WORK"}))
 
     def test_machine_actions_are_local(self):
-        for name in ("PREPARE_BASELINE_CANDIDATE", "FINALIZE_VISUAL_LOCK", "PREPARE_PRODUCTION_BATCH", "FINALIZE_PRODUCTION_IMAGES"):
+        for name in ("PREPARE_BASELINE_CANDIDATE", "RESOLVE_IMAGE_NORMALIZATION", "FINALIZE_VISUAL_LOCK", "PREPARE_PRODUCTION_BATCH", "FINALIZE_PRODUCTION_IMAGES"):
             action = {"action": name, "executor": "MACHINE"}
             self.assertEqual(machine_action_executor.local_machine_action(action), name)
             self.assertEqual(episode_runner.local_host_action(action), name)
@@ -294,6 +296,53 @@ class VisionAutoRepairTests(unittest.TestCase):
             production_ledger_manage._refresh_authority_derived_caches(Path("ep"))
         build.assert_called_once_with(Path("ep"), write=True)
 
+    def test_user_exception_can_reopen_downstream_invalidated_passed_frame(self):
+        data = {"frames": {"01": {
+            "status": "PASSED", "content_repairs_used": 1,
+            "current_candidate": {"sha256": "old"}, "approved_asset": {"sha256": "old"},
+            "reviews": [{"decision": "pass"}],
+        }}}
+        args = SimpleNamespace(
+            episode_dir="ep", frame="01", approval_text="继续推进啊",
+            reason="later four-image actual-pixel review invalidated the earlier baseline PASS",
+        )
+        with patch.object(production_ledger_manage, "episode_dir", return_value=Path("ep")), \
+                patch.object(production_ledger_manage, "get_ledger", return_value=(Path("ledger.json"), data)), \
+                patch.object(production_ledger_manage, "save_json"):
+            production_ledger_manage.cmd_authorize_user_exception_repair(args)
+        frame = data["frames"]["01"]
+        self.assertEqual(frame["status"], "EXCEPTION_REPAIR_AUTHORIZED")
+        self.assertEqual(frame["content_repairs_used"], 1)
+        self.assertEqual(frame["superseded_passes"][-1]["invalidation_basis"], "later_downstream_actual_pixel_review")
+        self.assertIsNone(frame["approved_asset"])
+        self.assertEqual(frame["user_exception_authorizations"][-1]["approval_text"], "继续推进啊")
+
+    def test_reopened_baseline_cannot_satisfy_dependency_with_stale_review_or_pixel_master(self):
+        with patch.object(visual_lock_baseline_gate, "baseline_frame", return_value=1), \
+                patch.object(visual_lock_baseline_gate, "read_json", return_value={"frames": {"01": {"status": "EXCEPTION_REPAIR_AUTHORIZED"}}}), \
+                patch.object(visual_lock_baseline_gate, "validate_review", return_value=[]), \
+                patch.object(visual_lock_baseline_gate.character_visual_contract, "pixel_master_required", return_value=True), \
+                patch.object(visual_lock_baseline_gate.character_visual_contract, "validate_pixel_master", return_value=[]):
+            self.assertFalse(visual_lock_baseline_gate.approved(Path("ep")))
+
+    def test_exception_repair_enqueue_is_distinct_and_replaces_historical_repair(self):
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            with patch.object(auto_repair_enqueue, "repair_pending", return_value=False), \
+                    patch.object(auto_repair_enqueue, "_ledger_frame", return_value={"status": "EXCEPTION_REPAIR_AUTHORIZED", "content_repairs_used": 1}), \
+                    patch.object(auto_repair_enqueue, "_source_item", return_value={"depends_on": []}), \
+                    patch.object(auto_repair_enqueue.image_model_policy, "for_episode", return_value={"model": "gpt-image-2", "quality": "high", "strict_model": False}), \
+                    patch.object(image_scheduler, "contract_references", return_value=[]), \
+                    patch.object(image_scheduler, "add_item", return_value={"id": "exception", "prompt_file": "exception.txt"}) as add:
+                result = auto_repair_enqueue.enqueue(
+                    ep, frame=16, findings=["COMMERCIAL_HDR_LOOK"], source="VISUAL_LOCK",
+                    review_note="downstream actual-pixel review failed",
+                )
+        self.assertEqual(result["status"], "REPAIR_ENQUEUED")
+        self.assertTrue(add.call_args.kwargs["replace"])
+        self.assertEqual(add.call_args.kwargs["capture_id"], "user-exception-VISUAL_LOCK-16")
+        self.assertIn("user-exception-a3", str(add.call_args.kwargs["prompt_file"]))
+
     def test_authority_refresh_reopens_needs_user_after_contract_drift(self):
         data = {"frames": {"05": {"status": "NEEDS_USER", "content_repairs_used": 1, "reviews": [{"decision": "repair"}]}}}
         args = SimpleNamespace(
@@ -315,7 +364,7 @@ class VisionAutoRepairTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             ep = Path(td)
             with patch.object(auto_repair_enqueue, "repair_pending", return_value=False), \
-                    patch.object(auto_repair_enqueue, "_ledger_frame", return_value={"status": "AUTHORITY_REFRESH_AUTHORIZED", "content_repairs_used": 1}), \
+                    patch.object(auto_repair_enqueue, "_ledger_frame", return_value={"status": "AUTHORITY_REFRESH_AUTHORIZED", "content_repairs_used": 1, "authority_refresh_authorization": {"frame_contract_sha256": "new-contract"}}), \
                     patch.object(auto_repair_enqueue, "_source_item", return_value={"depends_on": [1]}), \
                     patch.object(auto_repair_enqueue.image_model_policy, "for_episode", return_value={"model": "gpt-image-2", "quality": "high", "strict_model": False}), \
                     patch.object(visual_lock_baseline_gate, "baseline_frame", return_value=1), \
@@ -326,6 +375,33 @@ class VisionAutoRepairTests(unittest.TestCase):
         self.assertTrue(add.call_args.kwargs["replace"])
         self.assertEqual(add.call_args.kwargs["kind"], "repair")
         self.assertEqual(add.call_args.kwargs["capture_id"], "authority-refresh-05")
+        self.assertIn("new-contract", auto_repair_enqueue.authority_refresh_prompt(5, "new-contract"))
+        self.assertNotEqual(
+            auto_repair_enqueue.authority_refresh_prompt(5, "new-contract"),
+            auto_repair_enqueue.authority_refresh_prompt(5, "newer-contract"),
+        )
+
+    def test_visual_lock_exception_provenance_binds_only_current_exception_sha(self):
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True)
+            (ep / "meta/production-ledger.json").write_text(json.dumps({"frames": {"17": {
+                "status": "REPAIR_READY",
+                "user_exception_repairs_used": 1,
+                "current_candidate": {"sha256": "fresh", "attempt_id": "a3"},
+                "attempts": [
+                    {"attempt_id": "old", "result": "success", "request": {"capture_id": "user-exception-VISUAL_LOCK-17"}},
+                    {"attempt_id": "a3", "result": "success", "request": {"capture_id": "user-exception-VISUAL_LOCK-17"}},
+                ],
+            }}}), encoding="utf-8")
+            self.assertEqual(
+                visual_lock_v21._direct_user_exception_frames(ep, [{"frame": 17, "sha256": "fresh"}]),
+                [17],
+            )
+            self.assertEqual(
+                visual_lock_v21._direct_user_exception_frames(ep, [{"frame": 17, "sha256": "stale"}]),
+                [],
+            )
 
     def test_baseline_pass_promotes_approved_asset_immediately(self):
         ready = {"frames": {"01": {"status": "ORIGINAL_READY", "approved_asset": None}}}
@@ -358,6 +434,37 @@ class VisionAutoRepairTests(unittest.TestCase):
         self.assertEqual(result["status"], "REPAIR_ENQUEUED")
         enqueue.assert_called_once()
         self.assertIn("reality_first", enqueue.call_args.kwargs["findings"])
+
+    def test_visual_lock_human_present_requires_identity_even_without_name_token(self):
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True)
+            (ep / "meta/character-visual-contract.json").write_text(
+                json.dumps({"members": {"P01": {}, "P02": {}, "P03": {}, "P04": {}}}), encoding="utf-8"
+            )
+            hm = {"shot_progression": {"primary_subject": "四人走在石木云桥上", "human_present": True}}
+            needed, character_id, reason = reference_arbitrator._identity_need(ep, hm, [], scope="repair")
+        self.assertTrue(needed)
+        self.assertIsNone(character_id)
+        self.assertEqual(reason, "visual_lock_human_present")
+
+    def test_repair_scope_baseline_dependency_uses_current_baseline_approval(self):
+        q = {"items": [{"frame": 1, "status": "generated"}]}
+        with patch.object(image_scheduler.visual_lock_baseline_gate, "is_baseline_dependency", return_value=True), \
+                patch.object(image_scheduler.visual_lock_baseline_gate, "approved", return_value=False), \
+                patch.object(image_scheduler, "ledger_state", return_value="PASSED"):
+            self.assertFalse(image_scheduler.dependency_satisfied(Path("ep"), q, 1, scope="repair"))
+
+    def test_repair_scope_dependent_keeps_new_baseline_review_routable(self):
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True)
+            (ep / "meta/visual-lock-baseline-review.json").write_text(json.dumps({"decision": "PASS", "sha256": "old"}), encoding="utf-8")
+            q = {"items": [{"frame": 5, "scope": "repair", "status": "queued", "depends_on": [1]}]}
+            with patch.object(visual_lock_baseline_gate, "baseline_frame", return_value=1), \
+                    patch.object(visual_lock_baseline_gate, "approved", return_value=False), \
+                    patch.object(visual_lock_baseline_gate, "generated_baseline", return_value={"asset_path": "new.png", "sha256": "new"}):
+                self.assertTrue(visual_lock_baseline_gate.awaiting_review(ep, q))
 
     def test_baseline_review_defers_while_repair_is_pending(self):
         q = {"items": [
@@ -401,6 +508,8 @@ class BaselineCandidatePoolTests(unittest.TestCase):
     def test_baseline_candidate_uses_exception_raw_budget_bucket(self):
         self.assertEqual(raw_candidate_budget.kind_for_queue_item({"kind": "baseline_candidate"}), "exception")
         self.assertEqual(raw_candidate_budget.kind_for_queue_item({"kind": "repair"}), "repair")
+        self.assertEqual(raw_candidate_budget.kind_for_queue_item({"kind": "repair", "capture_id": "user-exception-VISUAL_LOCK-01"}), "user_exception")
+        self.assertEqual(raw_candidate_budget.limits()["user_exception"], 1)
 
     def test_baseline_candidate_begin_preserves_one_shot_content_repair_budget(self):
         with tempfile.TemporaryDirectory() as td:
@@ -528,6 +637,54 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
             action = self._derive(state="STORYBOARD_LOCKED", queue=queue, ledger=ledger, visual_errors=["stale"], handoff_valid=False)
         self.assertEqual((action["action"], action["executor"]), ("PREIMAGE_COMPILE", "WORK"))
         self.assertEqual(action["preimage_step"], "PREIMAGE_TASK_SET")
+
+    def test_unresolved_aspect_ratio_block_routes_to_normalization_before_visual_review(self):
+        frames = [1, 5, 16, 17]
+        queue = {"items": [
+            *[{"frame": n, "kind": "original", "scope": "visual_lock", "status": "generated", "completed_at": "2026-09-14T10:00:00+08:00"} for n in frames],
+            {"id": "r17", "frame": 17, "kind": "repair", "scope": "repair", "status": "blocked",
+             "technical_failure_code": "ASPECT_RATIO_MISMATCH", "completed_at": "2026-09-14T11:00:00+08:00"},
+        ]}
+        ledger = {f"{n:02d}": {"status": "ORIGINAL_READY"} for n in frames}
+        ledger["17"] = {"status": "TECH_FAILED", "current_candidate": {"sha256": "old", "recorded_at": "2026-09-14T10:00:00+08:00"}}
+        with patch.object(next_action.image_blocked_recovery, "inspect", return_value=[{
+            "frame": 17, "item_id": "r17", "code": "ASPECT_RATIO_MISMATCH",
+            "auto_resolvable": True, "reason": "provider_ratio_exception_is_deterministically_recoverable",
+        }]):
+            action = self._derive(state="STORYBOARD_LOCKED", queue=queue, ledger=ledger, visual_errors=["stale"])
+        self.assertEqual((action["action"], action["executor"]), ("RESOLVE_IMAGE_NORMALIZATION", "MACHINE"))
+        self.assertEqual(action["frames"], [17])
+        self.assertFalse(action["hard_stop"])
+
+    def test_unrecoverable_nonregenerating_block_hard_stops_before_visual_review(self):
+        frames = [1, 5, 16, 17]
+        queue = {"items": [
+            *[{"frame": n, "kind": "original", "scope": "visual_lock", "status": "generated", "completed_at": "2026-09-14T10:00:00+08:00"} for n in frames],
+            {"id": "r17", "frame": 17, "kind": "repair", "scope": "repair", "status": "blocked",
+             "technical_failure_code": "PROMPT_SOURCE_DRIFT", "completed_at": "2026-09-14T11:00:00+08:00"},
+        ]}
+        ledger = {f"{n:02d}": {"status": "ORIGINAL_READY"} for n in frames}
+        ledger["17"] = {"status": "TECH_FAILED", "current_candidate": {"sha256": "old", "recorded_at": "2026-09-14T10:00:00+08:00"}}
+        with patch.object(next_action.image_blocked_recovery, "inspect", return_value=[{
+            "frame": 17, "item_id": "r17", "code": "PROMPT_SOURCE_DRIFT",
+            "auto_resolvable": False, "reason": "unsupported_non_regenerating_failure",
+        }]):
+            action = self._derive(state="STORYBOARD_LOCKED", queue=queue, ledger=ledger, visual_errors=["stale"])
+        self.assertEqual(action["action"], "IMAGE_ATTEMPT_BLOCKED")
+        self.assertTrue(action["hard_stop"])
+        self.assertFalse(action["auto_recoverable"])
+
+    def test_superseded_blocked_row_is_history_not_current_route(self):
+        queue = {"items": [
+            {"id": "old", "frame": 17, "status": "blocked", "technical_failure_code": "ASPECT_RATIO_MISMATCH",
+             "completed_at": "2026-09-14T10:00:00+08:00"},
+            {"id": "new", "frame": 17, "status": "generated", "completed_at": "2026-09-14T11:00:00+08:00"},
+        ]}
+        ledger = {"frames": {"17": {"status": "REPAIR_READY", "current_candidate": {"sha256": "new", "recorded_at": "2026-09-14T11:00:00+08:00"}}}}
+        with patch.object(next_action, "read_json", side_effect=lambda path: queue if str(path).replace("\\", "/").endswith("production-queue.json") else ledger):
+            summary = next_action.queue_summary(Path("ep"))
+        self.assertEqual(summary["counts"]["blocked"], 0)
+        self.assertEqual(summary["blocked_items"], [])
 
     def test_authority_refresh_routes_to_regeneration_before_old_visual_review(self):
         frames = [1, 5, 16, 17]

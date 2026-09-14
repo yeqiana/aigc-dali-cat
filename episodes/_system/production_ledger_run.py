@@ -115,8 +115,8 @@ def cmd_begin(args: argparse.Namespace) -> None:
         raise SystemExit(f"technical retry must preserve attempt kind {last_kind!r}")
     if kind == "original" and status not in {"PENDING", "TECH_FAILED"}:
         raise SystemExit(f"cannot begin original from {status}")
-    if kind == "repair" and status not in {"REPAIR_AUTHORIZED", "AUTHORITY_REFRESH_AUTHORIZED", "EXCEPTION_REPAIR_AUTHORIZED", "TECH_FAILED"}:
-        raise SystemExit(f"repair requires REPAIR_AUTHORIZED, AUTHORITY_REFRESH_AUTHORIZED, EXCEPTION_REPAIR_AUTHORIZED, or TECH_FAILED retry; got {status}")
+    if kind == "repair" and status not in {"REPAIR_AUTHORIZED", "AUTHORITY_REFRESH_AUTHORIZED", "EXCEPTION_REPAIR_AUTHORIZED", "USER_CONTINUATION_REPAIR_AUTHORIZED", "TECH_FAILED"}:
+        raise SystemExit(f"repair requires REPAIR_AUTHORIZED, AUTHORITY_REFRESH_AUTHORIZED, EXCEPTION_REPAIR_AUTHORIZED, USER_CONTINUATION_REPAIR_AUTHORIZED, or TECH_FAILED retry; got {status}")
     if kind == "baseline_candidate" and status not in {"NEEDS_USER", "TECH_FAILED"}:
         raise SystemExit(f"baseline candidate requires NEEDS_USER or TECH_FAILED retry; got {status}")
     if kind == "repair" and status == "REPAIR_AUTHORIZED":
@@ -127,6 +127,8 @@ def cmd_begin(args: argparse.Namespace) -> None:
         if frame.get("user_exception_repairs_used", 0) >= 1:
             raise SystemExit("user exception repair limit reached")
         frame["user_exception_repairs_used"] = frame.get("user_exception_repairs_used", 0) + 1
+    if kind == "repair" and status == "USER_CONTINUATION_REPAIR_AUTHORIZED":
+        frame["user_continuation_repairs_used"] = int(frame.get("user_continuation_repairs_used") or 0) + 1
 
     text = prompt_text(args)
     refs = parse_references(args.reference)
@@ -326,11 +328,12 @@ def cmd_recover_success(args: argparse.Namespace) -> None:
         if isinstance(attempt.get("reference_execution"), dict):
             attempt["reference_execution"] = merge_provider_reference_evidence(attempt, receipt_data, provider_receipt)
     previous_error = attempt.get("error")
+    recovery_reason = str(getattr(args, "recovery_reason", "") or "").strip() or "durable_user_runner_success_arrived_after_parent_exit"
     attempt["recovery_correction"] = {
         "at": now_iso(),
         "previous_result": "technical_failure",
         "previous_error": previous_error,
-        "reason": "durable_user_runner_success_arrived_after_parent_exit",
+        "reason": recovery_reason,
         "runner_request_id": str(getattr(args, "runner_request_id", "") or "") or None,
         "runtime_transaction_id": tx,
     }

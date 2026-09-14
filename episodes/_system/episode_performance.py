@@ -8,7 +8,7 @@ image_backend_seconds may overlap stage wall time and must not be summed
 with stage totals as if they were independent.
 """
 from __future__ import annotations
-import argparse, datetime as dt, json, math, os, statistics, uuid
+import argparse, datetime as dt, json, math, os, statistics, tempfile, uuid
 from pathlib import Path
 import story_json
 import runtime_observability
@@ -82,20 +82,34 @@ def safe_start_episode(ep,source="runtime"):
 
 def begin_stage(ep,stage,source="scoped_worker",metadata=None):
     stage=str(stage).upper()
-    d=load(ep,True);rid=uuid.uuid4().hex[:12];at=now()
+    d=load(ep,True);bucket=d.setdefault("stages",{}).setdefault(stage,{"runs":[]})
+    # STORY_OS_V211_UNCLOSED_SPAN_REUSE: one row per logical attempt, not per pass.
+    # A scoped_model step hands back to the host (HOST_WAIT, rc=20) many times before
+    # it finishes. Reusing the still-open run_id keeps runs[-1] stable across those
+    # round-trips (critic_runtime_v211 reads it as the visual-lock binding) and stops
+    # the ledger filling with rows nothing ever closes. Mirrors begin_named_span().
+    running=next((x for x in reversed(bucket["runs"]) if x.get("status")=="RUNNING"),None)
+    if running:return running["run_id"]
+    rid=uuid.uuid4().hex[:12];at=now()
     row={"run_id":rid,"started_at":at,"ended_at":None,"duration_seconds":None,
          "status":"RUNNING","source":source,"metadata":metadata or {}}
-    d.setdefault("stages",{}).setdefault(stage,{"runs":[]})["runs"].append(row)
+    bucket["runs"].append(row)
     save(ep,d);return rid
 
 def end_stage(ep,stage,run_id=None,status="PASS",metadata=None):
     stage=str(stage).upper();d=load(ep,True);runs=(d.setdefault("stages",{}).setdefault(stage,{"runs":[]})["runs"])
     row=None
-    if run_id:row=next((x for x in reversed(runs) if x.get("run_id")==run_id),None)
-    if row is None:row=next((x for x in reversed(runs) if x.get("status")=="RUNNING"),None)
-    if row is None:
-        row={"run_id":run_id or uuid.uuid4().hex[:12],"started_at":now(),"source":"recovered","metadata":{}}
-        runs.append(row)
+    if run_id:
+        row=next((x for x in reversed(runs) if x.get("run_id")==run_id),None)
+    else:
+        row=next((x for x in reversed(runs) if x.get("status")=="RUNNING"),None)
+    # STORY_OS_V211_NO_FABRICATED_SPAN: no match means no span was ever opened for
+    # this attempt, so there is nothing to close. Never invent a row -- a fabricated
+    # row carries started_at=now() and reports a duration belonging to no execution.
+    # An explicit run_id must not fall back to an unrelated open row either: that
+    # merge closed a span opened hours earlier and inflated stage walls past 100h.
+    # fail-soft no-op, same contract as safe_end_stage().
+    if row is None:return None
     ended=now();row["ended_at"]=ended;row["duration_seconds"]=seconds_between(row.get("started_at"),ended) or 0.0
     row["status"]=str(status);row.setdefault("metadata",{}).update(metadata or {})
     save(ep,d);return row
@@ -321,6 +335,22 @@ def self_test():
     assert abs(percentile([10,20,30],0.5)-20)<0.001
     assert REL==runtime_observability.EPISODE_PERFORMANCE_REL
     assert _interval_union_seconds([])==0.0
+    # STORY_OS_V211_UNCLOSED_SPAN_REUSE + _NO_FABRICATED_SPAN. Temp episode must live
+    # under ROOT: _new() records episode_path relative to it.
+    with tempfile.TemporaryDirectory(dir=ROOT/"episodes/_tests") as td:
+        ep=Path(td);stage="VISUAL_LOCK"
+        def rows():return load(ep,False)["stages"][stage]["runs"]
+        first=begin_stage(ep,stage)
+        assert begin_stage(ep,stage)==first,"a second begin must adopt the open span"
+        assert len(rows())==1
+        # An unmatched run_id must not close an unrelated open row, nor invent one.
+        assert end_stage(ep,stage,run_id="nosuchrun") is None
+        assert len(rows())==1 and rows()[0]["status"]=="RUNNING"
+        closed=end_stage(ep,stage,status="REUSED")
+        assert closed and closed["run_id"]==first and isinstance(closed["duration_seconds"],float)
+        # Nothing open -> no-op, and never a fabricated 'recovered' row.
+        assert end_stage(ep,stage) is None
+        assert len(rows())==1 and not any(r.get("source")=="recovered" for r in rows())
     print("EPISODE PERFORMANCE + R3 CRITICAL PATH SELF-TEST PASS")
 
 def main():

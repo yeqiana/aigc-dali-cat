@@ -191,6 +191,45 @@ def parse_json_file(path):
     return story_json.read_json(path)
 
 
+def recover_completed_agent_json(log_text: str) -> dict | None:
+    """Recover a completed critic answer when Codex crashes after the answer.
+
+    Fail closed: accept only a JSONL ``item.completed`` agent_message whose
+    inner text is a JSON object and which is followed by ``turn.completed``.
+    This deliberately rejects partial streaming output and pre-completion
+    messages. The caller must still validate source hashes and the review schema.
+    """
+    last_agent: tuple[int, dict] | None = None
+    completed_indexes: list[int] = []
+    for index, raw in enumerate(str(log_text or "").splitlines()):
+        try:
+            event = json.loads(raw)
+        except Exception:
+            continue
+        if not isinstance(event, dict):
+            continue
+        if event.get("type") == "turn.completed":
+            completed_indexes.append(index)
+            continue
+        item = event.get("item") if event.get("type") == "item.completed" else None
+        if not isinstance(item, dict) or item.get("type") != "agent_message":
+            continue
+        text = item.get("text")
+        if not isinstance(text, str) or not text.strip():
+            continue
+        try:
+            payload = parse_json_text(text)
+        except Exception:
+            continue
+        last_agent = (index, payload)
+    if not last_agent:
+        return None
+    index, payload = last_agent
+    if not any(done_index > index for done_index in completed_indexes):
+        return None
+    return payload
+
+
 def self_test():
     import tempfile
 
@@ -208,6 +247,14 @@ def self_test():
         out.write_text(json.dumps(payload), encoding="utf-8")
         assert parse_json_file(out) == payload
         assert parse_json_text(json.dumps(payload)) == payload
+        recovered_log = "\n".join([
+            json.dumps({"type":"item.completed","item":{"type":"agent_message","text":json.dumps(payload)}}),
+            json.dumps({"type":"turn.completed","usage":{}}),
+            "memory allocation failed",
+        ])
+        assert recover_completed_agent_json(recovered_log) == payload
+        partial_log = json.dumps({"type":"item.completed","item":{"type":"agent_message","text":json.dumps(payload)}})
+        assert recover_completed_agent_json(partial_log) is None
         try:
             parse_json_text("[1]")
             raise AssertionError("non-object JSON must be rejected")

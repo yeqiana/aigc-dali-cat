@@ -30,6 +30,7 @@ DEFAULT_SECONDS: dict[str, int] = {
     "visual_baseline_critic": 300,  # visual lock baseline critic
     "fast_scout": 240,              # fast frame scout
     "review_critic": 900,           # story/visual/caption review critics
+    "review_status_probe": 30,      # one DevSpace agent-status RPC during a review wait
     "image_probe": 900,             # image provider capability probe
     "deep_semantic_review": 1800,   # frame semantic / incremental review
     "release_semantic": 1800,       # recent5 / release critic semantic build
