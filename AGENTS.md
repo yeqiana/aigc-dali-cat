@@ -161,15 +161,17 @@ Visual Lock 不再只看三张“风格图”：先 baseline，随后 worst cond
 
 ## 提交规则
 
-1. 允许提交 git 的图片/大文件仅限以下两类：
-   - 角色参考图：`episodes/**/assets/characters/`
+1. **系列剧本的母版图必须提交 Git。** 凡被 `episodes/**/meta/series-character-identity.json` 引用的 `group_identity_asset` / `primary_asset` / `supporting_assets`，都是系列身份权威的像素锚点，必须入库并保持 SHA 绑定一致；它们在本地存在但未提交，等于让 fresh clone 拿到悬空身份绑定。落盘沿用 `episodes/**/assets/characters/`，不搬迁既有已冻结证据引用的文件。
+   - 校验：`python episodes/_system/contract_sync.py` 会对未入库的系列母版图 FAIL。不得用「像素资产默认不入 Git」把母版图留在本地。
+2. 允许提交 git 的图片/大文件仅限以下两类：
+   - 角色参考图：`episodes/**/assets/characters/`（含上一条的系列母版图）
    - 竞品与账号截图：`research/competitors/`、`research/account/`
-2. 其他图片、视频、音频、压缩包一律禁止提交，已由 `.gitignore` 默认忽略，包括：
+3. 其他图片、视频、音频、压缩包一律禁止提交，已由 `.gitignore` 默认忽略，包括：
    - 各集 `images/`、`publish/` 成片
    - `assets/` 下 frames、subtitled、references、shenshi、materials 等中间资产
    - 发布包 zip、`workbench/` 中间处理资产、`.playwright-cli/` 截图
-3. 新增大文件前先 `git status` 确认只出现白名单文件；可用 `git check-ignore <文件>` 验证是否被忽略。
-4. 已误提交的非白名单文件用 `git rm --cached` 移出索引（保留本地），不要删本地文件。
+4. 新增大文件前先 `git status` 确认只出现白名单文件；可用 `git check-ignore <文件>` 验证是否被忽略。
+5. 已误提交的非白名单文件用 `git rm --cached` 移出索引（保留本地），不要删本地文件。
 
 <!-- STORY_OS_V1_8_AGENTS_BEGIN -->
 ## V1.8 默认视觉路由

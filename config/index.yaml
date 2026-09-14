@@ -56,6 +56,8 @@ runtimes:
 episode_layout:
   # authority 是输入权威；evidence 是机器审计结果；derived 可安全重建；
   # media 为本地像素资产，不默认提交 Git。
+  # 强制例外：系列剧本的母版图（episodes/**/meta/series-character-identity.json
+  # 引用的 assets/characters/ 图片）必须入库，由 contract_sync 校验。
   authority:
     - meta/episode-state.json
     - meta/release-manifest.json

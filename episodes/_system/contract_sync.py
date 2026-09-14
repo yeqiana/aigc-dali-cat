@@ -123,6 +123,74 @@ def tracked_local_artifacts(root: Path) -> list[str]:
     return [x.strip() for x in p.stdout.splitlines() if x.strip() and (root / x.strip()).exists()]
 
 
+SERIES_IDENTITY_NAME = "series-character-identity.json"
+
+
+def series_master_assets(identity: dict) -> list[tuple[str, str]]:
+    """(owner, repo-relative path) for every master image a series identity declares."""
+    rows: list[tuple[str, str]] = []
+    group = identity.get("group_identity_asset")
+    if isinstance(group, dict) and str(group.get("path") or "").strip():
+        rows.append(("group", str(group["path"]).strip()))
+    for cid, row in (identity.get("characters") or {}).items():
+        if not isinstance(row, dict):
+            continue
+        slots = [("primary", row.get("primary_asset"))]
+        slots += [(f"supporting:{i}", s) for i, s in enumerate(row.get("supporting_assets") or [])]
+        for slot, asset in slots:
+            if isinstance(asset, dict) and str(asset.get("path") or "").strip():
+                rows.append((f"{cid}:{slot}", str(asset["path"]).strip()))
+    return rows
+
+
+def untracked_series_masters(root: Path) -> list[str]:
+    """Series master images are the one pixel class that MUST be committed to Git.
+
+    Every path referenced by a series-level meta/series-character-identity.json is
+    the pixel anchor of the series identity authority. A local-only master image
+    cannot be resolved by a fresh clone, so the gap is reported here rather than
+    surfacing later as a dangling identity binding.
+    """
+    if not (root / ".git").exists():
+        return []
+    identities = sorted(root.glob(f"episodes/**/{SERIES_IDENTITY_NAME}"))
+    if not identities:
+        return []
+    try:
+        p = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "-z", "--", "episodes"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            check=False,
+        )
+    except OSError:
+        return []
+    if p.returncode != 0:
+        return []
+    tracked = {item.replace("\\", "/") for item in p.stdout.split("\0") if item}
+
+    errors: list[str] = []
+    for identity_path in identities:
+        declared = identity_path.relative_to(root).as_posix()
+        try:
+            identity = read_json(identity_path)
+        except Exception as exc:
+            errors.append(f"invalid series character identity {declared}: {exc}")
+            continue
+        for owner, rel in series_master_assets(identity):
+            target = rel.replace("\\", "/")
+            if not (root / target).is_file():
+                errors.append(f"series master image missing for {owner}: {rel} (declared by {declared})")
+            elif target not in tracked:
+                errors.append(
+                    f"series master image must be committed to Git for {owner}: {rel} "
+                    f"(declared by {declared}; see AGENTS.md 提交规则)"
+                )
+    return errors
+
+
 def collect_errors(root: Path | None = None) -> list[str]:
     root = root or repo_root()
     errors: list[str] = []
@@ -585,6 +653,8 @@ def collect_errors(root: Path | None = None) -> list[str]:
     tracked = tracked_local_artifacts(root)
     if tracked:
         errors.append("local installer receipts/backups are tracked by git: " + ", ".join(tracked[:10]))
+
+    errors.extend(untracked_series_masters(root))
 
     return errors
 

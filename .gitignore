@@ -78,8 +78,10 @@ StoryOS_*_Hotfix.py
 workbench/tmp/
 
 # Episode media policy:
-# all image/video/audio/archive binaries below episodes/ remain LOCAL ONLY.
-# Git tracks story/meta/code; pixel assets are linked by SHA/media-index.
+# all image/video/audio/archive binaries below episodes/ remain LOCAL ONLY,
+# EXCEPT series master images（系列剧本母版图）: every path referenced by
+# episodes/**/meta/series-character-identity.json MUST be committed to Git.
+# Git tracks story/meta/code; other pixel assets are linked by SHA/media-index.
 episodes/**/media/
 episodes/**/*.png
 episodes/**/*.jpg
@@ -100,7 +102,8 @@ episodes/**/*.mp3
 episodes/**/*.flac
 episodes/**/*.zip
 
-# Explicit exception: character anchors are allowed in Git.
+# Series master images / character anchors: REQUIRED in Git, not merely allowed.
+# Scope and enforcement: AGENTS.md「提交规则」and contract_sync.untracked_series_masters().
 !episodes/**/assets/characters/**
 
 # research/competitors/** and research/account/** are intentionally not ignored.
