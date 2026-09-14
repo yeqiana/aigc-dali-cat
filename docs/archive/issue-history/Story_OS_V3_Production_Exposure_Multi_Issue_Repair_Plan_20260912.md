@@ -1,5 +1,8 @@
 # Story OS V3 Production Exposure Multi Issue Repair Plan
 
+> **生命周期：IMPLEMENTED_HISTORICAL_PLAN / MIGRATED（2026-09-14）**
+> 本文保留为 EP003 Production Hardening 的历史实施方案，不再维护全局问题状态。E001～E007 已统一映射到 `reports/Story_OS_稳定生产闭环_暴露问题清单_20260911.md`（W-17、W-78～W-83）；当前状态以该 Canonical 清单为准。
+
 更新时间：2026-09-12
 
 目标：

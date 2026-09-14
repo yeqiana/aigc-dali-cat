@@ -1,5 +1,8 @@
 # Story OS Incremental Review 增量复审闭环治理方案 V1.0
 
+> **生命周期：IMPLEMENTED_HISTORICAL_PLAN / MIGRATED（2026-09-14）**
+> 本文保留为“用户例外返修后重新进入审核链”的历史设计。当前已具备 target-only exception review / SHA-bound incremental review 能力，对应 Canonical W-86 已修复；后续状态不在本文维护。
+
 更新时间：2026-09-12
 
 ## 一、背景

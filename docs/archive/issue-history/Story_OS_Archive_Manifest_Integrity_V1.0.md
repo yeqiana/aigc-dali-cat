@@ -1,8 +1,11 @@
 # Story OS Archive Manifest Integrity V1.0
 
+> **生命周期：IMPLEMENTED_GOVERNANCE_RECORD / MIGRATED（2026-09-14）**
+> 本文保留为归档重定位完整性的实现与验收记录。对应 Canonical W-87 已完成最小闭环修复；当前状态由统一暴露问题清单维护，本文继续作为 resolver/verifier 的设计依据与历史证据。
+
 更新日期：2026-09-11
 范围：归档治理（不修改 Runtime、不修改生产流程、不修改 Gate 逻辑）
-状态：已完成最小闭环修复（未提交 git）
+状态：已完成最小闭环修复（Canonical W-87）
 
 ## 一、背景
 

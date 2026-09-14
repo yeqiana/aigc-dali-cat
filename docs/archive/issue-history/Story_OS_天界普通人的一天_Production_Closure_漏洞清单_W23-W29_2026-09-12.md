@@ -1,5 +1,7 @@
 # Story OS《天界普通人的一天》Production Closure 漏洞清单（W-23 ~ W-29）
 
+> **Canonical migration notice（2026-09-14）**：本文 W-23～W-36 属 Episode 局部历史编号，已映射到 `reports/Story_OS_稳定生产闭环_暴露问题清单_20260911.md` 的全局 ID（主要为 W-15/W-30/W-34/W-60～W-69）。后续不得把本文局部编号当成全局 W-ID。
+
 - 日期：2026-09-12
 - Episode：`episodes/天界普通人的一天/`
 - 分支：`story-platform-v3`
@@ -8,7 +10,7 @@
 
 > 编号说明：本文件的 **W-23 ~ W-29 是本 Episode 治理编号**，由用户在本轮任务中点名指定。仓库既有
 > `reports/Story_OS_稳定生产闭环_暴露问题清单_20260911.md` 另有一套全局 W 系列（已用到 W-25 ~ W-34，见
-> `reports/EP003_生产暴露问题整理_20260911.md`）。两者命名空间不同，本文件不修改、不重排历史清单。
+> `reports/archive/issue-history/EP003_生产暴露问题整理_20260911.md`）。两者命名空间不同，本文件不修改、不重排历史清单。
 
 ## 1. 本轮真实生产事实（判定基线）
 

@@ -1,5 +1,7 @@
 # EP003 Production Exposure Audit
 
+> **Canonical migration notice（2026-09-14）**：本文 E001～E007 已映射到统一清单。历史上建议使用的 W-21/W-22/W-23 与全局编号发生冲突，现分别按 canonical mapping 处理（E001→W-17，E002→W-79，E003→W-78，E006→W-80 等）。全局编号以 `reports/Story_OS_稳定生产闭环_暴露问题清单_20260911.md` 为准。
+
 日期：2026-09-11
 
 Episode：10_彼此的天上 / EP003（雾中的另一座生活区）

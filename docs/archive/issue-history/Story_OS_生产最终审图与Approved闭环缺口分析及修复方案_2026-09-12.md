@@ -1,5 +1,8 @@
 # Story OS 生产最终审图与 Approved 闭环缺口分析及修复方案
 
+> **生命周期：IMPLEMENTED_HISTORICAL_PLAN / MIGRATED（2026-09-14）**
+> 本文保留为 Final Candidate / Approved 闭环的设计与修复历史。核心缺口已迁入 Canonical 清单（W-60、W-64、W-70、W-71）；当前问题状态以 `reports/Story_OS_稳定生产闭环_暴露问题清单_20260911.md` 为准。
+
 更新时间：2026-09-12
 
 适用项目：Story OS V3
