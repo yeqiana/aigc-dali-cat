@@ -132,6 +132,8 @@ def load_queue(ep: Path, *, max_parallel: int | None = None) -> dict:
 
 
 def save_queue(ep: Path, q: dict) -> None:
+    import episode_lifecycle
+    episode_lifecycle.assert_writable(Path(ep).resolve(), "production_queue.write")
     q["updated_at"] = now()
     write_json(Path(ep).resolve() / QUEUE_REL, q)
 
@@ -201,6 +203,46 @@ def ledger(ep: Path) -> dict:
 def ledger_state(ep: Path, frame: int) -> str:
     return str((((ledger(ep).get("frames") or {}).get(f"{frame:02d}") or {})
                 .get("status") or "PENDING"))
+
+
+def terminalize_superseded_history(ep: Path, q: dict) -> list[dict]:
+    """Mark only provably superseded technical queue history terminal.
+
+    This mutates ``q`` in memory; callers must hold the scheduler lock and call
+    ``save_queue``. Unknown history is deliberately left untouched.
+    """
+    frames = ledger(ep).get("frames") or {}
+    items = q.get("items") or []
+    changed: list[dict] = []
+    for index, item in enumerate(items):
+        if item.get("status") not in {"tech_failed", "blocked", "interrupted_unknown"}:
+            continue
+        frame_no = int(item.get("frame") or 0)
+        if frame_no <= 0:
+            continue
+        evidence = None
+        for later in items[index + 1:]:
+            if int(later.get("frame") or 0) == frame_no and later.get("status") == "generated":
+                evidence = {"type": "queue_item", "id": later.get("id")}
+                break
+        frame = frames.get(f"{frame_no:02d}") or frames.get(str(frame_no)) or {}
+        if evidence is None and isinstance(frame, dict):
+            approved = frame.get("approved_asset")
+            current = frame.get("current_candidate")
+            candidate = approved if isinstance(approved, dict) and approved.get("sha256") else current
+            if isinstance(candidate, dict) and candidate.get("sha256"):
+                failed_at = str(item.get("completed_at") or item.get("started_at") or item.get("queued_at") or "")
+                recorded_at = str(candidate.get("recorded_at") or "")
+                if not failed_at or not recorded_at or recorded_at >= failed_at:
+                    evidence = {"type": "ledger_candidate", "sha256": candidate.get("sha256"), "recorded_at": recorded_at or None}
+        if evidence is None:
+            continue
+        item["superseded_from_status"] = item.get("status")
+        item["status"] = "superseded"
+        item["superseded_at"] = now()
+        item["superseded_by"] = evidence
+        changed.append(item)
+    return changed
 
 
 def dependency_satisfied(ep: Path, q: dict, dep: int,
@@ -342,8 +384,10 @@ def ledger_success(ep: Path, item: dict, result: dict,
 def ledger_tech_fail(ep: Path, item: dict, code: str, message: str) -> None:
     import ledger_call
 
+    runner_request_id = str(((item.get("execution") or {}).get("runner_request_id")) or "").strip() or None
     ledger_call.tech_fail(ep, frame=int(item["frame"]), code=code,
-                          message=message)
+                          message=message, provider_invoked=bool(runner_request_id),
+                          runner_request_id=runner_request_id)
 
 
 def self_test() -> None:

@@ -148,13 +148,6 @@
     "distinct_frame_mapping_requires_review": true,
     "codex_subscription_runtime": "CODEX",
     "codex_subscription_logical_batch_config": "config/agent_runtime/codex-subscription-batch.json",
-    "codex_logical_batch_size": 5,
-    "codex_logical_batch_max_inflight_images": 3,
-    "codex_logical_batch_adaptive_steps": [
-      3,
-      2,
-      1
-    ],
     "codex_logical_batch_requires_api_key": false,
     "codex_logical_batch_native_multi_image": false,
     "codex_logical_batch_single_http_request": false,

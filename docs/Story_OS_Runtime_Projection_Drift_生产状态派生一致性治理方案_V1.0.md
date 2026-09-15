@@ -1,5 +1,8 @@
 # Story OS Runtime Projection Drift 生产状态派生一致性治理方案 V1.0
 
+> **生命周期：OPEN_GOVERNANCE_REFERENCE / MIGRATED（2026-09-14）**
+> 本文保留为 Runtime Projection / Resume / Queue-Ledger 对账的治理设计，不再维护问题状态。`next_action` 已有重算与 stale queue 过滤，但 projection/capsule 的统一 source-SHA 失效机制仍未完全闭环；当前状态统一看 Canonical W-15 / W-30 / W-34 / W-71。
+
 更新时间：
 2026-09-12
 

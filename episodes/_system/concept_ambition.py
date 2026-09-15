@@ -332,6 +332,37 @@ def self_test():
         globals()["ordinary_life_mode"]=old
     print("CONCEPT AMBITION V2.1 SELF-TEST PASS")
 
+def re_review_plan(ep: Path) -> dict:
+    ep = Path(ep).resolve()
+    cp = ep / CANDIDATES_REL
+    review_path = ep / REVIEW_REL
+    if not cp.is_file():
+        return {"required": False, "reason": "CANDIDATES_MISSING"}
+    current_sha = sha256_file(cp)
+    review = read_json(review_path) if review_path.is_file() else {}
+    reviewed_sha = str(review.get("candidates_sha256") or "").lower()
+    drifted = bool(reviewed_sha and reviewed_sha != current_sha.lower())
+    attempts = []
+    review_root = ep / "meta/runtime/reviews"
+    if review_root.is_dir():
+        for path in review_root.glob("concept-ambition-attempt-*-request.json"):
+            try:
+                attempts.append(int(path.name.split("-attempt-", 1)[1].split("-", 1)[0]))
+            except Exception:
+                continue
+    reviewed_attempt = int(((review.get("critic_provenance") or {}).get("attempt") or 0)) if isinstance(review, dict) else 0
+    next_attempt = max([reviewed_attempt, *attempts, 0]) + 1
+    return {
+        "required": (not review_path.is_file()) or drifted,
+        "reason": "CANDIDATES_SHA_DRIFT" if drifted else ("REVIEW_MISSING" if not review_path.is_file() else "CURRENT_REVIEW_VALID"),
+        "current_candidates_sha256": current_sha,
+        "reviewed_candidates_sha256": reviewed_sha or None,
+        "preserve_existing_review": review_path.is_file(),
+        "next_attempt": next_attempt,
+        "action": "RUN_CONCEPT_AMBITION_CRITIC" if ((not review_path.is_file()) or drifted) else "NONE",
+    }
+
+
 def main():
     ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("init"); p.add_argument("episode_dir")
@@ -339,11 +370,14 @@ def main():
     p=sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK"); p.add_argument("--bounded-devspace",action="store_true")
     p=sub.add_parser("verify"); p.add_argument("episode_dir")
     p=sub.add_parser("show"); p.add_argument("episode_dir")
+    p=sub.add_parser("re-review-plan"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
     a=ap.parse_args()
     if a.cmd=="self-test": self_test(); return 0
     ep=resolve_ep(a.episode_dir)
     if a.cmd=="init": return init_candidates(ep)
+    if a.cmd=="re-review-plan":
+        print(json.dumps(re_review_plan(ep),ensure_ascii=False,indent=2)); return 0
     if a.cmd=="show":
         for rel in (CANDIDATES_REL,REVIEW_REL):
             p=ep/rel; print(f"--- {rel} ---"); print(p.read_text(encoding="utf-8") if p.is_file() else "{}")

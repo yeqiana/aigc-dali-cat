@@ -1,101 +1,12 @@
 {
-  "schema_version": 1,
-  "story_os_version": "2.6.1",
-  "candidates_sha256": "075db596f4025a4a1893492cef1eae53685f91bb548f48d0d8b1943f7b555223",
-  "critic_provenance": {
-    "runtime": "WORK_ISOLATED",
-    "base_runtime": "WORK",
-    "isolated_session": true,
-    "execution_source": "product_runtime",
-    "attempt": 1,
-    "reviewed_at": "2026-09-08T23:55:00+08:00"
-  },
   "candidates": [
     {
       "id": "C01",
       "ambition_band": "A2",
       "scores": {
-        "one_line_hook": 13,
+        "one_line_hook": 14,
         "hero_frame": 12,
         "escalation_ceiling": 12,
-        "climax_visual_payoff": 8,
-        "mechanism_novelty": 9,
-        "discussion_space": 7
-      },
-      "concept_voltage": 61,
-      "wordless_test": {
-        "stop_scroll": true,
-        "escalation_readable": true,
-        "curiosity_gap": true
-      },
-      "strengths": [
-        "暗夜床底数物结构克制",
-        "嫁妆一物一数代入感强"
-      ],
-      "risks": [
-        "物证推进稍慢",
-        "高潮依赖单一声音"
-      ]
-    },
-    {
-      "id": "C02",
-      "ambition_band": "A2",
-      "scores": {
-        "one_line_hook": 12,
-        "hero_frame": 12,
-        "escalation_ceiling": 11,
-        "climax_visual_payoff": 9,
-        "mechanism_novelty": 9,
-        "discussion_space": 6
-      },
-      "concept_voltage": 59,
-      "wordless_test": {
-        "stop_scroll": true,
-        "escalation_readable": true,
-        "curiosity_gap": true
-      },
-      "strengths": [
-        "血缘替换惊吓点明确",
-        "静默家庭场景有张力"
-      ],
-      "risks": [
-        "影子命题偏常见",
-        "后期解释耗字幕"
-      ]
-    },
-    {
-      "id": "C03",
-      "ambition_band": "A3",
-      "scores": {
-        "one_line_hook": 14,
-        "hero_frame": 13,
-        "escalation_ceiling": 14,
-        "climax_visual_payoff": 10,
-        "mechanism_novelty": 11,
-        "discussion_space": 8
-      },
-      "concept_voltage": 70,
-      "wordless_test": {
-        "stop_scroll": true,
-        "escalation_readable": true,
-        "curiosity_gap": true
-      },
-      "strengths": [
-        "香断自燃视觉强",
-        "旧俗禁忌贴合系列"
-      ],
-      "risks": [
-        "警示命题偏既定",
-        "反派动机弱"
-      ]
-    },
-    {
-      "id": "C04",
-      "ambition_band": "A3",
-      "scores": {
-        "one_line_hook": 13,
-        "hero_frame": 12,
-        "escalation_ceiling": 13,
         "climax_visual_payoff": 9,
         "mechanism_novelty": 10,
         "discussion_space": 7
@@ -107,12 +18,90 @@
         "curiosity_gap": true
       },
       "strengths": [
-        "锁眼朝床构图单一却压迫",
-        "囚禁立意贴旧物"
+        "床底报数与嫁妆逐项对应，听觉钩子明确",
+        "最后数到新娘具备清晰升级"
       ],
       "risks": [
-        "高潮依赖锁眼开合",
-        "主角能动性弱"
+        "中段主要靠物品减少，视觉变化幅度有限",
+        "高潮仍偏单点贴近惊吓"
+      ]
+    },
+    {
+      "id": "C02",
+      "ambition_band": "A2",
+      "scores": {
+        "one_line_hook": 13,
+        "hero_frame": 13,
+        "escalation_ceiling": 11,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 8,
+        "discussion_space": 7
+      },
+      "concept_voltage": 62,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "镜中无影是高识别度首图",
+        "母亲身份替换容易建立情感威胁"
+      ],
+      "risks": [
+        "镜像/替身机制较常见",
+        "后脑第二张脸容易落入熟悉恐怖母题"
+      ]
+    },
+    {
+      "id": "C03",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 14,
+        "hero_frame": 14,
+        "escalation_ceiling": 13,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 9,
+        "discussion_space": 7
+      },
+      "concept_voltage": 67,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "三炷香齐断具有瞬时停顿感",
+        "旧俗婚礼语境天然匹配"
+      ],
+      "risks": [
+        "香灰写字依赖文字才能完整理解",
+        "断香复燃的终局规模有限"
+      ]
+    },
+    {
+      "id": "C04",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 13,
+        "hero_frame": 14,
+        "escalation_ceiling": 13,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 69,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "所有锁眼对床的空间规则有统一视觉语言",
+        "锁眼睁开可形成连续升级"
+      ],
+      "risks": [
+        "关键动作较单一",
+        "床上人消失后的因果空间不足"
       ]
     },
     {
@@ -124,162 +113,177 @@
         "escalation_ceiling": 16,
         "climax_visual_payoff": 12,
         "mechanism_novelty": 14,
-        "discussion_space": 9
+        "discussion_space": 8
       },
-      "concept_voltage": 83,
+      "concept_voltage": 82,
       "wordless_test": {
         "stop_scroll": true,
         "escalation_readable": true,
         "curiosity_gap": true
       },
       "strengths": [
-        "喜被活物化机制新鲜",
-        "绣样转头有真实老物载体"
+        "传统喜被纹样活物化具有强旧物辨识度",
+        "从换位到转头再到床下黄土，三段升级清楚"
       ],
       "risks": [
-        "被子拱起略喜感",
-        "需控制不滑向搞笑"
+        "被面拱起若表现失控会偏喜感",
+        "机制集中于单一物件"
       ]
     },
     {
       "id": "C06",
       "ambition_band": "A4",
       "scores": {
-        "one_line_hook": 15,
-        "hero_frame": 16,
-        "escalation_ceiling": 16,
-        "climax_visual_payoff": 12,
-        "mechanism_novelty": 13,
+        "one_line_hook": 17,
+        "hero_frame": 17,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 14,
         "discussion_space": 9
       },
-      "concept_voltage": 81,
+      "concept_voltage": 87,
       "wordless_test": {
         "stop_scroll": true,
         "escalation_readable": true,
         "curiosity_gap": true
       },
       "strengths": [
-        "双院嵌套空间感强",
-        "喜字门缝进入极致"
+        "喜字下第二院门是强封面画面",
+        "双院同步婚礼具备空间级异常和高讨论度"
       ],
       "risks": [
-        "两院明暗需一致",
-        "闭环解释稍绕"
+        "双场景一致性要求高",
+        "若后续解释过多会削弱直观冲击"
       ]
     },
     {
       "id": "C07",
       "ambition_band": "A4",
       "scores": {
-        "one_line_hook": 15,
-        "hero_frame": 15,
-        "escalation_ceiling": 16,
-        "climax_visual_payoff": 12,
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
         "mechanism_novelty": 13,
         "discussion_space": 9
       },
-      "concept_voltage": 80,
+      "concept_voltage": 88,
       "wordless_test": {
         "stop_scroll": true,
         "escalation_readable": true,
         "curiosity_gap": true
       },
       "strengths": [
-        "分身花轿视觉冲击",
-        "多重嫁的递归错觉"
+        "花轿里坐着自己属于强一眼反常",
+        "第二顶写着自己名字的花轿能继续抬升规模"
       ],
       "risks": [
-        "分身易与已有重复",
-        "结局需明确分层"
+        "分身与时间循环题材相对成熟",
+        "需要避免仅靠重复同一张脸制造异常"
       ]
     },
     {
       "id": "C08",
-      "ambition_band": "A3",
+      "ambition_band": "A2",
       "scores": {
-        "one_line_hook": 13,
+        "one_line_hook": 12,
         "hero_frame": 12,
         "escalation_ceiling": 12,
         "climax_visual_payoff": 9,
-        "mechanism_novelty": 10,
-        "discussion_space": 7
+        "mechanism_novelty": 8,
+        "discussion_space": 6
       },
-      "concept_voltage": 63,
+      "concept_voltage": 59,
       "wordless_test": {
         "stop_scroll": true,
         "escalation_readable": true,
-        "curiosity_gap": true
+        "curiosity_gap": false
       },
       "strengths": [
-        "灯影人群营造被围观",
-        "新房环境贴合"
+        "满墙人影适合低照度纪实画面",
+        "人影逐渐围床具备可读升级"
       ],
       "risks": [
-        "影子来历较空",
-        "缺少核心实动作"
+        "影子群体属于常见恐怖符号",
+        "核心机制缺少独特旧物或人物关系钩子"
       ]
     },
     {
       "id": "C09",
       "ambition_band": "A3",
       "scores": {
-        "one_line_hook": 14,
-        "hero_frame": 13,
-        "escalation_ceiling": 14,
-        "climax_visual_payoff": 10,
+        "one_line_hook": 16,
+        "hero_frame": 16,
+        "escalation_ceiling": 15,
+        "climax_visual_payoff": 11,
         "mechanism_novelty": 11,
-        "discussion_space": 8
+        "discussion_space": 9
       },
-      "concept_voltage": 70,
+      "concept_voltage": 78,
       "wordless_test": {
         "stop_scroll": true,
         "escalation_readable": true,
         "curiosity_gap": true
       },
       "strengths": [
-        "明天的自己摇头劝逃",
-        "绣鞋留白好"
+        "窗内看见明天的自己具有即时身份冲突",
+        "绣鞋收尾保留时间悖论讨论空间"
       ],
       "risks": [
-        "预知命题偏熟",
-        "动作仅一次回头"
+        "未来自己警告现在自己的结构较熟悉",
+        "高潮视觉规模不及空间嵌套或系统性禁锢"
       ]
     },
     {
       "id": "C10",
       "ambition_band": "A4",
       "scores": {
-        "one_line_hook": 18,
+        "one_line_hook": 19,
         "hero_frame": 18,
-        "escalation_ceiling": 18,
+        "escalation_ceiling": 19,
         "climax_visual_payoff": 14,
         "mechanism_novelty": 15,
         "discussion_space": 10
       },
-      "concept_voltage": 93,
+      "concept_voltage": 95,
       "wordless_test": {
         "stop_scroll": true,
         "escalation_readable": true,
         "curiosity_gap": true
       },
       "strengths": [
-        "记忆被药物与角色扮演替换的机制强",
-        "婚鞋铁环/金镯锁孔/新房土房构成层层夺回真实",
-        "货车同款嫁衣女孩把个体恐惧扩成体系",
-        "梦境与真相双层留白",
-        "M00旧数码与90s-00s农村土房天然契合"
+        "药瓶、婚鞋铁环、金镯锁孔、土房把记忆替换与禁锢变成连续可见证据",
+        "从个人记忆异常升级到同款嫁衣女孩群体，异常规模和讨论空间显著高于其他候选",
+        "Cover/Mid/Climax 不依赖字幕也能形成逐层夺回真实的视觉链"
       ],
       "risks": [
-        "题材涉及禁锢需保持虚构声明",
-        "药名/剂量/锁具解法不可写实",
-        "需避免教唆性细节"
+        "涉及禁锢与药物，必须维持虚构且避免可操作细节",
+        "若解释药物机制过多会削弱悬疑并触碰不必要的写实风险"
       ]
     }
   ],
   "selected_id": "C10",
-  "selection_reason": "记忆被药物与角色扮演替换的核心机制在多层旧物证据（无标签药瓶/婚鞋铁环/金镯锁孔/土房/同款嫁衣女孩）中可视化成立，三张前置图均可无字停顿，且终局梦境与真相的留白给出至少两种并行解释；是池中唯一同时兼顾题材现实性与传播力的高野心方向。",
+  "selection_reason": "C10 在一眼可读的婚礼旧物证据、持续升级的身份/记忆冲突和终局群体性扩张三方面同时领先；封面到高潮均可在无字幕情况下理解异常，而且最终仍保留‘哪层记忆是真实’的讨论空间。相比 C06/C07，它不只依赖单一空间或分身机制，而是形成完整的现实证据链，因此作为本轮唯一优先概念。",
   "issue_codes": [],
   "summary": {
     "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "candidates_sha256": "a500246e94e18ef096f1db7d42a74d9b8ba8570e4ed24e25dd7636bd9aa5d5ae",
+  "critic_provenance": {
+    "schema_version": 2,
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 2,
+    "reviewed_at": "2026-09-15T21:10:39+08:00",
+    "workspace_transport": "DEVSPACE",
+    "isolation_mode": "fresh_product_review_turn",
+    "webcodex_used": false,
+    "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/concept-ambition-attempt-2-request.json",
+    "request_id": "concept-ambition-a2-53669e83f4890f72",
+    "request_fingerprint": "53669e83f4890f722afbc7630d092f6d0e204df22bd14b5b67c5500461488da9"
   }
 }

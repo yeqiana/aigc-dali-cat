@@ -108,7 +108,7 @@ class RecoveryTests(unittest.TestCase):
 
     def test_transient_failure_recovers_and_completes(self):
         calls=[]
-        def execute(ep):
+        def execute(ep, **kwargs):
             calls.append(1)
             if len(calls)==1: return 21
             atomic_write_json(ep / "meta/episode-state.json", {"current_state":"PUBLISH_READY"})
@@ -125,7 +125,7 @@ class RecoveryTests(unittest.TestCase):
                           {"schema_version": 1, "items": rows, "waves": []})
         drained = []
 
-        def cycle(ep):
+        def cycle(ep, **kwargs):
             q = batch.load_queue(ep)
             ready = [x for x in q["items"] if x["status"] == "queued"]
             if ready:
@@ -248,6 +248,28 @@ class RecoveryTests(unittest.TestCase):
         frame=json.loads((self.ep/"meta/production-ledger.json").read_text())["frames"]["01"]
         self.assertEqual(frame["status"],"TECH_FAILED")
         self.assertEqual(frame["attempts"][-1]["result"],"technical_failure")
+
+    def test_recovery_preserves_provider_capacity_machine_code(self):
+        item=self._running_item()
+        production_recovery.prepare_execution(self.ep,item)
+        production_recovery.mark_worker_pending(self.ep,item)
+        production_recovery.write_lifecycle(
+            self.ep,item,"FAILED",worker_pid=99999,
+            error="PROVIDER_CAPACITY: requested=gpt-image-2; log=worker.jsonl",
+            result={"returncode":99,"stdout":"PROVIDER_CAPACITY: requested=gpt-image-2"},
+        )
+        ledger=self._active_ledger()
+        ledger["frames"]["01"]["attempts"][-1]["runtime_transaction_id"]=(item.get("execution") or {}).get("transaction_id")
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json",ledger)
+        q=batch.load_queue(self.ep)
+        report=production_recovery.reconcile_locked(self.ep,q)
+        self.assertEqual(report["rows"][0]["outcome"],"WORKER_FAILURE_REPLAYED")
+        self.assertEqual(q["items"][0]["status"],"tech_failed")
+        self.assertEqual(q["items"][0]["technical_failure_code"],"PROVIDER_CAPACITY")
+        frame=json.loads((self.ep/"meta/production-ledger.json").read_text())["frames"]["01"]
+        self.assertEqual(frame["status"],"TECH_FAILED")
+        self.assertEqual(frame["attempts"][-1]["error"]["code"],"PROVIDER_CAPACITY")
 
     def test_recovery_replays_ledger_commit_missing_from_queue(self):
         item=self._running_item()

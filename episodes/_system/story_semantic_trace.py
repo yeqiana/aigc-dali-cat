@@ -42,6 +42,7 @@ import hashlib
 import json
 from pathlib import Path
 
+import evidence_time
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -254,6 +255,10 @@ def validate_frame(trace, requirement, expected_contract_sha=None) -> list:
     if not isinstance(provenance, dict) or str(provenance.get("source") or "") not in PROVENANCE_SOURCES:
         findings.append(("semantic_evidence_missing_provenance",
                          "story_semantic_trace.provenance.source must be one of " + "/".join(PROVENANCE_SOURCES)))
+    else:
+        for error in evidence_time.validate_timestamp(
+                provenance.get("reviewed_at"), field="story_semantic_trace.provenance.reviewed_at", required=True):
+            findings.append(("semantic_timestamp_invalid", error))
     return findings
 
 

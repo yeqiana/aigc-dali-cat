@@ -250,7 +250,8 @@ def test_entity_selection_limits_verdict_scope(tmp_path, monkeypatch):
 
 def test_script_has_no_inline_credential_literal():
     source = (PROJECT_ROOT / "scripts" / "phase9_consistency_scan.py").read_text(encoding="utf-8")
-    assert "os.environ.get(\"STORYOS_MYSQL_PWD\"" in source
+    assert "storage_config.storage_summary()" in source
+    assert 'os.environ.get("STORYOS_MYSQL_PWD"' not in source
     assert "password=" not in source
     assert "connect(" not in source
 

@@ -1,5 +1,8 @@
 # Story OS 仓库模块化整理与资产生命周期治理方案 V1.0
 
+> **生命周期：ACTIVE_GOVERNANCE_REFERENCE / ISSUE_STATUS_MIGRATED（2026-09-14）**
+> 本文继续作为仓库模块/资产生命周期治理参考；其中发现的 Asset Boundary、文档膨胀、仓库卫生、Visual Profile 治理问题已分别迁入 Canonical W-24 / W-76 / W-77 / W-80，当前状态不在本文重复维护。
+
 更新时间：2026-09-11
 
 ## 一、目标

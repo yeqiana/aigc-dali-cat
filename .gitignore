@@ -21,6 +21,9 @@ desktop.ini
 .tmp-codex-critic-home/
 _tmp_*
 episodes/_system/_tmp_*
+# Detached-driver contract tests use tempfile under episodes/_tests; Windows child
+# processes can briefly outlive cleanup and leave these smoke directories behind.
+episodes/_tests/driver-*/
 
 # 归档豁免：.storyos/archive/ 下是有据可查的正式归档资产（带 README、走 git mv、
 # 逐文件 SHA-256 校验），不受上面 _tmp_* 等全局临时规则约束。

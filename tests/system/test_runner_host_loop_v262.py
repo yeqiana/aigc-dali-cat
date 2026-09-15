@@ -208,6 +208,45 @@ class TechnicalRetryPolicyTests(unittest.TestCase):
         self.assertEqual(image_model_policy.classify_backend_error("image generation failed: network error: error sending request"), "NETWORK_ERROR")
         self.assertEqual(image_scheduler.classify_error("NETWORK_ERROR: error sending request"), "NETWORK_ERROR")
 
+    def test_provider_capacity_is_explicit_retryable_technical_failure(self):
+        line = "Selected model is at capacity. Please try a different model."
+        self.assertEqual(image_model_policy.classify_backend_error(line), "PROVIDER_CAPACITY")
+        self.assertEqual(image_scheduler.classify_error(line), "PROVIDER_CAPACITY")
+        self.assertEqual(image_scheduler.classify_error("PROVIDER_CAPACITY: requested=gpt-image-2"), "PROVIDER_CAPACITY")
+        self.assertIn("PROVIDER_CAPACITY", image_scheduler.RETRYABLE_TECH_CODES)
+
+    def test_third_capacity_failure_closes_epoch_immediately(self):
+        item = {"attempts": 3, "technical_retry_epoch_start_attempt": 0}
+        status = image_scheduler._terminal_technical_status(item, "PROVIDER_CAPACITY")
+        self.assertEqual(status, "external_blocked")
+        self.assertEqual(item["external_block"]["reason"], "technical_retry_exhausted")
+        self.assertEqual(item["external_block"]["code"], "PROVIDER_CAPACITY")
+
+    def test_capacity_exhaustion_can_advance_non_strict_model_without_erasing_history(self):
+        item = {"attempts": 3, "technical_retry_epoch_start_attempt": 0,
+                "model": "gpt-image-2.5-flare", "strict_model": False,
+                "external_block": {"reason": "technical_retry_exhausted"}}
+        target = image_scheduler._apply_model_failover(item, "PROVIDER_CAPACITY")
+        self.assertEqual(target, "gpt-image-2.5-sunburst")
+        self.assertEqual(item["model"], "gpt-image-2.5-sunburst")
+        self.assertEqual(item["technical_retry_epoch_start_attempt"], 3)
+        self.assertEqual(item["model_failovers"][0]["from"], "gpt-image-2.5-flare")
+        self.assertNotIn("external_block", item)
+
+    def test_strict_model_never_auto_fails_over(self):
+        item = {"attempts": 3, "model": "gpt-image-2.5-flare", "strict_model": True}
+        self.assertIsNone(image_scheduler._apply_model_failover(item, "PROVIDER_CAPACITY"))
+        self.assertEqual(item["model"], "gpt-image-2.5-flare")
+
+    def test_scheduler_stays_retryable_while_an_availability_fallback_exists(self):
+        queue = {"items": [{"status": "external_blocked", "model": "gpt-image-2.5-sunburst",
+                            "strict_model": False, "technical_failure_code": "PROVIDER_CAPACITY"}]}
+        self.assertEqual(image_scheduler._scheduler_terminal_rc(
+            queue,has_block=False,has_failure=True),21)
+        queue["items"][0]["model"]="gpt-image-2"
+        self.assertEqual(image_scheduler._scheduler_terminal_rc(
+            queue,has_block=False,has_failure=True),24)
+
     def test_second_failed_attempt_backs_off_then_requeues_same_item(self):
         with tempfile.TemporaryDirectory() as td:
             ep = Path(td)
@@ -601,7 +640,8 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
             if name.endswith("meta/story-gates.json"):
                 return {"reviews": reviews or {}}
             return {}
-        with patch.object(next_action, "read_json", side_effect=fake_read), \
+        with patch.object(next_action.runtime_portability, "assert_episode_directory", return_value=None), \
+                patch.object(next_action, "read_json", side_effect=fake_read), \
                 patch.object(next_action, "state", return_value=state), \
                 patch.object(next_action.runtime_router, "detect", return_value=("WORK", "test")), \
                 patch.object(next_action.runtime_router, "image_execution_runtime", return_value=("CODEX", "test")), \
@@ -694,6 +734,59 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
         self.assertEqual((action["action"], action["executor"]), ("REFRESH_AUTHORITY_IMAGES", "CODEX_IMAGE"))
         self.assertEqual(action["frames"], frames)
 
+    def test_stale_visual_lock_generation_routes_to_machine_refresh_before_review(self):
+        frames = [1, 5, 16, 17]
+        queue = {"items": [{"frame": n, "kind": "original", "scope": "visual_lock", "status": "generated"} for n in frames]}
+        ledger = {f"{n:02d}": {"status": "PASSED"} for n in frames}
+        stale = [{
+            "frame": 16,
+            "recorded_frame_contract_sha256": "old",
+            "current_frame_contract_sha256": "new",
+            "candidate_sha256": "a" * 64,
+        }]
+        with patch.object(next_action.visual_lock_v21, "stale_generation_bindings", return_value=stale):
+            action = self._derive(state="STORYBOARD_LOCKED", queue=queue, ledger=ledger, visual_errors=["stale"])
+        self.assertEqual((action["action"], action["executor"]), ("PREPARE_STALE_VISUAL_LOCK_REFRESH", "MACHINE"))
+        self.assertEqual(action["frames"], [16])
+        self.assertNotIn(1, action["frames"])
+
+    def test_machine_contract_refresh_preserves_budget_and_does_not_forge_user_approval(self):
+        frame = {
+            "status": "PASSED",
+            "content_repairs_used": 1,
+            "current_candidate": {"sha256": "c" * 64, "path": "candidate.png"},
+            "attempts": [{
+                "candidate": {"sha256": "c" * 64},
+                "request": {"frame_contract": {"contract_sha256": "old-contract"}},
+            }],
+            "reviews": [{"decision": "pass"}],
+        }
+        data = {"frames": {"16": frame}}
+        with patch.object(production_ledger_manage, "get_ledger", return_value=(Path("ledger.json"), data)), \
+                patch.object(production_ledger_manage, "current_frame_contract_provenance", return_value={"contract_sha256": "new-contract"}), \
+                patch.object(production_ledger_manage.resolved_frame_contract, "verify_recorded_provenance", return_value=["frame 16 generation frame_contract_sha256 stale"]), \
+                patch.object(production_ledger_manage, "save_json"):
+            result = production_ledger_manage.authorize_machine_contract_refresh(Path("ep"), 16, reason="canonical contract changed")
+        self.assertEqual(result["status"], "AUTHORITY_REFRESH_AUTHORIZED")
+        self.assertEqual(frame["status"], "AUTHORITY_REFRESH_AUTHORIZED")
+        self.assertEqual(frame["content_repairs_used"], 1)
+        auth = frame["authority_refresh_authorization"]
+        self.assertEqual(auth["approval_basis"], "machine_verified_frame_contract_drift")
+        self.assertNotIn("approval_text", auth)
+        self.assertEqual(auth["previous_frame_contract_sha256"], "old-contract")
+        self.assertEqual(auth["frame_contract_sha256"], "new-contract")
+
+    def test_machine_action_authorizes_only_requested_stale_frames(self):
+        with patch.object(production_ledger_manage, "authorize_machine_contract_refresh", return_value={
+            "status": "AUTHORITY_REFRESH_AUTHORIZED", "frame": 16, "frame_contract_sha256": "new"
+        }) as authorize:
+            result = machine_action_executor.execute(Path("ep"), {
+                "action": "PREPARE_STALE_VISUAL_LOCK_REFRESH", "executor": "MACHINE", "frames": [16]
+            })
+        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["frames"], [16])
+        authorize.assert_called_once()
+
     def test_authority_refresh_waits_for_new_baseline_master_before_dependents(self):
         queue = {"items": [
             {"frame": 1, "kind": "repair", "scope": "repair", "status": "generated"},
@@ -751,6 +844,19 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
         self.assertTrue(action["hard_stop"])
         self.assertFalse(action["auto_recoverable"])
 
+    def test_capacity_block_with_fallback_routes_to_automatic_technical_retry(self):
+        queue = {"items": [{"frame": 16, "kind": "repair", "scope": "repair",
+                            "status": "external_blocked", "model": "gpt-image-2.5-flare",
+                            "strict_model": False, "technical_failure_code": "PROVIDER_CAPACITY",
+                            "external_block": {"reason": "technical_retry_exhausted"}}]}
+        ledger = {"16": {"status": "TECH_FAILED", "content_repairs_used": 0}}
+        action = self._derive(state="STORYBOARD_LOCKED", queue=queue, ledger=ledger)
+        self.assertEqual((action["action"], action["executor"]),
+                         ("RETRY_TECHNICAL_FAILURES", "CODEX_IMAGE"))
+        self.assertTrue(action["auto_recoverable"])
+        self.assertTrue(action["model_failover"])
+        self.assertEqual(action["frames"], [16])
+
 
 class ContinuousHostLoopTests(unittest.TestCase):
     def test_switch_is_read_from_config(self):
@@ -797,7 +903,8 @@ class ContinuousHostLoopTests(unittest.TestCase):
         runner.assert_called_once_with(Path("ep"), action)
 
     def test_loop_is_bounded(self):
-        with patch.object(workflow_runner, "host_loop_step", return_value=(True, "GENERATE_IMAGES rc=0")), \
+        with patch.object(next_action.runtime_portability, "assert_episode_directory", return_value=None), \
+                patch.object(workflow_runner, "host_loop_step", return_value=(True, "GENERATE_IMAGES rc=0")), \
                 patch.object(workflow_runner.runtime_dag, "execute", return_value=product_runtime_adapter.HOST_ACTION_REQUIRED_RC):
             rc, note = workflow_runner.advance_host_loop(Path("ep"), codex=None, timeout=1800, run_id="r", trace_id="t", max_cycles=2)
         self.assertEqual(rc, product_runtime_adapter.HOST_ACTION_REQUIRED_RC)
@@ -825,16 +932,20 @@ class ContinuousHostLoopTests(unittest.TestCase):
 
     def test_execute_cycle_prefers_the_local_image_action(self):
         action = {"action": "GENERATE_IMAGES", "executor": "CODEX_IMAGE"}
-        with patch.object(episode_runner.next_action, "write", return_value=action), \
-                patch.object(episode_runner, "run_local_image_action", return_value=5) as runner, \
-                patch.object(episode_runner.runtime_dag, "execute", side_effect=AssertionError("DAG must not run for a local image action")):
-            self.assertEqual(episode_runner.execute_cycle(Path("ep")), 5)
-        runner.assert_called_once()
+        with tempfile.TemporaryDirectory() as td:
+            episode = Path(td)
+            with patch.object(episode_runner.next_action, "write", return_value=action), \
+                    patch.object(episode_runner, "run_local_image_action", return_value=5) as runner, \
+                    patch.object(episode_runner.runtime_dag, "execute", side_effect=AssertionError("DAG must not run for a local image action")):
+                self.assertEqual(episode_runner.execute_cycle(episode), 5)
+            runner.assert_called_once()
 
     def test_execute_cycle_falls_back_to_dag(self):
-        with patch.object(episode_runner.next_action, "write", return_value={"action": "VISUAL_LOCK", "executor": "WORK"}), \
-                patch.object(episode_runner.runtime_dag, "execute", return_value=product_runtime_adapter.HOST_ACTION_REQUIRED_RC):
-            self.assertEqual(episode_runner.execute_cycle(Path("ep")), product_runtime_adapter.HOST_ACTION_REQUIRED_RC)
+        with tempfile.TemporaryDirectory() as td:
+            episode = Path(td)
+            with patch.object(episode_runner.next_action, "write", return_value={"action": "VISUAL_LOCK", "executor": "WORK"}), \
+                    patch.object(episode_runner.runtime_dag, "execute", return_value=product_runtime_adapter.HOST_ACTION_REQUIRED_RC):
+                self.assertEqual(episode_runner.execute_cycle(episode), product_runtime_adapter.HOST_ACTION_REQUIRED_RC)
 
 
 if __name__ == "__main__":

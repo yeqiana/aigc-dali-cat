@@ -58,6 +58,7 @@ EXPECTED_POLICY_CONSUMERS = {
     "rolling_frame_review.py",
     "runtime_dag.py",
     "runtime_mode_router.py",
+    "runtime_driver.py",
     "scoped_codex_worker.py",
     "speculative_production.py",
     "story_os.py",

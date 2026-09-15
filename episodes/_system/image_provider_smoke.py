@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse, json
 from pathlib import Path
 
+import image_model_policy
 import image_provider_runtime
 import openai_images_provider
 import runtime_timeout_policy
@@ -18,7 +19,7 @@ def main() -> int:
     p.add_argument("--width",type=int,default=1080)
     p.add_argument("--height",type=int,default=1350)
     p.add_argument("--quality",choices=["low","medium","high"],default="high")
-    p.add_argument("--model",default="gpt-image-2")
+    p.add_argument("--model",default=image_model_policy.DEFAULT_MODEL)
     p.add_argument("--timeout",type=int,default=None)
     a=ap.parse_args()
     if a.cmd=="capability":

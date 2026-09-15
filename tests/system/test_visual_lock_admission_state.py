@@ -134,6 +134,35 @@ class VisualLockAdmissionStateTests(unittest.TestCase):
         self.assertEqual(rows[0]["frame_contract_sha256"], "new-contract")
         self.assertTrue(rows[0]["binding_stale_for_review"])
 
+    def test_stale_generation_binding_targets_only_candidate_generated_under_old_contract(self):
+        _write(self.ep / "meta/story-gates.json", {
+            "visual": {"calibration": {"items": [
+                {"id": "V-A", "role": "first_major_anomaly", "frame": 5},
+                {"id": "V-B", "role": "worst_capture_condition", "frame": 16},
+            ]}}
+        })
+        _write(self.ep / "meta/production-ledger.json", {"frames": {
+            "05": {
+                "current_candidate": {"sha256": "5" * 64, "path": "five.png"},
+                "attempts": [{"candidate": {"sha256": "5" * 64}, "request": {"frame_contract": {"contract_sha256": "current-05"}}}],
+            },
+            "16": {
+                "current_candidate": {"sha256": "6" * 64, "path": "sixteen.png"},
+                "attempts": [{"candidate": {"sha256": "6" * 64}, "request": {"frame_contract": {"contract_sha256": "old-16"}}}],
+            },
+        }})
+
+        def verify(_ep, frame, recorded):
+            return ["frame 16 generation frame_contract_sha256 stale"] if int(frame) == 16 else []
+
+        with patch.object(visual_lock_v21.frame_contract, "required", return_value=True), \
+                patch.object(visual_lock_v21.frame_contract, "verify_recorded_provenance", side_effect=verify), \
+                patch.object(visual_lock_v21.frame_contract, "compile_frame", return_value={"contract_sha256": "current-16"}):
+            rows = visual_lock_v21.stale_generation_bindings(self.ep)
+        self.assertEqual([row["frame"] for row in rows], [16])
+        self.assertEqual(rows[0]["recorded_frame_contract_sha256"], "old-16")
+        self.assertEqual(rows[0]["current_frame_contract_sha256"], "current-16")
+
     def test_restore_ledger_pass_requires_exact_current_candidate_sha(self):
         asset = _asset()
         _write(self.ep / "meta/production-ledger.json", {

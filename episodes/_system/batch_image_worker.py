@@ -16,6 +16,7 @@ import image_provider_router
 import openai_images_provider
 import openai_batch_prompt_compiler
 import provider_capability
+import runtime_log_policy
 import runtime_trace
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
 
@@ -60,8 +61,10 @@ def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],tim
                     timeout=timeout,check=False,task_type="image")
             except subprocess.TimeoutExpired as exc:
                 raise BatchBackendError(f"TIMEOUT: batch image worker timeout after {timeout}s; log={log}") from exc
+        raw_log_text=log.read_text(encoding="utf-8",errors="replace") if log.is_file() else ""
+        runtime_log_policy.write_codex_noise_summary(log,raw_log_text)
         if done.returncode!=0:
-            tail=log.read_text(encoding="utf-8",errors="replace")[-6000:] if log.is_file() else ""
+            tail=runtime_log_policy.provider_relevant_codex_text(raw_log_text)[-6000:]
             code=image_model_policy.classify_backend_error(tail, source="image_backend")
             raise BatchBackendError(f"{code or 'BATCH_IMAGE_BACKEND_ERROR'}: rc={done.returncode}; log={log}")
         mapped=batch_result_mapper.map_outputs(workdir,contract)

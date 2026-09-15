@@ -76,11 +76,15 @@ def compile_capsule(ep,step,write=True):
         base=ep if local else ROOT
         evidence.append(file_row(p,base))
     preimage_task = None
-    if step.startswith("PREIMAGE_") and step != "PREIMAGE_COMPILE":
+    # Reverse lookup through the same mapping the producers use. Stripping the
+    # prefix by hand gave "ENVIRONMENT" for the registered step
+    # PREIMAGE_ENVIRONMENT, which is not a task type -- so this enrichment was
+    # dead for all three _PREPARE tasks even after the name was registered.
+    import preimage_task_contract
+    kind = preimage_task_contract.task_type_for_step(step)
+    if kind is not None:
         try:
-            import preimage_task_contract
             snapshot = story_json.read_json(ep/"meta/runtime/preimage-authority-snapshot.json", default={}) or {}
-            kind = step.removeprefix("PREIMAGE_")
             preimage_task = preimage_task_contract.task_contract(ep, kind, snapshot) if snapshot else None
         except Exception:
             preimage_task = None

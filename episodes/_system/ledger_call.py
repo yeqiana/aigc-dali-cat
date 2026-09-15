@@ -85,13 +85,16 @@ def success(
     return _invoke(production_ledger.cmd_success, namespace)
 
 
-def tech_fail(ep: Path, *, frame: int, code: str, message: str) -> tuple[bool, str]:
+def tech_fail(ep: Path, *, frame: int, code: str, message: str,
+              provider_invoked: bool = False, runner_request_id: str | None = None) -> tuple[bool, str]:
     """Mirror ``production_ledger.py tech-fail`` for a worker failure."""
     namespace = SimpleNamespace(
         episode_dir=str(Path(ep).resolve()),
         frame=f"{int(frame):02d}",
         code=code,
         message=message[:1000],
+        provider_invoked=bool(provider_invoked),
+        runner_request_id=runner_request_id,
     )
     return _invoke(production_ledger.cmd_tech_fail, namespace)
 

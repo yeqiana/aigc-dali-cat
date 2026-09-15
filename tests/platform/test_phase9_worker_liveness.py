@@ -336,7 +336,13 @@ def test_main_writes_evidence_without_credentials(tmp_path, monkeypatch):
     secret = "super-secret-watchdog-password"
     monkeypatch.setenv("STORYOS_REDIS_PASSWORD", secret)
     client = FakeRedis()
-    monkeypatch.setattr(liveness_module, "RedisConnection", lambda: FakeAdapter(client))
+    seen = {}
+
+    def fake_redis_connection(**kwargs):
+        seen.update(kwargs)
+        return FakeAdapter(client)
+
+    monkeypatch.setattr(liveness_module, "RedisConnection", fake_redis_connection)
     paths = _paths(tmp_path)
     evidence_file = tmp_path / "evidence.json"
     code = main([
@@ -355,10 +361,12 @@ def test_main_writes_evidence_without_credentials(tmp_path, monkeypatch):
     assert evidence["environment"]["redis"]["password_present"] is True
     assert evidence["summary"]["missing"] == ["worker-1"]
     assert load_roster(paths["roster_path"]) == ["worker-1"]
+    # 凭据按 storage.redis.password_env 指名解析后注入连接，而不是落进证据。
+    assert seen["password"] == secret
 
 
 def test_main_returns_env_error_when_redis_unavailable(monkeypatch):
-    def boom():
+    def boom(**kwargs):
         raise ConnectionError("redis down")
 
     monkeypatch.setattr(liveness_module, "RedisConnection", boom)

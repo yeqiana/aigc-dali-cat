@@ -18,6 +18,7 @@ import story_dna_trace  # STORY_OS_V3_E003_STORY_DNA_TRACE
 import visual_reality_score  # STORY_OS_V3_E005_VISUAL_REALITY_SCORE
 import visual_profile_closure as visual_profile_closure  # STORY_OS_PHASE46_VISUAL_PROFILE_CLOSURE
 import visual_profile_gate as visual_profile_gate  # STORY_OS_PHASE46_VISUAL_PROFILE_CLOSURE
+import asset_boundary_gate
 
 STATES = canonical_stages()
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
@@ -714,6 +715,8 @@ def validate(episode_dir: Path, target: str, *, metadata_only: bool = False) -> 
         check_calibration(repo_root, gates, manifest, findings, metadata_only=metadata_only)
         check_references(repo_root, gates, findings, metadata_only=metadata_only)
     if idx >= STATE_MIN["PRODUCTION_PASSED"]:
+        for error in asset_boundary_gate.verify_episode(episode_dir):
+            findings.append(Finding("FAIL", "asset_boundary", error))
         check_reference_execution_evidence(repo_root, episode_dir, gates, findings, metadata_only=metadata_only)
         check_identity_continuity_evidence(repo_root, episode_dir, gates, findings, metadata_only=metadata_only)
         check_story_semantic_trace(repo_root, episode_dir, gates, findings, metadata_only=metadata_only)

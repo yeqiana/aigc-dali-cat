@@ -61,6 +61,11 @@ def test_install_command_shape():
     assert TASK_NAME in script
     assert "New-ScheduledTaskTrigger -AtStartup" in script
     assert "'SYSTEM'" in script
+    assert "New-ScheduledTaskSettingsSet" in script
+    assert "-RestartCount 3" in script
+    assert "New-TimeSpan -Minutes 1" in script
+    assert "-ExecutionTimeLimit ([TimeSpan]::Zero)" in script
+    assert "-Settings $s" in script
     assert "-Force" in script
     assert "注册" in display
 
@@ -111,6 +116,11 @@ def test_status_command_shape():
         metrics_port=18081,
     )
     assert "Get-ScheduledTask" in script
+    assert "Execute=$action.Execute" in script
+    assert "TriggerType=$trigger.CimClass.CimClassName" in script
+    assert "UserId=$task.Principal.UserId" in script
+    assert "RestartCount=$task.Settings.RestartCount" in script
+    assert "ExecutionTimeLimit=$task.Settings.ExecutionTimeLimit" in script
     assert TASK_NAME in script
 
 

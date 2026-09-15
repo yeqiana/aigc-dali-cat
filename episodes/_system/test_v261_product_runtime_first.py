@@ -346,6 +346,32 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             self.assertIsNone(next_action.pending_product_review(ep, current_state="STORYBOARD_LOCKED"))
             self.assertIsNone(next_action.pending_product_review(ep, current_state="VISUAL_CALIBRATED"))
 
+    def test_pending_story_review_outranks_stale_preimage_handoff(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            meta = ep / "meta"
+            review_dir = meta / "runtime/reviews"
+            review_dir.mkdir(parents=True, exist_ok=True)
+            (meta / "episode-state.json").write_text(
+                json.dumps({"current_state": "STORYBOARD_LOCKED"}), encoding="utf-8"
+            )
+            request = {
+                "status": "AWAITING_PRODUCT_REVIEW",
+                "review_kind": "story-semantic",
+                "created_at": "2026-09-14T18:06:05+08:00",
+                "candidate_path": "episodes/example/meta/.story-semantic-review.candidate.json",
+            }
+            (review_dir / "story-semantic-request.json").write_text(
+                json.dumps(request), encoding="utf-8"
+            )
+            with mock.patch.object(next_action.product_runtime_adapter, "reconcile", return_value={}), \
+                    mock.patch.object(next_action, "_handoff_valid", return_value=False), \
+                    mock.patch("scheduler_core.progress", return_value={}):
+                derived = next_action.derive(ep)
+            self.assertEqual(derived["action"], "PRODUCT_REVIEW")
+            self.assertEqual(derived["review_kind"], "story-semantic")
+            self.assertIn("story-semantic-request.json", derived["request_path"])
+
     def test_product_runtime_request_is_work_devspace_only(self) -> None:
         with self.temp_episode() as td:
             ep = Path(td)
@@ -543,6 +569,198 @@ class ProductRuntimeFirstTests(unittest.TestCase):
     def test_release_and_caption_product_runtime_hooks_exist(self) -> None:
         self.assertTrue(callable(release_preflight.finalize_product_release_review))
         self.assertTrue(issubclass(caption_image_audit.ProductReviewHostAction, RuntimeError))
+
+    # --- V2.6.1.1: a second attempt needs revised bytes, not a new attempt number ---
+
+    def _freeze(self, ep: Path, name: str, text: str) -> Path:
+        path = ep / name
+        path.write_text(text, encoding="utf-8")
+        return path
+
+    def _reviewed_once(self, ep: Path, kind: str, source: Path) -> tuple[Path, Path]:
+        """Drive the real prepare -> finalize -> mark_complete cycle for attempt 1.
+
+        Hand-writing a FINALIZED JSON would only prove the guard reads a string.
+        This makes the same three calls story_review.py makes, so the fixture is
+        FINALIZED for the same reason a production review is: rc == 0.
+        """
+        (ep / "meta/runtime/reviews").mkdir(parents=True, exist_ok=True)
+        candidate = ep / f"meta/.{kind}.candidate.json"
+        product_review_adapter.prepare(
+            ep, kind=kind, runtime="WORK", attempt=1,
+            prompt="review frozen source", source_paths=[source],
+            candidate_path=candidate,
+        )
+        candidate.write_text(json.dumps({"summary": {"passed": True}}), encoding="utf-8")
+        product_review_adapter.finalize_candidate(
+            ep, kind=kind, runtime="WORK", attempt=1, candidate_path=candidate,
+        )
+        final = ep / f"meta/{kind}-review.json"
+        final.write_text(json.dumps({"summary": {"passed": True}}), encoding="utf-8")
+        product_review_adapter.mark_complete(ep, kind=kind, final_path=final, attempt=1)
+        return candidate, final
+
+    def _second_attempt(self, ep: Path, kind: str, source: Path, candidate: Path) -> dict:
+        return product_review_adapter.prepare(
+            ep, kind=kind, runtime="WORK", attempt=2,
+            prompt="second independent review", source_paths=[source],
+            candidate_path=candidate,
+        )
+
+    def test_second_attempt_rejected_when_first_is_finalized_and_sources_unchanged(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            source = self._freeze(ep, "story.md", "story v1")
+            candidate, _ = self._reviewed_once(ep, "story-semantic", source)
+            with self.assertRaises(product_review_adapter.ProductReviewError) as ctx:
+                self._second_attempt(ep, "story-semantic", source, candidate)
+            self.assertIn("revised frozen sources", str(ctx.exception))
+            self.assertFalse(
+                product_review_adapter.request_path(ep, "story-semantic", attempt=2).is_file(),
+                "a rejected attempt 2 must not leave a request behind",
+            )
+
+    def test_second_attempt_allowed_when_first_is_not_finalized(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            source = self._freeze(ep, "story.md", "story v1")
+            (ep / "meta/runtime/reviews").mkdir(parents=True, exist_ok=True)
+            candidate = ep / "meta/.story-semantic.candidate.json"
+            # attempt 1 FAILed: story_review.py calls mark_complete only when rc == 0,
+            # so the attempt-1 file stays AWAITING. Re-asking over these bytes is the
+            # documented revise-then-retry lane and it has to keep working.
+            product_review_adapter.prepare(
+                ep, kind="story-semantic", runtime="WORK", attempt=1,
+                prompt="review frozen source", source_paths=[source],
+                candidate_path=candidate,
+            )
+            req = self._second_attempt(ep, "story-semantic", source, candidate)
+            self.assertEqual(req["attempt"], 2)
+            self.assertEqual(req["status"], "AWAITING_PRODUCT_REVIEW")
+
+    def test_second_attempt_allowed_when_sources_changed(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            source = self._freeze(ep, "story.md", "story v1")
+            candidate, _ = self._reviewed_once(ep, "story-semantic", source)
+            source.write_text("story v2 revised", encoding="utf-8")
+            req = self._second_attempt(ep, "story-semantic", source, candidate)
+            self.assertEqual(req["attempt"], 2)
+
+    def test_second_attempt_guard_resolves_legacy_alias_only(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            source = self._freeze(ep, "story.md", "story v1")
+            candidate, _ = self._reviewed_once(ep, "story-semantic", source)
+            # Requests written before V2.6.1.1 left only the alias behind.
+            product_review_adapter.request_path(ep, "story-semantic", attempt=1).replace(
+                product_review_adapter.request_path(ep, "story-semantic")
+            )
+            with self.assertRaises(product_review_adapter.ProductReviewError) as ctx:
+                self._second_attempt(ep, "story-semantic", source, candidate)
+            self.assertIn("revised frozen sources", str(ctx.exception))
+
+    # --- V2.6.1.1: FINALIZED means "answered" only where finalization is PASS-gated ---
+
+    def _redundant_residue(self, ep: Path, kind: str) -> tuple[dict, dict]:
+        """Reproduce the 尸解仙 shape: attempt 1 FINALIZED over frozen bytes, then an
+        attempt 2 over byte-identical sources still AWAITING, whose candidate was
+        never written. Returns (attempt-1 request, attempt-2 entry)."""
+        source = self._freeze(ep, f"{kind}.md", "frozen body")
+        _, final = self._reviewed_once(ep, kind, source)
+        reviewed = product_review_adapter._read_json(
+            product_review_adapter.request_path(ep, kind, attempt=1)
+        )
+        residue = {
+            "schema_version": 3,
+            "status": "AWAITING_PRODUCT_REVIEW",
+            "review_kind": kind,
+            "runtime": "WORK",
+            "attempt": 2,
+            "created_at": "2026-09-14T18:06:05+08:00",
+            "source_files": reviewed["source_files"],
+            "candidate_path": reviewed["candidate_path"],
+            "review_execution_contract": reviewed.get("review_execution_contract") or {},
+        }
+        reviews = ep / "meta/runtime/reviews"
+        scoped = reviews / f"{kind}-attempt-2-request.json"
+        scoped.write_text(json.dumps(residue), encoding="utf-8")
+        alias = reviews / f"{kind}-request.json"
+        alias.write_text(
+            json.dumps({**residue, "attempt_request_path": product_review_adapter._repo_rel(scoped)}),
+            encoding="utf-8",
+        )
+        # The reviewer never produced a candidate, so there is no finished work to lose.
+        (ROOT / reviewed["candidate_path"]).unlink(missing_ok=True)
+        self.assertTrue(final.is_file())
+        return reviewed, {**residue, "path": product_review_adapter._repo_rel(alias)}
+
+    def test_redundant_story_review_residue_is_suppressed_and_reported(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True, exist_ok=True)
+            (ep / "meta/episode-state.json").write_text(
+                json.dumps({"current_state": "STORYBOARD_LOCKED"}), encoding="utf-8"
+            )
+            reviewed, entry = self._redundant_residue(ep, "story-semantic")
+            self.assertIsNotNone(product_review_adapter.answered_request(ep, entry))
+            self.assertIsNone(
+                next_action.pending_product_review(ep, current_state="STORYBOARD_LOCKED")
+            )
+            residue = next_action.redundant_product_review_residue(
+                ep, current_state="STORYBOARD_LOCKED"
+            )
+            self.assertEqual(len(residue), 1)
+            answered = residue[0]["redundant_with"]
+            self.assertEqual(residue[0]["review_kind"], "story-semantic")
+            self.assertEqual(residue[0]["attempt"], 2)
+            self.assertEqual(answered["final_path"], reviewed["final_path"])
+            with mock.patch.object(next_action.product_runtime_adapter, "reconcile", return_value={}), \
+                    mock.patch.object(next_action, "_handoff_valid", return_value=False), \
+                    mock.patch("scheduler_core.progress", return_value={}):
+                derived = next_action.derive(ep)
+            self.assertNotEqual(derived["action"], "PRODUCT_REVIEW")
+            self.assertEqual(derived["suppressed_product_reviews"], [{
+                "request_path": residue[0]["path"],
+                "review_kind": "story-semantic",
+                "attempt": 2,
+                "answered_by": answered["path"],
+                "final_path": reviewed["final_path"],
+            }])
+
+    def test_counterexample_reviews_are_never_suppressed(self) -> None:
+        """FINALIZED means "already answered" only where finalization is PASS-gated.
+
+        These three kinds finalize unconditionally, so suppressing one would either
+        re-ask an unanswered question or throw a repair authorization away.
+        """
+        for kind in ("recent5-semantic", "production-batch-batch-001", "caption-image-audit-v2-001"):
+            with self.subTest(kind=kind), self.temp_episode() as td:
+                ep = Path(td)
+                _, entry = self._redundant_residue(ep, kind)
+                self.assertNotIn(kind, product_review_adapter.FINALIZED_IS_PASS_KINDS)
+                self.assertIsNone(product_review_adapter.answered_request(ep, entry))
+
+    def test_redundant_review_is_not_suppressed_when_candidate_exists(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            reviewed, entry = self._redundant_residue(ep, "story-semantic")
+            # A request whose candidate exists is completable, so there is no
+            # permanent pin to break -- suppressing it would discard finished work.
+            (ROOT / reviewed["candidate_path"]).write_text(
+                json.dumps({"summary": {"passed": True}}), encoding="utf-8"
+            )
+            self.assertIsNone(product_review_adapter.answered_request(ep, entry))
+
+    def test_legacy_request_without_frozen_sources_is_not_suppressed(self) -> None:
+        with self.temp_episode() as td:
+            ep = Path(td)
+            _, entry = self._redundant_residue(ep, "story-semantic")
+            for dropped in ("source_files", "attempt", "candidate_path"):
+                with self.subTest(dropped=dropped):
+                    self.assertIsNone(product_review_adapter.answered_request(
+                        ep, {k: v for k, v in entry.items() if k != dropped}
+                    ))
 
 
 if __name__ == "__main__":

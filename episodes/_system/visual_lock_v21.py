@@ -452,6 +452,58 @@ def _dirty_detection_assets(ep: Path) -> list[dict]:
         return rows
 
 
+def stale_generation_bindings(ep: Path) -> list[dict]:
+    """Return Visual Lock frames whose current pixels were generated under an old contract.
+
+    This is narrower than a dirty review. A stale review can be repeated; stale
+    generation provenance must be regenerated before any pixel critic sees it.
+    The Production Ledger current candidate is the source of truth so an older
+    gate projection cannot invalidate a newer candidate by itself.
+    """
+    if not frame_contract.required(ep):
+        return []
+    gates = read_json(ep / GATES_REL)
+    items = ((((gates.get("visual") or {}).get("calibration") or {}).get("items")) or [])
+    ledger_path = ep / "meta/production-ledger.json"
+    ledger = read_json(ledger_path) if ledger_path.is_file() else {}
+    ledger_frames = ledger.get("frames") or {}
+    stale: list[dict] = []
+    for item in items:
+        if not isinstance(item, dict) or item.get("frame") is None:
+            continue
+        frame = int(item["frame"])
+        key = f"{frame:02d}"
+        frame_row = ledger_frames.get(key) or ledger_frames.get(str(frame)) or {}
+        candidate = frame_row.get("current_candidate") or {}
+        candidate_sha = str(candidate.get("sha256") or "").lower()
+        if not candidate_sha:
+            continue
+        attempt = next(
+            (
+                row for row in reversed(frame_row.get("attempts") or [])
+                if str(((row or {}).get("candidate") or {}).get("sha256") or "").lower() == candidate_sha
+            ),
+            None,
+        )
+        if not isinstance(attempt, dict):
+            continue
+        recorded = (attempt.get("request") or {}).get("frame_contract")
+        errors = frame_contract.verify_recorded_provenance(ep, frame, recorded)
+        if not any("frame_contract_sha256 stale" in str(error) for error in errors):
+            continue
+        current = frame_contract.compile_frame(ep, frame, write_cache=False)
+        stale.append({
+            "frame": frame,
+            "role": str(item.get("role") or ""),
+            "candidate_sha256": candidate_sha,
+            "candidate_path": str(candidate.get("path") or ""),
+            "recorded_frame_contract_sha256": str((recorded or {}).get("contract_sha256") or ""),
+            "current_frame_contract_sha256": str(current.get("contract_sha256") or ""),
+            "errors": errors,
+        })
+    return stale
+
+
 def dirty_admission_assets(ep: Path) -> list[dict]:
     """Return only admissions whose SHA-bound PASS evidence is absent/stale."""
     contract = compile_prompt_contract(ep)

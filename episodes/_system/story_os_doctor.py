@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 from contract_sync import collect_errors
+import preimage_task_contract
 import storyos_config
 import runtime_log_policy
 import episode_discovery
@@ -97,6 +98,14 @@ def run_doctor():
         storyos_config.load_index()
     except Exception as e:
         issue(issues, "ERROR", "CONFIG_INVALID", str(e))
+
+    try:
+        # PREIMAGE task -> DAG step registration. Checked here so the drift is a
+        # doctor finding instead of a ValueError raised inside a worker after the
+        # fan-out has already started (P0-E).
+        preimage_task_contract.assert_registries_aligned()
+    except Exception as e:
+        issue(issues, "ERROR", "PREIMAGE_REGISTRY_DRIFT", str(e))
 
     for error in collect_errors(ROOT):
         issue(issues, "ERROR", "CONTRACT_SYNC", error)

@@ -18,6 +18,7 @@ import production_ledger
 import runtime_router
 import story_json
 import runtime_timeout_policy
+import runtime_command
 
 ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=Path('meta/runtime-checkpoint.json')
 STORY_OS_VERSION=story_os_version(); STATES=canonical_stages()
@@ -180,7 +181,7 @@ If Snapshot is STALE, stop and resolve the drift; never hand-edit snapshot SHAs.
 Use delegated approval provenance honestly. Never fabricate --user-approved.
 Update runtime-checkpoint continuously. Do not build a ZIP in CODEX. Do not claim completion yourself; the parent performs deterministic postflight and stops at PUBLISH_READY + evidence PASS.
 """
-def run_cmd(args,cwd=ROOT): return subprocess.run([str(x) for x in args],cwd=cwd,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding='utf-8',errors='replace')
+def run_cmd(args,cwd=ROOT): return runtime_command.run_argv([str(x) for x in args],cwd=cwd,capture=True)
 def advance_to_publish_ready(ep):
     sp=ep/'meta/episode-state.json'
     if not sp.is_file(): return False,'episode-state missing'

@@ -15,6 +15,7 @@ import runtime_router
 import storyos_config
 import story_json
 import runtime_timeout_policy
+import runtime_command
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -107,7 +108,7 @@ def _ledger_pass(ep,frame):
     key=f"{int(frame):02d}"
     d=read_json(lp);row=((d.get("frames") or {}).get(key) or {});status=str(row.get("status") or "")
     if status in {"ORIGINAL_READY","REPAIR_READY"}:
-        cp=subprocess.run([sys.executable,str(SYSTEM/"production_ledger.py"),"review",str(ep),"--frame",key,"--decision","pass","--notes","Visual Lock ordinary baseline separate PASS"],cwd=ROOT,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
+        cp=runtime_command.run_argv([sys.executable,str(SYSTEM/"production_ledger.py"),"review",str(ep),"--frame",key,"--decision","pass","--notes","Visual Lock ordinary baseline separate PASS"],cwd=ROOT,capture=True)
         if cp.returncode!=0:raise ValueError("baseline ledger PASS failed: "+cp.stdout[-1200:])
         d=read_json(lp);row=((d.get("frames") or {}).get(key) or {});status=str(row.get("status") or "")
     # A baseline PASS is already a real actual-pixel approval. Leaving the row
@@ -115,7 +116,7 @@ def _ledger_pass(ep,frame):
     # binding. Promote the exact SHA-bound candidate immediately; locking still
     # remains the responsibility of the later canonical production/release path.
     if status=="PASSED" and not isinstance(row.get("approved_asset"),dict):
-        cp=subprocess.run([sys.executable,str(SYSTEM/"production_ledger.py"),"promote",str(ep),"--frame",key],cwd=ROOT,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
+        cp=runtime_command.run_argv([sys.executable,str(SYSTEM/"production_ledger.py"),"promote",str(ep),"--frame",key],cwd=ROOT,capture=True)
         if cp.returncode!=0:raise ValueError("baseline ledger promote failed: "+cp.stdout[-1200:])
 
 def critic_prompt(ep):

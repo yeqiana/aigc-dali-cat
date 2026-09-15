@@ -16,7 +16,14 @@ config_version: "1.0"
 image:
   # 正式生产默认模型。用户在 Runtime Request 显式指定时可覆盖，
   # 但显式模型必须严格执行，禁止静默替换。
-  model: gpt-image-2
+  model: gpt-image-2.5-flare
+
+  # 仅供 system_default / strict=false 的技术可用性降级。当前模型在
+  # PROVIDER_CAPACITY / MODEL_UNAVAILABLE 下耗尽本模型技术重试后，才按顺序
+  # 切换；用户显式指定模型绝不自动替换。
+  fallback_models:
+    - gpt-image-2.5-sunburst
+    - gpt-image-2
 
   # 正式生产质量。当前只允许 high；Scheduler、Worker 和 Ledger
   # 必须记录同一个值。
@@ -48,6 +55,9 @@ provider:
   exact_raw_canvas_required: false
   measure_raw_dimensions_locally: true
   provider_receipt_required: true
+  # 多人身份参考压缩是产品生成行为，不再由未声明 env-only 开关决定。
+  # STORY_OS_GROUP_REFERENCE_PROXY 仍可作为单次运维覆盖，effective-config 会记录来源。
+  group_reference_proxy: false
 
 creative:
   # 账号级长期创作画像：只约束常用题材、进入方式与账号视觉身份，不覆盖单集 Story Lock。
@@ -97,10 +107,17 @@ normalize:
   automatic_ratio_delta_max: 0.01
   review_ratio_delta_max: 0.03
 
+  # Provider 偶发会返回 100x100 一类退化缩略图。它们不是可接受的
+  # 生产 RAW，必须在比例/Normalize 之前按技术失败判废，避免继续烧审核与返修额度。
+  provider_raw_min_dimension: 256
+
   # 仅供显式 provider 尺寸兼容例外使用。默认链路仍禁止裁切；
   # 只有调用方显式声明技术例外且比例偏差不超过该值时，才允许
   # 轻量中心裁切后再缩放到正式画布，并必须在归一化证据中记录。
   exception_crop_ratio_delta_max: 0.06
+  # Provider 返回比例与请求画布不一致时，是否允许走上面的显式轻裁切例外。
+  # 默认关闭；STORY_OS_PROVIDER_RATIO_CROP_EXCEPTION 只作为临时运维覆盖。
+  provider_ratio_crop_exception_enabled: false
 
   # Normalize I/O 失败只在本地重试。重试耗尽后保留 RAW 并阻断，
   # 禁止为了后处理失败再次调用图片生成。
@@ -191,7 +208,7 @@ runtime:
       fresh_turn_required: true
     vision:
       runtime: CODEX
-      model: gpt-5.6-sol
+      model: gpt-5.6-terra
       isolated_required: true
       ephemeral: true
       generation_session_reuse: false
@@ -214,16 +231,20 @@ runtime:
 
   # 新篇默认走分段 DAG；PREIMAGE_COMPILE 是执行节点，不是新的 Episode stage。
   execution_mode: dag
-  # Explicit split protocol switches. The legacy flag remains a compatibility
-  # alias; authority and derived lanes are independently controllable.
-  parallel:
-    authority_enabled: true
-    derived_enabled: true
+  # 唯一有执行消费者的并行开关：帧合约并行编译（frame_contract.py:585）。
+  # 2026-09-15 W-91：原 parallel.authority_enabled / derived_enabled 已删除——
+  # 全仓唯一的读取点是 validate() 的类型检查，改成 false 不改变任何行为，
+  # 却让人以为 authority / derived 两条 lane 各自受开关控制。两条 lane 的实际
+  # 并发量由下面对应的 workers.* 决定，不再有并列的第二套开关。
   preimage_parallel_enabled: true
+  # local_codex_preimage → 仅显式本地 CODEX fallback 的 PREIMAGE fan-out；
+  # WORK + DevSpace 正式生产的 PREIMAGE 并发由 Host transport 管理，不伪装成本地指标。
+  # derived → Frame Contract 本地并行编译并发（frame_contract.py）。
+  # 2026-09-15 W-90/W-92：复核确认 composite Runtime DAG 本身保持串行；
+  # image 并发属于 image_scheduler，production_plan 仅作 diagnostic planner。
   workers:
-    authority: 4
+    local_codex_preimage: 4
     derived: 6
-    review: 3
   canonical_stage_source: meta/episode-state.json
   runtime_request_path: meta/runtime-request.json
 
@@ -266,6 +287,11 @@ storage:
     db: 0
     timeout_seconds: 5
     password_env: STORYOS_REDIS_PASSWORD
+  # Runtime event/trace/artifact 的应用层默认。platform/ 不读取 YAML；应用层解析后
+  # 显式注入。STORYOS_RUNTIME_STORE_MODE / STORYOS_RUNTIME_JSONL_ROOT 只做运行时覆盖。
+  runtime_store:
+    mode: jsonl
+    jsonl_root: .storyos
 
 compatibility:
   # 契约位：历史 JSON 请求/证据可读，但新的人工配置只写本 YAML。
@@ -288,6 +314,7 @@ timeout_policy:
   fast_scout: 240
   review_critic: 900
   review_status_probe: 30
+  driver_carrier_control: 60
   image_probe: 900
   deep_semantic_review: 1800
   release_semantic: 1800

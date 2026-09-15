@@ -423,7 +423,7 @@ def main():
     g = p.add_mutually_exclusive_group(required=True)
     g.add_argument("--scene")
     g.add_argument("--scene-file")
-    p.add_argument("--image-model", default="gpt-image-2")
+    p.add_argument("--image-model", default=codex_subscription_image.DEFAULT_IMAGE_MODEL)
     p.add_argument("--strict-model", action="store_true")
     p.set_defaults(func=visual_prepare)
 
@@ -457,7 +457,7 @@ def main():
     p.add_argument("episode_dir")
     p.add_argument("--frame", required=True)
     p.add_argument("--prompt-file", required=True)
-    p.add_argument("--image-model", default="gpt-image-2")
+    p.add_argument("--image-model", default=codex_subscription_image.DEFAULT_IMAGE_MODEL)
     p.add_argument("--timeout", type=int, default=None)
     p.add_argument("--codex")
     p.set_defaults(func=v224.production_smoke)

@@ -18,6 +18,7 @@ from subtitle_layout import layout_required as subtitle_layout_required, verify_
 from release_preflight import verify_recent5_evidence, verify_series_lock, verify_release_semantic, verify_governance
 from reference_execution_receipt import verify as verify_reference_execution
 import story_json
+import runtime_evidence_contract
 
 ROOT=Path(__file__).resolve().parents[2]
 STATES=canonical_stages()
@@ -70,6 +71,8 @@ def run_gate(ep,target):
     state=load_json(ep/'meta/episode-state.json');manifest=load_json(ep/'meta/release-manifest.json')
     if not is_enforced(state,manifest):return True,['legacy/pre-V1.8 episode: evidence gate not enforced until metadata is upgraded']
     idx=STATES.index(target);errors=[];info=[]
+    if idx>=STATES.index('PRODUCTION_PASSED'):
+        errors.extend(['runtime_evidence: '+x for x in runtime_evidence_contract.verify(ep)])
     if idx>=STATES.index('STORYBOARD_LOCKED'):
         ok,e,b=any_approval(ep,'story_lock');errors.extend(['story_lock: '+x for x in e] if not ok else []);info.extend(['story_lock basis='+b] if ok else [])
         if story_review_required(ep):

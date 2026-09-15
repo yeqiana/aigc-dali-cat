@@ -24,7 +24,7 @@ class StoryOSConfigTests(unittest.TestCase):
 
     def test_current_image_configuration(self):
         config = storyos_config.load_config()
-        self.assertEqual(storyos_config.get_path(config, "image.model"), "gpt-image-2")
+        self.assertEqual(storyos_config.get_path(config, "image.model"), "gpt-image-2.5-flare")
         self.assertEqual(storyos_config.get_path(config, "image.quality"), "high")
         self.assertEqual(storyos_config.get_path(config, "visual.default_profile_id"), "M00")
         self.assertEqual(storyos_config.get_path(config, "normalize.automatic_ratio_delta_max"), 0.01)

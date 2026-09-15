@@ -5,6 +5,7 @@ import argparse
 import time
 import json
 from pathlib import Path
+import effective_config
 import runtime_dag
 import runtime_failure_classifier
 import runtime_resume_token
@@ -12,6 +13,10 @@ import runner_state_store
 import runtime_checkpoint
 import next_action
 import runtime_timeout_policy
+import runtime_evidence_contract
+import episode_lifecycle
+import runtime_portability
+import runtime_ownership
 
 TERMINAL = {"PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED"}
 
@@ -57,7 +62,10 @@ def run_local_image_action(episode: Path, action: dict) -> int:
         retry = image_scheduler.retry_tech(episode) or {}
         if int(retry.get("requeued") or 0) == 0 and (retry.get("exhausted_frames") or retry.get("non_retryable_frames")):
             next_action.write(episode)
-            return 21
+            # The queue is now deliberately waiting on an external provider/capability.
+            # rc=21 would make the resident Runner call it another technical crash;
+            # rc=24 is the existing non-retryable CAPABILITY_WAIT protocol result.
+            return 24
     elif name == "REPAIR_FAILED_IMAGES":
         import auto_repair_enqueue
         auto_repair_enqueue.enqueue_marked_repairs(episode)
@@ -148,11 +156,25 @@ def run_local_host_action(episode: Path, action: dict) -> int:
         next_action.write(episode)
 
 
-def execute_cycle(episode: Path) -> int:
+def execute_cycle(episode: Path, codex: str | None = None, timeout: int | None = None) -> int:
+    # W-101: once an Episode enters the modern resident Runner, production
+    # completion requires all runtime evidence sinks. Historical Episodes are not
+    # fabricated/backfilled; the marker is the explicit compatibility boundary.
+    runtime_evidence_contract.arm(episode)
+    # Record what was in force before acting on it (W-96). After the fact, a run
+    # that took STORY_OS_IMAGE_RUNTIME=... was indistinguishable from one that
+    # did not: the config file said one thing, the behaviour was another, and no
+    # evidence said which. Written every cycle because a long run can span a
+    # config edit, and "which value did *this* step use" is the question asked.
+    effective_config.write(episode)
     action = next_action.write(episode)
     if local_host_action(action) is not None:
         return run_local_host_action(episode, action)
-    return runtime_dag.execute(episode)
+    # The resident Driver has to be able to run a scoped Codex step itself. Without
+    # this the only lane that can execute one is workflow_runner (the bounded
+    # `run --full-auto` drain), so "the single resident Driver" would stop at the
+    # first step that needs Codex and wait for a host that may never come back.
+    return runtime_dag.execute(episode, codex=codex, timeout=timeout)
 
 
 def progress_marker(episode:Path):
@@ -162,8 +184,14 @@ def progress_marker(episode:Path):
 
 
 def run_episode(episode: Path, *, interval: int = 10, max_loops: int | None = None,
-                resume: bool = False, max_attempts: int = 3) -> int:
+                resume: bool = False, max_attempts: int = 3,
+                codex: str | None = None, timeout: int | None = None) -> int:
     episode = Path(episode).resolve()
+    runtime_portability.assert_episode_directory(episode)
+    # W-11: resident Runner is a production owner, not a neutral observer.
+    # Refuse to mutate Episode production facts unless the control-plane record
+    # explicitly assigns production to V3_RUNTIME.
+    runtime_ownership.assert_v3_owner("episode_runner.run_episode")
     if interval < 0 or max_attempts < 1 or (max_loops is not None and max_loops < 1):
         raise ValueError("invalid runner bounds")
     cycles = 0
@@ -174,6 +202,11 @@ def run_episode(episode: Path, *, interval: int = 10, max_loops: int | None = No
         record_event(episode, {"type": "resume", "token": runtime_resume_token.load(episode)})
     runner_state_store.save(episode, status="RUNNING", resume_enabled=resume)
     while True:
+        if episode_lifecycle.is_terminal(episode):
+            disposition = episode_lifecycle.disposition(episode)
+            runner_state_store.save(episode, status="TERMINATED", disposition=disposition)
+            record_event(episode, {"type": "terminated", "disposition": disposition})
+            return 0
         state = runtime_dag.state(episode)
         if state in TERMINAL:
             valid,note=runtime_dag.validate_target(episode,"PUBLISH_READY")
@@ -187,7 +220,7 @@ def run_episode(episode: Path, *, interval: int = 10, max_loops: int | None = No
             failures = 0
             previous_state = state
         before=progress_marker(episode)
-        rc = execute_cycle(episode)
+        rc = execute_cycle(episode, codex=codex, timeout=timeout)
         cycles += 1
         decision = runtime_failure_classifier.classify(rc)
         record_event(episode, {"type": "cycle", "return_code": rc, "cycle": cycles,
@@ -223,10 +256,11 @@ def main() -> int:
     parser.add_argument("episode", type=Path)
     parser.add_argument("--interval", type=int, default=10)
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--codex", default=None)
     args = parser.parse_args()
     # Both public entrypoints use the same ownership lock and heartbeat.
     import persistent_runner_daemon
-    return persistent_runner_daemon.run(args.episode, args.interval, args.resume)
+    return persistent_runner_daemon.run(args.episode, args.interval, args.resume, args.codex)
 
 
 if __name__ == "__main__":

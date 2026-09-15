@@ -89,6 +89,11 @@ def _bootstrap_story_platform() -> None:
 
 _bootstrap_story_platform()
 
+# 连接配置唯一解析入口（应用层读 config/storyos.yaml#storage，platform/ 保持零 yaml 依赖）。
+if str(PROJECT_ROOT / "episodes" / "_system") not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT / "episodes" / "_system"))
+import storage_config  # noqa: E402
+
 from platform.core.clock import utc_now  # noqa: E402
 from platform.gateway.canary_auto_rollback import (  # noqa: E402
     CanaryAutoRollbackPolicy,
@@ -157,28 +162,9 @@ class CanaryProbe:
 
 
 def _env_summary() -> dict:
-    def _int(name, default):
-        try:
-            return int(os.environ.get(name, str(default)))
-        except ValueError:
-            return default
-
-    return {
-        "mysql": {
-            "host": os.environ.get("STORYOS_MYSQL_HOST", "127.0.0.1"),
-            "port": _int("STORYOS_MYSQL_PORT", 3306),
-            "database": os.environ.get("STORYOS_MYSQL_DB", "story_os_runtime"),
-            "user_present": bool(os.environ.get("STORYOS_MYSQL_USER", "")),
-            "password_present": bool(os.environ.get("STORYOS_MYSQL_PWD", "")),
-        },
-        "redis": {
-            "host": os.environ.get("STORYOS_REDIS_HOST", "127.0.0.1"),
-            "port": _int("STORYOS_REDIS_PORT", 6379),
-            "db": _int("STORYOS_REDIS_DB", 0),
-            "password_present": bool(os.environ.get("STORYOS_REDIS_PASSWORD", "")),
-        },
-        "failure_injection": {"mysql_host": REFUSED_MYSQL_HOST, "mysql_port": REFUSED_MYSQL_PORT},
-    }
+    summary = storage_config.storage_summary()
+    summary["failure_injection"] = {"mysql_host": REFUSED_MYSQL_HOST, "mysql_port": REFUSED_MYSQL_PORT}
+    return summary
 
 
 class CanaryDrill:
@@ -575,9 +561,9 @@ def _stages_from_text(text: str) -> tuple:
 
 
 def build_drill(args) -> CanaryDrill:
-    redis_client = RedisConnection().client
+    redis_client = RedisConnection(**storage_config.redis_connection_kwargs()).client
     redis_client.ping()
-    mysql = MySqlConnection()
+    mysql = MySqlConnection(**storage_config.mysql_connection_kwargs())
     mysql.health_check()
     broken = CanaryProbe(
         redis_client=redis_client,

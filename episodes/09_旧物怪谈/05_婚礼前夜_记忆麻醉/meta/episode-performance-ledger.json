@@ -7,7 +7,7 @@
   "fail_soft": true,
   "episode_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉",
   "started_at": "2026-09-08T23:30:13.199+08:00",
-  "updated_at": "2026-09-10T12:24:11.851+08:00",
+  "updated_at": "2026-09-15T21:10:39.613+08:00",
   "finalized_at": "2026-09-09T11:10:58.442+08:00",
   "final_status": "PUBLISH_READY",
   "total_wall_seconds": 42045.243,
@@ -375,6 +375,24 @@
           }
         }
       ]
+    },
+    "PRODUCT_REVIEW_CONCEPT-AMBITION": {
+      "runs": [
+        {
+          "run_id": "c7d62b1e602a",
+          "started_at": "2026-09-15T21:09:29.394+08:00",
+          "ended_at": "2026-09-15T21:10:39.613+08:00",
+          "duration_seconds": 70.219,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "concept-ambition-a2-53669e83f4890f72",
+            "attempt": 2,
+            "runtime": "WORK",
+            "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/concept-ambition-review.json"
+          }
+        }
+      ]
     }
   },
   "state_transitions": [
@@ -410,47 +428,75 @@
     "named_span_wall": {
       "PRODUCT_REVIEW_RECENT5-SEMANTIC": {
         "wall_seconds": 15.893,
-        "runs": 1
+        "resource_seconds": 15.893,
+        "runs": 1,
+        "unclosed_runs": 0
       },
       "VISUAL_LOCK_BASELINE_REVIEW": {
         "wall_seconds": 1033.982,
-        "runs": 3
+        "resource_seconds": 1033.982,
+        "runs": 3,
+        "unclosed_runs": 0
       },
       "PRODUCT_REVIEW_FRAME-SEMANTIC": {
         "wall_seconds": 1088.185,
-        "runs": 2
+        "resource_seconds": 1088.185,
+        "runs": 2,
+        "unclosed_runs": 0
       },
       "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-001": {
         "wall_seconds": 892.651,
-        "runs": 2
+        "resource_seconds": 892.651,
+        "runs": 2,
+        "unclosed_runs": 0
       },
       "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-002": {
         "wall_seconds": 892.613,
-        "runs": 2
+        "resource_seconds": 892.613,
+        "runs": 2,
+        "unclosed_runs": 0
       },
       "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-003": {
         "wall_seconds": 892.572,
-        "runs": 2
+        "resource_seconds": 892.572,
+        "runs": 2,
+        "unclosed_runs": 0
       },
       "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-004": {
         "wall_seconds": 892.542,
-        "runs": 2
+        "resource_seconds": 892.542,
+        "runs": 2,
+        "unclosed_runs": 0
       },
       "PRODUCT_REVIEW_RELEASE-SEMANTIC": {
         "wall_seconds": 1581.722,
-        "runs": 5
+        "resource_seconds": 1581.722,
+        "runs": 5,
+        "unclosed_runs": 0
       },
       "PRODUCT_REVIEW_VISUAL-LOCK-BASELINE": {
         "wall_seconds": 735.484,
-        "runs": 2
+        "resource_seconds": 735.484,
+        "runs": 2,
+        "unclosed_runs": 0
       },
       "PRODUCT_REVIEW_VISUAL-LOCK": {
         "wall_seconds": 268.637,
-        "runs": 1
+        "resource_seconds": 268.637,
+        "runs": 1,
+        "unclosed_runs": 0
       },
       "PRODUCT_REVIEW_STORY-SEMANTIC": {
         "wall_seconds": 104.39,
-        "runs": 1
+        "resource_seconds": 104.39,
+        "runs": 1,
+        "unclosed_runs": 0
+      },
+      "PRODUCT_REVIEW_CONCEPT-AMBITION": {
+        "wall_seconds": 70.219,
+        "resource_seconds": 70.219,
+        "runs": 1,
+        "unclosed_runs": 0
       }
     },
     "critical_path": {
@@ -478,7 +524,7 @@
       "average_attempt_seconds": null,
       "max_attempt_seconds": null
     },
-    "note": "stage wall time and image backend resource time can overlap; do not add them together."
+    "note": "stage/named wall_seconds are interval unions; resource_seconds sum run durations and may overlap. Do not add resource time to wall time."
   },
   "start_sources": [
     "episode_state.init"

@@ -186,7 +186,7 @@ def test_observers_are_bound_to_the_same_repositories(tmp_path):
     assert provider.observers() is observers
 
 
-def test_provider_only_closes_connections_it_owns(tmp_path):
+def test_provider_never_invents_mysql_connection(tmp_path):
     injected = FakeConnection()
     provider = RuntimeRepositoryProvider('dual', jsonl_root=str(tmp_path), connection=injected)
     provider.repositories()
@@ -194,11 +194,15 @@ def test_provider_only_closes_connections_it_owns(tmp_path):
     provider.close()
     assert injected.closed is False
 
-    owned = RuntimeRepositoryProvider('dual', jsonl_root=str(tmp_path))
-    owned.repositories()
-    assert owned._owns_connection is True
-    owned.close()
-    assert owned._connection is None
+    missing = RuntimeRepositoryProvider('dual', jsonl_root=str(tmp_path))
+    with pytest.raises(ValueError, match='MySQL connection is required'):
+        missing.repositories()
+
+
+def test_platform_has_no_implicit_jsonl_root(monkeypatch):
+    monkeypatch.delenv('STORYOS_RUNTIME_JSONL_ROOT', raising=False)
+    with pytest.raises(ValueError, match='jsonl_root is required'):
+        build_runtime_repositories()
 
 
 def test_provider_caches_repositories(tmp_path):

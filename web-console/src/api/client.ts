@@ -6,10 +6,15 @@ export interface ApiResponse<T> {
   timestamp: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_PLATFORM_API_URL ?? '';
+export const PLATFORM_API_BASE_URL = (import.meta.env.VITE_PLATFORM_API_URL ?? '').replace(/\/$/, '');
+
+export function platformApiUrl(path: string): string {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${PLATFORM_API_BASE_URL}${normalizedPath}`;
+}
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(platformApiUrl(path), {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -28,8 +33,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return body.data;
 }
 
+export const apiGet = <T>(path: string) => request<T>(path);
+
 export const apiClient = {
-  get: <T>(path: string) => request<T>(path),
+  get: <T>(path: string) => apiGet<T>(path),
   post: <T>(path: string, data?: unknown) =>
     request<T>(path, {
       method: 'POST',

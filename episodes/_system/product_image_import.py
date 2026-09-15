@@ -27,6 +27,7 @@ import image_scheduler
 import provider_capability
 import raw_candidate_budget
 import runtime_router
+import episode_performance
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -89,6 +90,8 @@ def _record_technical_failure(
         status="blocked" if budget_committed else "tech_failed",
         message=f"{code}: {message}",
     )
+    episode_performance.safe_record_queue_image_attempt(
+        ep,item,status="blocked" if budget_committed else "tech_failed",error_code=code)
 
 
 def _import_frame_locked(ep: Path, frame: int, raw: Path, *, item_id: str | None = None, runtime: str | None = None) -> dict:
@@ -130,6 +133,8 @@ def _import_frame_locked(ep: Path, frame: int, raw: Path, *, item_id: str | None
     if not claimed:
         image_scheduler.ledger_tech_fail(ep, item, "RAW_CANDIDATE_BUDGET_EXHAUSTED", str(budget_row)[:1000])
         _set_queue_failure(ep, item, status="blocked", message="RAW_CANDIDATE_BUDGET_EXHAUSTED: " + str(budget_row))
+        episode_performance.safe_record_queue_image_attempt(
+            ep,item,status="blocked",error_code="RAW_CANDIDATE_BUDGET_EXHAUSTED")
         raise ProductImageImportError("RAW_CANDIDATE_BUDGET_EXHAUSTED: " + str(budget_row))
 
     budget_committed = bool(budget_row.get("committed"))
@@ -207,6 +212,9 @@ def _import_frame_locked(ep: Path, frame: int, raw: Path, *, item_id: str | None
             target["product_runtime"] = base_runtime
             target["candidate_budget"] = commit_row
             image_scheduler.save_queue(ep, q)
+            episode_performance.safe_record_queue_image_attempt(ep,target,status="generated")
+        else:
+            episode_performance.safe_record_queue_image_attempt(ep,item,status="generated")
         return payload
     except Exception as exc:
         code = "PRODUCT_RUNTIME_IMPORT_FAILED"
@@ -215,6 +223,8 @@ def _import_frame_locked(ep: Path, frame: int, raw: Path, *, item_id: str | None
             if ":" in text:
                 code = text.split(":", 1)[0]
         elif isinstance(exc, NormalizeError):
+            code = exc.code
+        elif isinstance(exc, provider_capability.ProviderCapabilityError):
             code = exc.code
         _record_technical_failure(
             ep,

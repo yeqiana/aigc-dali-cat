@@ -1,6 +1,9 @@
 # Asset Boundary Gate 接入计划
 
-状态：Shadow Mode
+> **生命周期：OPEN_GOVERNANCE_REFERENCE / MIGRATED（2026-09-14）**
+> 本文仍是 Asset Boundary 正式接入的设计参考，但问题状态已统一迁入 Canonical W-24。当前事实仍是 Shadow/测试能力存在、生产门禁未正式强制接入。
+
+状态：Shadow Mode（Canonical W-24：🟡 部分解决）
 
 日期：2026-09-11
 

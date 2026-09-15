@@ -113,6 +113,11 @@ def _bootstrap_story_platform() -> None:
 
 _bootstrap_story_platform()
 
+# 连接配置唯一解析入口（应用层读 config/storyos.yaml#storage，platform/ 保持零 yaml 依赖）。
+if str(PROJECT_ROOT / "episodes" / "_system") not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT / "episodes" / "_system"))
+import storage_config  # noqa: E402
+
 from platform.core.clock import utc_now  # noqa: E402
 from platform.operations.runtime_alert_incident_management import (  # noqa: E402
     RuntimeAlert,
@@ -549,21 +554,7 @@ def run_watchdog(
 
 
 def _env_summary() -> dict:
-    """只记非凭据字段；密码只用布尔表示是否存在。"""
-    def _int(name: str, default):
-        try:
-            return int(os.environ.get(name, str(default)))
-        except (TypeError, ValueError):
-            return default
-
-    return {
-        "redis": {
-            "host": os.environ.get("STORYOS_REDIS_HOST", "127.0.0.1"),
-            "port": _int("STORYOS_REDIS_PORT", 6379),
-            "db": _int("STORYOS_REDIS_DB", 0),
-            "password_present": bool(os.environ.get("STORYOS_REDIS_PASSWORD", "")),
-        }
-    }
+    return {"redis": storage_config.storage_summary()["redis"]}
 
 
 def _parse_args(argv):
@@ -597,7 +588,7 @@ def main(argv=None) -> int:
         return EXIT_ENV_ERROR
 
     try:
-        client = RedisConnection().client
+        client = RedisConnection(**storage_config.redis_connection_kwargs()).client
         client.ping()
     except Exception as exc:  # noqa: BLE001 - 环境不可用必须显式退出
         print("启动失败：" + type(exc).__name__ + ": " + str(exc))

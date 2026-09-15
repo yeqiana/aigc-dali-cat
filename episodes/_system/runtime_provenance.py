@@ -11,6 +11,8 @@ from __future__ import annotations
 import datetime as dt
 from typing import Any
 
+import evidence_time
+
 BASE_RUNTIMES = {"CODEX", "WORK", "WEB"}
 ISOLATED_RUNTIME_BY_BASE = {
     "CODEX": "CODEX_ISOLATED",
@@ -62,6 +64,12 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
             "critic runtime must be one of " + ", ".join(sorted(ALLOWED_CRITIC_RUNTIMES))
         )
         return errors
+    schema_version = int(provenance.get("schema_version") or 1)
+    errors.extend(evidence_time.validate_timestamp(
+        provenance.get("reviewed_at"),
+        field="critic_provenance.reviewed_at",
+        required=schema_version >= CURRENT_PROVENANCE_SCHEMA_VERSION,
+    ))
     if runtime == DEVSPACE_BOUNDED_RUNTIME:
         if provenance.get("isolated_session") is not False:
             errors.append("bounded DevSpace critic must declare isolated_session=false")
@@ -98,7 +106,6 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
             errors.append("CODEX vision critic must declare ephemeral=true")
         if provenance.get("session_reused_from_generation") is not False:
             errors.append("CODEX vision critic must not reuse the generation session")
-    schema_version = int(provenance.get("schema_version") or 1)
     if schema_version >= 2 and base == "WORK":
         if str(provenance.get("workspace_transport") or "").upper() != DEVSPACE_WORKSPACE_TRANSPORT:
             errors.append("WORK critic workspace_transport must be DEVSPACE")

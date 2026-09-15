@@ -16,16 +16,21 @@ from __future__ import annotations
 
 import hashlib
 import json
+import datetime as dt
 from pathlib import Path
 
 import runtime_provenance
 import episode_performance
 import story_json
+import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 HOST_ACTION_REQUIRED_RC = 20
 NEW_REVIEW_RUNTIME = "WORK"
 WORKSPACE_TRANSPORT = "DEVSPACE"
+AWAITING = "AWAITING_PRODUCT_REVIEW"
+TERMINAL_REQUEST_STATUSES = frozenset({"FINALIZED", "EXPIRED", "CANCELLED", "SUPERSEDED"})
+REQUEST_TTL_ROLE = "review_critic"
 
 
 class ProductReviewError(RuntimeError):
@@ -66,6 +71,116 @@ def request_path(ep: Path, kind: str, *, attempt: int | None = None) -> Path:
     return root / f"{kind}-attempt-{int(attempt)}-request.json"
 
 
+def _parse_time(raw: object) -> dt.datetime:
+    text = str(raw or "").strip()
+    if not text:
+        raise ProductReviewError("review lifecycle timestamp missing")
+    try:
+        value = dt.datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ProductReviewError(f"invalid review lifecycle timestamp: {text}") from exc
+    if value.tzinfo is None:
+        raise ProductReviewError("review lifecycle timestamp must include timezone")
+    return value
+
+
+def _deadline_for(created_at: object) -> str:
+    created = _parse_time(created_at)
+    seconds = runtime_timeout_policy.seconds(REQUEST_TTL_ROLE)
+    return (created + dt.timedelta(seconds=seconds)).isoformat(timespec="seconds")
+
+
+def _persist_lifecycle(ep: Path, kind: str, attempt: int, req: dict) -> None:
+    scoped = request_path(ep, kind, attempt=attempt)
+    _write_json(scoped, req)
+    current_path = request_path(ep, kind)
+    if current_path.is_file():
+        current = _read_json(current_path)
+        if current.get("request_id") == req.get("request_id") or int(current.get("attempt") or 0) == attempt:
+            current.update(req)
+            current["attempt_request_path"] = _repo_rel(scoped)
+            _write_json(current_path, current)
+
+
+def transition_request(ep: Path, kind: str, *, attempt: int, status: str, actor: str, reason: str) -> dict:
+    if status not in TERMINAL_REQUEST_STATUSES - {"FINALIZED"}:
+        raise ProductReviewError(f"unsupported lifecycle transition: {status}")
+    _, req = _resolve_request(ep, kind, attempt)
+    if req.get("status") != AWAITING:
+        raise ProductReviewError(f"review request is not awaiting: {req.get('status')}")
+    req["status"] = status
+    req["lifecycle"] = {
+        "status": status,
+        "actor": str(actor or "unknown"),
+        "reason": str(reason or "unspecified"),
+        "at": runtime_provenance.now(),
+    }
+    _persist_lifecycle(ep, kind, attempt, req)
+    episode_performance.safe_end_named_span(
+        ep, f"PRODUCT_REVIEW_{kind}", status="BLOCKED",
+        metadata={"attempt": attempt, "request_status": status, "reason": reason})
+    return req
+
+
+def cancel_request(ep: Path, kind: str, *, attempt: int, actor: str, reason: str) -> dict:
+    return transition_request(ep, kind, attempt=attempt, status="CANCELLED", actor=actor, reason=reason)
+
+
+def reconcile_request(ep: Path, request: dict, *, now: dt.datetime | None = None) -> tuple[dict, dict | None]:
+    """Reconcile one live request without ever turning expiry into PASS.
+
+    Returns (request, lifecycle_event). Malformed metadata fails closed by leaving
+    the request AWAITING and returning an explicit error event for next-action.
+    """
+    req = dict(request)
+    if req.get("status") != AWAITING:
+        return req, None
+    kind = str(req.get("review_kind") or "")
+    try:
+        attempt = int(req.get("attempt") or 0)
+    except (TypeError, ValueError):
+        attempt = 0
+    if not kind or attempt < 1:
+        return req, {"status": "LIFECYCLE_ERROR", "reason": "missing review_kind/attempt"}
+
+    source_rows = req.get("source_files")
+    if not isinstance(source_rows, list) or not source_rows:
+        return req, {"status": "LIFECYCLE_ERROR", "reason": "source_files missing or ambiguous"}
+    for row in source_rows:
+        if not isinstance(row, dict) or not row.get("path") or not row.get("sha256"):
+            return req, {"status": "LIFECYCLE_ERROR", "reason": "source binding malformed"}
+        try:
+            source = (ROOT / str(row["path"])).resolve()
+            source.relative_to(ROOT.resolve())
+        except (OSError, ValueError):
+            return req, {"status": "LIFECYCLE_ERROR", "reason": "source binding escapes repository"}
+        if not source.is_file():
+            return req, {"status": "LIFECYCLE_ERROR", "reason": f"source missing: {row['path']}"}
+        if _sha256(source).lower() != str(row["sha256"]).lower():
+            updated = transition_request(
+                ep, kind, attempt=attempt, status="SUPERSEDED", actor="story-os",
+                reason=f"source drift: {row['path']}")
+            return updated, {"status": "SUPERSEDED", "reason": updated["lifecycle"]["reason"], "attempt": attempt, "review_kind": kind}
+
+    try:
+        deadline_at = str(req.get("deadline_at") or _deadline_for(req.get("created_at")))
+        deadline = _parse_time(deadline_at)
+    except ProductReviewError as exc:
+        return req, {"status": "LIFECYCLE_ERROR", "reason": str(exc), "attempt": attempt, "review_kind": kind}
+    if not req.get("deadline_at"):
+        req["deadline_at"] = deadline_at
+        _persist_lifecycle(ep, kind, attempt, req)
+    current = now or dt.datetime.now(dt.timezone.utc).astimezone()
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=dt.timezone.utc)
+    if current >= deadline:
+        updated = transition_request(
+            ep, kind, attempt=attempt, status="EXPIRED", actor="story-os",
+            reason=f"request deadline elapsed: {deadline_at}")
+        return updated, {"status": "EXPIRED", "reason": updated["lifecycle"]["reason"], "attempt": attempt, "review_kind": kind}
+    return req, None
+
+
 def _devspace_bounded_allowed(ep: Path) -> bool:
     """Allow same-WORK bounded review only for explicitly full-auto ordinary-life episodes.
 
@@ -85,10 +200,77 @@ def _devspace_bounded_allowed(ep: Path) -> bool:
 _EXTENDED_SOURCE_DRIFT_KINDS = {"visual-lock", "visual-lock-baseline"}
 
 
+def _frozen_source_key(source_files) -> tuple[tuple[str, str], ...]:
+    """Ordered (path, sha256) key for a frozen source list.
+
+    Ordered rather than a multiset: reordering source_files can change the
+    question a critic is asked, so ordered comparison only ever yields false
+    negatives (no suppression), which is the safe direction.
+
+    Every prepare() call site freezes the artifact actually under judgment into
+    source_files, so an equal key means "the same bytes were reviewed".
+    """
+    return tuple(
+        (str(row.get("path") or ""), str(row.get("sha256") or "").lower())
+        for row in (source_files or [])
+        if isinstance(row, dict)
+    )
+
+
+def _previous_attempt_request(ep: Path, kind: str, attempt: int) -> dict | None:
+    scoped = request_path(ep, kind, attempt=attempt)
+    if scoped.is_file():
+        return _read_json(scoped)
+    # Compatibility with requests written before V2.6.1.1: only the alias exists.
+    legacy = request_path(ep, kind)
+    if legacy.is_file():
+        data = _read_json(legacy)
+        if int(data.get("attempt") or 0) == attempt:
+            return data
+    return None
+
+
+def _reject_redundant_second_attempt(ep: Path, kind: str, sources: list[dict]) -> None:
+    """Refuse a NEW attempt 2 when attempt 1 already FINALIZED over these exact bytes.
+
+    FINALIZED means a completed verdict already covers this input for the kinds
+    whose finalization is PASS-gated, so asking again answers nothing new. The
+    contract authorizes attempt 2 only after attempt 1 FAILS
+    (codex_auto_orchestrator: "If it FAILS, revise story + affected storyboard
+    exactly once, then run attempt 2"), so a same-bytes attempt 2 after a PASS
+    is off-contract rather than a second opinion.
+
+    Deliberately NOT conditioned on FINALIZED alone: after a FAIL, mark_complete
+    is never called and the attempt-1 file stays AWAITING, which is exactly the
+    documented revise-then-retry lane. That lane must keep working.
+
+    Only guards creation. An attempt-2 request already on disk is left alone --
+    re-invoking run-critic to re-read an existing request must stay idempotent,
+    and such existing residue is answered by answered_request() at the consumer.
+    """
+    if request_path(ep, kind, attempt=2).is_file():
+        return
+    try:
+        previous = _previous_attempt_request(ep, kind, 1)
+    except (OSError, ValueError, ProductReviewError):
+        return
+    if previous is None or previous.get("status") != "FINALIZED":
+        return
+    if _frozen_source_key(previous.get("source_files")) != _frozen_source_key(sources):
+        return
+    raise ProductReviewError(
+        f"{kind} attempt 2 requires revised frozen sources: attempt 1 is already FINALIZED "
+        "and reviewed these exact bytes. Revise the reviewed artifact (or, if the question "
+        "itself changed, add the missing input to the caller's source_paths)."
+    )
+
+
 def _validate_attempt(ep: Path, kind: str, attempt: int, sources: list[dict]) -> None:
     if attempt < 1:
         raise ProductReviewError("attempt must be >= 1")
     if attempt <= 2:
+        if attempt == 2:
+            _reject_redundant_second_attempt(ep, kind, sources)
         return
     if kind not in _EXTENDED_SOURCE_DRIFT_KINDS:
         raise ProductReviewError("attempt must be 1 or 2")
@@ -98,16 +280,111 @@ def _validate_attempt(ep: Path, kind: str, attempt: int, sources: list[dict]) ->
     previous = _read_json(previous_path)
     if previous.get("status") != "FINALIZED":
         raise ProductReviewError("extended review attempt requires the previous attempt to be FINALIZED")
-    previous_sources = [
-        (str(row.get("path") or ""), str(row.get("sha256") or "").lower())
-        for row in (previous.get("source_files") or [])
-    ]
-    current_sources = [
-        (str(row.get("path") or ""), str(row.get("sha256") or "").lower())
-        for row in sources
-    ]
-    if previous_sources == current_sources:
+    if _frozen_source_key(previous.get("source_files")) == _frozen_source_key(sources):
         raise ProductReviewError("extended review attempt requires changed frozen source hashes")
+
+
+# status == "FINALIZED" only means "already answered" for kinds whose finalization
+# is gated on a PASS verdict.  These three finalize unconditionally, so a
+# FINALIZED row is NOT evidence that the frozen sources passed:
+#   recent5-semantic          -> fingerprint_semantics.py marks complete unconditionally
+#   production-batch-*        -> production_batch_review.py finalizes REPAIR_NOW too,
+#                                so suppressing one would discard a repair authorization
+#   caption-image-audit-v2-*  -> caption_image_audit.py never consults summary.passed
+FINALIZED_IS_PASS_KINDS = frozenset({
+    "story-semantic",
+    "concept-ambition",
+    "frame-semantic",
+    "release-semantic",
+    "visual-lock",
+    "visual-lock-baseline",
+    "visual-profile-legacy",
+})
+
+
+def answered_request(ep: Path, request: dict) -> dict | None:
+    """Return the earlier FINALIZED attempt that already answered this request.
+
+    A pending request is provably redundant when an earlier attempt of the same
+    kind FINALIZED a review of byte-identical frozen sources with the same
+    candidate path: re-serving it would re-ask a question that has already been
+    answered.  Suppressing it cannot skip an unanswered question.
+
+    Fails closed: any missing, unreadable or ambiguous input returns None and the
+    request is served normally.
+    """
+    kind = str(request.get("review_kind") or "")
+    if kind not in FINALIZED_IS_PASS_KINDS:
+        return None
+    try:
+        attempt = int(request.get("attempt") or 0)
+    except (TypeError, ValueError):
+        return None
+    if attempt < 2:
+        return None
+    key = _frozen_source_key(request.get("source_files"))
+    if not key:
+        return None
+    candidate_rel = str(request.get("candidate_path") or "")
+    if not candidate_rel:
+        return None
+    # A request whose candidate already exists is completable, so there is no
+    # permanent pin to break and suppressing it would discard finished work.
+    try:
+        if (ROOT / candidate_rel).resolve().is_file():
+            return None
+    except (OSError, ValueError):
+        return None
+    request_paths = {str(request.get("path") or "")}
+    review_dir = ep / "meta/runtime/reviews"
+    if not review_dir.is_dir():
+        return None
+    for sibling in sorted(review_dir.glob(f"{kind}*-request.json")):
+        try:
+            rel = _repo_rel(sibling)
+        except ValueError:
+            continue
+        if rel in request_paths:
+            continue
+        try:
+            data = _read_json(sibling)
+        except (OSError, ValueError, ProductReviewError):
+            continue
+        # Exact kind: "visual-lock" is a string prefix of "visual-lock-baseline",
+        # so the glob alone over-collects.
+        if str(data.get("review_kind") or "") != kind:
+            continue
+        if data.get("status") != "FINALIZED":
+            continue
+        try:
+            sibling_attempt = int(data.get("attempt") or 0)
+        except (TypeError, ValueError):
+            continue
+        # The alias and its scoped file share an attempt number, so this also
+        # prevents the request from matching itself.
+        if not 0 < sibling_attempt < attempt:
+            continue
+        if str(data.get("candidate_path") or "") != candidate_rel:
+            continue
+        if _frozen_source_key(data.get("source_files")) != key:
+            continue
+        final_rel = str(data.get("final_path") or "")
+        if not final_rel:
+            continue
+        try:
+            final_abs = (ROOT / final_rel).resolve()
+            final_abs.relative_to(ROOT.resolve())
+        except (OSError, ValueError):
+            continue
+        if not final_abs.is_file():
+            continue
+        return {
+            "path": rel,
+            "final_path": final_rel,
+            "attempt": sibling_attempt,
+            "finalized_at": str(data.get("finalized_at") or ""),
+        }
+    return None
 
 
 def _request_fingerprint(
@@ -183,7 +460,7 @@ def prepare(
         "request_id": request_id,
         "request_fingerprint": fingerprint,
         "created_at": runtime_provenance.now(),
-        "status": "AWAITING_PRODUCT_REVIEW",
+        "status": AWAITING,
         "review_kind": kind,
         "runtime": base,
         "critic_runtime": runtime_provenance.isolated_runtime(base),
@@ -218,6 +495,7 @@ def prepare(
     }
     if source_bindings is not None:
         req["source_bindings"] = source_bindings
+    req["deadline_at"] = _deadline_for(req["created_at"])
     attempt_path = request_path(ep, kind, attempt=attempt)
     if attempt_path.is_file():
         existing = _read_json(attempt_path)
@@ -269,6 +547,8 @@ def finalize_candidate(
 ) -> tuple[dict, dict]:
     base = runtime_provenance.normalize_base_runtime(runtime)
     path, req = _resolve_request(ep, kind, attempt)
+    if req.get("status") != AWAITING:
+        raise ProductReviewError(f"review request cannot be finalized from status={req.get('status')}")
     # Historical schema <=2 WORK requests can still be finalized after the
     # migration; new schema 3 requests are WORK+DevSpace only. WEB history is
     # readable but cannot be used to finalize a new/current review.
@@ -335,6 +615,8 @@ def mark_complete(ep: Path, kind: str, *, final_path: Path, attempt: int | None 
         if attempt < 1:
             raise ProductReviewError("cannot infer finalized review attempt")
     scoped_path, req = _resolve_request(ep, kind, attempt)
+    if req.get("status") != AWAITING:
+        raise ProductReviewError(f"review request cannot complete from status={req.get('status')}")
     req["status"] = "FINALIZED"
     req["finalized_at"] = runtime_provenance.now()
     req["final_path"] = _repo_rel(final_path)

@@ -86,6 +86,11 @@ def _bootstrap_story_platform() -> None:
 
 _bootstrap_story_platform()
 
+# 连接配置唯一解析入口（应用层读 config/storyos.yaml#storage，platform/ 保持零 yaml 依赖）。
+if str(PROJECT_ROOT / "episodes" / "_system") not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT / "episodes" / "_system"))
+import storage_config  # noqa: E402
+
 from platform.artifact.jsonl_artifact_store import JsonlArtifactStore  # noqa: E402
 from platform.event.jsonl_event_store import JsonlEventStore  # noqa: E402
 from platform.repository.artifact.mysql_artifact_repository import (  # noqa: E402
@@ -128,24 +133,8 @@ def _git_info() -> dict:
 
 
 def _env_summary(jsonl_root: str) -> dict:
-    """环境摘要：只保留非凭据字段，密码只用布尔值表示是否存在。"""
-    user = os.environ.get("STORYOS_MYSQL_USER", "")
-    password = os.environ.get("STORYOS_MYSQL_PWD", "")
-    port_raw = os.environ.get("STORYOS_MYSQL_PORT", "3306")
-    try:
-        port = int(port_raw)
-    except ValueError:
-        port = port_raw
-    return {
-        "mysql": {
-            "host": os.environ.get("STORYOS_MYSQL_HOST", "127.0.0.1"),
-            "port": port,
-            "database": os.environ.get("STORYOS_MYSQL_DB", "story_os_runtime"),
-            "user_present": bool(user),
-            "password_present": bool(password),
-        },
-        "jsonl_root": jsonl_root,
-    }
+    summary = storage_config.storage_summary()
+    return {"mysql": summary["mysql"], "runtime_store": summary["runtime_store"], "jsonl_root": jsonl_root}
 
 
 def _legacy_stores(jsonl_root: str) -> dict:
@@ -160,7 +149,11 @@ def _legacy_stores(jsonl_root: str) -> dict:
 def build_checker(jsonl_root: str, connection=None):
     """构建 Legacy + MySQL 双侧校验器；返回 (checker, connection)。"""
     stores = _legacy_stores(jsonl_root)
-    connection = connection if connection is not None else MySqlConnection()
+    connection = (
+        connection
+        if connection is not None
+        else MySqlConnection(**storage_config.mysql_connection_kwargs())
+    )
     checker = RuntimeConsistencyChecker(
         event_legacy=stores["event"],
         event_mysql=MySqlEventRepository(connection),
@@ -251,7 +244,7 @@ def _parse_args(argv):
 
 def main(argv=None) -> int:
     args = _parse_args(argv)
-    jsonl_root = args.jsonl_root or os.environ.get("STORYOS_RUNTIME_JSONL_ROOT") or DEFAULT_JSONL_ROOT
+    jsonl_root = args.jsonl_root or storage_config.runtime_store_config()["jsonl_root"]
     entities = list(args.entity) if args.entity else list(ENTITY_CHOICES)
     evidence_path = (
         Path(args.evidence_file)

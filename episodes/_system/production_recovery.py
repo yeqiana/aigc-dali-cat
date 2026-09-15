@@ -18,6 +18,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import production_ledger
+import image_model_policy
 import runtime_timeout_policy
 from runtime_atomic_store import atomic_write_json, update_json
 
@@ -255,6 +256,9 @@ def _commit_success(ep: Path, item: dict, lifecycle: dict) -> tuple[bool, str]:
     item["output_path"] = output.relative_to(ROOT.resolve()).as_posix()
     item["completed_at"] = now()
     item["last_error"] = None
+    item.pop("technical_failure_code", None)
+    item.pop("external_block", None)
+    item.pop("retry_exhausted", None)
     item["prompt_package"] = result.get("prompt_package")
     if result.get("log"):
         log = Path(str(result["log"]))
@@ -339,6 +343,9 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
             if candidate_path is not None and item_output is not None and candidate_path == item_output:
                 item["status"] = "generated"
                 item["last_error"] = None
+                item.pop("technical_failure_code", None)
+                item.pop("external_block", None)
+                item.pop("retry_exhausted", None)
                 outcome = "REVIEWED_CANDIDATE_RETAINED"
                 report["rows"].append({"item_id": item.get("id"), "frame": frame, "outcome": outcome,
                                        "ledger_status": ledger_status, "lifecycle_state": lifecycle_state})
@@ -353,6 +360,9 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
                 item["output_path"] = candidate_path.relative_to(ROOT.resolve()).as_posix()
                 item["completed_at"] = item.get("completed_at") or now()
                 item["last_error"] = None
+                item.pop("technical_failure_code", None)
+                item.pop("external_block", None)
+                item.pop("retry_exhausted", None)
                 mark_terminal(ep, item, "COMMITTED", recovery="ledger_ready_replayed")
                 outcome = "LEDGER_READY_REPLAYED"
             else:
@@ -377,7 +387,11 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
                     outcome = "SUCCESS_EVIDENCE_INVALID"
             elif lifecycle_state == "FAILED":
                 failure = str(lifecycle.get("error") or "worker failed before scheduler commit")
-                _mark_technical_failure(ep, item, "WORKER_INTERRUPTED_FAILURE", failure)
+                failure_code = (
+                    image_model_policy.classify_backend_error(failure, source="image_backend")
+                    or "WORKER_INTERRUPTED_FAILURE"
+                )
+                _mark_technical_failure(ep, item, failure_code, failure)
                 outcome = "WORKER_FAILURE_REPLAYED"
             elif lifecycle_state in {"WORKER_STARTED", "BACKEND_INVOKED"}:
                 # Resume is allowed to classify an abandoned worker as a

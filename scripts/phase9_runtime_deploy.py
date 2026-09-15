@@ -69,19 +69,27 @@ def build_commands(
         arg = build_launcher_argument(
             run_root, metrics_port, auto_recover, restart_agent_command
         )
+        settings = (
+            "$s = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries "
+            "-DontStopIfGoingOnBatteries -RestartCount 3 "
+            "-RestartInterval (New-TimeSpan -Minutes 1) "
+            "-ExecutionTimeLimit ([TimeSpan]::Zero); "
+        )
         if principal == "SYSTEM":
             script = (
                 "$a = New-ScheduledTaskAction -Execute {py} -Argument {arg}; "
                 "$t = New-ScheduledTaskTrigger -AtStartup; "
                 "$p = New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest; "
-                "Register-ScheduledTask -TaskName {task} -Action $a -Trigger $t -Principal $p -Force"
+                + settings
+                + "Register-ScheduledTask -TaskName {task} -Action $a -Trigger $t -Principal $p -Settings $s -Force"
             ).format(py=_ps_quote(python_exe), arg=_ps_quote(arg), task=_ps_quote(task_name))
         elif principal == "CURRENT_USER":
             script = (
                 "$a = New-ScheduledTaskAction -Execute {py} -Argument {arg}; "
                 "$t = New-ScheduledTaskTrigger -AtLogOn; "
                 "$p = New-ScheduledTaskPrincipal -UserId ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) -LogonType Interactive; "
-                "Register-ScheduledTask -TaskName {task} -Action $a -Trigger $t -Principal $p -Force"
+                + settings
+                + "Register-ScheduledTask -TaskName {task} -Action $a -Trigger $t -Principal $p -Settings $s -Force"
             ).format(py=_ps_quote(python_exe), arg=_ps_quote(arg), task=_ps_quote(task_name))
         else:
             raise ValueError("unknown principal: " + principal)
@@ -93,7 +101,17 @@ def build_commands(
         return [(script, "删除计划任务 " + task_name)]
     if action == "status":
         script = (
-            "Get-ScheduledTask -TaskName {task} | Format-List TaskName,State"
+            "$task = Get-ScheduledTask -TaskName {task}; "
+            "$action = $task.Actions | Select-Object -First 1; "
+            "$trigger = $task.Triggers | Select-Object -First 1; "
+            "[PSCustomObject]@{{"
+            "TaskName=$task.TaskName; State=$task.State; "
+            "Execute=$action.Execute; Arguments=$action.Arguments; "
+            "TriggerType=$trigger.CimClass.CimClassName; "
+            "UserId=$task.Principal.UserId; LogonType=$task.Principal.LogonType; RunLevel=$task.Principal.RunLevel; "
+            "RestartCount=$task.Settings.RestartCount; RestartInterval=$task.Settings.RestartInterval; "
+            "ExecutionTimeLimit=$task.Settings.ExecutionTimeLimit"
+            "}} | Format-List"
         ).format(task=_ps_quote(task_name))
         return [(script, "查询计划任务 " + task_name)]
     raise ValueError("unknown action: " + action)

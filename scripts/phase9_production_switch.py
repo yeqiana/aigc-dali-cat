@@ -59,7 +59,29 @@ from platform.gateway.runtime_primary_persistence import (  # noqa: E402
     load_runtime_primary,
     save_runtime_primary,
 )
+from platform.gateway.production_ownership_consumer import assess  # noqa: E402
 from platform.gateway.runtime_primary_registry import RuntimePrimaryRegistry  # noqa: E402
+
+
+def ownership_lines(current_runtime: str) -> list[str]:
+    """Recorded ownership and effective ownership, printed side by side.
+
+    ``status`` used to print the record alone, which reads identically whether or
+    not production consumes it. Both facts are printed now so the two states
+    cannot be confused again (W-11).
+    """
+    evidence = assess(PROJECT_ROOT, current_runtime)
+    if evidence.effective_ownership:
+        detail = "consumers=" + ", ".join(evidence.production_consumers)
+    else:
+        detail = ("0 production consumers; read only by control plane ("
+                  + str(len(evidence.control_plane_consumers)) + " modules) -- 账面切换，接管未完成")
+    return [
+        "  recorded_ownership=" + ("V3" if evidence.recorded_ownership else "not-V3"),
+        "  effective_ownership=" + str(evidence.effective_ownership),
+        "  takeover_state=" + evidence.takeover_state,
+        "  " + detail,
+    ]
 
 
 def plan_switch(current, target: str, reason: str):
@@ -86,6 +108,8 @@ def main(argv=None) -> int:
               + " previous=" + str(current.previous_runtime)
               + " reason=" + current.reason
               + " updated_at=" + current.updated_at)
+        for line in ownership_lines(current.primary_runtime):
+            print(line)
         return EXIT_OK
 
     new_record, changed = plan_switch(current, args.to, args.reason)

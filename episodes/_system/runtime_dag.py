@@ -32,6 +32,12 @@ import runtime_node_registry
 import runtime_node_evidence
 import storyos_config
 import runtime_scheduler
+import runtime_checkpoint
+import runtime_command
+import runtime_ownership
+import validate_episode
+import machine_gate
+import evidence_gate
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -87,7 +93,7 @@ def reconcile_visual_profile_closure(ep):
     ]
 
 def run(cmd):
-    return subprocess.run([str(x) for x in cmd],cwd=ROOT,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
+    return runtime_command.run_argv([str(x) for x in cmd],cwd=ROOT,capture=True)
 def load_dag():
     d=json.loads(DAG_FILE.read_text(encoding="utf-8-sig"))
     if d.get("schema_version")!=1: raise ValueError("invalid runtime-dag schema")
@@ -101,10 +107,15 @@ def stage_at_least(cur,target):
 def request_mode(ep):
     return runtime_execution.effective_mode(ep)
 def validate_target(ep,target):
-    outputs=[]
-    for script in ("validate_episode.py","machine_gate.py","evidence_gate.py"):
-        cp=run([sys.executable,SYSTEM/script,ep,"--target",target]); outputs.append(cp.stdout)
-        if cp.returncode!=0: return False,"\n".join(outputs)[-5000:]
+    ep=Path(ep).resolve()
+    findings=validate_episode.validate_episode(ep,ROOT,False,target)
+    failed=[str(x) for x in findings if getattr(x,"level",None)=="FAIL"]
+    if failed: return False,"\n".join(failed)[-5000:]
+    findings=machine_gate.validate(ep,target,metadata_only=False)
+    failed=[str(x) for x in findings if getattr(x,"level",None)=="FAIL"]
+    if failed: return False,"\n".join(failed)[-5000:]
+    ok,messages=evidence_gate.run_gate(ep,target)
+    if not ok: return False,"\n".join(str(x) for x in messages)[-5000:]
     return True,"PASS"
 
 # STORY_OS_V262_DAG_STOP_TARGET: an explicit --until target lets a bounded pass end on a chosen
@@ -128,10 +139,15 @@ def stop_target_reached(ep,target):
         return False,"gate rejected "+target+": "+str(msg)[-800:]
     return True,"PASS"
 def checkpoint(ep,step,status,elapsed,note,attempt=1,input_hash=None,output_hash=None):
-    cmd=[sys.executable,SYSTEM/"runtime_checkpoint.py","record-step",ep,"--step",step,"--status",status,"--attempt",str(attempt),"--finished-at",proto.now(),"--note",note]
-    if input_hash: cmd += ["--input-hash",input_hash]
-    if output_hash: cmd += ["--output-hash",output_hash]
-    run(cmd)
+    try:
+        runtime_checkpoint.record_step(
+            ep,step=step,status=status,attempt=attempt,finished_at=proto.now(),note=note,
+            input_hash=input_hash,output_hash=output_hash)
+    except FileNotFoundError:
+        # Compatibility with the former subprocess path: runtime_checkpoint.py
+        # returned non-zero when the file was absent, but DAG intentionally did
+        # not treat that recovery-projection failure as stage authority.
+        return None
 
 def spec_rows():
     d=load_dag(); rows=[]
@@ -214,6 +230,35 @@ def resolve_node_dependencies(nodes, *, completed=(), failed=()):
         row for row in rows if row["node_id"] in blocked
     ]}
 
+def production_scheduler_resources() -> dict:
+    """Resolved capacity presented to the top-level production scheduler.
+
+    Top-level Runtime steps stay serial unless their Node Contract explicitly
+    declares ``parallel_safe``.  The snapshot therefore exposes real lane
+    capacity without forcing unsafe composite steps to run concurrently.  Image
+    concurrency remains delegated to image_scheduler and PREIMAGE concurrency to
+    its task protocol, but the scheduler no longer plans against a fake global
+    ``max_workers=1`` resource model.
+    """
+    config=storyos_config.load_config()
+    authority=max(1,int(storyos_config.get_path(config,"runtime.workers.local_codex_preimage",4)))
+    derived=max(1,int(storyos_config.get_path(config,"runtime.workers.derived",6)))
+    image=max(1,int(storyos_config.get_path(config,"production.max_inflight_images",3)))
+    max_workers=max(authority,derived,image,1)
+    return {
+        "max_workers":max_workers,
+        "current_workers":0,
+        "runtime_capacity":{
+            "text":1,
+            "review":1,
+            "preimage":authority,
+            "authority":authority,
+            "derived":derived,
+            "image":image,
+        },
+    }
+
+
 def plan(ep):
     cur=state(ep); saved=proto.load_state(ep)
     out=[]
@@ -229,6 +274,10 @@ def plan(ep):
     return {"current_state":cur,"steps":out}
 
 def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
+    # W-11: a recorded production-owner switch only becomes effective when the
+    # Production Kernel consumes it. Direct DAG execution is a production entry,
+    # so fail closed before any reconcile/executor side effect.
+    runtime_ownership.assert_v3_owner("runtime_dag.execute")
     # STORY_OS_V262_DAG_STOP_TARGET: a stop target is a canonical Episode stage, never a step id.
     # Reject an unknown target before any reconcile, lock or executor exists.
     if until is not None and until not in STAGES:
@@ -268,6 +317,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
     step_by_id={spec.step_id: spec for spec in specs}
     completed_nodes=set()
     node_contract=runtime_node_registry.runtime_step_nodes(specs)
+    scheduler_resources=production_scheduler_resources()
     if until:
         # Already at or past the target: stopping is a no-op, so do not spawn INCREMENTAL_PLAN
         # or any other step merely to arrive back here.
@@ -277,7 +327,12 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             print(STOP_TARGET_REACHED+" "+until+" (already valid)")
             return 0
     while len(completed_nodes)<len(specs):
-        wave=runtime_scheduler.schedule(node_contract,completed=completed_nodes,max_workers=1)
+        wave=runtime_scheduler.schedule(
+            node_contract,
+            completed=completed_nodes,
+            max_workers=scheduler_resources["max_workers"],
+            resource_snapshot=scheduler_resources,
+        )
         if not wave["dispatch"]:
             background.shutdown(wait=False,cancel_futures=True)
             print("RUNTIME DAG SCHEDULER BLOCKED", json.dumps({
@@ -396,10 +451,19 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 # A local explicit CODEX run executes four bounded workers.  It
                 # is not a threaded wrapper around the legacy composite prompt.
                 import preimage_protocol
-                workers=int(storyos_config.get_path(storyos_config.load_config(),"runtime.workers.authority") or 4)
+                import preimage_task_contract
+                # Fail here, before the fan-out, if any task's step is missing
+                # from a registry: the alternative is discovering it inside a
+                # worker 20 minutes in, with the other three already running.
+                preimage_task_contract.assert_registries_aligned()
+                # This branch is the explicit local-Codex PREIMAGE fallback only.
+                # WORK + DevSpace production goes through the host-action branch above;
+                # its concurrency is owned by the host transport, not this local pool.
+                workers=int(storyos_config.get_path(storyos_config.load_config(),"runtime.workers.local_codex_preimage") or 4)
                 def _worker(task):
-                    execution_capsule.compile_capsule(ep,"PREIMAGE_"+task["task_type"],write=True)
-                    value, _log=scoped_codex_worker.run_step(ep,"PREIMAGE_"+task["task_type"],codex_raw=codex,timeout=timeout)
+                    step=preimage_task_contract.canonical_step(task["task_type"])
+                    execution_capsule.compile_capsule(ep,step,write=True)
+                    value, _log=scoped_codex_worker.run_step(ep,step,codex_raw=codex,timeout=timeout)
                     return value
                 outcome=preimage_protocol.execute_local(ep,_worker,max_workers=workers)
                 rc=0 if outcome.get("status")=="PASS" else 4

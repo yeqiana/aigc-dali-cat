@@ -6,10 +6,8 @@
     mysql  只写 MySQL（真实持久化）。
     dual   Legacy JSONL + MySQL 双写；secondary_enabled=False 可单独回滚 MySQL 侧。
 
-环境变量：
-    STORYOS_RUNTIME_STORE_MODE   jsonl | mysql | dual，默认 jsonl
-    STORYOS_RUNTIME_JSONL_ROOT   Legacy 目录，默认 .storyos
-    STORYOS_MYSQL_*              MySQL 连接参数，见 mysql_connection
+环境变量只作为 standalone/platform 调用的显式输入；Story OS 生产应用层必须
+先解析 config/storyos.yaml，再把 mode/jsonl_root/connection 显式注入本模块。
 
 约束：
     - 默认模式不改变既有行为，也不会因为缺少 pymysql 而失败。
@@ -35,7 +33,6 @@ from platform.trace.jsonl_trace_store import JsonlTraceStore
 
 STORE_MODE_ENV = "STORYOS_RUNTIME_STORE_MODE"
 JSONL_ROOT_ENV = "STORYOS_RUNTIME_JSONL_ROOT"
-DEFAULT_JSONL_ROOT = ".storyos"
 
 
 class RuntimeStoreMode(str, Enum):
@@ -108,7 +105,11 @@ def build_runtime_repositories(
     RuntimeRepositories.connection，由调用方负责 close()。
     """
     resolved = resolve_store_mode(mode)
-    root = jsonl_root or os.environ.get(JSONL_ROOT_ENV) or DEFAULT_JSONL_ROOT
+    root = jsonl_root or os.environ.get(JSONL_ROOT_ENV)
+    if resolved is not RuntimeStoreMode.MYSQL and not root:
+        raise ValueError(
+            "jsonl_root is required for jsonl/dual mode; Story OS application layer must inject storage.runtime_store.jsonl_root"
+        )
 
     if resolved is RuntimeStoreMode.JSONL:
         return RuntimeRepositories(
@@ -133,7 +134,9 @@ def build_runtime_repositories(
     from platform.repository.trace.mysql_trace_repository import MySqlTraceRepository
 
     if connection is None:
-        connection = MySqlConnection()
+        raise ValueError(
+            "MySQL connection is required for mysql/dual mode; Story OS application layer must inject storage_config.mysql_connection_kwargs()"
+        )
 
     mysql_event = MySqlEventRepository(connection)
     mysql_trace = MySqlTraceRepository(connection)
@@ -177,7 +180,11 @@ class RuntimeRepositoryProvider:
         secondary_enabled: bool = True,
     ):
         self.mode = resolve_store_mode(mode)
-        self.jsonl_root = jsonl_root or os.environ.get(JSONL_ROOT_ENV) or DEFAULT_JSONL_ROOT
+        self.jsonl_root = jsonl_root or os.environ.get(JSONL_ROOT_ENV)
+        if self.mode is not RuntimeStoreMode.MYSQL and not self.jsonl_root:
+            raise ValueError(
+                "jsonl_root is required for jsonl/dual mode; inject the application-resolved runtime store root"
+            )
         self.secondary_enabled = secondary_enabled
         self._connection = connection
         self._owns_connection = False
@@ -186,8 +193,7 @@ class RuntimeRepositoryProvider:
 
     def repositories(self) -> RuntimeRepositories:
         if self._repositories is None:
-            needs_mysql = self.mode is not RuntimeStoreMode.JSONL
-            self._owns_connection = needs_mysql and self._connection is None
+            self._owns_connection = False
             self._repositories = build_runtime_repositories(
                 self.mode,
                 jsonl_root=self.jsonl_root,

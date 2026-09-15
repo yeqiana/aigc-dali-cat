@@ -99,6 +99,21 @@ def execute(ep,item,timeout,codex):
         production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=str(exc), result=result)
         return result
 
+    # A backend return is not success by itself.  Historical workers could
+    # return rc=0 while producing no usable artifact, which let the scheduler
+    # commit budget and only discover the missing file later.  Fail closed at
+    # the worker boundary so technical retry/failover sees an explicit cause.
+    if not out.is_file() or out.stat().st_size <= 0:
+        code="IMAGE_BACKEND_NO_OUTPUT"
+        raw_candidate_budget.release(ep,budget_token,reason="backend_returned_without_output")
+        runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",
+                               status="FAILED",started_monotonic=trace_started,
+                               attrs={"frame":frame,"error":code,"runner_request_id":runner_request_id})
+        result={"returncode":95,"stdout":f"{code}: expected={out}","payload":payload,"output":None,"log":log,
+                "attempt":attempt,"scout":None,"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
+        production_recovery.write_lifecycle(ep,item,"FAILED",worker_pid=os.getpid(),error=result["stdout"],result=result)
+        return result
+
     commit_ok,commit_row=raw_candidate_budget.commit(ep,budget_token,reason="normalized_candidate_exists")
     if not commit_ok:
         runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="FAILED",started_monotonic=trace_started,attrs={"frame":frame,"error":"candidate commit failed"})

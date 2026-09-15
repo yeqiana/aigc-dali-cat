@@ -41,6 +41,36 @@ def ensure_shape(d: dict) -> dict:
     return d
 
 
+def record_step(episode_dir: Path, *, step: str, status: str, attempt: int = 1,
+                started_at: str | None = None, finished_at: str | None = None,
+                note: str = "", input_hash: str | None = None,
+                output_hash: str | None = None) -> dict:
+    """Append one Runtime step record without spawning a second Python process."""
+    if status not in VALID_STEP_STATUS:
+        raise ValueError(f"invalid runtime checkpoint status: {status}")
+    if isinstance(attempt, bool) or int(attempt) < 1:
+        raise ValueError("attempt must be at least 1")
+    path = Path(episode_dir).resolve() / REL
+    if not path.exists():
+        raise FileNotFoundError("runtime checkpoint missing")
+    d = ensure_shape(rd(path))
+    row = {
+        "step": str(step),
+        "status": status,
+        "input_hash": input_hash,
+        "output_hash": output_hash,
+        "attempt": int(attempt),
+        "started_at": started_at,
+        "finished_at": finished_at or now(),
+        "note": str(note),
+    }
+    d["step_runs"].append(row)
+    d["step_runs"] = d["step_runs"][-200:]
+    d["updated_at"] = now()
+    wr(path, d)
+    return row
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -72,20 +102,12 @@ def main() -> int:
     if a.cmd == "show":
         print(json.dumps(d, ensure_ascii=False, indent=2)); return 0
     if a.cmd == "record-step":
-        row = {
-            "step": a.step,
-            "status": a.status,
-            "input_hash": a.input_hash,
-            "output_hash": a.output_hash,
-            "attempt": a.attempt,
-            "started_at": a.started_at,
-            "finished_at": a.finished_at or now(),
-            "note": a.note,
-        }
-        d["step_runs"].append(row)
-        # Keep the latest 200 entries to prevent unbounded growth.
-        d["step_runs"] = d["step_runs"][-200:]
-        d["updated_at"] = now(); wr(path, d); print(path); return 0
+        record_step(
+            ep, step=a.step, status=a.status, attempt=a.attempt,
+            started_at=a.started_at, finished_at=a.finished_at, note=a.note,
+            input_hash=a.input_hash, output_hash=a.output_hash,
+        )
+        print(path); return 0
     if a.last_completed: d["last_completed"] = a.last_completed
     if a.next_action: d["next_action"] = a.next_action
     d["locked_frames"] = sorted(set(d.get("locked_frames", [])) | {str(x).zfill(2) for x in a.lock_frame})

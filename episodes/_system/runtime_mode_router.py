@@ -15,6 +15,7 @@ SYSTEM = Path(__file__).resolve().parent
 from story_os_contract import canonical_stages
 import story_json
 import runtime_timeout_policy
+import runtime_command
 STAGES=tuple(canonical_stages())
 SPECIAL = {"repair_only","release_only","data_review"}
 
@@ -29,8 +30,7 @@ def at_least(cur: str | None, target: str) -> bool:
     return cur in STAGES and target in STAGES and STAGES.index(cur) >= STAGES.index(target)
 
 def run(cmd: list[object]) -> subprocess.CompletedProcess[str]:
-    return subprocess.run([str(x) for x in cmd],cwd=ROOT,check=False,stdout=subprocess.PIPE,
-                          stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
+    return runtime_command.run_argv([str(x) for x in cmd],cwd=ROOT,capture=True)
 
 def validate_target(ep: Path, target: str) -> tuple[bool,str]:
     out=[]

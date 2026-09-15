@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 """Compact resume capsule: one cheap file to restore a Story OS run after context loss."""
 from __future__ import annotations
-import argparse, datetime as dt, hashlib, json
+import argparse, datetime as dt, json
 from pathlib import Path
 import production_ledger
 import runtime_capability_cache
 import story_json
+import derived_freshness
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/resume-capsule.json")
@@ -19,7 +20,7 @@ def read_json(p):
     return story_json.read_json(p, default=None)
 def sha(p):
     p=Path(p)
-    return hashlib.sha256(p.read_bytes()).hexdigest() if p.is_file() else None
+    return derived_freshness.sha256_file(p)
 def write_json(p,d):
     story_json.write_json(p, d)
 def _ledger_summary(ledger):
@@ -39,7 +40,7 @@ def compile_capsule(ep,write=True):
     ep=Path(ep).resolve(); state=read_json(ep/"meta/episode-state.json") or {};cur=str(state.get("current_state") or "UNKNOWN")
     next_target=None
     if cur in STAGES and STAGES.index(cur)<len(STAGES)-1:next_target=STAGES[STAGES.index(cur)+1]
-    sources=[{"path":rel,"sha256":sha(ep/rel)} for rel in SOURCE_RELS]
+    sources, source_fingerprint = derived_freshness.snapshot(ep, SOURCE_RELS)
     led=read_json(ep/"meta/production-ledger.json") or {};q=read_json(ep/"meta/production-queue.json") or {}
     caps=runtime_capability_cache.ensure(ep);ls=_ledger_summary(led);qs=_queue_summary(q)
     actions=[]
@@ -51,10 +52,12 @@ def compile_capsule(ep,write=True):
         elif cur=="PRODUCTION_PASSED":actions.append("continue Text/Release/Final Snapshot")
         elif cur=="PUBLISH_READY":actions.append("complete; do not reopen production unless user requests changes")
         else:actions.append("continue only the next canonical stage")
-    material=json.dumps(sources,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode("utf-8")
-    data={"schema_version":1,"module_version":"2.5.1","generated_at":now(),"episode":ep.relative_to(ROOT).as_posix() if ep.is_relative_to(ROOT) else str(ep),"current_state":cur,"next_target":next_target,"runtime_step":STEP_BY_STATE.get(cur),"source_fingerprint":hashlib.sha256(material).hexdigest(),"source_files":sources,"ledger":ls,"queue_status_counts":qs,"runtime_capabilities":caps,"next_actions":actions,"read_policy":"Read this capsule first after context loss. Do not broad-rescan repository authority unless a listed SHA changed, a required detail is missing, or a gate reports drift.","authority_policy":"Derived cache only; source authority always wins."}
+    data={"schema_version":1,"module_version":"2.5.1","generated_at":now(),"episode":ep.relative_to(ROOT).as_posix() if ep.is_relative_to(ROOT) else str(ep),"current_state":cur,"next_target":next_target,"runtime_step":STEP_BY_STATE.get(cur),"source_fingerprint":source_fingerprint,"source_files":sources,"ledger":ls,"queue_status_counts":qs,"runtime_capabilities":caps,"next_actions":actions,"read_policy":"Read this capsule first after context loss. Rebuild on source_fingerprint drift; source authority always wins.","authority_policy":"Derived cache only; source authority always wins."}
     if write:write_json(ep/REL,data)
     return data
+def load_fresh(ep,write=True):
+    ep=Path(ep).resolve(); existing=read_json(ep/REL) or {}
+    return existing if derived_freshness.is_fresh(ep,existing,SOURCE_RELS) else compile_capsule(ep,write)
 def self_test():
     x=_ledger_summary({"frames":{"01":{"status":"PASSED"},"02":{"status":"TECH_FAILED"},"03":{"status":"NEEDS_USER"}}})
     assert x["tech_retry_frames"]==["02"] and x["blocking_frames"]==["03"]
@@ -65,6 +68,6 @@ def main():
     p=sub.add_parser("show");p.add_argument("episode_dir")
     sub.add_parser("self-test");a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0
-    ep=Path(a.episode_dir).resolve();d=compile_capsule(ep,write=a.cmd=="build") if a.cmd=="build" else (read_json(ep/REL) or compile_capsule(ep,False))
+    ep=Path(a.episode_dir).resolve();d=compile_capsule(ep,write=True) if a.cmd=="build" else load_fresh(ep,write=True)
     print(json.dumps(d,ensure_ascii=False,indent=2));return 0
 if __name__=="__main__":raise SystemExit(main())

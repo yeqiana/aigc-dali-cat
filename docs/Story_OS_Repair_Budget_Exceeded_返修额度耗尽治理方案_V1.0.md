@@ -1,5 +1,8 @@
 # Story OS Repair Budget Exceeded 返修额度耗尽治理方案 V1.0
 
+> **生命周期：OPEN_POLICY_REFERENCE / MIGRATED（2026-09-14）**
+> 本文保留为 Frame repair budget 与 Episode continuity 的产品策略参考，不再单独维护状态。技术重试/内容返修/authority refresh/user continuation 已分 lane，但 `NEEDS_USER` 在额度耗尽后仍可能形成 Episode hard stop；统一状态见 Canonical W-06 / W-38 / W-52 / W-53 / W-85。
+
 更新时间：2026-09-12
 
 ## 一、背景

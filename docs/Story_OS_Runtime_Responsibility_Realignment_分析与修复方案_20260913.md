@@ -1,8 +1,11 @@
 # Story OS Runtime Responsibility Realignment 分工错位分析与修复方案
 
+> **生命周期：PARTIALLY_IMPLEMENTED_ARCHITECTURE_PLAN / MIGRATED（2026-09-14）**
+> 本文不再作为“待实施清单”使用。actual-pixel Review → `CODEX_VISION`、WORK 保留文本/治理 Authority 等核心分工已经落地（Canonical W-37）；Release Critic 的视觉判断与 Governance Authority 仍有收敛余项（W-84）。当前状态与新增回归契约漂移统一看 Canonical 清单。
+
 更新时间：2026-09-13  
 工作区：`D:\workspace\YeQianWorkSpace\yeqian\storyOS`  
-状态：**分析完成 / 待实施**
+状态：**核心分工已实施 / Release 职责仍部分收敛**
 
 ---
 

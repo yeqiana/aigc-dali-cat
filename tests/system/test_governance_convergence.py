@@ -28,6 +28,7 @@ import openai_batch_prompt_compiler
 import golden_episode_regression as golden
 import codex_subscription_image as single_backend
 import batch_image_worker as batch_delivery
+import episode_performance
 from test_repair_concurrency_lane import make_episode
 
 
@@ -110,6 +111,12 @@ class EntryBehavior(unittest.TestCase):
         self.assertEqual(peak, 3)
         self.assertEqual(len(starts), 6)
         self.assertTrue(all(x['attempts'] == 1 for x in q['items']))
+        perf = episode_performance.load(ep, False)
+        self.assertEqual(len(perf.get('image_attempts') or []), 6)
+        self.assertEqual(
+            {(x.get('queue_item_id'), x.get('attempt')) for x in perf['image_attempts']},
+            {(x['id'], 1) for x in q['items']},
+        )
         if not failures:
             self.assertEqual(rc, 0)
             self.assertLess(ordering.index(('start', 4)), ordering.index(('end', 1)))
@@ -128,6 +135,33 @@ class EntryBehavior(unittest.TestCase):
         for lane in (image_scheduler, batch_scheduler):
             with self.subTest(lane=lane.__name__):
                 self.exercise(lane, failures=(1, 2))
+
+    def test_single_scheduler_no_output_is_explicit_retryable_failure(self):
+        td, ep = make_episode([{'frame': 1}])
+        self.addCleanup(td.cleanup)
+
+        async def no_output(*_args):
+            return {
+                'returncode': 95,
+                'stdout': 'IMAGE_BACKEND_NO_OUTPUT: expected=missing.png',
+                'output': None,
+                'payload': None,
+            }
+
+        with ExitStack() as stack:
+            stack.enter_context(patch.object(image_scheduler, 'ledger_begin', return_value=(True, '')))
+            stack.enter_context(patch.object(image_scheduler, 'ledger_tech_fail', return_value=None))
+            stack.enter_context(patch.object(image_scheduler.resource_library, 'ensure_fresh', return_value=None))
+            stack.enter_context(patch.object(image_scheduler.runtime_router, 'detect', return_value=('CODEX', 'test')))
+            stack.enter_context(patch.object(image_scheduler.runtime_router, 'image_execution_runtime', return_value=('CODEX', 'test')))
+            stack.enter_context(patch.object(image_scheduler, 'async_backend_worker', no_output))
+            rc = image_scheduler.run_scheduler_async(ep, 1, 30, None)
+
+        queue = scheduler_core.load_queue(ep)
+        self.assertEqual(rc, 21)
+        self.assertEqual(queue['items'][0]['status'], 'tech_failed')
+        self.assertEqual(queue['items'][0]['technical_failure_code'], 'IMAGE_BACKEND_NO_OUTPUT')
+        self.assertIn('IMAGE_BACKEND_NO_OUTPUT', queue['items'][0]['last_error'])
 
 
 class BudgetResolution(unittest.TestCase):

@@ -162,6 +162,90 @@ def cmd_authorize_authority_refresh(args: argparse.Namespace) -> None:
     print(f"{key}: AUTHORITY_REFRESH_AUTHORIZED (content repair budget unchanged)")
 
 
+def authorize_machine_contract_refresh(ep: Path, frame_number: int, *, reason: str) -> dict:
+    """Reopen a candidate only when its recorded generation contract is provably stale.
+
+    This is deterministic recovery, not a user semantic decision. The old
+    candidate and attempt remain audit history and the content repair budget is
+    unchanged.
+    """
+    ep = Path(ep).resolve()
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, frame_number)
+    allowed = {"PASSED", "ORIGINAL_READY", "REPAIR_READY", "LOCKED", "NEEDS_USER"}
+    current_contract = current_frame_contract_provenance(ep, key) or {}
+    if frame.get("status") == "AUTHORITY_REFRESH_AUTHORIZED":
+        auth = frame.get("authority_refresh_authorization") or {}
+        if (
+            str(auth.get("approval_basis") or "") == "machine_verified_frame_contract_drift"
+            and str(auth.get("frame_contract_sha256") or "").lower()
+            == str(current_contract.get("contract_sha256") or "").lower()
+        ):
+            return {
+                "status": "REUSED",
+                "frame": int(frame_number),
+                "frame_contract_sha256": current_contract.get("contract_sha256"),
+            }
+    if frame.get("status") not in allowed:
+        raise ValueError(f"machine contract refresh requires {sorted(allowed)}, got {frame.get('status')}")
+    if not current_contract:
+        raise ValueError("current frame contract provenance missing")
+    candidate = frame.get("current_candidate") or {}
+    candidate_sha = str(candidate.get("sha256") or "").lower()
+    if not candidate_sha:
+        raise ValueError("machine contract refresh requires current candidate sha256")
+    attempt = next(
+        (
+            row for row in reversed(frame.get("attempts") or [])
+            if str(((row or {}).get("candidate") or {}).get("sha256") or "").lower() == candidate_sha
+        ),
+        None,
+    )
+    if not isinstance(attempt, dict):
+        raise ValueError("machine contract refresh requires matching generation attempt")
+    recorded = (attempt.get("request") or {}).get("frame_contract")
+    errors = resolved_frame_contract.verify_recorded_provenance(ep, key, recorded)
+    if not any("frame_contract_sha256 stale" in str(error) for error in errors):
+        raise ValueError("machine contract refresh refused: current candidate is not stale against Frame Contract")
+    previous_contract = str((recorded or {}).get("contract_sha256") or "")
+    prior_status = str(frame.get("status") or "")
+    prior_lock = frame.get("lock") if prior_status == "LOCKED" else None
+    if prior_lock:
+        frame.setdefault("superseded_locks", []).append({
+            "at": now_iso(), "lock": prior_lock, "approved_asset": frame.get("approved_asset")
+        })
+    frame.setdefault("authority_refresh_history", []).append({
+        "at": now_iso(),
+        "previous_status": prior_status,
+        "current_candidate": frame.get("current_candidate"),
+        "reviews": list(frame.get("reviews") or []),
+        "reason": reason,
+        "authorization_basis": "machine_verified_frame_contract_drift",
+        "previous_frame_contract_sha256": previous_contract,
+        "current_frame_contract_sha256": current_contract.get("contract_sha256"),
+    })
+    frame["status"] = "AUTHORITY_REFRESH_AUTHORIZED"
+    frame["authority_refresh_authorization"] = {
+        "at": now_iso(),
+        "reason": reason,
+        "approval_basis": "machine_verified_frame_contract_drift",
+        "frame_contract_sha256": current_contract.get("contract_sha256"),
+        "previous_frame_contract_sha256": previous_contract,
+        "candidate_sha256": candidate_sha,
+        "verification_errors": list(errors),
+        "content_repair_budget_unchanged": True,
+    }
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    return {
+        "status": "AUTHORITY_REFRESH_AUTHORIZED",
+        "frame": int(frame_number),
+        "previous_frame_contract_sha256": previous_contract,
+        "frame_contract_sha256": current_contract.get("contract_sha256"),
+        "candidate_sha256": candidate_sha,
+    }
+
+
 def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     """Record one explicit, non-delegable user exception after a hard repair failure.
 

@@ -7,6 +7,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+import runtime_command
 
 SYSTEM_DIR = Path(__file__).resolve().parent
 ROOT = SYSTEM_DIR.parents[1]
@@ -45,8 +46,8 @@ def mark(value):
 
 def run_cmd(cmd):
     try:
-        p = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
-        tail = (p.stdout + "\n" + p.stderr).strip()
+        p = runtime_command.run_argv([str(x) for x in cmd], cwd=ROOT, capture=True)
+        tail = (p.stdout or "").strip()
         if len(tail) > 3000:
             tail = tail[-3000:]
         return p.returncode == 0, tail

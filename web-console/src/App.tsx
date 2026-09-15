@@ -1,16 +1,18 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import Agents from './pages/Agents';
+import Dashboard from './pages/Dashboard';
+import Memory from './pages/Memory';
 
 function Layout() {
   return <div style={{padding: 24}}>
     <h1>Story OS V3 Console</h1>
     <nav>
-      <Link to="/">Dashboard</Link> | <Link to="/agents">Agents</Link> | <Link to="/workflows">Workflows</Link> | <Link to="/memory">Memory</Link>
+      <Link to="/">Dashboard</Link> | <Link to="/agents">Agents</Link> | <Link to="/memory">Memory</Link>
     </nav>
     <Routes>
-      <Route path="/" element={<h2>Dashboard</h2>} />
-      <Route path="/agents" element={<h2>Agent Console</h2>} />
-      <Route path="/workflows" element={<h2>Workflow Console</h2>} />
-      <Route path="/memory" element={<h2>Memory Console</h2>} />
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/agents" element={<Agents />} />
+      <Route path="/memory" element={<Memory />} />
     </Routes>
   </div>;
 }

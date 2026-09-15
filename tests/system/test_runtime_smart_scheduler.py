@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]; SYSTEM = ROOT / "episodes/_system"
 sys.path.insert(0, str(SYSTEM))
 import production_plan
+import runtime_dag
 import runtime_failure_strategy
 import runtime_node_execution
 import runtime_node_registry
@@ -64,8 +65,48 @@ class SmartSchedulerTest(unittest.TestCase):
                 status="FAILED", attempt=2, output="fact", evidence=["meta/frame-reviews"])
             plan = production_plan.build(ep)
             self.assertEqual(state.read_bytes(), before); self.assertEqual(row["attempt"], 2)
+            self.assertEqual(row["output"], "fact")
             self.assertIsNone(row["gate_pass"]); self.assertTrue(plan["dry_run"])
             self.assertFalse((ep / production_plan.REL).exists())
+            self.assertFalse(plan["production_consumer"])
+            self.assertEqual(plan["purpose"], "diagnostic_topology_estimate")
+            self.assertNotIn("review", plan["configured_workers"])
+
+    def test_large_node_output_is_compacted_but_still_auditable(self):
+        with tempfile.TemporaryDirectory() as raw:
+            ep = Path(raw)
+            payload = {"pending_frames": [f"frame-{i:03d}" for i in range(200)], "reason": "x" * 1000}
+            row = runtime_node_execution.record(
+                ep, node_id="INCREMENTAL_PLAN", start_time="a", end_time="b",
+                status="PASS", output=payload, evidence=["meta/production-ledger.json"])
+            compact = row["output"]
+            self.assertTrue(compact["compacted"])
+            self.assertEqual(compact["type"], "dict")
+            self.assertGreater(compact["bytes"], runtime_node_execution.OUTPUT_INLINE_BYTES)
+            self.assertEqual(len(compact["sha256"]), 64)
+            self.assertLessEqual(len(compact["preview"]), runtime_node_execution.OUTPUT_PREVIEW_CHARS)
+            line = (ep / runtime_node_execution.REL).read_text(encoding="utf-8")
+            self.assertLess(len(line.encode("utf-8")), 1400)
+
+    def test_production_scheduler_receives_real_capacity_without_forcing_parallel_composites(self):
+        resources = runtime_dag.production_scheduler_resources()
+        capacity = resources["runtime_capacity"]
+        self.assertGreater(resources["max_workers"], 1)
+        self.assertGreaterEqual(capacity["authority"], 1)
+        self.assertGreaterEqual(capacity["derived"], 1)
+        self.assertGreaterEqual(capacity["image"], 1)
+        self.assertEqual(capacity["text"], 1)
+        self.assertEqual(capacity["review"], 1)
+
+        nodes = runtime_node_registry.runtime_step_nodes(runtime_dag.spec_rows())
+        wave = runtime_scheduler.schedule(
+            nodes,
+            completed=[],
+            max_workers=resources["max_workers"],
+            resource_snapshot=resources,
+        )
+        self.assertEqual([row["node_id"] for row in wave["dispatch"]], ["INCREMENTAL_PLAN"])
+        self.assertEqual(wave["resources"]["runtime_capacity"], capacity)
 
     def test_failure_strategy_is_advice_not_gate(self):
         resolved = runtime_failure_strategy.resolve("identity_failure")

@@ -9,6 +9,7 @@ from pathlib import Path
 
 from story_os_contract import canonical_stages
 import story_json
+import runtime_command
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -16,7 +17,7 @@ STATES = canonical_stages()
 
 
 def run(args: list[object]) -> tuple[int, str]:
-    cp = subprocess.run([str(x) for x in args], cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace", check=False)
+    cp = runtime_command.run_argv([str(x) for x in args], cwd=ROOT, capture=True)
     return cp.returncode, cp.stdout
 
 
@@ -80,10 +81,13 @@ def plan(ep: Path) -> dict:
             except Exception:
                 fp = {"action": "ERROR", "raw": out[-1000:]}
             result["frame_plan"] = fp
-            result["frames"] = "CLEAN" if fp.get("action") in {"NOOP", "NOT_REQUIRED"} else "DIRTY"
+            if fp.get("action") == "ERROR":
+                result["frames"] = "ERROR"
+            else:
+                result["frames"] = "CLEAN" if fp.get("action") in {"NOOP", "NOT_REQUIRED"} else "DIRTY"
         else:
-            result["frames"] = "DIRTY"
-            result["frame_plan"] = {"action": "ERROR", "raw": out[-1500:]}
+            result["frames"] = "ERROR"
+            result["frame_plan"] = {"action": "ERROR", "returncode": rc, "raw": out[-1500:]}
     elif state_at_least(state, "PRODUCTION_PASSED"):
         result["frames"] = "MISSING"; result["missing"].append("meta/production-ledger.json")
 
@@ -98,7 +102,9 @@ def plan(ep: Path) -> dict:
         result["subtitle"] = "NOT_APPLICABLE"
 
     ordered = [result["story"], result["visual"], result["frames"], result["subtitle"]]
-    if "MISSING" in ordered:
+    if "ERROR" in ordered:
+        result["action"] = "ERROR"
+    elif "MISSING" in ordered:
         result["action"] = "MISSING_EVIDENCE"
     elif result["story"] == "DIRTY":
         result["action"] = "STORY_REVIEW_REQUIRED"
@@ -139,8 +145,11 @@ def main() -> int:
         ep.relative_to(ROOT.resolve())
     except ValueError:
         raise SystemExit("episode must be inside repository")
-    print(json.dumps(plan(ep), ensure_ascii=False, indent=2))
-    return 0
+    result = plan(ep)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    # Planner/inner-action failure is technical failure. Returning 0 here lets
+    # runtime_dag record the outer INCREMENTAL_PLAN step as PASS, which is false.
+    return 4 if result.get("action") == "ERROR" else 0
 
 
 if __name__ == "__main__":

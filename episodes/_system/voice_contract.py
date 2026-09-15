@@ -8,6 +8,7 @@ can know. Subtitle files remain final copy; they do not redefine the narrator.
 from __future__ import annotations
 import argparse, hashlib, json
 from pathlib import Path
+import evidence_time
 import story_json
 
 REL=Path("meta/voice-contract.json")
@@ -77,6 +78,8 @@ def validate_release_review(ep:Path)->list[str]:
     if not p.is_file(): return errors+["meta/subtitle-voice-review.json missing"]
     r=read_json(p)
     if r.get("schema_version")!=1: errors.append("subtitle voice review schema_version must be 1")
+    errors.extend(evidence_time.validate_timestamp(
+        r.get("reviewed_at"), field="subtitle_voice_review.reviewed_at", required=True))
     expected=sha_file(ep/REL)
     if str(r.get("voice_contract_sha256") or "").lower()!=expected.lower():
         errors.append("subtitle voice review voice_contract_sha256 stale")

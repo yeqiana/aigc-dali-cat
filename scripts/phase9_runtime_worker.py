@@ -126,6 +126,11 @@ def _bootstrap_story_platform() -> None:
 
 _bootstrap_story_platform()
 
+# 连接配置唯一解析入口（应用层读 config/storyos.yaml#storage，platform/ 保持零 yaml 依赖）。
+if str(PROJECT_ROOT / "episodes" / "_system") not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT / "episodes" / "_system"))
+import storage_config  # noqa: E402
+
 from platform.artifact.jsonl_artifact_store import JsonlArtifactStore  # noqa: E402
 from platform.core.clock import utc_now  # noqa: E402
 from platform.event.jsonl_event_store import JsonlEventStore  # noqa: E402
@@ -1058,28 +1063,8 @@ def exit_code(summary: dict) -> int:
 
 
 def _env_summary() -> dict:
-    """只记非凭据字段；密码只用布尔表示是否存在。"""
-    def _int(name: str, default):
-        try:
-            return int(os.environ.get(name, default))
-        except (TypeError, ValueError):
-            return os.environ.get(name, default)
-
-    return {
-        "mysql": {
-            "host": os.environ.get("STORYOS_MYSQL_HOST", "127.0.0.1"),
-            "port": _int("STORYOS_MYSQL_PORT", 3306),
-            "database": os.environ.get("STORYOS_MYSQL_DB", "story_os_runtime"),
-            "user_present": bool(os.environ.get("STORYOS_MYSQL_USER", "")),
-            "password_present": bool(os.environ.get("STORYOS_MYSQL_PWD", "")),
-        },
-        "redis": {
-            "host": os.environ.get("STORYOS_REDIS_HOST", "127.0.0.1"),
-            "port": _int("STORYOS_REDIS_PORT", 6379),
-            "db": _int("STORYOS_REDIS_DB", 0),
-            "password_present": bool(os.environ.get("STORYOS_REDIS_PASSWORD", "")),
-        },
-    }
+    """Resolved topology plus explicit-env provenance; credentials stay presence-only."""
+    return storage_config.storage_summary()
 
 
 def build_worker(args) -> RuntimeOperationsWorker:
@@ -1089,11 +1074,7 @@ def build_worker(args) -> RuntimeOperationsWorker:
         or os.environ.get("STORYOS_WORKER_ID")
         or ("runtime-worker-" + str(os.getpid()))
     )
-    jsonl_root = (
-        args.jsonl_root
-        or os.environ.get("STORYOS_RUNTIME_JSONL_ROOT")
-        or DEFAULT_JSONL_ROOT
-    )
+    jsonl_root = args.jsonl_root or storage_config.runtime_store_config()["jsonl_root"]
 
     store = None
     redis_client = None
@@ -1101,7 +1082,7 @@ def build_worker(args) -> RuntimeOperationsWorker:
         from platform.state.redis_connection import RedisConnection
         from platform.state.redis_runtime_state_store import RedisRuntimeStateStore
 
-        adapter = RedisConnection()
+        adapter = RedisConnection(**storage_config.redis_connection_kwargs())
         redis_client = adapter.client
         # 启动即探活：连不上就退出 3，不允许一个写不了心跳的 Worker 假装常驻。
         redis_client.ping()
@@ -1111,7 +1092,7 @@ def build_worker(args) -> RuntimeOperationsWorker:
     if not args.no_mysql:
         if not HAS_MYSQL_DRIVER:
             raise RuntimeError("pymysql is not installed; use --no-mysql for offline runs")
-        connection = MySqlConnection()
+        connection = MySqlConnection(**storage_config.mysql_connection_kwargs())
 
     return RuntimeOperationsWorker(
         worker_id=worker_id,

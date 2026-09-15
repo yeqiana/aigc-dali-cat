@@ -61,6 +61,8 @@ class InProcessRunner:
         self.runtime.mkdir(parents=True, exist_ok=True)
         self.fake_home = self.tmp / "runner-codex-home"
         self.fake_home.mkdir(parents=True, exist_ok=True)
+        (self.fake_home / "auth.json").write_text("{}", encoding="utf-8")
+        (self.fake_home / "config.toml").write_text('model = "stub"\n', encoding="utf-8")
         self.stack = contextlib.ExitStack()
         self.httpd = None
         self.thread = None
@@ -75,8 +77,16 @@ class InProcessRunner:
         return "http://127.0.0.1:%d" % int(self.httpd.server_address[1])
 
     def __enter__(self):
+        client_thread = threading.get_ident()
+        def fake_identity():
+            # The test process models the SYSTEM client on its main thread and
+            # the interactive user runner on HTTP worker threads. Do not let the
+            # account that launched pytest decide this contract implicitly.
+            return SYSTEM_ID if threading.get_ident() == client_thread else RUNNER_USER
         self.stack.enter_context(
             mock.patch.object(bridge, "runtime_dir", return_value=self.runtime))
+        self.stack.enter_context(
+            mock.patch.object(bridge, "current_identity", side_effect=fake_identity))
         self.stack.enter_context(
             mock.patch.object(bridge, "resolve_codex", return_value=(self.codex, "test_runner_resolved")))
         self.stack.enter_context(
@@ -89,7 +99,9 @@ class InProcessRunner:
         previous = getattr(bridge._Handler, "state", None)
         bridge._Handler.state = state
         self.stack.callback(setattr, bridge._Handler, "state", previous)
-        bridge.write_endpoint("127.0.0.1", httpd.server_address[1], self.token)
+        # Endpoint metadata belongs to the runner, not the SYSTEM client thread.
+        with mock.patch.object(bridge, "current_identity", return_value=RUNNER_USER):
+            bridge.write_endpoint("127.0.0.1", httpd.server_address[1], self.token)
         self.httpd = httpd
         self.thread = threading.Thread(target=httpd.serve_forever, daemon=True)
         self.thread.start()
@@ -162,6 +174,8 @@ class CodexUserRunnerBridgeTests(unittest.TestCase):
         self.assertEqual(health["codex_version"], CODEX_VERSION)
         self.assertEqual(health["codex_executable"], str(self.codex_stub))
         self.assertTrue(health["codex_home_accessible"])
+        self.assertTrue(health["codex_auth_present"])
+        self.assertTrue(health["codex_config_present"])
         self.assertEqual(health["transport"], "user_runner")
         self.assertFalse(health["secrets_persisted"])
         self.assertNotIn(runner.token, json.dumps(health, ensure_ascii=False))
@@ -235,6 +249,7 @@ class CodexUserRunnerBridgeTests(unittest.TestCase):
         task = bridge.CodexTask(argv=[str(evil), "exec", "--json", "-"],
                                 working_directory=str(ROOT))
         with self.stub_codex(), \
+                mock.patch.object(bridge, "current_identity", return_value=RUNNER_USER), \
                 mock.patch.object(bridge.subprocess, "run",
                                   return_value=FakeCompleted(0, b"ok")) as run:
             with self.assertRaises(bridge.CodexUserRunnerRejected) as ctx:
@@ -246,6 +261,7 @@ class CodexUserRunnerBridgeTests(unittest.TestCase):
         cmd_task = bridge.CodexTask(argv=["cmd.exe", "/c", "calc.exe"],
                                    working_directory=str(ROOT))
         with self.stub_codex(), \
+                mock.patch.object(bridge, "current_identity", return_value=RUNNER_USER), \
                 mock.patch.object(bridge.subprocess, "run",
                                   return_value=FakeCompleted(0, b"ok")) as run2:
             with self.assertRaises(bridge.CodexUserRunnerRejected) as ctx:
@@ -291,6 +307,7 @@ class CodexUserRunnerBridgeTests(unittest.TestCase):
         task = bridge.CodexTask(argv=["codex", "exec", "--json", "-"],
                                timeout_seconds=1, working_directory=str(ROOT))
         with self.stub_codex(), \
+                mock.patch.object(bridge, "current_identity", return_value=RUNNER_USER), \
                 mock.patch.object(bridge.subprocess, "run",
                                   side_effect=subprocess.TimeoutExpired("codex", 1)):
             result = bridge.execute_task(task)

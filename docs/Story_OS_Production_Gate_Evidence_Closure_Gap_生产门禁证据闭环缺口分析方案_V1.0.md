@@ -1,5 +1,8 @@
 # Story OS Production Gate Evidence Closure Gap 生产门禁证据闭环缺口分析方案 V1.0
 
+> **生命周期：PARTIALLY_IMPLEMENTED_HISTORICAL_PLAN / MIGRATED（2026-09-14）**
+> 本文保留为 Production Gate 证据闭环的历史分析。Story Semantic Trace 已有独立实现并纳入 Gate（W-78 已修复）；人工接受 / acceptance policy 仍有通用模型收敛项（W-60～W-62）。当前状态以 Canonical 暴露问题清单为准。
+
 更新时间：
 2026-09-12
 

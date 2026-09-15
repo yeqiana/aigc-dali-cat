@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import annotations
-import argparse, json, os, shutil, subprocess, sys
+import argparse, datetime, hashlib, json, os, shutil, subprocess, sys, time, uuid
 import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import execution_capsule
 import character_contract
 import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
 import character_appearance_anchor  # STORY_OS_V221_CHARACTER_CONTINUITY
+import inflight_codex_task  # STORY_OS_V262_INFLIGHT_ATTACH
 import resource_library
 import intro_policy
 import directing_quality
@@ -15,9 +16,73 @@ import storyos_config
 import runtime_router
 import product_runtime_adapter
 import runtime_timeout_policy
+import runtime_request
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
+
+# The step's previous Codex task produced no usable result inside its own
+# deadline. Technical, retryable: nothing about the content failed.
+ATTACH_TIMEOUT_RC=26
+ATTACH_POLL_SECONDS=5.0
+
+# P0-D real fault injection (2026-09-15) proved that CREATIVE_STORY cannot use
+# the rendered prompt as its attach identity: prompt() intentionally prepares
+# character/resource/directing helper files before compiling the capsule, so a
+# restarted Driver sees different prompt bytes even though the user's question
+# did not change.  Keep this list to inputs that exist *before* CREATIVE_STORY and
+# are not owned by that step.  Step outputs such as story-gates, concept rows,
+# character-contract, resource-selection and directing-quality are deliberately
+# absent.
+CREATIVE_STORY_ATTACH_ROOT_INPUTS=(
+    "config/storyos.yaml",
+    "config/profiles/account_creative/default.json",
+    "config/profiles/world_identity/default.json",
+    "standards/directing_grammar_v1.json",
+    "standards/character-pools.json",
+    "standards/entry-motivation-pools.json",
+    "standards/scene-pools.json",
+    "standards/forbidden-character-roles.json",
+    "story_os_manifest.json",
+    "reports/account-learning-index.json",
+)
+
+
+def _sha_file(path:Path)->str|None:
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+    except OSError:
+        return None
+
+
+def attach_source_sha256(ep:Path,step:str)->str:
+    """Stable authority projection used only to decide whether an old task attaches.
+
+    The exact submitted stdin is still pinned independently by the runner result's
+    ``stdin_sha256``.  This projection answers the different question: "is the
+    business input still the same after the Driver restarted?"  Returning an empty
+    string keeps the older exact-prompt/fail-closed identity for steps that do not
+    yet have an audited projection.
+    """
+    ep=Path(ep)
+    if step=="CREATIVE_STORY":
+        request_path=ep/"meta/runtime-request.json"
+        if not request_path.is_file():
+            return ""
+        request=json.loads(request_path.read_text(encoding="utf-8-sig"))
+        state_path=ep/"meta/episode-state.json"
+        state=json.loads(state_path.read_text(encoding="utf-8-sig")) if state_path.is_file() else {}
+        material={
+            "identity_schema_version":2,
+            "step":step,
+            "current_state":state.get("current_state"),
+            "creative_request":runtime_request.preimage_authority_projection(request),
+            "directive_sha256":hashlib.sha256(STEP_DIRECTIVES[step].strip().encode("utf-8")).hexdigest(),
+            "root_authority":{rel:_sha_file(ROOT/rel) for rel in CREATIVE_STORY_ATTACH_ROOT_INPUTS},
+        }
+        raw=json.dumps(material,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
+        return hashlib.sha256(raw).hexdigest()
+    return ""
 
 def runtime_index_block(step):
     try:
@@ -90,7 +155,7 @@ TARGET: reach VISUAL_CALIBRATED and stop there.
 - After all four admissions exist, run the normal bind/critic/final Visual Lock review. FOUR-admission PASS promotes the same baseline image from PROVISIONAL to LOCKED pixel master. Real-person style references never become identity masters.
 - STORY_OS_V211_PERF_RECOVERY: if the unified critic reports technical infrastructure failure (for example INPUT_IMAGES_UNAVAILABLE / Windows sandbox 1385 / critic return code 11), DO NOT convert that into content failure, DO NOT loop content repairs, and DO NOT mutate candidate decisions to failed. Stop this bounded step promptly and preserve meta/visual-critic-runtime.json; the parent DAG may run bounded speculative production.
 - generate/review/repair only those admissions as required.
-- use image model policy from meta/runtime-request.json; default gpt-image-2.
+- use image model policy from meta/runtime-request.json; the default comes from config/storyos.yaml.
 - record honest delegated visual approval only after evidence passes.
 - advance only to VISUAL_CALIBRATED.
 DO NOT run full Batch or release.
@@ -128,7 +193,7 @@ DO NOT mark PUBLISHED or fabricate metrics.
 # The parent single-writer commit validates the returned candidate separately.
 STEP_DIRECTIVES.update({
 "PREIMAGE_CHARACTER_FINALIZE": """TARGET: produce only the CHARACTER_FINALIZE Candidate declared by the execution capsule/request. Read the locked Story and Character Seed Contract. Validate final identity, wardrobe baseline, POV and textual appearance anchor. Do not rewrite Story or create pixel masters. Write only the declared candidate JSON; never modify shared authority, episode-state or gates.""",
-"PREIMAGE_ENVIRONMENT": """TARGET: produce only the ENVIRONMENT_PREPARE Candidate declared by the execution capsule/request. Cover physical environment, weather, impact and environment frame directives. Do not change Character, Story, World or other visual authority. Write only the declared candidate JSON; never modify shared authority, episode-state or gates.""",
+"PREIMAGE_ENVIRONMENT": """TARGET: produce only the ENVIRONMENT_PREPARE Candidate declared by the execution capsule/request. Cover physical environment, weather, impact and environment frame directives. The candidate must satisfy the Phase-3 Environment Contract before commit: whenever a segment condition implies a different daypart (morning/midday/afternoon/dusk/night), that segment must carry a matching time_of_day instead of inheriting an incompatible baseline. Provide directives for every frame and keep condition/time_of_day physically consistent. Do not change Character, Story, World or other visual authority. Write only the declared candidate JSON; never modify shared authority, episode-state or gates.""",
 "PREIMAGE_WORLD": """TARGET: produce only the WORLD_PREPARE Candidate declared by the execution capsule/request. Cover world identity/state, capture-event physical continuity, temporal continuity and wardrobe constraints. Do not rewrite Story or generate images. Write only the declared candidate JSON; never modify shared authority, episode-state or gates.""",
 "PREIMAGE_VISUAL_NARRATIVE": """TARGET: produce only the VISUAL_NARRATIVE_PREPARE Candidate declared by the execution capsule/request. Cover visual narrative core, shot progression, capture grammar and anomaly progression. Do not own environment physics or character identity. Write only the declared candidate JSON; never modify shared authority, episode-state or gates.""",
 })
@@ -187,12 +252,76 @@ Read the embedded FAST_RUNTIME_INDEX first. Do NOT recursively scan the reposito
 Stop when the bounded target is reached. The parent runtime independently verifies all gates.
 """
 
-def run_step(ep,step,codex_raw=None,timeout=None):
+def _attach(ep,step,text,timeout,log,poll_seconds=None):
+    """Claim a Codex result a dead Driver already paid for, or wait for it.
+
+    Returns (rc, handled). ``handled`` is False when there is nothing to attach
+    to and the caller should submit a new task.
+
+    A result is only ever adopted through inflight_codex_task.validate_result,
+    which requires rc=0, matching request_id, matching stdin SHA and an output
+    that hashes to its own recorded digest. Anything else is treated as no result
+    at all, so a half-written or drifted file cannot close a step.
+    """
+    if not codex_user_runner.bridge_required():
+        return None,False
+    source_sha=attach_source_sha256(ep,step)
+    fp=inflight_codex_task.fingerprint(step=step,prompt=text,source_sha256=source_sha)
+    verdict=inflight_codex_task.classify(ep,step=step,fingerprint_value=fp)
+    if verdict["decision"]==inflight_codex_task.ADOPT:
+        with log.open("ab") as h:
+            h.write(verdict["output"])
+        # The paid task is no longer in-flight once its durable result has been
+        # adopted.  Leaving the record behind makes a later Driver cycle adopt
+        # the same business result forever, so a downstream gate failure can
+        # never progress into a real repair submission.
+        inflight_codex_task.clear(ep,step)
+        return int(verdict["returncode"]),True
+    if verdict["decision"]!=inflight_codex_task.WAIT:
+        return None,False
+    # The task is still running under the resident user-mode runner. Submitting
+    # the same step again would run it twice, so wait for the result the dead
+    # Driver's call would have received instead.
+    record=verdict.get("record") or {}
+    deadline=_deadline_epoch(record)
+    poll=ATTACH_POLL_SECONDS if poll_seconds is None else max(0.0,float(poll_seconds))
+    print(f"ATTACH {step} request_id={record.get('request_id')} "
+          f"reason={verdict['reason']} validation={verdict.get('validation')}",flush=True)
+    while True:
+        if deadline is not None and time.time()>=deadline:
+            return ATTACH_TIMEOUT_RC,True
+        if poll:
+            time.sleep(poll)
+        again=inflight_codex_task.classify(ep,step=step,fingerprint_value=fp)
+        if again["decision"]==inflight_codex_task.ADOPT:
+            with log.open("ab") as h:
+                h.write(again["output"])
+            inflight_codex_task.clear(ep,step)
+            return int(again["returncode"]),True
+        if again["decision"]==inflight_codex_task.RESUBMIT and again.get("reason")!="WITHIN_TASK_DEADLINE":
+            # The task is provably gone and left nothing usable behind.
+            return None,False
+        if not poll:
+            return ATTACH_TIMEOUT_RC,True
+
+
+def _deadline_epoch(record):
+    raw=str(record.get("deadline_at") or "")
+    if not raw:
+        return None
+    try:
+        return datetime.datetime.fromisoformat(raw).timestamp()
+    except (TypeError,ValueError):
+        return None
+
+
+def run_step(ep,step,codex_raw=None,timeout=None,attach_poll_seconds=None):
     if step not in STEP_DIRECTIVES: raise ValueError(f"unknown scoped step: {step}")
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("codex_scoped_step")
     perf_run=episode_performance.safe_begin_stage(ep,step,source="scoped_codex_worker")
     rc=99;log=ep/"meta/scoped-workers"/f"{step.lower()}.jsonl";log.parent.mkdir(parents=True,exist_ok=True)
+    text=prompt(ep,step)
     if not runtime_router.local_codex_allowed(explicit=bool(codex_raw)):
         runtime,_=runtime_router.detect()
         request=product_runtime_adapter.build_request(
@@ -201,17 +330,41 @@ def run_step(ep,step,codex_raw=None,timeout=None):
         episode_performance.safe_end_stage(ep,step,perf_run,status="HOST_ACTION_REQUIRED",
                                            metadata={"timeout_seconds":timeout,"log":str(log)})
         return product_runtime_adapter.HOST_ACTION_REQUIRED_RC,str(log)
+    attached,handled=_attach(ep,step,text,timeout,log,poll_seconds=attach_poll_seconds)
+    if handled:
+        rc=int(attached)
+        episode_performance.safe_end_stage(ep,step,perf_run,status="PASS" if rc==0 else f"RC_{rc}",
+                                           metadata={"timeout_seconds":timeout,"log":str(log),"attached":True})
+        return rc,str(log)
+    request_id=None
+    collected=False
     try:
         codex=resolve_codex(codex_raw)
         cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"--json","-"]
+        request_id=uuid.uuid4().hex if codex_user_runner.bridge_required() else None
+        if request_id:
+            # Written before submission on purpose: a record written afterwards
+            # would be missing in exactly the case it exists for.
+            inflight_codex_task.begin(
+                ep,step=step,request_id=request_id,
+                fingerprint_value=inflight_codex_task.fingerprint(
+                    step=step,prompt=text,source_sha256=attach_source_sha256(ep,step)),
+                stdin_sha256=hashlib.sha256(text.encode("utf-8")).hexdigest(),
+                timeout_seconds=int(timeout),
+                source_sha256=attach_source_sha256(ep,step))
         with log.open("a",encoding="utf-8",newline="\n") as h:
             try:
-                cp=codex_user_runner.run_codex(cmd,input=prompt(ep,step),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="scoped_step")
-                rc=cp.returncode
+                cp=codex_user_runner.run_codex(cmd,input=text,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="scoped_step",request_id=request_id)
+                rc=cp.returncode; collected=True
             except subprocess.TimeoutExpired:
-                rc=124
+                rc=124; collected=True
         return rc,str(log)
     finally:
+        # Only a collected outcome clears the record. If this process dies while
+        # the task runs, the record stays and the next Driver attaches instead of
+        # paying for the step again.
+        if collected and request_id:
+            inflight_codex_task.clear(ep,step)
         episode_performance.safe_end_stage(ep,step,perf_run,status="PASS" if rc==0 else f"RC_{rc}",
                                            metadata={"timeout_seconds":timeout,"log":str(log)})
 

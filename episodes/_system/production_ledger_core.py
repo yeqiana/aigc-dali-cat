@@ -15,6 +15,7 @@ from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
 from visual_profile import compile_prompt_contract
 import frame_contract as resolved_frame_contract
 import storyos_config
+import episode_lifecycle
 from runtime_atomic_store import atomic_write_json
 
 LEDGER_FILE = Path("meta/production-ledger.json")
@@ -73,6 +74,9 @@ def load_json(path: Path) -> dict:
 
 
 def save_json(path: Path, data: dict) -> None:
+    path = Path(path).resolve()
+    if path.name == LEDGER_FILE.name and path.parent.name == "meta":
+        episode_lifecycle.assert_writable(path.parent.parent, "production_ledger.write")
     atomic_write_json(path, data)
 
 

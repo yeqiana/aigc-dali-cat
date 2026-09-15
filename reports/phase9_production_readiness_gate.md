@@ -1,8 +1,26 @@
 # Story OS V3 Phase9 Production Readiness Gate
 
+> **2026-09-15 当前状态校正（W-11 重开）**：早先本行写过「**W-11 已解决**」，判定依据是 `phase9_production_switch.py status` 返回 `primary=V3_RUNTIME`。该判定**只读了记录字段，没有读消费者**，与本文 `:6` 已自我推翻的 W-03 属同一类口径问题，现予重开。
+>
+> - **W-11 重开 → ❌ 开放（账面切换，接管未完成）**：`meta/runtime/runtime-primary.json` 确为 `V3_RUNTIME`，切换动作真实发生过；但生产执行体 `episodes/_system` 对 `primary_runtime` 的引用数为 **0**，读取方全部位于 `platform/gateway/` 内部（自产自销）。即：
+>   - `recorded_ownership = V3`（账面）
+>   - `effective_ownership = false`（无生产消费者）
+>   - `takeover_state = RECORDED_ONLY`
+>
+>   判定口径已修正：迁移完成不再仅凭字段。`ProductionMigrationCompletion.complete()` 新增生产消费者证据要求，无消费者时返回 `BLOCKED / ownership_recorded_but_no_production_consumer`；`phase9_production_switch.py status` 现在同时打印 recorded 与 effective 两项。契约测试见 `tests/system/test_production_runtime_ownership_contract.py`。
+>
+>   **本项不得再被下游当作「V3 已接管生产」的依据。** 真正的接管须待 `platform/` 内建成生产管线后另行实施（方案 C，不在本轮范围）。
+
+> **以下为 2026-09-14 校正（保留审计链）**：
+>
+> - ~~**W-11 已解决**：`phase9_production_switch.py status` 返回 `primary=V3_RUNTIME`、`reason=production_migration_finalized`。~~（2026-09-15 重开，见上）
+> - **W-03 仍开放（重要修正）**：本行早先曾写“`StoryOSRuntime` 计划任务存在且状态为 `Ready`”，该结论经二次复核**被推翻**——`Get-ScheduledTask -TaskName 'StoryOSRuntime'` 全库 0 命中，仓库自带 `scripts/phase9_runtime_deploy.py status` 实测 rc=1 `NotFound`。现存 `StoryOS-Codex-User-Runner`（`Ready`，执行 `scripts/start_codex_user_runner.ps1`）是另一条载体，不能等同。因此“计划任务待注册”这一项在当前事实上**依然成立**。
+>
+> 正文中的历史时间点不回写，以保留审计链。
+
 更新时间：
 
-2026-09-11
+2026-09-11（当前状态校正：2026-09-14）
 
 ## 1. Gate Purpose
 

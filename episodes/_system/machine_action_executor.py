@@ -16,7 +16,9 @@ import delegated_approval
 import episode_state
 import frame_semantic_review
 import image_blocked_recovery
+import image_scheduler
 import production_ledger
+import production_ledger_manage
 import production_prompt_materializer
 import story_json
 import visual_lock_baseline_gate
@@ -24,7 +26,7 @@ import visual_lock_candidate_pool
 import visual_lock_finalizer
 import visual_lock_v21
 
-ALLOWED_ACTIONS = {"PREPARE_BASELINE_CANDIDATE", "PREPARE_VISUAL_LOCK_CANDIDATES", "RESOLVE_IMAGE_NORMALIZATION", "FINALIZE_VISUAL_LOCK", "PREPARE_PRODUCTION_BATCH", "FINALIZE_PRODUCTION_IMAGES"}
+ALLOWED_ACTIONS = {"PREPARE_BASELINE_CANDIDATE", "PREPARE_VISUAL_LOCK_CANDIDATES", "PREPARE_STALE_VISUAL_LOCK_REFRESH", "RESOLVE_IMAGE_NORMALIZATION", "RESUME_BUDGET_AUTHORIZED_IMAGES", "FINALIZE_VISUAL_LOCK", "PREPARE_PRODUCTION_BATCH", "FINALIZE_PRODUCTION_IMAGES"}
 
 
 class MachineActionError(RuntimeError):
@@ -191,10 +193,30 @@ def execute(ep: Path, action: dict) -> dict:
         if status in {"PASS", "REUSED"}:
             return result
         raise MachineActionError(f"visual-lock candidate preparation failed: {result}")
+    if name == "PREPARE_STALE_VISUAL_LOCK_REFRESH":
+        rows = []
+        for frame in sorted({int(x) for x in (action.get("frames") or []) if int(x) > 0}):
+            rows.append(production_ledger_manage.authorize_machine_contract_refresh(
+                ep,
+                frame,
+                reason="current Visual Lock pixels were generated under a stale Frame Contract; deterministic authority refresh",
+            ))
+        return {
+            "status": "PASS",
+            "action": name,
+            "frames": [row["frame"] for row in rows],
+            "results": rows,
+            "state": _state(ep),
+        }
     if name == "RESOLVE_IMAGE_NORMALIZATION":
         result = image_blocked_recovery.recover(ep, frames=[int(x) for x in (action.get("frames") or [])])
         if str(result.get("status") or "").upper() != "PASS":
             raise MachineActionError(f"image normalization recovery blocked: {result}")
+        return {"status": "PASS", "action": name, "result": result, "state": _state(ep)}
+    if name == "RESUME_BUDGET_AUTHORIZED_IMAGES":
+        result = image_scheduler.resume_authorized_budget(ep, frames=[int(x) for x in (action.get("frames") or [])])
+        if str(result.get("status") or "").upper() != "PASS":
+            raise MachineActionError(f"candidate budget authorization is not sufficient: {result}")
         return {"status": "PASS", "action": name, "result": result, "state": _state(ep)}
     if name == "FINALIZE_VISUAL_LOCK":
         try:
@@ -213,7 +235,9 @@ def execute(ep: Path, action: dict) -> dict:
 def self_test() -> None:
     assert local_machine_action({"action": "PREPARE_BASELINE_CANDIDATE", "executor": "MACHINE"}) == "PREPARE_BASELINE_CANDIDATE"
     assert local_machine_action({"action": "PREPARE_VISUAL_LOCK_CANDIDATES", "executor": "MACHINE"}) == "PREPARE_VISUAL_LOCK_CANDIDATES"
+    assert local_machine_action({"action": "PREPARE_STALE_VISUAL_LOCK_REFRESH", "executor": "MACHINE"}) == "PREPARE_STALE_VISUAL_LOCK_REFRESH"
     assert local_machine_action({"action": "RESOLVE_IMAGE_NORMALIZATION", "executor": "MACHINE"}) == "RESOLVE_IMAGE_NORMALIZATION"
+    assert local_machine_action({"action": "RESUME_BUDGET_AUTHORIZED_IMAGES", "executor": "MACHINE"}) == "RESUME_BUDGET_AUTHORIZED_IMAGES"
     assert local_machine_action({"action": "FINALIZE_VISUAL_LOCK", "executor": "MACHINE"}) == "FINALIZE_VISUAL_LOCK"
     assert local_machine_action({"action": "PREPARE_PRODUCTION_BATCH", "executor": "MACHINE"}) == "PREPARE_PRODUCTION_BATCH"
     assert local_machine_action({"action": "FINALIZE_PRODUCTION_IMAGES", "executor": "MACHINE"}) == "FINALIZE_PRODUCTION_IMAGES"

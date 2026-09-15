@@ -16,9 +16,18 @@ import runtime_trace
 import batch_runtime_metrics
 import story_json
 import runtime_observability
+import derived_freshness
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = runtime_observability.WORKFLOW_OBSERVABILITY_REL
+SOURCE_RELS = (
+    "meta/episode-state.json", "meta/runtime-checkpoint.json",
+    runtime_observability.WORKFLOW_PERFORMANCE_REL,
+    runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL,
+    "meta/production-queue.json", "meta/production-ledger.json",
+    "meta/frame-scout-summary.json", "meta/final-candidate-snapshot.json",
+    "meta/post-publish-review.json", runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL,
+)
 
 
 def now() -> str:
@@ -97,11 +106,14 @@ def collect(ep: Path, *, write: bool = True) -> dict:
 
     waves = scheduler.get("waves") or []
     parallel = [int((x or {}).get("parallel") or 0) for x in waves if isinstance(x, dict)]
+    source_files, source_fingerprint = derived_freshness.snapshot(ep, SOURCE_RELS)
     report = {
         "schema_version": 1,
         "generated_at": now(),
         "kind": "workflow_observability",
         "diagnostic_only": True,
+        "source_files": source_files,
+        "source_fingerprint": source_fingerprint,
         "stage_source": "meta/episode-state.json",
         "episode": ep.relative_to(ROOT).as_posix(),
         "current_state": state.get("current_state"),
@@ -149,6 +161,12 @@ def collect(ep: Path, *, write: bool = True) -> dict:
     return report
 
 
+def load_fresh(ep: Path, *, write: bool = True) -> dict:
+    ep = Path(ep).resolve()
+    existing = maybe(ep, REL)
+    return existing if derived_freshness.is_fresh(ep, existing, SOURCE_RELS) else collect(ep, write=write)
+
+
 def self_test() -> None:
     assert REL == runtime_observability.WORKFLOW_OBSERVABILITY_REL
     assert counts([{"status": "A"}, {"status": "A"}, {"status": "B"}], "status") == {"A": 2, "B": 1}
@@ -168,8 +186,7 @@ def main() -> int:
     if a.cmd == "collect":
         print(json.dumps(collect(ep, write=True), ensure_ascii=False, indent=2)); return 0
     p = ep / REL
-    if not p.is_file():
-        collect(ep, write=True)
+    load_fresh(ep, write=True)
     print(p.read_text(encoding="utf-8")); return 0
 
 

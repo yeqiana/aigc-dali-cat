@@ -171,7 +171,32 @@ def record_image_attempt(ep,*,frame,scope,kind,status,model=None,attempt=1,
       "elapsed_seconds":float(elapsed_seconds) if isinstance(elapsed_seconds,(int,float)) else None,
       "queue_item_id":queue_item_id,"error_code":error_code
     }
-    d.setdefault("image_attempts",[]).append(row);save(ep,d);return row
+    rows=d.setdefault("image_attempts",[])
+    existing=None
+    if queue_item_id:
+        existing=next((x for x in reversed(rows)
+                       if str(x.get("queue_item_id") or "")==str(queue_item_id)
+                       and int(x.get("attempt") or 0)==int(row["attempt"])),None)
+    if existing is not None:
+        event_id=existing.get("event_id")
+        existing.update(row)
+        if event_id:existing["event_id"]=event_id
+        row=existing
+    else:
+        rows.append(row)
+    save(ep,d);return row
+
+def record_queue_image_attempt(ep,item,*,status,error_code=None,ended_at=None):
+    """Record one terminal scheduler/import attempt from its queue contract."""
+    return record_image_attempt(
+        ep,frame=int(item["frame"]),scope=item.get("scope"),kind=item.get("kind"),
+        status=status,model=item.get("model"),attempt=max(1,int(item.get("attempts") or 0)),
+        started_at=item.get("started_at"),ended_at=ended_at or item.get("completed_at") or now(),
+        queue_item_id=item.get("id"),error_code=error_code)
+
+def safe_record_queue_image_attempt(ep,item,**kwargs):
+    try:record_queue_image_attempt(ep,item,**kwargs);return True
+    except Exception:return False
 
 def safe_record_image_attempt(ep,**kwargs):
     try:record_image_attempt(ep,**kwargs);return True
@@ -193,8 +218,20 @@ def observe_checkpoint(ep,state):
         return True
     except Exception:return False
 
+def _close_open_telemetry(d,ended):
+    """Close dangling telemetry spans without turning them into PASS evidence."""
+    for section in ("stages","named_spans"):
+        for bucket in (d.get(section) or {}).values():
+            for row in (bucket or {}).get("runs") or []:
+                if row.get("status")!="RUNNING":continue
+                row["ended_at"]=ended
+                row["duration_seconds"]=seconds_between(row.get("started_at"),ended) or 0.0
+                row["status"]="CLOSED_AT_FINALIZE"
+                row.setdefault("metadata",{})["auto_closed_at_finalize"]=True
+
 def finalize(ep,status="COMPLETE"):
     ep=Path(ep).resolve();d=load(ep,True);ended=now()
+    _close_open_telemetry(d,ended)
     d["finalized_at"]=ended;d["final_status"]=status
     d["total_wall_seconds"]=seconds_between(d.get("started_at"),ended)
     save(ep,d)
@@ -212,6 +249,13 @@ def _run_total(bucket):
         v=row.get("duration_seconds")
         if isinstance(v,(int,float)):vals.append(float(v))
     return round(sum(vals),3)
+
+def _run_wall(bucket):
+    intervals=[]
+    for row in (bucket or {}).get("runs") or []:
+        a=row.get("started_at");b=row.get("ended_at")
+        if a and b:intervals.append((a,b))
+    return _interval_union_seconds(intervals)
 
 # STORY_OS_V211_RUNTIME_CLOSURE_R3: overlap-aware end-to-end critical-path telemetry.
 def _interval_union_seconds(intervals):
@@ -262,8 +306,12 @@ def _critical_path_summary(d):
     }
 
 def _refresh_summary(d):
-    stages={k:{"wall_seconds":_run_total(v),"runs":len(v.get("runs") or [])} for k,v in (d.get("stages") or {}).items()}
-    spans={k:{"wall_seconds":_run_total(v),"runs":len(v.get("runs") or [])} for k,v in (d.get("named_spans") or {}).items()}
+    def bucket_summary(v):
+        runs=v.get("runs") or []
+        return {"wall_seconds":_run_wall(v),"resource_seconds":_run_total(v),"runs":len(runs),
+                "unclosed_runs":sum(1 for x in runs if x.get("status")=="RUNNING")}
+    stages={k:bucket_summary(v) for k,v in (d.get("stages") or {}).items()}
+    spans={k:bucket_summary(v) for k,v in (d.get("named_spans") or {}).items()}
     imgs=d.get("image_attempts") or []
     completed=[x for x in imgs if str(x.get("status") or "") in {"generated","PASSED","PASS","success"}]
     repair=[x for x in imgs if str(x.get("kind") or "")=="repair"]
@@ -290,7 +338,7 @@ def _refresh_summary(d):
         "average_attempt_seconds":round(statistics.mean(vals),3) if vals else None,
         "max_attempt_seconds":round(max(vals),3) if vals else None,
       },
-      "note":"stage wall time and image backend resource time can overlap; do not add them together."
+      "note":"stage/named wall_seconds are interval unions; resource_seconds sum run durations and may overlap. Do not add resource time to wall time."
     }
 
 def episode_summary(ep):

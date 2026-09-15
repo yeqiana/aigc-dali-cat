@@ -60,6 +60,7 @@ import runtime_timeout_policy
 import story_json
 
 SCHEMA_VERSION = 1
+RUNNER_PROTOCOL_REVISION = 2
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME_REL = Path("runtime/codex-user-runner")
 ENDPOINT_NAME = "endpoint.json"
@@ -958,6 +959,10 @@ class RunnerState:
         self.started_at = time.strftime("%Y-%m-%dT%H:%M:%S%z")
         self.lock = threading.Lock()
         self.counters = {"tasks": 0, "failed": 0, "timeouts": 0, "rejected": 0}
+        # request_id -> started_at for tasks this runner is executing right now.
+        # A restarted Driver asks this before resubmitting: a request that is
+        # still in flight must be waited for, never started a second time.
+        self.inflight: dict[str, str] = {}
         self.log_path = runtime_dir() / LOG_NAME
         try:
             codex_path, resolution = resolve_codex()
@@ -973,6 +978,7 @@ class RunnerState:
         return {
             "status": "ok" if (self.codex_path and not is_non_interactive(identity)) else "degraded",
             "schema_version": SCHEMA_VERSION,
+            "protocol_revision": RUNNER_PROTOCOL_REVISION,
             "transport": "user_runner",
             "user": identity,
             "interactive_user": not is_non_interactive(identity),
@@ -983,6 +989,10 @@ class RunnerState:
             "codex_home": str(self.home),
             "codex_home_source": self.home_source,
             "codex_home_accessible": os.access(str(self.home), os.R_OK | os.W_OK),
+            # Presence only: health/preflight may prove an authentication context
+            # exists without returning or reading credential contents.
+            "codex_auth_present": (self.home / "auth.json").is_file(),
+            "codex_config_present": (self.home / "config.toml").is_file(),
             "host": self.host,
             "port": self.port,
             "pid": os.getpid(),
@@ -990,8 +1000,18 @@ class RunnerState:
             "max_timeout_seconds": max_timeout_seconds(),
             "allowed_task_types": sorted(ALLOWED_TASK_TYPES),
             "counters": dict(self.counters),
+            "inflight_request_ids": sorted(self.inflight),
+            "features": ["durable_task_results", "inflight_request_ids"],
             "secrets_persisted": False,
         }
+
+    def begin_task(self, request_id: str) -> None:
+        with self.lock:
+            self.inflight[str(request_id)] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+    def end_task(self, request_id: str) -> None:
+        with self.lock:
+            self.inflight.pop(str(request_id), None)
 
     def log(self, row: dict) -> None:
         try:
@@ -1085,7 +1105,13 @@ class _Handler(BaseHTTPRequestHandler):
             task = CodexTask.from_payload(payload)
             with self.state.lock:
                 self.state.counters["tasks"] += 1
-            result = execute_task(task)
+            # Marked before execute_task so a caller that dies mid-task leaves a
+            # request the next Driver can find still in flight.
+            self.state.begin_task(task.request_id)
+            try:
+                result = execute_task(task)
+            finally:
+                self.state.end_task(task.request_id)
         except CodexUserRunnerTimeout as exc:
             with self.state.lock:
                 self.state.counters["timeouts"] += 1

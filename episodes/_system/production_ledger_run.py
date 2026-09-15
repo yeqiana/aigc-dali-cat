@@ -160,6 +160,12 @@ def cmd_begin(args: argparse.Namespace) -> None:
         "request_fingerprint": request_fingerprint(payload),
         "notes": args.notes,
         "result": "pending",
+        "provider_attempt": {
+            "status": "NOT_INVOKED",
+            "recorded_at": now_iso(),
+            "model": args.model,
+            "quality": args.quality,
+        },
     }
     if getattr(args, "runtime_transaction_id", None):
         attempt["runtime_transaction_id"] = str(args.runtime_transaction_id)
@@ -251,6 +257,13 @@ def cmd_success(args: argparse.Namespace) -> None:
             "provider_attestation": receipt_data.get("provider_attestation"),
         }
         attempt["provider_receipt"] = provider_receipt
+        attempt["provider_attempt"] = {
+            **(attempt.get("provider_attempt") or {}),
+            "status": "COMPLETED",
+            "completed_at": now_iso(),
+            "provider_receipt_path": provider_receipt.get("path"),
+            "provider_receipt_sha256": provider_receipt.get("sha256"),
+        }
         if isinstance(attempt.get("reference_execution"), dict):
             attempt["reference_execution"] = merge_provider_reference_evidence(attempt, receipt_data, provider_receipt)
     attempt["result"] = "success"
@@ -325,6 +338,14 @@ def cmd_recover_success(args: argparse.Namespace) -> None:
             "provider_attestation": receipt_data.get("provider_attestation"),
         }
         attempt["provider_receipt"] = provider_receipt
+        attempt["provider_attempt"] = {
+            **(attempt.get("provider_attempt") or {}),
+            "status": "COMPLETED",
+            "completed_at": now_iso(),
+            "provider_receipt_path": provider_receipt.get("path"),
+            "provider_receipt_sha256": provider_receipt.get("sha256"),
+            "runner_request_id": str(getattr(args, "runner_request_id", "") or "") or None,
+        }
         if isinstance(attempt.get("reference_execution"), dict):
             attempt["reference_execution"] = merge_provider_reference_evidence(attempt, receipt_data, provider_receipt)
     previous_error = attempt.get("error")
@@ -360,6 +381,16 @@ def cmd_tech_fail(args: argparse.Namespace) -> None:
     attempt["result"] = "technical_failure"
     attempt["completed_at"] = now_iso()
     attempt["error"] = {"code": args.code, "message": args.message}
+    invoked = bool(getattr(args, "provider_invoked", False))
+    runner_request_id = str(getattr(args, "runner_request_id", "") or "").strip() or None
+    attempt["provider_attempt"] = {
+        **(attempt.get("provider_attempt") or {}),
+        "status": "INVOKED" if invoked else "NOT_INVOKED",
+        "recorded_at": now_iso(),
+        "runner_request_id": runner_request_id,
+        "failure_code": args.code,
+        "failed_at": now_iso(),
+    }
     frame.setdefault("technical_failures", []).append({
         "at": now_iso(), "attempt_id": attempt["attempt_id"], "code": args.code, "message": args.message
     })

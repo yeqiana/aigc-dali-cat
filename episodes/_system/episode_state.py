@@ -13,6 +13,7 @@ from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
 from story_os_contract import canonical_stages, story_os_version
 import episode_performance
 import story_json
+import episode_lifecycle
 
 STATES = canonical_stages()
 STATE_FILE = Path("meta/episode-state.json")
@@ -195,6 +196,7 @@ def initial_documents(*, episode_id: str, series: str, title: str, frame_count: 
         "series": series,
         "title": title,
         "current_state": "IDEA_LOCKED",
+        "disposition": episode_lifecycle.ACTIVE,
         "updated_at": at,
         "history": [
             {
@@ -351,6 +353,7 @@ def transition_cmd(args: argparse.Namespace) -> None:
         raise SystemExit(f"missing state file: {state_path}")
 
     data = load_json(state_path)
+    episode_lifecycle.assert_writable(episode_dir, "episode_state.transition")
     current = data.get("current_state")
     target = args.target
     if current not in STATES:
@@ -407,6 +410,13 @@ def transition_cmd(args: argparse.Namespace) -> None:
     print(f"{current} -> {target}")
 
 
+def terminate_cmd(args: argparse.Namespace) -> None:
+    episode_dir = ensure_episode_dir(args.episode_dir)
+    data = episode_lifecycle.terminate(
+        episode_dir, target=args.disposition, source=args.source, reason=args.reason)
+    print(f"episode disposition: {data['disposition']} (stage preserved: {data.get('current_state')})")
+
+
 def show_cmd(args: argparse.Namespace) -> None:
     episode_dir = ensure_episode_dir(args.episode_dir)
     data = {
@@ -449,6 +459,13 @@ def build_parser() -> argparse.ArgumentParser:
     tr.add_argument("--note", required=True)
     tr.add_argument("--rewind", action="store_true")
     tr.set_defaults(func=transition_cmd)
+
+    term = sub.add_parser("terminate", help="terminally void/abandon an Episode without changing its canonical stage")
+    term.add_argument("episode_dir")
+    term.add_argument("--disposition", required=True, choices=sorted(episode_lifecycle.TERMINAL))
+    term.add_argument("--source", required=True, help="auditable authority, e.g. direct_user:<decision>")
+    term.add_argument("--reason", required=True)
+    term.set_defaults(func=terminate_cmd)
 
     show = sub.add_parser("show", help="show state + manifest + gates")
     show.add_argument("episode_dir")

@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 import runtime_atomic_store as atomic
+import frame_contract
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -58,6 +59,8 @@ def _authorized_episode_override(ep: Path) -> int | None:
     override = _read_json(Path(ep).resolve() / OVERRIDE_REL)
     if not isinstance(override, dict):
         return None
+    if str(override.get("status") or "").upper() == "TERMINATED":
+        return None
     raw = override.get("max_total_content_candidates")
     auth = override.get("authorization")
     legacy_auth = override.get("authorized_by")
@@ -94,6 +97,8 @@ def authorized_frame_raise(ep: Path, frame_key: str, kind: str) -> dict:
     override = _read_json(Path(ep).resolve() / OVERRIDE_REL)
     if not isinstance(override, dict):
         return {"extra": 0, "sources": []}
+    if str(override.get("status") or "").upper() == "TERMINATED":
+        return {"extra": 0, "sources": []}
     total = 0
     sources: list[str] = []
     for row in override.get("per_frame_authorizations") or []:
@@ -129,6 +134,94 @@ def resolve_limit(ep: Path) -> dict:
 
 def episode_limit(ep: Path) -> int:
     return resolve_limit(ep)["limit"]
+
+
+def _override_path(ep: Path) -> Path:
+    return Path(ep).resolve() / OVERRIDE_REL
+
+
+def authorize_episode_budget(ep: Path, *, max_total: int, source: str, note: str = "") -> dict:
+    """Persist an explicit Episode-level continuation authorization.
+
+    This is the supported operational replacement for hand-editing the override
+    JSON.  It never infers approval: callers must provide a non-empty source.
+    """
+    ep = Path(ep).resolve()
+    source = str(source or "").strip()
+    if not source:
+        raise ValueError("authorization source is required")
+    if type(max_total) is not int or max_total <= 0:
+        raise ValueError("max_total must be a positive integer")
+    baseline = min(60, max(20, frame_count(ep) + 15))
+    if max_total <= baseline:
+        raise ValueError(f"max_total must exceed the default episode budget ({baseline})")
+    current = _read_json(_override_path(ep))
+    if not isinstance(current, dict):
+        current = {}
+    data = dict(current)
+    data.update({
+        "schema_version": 2,
+        "status": "AUTHORIZED",
+        "updated_at": now(),
+        "max_total_content_candidates": max_total,
+        "authorization": {"approved": True, "source": source, "note": str(note or "").strip(), "authorized_at": now()},
+    })
+    data.pop("termination", None)
+    story_json.write_json(_override_path(ep), data)
+    return data
+
+
+def authorize_frame_budget(ep: Path, *, frame: int, kind: str, additional: int, source: str, note: str = "") -> dict:
+    """Persist one bounded per-frame continuation authorization."""
+    ep = Path(ep).resolve()
+    source = str(source or "").strip()
+    if not source:
+        raise ValueError("authorization source is required")
+    if kind not in KINDS - {"authority_refresh", "user_continuation"}:
+        raise ValueError("kind does not support manual budget raise")
+    if type(additional) is not int or additional <= 0:
+        raise ValueError("additional must be a positive integer")
+    frame_key = f"{int(frame):02d}"
+    current = _read_json(_override_path(ep))
+    if not isinstance(current, dict):
+        current = {}
+    rows = list(current.get("per_frame_authorizations") or [])
+    row = {
+        "frame": frame_key,
+        "kind": kind,
+        "additional": additional,
+        "authorization": {"approved": True, "source": source, "note": str(note or "").strip(), "authorized_at": now()},
+    }
+    rows.append(row)
+    data = dict(current)
+    data.update({"schema_version": 2, "status": "AUTHORIZED", "updated_at": now(), "per_frame_authorizations": rows})
+    data.pop("termination", None)
+    story_json.write_json(_override_path(ep), data)
+    return data
+
+
+def terminate_override(ep: Path, *, source: str, reason: str) -> dict:
+    """Close all manual budget raises while preserving their audit trail."""
+    ep = Path(ep).resolve()
+    source = str(source or "").strip()
+    reason = str(reason or "").strip()
+    if not source or not reason:
+        raise ValueError("termination source and reason are required")
+    current = _read_json(_override_path(ep))
+    if not isinstance(current, dict) or not current:
+        raise ValueError("budget override does not exist")
+    data = dict(current)
+    data.update({"schema_version": 2, "status": "TERMINATED", "updated_at": now(),
+                 "termination": {"source": source, "reason": reason, "terminated_at": now()}})
+    story_json.write_json(_override_path(ep), data)
+    return data
+
+
+def override_status(ep: Path) -> dict:
+    data = _read_json(_override_path(Path(ep)))
+    active = bool(data) and str(data.get("status") or "AUTHORIZED").upper() != "TERMINATED"
+    return {"exists": bool(data), "active": active, "status": data.get("status") if data else None,
+            "effective_episode_budget": resolve_limit(Path(ep)), "override": data}
 
 def summary(ep: Path, *, pending: int = 0) -> dict:
     state = load(ep)
@@ -207,16 +300,99 @@ def semantic_key_for_queue_item(item: dict) -> str | None:
         return key or None
     return None
 
+
+def blocked_queue_context(ep: Path, items: list[dict]) -> dict:
+    """Explain whether explicit budget authorization can resume blocked queue work.
+
+    This is read-only decision support.  It never grants approval and never
+    mutates the queue.  Ordinary original/repair/exception lanes can be raised
+    through the existing authorized override lifecycle; semantic authority and
+    user-continuation lanes keep their own explicit authorization contracts.
+    """
+    ep = Path(ep).resolve()
+    state = load(ep)
+    rows = []
+    for item in items:
+        frame = int((item or {}).get("frame") or 0)
+        key = f"{frame:02d}"
+        kind = kind_for_queue_item(item)
+        bucket = (((state.get("frames") or {}).get(key) or {}).get(kind) or {})
+        used = int(bucket.get("used") or 0)
+        base_limit = int(limits().get(kind, 2))
+        raise_row = authorized_frame_raise(ep, key, kind) if kind in {"original", "repair", "exception", "user_exception"} else {"extra": 0, "sources": []}
+        effective_limit = base_limit + int(raise_row.get("extra") or 0)
+        rows.append({
+            "frame": frame,
+            "item_id": str((item or {}).get("id") or ""),
+            "kind": kind,
+            "used": used,
+            "base_limit": base_limit,
+            "effective_limit": effective_limit,
+            "frame_capacity_available": max(0, effective_limit - used),
+            "frame_authorization_supported": kind in {"original", "repair", "exception", "user_exception"},
+            "authorization_sources": list(raise_row.get("sources") or []),
+        })
+    episode = summary(ep, pending=len(rows))
+    episode_available = int(episode.get("available") or 0)
+    eligible = [row["frame"] for row in rows if row["frame_capacity_available"] > 0]
+    resumable = eligible[:max(0, episode_available)]
+    frame_needs = [row for row in rows if row["frame_capacity_available"] <= 0 and row["frame_authorization_supported"]]
+    options = []
+    if episode_available <= 0 and rows:
+        options.append({
+            "kind": "episode",
+            "command": "raw_candidate_budget.py authorize-episode",
+            "current_limit": int(episode.get("limit") or 0),
+            "minimum_new_limit": int(episode.get("limit") or 0) + max(1, len(rows)),
+            "requires_explicit_source": True,
+        })
+    for row in frame_needs:
+        options.append({
+            "kind": "frame",
+            "command": "raw_candidate_budget.py authorize-frame",
+            "frame": row["frame"],
+            "candidate_kind": row["kind"],
+            "minimum_additional": 1,
+            "requires_explicit_source": True,
+        })
+    return {
+        "episode": episode,
+        "items": rows,
+        "resumable_frames": sorted(set(resumable)),
+        "authorization_required": bool(options),
+        "authorization_options": options,
+    }
+
 def _authority_refresh_authorization(ep: Path, frame_key: str, semantic_key: str) -> dict:
     ledger = _read_json(Path(ep).resolve() / "meta/production-ledger.json")
     frame = (ledger.get("frames") or {}).get(frame_key) or {}
     auth = frame.get("authority_refresh_authorization") or {}
-    approved = (
+    direct_user = (
         str(auth.get("frame_contract_sha256") or "").lower() == str(semantic_key or "").lower()
         and bool(str(auth.get("approval_text") or "").strip())
         and str(auth.get("approval_basis") or "") == "direct_user_authority_contract_refresh"
     )
-    return {"approved": approved, "source": str(auth.get("approval_text") or "")[:200]}
+    machine_verified = False
+    if (
+        str(auth.get("frame_contract_sha256") or "").lower() == str(semantic_key or "").lower()
+        and str(auth.get("approval_basis") or "") == "machine_verified_frame_contract_drift"
+    ):
+        candidate = frame.get("current_candidate") or {}
+        candidate_sha = str(candidate.get("sha256") or "").lower()
+        if candidate_sha and candidate_sha == str(auth.get("candidate_sha256") or "").lower():
+            attempt = next(
+                (
+                    row for row in reversed(frame.get("attempts") or [])
+                    if str(((row or {}).get("candidate") or {}).get("sha256") or "").lower() == candidate_sha
+                ),
+                None,
+            )
+            if isinstance(attempt, dict):
+                recorded = (attempt.get("request") or {}).get("frame_contract")
+                errors = frame_contract.verify_recorded_provenance(ep, frame_key, recorded)
+                machine_verified = any("frame_contract_sha256 stale" in str(error) for error in errors)
+    source = str(auth.get("approval_text") or auth.get("reason") or "")[:200]
+    return {"approved": bool(direct_user or machine_verified), "source": source}
 
 def _user_continuation_authorization(ep: Path, frame_key: str, semantic_key: str) -> dict:
     ledger = _read_json(Path(ep).resolve() / "meta/production-ledger.json")
@@ -253,6 +429,8 @@ def _reserved_total(d: dict) -> int:
 
 def claim(ep, frame, kind, reason="", token=None, semantic_key=None):
     ep = Path(ep).resolve()
+    import episode_lifecycle
+    episode_lifecycle.assert_writable(ep, "raw_candidate_budget.claim")
     if kind not in KINDS:
         raise ValueError(f"kind must be {sorted(KINDS)}")
     key = f"{int(frame):02d}"
@@ -354,6 +532,8 @@ def claim(ep, frame, kind, reason="", token=None, semantic_key=None):
 
 def commit(ep, token, reason="candidate_file_committed"):
     ep = Path(ep).resolve()
+    import episode_lifecycle
+    episode_lifecycle.assert_writable(ep, "raw_candidate_budget.commit")
     token = str(token or "").strip()
     result = {}
 
@@ -428,10 +608,18 @@ def main():
     p = sub.add_parser("commit"); p.add_argument("episode_dir"); p.add_argument("--token", required=True); p.add_argument("--reason", default="candidate_file_committed")
     p = sub.add_parser("release"); p.add_argument("episode_dir"); p.add_argument("--token", required=True); p.add_argument("--reason", default="technical_failure_before_candidate_commit")
     p = sub.add_parser("show"); p.add_argument("episode_dir")
+    p = sub.add_parser("authorize-episode"); p.add_argument("episode_dir"); p.add_argument("--max-total", required=True, type=int); p.add_argument("--source", required=True); p.add_argument("--note", default="")
+    p = sub.add_parser("authorize-frame"); p.add_argument("episode_dir"); p.add_argument("--frame", required=True, type=int); p.add_argument("--kind", required=True, choices=sorted(KINDS - {"authority_refresh", "user_continuation"})); p.add_argument("--additional", required=True, type=int); p.add_argument("--source", required=True); p.add_argument("--note", default="")
+    p = sub.add_parser("terminate-override"); p.add_argument("episode_dir"); p.add_argument("--source", required=True); p.add_argument("--reason", required=True)
+    p = sub.add_parser("override-status"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
     a = ap.parse_args()
     if a.cmd == "self-test": self_test(); return 0
     if a.cmd == "show": print(json.dumps({**load(Path(a.episode_dir)), "effective_budget": summary(Path(a.episode_dir))}, ensure_ascii=False, indent=2)); return 0
+    if a.cmd == "authorize-episode": print(json.dumps(authorize_episode_budget(Path(a.episode_dir), max_total=a.max_total, source=a.source, note=a.note), ensure_ascii=False, indent=2)); return 0
+    if a.cmd == "authorize-frame": print(json.dumps(authorize_frame_budget(Path(a.episode_dir), frame=a.frame, kind=a.kind, additional=a.additional, source=a.source, note=a.note), ensure_ascii=False, indent=2)); return 0
+    if a.cmd == "terminate-override": print(json.dumps(terminate_override(Path(a.episode_dir), source=a.source, reason=a.reason), ensure_ascii=False, indent=2)); return 0
+    if a.cmd == "override-status": print(json.dumps(override_status(Path(a.episode_dir)), ensure_ascii=False, indent=2)); return 0
     if a.cmd == "claim":
         ok, row = claim(a.episode_dir, a.frame, a.kind, a.reason, a.token, a.semantic_key)
     elif a.cmd == "commit":

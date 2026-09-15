@@ -49,6 +49,8 @@ CHECKS = [
     "actual_information_gain",
 ]
 
+ANATOMY_CHECK = "anatomy_limb_hand_integrity"
+
 V22_VISUAL_NARRATIVE_CHECKS = [
     "camera_authorship_physical",
     "moment_capture_credibility",
@@ -85,7 +87,7 @@ def directing_v3_required(ep: Path) -> bool:
     try: return int(read_json(p).get("schema_version") or 0) >= 3
     except Exception: return False
 
-def checks_for_version(version: str, directing_v3: bool = False) -> list[str]:
+def checks_for_version(version: str, directing_v3: bool = False, *, anatomy_required: bool = True) -> list[str]:
     checks = CHECKS + (V21_PHASE3_CHECKS if version_tuple(version) >= (2, 1, 0) else [])
     if version_tuple(version) >= (2, 2, 0):
         checks += V22_VISUAL_NARRATIVE_CHECKS
@@ -93,6 +95,8 @@ def checks_for_version(version: str, directing_v3: bool = False) -> list[str]:
         checks += V221_WORLD_IDENTITY_CHECKS
     if directing_v3:
         checks += DIRECTING_V3_CHECKS
+    if anatomy_required:
+        checks += [ANATOMY_CHECK]
     return checks
 
 ISSUE_CODES = {
@@ -130,6 +134,9 @@ ISSUE_CODES = {
     "CINEMATIC_TRANSLATION_FAILED",
     "LIGHTING_DESIGN_MISMATCH",
     "ANOMALY_CONCEALMENT_MISSING",
+    "ANATOMY_DISTORTION",
+    "LIMB_COUNT_ERROR",
+    "HAND_INTEGRITY_FAILURE",
 }
 
 
@@ -694,6 +701,7 @@ def apply_pending_candidate(ep: Path, *, attempt: int) -> int:
         "CODEX", attempt=attempt, log=log_rel
     )
     provenance["review_scope"] = "FULL_FRAME_SET"
+    provenance["anatomy_integrity_enforced"] = True
     provenance["recovered_after_parent_timeout"] = True
     provenance["candidate_sha256"] = sha256_file(candidate)
     if log.stat().st_size <= 0:
@@ -739,7 +747,8 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
     if attempt not in {1, 2} and not (attempt == 3 and provenance.get("direct_user_exception_review") is True):
         errors.append(f"frame {key} critic attempt must be 1/2, or 3 for a direct-user-exception re-review")
     checks = data.get("checks") or {}
-    for check in checks_for_version(version, directing_v3):
+    anatomy_required = provenance.get("anatomy_integrity_enforced") is True
+    for check in checks_for_version(version, directing_v3, anatomy_required=anatomy_required):
         if checks.get(check) is not True:
             errors.append(f"frame {key} checks.{check} must be true")
     codes = data.get("issue_codes")
@@ -925,8 +934,9 @@ Hard rules for EVERY frame:
 17. camera_defect_physics: blur/noise/reflection/underexposure must have a plausible physical cause.
 18. screen_content_physics: phone/map/dashboard/time/camera UI must be internally, perspectivally and narratively coherent.
 19. visual_memory_continuity: character/wardrobe/vehicle/props/route/weather/light/anomaly evidence must persist unless explicitly changed.
-20. For shot-progression schema_version >=3 only: shot_scale_fidelity must match the locked shot_scale; scene_position_uniqueness_fidelity must not collapse different planned positions into visibly repeated camera setups; cinematic_structure_translation_fidelity must use the locked structural technique without becoming an exact film-still recreation; practical_lighting_design_fidelity must honor the declared real light source/contrast/suspense function; anomaly_concealment_fidelity must visibly use the locked mirror/water/glass/fog/light-shadow/screen/occlusion carrier when declared.
-21. PASS only if all required checks are true, issue_codes is empty and decision=pass.
+20. anatomy_limb_hand_integrity: visible human anatomy must be physically plausible. Extra/missing/fused limbs, impossible joint topology, duplicated or melted fingers/hands, detached body parts, or severe anatomy deformation are hard failures even when identity/story/POV are otherwise correct.
+21. For shot-progression schema_version >=3 only: shot_scale_fidelity must match the locked shot_scale; scene_position_uniqueness_fidelity must not collapse different planned positions into visibly repeated camera setups; cinematic_structure_translation_fidelity must use the locked structural technique without becoming an exact film-still recreation; practical_lighting_design_fidelity must honor the declared real light source/contrast/suspense function; anomaly_concealment_fidelity must visibly use the locked mirror/water/glass/fog/light-shadow/screen/occlusion carrier when declared.
+22. PASS only if all required checks are true, issue_codes is empty and decision=pass.
 
 Use issue codes only from this set:
 {', '.join(sorted(ISSUE_CODES))}
@@ -1199,6 +1209,7 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     provenance = runtime_provenance.build_vision_critic_provenance(
         attempt=attempt, log=log.relative_to(ROOT).as_posix(), review_scope="FULL_FRAME_SET"
     )
+    provenance["anatomy_integrity_enforced"] = True
     if candidate_gate:
         return _apply_candidate_gate(
             ep,
@@ -1481,6 +1492,7 @@ def run_exception_critic(ep: Path, *, targets: list[str], codex_raw: str | None,
     provenance = runtime_provenance.build_critic_provenance(
         "CODEX", attempt=3, log=log.relative_to(ROOT).as_posix(), allow_user_exception_attempt=True)
     provenance["review_scope"] = "INCREMENTAL_CONTEXT_SET"
+    provenance["anatomy_integrity_enforced"] = True
     provenance["direct_user_exception_frames"] = targets
     return _apply_exception_review(ep, data=read_json(candidate), rows=current, targets=targets, provenance=provenance)
 
@@ -1506,6 +1518,7 @@ def apply_exception_candidate(ep: Path) -> int:
     provenance = runtime_provenance.build_critic_provenance(
         "CODEX", attempt=3, log=log_rel, allow_user_exception_attempt=True)
     provenance["review_scope"] = "INCREMENTAL_CONTEXT_SET"
+    provenance["anatomy_integrity_enforced"] = True
     provenance["direct_user_exception_frames"] = targets
     provenance["recovered_after_parent_timeout"] = True
     provenance["candidate_sha256"] = sha256_file(candidate)

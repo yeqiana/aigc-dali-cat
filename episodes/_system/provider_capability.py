@@ -7,6 +7,14 @@ import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
 _CONFIG = storyos_config.load_config()
+DEFAULT_MODEL = str(storyos_config.get_path(_CONFIG, "image.model"))
+PROVIDER_RAW_MIN_DIMENSION = int(storyos_config.get_path(_CONFIG, "normalize.provider_raw_min_dimension"))
+
+
+class ProviderCapabilityError(ValueError):
+    def __init__(self, code: str, message: str):
+        self.code = str(code)
+        super().__init__(f"{self.code}: {message}")
 
 def _json(path: Path) -> dict:
     data=json.loads(path.read_text(encoding="utf-8-sig"))
@@ -26,13 +34,21 @@ def registry() -> dict:
 
 def resolve(model: str, route: str|None=None) -> dict:
     reg=registry(); profiles=reg.get("profiles") or {}; default_id=str(reg.get("default_capability_id") or "")
+    requested=str(model or "").strip()
     selected=None
     for _,rel in profiles.items():
         profile=_json(ROOT/str(rel)); routes=set(profile.get("transport_family") or [])
-        if str(profile.get("model") or "")==model and (not route or not routes or route in routes):
+        if requested and str(profile.get("model") or "")==requested and (not route or not routes or route in routes):
             selected=profile; break
-    if selected is None and default_id in profiles: selected=_json(ROOT/str(profiles[default_id]))
-    if selected is None: raise ValueError(f"PROVIDER_CAPABILITY_MISSING: model={model} route={route}")
+    # A named model must never inherit another model's capability record. This
+    # prevents a newly introduced or misspelled model from producing false
+    # provider evidence under the registry default.
+    if requested and selected is None:
+        raise ValueError(f"PROVIDER_CAPABILITY_MISSING: model={requested} route={route}")
+    if selected is None and default_id in profiles:
+        selected=_json(ROOT/str(profiles[default_id]))
+    if selected is None:
+        raise ValueError(f"PROVIDER_CAPABILITY_MISSING: model={requested} route={route}")
     return selected
 
 def image_size(path: Path) -> tuple[int,int]:
@@ -45,6 +61,11 @@ def _direction(src,target):
 
 def inspect(raw_path:Path,requested_width:int,requested_height:int,*,model:str,route:str,frame:int|None=None)->dict:
     profile=resolve(model,route); src=image_size(raw_path); target=(int(requested_width),int(requested_height))
+    if min(src) < PROVIDER_RAW_MIN_DIMENSION:
+        raise ProviderCapabilityError(
+            "PROVIDER_RAW_CANVAS_DEGENERATE",
+            f"provider returned {src[0]}x{src[1]}; minimum production RAW dimension is {PROVIDER_RAW_MIN_DIMENSION}px",
+        )
     sr=src[0]/src[1];tr=target[0]/target[1];delta=abs(sr-tr)/tr
     auto=float(storyos_config.get_path(_CONFIG,"normalize.automatic_ratio_delta_max"))
     review=float(storyos_config.get_path(_CONFIG,"normalize.review_ratio_delta_max"))
@@ -106,15 +127,23 @@ def finalize_receipt(path:Path,normalization:dict,final_path:Path)->dict:
     return {"path":_rel(path),"sha256":sha256_file(path),"receipt":data}
 
 def self_test():
-    p=resolve("gpt-image-2","codex_subscription")
+    p=resolve(DEFAULT_MODEL,"codex_subscription")
+    assert p["model"] == DEFAULT_MODEL
     assert p["requested_canvas"]["exact_raw_canvas_guaranteed"] is False
     assert p["normalize"]["crop_forbidden_by_default"] is True
+    assert resolve("gpt-image-2","codex_subscription")["model"] == "gpt-image-2"
+    try:
+        resolve("gpt-image-does-not-exist","codex_subscription")
+    except ValueError as exc:
+        assert "PROVIDER_CAPABILITY_MISSING" in str(exc)
+    else:
+        raise AssertionError("unknown named model must fail closed")
     print("PROVIDER CAPABILITY SELF-TEST PASS")
 
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)
-    p=sub.add_parser("show");p.add_argument("--model",default="gpt-image-2");p.add_argument("--route",default="codex_subscription")
-    p=sub.add_parser("inspect");p.add_argument("raw_path",type=Path);p.add_argument("--width",type=int,required=True);p.add_argument("--height",type=int,required=True);p.add_argument("--model",default="gpt-image-2");p.add_argument("--route",default="codex_subscription")
+    p=sub.add_parser("show");p.add_argument("--model",default=DEFAULT_MODEL);p.add_argument("--route",default="codex_subscription")
+    p=sub.add_parser("inspect");p.add_argument("raw_path",type=Path);p.add_argument("--width",type=int,required=True);p.add_argument("--height",type=int,required=True);p.add_argument("--model",default=DEFAULT_MODEL);p.add_argument("--route",default="codex_subscription")
     sub.add_parser("self-test");a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0
     if a.cmd=="show":print(json.dumps(resolve(a.model,a.route),ensure_ascii=False,indent=2));return 0

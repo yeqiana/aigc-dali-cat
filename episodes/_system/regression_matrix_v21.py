@@ -14,6 +14,7 @@ from story_os_contract import CANONICAL_STAGES, FOUR_ADMISSION_V21_POLICY, canon
 import migrate_v21
 import post_publish_review
 import story_json
+import runtime_command
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT = ROOT / "reports" / "story-os-v21-regression-matrix.json"
@@ -46,7 +47,7 @@ def assert_true(value: object, message: str) -> str:
 
 
 def run_subprocess(script: str, *args: str) -> str:
-    cp=subprocess.run([sys.executable,str(ROOT/"episodes/_system"/script),*args],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace",check=False)
+    cp=runtime_command.run_argv([sys.executable,str(ROOT/"episodes/_system"/script),*args],cwd=ROOT,capture=True)
     if cp.returncode!=0:
         raise AssertionError(cp.stdout[-2500:])
     return cp.stdout.strip().splitlines()[-1] if cp.stdout.strip() else "PASS"

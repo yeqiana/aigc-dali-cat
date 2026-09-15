@@ -96,6 +96,11 @@ def _bootstrap_story_platform() -> None:
 
 _bootstrap_story_platform()
 
+# 连接配置唯一解析入口（应用层读 config/storyos.yaml#storage，platform/ 保持零 yaml 依赖）。
+if str(PROJECT_ROOT / "episodes" / "_system") not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT / "episodes" / "_system"))
+import storage_config  # noqa: E402
+
 from platform.agent.runtime.agent_runtime import AgentRuntime  # noqa: E402
 from platform.agent.runtime.contracts import (  # noqa: E402
     AgentContext,
@@ -301,22 +306,7 @@ def group_environment(args, ctx: dict) -> None:
     check("A", "存储模式可解析", mode_ok, mode_detail)
     ctx["mode"] = mode
 
-    env = os.environ.get
-    ctx["env_summary"] = {
-        "mysql": {
-            "host": env("STORYOS_MYSQL_HOST"),
-            "port": env("STORYOS_MYSQL_PORT", "3306"),
-            "database": env("STORYOS_MYSQL_DB", "story_os_runtime"),
-            "user_present": bool(env("STORYOS_MYSQL_USER")),
-            "password_present": bool(env("STORYOS_MYSQL_PWD")),
-        },
-        "redis": {
-            "host": env("STORYOS_REDIS_HOST", "127.0.0.1"),
-            "port": env("STORYOS_REDIS_PORT", "6379"),
-            "db": env("STORYOS_REDIS_DB", "0"),
-            "password_present": bool(env("STORYOS_REDIS_PASSWORD")),
-        },
-    }
+    ctx["env_summary"] = storage_config.storage_summary()
     if mode is None or mode.value in ("mysql", "dual"):
         mysql_env = ctx["env_summary"]["mysql"]
         ready = bool(mysql_env["host"] and mysql_env["user_present"] and mysql_env["password_present"])
@@ -346,13 +336,13 @@ def group_mysql(ctx: dict) -> None:
     from platform.repository.mysql.mysql_connection import MySqlConnection
     from platform.repository.mysql.schema import apply_schema
 
-    connection = MySqlConnection()
+    connection = MySqlConnection(**storage_config.mysql_connection_kwargs())
     ctx["mysql"] = connection
     health = connection.health_check()
     check("B", "health_check alive", bool(health.get("alive")), f"version={health.get('version')}")
     version = str(health.get("version") or "")
     check("B", "MySQL 8.x", version.startswith("8."), version or "unknown")
-    expected_db = os.environ.get("STORYOS_MYSQL_DB", "story_os_runtime")
+    expected_db = storage_config.mysql_connection_kwargs()["database"]
     check(
         "B",
         "连接库与字符集",
@@ -380,7 +370,7 @@ def group_redis(args, ctx: dict) -> None:
         ctx["redis_client"] = None
         return
 
-    connection = RedisConnection()
+    connection = RedisConnection(**storage_config.redis_connection_kwargs())
     client = connection.client
     ctx["redis"] = connection
     ctx["redis_client"] = client
@@ -430,8 +420,21 @@ def group_runtime_execution(args, ctx: dict) -> None:
     smoke_root.mkdir(parents=True, exist_ok=True)
     ctx["smoke_root"] = smoke_root
 
-    provider = RuntimeRepositoryProvider(args.mode, jsonl_root=str(smoke_root))
+    # Provider 自己拥有并关闭它的连接；这里只把连接参数换成同一套解析结果，
+    # 避免 B 组（yaml 解析）与 D 组（env 默认）连到不同的库。
+    from platform.repository.mysql.mysql_connection import MySqlConnection
+
+    provider_connection = (
+        None
+        if resolve_store_mode(args.mode).value == "jsonl"
+        else MySqlConnection(**storage_config.mysql_connection_kwargs())
+    )
+    provider = RuntimeRepositoryProvider(
+        args.mode, jsonl_root=str(smoke_root), connection=provider_connection
+    )
     ctx["provider"] = provider
+    # provider 只关闭「自己创建」的连接；注入的连接归本脚本，登记后在收尾统一关闭。
+    ctx["provider_connection"] = provider_connection
     observers = provider.observers()
     ctx["observers"] = observers
     wired = all(
@@ -1209,6 +1212,12 @@ def main(argv=None) -> int:
         if provider is not None:
             try:
                 provider.close()
+            except Exception:  # noqa: BLE001
+                pass
+        provider_connection = ctx.get("provider_connection")
+        if provider_connection is not None:
+            try:
+                provider_connection.close()
             except Exception:  # noqa: BLE001
                 pass
         redis_connection = ctx.get("redis")

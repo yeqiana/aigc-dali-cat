@@ -193,7 +193,7 @@
     "provider_aware_batch_observability",
     "codex_subscription_logical_batch",
     "five_frame_codex_parallel_fanout",
-    "codex_batch_adaptive_concurrency_5_3_1",
+    "codex_batch_adaptive_concurrency",
     "codex_batch_partial_success_preservation",
     "codex_batch_failed_frame_only_retry",
     "codex_desktop_cli_preference",

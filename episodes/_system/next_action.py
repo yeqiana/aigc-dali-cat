@@ -5,6 +5,11 @@
 The only Episode stage authority remains meta/episode-state.json. This file is a
 runtime convenience for Work/ChatGPT host loops so they do not need to rescan the
 repository after every model/image action.
+
+Every field here is a projection of files already on disk: meta/episode-state.json,
+meta/runtime-runner-state.json and meta/runtime/reviews/. In particular host_loop
+and orphaned_pending_work report whether a host loop is running -- they never
+start, restart, stop, signal or wait on a runner. There is no watchdog here.
 """
 from __future__ import annotations
 
@@ -20,13 +25,18 @@ import image_blocked_recovery
 import preproduction_handoff
 import production_batch_review
 import production_ledger
+import product_review_adapter
 import product_runtime_adapter
+import raw_candidate_budget
+import runner_health_monitor
 import runtime_execution
 import runtime_router
+import runtime_portability
 import visual_lock_baseline_gate
 import visual_lock_candidate_pool
 import visual_lock_v21
 import story_json
+import episode_lifecycle
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/runtime/next-action.json")
@@ -47,11 +57,17 @@ def state(ep: Path) -> str:
     return str(read_json(ep / "meta/episode-state.json").get("current_state") or "UNKNOWN")
 
 
-def pending_product_review(ep: Path, *, current_state: str | None = None) -> dict | None:
+def _pending_product_review_scan(ep: Path, *, current_state: str | None = None) -> tuple[dict | None, list[dict]]:
+    """Return (live pending review, provably redundant residue).
+
+    Only alias files are considered here: they are the current pointer, and
+    per-attempt files are read on demand by product_review_adapter.
+    """
     root = ep / REVIEW_DIR
     if not root.is_dir():
-        return None
+        return None, []
     rows = []
+    residue: list[dict] = []
     for p in root.glob("*-request.json"):
         if "-attempt-" in p.name:
             continue
@@ -75,12 +91,87 @@ def pending_product_review(ep: Path, *, current_state: str | None = None) -> dic
             "visual-lock-baseline", "visual-lock", "visual-profile-legacy"
         }:
             continue
-        if d.get("status") == "AWAITING_PRODUCT_REVIEW":
-            rows.append((str(d.get("created_at") or ""), p, d))
+        if d.get("status") == product_review_adapter.AWAITING:
+            entry = {"path": p.resolve().relative_to(ROOT.resolve()).as_posix(), **d}
+            # A provably answered duplicate is residue, not an unanswered request
+            # that happened to age out. Preserve that stronger fact before TTL
+            # reconciliation so Gate F audit semantics stay intact.
+            answered = product_review_adapter.answered_request(ep, entry)
+            if answered:
+                residue.append({**entry, "redundant_with": answered})
+                continue
+            # Lifecycle reconciliation is fail-closed. Expired/superseded requests
+            # become terminal audit rows; malformed lifecycle metadata remains
+            # AWAITING so the review is still routed rather than silently skipped.
+            reconciled, _ = product_review_adapter.reconcile_request(ep, entry)
+            if reconciled.get("status") != product_review_adapter.AWAITING:
+                continue
+            rows.append((str(reconciled.get("created_at") or ""), p, reconciled))
     if not rows:
-        return None
+        return None, residue
     _, path, data = sorted(rows, key=lambda x: (x[0], x[1].name))[0]
-    return {"path": path.resolve().relative_to(ROOT.resolve()).as_posix(), **data}
+    return {"path": path.resolve().relative_to(ROOT.resolve()).as_posix(), **data}, residue
+
+
+def pending_product_review(ep: Path, *, current_state: str | None = None) -> dict | None:
+    """The single live pending product review, or None.
+
+    Kept as a public seam: derive() must keep calling this function, because
+    tests patch it to steer routing.
+    """
+    return _pending_product_review_scan(ep, current_state=current_state)[0]
+
+
+def redundant_product_review_residue(ep: Path, *, current_state: str | None = None) -> list[dict]:
+    """Pending reviews an earlier FINALIZED attempt already answered."""
+    return _pending_product_review_scan(ep, current_state=current_state)[1]
+
+
+def product_review_lifecycle_events(ep: Path) -> list[dict]:
+    """Current terminal request lifecycle evidence for next-action/audit."""
+    root = Path(ep) / REVIEW_DIR
+    if not root.is_dir():
+        return []
+    out: list[dict] = []
+    for p in sorted(root.glob("*-request.json")):
+        if "-attempt-" in p.name:
+            continue
+        d = read_json(p)
+        status = str(d.get("status") or "")
+        if status not in {"EXPIRED", "CANCELLED", "SUPERSEDED"}:
+            continue
+        lifecycle = d.get("lifecycle") if isinstance(d.get("lifecycle"), dict) else {}
+        out.append({
+            "request_path": p.resolve().relative_to(ROOT.resolve()).as_posix(),
+            "review_kind": d.get("review_kind"),
+            "attempt": d.get("attempt"),
+            "status": status,
+            "deadline_at": d.get("deadline_at"),
+            "actor": lifecycle.get("actor"),
+            "reason": lifecycle.get("reason"),
+            "at": lifecycle.get("at"),
+        })
+    return out
+
+
+def host_loop(ep: Path) -> dict:
+    """Projection of runner lifecycle evidence written by the host runner.
+
+    Reports only what a runner already wrote to meta/runtime-runner-state.json.
+    This never starts, restarts, stops, signals or waits on a runner, and the
+    absence of a runner is never a condition this module acts on.
+    """
+    try:
+        return runner_health_monitor.check(ep)
+    except Exception:
+        # Same shape as check() so no caller has to know which path produced it.
+        return {
+            "status": "UNKNOWN",
+            "runner_status": None,
+            "stage": None,
+            "host_loop": "IDLE",
+            "host_loop_source": "meta/runtime-runner-state.json",
+        }
 
 
 def queue_summary(ep: Path) -> dict:
@@ -221,12 +312,34 @@ def _handoff_valid(ep: Path) -> bool:
 
 def derive(ep: Path) -> dict:
     ep = Path(ep).resolve()
+    runtime_portability.assert_episode_directory(ep)
     runtime, _ = runtime_router.detect()
     image_runtime, _ = runtime_router.image_execution_runtime()
     vision_runtime, _ = runtime_router.vision_review_runtime()
     mode = runtime_execution.effective_mode(ep)
     cur = state(ep)
+    disposition = episode_lifecycle.disposition(ep)
+    if disposition in episode_lifecycle.TERMINAL:
+        return {
+            "schema_version": 1,
+            "derived_at": now(),
+            "episode": runtime_portability.episode_label(ep),
+            "episode_state": cur,
+            "episode_disposition": disposition,
+            "stage_authority": "meta/episode-state.json",
+            "derived_runtime_only": True,
+            "action": "EPISODE_TERMINATED",
+            "executor": None,
+            "work_pending": False,
+            "auto_recoverable": False,
+            "hard_stop": True,
+            "blocking": True,
+            "continue_without_user_prompt": False,
+            "reason": f"episode disposition is terminal: {disposition}",
+        }
     review = pending_product_review(ep, current_state=cur)
+    residue = redundant_product_review_residue(ep, current_state=cur)
+    loop = host_loop(ep)
     try:
         product_runtime_adapter.reconcile(ep)
     except Exception:
@@ -234,8 +347,9 @@ def derive(ep: Path) -> dict:
     base = {
         "schema_version": 1,
         "derived_at": now(),
-        "episode": ep.resolve().relative_to(ROOT.resolve()).as_posix(),
+        "episode": runtime_portability.episode_label(ep),
         "episode_state": cur,
+        "episode_disposition": disposition,
         "execution_mode": mode,
         "authoring_runtime": runtime,
         "image_execution_runtime": image_runtime,
@@ -245,6 +359,19 @@ def derive(ep: Path) -> dict:
         "work_pending": False,
         "auto_recoverable": False,
         "hard_stop": False,
+        "host_loop": str(loop.get("host_loop") or "IDLE"),
+        "runner_status": loop.get("runner_status"),
+        "product_review_lifecycle_events": product_review_lifecycle_events(ep),
+        "suppressed_product_reviews": [
+            {
+                "request_path": row.get("path"),
+                "review_kind": row.get("review_kind"),
+                "attempt": row.get("attempt"),
+                "answered_by": (row.get("redundant_with") or {}).get("path"),
+                "final_path": (row.get("redundant_with") or {}).get("final_path"),
+            }
+            for row in residue
+        ],
     }
     import scheduler_core
     base["progress"] = scheduler_core.progress(ep, read_json(ep / QUEUE_REL))
@@ -272,6 +399,23 @@ def derive(ep: Path) -> dict:
         except Exception:
             preimage_step = "PREIMAGE_TASK_SET"
         if str(preimage_step).startswith("PREIMAGE_"):
+            # An unanswered text/governance review is an unresolved authority
+            # decision, so it outranks PREIMAGE freshness: compiling a new handoff
+            # while the latest Story Critic / governance review is still awaiting
+            # completion would freeze unreviewed authority into image contracts.
+            # Visual pixel reviews are already filtered out by
+            # pending_product_review() when CODEX_VISION owns that lane.
+            #
+            # The yield is scoped to THIS branch on purpose. A pending review must
+            # not outrank ready-sibling image generation, queue recovery or the hard
+            # stops below: those act on work already authorized, and letting a
+            # review preempt them would strand a generatable frame behind a review
+            # that nobody has answered yet.
+            if review:
+                return action_result(action="PRODUCT_REVIEW", executor=runtime,
+                        request_path=review.get("path"), review_kind=review.get("review_kind"),
+                        candidate_path=review.get("candidate_path"),
+                        reason="fresh isolated product review is awaiting completion")
             current_request = read_json(ep / HOST_REL) if (ep / HOST_REL).is_file() else {}
             return action_result(
                 action="PREIMAGE_COMPILE",
@@ -290,6 +434,32 @@ def derive(ep: Path) -> dict:
         ledger_frames = read_json(ep / "meta/production-ledger.json").get("frames") or {}
         unresolved_blocked = list(qs.get("blocked_items") or [])
         if unresolved_blocked:
+            budget_blocked = [
+                row for row in unresolved_blocked
+                if str(row.get("technical_failure_code") or "").upper() == "RAW_CANDIDATE_BUDGET_EXHAUSTED"
+            ]
+            if budget_blocked:
+                budget_context = raw_candidate_budget.blocked_queue_context(ep, budget_blocked)
+                resumable = list(budget_context.get("resumable_frames") or [])
+                if resumable:
+                    return action_result(
+                        action="RESUME_BUDGET_AUTHORIZED_IMAGES",
+                        executor="MACHINE",
+                        frames=resumable,
+                        budget=budget_context,
+                        reason="explicit candidate-budget authorization is recorded; deterministically requeue only the newly authorized frames",
+                    )
+                return action_result(
+                    action="USER_DECISION_REQUIRED",
+                    executor=runtime,
+                    frames=sorted({int(row.get("frame") or 0) for row in budget_blocked if int(row.get("frame") or 0)>0}),
+                    budget=budget_context,
+                    decision_kind="CANDIDATE_BUDGET_EXHAUSTED",
+                    work_pending=True,
+                    auto_recoverable=False,
+                    hard_stop=True,
+                    reason="candidate budget is exhausted; use the formal episode/frame authorization lifecycle or leave generation stopped",
+                )
             plans = image_blocked_recovery.inspect(ep, unresolved_blocked)
             if plans and all(bool(row.get("auto_resolvable")) for row in plans):
                 return action_result(
@@ -377,6 +547,15 @@ def derive(ep: Path) -> dict:
             for x in q.get("items") or []
         )
         if cur=="STORYBOARD_LOCKED" and not visual_repair_active and len(visual_rows)==4 and all(x.get("status")=="generated" for x in visual_rows):
+            stale_bindings = visual_lock_v21.stale_generation_bindings(ep)
+            if stale_bindings:
+                return action_result(
+                    action="PREPARE_STALE_VISUAL_LOCK_REFRESH",
+                    executor="MACHINE",
+                    frames=sorted({int(row["frame"]) for row in stale_bindings}),
+                    stale_bindings=stale_bindings,
+                    reason="Visual Lock candidate pixels were generated under an older Frame Contract; re-render only those frames before pixel review",
+                )
             try:
                 visual_errors=visual_lock_v21.verify(ep,metadata_only=False)
             except Exception as exc:
@@ -432,7 +611,16 @@ def derive(ep: Path) -> dict:
                     executor="CODEX_IMAGE" if image_runtime=="CODEX" else runtime,
                     reason="actual-pixel review authorized content repair")
         if qs["counts"].get("external_blocked"):
-            blocked_frames=sorted({int(x.get("frame") or 0) for x in q.get("items") or [] if x.get("status")=="external_blocked" and int(x.get("frame") or 0)>0})
+            blocked_items=[x for x in q.get("items") or [] if x.get("status")=="external_blocked"]
+            failover_frames=sorted({
+                int(x.get("frame") or 0) for x in blocked_items
+                if int(x.get("frame") or 0)>0 and image_scheduler.availability_fallback_model(x)
+            })
+            if failover_frames:
+                return action_result(action="RETRY_TECHNICAL_FAILURES",executor="CODEX_IMAGE",
+                        frames=failover_frames,model_failover=True,
+                        reason="current non-strict image model exhausted availability retries; advance to the next configured model without consuming content repair")
+            blocked_frames=sorted({int(x.get("frame") or 0) for x in blocked_items if int(x.get("frame") or 0)>0})
             return action_result(action="EXTERNAL_IMAGE_PROVIDER_BLOCKED", executor="EXTERNAL",
                     frames=blocked_frames,hard_stop=True,auto_recoverable=False,
                     reason="image provider technical retry budget is exhausted; content/candidate budgets are preserved")
@@ -521,6 +709,10 @@ def derive(ep: Path) -> dict:
             reason="production frames exhausted automatic/authorized repair lanes and require an explicit user decision",
         )
 
+    # Last-resort authority gate: everything that acts on already-authorized work
+    # has returned above, so an unanswered review now blocks stage progression
+    # rather than image generation. See the scoped yield inside the stale-PREIMAGE
+    # branch for the one case where a review does outrank a concrete action.
     if review:
         return action_result(action="PRODUCT_REVIEW", executor=runtime,
                 request_path=review.get("path"), review_kind=review.get("review_kind"),
@@ -575,6 +767,7 @@ def apply_runtime_block_semantics(data: dict) -> dict:
         "REVIEW_FINAL_PRODUCTION",
         "PREPARE_BASELINE_CANDIDATE",
         "PREPARE_VISUAL_LOCK_CANDIDATES",
+        "PREPARE_STALE_VISUAL_LOCK_REFRESH",
         "RESOLVE_IMAGE_NORMALIZATION",
         "FINALIZE_VISUAL_LOCK",
         "PREPARE_PRODUCTION_BATCH",
@@ -586,6 +779,13 @@ def apply_runtime_block_semantics(data: dict) -> dict:
     # Backward compatibility: blocking means there is pending work, not that
     # the whole workflow must stop.
     data["blocking"] = bool(data["work_pending"] and data["hard_stop"])
+    # A pure projection of two facts already on disk: work is owed, and no host
+    # loop is running. It is deliberately NOT a hard stop and NOT a recovery
+    # trigger -- the engine has no watchdog and never starts a runner. It exists
+    # so that "there is work and nobody is doing it" is visible at every read
+    # site instead of looking like a quiet episode.
+    data["host_loop"] = str(data.get("host_loop") or "IDLE")
+    data["orphaned_pending_work"] = bool(data["work_pending"] and data["host_loop"] != "RUNNING")
     return data
 
 

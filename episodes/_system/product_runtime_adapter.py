@@ -45,6 +45,11 @@ def now() -> str:
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
 
+def execution_now() -> str:
+    """Higher-resolution timestamp for real Host worker overlap measurement."""
+    return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="microseconds")
+
+
 def _read_json(path: Path) -> dict:
     data = story_json.read_json(path, require_object=False)
     return data if isinstance(data, dict) else {}
@@ -263,14 +268,21 @@ def build_preimage_requests(ep: Path, *, runtime: str, mode: str, resume: bool, 
         data={
             "runtime": runtime, "status": "HOST_ACTION_REQUIRED", "source": source,
             "episode": ep.resolve().relative_to(ROOT.resolve()).as_posix(), "episode_state": episode_state(ep),
-            "execution_mode": mode, "resume": bool(resume), "next_step": f"PREIMAGE_{task['task_type']}",
+            "execution_mode": mode, "resume": bool(resume),
+            # The registered DAG step name, from the one mapping that defines it.
+            # Concatenating "PREIMAGE_" + task_type here produced host requests
+            # naming a step that no registry holds (W-93/P0-E).
+            "next_step": preimage_task_contract.canonical_step(task["task_type"]),
             "task": task, "snapshot_id": task["snapshot_id"], "candidate_output_path": task["candidate_output"],
             "resume_token": task["task_id"], "required_read": task["required_read"],
             "target_contract": "candidate_only_no_shared_authority_write",
             "host_contract": {"stage_authority":"meta/episode-state.json","must_not_claim_pass_without_evidence":True,
                               "must_not_write_shared_authority":True,"candidate_return_required":True,
+                              "execution_start_handshake_required":True,
                               "workspace_transport":WORKSPACE_TRANSPORT,"webcodex_allowed":False},
-            "instructions":["Perform only this bounded PREIMAGE task.", "Write/return the declared Candidate JSON only.",
+            "instructions":["Perform only this bounded PREIMAGE task.",
+                            "Before model/work execution, claim this request with product_runtime_adapter.py start-preimage using this request_id and a stable worker_id.",
+                            "Write/return the declared Candidate JSON only.",
                             "Do not modify story-gates.json, episode-state.json, or release-manifest.json."]}
         stored=_persist_request(ep,data,category="preimage")
         preimage_task_contract.update_task_state(ep,task,"HOST_ACTION_REQUIRED",request_id=stored["request_id"])
@@ -280,6 +292,92 @@ def build_preimage_requests(ep: Path, *, runtime: str, mode: str, resume: bool, 
     return out
 
 
+def mark_preimage_task_running(ep: Path, request_id: str, *, worker_id: str) -> dict:
+    """Claim one PREIMAGE Host request for real execution.
+
+    W-90: request creation is not execution.  The Host must explicitly mark the
+    request RUNNING so concurrency metrics are based on observed execution
+    intervals rather than overlapping HOST_ACTION_REQUIRED files.
+    """
+    worker_id = str(worker_id or "").strip()
+    if not worker_id:
+        raise ValueError("worker_id is required")
+    path = ep / REQUEST_HISTORY_REL / f"{request_id}.json"
+    if not path.is_file():
+        raise FileNotFoundError(f"host request missing: {path}")
+    request = _read_json(path)
+    task = request.get("task") or {}
+    if not task or not str(request.get("next_step") or "").startswith("PREIMAGE_"):
+        raise ValueError("not a PREIMAGE task request")
+    status = str(request.get("status") or "")
+    if status not in {"HOST_ACTION_REQUIRED", "RUNNING"}:
+        raise ValueError(f"PREIMAGE host request is terminal: {status}")
+    existing_worker = str(request.get("worker_id") or "").strip()
+    if status == "RUNNING" and existing_worker and existing_worker != worker_id:
+        raise RuntimeError(f"PREIMAGE_HOST_REQUEST_ALREADY_RUNNING: worker={existing_worker}")
+    started_at = str(request.get("started_at") or execution_now())
+    request.update({"status": "RUNNING", "started_at": started_at, "worker_id": worker_id})
+    _write_json(path, request)
+    preimage_task_contract.update_task_state(
+        ep, task, "RUNNING", request_id=request_id,
+        execution={"started_at": started_at, "worker_id": worker_id},
+    )
+    return request
+
+
+def preimage_execution_metrics(ep: Path) -> dict:
+    """Summarize only observed Host execution intervals; never infer starts."""
+    rows = []
+    snapshot_path = ep / "meta/runtime/preimage-authority-snapshot.json"
+    current_snapshot = _read_json(snapshot_path).get("snapshot_id") if snapshot_path.is_file() else None
+    history = ep / REQUEST_HISTORY_REL
+    if history.is_dir():
+        for path in sorted(history.glob("*.json")):
+            data = _read_json(path)
+            if (data.get("task") or {}) and str(data.get("next_step") or "").startswith("PREIMAGE_"):
+                if current_snapshot and data.get("snapshot_id") != current_snapshot:
+                    continue
+                rows.append(data)
+    events: list[tuple[dt.datetime, int]] = []
+    started = finished = 0
+    inflight = 0
+    for row in rows:
+        started_raw = row.get("started_at")
+        finished_raw = row.get("finished_at") or row.get("finalized_at") or row.get("completed_at")
+        if not started_raw:
+            continue
+        try:
+            start = dt.datetime.fromisoformat(str(started_raw))
+        except ValueError:
+            continue
+        started += 1
+        events.append((start, +1))
+        if finished_raw:
+            try:
+                end = dt.datetime.fromisoformat(str(finished_raw))
+            except ValueError:
+                end = None
+            if end is not None and end >= start:
+                finished += 1
+                events.append((end, -1))
+            else:
+                inflight += 1
+        else:
+            inflight += 1
+    active = peak = 0
+    # At the same timestamp, a finish releases capacity before another start.
+    for _at, delta in sorted(events, key=lambda item: (item[0], item[1])):
+        active += delta
+        peak = max(peak, active)
+    return {
+        "snapshot_id": current_snapshot,
+        "requested": len(rows), "started": started, "finished": finished,
+        "inflight_now": inflight, "peak_observed_concurrency": peak,
+        "unmeasured_requests": max(0, len(rows) - started),
+        "measurement": "host_execution_intervals_only",
+    }
+
+
 def complete_preimage_task(ep: Path, request_id: str, candidate: dict) -> dict:
     """Finalize exactly one host task after candidate validation, never a Gate."""
     path=ep/REQUEST_HISTORY_REL/f"{request_id}.json"
@@ -287,13 +385,20 @@ def complete_preimage_task(ep: Path, request_id: str, candidate: dict) -> dict:
     task=request.get("task") or {}
     if not task or not str(request.get("next_step") or "").startswith("PREIMAGE_"):
         raise ValueError("not a PREIMAGE task request")
+    if (request.get("host_contract") or {}).get("execution_start_handshake_required"):
+        if request.get("status") != "RUNNING" or not request.get("started_at") or not request.get("worker_id"):
+            raise ValueError("PREIMAGE_HOST_EXECUTION_START_REQUIRED")
     errors=preimage_task_contract.write_candidate(ep,task,candidate)
     if errors:
-        preimage_task_contract.update_task_state(ep,task,"FAILED",request_id=request_id,reason="; ".join(errors))
-        request.update({"status":"FAILED","completed_at":now(),"candidate_errors":errors})
+        finished_at = execution_now()
+        preimage_task_contract.update_task_state(ep,task,"FAILED",request_id=request_id,reason="; ".join(errors),
+            execution={"started_at": request.get("started_at"), "worker_id": request.get("worker_id"), "finished_at": finished_at})
+        request.update({"status":"FAILED","completed_at":finished_at,"finished_at":finished_at,"candidate_errors":errors})
         _write_json(path,request); return request
-    preimage_task_contract.update_task_state(ep,task,"COMPLETED",request_id=request_id,candidate_file=task["candidate_output"])
-    request.update({"status":"FINALIZED","finalized_at":now(),"candidate_path":task["candidate_output"]})
+    finished_at = execution_now()
+    preimage_task_contract.update_task_state(ep,task,"COMPLETED",request_id=request_id,candidate_file=task["candidate_output"],
+        execution={"started_at": request.get("started_at"), "worker_id": request.get("worker_id"), "finished_at": finished_at})
+    request.update({"status":"FINALIZED","finalized_at":finished_at,"finished_at":finished_at,"candidate_path":task["candidate_output"]})
     _write_json(path,request)
     episode_performance.safe_end_named_span(ep,f"HOST_ACTION_PREIMAGE_{task['task_type']}",status="PASS",metadata={"request_id":request_id})
     # The fourth independently finalized candidate releases only the serial
@@ -407,11 +512,21 @@ def main() -> int:
     p.add_argument("episode_dir")
     p.add_argument("--request-id", required=True)
     p.add_argument("--candidate", required=True, help="candidate JSON path, absolute or episode-relative")
+    p = sub.add_parser("start-preimage", help="claim one PREIMAGE Host request for actual execution")
+    p.add_argument("episode_dir")
+    p.add_argument("--request-id", required=True)
+    p.add_argument("--worker-id", required=True)
+    p = sub.add_parser("preimage-metrics", help="show observed PREIMAGE Host execution concurrency")
+    p.add_argument("episode_dir")
     sub.add_parser("self-test")
     args = ap.parse_args()
     if args.cmd in {None, "self-test"}:
         self_test(); return 0
     ep = Path(args.episode_dir).resolve()
+    if args.cmd == "start-preimage":
+        print_request(mark_preimage_task_running(ep, args.request_id, worker_id=args.worker_id)); return 0
+    if args.cmd == "preimage-metrics":
+        print_request(preimage_execution_metrics(ep)); return 0
     raw = Path(args.candidate)
     candidate_path = raw.resolve() if raw.is_absolute() else (ep / raw).resolve()
     candidate = _read_json(candidate_path)

@@ -32,6 +32,7 @@ import request_router
 import product_runtime_adapter
 import next_action
 import runtime_timeout_policy
+import runtime_command
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -70,7 +71,7 @@ def resolve_episode(raw: str) -> Path:
 
 
 def run(args: list[object]) -> subprocess.CompletedProcess[str]:
-    return subprocess.run([str(x) for x in args], cwd=ROOT, check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace")
+    return runtime_command.run_argv([str(x) for x in args], cwd=ROOT, capture=True)
 
 
 def load_contract() -> dict:
@@ -221,7 +222,7 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         if request_data:
             cmd += ["--runtime-request", str(ep / runtime_request_contract.EPISODE_REL)]
         t1 = time.monotonic()
-        child = subprocess.run([str(x) for x in cmd], cwd=ROOT, check=False)
+        child = runtime_command.run_argv([str(x) for x in cmd], cwd=ROOT, capture=False)
         child_elapsed = time.monotonic() - t1
         child_status = "PASS" if child.returncode == 0 else "FAILED"
         perf.record_step(ep, run_id, "CODEX_COMPAT_ADAPTER", child_status, child_elapsed, f"rc={child.returncode}")
@@ -280,7 +281,7 @@ def main() -> int:
         assert data["rules"].get("data_reviewed_requires_48h") is True
         assert "PUBLISH_RECORD" in data["steps"]
         assert "DATA_REVIEWED_GATE" in data["steps"]
-        assert image_model_policy.DEFAULT_MODEL == "gpt-image-2"
+        assert image_model_policy.DEFAULT_MODEL == "gpt-image-2.5-flare"
         assert data["rules"].get("current_visual_lock_calibration_count") == 4
         assert (ROOT / "runtimes/runtime-dag.json").is_file()
         print("WORKFLOW RUNNER V2.1 SELF-TEST PASS | PHASE910")

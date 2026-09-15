@@ -36,6 +36,10 @@ REDIS_ENV_KEYS = {
     "db": "STORYOS_REDIS_DB",
     "timeout": "STORYOS_REDIS_TIMEOUT",
 }
+RUNTIME_STORE_ENV_KEYS = {
+    "mode": "STORYOS_RUNTIME_STORE_MODE",
+    "jsonl_root": "STORYOS_RUNTIME_JSONL_ROOT",
+}
 
 
 def _section(name: str) -> dict[str, Any]:
@@ -126,6 +130,21 @@ def redis_connection_kwargs(overrides: dict | None = None) -> dict[str, Any]:
     return kwargs
 
 
+def runtime_store_config(overrides: dict | None = None) -> dict[str, str]:
+    """Resolve Runtime fact-store mode/root in the application layer."""
+    overrides = overrides or {}
+    section = _section("runtime_store")
+    mode = _text(overrides, "mode", RUNTIME_STORE_ENV_KEYS["mode"], section.get("mode")).lower()
+    if mode not in {"jsonl", "mysql", "dual"}:
+        raise ValueError(f"CONFIG_INVALID: runtime store mode {mode!r}")
+    root = _text(
+        overrides, "jsonl_root", RUNTIME_STORE_ENV_KEYS["jsonl_root"], section.get("jsonl_root")
+    )
+    if not root.strip():
+        raise ValueError("CONFIG_INVALID: storage.runtime_store.jsonl_root must be non-empty")
+    return {"mode": mode, "jsonl_root": root}
+
+
 def storage_summary() -> dict[str, Any]:
     """非凭据证据：只输出解析后的拓扑与「密码是否存在」，绝不输出密码值。
 
@@ -134,6 +153,7 @@ def storage_summary() -> dict[str, Any]:
     """
     mysql_section = _section("mysql")
     redis_section = _section("redis")
+    runtime_store = runtime_store_config()
     return {
         "mysql": {
             "host": _text({}, "host", MYSQL_ENV_KEYS["host"], mysql_section.get("host")),
@@ -141,12 +161,25 @@ def storage_summary() -> dict[str, Any]:
             "database": _text(
                 {}, "database", MYSQL_ENV_KEYS["database"], mysql_section.get("database")
             ),
+            "user_present": _present(os.environ.get(MYSQL_ENV_KEYS["user"])),
+            "host_env_provided": _present(os.environ.get(MYSQL_ENV_KEYS["host"])),
+            "port_env_provided": _present(os.environ.get(MYSQL_ENV_KEYS["port"])),
+            "user_env_provided": _present(os.environ.get(MYSQL_ENV_KEYS["user"])),
+            "database_env_provided": _present(os.environ.get(MYSQL_ENV_KEYS["database"])),
             "password_present": _credential(str(mysql_section.get("password_env") or "")) is not None,
         },
         "redis": {
             "host": _text({}, "host", REDIS_ENV_KEYS["host"], redis_section.get("host")),
             "port": _integer({}, "port", REDIS_ENV_KEYS["port"], redis_section.get("port")),
             "db": _integer({}, "db", REDIS_ENV_KEYS["db"], redis_section.get("db")),
+            "host_env_provided": _present(os.environ.get(REDIS_ENV_KEYS["host"])),
+            "port_env_provided": _present(os.environ.get(REDIS_ENV_KEYS["port"])),
+            "db_env_provided": _present(os.environ.get(REDIS_ENV_KEYS["db"])),
             "password_present": _credential(str(redis_section.get("password_env") or "")) is not None,
+        },
+        "runtime_store": {
+            **runtime_store,
+            "mode_env_provided": _present(os.environ.get(RUNTIME_STORE_ENV_KEYS["mode"])),
+            "jsonl_root_env_provided": _present(os.environ.get(RUNTIME_STORE_ENV_KEYS["jsonl_root"])),
         },
     }

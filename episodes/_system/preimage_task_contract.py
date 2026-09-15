@@ -26,28 +26,122 @@ TASK_TYPES = (
 
 # Scopes are intentionally disjoint: the commit layer fails closed if this
 # invariant is ever changed by a caller or an externally returned candidate.
+#
+# "step" is the canonical DAG step name for the task. It lives here, beside the
+# task type it belongs to, because building that name anywhere else is what broke
+# PREIMAGE: producers concatenated "PREIMAGE_" + task_type and invented
+# PREIMAGE_ENVIRONMENT_PREPARE / WORLD_PREPARE / VISUAL_NARRATIVE_PREPARE, names
+# no registry has ever held. Every registry (config/index.yaml stage_read_sets,
+# scoped_codex_worker.STEP_DIRECTIVES, runtime_node_registry executors) already
+# agrees on the suffix-less form, so the suffix-less form is canonical -- the
+# task type keeps its _PREPARE suffix because task state and task-results files
+# are keyed on it.
 TASK_SPECS = {
     "CHARACTER_FINALIZE": {
+        "step": "PREIMAGE_CHARACTER_FINALIZE",
         "node_id": "character_finalize", "candidate": "character-finalize.json",
         "scope": ("character.finalize",),
         "required_read": ("meta/story-gates.json", "meta/character-contract.json", "meta/character-visual-contract.json"),
     },
     "ENVIRONMENT_PREPARE": {
+        "step": "PREIMAGE_ENVIRONMENT",
         "node_id": "environment_prepare", "candidate": "environment.json",
         "scope": ("visual.environment_contract", "visual.frame_directives"),
         "required_read": ("meta/story-gates.json", "meta/story-semantic-review.json", "meta/runtime-request.json"),
     },
     "WORLD_PREPARE": {
+        "step": "PREIMAGE_WORLD",
         "node_id": "world_prepare", "candidate": "world.json",
         "scope": ("visual.world_identity", "visual.world_state", "visual.temporal_continuity", "visual.wardrobe"),
         "required_read": ("meta/story-gates.json", "meta/world-identity.json", "meta/character-contract.json"),
     },
     "VISUAL_NARRATIVE_PREPARE": {
+        "step": "PREIMAGE_VISUAL_NARRATIVE",
         "node_id": "visual_narrative_prepare", "candidate": "visual-narrative.json",
         "scope": ("visual.narrative_core", "visual.shot_progression", "visual.capture_grammar"),
         "required_read": ("meta/story-gates.json", "meta/shot-progression-review.json", "meta/runtime-request.json"),
     },
 }
+
+
+def _step_index() -> dict[str, str]:
+    """step -> task_type, built with a collision check.
+
+    A plain comprehension would silently drop a duplicate step, and a duplicate
+    means two tasks writing one capsule -- exactly the class of drift this index
+    exists to prevent. Fail at import instead.
+    """
+    index: dict[str, str] = {}
+    for task_type, spec in TASK_SPECS.items():
+        step = spec["step"]
+        if step in index:
+            raise ValueError(f"duplicate canonical PREIMAGE step {step}: {index[step]} and {task_type}")
+        index[step] = task_type
+    return index
+
+
+STEP_TO_TASK_TYPE = _step_index()
+PREIMAGE_STEPS = tuple(spec["step"] for spec in TASK_SPECS.values())
+
+
+def canonical_step(task_type: str) -> str:
+    """The registered DAG step name for a task type. Never build this by hand."""
+    spec = TASK_SPECS.get(task_type)
+    if spec is None:
+        raise ValueError(f"unsupported PREIMAGE task type: {task_type}")
+    return spec["step"]
+
+
+def task_type_for_step(step: str) -> str | None:
+    """Inverse of :func:`canonical_step`, or None for a non-PREIMAGE-task step."""
+    return STEP_TO_TASK_TYPE.get(step)
+
+
+def registry_mismatches(
+    *,
+    stage_read_sets: dict,
+    step_directives: dict,
+    executor_steps=frozenset(),
+) -> list[str]:
+    """Registration gaps for every PREIMAGE task, as readable strings.
+
+    Both lookups below are hard gates at runtime -- ``execution_capsule`` raises
+    on an unknown step and ``scoped_codex_worker`` raises on an unregistered one
+    -- but they are only reached after the PREIMAGE fan-out has already spent
+    the host's time. These same conditions are knowable at start-up, which is
+    where the answer belongs.
+    """
+    errors: list[str] = []
+    for task_type, spec in TASK_SPECS.items():
+        step = spec["step"]
+        if step not in stage_read_sets:
+            errors.append(f"{task_type}: {step} missing from stage_read_sets")
+        if step not in step_directives:
+            errors.append(f"{task_type}: {step} missing from STEP_DIRECTIVES")
+        if executor_steps and step not in executor_steps:
+            errors.append(f"{task_type}: {step} missing from the node registry executors")
+    return errors
+
+
+def assert_registries_aligned() -> None:
+    """Fail before PREIMAGE work starts, not 20 minutes into it.
+
+    Imports are lazy: ``scoped_codex_worker`` imports ``product_runtime_adapter``,
+    which imports this module, so a module-level import would be a cycle.
+    """
+    import runtime_node_registry
+    import scoped_codex_worker
+    import storyos_config
+
+    errors = registry_mismatches(
+        stage_read_sets=storyos_config.load_index().get("stage_read_sets") or {},
+        step_directives=scoped_codex_worker.STEP_DIRECTIVES,
+        executor_steps=frozenset(
+            n.get("executor") for n in runtime_node_registry.first_batch_nodes()
+        ),
+    )
+    if errors:
+        raise ValueError("PREIMAGE task registry drift: " + "; ".join(errors))
 
 
 def now() -> str:
@@ -149,10 +243,36 @@ def verify_character_finalize_candidate(candidate: dict, task: dict) -> list[str
     return [] if any(value.get(key) not in (None,"",{},[]) for key in keys) else ["character candidate requires character/identity/pov/appearance"]
 
 def verify_environment_prepare_candidate(candidate: dict, task: dict) -> list[str]:
-    env=candidate["payload"]["visual.environment_contract"]; directives=candidate["payload"]["visual.frame_directives"]
+    """Reject environment candidates that would fail immediately after commit."""
+    env=candidate["payload"]["visual.environment_contract"]
+    directives=candidate["payload"]["visual.frame_directives"]
     errors=[]
-    if not isinstance(env.get("baseline"),dict) or not env["baseline"]: errors.append("environment candidate requires non-empty baseline")
-    if not directives: errors.append("environment candidate requires frame directives")
+    if not isinstance(env.get("baseline"),dict) or not env["baseline"]:
+        errors.append("environment candidate requires non-empty baseline")
+    if not directives:
+        errors.append("environment candidate requires frame directives")
+    if errors:
+        return errors
+    try:
+        import environment_contract
+        ep=Path(str(task.get("episode") or ""))
+        try:
+            total=environment_contract.frame_count(ep)
+        except (FileNotFoundError, KeyError, ValueError):
+            # Protocol-only fixtures may intentionally omit release-manifest;
+            # production Episodes must still have it before Frame Contract compile.
+            # Derive only the validation horizon from the candidate's own directive
+            # keys so semantic consistency is still checked instead of bypassed.
+            frame_keys=[]
+            for raw in directives:
+                try: frame_keys.append(int(str(raw)))
+                except (TypeError, ValueError): pass
+            total=max(frame_keys) if frame_keys else 1
+        errors.extend(environment_contract.validate_environment(env,total))
+        errors.extend(environment_contract.validate_directives(ep,directives,total))
+        errors.extend(environment_contract.validate_effective_consistency(ep,env,directives,total))
+    except Exception as exc:
+        errors.append(f"environment candidate validation failed: {exc}")
     return errors
 
 def _applicable_object(value: dict) -> bool:
@@ -168,7 +288,40 @@ def valid_payload(task: dict) -> dict:
     """Explicit contract-shaped fixture/host template; never used by validation."""
     kind=task["task_type"]
     if kind=="CHARACTER_FINALIZE": return {"character.finalize":{"character":"locked","identity":"stable","pov":"first_person","appearance":"textual_anchor"}}
-    if kind=="ENVIRONMENT_PREPARE": return {"visual.environment_contract":{"baseline":{"location":"ordinary","weather":"stable"}},"visual.frame_directives":{"01":{"environment":"ordinary"}}}
+    if kind=="ENVIRONMENT_PREPARE":
+        ep=Path(str(task.get("episode") or ""))
+        total=1
+        try:
+            import environment_contract
+            total=environment_contract.frame_count(ep)
+        except Exception:
+            pass
+        directives={}
+        for frame in range(1,total+1):
+            directives[f"{frame:02d}"]={
+                "narrative_role":"setup",
+                "frame_mode":"normal_record",
+                "impact_level":0,
+                "required_visual_cues":[],
+                "scale_reference":"",
+                "escalation_from":None,
+            }
+        return {
+            "visual.environment_contract":{
+                "schema_version":1,
+                "season":"stable",
+                "baseline":{
+                    "condition":"clear morning",
+                    "time_of_day":"morning",
+                    "ground_state":"dry",
+                    "visibility":"clear",
+                    "physical_cues":["ordinary morning daylight"],
+                },
+                "segments":[],
+                "frame_overrides":{},
+            },
+            "visual.frame_directives":directives,
+        }
     if kind=="WORLD_PREPARE": return {scope:{"applicable":False} for scope in task["authority_scope"]}
     return {scope:{"rule":"candidate"} for scope in task["authority_scope"]}
 
@@ -188,7 +341,8 @@ def write_candidate(ep: Path, task: dict, candidate: dict) -> list[str]:
 
 
 def update_task_state(ep: Path, task: dict, status: str, *, request_id: str | None = None,
-                      candidate_file: str | None = None, reason: str | None = None) -> dict:
+                      candidate_file: str | None = None, reason: str | None = None,
+                      execution: dict | None = None) -> dict:
     path = Path(ep) / STATE_REL
     def mutate(current: dict) -> dict:
         if not current or current.get("snapshot_id") != task["snapshot_id"]:
@@ -198,6 +352,10 @@ def update_task_state(ep: Path, task: dict, status: str, *, request_id: str | No
         row.update({"task_id": task["task_id"], "status": status, "request_id": request_id or row.get("request_id"),
                     "candidate_path": candidate_file or task["candidate_output"], "updated_at": now()})
         if reason: row["reason"] = reason
+        if execution:
+            current_execution = dict(row.get("execution") or {})
+            current_execution.update({k: v for k, v in execution.items() if v is not None})
+            row["execution"] = current_execution
         current["tasks"][task["task_type"]] = row
         return dict(current)
     return atomic.update_json(path, lambda: _state_base(task["snapshot_id"]), mutate)

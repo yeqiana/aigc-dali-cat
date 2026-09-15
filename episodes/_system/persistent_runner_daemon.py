@@ -10,7 +10,7 @@ import runner_state_store
 import runtime_trace
 
 
-def run(episode: Path, interval: int = 10, resume: bool = False) -> int:
+def run(episode: Path, interval: int = 10, resume: bool = False, codex: str | None = None) -> int:
     episode = Path(episode).resolve()
     if not runner_state_store.acquire_lock(episode):
         return 25  # another live owner; never overwrite its state
@@ -26,9 +26,10 @@ def run(episode: Path, interval: int = 10, resume: bool = False) -> int:
     thread = threading.Thread(target=heartbeat, name="storyos-heartbeat", daemon=True)
     try:
         runner_state_store.save(episode, status="RUNNING", pid=os.getpid(), resume_enabled=resume)
-        runtime_trace.emit(episode, {"event": "RUNNER_STARTED", "resume_enabled": resume})
+        runtime_trace.emit(episode, {"event": "RUNNER_STARTED", "resume_enabled": resume,
+                                     "codex": codex or ""})
         thread.start()
-        rc = episode_runner.run_episode(episode, interval=interval, resume=resume)
+        rc = episode_runner.run_episode(episode, interval=interval, resume=resume, codex=codex)
         if heartbeat_error:
             raise RuntimeError("heartbeat persistence failed: " + heartbeat_error[0])
         runtime_trace.emit(episode, {"event": "RUNNER_EXIT", "return_code": rc})
@@ -48,8 +49,9 @@ def main():
     parser.add_argument("episode", type=Path)
     parser.add_argument("--interval", type=int, default=10)
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--codex", default=None)
     args = parser.parse_args()
-    return run(args.episode, args.interval, args.resume)
+    return run(args.episode, args.interval, args.resume, args.codex)
 
 
 if __name__ == "__main__":

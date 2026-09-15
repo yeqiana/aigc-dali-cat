@@ -23,6 +23,7 @@ import image_model_policy
 import provider_capability
 import image_artifact_collector
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
+import runtime_log_policy
 import runtime_router
 import storyos_config
 import runtime_timeout_policy
@@ -41,6 +42,17 @@ JPEG = b'\xff\xd8\xff'
 
 class BackendError(RuntimeError):
     pass
+
+
+def _configurable_bool(config_key: str, env_name: str) -> bool:
+    """Product boolean from YAML, with an observable one-run env override."""
+    raw = os.environ.get(env_name)
+    if raw is not None and str(raw).strip():
+        return str(raw).strip().lower() in {'1', 'true', 'on', 'yes'}
+    value = storyos_config.get_path(storyos_config.load_config(), config_key)
+    if not isinstance(value, bool):
+        raise BackendError(f'CONFIG_INVALID: {config_key} must be bool')
+    return value
 
 def valid_image(path: Path) -> bool:
     if not path.is_file() or path.stat().st_size < 16:
@@ -167,7 +179,7 @@ def _reference_proxy(source: Path, workdir: Path, index: int) -> Path:
     try:
         with Image.open(source) as image:
             image = image.convert('RGB')
-            group_proxy = str(os.environ.get('STORY_OS_GROUP_REFERENCE_PROXY') or '').strip().lower() in {'1','true','on','yes'}
+            group_proxy = _configurable_bool('provider.group_reference_proxy', 'STORY_OS_GROUP_REFERENCE_PROXY')
             if group_proxy and image.width >= 600:
                 # Same source authority, but reduce a two-person selfie to a compact
                 # overlapping left/right identity strip. This is a disposable
@@ -191,6 +203,58 @@ def _reference_proxy(source: Path, workdir: Path, index: int) -> Path:
         target = workdir / f'reference-{index:02d}{ext}'
         shutil.copy2(source, target)
         return target
+
+
+def image_runtime_preflight(*, bridged: bool, source_home: Path | None = None,
+                            worker_home: Path | None = None) -> dict:
+    """Fail before model execution when the selected Codex image lane is not ready.
+
+    Credential *contents* are never read or returned. For direct execution we
+    only prove that the sign-in marker exists and that the disposable worker's
+    generated_images root is writable. For the user-mode bridge those checks are
+    performed by the interactive runner and exposed as presence/accessibility
+    booleans through its health endpoint.
+    """
+    if bridged:
+        try:
+            health = codex_user_runner.runner_health()
+        except Exception as exc:
+            raise BackendError(f'IMAGE_RUNTIME_PREFLIGHT_FAILED: user runner unavailable: {exc}') from exc
+        if not health.get("codex_available"):
+            raise BackendError('IMAGE_RUNTIME_PREFLIGHT_FAILED: bridged Codex executable unavailable')
+        if not health.get("codex_home_accessible"):
+            raise BackendError('IMAGE_RUNTIME_PREFLIGHT_FAILED: bridged CODEX_HOME is not accessible')
+        if not health.get("codex_auth_present"):
+            raise BackendError('IMAGE_RUNTIME_PREFLIGHT_FAILED: bridged CODEX_HOME has no auth.json')
+        return {
+            "transport": "user_runner",
+            "codex_available": True,
+            "codex_home_accessible": True,
+            "auth_context_present": True,
+            "generated_images_writable": True,
+        }
+
+    source = Path(source_home or os.environ.get("CODEX_HOME") or (Path.home() / ".codex")).expanduser()
+    if not source.is_dir():
+        raise BackendError(f'IMAGE_RUNTIME_PREFLIGHT_FAILED: CODEX_HOME missing: {source}')
+    if not (source / "auth.json").is_file():
+        raise BackendError('IMAGE_RUNTIME_PREFLIGHT_FAILED: CODEX_HOME has no auth.json')
+    target = Path(worker_home or source).expanduser()
+    try:
+        generated = target / "generated_images"
+        generated.mkdir(parents=True, exist_ok=True)
+        probe = generated / f".storyos-write-probe-{uuid.uuid4().hex}"
+        probe.write_bytes(b"ok")
+        probe.unlink()
+    except OSError as exc:
+        raise BackendError(f'IMAGE_RUNTIME_PREFLIGHT_FAILED: generated_images is not writable: {target}') from exc
+    return {
+        "transport": "direct",
+        "codex_available": True,
+        "codex_home_accessible": True,
+        "auth_context_present": True,
+        "generated_images_writable": True,
+    }
 
 
 def image_worker_sandbox_mode(*, bridged: bool, has_references: bool) -> str:
@@ -260,7 +324,14 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
                 src = source_home / name
                 if src.is_file() and not (worker_codex_home / name).exists():
                     shutil.copy2(src, worker_codex_home / name)
+            image_runtime_preflight(
+                bridged=False,
+                source_home=source_home,
+                worker_home=worker_codex_home,
+            )
             worker_env["CODEX_HOME"] = str(worker_codex_home)
+        else:
+            image_runtime_preflight(bridged=True)
         with log.open('w', encoding='utf-8', newline='\n') as log_handle:
             try:
                 completed = codex_user_runner.run_codex(
@@ -302,11 +373,13 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
                             if p.is_file() and valid_image(p)]
                 if exported:
                     candidate = max(exported, key=lambda p: p.stat().st_mtime)
+        try:
+            raw_log_text = log.read_text(encoding='utf-8', errors='replace') if log.is_file() else ''
+            runtime_log_policy.write_codex_noise_summary(log, raw_log_text)
+        except Exception:
+            raw_log_text = ''
         if completed.returncode != 0 or not valid_image(candidate):
-            try:
-                tail=log.read_text(encoding='utf-8',errors='replace')[-6000:]
-            except Exception:
-                tail=''
+            tail = runtime_log_policy.provider_relevant_codex_text(raw_log_text)[-6000:]
             machine_code=image_model_policy.classify_backend_error(tail, source="image_backend")
             if machine_code:
                 raise BackendError(f'{machine_code}: requested={image_model}; log={log}')
@@ -399,7 +472,10 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     try:
         norm = normalize(raw_output, output, width, height)
     except NormalizeError as exc:
-        allow_provider_crop = str(os.environ.get('STORY_OS_PROVIDER_RATIO_CROP_EXCEPTION') or '').strip().lower() in {'1','true','on','yes'}
+        allow_provider_crop = _configurable_bool(
+            'normalize.provider_ratio_crop_exception_enabled',
+            'STORY_OS_PROVIDER_RATIO_CROP_EXCEPTION',
+        )
         if exc.code == 'ASPECT_RATIO_MISMATCH' and allow_provider_crop:
             norm = normalize_provider_crop_exception(
                 raw_output, output, width, height,
@@ -443,7 +519,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
             'enforcement': 'runtime_request_to_worker_contract',
             'provider_attestation': False,
             'generation_route': backend_name,
-            'generation_route_note': 'generated via built-in image_gen tool in the Codex desktop interface when STORY_OS_MANUAL_RAW_DIR is set; model contract stays gpt-image-2',
+            'generation_route_note': f'generated via built-in image_gen tool in the Codex desktop interface when STORY_OS_MANUAL_RAW_DIR is set; model contract stays {model_policy["model"]}',
         } if manual_src else {**model_policy, 'enforcement': 'runtime_request_to_worker_contract', 'provider_attestation': False},
         'elapsed_seconds': elapsed,
     }

@@ -35,6 +35,12 @@ def save(episode: Path, **fields) -> dict:
     path.parent.mkdir(parents=True, exist_ok=True)
     with _GUARD:
         current = load(episode)
+        # A new RUNNING epoch must not inherit terminal diagnostics from the
+        # previous process. Keeping rc/last_error while status=RUNNING made a
+        # healthy recovered Driver look failed and alive at the same time.
+        if fields.get("status") == "RUNNING":
+            for stale in ("return_code", "last_error", "last_action", "error", "attempt", "cycles"):
+                current.pop(stale, None)
         current.update(fields)
         current["heartbeat"] = _now()
         atomic_write_json(path, current)

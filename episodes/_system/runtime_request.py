@@ -47,6 +47,33 @@ def contains_any(text,signals):
 def request_id(text):
     return dt.datetime.now().strftime("%Y%m%d_%H%M%S")+"_"+hashlib.sha256(text.encode("utf-8")).hexdigest()[:8]
 
+
+def preimage_authority_projection(data):
+    """Creative Runtime Request fields that can legitimately affect PREIMAGE.
+
+    Image provider/model/quality, worker counts, delivery mode, request timestamps
+    and retry/resume bookkeeping are execution concerns. Hashing the whole request
+    made a provider-model upgrade falsely invalidate Character/Environment/World
+    authority. Keep only fields PREIMAGE consumers actually use as creative input.
+    """
+    row=data if isinstance(data,dict) else {}
+    provenance=row.get("provenance") or {}
+    return {
+        "topic": row.get("topic") or {},
+        "story_input": row.get("story_input") or {},
+        "creative_hints": row.get("creative_hints") or [],
+        "visual_profile": row.get("visual_profile"),
+        "provenance": {
+            "source": provenance.get("source"),
+            "original_request": provenance.get("original_request"),
+        },
+    }
+
+
+def preimage_authority_projection_sha256(data):
+    raw=json.dumps(preimage_authority_projection(data),ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
 def parse_topic(text):
     for left,right in (("「","」"),("《","》"),("『","』"),('"','"'),("“","”")):
         if left in text and right in text:
@@ -132,8 +159,9 @@ def compile_request(text):
     expected_intent=request_intent.expected_intent_for_mode(mode)
     if intent.get("intent") != expected_intent:
         intent={**intent,"intent":expected_intent,"reason_codes":[*(intent.get("reason_codes") or []),f"MODE_OVERRIDE_{mode.upper()}"]}
+    rid=request_id(text)
     data={
-        "schema_version":1,"request_id":request_id(text),"created_at":now(),"mode":mode,
+        "schema_version":1,"request_id":rid,"created_at":now(),"mode":mode,
         "repository":{"branch":branch,"source":branch_source},
         "topic":{"title":title,"raw":raw_topic},
         "story_input":story,
@@ -145,7 +173,7 @@ def compile_request(text):
         "runtime":{"execution_mode":str(storyos_config.get_path(_CONFIG,"runtime.execution_mode")),"continuous_execution":bool(full_auto),"resume":True,"max_image_workers":DEFAULT_MAX_IMAGE_WORKERS,"fail_soft":True,"incremental_reuse":True},
         "delivery":{"mode":"auto","zip_required_for_completion":False},
         "user_intent":{"full_auto_authorized":bool(full_auto),"allow_story_strengthening":story["mode"]!="locked_story","allow_story_rewrite":story["mode"] in {"auto_create","user_seed","core_constraints"},"ask_before_each_step":not bool(full_auto)},
-        "provenance":{"source":"natural_language","original_request":text.strip()},
+        "provenance":{"source":"natural_language","original_request":text.strip(),"creative_request_id":rid},
     }
     errors=validate_request(data)
     if errors:raise ValueError("; ".join(errors))
@@ -201,7 +229,7 @@ def effective_for_episode(episode_dir):
 
 def self_test():
     a=compile_request("读取 story 分支。全自动做一篇「仲夏夜惊魂」。")
-    assert a["story_input"]["mode"]=="auto_create" and a["image_model"]=="gpt-image-2" and a["image_quality"]=="high"
+    assert a["story_input"]["mode"]=="auto_create" and a["image_model"]==DEFAULT_IMAGE_MODEL and a["image_quality"]=="high"
     assert a["intent"]["intent"]=="CREATE_EPISODE"
     b=compile_request("读取 story 分支。全自动做一篇「仲夏夜惊魂」。剧情大概是：几个人住进山里民宿。")
     assert b["story_input"]["mode"]=="user_seed" and "山里民宿" in b["story_input"]["raw"]

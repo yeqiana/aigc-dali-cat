@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = ROOT / "episodes/_system"
@@ -94,6 +95,57 @@ class AuthorityRefreshBudgetTests(unittest.TestCase):
 
     def test_contract_without_matching_direct_user_authorization_is_refused(self):
         ok, row = raw_candidate_budget.claim(self.ep, 17, "authority_refresh", token="x", semantic_key=self.contract_b)
+        self.assertFalse(ok)
+        self.assertEqual(row["decision"], "AUTHORITY_REFRESH_NOT_AUTHORIZED")
+
+    def test_machine_verified_stale_contract_can_claim_without_fake_user_approval(self):
+        candidate_sha = "c" * 64
+        _write(self.ep / "meta/production-ledger.json", {
+            "frames": {"17": {
+                "status": "AUTHORITY_REFRESH_AUTHORIZED",
+                "current_candidate": {"sha256": candidate_sha},
+                "attempts": [{
+                    "candidate": {"sha256": candidate_sha},
+                    "request": {"frame_contract": {"contract_sha256": self.contract_a}},
+                }],
+                "authority_refresh_authorization": {
+                    "frame_contract_sha256": self.contract_b,
+                    "previous_frame_contract_sha256": self.contract_a,
+                    "candidate_sha256": candidate_sha,
+                    "approval_basis": "machine_verified_frame_contract_drift",
+                    "reason": "canonical authority changed",
+                },
+            }},
+        })
+        with patch.object(raw_candidate_budget.frame_contract, "verify_recorded_provenance",
+                          return_value=["frame 17 generation frame_contract_sha256 stale"]):
+            ok, row = raw_candidate_budget.claim(
+                self.ep, 17, "authority_refresh", token="machine-1", semantic_key=self.contract_b)
+        self.assertTrue(ok)
+        self.assertEqual(row["semantic_key"], self.contract_b)
+
+    def test_machine_refresh_is_refused_when_stale_proof_disappears(self):
+        candidate_sha = "c" * 64
+        _write(self.ep / "meta/production-ledger.json", {
+            "frames": {"17": {
+                "status": "AUTHORITY_REFRESH_AUTHORIZED",
+                "current_candidate": {"sha256": candidate_sha},
+                "attempts": [{
+                    "candidate": {"sha256": candidate_sha},
+                    "request": {"frame_contract": {"contract_sha256": self.contract_b}},
+                }],
+                "authority_refresh_authorization": {
+                    "frame_contract_sha256": self.contract_b,
+                    "previous_frame_contract_sha256": self.contract_a,
+                    "candidate_sha256": candidate_sha,
+                    "approval_basis": "machine_verified_frame_contract_drift",
+                    "reason": "canonical authority changed",
+                },
+            }},
+        })
+        with patch.object(raw_candidate_budget.frame_contract, "verify_recorded_provenance", return_value=[]):
+            ok, row = raw_candidate_budget.claim(
+                self.ep, 17, "authority_refresh", token="machine-no-stale", semantic_key=self.contract_b)
         self.assertFalse(ok)
         self.assertEqual(row["decision"], "AUTHORITY_REFRESH_NOT_AUTHORIZED")
 

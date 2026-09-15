@@ -16,6 +16,7 @@ import sys
 from pathlib import Path
 from typing import Any
 import story_json
+import runtime_command
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -69,16 +70,7 @@ def state(ep: Path) -> str:
 
 
 def run_cmd(args: list[object]) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        [str(x) for x in args],
-        cwd=ROOT,
-        check=False,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
+    return runtime_command.run_argv([str(x) for x in args], cwd=ROOT, capture=True)
 
 
 def gate_transition(ep: Path, target: str, note: str) -> None:

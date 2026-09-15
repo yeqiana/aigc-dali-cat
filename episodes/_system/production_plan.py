@@ -12,15 +12,19 @@ import storyos_config
 REL = Path("meta/runtime/production-plan.json")
 
 def build(episode: Path, *, max_workers: int = 2) -> dict:
-    """Return a topology/slot estimate only. No node, Gate, or state is executed."""
+    """Return a diagnostic topology estimate only; never a production scheduler input."""
     nodes = runtime_node_registry.first_batch_nodes()
     config=storyos_config.load_config()
     image_limit = int(storyos_config.get_path(config, "production.max_inflight_images", 3))
-    pools={"authority":int(storyos_config.get_path(config,"runtime.workers.authority",4)),
+    # Logical topology estimate only. `authority` below maps to the explicit
+    # local-Codex fallback pool; WORK+DevSpace host concurrency is intentionally
+    # not invented here. Review has no independent worker knob, and image work is
+    # delegated to image_scheduler in production.
+    pools={"authority":int(storyos_config.get_path(config,"runtime.workers.local_codex_preimage",4)),
            "derived":int(storyos_config.get_path(config,"runtime.workers.derived",6)),
-           "review":int(storyos_config.get_path(config,"runtime.workers.review",3)),"image":image_limit}
+           "image":image_limit}
     completed, waves = set(), []
-    planning_workers=max(pools["authority"], pools["derived"], pools["review"])
+    planning_workers=max(pools["authority"], pools["derived"])
     while len(completed) < len(nodes):
         result = runtime_scheduler.schedule(nodes, completed=completed, max_workers=planning_workers,
             resource_snapshot={"max_workers": planning_workers, "runtime_capacity": pools})
@@ -30,6 +34,7 @@ def build(episode: Path, *, max_workers: int = 2) -> dict:
         waves.append([item["node_id"] for item in dispatch])
         completed.update(item["node_id"] for item in dispatch)
     return {"schema_version": 1, "episode": str(Path(episode)), "dry_run": True,
+            "production_consumer": False, "purpose": "diagnostic_topology_estimate",
             "node_count": len(nodes), "nodes": nodes,
             "dependency_graph": {node["node_id"]: node["depends_on"] for node in nodes},
             "parallel_groups": waves, "estimated_waves": waves,

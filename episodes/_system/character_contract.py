@@ -54,7 +54,13 @@ def source_text(ep):
 
 def seed_for(ep):
     r=request(ep)
-    raw=str(r.get("request_id") or "")+"|"+str(((r.get("topic") or {}).get("title")) or "")+"|"+ep.as_posix()
+    provenance=r.get("provenance") or {}
+    migration=provenance.get("image_model_migration") or {}
+    # Provider/model migrations mint a new execution request id but must not
+    # reshuffle creative identity. Keep the original creative request stable.
+    creative_id=(provenance.get("creative_request_id") or migration.get("source_request_id")
+                 or r.get("request_id") or "")
+    raw=str(creative_id)+"|"+str(((r.get("topic") or {}).get("title")) or "")+"|"+ep.as_posix()
     return int(hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16],16)
 
 def weighted_choice(rng,weights):

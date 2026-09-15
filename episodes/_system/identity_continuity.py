@@ -47,6 +47,7 @@ import json
 import re
 from pathlib import Path
 
+import evidence_time
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -355,6 +356,10 @@ def validate_frame(evidence, requirements, authority) -> list:
     if not isinstance(provenance, dict) or str(provenance.get("source") or "") not in PROVENANCE_SOURCES:
         findings.append(("identity_continuity_provenance_missing",
                          "identity_evidence.provenance.source must be one of " + "/".join(PROVENANCE_SOURCES)))
+    else:
+        for error in evidence_time.validate_timestamp(
+                provenance.get("reviewed_at"), field="identity_evidence.provenance.reviewed_at", required=True):
+            findings.append(("identity_continuity_timestamp_invalid", error))
     return findings
 
 

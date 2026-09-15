@@ -36,6 +36,20 @@ CORE_ENGINE_FILES = [
     "media_workspace.py",
     "runtime_log_policy.py",
 ]
+# STORY_OS_V2_6_1_1_SINGLE_DRIVER: the resident driver (story_os.py runner) and a
+# step engine (runtime_dag.py) must stay distinguishable in the portal, because an
+# agent that cannot tell them apart drives the DAG by hand and leaves the episode
+# unattended -- that is exactly what happened to 尸解仙 on 2026-09-14. Docs alone
+# already failed once, so the block is machine-checked here on every doctor/CI run.
+SINGLE_DRIVER_MARKER = "STORY_OS_SINGLE_DRIVER"
+SINGLE_DRIVER_REQUIRED_TOKENS = (
+    "story_os.py runner",
+    "story_os.py run",
+    "story_os.py driver",
+    "runtime_dag",
+    "host_loop",
+    "orphaned_pending_work",
+)
 REQUIRED_CAPABILITIES = {
     "single_state_machine",
     "multi_runtime",
@@ -191,6 +205,24 @@ def untracked_series_masters(root: Path) -> list[str]:
     return errors
 
 
+def single_driver_errors(root: Path) -> list[str]:
+    rel = Path("START_HERE.md")
+    p = root / rel
+    if not p.is_file():
+        return [f"missing contract file: {rel.as_posix()}"]
+    text = read_text(p)
+    begin = f"<!-- {SINGLE_DRIVER_MARKER}_BEGIN -->"
+    end = f"<!-- {SINGLE_DRIVER_MARKER}_END -->"
+    if text.count(begin) != 1 or text.count(end) != 1:
+        return [f"{rel.as_posix()} must contain exactly one {SINGLE_DRIVER_MARKER} block"]
+    body = text.split(begin, 1)[1].split(end, 1)[0]
+    return [
+        f"{rel.as_posix()} single-driver block must declare {token}"
+        for token in SINGLE_DRIVER_REQUIRED_TOKENS
+        if token not in body
+    ]
+
+
 def collect_errors(root: Path | None = None) -> list[str]:
     root = root or repo_root()
     errors: list[str] = []
@@ -243,6 +275,8 @@ def collect_errors(root: Path | None = None) -> list[str]:
             continue
         if not declares_version(read_text(p), version):
             errors.append(f"{rel.as_posix()} does not declare Story OS V{version}")
+
+    errors.extend(single_driver_errors(root))
 
     for rel in [Path("runtimes/runtime-contract.json"), Path("standards/AUTHORITY_INDEX.json")]:
         p = root / rel
