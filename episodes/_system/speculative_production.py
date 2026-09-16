@@ -18,6 +18,7 @@ import frame_contract
 import image_model_policy
 import image_scheduler
 import preproduction_handoff
+import production_queue_store
 import visual_lock_v21
 import story_json
 import runtime_timeout_policy
@@ -63,7 +64,7 @@ def visual_lock_candidates_ready(ep: Path) -> tuple[bool, str]:
 
 
 def discover_prompt_dir(ep: Path) -> Path | None:
-    qpath = ep / image_scheduler.QUEUE_REL
+    qpath = production_queue_store.read_path(ep)
     candidates = []
     if qpath.is_file():
         q = read_json(qpath)

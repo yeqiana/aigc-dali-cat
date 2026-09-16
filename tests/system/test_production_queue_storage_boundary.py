@@ -37,8 +37,14 @@ def test_queue_remains_legacy_pinned_even_if_workspace_shadow_exists(monkeypatch
     assert scheduler_core.load_queue(ep)["items"][0]["id"] == "live"
     status = production_queue_store.migration_status(ep)
     assert status["workspace_shadow_enabled"] is False
+    assert status["consumer_boundary_ready"] is True
     assert status["cutover_ready"] is False
-    assert status["blocking_reason"] == "DEFER_CONSUMER_MIGRATION"
+    assert status["blocking_reason"] == "DEFER_ATOMIC_CUTOVER_PROTOCOL"
+    assert status["required_before_cutover"] == [
+        "scheduler_lock_guarded_copy",
+        "checksum_verified_activation",
+        "stale_workspace_shadow_rejected",
+    ]
 
 
 def test_queue_save_still_writes_episode_legacy_boundary(monkeypatch, tmp_path):
@@ -47,3 +53,36 @@ def test_queue_save_still_writes_episode_legacy_boundary(monkeypatch, tmp_path):
     scheduler_core.save_queue(ep, {"schema_version": 1, "items": [], "waves": []})
     assert production_queue_store.write_path(ep).is_file()
     assert not production_queue_store.workspace_candidate(ep).exists()
+
+
+def test_runtime_consumers_do_not_hardcode_queue_physical_path():
+    allowed_literal_owners = {
+        "production_queue_store.py",  # canonical physical boundary
+        "runtime_asset_policy.py",   # asset classification only
+        "migrate_v21.py",            # legacy logical gate declaration
+    }
+    offenders = []
+    for path in sorted(SYSTEM.glob("*.py")):
+        if path.name.startswith("test_") or path.name in allowed_literal_owners:
+            continue
+        if "production-queue.json" in path.read_text(encoding="utf-8"):
+            offenders.append(path.name)
+    assert offenders == []
+
+
+def test_runtime_consumers_do_not_construct_queue_path_from_compat_aliases():
+    forbidden = (
+        "ep / QUEUE_REL",
+        "ep/QUEUE_REL",
+        "Path(ep) / QUEUE_REL",
+        "image_scheduler.QUEUE_REL",
+    )
+    offenders = []
+    for path in sorted(SYSTEM.glob("*.py")):
+        if path.name.startswith("test_"):
+            continue
+        text = path.read_text(encoding="utf-8")
+        hits = [pattern for pattern in forbidden if pattern in text]
+        if hits:
+            offenders.append((path.name, hits))
+    assert offenders == []

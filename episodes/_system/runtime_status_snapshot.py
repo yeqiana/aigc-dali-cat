@@ -220,6 +220,14 @@ def snapshot(episode: Path) -> dict[str, Any]:
     external_runtime_sources = {"runtime_dag_state", "runtime_runner_state", "next_action"}
 
     def source_info(name: str, rel: Path) -> dict[str, Any]:
+        if name == "production_queue":
+            resolved = production_queue_store.read_path(ep)
+            legacy = production_queue_store.legacy_path(ep) if hasattr(production_queue_store, "legacy_path") else ep / rel
+            return {
+                "path": str(rel).replace("\\", "/"),
+                "present": resolved.is_file(),
+                "source_kind": "episode" if resolved == legacy else "runtime_workspace",
+            }
         if name in external_runtime_sources:
             resolved = runtime_workspace.resolve_read_path(ep, rel)
             return {

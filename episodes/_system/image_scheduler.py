@@ -821,7 +821,8 @@ def main()->int:
                 return batch_scheduler.run(ep,a.max_workers,run_timeout,a.codex)
             return run_scheduler_async(ep,a.max_workers,run_timeout,a.codex)
         if a.cmd=="retry-tech":print(json.dumps(retry_tech(ep,a.frame,reset_exhausted=a.reset_exhausted),ensure_ascii=False,indent=2));return 0
-        print((ep/QUEUE_REL).read_text(encoding="utf-8") if (ep/QUEUE_REL).is_file() else "{}");return 0
+        queue_path=production_queue_store.read_path(ep)
+        print(queue_path.read_text(encoding="utf-8") if queue_path.is_file() else "{}");return 0
     except (OSError,ValueError,RuntimeError,subprocess.TimeoutExpired) as exc:
         print("IMAGE SCHEDULER ERROR:",exc);return 3
 

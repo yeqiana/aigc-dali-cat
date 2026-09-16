@@ -401,7 +401,7 @@ def derive(ep: Path) -> dict:
         ],
     }
     import scheduler_core
-    base["progress"] = scheduler_core.progress(ep, read_json(ep / QUEUE_REL))
+    base["progress"] = scheduler_core.progress(ep, read_json(production_queue_store.read_path(ep)))
     def action_result(**kwargs):
         hard_stop = bool(kwargs.pop("hard_stop", False))
         auto = bool(kwargs.pop("auto_recoverable", True))
