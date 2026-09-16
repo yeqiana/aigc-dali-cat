@@ -19,6 +19,7 @@ import visual_reality_score  # STORY_OS_V3_E005_VISUAL_REALITY_SCORE
 import visual_profile_closure as visual_profile_closure  # STORY_OS_PHASE46_VISUAL_PROFILE_CLOSURE
 import visual_profile_gate as visual_profile_gate  # STORY_OS_PHASE46_VISUAL_PROFILE_CLOSURE
 import asset_boundary_gate
+import production_queue_store
 
 STATES = canonical_stages()
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
@@ -268,7 +269,7 @@ def check_four_admission(repo_root: Path, visual: dict, manifest: dict, findings
         findings.append(Finding("FAIL", "visual_lock_admission_frames", "admission_frames must equal the four locked Visual Lock frames"))
 
 
-def check_references(repo_root: Path, gates: dict, findings: list[Finding], *, metadata_only: bool) -> None:
+def check_references(repo_root: Path, gates: dict, findings: list[Finding], *, metadata_only: bool, episode_dir: Path | None = None) -> None:
     visual = gates.get("visual") if isinstance(gates.get("visual"), dict) else {}
     refs = visual.get("references")
     if not isinstance(refs, dict):
@@ -310,9 +311,12 @@ def check_references(repo_root: Path, gates: dict, findings: list[Finding], *, m
 
     # W-17: declaration-only validation is insufficient. Runtime queue evidence must
     # carry the same anchor contract when available.
-    queue_path = Path(gates.get("production_queue") or "meta/production-queue.json")
-    if not queue_path.is_absolute():
-        queue_path = repo_root / queue_path
+    if episode_dir is not None:
+        queue_path = production_queue_store.read_path(Path(episode_dir))
+    else:
+        queue_path = Path(gates.get("production_queue") or production_queue_store.REL)
+        if not queue_path.is_absolute():
+            queue_path = repo_root / queue_path
     if queue_path.exists():
         try:
             queue = json.loads(queue_path.read_text(encoding="utf-8-sig"))
@@ -705,7 +709,7 @@ def validate(episode_dir: Path, target: str, *, metadata_only: bool = False) -> 
     if idx >= STATE_MIN["VISUAL_CALIBRATED"]:
         check_authenticity_card(gates, manifest, findings)
         check_calibration(repo_root, gates, manifest, findings, metadata_only=metadata_only)
-        check_references(repo_root, gates, findings, metadata_only=metadata_only)
+        check_references(repo_root, gates, findings, metadata_only=metadata_only, episode_dir=episode_dir)
     if idx >= STATE_MIN["PRODUCTION_PASSED"]:
         for error in asset_boundary_gate.verify_episode(episode_dir):
             findings.append(Finding("FAIL", "asset_boundary", error))

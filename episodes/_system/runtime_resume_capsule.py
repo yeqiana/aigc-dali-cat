@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse, datetime as dt, json
 from pathlib import Path
 import production_ledger
+import production_queue_store
 import runtime_capability_cache
 import story_json
 import derived_freshness
@@ -12,7 +13,7 @@ import runtime_checkpoint
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/resume-capsule.json")
-SOURCE_RELS=["meta/episode-state.json","meta/production-ledger.json","meta/production-queue.json","meta/runtime-request.json","meta/story-gates.json","meta/runtime-checkpoint.json","meta/final-acceptance.json"]
+SOURCE_RELS=["meta/episode-state.json","meta/production-ledger.json",production_queue_store.REL.as_posix(),"meta/runtime-request.json","meta/story-gates.json","meta/runtime-checkpoint.json","meta/final-acceptance.json"]
 STAGES=["IDEA_LOCKED","STORYBOARD_LOCKED","VISUAL_CALIBRATED","PRODUCTION_PASSED","PUBLISH_READY","PUBLISHED","DATA_REVIEWED"]
 STEP_BY_STATE={"IDEA_LOCKED":"CREATIVE_STORY","STORYBOARD_LOCKED":"VISUAL_LOCK","VISUAL_CALIBRATED":"PRODUCTION","PRODUCTION_PASSED":"RELEASE","PUBLISH_READY":"RELEASE","PUBLISHED":"RELEASE","DATA_REVIEWED":"RELEASE"}
 
@@ -28,7 +29,9 @@ def source_snapshot(ep):
     ep=Path(ep).resolve();rows=[]
     for rel in SOURCE_RELS:
         logical=str(rel).replace("\\","/")
-        path=runtime_checkpoint.read_path(ep) if logical==runtime_checkpoint.REL.as_posix() else ep/rel
+        if logical==runtime_checkpoint.REL.as_posix():path=runtime_checkpoint.read_path(ep)
+        elif logical==production_queue_store.REL.as_posix():path=production_queue_store.read_path(ep)
+        else:path=ep/rel
         rows.append({"path":logical,"sha256":derived_freshness.sha256_file(path)})
     return rows,derived_freshness.fingerprint(rows)
 def sources_fresh(ep,data):
@@ -53,7 +56,7 @@ def compile_capsule(ep,write=True):
     next_target=None
     if cur in STAGES and STAGES.index(cur)<len(STAGES)-1:next_target=STAGES[STAGES.index(cur)+1]
     sources, source_fingerprint = source_snapshot(ep)
-    led=read_json(ep/"meta/production-ledger.json") or {};q=read_json(ep/"meta/production-queue.json") or {}
+    led=read_json(ep/"meta/production-ledger.json") or {};q=read_json(production_queue_store.read_path(ep)) or {}
     caps=runtime_capability_cache.ensure(ep);ls=_ledger_summary(led);qs=_queue_summary(q)
     actions=[]
     if ls["tech_retry_frames"]:actions.append("retry technical-failure frames only; do not regenerate successful siblings")

@@ -10,6 +10,7 @@ import frame_contract
 import codex_critic_runner
 import episode_performance
 import product_review_adapter
+import production_queue_store
 import runtime_provenance
 import runtime_router
 import storyos_config
@@ -48,7 +49,7 @@ def baseline_plan(ep):
 def baseline_frame(ep):return int(baseline_plan(ep)["frame"])
 
 def generated_baseline(ep):
-    ep=Path(ep).resolve();frame=baseline_frame(ep);q=read_json(ep/"meta/production-queue.json")
+    ep=Path(ep).resolve();frame=baseline_frame(ep);q=read_json(production_queue_store.read_path(ep))
     rows=[x for x in (q.get("items") or []) if int(x.get("frame") or -1)==frame and x.get("scope") in {"visual_lock","repair","baseline_candidate"} and x.get("status")=="generated" and x.get("output_path")]
     if not rows:raise ValueError(f"ordinary_baseline frame {frame:02d} is not generated")
     row=rows[-1];asset=repo_file(row["output_path"])
@@ -326,6 +327,7 @@ def main():
             e=validate_review(ep)
             if e:[print("FAIL:",x) for x in e];return 2
             print("VISUAL LOCK BASELINE REVIEW VERIFIED");return 0
-        print(json.dumps({"approved":approved(ep),"awaiting_review":awaiting_review(ep,read_json(ep/"meta/production-queue.json")) if (ep/"meta/production-queue.json").is_file() else False},ensure_ascii=False,indent=2));return 0
+        queue_path=production_queue_store.read_path(ep)
+        print(json.dumps({"approved":approved(ep),"awaiting_review":awaiting_review(ep,read_json(queue_path)) if queue_path.is_file() else False},ensure_ascii=False,indent=2));return 0
     except Exception as exc:print("BASELINE GATE ERROR:",exc);return 3
 if __name__=="__main__":raise SystemExit(main())

@@ -18,6 +18,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import production_ledger
+import production_queue_store
 import image_model_policy
 import runtime_timeout_policy
 from runtime_atomic_store import atomic_write_json, update_json
@@ -28,7 +29,6 @@ from runtime_atomic_store import atomic_write_json, update_json
 # user profile on Windows), so ``ep.parents[n]`` is not portable.
 ROOT = Path(__file__).resolve().parents[2]
 
-QUEUE_REL = Path("meta/production-queue.json")
 LEDGER_REL = Path("meta/production-ledger.json")
 JOURNAL_REL = Path("meta/runtime/production-commit-journal.json")
 LIFECYCLE_DIR = Path("meta/image-workers")
@@ -500,7 +500,7 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str, *, queue_
     import raw_candidate_budget
 
     ep = Path(ep).resolve()
-    queue = queue_override if isinstance(queue_override, dict) else _read(ep / QUEUE_REL)
+    queue = queue_override if isinstance(queue_override, dict) else _read(production_queue_store.read_path(ep))
     rows = [x for x in queue.get("items") or []
             if isinstance(x, dict) and int(x.get("frame") or 0) == int(frame)
             and x.get("status") in {"interrupted_unknown", "running", "tech_failed", "external_blocked"}]
@@ -690,7 +690,7 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str, *, queue_
         if not ok:
             raise RuntimeError(f"RECOVERY_LEDGER_COMMIT_FAILED: {note}")
     if write_queue:
-        atomic_write_json(ep / QUEUE_REL, queue)
+        atomic_write_json(production_queue_store.write_path(ep), queue)
     return {
         "ok": True,
         "frame": f"{int(frame):02d}",

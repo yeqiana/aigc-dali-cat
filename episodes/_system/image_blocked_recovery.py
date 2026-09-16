@@ -19,13 +19,13 @@ from types import SimpleNamespace
 import canvas_normalize
 import frame_contract
 import production_ledger
+import production_queue_store
 import production_recovery
 import provider_capability
 import raw_candidate_budget
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
-QUEUE_REL = Path("meta/production-queue.json")
 LEDGER_REL = Path("meta/production-ledger.json")
 SUPPORTED_AUTO_CODES = {"ASPECT_RATIO_MISMATCH"}
 
@@ -157,7 +157,7 @@ def inspect_item(ep: Path, item: dict) -> dict:
 
 def inspect(ep: Path, items: list[dict] | None = None) -> list[dict]:
     ep = Path(ep).resolve()
-    queue = _read(ep / QUEUE_REL)
+    queue = _read(production_queue_store.read_path(ep))
     rows = items if items is not None else [
         row for row in (queue.get("items") or [])
         if isinstance(row, dict) and row.get("status") == "blocked"
@@ -168,7 +168,7 @@ def inspect(ep: Path, items: list[dict] | None = None) -> list[dict]:
 def recover(ep: Path, *, frames: list[int] | None = None) -> dict:
     """Recover eligible blocked RAWs; never invoke an image provider."""
     ep = Path(ep).resolve()
-    queue = _read(ep / QUEUE_REL)
+    queue = _read(production_queue_store.read_path(ep))
     wanted = {int(x) for x in (frames or [])}
     rows = [
         row for row in (queue.get("items") or [])
@@ -244,7 +244,7 @@ def recover(ep: Path, *, frames: list[int] | None = None) -> dict:
         production_recovery.mark_terminal(ep, item, "COMMITTED", recovery="provider_ratio_normalization_exception")
         recovered.append({"frame": frame, "item_id": item["id"], "output_path": item["output_path"]})
 
-    story_json.write_json(ep / QUEUE_REL, queue)
+    story_json.write_json(production_queue_store.write_path(ep), queue)
     return {"status": "PASS", "recovered": len(recovered), "items": recovered, "plans": plans}
 
 

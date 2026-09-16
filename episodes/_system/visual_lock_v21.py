@@ -27,6 +27,7 @@ from story_os_contract import FOUR_ADMISSION_V21_POLICY, story_os_version
 from visual_profile import compile_prompt_contract
 import environment_contract
 import frame_contract
+import production_queue_store
 import character_visual_contract
 import visual_lock_baseline_gate
 import visual_narrative_core_v22  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
@@ -525,9 +526,9 @@ def dirty_admission_frames(ep: Path) -> list[int]:
 
 
 def bind_from_queue(ep: Path) -> dict:
-    qpath = ep / "meta/production-queue.json"
+    qpath = production_queue_store.read_path(ep)
     if not qpath.is_file():
-        raise ValueError("meta/production-queue.json missing")
+        raise ValueError("production queue missing")
     q = read_json(qpath)
     ledger_path = ep / "meta/production-ledger.json"
     ledger = read_json(ledger_path) if ledger_path.is_file() else {"frames": {}}

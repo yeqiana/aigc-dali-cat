@@ -11,6 +11,7 @@ import runtime_failure_classifier
 import runtime_resume_token
 import runner_state_store
 import runtime_checkpoint
+import production_queue_store
 import next_action
 import runtime_timeout_policy
 import runtime_evidence_contract
@@ -196,7 +197,7 @@ def progress_marker(episode:Path):
     row or stage changes.  Include those existing facts so three successful local
     machine actions cannot be misclassified as CAPABILITY_WAIT/no-progress.
     """
-    queue=next_action.read_json(episode/"meta/production-queue.json")
+    queue=next_action.read_json(production_queue_store.read_path(episode))
     ledger=next_action.read_json(episode/"meta/production-ledger.json")
     action=next_action.load(episode)
     frames=ledger.get("frames") or {}

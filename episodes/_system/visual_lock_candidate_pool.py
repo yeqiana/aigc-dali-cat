@@ -15,11 +15,11 @@ from pathlib import Path
 import frame_contract
 import character_visual_contract
 import image_model_policy
+import production_queue_store
 import story_json
 import storyos_config
 import visual_lock_admission_state
 
-QUEUE_REL = Path("meta/production-queue.json")
 LEDGER_REL = Path("meta/production-ledger.json")
 REVIEW_REL = Path("meta/visual-profile-review.json")
 PLAN_REL = Path("meta/visual-lock-plan.json")
@@ -84,7 +84,7 @@ def failed_rows(ep: Path) -> list[dict]:
 
 
 def candidate_items(ep: Path, frame: int) -> list[dict]:
-    q = _read(Path(ep) / QUEUE_REL)
+    q = _read(production_queue_store.read_path(Path(ep)))
     return [
         row for row in (q.get("items") or [])
         if isinstance(row, dict)

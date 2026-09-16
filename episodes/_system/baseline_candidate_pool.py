@@ -17,11 +17,11 @@ from __future__ import annotations
 from pathlib import Path
 
 import image_model_policy
+import production_queue_store
 import story_json
 import storyos_config
 
 ROOT = Path(__file__).resolve().parents[2]
-QUEUE_REL = Path("meta/production-queue.json")
 LEDGER_REL = Path("meta/production-ledger.json")
 REVIEW_REL = Path("meta/visual-lock-baseline-review.json")
 PLAN_REL = Path("meta/visual-lock-plan.json")
@@ -61,7 +61,7 @@ def _ledger_frame(ep: Path, frame: int) -> dict:
 
 def candidate_items(ep: Path) -> list[dict]:
     frame = _baseline_frame(ep)
-    q = _read(Path(ep) / QUEUE_REL)
+    q = _read(production_queue_store.read_path(Path(ep)))
     return [
         row for row in (q.get("items") or [])
         if isinstance(row, dict)

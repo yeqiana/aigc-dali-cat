@@ -18,6 +18,7 @@ import story_json
 import runtime_observability
 import derived_freshness
 import runtime_checkpoint
+import production_queue_store
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = runtime_observability.WORKFLOW_OBSERVABILITY_REL
@@ -25,7 +26,7 @@ SOURCE_RELS = (
     "meta/episode-state.json", "meta/runtime-checkpoint.json",
     runtime_observability.WORKFLOW_PERFORMANCE_REL,
     runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL,
-    "meta/production-queue.json", "meta/production-ledger.json",
+    production_queue_store.REL.as_posix(), "meta/production-ledger.json",
     "meta/frame-scout-summary.json", "meta/final-candidate-snapshot.json",
     "meta/post-publish-review.json", runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL,
 )
@@ -49,7 +50,12 @@ def source_snapshot(ep: Path) -> tuple[list[dict], str]:
     rows = []
     for rel in SOURCE_RELS:
         logical = str(rel).replace("\\", "/")
-        path = runtime_checkpoint.read_path(ep) if logical == runtime_checkpoint.REL.as_posix() else ep / rel
+        if logical == runtime_checkpoint.REL.as_posix():
+            path = runtime_checkpoint.read_path(ep)
+        elif logical == production_queue_store.REL.as_posix():
+            path = production_queue_store.read_path(ep)
+        else:
+            path = ep / rel
         rows.append({"path": logical, "sha256": derived_freshness.sha256_file(path)})
     return rows, derived_freshness.fingerprint(rows)
 
@@ -78,7 +84,8 @@ def collect(ep: Path, *, write: bool = True) -> dict:
     checkpoint = runtime_checkpoint.load(ep, {})
     performance = maybe(ep, runtime_observability.WORKFLOW_PERFORMANCE_REL)
     scheduler = maybe(ep, runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL)
-    queue = maybe(ep, "meta/production-queue.json")
+    queue_path = production_queue_store.read_path(ep)
+    queue = read_json(queue_path) if queue_path.is_file() else {}
     ledger = maybe(ep, "meta/production-ledger.json")
     scout = maybe(ep, "meta/frame-scout-summary.json")
     snapshot = maybe(ep, "meta/final-candidate-snapshot.json")
