@@ -126,6 +126,11 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
             and attempt >= 3
             and provenance.get("direct_user_exception_review") is True
         )
+        user_continuation = (
+            isinstance(attempt, int)
+            and attempt >= 3
+            and provenance.get("direct_user_continuation_review") is True
+        )
         bounded_visual = (
             isinstance(attempt, int)
             and 3 <= attempt <= 5
@@ -133,8 +138,8 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
             and base == "CODEX"
             and provenance.get("review_capability") == VISION_REVIEW_CAPABILITY
         )
-        if attempt not in {1, 2} and not extended and not user_exception and not bounded_visual:
-            errors.append("critic attempt must be 1 or 2 unless this is source-drift, direct-user-exception, or bounded baseline-candidate vision review")
+        if attempt not in {1, 2} and not extended and not user_exception and not user_continuation and not bounded_visual:
+            errors.append("critic attempt must be 1 or 2 unless this is source-drift, direct-user-exception, direct-user-continuation, or bounded baseline-candidate vision review")
     return errors
 
 
@@ -167,6 +172,7 @@ def build_vision_critic_provenance(
     review_scope: str | None = None,
     allow_bounded_candidate_attempt: bool = False,
     allow_user_exception_attempt: bool = False,
+    allow_user_continuation_attempt: bool = False,
 ) -> dict:
     """Build provenance for an actual-pixel Codex critic.
 
@@ -179,6 +185,7 @@ def build_vision_critic_provenance(
         log=log,
         allow_bounded_visual_attempt=allow_bounded_candidate_attempt,
         allow_user_exception_attempt=allow_user_exception_attempt,
+        allow_user_continuation_attempt=allow_user_continuation_attempt,
     )
     data.update({
         "review_capability": VISION_REVIEW_CAPABILITY,
@@ -198,6 +205,7 @@ def build_critic_provenance(
     request_path: str | None = None,
     allow_extended_attempt: bool = False,
     allow_user_exception_attempt: bool = False,
+    allow_user_continuation_attempt: bool = False,
     allow_bounded_visual_attempt: bool = False,
 ) -> dict:
     base = normalize_base_runtime(base_runtime)
@@ -209,9 +217,10 @@ def build_critic_provenance(
     # round 4+ after bounded candidates were already reviewed. The explicit
     # flag is the authority; ordinary callers still cannot exceed attempt 2.
     allowed_user_exception = allow_user_exception_attempt and attempt >= 3
+    allowed_user_continuation = allow_user_continuation_attempt and attempt >= 3
     allowed_bounded_visual = allow_bounded_visual_attempt and base == "CODEX" and 3 <= attempt <= 5
-    if attempt > 2 and not (allowed_extended or allowed_user_exception or allowed_bounded_visual):
-        raise ValueError("attempt must be 1 or 2 unless this is source-drift, direct-user-exception, or bounded baseline-candidate vision review")
+    if attempt > 2 and not (allowed_extended or allowed_user_exception or allowed_user_continuation or allowed_bounded_visual):
+        raise ValueError("attempt must be 1 or 2 unless this is source-drift, direct-user-exception, direct-user-continuation, or bounded baseline-candidate vision review")
     data = {
         "schema_version": CURRENT_PROVENANCE_SCHEMA_VERSION,
         "runtime": isolated_runtime(base),
@@ -230,6 +239,8 @@ def build_critic_provenance(
     if attempt > 2:
         if allowed_user_exception:
             data["direct_user_exception_review"] = True
+        elif allowed_user_continuation:
+            data["direct_user_continuation_review"] = True
         elif allowed_bounded_visual:
             data["bounded_visual_candidate_review"] = True
         else:
@@ -260,6 +271,9 @@ def self_test() -> None:
     assert validate_critic_provenance(work) == []
     assert validate_critic_provenance(build_critic_provenance("WORK", attempt=3, allow_extended_attempt=True)) == []
     assert validate_critic_provenance(build_critic_provenance("CODEX", attempt=3, allow_user_exception_attempt=True)) == []
+    continuation = build_vision_critic_provenance(attempt=4, log="vision-cont-a4.jsonl", review_scope="DIRECT_USER_CONTINUATION_PATCH", allow_user_continuation_attempt=True)
+    assert continuation["direct_user_continuation_review"] is True
+    assert validate_critic_provenance(continuation) == []
     exception_round = build_vision_critic_provenance(attempt=6, log="vision-a6.jsonl", review_scope="VISUAL_LOCK_FOUR_ADMISSION", allow_user_exception_attempt=True)
     assert exception_round["direct_user_exception_review"] is True
     assert validate_critic_provenance(exception_round) == []
