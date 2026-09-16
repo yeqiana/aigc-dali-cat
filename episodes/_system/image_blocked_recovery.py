@@ -23,6 +23,7 @@ import production_queue_store
 import production_recovery
 import provider_capability
 import raw_candidate_budget
+import scheduler_core
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -165,8 +166,8 @@ def inspect(ep: Path, items: list[dict] | None = None) -> list[dict]:
     return [inspect_item(ep, row) for row in rows]
 
 
-def recover(ep: Path, *, frames: list[int] | None = None) -> dict:
-    """Recover eligible blocked RAWs; never invoke an image provider."""
+def _recover_locked(ep: Path, *, frames: list[int] | None = None) -> dict:
+    """Recover eligible blocked RAWs while the caller owns the Queue lock."""
     ep = Path(ep).resolve()
     queue = _read(production_queue_store.read_path(ep))
     wanted = {int(x) for x in (frames or [])}
@@ -244,8 +245,18 @@ def recover(ep: Path, *, frames: list[int] | None = None) -> dict:
         production_recovery.mark_terminal(ep, item, "COMMITTED", recovery="provider_ratio_normalization_exception")
         recovered.append({"frame": frame, "item_id": item["id"], "output_path": item["output_path"]})
 
-    story_json.write_json(production_queue_store.write_path(ep), queue)
+    scheduler_core.save_queue(ep, queue)
     return {"status": "PASS", "recovered": len(recovered), "items": recovered, "plans": plans}
+
+
+def recover(ep: Path, *, frames: list[int] | None = None) -> dict:
+    """Serialize deterministic recovery against schedulers and Queue cutover."""
+    ep = Path(ep).resolve()
+    try:
+        with scheduler_core.queue_transaction(ep):
+            return _recover_locked(ep, frames=frames)
+    except scheduler_core.QueueMutationBusy:
+        return {"status": "BLOCKED", "recovered": 0, "reason": "QUEUE_MUTATION_BUSY", "plans": []}
 
 
 def main() -> int:

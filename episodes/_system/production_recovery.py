@@ -19,6 +19,7 @@ from types import SimpleNamespace
 
 import production_ledger
 import production_queue_store
+import scheduler_core
 import image_model_policy
 import runtime_timeout_policy
 from runtime_atomic_store import atomic_write_json, update_json
@@ -481,7 +482,7 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
     return report
 
 
-def recover_user_runner_success(ep: Path, frame: int, request_id: str, *, queue_override: dict | None = None, write_queue: bool = True) -> dict:
+def _recover_user_runner_success_locked(ep: Path, frame: int, request_id: str, *, queue_override: dict | None = None, write_queue: bool = True) -> dict:
     """Recover a real Codex image when the scheduler died after provider success.
 
     This is deliberately fail-closed.  It accepts only an ``interrupted_unknown``
@@ -690,7 +691,7 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str, *, queue_
         if not ok:
             raise RuntimeError(f"RECOVERY_LEDGER_COMMIT_FAILED: {note}")
     if write_queue:
-        atomic_write_json(production_queue_store.write_path(ep), queue)
+        scheduler_core.save_queue(ep, queue)
     return {
         "ok": True,
         "frame": f"{int(frame):02d}",
@@ -701,6 +702,14 @@ def recover_user_runner_success(ep: Path, frame: int, request_id: str, *, queue_
         "output": str(output),
         "provider_receipt": (payload.get("provider_receipt") or {}).get("path"),
     }
+
+
+def recover_user_runner_success(ep: Path, frame: int, request_id: str, *, queue_override: dict | None = None, write_queue: bool = True) -> dict:
+    ep = Path(ep).resolve()
+    with scheduler_core.queue_transaction(ep):
+        return _recover_user_runner_success_locked(
+            ep, frame, request_id, queue_override=queue_override, write_queue=write_queue
+        )
 
 
 def main() -> int:

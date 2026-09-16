@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse, datetime as dt, hashlib, json
 from pathlib import Path
 import production_queue_store
+import scheduler_core
 import runtime_request
 import storyos_config
 
@@ -95,7 +96,7 @@ def next_fallback_model(current_model: str, *, strict_model: bool = False) -> st
     return chain[index+1] if index+1<len(chain) else None
 
 
-def migrate_system_default(episode_dir: Path, *, target_model: str | None = None) -> dict:
+def _migrate_system_default_locked(episode_dir: Path, *, target_model: str | None = None) -> dict:
     """Explicitly migrate a non-strict system-default Episode to a new default model.
 
     Historical generated rows keep their original model evidence. Only pending or
@@ -150,7 +151,7 @@ def migrate_system_default(episode_dir: Path, *, target_model: str | None = None
 
     if old_model==target:
         if queue_path.is_file() and reclassified:
-            runtime_request.write_json(production_queue_store.write_path(ep),queue)
+            scheduler_core.save_queue(ep,queue)
         evidence_path=ep/"meta/runtime/image-model-migration.json"
         existing=runtime_request.read_json(evidence_path) if evidence_path.is_file() else {}
         migration=(request.get("provenance") or {}).get("image_model_migration") or {}
@@ -186,7 +187,7 @@ def migrate_system_default(episode_dir: Path, *, target_model: str | None = None
     compiled=runtime_request.write_compiled(corrected)
     runtime_request.bind_request(compiled,ep,force=True)
     if queue_path.is_file():
-        runtime_request.write_json(production_queue_store.write_path(ep),queue)
+        scheduler_core.save_queue(ep,queue)
     evidence={
         "schema_version":1,"status":"MIGRATED","episode":str(ep),"at":stamp,
         "from":old_model,"to":target,"source_request_id":request.get("request_id"),
@@ -198,6 +199,12 @@ def migrate_system_default(episode_dir: Path, *, target_model: str | None = None
     }
     runtime_request.write_json(ep/"meta/runtime/image-model-migration.json",evidence)
     return evidence
+
+
+def migrate_system_default(episode_dir: Path, *, target_model: str | None = None) -> dict:
+    ep = Path(episode_dir).resolve()
+    with scheduler_core.queue_transaction(ep):
+        return _migrate_system_default_locked(ep, target_model=target_model)
 
 
 def self_test():

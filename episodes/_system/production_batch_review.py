@@ -23,6 +23,7 @@ import frame_contract
 import image_scheduler
 import product_review_adapter
 import production_queue_store
+import scheduler_core
 import runtime_provenance
 import runtime_router
 import runtime_timeout_policy
@@ -216,7 +217,7 @@ def _prepare_locked(ep: Path, batch_id: str, *, attempt: int = 1) -> dict:
         if row.get("id") in ids and row.get("status") == "generated":
             row["status"] = "review_pending"
             row["batch_review_request"] = request.get("request_path")
-    write_json(production_queue_store.write_path(ep), q)
+    scheduler_core.save_queue(ep, q)
     return result
 
 
@@ -271,7 +272,7 @@ def _apply_review_data_locked(ep: Path, batch_id: str, *, data: dict, provenance
             item["status"] = "generated"
     final = {**data, "schema_version": 1, "batch_id": batch_id, "review_scope": "EARLY_BATCH_ACTUAL_PIXELS",
              "final_pass_authority": False, "critic_provenance": provenance, "unit_history": history}
-    out = final_path(ep, batch_id); write_json(out, final); write_json(production_queue_store.write_path(ep), q)
+    out = final_path(ep, batch_id); write_json(out, final); scheduler_core.save_queue(ep, q)
     if mark_product_review_complete:
         product_review_adapter.mark_complete(ep, kind(batch_id), attempt=attempt, final_path=out)
     candidate.unlink(missing_ok=True)
