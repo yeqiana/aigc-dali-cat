@@ -28,7 +28,13 @@ import raw_candidate_budget as RCB
 
 
 def make_episode(items, prefix="lane_test"):
-    td = tempfile.TemporaryDirectory(prefix=prefix + "_", dir=str(ROOT))
+    # W-77: test fixtures must never appear as transient Episode-like roots at
+    # repository top level.  Keep them under the canonical test-episode area so
+    # concurrent hygiene scanners cannot mistake an in-flight test for a real
+    # production asset.
+    test_root = ROOT / "episodes" / "_tests"
+    test_root.mkdir(parents=True, exist_ok=True)
+    td = tempfile.TemporaryDirectory(prefix=prefix + "_", dir=str(test_root))
     ep = Path(td.name)
     prompts = ep / "prompts"
     prompts.mkdir(parents=True)
