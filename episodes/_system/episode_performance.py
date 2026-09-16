@@ -17,6 +17,7 @@ ROOT=Path(__file__).resolve().parents[2]
 REL=runtime_observability.EPISODE_PERFORMANCE_REL
 REPORT_REL=Path("reports/story-os-performance-summary.json")
 STAGE_NAMES={"CREATIVE_STORY","PREIMAGE_COMPILE","VISUAL_LOCK","PRODUCTION","RELEASE","FULL_AUTO_LEGACY","VISUAL_LOCK_BASELINE_REVIEW"}
+EXECUTION_STATES={"ACTIVE","HOST_WAIT","USER_WAIT","IDLE"}
 
 def now_dt():
     return dt.datetime.now(dt.timezone.utc).astimezone()
@@ -53,6 +54,7 @@ def _new(ep):
       "named_spans":{},
       "state_transitions":[],
       "image_attempts":[],
+      "execution_sessions":[],
       "summary":{}
     }
 
@@ -202,6 +204,80 @@ def safe_record_image_attempt(ep,**kwargs):
     try:record_image_attempt(ep,**kwargs);return True
     except Exception:return False
 
+def _close_execution_state(session, ended):
+    states=session.get("states") or []
+    row=next((x for x in reversed(states) if not x.get("ended_at")),None)
+    if row is None:return None
+    row["ended_at"]=ended
+    row["duration_seconds"]=seconds_between(row.get("started_at"),ended) or 0.0
+    return row
+
+def _close_execution_session(session, ended, status):
+    _close_execution_state(session,ended)
+    session["ended_at"]=ended
+    session["duration_seconds"]=seconds_between(session.get("started_at"),ended) or 0.0
+    session["status"]=str(status)
+    return session
+
+def begin_execution_session(ep,source="runtime",session_id=None,metadata=None,at=None):
+    d=load(ep,True);at=at or now();sessions=d.setdefault("execution_sessions",[])
+    sid=str(session_id or uuid.uuid4().hex[:12])
+    existing=next((x for x in reversed(sessions) if str(x.get("session_id") or "")==sid),None)
+    if existing and not existing.get("ended_at"):return sid
+    for old in reversed(sessions):
+        if not old.get("ended_at"):
+            _close_execution_session(old,at,"HANDOFF_TO_NEXT_SESSION")
+            break
+    sessions.append({"session_id":sid,"source":str(source),"started_at":at,"ended_at":None,
+                     "duration_seconds":None,"status":"RUNNING","metadata":metadata or {},"states":[]})
+    save(ep,d);return sid
+
+def transition_execution_state(ep,state,*,session_id=None,source="runtime",metadata=None,at=None):
+    state=str(state).upper()
+    if state not in EXECUTION_STATES:raise ValueError("invalid execution state: "+state)
+    d=load(ep,True);at=at or now();sessions=d.setdefault("execution_sessions",[])
+    session=None
+    if session_id is not None:
+        session=next((x for x in reversed(sessions) if str(x.get("session_id") or "")==str(session_id) and not x.get("ended_at")),None)
+    if session is None:session=next((x for x in reversed(sessions) if not x.get("ended_at")),None)
+    if session is None:
+        sid=begin_execution_session(ep,source=source,session_id=session_id,at=at)
+        d=load(ep,True);sessions=d.setdefault("execution_sessions",[])
+        session=next(x for x in reversed(sessions) if str(x.get("session_id") or "")==sid and not x.get("ended_at"))
+    states=session.setdefault("states",[])
+    current=next((x for x in reversed(states) if not x.get("ended_at")),None)
+    if current and current.get("state")==state:
+        current.setdefault("metadata",{}).update(metadata or {});save(ep,d);return current
+    if current:_close_execution_state(session,at)
+    row={"state":state,"started_at":at,"ended_at":None,"duration_seconds":None,
+         "source":str(source),"metadata":metadata or {}}
+    states.append(row);save(ep,d);return row
+
+def finish_execution_session(ep,session_id=None,status="COMPLETE",at=None):
+    d=load(ep,True);at=at or now();sessions=d.setdefault("execution_sessions",[])
+    session=None
+    if session_id is not None:
+        session=next((x for x in reversed(sessions) if str(x.get("session_id") or "")==str(session_id) and not x.get("ended_at")),None)
+    if session is None:session=next((x for x in reversed(sessions) if not x.get("ended_at")),None)
+    if session is None:return None
+    _close_execution_session(session,at,status);save(ep,d);return session
+
+def safe_begin_execution_session(ep,**kwargs):
+    try:return begin_execution_session(ep,**kwargs)
+    except Exception:return None
+def safe_transition_execution_state(ep,state,**kwargs):
+    try:transition_execution_state(ep,state,**kwargs);return True
+    except Exception:return False
+def safe_finish_execution_session(ep,**kwargs):
+    try:finish_execution_session(ep,**kwargs);return True
+    except Exception:return False
+
+def execution_state_for_result(return_code,action=None):
+    name=str((action or {}).get("action") or "") if isinstance(action,dict) else ""
+    if int(return_code)==22 or name=="USER_DECISION_REQUIRED":return "USER_WAIT"
+    if int(return_code)==20:return "HOST_WAIT"
+    return "IDLE"
+
 def observe_checkpoint(ep,state):
     try:
         state=str(state)
@@ -228,6 +304,9 @@ def _close_open_telemetry(d,ended):
                 row["duration_seconds"]=seconds_between(row.get("started_at"),ended) or 0.0
                 row["status"]="CLOSED_AT_FINALIZE"
                 row.setdefault("metadata",{})["auto_closed_at_finalize"]=True
+    for session in d.get("execution_sessions") or []:
+        if not session.get("ended_at"):
+            _close_execution_session(session,ended,"CLOSED_AT_FINALIZE")
 
 def finalize(ep,status="COMPLETE"):
     ep=Path(ep).resolve();d=load(ep,True);ended=now()
@@ -305,6 +384,28 @@ def _critical_path_summary(d):
       "note":"End-to-end wall is the user-visible critical path; image resource time is overlap-aware and is not added to stage wall."
     }
 
+def _execution_summary(d):
+    sessions=d.get("execution_sessions") or []
+    observed_end=d.get("updated_at") or now()
+    aggregate={state:[] for state in EXECUTION_STATES}
+    def one(session):
+        by_state={state:[] for state in EXECUTION_STATES}
+        all_intervals=[]
+        for row in session.get("states") or []:
+            state=str(row.get("state") or "")
+            if state not in EXECUTION_STATES:continue
+            end=row.get("ended_at") or observed_end
+            if row.get("started_at") and end:
+                interval=(row["started_at"],end);by_state[state].append(interval);aggregate[state].append(interval);all_intervals.append(interval)
+        out={state.lower()+"_seconds":_interval_union_seconds(by_state[state]) for state in sorted(EXECUTION_STATES)}
+        out["wall_seconds"]=_interval_union_seconds(all_intervals)
+        out.update({"session_id":session.get("session_id"),"source":session.get("source"),"status":session.get("status")})
+        return out
+    latest=one(sessions[-1]) if sessions else None
+    total={state.lower()+"_seconds":_interval_union_seconds(aggregate[state]) for state in sorted(EXECUTION_STATES)}
+    return {"session_count":len(sessions),"latest":latest,"aggregate":total,
+            "active_wall_seconds":None if latest is None else latest["active_seconds"]}
+
 def _refresh_summary(d):
     def bucket_summary(v):
         runs=v.get("runs") or []
@@ -320,7 +421,9 @@ def _refresh_summary(d):
     image_backend=sum(vals)
     critical_path=_critical_path_summary(d)  # STORY_OS_V211_RUNTIME_CLOSURE_R3
     # STORY_OS_V2_5_1_RUNTIME_FAST_PATH: advisory active-wall SLO; never a gate.
-    active_wall=((d.get("run_wall") or {}).get("active_wall_seconds"))
+    execution_wall=_execution_summary(d)
+    active_wall=execution_wall.get("active_wall_seconds")
+    if not isinstance(active_wall,(int,float)): active_wall=((d.get("run_wall") or {}).get("active_wall_seconds"))
     if not isinstance(active_wall,(int,float)): active_wall=d.get("total_wall_seconds")
     if isinstance(active_wall,(int,float)):
         perf_health="GREEN" if active_wall<=5400 else ("YELLOW" if active_wall<=7200 else "RED")
@@ -330,6 +433,7 @@ def _refresh_summary(d):
       "stage_wall":stages,
       "named_span_wall":spans,
       "critical_path":critical_path,
+      "execution_wall":execution_wall,
       "performance_slo":performance_slo,
       "images":{
         "attempts":len(imgs),"successful_attempts":len(completed),"repair_attempts":len(repair),

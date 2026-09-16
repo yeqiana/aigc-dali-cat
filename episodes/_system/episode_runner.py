@@ -15,6 +15,7 @@ import next_action
 import runtime_timeout_policy
 import runtime_evidence_contract
 import episode_lifecycle
+import episode_performance
 import runtime_portability
 import runtime_ownership
 
@@ -198,6 +199,10 @@ def run_episode(episode: Path, *, interval: int = 10, max_loops: int | None = No
     failures = 0
     previous_state = None
     idle_cycles = 0
+    perf_session = episode_performance.safe_begin_execution_session(
+        episode, source="episode_runner", metadata={"resume": bool(resume)})
+    episode_performance.safe_transition_execution_state(
+        episode, "ACTIVE", session_id=perf_session, source="episode_runner")
     if resume:
         record_event(episode, {"type": "resume", "token": runtime_resume_token.load(episode)})
     runner_state_store.save(episode, status="RUNNING", resume_enabled=resume)
@@ -206,15 +211,21 @@ def run_episode(episode: Path, *, interval: int = 10, max_loops: int | None = No
             disposition = episode_lifecycle.disposition(episode)
             runner_state_store.save(episode, status="TERMINATED", disposition=disposition)
             record_event(episode, {"type": "terminated", "disposition": disposition})
+            episode_performance.safe_transition_execution_state(episode,"IDLE",session_id=perf_session,source="episode_runner")
+            episode_performance.safe_finish_execution_session(episode,session_id=perf_session,status="TERMINATED")
             return 0
         state = runtime_dag.state(episode)
         if state in TERMINAL:
             valid,note=runtime_dag.validate_target(episode,"PUBLISH_READY")
             if not valid:
                 runner_state_store.save(episode,status="HARD_STOP",return_code=23,last_error=note)
+                episode_performance.safe_transition_execution_state(episode,"IDLE",session_id=perf_session,source="episode_runner")
+                episode_performance.safe_finish_execution_session(episode,session_id=perf_session,status="HARD_STOP")
                 return 23
             runner_state_store.save(episode, status="COMPLETED", state=state)
             record_event(episode, {"type": "completed", "state": state})
+            episode_performance.safe_transition_execution_state(episode,"IDLE",session_id=perf_session,source="episode_runner")
+            episode_performance.safe_finish_execution_session(episode,session_id=perf_session,status="COMPLETE")
             return 0
         if state != previous_state:
             failures = 0
@@ -232,23 +243,45 @@ def run_episode(episode: Path, *, interval: int = 10, max_loops: int | None = No
                 last_event=decision.reason, resume_action=decision.action)
             if decision.retryable and failures < max_attempts:
                 runner_state_store.save(episode, status="RETRY_WAIT", attempt=failures)
+                episode_performance.safe_transition_execution_state(
+                    episode,"IDLE",session_id=perf_session,source="episode_runner",
+                    metadata={"reason":"technical_retry_backoff"})
                 time.sleep(min(interval * 2 ** (failures - 1), 60))
+                episode_performance.safe_transition_execution_state(
+                    episode,"ACTIVE",session_id=perf_session,source="episode_runner")
                 continue
             runner_state_store.save(episode, status=decision.category, return_code=rc,
                                     attempt=failures, last_action=decision.action)
+            wait_state=episode_performance.execution_state_for_result(
+                rc,next_action.read_json(episode/next_action.REL))
+            episode_performance.safe_transition_execution_state(
+                episode,wait_state,session_id=perf_session,source="episode_runner")
+            if wait_state=="IDLE":
+                episode_performance.safe_finish_execution_session(
+                    episode,session_id=perf_session,status=decision.category)
             return rc
         failures = 0
         if runtime_dag.state(episode) in TERMINAL:
             continue
         if max_loops is not None and cycles >= max_loops:
             runner_state_store.save(episode, status="YIELDED", cycles=cycles)
+            episode_performance.safe_transition_execution_state(episode,"IDLE",session_id=perf_session,source="episode_runner")
+            episode_performance.safe_finish_execution_session(episode,session_id=perf_session,status="YIELDED")
             return 0
         idle_cycles=idle_cycles+1 if progress_marker(episode)==before else 0
         if idle_cycles>=max_attempts:
             runner_state_store.save(episode,status="CAPABILITY_WAIT",return_code=24,
                 last_error="NO_PROGRESS: repeated successful cycles did not advance stage or queue")
+            episode_performance.safe_transition_execution_state(
+                episode,"IDLE",session_id=perf_session,source="episode_runner",metadata={"reason":"no_progress"})
+            episode_performance.safe_finish_execution_session(
+                episode,session_id=perf_session,status="CAPABILITY_WAIT")
             return 24
+        episode_performance.safe_transition_execution_state(
+            episode,"IDLE",session_id=perf_session,source="episode_runner",metadata={"reason":"runner_interval"})
         time.sleep(interval)
+        episode_performance.safe_transition_execution_state(
+            episode,"ACTIVE",session_id=perf_session,source="episode_runner")
 
 
 def main() -> int:

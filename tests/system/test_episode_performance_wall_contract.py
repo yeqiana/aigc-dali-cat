@@ -82,3 +82,57 @@ def test_queue_attempt_is_idempotent_by_item_and_attempt():
         assert rows[0]["status"] == "generated"
         assert rows[0]["error_code"] is None
         assert rows[0]["elapsed_seconds"] == 10.0
+
+
+def test_execution_sessions_split_active_host_user_and_idle_wall():
+    data = {
+        "started_at": _ts(0), "updated_at": _ts(40), "finalized_at": None,
+        "stages": {}, "named_spans": {}, "image_attempts": [], "summary": {},
+        "execution_sessions": [{
+            "session_id": "run-1", "source": "test", "started_at": _ts(0), "ended_at": _ts(40), "status": "COMPLETE",
+            "states": [
+                {"state": "ACTIVE", "started_at": _ts(0), "ended_at": _ts(10)},
+                {"state": "HOST_WAIT", "started_at": _ts(10), "ended_at": _ts(25)},
+                {"state": "ACTIVE", "started_at": _ts(25), "ended_at": _ts(30)},
+                {"state": "USER_WAIT", "started_at": _ts(30), "ended_at": _ts(35)},
+                {"state": "IDLE", "started_at": _ts(35), "ended_at": _ts(40)},
+            ],
+        }],
+    }
+    perf._refresh_summary(data)
+    latest = data["summary"]["execution_wall"]["latest"]
+    assert latest["active_seconds"] == 15.0
+    assert latest["host_wait_seconds"] == 15.0
+    assert latest["user_wait_seconds"] == 5.0
+    assert latest["idle_seconds"] == 5.0
+    assert latest["wall_seconds"] == 40.0
+    assert data["summary"]["performance_slo"]["active_wall_seconds"] == 15.0
+
+
+def test_new_execution_session_closes_previous_wait_and_latest_slo_ignores_history():
+    tests_root = ROOT / "episodes/_tests"
+    tests_root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="perf-session-", dir=tests_root) as raw:
+        ep = Path(raw)
+        perf.begin_execution_session(ep, source="test", session_id="old", at=_ts(0))
+        perf.transition_execution_state(ep, "ACTIVE", session_id="old", at=_ts(0))
+        perf.transition_execution_state(ep, "HOST_WAIT", session_id="old", at=_ts(10))
+        perf.begin_execution_session(ep, source="test", session_id="new", at=_ts(100))
+        perf.transition_execution_state(ep, "ACTIVE", session_id="new", at=_ts(100))
+        perf.transition_execution_state(ep, "IDLE", session_id="new", at=_ts(120))
+        perf.finish_execution_session(ep, session_id="new", status="COMPLETE", at=_ts(120))
+        data = perf.load(ep, False)
+        perf._refresh_summary(data)
+        assert data["execution_sessions"][0]["status"] == "HANDOFF_TO_NEXT_SESSION"
+        assert data["execution_sessions"][0]["states"][-1]["state"] == "HOST_WAIT"
+        assert data["execution_sessions"][0]["states"][-1]["duration_seconds"] == 90.0
+        latest = data["summary"]["execution_wall"]["latest"]
+        assert latest["active_seconds"] == 20.0
+        assert data["summary"]["performance_slo"]["active_wall_seconds"] == 20.0
+
+
+def test_execution_result_classification_keeps_waits_out_of_active_time():
+    assert perf.execution_state_for_result(20, {"action": "PRODUCT_REVIEW"}) == "HOST_WAIT"
+    assert perf.execution_state_for_result(22, {}) == "USER_WAIT"
+    assert perf.execution_state_for_result(0, {"action": "USER_DECISION_REQUIRED"}) == "USER_WAIT"
+    assert perf.execution_state_for_result(0, {"action": "COMPLETE"}) == "IDLE"

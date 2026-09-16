@@ -33,6 +33,7 @@ import product_runtime_adapter
 import next_action
 import runtime_timeout_policy
 import runtime_command
+import episode_performance as episode_perf
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -173,6 +174,11 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
     if runtime not in {"WORK", "WEB", "CODEX"}:
         raise SystemExit(f"unsupported runtime: {runtime}")
     run_id = perf.start_run(ep, runtime, "resume" if resume else "run")
+    episode_perf.safe_begin_execution_session(
+        ep, source="workflow_runner", session_id=run_id,
+        metadata={"runtime":runtime,"resume":bool(resume)})
+    episode_perf.safe_transition_execution_state(
+        ep,"ACTIVE",session_id=run_id,source="workflow_runner")
     route_decision = request_router.route_episode(ep, request_data, write=True) if request_data else None
     trace_id = runtime_trace.start_run(ep, run_id, request_data, runtime, route_decision)
     if route_decision:
@@ -205,8 +211,14 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
                 obs.collect(ep, write=True)
             except Exception:
                 pass
-            try: next_action.write(ep)
-            except Exception: pass
+            try: pending_after=next_action.write(ep)
+            except Exception: pending_after={}
+            execution_state=episode_perf.execution_state_for_result(rc,pending_after)
+            episode_perf.safe_transition_execution_state(
+                ep,execution_state,session_id=run_id,source="workflow_runner",
+                metadata={"return_code":rc,"action":pending_after.get("action") if isinstance(pending_after,dict) else None})
+            if execution_state=="IDLE":
+                episode_perf.safe_finish_execution_session(ep,session_id=run_id,status=final_status)
             runtime_trace.finish_run(ep, trace_id, run_id, final_status, note=f"runtime_dag {host_loop_note}".strip())
             return rc  # RUNTIME_DAG_V1
         t0 = time.monotonic()
@@ -229,6 +241,9 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         record_checkpoint_step(ep, "CODEX_COMPAT_ADAPTER", child_status, child_elapsed, f"rc={child.returncode}")
         total = time.monotonic() - started
         perf.finish_run(ep, run_id, "COMPLETE" if child.returncode == 0 else "FAILED", total)
+        episode_perf.safe_transition_execution_state(ep,"IDLE",session_id=run_id,source="workflow_runner")
+        episode_perf.safe_finish_execution_session(
+            ep,session_id=run_id,status="COMPLETE" if child.returncode == 0 else "FAILED")
         try: performance_guard_v211.observe(ep, run_id, context="COMPAT_FINISH")
         except Exception: pass
         try:
@@ -239,6 +254,8 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         return child.returncode
     except BaseException:
         total = time.monotonic() - started
+        episode_perf.safe_transition_execution_state(ep,"IDLE",session_id=run_id,source="workflow_runner",metadata={"reason":"exception"})
+        episode_perf.safe_finish_execution_session(ep,session_id=run_id,status="BLOCKED")
         try:
             perf.finish_run(ep, run_id, "BLOCKED", total)
             try: performance_guard_v211.observe(ep, run_id, context="EXCEPTION_FINISH")
