@@ -64,3 +64,7 @@ def test_root_debug_scratch_is_ignored_by_policy():
     ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
     assert ".codex-run/" in ignore
     assert ".probe-tmp.py" in ignore
+    assert "/meta/runtime-image-scheduler.lock" in ignore
+    assert "episodes/**/meta/runtime/driver-logs/" in ignore
+    assert "episodes/**/meta/runtime-image-scheduler.lock" in ignore
+    assert "/reports/story-os-performance-summary.json" in ignore
