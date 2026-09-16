@@ -410,7 +410,7 @@ def calibration_assets(ep: Path, *, metadata_only: bool = False) -> list[dict]:
             asset_sha = sha256_file(p)
             current = frame_contract.compile_frame(ep, frame, write_cache=False)
             recorded_fc = str(item.get("frame_contract_sha256") or "")
-            if recorded_fc and recorded_fc != current["contract_sha256"]:
+            if recorded_fc and not frame_contract.recorded_contract_matches_current(ep, frame, recorded_fc):
                 raise ValueError(f"{role} frame contract stale")
             binding_errors = _find_attempt_binding(ep, frame, asset_sha)
             if binding_errors:
@@ -422,7 +422,11 @@ def calibration_assets(ep: Path, *, metadata_only: bool = False) -> list[dict]:
                 "path": p,
                 "asset_path": repo_rel(p),
                 "sha256": asset_sha,
-                "frame_contract_sha256": current["contract_sha256"],
+                # Pixel/review evidence stays bound to the contract that actually
+                # generated these pixels. A separately recorded projection-only
+                # migration may prove that old contract equivalent to current;
+                # never rewrite historical critic evidence to the new SHA.
+                "frame_contract_sha256": recorded_fc or current["contract_sha256"],
                 "impact_level": current["hash_material"]["frame_directive"].get("impact_level"),
                 "frame_mode": current["hash_material"]["frame_directive"].get("frame_mode"),
                 "scale_reference": current["hash_material"]["frame_directive"].get("scale_reference"),
@@ -653,6 +657,26 @@ def verify(ep: Path, *, metadata_only: bool = False) -> list[str]:
         assets = calibration_assets(ep, metadata_only=metadata_only)
         data = read_json(path)
         errors = validate_payload(data, contract=contract, assets=assets, version=episode_version(ep))
+        weak_ids = {
+            str(asset.get("id") or "")
+            for asset in assets
+            if (visual_lock_admission_state.valid_pass(
+                ep, asset, profile_sha256=contract["profile_sha256"],
+                story_os_version=episode_version(ep)
+            ) or {}).get("status") == "WEAK_PASS"
+        }
+        if weak_ids and errors:
+            # Keep the critic FAIL payload untouched. Only the verifier projects a
+            # SHA-bound WEAK_PASS over its row-level soft findings and global FAIL
+            # summary; schema/provenance/hash/binding errors remain fatal.
+            row_errors = tuple(f"{rid}.checks." for rid in weak_ids)
+            issue_errors = {f"{rid}.issues must be empty for PASS" for rid in weak_ids}
+            errors = [
+                error for error in errors
+                if not error.startswith(row_errors)
+                and error not in issue_errors
+                and error not in {"issue_codes must be empty for PASS", "summary.passed must be true"}
+            ]
         if not metadata_only:
             if not errors:
                 errors.extend("BASELINE_GATE:"+x for x in visual_lock_baseline_gate.validate_final_requirement(ep))

@@ -14,16 +14,20 @@ TRACKED_CACHE_MARKERS = (
     "/.storyos_cache/",
     "/.codex-run/",
 )
+NON_LIVE_DIRS = {
+    "archive", ".git", "node_modules", "__pycache__", ".pytest_cache",
+    ".mypy_cache", ".ruff_cache", ".storyos_cache", ".codex-run",
+}
 
 
-def _is_archive(path: Path) -> bool:
-    return "archive" in path.parts or ".git" in path.parts or "node_modules" in path.parts
+def _is_non_live(path: Path) -> bool:
+    return any(part in NON_LIVE_DIRS for part in path.parts)
 
 
 def test_live_executable_and_config_files_have_no_utf8_bom():
     bad = []
     for path in ROOT.rglob("*"):
-        if not path.is_file() or path.suffix.lower() not in LIVE_BOM_EXTENSIONS or _is_archive(path):
+        if not path.is_file() or path.suffix.lower() not in LIVE_BOM_EXTENSIONS or _is_non_live(path):
             continue
         if "__pycache__" in path.parts:
             continue

@@ -14,6 +14,7 @@ from types import SimpleNamespace
 import baseline_candidate_pool
 import delegated_approval
 import episode_state
+import frame_contract
 import frame_semantic_review
 import image_blocked_recovery
 import image_scheduler
@@ -26,7 +27,7 @@ import visual_lock_candidate_pool
 import visual_lock_finalizer
 import visual_lock_v21
 
-ALLOWED_ACTIONS = {"PREPARE_BASELINE_CANDIDATE", "PREPARE_VISUAL_LOCK_CANDIDATES", "PREPARE_STALE_VISUAL_LOCK_REFRESH", "RESOLVE_IMAGE_NORMALIZATION", "RESUME_BUDGET_AUTHORIZED_IMAGES", "FINALIZE_VISUAL_LOCK", "PREPARE_PRODUCTION_BATCH", "FINALIZE_PRODUCTION_IMAGES"}
+ALLOWED_ACTIONS = {"PREPARE_BASELINE_CANDIDATE", "PREPARE_VISUAL_LOCK_CANDIDATES", "APPLY_VISUAL_LOCK_WEAK_PASS", "PREPARE_STALE_VISUAL_LOCK_REFRESH", "RESOLVE_IMAGE_NORMALIZATION", "RESUME_BUDGET_AUTHORIZED_IMAGES", "FINALIZE_VISUAL_LOCK", "PREPARE_PRODUCTION_BATCH", "FINALIZE_PRODUCTION_IMAGES"}
 
 
 class MachineActionError(RuntimeError):
@@ -147,13 +148,18 @@ def _finalize_visual_lock(ep: Path) -> dict:
         return {"status": "REUSED", "action": "FINALIZE_VISUAL_LOCK", "state": state}
     if state != "STORYBOARD_LOCKED":
         raise MachineActionError(f"Visual Lock finalizer requires STORYBOARD_LOCKED, got {state}")
+    # Strict machine fields are a derived projection of already-locked PREIMAGE
+    # authority. Materializing them here must not force image regeneration. Freeze
+    # the exact old->new projection-only contract mapping and keep the PREIMAGE
+    # caches/index immutable; the migration evidence bridges the equivalent SHA.
+    machine_contract = _materialize_visual_machine_contract(ep)
+    projection_migration = frame_contract.record_projection_migrations(ep)
     baseline_errors = visual_lock_baseline_gate.validate_review(ep)
     if baseline_errors:
         raise MachineActionError("baseline review not valid: " + "; ".join(baseline_errors[:8]))
     visual_errors = visual_lock_v21.verify(ep, metadata_only=False)
     if visual_errors:
         raise MachineActionError("Visual Lock review not valid: " + "; ".join(visual_errors[:8]))
-    machine_contract = _materialize_visual_machine_contract(ep)
     report = visual_lock_finalizer.build(ep)
     report_errors = visual_lock_finalizer.verify(ep)
     if report_errors:
@@ -171,7 +177,7 @@ def _finalize_visual_lock(ep: Path) -> dict:
         episode_dir=str(ep), target="VISUAL_CALIBRATED", rewind=False,
         note="Full-auto Visual Lock evidence verified; deterministic canonical transition",
     ))
-    return {"status": "PASS", "action": "FINALIZE_VISUAL_LOCK", "state": _state(ep), "report": report.get("decision"), "machine_contract": machine_contract}
+    return {"status": "PASS", "action": "FINALIZE_VISUAL_LOCK", "state": _state(ep), "report": report.get("decision"), "machine_contract": machine_contract, "projection_migration": projection_migration}
 
 
 def execute(ep: Path, action: dict) -> dict:
@@ -193,6 +199,11 @@ def execute(ep: Path, action: dict) -> dict:
         if status in {"PASS", "REUSED"}:
             return result
         raise MachineActionError(f"visual-lock candidate preparation failed: {result}")
+    if name == "APPLY_VISUAL_LOCK_WEAK_PASS":
+        result = visual_lock_candidate_pool.apply_weak_passes(ep, frames=[int(x) for x in (action.get("frames") or [])])
+        if str(result.get("status") or "").upper() not in {"PASS", "REUSED"}:
+            raise MachineActionError(f"visual-lock weak-pass policy blocked: {result}")
+        return {"status": "PASS", "action": name, "result": result, "state": _state(ep)}
     if name == "PREPARE_STALE_VISUAL_LOCK_REFRESH":
         rows = []
         for frame in sorted({int(x) for x in (action.get("frames") or []) if int(x) > 0}):
@@ -216,7 +227,7 @@ def execute(ep: Path, action: dict) -> dict:
     if name == "RESUME_BUDGET_AUTHORIZED_IMAGES":
         result = image_scheduler.resume_authorized_budget(ep, frames=[int(x) for x in (action.get("frames") or [])])
         if str(result.get("status") or "").upper() != "PASS":
-            raise MachineActionError(f"candidate budget authorization is not sufficient: {result}")
+            raise MachineActionError(f"candidate budget has no resumable bounded capacity: {result}")
         return {"status": "PASS", "action": name, "result": result, "state": _state(ep)}
     if name == "FINALIZE_VISUAL_LOCK":
         try:

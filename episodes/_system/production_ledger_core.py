@@ -38,15 +38,16 @@ FRAME_STATES = {
     "REPAIRING",
     "REPAIR_READY",
     "PASSED",
+    "WEAK_PASS",
     "NEEDS_USER",
     "LOCKED",
 }
 REFERENCE_KINDS = {"identity", "prop", "location", "capture_style"}
 # Canonical derived subsets of FRAME_STATES. Consumers import these instead of
 # re-typing the member sets so scheduler/recovery/gate vocabulary cannot drift.
-READY_LEDGER_STATES = frozenset({"ORIGINAL_READY", "REPAIR_READY", "PASSED", "LOCKED"})
+READY_LEDGER_STATES = frozenset({"ORIGINAL_READY", "REPAIR_READY", "PASSED", "WEAK_PASS", "LOCKED"})
 ACTIVE_LEDGER_STATES = frozenset({"GENERATING", "REPAIRING"})
-ACCEPTED_LEDGER_STATES = frozenset({"PASSED", "LOCKED"})
+ACCEPTED_LEDGER_STATES = frozenset({"PASSED", "WEAK_PASS", "LOCKED"})
 
 
 def now_iso() -> str:

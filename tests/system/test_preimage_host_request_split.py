@@ -18,6 +18,28 @@ class PreimageHostRequestSplitTest(unittest.TestCase):
    self.assertEqual({r["task"]["task_type"] for r in requests},{"CHARACTER_FINALIZE","ENVIRONMENT_PREPARE","WORLD_PREPARE","VISUAL_NARRATIVE_PREPARE"})
   finally: shutil.rmtree(raw,ignore_errors=True)
 
+ def test_task_set_declares_parallel_start_then_collect_host_contract(self):
+  base=ROOT/".storyos-tmp"; base.mkdir(exist_ok=True); raw=tempfile.mkdtemp(dir=base)
+  try:
+   ep=Path(raw); (ep/"meta").mkdir(); (ep/"meta/episode-state.json").write_text(json.dumps({"current_state":"STORYBOARD_LOCKED"}),encoding="utf-8")
+   (ep/"meta/story-gates.json").write_text(json.dumps({"story":{"locked":True},"visual":{}}),encoding="utf-8")
+   request=adapter.build_request(ep,runtime="WORK",mode="full_auto",resume=True,source="test")
+   self.assertEqual(request["next_step"],"PREIMAGE_TASK_SET")
+   dispatch=request["host_dispatch_contract"]
+   self.assertEqual(dispatch["strategy"],"parallel_start_then_collect")
+   self.assertEqual(dispatch["max_parallel"],4)
+   self.assertTrue(dispatch["start_all_before_wait"])
+   self.assertEqual(dispatch["completion_order"],"any")
+   self.assertEqual(dispatch["authority_commit"],"single_writer_after_barrier")
+   self.assertTrue(dispatch["host_owned_concurrency"])
+   self.assertEqual(len(request["requests"]),4)
+   for child in request["requests"]:
+    contract=child["host_contract"]
+    self.assertEqual(contract["dispatch_group"],"PREIMAGE_TASK_SET")
+    self.assertTrue(contract["independent_parallelizable"])
+    self.assertFalse(contract["wait_for_siblings_before_start"])
+  finally: shutil.rmtree(raw,ignore_errors=True)
+
  def test_independent_completion_resume_only_returns_unfinished_task(self):
   base=ROOT/".storyos-tmp"; base.mkdir(exist_ok=True); raw=tempfile.mkdtemp(dir=base)
   try:

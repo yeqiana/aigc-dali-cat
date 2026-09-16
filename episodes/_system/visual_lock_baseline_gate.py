@@ -88,8 +88,10 @@ def validate_review(ep):
     if d.get("decision")!="PASS":e.append("baseline review decision must be PASS")
     try:src=generated_baseline(ep)
     except Exception as exc:return [str(exc)]
-    for k in ("frame","asset_path","sha256","frame_contract_sha256"):
+    for k in ("frame","asset_path","sha256"):
         if str(d.get(k) or "").lower()!=str(src.get(k) or "").lower():e.append(f"baseline review {k} stale")
+    if not frame_contract.recorded_contract_matches_current(ep, d.get("frame") or src.get("frame"), str(d.get("frame_contract_sha256") or "")):
+        e.append("baseline review frame_contract_sha256 stale")
     for k in CHECKS:
         if str((d.get("checks") or {}).get(k) or "").upper()!="PASS":e.append(f"baseline review check {k} must PASS")
     e.extend(_box_errors(ep,d));return e

@@ -178,6 +178,203 @@ class VisualLockAdmissionStateTests(unittest.TestCase):
         self.assertLessEqual(len(prompt), 245)
         self.assertLessEqual(len(prompt.encode("utf-8")), 850)
 
+    def test_candidate_prompt_carries_concrete_frame_contract_pixel_evidence(self):
+        row = {
+            "frame": 5,
+            "role": "first_major_anomaly",
+            "checks": {"anomaly_scale_delivery": False},
+            "issues": ["ANOMALY_NOT_READABLE"],
+        }
+        contract = {
+            "hash_material": {
+                "frame_directive": {
+                    "required_visual_cues": [
+                        "dust-covered furniture",
+                        "clean enamel tea mug containing fresh water",
+                    ]
+                },
+                "capture_event": {
+                    "retained_reason": "家具全盖着布，只有茶缸是干净有水的"
+                },
+            }
+        }
+        with patch.object(candidate_pool, "_row_for_frame", return_value=row), \
+                patch.object(candidate_pool.frame_contract, "compile_frame", return_value=contract):
+            prompt = candidate_pool.candidate_prompt(self.ep, 5, 1)
+        self.assertIn("dust-covered furniture", prompt)
+        self.assertIn("clean enamel tea mug", prompt)
+        self.assertIn("茶缸是干净有水", prompt)
+        self.assertLessEqual(len(prompt), 245)
+        self.assertLessEqual(len(prompt.encode("utf-8")), 850)
+
+    def test_candidate_prompt_slot2_hard_fits_local_prompt_budget(self):
+        row = {
+            "frame": 5,
+            "role": "first_major_anomaly",
+            "checks": {"anomaly_scale_delivery": False, "reality_first": False},
+            "issues": ["ANOMALY_NOT_READABLE", "MOMENT_CAPTURE_CREDIBILITY"],
+        }
+        contract = {
+            "hash_material": {
+                "frame_directive": {
+                    "required_visual_cues": [
+                        "dust-covered furniture across the entire abandoned room",
+                        "clean enamel tea mug containing visibly fresh water",
+                    ]
+                },
+                "capture_event": {
+                    "retained_reason": "家具全部积灰，只有搪瓷茶缸干净且装着新鲜水，这个反差必须在同一画面直接可读"
+                },
+            }
+        }
+        with patch.object(candidate_pool, "_row_for_frame", return_value=row), \
+                patch.object(candidate_pool.frame_contract, "compile_frame", return_value=contract):
+            prompt = candidate_pool.candidate_prompt(self.ep, 5, 2)
+        self.assertLessEqual(len(prompt), 245)
+        self.assertLessEqual(len(prompt.encode("utf-8")), 850)
+        self.assertIn("dust-covered furniture", prompt)
+        self.assertIn("clean enamel tea mug", prompt)
+
+    def test_prompt_budget_begin_rejection_is_recompilable_only_for_current_policy_candidate(self):
+        item = {
+            "kind": "baseline_candidate",
+            "status": "blocked",
+            "capture_id": f"visual-lock-candidate-{candidate_pool.CANDIDATE_POLICY_REVISION}-03-02",
+            "attempts": 0,
+            "output_path": None,
+            "last_error": "prompt budget exceeded: 268 chars/560 bytes; limit=260 chars/900 bytes",
+            "execution": {"phase": "BEGIN_REJECTED"},
+        }
+        self.assertTrue(candidate_pool.recompilable_prompt_blocked_item(item))
+        self.assertFalse(candidate_pool.recompilable_prompt_blocked_item({**item, "attempts": 1}))
+        self.assertFalse(candidate_pool.recompilable_prompt_blocked_item({**item, "capture_id": "visual-lock-candidate-v1-03-02"}))
+
+    def test_candidate_capacity_is_bounded_per_explicit_policy_revision(self):
+        frame = 5
+        legacy = {
+            "frame": frame,
+            "kind": "baseline_candidate",
+            "capture_id": "visual-lock-candidate-05-01",
+            "status": "superseded",
+            "output_path": "legacy.png",
+        }
+        current = {
+            "frame": frame,
+            "kind": "baseline_candidate",
+            "capture_id": f"visual-lock-candidate-{candidate_pool.CANDIDATE_POLICY_REVISION}-05-01",
+            "status": "generated",
+            "output_path": "current.png",
+        }
+        _write(self.ep / "meta/production-queue.json", {"items": [legacy, current]})
+        self.assertEqual(candidate_pool.historical_successful_slots(self.ep, frame), 2)
+        self.assertEqual(candidate_pool.successful_slots(self.ep, frame), 1)
+
+    def test_weak_pass_counts_only_successful_content_outputs_not_technical_failures(self):
+        frame = 5
+        sha = "c" * 64
+        fc = "d" * 64
+        _write(self.ep / "meta/production-ledger.json", {"frames": {"05": {
+            "status": "NEEDS_USER",
+            "current_candidate": {"sha256": sha},
+            "attempts": [
+                {"result": "success"},
+                {"result": "technical_failure"},
+                {"result": "success"},
+                {"result": "technical_failure"},
+                {"result": "success"},
+                {"result": "success"},
+            ],
+        }}})
+        _write(self.ep / "meta/visual-profile-review.json", {"calibration": [{
+            "id": "V-A", "frame": frame, "role": "first_major_anomaly",
+            "sha256": sha, "frame_contract_sha256": fc,
+            "checks": {"anomaly_scale_delivery": False},
+            "issues": ["ANOMALY_NOT_READABLE"],
+        }]})
+        result = candidate_pool.weak_pass_eligibility(self.ep, frame)
+        self.assertTrue(result["eligible"])
+        self.assertEqual(result["content_attempts"], 4)
+        self.assertEqual(result["technical_attempts"], 2)
+
+    def test_weak_pass_never_overrides_hard_identity_failure(self):
+        frame = 5
+        _write(self.ep / "meta/production-ledger.json", {"frames": {"05": {
+            "status": "NEEDS_USER",
+            "current_candidate": {"sha256": "c" * 64},
+            "attempts": [{"result": "success"}] * 4,
+        }}})
+        _write(self.ep / "meta/visual-profile-review.json", {"calibration": [{
+            "id": "V-A", "frame": frame, "role": "first_major_anomaly",
+            "checks": {"character_appearance_anchor_fidelity": False},
+            "issues": ["CHARACTER_IDENTITY_MISMATCH"],
+        }]})
+        result = candidate_pool.weak_pass_eligibility(self.ep, frame)
+        self.assertFalse(result["eligible"])
+        self.assertIn("character_appearance_anchor_fidelity", result["hard_failed_checks"])
+
+    def test_apply_weak_pass_preserves_failed_review_and_marks_ledger_and_gate(self):
+        frame = 5
+        sha = "c" * 64
+        fc = "d" * 64
+        _write(self.ep / "meta/production-ledger.json", {"frames": {"05": {
+            "status": "NEEDS_USER",
+            "current_candidate": {"sha256": sha},
+            "attempts": [{"result": "success"}] * 4 + [{"result": "technical_failure"}],
+            "reviews": [],
+        }}})
+        _write(self.ep / "meta/story-gates.json", {"visual": {"calibration": {"items": [{
+            "id": "V-A", "frame": frame, "role": "first_major_anomaly",
+            "sha256": sha, "frame_contract_sha256": fc, "decision": "failed",
+        }]}}, "reviews": {"visual_admission": "failed"}})
+        failed = {
+            "id": "V-A", "frame": frame, "role": "first_major_anomaly",
+            "sha256": sha, "frame_contract_sha256": fc,
+            "checks": {"anomaly_scale_delivery": False},
+            "issues": ["ANOMALY_NOT_READABLE"],
+        }
+        _write(self.ep / "meta/visual-profile-review.json", {
+            "story_os_version": "2.6.1", "profile_sha256": self.profile_sha,
+            "calibration": [failed],
+        })
+        result = candidate_pool.apply_weak_passes(self.ep, frames=[frame])
+        self.assertEqual(result["status"], "PASS")
+        ledger = json.loads((self.ep / "meta/production-ledger.json").read_text(encoding="utf-8"))
+        self.assertEqual(ledger["frames"]["05"]["status"], "WEAK_PASS")
+        self.assertEqual(ledger["frames"]["05"]["weak_pass"]["approved_by_policy"], "attempt_over_3_auto_release")
+        registry = admission_state.load(self.ep)
+        self.assertEqual(registry["items"]["V-A"]["status"], "WEAK_PASS")
+        self.assertEqual(registry["items"]["V-A"]["review_row"]["checks"]["anomaly_scale_delivery"], False)
+        gates = json.loads((self.ep / "meta/story-gates.json").read_text(encoding="utf-8"))
+        self.assertEqual(gates["visual"]["calibration"]["items"][0]["decision"], "passed")
+        self.assertTrue(gates["visual"]["calibration"]["items"][0]["weak_pass"])
+
+    def test_weak_pass_finalization_locks_existing_provisional_pixel_master_after_all_admissions_accept(self):
+        projection = {"all_passed": True, "passed_frames": [1, 5, 8, 16]}
+        _write(self.ep / "meta/story-gates.json", {"visual": {"calibration": {"items": [{
+            "id": "V-B", "role": "ordinary_baseline", "frame": 1,
+            "asset_path": "episode/baseline.png", "sha256": "a" * 64,
+            "frame_contract_sha256": "b" * 64, "decision": "passed",
+        }]}}})
+        locked = {"status": "LOCKED", "sha256": "a" * 64}
+        with patch.object(candidate_pool.character_visual_contract, "pixel_master_required", return_value=True), \
+                patch.object(candidate_pool.character_visual_contract, "lock_pixel_master", return_value=locked) as lock:
+            result = candidate_pool._lock_pixel_master_after_accepted_visual_gate(self.ep, projection)
+        self.assertEqual(result["status"], "LOCKED")
+        self.assertEqual(result["frame"], 1)
+        self.assertEqual(lock.call_args.kwargs["asset_path"], "episode/baseline.png")
+
+    def test_technical_failure_without_output_never_consumes_current_policy_slot(self):
+        frame = 5
+        failed = {
+            "frame": frame,
+            "kind": "baseline_candidate",
+            "capture_id": f"visual-lock-candidate-{candidate_pool.CANDIDATE_POLICY_REVISION}-05-01",
+            "status": "tech_failed",
+            "output_path": None,
+        }
+        _write(self.ep / "meta/production-queue.json", {"items": [failed]})
+        self.assertEqual(candidate_pool.successful_slots(self.ep, frame), 0)
+
     def test_restore_ledger_pass_requires_exact_current_candidate_sha(self):
         asset = _asset()
         _write(self.ep / "meta/production-ledger.json", {

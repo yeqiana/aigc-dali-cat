@@ -60,6 +60,44 @@ def valid_image(path: Path) -> bool:
     header = path.read_bytes()[:16]
     return header.startswith(PNG) or header.startswith(JPEG)
 
+
+def provider_raw_candidate_viable(path: Path) -> bool:
+    """Whether a provider candidate is large enough to enter production RAW flow.
+
+    ``valid_image`` deliberately stays a lightweight file/signature check because
+    it is also used for references and recovery artifacts. Production provider
+    output has a stronger minimum-dimension contract: tiny placeholder/thumbnail
+    images (for example 100x100) must not hide a transport failure recorded by
+    the same Codex invocation.
+    """
+    if not valid_image(path):
+        return False
+    try:
+        with Image.open(path) as image:
+            return min(int(image.width), int(image.height)) >= provider_capability.PROVIDER_RAW_MIN_DIMENSION
+    except (OSError, ValueError):
+        return False
+
+
+def logged_backend_failure(raw_log_text: str, *, returncode: int,
+                           candidate_valid: bool, candidate_viable: bool) -> str | None:
+    """Prefer the invocation's technical root cause before a degenerate RAW error.
+
+    A full-size valid candidate wins over incidental warning text. But when the
+    only artifact is invalid or below the production minimum dimension, inspect
+    the same invocation log first so NETWORK_ERROR / capacity / auth / transport
+    failures are preserved instead of being overwritten later by a 100x100 RAW
+    validation error.
+    """
+    if int(returncode) == 0 and candidate_valid and candidate_viable:
+        return None
+    relevant = runtime_log_policy.provider_relevant_codex_text(str(raw_log_text or ""))
+    # The compact provider projection intentionally drops some generic transport
+    # wording. Keep the original bounded tail as a fallback so a real network
+    # failure is not lost merely because the projection found no provider token.
+    tail = (relevant[-6000:] or str(raw_log_text or "")[-6000:])
+    return image_model_policy.classify_backend_error(tail, source="image_backend")
+
 def resolve_codex(raw: str | None) -> Path:
     explicit = bool(raw or os.environ.get("CODEX_EXE"))
     if not runtime_router.local_codex_image_allowed(explicit=explicit):
@@ -408,12 +446,21 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             runtime_log_policy.write_codex_noise_summary(log, raw_log_text)
         except Exception:
             raw_log_text = ''
-        if completed.returncode != 0 or not valid_image(candidate):
-            tail = runtime_log_policy.provider_relevant_codex_text(raw_log_text)[-6000:]
-            machine_code=image_model_policy.classify_backend_error(tail, source="image_backend")
-            if machine_code:
-                raise BackendError(f'{machine_code}: requested={image_model}; log={log}')
+        candidate_valid = valid_image(candidate)
+        candidate_viable = provider_raw_candidate_viable(candidate) if candidate_valid else False
+        machine_code = logged_backend_failure(
+            raw_log_text,
+            returncode=completed.returncode,
+            candidate_valid=candidate_valid,
+            candidate_viable=candidate_viable,
+        )
+        if machine_code:
+            raise BackendError(f'{machine_code}: requested={image_model}; log={log}')
+        if completed.returncode != 0 or not candidate_valid:
             raise BackendError(f'Codex image worker failed rc={completed.returncode}; no_valid_image=true; log={log}')
+        # Structurally valid but undersized provider RAW with no technical error in
+        # the same invocation continues to provider_capability.inspect(), which is
+        # the canonical source of PROVIDER_RAW_CANVAS_DEGENERATE evidence.
         raw_output.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(candidate, raw_output)
     return round(time.monotonic() - started, 2)
@@ -608,6 +655,14 @@ def main() -> int:
         assert 'save or copy the actual generated candidate to ./out.png' not in smoke_prompt
         assert provider_size(1080, 1350) == '1080x1350'
         assert provider_size(1080, 1920) == '1080x1920'
+        assert logged_backend_failure(
+            'network error: error sending request', returncode=0,
+            candidate_valid=True, candidate_viable=False,
+        ) == image_model_policy.NETWORK_ERROR
+        assert logged_backend_failure(
+            'old warning: network error: error sending request', returncode=0,
+            candidate_valid=True, candidate_viable=True,
+        ) is None
         if os.name == 'nt':
             assert image_worker_sandbox_mode(bridged=True, has_references=False) == 'danger-full-access'
             assert image_worker_sandbox_mode(bridged=False, has_references=True) == 'danger-full-access'

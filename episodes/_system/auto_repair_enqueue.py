@@ -237,8 +237,21 @@ def _compact_findings(findings: list[str]) -> str:
     return "、".join(cleaned) if cleaned else "实际像素审核未通过"
 
 
-def repair_prompt(frame: int, findings: list[str]) -> str:
-    """Short derived prompt; the locked Frame Contract carries scene authority."""
+def repair_prompt(
+    frame: int,
+    findings: list[str],
+    *,
+    required_visual_cues: list[str] | None = None,
+    camera_owner: str = "",
+    camera_position: str = "",
+) -> str:
+    """Short derived prompt with current Frame Contract must-show cues.
+
+    The locked Frame Contract remains the authority. This prompt only lifts the
+    concrete visual delta and camera-authorship constraints into the expensive
+    retry request so a repair does not lose the exact reason the prior pixels
+    failed.
+    """
     codes = {str(x or "").strip().upper() for x in findings}
     if codes & {
         "CINEMATIC_CLIMAX_POSTER", "PROMO_FANTASY_COMPOSITION",
@@ -253,21 +266,51 @@ def repair_prompt(frame: int, findings: list[str]) -> str:
             "强逆光允许天空过曝、人物欠曝或剪影和轻微眩光，禁止HDR、金色轮廓光、对称海报和旅游宣传片质感。"
         )
     focus = _compact_findings(findings)
-    text = (
-        f"返修Frame{frame:02d}。严格保持当前Frame Contract、人物身份/服装/地点/事件与世界设定，不改故事。"
-        f"重点修复：{focus}。改成可信的普通手机随手拍：自然不对称构图、真实皮肤与曝光、非电影布光、非海报化；"
-        "保留生活杂物和轻微摄影瑕疵，天界设定照合同保留但不过度特效化。"
-    )
-    # Repository generation budget is <=260 chars / <=900 UTF-8 bytes.
+    cues = [str(x or "").strip() for x in (required_visual_cues or []) if str(x or "").strip()][:3]
+    cue_text = "；".join(cues)
+    camera_bits = []
+    if str(camera_owner or "").strip():
+        camera_bits.append(f"持机人={str(camera_owner).strip()}")
+    if str(camera_position or "").strip():
+        camera_bits.append(f"机位={str(camera_position).strip()}")
+    camera_text = "；".join(camera_bits)
+
+    parts = [
+        f"返修Frame{frame:02d}。严格保持当前Frame Contract、人物身份/服装/地点/事件与世界设定，不改故事。",
+        f"重点修复：{focus}。",
+    ]
+    if cue_text:
+        parts.append(f"像素必须清楚兑现：{cue_text}。")
+    if camera_text:
+        parts.append(f"摄像机物理必须成立：{camera_text}；不得出现无法解释的全员入镜或幽灵机位。")
+    parts.append("普通手机随手拍，自然不对称构图、真实曝光、非电影布光、非海报化；保留生活杂物和有物理原因的轻微摄影瑕疵。")
+    text = "".join(parts)
+
+    # Repository generation budget is <=260 chars / <=900 UTF-8 bytes. Trim
+    # only secondary prose/findings; never silently drop mandatory visual cues.
     while len(text) > 250 or len(text.encode("utf-8")) > 860:
-        if len(focus) <= 24:
+        if len(focus) > 20:
+            focus = focus[:-4]
+        elif len(camera_position) > 18:
+            camera_position = camera_position[:18]
+        elif len(cues) > 2:
+            cues = cues[:2]
+        else:
             break
-        focus = focus[:-4]
-        text = (
-            f"返修Frame{frame:02d}。严格保持当前Frame Contract、人物身份/服装/地点/事件与世界设定，不改故事。"
-            f"重点修复：{focus}。普通手机随手拍，自然不对称构图、真实皮肤与曝光、非电影布光、非海报化；"
-            "天界设定照合同保留但不过度特效化。"
-        )
+        cue_text = "；".join(cues)
+        camera_bits = []
+        if str(camera_owner or "").strip():
+            camera_bits.append(f"持机人={str(camera_owner).strip()}")
+        if str(camera_position or "").strip():
+            camera_bits.append(f"机位={str(camera_position).strip()}")
+        camera_text = "；".join(camera_bits)
+        parts = [f"返修Frame{frame:02d}。保持当前Frame Contract，不改故事。", f"重点修复：{focus}。"]
+        if cue_text:
+            parts.append(f"必须清楚兑现：{cue_text}。")
+        if camera_text:
+            parts.append(f"摄像机物理：{camera_text}；禁止幽灵机位。")
+        parts.append("普通手机随手拍，真实曝光，非电影/海报化。")
+        text = "".join(parts)
     return text
 
 
@@ -322,7 +365,21 @@ def enqueue(
     else:
         suffix = "user-exception-a3" if exception_repair else "a2"
     prompt_path = prompt_dir / f"{frame:02d}-{source.lower().replace('_', '-')}-{suffix}.txt"
-    prompt_path.write_text(repair_prompt(frame, findings) + "\n", encoding="utf-8", newline="\n")
+    contract = _read(ep / "meta" / "runtime" / "contracts" / "frames" / f"{frame:02d}.json")
+    material = contract.get("hash_material") or {}
+    directive = material.get("frame_directive") or {}
+    capture = material.get("capture_event") or {}
+    prompt_path.write_text(
+        repair_prompt(
+            frame,
+            findings,
+            required_visual_cues=list(directive.get("required_visual_cues") or []),
+            camera_owner=str(capture.get("photographer_id") or ""),
+            camera_position=str(capture.get("device_position") or ""),
+        ) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
 
     # Local import avoids a baseline_gate <-> image_scheduler import cycle.
     import image_scheduler
@@ -365,7 +422,17 @@ def self_test() -> None:
     prompt = repair_prompt(1, ["reality_first", "not_cinematic", "capture_credibility"])
     assert len(prompt) <= 260
     assert len(prompt.encode("utf-8")) <= 900
-    assert "Frame01" in prompt and "不改故事" in prompt
+    assert "Frame01" in prompt and "不改故事" in prompt and "天界" not in prompt
+    grounded = repair_prompt(
+        3,
+        ["ANOMALY_NOT_READABLE", "POV_RECORDER_OBVIOUSLY_ILLEGAL"],
+        required_visual_cues=["dust-covered furniture", "clean enamel tea mug containing fresh water"],
+        camera_owner="P01",
+        camera_position="doorway chest height",
+    )
+    assert "dust-covered furniture" in grounded and "clean enamel tea mug containing fresh water" in grounded
+    assert "持机人=P01" in grounded and "禁止幽灵机位" in grounded and "天界" not in grounded
+    assert len(grounded) <= 260 and len(grounded.encode("utf-8")) <= 900
     anti_poster = repair_prompt(17, ["PROMO_FANTASY_COMPOSITION", "SUBJECTS_ARRANGED_FOR_CAMERA"])
     assert len(anti_poster) <= 260 and len(anti_poster.encode("utf-8")) <= 900
     assert "不看镜头" in anti_poster and "夕阳不要落视觉中心" in anti_poster and "禁止HDR" in anti_poster

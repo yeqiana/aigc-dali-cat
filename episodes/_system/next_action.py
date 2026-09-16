@@ -452,6 +452,32 @@ def derive(ep: Path) -> dict:
     if q:
         ledger_frames = read_json(ep / "meta/production-ledger.json").get("frames") or {}
         unresolved_blocked = list(qs.get("blocked_items") or [])
+        recompilable_prompt_blocks = [
+            row for row in unresolved_blocked
+            if visual_lock_candidate_pool.recompilable_prompt_blocked_item(row)
+        ]
+        if recompilable_prompt_blocks:
+            blocked_frames = sorted({
+                int(row.get("frame") or 0) for row in recompilable_prompt_blocks
+                if int(row.get("frame") or 0) > 0
+            })
+            # A current-policy Visual Lock candidate rejected before provider
+            # execution because the local prompt compiler exceeded its own budget
+            # is not a user decision and not an image-provider failure. Re-enqueue
+            # through the candidate pool; add_item(..., replace=True) will preserve
+            # the rejected row as superseded audit history.
+            other_blocked = [row for row in unresolved_blocked if row not in recompilable_prompt_blocks]
+            if not other_blocked and blocked_frames:
+                return action_result(
+                    action="PREPARE_VISUAL_LOCK_CANDIDATES",
+                    executor="MACHINE",
+                    frames=blocked_frames,
+                    work_pending=True,
+                    auto_recoverable=True,
+                    hard_stop=False,
+                    reason="current-policy Visual Lock candidate was rejected before provider execution by the local prompt budget; recompile a bounded replacement candidate",
+                )
+            unresolved_blocked = other_blocked
         if unresolved_blocked:
             budget_blocked = [
                 row for row in unresolved_blocked
@@ -466,7 +492,10 @@ def derive(ep: Path) -> dict:
                         executor="MACHINE",
                         frames=resumable,
                         budget=budget_context,
-                        reason="explicit candidate-budget authorization is recorded; deterministically requeue only the newly authorized frames",
+                        work_pending=True,
+                        auto_recoverable=True,
+                        hard_stop=False,
+                        reason="candidate budget has deterministic machine-resumable capacity; requeue only frames that currently fit their bounded budget contract",
                     )
                 return action_result(
                     action="USER_DECISION_REQUIRED",
@@ -549,6 +578,11 @@ def derive(ep: Path) -> dict:
         visual_rows=[x for x in q.get("items") or [] if str(x.get("scope") or "")=="visual_lock"]
         visual_frames={int(x.get("frame") or 0) for x in visual_rows}
         if cur=="STORYBOARD_LOCKED":
+            weak_pass_frames=visual_lock_candidate_pool.weak_pass_eligible_frames(ep)
+            if weak_pass_frames:
+                return action_result(action="APPLY_VISUAL_LOCK_WEAK_PASS", executor="MACHINE",
+                        frames=weak_pass_frames,auto_recoverable=True,hard_stop=False,
+                        reason="content attempts exceeded 3 and only soft visual-quality findings remain; apply auditable low-score acceptance without generating again")
             candidate_frames=visual_lock_candidate_pool.prepareable_frames(ep)
             if candidate_frames:
                 return action_result(action="PREPARE_VISUAL_LOCK_CANDIDATES", executor="MACHINE",

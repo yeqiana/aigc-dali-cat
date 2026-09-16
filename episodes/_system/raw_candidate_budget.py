@@ -23,6 +23,7 @@ OVERRIDE_REL = Path("meta/runtime/raw-candidate-budget-override.json")
 BUDGET_BLOCK_CODES = frozenset({"RAW_CANDIDATE_BUDGET_EXHAUSTED", "EPISODE_IMAGE_LOOP_GUARD"})
 CFG = ROOT / "runtimes/runtime-fast-path-v251.json"
 KINDS = {"original", "repair", "exception", "user_exception", "authority_refresh", "user_continuation"}
+VISUAL_LOCK_POLICY_SEMANTIC_PREFIX = "visual-lock-policy:"
 
 def now() -> str:
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -304,7 +305,38 @@ def semantic_key_for_queue_item(item: dict) -> str | None:
     if kind == "user_continuation":
         key = str((item or {}).get("capture_id") or "").strip()
         return key or None
+    if kind == "exception" and str((item or {}).get("kind") or "").lower() == "baseline_candidate":
+        # Visual Lock competitive candidates are bounded by the prompt policy that
+        # produced them.  A framework fix may legitimately create a new explicit
+        # policy revision; old-policy retained pixels must not permanently consume
+        # the new revision's two-slot frame budget.  Keep the Episode-wide budget
+        # unchanged so policy revisions cannot bypass the global image-loop guard.
+        capture_id = str((item or {}).get("capture_id") or "").strip().lower()
+        prefix = "visual-lock-candidate-"
+        try:
+            frame = int((item or {}).get("frame") or 0)
+        except Exception:
+            frame = 0
+        marker = f"-{frame:02d}-" if frame > 0 else ""
+        if capture_id.startswith(prefix) and marker:
+            body = capture_id[len(prefix):]
+            if marker in body:
+                revision, slot = body.rsplit(marker, 1)
+                if revision and slot.isdigit():
+                    return f"{VISUAL_LOCK_POLICY_SEMANTIC_PREFIX}{revision}"
     return None
+
+
+def _policy_scoped_exception(kind: str, semantic_key: str | None) -> bool:
+    return kind == "exception" and str(semantic_key or "").startswith(VISUAL_LOCK_POLICY_SEMANTIC_PREFIX)
+
+
+def _semantic_used(bucket: dict, semantic_key: str) -> int:
+    key = str(semantic_key or "").lower()
+    return sum(
+        1 for row in ((bucket or {}).get("claims") or {}).values()
+        if isinstance(row, dict) and str(row.get("semantic_key") or "").lower() == key
+    )
 
 
 def blocked_queue_context(ep: Path, items: list[dict]) -> dict:
@@ -323,9 +355,10 @@ def blocked_queue_context(ep: Path, items: list[dict]) -> dict:
         key = f"{frame:02d}"
         kind = kind_for_queue_item(item)
         bucket = (((state.get("frames") or {}).get(key) or {}).get(kind) or {})
-        used = int(bucket.get("used") or 0)
+        bucket_used = int(bucket.get("used") or 0)
         base_limit = int(limits().get(kind, 2))
         semantic_key = semantic_key_for_queue_item(item)
+        used = _semantic_used(bucket, semantic_key) if _policy_scoped_exception(kind, semantic_key) else bucket_used
         semantic_authorized = False
         semantic_duplicate = False
         if kind in {"authority_refresh", "user_continuation"}:
@@ -355,6 +388,7 @@ def blocked_queue_context(ep: Path, items: list[dict]) -> dict:
             "item_id": str((item or {}).get("id") or ""),
             "kind": kind,
             "used": used,
+            "bucket_used": bucket_used,
             "base_limit": base_limit,
             "effective_limit": effective_limit,
             "frame_capacity_available": max(0, effective_limit - used),
@@ -475,12 +509,17 @@ def claim(ep, frame, kind, reason="", token=None, semantic_key=None):
         found = _find_token(d, token)
         if found:
             f, k, bucket, _, row = found
-            same_semantic = kind not in {"authority_refresh", "user_continuation"} or str((row or {}).get("semantic_key") or "").lower() == str(semantic_key or "").lower()
+            same_semantic = (
+                not semantic_key
+                if kind not in {"authority_refresh", "user_continuation"}
+                else False
+            ) or str((row or {}).get("semantic_key") or "").lower() == str(semantic_key or "").lower()
             if f != key or k != kind or not same_semantic:
                 result.update({"decision": "TOKEN_CONTEXT_MISMATCH", "token": token})
                 return
+            used = _semantic_used(bucket, semantic_key) if _policy_scoped_exception(kind, semantic_key) else int(bucket.get("used") or 0)
             result.update({
-                "frame": f, "kind": k, "used": int(bucket.get("used") or 0),
+                "frame": f, "kind": k, "used": used,
                 "limit": int(limits().get(k, 2)), "decision": "REUSE_CLAIM",
                 "token": token, "committed": bool((row or {}).get("committed")),
                 "semantic_key": (row or {}).get("semantic_key"),
@@ -515,12 +554,15 @@ def claim(ep, frame, kind, reason="", token=None, semantic_key=None):
             raise_row = authorized_frame_raise(ep, key, kind)
             per_kind_limit = base_limit + int(raise_row["extra"])
             authorization_source = None
-            if int(bucket.get("used") or 0) >= per_kind_limit:
+            scoped_used = _semantic_used(bucket, semantic_key) if _policy_scoped_exception(kind, semantic_key) else int(bucket.get("used") or 0)
+            if scoped_used >= per_kind_limit:
                 result.update({
-                    "frame": key, "kind": kind, "used": int(bucket.get("used") or 0),
+                    "frame": key, "kind": kind, "used": scoped_used,
                     "limit": per_kind_limit, "base_limit": base_limit,
+                    "bucket_used": int(bucket.get("used") or 0),
                     "authorized_raise": int(raise_row["extra"]),
                     "decision": "STOP_IMAGE_LOOP", "token": token,
+                    "semantic_key": semantic_key,
                 })
                 return
 
@@ -552,7 +594,9 @@ def claim(ep, frame, kind, reason="", token=None, semantic_key=None):
             event["authorized_raise"] = int(raise_row["extra"])
         d["events"].append(event)
         result.update({
-            "frame": key, "kind": kind, "used": bucket["used"], "limit": per_kind_limit,
+            "frame": key, "kind": kind,
+            "used": (_semantic_used(bucket, semantic_key) if _policy_scoped_exception(kind, semantic_key) else bucket["used"]),
+            "bucket_used": bucket["used"], "limit": per_kind_limit,
             "authorized_raise": int(raise_row["extra"]),
             "episode_used": total_now + 1, "episode_limit": total_limit,
             "decision": "ALLOW", "token": token, "committed": False,

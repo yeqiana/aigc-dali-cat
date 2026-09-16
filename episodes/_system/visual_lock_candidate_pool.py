@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import frame_contract
+import character_visual_contract
 import image_model_policy
 import story_json
 import storyos_config
@@ -21,6 +23,23 @@ QUEUE_REL = Path("meta/production-queue.json")
 LEDGER_REL = Path("meta/production-ledger.json")
 REVIEW_REL = Path("meta/visual-profile-review.json")
 PLAN_REL = Path("meta/visual-lock-plan.json")
+GATES_REL = Path("meta/story-gates.json")
+CANDIDATE_POLICY_REVISION = "v2-semantic-anchor"
+WEAK_PASS_CONTENT_ATTEMPT_THRESHOLD = 3
+WEAK_PASS_HARD_CHECKS = frozenset({
+    "environment_physics_fidelity",
+    "capture_credibility",
+    "camera_authorship_physical",
+    "screen_content_physics",
+    "world_identity_fidelity",
+    "character_appearance_anchor_fidelity",
+    "cultural_environment_fidelity",
+})
+WEAK_PASS_HARD_ISSUE_TOKENS = (
+    "IDENTITY", "CHARACTER", "WRONG_SCENE", "SCENE_MISMATCH", "STORY_SEMANTIC",
+    "FRAME_CONTRACT", "GHOST_CAMERA", "SCREEN_", "SAFETY", "COMPLIANCE",
+    "CORRUPT", "EMPTY_IMAGE", "MISSING_ASSET", "TECHNICAL", "PROVIDER_",
+)
 
 
 def _read(path: Path) -> dict:
@@ -75,7 +94,25 @@ def candidate_items(ep: Path, frame: int) -> list[dict]:
     ]
 
 
+def current_policy_candidate_items(ep: Path, frame: int) -> list[dict]:
+    prefix = f"visual-lock-candidate-{CANDIDATE_POLICY_REVISION}-{int(frame):02d}-"
+    return [
+        row for row in candidate_items(ep, frame)
+        if str(row.get("capture_id") or "").startswith(prefix)
+    ]
+
+
 def successful_slots(ep: Path, frame: int) -> int:
+    # Candidate capacity belongs to a prompt-policy revision. A framework fix that
+    # materially changes what pixels must be generated must not remain exhausted
+    # forever because older-policy outputs consumed the bounded slots. The revision
+    # is explicit in capture_id, so a later policy change is bounded/auditable
+    # rather than silently granting unlimited retries.
+    return sum(bool(row.get("output_path")) for row in current_policy_candidate_items(ep, frame))
+
+
+def historical_successful_slots(ep: Path, frame: int) -> int:
+    """All successful candidate outputs, used only for monotonic critic attempts."""
     return sum(bool(row.get("output_path")) for row in candidate_items(ep, frame))
 
 
@@ -87,10 +124,163 @@ def active_candidate(ep: Path, frame: int) -> dict | None:
     return rows[-1] if rows else None
 
 
+def recompilable_prompt_blocked_item(item: dict) -> bool:
+    """Return True only for a current-policy candidate rejected before provider execution.
+
+    This is deliberately narrow: the row must be a Visual Lock candidate from the
+    current prompt-policy revision, have zero provider attempts/output, and carry
+    the local prompt-budget BEGIN_REJECTED signature. Such a row is safe to replace
+    after the prompt compiler is fixed; real provider/content failures are not.
+    """
+    if not isinstance(item, dict):
+        return False
+    capture_id = str(item.get("capture_id") or "")
+    expected_prefix = f"visual-lock-candidate-{CANDIDATE_POLICY_REVISION}-"
+    execution = item.get("execution") or {}
+    return (
+        item.get("kind") == "baseline_candidate"
+        and item.get("status") == "blocked"
+        and capture_id.startswith(expected_prefix)
+        and int(item.get("attempts") or 0) == 0
+        and not item.get("output_path")
+        and str(execution.get("phase") or "") == "BEGIN_REJECTED"
+        and "prompt budget exceeded" in str(item.get("last_error") or "").lower()
+    )
+
+
 def _ledger_frame(ep: Path, frame: int) -> dict:
     ledger = _read(Path(ep) / LEDGER_REL)
     row = (ledger.get("frames") or {}).get(f"{int(frame):02d}") or {}
     return row if isinstance(row, dict) else {}
+
+
+def weak_pass_eligibility(ep: Path, frame: int) -> dict:
+    """Return auditable low-score eligibility; technical attempts never count as content tries."""
+    ep = Path(ep).resolve()
+    ledger = _ledger_frame(ep, frame)
+    attempts = [x for x in (ledger.get("attempts") or []) if isinstance(x, dict)]
+    content_attempts = sum(x.get("result") == "success" for x in attempts)
+    technical_attempts = sum(x.get("result") == "technical_failure" for x in attempts)
+    row = _row_for_frame(ep, frame)
+    checks = row.get("checks") or {}
+    failed_checks = sorted(str(key) for key, value in checks.items() if value is not True)
+    issues = [str(x) for x in (row.get("issues") or []) if str(x)]
+    hard_checks = sorted(set(failed_checks) & set(WEAK_PASS_HARD_CHECKS))
+    hard_issues = sorted({
+        issue for issue in issues
+        if any(token in issue.upper() for token in WEAK_PASS_HARD_ISSUE_TOKENS)
+    })
+    candidate = ledger.get("current_candidate") or {}
+    eligible = (
+        bool(row)
+        and str(ledger.get("status") or "") == "NEEDS_USER"
+        and content_attempts > WEAK_PASS_CONTENT_ATTEMPT_THRESHOLD
+        and bool(candidate.get("sha256"))
+        and bool(failed_checks or issues)
+        and not hard_checks
+        and not hard_issues
+    )
+    return {
+        "eligible": eligible,
+        "frame": int(frame),
+        "content_attempts": content_attempts,
+        "technical_attempts": technical_attempts,
+        "failed_checks": failed_checks,
+        "issue_codes": issues,
+        "hard_failed_checks": hard_checks,
+        "hard_issue_codes": hard_issues,
+        "threshold": WEAK_PASS_CONTENT_ATTEMPT_THRESHOLD,
+    }
+
+
+def weak_pass_eligible_frames(ep: Path) -> list[int]:
+    frames = []
+    for row in failed_rows(ep):
+        try:
+            frame = int(row.get("frame"))
+        except Exception:
+            continue
+        if active_candidate(ep, frame) is None and weak_pass_eligibility(ep, frame).get("eligible"):
+            frames.append(frame)
+    return sorted(set(frames))
+
+
+def apply_weak_passes(ep: Path, frames: list[int] | None = None) -> dict:
+    """Apply the speed policy to exact current candidates; never generate new pixels."""
+    ep = Path(ep).resolve()
+    wanted = sorted({int(x) for x in (frames or weak_pass_eligible_frames(ep)) if int(x) > 0})
+    review = _read(ep / REVIEW_REL)
+    profile_sha = str(review.get("profile_sha256") or "")
+    version = str(review.get("story_os_version") or "")
+    applied = []
+    blocked = []
+    for frame in wanted:
+        eligibility = weak_pass_eligibility(ep, frame)
+        if not eligibility.get("eligible"):
+            blocked.append(eligibility)
+            continue
+        row = _row_for_frame(ep, frame)
+        ledger = _ledger_frame(ep, frame)
+        candidate = ledger.get("current_candidate") or {}
+        asset = {
+            "id": str(row.get("id") or ""),
+            "role": str(row.get("role") or ""),
+            "frame": frame,
+            "sha256": str(candidate.get("sha256") or row.get("sha256") or "").lower(),
+            "frame_contract_sha256": str(row.get("frame_contract_sha256") or "").lower(),
+        }
+        reason = f"content attempts={eligibility['content_attempts']} exceeded {WEAK_PASS_CONTENT_ATTEMPT_THRESHOLD}; only soft visual-quality findings remain"
+        entry = visual_lock_admission_state.record_weak_pass(
+            ep, asset=asset, review_row=row, profile_sha256=profile_sha,
+            story_os_version=version, content_attempts=eligibility["content_attempts"],
+            technical_attempts=eligibility["technical_attempts"],
+            failed_checks=eligibility["failed_checks"], issue_codes=eligibility["issue_codes"],
+            reason=reason,
+        )
+        if not visual_lock_admission_state.restore_ledger_weak_pass(ep, asset=asset, weak_pass=entry["weak_pass"]):
+            blocked.append({**eligibility, "reason": "current_candidate_sha_drift"})
+            continue
+        applied.append({"frame": frame, **entry["weak_pass"], "sha256": asset["sha256"]})
+    projection = visual_lock_admission_state.sync_gate_decisions(ep) if applied else {}
+    pixel_master = _lock_pixel_master_after_accepted_visual_gate(ep, projection)
+    return {
+        "status": "PASS" if applied and not blocked else ("REUSED" if not wanted else "BLOCKED"),
+        "applied": applied,
+        "blocked": blocked,
+        "gate_projection": projection,
+        "pixel_master": pixel_master,
+    }
+
+
+def _lock_pixel_master_after_accepted_visual_gate(ep: Path, projection: dict) -> dict | None:
+    """Mirror the normal critic-PASS identity finalization after a policy weak-pass.
+
+    The baseline was already independently reviewed and may have established a
+    PROVISIONAL Pixel Master. Once all four admissions are accepted, including
+    an auditable WEAK_PASS, freeze that same baseline asset as the final master.
+    No image generation or creative judgment happens here.
+    """
+    ep = Path(ep).resolve()
+    if not bool((projection or {}).get("all_passed")):
+        return None
+    if not character_visual_contract.pixel_master_required(ep):
+        return {"status": "NOT_REQUIRED"}
+    gates = _read(ep / GATES_REL)
+    items = (((gates.get("visual") or {}).get("calibration") or {}).get("items") or [])
+    baseline = next(
+        (row for row in items if isinstance(row, dict) and row.get("role") == "ordinary_baseline" and row.get("decision") == "passed"),
+        None,
+    )
+    if not baseline:
+        raise RuntimeError("accepted Visual Lock has no passed ordinary_baseline for Pixel Master")
+    master = character_visual_contract.lock_pixel_master(
+        ep,
+        frame=int(baseline.get("frame") or 0),
+        asset_path=str(baseline.get("asset_path") or ""),
+        asset_sha256=str(baseline.get("sha256") or ""),
+        frame_contract_sha256=str(baseline.get("frame_contract_sha256") or ""),
+    )
+    return {"status": str(master.get("status") or ""), "frame": int(baseline.get("frame") or 0), "sha256": master.get("sha256")}
 
 
 def prepareable_frames(ep: Path) -> list[int]:
@@ -164,6 +354,25 @@ def _compact(values: list[str], limit: int = 3) -> str:
     return "、".join(out)
 
 
+def _frame_semantic_anchor(ep: Path, frame: int) -> str:
+    """Extract the concrete pixel evidence that makes this frame's event readable."""
+    try:
+        contract = frame_contract.compile_frame(Path(ep).resolve(), int(frame), write_cache=True)
+    except Exception:
+        return ""
+    material = contract.get("hash_material") or {}
+    directive = material.get("frame_directive") or {}
+    capture = material.get("capture_event") or {}
+    cues = [str(x).strip() for x in (directive.get("required_visual_cues") or []) if str(x).strip()]
+    retained = str(capture.get("retained_reason") or "").strip()
+    pieces: list[str] = []
+    if cues:
+        pieces.append("必须同画面清楚呈现：" + "；".join(cues[:2]))
+    if retained:
+        pieces.append("异常证据=" + retained)
+    return "。".join(pieces)
+
+
 def candidate_prompt(ep: Path, frame: int, slot: int) -> str:
     row = _row_for_frame(ep, frame)
     checks = row.get("checks") or {}
@@ -171,36 +380,40 @@ def candidate_prompt(ep: Path, frame: int, slot: int) -> str:
     findings.extend(str(x) for x in (row.get("issues") or []))
     focus = _compact(findings) or "reality_first、unposed_capture、not_cinematic"
     role = str(row.get("role") or "visual_lock_admission")
+    semantic_anchor = _frame_semantic_anchor(ep, frame)
     variants = {
-        "worst_capture_condition": (
-            "真实逆光/遮挡/走动模糊，脸可偏暗或局部过曝；禁止金色日落、HDR、整齐站位和旅游宣传构图。"
-        ),
-        "first_major_anomaly": (
-            "走路随手拍，异常必须在普通生活画面里一眼可辨；允许边缘遮挡和非完美构图，但异常核心形态/动作/反差必须清楚。禁止大全景、极深景深和海报式奇观。"
-        ),
-        "first_major_visual_contrast": (
-            "走路随手拍，首个视觉反差必须在普通生活画面里清楚可辨；允许局部遮挡，但关键反差不能被屋檐/行人/水汽完全遮没。禁止大全景、极深景深和海报式奇观。"
-        ),
-        "high_impact_admission": (
-            "保留大尺度但像偶然记录：主体偏心、前景遮挡/裁切、曝光不完美，人物仍做日常动作；禁止居中落日和海报构图。"
-        ),
+        "worst_capture_condition": "真实逆光/遮挡/走动模糊；可偏暗或局部过曝，禁HDR、整齐站位和宣传构图。",
+        "first_major_anomaly": "生活随手拍；异常必须一眼可辨，核心形态/动作/反差清楚，可局部遮挡；禁大全景、深景深和海报奇观。",
+        "first_major_visual_contrast": "生活随手拍；首个视觉反差清楚可辨，可局部遮挡；关键反差不能被屋檐/行人/水汽完全遮没。",
+        "high_impact_admission": "保留大尺度但像偶然记录：主体偏心、前景遮挡/裁切、曝光不完美；禁居中海报构图。",
     }
-    fallback = "手机随手拍优先：动作不中断、轻微偏斜/遮挡、自然曝光与真实皮肤；禁止宣传片、电影海报、HDR和摆拍。"
+    fallback = "手机随手拍：动作不中断、轻微偏斜/遮挡、自然曝光与真实皮肤；禁宣传片、HDR和摆拍。"
     variant = variants.get(role, fallback)
     if slot >= 2:
-        variant += " 第二候选再降精修感，增加生活杂物与非完美瞬间。"
+        variant += " 候选2再降精修感，增加生活杂物。"
+    anchor_clause = f"{semantic_anchor}。" if semantic_anchor else ""
     text = (
-        f"VL候选{slot} F{int(frame):02d} 角色={role}。保持Frame Contract、身份、服装、事件，不改剧情。"
-        f"修正：{focus}。{variant}"
+        f"VL[{CANDIDATE_POLICY_REVISION}]候选{slot} F{int(frame):02d} {role}。"
+        f"保持Frame Contract/身份/服装/事件。{anchor_clause}修正：{focus}。{variant}"
     )
     while len(text) > 245 or len(text.encode("utf-8")) > 850:
-        focus = focus[:-8] if len(focus) > 18 else "写实、非摆拍、非电影化"
+        focus = focus[:-8] if len(focus) > 18 else "写实、非摆拍"
+        if len(anchor_clause) > 110:
+            anchor_clause = anchor_clause[:110].rstrip("；，。 ") + "。"
         text = (
-            f"Visual Lock候选{slot} Frame{int(frame):02d}。保持Frame Contract与身份。针对：{focus}。{variant}"
+            f"VL[{CANDIDATE_POLICY_REVISION}]候选{slot} F{int(frame):02d}。保持Frame Contract/身份。"
+            f"{anchor_clause}修正：{focus}。{variant}"
         )
-        if len(focus) <= 18:
+        if len(focus) <= 12 and len(anchor_clause) <= 110:
             break
-    return text
+    # Hard compiler contract: enqueue must never hand image_scheduler a prompt
+    # that is already known to violate the local per-frame prompt budget. Keep the
+    # semantic anchor at the front and trim only the trailing stylistic guidance.
+    if len(text) > 245:
+        text = text[:245].rstrip("；，。 ")
+    while len(text.encode("utf-8")) > 850 and text:
+        text = text[:-1]
+    return text.rstrip("；，。 ")
 
 
 def enqueue_frame(ep: Path, frame: int) -> dict:
@@ -218,7 +431,7 @@ def enqueue_frame(ep: Path, frame: int) -> dict:
     slot = used + 1
     prompt_dir = ep / "prompts" / "visual-lock-candidates"
     prompt_dir.mkdir(parents=True, exist_ok=True)
-    prompt_path = prompt_dir / f"{int(frame):02d}-candidate-{slot}.txt"
+    prompt_path = prompt_dir / f"{int(frame):02d}-{CANDIDATE_POLICY_REVISION}-candidate-{slot}.txt"
     prompt_path.write_text(candidate_prompt(ep, frame, slot) + "\n", encoding="utf-8", newline="\n")
     import image_scheduler
     policy = image_model_policy.for_episode(ep)
@@ -230,7 +443,7 @@ def enqueue_frame(ep: Path, frame: int) -> dict:
         prompt_file=prompt_path,
         scope="repair",
         references=refs,
-        capture_id=f"visual-lock-candidate-{int(frame):02d}-{slot:02d}",
+        capture_id=f"visual-lock-candidate-{CANDIDATE_POLICY_REVISION}-{int(frame):02d}-{slot:02d}",
         model=policy["model"],
         quality=policy["quality"],
         strict_model=bool(policy.get("strict_model")),
@@ -264,7 +477,9 @@ def review_attempt(ep: Path) -> int:
             continue
         if frame == baseline_frame(ep):
             continue
-        slots = max(slots, successful_slots(ep, frame))
+        # Review attempt numbers must never go backwards when a prompt policy
+        # revision opens a fresh bounded candidate epoch.
+        slots = max(slots, historical_successful_slots(ep, frame))
     return base + slots
 
 

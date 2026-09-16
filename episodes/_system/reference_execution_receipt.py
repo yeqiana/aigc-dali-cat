@@ -22,6 +22,19 @@ def sha256_file(path: Path) -> str:
 
 
 def verify(ep: Path) -> list[str]:
+    gates_path = ep / "meta" / "story-gates.json"
+    try:
+        gates = json.loads(gates_path.read_text(encoding="utf-8-sig")) if gates_path.is_file() else {}
+    except Exception:
+        gates = {}
+    references = ((gates.get("visual") or {}).get("references") or {}) if isinstance(gates, dict) else {}
+    # Reference-execution evidence is a conditional contract. If this Episode
+    # does not declare references.required=true, forcing a synthetic global
+    # receipt would create fake evidence for pixels that legitimately had no
+    # required reference. Per-attempt reference evidence remains enforced by
+    # machine_gate whenever required references are declared.
+    if not isinstance(references, dict) or references.get("required") is not True:
+        return []
     receipt = ep / "meta" / "reference-execution-receipt.json"
     if not receipt.is_file():
         return ["reference execution receipt missing"]

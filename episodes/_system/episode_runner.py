@@ -175,13 +175,50 @@ def execute_cycle(episode: Path, codex: str | None = None, timeout: int | None =
     # this the only lane that can execute one is workflow_runner (the bounded
     # `run --full-auto` drain), so "the single resident Driver" would stop at the
     # first step that needs Codex and wait for a host that may never come back.
-    return runtime_dag.execute(episode, codex=codex, timeout=timeout)
+    rc = runtime_dag.execute(episode, codex=codex, timeout=timeout)
+    # A DAG step can legitimately return HOST_WAIT after it has materialized the
+    # *next* action.  If that freshly-derived action is now owned by this machine,
+    # handing rc=20 to the resident loop would incorrectly terminate an otherwise
+    # autonomous run and require an operator to type "continue".  Reconcile once
+    # after HOST_WAIT and consume that local action; genuine host-owned waits still
+    # return unchanged and therefore never spin.
+    if runtime_failure_classifier.classify(rc).category == "HOST_WAIT":
+        following = next_action.write(episode)
+        if local_host_action(following) is not None:
+            return run_local_host_action(episode, following)
+    return rc
 
 
 def progress_marker(episode:Path):
+    """Bounded resident-loop progress fingerprint, not a new authority.
+
+    Stage + queue alone misses legitimate metadata-only progress such as
+    APPLY_VISUAL_LOCK_WEAK_PASS: the ledger and next action advance while no image
+    row or stage changes.  Include those existing facts so three successful local
+    machine actions cannot be misclassified as CAPABILITY_WAIT/no-progress.
+    """
     queue=next_action.read_json(episode/"meta/production-queue.json")
-    return (runtime_dag.state(episode), tuple((x.get("id"),x.get("status"),x.get("attempts"),x.get("output_path"))
-        for x in queue.get("items") or []))
+    ledger=next_action.read_json(episode/"meta/production-ledger.json")
+    action=next_action.read_json(episode/next_action.REL)
+    frames=ledger.get("frames") or {}
+    ledger_marker=tuple(sorted(
+        (str(k), str(v.get("status") or ""), int(v.get("content_repairs_used") or 0))
+        for k,v in frames.items() if isinstance(v,dict)
+    )) if isinstance(frames,dict) else ()
+    action_marker=(
+        str(action.get("action") or ""),
+        str(action.get("executor") or ""),
+        tuple(int(x) for x in (action.get("frames") or []) if str(x).isdigit()),
+        bool(action.get("auto_recoverable")),
+        bool(action.get("hard_stop")),
+    ) if isinstance(action,dict) else ()
+    return (
+        runtime_dag.state(episode),
+        tuple((x.get("id"),x.get("status"),x.get("attempts"),x.get("output_path"))
+            for x in queue.get("items") or []),
+        ledger_marker,
+        action_marker,
+    )
 
 
 def run_episode(episode: Path, *, interval: int = 10, max_loops: int | None = None,

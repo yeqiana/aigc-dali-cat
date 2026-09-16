@@ -158,7 +158,7 @@ def progress(ep: Path, q: dict, *, requested_workers: int = 3) -> dict:
         "historical_adaptive_parallel": q.get("adaptive_parallel"),
         "adaptive_parallel_semantics": "history_only",
         "generated_frames": sum(any(a.get("result") == "success" for a in r.get("attempts") or []) for r in rows),
-        "content_passed_frames": sum(r.get("status") in {"PASSED", "LOCKED"} for r in rows),
+        "content_passed_frames": sum(r.get("status") in {"PASSED", "WEAK_PASS", "LOCKED"} for r in rows),
         "pending_review_frames": sum(r.get("status") in {"ORIGINAL_READY", "REPAIR_READY"} for r in rows),
         "pending_decision_frames": sum(r.get("status") == "NEEDS_USER" for r in rows),
         "canonical_stage": stage.get("current_state"),

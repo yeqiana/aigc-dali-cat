@@ -443,8 +443,8 @@ def cmd_promote(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
     key, frame = frame_obj(data, args.frame)
-    if frame["status"] != "PASSED":
-        raise SystemExit(f"promote requires PASSED and refuses to overwrite LOCKED assets, got {frame['status']}")
+    if frame["status"] not in {"PASSED", "WEAK_PASS"}:
+        raise SystemExit(f"promote requires PASSED/WEAK_PASS and refuses to overwrite LOCKED assets, got {frame['status']}")
     candidate_info = frame.get("current_candidate")
     if not isinstance(candidate_info, dict) or not candidate_info.get("path"):
         raise SystemExit("current candidate missing")

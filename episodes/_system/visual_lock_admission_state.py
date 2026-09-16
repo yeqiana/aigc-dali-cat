@@ -15,11 +15,13 @@ import json
 from pathlib import Path
 
 import story_json
+import frame_contract
 
 REL = Path("meta/visual-lock-admissions.json")
 GATES_REL = Path("meta/story-gates.json")
 LEDGER_REL = Path("meta/production-ledger.json")
 SCHEMA_VERSION = 1
+ACCEPTED_ADMISSION_STATUSES = frozenset({"PASS", "WEAK_PASS"})
 
 
 def now() -> str:
@@ -60,13 +62,16 @@ def binding(asset: dict, *, profile_sha256: str, story_os_version: str) -> dict:
 def valid_pass(ep: Path, asset: dict, *, profile_sha256: str, story_os_version: str) -> dict | None:
     data = load(ep)
     item = (data.get("items") or {}).get(str(asset.get("id") or ""))
-    if not isinstance(item, dict) or item.get("status") != "PASS":
+    if not isinstance(item, dict) or item.get("status") not in ACCEPTED_ADMISSION_STATUSES:
         return None
     expected = binding(asset, profile_sha256=profile_sha256, story_os_version=story_os_version)
     for key, value in expected.items():
         actual = item.get(key)
         if key in {"sha256", "frame_contract_sha256", "profile_sha256"}:
             actual = str(actual or "").lower()
+        if key == "frame_contract_sha256" and actual != value:
+            if frame_contract.recorded_contract_matches_current(ep, expected["frame"], actual):
+                continue
         if actual != value:
             return None
     review_row = item.get("review_row")
@@ -182,7 +187,7 @@ def valid_pass_for_gate_row(ep: Path, review_row: dict) -> bool:
         return False
     data = load(ep)
     entry = (data.get("items") or {}).get(rid)
-    if not isinstance(entry, dict) or entry.get("status") != "PASS":
+    if not isinstance(entry, dict) or entry.get("status") not in ACCEPTED_ADMISSION_STATUSES:
         return False
     current_profile_sha = _current_profile_sha(ep)
     current_version = _current_story_os_version(ep)
@@ -344,13 +349,17 @@ def sync_gate_decisions(ep: Path) -> dict:
         entry = registry.get(rid)
         valid = (
             isinstance(entry, dict)
-            and entry.get("status") == "PASS"
+            and entry.get("status") in ACCEPTED_ADMISSION_STATUSES
             and int(entry.get("frame") or 0) == int(item.get("frame") or 0)
             and str(entry.get("sha256") or "").lower() == str(item.get("sha256") or "").lower()
             and str(entry.get("frame_contract_sha256") or "").lower() == str(item.get("frame_contract_sha256") or "").lower()
         )
         if valid:
             item["decision"] = "passed"
+            if entry.get("status") == "WEAK_PASS":
+                item["weak_pass"] = True
+                item["weak_pass_reason"] = str((entry.get("weak_pass") or {}).get("weak_pass_reason") or "")
+                item["approved_by_policy"] = str((entry.get("weak_pass") or {}).get("approved_by_policy") or "")
             passed_frames.append(int(item.get("frame") or 0))
     reviews = gates.setdefault("reviews", {})
     reviews["visual_admission"] = "passed" if items and all(
@@ -377,7 +386,7 @@ def restore_ledger_pass(ep: Path, *, asset: dict, evidence_note: str) -> bool:
     candidate = frame.get("current_candidate") or {}
     if str(candidate.get("sha256") or "").lower() != str(asset.get("sha256") or "").lower():
         return False
-    if frame.get("status") in {"PASSED", "LOCKED"}:
+    if frame.get("status") in {"PASSED", "WEAK_PASS", "LOCKED"}:
         return True
     frame.setdefault("reviews", []).append({
         "at": now(),
@@ -388,6 +397,78 @@ def restore_ledger_pass(ep: Path, *, asset: dict, evidence_note: str) -> bool:
         "frame_contract_sha256": str(asset.get("frame_contract_sha256") or "").lower(),
     })
     frame["status"] = "PASSED"
+    ledger["updated_at"] = now()
+    story_json.write_json(path, ledger)
+    return True
+
+
+def record_weak_pass(
+    ep: Path,
+    *,
+    asset: dict,
+    review_row: dict,
+    profile_sha256: str,
+    story_os_version: str,
+    content_attempts: int,
+    technical_attempts: int,
+    failed_checks: list[str],
+    issue_codes: list[str],
+    reason: str,
+) -> dict:
+    """Persist a SHA-bound low-score acceptance without rewriting critic FAIL evidence."""
+    ep = Path(ep)
+    data = load(ep)
+    rid = str(asset.get("id") or "")
+    entry = binding(asset, profile_sha256=profile_sha256, story_os_version=story_os_version)
+    weak = {
+        "weak_pass": True,
+        "weak_pass_reason": str(reason),
+        "failed_checks": sorted({str(x) for x in failed_checks if str(x)}),
+        "issue_codes": sorted({str(x) for x in issue_codes if str(x)}),
+        "content_attempts": int(content_attempts),
+        "technical_attempts": int(technical_attempts),
+        "approved_by_policy": "attempt_over_3_auto_release",
+    }
+    entry.update({
+        "status": "WEAK_PASS",
+        "reviewed_at": now(),
+        "attempt": int(content_attempts),
+        "review_row": dict(review_row),
+        "provenance": {"policy": "attempt_over_3_auto_release"},
+        "weak_pass": weak,
+    })
+    data.setdefault("items", {})[rid] = entry
+    data["updated_at"] = now()
+    story_json.write_json(ep / REL, data)
+    return entry
+
+
+def restore_ledger_weak_pass(ep: Path, *, asset: dict, weak_pass: dict) -> bool:
+    """Accept only the exact current candidate SHA and retain the quality debt explicitly."""
+    ep = Path(ep)
+    path = ep / LEDGER_REL
+    ledger = _read(path)
+    frame_key = f"{int(asset.get('frame') or 0):02d}"
+    frame = (ledger.get("frames") or {}).get(frame_key)
+    if not isinstance(frame, dict):
+        return False
+    candidate = frame.get("current_candidate") or {}
+    if str(candidate.get("sha256") or "").lower() != str(asset.get("sha256") or "").lower():
+        return False
+    audit = dict(weak_pass or {})
+    audit["weak_pass"] = True
+    audit["approved_by_policy"] = "attempt_over_3_auto_release"
+    audit["accepted_at"] = now()
+    frame["weak_pass"] = audit
+    frame.setdefault("reviews", []).append({
+        "at": audit["accepted_at"],
+        "decision": "weak_pass",
+        "notes": str(audit.get("weak_pass_reason") or "content attempts exceeded speed policy"),
+        "candidate_sha256": str(asset.get("sha256") or "").lower(),
+        "frame_contract_sha256": str(asset.get("frame_contract_sha256") or "").lower(),
+        "approved_by_policy": "attempt_over_3_auto_release",
+    })
+    frame["status"] = "WEAK_PASS"
     ledger["updated_at"] = now()
     story_json.write_json(path, ledger)
     return True

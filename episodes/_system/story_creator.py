@@ -86,10 +86,24 @@ def ensure_episode_core_documents(
             continue
         story_json.write_json(path, documents[key])
         created.append(path.relative_to(episode).as_posix())
+    # Modern episodes use the governed/frozen Visual Profile itself as the
+    # visual-spec artifact. Older episodes may still carry a dedicated markdown
+    # visual spec; never overwrite that explicit path.
+    visual_lock_path = meta / "visual-profile.json"
+    manifest_path = paths["manifest"]
+    visual_spec_backfilled = False
+    if visual_lock_path.is_file() and manifest_path.is_file():
+        current_manifest = story_json.read_json(manifest_path, default={})
+        current_artifacts = current_manifest.setdefault("artifacts", {})
+        if not current_artifacts.get("visual_spec"):
+            current_artifacts["visual_spec"] = visual_lock_path.resolve().relative_to(root.resolve()).as_posix()
+            story_json.write_json(manifest_path, current_manifest)
+            visual_spec_backfilled = True
     world_override = world_identity_contract.ensure_visual_profile_override(episode, profile_id)
     return {
         "created": created,
         "paths": {key: value.as_posix() for key, value in paths.items()},
+        "visual_spec_backfilled": visual_spec_backfilled,
         "world_identity_override": bool(world_override),
     }
 

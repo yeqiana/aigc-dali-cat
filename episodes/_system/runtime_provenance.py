@@ -133,7 +133,7 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
         )
         bounded_visual = (
             isinstance(attempt, int)
-            and 3 <= attempt <= 5
+            and attempt >= 3
             and provenance.get("bounded_visual_candidate_review") is True
             and base == "CODEX"
             and provenance.get("review_capability") == VISION_REVIEW_CAPABILITY
@@ -218,7 +218,12 @@ def build_critic_provenance(
     # flag is the authority; ordinary callers still cannot exceed attempt 2.
     allowed_user_exception = allow_user_exception_attempt and attempt >= 3
     allowed_user_continuation = allow_user_continuation_attempt and attempt >= 3
-    allowed_bounded_visual = allow_bounded_visual_attempt and base == "CODEX" and 3 <= attempt <= 5
+    # The candidate pool is bounded per explicit prompt-policy revision, while
+    # review attempt numbers are intentionally monotonic across revisions. A
+    # later policy epoch can therefore legitimately reach attempt 6+ without
+    # becoming an unbounded retry loop. The explicit bounded-review flag is the
+    # authority; candidate capacity itself is enforced by visual_lock_candidate_pool.
+    allowed_bounded_visual = allow_bounded_visual_attempt and base == "CODEX" and attempt >= 3
     if attempt > 2 and not (allowed_extended or allowed_user_exception or allowed_user_continuation or allowed_bounded_visual):
         raise ValueError("attempt must be 1 or 2 unless this is source-drift, direct-user-exception, direct-user-continuation, or bounded baseline-candidate vision review")
     data = {

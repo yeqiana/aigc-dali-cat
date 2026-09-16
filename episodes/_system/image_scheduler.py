@@ -55,7 +55,7 @@ RETRYABLE_TECH_CODES = {
     "NETWORK_ERROR", "NETWORK_CONNECT", "RATE_LIMIT_429", "BACKEND_5XX", "PROVIDER_CAPACITY", "TIMEOUT", "IMAGE_BACKEND_ERROR",
     "IMAGE_BACKEND_NO_OUTPUT",
     "LOCAL_WORKSPACE_PERMISSION",
-    "PROVIDER_ARTIFACT_SAVE_COLLISION", "WORKER_INTERRUPTED_FAILURE",
+    "PROVIDER_ARTIFACT_SAVE_COLLISION", "WORKER_INTERRUPTED_FAILURE", "WORKER_PROCESS_LOST",
 }
 NON_REGENERATING_FAILURE_CODES = {
     "NORMALIZE_REVIEW", "ASPECT_RATIO_MISMATCH", "NORMALIZE_TECHNICAL_FAILURE",
@@ -665,11 +665,11 @@ def _apply_model_failover(item:dict,code:str)->str|None:
 
 
 def resume_authorized_budget(ep:Path,frames:list[int]|None=None)->dict:
-    """Requeue only budget-blocked items whose explicit authorization now fits.
+    """Requeue only budget-blocked items whose current bounded budget now fits.
 
-    Authorization itself remains a user decision in raw_candidate_budget. This
-    deterministic step merely consumes that recorded decision; it never raises
-    a limit and never guesses approval.
+    Capacity may come from an explicit user authorization or from a deterministic
+    semantic/policy budget epoch already encoded by raw_candidate_budget. This
+    step never raises a limit and never guesses approval.
     """
     ep=Path(ep).resolve();wanted={int(x) for x in (frames or [])}
     with queue_transaction(ep):
@@ -685,7 +685,7 @@ def resume_authorized_budget(ep:Path,frames:list[int]|None=None)->dict:
             frame=int(item.get("frame") or 0)
             if frame not in allowed:
                 continue
-            item.setdefault("budget_recovery",[]).append({"at":now(),"reason":"explicit_budget_authorization_consumed"})
+            item.setdefault("budget_recovery",[]).append({"at":now(),"reason":"bounded_budget_capacity_available"})
             item["status"]="queued"
             item["last_error"]=None
             item.pop("technical_failure_code",None)

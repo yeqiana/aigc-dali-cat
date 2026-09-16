@@ -50,6 +50,84 @@ def test_authorization_never_infers_user_approval():
             budget.authorize_frame_budget(ep, frame=1, kind="repair", additional=0, source="user")
 
 
+def test_visual_lock_policy_revision_gets_its_own_bounded_exception_slots_without_raising_episode_cap():
+    with tempfile.TemporaryDirectory() as td:
+        ep = Path(td)
+        # Legacy Visual Lock candidates consumed the historical exception bucket.
+        for idx in (1, 2):
+            ok, row = budget.claim(ep, 3, "exception", token=f"legacy-{idx}")
+            assert ok, row
+            assert budget.commit(ep, f"legacy-{idx}")[0]
+
+        item = {
+            "id": "v2-1",
+            "frame": 3,
+            "kind": "baseline_candidate",
+            "capture_id": "visual-lock-candidate-v2-semantic-anchor-03-01",
+            "status": "blocked",
+            "technical_failure_code": "RAW_CANDIDATE_BUDGET_EXHAUSTED",
+        }
+        semantic = budget.semantic_key_for_queue_item(item)
+        assert semantic == "visual-lock-policy:v2-semantic-anchor"
+        context = budget.blocked_queue_context(ep, [item])
+        assert context["items"][0]["bucket_used"] == 2
+        assert context["items"][0]["used"] == 0
+        assert context["items"][0]["frame_capacity_available"] == 2
+        assert context["authorization_required"] is False
+        assert context["resumable_frames"] == [3]
+        # The global Episode cap is unchanged; only the per-policy frame accounting
+        # gets a fresh bounded two-candidate epoch.
+        assert context["episode"]["limit"] == 35
+
+        for idx in (1, 2):
+            ok, row = budget.claim(ep, 3, "exception", token=f"v2-{idx}", semantic_key=semantic)
+            assert ok, row
+            assert row["used"] == idx
+            assert budget.commit(ep, f"v2-{idx}")[0]
+        ok, row = budget.claim(ep, 3, "exception", token="v2-3", semantic_key=semantic)
+        assert not ok
+        assert row["decision"] == "STOP_IMAGE_LOOP"
+        assert row["used"] == 2
+        assert row["bucket_used"] == 4
+
+
+def test_visual_lock_policy_epoch_is_machine_resumable_without_fake_user_authorization():
+    with tempfile.TemporaryDirectory() as td:
+        ep = Path(td)
+        (ep / "meta").mkdir(parents=True)
+        budget.story_json.write_json(ep / "meta/episode-state.json", {"current_state": "VISUAL_CALIBRATED"})
+        budget.story_json.write_json(ep / "meta/release-manifest.json", {"release": {"body_frame_count": 1}})
+        for idx in (1, 2):
+            ok, row = budget.claim(ep, 3, "exception", token=f"legacy-{idx}")
+            assert ok, row
+            assert budget.commit(ep, f"legacy-{idx}")[0]
+        item = {
+            "id": "v2-blocked",
+            "frame": 3,
+            "kind": "baseline_candidate",
+            "scope": "repair",
+            "capture_id": "visual-lock-candidate-v2-semantic-anchor-03-01",
+            "status": "blocked",
+            "technical_failure_code": "RAW_CANDIDATE_BUDGET_EXHAUSTED",
+            "last_error": "RAW_CANDIDATE_BUDGET_EXHAUSTED: STOP_IMAGE_LOOP",
+        }
+        scheduler_core.save_queue(ep, {"schema_version": 1, "items": [item], "waves": []})
+
+        resumable = next_action.derive(ep)
+        assert resumable["action"] == "RESUME_BUDGET_AUTHORIZED_IMAGES"
+        assert resumable["executor"] == "MACHINE"
+        assert resumable["auto_recoverable"] is True
+        assert resumable["hard_stop"] is False
+        assert resumable["budget"]["authorization_required"] is False
+        assert "explicit" not in resumable["reason"].lower()
+        assert "authorization" not in resumable["reason"].lower()
+        result = machine_action_executor.execute(ep, resumable)
+        assert result["status"] == "PASS"
+        queue = scheduler_core.load_queue(ep)
+        assert queue["items"][0]["status"] == "queued"
+        assert queue["items"][0]["budget_recovery"][-1]["reason"] == "bounded_budget_capacity_available"
+
+
 def test_episode_authorization_resumes_machine_authorized_authority_refresh_lane():
     with tempfile.TemporaryDirectory() as td:
         ep = Path(td)
@@ -127,6 +205,8 @@ def test_exhausted_frame_budget_routes_to_user_then_machine_resume_after_authori
         resumable = next_action.derive(ep)
         assert resumable["action"] == "RESUME_BUDGET_AUTHORIZED_IMAGES"
         assert resumable["executor"] == "MACHINE"
+        assert resumable["auto_recoverable"] is True
+        assert resumable["hard_stop"] is False
         result = machine_action_executor.execute(ep, resumable)
         assert result["status"] == "PASS"
         queue = scheduler_core.load_queue(ep)

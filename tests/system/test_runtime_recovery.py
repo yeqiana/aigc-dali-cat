@@ -39,6 +39,26 @@ class RecoveryTests(unittest.TestCase):
             self.assertEqual(runner.run_episode(self.ep,interval=0),24)
             self.assertEqual(execute.call_count,3)
 
+    def test_progress_marker_sees_metadata_only_weak_pass_progress(self):
+        atomic_write_json(self.ep / "meta/production-queue.json", {"items": []})
+        atomic_write_json(self.ep / "meta/production-ledger.json", {
+            "frames": {"03": {"status": "NEEDS_USER", "content_repairs_used": 1}}
+        })
+        atomic_write_json(self.ep / runner.next_action.REL, {
+            "action": "APPLY_VISUAL_LOCK_WEAK_PASS", "executor": "MACHINE",
+            "frames": [3], "auto_recoverable": True, "hard_stop": False,
+        })
+        before = runner.progress_marker(self.ep)
+        atomic_write_json(self.ep / "meta/production-ledger.json", {
+            "frames": {"03": {"status": "WEAK_PASS", "content_repairs_used": 1}}
+        })
+        atomic_write_json(self.ep / runner.next_action.REL, {
+            "action": "REVIEW_VISUAL_LOCK", "executor": "CODEX_VISION",
+            "frames": [3], "auto_recoverable": True, "hard_stop": False,
+        })
+        after = runner.progress_marker(self.ep)
+        self.assertNotEqual(before, after)
+
     def test_terminal_stage_requires_real_gate_validation(self):
         atomic_write_json(self.ep/"meta/episode-state.json",{"current_state":"PUBLISH_READY"})
         with patch.object(runner.runtime_dag,"validate_target",return_value=(False,"snapshot missing")):

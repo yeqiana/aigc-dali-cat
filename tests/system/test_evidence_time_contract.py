@@ -39,3 +39,27 @@ def test_runtime_critic_provenance_rejects_future_review_time():
     ).isoformat()
     errors = runtime_provenance.validate_critic_provenance(provenance)
     assert any("critic_provenance.reviewed_at is in the future" in error for error in errors)
+
+
+def test_bounded_visual_candidate_provenance_allows_monotonic_attempt_after_policy_epoch():
+    provenance = runtime_provenance.build_vision_critic_provenance(
+        attempt=6,
+        review_scope="VISUAL_LOCK_DIRTY_ADMISSION",
+        allow_bounded_candidate_attempt=True,
+    )
+    assert provenance["attempt"] == 6
+    assert provenance["bounded_visual_candidate_review"] is True
+    assert runtime_provenance.validate_critic_provenance(provenance) == []
+
+
+def test_high_attempt_without_bounded_visual_authority_still_fails_closed():
+    try:
+        runtime_provenance.build_vision_critic_provenance(
+            attempt=6,
+            review_scope="VISUAL_LOCK_DIRTY_ADMISSION",
+            allow_bounded_candidate_attempt=False,
+        )
+    except ValueError as exc:
+        assert "attempt must be 1 or 2" in str(exc)
+    else:
+        raise AssertionError("unbounded high-attempt visual review must fail closed")

@@ -90,17 +90,52 @@ def visual_assets(ep: Path) -> tuple[list[dict], dict]:
     gates = load_json(ep / GATES_REL)
     artifacts = manifest.get('artifacts') or {}
     visual = gates.get('visual') or {}
+    calibration = visual.get('calibration') or {}
+    admission_items = calibration.get('items') or []
+    modern_four_admission = (
+        calibration.get('policy') == 'four_admission_v21'
+        and isinstance(admission_items, list)
+        and len(admission_items) == 4
+    )
     rows: list[dict] = []
-    spec = repo_path(artifacts.get('visual_spec'), 'manifest.artifacts.visual_spec')
-    rows.append(row_for_path(spec, 'visual_spec'))
+    raw_spec = artifacts.get('visual_spec')
+    if isinstance(raw_spec, str) and raw_spec.strip():
+        spec = repo_path(raw_spec, 'manifest.artifacts.visual_spec')
+        rows.append(row_for_path(spec, 'visual_spec'))
+    elif modern_four_admission:
+        # V2.1+ no longer needs a separately authored legacy visual-spec markdown.
+        # The frozen Visual Profile is the current visual specification authority.
+        spec = ep / 'meta/visual-profile.json'
+        if not spec.is_file():
+            raise SystemExit('modern Visual Lock requires meta/visual-profile.json')
+        rows.append(row_for_path(spec, 'visual_profile_lock'))
+    else:
+        raise SystemExit('manifest.artifacts.visual_spec missing')
 
     sheet = visual.get('calibration_contact_sheet') or {}
-    sheet_path = repo_path(sheet.get('path'), 'visual.calibration_contact_sheet.path')
-    sheet_row = row_for_path(sheet_path, 'calibration_contact_sheet')
-    expected_sheet = str(sheet.get('sha256') or '').lower()
-    if expected_sheet and expected_sheet != sheet_row['sha256'].lower():
-        raise SystemExit('calibration contact sheet hash already drifted before Visual Lock')
-    rows.append(sheet_row)
+    if sheet.get('path'):
+        sheet_path = repo_path(sheet.get('path'), 'visual.calibration_contact_sheet.path')
+        sheet_row = row_for_path(sheet_path, 'calibration_contact_sheet')
+        expected_sheet = str(sheet.get('sha256') or '').lower()
+        if expected_sheet and expected_sheet != sheet_row['sha256'].lower():
+            raise SystemExit('calibration contact sheet hash already drifted before Visual Lock')
+        rows.append(sheet_row)
+    elif modern_four_admission:
+        # A contact sheet is presentation-only. Bind delegated approval directly
+        # to all four exact admission pixels so current Visual Lock never has to
+        # manufacture a legacy three-frame sheet merely to satisfy approval IO.
+        for item in admission_items:
+            if not isinstance(item, dict) or item.get('decision') != 'passed':
+                raise SystemExit('modern Visual Lock admission must be passed before delegated approval')
+            admission_id = str(item.get('id') or '')
+            p = repo_path(item.get('asset_path'), f'visual admission[{admission_id}].asset_path')
+            row = row_for_path(p, f'visual_admission:{admission_id}')
+            expected = str(item.get('sha256') or '').lower()
+            if not expected or expected != row['sha256'].lower():
+                raise SystemExit(f'visual admission hash drift before Visual Lock: {admission_id}')
+            rows.append(row)
+    else:
+        raise SystemExit('visual.calibration_contact_sheet.path missing')
 
     refs = visual.get('references') or {}
     for item in refs.get('items') or []:

@@ -15,6 +15,7 @@ if str(SYSTEM) not in sys.path:
 import auto_repair_enqueue
 import baseline_candidate_pool
 import character_appearance_anchor
+import codex_subscription_image
 import episode_runner
 import image_artifact_collector
 import image_blocked_recovery
@@ -208,6 +209,43 @@ class TechnicalRetryPolicyTests(unittest.TestCase):
         self.assertEqual(image_model_policy.classify_backend_error("image generation failed: network error: error sending request"), "NETWORK_ERROR")
         self.assertEqual(image_scheduler.classify_error("NETWORK_ERROR: error sending request"), "NETWORK_ERROR")
 
+    def test_network_error_wins_over_same_invocation_degenerate_candidate(self):
+        with tempfile.TemporaryDirectory() as td:
+            tiny = Path(td) / "tiny.png"
+            codex_subscription_image.Image.new("RGB", (100, 100)).save(tiny, "PNG")
+            self.assertTrue(codex_subscription_image.valid_image(tiny))
+            self.assertFalse(codex_subscription_image.provider_raw_candidate_viable(tiny))
+            code = codex_subscription_image.logged_backend_failure(
+                "image generation failed: network error: error sending request",
+                returncode=0,
+                candidate_valid=True,
+                candidate_viable=False,
+            )
+            self.assertEqual(code, "NETWORK_ERROR")
+
+    def test_good_candidate_is_not_failed_by_incidental_network_warning(self):
+        with tempfile.TemporaryDirectory() as td:
+            image = Path(td) / "good.png"
+            minimum = int(codex_subscription_image.provider_capability.PROVIDER_RAW_MIN_DIMENSION)
+            codex_subscription_image.Image.new("RGB", (minimum, minimum)).save(image, "PNG")
+            self.assertTrue(codex_subscription_image.provider_raw_candidate_viable(image))
+            code = codex_subscription_image.logged_backend_failure(
+                "old warning: network error: error sending request",
+                returncode=0,
+                candidate_valid=True,
+                candidate_viable=True,
+            )
+            self.assertIsNone(code)
+
+    def test_degenerate_candidate_without_technical_log_keeps_canonical_raw_error(self):
+        code = codex_subscription_image.logged_backend_failure(
+            "image_generation completed",
+            returncode=0,
+            candidate_valid=True,
+            candidate_viable=False,
+        )
+        self.assertIsNone(code)
+
     def test_provider_capacity_is_explicit_retryable_technical_failure(self):
         line = "Selected model is at capacity. Please try a different model."
         self.assertEqual(image_model_policy.classify_backend_error(line), "PROVIDER_CAPACITY")
@@ -235,6 +273,15 @@ class TechnicalRetryPolicyTests(unittest.TestCase):
             "last_error": "[Errno 13] Permission denied: C:\\Temp\\story-os-image-abc\\reference-01.png",
         }
         self.assertEqual(image_scheduler._technical_retry_code(item), "LOCAL_WORKSPACE_PERMISSION")
+
+    def test_worker_process_lost_requeues_as_retryable_technical_failure(self):
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            self._queue(ep, {"id": "q1", "frame": 3, "kind": "baseline_candidate", "scope": "repair", "status": "tech_failed", "attempts": 6, "technical_retry_epoch_start_attempt": 5, "technical_failure_code": "WORKER_PROCESS_LOST", "last_error": "worker disappeared before terminal receipt"})
+            result = image_scheduler.retry_tech(ep, sleep_fn=lambda seconds: self.assertEqual(seconds, 15))
+            queue = json.loads((ep / "meta/production-queue.json").read_text(encoding="utf-8"))
+            self.assertEqual(result["requeued"], 1)
+            self.assertEqual(queue["items"][0]["status"], "queued")
 
     def test_third_capacity_failure_closes_epoch_immediately(self):
         item = {"attempts": 3, "technical_retry_epoch_start_attempt": 0}
@@ -708,6 +755,23 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
         self.assertFalse(action["hard_stop"])
         self.assertTrue(action["auto_recoverable"])
 
+    def test_soft_visual_failure_over_three_routes_to_weak_pass_before_pool_or_human_stop(self):
+        frames = [1, 3, 8, 16]
+        queue = {"items": [
+            {"frame": n, "kind": "original", "scope": "visual_lock", "status": "generated"}
+            for n in frames
+        ]}
+        ledger = {f"{n:02d}": {"status": "PASSED"} for n in frames}
+        ledger["03"] = {"status": "NEEDS_USER", "current_candidate": {"sha256": "c" * 64}}
+        with patch.object(next_action.visual_lock_candidate_pool, "weak_pass_eligible_frames", return_value=[3]), \
+                patch.object(next_action.visual_lock_candidate_pool, "prepareable_frames", return_value=[]), \
+                patch.object(next_action.visual_lock_candidate_pool, "exhausted_frames", return_value=[3]):
+            action = self._derive(state="STORYBOARD_LOCKED", queue=queue, ledger=ledger, visual_errors=["soft visual failure"])
+        self.assertEqual((action["action"], action["executor"]), ("APPLY_VISUAL_LOCK_WEAK_PASS", "MACHINE"))
+        self.assertEqual(action["frames"], [3])
+        self.assertTrue(action["auto_recoverable"])
+        self.assertFalse(action["hard_stop"])
+
     def test_needs_user_frame_does_not_preempt_runnable_sibling_generation(self):
         queue = {"items": [
             {"id": "old01", "frame": 1, "kind": "original", "scope": "batch", "status": "generated"},
@@ -773,6 +837,32 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
             action = self._derive(state="STORYBOARD_LOCKED", queue=queue, ledger=ledger, visual_errors=["stale"])
         self.assertEqual((action["action"], action["executor"]), ("RESOLVE_IMAGE_NORMALIZATION", "MACHINE"))
         self.assertEqual(action["frames"], [17])
+        self.assertFalse(action["hard_stop"])
+
+    def test_current_policy_prompt_budget_block_routes_to_machine_recompile(self):
+        frames = [1, 3, 8, 16]
+        blocked = {
+            "id": "vl3",
+            "frame": 3,
+            "kind": "baseline_candidate",
+            "scope": "repair",
+            "status": "blocked",
+            "capture_id": f"visual-lock-candidate-{next_action.visual_lock_candidate_pool.CANDIDATE_POLICY_REVISION}-03-02",
+            "attempts": 0,
+            "output_path": None,
+            "last_error": "prompt budget exceeded: 268 chars/560 bytes; limit=260 chars/900 bytes",
+            "execution": {"phase": "BEGIN_REJECTED"},
+        }
+        queue = {"items": [
+            *[{"frame": n, "kind": "original", "scope": "visual_lock", "status": "generated", "completed_at": "2026-09-16T10:00:00+08:00"} for n in frames],
+            blocked,
+        ]}
+        ledger = {f"{n:02d}": {"status": "PASSED"} for n in frames}
+        ledger["03"] = {"status": "NEEDS_USER", "content_repairs_used": 1}
+        action = self._derive(state="STORYBOARD_LOCKED", queue=queue, ledger=ledger, visual_errors=["stale"])
+        self.assertEqual((action["action"], action["executor"]), ("PREPARE_VISUAL_LOCK_CANDIDATES", "MACHINE"))
+        self.assertEqual(action["frames"], [3])
+        self.assertTrue(action["auto_recoverable"])
         self.assertFalse(action["hard_stop"])
 
     def test_unrecoverable_nonregenerating_block_hard_stops_before_visual_review(self):
@@ -1051,6 +1141,18 @@ class ContinuousHostLoopTests(unittest.TestCase):
                     patch.object(episode_runner.runtime_dag, "execute", side_effect=AssertionError("DAG must not run for a local image action")):
                 self.assertEqual(episode_runner.execute_cycle(episode), 5)
             runner.assert_called_once()
+
+    def test_execute_cycle_consumes_fresh_local_action_after_dag_host_wait(self):
+        initial = {"action": "VISUAL_LOCK", "executor": "WORK"}
+        following = {"action": "APPLY_VISUAL_LOCK_WEAK_PASS", "executor": "MACHINE", "frames": [3]}
+        with tempfile.TemporaryDirectory() as td:
+            episode = Path(td)
+            with patch.object(episode_runner.next_action, "write", side_effect=[initial, following]), \
+                    patch.object(episode_runner, "local_host_action", side_effect=[None, "APPLY_VISUAL_LOCK_WEAK_PASS"]), \
+                    patch.object(episode_runner.runtime_dag, "execute", return_value=product_runtime_adapter.HOST_ACTION_REQUIRED_RC), \
+                    patch.object(episode_runner, "run_local_host_action", return_value=0) as local_runner:
+                self.assertEqual(episode_runner.execute_cycle(episode), 0)
+            local_runner.assert_called_once_with(episode, following)
 
     def test_execute_cycle_falls_back_to_dag(self):
         with tempfile.TemporaryDirectory() as td:

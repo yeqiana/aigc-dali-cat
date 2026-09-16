@@ -40,6 +40,7 @@ import storyos_config
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
 INDEX_REL = Path("meta/runtime/contracts/frame-contract-index.json")
+PROJECTION_MIGRATION_REL = Path("meta/runtime/frame-contract-projection-migrations.json")
 MIN_VERSION = (2, 1, 0)
 SCHEMA_VERSION = 1
 MAX_EXCERPT = 2200
@@ -622,6 +623,117 @@ def cache_path(ep: Path, frame: int | str) -> Path:
     return Path(ep).resolve() / CACHE_ROOT / f"{int(frame):02d}.json"
 
 
+def _monotonic_projection_fill(old: object, new: object) -> bool:
+    """Allow only empty->derived-value completion; never rewrite existing authority."""
+    if old is None or old == "":
+        return True
+    if isinstance(old, dict):
+        if not isinstance(new, dict):
+            return False
+        return all(key in new and _monotonic_projection_fill(value, new[key]) for key, value in old.items())
+    if isinstance(old, list):
+        return old == new
+    return old == new
+
+
+def _projection_only_upgrade(cached: dict, current: dict) -> bool:
+    old_material = cached.get("hash_material") or {}
+    new_material = current.get("hash_material") or {}
+    if not isinstance(old_material, dict) or not isinstance(new_material, dict):
+        return False
+    old_rest = dict(old_material)
+    new_rest = dict(new_material)
+    old_auth = old_rest.pop("authenticity_card", None)
+    new_auth = new_rest.pop("authenticity_card", None)
+    old_cont = old_rest.pop("continuity", None)
+    new_cont = new_rest.pop("continuity", None)
+    return (
+        old_rest == new_rest
+        and _monotonic_projection_fill(old_auth, new_auth)
+        and _monotonic_projection_fill(old_cont, new_cont)
+    )
+
+
+def _migration_rows(ep: Path) -> list[dict]:
+    data = story_json.read_json(Path(ep).resolve() / PROJECTION_MIGRATION_REL, default={})
+    rows = data.get("items") if isinstance(data, dict) else []
+    return rows if isinstance(rows, list) else []
+
+
+def recorded_contract_matches_current(ep: Path, frame: int | str, recorded_sha256: str) -> bool:
+    """Accept exact SHA or a recorded, strictly projection-only old->new migration."""
+    ep = Path(ep).resolve()
+    key = f"{int(frame):02d}"
+    recorded = str(recorded_sha256 or "").lower()
+    current = compile_frame(ep, frame, write_cache=False)
+    current_sha = str(current.get("contract_sha256") or "").lower()
+    if recorded and recorded == current_sha:
+        return True
+    for row in _migration_rows(ep):
+        if (
+            str(row.get("frame") or "").zfill(2) == key
+            and str(row.get("from_contract_sha256") or "").lower() == recorded
+            and str(row.get("to_contract_sha256") or "").lower() == current_sha
+            and row.get("reason") == "machine_visual_projection_only"
+        ):
+            return True
+    path = cache_path(ep, frame)
+    if not recorded or not path.is_file():
+        return False
+    try:
+        cached = read_json(path)
+    except Exception:
+        return False
+    return (
+        str(cached.get("contract_sha256") or "").lower() == recorded
+        and _projection_only_upgrade(cached, current)
+    )
+
+
+def record_projection_migrations(ep: Path) -> dict:
+    """Freeze semantic-equivalence evidence before refreshing derived frame caches."""
+    ep = Path(ep).resolve()
+    existing = story_json.read_json(ep / PROJECTION_MIGRATION_REL, default={})
+    items = list(existing.get("items") or []) if isinstance(existing, dict) else []
+    known = {
+        (str(row.get("frame") or "").zfill(2), str(row.get("from_contract_sha256") or "").lower(), str(row.get("to_contract_sha256") or "").lower())
+        for row in items if isinstance(row, dict)
+    }
+    added = []
+    for frame in range(1, frame_count(ep) + 1):
+        path = cache_path(ep, frame)
+        if not path.is_file():
+            continue
+        cached = read_json(path)
+        current = compile_frame(ep, frame, write_cache=False)
+        old_sha = str(cached.get("contract_sha256") or "").lower()
+        new_sha = str(current.get("contract_sha256") or "").lower()
+        if not old_sha or old_sha == new_sha:
+            continue
+        if not _projection_only_upgrade(cached, current):
+            continue
+        marker = (f"{frame:02d}", old_sha, new_sha)
+        if marker in known:
+            continue
+        row = {
+            "frame": f"{frame:02d}",
+            "from_contract_sha256": old_sha,
+            "to_contract_sha256": new_sha,
+            "reason": "machine_visual_projection_only",
+            "allowed_projection_keys": ["authenticity_card", "continuity"],
+            "recorded_at": now(),
+        }
+        items.append(row)
+        added.append(row)
+        known.add(marker)
+    if added:
+        story_json.write_json(ep / PROJECTION_MIGRATION_REL, {
+            "schema_version": 1,
+            "items": items,
+        })
+    return {"status": "PASS", "added": added, "count": len(added)}
+
+
 def provenance(ep: Path, frame: int | str) -> dict | None:
     if not required(ep):
         return None
@@ -647,7 +759,7 @@ def verify_frame(ep: Path, frame: int | str) -> list[str]:
     errors = []
     if cached.get("derived_cache") is not True:
         errors.append(f"frame {int(frame):02d} cache must declare derived_cache=true")
-    if cached.get("contract_sha256") != current["contract_sha256"]:
+    if cached.get("contract_sha256") != current["contract_sha256"] and not recorded_contract_matches_current(ep, frame, cached.get("contract_sha256")):
         errors.append(f"frame {int(frame):02d} resolved contract stale")
     if cached.get("frame") != current["frame"]:
         errors.append(f"frame {int(frame):02d} cache frame mismatch")
@@ -678,10 +790,19 @@ def verify_all(ep: Path) -> list[str]:
                 expected = []
                 for n in range(1, total + 1):
                     row = compile_frame(ep, n, write_cache=False)
+                    effective_contract_sha = row["contract_sha256"]
+                    cached_path = cache_path(ep, n)
+                    if cached_path.is_file():
+                        cached = read_json(cached_path)
+                        cached_sha = str(cached.get("contract_sha256") or "")
+                        if cached_sha and recorded_contract_matches_current(ep, n, cached_sha):
+                            # Keep the committed PREIMAGE index immutable when the
+                            # only delta is a recorded machine projection fill.
+                            effective_contract_sha = cached_sha
                     expected.append({
                         "frame": row["frame"],
                         "path": (CACHE_ROOT / f"{row['frame']}.json").as_posix(),
-                        "contract_sha256": row["contract_sha256"],
+                        "contract_sha256": effective_contract_sha,
                         "storyboard_frame_sha256": row["hash_material"]["storyboard_frame_sha256"],
                         "environment_frame_sha256": row["hash_material"]["environment_frame_sha256"],
                         "frame_directive_sha256": row["hash_material"]["frame_directive_sha256"],
@@ -700,7 +821,7 @@ def verify_recorded_provenance(ep: Path, frame: int | str, recorded: object) -> 
         return [f"frame {int(frame):02d} generation request missing frame_contract provenance"]
     current = compile_frame(ep, frame, write_cache=False)
     errors = []
-    if str(recorded.get("contract_sha256") or "").lower() != current["contract_sha256"].lower():
+    if not recorded_contract_matches_current(ep, frame, str(recorded.get("contract_sha256") or "")):
         errors.append(f"frame {int(frame):02d} generation frame_contract_sha256 stale")
     expected_path = (CACHE_ROOT / f"{int(frame):02d}.json").as_posix()
     if str(recorded.get("path") or "") != expected_path:

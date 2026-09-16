@@ -60,7 +60,34 @@ def test_metrics_use_only_observed_execution_intervals():
         _write(history / "c.json", _request("c"))
         metrics = adapter.preimage_execution_metrics(ep)
         assert metrics == {
-            "snapshot_id": None, "requested": 3, "started": 2, "finished": 2, "inflight_now": 0,
+            "snapshot_id": None, "authority_snapshot_id": None,
+            "snapshot_scope": "all_history_no_authority_snapshot",
+            "requested": 3, "started": 2, "finished": 2, "inflight_now": 0,
             "peak_observed_concurrency": 2, "unmeasured_requests": 1,
             "measurement": "host_execution_intervals_only",
         }
+
+
+def test_metrics_preserve_latest_real_execution_after_authority_snapshot_advances():
+    with tempfile.TemporaryDirectory() as td:
+        ep = Path(td)
+        history = ep / adapter.REQUEST_HISTORY_REL
+        old_snapshot = "old-preimage-snapshot"
+        current_snapshot = "post-commit-authority-snapshot"
+        first = _request("a", started_at="2026-09-16T10:00:00+00:00", finished_at="2026-09-16T10:10:00+00:00", status="FINALIZED")
+        second = _request("b", started_at="2026-09-16T10:05:00+00:00", finished_at="2026-09-16T10:15:00+00:00", status="FINALIZED")
+        for row in (first, second):
+            row["snapshot_id"] = old_snapshot
+            row["task"]["snapshot_id"] = old_snapshot
+        _write(history / "a.json", first)
+        _write(history / "b.json", second)
+        _write(ep / "meta/runtime/preimage-authority-snapshot.json", {"snapshot_id": current_snapshot})
+
+        metrics = adapter.preimage_execution_metrics(ep)
+        assert metrics["authority_snapshot_id"] == current_snapshot
+        assert metrics["snapshot_id"] == old_snapshot
+        assert metrics["snapshot_scope"] == "latest_observed_execution_snapshot"
+        assert metrics["requested"] == 2
+        assert metrics["started"] == 2
+        assert metrics["finished"] == 2
+        assert metrics["peak_observed_concurrency"] == 2
