@@ -451,16 +451,30 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                     host_step,_=product_runtime_adapter.next_host_step(ep,mode)
                     if host_step=="PREIMAGE_FRAME_CONTRACT_COMPILE":
                         import frame_contract
+                        import preimage_directing_materializer
                         try:
+                            materialized=preimage_directing_materializer.ensure(ep)
                             index=frame_contract.compile_all(ep)
                             deterministic_preimage_step=host_step
-                            note=json.dumps({"deterministic_step":host_step,"frame_contract_index_sha256":index.get("index_sha256")},ensure_ascii=True)
+                            note=json.dumps({"deterministic_step":host_step,"directing_contracts":materialized.get("contracts"),"frame_contract_index_sha256":index.get("index_sha256")},ensure_ascii=True)
                         except Exception as exc:
                             rc=4
                             note=f"PREIMAGE FRAME CONTRACT COMPILE FAIL: {exc}"
                     elif host_step=="PREIMAGE_VERIFY":
-                        deterministic_preimage_step=host_step
-                        note=json.dumps({"deterministic_step":host_step,"reason":"current authority exists; verify/build handoff locally"},ensure_ascii=True)
+                        import frame_contract
+                        import preimage_directing_materializer
+                        try:
+                            materialized=preimage_directing_materializer.ensure(ep)
+                            # A hosted authority commit can make the strict directing
+                            # contracts appear after an earlier Frame Contract compile.
+                            # Recompile here so final PREIMAGE verification binds the
+                            # exact materialized contract SHAs instead of stale/missing ones.
+                            index=frame_contract.compile_all(ep)
+                            deterministic_preimage_step=host_step
+                            note=json.dumps({"deterministic_step":host_step,"reason":"current authority exists; materialize strict directing contracts and verify/build handoff locally","directing_contracts":materialized.get("contracts"),"frame_contract_index_sha256":index.get("index_sha256")},ensure_ascii=True)
+                        except Exception as exc:
+                            rc=4
+                            note=f"PREIMAGE VERIFY MATERIALIZATION FAIL: {exc}"
                 if deterministic_preimage_step is not None:
                     rc=0
                 elif rc==0:
