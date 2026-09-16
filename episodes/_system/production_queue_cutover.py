@@ -53,6 +53,31 @@ def _blocked(reason: str, **extra) -> dict:
     return {"status": "BLOCKED", "reason": reason, "activated": False, **extra}
 
 
+def _write_transition_receipt(ep: Path, receipt: dict, *, expected_state: str,
+                              legacy: Path, workspace: Path, failure_reason: str) -> dict | None:
+    """Write the authority marker without leaving callers with an unknown outcome.
+
+    If the atomic writer reports an error after the replace already succeeded,
+    re-inspection proves the transition and normal execution may continue.  If
+    the expected receipt is absent/invalid, return a deterministic BLOCKED
+    result; Store authority then remains at the previously proven state (or
+    fails closed for an invalid marker).
+    """
+    try:
+        activation.write_receipt(ep, receipt)
+    except Exception as exc:
+        inspected = activation.inspect(ep, legacy_path=legacy, workspace_path=workspace)
+        if inspected["valid"] and inspected["state"] == expected_state:
+            return None
+        return _blocked(
+            failure_reason,
+            error=f"{type(exc).__name__}: {exc}",
+            activation_state=inspected.get("state"),
+            errors=inspected.get("errors") or [],
+        )
+    return None
+
+
 def activate(episode_dir: Path) -> dict:
     ep = Path(episode_dir).resolve()
     try:
@@ -83,7 +108,13 @@ def activate(episode_dir: Path) -> dict:
                 workspace_sha256=workspace_sha,
                 reason="scheduler-lock-guarded queue activation",
             )
-            activation.write_receipt(ep, receipt)
+            write_failure = _write_transition_receipt(
+                ep, receipt, expected_state=activation.ACTIVE,
+                legacy=legacy, workspace=workspace,
+                failure_reason="ACTIVATION_RECEIPT_WRITE_FAILED",
+            )
+            if write_failure is not None:
+                return write_failure
             verified = activation.inspect(ep, legacy_path=legacy, workspace_path=workspace)
             if not verified["valid"] or verified["state"] != activation.ACTIVE:
                 return _blocked("ACTIVATION_RECEIPT_VERIFY_FAILED", errors=verified.get("errors") or [])
@@ -131,7 +162,13 @@ def rollback(episode_dir: Path) -> dict:
                 workspace_sha256=source_sha,
                 reason="scheduler-lock-guarded queue rollback",
             )
-            activation.write_receipt(ep, receipt)
+            write_failure = _write_transition_receipt(
+                ep, receipt, expected_state=activation.ROLLED_BACK,
+                legacy=legacy, workspace=workspace,
+                failure_reason="ROLLBACK_RECEIPT_WRITE_FAILED",
+            )
+            if write_failure is not None:
+                return write_failure
             verified = activation.inspect(ep, legacy_path=legacy, workspace_path=workspace)
             if not verified["valid"] or verified["state"] != activation.ROLLED_BACK:
                 return _blocked("ROLLBACK_RECEIPT_VERIFY_FAILED", errors=verified.get("errors") or [])
