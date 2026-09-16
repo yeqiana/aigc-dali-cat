@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-15T21:48:46.827+08:00",
+  "generated_at": "2026-09-16T12:04:35.257+08:00",
   "sample_size": 2,
   "p50_total_seconds": 42715.471,
   "p90_total_seconds": 43251.654,
@@ -11,13 +11,13 @@
       "total_wall_seconds": 42045.243,
       "final_status": "PUBLISH_READY",
       "images": {
-        "attempts": 0,
-        "successful_attempts": 0,
-        "repair_attempts": 0,
-        "technical_failures_or_retries": 0,
-        "image_backend_seconds": 0,
-        "average_attempt_seconds": null,
-        "max_attempt_seconds": null
+        "attempts": 37,
+        "successful_attempts": 24,
+        "repair_attempts": 37,
+        "technical_failures_or_retries": 13,
+        "image_backend_seconds": 2777.0,
+        "average_attempt_seconds": 75.054,
+        "max_attempt_seconds": 141.0
       },
       "stage_wall": {}
     },
