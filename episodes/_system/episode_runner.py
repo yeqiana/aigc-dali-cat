@@ -199,7 +199,7 @@ def progress_marker(episode:Path):
     """
     queue=next_action.read_json(episode/"meta/production-queue.json")
     ledger=next_action.read_json(episode/"meta/production-ledger.json")
-    action=next_action.read_json(episode/next_action.REL)
+    action=next_action.load(episode)
     frames=ledger.get("frames") or {}
     ledger_marker=tuple(sorted(
         (str(k), str(v.get("status") or ""), int(v.get("content_repairs_used") or 0))
@@ -290,7 +290,7 @@ def run_episode(episode: Path, *, interval: int = 10, max_loops: int | None = No
             runner_state_store.save(episode, status=decision.category, return_code=rc,
                                     attempt=failures, last_action=decision.action)
             wait_state=episode_performance.execution_state_for_result(
-                rc,next_action.read_json(episode/next_action.REL))
+                rc,next_action.load(episode))
             episode_performance.safe_transition_execution_state(
                 episode,wait_state,session_id=perf_session,source="episode_runner")
             if wait_state=="IDLE":

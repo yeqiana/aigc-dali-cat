@@ -33,6 +33,7 @@ import runner_health_monitor
 import runtime_execution
 import runtime_router
 import runtime_portability
+import runtime_workspace
 import visual_lock_baseline_gate
 import visual_lock_candidate_pool
 import visual_lock_v21
@@ -52,6 +53,12 @@ def now() -> str:
 
 def read_json(path: Path) -> dict:
     return story_json.read_json(path, default={})
+
+
+def load(ep: Path) -> dict:
+    """Read the derived next action from Runtime Workspace with legacy fallback."""
+    data = runtime_workspace.read_json(Path(ep), REL, default={})
+    return data if isinstance(data, dict) else {}
 
 
 def state(ep: Path) -> str:
@@ -890,9 +897,7 @@ def apply_runtime_block_semantics(data: dict) -> dict:
 
 def write(ep: Path) -> dict:
     data = apply_runtime_block_semantics(derive(ep))
-    path = Path(ep) / REL
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    runtime_workspace.write_json(Path(ep), REL, data)
     return data
 
 
