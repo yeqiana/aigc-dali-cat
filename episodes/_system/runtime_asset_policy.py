@@ -73,6 +73,7 @@ def classify(path: str | PurePosixPath) -> RuntimeAssetPolicy:
         "meta/frame-semantic-audit.json",
         "meta/story-dna-trace.json",
         "meta/runtime/runtime-evidence-contract.json",
+        "meta/formal-evidence-index.json",
     } or rel.startswith("meta/frame-reviews/"):
         return RuntimeAssetPolicy(
             FORMAL_EVIDENCE,
