@@ -19,6 +19,7 @@ import runtime_router
 import story_json
 import runtime_timeout_policy
 import runtime_command
+import runtime_request
 
 ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=Path('meta/runtime-checkpoint.json')
 STORY_OS_VERSION=story_os_version(); STATES=canonical_stages()
@@ -54,8 +55,12 @@ def runtime_request_block(ep, request_path=None):
     path = Path(request_path).resolve() if request_path else (ep / "meta/runtime-request.json")
     if not path.is_file(): return ""
     data = read_json(path)
-    story = data.get("story_input") or {}
-    image = data.get("image") or {}
+    sections = runtime_request.partitioned_view(data)
+    creative = sections["creative_request"]
+    execution = sections["execution_policy"]
+    operator = sections["operator_instructions"]
+    story = creative.get("story_input") or {}
+    image = execution.get("image") or {}
     image_model = data.get("image_model") or image.get("model") or image_model_policy.DEFAULT_MODEL
     image_quality = data.get("image_quality") or image.get("quality") or image_model_policy.DEFAULT_QUALITY
     mode = story.get("mode")
@@ -65,7 +70,16 @@ def runtime_request_block(ep, request_path=None):
         "core_constraints": "The user supplied hard story constraints. Preserve every constraint, but optimize the remaining structure and escalation.",
         "locked_story": "The user explicitly locked the story. Only logic/polish repairs are allowed; do not structurally rewrite it.",
     }
-    return "\n<RUNTIME_REQUEST>\n" + json.dumps(data, ensure_ascii=False, indent=2) + "\n</RUNTIME_REQUEST>\nRUNTIME REQUEST DIRECTIVE: " + directives.get(mode, "") + f"\nIMAGE MODEL CONTRACT: requested={image_model} quality={image_quality} source={image.get('source')} strict={bool(image.get('strict_model'))}. Never silently substitute an explicitly requested image model or quality.\n"
+    return (
+        "\n<CREATIVE_REQUEST>\n" + json.dumps(creative, ensure_ascii=False, indent=2) +
+        "\n</CREATIVE_REQUEST>\n<EXECUTION_POLICY>\n" + json.dumps(execution, ensure_ascii=False, indent=2) +
+        "\n</EXECUTION_POLICY>\n<OPERATOR_INSTRUCTIONS>\n" + json.dumps(operator, ensure_ascii=False, indent=2) +
+        "\n</OPERATOR_INSTRUCTIONS>\n"
+        "BOUNDARY CONTRACT: CREATIVE_REQUEST is the only story/character creative input. "
+        "OPERATOR_INSTRUCTIONS are execution-only and MUST NEVER be interpreted as plot, character, world, frame, or visual requirements.\n"
+        "RUNTIME REQUEST DIRECTIVE: " + directives.get(mode, "") +
+        f"\nIMAGE MODEL CONTRACT: requested={image_model} quality={image_quality} source={image.get('source')} strict={bool(image.get('strict_model'))}. Never silently substitute an explicitly requested image model or quality.\n"
+    )
 
 def worker_instruction(ep,resume,request_path=None):
     rel=ep.relative_to(ROOT).as_posix(); mode='resume from checkpoint' if resume else 'start from real current repository state'

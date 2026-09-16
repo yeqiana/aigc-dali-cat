@@ -27,6 +27,7 @@ import preimage_protocol
 import preproduction_handoff
 import storyos_config
 import story_json
+import runtime_memory_advice
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUEST_REL = Path("meta/runtime/product-host-request.json")
@@ -187,8 +188,23 @@ def build_request(
     step, target = next_host_step(ep, mode)
     if step == "PREIMAGE_TASK_SET":
         requests = build_preimage_requests(ep, runtime=runtime, mode=mode, resume=resume, source=source)
-        return {"status": "HOST_ACTION_REQUIRED", "next_step": step, "requests": requests,
-                "host_task_count": len(requests), "not_episode_stage": True, "not_gate_authority": True}
+        return {
+            "status": "HOST_ACTION_REQUIRED",
+            "next_step": step,
+            "requests": requests,
+            "host_task_count": len(requests),
+            "host_dispatch_contract": {
+                "strategy": "parallel_start_then_collect",
+                "max_parallel": len(requests),
+                "start_all_before_wait": True,
+                "completion_order": "any",
+                "authority_commit": "single_writer_after_barrier",
+                "host_owned_concurrency": True,
+                "measurement": "start-preimage/complete-preimage execution intervals",
+            },
+            "not_episode_stage": True,
+            "not_gate_authority": True,
+        }
     rel = ep.resolve().relative_to(ROOT.resolve()).as_posix()
     try:
         index=storyos_config.load_index(); required_read=((index.get("stage_read_sets") or {}).get(step) or [])
@@ -199,6 +215,10 @@ def build_request(
         step_instructions += [
             "Read config/profiles/account_creative/default.json as the account default topic/style profile, without overriding explicit user constraints or recent-5 anti-homogeneity evidence.",
             "For new/unlocked work author meta/shot-progression-review.json schema_version=3 using standards/directing_grammar_v1.json: large+small shot scales, globally unique scene_position_id, at least two translated classic shot-structure references, practical-light narrative design, and at least one physically valid concealed anomaly carrier for suspense/strange genres. Run shot_progression_gate.py validate before completing CREATIVE_STORY."
+        ]
+        memory_advice=runtime_memory_advice.advice_for_episode(ep)
+        step_instructions += [
+            "Use memory_advice only as historical watch-outs. It is advisory-only, cannot block production, and never overrides explicit user constraints, recent-5 evidence, or canonical Story OS standards."
         ]
     if step=="RELEASE":
         step_instructions += [
@@ -237,6 +257,7 @@ def build_request(
             "When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.",
             *step_instructions,
         ],
+        **({"memory_advice": memory_advice} if step=="CREATIVE_STORY" else {}),
     }
     if request_data:
         data["runtime_request_id"] = request_data.get("request_id")
@@ -279,8 +300,11 @@ def build_preimage_requests(ep: Path, *, runtime: str, mode: str, resume: bool, 
             "host_contract": {"stage_authority":"meta/episode-state.json","must_not_claim_pass_without_evidence":True,
                               "must_not_write_shared_authority":True,"candidate_return_required":True,
                               "execution_start_handshake_required":True,
+                              "dispatch_group":"PREIMAGE_TASK_SET","independent_parallelizable":True,
+                              "wait_for_siblings_before_start":False,
                               "workspace_transport":WORKSPACE_TRANSPORT,"webcodex_allowed":False},
             "instructions":["Perform only this bounded PREIMAGE task.",
+                            "This request is independent inside PREIMAGE_TASK_SET: start it without waiting for sibling PREIMAGE requests to finish.",
                             "Before model/work execution, claim this request with product_runtime_adapter.py start-preimage using this request_id and a stable worker_id.",
                             "Write/return the declared Candidate JSON only.",
                             "Do not modify story-gates.json, episode-state.json, or release-manifest.json."]}
@@ -326,8 +350,16 @@ def mark_preimage_task_running(ep: Path, request_id: str, *, worker_id: str) -> 
 
 
 def preimage_execution_metrics(ep: Path) -> dict:
-    """Summarize only observed Host execution intervals; never infer starts."""
-    rows = []
+    """Summarize only observed Host execution intervals; never infer starts.
+
+    PREIMAGE authority commit can legitimately advance the current authority
+    snapshot after the Host requests have finished.  Do not let that erase the
+    just-observed execution evidence: prefer the current snapshot when it still
+    has request rows, otherwise fall back to the latest snapshot that has a real
+    ``started_at`` handshake.  The returned authority/measurement ids make that
+    fallback explicit instead of silently mixing snapshots.
+    """
+    all_rows = []
     snapshot_path = ep / "meta/runtime/preimage-authority-snapshot.json"
     current_snapshot = _read_json(snapshot_path).get("snapshot_id") if snapshot_path.is_file() else None
     history = ep / REQUEST_HISTORY_REL
@@ -335,9 +367,30 @@ def preimage_execution_metrics(ep: Path) -> dict:
         for path in sorted(history.glob("*.json")):
             data = _read_json(path)
             if (data.get("task") or {}) and str(data.get("next_step") or "").startswith("PREIMAGE_"):
-                if current_snapshot and data.get("snapshot_id") != current_snapshot:
-                    continue
-                rows.append(data)
+                all_rows.append(data)
+
+    def request_snapshot(row: dict) -> str | None:
+        return row.get("snapshot_id") or (row.get("task") or {}).get("snapshot_id")
+
+    measured_snapshot = current_snapshot
+    scope = "current_authority_snapshot"
+    if not current_snapshot:
+        rows = all_rows
+        measured_snapshot = None
+        scope = "all_history_no_authority_snapshot"
+    else:
+        rows = [row for row in all_rows if request_snapshot(row) == current_snapshot]
+        if not rows:
+            observed = [row for row in all_rows if row.get("started_at")]
+            if observed:
+                latest = max(observed, key=lambda row: str(row.get("started_at") or ""))
+                measured_snapshot = request_snapshot(latest)
+                rows = [row for row in all_rows if request_snapshot(row) == measured_snapshot]
+                scope = "latest_observed_execution_snapshot"
+            else:
+                measured_snapshot = current_snapshot
+                rows = []
+                scope = "current_authority_snapshot_no_requests"
     events: list[tuple[dt.datetime, int]] = []
     started = finished = 0
     inflight = 0
@@ -370,7 +423,9 @@ def preimage_execution_metrics(ep: Path) -> dict:
         active += delta
         peak = max(peak, active)
     return {
-        "snapshot_id": current_snapshot,
+        "snapshot_id": measured_snapshot,
+        "authority_snapshot_id": current_snapshot,
+        "snapshot_scope": scope,
         "requested": len(rows), "started": started, "finished": finished,
         "inflight_now": inflight, "peak_observed_concurrency": peak,
         "unmeasured_requests": max(0, len(rows) - started),

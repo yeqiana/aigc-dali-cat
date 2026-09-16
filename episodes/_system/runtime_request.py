@@ -34,6 +34,7 @@ RELEASE_ONLY_SIGNALS = ("只做发布","只做release","release only","release_o
 DATA_REVIEW_SIGNALS = ("只做复盘","数据复盘","data review","data_review")
 PREPRODUCTION_SIGNALS = ("只做前期资产","只做前期","不要生成图片","不生图","做到可以正式生图的交接状态","做到生图交接状态","preproduction only","preproduction_only")
 IMAGE_CONTINUE_SIGNALS = ("从生图开始","从图片开始","接管前期资产","接管已经完成的前期资产","不要重写剧情","image continue","image_continue")
+CREATIVE_SECTION_MARKERS = ("【创作要求】", "[创作要求]", "创作要求：", "创作要求:")
 
 def now():
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -127,6 +128,104 @@ def story_input(text):
     if contains_any(text,SEED_SIGNALS):
         return {"mode":"user_seed","raw":split_after_marker(text,SEED_SIGNALS) or text.strip(),"constraints":[],"rewrite_policy":"strengthen_and_rewrite","preserve_core_intent":True,"allow_structure_rewrite":True}
     return {"mode":"auto_create","raw":None,"constraints":[],"rewrite_policy":"auto_create","preserve_core_intent":True,"allow_structure_rewrite":True}
+
+
+def _explicit_creative_section(text):
+    """Return (creative, operator-prefix) only for an explicit creative boundary.
+
+    We intentionally do not guess from command-looking lines.  Existing requests
+    without a declared creative section keep their legacy semantics; prompts that
+    explicitly distinguish execution instructions from 创作要求 get a safe split.
+    """
+    raw=str(text or "")
+    for marker in CREATIVE_SECTION_MARKERS:
+        idx=raw.find(marker)
+        if idx >= 0:
+            creative=raw[idx+len(marker):].strip()
+            operator=raw[:idx].strip()
+            return (creative or None, operator or None)
+    return None, None
+
+
+def creative_request_view(data):
+    """Derived creative-only view; never mutates the immutable Runtime Request."""
+    row=data if isinstance(data,dict) else {}
+    provenance=row.get("provenance") or {}
+    creative_text,_operator=_explicit_creative_section(provenance.get("original_request"))
+    if creative_text:
+        parsed_story=story_input(creative_text)
+        # An explicit creative section is user-supplied creative intent even when
+        # it does not contain legacy seed trigger phrases. Treating it as
+        # auto_create would discard the section because auto_create.raw is None.
+        if parsed_story.get("mode")=="auto_create":
+            parsed_story={
+                "mode":"user_seed",
+                "raw":creative_text,
+                "constraints":[],
+                "rewrite_policy":"strengthen_and_rewrite",
+                "preserve_core_intent":True,
+                "allow_structure_rewrite":True,
+            }
+        return {
+            "topic": row.get("topic") or {},
+            "story_input": parsed_story,
+            "creative_hints": creative_hints(creative_text),
+            "visual_profile": row.get("visual_profile"),
+        }
+    return {
+        "topic": row.get("topic") or {},
+        "story_input": row.get("story_input") or {},
+        "creative_hints": row.get("creative_hints") or [],
+        "visual_profile": row.get("visual_profile"),
+    }
+
+
+def execution_policy_view(data):
+    """Derived execution-only view for runtime/router consumers."""
+    row=data if isinstance(data,dict) else {}
+    return {
+        "mode": row.get("mode"),
+        "repository": row.get("repository") or {},
+        "intent": row.get("intent") or {},
+        "image": row.get("image") or {},
+        "image_model": row.get("image_model"),
+        "image_quality": row.get("image_quality"),
+        "runtime": row.get("runtime") or {},
+        "delivery": row.get("delivery") or {},
+        "user_intent": row.get("user_intent") or {},
+    }
+
+
+def operator_instructions_view(data):
+    """Derived operator-only instructions, deliberately excluded from creative input."""
+    row=data if isinstance(data,dict) else {}
+    provenance=row.get("provenance") or {}
+    _creative,operator=_explicit_creative_section(provenance.get("original_request"))
+    return {
+        "raw": operator,
+        "source": "explicit_prefix_before_creative_section" if operator else "none",
+    }
+
+
+def partitioned_view(data):
+    return {
+        "creative_request": creative_request_view(data),
+        "execution_policy": execution_policy_view(data),
+        "operator_instructions": operator_instructions_view(data),
+    }
+
+
+def creative_source_text(data):
+    """Plain text used by creative/character selection without operator commands."""
+    creative=creative_request_view(data)
+    story=creative.get("story_input") or {}
+    bits=[
+        str(((creative.get("topic") or {}).get("title")) or ""),
+        str(story.get("raw") or ""),
+        "\n".join(str(x) for x in (story.get("constraints") or [])),
+        " ".join(str(x) for x in (creative.get("creative_hints") or [])),
+    ]
+    return "\n".join(x for x in bits if x)
 
 def parse_mode(text):
     if contains_any(text,RESUME_SIGNALS):return "resume"

@@ -17,6 +17,7 @@ import runtime_router
 import product_runtime_adapter
 import runtime_timeout_policy
 import runtime_request
+import runtime_memory_advice
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -206,11 +207,15 @@ def prefix(codex):
     import codex_cli_contract
     return codex_cli_contract.command_prefix(codex)
 
-def request_block(ep):
+def request_block(ep,step):
     p=ep/"meta/runtime-request.json"
     if not p.is_file(): return "<runtime_request>ABSENT</runtime_request>"
     data=json.loads(p.read_text(encoding="utf-8-sig"))
-    return "<runtime_request>\n"+json.dumps(data,ensure_ascii=False,indent=2)+"\n</runtime_request>"
+    if step=="CREATIVE_STORY":
+        payload={"creative_request":runtime_request.creative_request_view(data)}
+    else:
+        payload=runtime_request.partitioned_view(data)
+    return "<runtime_request>\n"+json.dumps(payload,ensure_ascii=False,indent=2)+"\n</runtime_request>"
 
 def prompt(ep,step):
     rel=ep.relative_to(ROOT).as_posix()
@@ -239,7 +244,9 @@ Read the embedded FAST_RUNTIME_INDEX first. Do NOT recursively scan the reposito
 {json.dumps(capsule,ensure_ascii=False,indent=2)}
 </EXECUTION_CAPSULE>
 
-{request_block(ep)}
+{request_block(ep,step)}
+
+{runtime_memory_advice.prompt_block(ep) if step=="CREATIVE_STORY" else ""}
 
 <SCOPED_STEP id="{step}">
 {STEP_DIRECTIVES[step].strip()}

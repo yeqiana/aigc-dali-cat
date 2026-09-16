@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, random, re
 from pathlib import Path
 import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
+import runtime_request
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -43,14 +44,9 @@ def visual_profile_id(ep):
 
 
 def source_text(ep):
-    r=request(ep)
-    bits=[
-        str(((r.get("topic") or {}).get("title")) or ""),
-        str(((r.get("story_input") or {}).get("raw")) or ""),
-        str(((r.get("provenance") or {}).get("original_request")) or ""),
-        " ".join(str(x) for x in (r.get("creative_hints") or [])),
-    ]
-    return "\n".join(x for x in bits if x)
+    # Runtime Request may contain operational commands alongside an explicit
+    # 创作要求 section.  Character selection must consume creative intent only.
+    return runtime_request.creative_source_text(request(ep))
 
 def seed_for(ep):
     r=request(ep)
