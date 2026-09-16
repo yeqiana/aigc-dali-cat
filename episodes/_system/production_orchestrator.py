@@ -61,6 +61,7 @@ import repair_engine  # noqa: E402
 import story_creator  # noqa: E402
 import story_intent_parser  # noqa: E402
 import story_json  # noqa: E402
+import runtime_workspace  # noqa: E402
 import runtime_request as runtime_request_contract  # noqa: E402
 import visual_profile_lock_adapter as adapter  # noqa: E402
 import visual_profile_lock_lifecycle as lifecycle  # noqa: E402
@@ -611,7 +612,7 @@ def _emit(root, episode_dir, *, status, intent, selection, profile_id, lifecycle
         document["written"] = False
         return document
     try:
-        story_json.write_json(Path(episode_dir) / STATUS_DOC_REL, document)
+        runtime_workspace.write_json(Path(episode_dir), STATUS_DOC_REL, document)
     except Exception as exc:  # a reporting failure never changes the production outcome
         document["notes"].append("status document not written: " + type(exc).__name__)
         return document

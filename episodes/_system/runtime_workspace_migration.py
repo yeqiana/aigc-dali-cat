@@ -30,11 +30,16 @@ COPY_READY_EXACT = frozenset({
     "meta/runtime-dag-state.json",
     "meta/runtime-runner-state.json",
     "meta/runtime-resume-token.json",
+    "meta/runtime-execution.json",
+    "meta/runtime/resume-capsule.json",
+    "meta/runtime/product-host-request.json",
+    "meta/runtime/full-auto-status.json",
 })
 COPY_READY_PREFIXES = (
     "meta/runtime/execution-capsules/",
     "meta/runtime/prompt-packages/",
     "meta/runtime/contracts/frames/",
+    "meta/runtime/host-requests/",
 )
 
 

@@ -443,7 +443,7 @@ def derive(ep: Path) -> dict:
                         request_path=review.get("path"), review_kind=review.get("review_kind"),
                         candidate_path=review.get("candidate_path"),
                         reason="fresh isolated product review is awaiting completion")
-            current_request = read_json(ep / HOST_REL) if (ep / HOST_REL).is_file() else {}
+            current_request = runtime_workspace.read_json(ep, HOST_REL, default={}) or {}
             return action_result(
                 action="PREIMAGE_COMPILE",
                 executor=runtime,

@@ -28,6 +28,7 @@ import preproduction_handoff
 import storyos_config
 import story_json
 import runtime_memory_advice
+import runtime_workspace
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUEST_REL = Path("meta/runtime/product-host-request.json")
@@ -60,6 +61,13 @@ def _write_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
 
 
+def _display_path(path: Path) -> str:
+    try:
+        return path.resolve().relative_to(ROOT.resolve()).as_posix()
+    except ValueError:
+        return str(path.resolve())
+
+
 def _stable_hash(data: dict) -> str:
     raw = json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
@@ -76,7 +84,7 @@ def _state_at_least(current: str, target: str) -> bool:
 
 def reconcile(ep: Path) -> dict | None:
     """Finalize a stale current host pointer when canonical evidence already proves completion."""
-    current_path = ep / REQUEST_REL
+    current_path = runtime_workspace.resolve_read_path(ep, REQUEST_REL)
     if not current_path.is_file():
         return None
     current = _read_json(current_path)
@@ -142,7 +150,8 @@ def _persist_request(ep: Path, payload: dict, *, category: str) -> dict:
     }
     fingerprint = _stable_hash(fingerprint_basis)
     request_id = f"{category}-{fingerprint[:16]}"
-    history_path = ep / REQUEST_HISTORY_REL / f"{request_id}.json"
+    history_rel = REQUEST_HISTORY_REL / f"{request_id}.json"
+    history_path = runtime_workspace.resolve_read_path(ep, history_rel)
     if history_path.is_file():
         existing = _read_json(history_path)
         if existing.get("request_fingerprint") != fingerprint:
@@ -156,16 +165,16 @@ def _persist_request(ep: Path, payload: dict, *, category: str) -> dict:
             "request_fingerprint": fingerprint,
             "created_at": now(),
         }
-        _write_json(history_path, stored)
+        history_path = runtime_workspace.write_json(ep, history_rel, stored)
     current = {
         **stored,
-        "request_path": history_path.relative_to(ROOT).as_posix(),
+        "request_path": _display_path(history_path),
     }
-    _write_json(ep / REQUEST_REL, current)
+    current_path = runtime_workspace.write_json(ep, REQUEST_REL, current)
     return {
         **stored,
-        "request_path": history_path.relative_to(ROOT).as_posix(),
-        "current_request_path": (ep / REQUEST_REL).relative_to(ROOT).as_posix(),
+        "request_path": _display_path(history_path),
+        "current_request_path": _display_path(current_path),
     }
 
 
@@ -326,7 +335,8 @@ def mark_preimage_task_running(ep: Path, request_id: str, *, worker_id: str) -> 
     worker_id = str(worker_id or "").strip()
     if not worker_id:
         raise ValueError("worker_id is required")
-    path = ep / REQUEST_HISTORY_REL / f"{request_id}.json"
+    request_rel = REQUEST_HISTORY_REL / f"{request_id}.json"
+    path = runtime_workspace.resolve_read_path(ep, request_rel)
     if not path.is_file():
         raise FileNotFoundError(f"host request missing: {path}")
     request = _read_json(path)
@@ -341,7 +351,7 @@ def mark_preimage_task_running(ep: Path, request_id: str, *, worker_id: str) -> 
         raise RuntimeError(f"PREIMAGE_HOST_REQUEST_ALREADY_RUNNING: worker={existing_worker}")
     started_at = str(request.get("started_at") or execution_now())
     request.update({"status": "RUNNING", "started_at": started_at, "worker_id": worker_id})
-    _write_json(path, request)
+    runtime_workspace.write_json(ep, request_rel, request)
     preimage_task_contract.update_task_state(
         ep, task, "RUNNING", request_id=request_id,
         execution={"started_at": started_at, "worker_id": worker_id},
@@ -362,9 +372,14 @@ def preimage_execution_metrics(ep: Path) -> dict:
     all_rows = []
     snapshot_path = ep / "meta/runtime/preimage-authority-snapshot.json"
     current_snapshot = _read_json(snapshot_path).get("snapshot_id") if snapshot_path.is_file() else None
-    history = ep / REQUEST_HISTORY_REL
-    if history.is_dir():
+    seen: set[str] = set()
+    for history in runtime_workspace.read_candidates(ep, REQUEST_HISTORY_REL):
+        if not history.is_dir():
+            continue
         for path in sorted(history.glob("*.json")):
+            if path.name in seen:
+                continue
+            seen.add(path.name)
             data = _read_json(path)
             if (data.get("task") or {}) and str(data.get("next_step") or "").startswith("PREIMAGE_"):
                 all_rows.append(data)
@@ -435,7 +450,8 @@ def preimage_execution_metrics(ep: Path) -> dict:
 
 def complete_preimage_task(ep: Path, request_id: str, candidate: dict) -> dict:
     """Finalize exactly one host task after candidate validation, never a Gate."""
-    path=ep/REQUEST_HISTORY_REL/f"{request_id}.json"
+    request_rel=REQUEST_HISTORY_REL/f"{request_id}.json"
+    path=runtime_workspace.resolve_read_path(ep,request_rel)
     request=_read_json(path)
     task=request.get("task") or {}
     if not task or not str(request.get("next_step") or "").startswith("PREIMAGE_"):
@@ -449,12 +465,12 @@ def complete_preimage_task(ep: Path, request_id: str, candidate: dict) -> dict:
         preimage_task_contract.update_task_state(ep,task,"FAILED",request_id=request_id,reason="; ".join(errors),
             execution={"started_at": request.get("started_at"), "worker_id": request.get("worker_id"), "finished_at": finished_at})
         request.update({"status":"FAILED","completed_at":finished_at,"finished_at":finished_at,"candidate_errors":errors})
-        _write_json(path,request); return request
+        runtime_workspace.write_json(ep,request_rel,request); return request
     finished_at = execution_now()
     preimage_task_contract.update_task_state(ep,task,"COMPLETED",request_id=request_id,candidate_file=task["candidate_output"],
         execution={"started_at": request.get("started_at"), "worker_id": request.get("worker_id"), "finished_at": finished_at})
     request.update({"status":"FINALIZED","finalized_at":finished_at,"finished_at":finished_at,"candidate_path":task["candidate_output"]})
-    _write_json(path,request)
+    runtime_workspace.write_json(ep,request_rel,request)
     episode_performance.safe_end_named_span(ep,f"HOST_ACTION_PREIMAGE_{task['task_type']}",status="PASS",metadata={"request_id":request_id})
     # The fourth independently finalized candidate releases only the serial
     # authority commit. Completion of a request never grants a Gate decision.
@@ -462,7 +478,7 @@ def complete_preimage_task(ep: Path, request_id: str, candidate: dict) -> dict:
     planned = preimage_task_contract.plan_tasks(ep, snapshot, resume=True) if snapshot else []
     if planned and all(item.get("status") == "REUSED" for item in planned):
         request["authority_commit"] = preimage_protocol.commit_candidates(ep, snapshot, planned)
-        _write_json(path, request)
+        runtime_workspace.write_json(ep, request_rel, request)
     return request
 
 
@@ -519,7 +535,8 @@ def build_image_request(
 
 
 def mark_complete(ep: Path, request_id: str, *, result: dict | None = None) -> dict:
-    path = ep / REQUEST_HISTORY_REL / f"{request_id}.json"
+    request_rel = REQUEST_HISTORY_REL / f"{request_id}.json"
+    path = runtime_workspace.resolve_read_path(ep, request_rel)
     if not path.is_file():
         raise FileNotFoundError(f"host request missing: {path}")
     data = _read_json(path)
@@ -529,8 +546,8 @@ def mark_complete(ep: Path, request_id: str, *, result: dict | None = None) -> d
     episode_performance.safe_end_named_span(ep, span_name, status="PASS", metadata={"request_id": request_id})
     if result is not None:
         data["result"] = result
-    _write_json(path, data)
-    current_path = ep / REQUEST_REL
+    runtime_workspace.write_json(ep, request_rel, data)
+    current_path = runtime_workspace.resolve_read_path(ep, REQUEST_REL)
     if current_path.is_file():
         current = _read_json(current_path)
         if current.get("request_id") == request_id:
@@ -540,7 +557,7 @@ def mark_complete(ep: Path, request_id: str, *, result: dict | None = None) -> d
             })
             if result is not None:
                 current["result"] = result
-            _write_json(current_path, current)
+            runtime_workspace.write_json(ep, REQUEST_REL, current)
     return data
 
 

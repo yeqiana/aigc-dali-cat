@@ -10,6 +10,7 @@ import runtime_capability_cache
 import story_json
 import derived_freshness
 import runtime_checkpoint
+import runtime_workspace
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/resume-capsule.json")
@@ -68,10 +69,10 @@ def compile_capsule(ep,write=True):
         elif cur=="PUBLISH_READY":actions.append("complete; do not reopen production unless user requests changes")
         else:actions.append("continue only the next canonical stage")
     data={"schema_version":1,"module_version":"2.5.1","generated_at":now(),"episode":ep.relative_to(ROOT).as_posix() if ep.is_relative_to(ROOT) else str(ep),"current_state":cur,"next_target":next_target,"runtime_step":STEP_BY_STATE.get(cur),"source_fingerprint":source_fingerprint,"source_files":sources,"ledger":ls,"queue_status_counts":qs,"runtime_capabilities":caps,"next_actions":actions,"read_policy":"Read this capsule first after context loss. Rebuild on source_fingerprint drift; source authority always wins.","authority_policy":"Derived cache only; source authority always wins."}
-    if write:write_json(ep/REL,data)
+    if write:runtime_workspace.write_json(ep,REL,data)
     return data
 def load_fresh(ep,write=True):
-    ep=Path(ep).resolve(); existing=read_json(ep/REL) or {}
+    ep=Path(ep).resolve(); existing=runtime_workspace.read_json(ep,REL,default={}) or {}
     return existing if sources_fresh(ep,existing) else compile_capsule(ep,write)
 def self_test():
     x=_ledger_summary({"frames":{"01":{"status":"PASSED"},"02":{"status":"TECH_FAILED"},"03":{"status":"NEEDS_USER"}}})

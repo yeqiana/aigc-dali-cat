@@ -95,6 +95,27 @@ def classify(path: str | PurePosixPath) -> RuntimeAssetPolicy:
             "effective runtime configuration projection regenerated from config and request",
         )
 
+    if rel == "meta/runtime/full-auto-status.json":
+        return RuntimeAssetPolicy(
+            DERIVED_CACHE,
+            MIGRATION_CANDIDATE,
+            "derived full-auto status projection; canonical stage remains episode-state.json",
+        )
+
+    if rel == "meta/runtime/resume-capsule.json":
+        return RuntimeAssetPolicy(
+            DERIVED_CACHE,
+            MIGRATION_CANDIDATE,
+            "freshness-bound resume projection; rebuildable from canonical runtime sources",
+        )
+
+    if rel == "meta/runtime-execution.json" or rel == "meta/runtime/product-host-request.json" or rel.startswith("meta/runtime/host-requests/"):
+        return RuntimeAssetPolicy(
+            OPERATIONAL_STATE,
+            PRESERVE_UNTIL_ARCHIVED,
+            "mutable host/execution coordination state; external Runtime Workspace is the production location",
+        )
+
     if rel in {
         "meta/production-queue.json",
         "meta/runtime-checkpoint.json",
@@ -111,7 +132,7 @@ def classify(path: str | PurePosixPath) -> RuntimeAssetPolicy:
         return RuntimeAssetPolicy(
             OPERATIONAL_STATE,
             PRESERVE_UNTIL_ARCHIVED,
-            "mutable resume/recovery state; separate storage is desirable but current readers depend on it",
+            "mutable resume/recovery state; Runtime Workspace is the production location with legacy fallback",
         )
 
     if rel.startswith("media/") or rel.startswith("assets/") or rel.startswith("prompts/"):

@@ -25,6 +25,7 @@ import product_review_adapter
 import production_ledger
 import story_json
 import runtime_timeout_policy
+import runtime_workspace
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_DIR = Path("meta/frame-reviews")
@@ -1023,7 +1024,7 @@ Read these locked sources before judging:
 - standards/Resolved_Frame_Contract规范_V1.0.md
 - standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md
 Fast Scout evidence is triage only. Do NOT trust PASS_FAST as a final pass; independently judge every supplied actual frame.
-Resolved Frame Contracts: {rel_ep}/meta/runtime/contracts/frames/NN.json. The frame review must honor the SAME contract SHA used by the generation attempt.
+Resolved Frame Contracts: {runtime_workspace.workspace_path(ep, phase4_contract.CACHE_ROOT).as_posix()}/NN.json. The frame review must honor the SAME contract SHA used by the generation attempt.
 
 Attached images are in numeric order and map as follows:
 {mapping}
@@ -2035,7 +2036,7 @@ Read these locked authorities before judging:
 - standards/制作规范_正式版.md
 - standards/生产帧语义强制规范_V1.0.md
 - standards/Resolved_Frame_Contract规范_V1.0.md
-Resolved Frame Contracts live at {(ep / 'meta/runtime/contracts/frames').relative_to(ROOT).as_posix()}/NN.json.
+Resolved Frame Contracts live at {runtime_workspace.workspace_path(ep, phase4_contract.CACHE_ROOT).as_posix()}/NN.json.
 
 Attached mapping:
 {mapping}
@@ -2688,7 +2689,7 @@ Read these locked authorities before judging:
 - standards/制作规范_正式版.md
 - standards/生产帧语义强制规范_V1.0.md
 - standards/Resolved_Frame_Contract规范_V1.0.md
-Resolved Frame Contracts live at {(ep / 'meta/runtime/contracts/frames').relative_to(ROOT).as_posix()}/NN.json.
+Resolved Frame Contracts live at {runtime_workspace.workspace_path(ep, phase4_contract.CACHE_ROOT).as_posix()}/NN.json.
 
 Attached mapping:
 {mapping}

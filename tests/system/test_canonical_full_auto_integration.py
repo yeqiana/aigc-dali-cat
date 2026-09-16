@@ -489,7 +489,7 @@ class OneSentenceChainCaseTest(CanonicalFullAutoBase):
         checkpoint = runtime_checkpoint.load(episode, {})
         self.assertTrue(checkpoint['continuous_execution_authorized'])
         self.assertEqual(checkpoint['approval_basis'], 'delegated_continuous_execution')
-        written = self.read_json(episode / orchestrator.STATUS_DOC_REL)
+        written = runtime_workspace.read_json(episode, orchestrator.STATUS_DOC_REL, default={})
         self.assertEqual(written['status'], document['status'])
         self.assertTrue(document['written'])
         return document, episode
