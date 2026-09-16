@@ -19,6 +19,7 @@ import batch_scheduler
 import scheduler_core
 import raw_candidate_budget as budget
 import prompt_package
+import runtime_workspace
 import production_batch_review as batch_review
 import frame_semantic_review as semantic
 import incremental_frame_review as incr
@@ -211,12 +212,15 @@ class EvidenceRecovery(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(dir=ROOT, prefix='evidence-test-')
         self.addCleanup(self.tmp.cleanup)
         self.ep = Path(self.tmp.name)
+        runtime_root = patch.object(runtime_workspace, 'DEFAULT_ROOT', self.ep / '.runtime-workspace')
+        runtime_root.start()
+        self.addCleanup(runtime_root.stop)
 
     def test_old_prompt_new_contract_rejected_without_rebinding_package(self):
         prompt = self.ep / 'prompt.txt'; prompt.write_text('old scene', encoding='utf-8')
         with patch.object(prompt_package.frame_contract, 'compile_frame', return_value={'contract_sha256': 'old'}), patch.object(prompt_package.image_model_policy, 'for_episode', return_value={}):
             prompt_package.compile_frame(self.ep, 1, prompt)
-        path = self.ep / prompt_package.REL / '01.json'
+        path = runtime_workspace.workspace_path(self.ep, prompt_package.REL / '01.json')
         before = path.read_bytes()
         with patch.object(prompt_package.frame_contract, 'compile_frame', return_value={'contract_sha256': 'new'}), patch.object(prompt_package.image_model_policy, 'for_episode', return_value={}):
             with self.assertRaisesRegex(ValueError, 'PROMPT_SOURCE_DRIFT'):
@@ -545,7 +549,7 @@ class EvidenceRecovery(unittest.TestCase):
                     self.assertIn('<scene>\ncurrent scene\n</scene>', result['text'])
                     self.assertIn('<frame_contract>\nlocked contract\n</frame_contract>', result['text'])
                     self.assertNotIn('\ufeff', result['text'])
-                    package = self.ep / prompt_package.REL / '01.json'
+                    package = runtime_workspace.workspace_path(self.ep, prompt_package.REL / '01.json')
                     before = package.read_bytes()
                     resolved.return_value = {'contract_sha256': 'new', 'prompt_contract': 'new contract'}
                     with self.assertRaisesRegex(ValueError, 'PROMPT_SOURCE_DRIFT'):
