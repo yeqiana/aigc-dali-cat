@@ -45,6 +45,7 @@ import repair_engine  # noqa: E402
 import story_json  # noqa: E402
 import story_semantic_trace  # noqa: E402
 import visual_profile_gate  # noqa: E402
+import runtime_workspace  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -105,7 +106,8 @@ def frame_numbers(ep, ledger=None) -> list:
             numbers.add(int(key))
         except (TypeError, ValueError):
             continue
-    for folder in (ep / REVIEW_DIR, ep / CONTRACT_CACHE_REL):
+    contract_dirs = runtime_workspace.read_candidates(ep, CONTRACT_CACHE_REL)
+    for folder in (ep / REVIEW_DIR, *contract_dirs):
         if not folder.is_dir():
             continue
         for path in folder.glob("*.json"):

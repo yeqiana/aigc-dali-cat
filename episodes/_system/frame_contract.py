@@ -36,6 +36,7 @@ import story_json
 import preimage_authority_snapshot
 import runtime_node_execution
 import storyos_config
+import runtime_workspace
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
@@ -528,8 +529,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "prompt_contract": "\n".join(prompt_lines),
     }
     if write_cache:
-        path = ep / CACHE_ROOT / f"{key}.json"
-        write_json(path, result)
+        write_json(cache_write_path(ep, key), result)
     return result
 
 
@@ -619,8 +619,25 @@ def compile_all(ep: Path) -> dict:
     return index
 
 
+def cache_rel(frame: int | str) -> Path:
+    return CACHE_ROOT / f"{int(frame):02d}.json"
+
+
+def cache_read_path(ep: Path, frame: int | str) -> Path:
+    return runtime_workspace.resolve_read_path(Path(ep).resolve(), cache_rel(frame))
+
+
+def cache_write_path(ep: Path, frame: int | str) -> Path:
+    return runtime_workspace.workspace_path(Path(ep).resolve(), cache_rel(frame))
+
+
+def cache_read_dirs(ep: Path) -> tuple[Path, ...]:
+    return runtime_workspace.read_candidates(Path(ep).resolve(), CACHE_ROOT)
+
+
 def cache_path(ep: Path, frame: int | str) -> Path:
-    return Path(ep).resolve() / CACHE_ROOT / f"{int(frame):02d}.json"
+    """Backward-compatible physical read path for the derived frame cache."""
+    return cache_read_path(ep, frame)
 
 
 def _monotonic_projection_fill(old: object, new: object) -> bool:
@@ -751,7 +768,7 @@ def verify_frame(ep: Path, frame: int | str) -> list[str]:
     current = compile_frame(ep, frame, write_cache=False)
     path = cache_path(ep, frame)
     if not path.is_file():
-        return [f"resolved frame contract cache missing: {path.relative_to(ep)}"]
+        return [f"resolved frame contract cache missing: {cache_rel(frame).as_posix()}"]
     try:
         cached = read_json(path)
     except Exception as exc:

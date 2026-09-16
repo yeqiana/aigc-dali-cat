@@ -44,6 +44,7 @@ from pathlib import Path
 
 import evidence_time
 import story_json
+import runtime_workspace
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_REL = Path("meta/release-manifest.json")
@@ -176,7 +177,7 @@ def contract_requirements(ep, frame, story_lock_block=None) -> dict:
 
 def requirements_from_contract(ep, frame):
     """Read the requirement block the Frame Contract published, if any."""
-    data = read_json(Path(ep) / CONTRACT_CACHE_REL / f"{int(frame):02d}.json")
+    data = read_json(runtime_workspace.resolve_read_path(Path(ep), CONTRACT_CACHE_REL / f"{int(frame):02d}.json"))
     block = data.get("story_semantic_requirements") if isinstance(data, dict) else None
     return block if isinstance(block, dict) else None
 
@@ -323,7 +324,7 @@ def verify(ep, *, ledger=None, metadata_only=False) -> list:
 
 
 def _contract_sha(ep, frame):
-    data = read_json(Path(ep) / CONTRACT_CACHE_REL / f"{int(frame):02d}.json")
+    data = read_json(runtime_workspace.resolve_read_path(Path(ep), CONTRACT_CACHE_REL / f"{int(frame):02d}.json"))
     if isinstance(data, dict):
         token = str(data.get("contract_sha256") or "").strip()
         if token:
