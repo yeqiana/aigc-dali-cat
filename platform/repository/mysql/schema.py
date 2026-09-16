@@ -81,15 +81,30 @@ CREATE_ARTIFACT_TABLE_SQL = (
 )
 
 
+CREATE_PLATFORM_LATEST_RECORD_TABLE_SQL = (
+    "CREATE TABLE IF NOT EXISTS " + DATABASE_NAME + ".platform_latest_record ("
+    "namespace VARCHAR(64) NOT NULL,"
+    "record_key VARCHAR(128) NOT NULL,"
+    "payload JSON NOT NULL,"
+    "created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),"
+    "updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),"
+    "PRIMARY KEY (namespace, record_key),"
+    "KEY idx_platform_latest_record_updated_at (updated_at)"
+    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+)
+
+
 def apply_schema(connection: MySqlConnection) -> list[str]:
     """幂等建库建表，返回执行顺序描述。"""
     connection.execute(CREATE_DATABASE_SQL)
     connection.execute(CREATE_EVENT_TABLE_SQL)
     connection.execute(CREATE_TRACE_TABLE_SQL)
     connection.execute(CREATE_ARTIFACT_TABLE_SQL)
+    connection.execute(CREATE_PLATFORM_LATEST_RECORD_TABLE_SQL)
     return [
         "create_database",
         "create_event_log",
         "create_trace_span",
         "create_artifact_index",
+        "create_platform_latest_record",
     ]
