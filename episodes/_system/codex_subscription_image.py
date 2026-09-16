@@ -214,7 +214,7 @@ def _legacy_bridge_auth_probe() -> bool:
             ["codex", "login", "status"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            timeout=30,
+            timeout=runtime_timeout_policy.seconds("codex_auth_probe"),
             check=False,
             text=True,
             encoding="utf-8",
