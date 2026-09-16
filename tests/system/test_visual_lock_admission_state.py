@@ -163,6 +163,21 @@ class VisualLockAdmissionStateTests(unittest.TestCase):
         self.assertEqual(rows[0]["recorded_frame_contract_sha256"], "old-16")
         self.assertEqual(rows[0]["current_frame_contract_sha256"], "current-16")
 
+    def test_candidate_prompt_keeps_first_major_anomaly_readable(self):
+        row = {
+            "frame": 5,
+            "role": "first_major_anomaly",
+            "checks": {"anomaly_scale_delivery": False},
+            "issues": ["ANOMALY_NOT_READABLE"],
+        }
+        with patch.object(candidate_pool, "_row_for_frame", return_value=row):
+            prompt = candidate_pool.candidate_prompt(self.ep, 5, 1)
+        self.assertIn("异常必须", prompt)
+        self.assertIn("清楚", prompt)
+        self.assertNotIn("远景被屋檐/行人/水汽遮挡", prompt)
+        self.assertLessEqual(len(prompt), 245)
+        self.assertLessEqual(len(prompt.encode("utf-8")), 850)
+
     def test_restore_ledger_pass_requires_exact_current_candidate_sha(self):
         asset = _asset()
         _write(self.ep / "meta/production-ledger.json", {

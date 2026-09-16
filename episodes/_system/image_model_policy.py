@@ -22,6 +22,7 @@ BACKEND_5XX="BACKEND_5XX"
 RATE_LIMIT_429="RATE_LIMIT_429"
 AUTH_401="AUTH_401"
 PERMISSION_403="PERMISSION_403"
+LOCAL_WORKSPACE_PERMISSION="LOCAL_WORKSPACE_PERMISSION"
 NETWORK_ERROR="NETWORK_ERROR"
 ARTIFACT_SAVE_COLLISION="PROVIDER_ARTIFACT_SAVE_COLLISION"
 MODEL_UNAVAILABLE_PATTERNS=("model_unavailable","model unavailable","model is not available","requested model is not available","unknown model","unsupported model","model not found","does not exist","cannot honor the requested model")
@@ -33,6 +34,10 @@ BACKEND_5XX_PATTERNS=("500 internal server error","502 bad gateway","503 service
 RATE_LIMIT_PATTERNS=("429","too many requests","rate limit")
 AUTH_401_PATTERNS=("401 unauthorized","http 401","status code 401","authentication required")
 PERMISSION_403_PATTERNS=("403 forbidden","http 403","permission denied")
+LOCAL_WORKSPACE_PERMISSION_PATTERNS=(
+    "codex_user_runner_workspace_unavailable",
+    "failed to grant runner access",
+)
 NETWORK_ERROR_PATTERNS=("network error","error sending request","connection reset","connection aborted","connection refused","connection closed","transport channel closed")
 # STORY_OS_V2_6_2_ARTIFACT_COLLISION: the Codex image tool can generate a real picture and
 # still fail its own local save (Windows os error 183 / ERROR_ALREADY_EXISTS). Story OS only
@@ -45,6 +50,11 @@ def classify_backend_error(text, *, source="image_backend"):
     if source != "image_backend":
         return None
     if any(x in low for x in AUTH_401_PATTERNS): return AUTH_401
+    # Local staging/ACL failures are recoverable infrastructure faults, not a
+    # provider authorization verdict. Keep real HTTP/provider 403 fail-closed.
+    if (any(x in low for x in LOCAL_WORKSPACE_PERMISSION_PATTERNS)
+            or ("permission denied" in low and "story-os-image-" in low)):
+        return LOCAL_WORKSPACE_PERMISSION
     if any(x in low for x in PERMISSION_403_PATTERNS): return PERMISSION_403
     if any(x in low for x in NETWORK_ERROR_PATTERNS): return NETWORK_ERROR
     if any(x in low for x in PROVIDER_CAPACITY_PATTERNS): return PROVIDER_CAPACITY

@@ -215,6 +215,27 @@ class TechnicalRetryPolicyTests(unittest.TestCase):
         self.assertEqual(image_scheduler.classify_error("PROVIDER_CAPACITY: requested=gpt-image-2"), "PROVIDER_CAPACITY")
         self.assertIn("PROVIDER_CAPACITY", image_scheduler.RETRYABLE_TECH_CODES)
 
+    def test_local_workspace_permission_is_retryable_without_weakening_provider_403(self):
+        grant_error = (
+            "CODEX_USER_RUNNER_WORKSPACE_UNAVAILABLE: failed to grant runner access to "
+            "D:\\repo\\runtime\\codex-user-runner\\tmp\\story-os-image-abc: Access is denied."
+        )
+        temp_error = (
+            "[Errno 13] Permission denied: "
+            "'C:\\Users\\u\\AppData\\Local\\Temp\\story-os-image-xyz\\reference-01.png'"
+        )
+        self.assertEqual(image_model_policy.classify_backend_error(grant_error), "LOCAL_WORKSPACE_PERMISSION")
+        self.assertEqual(image_model_policy.classify_backend_error(temp_error), "LOCAL_WORKSPACE_PERMISSION")
+        self.assertIn("LOCAL_WORKSPACE_PERMISSION", image_scheduler.RETRYABLE_TECH_CODES)
+        self.assertEqual(image_model_policy.classify_backend_error("HTTP 403 Forbidden from image provider"), "PERMISSION_403")
+
+    def test_legacy_permission_403_queue_row_reclassifies_from_local_error_text(self):
+        item = {
+            "technical_failure_code": "PERMISSION_403",
+            "last_error": "[Errno 13] Permission denied: C:\\Temp\\story-os-image-abc\\reference-01.png",
+        }
+        self.assertEqual(image_scheduler._technical_retry_code(item), "LOCAL_WORKSPACE_PERMISSION")
+
     def test_third_capacity_failure_closes_epoch_immediately(self):
         item = {"attempts": 3, "technical_retry_epoch_start_attempt": 0}
         status = image_scheduler._terminal_technical_status(item, "PROVIDER_CAPACITY")

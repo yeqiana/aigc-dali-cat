@@ -54,6 +54,7 @@ TECH_RETRY_BACKOFF = tuple(int(x) for x in storyos_config.get_path(_CONFIG, "pro
 RETRYABLE_TECH_CODES = {
     "NETWORK_ERROR", "NETWORK_CONNECT", "RATE_LIMIT_429", "BACKEND_5XX", "PROVIDER_CAPACITY", "TIMEOUT", "IMAGE_BACKEND_ERROR",
     "IMAGE_BACKEND_NO_OUTPUT",
+    "LOCAL_WORKSPACE_PERMISSION",
     "PROVIDER_ARTIFACT_SAVE_COLLISION", "WORKER_INTERRUPTED_FAILURE",
 }
 NON_REGENERATING_FAILURE_CODES = {
@@ -614,8 +615,15 @@ def run_scheduler_legacy_removed_path(ep:Path,max_workers:int,timeout:int,codex:
 
 
 def _technical_retry_code(item:dict)->str:
+    error=str(item.get("last_error") or "")
+    # W-107: old queue rows may already have collapsed a local Windows staging
+    # ACL failure into PERMISSION_403. Reclassify that narrow signature from the
+    # preserved error text so recovery can open a new bounded technical epoch.
+    inferred=image_model_policy.classify_backend_error(error,source="image_backend")
+    if inferred==image_model_policy.LOCAL_WORKSPACE_PERMISSION:
+        return inferred
     code=str(item.get("technical_failure_code") or "").strip().upper()
-    return code or classify_error(str(item.get("last_error") or ""))
+    return code or inferred or classify_error(error)
 
 
 def _retry_epoch_attempts(item:dict)->int:
