@@ -17,6 +17,7 @@ if str(SYSTEM) not in sys.path:
 
 import caption_image_audit
 import codex_subscription_image
+import codex_user_runner
 import image_provider_runtime
 import image_worker_pool
 import next_action
@@ -92,14 +93,13 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         os.environ["STORY_OS_RUNTIME"] = "WORK"
         os.environ["STORY_OS_IMAGE_RUNTIME"] = "CODEX"
         with tempfile.TemporaryDirectory(prefix="v261-no-desktop-codex-") as td:
-            with mock.patch.dict(os.environ, {"LOCALAPPDATA": td, "CODEX_EXE": ""}, clear=False):
-                with mock.patch.object(
-                    codex_subscription_image.shutil,
-                    "which",
-                    side_effect=lambda name: sys.executable if name == "codex" else None,
-                ):
-                    resolved = codex_subscription_image.resolve_codex(None)
-        self.assertEqual(resolved, Path(sys.executable).resolve())
+            fake_codex = Path(td) / "codex.exe"
+            fake_codex.write_bytes(b"fake-codex")
+            with mock.patch.dict(os.environ, {"LOCALAPPDATA": td, "CODEX_EXE": ""}, clear=False), \
+                 mock.patch.object(codex_user_runner, "resolve_codex", return_value=(fake_codex, "runner_resolved")), \
+                 mock.patch.object(codex_user_runner, "codex_version", return_value="codex-cli 0.153.4"):
+                resolved = codex_subscription_image.resolve_codex(None)
+        self.assertEqual(resolved, fake_codex.resolve())
 
     def test_queue_model_strictness_survives_internal_forwarding(self) -> None:
         with self.temp_episode() as td:
