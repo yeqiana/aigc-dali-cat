@@ -98,17 +98,12 @@ def history_from_registry(current: dict, registry: dict) -> list[dict]:
     ][-5:]
 
 def resolve_codex(raw: str | None) -> Path:
-    value = raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not value:
-        raise RuntimeError("Codex CLI not found for semantic Recent-5 critic")
-    return Path(value).expanduser().resolve()
+    import codex_cli_contract
+    return codex_cli_contract.resolve_path(raw)
 
 def prefix(codex: Path) -> list[str]:
-    if codex.suffix.lower() == ".py":
-        return [sys.executable, str(codex)]
-    if os.name == "nt" and codex.suffix.lower() in {".cmd", ".bat"}:
-        return ["cmd.exe", "/d", "/c", str(codex)]
-    return [str(codex)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(codex)
 
 def score_from_flags(flags: dict) -> tuple[int, bool, list[str]]:
     matched = [k for k in FINGERPRINT_KEYS if flags.get(k) is True]

@@ -84,20 +84,15 @@ def resolve_codex(raw: str | None) -> Path:
             candidates = [p for p in candidates if p.is_file()]
             if candidates:
                 value = str(max(candidates, key=lambda p: p.stat().st_mtime_ns))
-    value = value or shutil.which('codex') or shutil.which('codex.exe') or shutil.which('codex.cmd')
-    if not value:
-        raise BackendError('Codex CLI not found; pass --codex or set CODEX_EXE')
-    path = Path(value).expanduser().resolve()
-    if not path.exists():
-        raise BackendError(f'Codex CLI not found: {path}')
-    return path
+    import codex_cli_contract
+    try:
+        return codex_cli_contract.resolve_path(value)
+    except codex_cli_contract.CodexCliContractError as exc:
+        raise BackendError(str(exc)) from exc
 
 def command_prefix(codex: Path) -> list[str]:
-    if codex.suffix.lower() == '.py':
-        return [sys.executable, str(codex)]
-    if os.name == 'nt' and codex.suffix.lower() in {'.cmd', '.bat'}:
-        return ['cmd.exe', '/d', '/c', str(codex)]
-    return [str(codex)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(codex)
 
 def provider_size(width: int, height: int) -> str:
     return f'{width}x{height}'

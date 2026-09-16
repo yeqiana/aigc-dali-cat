@@ -72,17 +72,12 @@ def release_review_rows(rows: dict[str, dict]) -> dict[str, dict]:
     return {role: rows[role] for role in roles if role in rows}
 
 def resolve_codex(raw: str | None) -> Path:
-    value = raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not value:
-        raise RuntimeError("Codex CLI not found")
-    return Path(value).expanduser().resolve()
+    import codex_cli_contract
+    return codex_cli_contract.resolve_path(raw)
 
 def prefix(codex: Path) -> list[str]:
-    if codex.suffix.lower() == ".py":
-        return [sys.executable, str(codex)]
-    if os.name == "nt" and codex.suffix.lower() in {".cmd", ".bat"}:
-        return ["cmd.exe", "/d", "/c", str(codex)]
-    return [str(codex)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(codex)
 
 def release_critic_prompt(ep: Path, candidate: Path, rows: dict[str, dict]) -> str:
     manifest = load_manifest(ep)

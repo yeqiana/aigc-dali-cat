@@ -171,16 +171,12 @@ def verify(ep):
     except Exception as exc: return [str(exc)]
 
 def resolve_codex(raw):
-    value=raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not value: raise RuntimeError("Codex CLI not found")
-    p=Path(value).expanduser().resolve()
-    if not p.exists(): raise RuntimeError(f"Codex CLI not found: {p}")
-    return p
+    import codex_cli_contract
+    return codex_cli_contract.resolve_path(raw)
 
 def prefix(codex):
-    if codex.suffix.lower()==".py": return [sys.executable,str(codex)]
-    if os.name=="nt" and codex.suffix.lower() in {".cmd",".bat"}: return ["cmd.exe","/d","/c",str(codex)]
-    return [str(codex)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(codex)
 
 def ordinary_life_mode(ep):
     p=Path(ep)/"meta/shot-progression-review.json"

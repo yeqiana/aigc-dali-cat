@@ -20,13 +20,11 @@ REL=Path("meta/runtime/rolling-reviews")
 VALID={"PASS_PREVIEW","REPAIR_NOW","UNCERTAIN"}
 
 def resolve_codex(raw):
-    v=raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not v: raise RuntimeError("Codex CLI not found")
-    return Path(v).expanduser().resolve()
+    import codex_cli_contract
+    return codex_cli_contract.resolve_path(raw)
 def prefix(p):
-    if p.suffix.lower()==".py": return [sys.executable,str(p)]
-    if os.name=="nt" and p.suffix.lower() in {".cmd",".bat"}: return ["cmd.exe","/d","/c",str(p)]
-    return [str(p)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(p)
 def review(ep,frame,image,codex_raw=None,timeout=None):
     image=Path(image).resolve()
     if timeout is None:

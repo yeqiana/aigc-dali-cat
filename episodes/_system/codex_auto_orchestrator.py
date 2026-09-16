@@ -33,13 +33,14 @@ def resolve_episode(raw):
     except ValueError: raise SystemExit('episode must be inside repository')
     return ep
 def resolve_codex(raw):
-    value=raw or shutil.which('codex') or shutil.which('codex.exe') or shutil.which('codex.cmd')
-    if not value: raise SystemExit('Codex CLI not found. Install/login Codex, then retry.')
-    return Path(value).resolve()
+    import codex_cli_contract
+    try:
+        return codex_cli_contract.resolve_path(raw)
+    except codex_cli_contract.CodexCliContractError as exc:
+        raise SystemExit(str(exc)) from exc
 def prefix(codex):
-    if codex.suffix.lower()=='.py': return [sys.executable,str(codex)]
-    if os.name=='nt' and codex.suffix.lower() in {'.cmd','.bat'}: return ['cmd.exe','/d','/c',str(codex)]
-    return [str(codex)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(codex)
 def update_checkpoint(ep,state,next_action,error=None,completion=None):
     p=ep/CHECKPOINT; d=read_json(p) if p.exists() else {'schema_version':2,'locked_frames':[],'failed_frames':[],'step_runs':[]}
     d.update({'story_os_version':STORY_OS_VERSION,'runtime':'CODEX','continuous_execution_authorized':True,'approval_basis':'delegated_continuous_execution','last_completed':state,'next_action':next_action,'updated_at':now()})
