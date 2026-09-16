@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "applicable": true,
+  "mode": "destination_checkin_selfie",
+  "reason": "用户硬约束要求 Frame01 正脸/自拍身份锚。古代普通家庭题不做旅行打卡，按兼容的 destination_checkin_selfie 语义解释为自家院门内的生活留影；P01 正脸为主，P02 从后侧自然入画，后续帧不再自拍。",
+  "exception_reason": "",
+  "created_at": "2026-09-16T17:45:00+08:00",
+  "opening_frames": [
+    {
+      "frame": "01",
+      "selfie": true,
+      "location_type": "destination_checkin",
+      "people_visible": 2,
+      "relationship_anchor": true,
+      "clothing_anchor_visible": true,
+      "natural_unpolished_capture": true,
+      "anomaly_level": "none",
+      "notes": "P02 在院门内侧顺手给刚扛柴回来的 P01 留一张正脸生活照；P01 褐色粗麻短褐，P02 灰蓝粗麻襦裙从后侧经过，构图略偏、衣服带劳作灰，不是古装写真。"
+    },
+    {
+      "frame": "02",
+      "selfie": false,
+      "location_type": "destination_checkin",
+      "people_visible": 4,
+      "relationship_anchor": true,
+      "clothing_anchor_visible": true,
+      "natural_unpolished_capture": true,
+      "anomaly_level": "none",
+      "notes": "灶房低木案一家四口吃稀粥，P03 把自己碗里的半勺粥推给 P04；无人看镜头。"
+    }
+  ],
+  "rules": {
+    "preferred_frame_range": [1, 2],
+    "preferred_contexts": ["destination_checkin"],
+    "selfie_required_when_applicable": true,
+    "minimum_people_visible": 2,
+    "establish_relationship_before_anomaly": true,
+    "strong_anomaly_forbidden_in_opening_anchor": true,
+    "commercial_or_staged_group_photo_forbidden": true,
+    "allow_exception_with_reason": true
+  }
+}

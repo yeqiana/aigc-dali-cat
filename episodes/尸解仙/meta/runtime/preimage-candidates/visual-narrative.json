@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "task_id": "preimage-visual_narrative_prepare-934b5066e5fc",
+  "task_type": "VISUAL_NARRATIVE_PREPARE",
+  "snapshot_id": "934b5066e5fc77eefb985aaaf3e15b7a69269806d3a5ba7c02a46d895d1957a8",
+  "source_authority_sha256": {
+    "owned_scopes": {
+      "character.finalize": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.environment_contract": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.frame_directives": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.world_identity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.world_state": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.temporal_continuity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.wardrobe": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.narrative_core": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.shot_progression": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.capture_grammar": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+    },
+    "character_contract": "cd14312235a129548d6ad3cae5764c1974433b0f9ec71c2705c37c23c88ae84f",
+    "world_identity": null,
+    "runtime_request_preimage": "f00ad2b01a85f8ac9789096e48c8f05cca71ad75ccdc83ad13d4d2830f04734b",
+    "story_lock": "62904b475e91e8452340e6381b1c3dbcceff320b41859af0d563ddc1a902ac0b",
+    "visual_profile": "9eb5996e47c6373ded1bf546b4926e9d2ce1553d281618dc1c46d703e1364f20"
+  },
+  "generated_at": "2026-09-16T11:47:00+08:00",
+  "status": "COMPLETED",
+  "authority_scope": [
+    "visual.narrative_core",
+    "visual.shot_progression",
+    "visual.capture_grammar"
+  ],
+  "payload": {
+    "visual.narrative_core": {
+      "story_mode": "modern_folk_horror_real_phone_album",
+      "exclusive_mechanism": "痕迹与主人解绑：人已不在，但属于他的生活痕迹每天继续出现，并逐步把续痕者纳入新的痕迹主人",
+      "evidence_channel": "只使用灶火、碗筷、湿衣、黄历划痕、杯子、枕痕、门闩等生活痕迹；影子不得作为主证据通道",
+      "human_core": "P01 与 P02 都是二十多岁的普通年轻人，以处理老屋交接为现实进入理由，不具备道士、调查员、探灵人或异常专业能力",
+      "visual_contrast": "普通南方山村老屋的生活质感，与无人居住房屋里持续出现的当日生活痕迹形成冲突；异常靠现实物件状态成立，不靠怪物或特效",
+      "progression": {
+        "ordinary": "01-02 建立朋友关系、村口与老屋正常基线",
+        "discovery": "03-08 从干净茶缸、温灶、两副碗筷、湿衣、黄历与手抄页逐层确认规则",
+        "attempted_continuation": "09 P01 按普通人的理解替奶奶把这一天过完",
+        "causal_transfer": "10-15 倒数停止、衣物和杯子开始指向 P01，说明续痕正在换主人",
+        "climax": "16 黄历最后一页出现两个名字，P01 的名字在下，确认继续执行会把自己留下",
+        "break_rule": "17-18 收走第二副碗筷并烧掉手抄页，主动停止续痕",
+        "residue": "19-20 冷灶、空绳、锁门与车内相册反光回到现实，证明痕迹已断但经历留下"
+      },
+      "visual_lock_priority": {
+        "ordinary_baseline": "01",
+        "first_major_anomaly": "04",
+        "high_impact_admission": "16",
+        "worst_capture_condition_hint": "14"
+      },
+      "forbidden": [
+        "shadow_as_primary_evidence",
+        "ghost_or_monster_reveal",
+        "taoist_or_investigator_protagonist",
+        "omniscient_ghost_camera",
+        "cinematic_horror_poster_composition",
+        "blue_green_horror_filter",
+        "unmotivated_fog_or_supernatural_glow"
+      ]
+    },
+    "visual.shot_progression": {
+      "source": "meta/shot-progression-review.json",
+      "frame_count": 20,
+      "grammar": "第一人称真实手机相册；每帧是人物当时有理由保存的一张记录，而不是电影分镜截图",
+      "scale_arc": "01 自拍近中景 -> 02-04 门口/堂屋/灶房中全景与近景 -> 05-08 生活物件细节 -> 09-14 人物行动与空间矛盾交替 -> 15-18 纸面/物件近景完成因果与决断 -> 19 宽景现实残留 -> 20 车内近中景收束",
+      "scene_position_policy": "沿用已锁定的唯一 scene_position_id，不复用完全相同机位；同一地点再次出现必须换人物位置、距离或叙事目的",
+      "practical_lighting": "只使用日光、窗光、天光、裸灯、灶火与手机屏幕等现场真实光源，不增加舞台式轮廓光和电影色光",
+      "cinematic_translation": "只吸收负空间、框中框、遮挡揭示、反射第二信息层等结构，不复刻具体电影镜头，不牺牲手机随手拍真实性",
+      "frame01_rule": "必须看清主要人物正脸并建立 P01/P02 普通朋友关系；自然自拍，不做宣传照或海报站姿",
+      "frame04_rule": "首次重大异常靠温灶、余火和锅盖水汽成立；蒸汽只能做真实遮挡，不能做超自然烟雾",
+      "frame16_rule": "高潮必须让黄历最后一页和两个名字成为清晰主信息；纸角遮挡只服务于自然揭示，不能做夸张恐怖特效",
+      "frame17_18_rule": "高潮后的行动必须比表情更重要：收走第二副碗筷、装箱、烧掉手抄页，明确表现普通人主动终止规则",
+      "frame20_rule": "车内交接单是现实层，手机屏幕/车窗反光只作为第二信息层确认空院子；反射方向和亮度必须物理成立"
+    },
+    "visual.capture_grammar": {
+      "device": "2026 年普通智能手机，4:5 正文画幅；以 P01 第一人称手持为主，自拍、桌上临时放置或 P02 短暂代拍必须由当帧动作解释",
+      "camera_authorship": "每帧摄影者必须可在现实空间中解释；禁止无人物可持机的幽灵机位、吊臂视角和不可能的远景第三人称",
+      "photo_feel": "M00 现实生活纪实母版：私人相册即时感、自然皮肤与材质、轻微手持不完美、真实手机曝光；不做商业棚拍和电影海报",
+      "composition": "主体优先但允许轻微歪斜、边缘遮挡和不完美裁切；异常必须和现实尺度参照同时存在，不靠字幕替代像素证据",
+      "capture_defects": "弱光允许轻噪点、轻运动模糊、手机高光溢出或暗部损失，但不得用统一低清滤镜伪造年代感",
+      "continuity": "P01/P02 身份、服装、老屋门框、八仙桌、灶台、黄历、两副碗筷和时间推进必须跨帧稳定；Visual Lock 前不伪造 Pixel Master",
+      "anomaly_progression": "异常始终表现为生活痕迹的物理状态变化：有人刚用过、刚洗过、刚写过、刚睡过；不出现影子主证据、怪物、法术或灵体实体化",
+      "human_response": "反应保持普通人尺度：先记录、核对、讨论、尝试解决，再在证据指向自身后停止续痕；避免连续尖叫、同步戏剧化反应或专业驱魔动作"
+    }
+  }
+}

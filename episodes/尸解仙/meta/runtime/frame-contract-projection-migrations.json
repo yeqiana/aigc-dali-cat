@@ -1,0 +1,225 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "frame": "01",
+      "from_contract_sha256": "b8f4214b2a06e953bbccc407ec28fd33a5df44f3931be3bbb4181c0866b8a8c5",
+      "to_contract_sha256": "08564d127952cff3d8ada4676ce8cbec65b9066b5a8c8b30467bd29781b99364",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "02",
+      "from_contract_sha256": "6ea2ab5f1ae42b5c4ad5eee21f115cfaae6b9aab38ee37290362f15efce99d63",
+      "to_contract_sha256": "7ae51297dafa60be8bde63096fd3ccbd1d794c94dcdb34aaa0b4f660555fdbd3",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "03",
+      "from_contract_sha256": "51a7f709283cc12d9c1ddb1f42ebb197df960a39f22135ed53d2ca2b945a33dc",
+      "to_contract_sha256": "8262cf795d63fef8fddc95d6ed16d5db6744ff5b222c5ee9d8732f3ee6386342",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "04",
+      "from_contract_sha256": "dd6faf477883cb98455735d4957f3446ae83978fa90438b8315e2ce3714ec747",
+      "to_contract_sha256": "750047a1271245fbddaa22df54eb04bf52725ea08d95219a2b16d5fbdd610cb5",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "05",
+      "from_contract_sha256": "c2f3d6f85151a4847351aa4f14690c8b41067d8c58e0df6b7b2bd1be9c29cae4",
+      "to_contract_sha256": "49d23c649218038dcfa00d187d5464993f13e6b1c87b4066b67ba1912c0b89b0",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "06",
+      "from_contract_sha256": "18d52b524454c49a4d8699d4c25859c391b40f9e7c7d020b350f68cfe1d6ffdb",
+      "to_contract_sha256": "ae6019d9a1940da86d0c2e4c74521628a777aee6727d8f31222920ab78464dea",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "07",
+      "from_contract_sha256": "71388e5dce1f56ff75329beafe3d9decd318b852e205961200353c08ac367676",
+      "to_contract_sha256": "1c3aca94cb6a77f3418248b92a41ce60046b95f6f1825196d4bdb41336301b34",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "08",
+      "from_contract_sha256": "c933b6d75c0f876c167f31e560d2b0832c1f1e1f7f45dc33f6eb51883c1057ba",
+      "to_contract_sha256": "01e635df57820e763cd9587115fe3fb616ea2b5486672e1cfdb8c310a54694bb",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "09",
+      "from_contract_sha256": "f4266e5446554a070b4fba4efe4e8c6b01ecdc3584cb8449d3b6b80e7abca6ce",
+      "to_contract_sha256": "a88c9b214e968c432479706abc1b6549a488115665ad84c92c6ceff106962b0c",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "10",
+      "from_contract_sha256": "ed3397b92fb3013d485500114c28b27a58854fabf87f9a31492a212bfcb37617",
+      "to_contract_sha256": "eb85c1a504aeb8fcfcb2ed2c873e2c80afc7589c51256a13a55281dd917d0bdf",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "11",
+      "from_contract_sha256": "146849fcdaa133a15b02ebe6bd59ef1d8c43a8a19e5e91c77f078f2c16c66559",
+      "to_contract_sha256": "c59e0b896c9fb6d574d2c3e975ea00fa1cb471621ef8fef729f08aa5148daea6",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "12",
+      "from_contract_sha256": "62da5a348edb188565e316ab6eba04145e04f6e65134ae210cb26d490f93998b",
+      "to_contract_sha256": "99037bf6754388e9b40e18c41395041548642831fa235374318ef9f1b4ed6b57",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "13",
+      "from_contract_sha256": "83bc68b4a3863ebd080b62396c7a847dc3c5062127adb407192667da8795a14c",
+      "to_contract_sha256": "3aaba75834c67046542f11525696377961d393d9981d7a89968b0a5fde961e30",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "14",
+      "from_contract_sha256": "d0393ebffe2faac42ddb5a19d7748278e54d316c9c1902b1ed21f362f9218561",
+      "to_contract_sha256": "ea0880acac758f8d9a9693873f19109fb9b7b3ce85b0375ae131a88aeced6d23",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:08+08:00"
+    },
+    {
+      "frame": "15",
+      "from_contract_sha256": "6791cd50fe4e9ff89d8f3419cafb1fb2fec4a4a62114511bdd50286275e9c865",
+      "to_contract_sha256": "8f5651120ef30598105cfc9cc80dbf441005097c25983a6b4262e1856af183a7",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:09+08:00"
+    },
+    {
+      "frame": "16",
+      "from_contract_sha256": "ac5489a4712afae30c7c76e2b1683e74f12a526c82c83de01dff6829cdc2b050",
+      "to_contract_sha256": "53bab7171e631fcb6be8284c8cc22b57c139f1a7af9edecd51424f136d9572ef",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:09+08:00"
+    },
+    {
+      "frame": "17",
+      "from_contract_sha256": "0fdf7acfe13b2dac3076d2ce609a8321628b94459fedc3312af21f95cf6a05dd",
+      "to_contract_sha256": "a18390503de74fa84ef14033e6543392c2cccbdad009ea43635a8b982a10f86c",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:09+08:00"
+    },
+    {
+      "frame": "18",
+      "from_contract_sha256": "3184a1275f4d5c6b440c6ee2307ecd5dc30cf24dce1115aecffb4b3405f1635a",
+      "to_contract_sha256": "07d2e9a342bca460fc04c0f90755fdc9da79f730e6800cf48fa9d83d9da31a20",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:09+08:00"
+    },
+    {
+      "frame": "19",
+      "from_contract_sha256": "d3652abfab3aa9c21cc3cb8307a4fe4851103bce2a72f6434a36da14a8787033",
+      "to_contract_sha256": "c607c2ec250b7e73589cd97100602c4f389d0ee2ea61a63b37d5b4d56bd315ad",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:09+08:00"
+    },
+    {
+      "frame": "20",
+      "from_contract_sha256": "9977686028bd4050e8ebd256593e7fbb99fdc50541a3e9bc53fd7c8b4827d0a1",
+      "to_contract_sha256": "3c6b909f8fff27b8bb4ff6645d2b792024f96e06f394fa254e7ab3f9e6b33590",
+      "reason": "machine_visual_projection_only",
+      "allowed_projection_keys": [
+        "authenticity_card",
+        "continuity"
+      ],
+      "recorded_at": "2026-09-16T17:23:09+08:00"
+    }
+  ]
+}

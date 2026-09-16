@@ -1,0 +1,30 @@
+{
+  "schema_version": 2,
+  "request_id": "concept-ambition-a2-2e46c5a7f1e3ca76",
+  "request_fingerprint": "2e46c5a7f1e3ca7602a2a85058aeaa473dea9268ddd616f235d78383a7e803cd",
+  "created_at": "2026-09-13T02:02:11+08:00",
+  "status": "FINALIZED",
+  "review_kind": "concept-ambition",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 2,
+  "source_files": [
+    {
+      "path": "episodes/天界普通女生的一天/meta/concept-candidates.json",
+      "sha256": "fc781e2c77932c993027942c9f8bed5ab508b60343e1182aa8e80e1e57b39f60"
+    }
+  ],
+  "candidate_path": "episodes/天界普通女生的一天/meta/.concept-ambition-review.candidate.json",
+  "prompt_sha256": "9330aed1938a88d2ed9ed5ac7b6d0731f9b6a59a7c1069ce182482e7556c268d",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are the independent Story OS V2.1 Concept Ambition + Image-first Propagation Critic.\nReview ALL 8-12 concepts in episodes/天界普通女生的一天/meta/concept-candidates.json. This is a fresh isolated review.\n\nORDINARY-LIFE AMBITION OVERRIDE (takes precedence over anomaly-band wording below):\n- This Episode is explicitly anomaly_applicable=false. Do NOT add horror, mystery, investigation, paranormal behavior or an anomaly merely to raise concept_voltage.\n- Interpret ambition bands by image/world/social scale for this Episode: A1 restrained everyday moment; A2 clear setting contrast; A3 strong celestial-life visual contrast; A4 large/high-impact world-scale daily-life image; A5 overwhelming world-scale daily-life image that still preserves ordinary behavior.\n- Reward realistic celestial scale, character appeal, friendship chemistry, ordinary-life specificity, visual state change and wordless Cover/Mid/Climax readability.\n- mechanism_novelty means novelty of the everyday-life visual/story engine, not an anomaly mechanism.\n- At least 3 A4/A5 directions are still required, but they must achieve that through peaceful celestial-world scale and ordinary-life contrast, never through anomaly injection.\n\nDOCTRINE:\n- Concept ambition comes BEFORE capture realism.\n- Do NOT lower a concept because its place, creature, ruin, dream-space, anomaly scale, case phenomenon, geography or world rule cannot exist in reality.\n- Reality-first constrains HOW the later image is captured, not WHAT may happen.\n- Reward concepts whose Cover/Mid/Climax images work before captions.\n- Penalize generic unease, text-dependent reveals, tiny escalation, discovery-only climaxes and visually ordinary payoffs.\n- Fictional cases, impossible ruins, dream intrusion, cosmic anomalies, giant-scale anomalies and surreal geography are valid.\n- The pool must include at least 3 genuinely high-ambition A4/A5 directions.\n\nBands: A1 restrained oddity; A2 clear anomaly; A3 strong anomaly; A4 large/high-impact anomaly; A5 world-rule loss/overwhelming anomaly.\n\nScores: one_line_hook 0-20; hero_frame 0-20; escalation_ceiling 0-20; climax_visual_payoff 0-15; mechanism_novelty 0-15; discussion_space 0-10.\nconcept_voltage = exact sum.\n\nWordless test: stop_scroll, escalation_readable, curiosity_gap.\nSelect exactly ONE concept. Winner must score >=80 and pass all 3 wordless checks.\nIf no valid winner exists, summary.passed=false.\n\nWrite ONLY JSON to episodes/天界普通女生的一天/meta/.concept-ambition-review.candidate.json:\n{\n  \"candidates\":[{\n    \"id\":\"C01\",\"ambition_band\":\"A4\",\n    \"scores\":{\"one_line_hook\":18,\"hero_frame\":19,\"escalation_ceiling\":18,\"climax_visual_payoff\":14,\"mechanism_novelty\":13,\"discussion_space\":9},\n    \"concept_voltage\":91,\n    \"wordless_test\":{\"stop_scroll\":true,\"escalation_readable\":true,\"curiosity_gap\":true},\n    \"strengths\":[\"...\"],\"risks\":[\"...\"]\n  }],\n  \"selected_id\":\"C01\",\n  \"selection_reason\":\"...\",\n  \"issue_codes\":[],\n  \"summary\":{\"passed\":true}\n}\nEpisode: episodes/天界普通女生的一天\nAttempt: 2\n",
+  "attempt_request_path": "episodes/天界普通女生的一天/meta/runtime/reviews/concept-ambition-attempt-2-request.json",
+  "finalized_at": "2026-09-13T10:33:12+08:00",
+  "final_path": "episodes/天界普通女生的一天/meta/concept-ambition-review.json"
+}

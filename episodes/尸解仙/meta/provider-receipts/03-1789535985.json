@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "recorded_at_epoch": 1789535985,
+  "frame": "03",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "generation_route": "codex_subscription",
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "requested_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": 0.8
+  },
+  "provider_raw_canvas": {
+    "width": 1122,
+    "height": 1402,
+    "aspect_ratio": 0.800285307,
+    "exact_requested_canvas": false,
+    "resize_direction_to_release": "downscale"
+  },
+  "ratio_delta": 0.000356633,
+  "normalize_decision": "AUTO_NORMALIZE",
+  "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\尸解仙\\media\\raw\\03-1789535856.png",
+  "raw_sha256": "ab761b6599186b8a7ebf0b163e7a7d4ef967133e7d3753bc637a669794cacfb5",
+  "provider_attestation": false,
+  "exact_raw_canvas_guaranteed": false,
+  "receipt_is_evidence_not_authority": true,
+  "reference_transport": "codex_subscription_cli_attachment",
+  "references": [
+    {
+      "order": 1,
+      "path": "episodes/尸解仙/media/candidates/scheduled/01-a171db41184d-a2.png",
+      "sha256": "d6aaf0f185b21895128fe8b911902a12096487d19ede01a5244aa7dc3dba71c7"
+    }
+  ],
+  "normalization": {
+    "operation": "RESIZE_LANCZOS",
+    "ratio_delta": 0.000357,
+    "crop_applied": false,
+    "reencoded": true,
+    "local_attempts": 1
+  },
+  "release_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\尸解仙\\media\\candidates\\scheduled\\03-855d4e9f6033-a1.png",
+    "sha256": "551feaf9a50e40526054ae019d8c3eb9da86fc7ee8668c8e01cd07fb2c7e5d6e"
+  }
+}

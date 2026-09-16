@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "note": "Runtime DAG recovery evidence only; NOT a stage source.",
+  "steps": {
+    "INCREMENTAL_PLAN": {
+      "step_id": "INCREMENTAL_PLAN",
+      "status": "REUSED",
+      "attempt": 7,
+      "started_at": "2026-09-15T17:31:21+08:00",
+      "finished_at": "2026-09-15T17:31:21+08:00",
+      "elapsed_seconds": 0.0,
+      "input_hash": "46b7ae18ddd1b325fa24c8c000be375e6ee7ab8f7db0f602d370c800866b3101",
+      "output_hash": "7a36f94d4ba2cf7f8223d0f765638c7a529942b6c34f3e22cfe45de0bbfb5e37",
+      "note": "plan inputs unchanged since last run",
+      "returncode": 0
+    },
+    "CREATIVE_STORY": {
+      "step_id": "CREATIVE_STORY",
+      "status": "BLOCKED",
+      "attempt": 3,
+      "started_at": "2026-09-15T17:31:21+08:00",
+      "finished_at": "2026-09-15T17:31:21+08:00",
+      "elapsed_seconds": 0.07800000000133878,
+      "input_hash": "5d7dc652b5fc6717dc9115d7ad32e2049503a700d709e04463b2997a702ea444",
+      "output_hash": "c8da23949a53d548806fbcba03d0f99130bbb566d736a79fc92ddf77859a61b1",
+      "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\江南卖花姑娘的一天\\meta\\scoped-workers\\creative_story.jsonl\nCHARACTER CONTRACT FAIL\ncharacter contract status must be LOCKED before Story Lock\nNO-ANOMALY TEST must be rechecked_against_final_story=true before Story Lock",
+      "returncode": 4
+    }
+  },
+  "history": [
+    {
+      "step_id": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "attempt": 1,
+      "started_at": "2026-09-15T17:07:28+08:00",
+      "finished_at": "2026-09-15T17:07:28+08:00",
+      "elapsed_seconds": 0.1720000000022992,
+      "input_hash": "46b7ae18ddd1b325fa24c8c000be375e6ee7ab8f7db0f602d370c800866b3101",
+      "output_hash": "7a4230ec3dd174ee91093e1507c347a41377afa267dfbb8893d01009f6446da5",
+      "note": "{\n  \"episode\": \"episodes/�������������һ��\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n",
+      "returncode": 0
+    },
+    {
+      "step_id": "INCREMENTAL_PLAN",
+      "status": "REUSED",
+      "attempt": 2,
+      "started_at": "2026-09-15T17:11:39+08:00",
+      "finished_at": "2026-09-15T17:11:39+08:00",
+      "elapsed_seconds": 0.0,
+      "input_hash": "46b7ae18ddd1b325fa24c8c000be375e6ee7ab8f7db0f602d370c800866b3101",
+      "output_hash": "f5b4ba7e82349511398cea79b231782249f470ce36cf8ae6be925abf2bb67a25",
+      "note": "plan inputs unchanged since last run",
+      "returncode": 0
+    },
+    {
+      "step_id": "INCREMENTAL_PLAN",
+      "status": "REUSED",
+      "attempt": 3,
+      "started_at": "2026-09-15T17:12:59+08:00",
+      "finished_at": "2026-09-15T17:12:59+08:00",
+      "elapsed_seconds": 0.0,
+      "input_hash": "46b7ae18ddd1b325fa24c8c000be375e6ee7ab8f7db0f602d370c800866b3101",
+      "output_hash": "699a4a66cd8988e82627d125da3ccfd7c7025981ea9183104586b450ee32b1bb",
+      "note": "plan inputs unchanged since last run",
+      "returncode": 0
+    },
+    {
+      "step_id": "INCREMENTAL_PLAN",
+      "status": "REUSED",
+      "attempt": 4,
+      "started_at": "2026-09-15T17:26:53+08:00",
+      "finished_at": "2026-09-15T17:26:53+08:00",
+      "elapsed_seconds": 0.0,
+      "input_hash": "46b7ae18ddd1b325fa24c8c000be375e6ee7ab8f7db0f602d370c800866b3101",
+      "output_hash": "20c13407378f3d5b6fab7ec9b3f1588cb3280016dd8534ed87d7fa416cc3e301",
+      "note": "plan inputs unchanged since last run",
+      "returncode": 0
+    },
+    {
+      "step_id": "INCREMENTAL_PLAN",
+      "status": "REUSED",
+      "attempt": 5,
+      "started_at": "2026-09-15T17:28:09+08:00",
+      "finished_at": "2026-09-15T17:28:09+08:00",
+      "elapsed_seconds": 0.0,
+      "input_hash": "46b7ae18ddd1b325fa24c8c000be375e6ee7ab8f7db0f602d370c800866b3101",
+      "output_hash": "62f194b562657b65dcc9e8572cc06aa1ecb93009b5a0a21dff49f62c242d88da",
+      "note": "plan inputs unchanged since last run",
+      "returncode": 0
+    },
+    {
+      "step_id": "CREATIVE_STORY",
+      "status": "BLOCKED",
+      "attempt": 1,
+      "started_at": "2026-09-15T17:28:10+08:00",
+      "finished_at": "2026-09-15T17:30:50+08:00",
+      "elapsed_seconds": 160.76600000000326,
+      "input_hash": "5d7dc652b5fc6717dc9115d7ad32e2049503a700d709e04463b2997a702ea444",
+      "output_hash": "c8da23949a53d548806fbcba03d0f99130bbb566d736a79fc92ddf77859a61b1",
+      "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\江南卖花姑娘的一天\\meta\\scoped-workers\\creative_story.jsonl\nCHARACTER CONTRACT FAIL\ncharacter contract status must be LOCKED before Story Lock\nNO-ANOMALY TEST must be rechecked_against_final_story=true before Story Lock",
+      "returncode": 4
+    },
+    {
+      "step_id": "INCREMENTAL_PLAN",
+      "status": "REUSED",
+      "attempt": 6,
+      "started_at": "2026-09-15T17:31:00+08:00",
+      "finished_at": "2026-09-15T17:31:00+08:00",
+      "elapsed_seconds": 0.0,
+      "input_hash": "46b7ae18ddd1b325fa24c8c000be375e6ee7ab8f7db0f602d370c800866b3101",
+      "output_hash": "6340b4170d44cada9ed4fa6517d4ee279ba16b23f02223cb4195c7daeebc07c5",
+      "note": "plan inputs unchanged since last run",
+      "returncode": 0
+    },
+    {
+      "step_id": "CREATIVE_STORY",
+      "status": "BLOCKED",
+      "attempt": 2,
+      "started_at": "2026-09-15T17:31:01+08:00",
+      "finished_at": "2026-09-15T17:31:01+08:00",
+      "elapsed_seconds": 0.0779999999977008,
+      "input_hash": "5d7dc652b5fc6717dc9115d7ad32e2049503a700d709e04463b2997a702ea444",
+      "output_hash": "c8da23949a53d548806fbcba03d0f99130bbb566d736a79fc92ddf77859a61b1",
+      "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\江南卖花姑娘的一天\\meta\\scoped-workers\\creative_story.jsonl\nCHARACTER CONTRACT FAIL\ncharacter contract status must be LOCKED before Story Lock\nNO-ANOMALY TEST must be rechecked_against_final_story=true before Story Lock",
+      "returncode": 4
+    },
+    {
+      "step_id": "INCREMENTAL_PLAN",
+      "status": "REUSED",
+      "attempt": 7,
+      "started_at": "2026-09-15T17:31:21+08:00",
+      "finished_at": "2026-09-15T17:31:21+08:00",
+      "elapsed_seconds": 0.0,
+      "input_hash": "46b7ae18ddd1b325fa24c8c000be375e6ee7ab8f7db0f602d370c800866b3101",
+      "output_hash": "7a36f94d4ba2cf7f8223d0f765638c7a529942b6c34f3e22cfe45de0bbfb5e37",
+      "note": "plan inputs unchanged since last run",
+      "returncode": 0
+    },
+    {
+      "step_id": "CREATIVE_STORY",
+      "status": "BLOCKED",
+      "attempt": 3,
+      "started_at": "2026-09-15T17:31:21+08:00",
+      "finished_at": "2026-09-15T17:31:21+08:00",
+      "elapsed_seconds": 0.07800000000133878,
+      "input_hash": "5d7dc652b5fc6717dc9115d7ad32e2049503a700d709e04463b2997a702ea444",
+      "output_hash": "c8da23949a53d548806fbcba03d0f99130bbb566d736a79fc92ddf77859a61b1",
+      "note": "log=D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\江南卖花姑娘的一天\\meta\\scoped-workers\\creative_story.jsonl\nCHARACTER CONTRACT FAIL\ncharacter contract status must be LOCKED before Story Lock\nNO-ANOMALY TEST must be rechecked_against_final_story=true before Story Lock",
+      "returncode": 4
+    }
+  ],
+  "updated_at": "2026-09-15T17:31:21+08:00"
+}

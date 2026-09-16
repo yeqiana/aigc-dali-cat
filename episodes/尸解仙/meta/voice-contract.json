@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "authority": "Story Build Voice Contract",
+  "created_at": "2026-09-15T11:55:00+08:00",
+  "voice_card": {
+    "person": "P01 陈亦航（第一人称）",
+    "role": "回村处理老屋交接的普通人，当事人",
+    "age": 25,
+    "education_and_knowledge_boundary": "本科学的是室内设计，会画图、会用手机拍东西；不懂民俗，不懂古文，不会看黄历上的宜忌，只认得奶奶的字迹。他没有任何处理这类事情的经验。",
+    "recording_reason": "奶奶三个月前去世，老屋月底要交回村里做旧村改造清点，他回来签字、收东西；习惯把过程拍下来，既是留记录，也是给自己一个交代。",
+    "knows_now": "奶奶三个月前走了；老屋的灶每天有当天新烧的灰，锅里是温的，碗筷每天摆成两副，晾衣绳每天换一轮衣服，老黄历每天被划掉一格。",
+    "does_not_know": "一开始不知道留痕的规矩，不知道被划掉的格子是往前数的，也不知道替人过完一天会把自己的痕迹写进去；直到最后一页出现他自己的名字。",
+    "stress_language": "话变短，先报事实再补一句；会重复问同一件事；把“奶奶”改口成“她”。",
+    "fear_language_change": "语速慢下来，句子更短，最后只说主语和动词；不再解释，只描述眼前看到的东西。",
+    "ordinary_vocabulary": "大白话为主：“不对劲”“我拍一下”“你看这儿”“再来一遍”“先别动”。",
+    "forbidden_technical_terms": "尸解仙、羽化、修仙、符箓、科仪、煞气、阵法、开光这类术语；他不会说，也不该说。"
+  },
+  "subtitle_policy": {
+    "max_visible_chars": 48,
+    "continuous_three_frame_test": true,
+    "read_aloud_test": true,
+    "delete_subtitle_test": true,
+    "do_not_repeat_visible_anomaly": true,
+    "allow_short_fragments_and_self_correction": true,
+    "note": "字幕只补画面读不出来的时间关系和心理，不重复画面已经给出的异常。"
+  }
+}

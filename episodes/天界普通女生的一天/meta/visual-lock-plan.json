@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "generated_at": "2026-09-13T11:01:49+08:00",
+  "policy": {
+    "baseline_first": true,
+    "remaining_three_parallelizable": true,
+    "calibration_count": 4,
+    "baseline_selection": "opening_social_anchor",
+    "baseline_frame": 1,
+    "opening_social_anchor_machine_priority": true,
+    "ordinary_life_override": true,
+    "legacy_first_major_anomaly_semantics": "first_major_visual_contrast"
+  },
+  "items": [
+    {"id":"V-B","frame":1,"mode":"normal_record","role":"ordinary_baseline","impact":1,"scale_reference":"","environment_severity":4,"contract_sha256":"db7d946e32fc88b105a8496dbdb47907e432eca692cc20d38f1d24a3f8971cc4","depends_on":[]},
+    {"id":"V-W","frame":16,"mode":"normal_record","role":"worst_capture_condition","impact":1,"scale_reference":"","environment_severity":5,"contract_sha256":"8334e010cad5ab73ccc124813e2e95537950064bfcdc8312d52fad918d2a7016","depends_on":[1]},
+    {"id":"V-A","frame":5,"mode":"normal_record","role":"first_major_anomaly","impact":1,"scale_reference":"","environment_severity":4,"contract_sha256":"f0777d70b0b25aefa5ee3acb07b7f85cc5144f3ac37b5f8cbc1db85d68cdb612","depends_on":[1],"ordinary_life_semantics":"first_major_visual_contrast"},
+    {"id":"V-H","frame":17,"mode":"climax_impact","role":"high_impact_admission","impact":3,"scale_reference":"four ordinary young residents visibly small against a vast sunset cloud sea","environment_severity":5,"contract_sha256":"5a035fbca149d54942a635c5d6f17136817188485a4bd0eccfb7eaa1838ca86f","depends_on":[1]}
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "01",
+  "risk_level": "LOW",
+  "risk_score": 0,
+  "risk_tags": [],
+  "frame_contract_sha256": "b8f4214b2a06e953bbccc407ec28fd33a5df44f3931be3bbb4181c0866b8a8c5",
+  "asset_path": "episodes/尸解仙/media/candidates/scheduled/01-a171db41184d-a2.png",
+  "asset_sha256": "d6aaf0f185b21895128fe8b911902a12096487d19ede01a5244aa7dc3dba71c7",
+  "scouted_at": "2026-09-16T12:07:01+08:00",
+  "final_critic_still_required": true,
+  "decision": "DEFER_TO_FINAL",
+  "issue_codes": [],
+  "notes": "Low-risk frame: skip extra critic call; final critic remains authoritative.",
+  "model_called": false,
+  "scout_status": "low_risk_defer"
+}

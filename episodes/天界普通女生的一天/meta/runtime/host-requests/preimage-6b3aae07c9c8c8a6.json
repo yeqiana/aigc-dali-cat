@@ -1,0 +1,88 @@
+{
+  "runtime": "WORK",
+  "status": "HOST_ACTION_REQUIRED",
+  "source": "runtime_dag:PREIMAGE_COMPILE",
+  "episode": "episodes/天界普通女生的一天",
+  "episode_state": "STORYBOARD_LOCKED",
+  "execution_mode": "full_auto",
+  "resume": true,
+  "next_step": "PREIMAGE_WORLD",
+  "task": {
+    "schema_version": 1,
+    "task_id": "preimage-world_prepare-10664f7f892c",
+    "task_type": "WORLD_PREPARE",
+    "node_id": "world_prepare",
+    "episode": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通女生的一天",
+    "snapshot_id": "10664f7f892c341bc2a2f36970372f36340bf56e7e91545f601257bb36ebfe71",
+    "depends_on": [
+      "story_lock"
+    ],
+    "required_read": [
+      "meta/story-gates.json",
+      "meta/world-identity.json",
+      "meta/character-contract.json"
+    ],
+    "input_contract": {
+      "source_authority_sha256": {
+        "owned_scopes": {
+          "character.finalize": "a8c28494d508a29e55d3e10479d68e683b0f8682ca0cf67145639da3e1b037c4",
+          "visual.environment_contract": "43930972a41e43773f1c54628b9cd7624bb267b859d0c4a92d18c09332be0edc",
+          "visual.frame_directives": "cf16ed89eb47e30bf399d73c7470588f9d2f0b58a49f9833235a55149e55201a",
+          "visual.world_identity": "35d4da7b9dff682ce879569e2856253d8e6f98adea7c4bb83ce172134e9e2961",
+          "visual.world_state": "35b33d1b2e3f448525d32597e9f9b04af142613ad17017bc369fe13831002458",
+          "visual.temporal_continuity": "e771b36f52a94459b38d8d0fd7d0c9d3242e36ec82a8a322599af9182ebc2434",
+          "visual.wardrobe": "d3eaa58e341062b64c349766bdf310e9197e89f4bbe11ce85fb82f6e761622fc",
+          "visual.narrative_core": "87e635ba0f2254eb21ec57a821c0edce8bf0c8b09d073d65a63ad1d0180359da",
+          "visual.shot_progression": "24a9b415efcbff84eee7020eee3c05cd4e7f3659d3c3e095ae12213e84f55217",
+          "visual.capture_grammar": "abec40e13ad7d44d74e9e331b14ad7d593b2181959866a6e983b8ed3e9534bee"
+        },
+        "character_contract": "9d4d0635e2ef11c893ba82a3894eacef3d474481010f010e61b49bf54f5c2df2",
+        "world_identity": "02634a0440ab6fcc7856a050d6cb7567a59f91e086a3124bcecf9d3f914c9fc1",
+        "runtime_request": "f6d130dd52a5a0ccca60d5d8542c89f0af02a6f7c3d1d6d6ee5581118bd789db",
+        "story_lock": "fdd7f4ac06fcfd6decd33c8545c7009ff8e2c73721e710dff7e2ea64431d053c",
+        "visual_profile": "e1cefbd26880f41ccc050710d5e3877c5297d66c393cc5a8a282361d569ba78e"
+      }
+    },
+    "candidate_output": "meta/runtime/preimage-candidates/world.json",
+    "verifier": "verify_world_prepare_candidate",
+    "retry_policy": {
+      "retry_failed_only": true,
+      "stale_requires_new_snapshot": true
+    },
+    "authority_scope": [
+      "visual.world_identity",
+      "visual.world_state",
+      "visual.temporal_continuity",
+      "visual.wardrobe"
+    ],
+    "target": "candidate_only_no_shared_authority_write",
+    "status": "PENDING",
+    "resume": true
+  },
+  "snapshot_id": "10664f7f892c341bc2a2f36970372f36340bf56e7e91545f601257bb36ebfe71",
+  "candidate_output_path": "meta/runtime/preimage-candidates/world.json",
+  "resume_token": "preimage-world_prepare-10664f7f892c",
+  "required_read": [
+    "meta/story-gates.json",
+    "meta/world-identity.json",
+    "meta/character-contract.json"
+  ],
+  "target_contract": "candidate_only_no_shared_authority_write",
+  "host_contract": {
+    "stage_authority": "meta/episode-state.json",
+    "must_not_claim_pass_without_evidence": true,
+    "must_not_write_shared_authority": true,
+    "candidate_return_required": true,
+    "workspace_transport": "DEVSPACE",
+    "webcodex_allowed": false
+  },
+  "instructions": [
+    "Perform only this bounded PREIMAGE task.",
+    "Write/return the declared Candidate JSON only.",
+    "Do not modify story-gates.json, episode-state.json, or release-manifest.json."
+  ],
+  "schema_version": 2,
+  "request_id": "preimage-6b3aae07c9c8c8a6",
+  "request_fingerprint": "6b3aae07c9c8c8a62289f4a0061a813f36b227391a5ad4fa989cc50832e60119",
+  "created_at": "2026-09-15T16:21:50+08:00"
+}

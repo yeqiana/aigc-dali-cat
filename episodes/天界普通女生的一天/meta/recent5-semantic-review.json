@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "episode_id": "天界普通女生的一天",
+  "reviewed_at": "2026-09-13T10:34:20+08:00",
+  "candidate_fingerprint_path": "episodes/天界普通女生的一天/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "9e1408db0f90dea64466961e68d443aad762d14c58d20680d5fcd2ce03db43ae",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "history_episode_ids": ["09-04", "10-01"],
+  "critic_provenance": {
+    "schema_version": 2,
+    "runtime": "WORK_DEVSPACE_BOUNDED",
+    "base_runtime": "WORK",
+    "isolated_session": false,
+    "execution_source": "product_runtime",
+    "workspace_transport": "DEVSPACE",
+    "isolation_mode": "bounded_request_only",
+    "webcodex_used": false,
+    "full_auto_user_authorized": true,
+    "ordinary_life_only": true,
+    "attempt": 1,
+    "reviewed_at": "2026-09-13T10:34:20+08:00",
+    "request_path": "episodes/天界普通女生的一天/meta/runtime/reviews/recent5-semantic-attempt-1-request.json",
+    "request_id": "recent5-semantic-a1-864c34cceb54fa17",
+    "request_fingerprint": "864c34cceb54fa17e2b1df9797cbf5a91147748fd52556bdf8f745994aa2a7ad"
+  },
+  "comparisons": [
+    {
+      "episode_id": "09-04",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    },
+    {
+      "episode_id": "10-01",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    }
+  ]
+}

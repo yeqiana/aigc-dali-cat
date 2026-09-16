@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "reconciled_at": "2026-09-16T16:06:00+08:00",
+  "rows": [
+    {
+      "item_id": "a171db41184d",
+      "frame": 1,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "b8ef6ddd30ff",
+      "frame": 8,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "94e13a84736b",
+      "frame": 3,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "3be912a5eaac",
+      "frame": 16,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "42b6012b122d",
+      "frame": 3,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "SUCCEEDED"
+    }
+  ]
+}

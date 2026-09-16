@@ -1,0 +1,1003 @@
+{
+  "schema_version": 3,
+  "module_version": "2.6.0",
+  "updated_at": "2026-09-15T16:53:40+08:00",
+  "frames": {
+    "01": {
+      "original": {
+        "used": 1,
+        "claims": {
+          "vl01b001a001": {
+            "claimed_at": "2026-09-13T12:05:15+08:00",
+            "reason": "formal_generation_entrypoint scope=visual_lock attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T12:06:29+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "repair": {
+        "used": 2,
+        "claims": {
+          "502a93ed6cb7": {
+            "claimed_at": "2026-09-13T15:59:57+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=4",
+            "committed": true,
+            "committed_at": "2026-09-13T16:01:59+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "bacc0c7b5b39": {
+            "claimed_at": "2026-09-13T23:00:47+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T23:03:00+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "exception": {
+        "used": 2,
+        "claims": {
+          "d27055ffab33": {
+            "claimed_at": "2026-09-13T17:26:50+08:00",
+            "reason": "formal_generation_entrypoint scope=baseline_candidate attempt=3",
+            "committed": true,
+            "committed_at": "2026-09-13T17:28:40+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "281a1d44f404": {
+            "claimed_at": "2026-09-14T09:31:22+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-14T09:33:24+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      }
+    },
+    "16": {
+      "original": {
+        "used": 1,
+        "claims": {
+          "vl16a016a016": {
+            "claimed_at": "2026-09-13T17:35:18+08:00",
+            "reason": "formal_generation_entrypoint scope=visual_lock attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T17:37:06+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "repair": {
+        "used": 2,
+        "claims": {
+          "075b1f47533b": {
+            "claimed_at": "2026-09-13T21:05:36+08:00",
+            "reason": "recover_durable_user_runner_success",
+            "committed": true,
+            "committed_at": "2026-09-13T21:05:36+08:00",
+            "commit_reason": "recovered_interrupted_user_runner_success"
+          },
+          "d6134a0c1238": {
+            "claimed_at": "2026-09-13T23:04:20+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T23:07:06+08:00",
+            "commit_reason": "recovered_interrupted_user_runner_success"
+          }
+        }
+      },
+      "exception": {
+        "used": 2,
+        "claims": {
+          "d885f781fe3a": {
+            "claimed_at": "2026-09-13T21:16:42+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-13T21:18:42+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "d7368d3009a6": {
+            "claimed_at": "2026-09-13T23:09:52+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T23:12:03+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "7f51ea4bbe36": {
+            "claimed_at": "2026-09-15T16:51:47+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=11",
+            "committed": true,
+            "committed_at": "2026-09-15T16:53:40+08:00",
+            "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33",
+            "authorization_source": "current Visual Lock pixels were generated under a stale Frame Contract; deterministic authority refresh",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      }
+    },
+    "17": {
+      "original": {
+        "used": 1,
+        "claims": {
+          "vl17a017a017": {
+            "claimed_at": "2026-09-13T17:35:18+08:00",
+            "reason": "formal_generation_entrypoint scope=visual_lock attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T17:37:03+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "repair": {
+        "used": 6,
+        "claims": {
+          "3a2c5771f52a": {
+            "claimed_at": "2026-09-13T21:05:35+08:00",
+            "reason": "recover_durable_user_runner_success",
+            "committed": true,
+            "committed_at": "2026-09-13T21:05:35+08:00",
+            "commit_reason": "recovered_interrupted_user_runner_success"
+          },
+          "c5500d791ed2": {
+            "claimed_at": "2026-09-13T23:04:19+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T23:07:07+08:00",
+            "commit_reason": "recovered_interrupted_user_runner_success"
+          },
+          "e7b216b568ed": {
+            "claimed_at": "2026-09-14T10:23:23+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-14T10:27:51+08:00",
+            "authorized_raise": 1,
+            "authorization_sources": [
+              "direct_user:继续跑; Frame17 authority conflict fixed on 2026-09-14; allow exactly one authority-refresh redraw against the new Frame Contract"
+            ],
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "ea8a85e45584": {
+            "claimed_at": "2026-09-14T11:12:21+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-14T11:14:32+08:00",
+            "authorized_raise": 2,
+            "authorization_sources": [
+              "direct_user:继续跑; Frame17 authority conflict fixed on 2026-09-14; allow exactly one authority-refresh redraw against the new Frame Contract",
+              "direct_user:2026-09-14 continue full-auto; fresh PREIMAGE authority changed Frame17 to P02 temporary hand-held image-jade; allow exactly one redraw against contract df2272cb7a420f735693a8f71c08cb0433d"
+            ],
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "4663bb9ac575": {
+            "claimed_at": "2026-09-14T13:56:36+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-14T13:58:59+08:00",
+            "authorized_raise": 3,
+            "authorization_sources": [
+              "direct_user:继续跑; Frame17 authority conflict fixed on 2026-09-14; allow exactly one authority-refresh redraw against the new Frame Contract",
+              "direct_user:2026-09-14 continue full-auto; fresh PREIMAGE authority changed Frame17 to P02 temporary hand-held image-jade; allow exactly one redraw against contract df2272cb7a420f735693a8f71c08cb0433d",
+              "direct_user:继续处理; after Visual Lock dirty-only repair, Frame17 alone still fails cinematic-poster/reality-first/environment-physics checks; allow exactly one continuation candidate without accepting f"
+            ],
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "1c196a87b2a9": {
+            "claimed_at": "2026-09-14T14:02:35+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-14T14:04:38+08:00",
+            "authorized_raise": 4,
+            "authorization_sources": [
+              "direct_user:继续跑; Frame17 authority conflict fixed on 2026-09-14; allow exactly one authority-refresh redraw against the new Frame Contract",
+              "direct_user:2026-09-14 continue full-auto; fresh PREIMAGE authority changed Frame17 to P02 temporary hand-held image-jade; allow exactly one redraw against contract df2272cb7a420f735693a8f71c08cb0433d",
+              "direct_user:继续处理; after Visual Lock dirty-only repair, Frame17 alone still fails cinematic-poster/reality-first/environment-physics checks; allow exactly one continuation candidate without accepting f",
+              "direct_user:继续处理; corrective continuation after first continuation exposed repair-prompt truncation/underspecification (subjects turned toward camera and sunset remained promotional); allow exactly on"
+            ],
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "exception": {
+        "used": 2,
+        "claims": {
+          "487261eb8f9b": {
+            "claimed_at": "2026-09-13T21:13:05+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T21:15:00+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "b5fa21eff81e": {
+            "claimed_at": "2026-09-13T23:09:52+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T23:11:50+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "user_exception": {
+        "used": 1,
+        "claims": {
+          "4268bafa343f": {
+            "claimed_at": "2026-09-14T09:46:38+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-14T09:48:47+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "17fd33741fdf": {
+            "claimed_at": "2026-09-15T15:10:19+08:00",
+            "reason": "recover_preserved_provider_raw_via_explicit_ratio_exception",
+            "committed": true,
+            "committed_at": "2026-09-15T15:10:20+08:00",
+            "semantic_key": "ff0dc68d79ecf675016adcde950cf8cea8fa8280f5e788df6090ec9c11bc1da7",
+            "authorization_source": "继续处理",
+            "commit_reason": "normalized_preserved_provider_raw_committed"
+          }
+        }
+      }
+    },
+    "05": {
+      "original": {
+        "used": 1,
+        "claims": {
+          "vl05a005a005": {
+            "claimed_at": "2026-09-13T17:35:18+08:00",
+            "reason": "formal_generation_entrypoint scope=visual_lock attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T17:37:05+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "repair": {
+        "used": 2,
+        "claims": {
+          "0af32a85db43": {
+            "claimed_at": "2026-09-13T21:05:37+08:00",
+            "reason": "recover_durable_user_runner_success",
+            "committed": true,
+            "committed_at": "2026-09-13T21:05:37+08:00",
+            "commit_reason": "recovered_interrupted_user_runner_success"
+          },
+          "282c066af622": {
+            "claimed_at": "2026-09-13T23:04:20+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T23:07:05+08:00",
+            "commit_reason": "recovered_interrupted_user_runner_success"
+          }
+        }
+      },
+      "exception": {
+        "used": 2,
+        "claims": {
+          "528ad57c6acb": {
+            "claimed_at": "2026-09-13T21:13:05+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-13T21:15:00+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "71e4e98dafa2": {
+            "claimed_at": "2026-09-14T09:39:58+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-14T09:41:53+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      }
+    }
+  },
+  "events": [
+    {
+      "at": "2026-09-13T12:05:15+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "original",
+      "token": "vl01b001a001"
+    },
+    {
+      "at": "2026-09-13T12:06:29+08:00",
+      "event": "commit",
+      "frame": "01",
+      "kind": "original",
+      "token": "vl01b001a001"
+    },
+    {
+      "at": "2026-09-13T15:20:37+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "repair",
+      "token": "502a93ed6cb7"
+    },
+    {
+      "at": "2026-09-13T15:29:10+08:00",
+      "event": "release",
+      "frame": "01",
+      "kind": "repair",
+      "token": "502a93ed6cb7",
+      "reason": "RECOVERY_MISBOUND_SUCCESS_INVALIDATED"
+    },
+    {
+      "at": "2026-09-13T15:37:57+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "repair",
+      "token": "502a93ed6cb7"
+    },
+    {
+      "at": "2026-09-13T15:54:08+08:00",
+      "event": "release",
+      "frame": "01",
+      "kind": "repair",
+      "token": "502a93ed6cb7",
+      "reason": "recovery_technical_failure:WORKER_PROCESS_LOST"
+    },
+    {
+      "at": "2026-09-13T15:54:40+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "repair",
+      "token": "502a93ed6cb7"
+    },
+    {
+      "at": "2026-09-13T15:58:42+08:00",
+      "event": "release",
+      "frame": "01",
+      "kind": "repair",
+      "token": "502a93ed6cb7",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-13T15:59:57+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "repair",
+      "token": "502a93ed6cb7"
+    },
+    {
+      "at": "2026-09-13T16:01:59+08:00",
+      "event": "commit",
+      "frame": "01",
+      "kind": "repair",
+      "token": "502a93ed6cb7"
+    },
+    {
+      "at": "2026-09-13T16:58:25+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "exception",
+      "token": "d27055ffab33"
+    },
+    {
+      "at": "2026-09-13T17:05:22+08:00",
+      "event": "release",
+      "frame": "01",
+      "kind": "exception",
+      "token": "d27055ffab33",
+      "reason": "recovery_technical_failure:WORKER_PROCESS_LOST"
+    },
+    {
+      "at": "2026-09-13T17:05:36+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "exception",
+      "token": "d27055ffab33"
+    },
+    {
+      "at": "2026-09-13T17:10:12+08:00",
+      "event": "release",
+      "frame": "01",
+      "kind": "exception",
+      "token": "d27055ffab33",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-13T17:26:50+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "exception",
+      "token": "d27055ffab33"
+    },
+    {
+      "at": "2026-09-13T17:28:40+08:00",
+      "event": "commit",
+      "frame": "01",
+      "kind": "exception",
+      "token": "d27055ffab33"
+    },
+    {
+      "at": "2026-09-13T17:35:18+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "original",
+      "token": "vl16a016a016"
+    },
+    {
+      "at": "2026-09-13T17:35:18+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "original",
+      "token": "vl17a017a017"
+    },
+    {
+      "at": "2026-09-13T17:35:18+08:00",
+      "event": "claim",
+      "frame": "05",
+      "kind": "original",
+      "token": "vl05a005a005"
+    },
+    {
+      "at": "2026-09-13T17:37:03+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "original",
+      "token": "vl17a017a017"
+    },
+    {
+      "at": "2026-09-13T17:37:05+08:00",
+      "event": "commit",
+      "frame": "05",
+      "kind": "original",
+      "token": "vl05a005a005"
+    },
+    {
+      "at": "2026-09-13T17:37:06+08:00",
+      "event": "commit",
+      "frame": "16",
+      "kind": "original",
+      "token": "vl16a016a016"
+    },
+    {
+      "at": "2026-09-13T17:38:49+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "repair",
+      "token": "3a2c5771f52a"
+    },
+    {
+      "at": "2026-09-13T17:38:49+08:00",
+      "event": "claim",
+      "frame": "05",
+      "kind": "repair",
+      "token": "0af32a85db43"
+    },
+    {
+      "at": "2026-09-13T17:38:49+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "repair",
+      "token": "075b1f47533b"
+    },
+    {
+      "at": "2026-09-13T17:42:28+08:00",
+      "event": "release",
+      "frame": "16",
+      "kind": "repair",
+      "token": "075b1f47533b",
+      "reason": "recovery_technical_failure:WORKER_PROCESS_LOST"
+    },
+    {
+      "at": "2026-09-13T17:42:28+08:00",
+      "event": "release",
+      "frame": "05",
+      "kind": "repair",
+      "token": "0af32a85db43",
+      "reason": "recovery_technical_failure:WORKER_PROCESS_LOST"
+    },
+    {
+      "at": "2026-09-13T17:42:28+08:00",
+      "event": "release",
+      "frame": "17",
+      "kind": "repair",
+      "token": "3a2c5771f52a",
+      "reason": "recovery_technical_failure:WORKER_PROCESS_LOST"
+    },
+    {
+      "at": "2026-09-13T21:05:35+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "repair",
+      "token": "3a2c5771f52a"
+    },
+    {
+      "at": "2026-09-13T21:05:35+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "repair",
+      "token": "3a2c5771f52a"
+    },
+    {
+      "at": "2026-09-13T21:05:36+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "repair",
+      "token": "075b1f47533b"
+    },
+    {
+      "at": "2026-09-13T21:05:36+08:00",
+      "event": "commit",
+      "frame": "16",
+      "kind": "repair",
+      "token": "075b1f47533b"
+    },
+    {
+      "at": "2026-09-13T21:05:37+08:00",
+      "event": "claim",
+      "frame": "05",
+      "kind": "repair",
+      "token": "0af32a85db43"
+    },
+    {
+      "at": "2026-09-13T21:05:37+08:00",
+      "event": "commit",
+      "frame": "05",
+      "kind": "repair",
+      "token": "0af32a85db43"
+    },
+    {
+      "at": "2026-09-13T21:13:05+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "exception",
+      "token": "487261eb8f9b"
+    },
+    {
+      "at": "2026-09-13T21:13:05+08:00",
+      "event": "claim",
+      "frame": "05",
+      "kind": "exception",
+      "token": "528ad57c6acb"
+    },
+    {
+      "at": "2026-09-13T21:15:00+08:00",
+      "event": "commit",
+      "frame": "05",
+      "kind": "exception",
+      "token": "528ad57c6acb"
+    },
+    {
+      "at": "2026-09-13T21:15:00+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "exception",
+      "token": "487261eb8f9b"
+    },
+    {
+      "at": "2026-09-13T21:16:42+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "exception",
+      "token": "d885f781fe3a"
+    },
+    {
+      "at": "2026-09-13T21:18:42+08:00",
+      "event": "commit",
+      "frame": "16",
+      "kind": "exception",
+      "token": "d885f781fe3a"
+    },
+    {
+      "at": "2026-09-13T23:00:47+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "repair",
+      "token": "bacc0c7b5b39"
+    },
+    {
+      "at": "2026-09-13T23:03:00+08:00",
+      "event": "commit",
+      "frame": "01",
+      "kind": "repair",
+      "token": "bacc0c7b5b39"
+    },
+    {
+      "at": "2026-09-13T23:04:19+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "repair",
+      "token": "c5500d791ed2"
+    },
+    {
+      "at": "2026-09-13T23:04:20+08:00",
+      "event": "claim",
+      "frame": "05",
+      "kind": "repair",
+      "token": "282c066af622"
+    },
+    {
+      "at": "2026-09-13T23:04:20+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "repair",
+      "token": "d6134a0c1238"
+    },
+    {
+      "at": "2026-09-13T23:07:05+08:00",
+      "event": "commit",
+      "frame": "05",
+      "kind": "repair",
+      "token": "282c066af622"
+    },
+    {
+      "at": "2026-09-13T23:07:06+08:00",
+      "event": "commit",
+      "frame": "16",
+      "kind": "repair",
+      "token": "d6134a0c1238"
+    },
+    {
+      "at": "2026-09-13T23:07:07+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "repair",
+      "token": "c5500d791ed2"
+    },
+    {
+      "at": "2026-09-13T23:09:52+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "exception",
+      "token": "d7368d3009a6"
+    },
+    {
+      "at": "2026-09-13T23:09:52+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "exception",
+      "token": "b5fa21eff81e"
+    },
+    {
+      "at": "2026-09-13T23:11:50+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "exception",
+      "token": "b5fa21eff81e"
+    },
+    {
+      "at": "2026-09-13T23:12:03+08:00",
+      "event": "commit",
+      "frame": "16",
+      "kind": "exception",
+      "token": "d7368d3009a6"
+    },
+    {
+      "at": "2026-09-14T09:31:22+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "exception",
+      "token": "281a1d44f404"
+    },
+    {
+      "at": "2026-09-14T09:33:24+08:00",
+      "event": "commit",
+      "frame": "01",
+      "kind": "exception",
+      "token": "281a1d44f404"
+    },
+    {
+      "at": "2026-09-14T09:39:58+08:00",
+      "event": "claim",
+      "frame": "05",
+      "kind": "exception",
+      "token": "71e4e98dafa2"
+    },
+    {
+      "at": "2026-09-14T09:41:53+08:00",
+      "event": "commit",
+      "frame": "05",
+      "kind": "exception",
+      "token": "71e4e98dafa2"
+    },
+    {
+      "at": "2026-09-14T09:46:38+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "user_exception",
+      "token": "4268bafa343f"
+    },
+    {
+      "at": "2026-09-14T09:48:47+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "user_exception",
+      "token": "4268bafa343f"
+    },
+    {
+      "at": "2026-09-14T10:23:23+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "repair",
+      "token": "e7b216b568ed",
+      "authorized_raise": 1
+    },
+    {
+      "at": "2026-09-14T10:27:51+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "repair",
+      "token": "e7b216b568ed"
+    },
+    {
+      "at": "2026-09-14T11:07:59+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "repair",
+      "token": "ea8a85e45584",
+      "authorized_raise": 2
+    },
+    {
+      "at": "2026-09-14T11:11:19+08:00",
+      "event": "release",
+      "frame": "17",
+      "kind": "repair",
+      "token": "ea8a85e45584",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-14T11:12:21+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "repair",
+      "token": "ea8a85e45584",
+      "authorized_raise": 2
+    },
+    {
+      "at": "2026-09-14T11:14:32+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "repair",
+      "token": "ea8a85e45584"
+    },
+    {
+      "at": "2026-09-14T13:56:36+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "repair",
+      "token": "4663bb9ac575",
+      "authorized_raise": 3
+    },
+    {
+      "at": "2026-09-14T13:58:59+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "repair",
+      "token": "4663bb9ac575"
+    },
+    {
+      "at": "2026-09-14T14:02:35+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "repair",
+      "token": "1c196a87b2a9",
+      "authorized_raise": 4
+    },
+    {
+      "at": "2026-09-14T14:04:38+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "repair",
+      "token": "1c196a87b2a9"
+    },
+    {
+      "at": "2026-09-14T14:14:14+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "repair",
+      "token": "17fd33741fdf",
+      "authorized_raise": 5
+    },
+    {
+      "at": "2026-09-14T14:16:16+08:00",
+      "event": "release",
+      "frame": "17",
+      "kind": "repair",
+      "token": "17fd33741fdf",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T15:10:19+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "authority_refresh",
+      "token": "17fd33741fdf",
+      "semantic_key": "ff0dc68d79ecf675016adcde950cf8cea8fa8280f5e788df6090ec9c11bc1da7"
+    },
+    {
+      "at": "2026-09-15T15:10:20+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "authority_refresh",
+      "token": "17fd33741fdf"
+    },
+    {
+      "at": "2026-09-15T15:23:21+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33"
+    },
+    {
+      "at": "2026-09-15T15:24:25+08:00",
+      "event": "release",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T15:24:52+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33"
+    },
+    {
+      "at": "2026-09-15T15:25:22+08:00",
+      "event": "release",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T15:26:28+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33"
+    },
+    {
+      "at": "2026-09-15T15:26:57+08:00",
+      "event": "release",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T15:49:01+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33"
+    },
+    {
+      "at": "2026-09-15T15:52:44+08:00",
+      "event": "release",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T16:30:46+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33"
+    },
+    {
+      "at": "2026-09-15T16:37:44+08:00",
+      "event": "release",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T16:38:41+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33"
+    },
+    {
+      "at": "2026-09-15T16:39:03+08:00",
+      "event": "release",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T16:42:40+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33"
+    },
+    {
+      "at": "2026-09-15T16:45:36+08:00",
+      "event": "release",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T16:46:03+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33"
+    },
+    {
+      "at": "2026-09-15T16:46:40+08:00",
+      "event": "release",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T16:47:46+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33"
+    },
+    {
+      "at": "2026-09-15T16:48:13+08:00",
+      "event": "release",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T16:50:52+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33"
+    },
+    {
+      "at": "2026-09-15T16:51:21+08:00",
+      "event": "release",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T16:51:47+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36",
+      "semantic_key": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33"
+    },
+    {
+      "at": "2026-09-15T16:53:40+08:00",
+      "event": "commit",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "7f51ea4bbe36"
+    }
+  ]
+}

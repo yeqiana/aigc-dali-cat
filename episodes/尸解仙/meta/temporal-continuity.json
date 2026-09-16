@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_world_state_sha256": "41bae814590744aa79a96266cd204ec37935e3e26a7ec6cfe4689f94c147b17a",
+  "world_state_synced": true,
+  "derived_from_preimage_authority": true,
+  "frames": [
+    {
+      "frame": "01",
+      "elapsed_minutes_from_prev": 0,
+      "daypart": "afternoon",
+      "weather": "clear dry afternoon",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "opening state"
+    },
+    {
+      "frame": "02",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "afternoon",
+      "weather": "clear dry afternoon",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "03",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "afternoon",
+      "weather": "clear dry afternoon",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "04",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "afternoon",
+      "weather": "clear dry afternoon",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "05",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "afternoon",
+      "weather": "clear dry afternoon",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "06",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "afternoon",
+      "weather": "clear dry afternoon",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "07",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "afternoon",
+      "weather": "clear dry afternoon",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "08",
+      "elapsed_minutes_from_prev": 120,
+      "daypart": "night",
+      "weather": "dry quiet night",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "artificial_night",
+      "large_transition": true,
+      "transition_reason": "physical time/environment transition: afternoon -> night"
+    },
+    {
+      "frame": "09",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "dry quiet night",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "10",
+      "elapsed_minutes_from_prev": 480,
+      "daypart": "morning",
+      "weather": "clear cool morning",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": true,
+      "transition_reason": "physical time/environment transition: night -> morning"
+    },
+    {
+      "frame": "11",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "morning",
+      "weather": "clear cool morning",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "12",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "morning",
+      "weather": "clear cool morning",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "13",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "morning",
+      "weather": "clear cool morning",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "14",
+      "elapsed_minutes_from_prev": 120,
+      "daypart": "night",
+      "weather": "dry quiet night",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "artificial_night",
+      "large_transition": true,
+      "transition_reason": "physical time/environment transition: morning -> night"
+    },
+    {
+      "frame": "15",
+      "elapsed_minutes_from_prev": 480,
+      "daypart": "morning",
+      "weather": "clear dry morning",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": true,
+      "transition_reason": "physical time/environment transition: night -> morning"
+    },
+    {
+      "frame": "16",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "morning",
+      "weather": "clear dry morning",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "17",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "morning",
+      "weather": "clear dry morning",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "18",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "morning",
+      "weather": "clear dry morning",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "19",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "afternoon",
+      "weather": "clear dry afternoon",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: morning -> afternoon"
+    },
+    {
+      "frame": "20",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "afternoon",
+      "weather": "clear dry afternoon",
+      "precipitation": "none during the photographed periods",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    }
+  ]
+}

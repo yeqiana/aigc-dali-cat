@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "authority": "Story Build Voice Contract",
+  "created_at": "2026-09-16T17:44:00+08:00",
+  "voice_card": {
+    "person": "P01 郭巨（第一人称）",
+    "role": "汉代河内一带普通年轻农户，同时是儿子、丈夫和父亲",
+    "age": 26,
+    "education_and_knowledge_boundary": "只懂种地、修农具、算家里口粮和租谷；受乡里‘孝’观念影响，但不会讲经义，不懂后世二十四孝文本，也不会用现代伦理术语解释自己的选择。",
+    "recording_reason": "把一天里的家务、借粮、分饭和家人相处留成生活档案；不是宣传孝道，也不是拍故事给别人看。",
+    "knows_now": "家里粮只够几天，母亲身体弱，妻子和孩子也在挨饿；他知道自己必须想办法撑过催租期限。",
+    "does_not_know": "一开始不知道母亲一直把自己的口粮藏给孙子，也没意识到自己所谓的孝顺正在把代价压到妻儿身上；直到母亲追到荒坡把孩子抢回去。",
+    "stress_language": "句子变短，先说眼前事实；不会大段解释‘孝’，更多是‘粮不够了’‘娘不能饿’‘我没别的法子’。",
+    "fear_language_change": "本篇无恐怖。压力增大时声音更低、更慢，少解释，多停顿；Frame14-17 接近说不出完整句子。",
+    "ordinary_vocabulary": "朴素口语：‘再熬两天’‘你先吃’‘我去借’‘别跟来’‘娘，我知道’。",
+    "forbidden_technical_terms": "二十四孝、愚孝、伦理困境、代际牺牲、道德绑架、资源配置等现代总结词；这些只能由观众自己得出。"
+  },
+  "subtitle_policy": {
+    "max_visible_chars": 32,
+    "continuous_three_frame_test": true,
+    "read_aloud_test": true,
+    "delete_subtitle_test": true,
+    "do_not_repeat_visible_anomaly": true,
+    "allow_short_fragments_and_self_correction": true,
+    "note": "字幕只补时间、关系和当事人当下想法；最多2行，左中安全区，不替画面讲道理。"
+  }
+}

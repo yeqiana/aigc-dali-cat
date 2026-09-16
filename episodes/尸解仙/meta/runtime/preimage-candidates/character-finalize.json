@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "task_id": "preimage-character_finalize-934b5066e5fc",
+  "task_type": "CHARACTER_FINALIZE",
+  "snapshot_id": "934b5066e5fc77eefb985aaaf3e15b7a69269806d3a5ba7c02a46d895d1957a8",
+  "source_authority_sha256": {
+    "owned_scopes": {
+      "character.finalize": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.environment_contract": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.frame_directives": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.world_identity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.world_state": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.temporal_continuity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.wardrobe": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.narrative_core": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.shot_progression": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.capture_grammar": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+    },
+    "character_contract": "cd14312235a129548d6ad3cae5764c1974433b0f9ec71c2705c37c23c88ae84f",
+    "world_identity": null,
+    "runtime_request_preimage": "f00ad2b01a85f8ac9789096e48c8f05cca71ad75ccdc83ad13d4d2830f04734b",
+    "story_lock": "62904b475e91e8452340e6381b1c3dbcceff320b41859af0d563ddc1a902ac0b",
+    "visual_profile": "9eb5996e47c6373ded1bf546b4926e9d2ce1553d281618dc1c46d703e1364f20"
+  },
+  "generated_at": "2026-09-16T11:49:30+08:00",
+  "status": "COMPLETED",
+  "authority_scope": [
+    "character.finalize"
+  ],
+  "payload": {
+    "character.finalize": {
+      "character": {
+        "cast_type": "pair",
+        "relationship": "同村发小，一起在老院长大，成年后各自在城里打工",
+        "ordinary_person_score": 100,
+        "entry_reason": "奶奶过世三个月，老屋在旧村改造前需要收拾并交给村里",
+        "forbidden_roles": [
+          "道士",
+          "调查员",
+          "探灵人",
+          "异常研究人员",
+          "以专业技能解决异常的功能型职业"
+        ]
+      },
+      "identity": {
+        "P01": {
+          "role": "第一人称主角",
+          "gender": "male",
+          "age": 25,
+          "world_identity": "2026 年中国大陆普通年轻男性",
+          "face_rule": "原创且独立可辨认的普通中国青年面孔，自然肤质、轻微不对称，不像明星或网红",
+          "hair": "普通黑色短发，额前自然碎发，鬓角略长，发旋处一缕不服帖",
+          "body": "普通偏瘦但自然的年轻人体型"
+        },
+        "P02": {
+          "role": "同行发小",
+          "gender": "female",
+          "age": 25,
+          "world_identity": "2026 年中国大陆普通年轻女性",
+          "face_rule": "原创且独立可辨认的普通中国青年面孔，自然肤质、轻微不对称，不像明星或网红",
+          "hair": "普通黑色齐肩直发，发尾自然外翻，平时可用黑色皮筋随手扎起",
+          "body": "自然匀称的普通年轻人体型"
+        }
+      },
+      "pov": {
+        "character_id": "P01",
+        "first_person": true,
+        "device": "普通智能手机手持拍摄",
+        "camera_authorship_rule": "P01 是默认摄影者；自拍、桌上临时放置或 P02 代拍必须在具体帧里有现实动作依据，禁止幽灵机位"
+      },
+      "appearance": {
+        "P01": {
+          "clothing_anchor": "深灰薄外套 + 黑色短袖 + 深灰工装裤 + 运动鞋",
+          "presentation": "普通返乡打工青年，自然皮肤纹理，不浓妆、不精修、不时尚大片化"
+        },
+        "P02": {
+          "clothing_anchor": "米色薄针织外套 + 浅色短袖 + 牛仔裤 + 运动鞋",
+          "presentation": "普通返乡年轻女性，自然皮肤纹理，不浓妆、不瓷白皮、不商业模特化"
+        },
+        "continuity": "两人身份、发型和基础穿着在无明确剧情事件时保持稳定；Visual Lock baseline 通过后才允许建立 provisional Pixel Master，PREIMAGE 不生成身份母版"
+      }
+    }
+  }
+}

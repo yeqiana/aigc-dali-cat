@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-15T16:55:11+08:00",
+  "items": {
+    "V-B": {
+      "id": "V-B",
+      "role": "ordinary_baseline",
+      "frame": 1,
+      "sha256": "4ff7a94d486416f5ff049ebbd8c239fbb682e9e1f5586b2ea4d795186debd5d6",
+      "frame_contract_sha256": "83efe10c929571e1c7960da6b7fe6987322612ca012793487ce28d0fcc008cd3",
+      "profile_sha256": "e1cefbd26880f41ccc050710d5e3877c5297d66c393cc5a8a282361d569ba78e",
+      "story_os_version": "2.6.1",
+      "status": "PASS",
+      "reviewed_at": "2026-09-14T13:50:28+08:00",
+      "attempt": 0,
+      "review_row": {
+        "id": "V-B",
+        "checks": {
+          "visual_profile_match": true,
+          "reality_first": true,
+          "ordinary_life_density": true,
+          "available_light": true,
+          "unposed_capture": true,
+          "not_cinematic": true,
+          "causal_imperfection": true,
+          "environment_physics_fidelity": true,
+          "capture_credibility": true,
+          "anomaly_scale_delivery": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true
+        },
+        "issues": [],
+        "notes": "近距离手持自拍具有伸臂透视、边缘裁切和散乱发丝；粉衣同伴正在替持机者整理头发，灰衣男子携带包子和水杯，生活动作与朋友关系清楚。门框、杂物架和云上中式居民建筑共同建立天界日常环境，日光方向及人物受光基本一致。",
+        "sha256": "4ff7a94d486416f5ff049ebbd8c239fbb682e9e1f5586b2ea4d795186debd5d6",
+        "frame_contract_sha256": "83efe10c929571e1c7960da6b7fe6987322612ca012793487ce28d0fcc008cd3",
+        "frame": 1,
+        "role": "ordinary_baseline"
+      },
+      "provenance": {
+        "reconciled_from_historical_critic": true,
+        "log": "meta/visual-lock-critic-attempt-5.jsonl",
+        "candidate_attempt_id": "fb44a0209585",
+        "candidate_completed_at": "2026-09-14T09:33:24+08:00"
+      }
+    },
+    "V-W": {
+      "id": "V-W",
+      "role": "worst_capture_condition",
+      "frame": 16,
+      "sha256": "8b8a01b493fd3ead5db5bf7242222eff068efddfac2a19df3f5b8a8fb87d6d21",
+      "frame_contract_sha256": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33",
+      "profile_sha256": "e1cefbd26880f41ccc050710d5e3877c5297d66c393cc5a8a282361d569ba78e",
+      "story_os_version": "2.6.1",
+      "status": "FAIL",
+      "reviewed_at": "2026-09-15T16:55:11+08:00",
+      "attempt": 4,
+      "review_row": {
+        "id": "V-W",
+        "checks": {
+          "visual_profile_match": false,
+          "reality_first": false,
+          "ordinary_life_density": true,
+          "available_light": true,
+          "unposed_capture": false,
+          "not_cinematic": false,
+          "causal_imperfection": false,
+          "environment_physics_fidelity": false,
+          "capture_credibility": false,
+          "anomaly_scale_delivery": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true
+        },
+        "issues": [
+          "CINEMATIC_PROMO_COMPOSITION",
+          "REALITY_FIRST_FAIL",
+          "ENVIRONMENT_PHYSICS_FAIL",
+          "CAPTURE_CREDIBILITY_FAIL"
+        ],
+        "notes": "夕阳、云海、远景建筑与人物布光均呈高度商业化电影概念图质感；四人被清晰而均衡地安排在前景，缺少随手记录应有的取景偶然性。前景自拍持机位置可成立，但成像整体不像普通居民保存的私人记录。",
+        "sha256": "8b8a01b493fd3ead5db5bf7242222eff068efddfac2a19df3f5b8a8fb87d6d21",
+        "frame_contract_sha256": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33",
+        "frame": 16,
+        "role": "worst_capture_condition"
+      },
+      "provenance": {
+        "schema_version": 2,
+        "runtime": "CODEX_ISOLATED",
+        "base_runtime": "CODEX",
+        "isolated_session": true,
+        "execution_source": "local_codex_cli",
+        "attempt": 4,
+        "reviewed_at": "2026-09-15T16:55:10+08:00",
+        "direct_user_exception_review": true,
+        "log": "episodes/天界普通女生的一天/meta/visual-lock-critic-attempt-4.jsonl",
+        "review_capability": "vision",
+        "ephemeral": true,
+        "session_reused_from_generation": false,
+        "review_scope": "VISUAL_LOCK_DIRTY_ADMISSION",
+        "direct_user_exception_frames": [
+          1
+        ]
+      }
+    },
+    "V-A": {
+      "id": "V-A",
+      "role": "first_major_anomaly",
+      "frame": 5,
+      "sha256": "f397389a28536012af4965e30116994ac36f9cfc71d877c80e849659a81e23dd",
+      "frame_contract_sha256": "5ff6a953e1f2881c4b29baf6e7804267228277aabaa4e8feb41895086c3ab886",
+      "profile_sha256": "e1cefbd26880f41ccc050710d5e3877c5297d66c393cc5a8a282361d569ba78e",
+      "story_os_version": "2.6.1",
+      "status": "PASS",
+      "reviewed_at": "2026-09-14T13:50:28+08:00",
+      "attempt": 0,
+      "review_row": {
+        "id": "V-A",
+        "checks": {
+          "visual_profile_match": true,
+          "reality_first": true,
+          "ordinary_life_density": true,
+          "available_light": true,
+          "unposed_capture": true,
+          "not_cinematic": true,
+          "causal_imperfection": true,
+          "environment_physics_fidelity": true,
+          "capture_credibility": true,
+          "anomaly_scale_delivery": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true
+        },
+        "issues": [],
+        "notes": "画面由未入镜的同行者在队伍后方步行拍摄，机位高度和距离符合人体持机。粉衣人物边走边指向栏外，灰衣人物回看，棕衣人物提食物继续前行；步态造成的局部运动模糊和倾斜构图有明确物理原因。云海城市的强烈世界反差可读，但三人的普通逛街动作仍占叙事核心。",
+        "sha256": "f397389a28536012af4965e30116994ac36f9cfc71d877c80e849659a81e23dd",
+        "frame_contract_sha256": "5ff6a953e1f2881c4b29baf6e7804267228277aabaa4e8feb41895086c3ab886",
+        "frame": 5,
+        "role": "first_major_anomaly"
+      },
+      "provenance": {
+        "reconciled_from_historical_critic": true,
+        "log": "meta/visual-lock-critic-attempt-5.jsonl",
+        "candidate_attempt_id": "931af72300ac",
+        "candidate_completed_at": "2026-09-14T09:41:53+08:00"
+      }
+    },
+    "V-H": {
+      "id": "V-H",
+      "role": "high_impact_admission",
+      "frame": 17,
+      "sha256": "a1f064f1396df0860af3e5aeb48942390852ea4a2e94f40aa38a41fbafde7c02",
+      "frame_contract_sha256": "ff0dc68d79ecf675016adcde950cf8cea8fa8280f5e788df6090ec9c11bc1da7",
+      "profile_sha256": "e1cefbd26880f41ccc050710d5e3877c5297d66c393cc5a8a282361d569ba78e",
+      "story_os_version": "2.6.1",
+      "status": "FAIL",
+      "reviewed_at": "2026-09-15T16:55:11+08:00",
+      "attempt": 4,
+      "review_row": {
+        "id": "V-H",
+        "checks": {
+          "visual_profile_match": false,
+          "reality_first": false,
+          "ordinary_life_density": true,
+          "available_light": true,
+          "unposed_capture": true,
+          "not_cinematic": false,
+          "causal_imperfection": false,
+          "environment_physics_fidelity": false,
+          "capture_credibility": false,
+          "anomaly_scale_delivery": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true
+        },
+        "issues": [
+          "CINEMATIC_PROMO_COMPOSITION",
+          "REALITY_FIRST_FAIL",
+          "ENVIRONMENT_PHYSICS_FAIL",
+          "CAPTURE_CREDIBILITY_FAIL"
+        ],
+        "notes": "P02的粉色袖口近边缘入画，可解释同行者持机；三名人物与栏杆也提供了云海和桥群的有效尺度参照，日常驻足观看动作自然。但无尽桥群、云海和均匀金色氛围呈电影级宣传片式奇观，环境细节过度整洁和戏剧化，未达到现实生活私人记录的真实捕捉感。",
+        "sha256": "a1f064f1396df0860af3e5aeb48942390852ea4a2e94f40aa38a41fbafde7c02",
+        "frame_contract_sha256": "ff0dc68d79ecf675016adcde950cf8cea8fa8280f5e788df6090ec9c11bc1da7",
+        "frame": 17,
+        "role": "high_impact_admission"
+      },
+      "provenance": {
+        "schema_version": 2,
+        "runtime": "CODEX_ISOLATED",
+        "base_runtime": "CODEX",
+        "isolated_session": true,
+        "execution_source": "local_codex_cli",
+        "attempt": 4,
+        "reviewed_at": "2026-09-15T16:55:10+08:00",
+        "direct_user_exception_review": true,
+        "log": "episodes/天界普通女生的一天/meta/visual-lock-critic-attempt-4.jsonl",
+        "review_capability": "vision",
+        "ephemeral": true,
+        "session_reused_from_generation": false,
+        "review_scope": "VISUAL_LOCK_DIRTY_ADMISSION",
+        "direct_user_exception_frames": [
+          1
+        ]
+      }
+    }
+  }
+}

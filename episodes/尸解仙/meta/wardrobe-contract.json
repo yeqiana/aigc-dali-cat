@@ -1,0 +1,879 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_temporal_sha256": "22b2c00d22cd7c22076702d5a162fd7662d10d3729c51c5d552267171034ea27",
+  "derived_from_preimage_authority": true,
+  "rules": {
+    "wardrobe_changes_follow_scene_weather_temperature_activity": true,
+    "female_lead_default_body": "slim_proportionate_natural",
+    "pretty_clothes_allowed_when_physical_context_supports_them": true,
+    "camisole_in_cold_outdoor_requires_warm_outer_layer": true,
+    "skirt_in_cold_requires_thick_tights_and_warm_layer": true,
+    "high_altitude_outdoor_requires_wind_or_insulation_layer": true,
+    "outfit_change_requires_reason": true,
+    "no_eroticized_framing_requirement": true
+  },
+  "frames": {
+    "01": {
+      "scene_context": "村口停车处（车内）",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "clear dry afternoon",
+      "activity": "车刚停稳，两个人一起对着手机镜头自拍",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "02": {
+      "scene_context": "老屋门口",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "clear dry afternoon",
+      "activity": "P02 把一直留着的钥匙递给 P01，两个人站在门口",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "03": {
+      "scene_context": "老屋堂屋",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "clear dry afternoon",
+      "activity": "P01 推门进屋，两个人站在门口往里看",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "04": {
+      "scene_context": "灶房灶门口",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "clear dry afternoon",
+      "activity": "P01 掀开锅盖看，回头喊 P02 过来",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "05": {
+      "scene_context": "灶房八仙桌",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "clear dry afternoon",
+      "activity": "两个人还没坐，桌上已经摆好了两副碗筷",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "06": {
+      "scene_context": "院子晾衣绳",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "clear dry afternoon",
+      "activity": "P02 伸手拨开绳上的衣服，两个人低头看地面",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "07": {
+      "scene_context": "堂屋条案",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "clear dry afternoon",
+      "activity": "P01 数被划掉的格子，发现划痕是往前数的",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "08": {
+      "scene_context": "堂屋条案（手抄页）",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "dry quiet night",
+      "activity": "P02 把那页纸念出来，两个人凑在一起看",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "09": {
+      "scene_context": "灶房灶前",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "dry quiet night",
+      "activity": "他蹲下来自己点火，把第二副碗筷摆上桌",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "10": {
+      "scene_context": "堂屋条案（次日清晨）",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "clear cool morning",
+      "activity": "他翻开黄历，昨天该划的那一格空着，旁边多出一个字",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "11": {
+      "scene_context": "院子晾衣绳（次日）",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "clear cool morning",
+      "activity": "他伸手把绳上的衣服翻过来看衣角",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "12": {
+      "scene_context": "奶奶房间门口",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "clear cool morning",
+      "activity": "他伸手推门，门从里面插着，他回头指给 P02 看",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "13": {
+      "scene_context": "奶奶房间内",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "clear cool morning",
+      "activity": "两个人站在床边看，枕头上有一道新的压痕",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "14": {
+      "scene_context": "灶房八仙桌（夜）",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "dry quiet night",
+      "activity": "P02 说要下山，他劝她再留一晚",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "15": {
+      "scene_context": "堂屋条案（第三天）",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "clear dry morning",
+      "activity": "他发现自己的杯子被洗净归位，黄历上出现了他的字迹",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "16": {
+      "scene_context": "堂屋条案（最后一页）",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "clear dry morning",
+      "activity": "他翻开最后一页，两个名字并排，他的名字在下",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "17": {
+      "scene_context": "灶房八仙桌",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "clear dry morning",
+      "activity": "他把第二副碗筷收进纸箱，P02 帮他把奶奶的东西装起来",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "18": {
+      "scene_context": "灶房灶前",
+      "location_type": "indoor",
+      "temperature_band": "mild",
+      "weather": "clear dry morning",
+      "activity": "他把那页手抄纸撕下来投进灶膛，纸卷起来烧完",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "19": {
+      "scene_context": "老屋门口",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "clear dry afternoon",
+      "activity": "他锁上门，回头看了一眼灶房和院子",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "20": {
+      "scene_context": "村口停车处（回程）",
+      "location_type": "outdoor",
+      "temperature_band": "mild",
+      "weather": "clear dry afternoon",
+      "activity": "他把签好的老屋交接单递给 P02，翻手机相册看最后一张",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "深灰薄外套+黑色短袖+深灰工装裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "米色薄针织外套+浅色短袖+牛仔裤+运动鞋"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "contract_version": "2.2.1",
+  "derived_cache": true,
+  "world_identity_profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+  "world_identity_effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b",
+  "character_contract_path": "meta/character-contract.json",
+  "character_contract_sha256": "cd14312235a129548d6ad3cae5764c1974433b0f9ec71c2705c37c23c88ae84f",
+  "character_visual_contract_path": "meta/character-visual-contract.json",
+  "character_visual_contract_sha256": "2786f92c3f05a8be2e0b82f8e44fb477330cfea44c0c629c546b6510f033c514",
+  "members": {
+    "P01": {
+      "character_id": "P01",
+      "nationality_context": "Chinese",
+      "resident_context": "mainland Chinese local residents",
+      "gender": "male",
+      "age": 25,
+      "build": "普通年轻人体型",
+      "body_build": "lean_proportionate_natural",
+      "hair": {
+        "character_contract_anchor": "普通黑色短发，额前自然碎发，鬓角略长未修",
+        "haircut_anchor": "普通黑色短发，额前自然碎发，鬓角略长没修，发旋处有一缕不服帖",
+        "hair_length_anchor": "耳上到耳中的短发长度，后颈发脚偏长"
+      },
+      "clothing_anchor": "深灰薄外套+黑色短袖+深灰工装裤+运动鞋",
+      "device_anchor": "手机手持拍摄",
+      "visual_priority": "primary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_visible_texture",
+        "allowed_variation": [
+          "wet",
+          "windblown",
+          "messy",
+          "hood_up",
+          "tied_or_untied_with_story_reason"
+        ],
+        "forbidden_unmotivated_drift": [
+          "nationality/cultural identity",
+          "apparent age",
+          "face identity",
+          "haircut or hair length",
+          "body build",
+          "character role",
+          "clothing anchor unless wardrobe contract changes it"
+        ]
+      }
+    },
+    "P02": {
+      "character_id": "P02",
+      "nationality_context": "Chinese",
+      "resident_context": "mainland Chinese local residents",
+      "gender": "female",
+      "age": 25,
+      "build": "普通年轻人体型",
+      "body_build": "slim_proportionate_natural",
+      "hair": {
+        "character_contract_anchor": "普通黑色齐肩直发，发尾自然外翻，无造型感",
+        "haircut_anchor": "普通黑色齐肩直发，发尾自然外翻，没有刘海造型",
+        "hair_length_anchor": "齐肩长度，平时用一根黑色皮筋随手扎起"
+      },
+      "clothing_anchor": "米色薄针织外套+浅色短袖+牛仔裤+运动鞋",
+      "device_anchor": null,
+      "visual_priority": "primary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_visible_texture",
+        "allowed_variation": [
+          "wet",
+          "windblown",
+          "messy",
+          "hood_up",
+          "tied_or_untied_with_story_reason"
+        ],
+        "forbidden_unmotivated_drift": [
+          "nationality/cultural identity",
+          "apparent age",
+          "face identity",
+          "haircut or hair length",
+          "body build",
+          "character role",
+          "clothing anchor unless wardrobe contract changes it"
+        ]
+      }
+    }
+  },
+  "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+  "anchor_sha256": "17b040990bfb406abefa9b029dc18ef7ea248eab899b1e6f484d7168a229b32f"
+}

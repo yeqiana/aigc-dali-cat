@@ -1,0 +1,366 @@
+{
+  "schema_version": 1,
+  "task_id": "preimage-environment_prepare-934b5066e5fc",
+  "task_type": "ENVIRONMENT_PREPARE",
+  "snapshot_id": "934b5066e5fc77eefb985aaaf3e15b7a69269806d3a5ba7c02a46d895d1957a8",
+  "source_authority_sha256": {
+    "owned_scopes": {
+      "character.finalize": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.environment_contract": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.frame_directives": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.world_identity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.world_state": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.temporal_continuity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.wardrobe": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.narrative_core": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.shot_progression": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.capture_grammar": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+    },
+    "character_contract": "cd14312235a129548d6ad3cae5764c1974433b0f9ec71c2705c37c23c88ae84f",
+    "world_identity": null,
+    "runtime_request_preimage": "f00ad2b01a85f8ac9789096e48c8f05cca71ad75ccdc83ad13d4d2830f04734b",
+    "story_lock": "62904b475e91e8452340e6381b1c3dbcceff320b41859af0d563ddc1a902ac0b",
+    "visual_profile": "9eb5996e47c6373ded1bf546b4926e9d2ce1553d281618dc1c46d703e1364f20"
+  },
+  "generated_at": "2026-09-16T11:51:00+08:00",
+  "status": "COMPLETED",
+  "authority_scope": [
+    "visual.environment_contract",
+    "visual.frame_directives"
+  ],
+  "payload": {
+    "visual.environment_contract": {
+      "schema_version": 1,
+      "season": "early autumn in a humid southern Chinese mountain village",
+      "baseline": {
+        "condition": "dry mild rural weather",
+        "time_of_day": "day",
+        "temperature_feel": "mild and slightly humid",
+        "ground_state": "mostly dry stone and packed-earth surfaces",
+        "visibility": "clear at village scale with ordinary mountain haze in the distance",
+        "wind": "light intermittent breeze in the courtyard",
+        "precipitation": "none during the photographed periods",
+        "physical_cues": [
+          "weathered timber and plaster retain natural uneven texture",
+          "courtyard ground is dry except where story props explicitly carry moisture",
+          "window and doorway light changes naturally with time of day",
+          "no supernatural fog, glow, or stylized color cast"
+        ]
+      },
+      "segments": [
+        {
+          "id": "S01_DAY1_AFTERNOON",
+          "start_frame": 1,
+          "end_frame": 7,
+          "condition": "clear dry afternoon",
+          "time_of_day": "afternoon",
+          "physical_cues": [
+            "soft-to-directional natural daylight at village entrance and courtyard",
+            "dry threshold and courtyard ground",
+            "visible daylight through old-house windows"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S02_DAY1_NIGHT",
+          "start_frame": 8,
+          "end_frame": 9,
+          "condition": "dry quiet night",
+          "time_of_day": "night",
+          "physical_cues": [
+            "bare household bulb in the main room",
+            "stove fire as local warm practical light",
+            "dark exterior beyond doors and windows"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S03_DAY2_MORNING",
+          "start_frame": 10,
+          "end_frame": 13,
+          "condition": "clear cool morning",
+          "time_of_day": "morning",
+          "physical_cues": [
+            "flat natural morning light on the almanac",
+            "soft daylight over the clothesline",
+            "room interiors lit primarily by windows"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S04_DAY2_NIGHT",
+          "start_frame": 14,
+          "end_frame": 14,
+          "condition": "dry quiet night",
+          "time_of_day": "night",
+          "physical_cues": [
+            "single bare bulb over the table",
+            "background rooms fall naturally darker",
+            "no added cinematic rim light"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S05_DAY3_MORNING",
+          "start_frame": 15,
+          "end_frame": 18,
+          "condition": "clear dry morning",
+          "time_of_day": "morning",
+          "physical_cues": [
+            "ordinary window daylight on table and paper surfaces",
+            "stove fire becomes the strongest local practical only when the page is burned",
+            "courtyard and room remain physically consistent with a dry morning"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S06_DEPARTURE_AFTERNOON",
+          "start_frame": 19,
+          "end_frame": 20,
+          "condition": "clear dry afternoon",
+          "time_of_day": "afternoon",
+          "physical_cues": [
+            "neutral outdoor daylight at the locked doorway",
+            "car interior receives soft side daylight through windows",
+            "screen and window reflection remain subordinate to real ambient light"
+          ],
+          "conditional_effects": []
+        }
+      ],
+      "frame_overrides": {}
+    },
+    "visual.frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "P01 and P02 natural car selfie",
+          "ordinary village arrival context"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "old timber doorway",
+          "courtyard clothesline",
+          "key handoff between P02 and P01"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "03": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "dust-covered furniture",
+          "clean enamel tea mug containing fresh water"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "04": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "recent warm embers in stove",
+          "condensation or steam at pot lid",
+          "ordinary soot and stove scale"
+        ],
+        "scale_reference": "",
+        "escalation_from": 3
+      },
+      "05": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "two complete bowl-and-chopstick settings",
+          "empty habitual grandmother seat remains visible"
+        ],
+        "scale_reference": "",
+        "escalation_from": 4
+      },
+      "06": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "freshly wet old shirt on line",
+          "droplets at fabric edge",
+          "dry ground directly below"
+        ],
+        "scale_reference": "",
+        "escalation_from": 5
+      },
+      "07": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "old almanac close-up",
+          "crossed-out cells visibly count toward remaining three cells"
+        ],
+        "scale_reference": "",
+        "escalation_from": 6
+      },
+      "08": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "grandmother handwritten rule page",
+          "P01 and P02 reading together under ordinary bare bulb"
+        ],
+        "scale_reference": "",
+        "escalation_from": 7
+      },
+      "09": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "P01 relights cold stove himself",
+          "second bowl setting deliberately placed by P01"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "10": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "expected crossed-out cell remains blank",
+          "fresh wet ink character 续 beside it"
+        ],
+        "scale_reference": "",
+        "escalation_from": 9
+      },
+      "11": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "shirt on line matches P01 previous-day clothing",
+          "same dusty hem detail identifies it as his"
+        ],
+        "scale_reference": "",
+        "escalation_from": 10
+      },
+      "12": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "closed wooden bedroom door",
+          "inside latch position readable despite empty room"
+        ],
+        "scale_reference": "",
+        "escalation_from": 11
+      },
+      "13": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "otherwise orderly empty bedroom",
+          "fresh pillow indentation"
+        ],
+        "scale_reference": "",
+        "escalation_from": 12
+      },
+      "14": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "P02 seated across ordinary table",
+          "two bowl settings remain part of scene",
+          "single bare bulb lighting"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "15": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "P01 own cup has been washed and returned",
+          "new handwriting on almanac visibly matches P01 writing",
+          "both personal traces share one tabletop context"
+        ],
+        "scale_reference": "P01 hand and familiar cup provide direct human-size reference for the transferred traces",
+        "escalation_from": 11
+      },
+      "16": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 4,
+        "required_visual_cues": [
+          "last almanac page fully readable",
+          "two handwritten names appear together",
+          "P01 name is the lower/newer entry",
+          "P01 hand or phone edge gives ordinary physical scale"
+        ],
+        "scale_reference": "the two names occupy the same ordinary almanac page beside P01 hand, proving the anomaly has moved from grandmother's household traces to P01 himself",
+        "escalation_from": 15
+      },
+      "17": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "second bowl-and-chopstick setting being packed into cardboard box",
+          "P01 and P02 hands actively packing grandmother's items"
+        ],
+        "scale_reference": "",
+        "escalation_from": 16
+      },
+      "18": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "handwritten rule page visibly burning in real stove fire",
+          "paper curls and chars naturally",
+          "no magical flame or spirit effect"
+        ],
+        "scale_reference": "ordinary stove mouth, P01 hand, and sheet of paper keep the act at believable household scale",
+        "escalation_from": 17
+      },
+      "19": {
+        "narrative_role": "residue",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "locked old wooden door",
+          "cold stove direction",
+          "empty clothesline",
+          "quiet ordinary courtyard"
+        ],
+        "scale_reference": "",
+        "escalation_from": 18
+      },
+      "20": {
+        "narrative_role": "residue",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "signed house handover form in car",
+          "P01 and P02 hands",
+          "physically plausible phone-screen or car-window reflection showing empty courtyard as secondary information"
+        ],
+        "scale_reference": "",
+        "escalation_from": 19
+      }
+    }
+  }
+}

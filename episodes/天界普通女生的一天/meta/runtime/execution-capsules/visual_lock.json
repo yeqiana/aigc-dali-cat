@@ -1,0 +1,703 @@
+{
+  "schema_version": 1,
+  "story_os": "2.1",
+  "step": "VISUAL_LOCK",
+  "current_state": "STORYBOARD_LOCKED",
+  "runtime_request": {
+    "schema_version": 1,
+    "request_id": "20260915_161322_913acd7a",
+    "created_at": "2026-09-15T16:13:22+08:00",
+    "mode": "full_auto",
+    "repository": {
+      "branch": "story",
+      "source": "system_default"
+    },
+    "topic": {
+      "title": "天界普通女生的一天",
+      "raw": "天界普通女生的一天"
+    },
+    "story_input": {
+      "mode": "auto_create",
+      "raw": null,
+      "constraints": [],
+      "rewrite_policy": "auto_create",
+      "preserve_core_intent": true,
+      "allow_structure_rewrite": true
+    },
+    "intent": {
+      "intent": "CREATE_EPISODE",
+      "source": "deterministic_rules",
+      "confidence": 1.0,
+      "reason_codes": [
+        "DEFAULT_CREATE"
+      ],
+      "normalized_request_sha256": "f5502b5ff4a2ad1f702154c3d2aed821635adb460a8a63f4247919cf55b99fe9",
+      "normalized_request": "全自动做一篇「天界普通女生的一天」。",
+      "requires_llm_rewrite": false,
+      "requires_clarification": false
+    },
+    "creative_hints": [],
+    "image_model": "gpt-image-2.5-flare",
+    "image_quality": "high",
+    "image": {
+      "provider": "openai",
+      "model": "gpt-image-2.5-flare",
+      "source": "system_default",
+      "strict_model": false,
+      "quality": "high"
+    },
+    "runtime": {
+      "execution_mode": "dag",
+      "continuous_execution": true,
+      "resume": true,
+      "max_image_workers": 3,
+      "fail_soft": true,
+      "incremental_reuse": true
+    },
+    "delivery": {
+      "mode": "auto",
+      "zip_required_for_completion": false
+    },
+    "user_intent": {
+      "full_auto_authorized": true,
+      "allow_story_strengthening": true,
+      "allow_story_rewrite": true,
+      "ask_before_each_step": false
+    },
+    "provenance": {
+      "source": "natural_language",
+      "original_request": "一位长相好看但真实自然的天界普通女生，以第一人称手机相册视角记录自己在天界的日常一天：清晨先来一张自拍，随后出门穿过云间街巷，与几位男女好友相聚，一起闲聊、吃饭、办日常差事、散步看景，直到傍晚结伴回去休息。整体保持古风天界生活气质，普通人日常感强，人物互动自然，现代元素不超过10%，不涉及恐怖、不涉及调查或探秘，第一张必须是自拍；除这些明确要求外，其余规则遵循仓库默认生产规范，整体采用偏写实的真实照片感风格，避免明显插画感、过度梦幻感和强摆拍感。",
+      "image_model_migration": {
+        "from": "gpt-image-2",
+        "to": "gpt-image-2.5-flare",
+        "at": "2026-09-15T16:13:22+08:00",
+        "source_request_id": "20260913_013729_f5502b5f",
+        "reason": "system_default_upgrade"
+      }
+    },
+    "visual_profile": "M04_HEAVEN_MUNDANE_LIFE_V1",
+    "visual_profile_resolution": {
+      "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\standards\\visual_profiles\\profiles\\M04_HEAVEN_MUNDANE_LIFE_V1.json",
+      "resolved_profile_id": "M04_HEAVEN_MUNDANE_LIFE_V1",
+      "requested_profile_id": "M04_HEAVEN_MUNDANE_LIFE_V1",
+      "registered": true,
+      "fallback": false,
+      "resolution": "registry",
+      "registry": "standards/visual_profiles/index.json"
+    },
+    "visual_profile_selection": {
+      "adapter_version": "1.0",
+      "source": "selector",
+      "status": "selected",
+      "lifecycle_state": "SELECTED",
+      "selected_profile": "M04_HEAVEN_MUNDANE_LIFE_V1",
+      "lock_path": "meta/visual-profile.json",
+      "written": true,
+      "requires_confirmation": true,
+      "selection_evidence": {
+        "selector_version": "1.0",
+        "source": "rule_engine",
+        "registry": "standards/visual_profiles/index.json",
+        "inputs_digest": "sha256:dddef49bc6103c0668020e3279ad559f98ee82110e01be8b540518292145d61c",
+        "inputs_summary": {
+          "world": "fictional",
+          "era": "unspecified",
+          "theme": "daily_life",
+          "genre": "daily_life",
+          "location": "",
+          "experience_type": "immersive_first_person",
+          "series": "",
+          "previous_profile": "",
+          "realism": "maximum",
+          "immersion": "high",
+          "fantasy_level": "high",
+          "forced_profile_id": ""
+        },
+        "matched_rules": [
+          "world=fictional",
+          "fantasy_level=high"
+        ],
+        "rejected": [
+          {
+            "profile": "M00_REAL_WORLD_DOCUMENTARY_V1",
+            "reason": "not matched: world=real"
+          },
+          {
+            "profile": "M01_ANCIENT_MUNDANE_LIFE_V1",
+            "reason": "not matched: world=historical_real, era=ancient"
+          },
+          {
+            "profile": "M03_JIANGNAN_IMMERSIVE_LIFE_V1",
+            "reason": "not matched: location=jiangnan, experience_type=immersive_first_person"
+          }
+        ],
+        "reason": [
+          "prio=semantic"
+        ],
+        "candidate_count": 1,
+        "notes": [
+          "theme=daily_life"
+        ]
+      }
+    }
+  },
+  "runtime_execution": null,
+  "effective_execution_mode": "full_auto",
+  "runtime_fast_path": {
+    "schema_version": 1,
+    "module_version": "2.6.0",
+    "enabled": true,
+    "goal": "runtime_fast_path_without_creative_rule_changes",
+    "capability_cache_ttl_seconds": 21600,
+    "resume_capsule_required_on_context_restore": true,
+    "rolling_review_requires_verified_vision": true,
+    "raw_candidate_budget": {
+      "original": 2,
+      "repair": 2,
+      "exception": 2,
+      "user_exception": 1
+    },
+    "performance_slo": {
+      "green_seconds": 5400,
+      "yellow_seconds": 7200,
+      "red_above_seconds": 7200,
+      "gate": false,
+      "incident_above_seconds": 10800
+    },
+    "policies": {
+      "no_broad_repository_rescan_when_resume_capsule_fresh": true,
+      "technical_failure_does_not_consume_raw_candidate_budget": true,
+      "rolling_review_without_verified_vision": "UNCERTAIN",
+      "rolling_review_without_verified_vision_may_emit_repair_now": false,
+      "fast_path_fail_soft": true,
+      "source_authority_wins_on_sha_mismatch": true,
+      "candidate_budget_enforced_at_generation_entrypoints": true,
+      "queue_item_token_is_idempotent": true,
+      "technical_failure_releases_candidate_budget": true,
+      "budget_exhaustion_is_non_regenerating_block": true,
+      "atomic_candidate_budget": true,
+      "candidate_commit_before_review": true,
+      "review_failure_may_release_committed_candidate": false,
+      "caption_change_invalidates_visual_review": false,
+      "cross_shell_safe_argv_only": true,
+      "bash_heredoc_allowed": false,
+      "powershell_here_string_allowed": false,
+      "shell_true_allowed": false
+    },
+    "episode_candidate_budget": {
+      "formula": "min(60,max(20,frame_count+15))"
+    }
+  },
+  "runtime_capabilities": {
+    "schema_version": 1,
+    "module_version": "2.5.1",
+    "generated_at": "2026-09-14T10:58:51+08:00",
+    "expires_after_seconds": 21600,
+    "platform": "nt",
+    "codex_path": "D:\\soft\\nvm-setup\\nodejs\\codex.CMD",
+    "text_worker": "available",
+    "vision_review": "unverified",
+    "image_generation_route": "unknown",
+    "sandbox_risk": "windows_1385_possible",
+    "source": "cheap_auto_detect_no_model_probe",
+    "note": "Set/record vision_review=verified only after a real pixel-vision probe succeeds."
+  },
+  "resume_capsule": {
+    "schema_version": 1,
+    "module_version": "2.5.1",
+    "generated_at": "2026-09-14T14:13:56+08:00",
+    "episode": "episodes/天界普通女生的一天",
+    "current_state": "STORYBOARD_LOCKED",
+    "next_target": "VISUAL_CALIBRATED",
+    "runtime_step": "VISUAL_LOCK",
+    "source_fingerprint": "161f4910600e2748ec842246cb639d1863ac11c1085d054be2aa19b11538a771",
+    "source_files": [
+      {
+        "path": "meta/episode-state.json",
+        "sha256": "879c255d7ea014941a29e8e674a1c8cb58d40cfede8fbbce6f24552ed528f0c6"
+      },
+      {
+        "path": "meta/production-ledger.json",
+        "sha256": "17892e2616213780d139dbd76779c2bbded84be8b9c94bc08f6b7e96fd46f59f"
+      },
+      {
+        "path": "meta/production-queue.json",
+        "sha256": "3691148acb2eccf5d839e29c61fad59b1a6653bf3070e0c5436ddd05341ced2a"
+      },
+      {
+        "path": "meta/runtime-request.json",
+        "sha256": "3ef98432540a8230627ad88ed80aa2db5649c8dd30a0c7c029ff13261ed0517e"
+      },
+      {
+        "path": "meta/story-gates.json",
+        "sha256": "85359db5605fbd1a4f3a5b9b22403d0ba850285c813a76dba9eca1fe595a7c3f"
+      },
+      {
+        "path": "meta/runtime-checkpoint.json",
+        "sha256": "fbe5890d1898e966428531e40c19d89767ace93f8ddad498eef7417b0cd94d0f"
+      },
+      {
+        "path": "meta/final-acceptance.json",
+        "sha256": null
+      }
+    ],
+    "ledger": {
+      "frame_count": 20,
+      "status_counts": {
+        "PASSED": 3,
+        "PENDING": 16,
+        "AUTHORITY_REFRESH_AUTHORIZED": 1
+      },
+      "blocking_frames": [],
+      "tech_retry_frames": [],
+      "ready_frames": [
+        "01",
+        "05",
+        "16"
+      ]
+    },
+    "queue_status_counts": {
+      "generated": 11,
+      "superseded": 17,
+      "queued": 1
+    },
+    "runtime_capabilities": {
+      "schema_version": 1,
+      "module_version": "2.5.1",
+      "generated_at": "2026-09-14T10:58:51+08:00",
+      "expires_after_seconds": 21600,
+      "platform": "nt",
+      "codex_path": "D:\\soft\\nvm-setup\\nodejs\\codex.CMD",
+      "text_worker": "available",
+      "vision_review": "unverified",
+      "image_generation_route": "unknown",
+      "sandbox_risk": "windows_1385_possible",
+      "source": "cheap_auto_detect_no_model_probe",
+      "note": "Set/record vision_review=verified only after a real pixel-vision probe succeeds."
+    },
+    "next_actions": [
+      "continue Visual Lock from existing evidence"
+    ],
+    "read_policy": "Read this capsule first after context loss. Do not broad-rescan repository authority unless a listed SHA changed, a required detail is missing, or a gate reports drift.",
+    "authority_policy": "Derived cache only; source authority always wins."
+  },
+  "character_contract": {
+    "schema_version": 1,
+    "status": "LOCKED",
+    "derived_from_pools": true,
+    "not_episode_stage": true,
+    "created_at": "2026-09-13T01:37:29+08:00",
+    "locked_at": "2026-09-13T01:50:00+08:00",
+    "selection_seed": 5694859121043832524,
+    "era": {
+      "bucket": "modern_2020s",
+      "year": 2026,
+      "source": "fictional_world_human_baseline",
+      "world_era": "fictional"
+    },
+    "world_identity": {
+      "profile_id": "CELESTIAL_MUNDANE_WORLD_V1",
+      "country": "天界（虚构世界）",
+      "region": "云海普通居民区、公共生活区与基层设施",
+      "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+      "resident_context": "天界普通本地居民",
+      "effective_sha256": "dd4f59b2df967f640d82e58c64be2b6272d530d5a172207c7be71b6e414851e2"
+    },
+    "fictional_world": {
+      "profile_id": "M04_HEAVEN_MUNDANE_LIFE_V1",
+      "reality_basis": "fictional_world_mundane",
+      "ordinary_life_rule": "天界按普通居民的生活秩序运转，主角和朋友都是普通居民，不承担岗位强制、英雄、调查或神秘任务",
+      "capture_device": "随身留影玉牌（仅承担私人相册记录功能）"
+    },
+    "cast": {
+      "type": "mixed_friend_group",
+      "size": 4,
+      "relationship": "相识多年的普通好友",
+      "members": [
+        {
+          "id": "P01",
+          "pov": true,
+          "gender": "female",
+          "age": 24,
+          "build": "纤细匀称、真实自然的年轻女性体型",
+          "hair": "自然黑色长发，日常低马尾或散发",
+          "clothing_anchor": "米白与浅青为主的朴素天界日常襦裙与轻薄外衫，真实布料褶皱，无华丽仙袍",
+          "device_anchor": "随身留影玉牌（自带留影功能）",
+          "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+          "resident_context": "天界普通本地居民与基层工作人员"
+        },
+        {
+          "id": "P02",
+          "pov": false,
+          "gender": "female",
+          "age": 24,
+          "build": "健康自然的年轻女性体型",
+          "hair": "自然黑色齐肩发，半束发",
+          "clothing_anchor": "藕粉灰与米白的朴素日常衣裙，轻便耐走",
+          "device_anchor": null,
+          "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+          "resident_context": "天界普通本地居民与基层工作人员"
+        },
+        {
+          "id": "P03",
+          "pov": false,
+          "gender": "male",
+          "age": 25,
+          "build": "清瘦自然的年轻男性体型",
+          "hair": "自然黑色短发，略微蓬松",
+          "clothing_anchor": "灰蓝短褂与深灰长裤，普通天界青年日常穿着",
+          "device_anchor": null,
+          "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+          "resident_context": "天界普通本地居民与基层工作人员"
+        },
+        {
+          "id": "P04",
+          "pov": false,
+          "gender": "male",
+          "age": 23,
+          "build": "普通健康的年轻男性体型",
+          "hair": "自然黑色短发，额前略乱",
+          "clothing_anchor": "浅褐短衫与青灰长裤，干净但有日常使用痕迹",
+          "device_anchor": null,
+          "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+          "resident_context": "天界普通本地居民与基层工作人员"
+        }
+      ]
+    },
+    "pov": {
+      "character_id": "P01",
+      "first_person": true
+    },
+    "entry": {
+      "type": "daily_life",
+      "label": "普通生活日常",
+      "source": "visual_profile:M04_HEAVEN_MUNDANE_LIFE_V1",
+      "reason": "女主以休息日和朋友相处、吃饭、闲逛与生活琐事为主，短暂轮值只是一天里的普通插曲"
+    },
+    "scene": {
+      "primary_category": "modern_indoor",
+      "primary_place": "天界普通居民区、云街与公共生活区"
+    },
+    "role_policy": {
+      "protagonist_role": "天界普通年轻女生",
+      "career_function": "none",
+      "solves_anomaly_professionally": false
+    },
+    "no_anomaly_test": {
+      "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+      "ordinary_day_plan": "起床自拍、出门吃早饭、和朋友会合、做普通轮值与生活差事、一起吃饭闲聊、傍晚看云海后回家",
+      "pass": true,
+      "must_be_rechecked_before_story_lock": true,
+      "rechecked_against_final_story": true
+    },
+    "continuity_policy": {
+      "member_count_changes_require_story_event": true,
+      "pov_character_id_stable": true,
+      "clothing_and_device_anchors_propagate_to_frame_contract": true
+    },
+    "ordinary_person_score": 100,
+    "forbidden_role_check": {
+      "pass": true,
+      "hits": []
+    },
+    "story_build_note": "本集是纯天界生活日常。P01 为好看但真实自然的普通女生，P02/P03/P04 是她的普通好友；不调查、不探秘、不处理异常，不英雄化。现代元素只保留留影玉牌这一相册记录功能，其余视觉与生活方式以东方古风天界为主。"
+  },
+  "preimage_task": null,
+  "invariants": {
+    "zip_is_delivery_adapter_not_stage_gate": true,
+    "codex_production_complete_at_publish_ready": true,
+    "concept_ambition_before_story_lock": true,
+    "image_first_propagation_gate": true,
+    "reality_limits_capture_not_concept": true,
+    "environment_is_physics_not_filter": true,
+    "resolved_frame_contract_is_derived_cache": true,
+    "generation_and_review_bind_same_frame_contract_sha": true,
+    "visual_lock_four_admissions": true,
+    "max_parallel_image_workers": 3,
+    "production_ledger_single_writer": true,
+    "technical_failure_does_not_consume_content_repair": true,
+    "scheduler_fail_soft": true,
+    "fast_scout_never_final_pass": true,
+    "final_candidate_snapshot_before_publish_ready": true,
+    "delivery_consumes_verified_snapshot": true,
+    "runtime_request_immutable_after_bind": true,
+    "auto_create_story_when_missing": true,
+    "user_seed_requires_strengthen_and_rewrite": true,
+    "default_image_model": "gpt-image-2",
+    "default_image_quality": "high",
+    "explicit_image_model_no_silent_fallback": true,
+    "current_visual_lock_calibration_count": 4,
+    "visual_lock_real_1_plus_3_barrier": true,
+    "visual_lock_dependents_require_baseline_review_pass": true,
+    "reference_arbitration_max_refs": 2,
+    "final_snapshot_locks_character_master_assets": true,
+    "human_response_interaction_enabled": true,
+    "emotion_intensity_max": 4,
+    "interaction_density_min_one_per_5_human_frames": true,
+    "performance_telemetry_fail_soft": true
+  },
+  "authority_files": [
+    {
+      "path": "config/storyos.yaml",
+      "exists": true,
+      "sha256": "ceb5e7f537b4c09ba9296cebdafcb800f9646975fa563d527f32a75fbc7645be",
+      "bytes": 13910
+    },
+    {
+      "path": "config/index.yaml",
+      "exists": true,
+      "sha256": "1ab150cc5fd5395f81636b771b1d05dabd5efb4f3389f63802b94dc2e1e748ec",
+      "bytes": 9416
+    },
+    {
+      "path": "START_HERE.md",
+      "exists": true,
+      "sha256": "3225c05bd9796dda79705cf10b8dcec75da97a824f361fffb67477a27c6fcbd6",
+      "bytes": 25500
+    },
+    {
+      "path": "SKILL.md",
+      "exists": true,
+      "sha256": "739ab18b6f16e6f745b83a536688a64938a2335295ad8f7c09c78a9a485075fb",
+      "bytes": 28400
+    },
+    {
+      "path": "AGENTS.md",
+      "exists": true,
+      "sha256": "a5109c944e9c96d714797fc58eb32fd05fdef8320263d203f8d1fb800c8e00c5",
+      "bytes": 20693
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "exists": true,
+      "sha256": "1bd41fc05fa342885dc4f3f84a40a6735c9551b710a0fd669f2a8189e8169746",
+      "bytes": 65309
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "exists": true,
+      "sha256": "1fec4cc327620fefe82a2539bcaa0bcd8cacc9fd1ca27bf90abfcbe84f3d60c7",
+      "bytes": 18801
+    },
+    {
+      "path": "standards/Character_And_Entry_Pool_V1.0.md",
+      "exists": true,
+      "sha256": "6cc077f723c33d427bcf9bf73910b2e7e6fc0e08cf354b83aa7414086d84cd77",
+      "bytes": 2771
+    },
+    {
+      "path": "standards/character-pools.json",
+      "exists": true,
+      "sha256": "e4a13a6579cd286d71124d985ddb21a4ac281a66851223811b6f988a2ec9c061",
+      "bytes": 2769
+    },
+    {
+      "path": "standards/entry-motivation-pools.json",
+      "exists": true,
+      "sha256": "7b23f2ff7a9f449b730c432c7fec33d0a2b92c40f2bea2afee955aab8d8f11a3",
+      "bytes": 4630
+    },
+    {
+      "path": "standards/scene-pools.json",
+      "exists": true,
+      "sha256": "dbe16ad36689fe6631c7cfff9d4ff422d2cc778647662b4a15d202bd30ad3c98",
+      "bytes": 2238
+    },
+    {
+      "path": "standards/forbidden-character-roles.json",
+      "exists": true,
+      "sha256": "c0b18e39cd4141f999a4b30bc190fa0bb59c5eb84bfe8b67828cde6ad2eb5459",
+      "bytes": 1179
+    },
+    {
+      "path": "runtimes/runtime-mode-contract-r2.json",
+      "exists": true,
+      "sha256": "0e14ce9d20a177fafafc2b76c146f31022793278560005376ddbfdfa8c5c47af",
+      "bytes": 1249
+    },
+    {
+      "path": "runtimes/runtime-fast-path-v251.json",
+      "exists": true,
+      "sha256": "a3073d68b300ebea16d63bd3cabafbbe45ba1255ba202247ab2302158b382580",
+      "bytes": 1592
+    },
+    {
+      "path": "library/catalog.json",
+      "exists": true,
+      "sha256": "20ecd1817b3dc4f9ffb01873307f32aa5c354b21831d463764473d588e8d3dc4",
+      "bytes": 3167
+    },
+    {
+      "path": "library/copy/intro-openers.json",
+      "exists": true,
+      "sha256": "b5b2b0bbc16329c0369f75040fe4fdde4a8d0d304b513ebcd7ab9463f9347f3f",
+      "bytes": 2572
+    },
+    {
+      "path": "standards/AIGC_Directing_Quality_V1.0.md",
+      "exists": true,
+      "sha256": "c7dc75dabe8ce6820a6637751cf48aadb1b5ebb17039682fb65bd77581446e33",
+      "bytes": 4525
+    },
+    {
+      "path": "standards/Character_Visual_And_Wardrobe_V1.0.md",
+      "exists": true,
+      "sha256": "8a372a254e4256a9eaa1cd085f9a28218827c9719ddf71112104c1d3dac179e7",
+      "bytes": 3036
+    },
+    {
+      "path": "standards/Character_Master_Final_Closure_V1.0.md",
+      "exists": true,
+      "sha256": "a8c741fa93e4ccc745bc64a4d888bf35579983c054498181f0c65693da339de5",
+      "bytes": 2241
+    },
+    {
+      "path": "standards/Human_Response_Interaction_V1.0.md",
+      "exists": true,
+      "sha256": "60f0e393bd11eaec516340e142e4bf30a6f5fc76f965abb74befb1b0d0cc7023",
+      "bytes": 2806
+    },
+    {
+      "path": "standards/wardrobe-scenario-profiles.json",
+      "exists": true,
+      "sha256": "e2a519a8378f140e98b3e4f7f9189a34d331e136b214b17adc707435b25bf689",
+      "bytes": 2553
+    },
+    {
+      "path": "config/profiles/account_creative/default.json",
+      "exists": true,
+      "sha256": "63b23f526c11601f5692718d4a9f7749f1908a96fcf274548d6f7396c52cbad9",
+      "bytes": 2358
+    },
+    {
+      "path": "standards/directing_grammar_v1.json",
+      "exists": true,
+      "sha256": "908456e0a314e7133308121853da2d3cec26b55b7c32098ec3db0c19b8222990",
+      "bytes": 5147
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "config/storyos.yaml",
+      "exists": true,
+      "sha256": "ceb5e7f537b4c09ba9296cebdafcb800f9646975fa563d527f32a75fbc7645be",
+      "bytes": 13910
+    },
+    {
+      "path": "meta/runtime-execution.json",
+      "exists": false
+    },
+    {
+      "path": "meta/runtime-request.json",
+      "exists": true,
+      "sha256": "f6d130dd52a5a0ccca60d5d8542c89f0af02a6f7c3d1d6d6ee5581118bd789db",
+      "bytes": 4737
+    },
+    {
+      "path": "meta/episode-state.json",
+      "exists": true,
+      "sha256": "879c255d7ea014941a29e8e674a1c8cb58d40cfede8fbbce6f24552ed528f0c6",
+      "bytes": 732
+    },
+    {
+      "path": "meta/character-contract.json",
+      "exists": true,
+      "sha256": "9d4d0635e2ef11c893ba82a3894eacef3d474481010f010e61b49bf54f5c2df2",
+      "bytes": 4348
+    },
+    {
+      "path": "meta/concept-ambition-review.json",
+      "exists": true,
+      "sha256": "d08dc181313781628adc0d9f6e5f24d73260a7433d8b632b48ef4e01c0726c6e",
+      "bytes": 7264
+    },
+    {
+      "path": "meta/directing-quality.json",
+      "exists": true,
+      "sha256": "2fb807542219dcc14df8ca31485e11bbc8a2187df26734c7b6443d3482529ac3",
+      "bytes": 759
+    },
+    {
+      "path": "meta/character-visual-contract.json",
+      "exists": true,
+      "sha256": "b3cc3bb3afe9eb63802b896119fe5637f525e38c78b7af9992f3485cc1a27455",
+      "bytes": 6012
+    },
+    {
+      "path": "meta/visual-lock-baseline-review.json",
+      "exists": true,
+      "sha256": "763126bd662e0e4d5356f3bfab9cc302c06bcea0e5a8896fc2cf6380d7f6aae5",
+      "bytes": 2233
+    },
+    {
+      "path": "meta/character-pixel-master.json",
+      "exists": true,
+      "sha256": "225510026465c1bd3f0c0a5741aae4b25df8b5fee905e9e97d444e4904048fee",
+      "bytes": 1017
+    },
+    {
+      "path": "meta/character-master-crops.json",
+      "exists": true,
+      "sha256": "c9ef1116a0af5fd89ff0456759ae44b3d53f0c27f9f6b98325d6aa0b384e36a6",
+      "bytes": 1237
+    },
+    {
+      "path": "meta/shot-progression-review.json",
+      "exists": true,
+      "sha256": "636c8a2097072e08dadb6110c2475c890bc02af235859c19606b1dca6db7b2c7",
+      "bytes": 27668
+    },
+    {
+      "path": "meta/capture-event-contract.json",
+      "exists": true,
+      "sha256": "5b55bd2d24fc4e65b647f072653488a8943462ea0ad31dfcb3db8de425e62ca3",
+      "bytes": 9649
+    },
+    {
+      "path": "meta/world-state.json",
+      "exists": true,
+      "sha256": "2eb2f49ff3d78b170be044d530a55768837b4153f73dad5bec210c1cf78dd4f5",
+      "bytes": 4508
+    },
+    {
+      "path": "meta/temporal-continuity.json",
+      "exists": true,
+      "sha256": "be238b61463217f2d5ed624d77870391a4b98edaa9ed9e77215b4d0680a3bebe",
+      "bytes": 5907
+    },
+    {
+      "path": "meta/wardrobe-contract.json",
+      "exists": true,
+      "sha256": "a321b4bd7d10e6945ffc24b57c0a3a51ec3bdacccdc534c6a4de54e7451754e0",
+      "bytes": 18301
+    },
+    {
+      "path": "meta/visual-lock-plan.json",
+      "exists": true,
+      "sha256": "ce90eabd033cacfac47ae0939f0aecbccc5a60e3a411f6700bf803a5cab89454",
+      "bytes": 1570
+    },
+    {
+      "path": "meta/runtime/contracts/frame-contract-index.json",
+      "exists": true,
+      "sha256": "fc73a04053d1c5b72423581f86efef3a327b9895869589d9d8b89f52c35361f0",
+      "bytes": 9933
+    },
+    {
+      "path": "meta/runtime/contracts/character-appearance-anchor.json",
+      "exists": true,
+      "sha256": "c1aa4a042d6b18298996ca24415f9ded088ba19ddb5a89b4050ae8ed39aa9c58",
+      "bytes": 6623
+    },
+    {
+      "path": "meta/story-gates.json",
+      "exists": true,
+      "sha256": "4253f5969ddd2410171c86ad511b0b40812d8c26c109d632b4d1b6799ee5f343",
+      "bytes": 25507
+    }
+  ],
+  "authority_policy": "Derived cache only. If capsule conflicts with source authority, source authority wins.",
+  "read_policy": "Fast Path: consume resume_capsule + runtime_capabilities + this step capsule first. Do not broad-rescan repository files while source SHA is unchanged; open source authority only for missing details, SHA drift, or conflict resolution.",
+  "source_sha256": "33a4150a678cc298e444d8069081bfb11fd41b874328b8e194a3e65e44fbe441",
+  "compiled_at": "2026-09-15T16:55:27+08:00"
+}

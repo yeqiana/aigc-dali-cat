@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "task_id": "preimage-world_prepare-fedc3470fb71",
+  "task_type": "WORLD_PREPARE",
+  "snapshot_id": "fedc3470fb71a09b5dfc45ac61e1814fd850221ef8d6011eb8df1e6b12254f19",
+  "source_authority_sha256": {
+    "owned_scopes": {
+      "character.finalize": "a8c28494d508a29e55d3e10479d68e683b0f8682ca0cf67145639da3e1b037c4",
+      "visual.environment_contract": "43930972a41e43773f1c54628b9cd7624bb267b859d0c4a92d18c09332be0edc",
+      "visual.frame_directives": "cf16ed89eb47e30bf399d73c7470588f9d2f0b58a49f9833235a55149e55201a",
+      "visual.world_identity": "35d4da7b9dff682ce879569e2856253d8e6f98adea7c4bb83ce172134e9e2961",
+      "visual.world_state": "35b33d1b2e3f448525d32597e9f9b04af142613ad17017bc369fe13831002458",
+      "visual.temporal_continuity": "e771b36f52a94459b38d8d0fd7d0c9d3242e36ec82a8a322599af9182ebc2434",
+      "visual.wardrobe": "d3eaa58e341062b64c349766bdf310e9197e89f4bbe11ce85fb82f6e761622fc",
+      "visual.narrative_core": "87e635ba0f2254eb21ec57a821c0edce8bf0c8b09d073d65a63ad1d0180359da",
+      "visual.shot_progression": "24a9b415efcbff84eee7020eee3c05cd4e7f3659d3c3e095ae12213e84f55217",
+      "visual.capture_grammar": "abec40e13ad7d44d74e9e331b14ad7d593b2181959866a6e983b8ed3e9534bee"
+    },
+    "character_contract": "9d4d0635e2ef11c893ba82a3894eacef3d474481010f010e61b49bf54f5c2df2",
+    "world_identity": "02634a0440ab6fcc7856a050d6cb7567a59f91e086a3124bcecf9d3f914c9fc1",
+    "runtime_request": "3ef98432540a8230627ad88ed80aa2db5649c8dd30a0c7c029ff13261ed0517e",
+    "story_lock": "fdd7f4ac06fcfd6decd33c8545c7009ff8e2c73721e710dff7e2ea64431d053c",
+    "visual_profile": "e1cefbd26880f41ccc050710d5e3877c5297d66c393cc5a8a282361d569ba78e"
+  },
+  "generated_at": "2026-09-15T15:06:14+08:00",
+  "status": "COMPLETED",
+  "authority_scope": [
+    "visual.world_identity",
+    "visual.world_state",
+    "visual.temporal_continuity",
+    "visual.wardrobe"
+  ],
+  "payload": {
+    "visual.world_identity": {
+      "applicable": true,
+      "profile_id": "CELESTIAL_MUNDANE_WORLD_V1",
+      "world": "东方天界的普通居民生活区，不映射现实国家；云海、云桥和层叠街区是日常地理，不是异常或法术展示",
+      "population": "普通二十多岁天界本地居民，外貌自然可信，禁止英雄化、明星化、网红化",
+      "architecture": "朴素石木居民区、公共轮值房、家常食肆、旧云市、茶摊、云桥；避免宏大神殿与仙侠宣传片构图",
+      "modern_element_budget": "visible modern content <=10%; 留影玉牌只承担相册记录功能"
+    },
+    "visual.world_state": {
+      "applicable": true,
+      "initial_time": "morning",
+      "initial_location": "P01 home cloud corridor",
+      "weather": "clear mild dry day",
+      "recorder": "P01 normally uses the handheld image-jade device; at Frame17 P02 temporarily takes P01's device and stays behind the camera with only a dusty-pink sleeve/hand/device-edge fragment allowed in frame; the device returns to P01 from Frame18 onward",
+      "recorder_exception_frame17": "photographer=P02; active_device remains P01 image-jade; P01/P03/P04 are the three distant complete figures; P02 must not fully enter frame",
+      "persistent_props": [
+        "image-jade device",
+        "small snack parcels",
+        "wooden hairpin after Frame12"
+      ],
+      "character_presence": "P01/P02/P03 present from opening; P04 joins at Frame04; all four remain together until Frame19 goodbye",
+      "anomaly_phase": "ordinary; no anomaly exists"
+    },
+    "visual.temporal_continuity": {
+      "applicable": true,
+      "timeline": [
+        "Frames01-04 morning",
+        "Frames05-07 late morning",
+        "Frames08-10 midday",
+        "Frames11-15 afternoon",
+        "Frames16-18 dusk",
+        "Frames19-20 early evening"
+      ],
+      "weather_rule": "clear/mild/dry throughout; only sun angle and ambient light change",
+      "continuity_rule": "all daypart changes require positive elapsed time; dusk/evening shift is motivated by hours spent together"
+    },
+    "visual.wardrobe": {
+      "applicable": true,
+      "temperature_band": "mild",
+      "weather": "clear dry mild day",
+      "look_policy": "single stable everyday look per character for whole episode unless a visible story reason exists",
+      "P01": "ivory/light-cyan everyday ruqun-like clothing with light outer layer; practical flat shoes; natural hair",
+      "P02": "dusty pink-grey and ivory everyday dress; practical flat shoes",
+      "P03": "grey-blue short jacket and deep-grey trousers",
+      "P04": "light-brown short top and blue-grey trousers",
+      "physics": "clothing remains plausible for mild walking/market/bridge activity; no cold-weather or high-altitude special gear needed"
+    }
+  }
+}

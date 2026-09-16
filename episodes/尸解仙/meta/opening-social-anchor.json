@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "applicable": true,
+  "mode": "mixed_selfie",
+  "reason": "多人同行返乡故事：Frame 01 用车上出发自拍建立“老同学一起回村”，Frame 02 用老屋门口的目的地自拍（P02 递钥匙）建立地点与关系。",
+  "exception_reason": "",
+  "created_at": "2026-09-15T11:55:00+08:00",
+  "opening_frames": [
+    {
+      "frame": "01",
+      "selfie": true,
+      "location_type": "vehicle",
+      "people_visible": 2,
+      "relationship_anchor": true,
+      "clothing_anchor_visible": true,
+      "natural_unpolished_capture": true,
+      "anomaly_level": "none",
+      "notes": "车停稳后 P02 举手机把两个人框进画面；P01 深灰薄外套，P02 米色薄针织外套；手机举得有点歪，拍到半边后视镜，不是商业合照。"
+    },
+    {
+      "frame": "02",
+      "selfie": true,
+      "location_type": "destination_checkin",
+      "people_visible": 2,
+      "relationship_anchor": true,
+      "clothing_anchor_visible": true,
+      "natural_unpolished_capture": true,
+      "anomaly_level": "micro_background_only",
+      "notes": "老屋门口的目的地自拍，P02 把钥匙递到 P01 手里；门框背景里能看到晾衣绳上挂着衣服的正常生活痕迹，不作为异常强调。"
+    }
+  ],
+  "rules": {
+    "preferred_frame_range": [
+      1,
+      2
+    ],
+    "preferred_contexts": [
+      "vehicle",
+      "destination_checkin"
+    ],
+    "selfie_required_when_applicable": true,
+    "minimum_people_visible": 2,
+    "establish_relationship_before_anomaly": true,
+    "strong_anomaly_forbidden_in_opening_anchor": true,
+    "commercial_or_staged_group_photo_forbidden": true,
+    "allow_exception_with_reason": true
+  }
+}
