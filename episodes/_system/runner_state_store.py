@@ -7,11 +7,11 @@ Runtime lifecycle evidence only. It does not replace episode-state.json.
 from __future__ import annotations
 
 import datetime as dt
-import json
 import os
 import threading
-from runtime_atomic_store import atomic_write_json
 from pathlib import Path
+
+import runtime_workspace
 
 REL = Path("meta/runtime-runner-state.json")
 LOCK_REL = Path("meta/runtime-runner.lock")
@@ -24,15 +24,11 @@ def _now() -> str:
 
 
 def load(episode: Path) -> dict:
-    path = episode / REL
-    if not path.exists():
-        return {}
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    data = runtime_workspace.read_json(episode, REL, default={})
+    return data if isinstance(data, dict) else {}
 
 
 def save(episode: Path, **fields) -> dict:
-    path = episode / REL
-    path.parent.mkdir(parents=True, exist_ok=True)
     with _GUARD:
         current = load(episode)
         # A new RUNNING epoch must not inherit terminal diagnostics from the
@@ -43,7 +39,7 @@ def save(episode: Path, **fields) -> dict:
                 current.pop(stale, None)
         current.update(fields)
         current["heartbeat"] = _now()
-        atomic_write_json(path, current)
+        runtime_workspace.write_json(episode, REL, current)
         return current
 
 

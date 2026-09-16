@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 import runner_health_monitor
+import runtime_workspace
 
 SCHEMA_VERSION = 1
 EPISODE_STATE_REL = Path("meta/episode-state.json")
@@ -153,9 +154,9 @@ def snapshot(episode: Path) -> dict[str, Any]:
     """Build one stable Console/Platform read model without mutating the Episode."""
     ep = Path(episode).resolve()
     episode_state = _read(ep / EPISODE_STATE_REL)
-    dag = _read(ep / DAG_STATE_REL)
-    runner = _read(ep / RUNNER_STATE_REL)
-    next_action_raw = _read(ep / NEXT_ACTION_REL)
+    dag = runtime_workspace.read_json(ep, DAG_STATE_REL, default={}) or {}
+    runner = runtime_workspace.read_json(ep, RUNNER_STATE_REL, default={}) or {}
+    next_action_raw = runtime_workspace.read_json(ep, NEXT_ACTION_REL, default={}) or {}
     ledger = _read(ep / LEDGER_REL)
     queue = _read(ep / QUEUE_REL)
     admissions = _read(ep / ADMISSIONS_REL)
@@ -215,6 +216,17 @@ def snapshot(episode: Path) -> dict[str, Any]:
         "production_queue": QUEUE_REL,
         "visual_lock_admissions": ADMISSIONS_REL,
     }
+    external_runtime_sources = {"runtime_dag_state", "runtime_runner_state", "next_action"}
+
+    def source_info(name: str, rel: Path) -> dict[str, Any]:
+        if name in external_runtime_sources:
+            resolved = runtime_workspace.resolve_read_path(ep, rel)
+            return {
+                "path": str(rel).replace("\\", "/"),
+                "present": resolved.is_file(),
+                "source_kind": runtime_workspace.source_kind(ep, rel),
+            }
+        return {"path": str(rel).replace("\\", "/"), "present": (ep / rel).is_file(), "source_kind": "episode"}
 
     return {
         "schema_version": SCHEMA_VERSION,
@@ -246,7 +258,7 @@ def snapshot(episode: Path) -> dict[str, Any]:
             "dag_status": dag_summary.get("status"),
         },
         "sources": {
-            name: {"path": str(rel).replace("\\", "/"), "present": (ep / rel).is_file()}
+            name: source_info(name, rel)
             for name, rel in source_paths.items()
         },
     }

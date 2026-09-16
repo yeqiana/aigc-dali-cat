@@ -5,6 +5,7 @@ import datetime as dt, hashlib, json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 import story_json
+import runtime_workspace
 
 DAG_REL = Path("meta/runtime-dag-state.json")
 
@@ -55,15 +56,15 @@ class StepResult:
     returncode:int=0
 
 def load_state(ep):
-    path=ep/DAG_REL
-    if not path.is_file():
+    data=runtime_workspace.read_json(ep,DAG_REL,default=None)
+    if not isinstance(data,dict):
         return {"schema_version":1,"note":"Runtime DAG recovery evidence only; NOT a stage source.","steps":{},"history":[]}
-    data=read_json(path); data.setdefault("steps",{}); data.setdefault("history",[]); return data
+    data.setdefault("steps",{}); data.setdefault("history",[]); return data
 
 def save_result(ep,result):
     data=load_state(ep); row=asdict(result)
     data["steps"][result.step_id]=row; data["history"].append(row); data["history"]=data["history"][-200:]; data["updated_at"]=now()
-    write_json(ep/DAG_REL,data)
+    runtime_workspace.write_json(ep,DAG_REL,data)
 
 def self_test():
     x=StepSpec("A","machine",(),("RESTORE",),None,())
