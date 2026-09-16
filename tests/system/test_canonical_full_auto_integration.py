@@ -43,6 +43,7 @@ import argparse
 import contextlib
 import hashlib
 import io
+import os
 import json
 import shutil
 import subprocess
@@ -63,6 +64,8 @@ import machine_gate  # noqa: E402
 import production_ledger_manage  # noqa: E402
 import production_orchestrator as orchestrator  # noqa: E402
 import repair_engine  # noqa: E402
+import runtime_checkpoint  # noqa: E402
+import runtime_workspace  # noqa: E402
 import story_creator  # noqa: E402
 import story_intent_parser  # noqa: E402
 import story_semantic_trace  # noqa: E402
@@ -104,6 +107,9 @@ class CanonicalFullAutoBase(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory(prefix="canonical-full-auto-")
         self.addCleanup(self._tmp.cleanup)
         self.root = Path(self._tmp.name) / "repo"
+        self._runtime_workspace_env = os.environ.get(runtime_workspace.ENV_ROOT)
+        os.environ[runtime_workspace.ENV_ROOT] = str(self.root / ".storyos/runtime/episodes")
+        self.addCleanup(self._restore_runtime_workspace_env)
         shutil.copytree(ROOT / "standards/visual_profiles", self.root / "standards/visual_profiles")
         shutil.copytree(ROOT / "standards/story", self.root / "standards/story")
 
@@ -117,6 +123,12 @@ class CanonicalFullAutoBase(unittest.TestCase):
         self._workflow = orchestrator._run_canonical_workflow
         self.addCleanup(
             lambda: setattr(orchestrator, "_run_canonical_workflow", self._workflow))
+
+    def _restore_runtime_workspace_env(self) -> None:
+        if self._runtime_workspace_env is None:
+            os.environ.pop(runtime_workspace.ENV_ROOT, None)
+        else:
+            os.environ[runtime_workspace.ENV_ROOT] = self._runtime_workspace_env
 
     def _restore_roots(self) -> None:
         for module, value in self._roots:
@@ -474,7 +486,7 @@ class OneSentenceChainCaseTest(CanonicalFullAutoBase):
         self.assertEqual(lock['profile_id'], profile_id)
         self.assertEqual(lock['lifecycle_state'], adapter.LIFECYCLE_LOCKED)
         self.assertEqual(lock['confirmation']['mode'], 'delegated_auto')
-        checkpoint = self.read_json(episode / 'meta/runtime-checkpoint.json')
+        checkpoint = runtime_checkpoint.load(episode, {})
         self.assertTrue(checkpoint['continuous_execution_authorized'])
         self.assertEqual(checkpoint['approval_basis'], 'delegated_continuous_execution')
         written = self.read_json(episode / orchestrator.STATUS_DOC_REL)
@@ -505,7 +517,7 @@ class OneSentenceChainCaseTest(CanonicalFullAutoBase):
         self.assertEqual(lock['lifecycle_state'], adapter.LIFECYCLE_NEEDS_CONFIRMATION)
         self.assertEqual(sorted(lock['selection']['candidates']), sorted([M01, M03]))
         self.assertFalse((episode / 'media').exists(), 'no production may start')
-        self.assertFalse((episode / 'meta/runtime-checkpoint.json').exists())
+        self.assertFalse(runtime_checkpoint.exists(episode))
         self.assertEqual(orchestrator.full_auto_exit_code(document['status']), 3)
 
 
@@ -718,7 +730,7 @@ class ResumeCaseTest(CanonicalFullAutoBase):
         episode = self.episode_of(first)
         self.assertTrue(first["created"], first)
         lock_before = (episode / adapter.LOCK_REL).read_bytes()
-        checkpoint_before = (episode / "meta/runtime-checkpoint.json").read_bytes()
+        checkpoint_before = runtime_checkpoint.read_path(episode).read_bytes()
 
         calls = self.fake_workflow()
         second = self.run_full_auto(HEAVEN_WORK, full_auto=True, resume=True)
@@ -728,7 +740,7 @@ class ResumeCaseTest(CanonicalFullAutoBase):
         self.assertEqual([call["resume"] for call in calls], [True], calls)
         self.assertEqual((episode / adapter.LOCK_REL).read_bytes(), lock_before,
                          "resume must not re-confirm the Visual Lock")
-        self.assertEqual((episode / "meta/runtime-checkpoint.json").read_bytes(),
+        self.assertEqual(runtime_checkpoint.read_path(episode).read_bytes(),
                          checkpoint_before, "resume reuses the existing checkpoint")
         self.assertEqual(len(list((self.root / "episodes").iterdir())), 1)
         self.assertEqual(second["status"], orchestrator.FULL_AUTO_STATUS_RUNNING, second)

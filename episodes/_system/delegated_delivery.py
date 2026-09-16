@@ -20,6 +20,7 @@ from frame_semantic_review import (
 from machine_gate import validate as validate_machine_gate
 import final_candidate_snapshot as final_snapshot
 import story_json
+import runtime_checkpoint
 from final_acceptance import allows as acceptance_allows
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -125,7 +126,7 @@ def gather(ep: Path) -> tuple[list[dict], dict]:
     if ((audit.get('summary') or {}).get('passed')) is not True: raise SystemExit('text audit is not PASS')
     files.append(row(text_audit,'text_audit','qa/text-audit.json'))
     files.append(row(manifest_path,'release_manifest','release-manifest.json'))
-    checkpoint=ep/'meta/runtime-checkpoint.json'
+    checkpoint=runtime_checkpoint.read_path(ep)
     if checkpoint.is_file(): files.append(row(checkpoint,'runtime_checkpoint','evidence/runtime-checkpoint.json'))
     ledger=ep/'meta/production-ledger.json'
     if ledger.is_file(): files.append(row(ledger,'production_ledger','evidence/production-ledger.json'))

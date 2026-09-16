@@ -11,9 +11,10 @@ from pathlib import Path
 from approval_lock import story_assets, visual_assets
 from story_os_contract import story_os_version
 import story_json
+import runtime_checkpoint
 
 REL = Path('meta/delegated-approvals.json')
-CHECKPOINT = Path('meta/runtime-checkpoint.json')
+CHECKPOINT = runtime_checkpoint.REL
 ROOT = Path(__file__).resolve().parents[2]
 STORY_OS_VERSION = story_os_version()
 
@@ -42,10 +43,9 @@ def sha256_file(path: Path) -> str:
 
 
 def authorized(ep: Path) -> tuple[bool, str]:
-    p = ep / CHECKPOINT
-    if not p.is_file():
+    if not runtime_checkpoint.exists(ep):
         return False, 'runtime-checkpoint missing'
-    d = read_json(p)
+    d = runtime_checkpoint.load(ep, {})
     if d.get('continuous_execution_authorized') is not True:
         return False, 'continuous_execution_authorized is not true'
     if d.get('approval_basis') not in {'delegated_continuous_execution', 'delegated_auto_review'}:

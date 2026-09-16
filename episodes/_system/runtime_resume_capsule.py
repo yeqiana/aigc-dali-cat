@@ -8,6 +8,7 @@ import production_ledger
 import runtime_capability_cache
 import story_json
 import derived_freshness
+import runtime_checkpoint
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/resume-capsule.json")
@@ -23,6 +24,17 @@ def sha(p):
     return derived_freshness.sha256_file(p)
 def write_json(p,d):
     story_json.write_json(p, d)
+def source_snapshot(ep):
+    ep=Path(ep).resolve();rows=[]
+    for rel in SOURCE_RELS:
+        logical=str(rel).replace("\\","/")
+        path=runtime_checkpoint.read_path(ep) if logical==runtime_checkpoint.REL.as_posix() else ep/rel
+        rows.append({"path":logical,"sha256":derived_freshness.sha256_file(path)})
+    return rows,derived_freshness.fingerprint(rows)
+def sources_fresh(ep,data):
+    if not isinstance(data,dict) or not data.get("source_fingerprint"):return False
+    _rows,current=source_snapshot(ep)
+    return str(data.get("source_fingerprint") or "").lower()==current.lower()
 def _ledger_summary(ledger):
     frames=(ledger or {}).get("frames") or {};status_counts={}; blocking=[];tech=[];ready=[]
     for k,row in frames.items():
@@ -40,7 +52,7 @@ def compile_capsule(ep,write=True):
     ep=Path(ep).resolve(); state=read_json(ep/"meta/episode-state.json") or {};cur=str(state.get("current_state") or "UNKNOWN")
     next_target=None
     if cur in STAGES and STAGES.index(cur)<len(STAGES)-1:next_target=STAGES[STAGES.index(cur)+1]
-    sources, source_fingerprint = derived_freshness.snapshot(ep, SOURCE_RELS)
+    sources, source_fingerprint = source_snapshot(ep)
     led=read_json(ep/"meta/production-ledger.json") or {};q=read_json(ep/"meta/production-queue.json") or {}
     caps=runtime_capability_cache.ensure(ep);ls=_ledger_summary(led);qs=_queue_summary(q)
     actions=[]
@@ -57,7 +69,7 @@ def compile_capsule(ep,write=True):
     return data
 def load_fresh(ep,write=True):
     ep=Path(ep).resolve(); existing=read_json(ep/REL) or {}
-    return existing if derived_freshness.is_fresh(ep,existing,SOURCE_RELS) else compile_capsule(ep,write)
+    return existing if sources_fresh(ep,existing) else compile_capsule(ep,write)
 def self_test():
     x=_ledger_summary({"frames":{"01":{"status":"PASSED"},"02":{"status":"TECH_FAILED"},"03":{"status":"NEEDS_USER"}}})
     assert x["tech_retry_frames"]==["02"] and x["blocking_frames"]==["03"]

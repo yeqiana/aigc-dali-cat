@@ -16,6 +16,7 @@ from story_os_contract import canonical_stages
 import story_json
 import runtime_timeout_policy
 import runtime_command
+import runtime_checkpoint
 STAGES=tuple(canonical_stages())
 SPECIAL = {"repair_only","release_only","data_review"}
 
@@ -43,7 +44,7 @@ def validate_target(ep: Path, target: str) -> tuple[bool,str]:
 def guard(ep: Path, mode: str) -> list[str]:
     cur=state(ep); errors=[]
     if mode == "resume":
-        if not (ep/"meta/runtime-checkpoint.json").is_file():
+        if not runtime_checkpoint.exists(ep):
             errors.append("RESUME_CHECKPOINT_MISSING")
     elif mode == "image_continue":
         if not at_least(cur,"STORYBOARD_LOCKED"):

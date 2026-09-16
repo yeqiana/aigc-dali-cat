@@ -29,12 +29,11 @@ LOCAL_IMAGE_ACTIONS = {"GENERATE_IMAGES", "RETRY_TECHNICAL_FAILURES", "REPAIR_FA
 
 def record_event(episode, event):
     # Merge lifecycle evidence without overwriting DAG checkpoints/step runs.
-    from runtime_atomic_store import update_json
     def mutate(data):
-        data = runtime_checkpoint.ensure_shape(data)
+        runtime_checkpoint.ensure_shape(data)
         data.setdefault("runner_events", []).append({"at": runtime_checkpoint.now(), **event})
         data["runner_events"] = data["runner_events"][-100:]
-    update_json(episode / runtime_checkpoint.REL, dict, mutate)
+    runtime_checkpoint.update(episode, mutate)
 
 
 def local_image_action(action: dict) -> str | None:

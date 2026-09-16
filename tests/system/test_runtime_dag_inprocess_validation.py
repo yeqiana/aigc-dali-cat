@@ -31,6 +31,7 @@ def test_checkpoint_uses_in_process_writer_not_python_subprocess():
         path.write_text(json.dumps(runtime_checkpoint.ensure_shape({})), encoding="utf-8")
         with patch.object(runtime_dag, "run", side_effect=AssertionError("subprocess checkpoint path used")):
             runtime_dag.checkpoint(ep, "UNIT", "PASS", 0.1, "ok", attempt=1)
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = runtime_checkpoint.load(ep, {})
+        assert runtime_checkpoint.read_path(ep) != path
         assert data["step_runs"][-1]["step"] == "UNIT"
         assert data["step_runs"][-1]["status"] == "PASS"

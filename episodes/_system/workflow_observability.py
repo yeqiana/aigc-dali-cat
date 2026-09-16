@@ -17,6 +17,7 @@ import batch_runtime_metrics
 import story_json
 import runtime_observability
 import derived_freshness
+import runtime_checkpoint
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = runtime_observability.WORKFLOW_OBSERVABILITY_REL
@@ -44,6 +45,15 @@ def maybe(ep: Path, rel: Path | str) -> dict:
     return read_json(p) if p.is_file() else {}
 
 
+def source_snapshot(ep: Path) -> tuple[list[dict], str]:
+    rows = []
+    for rel in SOURCE_RELS:
+        logical = str(rel).replace("\\", "/")
+        path = runtime_checkpoint.read_path(ep) if logical == runtime_checkpoint.REL.as_posix() else ep / rel
+        rows.append({"path": logical, "sha256": derived_freshness.sha256_file(path)})
+    return rows, derived_freshness.fingerprint(rows)
+
+
 def write_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
 
@@ -65,7 +75,7 @@ def counts(rows, key):
 
 def collect(ep: Path, *, write: bool = True) -> dict:
     state = maybe(ep, "meta/episode-state.json")
-    checkpoint = maybe(ep, "meta/runtime-checkpoint.json")
+    checkpoint = runtime_checkpoint.load(ep, {})
     performance = maybe(ep, runtime_observability.WORKFLOW_PERFORMANCE_REL)
     scheduler = maybe(ep, runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL)
     queue = maybe(ep, "meta/production-queue.json")
@@ -106,7 +116,7 @@ def collect(ep: Path, *, write: bool = True) -> dict:
 
     waves = scheduler.get("waves") or []
     parallel = [int((x or {}).get("parallel") or 0) for x in waves if isinstance(x, dict)]
-    source_files, source_fingerprint = derived_freshness.snapshot(ep, SOURCE_RELS)
+    source_files, source_fingerprint = source_snapshot(ep)
     report = {
         "schema_version": 1,
         "generated_at": now(),

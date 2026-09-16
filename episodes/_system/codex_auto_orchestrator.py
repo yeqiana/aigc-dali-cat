@@ -20,8 +20,9 @@ import story_json
 import runtime_timeout_policy
 import runtime_command
 import runtime_request
+import runtime_checkpoint
 
-ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=Path('meta/runtime-checkpoint.json')
+ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=runtime_checkpoint.REL
 STORY_OS_VERSION=story_os_version(); STATES=canonical_stages()
 
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec='seconds')
@@ -43,13 +44,14 @@ def prefix(codex):
     import codex_cli_contract
     return codex_cli_contract.command_prefix(codex)
 def update_checkpoint(ep,state,next_action,error=None,completion=None):
-    p=ep/CHECKPOINT; d=read_json(p) if p.exists() else {'schema_version':2,'locked_frames':[],'failed_frames':[],'step_runs':[]}
-    d.update({'story_os_version':STORY_OS_VERSION,'runtime':'CODEX','continuous_execution_authorized':True,'approval_basis':'delegated_continuous_execution','last_completed':state,'next_action':next_action,'updated_at':now()})
-    d.setdefault('step_runs',[])
-    if error:d['last_error']=error
-    else:d.pop('last_error',None)
-    if completion:d['completion']=completion
-    write_json(p,d)
+    def mutate(d):
+        runtime_checkpoint.ensure_shape(d)
+        d.update({'story_os_version':STORY_OS_VERSION,'runtime':'CODEX','continuous_execution_authorized':True,'approval_basis':'delegated_continuous_execution','last_completed':state,'next_action':next_action,'updated_at':now()})
+        d.setdefault('step_runs',[])
+        if error:d['last_error']=error
+        else:d.pop('last_error',None)
+        if completion:d['completion']=completion
+    runtime_checkpoint.update(ep, mutate)
     episode_performance.observe_checkpoint(ep,state)
 def runtime_request_block(ep, request_path=None):
     path = Path(request_path).resolve() if request_path else (ep / "meta/runtime-request.json")
@@ -211,7 +213,7 @@ def advance_to_publish_ready(ep):
         if r.returncode!=0: return False,r.stdout[-2000:]
     return False,'transition loop exhausted'
 def postflight(ep):
-    cp=read_json(ep/CHECKPOINT) if (ep/CHECKPOINT).is_file() else {}
+    cp=runtime_checkpoint.load(ep, {})
     failed=cp.get('failed_frames') or []
     if failed:return 'PAUSED',f'failed_frames present: {failed}'
     ledger_path=ep/'meta/production-ledger.json'
@@ -274,7 +276,7 @@ def main():
     if a.cmd=='self-test':
         assert STATES[4]=='PUBLISH_READY'; assert CHECKPOINT.as_posix()=='meta/runtime-checkpoint.json'; print('CODEX AUTO ORCHESTRATOR V2.1 ADAPTER SELF-TEST PASS'); return 0
     if a.cmd=='status':
-        ep=resolve_episode(a.episode_dir); p=ep/CHECKPOINT; print(p.read_text(encoding='utf-8-sig') if p.exists() else 'NO CHECKPOINT'); return 0
+        ep=resolve_episode(a.episode_dir); p=runtime_checkpoint.read_path(ep); print(p.read_text(encoding='utf-8-sig') if p.exists() else 'NO CHECKPOINT'); return 0
     if a.cmd=='postflight':
         ep=resolve_episode(a.episode_dir); status,reason=postflight(ep); print(status,reason); return 0 if status=='COMPLETE' else 4 if status=='PAUSED' else 3
     if not a.full_auto: raise SystemExit('run/resume requires explicit --full-auto')

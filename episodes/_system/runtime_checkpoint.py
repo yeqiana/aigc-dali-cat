@@ -7,6 +7,10 @@ import datetime as dt
 import json
 from pathlib import Path
 
+import runtime_workspace
+import story_json
+from runtime_atomic_store import update_json as atomic_update_json
+
 REL = Path("meta/runtime-checkpoint.json")
 VALID_STEP_STATUS = {"PASS", "REUSED", "DIRTY", "FAILED", "BLOCKED", "HOST_WAIT", "SKIPPED_NOT_APPLICABLE"}
 
@@ -15,18 +19,43 @@ def now() -> str:
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
 
-def rd(p: Path) -> dict:
-    data = json.loads(p.read_text(encoding="utf-8-sig"))
+def read_path(episode_dir: Path) -> Path:
+    return runtime_workspace.resolve_read_path(Path(episode_dir).resolve(), REL)
+
+
+def write_path(episode_dir: Path) -> Path:
+    return runtime_workspace.workspace_path(Path(episode_dir).resolve(), REL)
+
+
+def exists(episode_dir: Path) -> bool:
+    return read_path(episode_dir).is_file()
+
+
+def load(episode_dir: Path, default: dict | None = None) -> dict:
+    path = read_path(episode_dir)
+    if not path.is_file():
+        return dict(default or {})
+    data = story_json.read_json(path, default=default or {}, require_object=False)
     if not isinstance(data, dict):
         raise SystemExit("runtime checkpoint root must be object")
     return data
 
 
-def wr(p: Path, d: dict) -> None:
-    p.parent.mkdir(parents=True, exist_ok=True)
-    tmp = p.with_suffix(p.suffix + ".tmp")
-    tmp.write_text(json.dumps(d, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-    tmp.replace(p)
+def save(episode_dir: Path, data: dict) -> Path:
+    path = write_path(episode_dir)
+    story_json.write_json(path, data)
+    return path
+
+
+def update(episode_dir: Path, mutator, *, require_existing: bool = False):
+    ep = Path(episode_dir).resolve()
+    if require_existing and not exists(ep):
+        raise FileNotFoundError("runtime checkpoint missing")
+
+    def default_factory() -> dict:
+        return load(ep, {})
+
+    return atomic_update_json(write_path(ep), default_factory, mutator)
 
 
 def ensure_shape(d: dict) -> dict:
@@ -50,10 +79,6 @@ def record_step(episode_dir: Path, *, step: str, status: str, attempt: int = 1,
         raise ValueError(f"invalid runtime checkpoint status: {status}")
     if isinstance(attempt, bool) or int(attempt) < 1:
         raise ValueError("attempt must be at least 1")
-    path = Path(episode_dir).resolve() / REL
-    if not path.exists():
-        raise FileNotFoundError("runtime checkpoint missing")
-    d = ensure_shape(rd(path))
     row = {
         "step": str(step),
         "status": status,
@@ -64,11 +89,15 @@ def record_step(episode_dir: Path, *, step: str, status: str, attempt: int = 1,
         "finished_at": finished_at or now(),
         "note": str(note),
     }
-    d["step_runs"].append(row)
-    d["step_runs"] = d["step_runs"][-200:]
-    d["updated_at"] = now()
-    wr(path, d)
-    return row
+
+    def mutate(data: dict):
+        ensure_shape(data)
+        data["step_runs"].append(row)
+        data["step_runs"] = data["step_runs"][-200:]
+        data["updated_at"] = now()
+        return row
+
+    return update(Path(episode_dir).resolve(), mutate, require_existing=True)
 
 
 def main() -> int:
@@ -85,9 +114,9 @@ def main() -> int:
         assert isinstance(d["step_runs"], list)
         print("RUNTIME CHECKPOINT SELF-TEST PASS")
         return 0
-    ep = Path(a.episode_dir).resolve(); path = ep / REL
+    ep = Path(a.episode_dir).resolve()
     if a.cmd == "init":
-        d = ensure_shape(rd(path) if path.exists() else {})
+        d = ensure_shape(load(ep, {}))
         d["runtime"] = a.runtime
         if a.full_auto:
             d["continuous_execution_authorized"] = True
@@ -95,10 +124,10 @@ def main() -> int:
         else:
             d.setdefault("continuous_execution_authorized", False)
             d.setdefault("approval_basis", "interactive")
-        d["updated_at"] = now(); wr(path, d); print(path); return 0
-    if not path.exists():
+        d["updated_at"] = now(); path = save(ep, d); print(path); return 0
+    if not exists(ep):
         raise SystemExit("runtime checkpoint missing")
-    d = ensure_shape(rd(path))
+    d = ensure_shape(load(ep, {}))
     if a.cmd == "show":
         print(json.dumps(d, ensure_ascii=False, indent=2)); return 0
     if a.cmd == "record-step":
@@ -107,12 +136,12 @@ def main() -> int:
             started_at=a.started_at, finished_at=a.finished_at, note=a.note,
             input_hash=a.input_hash, output_hash=a.output_hash,
         )
-        print(path); return 0
+        print(write_path(ep)); return 0
     if a.last_completed: d["last_completed"] = a.last_completed
     if a.next_action: d["next_action"] = a.next_action
     d["locked_frames"] = sorted(set(d.get("locked_frames", [])) | {str(x).zfill(2) for x in a.lock_frame})
     d["failed_frames"] = sorted(set(d.get("failed_frames", [])) | {str(x).zfill(2) for x in a.fail_frame})
-    d["updated_at"] = now(); wr(path, d); print(path); return 0
+    d["updated_at"] = now(); path = save(ep, d); print(path); return 0
 
 
 if __name__ == "__main__":
