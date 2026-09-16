@@ -215,6 +215,9 @@ runtime:
       reasoning_effort_default: medium
       reasoning_effort_fast: medium
       reasoning_effort_final: medium
+      # Final Semantic FULL Review 的最大局部 Critic 并发。20 帧默认自适应到 4；
+      # 更小帧集按 1/2/3 自动降档。只控制只读 Critic fan-out，Ledger 仍单写。
+      max_inflight_final: 4
     governance:
       runtime: WORK
       workspace_transport: DEVSPACE

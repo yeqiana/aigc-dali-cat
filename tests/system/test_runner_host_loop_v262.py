@@ -101,7 +101,7 @@ class LocalImageDispatchTests(unittest.TestCase):
             self.assertIsNone(episode_runner.local_image_action(row), row)
 
     def test_codex_vision_review_actions_are_local(self):
-        for name in ("REVIEW_ORDINARY_BASELINE", "REVIEW_VISUAL_LOCK", "REVIEW_GENERATED_IMAGES", "REVIEW_FINAL_PRODUCTION"):
+        for name in ("REVIEW_ORDINARY_BASELINE", "REVIEW_VISUAL_LOCK", "REVIEW_GENERATED_IMAGES", "REVIEW_FINAL_PRODUCTION", "REVIEW_FINAL_PATCH", "REVIEW_FINAL_EXCEPTION", "REVIEW_FINAL_CONTINUATION"):
             action = {"action": name, "executor": "CODEX_VISION"}
             self.assertEqual(vision_review_executor.local_vision_action(action), name)
             self.assertEqual(episode_runner.local_host_action(action), name)
@@ -363,6 +363,24 @@ class VisionAutoRepairTests(unittest.TestCase):
                 patch.object(visual_lock_baseline_gate.character_visual_contract, "pixel_master_required", return_value=True), \
                 patch.object(visual_lock_baseline_gate.character_visual_contract, "validate_pixel_master", return_value=[]):
             self.assertFalse(visual_lock_baseline_gate.approved(Path("ep")))
+
+    def test_ordinary_repair_replaces_historical_authority_refresh_queue_identity(self):
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            with patch.object(auto_repair_enqueue, "repair_pending", return_value=False), \
+                    patch.object(auto_repair_enqueue, "_ledger_frame", return_value={"status": "REPAIR_AUTHORIZED", "content_repairs_used": 0}), \
+                    patch.object(auto_repair_enqueue, "_source_item", return_value={"depends_on": []}), \
+                    patch.object(auto_repair_enqueue.image_model_policy, "for_episode", return_value={"model": "gpt-image-2", "quality": "high", "strict_model": False}), \
+                    patch.object(image_scheduler, "contract_references", return_value=[]), \
+                    patch.object(image_scheduler, "add_item", return_value={"id": "fresh-repair", "prompt_file": "repair.txt"}) as add:
+                result = auto_repair_enqueue.enqueue(
+                    ep, frame=17, findings=["WARDROBE_DRIFT"], source="FINAL_SEMANTIC",
+                    review_note="later semantic critic invalidated authority-refresh pixels",
+                )
+        self.assertEqual(result["status"], "REPAIR_ENQUEUED")
+        self.assertTrue(add.call_args.kwargs["replace"])
+        self.assertEqual(add.call_args.kwargs["capture_id"], "auto-repair-FINAL_SEMANTIC-17")
+        self.assertIn("17-final-semantic-a2", str(add.call_args.kwargs["prompt_file"]))
 
     def test_exception_repair_enqueue_is_distinct_and_replaces_historical_repair(self):
         with tempfile.TemporaryDirectory() as td:
@@ -669,6 +687,46 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
         self.assertFalse(action["hard_stop"])
         self.assertTrue(action["auto_recoverable"])
 
+    def test_needs_user_frame_does_not_preempt_runnable_sibling_generation(self):
+        queue = {"items": [
+            {"id": "old01", "frame": 1, "kind": "original", "scope": "batch", "status": "generated"},
+            {"id": "q02", "frame": 2, "kind": "original", "scope": "batch", "status": "queued"},
+        ]}
+        ledger = {"01": {"status": "NEEDS_USER"}, "02": {"status": "PENDING"}}
+        with patch.object(image_scheduler, "ready_items", return_value=([{"frame": 2}], [])):
+            action = self._derive(state="VISUAL_CALIBRATED", queue=queue, ledger=ledger, expected=2)
+        self.assertEqual((action["action"], action["executor"]), ("GENERATE_IMAGES", "CODEX_IMAGE"))
+        self.assertEqual(action["frames"], [2])
+        self.assertFalse(action["hard_stop"])
+        self.assertTrue(action["auto_recoverable"])
+
+    def test_needs_user_frame_does_not_preempt_sibling_batch_review(self):
+        queue = {"items": [
+            {"id": "old01", "frame": 1, "kind": "original", "scope": "batch", "status": "generated"},
+            {"id": "b02", "frame": 2, "kind": "original", "scope": "batch", "status": "review_pending", "batch_id": "batch-02"},
+        ]}
+        ledger = {"01": {"status": "NEEDS_USER"}, "02": {"status": "ORIGINAL_READY"}}
+        with patch.object(image_scheduler, "ready_items", return_value=([], [])):
+            action = self._derive(state="VISUAL_CALIBRATED", queue=queue, ledger=ledger, expected=2)
+        self.assertEqual((action["action"], action["executor"]), ("REVIEW_GENERATED_IMAGES", "CODEX_VISION"))
+        self.assertEqual(action["batch_ids"], ["batch-02"])
+        self.assertFalse(action["hard_stop"])
+        self.assertTrue(action["auto_recoverable"])
+
+    def test_needs_user_hard_stops_only_after_machine_sibling_work_is_exhausted(self):
+        queue = {"items": [
+            {"id": "old01", "frame": 1, "kind": "original", "scope": "batch", "status": "generated"},
+            {"id": "old02", "frame": 2, "kind": "original", "scope": "batch", "status": "generated"},
+        ]}
+        ledger = {"01": {"status": "NEEDS_USER"}, "02": {"status": "LOCKED"}}
+        with patch.object(next_action.visual_lock_baseline_gate, "baseline_frame", return_value=None), \
+                patch.object(image_scheduler, "ready_items", return_value=([], [])):
+            action = self._derive(state="VISUAL_CALIBRATED", queue=queue, ledger=ledger, expected=2)
+        self.assertEqual(action["action"], "USER_DECISION_REQUIRED")
+        self.assertEqual(action["frames"], [1])
+        self.assertTrue(action["hard_stop"])
+        self.assertFalse(action["auto_recoverable"])
+
     def test_stale_preimage_boundary_blocks_authority_refresh_generation(self):
         frames = [1, 5, 16, 17]
         queue = {"items": [{"frame": n, "kind": "original", "scope": "visual_lock", "status": "generated"} for n in frames]}
@@ -829,6 +887,39 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
         self.assertEqual((action["action"], action["executor"]), ("REVIEW_FINAL_PRODUCTION", "CODEX_VISION"))
         self.assertEqual(action["attempt"], 1)
 
+    def test_publish_ready_with_repair_ready_frames_cannot_fall_through_to_complete(self):
+        queue = {"items": [{"frame": n, "kind": "original", "scope": "batch", "status": "generated"} for n in range(1, 21)]}
+        ledger = {f"{n:02d}": {"status": "LOCKED"} for n in range(1, 21)}
+        ledger["17"] = {"status": "REPAIR_READY", "content_repairs_used": 1}
+        ledger["18"] = {"status": "REPAIR_READY", "content_repairs_used": 1}
+        action = self._derive(state="PUBLISH_READY", queue=queue, ledger=ledger)
+        self.assertEqual((action["action"], action["executor"]), ("REVIEW_FINAL_PRODUCTION", "CODEX_VISION"))
+        self.assertTrue(action["work_pending"])
+
+    def test_publish_ready_direct_user_exception_routes_to_attempt3_exception_review_first(self):
+        queue = {"items": [{"frame": n, "kind": "original", "scope": "batch", "status": "generated"} for n in range(1, 21)]}
+        ledger = {f"{n:02d}": {"status": "LOCKED"} for n in range(1, 21)}
+        ledger["12"] = {"status": "REPAIR_READY", "content_repairs_used": 1, "user_exception_repairs_used": 1,
+                        "current_candidate": {"attempt_id": "ex12"},
+                        "attempts": [{"attempt_id": "ex12", "request": {"capture_id": "user-exception-FINAL_SEMANTIC-12"}}]}
+        ledger["17"] = {"status": "REPAIR_READY", "content_repairs_used": 1}
+        action = self._derive(state="PUBLISH_READY", queue=queue, ledger=ledger)
+        self.assertEqual((action["action"], action["executor"]), ("REVIEW_FINAL_EXCEPTION", "CODEX_VISION"))
+        self.assertEqual(action["frames"], [12])
+
+    def test_publish_ready_user_continuation_candidate_routes_to_own_patch_review(self):
+        queue = {"items": [{"frame": n, "kind": "original", "scope": "batch", "status": "generated"} for n in range(1, 21)]}
+        ledger = {f"{n:02d}": {"status": "LOCKED"} for n in range(1, 21)}
+        ledger["12"] = {
+            "status": "REPAIR_READY", "content_repairs_used": 1,
+            "user_exception_repairs_used": 1, "user_continuation_repairs_used": 1,
+            "current_candidate": {"attempt_id": "cont12"},
+            "attempts": [{"attempt_id": "cont12", "request": {"capture_id": "user-continuation-FINAL_SEMANTIC_CONTINUATION-12-01"}}],
+        }
+        action = self._derive(state="PUBLISH_READY", queue=queue, ledger=ledger)
+        self.assertEqual((action["action"], action["executor"]), ("REVIEW_FINAL_CONTINUATION", "CODEX_VISION"))
+        self.assertEqual(action["frames"], [12])
+
     def test_all_locked_frames_route_to_machine_image_finalizer(self):
         queue = {"items": [{"frame": n, "kind": "original", "scope": "batch", "status": "generated"} for n in range(1, 21)]}
         ledger = {f"{n:02d}": {"status": "LOCKED"} for n in range(1, 21)}
@@ -903,9 +994,9 @@ class ContinuousHostLoopTests(unittest.TestCase):
         runner.assert_called_once_with(Path("ep"), action)
 
     def test_loop_is_bounded(self):
-        with patch.object(next_action.runtime_portability, "assert_episode_directory", return_value=None), \
-                patch.object(workflow_runner, "host_loop_step", return_value=(True, "GENERATE_IMAGES rc=0")), \
-                patch.object(workflow_runner.runtime_dag, "execute", return_value=product_runtime_adapter.HOST_ACTION_REQUIRED_RC):
+        with patch.object(workflow_runner, "host_loop_step", return_value=(True, "GENERATE_IMAGES rc=0")), \
+                patch.object(workflow_runner.runtime_dag, "execute", return_value=product_runtime_adapter.HOST_ACTION_REQUIRED_RC), \
+                patch.object(workflow_runner.next_action, "write", return_value={"action": "GENERATE_IMAGES", "executor": "CODEX_IMAGE"}):
             rc, note = workflow_runner.advance_host_loop(Path("ep"), codex=None, timeout=1800, run_id="r", trace_id="t", max_cycles=2)
         self.assertEqual(rc, product_runtime_adapter.HOST_ACTION_REQUIRED_RC)
         self.assertIn("max_cycles=2", note)

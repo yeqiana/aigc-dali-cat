@@ -50,7 +50,52 @@ def test_authorization_never_infers_user_approval():
             budget.authorize_frame_budget(ep, frame=1, kind="repair", additional=0, source="user")
 
 
-def test_exhausted_frame_budget_routes_to_user_then_machine_resume_after_authorization():
+def test_episode_authorization_resumes_machine_authorized_authority_refresh_lane():
+    with tempfile.TemporaryDirectory() as td:
+        ep = Path(td)
+        (ep / "meta").mkdir(parents=True)
+        budget.story_json.write_json(ep / "meta/episode-state.json", {"current_state": "PUBLISH_READY"})
+        budget.story_json.write_json(ep / "meta/release-manifest.json", {"release": {"body_frame_count": 1}})
+        budget.story_json.write_json(ep / "meta/production-ledger.json", {
+            "frames": {
+                "01": {
+                    "authority_refresh_authorization": {
+                        "frame_contract_sha256": "current-contract-sha",
+                        "approval_text": "direct user authority refresh",
+                        "approval_basis": "direct_user_authority_contract_refresh",
+                    }
+                }
+            }
+        })
+        item = {
+            "id": "authority-refresh-blocked-01",
+            "frame": 1,
+            "kind": "repair",
+            "capture_id": "authority-refresh-01",
+            "status": "blocked",
+            "technical_failure_code": "EPISODE_IMAGE_LOOP_GUARD",
+            "frame_contract": {"contract_sha256": "current-contract-sha"},
+        }
+
+        # The semantic lane has a configured base limit of zero by design, but a
+        # matching authority authorization grants one candidate. The read-side
+        # recovery context must mirror claim() and expose that candidate as resumable.
+        context = budget.blocked_queue_context(ep, [item])
+        assert context["resumable_frames"] == [1]
+        row = context["items"][0]
+        assert row["kind"] == "authority_refresh"
+        assert row["base_limit"] == 0
+        assert row["frame_capacity_available"] == 1
+        assert row["semantic_authorization_approved"] is True
+        assert row["semantic_duplicate"] is False
+        assert context["authorization_required"] is False
+
+
+@pytest.mark.parametrize("failure_code", [
+    "RAW_CANDIDATE_BUDGET_EXHAUSTED",
+    "EPISODE_IMAGE_LOOP_GUARD",
+])
+def test_exhausted_frame_budget_routes_to_user_then_machine_resume_after_authorization(failure_code):
     # This test exercises logical Episode behavior, not repository-local path
     # routing. Keep the fixture outside the checkout so W-77 production guards
     # remain strict for every repository-local Episode path.
@@ -67,8 +112,8 @@ def test_exhausted_frame_budget_routes_to_user_then_machine_resume_after_authori
             assert ok, row
         item = {
             "id": "repair-blocked-01", "frame": 1, "kind": "repair", "scope": "batch",
-            "status": "blocked", "technical_failure_code": "RAW_CANDIDATE_BUDGET_EXHAUSTED",
-            "last_error": "RAW_CANDIDATE_BUDGET_EXHAUSTED: STOP_IMAGE_LOOP",
+            "status": "blocked", "technical_failure_code": failure_code,
+            "last_error": f"{failure_code}: STOP_IMAGE_LOOP",
         }
         scheduler_core.save_queue(ep, {"schema_version": 1, "items": [item], "waves": []})
 

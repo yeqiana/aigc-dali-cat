@@ -15,6 +15,12 @@ import story_json
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/runtime/raw-candidate-budget.json")
 OVERRIDE_REL = Path("meta/runtime/raw-candidate-budget-override.json")
+
+# Both codes are emitted by the same raw-candidate budget guard. The first
+# means the per-frame lane is exhausted; the second means the Episode-wide
+# total is exhausted. Once the formal authorization lifecycle adds capacity,
+# both must be resumable through the same deterministic queue path.
+BUDGET_BLOCK_CODES = frozenset({"RAW_CANDIDATE_BUDGET_EXHAUSTED", "EPISODE_IMAGE_LOOP_GUARD"})
 CFG = ROOT / "runtimes/runtime-fast-path-v251.json"
 KINDS = {"original", "repair", "exception", "user_exception", "authority_refresh", "user_continuation"}
 
@@ -319,8 +325,31 @@ def blocked_queue_context(ep: Path, items: list[dict]) -> dict:
         bucket = (((state.get("frames") or {}).get(key) or {}).get(kind) or {})
         used = int(bucket.get("used") or 0)
         base_limit = int(limits().get(kind, 2))
-        raise_row = authorized_frame_raise(ep, key, kind) if kind in {"original", "repair", "exception", "user_exception"} else {"extra": 0, "sources": []}
-        effective_limit = base_limit + int(raise_row.get("extra") or 0)
+        semantic_key = semantic_key_for_queue_item(item)
+        semantic_authorized = False
+        semantic_duplicate = False
+        if kind in {"authority_refresh", "user_continuation"}:
+            auth = (
+                _authority_refresh_authorization(ep, key, semantic_key)
+                if kind == "authority_refresh"
+                else _user_continuation_authorization(ep, key, semantic_key)
+            ) if semantic_key else {"approved": False, "source": ""}
+            semantic_authorized = bool(auth.get("approved"))
+            semantic_duplicate = bool(semantic_key) and any(
+                str((claim or {}).get("semantic_key") or "").lower() == str(semantic_key).lower()
+                for claim in (bucket.get("claims") or {}).values()
+                if isinstance(claim, dict)
+            )
+            # Semantic lanes deliberately have a configured base limit of zero.
+            # One machine/user authorization grants exactly one retained candidate
+            # for that semantic key; this mirrors claim() instead of treating zero
+            # as an unconditional hard stop in the read-side recovery decision.
+            semantic_capacity = 1 if semantic_authorized and not semantic_duplicate else 0
+            raise_row = {"extra": 0, "sources": [str(auth.get("source") or "")[:200]] if semantic_authorized else []}
+            effective_limit = used + semantic_capacity
+        else:
+            raise_row = authorized_frame_raise(ep, key, kind)
+            effective_limit = base_limit + int(raise_row.get("extra") or 0)
         rows.append({
             "frame": frame,
             "item_id": str((item or {}).get("id") or ""),
@@ -331,6 +360,9 @@ def blocked_queue_context(ep: Path, items: list[dict]) -> dict:
             "frame_capacity_available": max(0, effective_limit - used),
             "frame_authorization_supported": kind in {"original", "repair", "exception", "user_exception"},
             "authorization_sources": list(raise_row.get("sources") or []),
+            "semantic_key": semantic_key,
+            "semantic_authorization_approved": semantic_authorized,
+            "semantic_duplicate": semantic_duplicate,
         })
     episode = summary(ep, pending=len(rows))
     episode_available = int(episode.get("available") or 0)

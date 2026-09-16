@@ -345,9 +345,11 @@ def enqueue(
         quality=policy["quality"],
         strict_model=bool(policy.get("strict_model")),
         depends_on=[int(x) for x in (source_item.get("depends_on") or [])],
-        # A direct-user exception is a distinct third-attempt transaction. Keep
-        # historical repairs as superseded evidence instead of deduping to them.
-        replace=exception_repair or continuation_repair,
+        # Every authorized repair is a new semantic transaction. Historical
+        # generated repairs (including authority refreshes) are audit evidence,
+        # not reusable queue identity for a later content repair. repair_pending()
+        # already prevents duplicate queued/running work for the same frame.
+        replace=True,
     )
     return {
         "status": "REPAIR_ENQUEUED",

@@ -14,7 +14,8 @@ from production_ledger_run import (cmd_authorize_repair, cmd_begin,
 from production_ledger_manage import (cmd_accept_user_exception_candidate,
     cmd_audit, cmd_authorize_authority_refresh, cmd_authorize_user_continuation_repair, cmd_authorize_user_exception_repair,
     cmd_authorize_user_locked_repair, cmd_authorize_user_passed_repair,
-    cmd_batch_begin, cmd_batch_end, cmd_init, cmd_lock, cmd_promote, cmd_show)
+    cmd_batch_begin, cmd_batch_end, cmd_init, cmd_lock, cmd_promote, cmd_show,
+    mark_review_needs_user)
 
 
 def parser() -> argparse.ArgumentParser:

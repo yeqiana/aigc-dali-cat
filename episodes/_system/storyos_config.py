@@ -144,6 +144,9 @@ def validate(data: dict | None = None) -> list[str]:
     for key in ("reasoning_effort_default", "reasoning_effort_fast", "reasoning_effort_final"):
         if str(get_path(cfg, f"runtime.review.vision.{key}", "")) not in {"low", "medium", "high"}:
             errors.append(f"runtime.review.vision.{key} must be low, medium or high")
+    final_review_cap = get_path(cfg, "runtime.review.vision.max_inflight_final")
+    if type(final_review_cap) is not int or not 1 <= final_review_cap <= 6:
+        errors.append("runtime.review.vision.max_inflight_final must be an int between 1 and 6")
     if str(get_path(cfg, "runtime.review.governance.runtime", "")).upper() != "WORK":
         errors.append("runtime.review.governance.runtime must be WORK")
     if str(get_path(cfg, "runtime.review.governance.workspace_transport", "")).upper() != "DEVSPACE":

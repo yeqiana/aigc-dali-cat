@@ -668,7 +668,7 @@ def resume_authorized_budget(ep:Path,frames:list[int]|None=None)->dict:
         q=load_queue(ep)
         blocked=[item for item in q.get("items") or []
                  if item.get("status")=="blocked"
-                 and str(item.get("technical_failure_code") or "").upper()=="RAW_CANDIDATE_BUDGET_EXHAUSTED"
+                 and str(item.get("technical_failure_code") or "").upper() in raw_candidate_budget.BUDGET_BLOCK_CODES
                  and (not wanted or int(item.get("frame") or 0) in wanted)]
         context=raw_candidate_budget.blocked_queue_context(ep,blocked)
         allowed=set(int(x) for x in context.get("resumable_frames") or [])

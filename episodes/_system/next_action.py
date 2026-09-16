@@ -21,6 +21,7 @@ from pathlib import Path
 import baseline_candidate_pool
 import character_visual_contract
 import frame_contract
+import frame_semantic_review
 import image_blocked_recovery
 import preproduction_handoff
 import production_batch_review
@@ -291,6 +292,24 @@ def _represented_original_frames(q: dict) -> set[int]:
     }
 
 
+def _current_candidate_capture_id(frame: dict) -> str:
+    """Return the capture id that produced the current candidate, if provable."""
+    if not isinstance(frame, dict):
+        return ""
+    current = frame.get("current_candidate")
+    if not isinstance(current, dict):
+        return ""
+    attempt_id = str(current.get("attempt_id") or "")
+    if not attempt_id:
+        return ""
+    for attempt in reversed(frame.get("attempts") or []):
+        if not isinstance(attempt, dict) or str(attempt.get("attempt_id") or "") != attempt_id:
+            continue
+        request = attempt.get("request") if isinstance(attempt.get("request"), dict) else {}
+        return str(request.get("capture_id") or "")
+    return ""
+
+
 def _final_semantic_attempt(ep: Path) -> int:
     first = ep / "meta/frame-semantic-candidate-attempt-1.json"
     if first.is_file():
@@ -436,7 +455,7 @@ def derive(ep: Path) -> dict:
         if unresolved_blocked:
             budget_blocked = [
                 row for row in unresolved_blocked
-                if str(row.get("technical_failure_code") or "").upper() == "RAW_CANDIDATE_BUDGET_EXHAUSTED"
+                if str(row.get("technical_failure_code") or "").upper() in raw_candidate_budget.BUDGET_BLOCK_CODES
             ]
             if budget_blocked:
                 budget_context = raw_candidate_budget.blocked_queue_context(ep, budget_blocked)
@@ -643,7 +662,7 @@ def derive(ep: Path) -> dict:
                     frames=running_frames,
                     reason="image attempt is marked running; scheduler must reconcile durable worker evidence before any retry")
 
-        if cur=="VISUAL_CALIBRATED":
+        if cur in {"VISUAL_CALIBRATED", "PRODUCTION_PASSED", "PUBLISH_READY"}:
             expected=_expected_frames(ep)
             ledger_frames=read_json(ep/"meta/production-ledger.json").get("frames") or {}
             ready_statuses=set(production_ledger.READY_LEDGER_STATES) | set(production_ledger.ACCEPTED_LEDGER_STATES)
@@ -659,6 +678,49 @@ def derive(ep: Path) -> dict:
                 str(ledger_frames[f"{frame:02d}"].get("status") or "")=="LOCKED"
                 for frame in range(1,expected+1)
             )
+            continuation_review_frames=sorted(
+                frame for frame in range(1, expected+1)
+                if isinstance(ledger_frames.get(f"{frame:02d}"), dict)
+                and str(ledger_frames[f"{frame:02d}"].get("status") or "") == "REPAIR_READY"
+                and _current_candidate_capture_id(ledger_frames[f"{frame:02d}"]).startswith("user-continuation-")
+            )
+            if continuation_review_frames:
+                return action_result(
+                    action="REVIEW_FINAL_CONTINUATION",
+                    executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
+                    frames=continuation_review_frames,
+                    reason="fresh direct-user continuation candidates require their own SHA-bound patch review before generic final production review",
+                )
+            exception_review_frames=sorted(
+                frame for frame in range(1, expected+1)
+                if isinstance(ledger_frames.get(f"{frame:02d}"), dict)
+                and str(ledger_frames[f"{frame:02d}"].get("status") or "") == "REPAIR_READY"
+                and _current_candidate_capture_id(ledger_frames[f"{frame:02d}"]).startswith("user-exception-")
+            )
+            if exception_review_frames:
+                return action_result(
+                    action="REVIEW_FINAL_EXCEPTION",
+                    executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
+                    frames=exception_review_frames,
+                    reason="direct-user exception candidates must receive their dedicated attempt-3 semantic review before generic final production review",
+                )
+            ordinary_patch_frames=sorted(
+                frame for frame in range(1, expected+1)
+                if isinstance(ledger_frames.get(f"{frame:02d}"), dict)
+                and str(ledger_frames[f"{frame:02d}"].get("status") or "") == "REPAIR_READY"
+                and not _current_candidate_capture_id(ledger_frames[f"{frame:02d}"]).startswith("user-continuation-")
+                and not _current_candidate_capture_id(ledger_frames[f"{frame:02d}"]).startswith("user-exception-")
+            )
+            if ordinary_patch_frames and frame_semantic_review.ordinary_patch_eligible(
+                ep, [f"{frame:02d}" for frame in ordinary_patch_frames]
+            ):
+                return action_result(
+                    action="REVIEW_FINAL_PATCH",
+                    executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
+                    attempt=_final_semantic_attempt(ep),
+                    frames=ordinary_patch_frames,
+                    reason="bounded ordinary repair candidates have fresh locked siblings; review dirty frames plus continuity context instead of re-reviewing the full frame set",
+                )
             if complete_candidates and not all_locked:
                 return action_result(action="REVIEW_FINAL_PRODUCTION",
                         executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
@@ -765,6 +827,9 @@ def apply_runtime_block_semantics(data: dict) -> dict:
         "REVIEW_VISUAL_LOCK",
         "REVIEW_GENERATED_IMAGES",
         "REVIEW_FINAL_PRODUCTION",
+        "REVIEW_FINAL_PATCH",
+        "REVIEW_FINAL_EXCEPTION",
+        "REVIEW_FINAL_CONTINUATION",
         "PREPARE_BASELINE_CANDIDATE",
         "PREPARE_VISUAL_LOCK_CANDIDATES",
         "PREPARE_STALE_VISUAL_LOCK_REFRESH",

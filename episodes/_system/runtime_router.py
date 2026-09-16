@@ -78,6 +78,13 @@ def vision_review_effort(kind: str = 'default') -> str:
     return value
 
 
+def vision_review_max_inflight_final() -> int:
+    value = storyos_config.get_path(_CONFIG, 'runtime.review.vision.max_inflight_final')
+    if type(value) is not int or not 1 <= value <= 6:
+        raise ValueError('runtime.review.vision.max_inflight_final must be an int between 1 and 6')
+    return value
+
+
 def _effective_runtime() -> str:
     override = os.getenv('STORY_OS_RUNTIME', '').strip().upper()
     return override if override in VALID else preferred_runtime()

@@ -60,6 +60,7 @@ PRODUCTION_KEYS = (
     "runtime.preferred_runtime",
     "runtime.image_execution_runtime",
     "runtime.review.vision.runtime",
+    "runtime.review.vision.max_inflight_final",
     "runtime.workers.local_codex_preimage",
     "runtime.workers.derived",
     "runtime.preimage_parallel_enabled",

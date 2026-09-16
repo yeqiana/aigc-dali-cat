@@ -299,6 +299,61 @@ def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     print(f"{key}: EXCEPTION_REPAIR_AUTHORIZED (direct user exception recorded)")
 
 
+def mark_review_needs_user(ep: Path, frame_no: int | str, *, reason: str) -> dict:
+    """Escalate an already accepted frame after a later machine review invalidates it.
+
+    This records a *need for user authority* only.  It never fabricates user
+    approval and never resets any repair counter.  The previously approved/locked
+    asset is preserved under superseded evidence so downstream dependency checks
+    cannot keep treating invalidated pixels as current authority.
+    """
+    ep = episode_dir(str(ep))
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, frame_no)
+    prior_status = str(frame.get("status") or "")
+    if prior_status not in {"LOCKED", "PASSED"}:
+        raise SystemExit(f"review escalation requires LOCKED or PASSED, got {prior_status}")
+    note = str(reason or "").strip()
+    if not note:
+        raise SystemExit("review escalation requires an evidence reason")
+
+    if prior_status == "LOCKED":
+        frame.setdefault("superseded_locks", []).append({
+            "at": now_iso(),
+            "lock": frame.get("lock"),
+            "approved_asset": frame.get("approved_asset"),
+            "reason": note,
+        })
+        frame["lock"] = None
+    else:
+        frame.setdefault("superseded_passes", []).append({
+            "at": now_iso(),
+            "current_candidate": frame.get("current_candidate"),
+            "approved_asset": frame.get("approved_asset"),
+            "reviews": list(frame.get("reviews") or []),
+            "reason": note,
+            "invalidation_basis": "later_downstream_actual_pixel_review",
+        })
+    frame["approved_asset"] = None
+    frame.setdefault("reviews", []).append({
+        "at": now_iso(),
+        "decision": "needs_user",
+        "notes": note,
+    })
+    frame.setdefault("review_escalations", []).append({
+        "at": now_iso(),
+        "from_status": prior_status,
+        "to_status": "NEEDS_USER",
+        "reason": note,
+        "approval_granted": False,
+        "basis": "later_machine_review_invalidated_accepted_pixels",
+    })
+    frame["status"] = "NEEDS_USER"
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    return {"frame": key, "status": "NEEDS_USER", "from_status": prior_status}
+
+
 def cmd_authorize_user_continuation_repair(args: argparse.Namespace) -> None:
     """Authorize exactly one additional content candidate after an explicit user continue decision.
 

@@ -26,6 +26,9 @@ ALLOWED_ACTIONS = {
     "REVIEW_VISUAL_LOCK",
     "REVIEW_GENERATED_IMAGES",
     "REVIEW_FINAL_PRODUCTION",
+    "REVIEW_FINAL_PATCH",
+    "REVIEW_FINAL_EXCEPTION",
+    "REVIEW_FINAL_CONTINUATION",
 }
 
 
@@ -144,6 +147,38 @@ def execute(ep: Path, action: dict) -> dict:
         errors = visual_lock_v21.verify(ep, metadata_only=False)
         return {"status": "PASS" if not errors else "FAIL", "action": name, "runtime": "CODEX_VISION", "errors": errors, "attempt": attempt}
 
+    if name == "REVIEW_FINAL_CONTINUATION":
+        frames = [str(x).zfill(2) for x in (action.get("frames") or []) if str(x)]
+        if not frames:
+            raise VisionReviewError("REVIEW_FINAL_CONTINUATION requires at least one frame")
+        rc = frame_semantic_review.run_continuation_critic(
+            ep,
+            targets=frames,
+            codex_raw=None,
+            timeout=runtime_timeout_policy.seconds("deep_semantic_review"),
+        )
+        if rc == 0:
+            return {"status": "PASS", "action": name, "runtime": "CODEX_VISION", "frames": frames}
+        if rc in {2, 3}:
+            return {"status": "FAIL", "action": name, "runtime": "CODEX_VISION", "frames": frames, "returncode": rc}
+        return {"status": "TECHNICAL_FAILURE", "action": name, "runtime": "CODEX_VISION", "frames": frames, "returncode": rc}
+
+    if name == "REVIEW_FINAL_EXCEPTION":
+        frames = [str(x).zfill(2) for x in (action.get("frames") or []) if str(x)]
+        if not frames:
+            raise VisionReviewError("REVIEW_FINAL_EXCEPTION requires at least one frame")
+        rc = frame_semantic_review.run_exception_critic(
+            ep,
+            targets=frames,
+            codex_raw=None,
+            timeout=runtime_timeout_policy.seconds("deep_semantic_review"),
+        )
+        if rc == 0:
+            return {"status": "PASS", "action": name, "runtime": "CODEX_VISION", "attempt": 3, "frames": frames}
+        if rc in {2, 3}:
+            return {"status": "FAIL", "action": name, "runtime": "CODEX_VISION", "attempt": 3, "frames": frames, "returncode": rc}
+        return {"status": "TECHNICAL_FAILURE", "action": name, "runtime": "CODEX_VISION", "attempt": 3, "frames": frames, "returncode": rc}
+
     if name == "REVIEW_FINAL_PRODUCTION":
         attempt = int(action.get("attempt") or 1)
         rc = frame_semantic_review.run_critic(
@@ -187,6 +222,36 @@ def execute(ep: Path, action: dict) -> dict:
         if needs_user:
             return {"status": "NEEDS_USER", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "frames": needs_user, "repairs": repairs}
         return {"status": "FAIL", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "returncode": rc, "repairs": repairs}
+
+    if name == "REVIEW_FINAL_PATCH":
+        frames = [str(x).zfill(2) for x in (action.get("frames") or []) if str(x)]
+        if not frames:
+            raise VisionReviewError("REVIEW_FINAL_PATCH requires at least one frame")
+        attempt = int(action.get("attempt") or 2)
+        rc = frame_semantic_review.run_patch_critic(
+            ep,
+            targets=frames,
+            attempt=attempt,
+            codex_raw=None,
+            timeout=runtime_timeout_policy.seconds("deep_semantic_review"),
+        )
+        if rc == 0:
+            return {"status": "PASS", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "frames": frames}
+        if rc not in {2, 3}:
+            return {"status": "TECHNICAL_FAILURE", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "frames": frames, "returncode": rc}
+        ledger = story_json.read_json(ep / "meta/production-ledger.json", default={})
+        needs_user = [
+            str(key).zfill(2) for key, value in ((ledger.get("frames") or {}).items())
+            if isinstance(value, dict) and value.get("status") == "NEEDS_USER"
+        ]
+        return {
+            "status": "NEEDS_USER" if needs_user else "FAIL",
+            "action": name,
+            "runtime": "CODEX_VISION",
+            "attempt": attempt,
+            "frames": needs_user or frames,
+            "returncode": rc,
+        }
 
     batch_ids = [str(x) for x in (action.get("batch_ids") or production_batch_review.pending(ep)) if str(x)]
     if not batch_ids:
