@@ -222,6 +222,20 @@ class ConsumerTests(unittest.TestCase):
         self.assertEqual(storyos_config.validate(cfg), [],
                          "删除死配置后 validate() 不再干净")
 
+    def test_active_agent_contracts_delegate_image_default_to_storyos_config(self) -> None:
+        """Active entry docs must not freeze a second image-model default."""
+        authority = "config/storyos.yaml:image.model"
+        stale_phrases = (
+            "默认 `image_model=gpt-image-2`",
+            "实际图片仍由 `gpt-image-2`",
+            "实际图片模型固定 `gpt-image-2`",
+        )
+        for rel in ("AGENTS.md", "START_HERE.md", "SKILL.md"):
+            text = (ROOT / rel).read_text(encoding="utf-8-sig")
+            self.assertIn(authority, text, f"{rel} 没有委托 image.model 唯一配置入口")
+            for phrase in stale_phrases:
+                self.assertNotIn(phrase, text, f"{rel} 又写死了旧图片模型：{phrase}")
+
 
 class EffectiveConfigTests(unittest.TestCase):
 
