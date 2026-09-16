@@ -157,14 +157,11 @@ def run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     Batch planning/review/ledger semantics stay here; only execution scheduling
     moves to async_task_runtime.
     """
-    import runner_state_store
-    lock_rel=Path("meta/runtime-image-scheduler.lock")
-    if not runner_state_store.acquire_lock(ep,lock_rel=lock_rel):
-        return 21
     try:
-        return asyncio.run(_run_async(ep,max_workers,timeout,codex))
-    finally:
-        runner_state_store.release_lock(ep,lock_rel=lock_rel)
+        with scheduler_core.queue_transaction(ep):
+            return asyncio.run(_run_async(ep,max_workers,timeout,codex))
+    except scheduler_core.QueueMutationBusy:
+        return 21
 
 
 async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:

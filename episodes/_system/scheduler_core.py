@@ -16,6 +16,7 @@ Lane policy stays with the consumer for B0/B1:
 from __future__ import annotations
 
 import datetime as dt
+import threading
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Callable
@@ -26,6 +27,7 @@ ROOT = Path(__file__).resolve().parents[2]
 QUEUE_REL = production_queue_store.REL
 SCHEDULER_LOCK_REL = Path("meta/runtime-image-scheduler.lock")
 EMPTY_QUEUE = {"schema_version": 1, "items": [], "waves": []}
+_QUEUE_LOCK_LOCAL = threading.local()
 
 
 def now() -> str:
@@ -142,10 +144,12 @@ def load_queue(ep: Path, *, max_parallel: int | None = None) -> dict:
 
 
 def save_queue(ep: Path, q: dict) -> None:
+    ep = Path(ep).resolve()
     import episode_lifecycle
-    episode_lifecycle.assert_writable(Path(ep).resolve(), "production_queue.write")
-    q["updated_at"] = now()
-    write_json(production_queue_store.write_path(Path(ep).resolve()), q)
+    episode_lifecycle.assert_writable(ep, "production_queue.write")
+    with queue_transaction(ep):
+        q["updated_at"] = now()
+        write_json(production_queue_store.write_path(ep), q)
 
 
 def progress(ep: Path, q: dict, *, requested_workers: int = 3) -> dict:
@@ -186,19 +190,40 @@ class QueueMutationBusy(RuntimeError):
 def queue_transaction(ep: Path):
     """Serialize queue read-modify-write against image execution.
 
-    Both scheduler lanes hold this same OS lock for the whole run, so small
-    direct mutations fail with QueueMutationBusy while pixels/ledger
-    transitions are in flight.  The caller can retry later.
+    The OS advisory lock remains the cross-thread/process authority.  A
+    thread-local depth makes the lock re-entrant only for the same Episode in
+    the same thread, allowing central ``save_queue`` to protect every write
+    without deadlocking callers that already own a queue transaction.
     """
     import runner_state_store
 
     ep = Path(ep).resolve()
+    key = ep.as_posix()
+    depths = getattr(_QUEUE_LOCK_LOCAL, "depths", None)
+    if depths is None:
+        depths = {}
+        _QUEUE_LOCK_LOCAL.depths = depths
+    depth = int(depths.get(key) or 0)
+    if depth:
+        depths[key] = depth + 1
+        try:
+            yield
+        finally:
+            remaining = int(depths.get(key) or 1) - 1
+            if remaining > 0:
+                depths[key] = remaining
+            else:
+                depths.pop(key, None)
+        return
+
     if not runner_state_store.acquire_lock(ep, lock_rel=SCHEDULER_LOCK_REL):
         raise QueueMutationBusy("QUEUE_MUTATION_BUSY: image scheduler owns "
                                 "the production queue; retry later")
+    depths[key] = 1
     try:
         yield
     finally:
+        depths.pop(key, None)
         runner_state_store.release_lock(ep, lock_rel=SCHEDULER_LOCK_REL)
 
 
@@ -411,12 +436,9 @@ def self_test() -> None:
         assert load_queue(ep)["max_parallel"] == 3
         with queue_transaction(ep):
             assert load_queue(ep)["schema_version"] == 1
-        try:
+        with queue_transaction(ep):
             with queue_transaction(ep):
-                with queue_transaction(ep):
-                    raise AssertionError("nested queue_transaction must fail")
-        except QueueMutationBusy:
-            pass
+                save_queue(ep, load_queue(ep))
     print("SCHEDULER CORE SELF-TEST PASS")
 
 

@@ -407,13 +407,11 @@ def run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int
     Image execution no longer depends on the legacy image ThreadPool path.
     Rolling review remains isolated on its own review executor.
     """
-    import runner_state_store
-    if not runner_state_store.acquire_lock(ep,lock_rel=SCHEDULER_LOCK_REL):
-        return 21
     try:
-        return asyncio.run(_run_scheduler_async(ep,max_workers,timeout,codex))
-    finally:
-        runner_state_store.release_lock(ep,lock_rel=SCHEDULER_LOCK_REL)
+        with scheduler_core.queue_transaction(ep):
+            return asyncio.run(_run_scheduler_async(ep,max_workers,timeout,codex))
+    except QueueMutationBusy:
+        return 21
 
 
 async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
