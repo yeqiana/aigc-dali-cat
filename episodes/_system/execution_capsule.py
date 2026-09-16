@@ -8,6 +8,7 @@ Codex worker reread the whole repository policy stack before doing bounded work.
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json
 import runtime_execution
+import runtime_workspace
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -107,8 +108,7 @@ def compile_capsule(ep,step,write=True):
     raw=json.dumps(material,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
     data={**material,"source_sha256":sha_bytes(raw),"compiled_at":now()}
     if write:
-        out=ep/REL/f"{step.lower()}.json"; out.parent.mkdir(parents=True,exist_ok=True)
-        out.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+        runtime_workspace.write_json(ep, REL/f"{step.lower()}.json", data)
     return data
 def self_test():
     assert "default_image_model" in RULE_KEYS

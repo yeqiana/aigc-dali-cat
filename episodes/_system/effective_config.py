@@ -30,6 +30,7 @@ import sys
 from pathlib import Path
 
 import runtime_portability
+import runtime_workspace
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT / "episodes/_system") not in sys.path:
@@ -153,9 +154,7 @@ def write(ep) -> dict:
     ep = Path(ep).resolve()
     runtime_portability.assert_episode_directory(ep)
     data = snapshot()
-    path = ep / REL
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    runtime_workspace.write_json(ep, REL, data)
     return data
 
 

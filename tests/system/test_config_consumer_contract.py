@@ -32,6 +32,7 @@ import codex_subscription_batch_runtime
 import codex_subscription_image
 import effective_config
 import runtime_router
+import runtime_workspace
 import storage_config
 import storyos_config
 
@@ -274,14 +275,17 @@ class EffectiveConfigTests(unittest.TestCase):
         self.assertNotIn(secret, blob, "快照把凭据值写出去了")
         self.assertTrue(data["credential_presence"]["STORYOS_MYSQL_PWD"]["present"])
 
-    def test_the_snapshot_lands_under_the_episode_it_belongs_to(self) -> None:
+    def test_the_snapshot_lands_in_the_episode_runtime_workspace(self) -> None:
         base = ROOT / "episodes/_tests"
         base.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(dir=base) as td:
-            effective_config.write(td)
-            path = Path(td) / effective_config.REL
-            self.assertTrue(path.is_file())
-            written = json.loads(path.read_text(encoding="utf-8"))
+            runtime_root = Path(td) / ".runtime-test"
+            with mock.patch.object(runtime_workspace, "DEFAULT_ROOT", runtime_root):
+                effective_config.write(td)
+                path = runtime_workspace.workspace_path(td, effective_config.REL)
+                self.assertTrue(path.is_file())
+                self.assertFalse((Path(td) / effective_config.REL).exists())
+                written = json.loads(path.read_text(encoding="utf-8"))
         self.assertIn("sources", written)
 
     def test_runtime_store_is_application_resolved_and_platform_has_no_hidden_default(self) -> None:
