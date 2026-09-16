@@ -20,7 +20,7 @@ from visual_lock_v21 import required as visual_lock_v21_required, verify as veri
 from fast_frame_scout import required as fast_scout_required, audit as audit_fast_scout
 from final_candidate_snapshot import required as final_snapshot_required, verify as verify_final_snapshot
 from post_publish_review import REQUIRED_FOR_DATA_REVIEWED, required as post_publish_required, verify as verify_post_publish
-from final_acceptance import valid as acceptance_valid
+from final_acceptance import allows as acceptance_allows
 
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 PRODUCTION_DECISIONS = {"pending", "pass", "fail"}
@@ -494,7 +494,7 @@ def check_stage(repo_root: Path, episode_dir: Path, manifest: dict, current: str
         require_repo_path(repo_root, artifacts, "production_review", findings, "manifest.artifacts", metadata_only=metadata_only)
         require_repo_path(repo_root, artifacts, "captions", findings, "manifest.artifacts", metadata_only=metadata_only)
         if quality.get("production_gate") != "pass":
-            if acceptance_valid(episode_dir) is None:
+            if not acceptance_allows(episode_dir, "production_gate"):
                 findings.append(Finding("FAIL", "production_not_passed", "quality.production_gate must be 'pass'"))
             else:
                 findings.append(Finding("WARN", "production_gate_accepted", "direct user final-decision acceptance recorded; production gate accepted as-is (meta/final-acceptance.json)"))
@@ -620,7 +620,7 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
         else:
             findings.append(Finding("WARN", "legacy_without_story_gates", "旧剧集尚未迁移 Story OS V1.2 门禁；保持兼容"))
     elif effective:
-        check_story_os_for_effective(repo_root, state, manifest, gates, effective, findings, metadata_only=metadata_only, waive=acceptance_valid(episode_dir) is not None, legacy_gates_pending=legacy_gates_pending)
+        check_story_os_for_effective(repo_root, state, manifest, gates, effective, findings, metadata_only=metadata_only, waive=acceptance_allows(episode_dir, "production_gate"), legacy_gates_pending=legacy_gates_pending)
 
     # V2.1 Concept Ambition is pre-Story-Lock evidence, not a second episode stage.
     if effective and STATE_MIN[effective] >= STATE_MIN["STORYBOARD_LOCKED"] and concept_ambition_required(episode_dir):
@@ -645,7 +645,7 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
         if not metadata_only:
             scout_errors = audit_fast_scout(episode_dir, write_summary=True)
             if scout_errors:
-                if acceptance_valid(episode_dir) is not None:
+                if acceptance_allows(episode_dir, "fast_frame_scout"):
                     findings.append(Finding("WARN", "fast_frame_scout_accepted", "direct user final-decision acceptance recorded; scout REPAIR_NOW/stale accepted as known defects (meta/final-acceptance.json)"))
                 else:
                     for error in scout_errors:

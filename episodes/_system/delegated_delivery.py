@@ -20,7 +20,7 @@ from frame_semantic_review import (
 from machine_gate import validate as validate_machine_gate
 import final_candidate_snapshot as final_snapshot
 import story_json
-from final_acceptance import valid as acceptance_valid
+from final_acceptance import allows as acceptance_allows
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT_REL = Path('meta/delegated-release.json')
@@ -67,7 +67,7 @@ def preflight(ep: Path) -> None:
         if errors: raise SystemExit('final candidate snapshot preflight failed: ' + '; '.join(errors))
     if frame_semantic_required(ep):
         errors = verify_frame_semantic_episode(ep, metadata_only=False, write_audit=True)
-        if errors and acceptance_valid(ep) is None:
+        if errors and not acceptance_allows(ep, "frame_semantic"):
             raise SystemExit('frame semantic preflight failed: ' + '; '.join(errors))
         if errors:
             print('DELEGATED DELIVERY WARN: frame semantic preflight accepted as known defects (meta/final-acceptance.json): ' + '; '.join(errors[:4]))

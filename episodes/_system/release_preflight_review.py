@@ -122,15 +122,14 @@ Hard release checks:
 7. no_caption_invented_core_evidence: final text may add context, but may not invent the core visual evidence.
 8. subtitle_left_middle_and_unobstructed: require BOTH SHA-bound all-frame audits above to PASS. subtitle-layout-audit proves left/middle geometry, line count and current publish-output hashes; caption-image-audit proves every final publish frame was pixel-reviewed in chunks and subtitle_unobstructed=true. Do not reopen every body image here; fail if either audit is missing/stale/failed.
 9. caption_conversational_hook_quality: captions must sound like a real first-person immediate record, stay concise/eye-catching, avoid novel narration/AI boilerplate, and perform one clear narrative function per frame. Two rendered lines is the hard maximum.
+10. no_unverifiable_real_group_accusation: release text must not invent a dangerous accusation against a real region, ethnicity, religion, organization, or identifiable person.
+11. real_location_handled_as_fictional_story_context: a real location may be background context, but invented events must not be presented as official/verified real incidents.
 
-Governance checks:
-- This is AI-generated realistic fictional story content.
-- Real locations may be used as story backgrounds, but the release must not present invented events as official/verified real incidents.
-- No unverifiable dangerous accusation against a real region, ethnicity, religion, organization, or identifiable person.
-- Platform AI-generation declaration/label must be planned and not intentionally stripped.
-- A fiction-context notice is appropriate for this Story OS format.
+Policy governance is NOT this critic's authority. AI-generation declaration,
+platform label and fiction-context notice are verified separately from
+meta/publish-compliance.json by release_preflight_verify.verify_governance().
 
-PASS only when every release and governance check is true.
+PASS only when every release semantic check is true.
 Write ONLY valid JSON to {out}:
 {{
   "release_checks": {{
@@ -142,12 +141,7 @@ Write ONLY valid JSON to {out}:
     "description_consistency": true,
     "no_caption_invented_core_evidence": true,
     "subtitle_left_middle_and_unobstructed": true,
-    "caption_conversational_hook_quality": true
-  }},
-  "governance_checks": {{
-    "ai_generated_declared": true,
-    "platform_ai_label_planned": true,
-    "fiction_context_not_misrepresented_as_official_fact": true,
+    "caption_conversational_hook_quality": true,
     "no_unverifiable_real_group_accusation": true,
     "real_location_handled_as_fictional_story_context": true
   }},
@@ -172,10 +166,6 @@ def validate_release_review(ep: Path, data: dict) -> list[str]:
     for key in RELEASE_CHECKS:
         if checks.get(key) is not True:
             errors.append(f"release_checks.{key} must be true")
-    gov = data.get("governance_checks") or {}
-    for key in GOV_CHECKS:
-        if gov.get(key) is not True:
-            errors.append(f"governance_checks.{key} must be true")
     if data.get("issue_codes") not in ([], None):
         errors.append(f"release semantic issue_codes not empty: {data.get('issue_codes')}")
     if (data.get("summary") or {}).get("passed") is not True:

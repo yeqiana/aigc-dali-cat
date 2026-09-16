@@ -273,6 +273,27 @@ def plan(ep):
         out.append(row)
     return {"current_state":cur,"steps":out}
 
+def run_release_preflight_recovery(ep: Path, codex=None, timeout=None) -> tuple[int, str]:
+    """Run targeted release evidence recovery after the scoped RELEASE worker.
+
+    The scoped worker creates captions/copy/assets.  This hook reuses the
+    existing prepare-auto recovery only after those sources exist, so stale
+    caption/compliance/release-review evidence does not force a second full
+    RELEASE worker invocation.  Non-zero results are preserved fail-closed.
+    """
+    import argparse
+    import release_preflight
+    try:
+        rc = int(release_preflight.cmd_prepare_auto(argparse.Namespace(
+            episode_dir=str(ep), codex=codex, timeout=timeout,
+        )))
+    except Exception as exc:
+        return 4, f"RELEASE PREFLIGHT AUTO RECOVERY FAIL: {exc}"
+    if rc != 0:
+        return rc, f"RELEASE PREFLIGHT AUTO RECOVERY rc={rc}"
+    return 0, "RELEASE PREFLIGHT AUTO RECOVERY PASS"
+
+
 def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
     # W-11: a recorded production-owner switch only becomes effective when the
     # Production Kernel consumes it. Direct DAG execution is a production entry,
@@ -523,6 +544,11 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             if quality_errors:
                 rc=4
                 note=(note+"\nDIRECTING QUALITY FAIL\n"+"\n".join(quality_errors))[-5000:]
+        if rc==0 and s.step_id=="RELEASE":
+            recovery_rc,recovery_note=run_release_preflight_recovery(ep,codex=codex,timeout=timeout)
+            note=(note+"\n"+recovery_note)[-5000:]
+            if recovery_rc!=0:
+                rc=recovery_rc
         if rc==0 and s.target_state:
             ok,msg=validate_target(ep,s.target_state)
             if not ok: rc=4; note=(note+"\nPOSTCONDITION FAIL\n"+msg)[-5000:]

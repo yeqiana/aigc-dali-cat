@@ -54,12 +54,6 @@ RELEASE_CHECKS = (
     "no_caption_invented_core_evidence",
     "subtitle_left_middle_and_unobstructed",
     "caption_conversational_hook_quality",
-)
-
-GOV_CHECKS = (
-    "ai_generated_declared",
-    "platform_ai_label_planned",
-    "fiction_context_not_misrepresented_as_official_fact",
     "no_unverifiable_real_group_accusation",
     "real_location_handled_as_fictional_story_context",
 )

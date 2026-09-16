@@ -11,7 +11,7 @@ from pathlib import Path
 from story_os_contract import canonical_stages
 from story_os_contract import FOUR_ADMISSION_V21_POLICY
 from incremental_frame_review import review_required as semantic_frame_review_required, verify_episode as verify_frame_semantic_episode
-from final_acceptance import valid as acceptance_valid
+from final_acceptance import allows as acceptance_allows
 import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
 import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
 import story_dna_trace  # STORY_OS_V3_E003_STORY_DNA_TRACE
@@ -523,14 +523,6 @@ def check_story_semantic_trace(repo_root: Path, episode_dir: Path, gates: dict, 
         return
     enforced_from = str(marker.get("enforced_from") or "")
     frames = ledger.get("frames") if isinstance(ledger.get("frames"), dict) else {}
-    acceptance = acceptance_valid(episode_dir)
-    accepted_defect_frames: set[str] = set()
-    if acceptance is not None:
-        for raw in acceptance.get("known_defect_frames") or []:
-            try:
-                accepted_defect_frames.add(f"{int(raw):02d}")
-            except (TypeError, ValueError):
-                continue
     for key in sorted(frames):
         frame = frames.get(key)
         if not isinstance(frame, dict):
@@ -548,7 +540,7 @@ def check_story_semantic_trace(repo_root: Path, episode_dir: Path, gates: dict, 
         trace = story_semantic_trace.trace_from_review(review)
         expected_contract = story_semantic_trace.attempt_contract_sha(attempt)
         for code, message in story_semantic_trace.validate_frame(trace, requirement, expected_contract):
-            if key in accepted_defect_frames:
+            if acceptance_allows(episode_dir, "story_semantic_trace", key):
                 findings.append(Finding(
                     "WARN", "story_semantic_trace_accepted",
                     f"frame {key}: {code}: {message} accepted as known defect "
@@ -647,7 +639,7 @@ def check_production(repo_root: Path, episode_dir: Path, gates: dict, manifest: 
     if semantic_required:
         errors = verify_frame_semantic_episode(episode_dir, metadata_only=metadata_only, write_audit=False)
         if errors:
-            if acceptance_valid(episode_dir) is not None:
+            if acceptance_allows(episode_dir, "frame_semantic"):
                 findings.append(Finding("WARN", "frame_semantic_accepted", "direct user final-decision acceptance recorded; semantic FAIL accepted as known defects (meta/final-acceptance.json)"))
             else:
                 for error in errors:

@@ -14,7 +14,7 @@ from pathlib import Path
 
 import frame_contract
 import frame_semantic_review as base
-from final_acceptance import valid as acceptance_valid
+from final_acceptance import allows as acceptance_allows
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/visual-final-freeze.json")
@@ -33,8 +33,8 @@ def _row(ep: Path, frame: dict) -> dict:
 def build(ep: Path) -> dict:
     ep = Path(ep).resolve()
     errors = base.verify_episode(ep, metadata_only=False, write_audit=False)
-    accepted = acceptance_valid(ep)
-    if errors and accepted is None:
+    accepted = acceptance_allows(ep, "frame_semantic")
+    if errors and not accepted:
         raise ValueError("final visual semantic review not clean: " + "; ".join(errors[:8]))
     frames = base.frame_records(ep, require_files=True)
     data = {
@@ -42,9 +42,9 @@ def build(ep: Path) -> dict:
         "module_version": "2.6.0",
         "authority": "visual evidence only; captions are deliberately excluded",
         "caption_changes_invalidate_visual_freeze": False,
-        "accepted_known_defects": bool(errors and accepted is not None),
+        "accepted_known_defects": bool(errors and accepted),
         "frames": [_row(ep, row) for row in frames],
-        "summary": {"passed": True, "frame_count": len(frames), "accepted_known_defects": bool(errors and accepted is not None)},
+        "summary": {"passed": True, "frame_count": len(frames), "accepted_known_defects": bool(errors and accepted)},
     }
     base.write_json(ep / REL, data)
     return data

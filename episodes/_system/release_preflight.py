@@ -51,13 +51,13 @@ from release_preflight_review import _finalize_release_review
 
 def cmd_verify(args: argparse.Namespace) -> int:
     ep = ep_path(args.episode_dir)
+    release_evidence = verify_release_evidence(ep)
     groups = [
         ("recent5", verify_recent5_evidence(ep)),
         ("series_lock", verify_series_lock(ep)),
         ("visual_final_freeze", visual_final_freeze.verify(ep)),
         ("caption_image_audit", caption_image_audit.verify(ep)),
-        ("release_semantic", verify_release_semantic(ep)),
-        ("governance", verify_governance(ep)),
+        *release_evidence.items(),
     ]
     failed = False
     for name, errors in groups:

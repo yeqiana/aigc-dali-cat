@@ -10,7 +10,7 @@ from pathlib import Path
 from story_os_contract import story_os_version
 from frame_semantic_review import review_required as frame_semantic_required, verify_episode as verify_frame_semantic_episode
 import final_candidate_snapshot as final_snapshot
-from final_acceptance import valid as acceptance_valid
+from final_acceptance import allows as acceptance_allows
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -106,7 +106,7 @@ def build_payload(ep: Path) -> dict:
     if frame_semantic_required(ep):
         semantic_errors = verify_frame_semantic_episode(ep, metadata_only=False, write_audit=True)
         if semantic_errors:
-            if acceptance_valid(ep) is None:
+            if not acceptance_allows(ep, "frame_semantic"):
                 raise SystemExit('frame semantic release preflight failed: ' + '; '.join(semantic_errors))
             print('RELEASE PACKAGE WARN: frame semantic known defects accepted (meta/final-acceptance.json)')
     manifest = load_json(ep / MANIFEST_REL)

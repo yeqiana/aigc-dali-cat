@@ -18,7 +18,8 @@ import fast_frame_scout
 import character_visual_contract
 import caption_image_audit
 import visual_final_freeze
-from final_acceptance import valid as acceptance_valid
+from final_acceptance import allows as acceptance_allows
+from release_preflight_verify import release_evidence_errors
 import story_json
 import runtime_observability
 
@@ -131,7 +132,7 @@ def _optional(ep:Path,relpath:str,role:str,archive:str)->dict|None:
 
 def preflight(ep:Path, *, write_evidence:bool=True)->None:  # STORY_OS_V2_5_R31_HOTFIX
     semantic=frame_semantic_review.verify_episode(ep,metadata_only=False,write_audit=write_evidence)
-    if semantic and acceptance_valid(ep) is None:
+    if semantic and not acceptance_allows(ep, "frame_semantic"):
         raise ValueError("frame semantic preflight failed: "+"; ".join(semantic[:8]))
     elif semantic:
         print("FINAL SNAPSHOT WARN: frame semantic preflight accepted as known defects (meta/final-acceptance.json)")
@@ -142,16 +143,16 @@ def preflight(ep:Path, *, write_evidence:bool=True)->None:  # STORY_OS_V2_5_R31_
     if caption_errors:
         raise ValueError("caption image audit preflight failed: "+"; ".join(caption_errors[:8]))
     scout=fast_frame_scout.audit(ep,write_summary=write_evidence)
-    if scout and acceptance_valid(ep) is None:
+    if scout and not acceptance_allows(ep, "fast_frame_scout"):
         raise ValueError("Fast Scout unresolved: "+"; ".join(scout[:8]))
     elif scout:
         print("FINAL SNAPSHOT WARN: Fast Scout REPAIR_NOW/stale accepted as known defects (meta/final-acceptance.json)")
     ta=ep/"meta/text-audit.json"
     if not ta.is_file():raise ValueError("meta/text-audit.json missing")
     if ((read_json(ta).get("summary") or {}).get("passed")) is not True:raise ValueError("text audit is not PASS")
-    for required_rel in ("meta/release-semantic-review.json","meta/publish-compliance.json"):
-        p=ep/required_rel
-        if not p.is_file():raise ValueError(f"{required_rel} missing; run release_preflight prepare-auto first")
+    release_errors=release_evidence_errors(ep)
+    if release_errors:
+        raise ValueError("release evidence preflight failed: "+"; ".join(release_errors[:8]))
     master_path=ep/character_visual_contract.PIXEL_MASTER_REL
     if master_path.is_file():
         master_errors=character_visual_contract.validate_pixel_master(ep)
