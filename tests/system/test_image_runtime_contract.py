@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -406,7 +407,28 @@ class ModelFallbackConvergenceTests(unittest.TestCase):
         self.assertNotIn("auth", json.dumps(result).lower().replace("auth_context_present", ""))
 
         health["codex_auth_present"] = False
-        with mock.patch.object(codex_subscription_image.codex_user_runner, "runner_health", return_value=health):
+        with mock.patch.object(codex_subscription_image.codex_user_runner, "runner_health", return_value=health), \
+             mock.patch.object(codex_subscription_image, "_legacy_bridge_auth_probe") as legacy_probe:
+            with self.assertRaises(codex_subscription_image.BackendError):
+                codex_subscription_image.image_runtime_preflight(bridged=True)
+        legacy_probe.assert_not_called()
+
+    def test_image_runtime_preflight_bridge_probes_legacy_runner_missing_auth_bit(self):
+        health = {
+            "protocol_revision": 2,
+            "codex_available": True,
+            "codex_home_accessible": True,
+        }
+        completed = subprocess.CompletedProcess(["codex", "login", "status"], 0, "Logged in using ChatGPT", None)
+        with mock.patch.object(codex_subscription_image.codex_user_runner, "runner_health", return_value=health), \
+             mock.patch.object(codex_subscription_image.codex_user_runner, "run_codex", return_value=completed) as run_codex:
+            result = codex_subscription_image.image_runtime_preflight(bridged=True)
+        self.assertTrue(result["auth_context_present"])
+        run_codex.assert_called_once()
+
+        logged_out = subprocess.CompletedProcess(["codex", "login", "status"], 1, "Not logged in", None)
+        with mock.patch.object(codex_subscription_image.codex_user_runner, "runner_health", return_value=health), \
+             mock.patch.object(codex_subscription_image.codex_user_runner, "run_codex", return_value=logged_out):
             with self.assertRaises(codex_subscription_image.BackendError):
                 codex_subscription_image.image_runtime_preflight(bridged=True)
 

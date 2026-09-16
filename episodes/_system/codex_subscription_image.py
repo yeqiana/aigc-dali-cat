@@ -200,6 +200,34 @@ def _reference_proxy(source: Path, workdir: Path, index: int) -> Path:
         return target
 
 
+def _legacy_bridge_auth_probe() -> bool:
+    """Prove an older live user-runner still has a usable ChatGPT/Codex login.
+
+    Runner processes can legitimately outlive a Story OS code deploy.  Protocol
+    revision 2 runners started before ``codex_auth_present`` was added omit that
+    health field even though they can still execute authenticated Codex work.
+    Use the CLI's read-only login-status command through the same interactive-user
+    bridge instead of treating an absent field as a logged-out user.
+    """
+    try:
+        completed = codex_user_runner.run_codex(
+            ["codex", "login", "status"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=30,
+            check=False,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            task_type="smoke",
+            codex_home_mode="inherit",
+        )
+    except Exception:
+        return False
+    text = str(completed.stdout or "").strip().lower()
+    return completed.returncode == 0 and ("logged in" in text or "authenticated" in text)
+
+
 def image_runtime_preflight(*, bridged: bool, source_home: Path | None = None,
                             worker_home: Path | None = None) -> dict:
     """Fail before model execution when the selected Codex image lane is not ready.
@@ -219,8 +247,15 @@ def image_runtime_preflight(*, bridged: bool, source_home: Path | None = None,
             raise BackendError('IMAGE_RUNTIME_PREFLIGHT_FAILED: bridged Codex executable unavailable')
         if not health.get("codex_home_accessible"):
             raise BackendError('IMAGE_RUNTIME_PREFLIGHT_FAILED: bridged CODEX_HOME is not accessible')
-        if not health.get("codex_auth_present"):
-            raise BackendError('IMAGE_RUNTIME_PREFLIGHT_FAILED: bridged CODEX_HOME has no auth.json')
+        if "codex_auth_present" in health:
+            auth_present = bool(health.get("codex_auth_present"))
+        else:
+            # Backward compatibility for already-running user runners from before
+            # the health presence bit existed.  Do not assume success: prove it
+            # with a read-only `codex login status` call in that same user context.
+            auth_present = _legacy_bridge_auth_probe()
+        if not auth_present:
+            raise BackendError('IMAGE_RUNTIME_PREFLIGHT_FAILED: bridged Codex authentication context unavailable')
         return {
             "transport": "user_runner",
             "codex_available": True,
