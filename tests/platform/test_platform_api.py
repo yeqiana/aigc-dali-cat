@@ -100,6 +100,8 @@ def test_platform_route_catalog_matches_p51_contract():
         ("POST", "/api/v1/workflows/{code}/runs"),
         ("GET", "/api/v1/workflows/runs/{id}"),
         ("GET", "/api/v1/executions/{id}"),
+        ("GET", "/api/v1/runtime/status"),
+        ("GET", "/api/v1/runtime/statuses"),
         ("POST", "/api/v1/memory/search"),
         ("GET", "/api/v1/memory/{id}"),
         ("GET", "/api/v1/skills"),

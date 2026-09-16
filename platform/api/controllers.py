@@ -6,6 +6,7 @@ from platform.api.service_ports import (
     ExecutionServicePort,
     MemoryServicePort,
     RegistryServicePort,
+    RuntimeStatusServicePort,
     TraceServicePort,
     WorkflowServicePort,
 )
@@ -51,6 +52,26 @@ class ExecutionApiController:
         if execution is None:
             return ApiResponse.error("EXECUTION_NOT_FOUND", f"execution not found: {execution_id}")
         return ApiResponse.ok(execution)
+
+
+class RuntimeStatusApiController:
+    def __init__(self, service: RuntimeStatusServicePort) -> None:
+        self._service = service
+
+    def get_episode_status(self, episode: str) -> ApiResponse[dict]:
+        try:
+            status = self._service.get_episode_status(episode)
+        except ValueError as exc:
+            return ApiResponse.error("INVALID_REQUEST", str(exc))
+        if status is None:
+            return ApiResponse.error("EPISODE_NOT_FOUND", f"episode not found: {episode}")
+        return ApiResponse.ok(status)
+
+    def list_episode_statuses(self, limit: str = "50", offset: str = "0") -> ApiResponse[dict]:
+        try:
+            return ApiResponse.ok(self._service.list_episode_statuses(limit=limit, offset=offset))
+        except ValueError as exc:
+            return ApiResponse.error("INVALID_REQUEST", str(exc))
 
 
 class MemoryApiController:

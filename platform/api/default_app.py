@@ -1,16 +1,25 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+from pathlib import Path
 
 from platform.agent.application.agent_service import AgentApplicationService
+from platform.agent.runtime.agent_runtime import AgentRuntime
+from platform.agent.runtime.execution_recorder import ExecutionRecorder
 from platform.api.controllers import (
     AgentApiController,
     ExecutionApiController,
     MemoryApiController,
+    RuntimeStatusApiController,
     TraceApiController,
 )
 from platform.api.contracts import MemorySearchRequest
 from platform.operations.experience_store import ExperienceStore, RuntimeExperience
+from platform.operations.runtime_status_service import RuntimeStatusApiService
+from platform.repository.platform_record_store_provider import (
+    PlatformRecordStores,
+    build_platform_record_stores,
+)
 
 
 class ExperienceMemoryApiService:
@@ -60,17 +69,28 @@ def build_default_controllers(
     *,
     agent_service: AgentApplicationService | None = None,
     experience_store: ExperienceStore | None = None,
+    runtime_status_service: RuntimeStatusApiService | None = None,
+    platform_state_root: str | Path | None = None,
+    record_stores: PlatformRecordStores | None = None,
 ) -> dict[str, object]:
     """Build only controllers backed by real repository services.
 
     Unsupported future console surfaces are deliberately absent; the HTTP
     dispatcher returns CAPABILITY_NOT_CONFIGURED instead of fabricated data.
     """
-    agent_service = agent_service or AgentApplicationService()
+    stores = record_stores or build_platform_record_stores(platform_state_root)
+    if agent_service is None:
+        agent_service = AgentApplicationService(
+            AgentRuntime(recorder=ExecutionRecorder(stores.execution))
+        )
+    if experience_store is None:
+        experience_store = ExperienceStore(stores.experience)
     memory_service = ExperienceMemoryApiService(experience_store)
+    runtime_status_service = runtime_status_service or RuntimeStatusApiService()
     return {
         "AgentApiController": AgentApiController(agent_service),
         "ExecutionApiController": ExecutionApiController(agent_service),
         "TraceApiController": TraceApiController(agent_service),
         "MemoryApiController": MemoryApiController(memory_service),
+        "RuntimeStatusApiController": RuntimeStatusApiController(runtime_status_service),
     }

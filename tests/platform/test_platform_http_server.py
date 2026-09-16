@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import json
+import tempfile
+from pathlib import Path
 import threading
 import urllib.error
 import urllib.request
 
-from platform.api.controllers import AgentApiController, ExecutionApiController, TraceApiController
+from platform.api.controllers import AgentApiController, ExecutionApiController, RuntimeStatusApiController, TraceApiController
 from platform.api.default_app import build_default_controllers
 from platform.api.http_server import PlatformApiDispatcher, build_http_server
 from platform.operations.experience_store import ExperienceStore, RuntimeExperience
+from platform.operations.runtime_status_service import RuntimeStatusApiService
 
 
 class FakeAgentService:
@@ -122,6 +125,112 @@ def test_default_composition_exposes_real_agent_and_memory_services():
     assert status == 200
     assert payload["data"][0]["id"] == "mem-1"
     assert payload["data"][0]["memory_type"] == "runtime_experience"
+
+
+def test_runtime_status_query_uses_safe_episode_relative_path_and_hides_host_path():
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        episode = root / "episodes" / "series" / "episode"
+        (episode / "meta").mkdir(parents=True)
+        (episode / "meta/episode-state.json").write_text('{"current_state":"STORYBOARD_LOCKED"}', encoding="utf-8")
+        service = RuntimeStatusApiService(
+            repo_root=root,
+            projector=lambda ep: {
+                "production_stage": "STORYBOARD_LOCKED",
+                "execution_status": "RUNNING",
+                "episode_path": str(ep),
+            },
+        )
+        dispatcher = PlatformApiDispatcher({"RuntimeStatusApiController": RuntimeStatusApiController(service)})
+
+        status, payload = dispatcher.dispatch("GET", "/api/v1/runtime/status?episode=series%2Fepisode")
+
+        assert status == 200
+        assert payload["data"]["episode_ref"] == "series/episode"
+        assert payload["data"]["production_stage"] == "STORYBOARD_LOCKED"
+        assert "episode_path" not in payload["data"]
+
+
+def test_runtime_status_rejects_episode_path_escape():
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        (root / "episodes").mkdir()
+        service = RuntimeStatusApiService(repo_root=root, projector=lambda ep: {})
+        dispatcher = PlatformApiDispatcher({"RuntimeStatusApiController": RuntimeStatusApiController(service)})
+
+        status, payload = dispatcher.dispatch("GET", "/api/v1/runtime/status?episode=..%2Fsecret")
+
+        assert status == 400
+        assert payload["code"] == "INVALID_REQUEST"
+
+
+def test_runtime_status_list_is_bounded_excludes_control_trees_and_isolates_bad_episode():
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        for ref in ("01_series/01_alpha", "01_series/02_beta", "02_series/01_bad"):
+            meta = root / "episodes" / ref / "meta"
+            meta.mkdir(parents=True)
+            (meta / "episode-state.json").write_text('{"current_state":"STORYBOARD_LOCKED"}', encoding="utf-8")
+        control = root / "episodes" / "_system" / "fake" / "meta"
+        control.mkdir(parents=True)
+        (control / "episode-state.json").write_text('{"current_state":"BROKEN"}', encoding="utf-8")
+
+        def projector(ep: Path):
+            if ep.name == "01_bad":
+                raise RuntimeError(f"do not leak this host path: {ep}")
+            return {
+                "episode_path": str(ep),
+                "production_stage": "STORYBOARD_LOCKED",
+                "execution_status": "RUNNING",
+                "current_action": "VISUAL_LOCK",
+                "needs_user": False,
+                "heartbeat": {"health": "HEALTHY"},
+                "image_progress": {"generated_frames": 1},
+                "review_progress": {"visual_lock_accepted": 1},
+            }
+
+        service = RuntimeStatusApiService(repo_root=root, projector=projector)
+        dispatcher = PlatformApiDispatcher({"RuntimeStatusApiController": RuntimeStatusApiController(service)})
+
+        status, first = dispatcher.dispatch("GET", "/api/v1/runtime/statuses?limit=2&offset=0")
+        assert status == 200
+        assert first["data"]["count"] == 2
+        assert first["data"]["has_more"] is True
+        assert [row["episode_ref"] for row in first["data"]["items"]] == [
+            "01_series/01_alpha", "01_series/02_beta",
+        ]
+        assert all("episode_path" not in row for row in first["data"]["items"])
+
+        status, second = dispatcher.dispatch("GET", "/api/v1/runtime/statuses?limit=2&offset=2")
+        assert status == 200
+        assert second["data"]["count"] == 1
+        assert second["data"]["has_more"] is False
+        assert second["data"]["items"][0] == {
+            "episode_ref": "02_series/01_bad",
+            "execution_status": "ERROR",
+            "error": "STATUS_PROJECTION_FAILED",
+        }
+        assert second["data"]["errors"] == [{
+            "episode_ref": "02_series/01_bad", "code": "STATUS_PROJECTION_FAILED"
+        }]
+        assert str(root) not in json.dumps(second, ensure_ascii=False)
+
+
+def test_runtime_status_list_validates_paging_query():
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        (root / "episodes").mkdir()
+        service = RuntimeStatusApiService(repo_root=root, projector=lambda ep: {})
+        dispatcher = PlatformApiDispatcher({"RuntimeStatusApiController": RuntimeStatusApiController(service)})
+
+        for query in ("limit=0", "limit=101", "limit=nope", "offset=-1", "offset=nope"):
+            status, payload = dispatcher.dispatch("GET", f"/api/v1/runtime/statuses?{query}")
+            assert status == 400
+            assert payload["code"] == "INVALID_REQUEST"
+
+
+def test_default_composition_exposes_runtime_status_controller():
+    assert "RuntimeStatusApiController" in build_default_controllers()
 
 
 def test_healthz_is_available_without_business_controllers():

@@ -6,7 +6,7 @@ import re
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Callable, Mapping
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 from platform.api.contracts import (
     ApiResponse,
@@ -62,7 +62,9 @@ class PlatformApiDispatcher:
         path: str,
         body: Mapping[str, Any] | None = None,
     ) -> tuple[int, dict[str, Any]]:
-        clean_path = urlsplit(path).path
+        parsed = urlsplit(path)
+        clean_path = parsed.path
+        query_params = parse_qs(parsed.query, keep_blank_values=True)
         method = str(method or "GET").upper()
         if method == "GET" and clean_path == "/healthz":
             return 200, {"code": "OK", "message": "platform api ready", "data": {"status": "UP"}}
@@ -72,7 +74,7 @@ class PlatformApiDispatcher:
             match = route.pattern.fullmatch(clean_path)
             if match is None:
                 continue
-            return self._invoke(route.definition, match.groupdict(), body or {})
+            return self._invoke(route.definition, match.groupdict(), body or {}, query_params)
         payload = ApiResponse.error(
             "ROUTE_NOT_FOUND",
             f"route not found: {method} {clean_path}",
@@ -84,6 +86,7 @@ class PlatformApiDispatcher:
         route: RouteDefinition,
         path_params: Mapping[str, str],
         body: Mapping[str, Any],
+        query_params: Mapping[str, list[str]],
     ) -> tuple[int, dict[str, Any]]:
         controller_name, method_name = route.handler.split(".", 1)
         controller = self.controllers.get(controller_name)
@@ -110,9 +113,17 @@ class PlatformApiDispatcher:
                     continue
                 try:
                     kwargs[param.name] = next(path_values)
+                    continue
                 except StopIteration:
-                    if param.default is inspect.Parameter.empty:
-                        raise TypeError(f"missing route argument for {route.handler}: {param.name}")
+                    pass
+                if param.name in query_params:
+                    values = query_params[param.name]
+                    if len(values) != 1:
+                        raise ValueError(f"query parameter must appear once: {param.name}")
+                    kwargs[param.name] = values[0]
+                    continue
+                if param.default is inspect.Parameter.empty:
+                    raise TypeError(f"missing route argument for {route.handler}: {param.name}")
             response = handler(**kwargs)
         except (TypeError, ValueError) as exc:
             payload = ApiResponse.error("INVALID_REQUEST", str(exc))

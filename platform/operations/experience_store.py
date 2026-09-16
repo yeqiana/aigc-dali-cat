@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Literal
+
+from platform.repository.jsonl_latest_record_store import LatestRecordStore
 
 
 ExperienceOutcome = Literal["SUCCESS", "FAILURE", "RECOVERED"]
@@ -26,17 +28,19 @@ class RuntimeExperience:
 
 
 class ExperienceStore:
-    """Minimal in-memory experience storage abstraction.
+    """Experience storage facade with optional durable latest-record backing."""
 
-    Future implementations may persist to database/vector storage, but the
-    operations layer only depends on this contract.
-    """
-
-    def __init__(self) -> None:
-        self._experiences: list[RuntimeExperience] = []
+    def __init__(self, store: LatestRecordStore | None = None) -> None:
+        self._store = store
+        persisted = store.load_all() if store else {}
+        self._experiences: list[RuntimeExperience] = [
+            RuntimeExperience(**row) for row in persisted.values()
+        ]
 
     def append(self, experience: RuntimeExperience) -> None:
         self._experiences.append(experience)
+        if self._store is not None:
+            self._store.upsert(asdict(experience))
 
     def list_all(self) -> tuple[RuntimeExperience, ...]:
         return tuple(self._experiences)

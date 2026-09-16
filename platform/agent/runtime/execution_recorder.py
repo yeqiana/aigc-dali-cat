@@ -6,6 +6,7 @@ from typing import Any
 from uuid import uuid4
 
 from platform.core.clock import utc_now_iso
+from platform.repository.jsonl_latest_record_store import LatestRecordStore
 
 
 def _now() -> str:
@@ -19,9 +20,14 @@ class ExecutionRecorder:
     execution-record boundary until the MySQL repository is wired in.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, store: LatestRecordStore | None = None) -> None:
         self._lock = RLock()
-        self._executions: dict[str, dict[str, Any]] = {}
+        self._store = store
+        self._executions: dict[str, dict[str, Any]] = store.load_all() if store else {}
+
+    def _persist(self, record: dict[str, Any]) -> None:
+        if self._store is not None:
+            self._store.upsert(record)
 
     def start_execution(
         self,
@@ -52,6 +58,7 @@ class ExecutionRecorder:
                 "created_time": now,
                 "updated_time": now,
             }
+            self._persist(self._executions[execution_id])
 
     def start_skill(
         self,
@@ -78,6 +85,7 @@ class ExecutionRecorder:
                 }
             )
             record["updated_time"] = now
+            self._persist(record)
         return skill_execution_id
 
     def finish_skill(
@@ -100,6 +108,7 @@ class ExecutionRecorder:
                     item["finished_time"] = now
                     break
             record["updated_time"] = now
+            self._persist(record)
 
     def start_tool(
         self,
@@ -127,6 +136,7 @@ class ExecutionRecorder:
                 }
             )
             record["updated_time"] = now
+            self._persist(record)
         return tool_execution_id
 
     def finish_tool(
@@ -149,6 +159,7 @@ class ExecutionRecorder:
                     item["finished_time"] = now
                     break
             record["updated_time"] = now
+            self._persist(record)
 
     def finish_execution(
         self,
@@ -166,6 +177,7 @@ class ExecutionRecorder:
             record["error"] = error
             record["finished_time"] = now
             record["updated_time"] = now
+            self._persist(record)
 
     def get(self, execution_id: str) -> dict[str, Any] | None:
         with self._lock:
