@@ -34,6 +34,7 @@ import runtime_execution
 import runtime_router
 import runtime_portability
 import runtime_workspace
+import production_queue_store
 import visual_lock_baseline_gate
 import visual_lock_candidate_pool
 import visual_lock_v21
@@ -42,7 +43,7 @@ import episode_lifecycle
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/runtime/next-action.json")
-QUEUE_REL = Path("meta/production-queue.json")
+QUEUE_REL = production_queue_store.REL
 HOST_REL = Path("meta/runtime/product-host-request.json")
 REVIEW_DIR = Path("meta/runtime/reviews")
 
@@ -183,7 +184,7 @@ def host_loop(ep: Path) -> dict:
 
 
 def queue_summary(ep: Path) -> dict:
-    q = read_json(ep / QUEUE_REL)
+    q = read_json(production_queue_store.read_path(ep))
     counts: dict[str, int] = {}
     queued_frames = []
     items = [row for row in (q.get("items") or []) if isinstance(row, dict)]

@@ -44,7 +44,7 @@ import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
-QUEUE_REL = Path("meta/production-queue.json")
+QUEUE_REL = scheduler_core.QUEUE_REL
 SCHEDULER_LOCK_REL = Path("meta/runtime-image-scheduler.lock")
 _CONFIG = storyos_config.load_config()
 MAX_SUPPORTED_WORKERS = int(storyos_config.get_path(_CONFIG, "production.max_inflight_images"))
@@ -171,7 +171,7 @@ def contract_references(ep:Path,frame:int,scope:str="batch")->list[dict]:
 
 def init_queue(ep:Path,force:bool=False)->dict:
     with queue_transaction(ep):
-        p=ep/QUEUE_REL
+        p=scheduler_core.queue_read_path(ep)
         if p.exists() and not force:return read_json(p)
         q={"schema_version":1,"created_at":now(),"updated_at":now(),"max_parallel":MAX_SUPPORTED_WORKERS,"adaptive_parallel":MAX_SUPPORTED_WORKERS,"stable_waves":0,"items":[],"waves":[]}
         save_queue(ep,q);return q

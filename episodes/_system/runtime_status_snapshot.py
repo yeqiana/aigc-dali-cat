@@ -16,6 +16,7 @@ from typing import Any
 
 import runner_health_monitor
 import runtime_workspace
+import production_queue_store
 
 SCHEMA_VERSION = 1
 EPISODE_STATE_REL = Path("meta/episode-state.json")
@@ -23,7 +24,7 @@ DAG_STATE_REL = Path("meta/runtime-dag-state.json")
 RUNNER_STATE_REL = Path("meta/runtime-runner-state.json")
 NEXT_ACTION_REL = Path("meta/runtime/next-action.json")
 LEDGER_REL = Path("meta/production-ledger.json")
-QUEUE_REL = Path("meta/production-queue.json")
+QUEUE_REL = production_queue_store.REL
 ADMISSIONS_REL = Path("meta/visual-lock-admissions.json")
 
 ACCEPTED_FRAME_STATES = frozenset({"PASSED", "WEAK_PASS", "LOCKED"})
@@ -158,7 +159,7 @@ def snapshot(episode: Path) -> dict[str, Any]:
     runner = runtime_workspace.read_json(ep, RUNNER_STATE_REL, default={}) or {}
     next_action_raw = runtime_workspace.read_json(ep, NEXT_ACTION_REL, default={}) or {}
     ledger = _read(ep / LEDGER_REL)
-    queue = _read(ep / QUEUE_REL)
+    queue = _read(production_queue_store.read_path(ep))
     admissions = _read(ep / ADMISSIONS_REL)
 
     production_stage = str(episode_state.get("current_state") or "") or None

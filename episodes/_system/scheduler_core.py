@@ -20,8 +20,10 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Callable
 
+import production_queue_store
+
 ROOT = Path(__file__).resolve().parents[2]
-QUEUE_REL = Path("meta/production-queue.json")
+QUEUE_REL = production_queue_store.REL
 SCHEDULER_LOCK_REL = Path("meta/runtime-image-scheduler.lock")
 EMPTY_QUEUE = {"schema_version": 1, "items": [], "waves": []}
 
@@ -109,13 +111,21 @@ def empty_queue(*, max_parallel: int | None = None) -> dict:
     return q
 
 
+def queue_read_path(ep: Path) -> Path:
+    return production_queue_store.read_path(Path(ep).resolve())
+
+
+def queue_write_path(ep: Path) -> Path:
+    return production_queue_store.write_path(Path(ep).resolve())
+
+
 def load_queue(ep: Path, *, max_parallel: int | None = None) -> dict:
     """Read production queue with the portability path guard.
 
     Missing file returns EMPTY_QUEUE (same semantics as both scheduler lanes'
     private copies).
     """
-    p = Path(ep).resolve() / QUEUE_REL
+    p = production_queue_store.read_path(Path(ep).resolve())
     if not p.is_file():
         q = dict(EMPTY_QUEUE)
         if max_parallel is not None:
@@ -135,7 +145,7 @@ def save_queue(ep: Path, q: dict) -> None:
     import episode_lifecycle
     episode_lifecycle.assert_writable(Path(ep).resolve(), "production_queue.write")
     q["updated_at"] = now()
-    write_json(Path(ep).resolve() / QUEUE_REL, q)
+    write_json(production_queue_store.write_path(Path(ep).resolve()), q)
 
 
 def progress(ep: Path, q: dict, *, requested_workers: int = 3) -> dict:
