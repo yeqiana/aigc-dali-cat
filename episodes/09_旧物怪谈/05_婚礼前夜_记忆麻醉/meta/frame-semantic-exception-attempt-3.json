@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "attempt": 3,
+  "review_scope": "DIRECT_USER_EXCEPTION_PATCH",
+  "targets": [
+    "12"
+  ],
+  "critic_provenance": {
+    "schema_version": 2,
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 3,
+    "reviewed_at": "2026-09-15T23:50:46+08:00",
+    "direct_user_exception_review": true,
+    "log": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-exception-critic-attempt-3.jsonl",
+    "review_scope": "INCREMENTAL_CONTEXT_SET",
+    "anatomy_integrity_enforced": true,
+    "direct_user_exception_frames": [
+      "12"
+    ]
+  },
+  "reviewed_assets": [
+    {
+      "frame": "11",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/11.png",
+      "sha256": "a9098924f5be9d4c20a3f146c41aa88c133428ad69fec4a86de5d636984f2c6c"
+    },
+    {
+      "frame": "12",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-5636c3a68877-a1.png",
+      "sha256": "3ddefee87ad0e8a34244e3542efde071019d5ca1abd66f9c9eacf28205c99114"
+    },
+    {
+      "frame": "13",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/13.png",
+      "sha256": "f046ae5ed4d5835cd9515b8bc855e0a1696f68de28c03b62defa48e5495d5136"
+    }
+  ],
+  "critic_result": {
+    "frames": [
+      {
+        "frame": "11",
+        "checks": {
+          "scene_storyboard_fidelity": true,
+          "story_beat_fidelity": true,
+          "key_prop_fidelity": true,
+          "character_identity": true,
+          "wardrobe_continuity": true,
+          "pov_photographer_legality": true,
+          "spatial_continuity": true,
+          "temporal_continuity": true,
+          "anomaly_readability": true,
+          "caption_image_support": true,
+          "actual_information_gain": true,
+          "environment_physics_fidelity": true,
+          "anomaly_escalation_fidelity": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "narrative_evidence_gain": true,
+          "shot_grammar_diversity": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "visual_memory_continuity": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true,
+          "shot_scale_fidelity": true,
+          "scene_position_uniqueness_fidelity": true,
+          "cinematic_structure_translation_fidelity": true,
+          "practical_lighting_design_fidelity": true,
+          "anomaly_concealment_fidelity": true,
+          "anatomy_limb_hand_integrity": true
+        },
+        "issue_codes": [],
+        "notes": "P01's left hand lifts the red window cloth; the fixed metal bars visibly span and connect to the window frame, while the clay wall, wedding bedding and dim practical interior light remain continuous.",
+        "decision": "pass"
+      },
+      {
+        "frame": "12",
+        "checks": {
+          "scene_storyboard_fidelity": true,
+          "story_beat_fidelity": true,
+          "key_prop_fidelity": true,
+          "character_identity": true,
+          "wardrobe_continuity": true,
+          "pov_photographer_legality": false,
+          "spatial_continuity": true,
+          "temporal_continuity": true,
+          "anomaly_readability": true,
+          "caption_image_support": true,
+          "actual_information_gain": true,
+          "environment_physics_fidelity": true,
+          "anomaly_escalation_fidelity": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": false,
+          "moment_capture_credibility": true,
+          "narrative_evidence_gain": true,
+          "shot_grammar_diversity": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "visual_memory_continuity": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true,
+          "shot_scale_fidelity": true,
+          "scene_position_uniqueness_fidelity": true,
+          "cinematic_structure_translation_fidelity": true,
+          "practical_lighting_design_fidelity": true,
+          "anomaly_concealment_fidelity": true,
+          "anatomy_limb_hand_integrity": true
+        },
+        "issue_codes": [
+          "POV_ILLEGAL",
+          "CAMERA_OWNER_UNRESOLVED",
+          "UNEXPLAINED_THIRD_PERSON"
+        ],
+        "notes": "The open truck, the man at its rear, several adult women in red wedding clothes, and the chain across their ankles are readable under the truck headlights. However, the large blurred floral-clothed shoulder and torso occupy the near left foreground as a subject being watched from behind. That composition cannot be produced by P01's own single hand-held first-person camera, and no authorized second photographer, mirror, or fixed camera is established.",
+        "decision": "fail"
+      },
+      {
+        "frame": "13",
+        "checks": {
+          "scene_storyboard_fidelity": true,
+          "story_beat_fidelity": true,
+          "key_prop_fidelity": true,
+          "character_identity": true,
+          "wardrobe_continuity": true,
+          "pov_photographer_legality": true,
+          "spatial_continuity": true,
+          "temporal_continuity": true,
+          "anomaly_readability": true,
+          "caption_image_support": true,
+          "actual_information_gain": true,
+          "environment_physics_fidelity": true,
+          "anomaly_escalation_fidelity": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "narrative_evidence_gain": true,
+          "shot_grammar_diversity": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "visual_memory_continuity": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true,
+          "shot_scale_fidelity": true,
+          "scene_position_uniqueness_fidelity": true,
+          "cinematic_structure_translation_fidelity": true,
+          "practical_lighting_design_fidelity": true,
+          "anomaly_concealment_fidelity": true,
+          "anatomy_limb_hand_integrity": true
+        },
+        "issue_codes": [],
+        "notes": "From P01's bed-side eye level, the dark-coated man extends a visible pill and water glass while holding the small white bottle; his body occupies the doorway route. The wedding room, red bedding, practical bare bulb, and open exterior door continue the preceding location without an unexplained camera source.",
+        "decision": "pass"
+      }
+    ],
+    "issue_codes": [
+      "POV_ILLEGAL",
+      "CAMERA_OWNER_UNRESOLVED",
+      "UNEXPLAINED_THIRD_PERSON"
+    ],
+    "summary": {
+      "passed": false,
+      "notes": "Exception re-review fails target frame 12 only: its readable truck evidence is invalidated by an unexplained third-person camera position behind the visible P01 foreground body. Context frames 11 and 13 remain semantically valid."
+    }
+  },
+  "context_failures": [],
+  "recorded_at": "2026-09-15T23:50:46+08:00",
+  "failed_targets": [
+    "12"
+  ],
+  "completed_at": "2026-09-15T23:50:46+08:00"
+}

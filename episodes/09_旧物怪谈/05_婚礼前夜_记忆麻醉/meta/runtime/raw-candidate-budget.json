@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "module_version": "2.6.0",
-  "updated_at": "2026-09-10T17:04:30+08:00",
+  "updated_at": "2026-09-16T00:48:45+08:00",
   "frames": {
     "01": {
       "original": {
@@ -69,6 +69,20 @@
             ]
           }
         }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "9ac4058b70e5": {
+            "claimed_at": "2026-09-15T22:20:23+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-15T22:22:08+08:00",
+            "semantic_key": "ce940153f0e5c77f16a2f04e4ccbbc52678ff510da522965ad6aaebcf41d2fee",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
       }
     },
     "11": {
@@ -92,6 +106,20 @@
             "reason": "formal_generation_entrypoint scope=batch attempt=1",
             "committed": true,
             "committed_at": "2026-09-09T14:06:46+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "d67acb70d975": {
+            "claimed_at": "2026-09-15T22:04:11+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T22:05:36+08:00",
+            "semantic_key": "bb2e25a5fa632616fdc626106ab5516b4975f6b3125ca2270f0270bcdf517f54",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -121,6 +149,20 @@
             "commit_reason": "normalized_candidate_exists"
           }
         }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "bfc569e948a0": {
+            "claimed_at": "2026-09-15T22:04:12+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T22:05:56+08:00",
+            "semantic_key": "341af718d210a96b479b18daef3e679888e73f755251ab985dd69a07517b9843",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
       }
     },
     "03": {
@@ -147,6 +189,34 @@
             "commit_reason": "normalized_candidate_exists"
           }
         }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "f1e5e117579a": {
+            "claimed_at": "2026-09-15T22:06:01+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T22:08:04+08:00",
+            "semantic_key": "447482052b2501d2dc0941dae852f28019f1fe94a638a75e0db255583c0dd78a",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "user_continuation": {
+        "used": 1,
+        "claims": {
+          "740bc23e704d": {
+            "claimed_at": "2026-09-15T23:07:33+08:00",
+            "reason": "recover_preserved_provider_raw_via_explicit_ratio_exception",
+            "committed": true,
+            "committed_at": "2026-09-15T23:07:34+08:00",
+            "semantic_key": "user-continuation-final_semantic-03-01",
+            "authorization_source": "继续，看看能不能多线程并发的去跑",
+            "commit_reason": "normalized_preserved_provider_raw_committed"
+          }
+        }
       }
     },
     "02": {
@@ -170,6 +240,20 @@
             "reason": "formal_generation_entrypoint scope=batch attempt=1",
             "committed": true,
             "committed_at": "2026-09-09T14:23:30+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "503127995491": {
+            "claimed_at": "2026-09-15T22:19:08+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-15T22:20:49+08:00",
+            "semantic_key": "aabbd1e68b9567fa76f06cdc4a8aca89db3d2a1e9dba99f3a6edd555cafd554e",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -199,6 +283,20 @@
             "commit_reason": "normalized_candidate_exists"
           }
         }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "27516ae179ad": {
+            "claimed_at": "2026-09-15T22:35:59+08:00",
+            "reason": "recover_preserved_provider_raw_via_explicit_ratio_exception",
+            "committed": true,
+            "committed_at": "2026-09-15T22:36:00+08:00",
+            "semantic_key": "c777916425e917fded9cfa81aaf4646990f8877701c129e4097cca61aea55abb",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_preserved_provider_raw_committed"
+          }
+        }
       }
     },
     "04": {
@@ -222,6 +320,20 @@
             "reason": "formal_generation_entrypoint scope=batch attempt=1",
             "committed": true,
             "committed_at": "2026-09-09T14:23:04+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "2e6456d0f788": {
+            "claimed_at": "2026-09-15T22:07:12+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T22:08:39+08:00",
+            "semantic_key": "d5ea8687c1a81231260780ac4208e7812fbb9c9ec14802be18a8d74218d98f2e",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -251,6 +363,20 @@
             "commit_reason": "normalized_candidate_exists"
           }
         }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "35858b4a2df2": {
+            "claimed_at": "2026-09-15T22:16:01+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-15T22:17:40+08:00",
+            "semantic_key": "d45cd67233a6b8646c382bc6a7a7974b10bd6009d9268a7294e9737f7b73ca69",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
       }
     },
     "07": {
@@ -274,6 +400,34 @@
             "reason": "formal_generation_entrypoint scope=batch attempt=1",
             "committed": true,
             "committed_at": "2026-09-09T14:14:45+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "8b3f44f752a2": {
+            "claimed_at": "2026-09-15T22:36:00+08:00",
+            "reason": "recover_preserved_provider_raw_via_explicit_ratio_exception",
+            "committed": true,
+            "committed_at": "2026-09-15T22:36:01+08:00",
+            "semantic_key": "c7c9668cb1386a7cd37347a375a1394237471e4e30370d1bf751b013dbe3d384",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_preserved_provider_raw_committed"
+          }
+        }
+      },
+      "user_continuation": {
+        "used": 1,
+        "claims": {
+          "51e66ee258c8": {
+            "claimed_at": "2026-09-15T23:04:47+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T23:06:57+08:00",
+            "semantic_key": "user-continuation-final_semantic-07-01",
+            "authorization_source": "继续，看看能不能多线程并发的去跑",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -303,6 +457,20 @@
             "commit_reason": "normalized_candidate_exists"
           }
         }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "3750991c07ba": {
+            "claimed_at": "2026-09-15T22:07:35+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T22:09:18+08:00",
+            "semantic_key": "b88f08e3d19dfe74c46cb4a6422b0f86910bbe19697c02b4d69ab11b322d8162",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
       }
     },
     "09": {
@@ -329,6 +497,20 @@
             "commit_reason": "normalized_candidate_exists"
           }
         }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "4c08eff05c27": {
+            "claimed_at": "2026-09-15T22:08:40+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T22:10:42+08:00",
+            "semantic_key": "279ed2e3030ddb97513a4c99b5d02d8f99f7d047f9c423d1d28e46437ab88b5b",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
       }
     },
     "10": {
@@ -352,6 +534,20 @@
             "reason": "formal_generation_entrypoint scope=batch attempt=1",
             "committed": true,
             "committed_at": "2026-09-09T14:11:27+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "7d92291f0b2e": {
+            "claimed_at": "2026-09-15T22:08:05+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T22:09:38+08:00",
+            "semantic_key": "1d76f134873a2ca24eb5be701e2d57e8229cc6512db7a5991ca6d1955873c262",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -388,6 +584,55 @@
             "commit_reason": "normalized_candidate_exists"
           }
         }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "1711a50e917b": {
+            "claimed_at": "2026-09-15T22:04:12+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T22:06:00+08:00",
+            "semantic_key": "fa2a37fde5a8c2930986b0f959cddd66f522735b01cd2ee0e4f606642300cdac",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "user_exception": {
+        "used": 1,
+        "claims": {
+          "5636c3a68877": {
+            "claimed_at": "2026-09-15T23:24:33+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T23:26:28+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "user_continuation": {
+        "used": 2,
+        "claims": {
+          "2ed4ecabc591": {
+            "claimed_at": "2026-09-16T00:27:59+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-16T00:29:57+08:00",
+            "semantic_key": "user-continuation-final_semantic_continuation-12-01",
+            "authorization_source": "继续修复，看看能不能多线程；若第一轮修复跑完，可以继续并行往下修复，直到全部修复完成",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "613ca3d6dceb": {
+            "claimed_at": "2026-09-16T00:47:03+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-16T00:48:45+08:00",
+            "semantic_key": "user-continuation-final_semantic_continuation-12-02",
+            "authorization_source": "继续修复，看看能不能多线程；若第一轮修复跑完，可以继续并行往下修复，直到全部修复完成",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
       }
     },
     "13": {
@@ -411,6 +656,20 @@
             "reason": "formal_generation_entrypoint scope=batch attempt=1",
             "committed": true,
             "committed_at": "2026-09-09T14:08:31+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "cdbe48518add": {
+            "claimed_at": "2026-09-15T22:05:36+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T22:07:12+08:00",
+            "semantic_key": "26bc4238705b9f54778cb48229981ce5ff5747eefd5c7d363d972b7261f3bbda",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -440,6 +699,20 @@
             "commit_reason": "normalized_candidate_exists"
           }
         }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "3c10b4a65646": {
+            "claimed_at": "2026-09-15T22:18:49+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-15T22:20:23+08:00",
+            "semantic_key": "d976fa8c84b7bf83b329f69f289560cec266d59cab0f2f7f392bae8e12bf21c5",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
       }
     },
     "16": {
@@ -466,6 +739,20 @@
             "commit_reason": "normalized_candidate_exists"
           }
         }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "39f96d6ea0ab": {
+            "claimed_at": "2026-09-15T22:05:57+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T22:07:34+08:00",
+            "semantic_key": "68bb687dba328d150ba561e576a858f96308de2c3628ef0554d34b7ea93c492a",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
       }
     },
     "17": {
@@ -482,13 +769,34 @@
         }
       },
       "repair": {
-        "used": 1,
+        "used": 2,
         "claims": {
           "100e40533e81": {
             "claimed_at": "2026-09-09T14:21:34+08:00",
             "reason": "formal_generation_entrypoint scope=batch attempt=1",
             "committed": true,
             "committed_at": "2026-09-09T14:24:32+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "db3dbc1276c7": {
+            "claimed_at": "2026-09-15T23:24:33+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T23:26:10+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "a4f86f7db358": {
+            "claimed_at": "2026-09-15T22:16:01+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-15T22:17:44+08:00",
+            "semantic_key": "61d99691e3d597f08e935e18f361ef9d19b1978e63b2fbb0c5b64a215acd308b",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -508,13 +816,34 @@
         }
       },
       "repair": {
-        "used": 1,
+        "used": 2,
         "claims": {
           "a7fa4eff8609": {
             "claimed_at": "2026-09-09T14:14:46+08:00",
             "reason": "formal_generation_entrypoint scope=batch attempt=1",
             "committed": true,
             "committed_at": "2026-09-09T14:16:53+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          },
+          "25fcfdd67bf9": {
+            "claimed_at": "2026-09-15T23:24:33+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=1",
+            "committed": true,
+            "committed_at": "2026-09-15T23:26:15+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "9fd69bf0a8bf": {
+            "claimed_at": "2026-09-15T22:17:39+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-15T22:18:48+08:00",
+            "semantic_key": "796aa644d9382f623fc8d182d176f0495516b7f18dd956f5ffc74231bca11aaa",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -544,6 +873,20 @@
             "commit_reason": "normalized_candidate_exists"
           }
         }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "407ab497972a": {
+            "claimed_at": "2026-09-15T22:17:41+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-15T22:19:17+08:00",
+            "semantic_key": "7d807c5702a25b32c7d5a2789666f2b2557ec8ea13ae859fc507a377eb8d7ff6",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
       }
     },
     "20": {
@@ -567,6 +910,20 @@
             "reason": "formal_generation_entrypoint scope=batch attempt=1",
             "committed": true,
             "committed_at": "2026-09-09T14:18:51+08:00",
+            "commit_reason": "normalized_candidate_exists"
+          }
+        }
+      },
+      "authority_refresh": {
+        "used": 1,
+        "claims": {
+          "737fe5a8663e": {
+            "claimed_at": "2026-09-15T22:17:45+08:00",
+            "reason": "formal_generation_entrypoint scope=repair attempt=2",
+            "committed": true,
+            "committed_at": "2026-09-15T22:19:08+08:00",
+            "semantic_key": "c3fd4f0bf1d7f7e375785c101ba8786e86fcc08283496191795d50f6a16509d5",
+            "authorization_source": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
             "commit_reason": "normalized_candidate_exists"
           }
         }
@@ -1519,6 +1876,456 @@
       "kind": "repair",
       "token": "87d54b6a927d",
       "authorized_raise": 4
+    },
+    {
+      "at": "2026-09-15T22:04:11+08:00",
+      "event": "claim",
+      "frame": "11",
+      "kind": "authority_refresh",
+      "token": "d67acb70d975",
+      "semantic_key": "bb2e25a5fa632616fdc626106ab5516b4975f6b3125ca2270f0270bcdf517f54"
+    },
+    {
+      "at": "2026-09-15T22:04:12+08:00",
+      "event": "claim",
+      "frame": "15",
+      "kind": "authority_refresh",
+      "token": "bfc569e948a0",
+      "semantic_key": "341af718d210a96b479b18daef3e679888e73f755251ab985dd69a07517b9843"
+    },
+    {
+      "at": "2026-09-15T22:04:12+08:00",
+      "event": "claim",
+      "frame": "12",
+      "kind": "authority_refresh",
+      "token": "1711a50e917b",
+      "semantic_key": "fa2a37fde5a8c2930986b0f959cddd66f522735b01cd2ee0e4f606642300cdac"
+    },
+    {
+      "at": "2026-09-15T22:05:36+08:00",
+      "event": "commit",
+      "frame": "11",
+      "kind": "authority_refresh",
+      "token": "d67acb70d975"
+    },
+    {
+      "at": "2026-09-15T22:05:36+08:00",
+      "event": "claim",
+      "frame": "13",
+      "kind": "authority_refresh",
+      "token": "cdbe48518add",
+      "semantic_key": "26bc4238705b9f54778cb48229981ce5ff5747eefd5c7d363d972b7261f3bbda"
+    },
+    {
+      "at": "2026-09-15T22:05:56+08:00",
+      "event": "commit",
+      "frame": "15",
+      "kind": "authority_refresh",
+      "token": "bfc569e948a0"
+    },
+    {
+      "at": "2026-09-15T22:05:57+08:00",
+      "event": "claim",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "39f96d6ea0ab",
+      "semantic_key": "68bb687dba328d150ba561e576a858f96308de2c3628ef0554d34b7ea93c492a"
+    },
+    {
+      "at": "2026-09-15T22:06:00+08:00",
+      "event": "commit",
+      "frame": "12",
+      "kind": "authority_refresh",
+      "token": "1711a50e917b"
+    },
+    {
+      "at": "2026-09-15T22:06:01+08:00",
+      "event": "claim",
+      "frame": "03",
+      "kind": "authority_refresh",
+      "token": "f1e5e117579a",
+      "semantic_key": "447482052b2501d2dc0941dae852f28019f1fe94a638a75e0db255583c0dd78a"
+    },
+    {
+      "at": "2026-09-15T22:07:12+08:00",
+      "event": "commit",
+      "frame": "13",
+      "kind": "authority_refresh",
+      "token": "cdbe48518add"
+    },
+    {
+      "at": "2026-09-15T22:07:12+08:00",
+      "event": "claim",
+      "frame": "04",
+      "kind": "authority_refresh",
+      "token": "2e6456d0f788",
+      "semantic_key": "d5ea8687c1a81231260780ac4208e7812fbb9c9ec14802be18a8d74218d98f2e"
+    },
+    {
+      "at": "2026-09-15T22:07:34+08:00",
+      "event": "commit",
+      "frame": "16",
+      "kind": "authority_refresh",
+      "token": "39f96d6ea0ab"
+    },
+    {
+      "at": "2026-09-15T22:07:35+08:00",
+      "event": "claim",
+      "frame": "08",
+      "kind": "authority_refresh",
+      "token": "3750991c07ba",
+      "semantic_key": "b88f08e3d19dfe74c46cb4a6422b0f86910bbe19697c02b4d69ab11b322d8162"
+    },
+    {
+      "at": "2026-09-15T22:08:04+08:00",
+      "event": "commit",
+      "frame": "03",
+      "kind": "authority_refresh",
+      "token": "f1e5e117579a"
+    },
+    {
+      "at": "2026-09-15T22:08:05+08:00",
+      "event": "claim",
+      "frame": "10",
+      "kind": "authority_refresh",
+      "token": "7d92291f0b2e",
+      "semantic_key": "1d76f134873a2ca24eb5be701e2d57e8229cc6512db7a5991ca6d1955873c262"
+    },
+    {
+      "at": "2026-09-15T22:08:39+08:00",
+      "event": "commit",
+      "frame": "04",
+      "kind": "authority_refresh",
+      "token": "2e6456d0f788"
+    },
+    {
+      "at": "2026-09-15T22:08:40+08:00",
+      "event": "claim",
+      "frame": "09",
+      "kind": "authority_refresh",
+      "token": "4c08eff05c27",
+      "semantic_key": "279ed2e3030ddb97513a4c99b5d02d8f99f7d047f9c423d1d28e46437ab88b5b"
+    },
+    {
+      "at": "2026-09-15T22:09:18+08:00",
+      "event": "commit",
+      "frame": "08",
+      "kind": "authority_refresh",
+      "token": "3750991c07ba"
+    },
+    {
+      "at": "2026-09-15T22:09:38+08:00",
+      "event": "commit",
+      "frame": "10",
+      "kind": "authority_refresh",
+      "token": "7d92291f0b2e"
+    },
+    {
+      "at": "2026-09-15T22:10:42+08:00",
+      "event": "commit",
+      "frame": "09",
+      "kind": "authority_refresh",
+      "token": "4c08eff05c27"
+    },
+    {
+      "at": "2026-09-15T22:16:01+08:00",
+      "event": "claim",
+      "frame": "05",
+      "kind": "authority_refresh",
+      "token": "35858b4a2df2",
+      "semantic_key": "d45cd67233a6b8646c382bc6a7a7974b10bd6009d9268a7294e9737f7b73ca69"
+    },
+    {
+      "at": "2026-09-15T22:16:01+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "authority_refresh",
+      "token": "a4f86f7db358",
+      "semantic_key": "61d99691e3d597f08e935e18f361ef9d19b1978e63b2fbb0c5b64a215acd308b"
+    },
+    {
+      "at": "2026-09-15T22:16:01+08:00",
+      "event": "claim",
+      "frame": "07",
+      "kind": "authority_refresh",
+      "token": "8b3f44f752a2",
+      "semantic_key": "c7c9668cb1386a7cd37347a375a1394237471e4e30370d1bf751b013dbe3d384"
+    },
+    {
+      "at": "2026-09-15T22:17:38+08:00",
+      "event": "release",
+      "frame": "07",
+      "kind": "authority_refresh",
+      "token": "8b3f44f752a2",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T22:17:39+08:00",
+      "event": "claim",
+      "frame": "18",
+      "kind": "authority_refresh",
+      "token": "9fd69bf0a8bf",
+      "semantic_key": "796aa644d9382f623fc8d182d176f0495516b7f18dd956f5ffc74231bca11aaa"
+    },
+    {
+      "at": "2026-09-15T22:17:40+08:00",
+      "event": "commit",
+      "frame": "05",
+      "kind": "authority_refresh",
+      "token": "35858b4a2df2"
+    },
+    {
+      "at": "2026-09-15T22:17:41+08:00",
+      "event": "claim",
+      "frame": "19",
+      "kind": "authority_refresh",
+      "token": "407ab497972a",
+      "semantic_key": "7d807c5702a25b32c7d5a2789666f2b2557ec8ea13ae859fc507a377eb8d7ff6"
+    },
+    {
+      "at": "2026-09-15T22:17:44+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "authority_refresh",
+      "token": "a4f86f7db358"
+    },
+    {
+      "at": "2026-09-15T22:17:45+08:00",
+      "event": "claim",
+      "frame": "20",
+      "kind": "authority_refresh",
+      "token": "737fe5a8663e",
+      "semantic_key": "c3fd4f0bf1d7f7e375785c101ba8786e86fcc08283496191795d50f6a16509d5"
+    },
+    {
+      "at": "2026-09-15T22:18:48+08:00",
+      "event": "commit",
+      "frame": "18",
+      "kind": "authority_refresh",
+      "token": "9fd69bf0a8bf"
+    },
+    {
+      "at": "2026-09-15T22:18:49+08:00",
+      "event": "claim",
+      "frame": "14",
+      "kind": "authority_refresh",
+      "token": "3c10b4a65646",
+      "semantic_key": "d976fa8c84b7bf83b329f69f289560cec266d59cab0f2f7f392bae8e12bf21c5"
+    },
+    {
+      "at": "2026-09-15T22:19:08+08:00",
+      "event": "commit",
+      "frame": "20",
+      "kind": "authority_refresh",
+      "token": "737fe5a8663e"
+    },
+    {
+      "at": "2026-09-15T22:19:08+08:00",
+      "event": "claim",
+      "frame": "02",
+      "kind": "authority_refresh",
+      "token": "503127995491",
+      "semantic_key": "aabbd1e68b9567fa76f06cdc4a8aca89db3d2a1e9dba99f3a6edd555cafd554e"
+    },
+    {
+      "at": "2026-09-15T22:19:17+08:00",
+      "event": "commit",
+      "frame": "19",
+      "kind": "authority_refresh",
+      "token": "407ab497972a"
+    },
+    {
+      "at": "2026-09-15T22:19:18+08:00",
+      "event": "claim",
+      "frame": "06",
+      "kind": "authority_refresh",
+      "token": "27516ae179ad",
+      "semantic_key": "c777916425e917fded9cfa81aaf4646990f8877701c129e4097cca61aea55abb"
+    },
+    {
+      "at": "2026-09-15T22:20:23+08:00",
+      "event": "commit",
+      "frame": "14",
+      "kind": "authority_refresh",
+      "token": "3c10b4a65646"
+    },
+    {
+      "at": "2026-09-15T22:20:23+08:00",
+      "event": "claim",
+      "frame": "01",
+      "kind": "authority_refresh",
+      "token": "9ac4058b70e5",
+      "semantic_key": "ce940153f0e5c77f16a2f04e4ccbbc52678ff510da522965ad6aaebcf41d2fee"
+    },
+    {
+      "at": "2026-09-15T22:20:49+08:00",
+      "event": "commit",
+      "frame": "02",
+      "kind": "authority_refresh",
+      "token": "503127995491"
+    },
+    {
+      "at": "2026-09-15T22:20:53+08:00",
+      "event": "release",
+      "frame": "06",
+      "kind": "authority_refresh",
+      "token": "27516ae179ad",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T22:22:08+08:00",
+      "event": "commit",
+      "frame": "01",
+      "kind": "authority_refresh",
+      "token": "9ac4058b70e5"
+    },
+    {
+      "at": "2026-09-15T22:35:59+08:00",
+      "event": "claim",
+      "frame": "06",
+      "kind": "authority_refresh",
+      "token": "27516ae179ad",
+      "semantic_key": "c777916425e917fded9cfa81aaf4646990f8877701c129e4097cca61aea55abb"
+    },
+    {
+      "at": "2026-09-15T22:36:00+08:00",
+      "event": "commit",
+      "frame": "06",
+      "kind": "authority_refresh",
+      "token": "27516ae179ad"
+    },
+    {
+      "at": "2026-09-15T22:36:00+08:00",
+      "event": "claim",
+      "frame": "07",
+      "kind": "authority_refresh",
+      "token": "8b3f44f752a2",
+      "semantic_key": "c7c9668cb1386a7cd37347a375a1394237471e4e30370d1bf751b013dbe3d384"
+    },
+    {
+      "at": "2026-09-15T22:36:01+08:00",
+      "event": "commit",
+      "frame": "07",
+      "kind": "authority_refresh",
+      "token": "8b3f44f752a2"
+    },
+    {
+      "at": "2026-09-15T23:04:47+08:00",
+      "event": "claim",
+      "frame": "07",
+      "kind": "user_continuation",
+      "token": "51e66ee258c8",
+      "semantic_key": "user-continuation-final_semantic-07-01"
+    },
+    {
+      "at": "2026-09-15T23:04:47+08:00",
+      "event": "claim",
+      "frame": "03",
+      "kind": "user_continuation",
+      "token": "740bc23e704d",
+      "semantic_key": "user-continuation-final_semantic-03-01"
+    },
+    {
+      "at": "2026-09-15T23:06:57+08:00",
+      "event": "commit",
+      "frame": "07",
+      "kind": "user_continuation",
+      "token": "51e66ee258c8"
+    },
+    {
+      "at": "2026-09-15T23:07:08+08:00",
+      "event": "release",
+      "frame": "03",
+      "kind": "user_continuation",
+      "token": "740bc23e704d",
+      "reason": "generation_failed_before_candidate_commit"
+    },
+    {
+      "at": "2026-09-15T23:07:33+08:00",
+      "event": "claim",
+      "frame": "03",
+      "kind": "user_continuation",
+      "token": "740bc23e704d",
+      "semantic_key": "user-continuation-final_semantic-03-01"
+    },
+    {
+      "at": "2026-09-15T23:07:34+08:00",
+      "event": "commit",
+      "frame": "03",
+      "kind": "user_continuation",
+      "token": "740bc23e704d"
+    },
+    {
+      "at": "2026-09-15T23:24:33+08:00",
+      "event": "claim",
+      "frame": "12",
+      "kind": "user_exception",
+      "token": "5636c3a68877"
+    },
+    {
+      "at": "2026-09-15T23:24:33+08:00",
+      "event": "claim",
+      "frame": "17",
+      "kind": "repair",
+      "token": "db3dbc1276c7"
+    },
+    {
+      "at": "2026-09-15T23:24:33+08:00",
+      "event": "claim",
+      "frame": "18",
+      "kind": "repair",
+      "token": "25fcfdd67bf9"
+    },
+    {
+      "at": "2026-09-15T23:26:10+08:00",
+      "event": "commit",
+      "frame": "17",
+      "kind": "repair",
+      "token": "db3dbc1276c7"
+    },
+    {
+      "at": "2026-09-15T23:26:15+08:00",
+      "event": "commit",
+      "frame": "18",
+      "kind": "repair",
+      "token": "25fcfdd67bf9"
+    },
+    {
+      "at": "2026-09-15T23:26:28+08:00",
+      "event": "commit",
+      "frame": "12",
+      "kind": "user_exception",
+      "token": "5636c3a68877"
+    },
+    {
+      "at": "2026-09-16T00:27:59+08:00",
+      "event": "claim",
+      "frame": "12",
+      "kind": "user_continuation",
+      "token": "2ed4ecabc591",
+      "semantic_key": "user-continuation-final_semantic_continuation-12-01"
+    },
+    {
+      "at": "2026-09-16T00:29:57+08:00",
+      "event": "commit",
+      "frame": "12",
+      "kind": "user_continuation",
+      "token": "2ed4ecabc591"
+    },
+    {
+      "at": "2026-09-16T00:47:03+08:00",
+      "event": "claim",
+      "frame": "12",
+      "kind": "user_continuation",
+      "token": "613ca3d6dceb",
+      "semantic_key": "user-continuation-final_semantic_continuation-12-02"
+    },
+    {
+      "at": "2026-09-16T00:48:45+08:00",
+      "event": "commit",
+      "frame": "12",
+      "kind": "user_continuation",
+      "token": "613ca3d6dceb"
     }
   ]
 }

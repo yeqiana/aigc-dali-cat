@@ -1,0 +1,47 @@
+{
+  "schema_version": 3,
+  "request_id": "concept-ambition-a2-53669e83f4890f72",
+  "request_fingerprint": "53669e83f4890f722afbc7630d092f6d0e204df22bd14b5b67c5500461488da9",
+  "created_at": "2026-09-15T21:09:29+08:00",
+  "status": "FINALIZED",
+  "review_kind": "concept-ambition",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "workspace_transport": "DEVSPACE",
+  "review_execution_contract": {
+    "runtime": "WORK",
+    "critic_runtime": "WORK_ISOLATED",
+    "workspace_transport": "DEVSPACE",
+    "fresh_product_review_turn_required": true,
+    "devspace_bounded_fallback_allowed": false,
+    "bounded_fallback_runtime": "WORK_DEVSPACE_BOUNDED",
+    "source_access": "read_only",
+    "candidate_write_scope": "candidate_path_only",
+    "webcodex_allowed": false,
+    "local_codex_review_allowed": false
+  },
+  "attempt": 2,
+  "source_files": [
+    {
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/concept-candidates.json",
+      "sha256": "a500246e94e18ef096f1db7d42a74d9b8ba8570e4ed24e25dd7636bd9aa5d5ae"
+    }
+  ],
+  "candidate_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.concept-ambition-review.candidate.json",
+  "prompt_sha256": "0185a92de08dcaa45a576f3008ddf095016113bac9606bf029e61f903a213d3d",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial WORK_ISOLATED review turn when an isolated turn is available.",
+    "For an explicitly full-auto anomaly_applicable=false episode only, a bounded same-WORK DevSpace review may be used if review_execution_contract.devspace_bounded_fallback_allowed=true; it must be recorded as WORK_DEVSPACE_BOUNDED, never WORK_ISOLATED.",
+    "Use DevSpace/workspace tools as the only repository access path.",
+    "Do not use WebCodex and do not spawn local Codex for review.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are the independent Story OS V2.1 Concept Ambition + Image-first Propagation Critic.\nReview ALL 8-12 concepts in episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/concept-candidates.json. This is a fresh isolated review.\n\nDOCTRINE:\n- Concept ambition comes BEFORE capture realism.\n- Do NOT lower a concept because its place, creature, ruin, dream-space, anomaly scale, case phenomenon, geography or world rule cannot exist in reality.\n- Reality-first constrains HOW the later image is captured, not WHAT may happen.\n- Reward concepts whose Cover/Mid/Climax images work before captions.\n- Penalize generic unease, text-dependent reveals, tiny escalation, discovery-only climaxes and visually ordinary payoffs.\n- Fictional cases, impossible ruins, dream intrusion, cosmic anomalies, giant-scale anomalies and surreal geography are valid.\n- The pool must include at least 3 genuinely high-ambition A4/A5 directions.\n\nBands: A1 restrained oddity; A2 clear anomaly; A3 strong anomaly; A4 large/high-impact anomaly; A5 world-rule loss/overwhelming anomaly.\n\nScores: one_line_hook 0-20; hero_frame 0-20; escalation_ceiling 0-20; climax_visual_payoff 0-15; mechanism_novelty 0-15; discussion_space 0-10.\nconcept_voltage = exact sum.\n\nWordless test: stop_scroll, escalation_readable, curiosity_gap.\nSelect exactly ONE concept. Winner must score >=80 and pass all 3 wordless checks.\nIf no valid winner exists, summary.passed=false.\n\nWrite ONLY JSON to episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/.concept-ambition-review.candidate.json:\n{\n  \"candidates\":[{\n    \"id\":\"C01\",\"ambition_band\":\"A4\",\n    \"scores\":{\"one_line_hook\":18,\"hero_frame\":19,\"escalation_ceiling\":18,\"climax_visual_payoff\":14,\"mechanism_novelty\":13,\"discussion_space\":9},\n    \"concept_voltage\":91,\n    \"wordless_test\":{\"stop_scroll\":true,\"escalation_readable\":true,\"curiosity_gap\":true},\n    \"strengths\":[\"...\"],\"risks\":[\"...\"]\n  }],\n  \"selected_id\":\"C01\",\n  \"selection_reason\":\"...\",\n  \"issue_codes\":[],\n  \"summary\":{\"passed\":true}\n}\nEpisode: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉\nAttempt: 2\n",
+  "deadline_at": "2026-09-15T21:24:29+08:00",
+  "attempt_request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/concept-ambition-attempt-2-request.json",
+  "finalized_at": "2026-09-15T21:10:39+08:00",
+  "final_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/concept-ambition-review.json"
+}

@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "attempt": 5,
+  "review_scope": "DIRECT_USER_CONTINUATION_PATCH",
+  "targets": [
+    "12"
+  ],
+  "critic_provenance": {
+    "schema_version": 2,
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 5,
+    "reviewed_at": "2026-09-16T00:55:19+08:00",
+    "direct_user_continuation_review": true,
+    "log": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-continuation-critic-attempt-5.jsonl",
+    "review_scope": "INCREMENTAL_CONTEXT_SET",
+    "anatomy_integrity_enforced": true,
+    "direct_user_continuation_frames": [
+      "12"
+    ]
+  },
+  "reviewed_assets": [
+    {
+      "frame": "11",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/11.png",
+      "sha256": "a9098924f5be9d4c20a3f146c41aa88c133428ad69fec4a86de5d636984f2c6c"
+    },
+    {
+      "frame": "12",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-613ca3d6dceb-a1.png",
+      "sha256": "4e52e2b2383885fb17934061c3a28b1cda61ca236147fc8223daacd62834558a"
+    },
+    {
+      "frame": "13",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/13.png",
+      "sha256": "f046ae5ed4d5835cd9515b8bc855e0a1696f68de28c03b62defa48e5495d5136"
+    }
+  ],
+  "critic_result": {
+    "frames": [
+      {
+        "frame": "11",
+        "checks": {
+          "scene_storyboard_fidelity": true,
+          "story_beat_fidelity": true,
+          "key_prop_fidelity": true,
+          "character_identity": true,
+          "wardrobe_continuity": true,
+          "pov_photographer_legality": true,
+          "spatial_continuity": true,
+          "temporal_continuity": true,
+          "anomaly_readability": true,
+          "caption_image_support": true,
+          "actual_information_gain": true,
+          "environment_physics_fidelity": true,
+          "anomaly_escalation_fidelity": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "narrative_evidence_gain": true,
+          "shot_grammar_diversity": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "visual_memory_continuity": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true,
+          "shot_scale_fidelity": true,
+          "scene_position_uniqueness_fidelity": true,
+          "cinematic_structure_translation_fidelity": true,
+          "practical_lighting_design_fidelity": true,
+          "anomaly_concealment_fidelity": true,
+          "anatomy_limb_hand_integrity": true
+        },
+        "issue_codes": [],
+        "notes": "Locked context remains valid: the floral-sleeved left hand lifts the red curtain inside the earthen-walled wedding room, revealing fixed iron bars across the window. The barred opening, wall and sill give physical scale; no medicine is visible and the hand/camera position remains first-person plausible.",
+        "decision": "pass"
+      },
+      {
+        "frame": "12",
+        "checks": {
+          "scene_storyboard_fidelity": true,
+          "story_beat_fidelity": true,
+          "key_prop_fidelity": true,
+          "character_identity": true,
+          "wardrobe_continuity": true,
+          "pov_photographer_legality": true,
+          "spatial_continuity": true,
+          "temporal_continuity": true,
+          "anomaly_readability": true,
+          "caption_image_support": true,
+          "actual_information_gain": true,
+          "environment_physics_fidelity": true,
+          "anomaly_escalation_fidelity": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "narrative_evidence_gain": true,
+          "shot_grammar_diversity": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "visual_memory_continuity": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true,
+          "shot_scale_fidelity": true,
+          "scene_position_uniqueness_fidelity": true,
+          "cinematic_structure_translation_fidelity": true,
+          "practical_lighting_design_fidelity": true,
+          "anomaly_concealment_fidelity": true,
+          "anatomy_limb_hand_integrity": true
+        },
+        "issue_codes": [],
+        "notes": "Target pixels satisfy the required reveal: a floral sleeve and hand hold the inside door edge, framing a man at the open rear of a rural cargo truck. Three adult women in red wedding clothing sit inside; their ankle iron cuffs and linking chain are plainly legible. The doorway, truck body, human bodies and hard vehicle backlight provide scale and a physically explainable P01 eye-level record. No drug bottle, P01 face, or P01 red bridal clothing appears.",
+        "decision": "pass"
+      },
+      {
+        "frame": "13",
+        "checks": {
+          "scene_storyboard_fidelity": true,
+          "story_beat_fidelity": true,
+          "key_prop_fidelity": true,
+          "character_identity": true,
+          "wardrobe_continuity": true,
+          "pov_photographer_legality": true,
+          "spatial_continuity": true,
+          "temporal_continuity": true,
+          "anomaly_readability": true,
+          "caption_image_support": true,
+          "actual_information_gain": true,
+          "environment_physics_fidelity": true,
+          "anomaly_escalation_fidelity": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "narrative_evidence_gain": true,
+          "shot_grammar_diversity": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "visual_memory_continuity": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true,
+          "shot_scale_fidelity": true,
+          "scene_position_uniqueness_fidelity": true,
+          "cinematic_structure_translation_fidelity": true,
+          "practical_lighting_design_fidelity": true,
+          "anomaly_concealment_fidelity": true,
+          "anatomy_limb_hand_integrity": true
+        },
+        "issue_codes": [],
+        "notes": "Locked context remains valid: the man in the same dark outerwear advances a visible pill and glass of water while holding a small white bottle; his body occupies the doorway. The wedding bed, earthen room, practical bare-bulb light and open dark exterior preserve the immediate 12-to-13 space and establish the coercive medicine beat without forced ingestion.",
+        "decision": "pass"
+      }
+    ],
+    "issue_codes": [],
+    "summary": {
+      "passed": true,
+      "notes": "Continuation patch judgment: target frame 12 and its locked context rows meet the resolved contracts on actual pixels."
+    }
+  },
+  "context_failures": [],
+  "recorded_at": "2026-09-16T00:55:19+08:00",
+  "failed_targets": [],
+  "completed_at": "2026-09-16T00:55:19+08:00"
+}

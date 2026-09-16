@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "13151f5f61de3b0627ba887af545011b05a671c790332747e4253cfa7cce8987",
+  "snapshot_kind": "PREIMAGE_INPUT_SNAPSHOT",
+  "created_at": "2026-09-15T21:58:00+08:00",
+  "authority_sha256": {
+    "owned_scopes": {
+      "character.finalize": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.environment_contract": "a65bc026734340b218aa2c07d4b500b2697efa636bbcbefc12567dc269c84dde",
+      "visual.frame_directives": "b5d021d8ffce232e43900ff40277dde2d8dfd35272e8487df094cb1e4053a701",
+      "visual.world_identity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.world_state": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.temporal_continuity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.wardrobe": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.narrative_core": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.shot_progression": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.capture_grammar": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+    },
+    "character_contract": "ed645046da6ca83dfe8411dabe2331cabe9e2ea9187e21acaca60f733a203507",
+    "world_identity": null,
+    "runtime_request_preimage": "364050335c0b55b7f9e9f82fe3304303510a1f35f5f7aaf2aa72e655f20b16bb",
+    "story_lock": "490fa39bb586496f8ad8ad6f1c110587809ed6b55a04c687f12eb29224a92fa1",
+    "visual_profile": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+  },
+  "whole_authority_sha256": {
+    "story_gates": "f22c591ef5738fd3aed88a3b2dbc06e0256feba1764dda127ee441b3534b0097",
+    "character_contract": "ed645046da6ca83dfe8411dabe2331cabe9e2ea9187e21acaca60f733a203507",
+    "world_identity": null,
+    "runtime_request_preimage": "364050335c0b55b7f9e9f82fe3304303510a1f35f5f7aaf2aa72e655f20b16bb",
+    "story_lock": "490fa39bb586496f8ad8ad6f1c110587809ed6b55a04c687f12eb29224a92fa1",
+    "visual_profile": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+  },
+  "derived_execution_evidence": true,
+  "episode_state_mutated": false,
+  "gate_pass": null
+}

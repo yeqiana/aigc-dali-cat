@@ -466,6 +466,430 @@
       "lifecycle": "meta/image-workers/01-87d54b6a927d-a1.lifecycle.json",
       "code": "WORKER_NO_TERMINAL_RECEIPT",
       "reason": "WORKER_NO_TERMINAL_RECEIPT: worker pid 49464 exited without terminal receipt; candidate never appeared; attempt voided by direct user instruction (作废这次尝试)"
+    },
+    "a74a4bbe3af04c80a5e935ae1508a153": {
+      "transaction_id": "a74a4bbe3af04c80a5e935ae1508a153",
+      "created_at": "2026-09-15T22:02:37+08:00",
+      "phase": "BEGIN_REJECTED",
+      "updated_at": "2026-09-15T22:02:37+08:00",
+      "item_id": "2f243c212a80",
+      "frame": 17,
+      "reason": "[Errno 2] No such file or directory: 'D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\09_旧物怪谈\\\\05_婚礼前夜_记忆麻醉\\\\media\\\\batch\\\\prompts\\\\17.txt'"
+    },
+    "0a397ca2b2ba44bfa4e7c8cb182fba66": {
+      "transaction_id": "0a397ca2b2ba44bfa4e7c8cb182fba66",
+      "created_at": "2026-09-15T22:02:37+08:00",
+      "phase": "BEGIN_REJECTED",
+      "updated_at": "2026-09-15T22:02:37+08:00",
+      "item_id": "66cf6f8795fb",
+      "frame": 12,
+      "reason": "[Errno 2] No such file or directory: 'D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\09_旧物怪谈\\\\05_婚礼前夜_记忆麻醉\\\\media\\\\batch\\\\prompts\\\\12.txt'"
+    },
+    "38acfaa0a78542608618037691f12e93": {
+      "transaction_id": "38acfaa0a78542608618037691f12e93",
+      "created_at": "2026-09-15T22:02:37+08:00",
+      "phase": "BEGIN_REJECTED",
+      "updated_at": "2026-09-15T22:02:37+08:00",
+      "item_id": "31122a57df15",
+      "frame": 6,
+      "reason": "[Errno 2] No such file or directory: 'D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\09_旧物怪谈\\\\05_婚礼前夜_记忆麻醉\\\\media\\\\batch\\\\prompts\\\\06.txt'"
+    },
+    "bf09912c2d9d4ba0a96eeef99169fb17": {
+      "transaction_id": "bf09912c2d9d4ba0a96eeef99169fb17",
+      "created_at": "2026-09-15T22:02:37+08:00",
+      "phase": "BEGIN_REJECTED",
+      "updated_at": "2026-09-15T22:02:37+08:00",
+      "item_id": "0cedad7e5345",
+      "frame": 4,
+      "reason": "[Errno 2] No such file or directory: 'D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\09_旧物怪谈\\\\05_婚礼前夜_记忆麻醉\\\\media\\\\batch\\\\prompts\\\\04.txt'"
+    },
+    "2b29fbfa86854f329d8d1946136e33f4": {
+      "transaction_id": "2b29fbfa86854f329d8d1946136e33f4",
+      "created_at": "2026-09-15T22:02:37+08:00",
+      "phase": "BEGIN_REJECTED",
+      "updated_at": "2026-09-15T22:02:37+08:00",
+      "item_id": "6b4678646fb5",
+      "frame": 2,
+      "reason": "[Errno 2] No such file or directory: 'D:\\\\workspace\\\\YeQianWorkSpace\\\\yeqian\\\\storyOS\\\\episodes\\\\09_旧物怪谈\\\\05_婚礼前夜_记忆麻醉\\\\media\\\\batch\\\\prompts\\\\02.txt'"
+    },
+    "1ce46fd25b6b4a2898216c2da4243bae": {
+      "transaction_id": "1ce46fd25b6b4a2898216c2da4243bae",
+      "created_at": "2026-09-15T22:02:37+08:00",
+      "phase": "BEGIN_REJECTED",
+      "updated_at": "2026-09-15T22:02:37+08:00",
+      "item_id": "87d54b6a927d",
+      "frame": 1,
+      "reason": "PROMPT_SOURCE_DRIFT: unchanged scene prompt belongs to an older Frame Contract; rebuild scene from current storyboard before generation"
+    },
+    "dbd96d6c2f374f71a993719745c2a631": {
+      "transaction_id": "dbd96d6c2f374f71a993719745c2a631",
+      "created_at": "2026-09-15T22:04:11+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "bfc569e948a0",
+      "frame": 15,
+      "lifecycle": "meta/image-workers/15-bfc569e948a0-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "daeae7d26fd8492ba6ccc6d0eb9e093a": {
+      "transaction_id": "daeae7d26fd8492ba6ccc6d0eb9e093a",
+      "created_at": "2026-09-15T22:04:11+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "d67acb70d975",
+      "frame": 11,
+      "lifecycle": "meta/image-workers/11-d67acb70d975-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "c696cdeb89bb4ba7b38df941563c7fc1": {
+      "transaction_id": "c696cdeb89bb4ba7b38df941563c7fc1",
+      "created_at": "2026-09-15T22:04:11+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-15T23:04:47+08:00",
+      "item_id": "1711a50e917b",
+      "frame": 12,
+      "lifecycle": "meta/image-workers/12-1711a50e917b-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "cde4315531e84a54958f50e1480917a0": {
+      "transaction_id": "cde4315531e84a54958f50e1480917a0",
+      "created_at": "2026-09-15T22:05:36+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "cdbe48518add",
+      "frame": 13,
+      "lifecycle": "meta/image-workers/13-cdbe48518add-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "2542c667f7c6464d98d1590432e0e5c7": {
+      "transaction_id": "2542c667f7c6464d98d1590432e0e5c7",
+      "created_at": "2026-09-15T22:05:56+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "39f96d6ea0ab",
+      "frame": 16,
+      "lifecycle": "meta/image-workers/16-39f96d6ea0ab-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "b1187270a9b84ac890f9e182bfbb14f4": {
+      "transaction_id": "b1187270a9b84ac890f9e182bfbb14f4",
+      "created_at": "2026-09-15T22:06:01+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-15T22:16:00+08:00",
+      "item_id": "f1e5e117579a",
+      "frame": 3,
+      "lifecycle": "meta/image-workers/03-f1e5e117579a-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "81af56159bb84e44931b714d920be2ce": {
+      "transaction_id": "81af56159bb84e44931b714d920be2ce",
+      "created_at": "2026-09-15T22:07:12+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "2e6456d0f788",
+      "frame": 4,
+      "lifecycle": "meta/image-workers/04-2e6456d0f788-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "b3358a722fcb4478ad0602931d817410": {
+      "transaction_id": "b3358a722fcb4478ad0602931d817410",
+      "created_at": "2026-09-15T22:07:34+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "3750991c07ba",
+      "frame": 8,
+      "lifecycle": "meta/image-workers/08-3750991c07ba-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "12aff0984e584dd4b1ced2b2c7115ab8": {
+      "transaction_id": "12aff0984e584dd4b1ced2b2c7115ab8",
+      "created_at": "2026-09-15T22:08:05+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "7d92291f0b2e",
+      "frame": 10,
+      "lifecycle": "meta/image-workers/10-7d92291f0b2e-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "4892e2d27b5f4163a611b7945dc7045e": {
+      "transaction_id": "4892e2d27b5f4163a611b7945dc7045e",
+      "created_at": "2026-09-15T22:08:40+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "4c08eff05c27",
+      "frame": 9,
+      "lifecycle": "meta/image-workers/09-4c08eff05c27-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "1fedd51f4b934889a225fe537c487d49": {
+      "transaction_id": "1fedd51f4b934889a225fe537c487d49",
+      "created_at": "2026-09-15T22:09:18+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-15T22:09:18+08:00",
+      "item_id": "35858b4a2df2",
+      "frame": 5,
+      "lifecycle": "meta/image-workers/05-35858b4a2df2-a1.lifecycle.json",
+      "code": "EPISODE_IMAGE_LOOP_GUARD"
+    },
+    "e3a3c61e215f45f9aa3f3c08a99a8823": {
+      "transaction_id": "e3a3c61e215f45f9aa3f3c08a99a8823",
+      "created_at": "2026-09-15T22:09:18+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-15T22:09:19+08:00",
+      "item_id": "8b3f44f752a2",
+      "frame": 7,
+      "lifecycle": "meta/image-workers/07-8b3f44f752a2-a1.lifecycle.json",
+      "code": "EPISODE_IMAGE_LOOP_GUARD"
+    },
+    "95f7c75dec034fe08784d4d7a3b24600": {
+      "transaction_id": "95f7c75dec034fe08784d4d7a3b24600",
+      "created_at": "2026-09-15T22:09:19+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-15T22:09:19+08:00",
+      "item_id": "a4f86f7db358",
+      "frame": 17,
+      "lifecycle": "meta/image-workers/17-a4f86f7db358-a1.lifecycle.json",
+      "code": "EPISODE_IMAGE_LOOP_GUARD"
+    },
+    "9c6f3c78692c474da9469c3801805805": {
+      "transaction_id": "9c6f3c78692c474da9469c3801805805",
+      "created_at": "2026-09-15T22:09:19+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-15T22:09:20+08:00",
+      "item_id": "9fd69bf0a8bf",
+      "frame": 18,
+      "lifecycle": "meta/image-workers/18-9fd69bf0a8bf-a1.lifecycle.json",
+      "code": "EPISODE_IMAGE_LOOP_GUARD"
+    },
+    "57bc308e959c4b1da84977bccce4b40e": {
+      "transaction_id": "57bc308e959c4b1da84977bccce4b40e",
+      "created_at": "2026-09-15T22:09:20+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-15T22:09:20+08:00",
+      "item_id": "407ab497972a",
+      "frame": 19,
+      "lifecycle": "meta/image-workers/19-407ab497972a-a1.lifecycle.json",
+      "code": "EPISODE_IMAGE_LOOP_GUARD"
+    },
+    "510bf579ef3147c88894ce11f0364673": {
+      "transaction_id": "510bf579ef3147c88894ce11f0364673",
+      "created_at": "2026-09-15T22:09:20+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-15T22:09:20+08:00",
+      "item_id": "737fe5a8663e",
+      "frame": 20,
+      "lifecycle": "meta/image-workers/20-737fe5a8663e-a1.lifecycle.json",
+      "code": "EPISODE_IMAGE_LOOP_GUARD"
+    },
+    "69cacd288ab044d5be8ff6d0466fa764": {
+      "transaction_id": "69cacd288ab044d5be8ff6d0466fa764",
+      "created_at": "2026-09-15T22:09:20+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-15T22:09:21+08:00",
+      "item_id": "3c10b4a65646",
+      "frame": 14,
+      "lifecycle": "meta/image-workers/14-3c10b4a65646-a1.lifecycle.json",
+      "code": "EPISODE_IMAGE_LOOP_GUARD"
+    },
+    "1e90b67b284642019066de6445575d8f": {
+      "transaction_id": "1e90b67b284642019066de6445575d8f",
+      "created_at": "2026-09-15T22:09:21+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-15T22:09:21+08:00",
+      "item_id": "503127995491",
+      "frame": 2,
+      "lifecycle": "meta/image-workers/02-503127995491-a1.lifecycle.json",
+      "code": "EPISODE_IMAGE_LOOP_GUARD"
+    },
+    "e483610ee433450cb80e2bccd13a7221": {
+      "transaction_id": "e483610ee433450cb80e2bccd13a7221",
+      "created_at": "2026-09-15T22:09:21+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-15T22:09:22+08:00",
+      "item_id": "27516ae179ad",
+      "frame": 6,
+      "lifecycle": "meta/image-workers/06-27516ae179ad-a1.lifecycle.json",
+      "code": "EPISODE_IMAGE_LOOP_GUARD"
+    },
+    "9082e32f5471468682caf96acc24b760": {
+      "transaction_id": "9082e32f5471468682caf96acc24b760",
+      "created_at": "2026-09-15T22:09:22+08:00",
+      "phase": "BLOCKED",
+      "updated_at": "2026-09-15T22:09:22+08:00",
+      "item_id": "9ac4058b70e5",
+      "frame": 1,
+      "lifecycle": "meta/image-workers/01-9ac4058b70e5-a1.lifecycle.json",
+      "code": "EPISODE_IMAGE_LOOP_GUARD"
+    },
+    "2b13a8451cf849989aeceb481ca7f6ad": {
+      "transaction_id": "2b13a8451cf849989aeceb481ca7f6ad",
+      "created_at": "2026-09-15T22:16:00+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "35858b4a2df2",
+      "frame": 5,
+      "lifecycle": "meta/image-workers/05-35858b4a2df2-a2.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "816f496089c644a88686bdebd994da5b": {
+      "transaction_id": "816f496089c644a88686bdebd994da5b",
+      "created_at": "2026-09-15T22:16:00+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-15T22:36:01+08:00",
+      "item_id": "8b3f44f752a2",
+      "frame": 7,
+      "lifecycle": "meta/image-workers/07-8b3f44f752a2-a2.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH",
+      "recovery": "provider_ratio_normalization_exception"
+    },
+    "71ff488d259a459fafd2b14032ab21ee": {
+      "transaction_id": "71ff488d259a459fafd2b14032ab21ee",
+      "created_at": "2026-09-15T22:16:00+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-15T23:04:47+08:00",
+      "item_id": "a4f86f7db358",
+      "frame": 17,
+      "lifecycle": "meta/image-workers/17-a4f86f7db358-a2.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "8006f01b9dcb4be988352a59476f0a09": {
+      "transaction_id": "8006f01b9dcb4be988352a59476f0a09",
+      "created_at": "2026-09-15T22:17:39+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-15T23:04:47+08:00",
+      "item_id": "9fd69bf0a8bf",
+      "frame": 18,
+      "lifecycle": "meta/image-workers/18-9fd69bf0a8bf-a2.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "e08d8d8091564e13b59c4e4db280ca94": {
+      "transaction_id": "e08d8d8091564e13b59c4e4db280ca94",
+      "created_at": "2026-09-15T22:17:40+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "407ab497972a",
+      "frame": 19,
+      "lifecycle": "meta/image-workers/19-407ab497972a-a2.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "25108c120d3f472ea9f4d02d22339cfb": {
+      "transaction_id": "25108c120d3f472ea9f4d02d22339cfb",
+      "created_at": "2026-09-15T22:17:44+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "737fe5a8663e",
+      "frame": 20,
+      "lifecycle": "meta/image-workers/20-737fe5a8663e-a2.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "370aebb8b9b942a9af151324ef07b1ec": {
+      "transaction_id": "370aebb8b9b942a9af151324ef07b1ec",
+      "created_at": "2026-09-15T22:18:48+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "3c10b4a65646",
+      "frame": 14,
+      "lifecycle": "meta/image-workers/14-3c10b4a65646-a2.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "2ac6019b2edb4b97a7d2f5ad96f1fc1e": {
+      "transaction_id": "2ac6019b2edb4b97a7d2f5ad96f1fc1e",
+      "created_at": "2026-09-15T22:19:08+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "503127995491",
+      "frame": 2,
+      "lifecycle": "meta/image-workers/02-503127995491-a2.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "6169b9da8b7b436b8d1bcd711b12d0cf": {
+      "transaction_id": "6169b9da8b7b436b8d1bcd711b12d0cf",
+      "created_at": "2026-09-15T22:19:18+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "27516ae179ad",
+      "frame": 6,
+      "lifecycle": "meta/image-workers/06-27516ae179ad-a2.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH",
+      "recovery": "ledger_ready_replayed"
+    },
+    "3d4ea847028f43899c070b15f4eebaaa": {
+      "transaction_id": "3d4ea847028f43899c070b15f4eebaaa",
+      "created_at": "2026-09-15T22:20:23+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "9ac4058b70e5",
+      "frame": 1,
+      "lifecycle": "meta/image-workers/01-9ac4058b70e5-a2.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "35e8062eeda5426d8f5f8d2ae3e3ffc5": {
+      "transaction_id": "35e8062eeda5426d8f5f8d2ae3e3ffc5",
+      "created_at": "2026-09-15T23:04:47+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "740bc23e704d",
+      "frame": 3,
+      "lifecycle": "meta/image-workers/03-740bc23e704d-a1.lifecycle.json",
+      "code": "ASPECT_RATIO_MISMATCH",
+      "recovery": "ledger_ready_replayed"
+    },
+    "0b8a8384c56049dfbba8c9a2d4127894": {
+      "transaction_id": "0b8a8384c56049dfbba8c9a2d4127894",
+      "created_at": "2026-09-15T23:04:47+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "51e66ee258c8",
+      "frame": 7,
+      "lifecycle": "meta/image-workers/07-51e66ee258c8-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "a8d9f0997c6e442dbd6032a4dbbe16bd": {
+      "transaction_id": "a8d9f0997c6e442dbd6032a4dbbe16bd",
+      "created_at": "2026-09-15T23:24:32+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-15T23:26:28+08:00",
+      "item_id": "5636c3a68877",
+      "frame": 12,
+      "lifecycle": "meta/image-workers/12-5636c3a68877-a1.lifecycle.json"
+    },
+    "0833753e06504443a9e6dda65c48728c": {
+      "transaction_id": "0833753e06504443a9e6dda65c48728c",
+      "created_at": "2026-09-15T23:24:33+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "db3dbc1276c7",
+      "frame": 17,
+      "lifecycle": "meta/image-workers/17-db3dbc1276c7-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "7af13151bde746cdb6d2cf08a6e0788a": {
+      "transaction_id": "7af13151bde746cdb6d2cf08a6e0788a",
+      "created_at": "2026-09-15T23:24:33+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:47:03+08:00",
+      "item_id": "25fcfdd67bf9",
+      "frame": 18,
+      "lifecycle": "meta/image-workers/18-25fcfdd67bf9-a1.lifecycle.json",
+      "recovery": "ledger_ready_replayed"
+    },
+    "85cc3f5ff18348d4be9d0039f56c0de0": {
+      "transaction_id": "85cc3f5ff18348d4be9d0039f56c0de0",
+      "created_at": "2026-09-16T00:27:59+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:29:57+08:00",
+      "item_id": "2ed4ecabc591",
+      "frame": 12,
+      "lifecycle": "meta/image-workers/12-2ed4ecabc591-a1.lifecycle.json"
+    },
+    "6cfe0da77626458783e2754ffa7f576a": {
+      "transaction_id": "6cfe0da77626458783e2754ffa7f576a",
+      "created_at": "2026-09-16T00:47:03+08:00",
+      "phase": "COMMITTED",
+      "updated_at": "2026-09-16T00:48:45+08:00",
+      "item_id": "613ca3d6dceb",
+      "frame": 12,
+      "lifecycle": "meta/image-workers/12-613ca3d6dceb-a1.lifecycle.json"
     }
   }
 }

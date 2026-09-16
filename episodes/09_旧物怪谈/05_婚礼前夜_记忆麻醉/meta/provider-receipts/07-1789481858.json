@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "recorded_at_epoch": 1789481858,
+  "frame": "07",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "generation_route": "codex_subscription",
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "requested_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": 0.8
+  },
+  "provider_raw_canvas": {
+    "width": 1092,
+    "height": 1440,
+    "aspect_ratio": 0.758333333,
+    "exact_requested_canvas": false,
+    "resize_direction_to_release": "downscale"
+  },
+  "ratio_delta": 0.052083333,
+  "normalize_decision": "ASPECT_RATIO_MISMATCH",
+  "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\07-1789481761.png",
+  "raw_sha256": "8e756dda29df5324d31c6fb058d5c6c65aab94841c7610d5cbb3f108276e63c4",
+  "provider_attestation": false,
+  "exact_raw_canvas_guaranteed": false,
+  "receipt_is_evidence_not_authority": true,
+  "reference_transport": "codex_subscription_cli_attachment",
+  "references": [],
+  "normalization": {
+    "operation": "CENTER_CROP_THEN_RESIZE_LANCZOS",
+    "ratio_delta": 0.052083,
+    "crop_applied": true,
+    "reencoded": true,
+    "local_attempts": 1
+  },
+  "release_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\07-8b3f44f752a2-a2.png",
+    "sha256": "53c01669aeac2102ac975c2a116dbf14d6ca68976e59b2a921439fb3ba5d36a5"
+  }
+}

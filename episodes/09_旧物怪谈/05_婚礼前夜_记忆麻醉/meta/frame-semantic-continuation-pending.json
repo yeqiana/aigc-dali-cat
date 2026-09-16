@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "attempt": 5,
+  "recorded_at": "2026-09-16T00:50:56+08:00",
+  "targets": [
+    "12"
+  ],
+  "contexts": {
+    "story_sha256": "05f9a3c997b22f00c3f3acdeacf880997e40d09b7bf985cc2606917f888055e8",
+    "storyboard_sha256": "d98a762d3a2611dc7c1697808d34076a39f5f6fb8ce4e9c52f4acb5179e9dbcc",
+    "visual_contract_sha256": "52eed9d5001518961bbe7b598d07aa6a288855b45f26f600d47a93113404bcdc"
+  },
+  "assets": [
+    {
+      "frame": "11",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/11.png",
+      "sha256": "a9098924f5be9d4c20a3f146c41aa88c133428ad69fec4a86de5d636984f2c6c"
+    },
+    {
+      "frame": "12",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-613ca3d6dceb-a1.png",
+      "sha256": "4e52e2b2383885fb17934061c3a28b1cda61ca236147fc8223daacd62834558a"
+    },
+    {
+      "frame": "13",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/13.png",
+      "sha256": "f046ae5ed4d5835cd9515b8bc855e0a1696f68de28c03b62defa48e5495d5136"
+    }
+  ]
+}

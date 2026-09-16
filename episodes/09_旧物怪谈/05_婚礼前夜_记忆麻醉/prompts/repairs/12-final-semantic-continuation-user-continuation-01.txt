@@ -1,0 +1,1 @@
+返修Frame12。严格保持当前Frame Contract、人物身份/服装/地点/事件与世界设定，不改故事。重点修复：POV_ILLEGAL、CAMERA_OWNER_UNRESOLVED、UNEXPLAINED_THIRD_PERSON、The open truck, the man at its rear, sever。改成可信的普通手机随手拍：自然不对称构图、真实皮肤与曝光、非电影布光、非海报化；保留生活杂物和轻微摄影瑕疵，天界设定照合同保留但不过度特效化。

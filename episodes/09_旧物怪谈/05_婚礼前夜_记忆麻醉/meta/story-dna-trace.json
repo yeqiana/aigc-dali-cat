@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-15T22:39:56+08:00",
+  "authority": {
+    "episode_state_mutated": false,
+    "source": "Story Lock + story-gates"
+  },
+  "story_core": "漏服被说成助眠的药后，女主从婚礼物件和空间中确认自己正在被限制并可能被运走；她拒绝下一剂药、主动制造机会逃到检查站，却仍失去自己的名字，结尾以另一场试鞋梦和旧房间细节回返保留获救真伪的双解释。",
+  "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+  "character_relationship": "P01与所谓未婚夫及亲属表面是婚礼中的亲密关系，实际通过被排练的恋爱经历、陌生的母亲以及男人递药堵门，逐步揭示为控制者与被控制者关系。",
+  "reversal_point": "09—13帧由婚鞋铁环、金镯锁孔、红布后铁栏、货车内其他女孩和男人再次递药堵门，把婚礼在清醒现实中反转为限制与运走人的控制场景；19—20帧再用无环婚鞋梦与旧房间回返形成结尾二次反转。",
+  "required_frames": [],
+  "forbidden_deviation": [],
+  "frame_mapping": {
+    "01": {
+      "story_goal": "hook",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "02": {
+      "story_goal": "hook",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "03": {
+      "story_goal": "hook",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "04": {
+      "story_goal": null,
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "05": {
+      "story_goal": null,
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "06": {
+      "story_goal": null,
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "07": {
+      "story_goal": null,
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "08": {
+      "story_goal": "escalation",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "09": {
+      "story_goal": "escalation",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "10": {
+      "story_goal": "escalation",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "11": {
+      "story_goal": "escalation",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "12": {
+      "story_goal": "escalation",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "13": {
+      "story_goal": "escalation",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "14": {
+      "story_goal": null,
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "15": {
+      "story_goal": "climax",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "16": {
+      "story_goal": "escalation",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "17": {
+      "story_goal": null,
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "18": {
+      "story_goal": null,
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "19": {
+      "story_goal": null,
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "20": {
+      "story_goal": "payoff",
+      "emotional_goal": "从婚前夜的轻微记忆缺口与不安，逐步升级为确认被控制的恐惧和主动反抗；获救后仍以失名与现实不确定性留下余悸。",
+      "reversal_contribution": null,
+      "required": true
+    }
+  }
+}
