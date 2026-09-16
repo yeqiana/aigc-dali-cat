@@ -26,6 +26,7 @@ MIGRATABLE = frozenset({runtime_asset_policy.OPERATIONAL_STATE, runtime_asset_po
 COPY_READY_EXACT = frozenset({
     effective_config.REL.as_posix(),
     "meta/runtime/next-action.json",
+    "meta/runtime-checkpoint.json",
     "meta/runtime-dag-state.json",
     "meta/runtime-runner-state.json",
     "meta/runtime-resume-token.json",
@@ -33,6 +34,7 @@ COPY_READY_EXACT = frozenset({
 COPY_READY_PREFIXES = (
     "meta/runtime/execution-capsules/",
     "meta/runtime/prompt-packages/",
+    "meta/runtime/contracts/frames/",
 )
 
 
