@@ -197,6 +197,12 @@ def initial_documents(*, episode_id: str, series: str, title: str, frame_count: 
         "title": title,
         "current_state": "IDEA_LOCKED",
         "disposition": episode_lifecycle.ACTIVE,
+        "runtime_storage": {
+            "production_queue": {
+                "authority": "runtime_workspace",
+                "policy": "native_workspace_v1",
+            },
+        },
         "updated_at": at,
         "history": [
             {

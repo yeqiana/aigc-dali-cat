@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 """Scheduler-lock-guarded Production Queue activation and rollback protocol.
 
-No operation runs implicitly. Callers must explicitly invoke activate() or
-rollback(); both serialize against the existing image scheduler lock, preserve
-both queue copies, verify checksums before changing authority, and write the
-activation receipt last.
+Legacy Episode transitions are explicit. Newly-created Episodes may already be
+native Runtime Workspace authority via their canonical Episode state. activate()
+and rollback() serialize against the existing image scheduler lock, preserve
+queue copies when crossing authority boundaries, verify checksums, and write the
+transition receipt last.
 """
 from __future__ import annotations
 
@@ -87,7 +88,7 @@ def activate(episode_dir: Path) -> dict:
             marker = activation.inspect(ep, legacy_path=legacy, workspace_path=workspace)
             if not marker["valid"]:
                 return _blocked("INVALID_ACTIVATION_RECEIPT", errors=marker.get("errors") or [])
-            if marker["state"] == activation.ACTIVE:
+            if production_queue_store.authority(ep) == "workspace":
                 return {"status": "PASS", "reason": "ALREADY_ACTIVE", "activated": True,
                         "read_path": workspace.as_posix(), "write_path": workspace.as_posix()}
             if not legacy.is_file():
@@ -142,7 +143,7 @@ def rollback(episode_dir: Path) -> dict:
             marker = activation.inspect(ep, legacy_path=legacy, workspace_path=workspace)
             if not marker["valid"]:
                 return _blocked("INVALID_ACTIVATION_RECEIPT", errors=marker.get("errors") or [])
-            if marker["state"] != activation.ACTIVE:
+            if production_queue_store.authority(ep) != "workspace":
                 return {"status": "PASS", "reason": "ALREADY_LEGACY", "activated": False,
                         "read_path": legacy.as_posix(), "write_path": legacy.as_posix()}
             if not workspace.is_file():
