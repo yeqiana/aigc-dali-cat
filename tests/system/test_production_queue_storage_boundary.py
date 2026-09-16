@@ -32,19 +32,17 @@ def test_queue_remains_legacy_pinned_even_if_workspace_shadow_exists(monkeypatch
     story_json.write_json(legacy, {"schema_version": 1, "items": [{"id": "live"}], "waves": []})
     story_json.write_json(shadow, {"schema_version": 1, "items": [{"id": "stale-shadow"}], "waves": []})
 
-    assert production_queue_store.STORAGE_MODE == "legacy_pinned"
+    assert production_queue_store.STORAGE_MODE == "activation_guarded"
     assert production_queue_store.read_path(ep) == legacy
     assert scheduler_core.load_queue(ep)["items"][0]["id"] == "live"
     status = production_queue_store.migration_status(ep)
     assert status["workspace_shadow_enabled"] is False
     assert status["consumer_boundary_ready"] is True
+    assert status["cutover_protocol_ready"] is True
     assert status["cutover_ready"] is False
-    assert status["blocking_reason"] == "DEFER_ATOMIC_CUTOVER_PROTOCOL"
-    assert status["required_before_cutover"] == [
-        "scheduler_lock_guarded_copy",
-        "checksum_verified_activation",
-        "stale_workspace_shadow_rejected",
-    ]
+    assert status["activated"] is False
+    assert status["activation_state"] == "ABSENT"
+    assert status["blocking_reason"] == "UNVERIFIED_WORKSPACE_SHADOW_CONFLICT"
 
 
 def test_queue_save_still_writes_episode_legacy_boundary(monkeypatch, tmp_path):
@@ -86,3 +84,21 @@ def test_runtime_consumers_do_not_construct_queue_path_from_compat_aliases():
         if hits:
             offenders.append((path.name, hits))
     assert offenders == []
+
+
+def test_runtime_queue_physical_writes_are_centralized_in_scheduler_core():
+    offenders = []
+    for path in sorted(SYSTEM.glob("*.py")):
+        if path.name.startswith("test_") or path.name in {"scheduler_core.py", "production_queue_store.py"}:
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "production_queue_store.write_path(" in text:
+            offenders.append(path.name)
+    assert offenders == []
+
+
+def test_scheduler_lanes_use_shared_queue_transaction_lock():
+    for name in ("image_scheduler.py", "batch_scheduler.py"):
+        text = (SYSTEM / name).read_text(encoding="utf-8")
+        assert "runner_state_store.acquire_lock" not in text
+        assert "queue_transaction(" in text
