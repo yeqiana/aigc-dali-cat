@@ -8,6 +8,7 @@ The reproducible snapshot pins the current default family for deterministic reru
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json
 from pathlib import Path
+import production_queue_store
 import runtime_request
 import storyos_config
 
@@ -115,7 +116,7 @@ def migrate_system_default(episode_dir: Path, *, target_model: str | None = None
     import provider_capability
     provider_capability.resolve(target,"codex_subscription")
 
-    queue_path=ep/"meta/production-queue.json"
+    queue_path=production_queue_store.read_path(ep)
     queue=runtime_request.read_json(queue_path) if queue_path.is_file() else {"items":[]}
     active=[x for x in (queue.get("items") or []) if isinstance(x,dict) and x.get("status")=="running"]
     if active:
@@ -149,7 +150,7 @@ def migrate_system_default(episode_dir: Path, *, target_model: str | None = None
 
     if old_model==target:
         if queue_path.is_file() and reclassified:
-            runtime_request.write_json(queue_path,queue)
+            runtime_request.write_json(production_queue_store.write_path(ep),queue)
         evidence_path=ep/"meta/runtime/image-model-migration.json"
         existing=runtime_request.read_json(evidence_path) if evidence_path.is_file() else {}
         migration=(request.get("provenance") or {}).get("image_model_migration") or {}
@@ -185,7 +186,7 @@ def migrate_system_default(episode_dir: Path, *, target_model: str | None = None
     compiled=runtime_request.write_compiled(corrected)
     runtime_request.bind_request(compiled,ep,force=True)
     if queue_path.is_file():
-        runtime_request.write_json(queue_path,queue)
+        runtime_request.write_json(production_queue_store.write_path(ep),queue)
     evidence={
         "schema_version":1,"status":"MIGRATED","episode":str(ep),"at":stamp,
         "from":old_model,"to":target,"source_request_id":request.get("request_id"),

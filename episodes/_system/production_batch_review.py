@@ -22,6 +22,7 @@ import codex_user_runner
 import frame_contract
 import image_scheduler
 import product_review_adapter
+import production_queue_store
 import runtime_provenance
 import runtime_router
 import runtime_timeout_policy
@@ -29,7 +30,8 @@ import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
-QUEUE_REL = Path("meta/production-queue.json")
+# Backward-compatible public alias; physical path ownership remains in the Queue Store.
+QUEUE_REL = production_queue_store.REL
 REVIEW_DIR = Path("meta/runtime/batch-reviews")
 VALID = {"PASS_PREVIEW", "REPAIR_NOW", "UNCERTAIN"}
 
@@ -142,7 +144,7 @@ def record_unit(ep: Path, batch_id: str, unit: dict) -> dict:
 
 
 def batch_items(ep: Path, batch_id: str) -> list[dict]:
-    q = read_json(ep / QUEUE_REL)
+    q = read_json(production_queue_store.read_path(ep))
     rows = [x for x in q.get("items") or [] if isinstance(x, dict) and x.get("batch_id") == batch_id and x.get("output_path")]
     return sorted(rows, key=lambda x: int(x.get("frame") or 0))
 
@@ -208,13 +210,13 @@ def _prepare_locked(ep: Path, batch_id: str, *, attempt: int = 1) -> dict:
         if result["pending_frames"] or (final.get("critic_provenance") or {}).get("request_fingerprint") != request.get("request_fingerprint"):
             raise ValueError("finalized batch evidence invalid; prepare a new review attempt")
         return result
-    q = read_json(ep / QUEUE_REL)
+    q = read_json(production_queue_store.read_path(ep))
     ids = {x.get("id") for x in rows}
     for row in q.get("items") or []:
         if row.get("id") in ids and row.get("status") == "generated":
             row["status"] = "review_pending"
             row["batch_review_request"] = request.get("request_path")
-    write_json(ep / QUEUE_REL, q)
+    write_json(production_queue_store.write_path(ep), q)
     return result
 
 
@@ -252,7 +254,7 @@ def _apply_review_data_locked(ep: Path, batch_id: str, *, data: dict, provenance
         item = next(x for x in rows if f"{int(x['frame']):02d}" == frame)
         if any(row.get(k) != v for k, v in unit_binding(ep, item).items()):
             raise ValueError(f"batch review unit SHA drift frame {frame}")
-    q = read_json(ep / QUEUE_REL)
+    q = read_json(production_queue_store.read_path(ep))
     previous = read_json(final_path(ep, batch_id)) if final_path(ep, batch_id).is_file() else {}
     history = [*(previous.get("unit_history") or []), *(previous.get("frames") or []), *(data.get("unit_history") or [])]
     item_by_frame = {f"{int(x.get('frame') or 0):02d}": x for x in q.get("items") or [] if x.get("batch_id") == batch_id}
@@ -269,7 +271,7 @@ def _apply_review_data_locked(ep: Path, batch_id: str, *, data: dict, provenance
             item["status"] = "generated"
     final = {**data, "schema_version": 1, "batch_id": batch_id, "review_scope": "EARLY_BATCH_ACTUAL_PIXELS",
              "final_pass_authority": False, "critic_provenance": provenance, "unit_history": history}
-    out = final_path(ep, batch_id); write_json(out, final); write_json(ep / QUEUE_REL, q)
+    out = final_path(ep, batch_id); write_json(out, final); write_json(production_queue_store.write_path(ep), q)
     if mark_product_review_complete:
         product_review_adapter.mark_complete(ep, kind(batch_id), attempt=attempt, final_path=out)
     candidate.unlink(missing_ok=True)
@@ -348,7 +350,7 @@ def run_codex_review(ep: Path, batch_id: str, *, attempt: int = 1, codex_raw: st
 
 def pending(ep: Path) -> list[str]:
     ep = Path(ep).resolve()
-    q = read_json(ep / QUEUE_REL)
+    q = read_json(production_queue_store.read_path(ep))
     batch_ids = sorted({str(x.get("batch_id")) for x in q.get("items") or []
                         if x.get("batch_id") and x.get("status") in {"generated", "review_pending"}})
     result = []

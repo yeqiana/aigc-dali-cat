@@ -33,7 +33,8 @@ CAPABILITY_WAIT=24
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
-QUEUE_REL=Path("meta/production-queue.json")
+# Backward-compatible public alias. Physical storage is owned by production_queue_store via scheduler_core.
+QUEUE_REL=scheduler_core.QUEUE_REL
 
 READY_LEDGER_STATES=production_ledger.READY_LEDGER_STATES
 

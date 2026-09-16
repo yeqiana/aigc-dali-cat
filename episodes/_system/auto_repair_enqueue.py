@@ -18,10 +18,10 @@ from pathlib import Path
 
 import image_model_policy
 import ledger_call
+import production_queue_store
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
-QUEUE_REL = Path("meta/production-queue.json")
 LEDGER_REL = Path("meta/production-ledger.json")
 
 
@@ -42,7 +42,7 @@ def _ledger_frame(ep: Path, frame: int) -> dict:
 
 
 def _queue_items(ep: Path, frame: int) -> list[dict]:
-    q = _read(ep / QUEUE_REL)
+    q = _read(production_queue_store.read_path(ep))
     return [
         row for row in (q.get("items") or [])
         if isinstance(row, dict) and int(row.get("frame") or -1) == int(frame)
@@ -71,7 +71,7 @@ def enqueue_marked_repairs(ep: Path) -> dict:
     repair transaction so ``REPAIR_FAILED_IMAGES`` cannot become an empty loop.
     """
     ep = Path(ep).resolve()
-    q = _read(ep / QUEUE_REL)
+    q = _read(production_queue_store.read_path(ep))
     marked = [row for row in (q.get("items") or []) if isinstance(row, dict) and row.get("status") == "scout_repair"]
     results = []
     supersede_ids: set[str] = set()
@@ -99,12 +99,12 @@ def enqueue_marked_repairs(ep: Path) -> dict:
         if result.get("status") in {"REPAIR_ENQUEUED", "REPAIR_ALREADY_PENDING"}:
             supersede_ids.add(str(row.get("id") or ""))
     if supersede_ids:
-        latest = _read(ep / QUEUE_REL)
+        latest = _read(production_queue_store.read_path(ep))
         for row in latest.get("items") or []:
             if str(row.get("id") or "") in supersede_ids and row.get("status") == "scout_repair":
                 row["status"] = "superseded"
                 row["superseded_reason"] = "bounded content repair enqueued"
-        story_json.write_json(ep / QUEUE_REL, latest)
+        story_json.write_json(production_queue_store.write_path(ep), latest)
     return {"marked": len(marked), "results": results, "repair_items_ready": sum(r.get("status") in {"REPAIR_ENQUEUED", "REPAIR_ALREADY_PENDING"} for r in results)}
 
 
