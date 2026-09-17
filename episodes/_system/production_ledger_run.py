@@ -9,6 +9,35 @@ from __future__ import annotations
 from production_ledger_core import *  # noqa: F401,F403  (shared ledger globals)
 import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
 import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
+import provider_receipt_persistence
+
+
+def _load_provider_receipt_evidence(ep: Path, raw_path: str, key: str, expected: tuple[int, int]):
+    loaded = provider_receipt_persistence.load_by_path(ep, raw_path)
+    if not loaded:
+        raise SystemExit(f"provider receipt not found: {raw_path}")
+    receipt_data = loaded.get("payload")
+    if not isinstance(receipt_data, dict):
+        raise SystemExit("provider receipt root must be object")
+    if str(receipt_data.get("frame") or "") not in {"", key}:
+        raise SystemExit(f"provider receipt frame mismatch: {receipt_data.get('frame')} != {key}")
+    release_canvas = receipt_data.get("release_canvas") or {}
+    if release_canvas and (release_canvas.get("width"), release_canvas.get("height")) != expected:
+        raise SystemExit("provider receipt release canvas mismatch")
+    digest = str(loaded.get("legacy_sha256") or "")
+    if not digest:
+        raise SystemExit("provider receipt legacy sha256 missing")
+    evidence = {
+        "path": str(loaded.get("legacy_path") or raw_path),
+        "sha256": digest,
+        "capability_id": receipt_data.get("capability_id"),
+        "provider_raw_canvas": receipt_data.get("provider_raw_canvas"),
+        "ratio_delta": receipt_data.get("ratio_delta"),
+        "normalize_decision": receipt_data.get("normalize_decision"),
+        "provider_attestation": receipt_data.get("provider_attestation"),
+        "storage_source": loaded.get("source"),
+    }
+    return evidence, receipt_data
 
 def declared_reference_contract(ep: Path) -> bool | None:
     """True when story-gates declares required reference/identity anchors.
@@ -236,26 +265,9 @@ def cmd_success(args: argparse.Namespace) -> None:
     }
     provider_receipt = None
     if getattr(args, "provider_receipt", None):
-        receipt_path = Path(args.provider_receipt).resolve()
-        if not receipt_path.is_file():
-            raise SystemExit(f"provider receipt not found: {receipt_path}")
-        receipt_data = json.loads(receipt_path.read_text(encoding="utf-8-sig"))
-        if not isinstance(receipt_data, dict):
-            raise SystemExit("provider receipt root must be object")
-        if str(receipt_data.get("frame") or "") not in {"", key}:
-            raise SystemExit(f"provider receipt frame mismatch: {receipt_data.get('frame')} != {key}")
-        release_canvas = receipt_data.get("release_canvas") or {}
-        if release_canvas and (release_canvas.get("width"), release_canvas.get("height")) != expected:
-            raise SystemExit("provider receipt release canvas mismatch")
-        provider_receipt = {
-            "path": repo_relative(receipt_path),
-            "sha256": sha256_file(receipt_path),
-            "capability_id": receipt_data.get("capability_id"),
-            "provider_raw_canvas": receipt_data.get("provider_raw_canvas"),
-            "ratio_delta": receipt_data.get("ratio_delta"),
-            "normalize_decision": receipt_data.get("normalize_decision"),
-            "provider_attestation": receipt_data.get("provider_attestation"),
-        }
+        provider_receipt, receipt_data = _load_provider_receipt_evidence(
+            ep, str(args.provider_receipt), key, expected
+        )
         attempt["provider_receipt"] = provider_receipt
         attempt["provider_attempt"] = {
             **(attempt.get("provider_attempt") or {}),
@@ -317,26 +329,9 @@ def cmd_recover_success(args: argparse.Namespace) -> None:
     }
     provider_receipt = None
     if getattr(args, "provider_receipt", None):
-        receipt_path = Path(args.provider_receipt).resolve()
-        if not receipt_path.is_file():
-            raise SystemExit(f"provider receipt not found: {receipt_path}")
-        receipt_data = json.loads(receipt_path.read_text(encoding="utf-8-sig"))
-        if not isinstance(receipt_data, dict):
-            raise SystemExit("provider receipt root must be object")
-        if str(receipt_data.get("frame") or "") not in {"", key}:
-            raise SystemExit(f"provider receipt frame mismatch: {receipt_data.get('frame')} != {key}")
-        release_canvas = receipt_data.get("release_canvas") or {}
-        if release_canvas and (release_canvas.get("width"), release_canvas.get("height")) != expected:
-            raise SystemExit("provider receipt release canvas mismatch")
-        provider_receipt = {
-            "path": repo_relative(receipt_path),
-            "sha256": sha256_file(receipt_path),
-            "capability_id": receipt_data.get("capability_id"),
-            "provider_raw_canvas": receipt_data.get("provider_raw_canvas"),
-            "ratio_delta": receipt_data.get("ratio_delta"),
-            "normalize_decision": receipt_data.get("normalize_decision"),
-            "provider_attestation": receipt_data.get("provider_attestation"),
-        }
+        provider_receipt, receipt_data = _load_provider_receipt_evidence(
+            ep, str(args.provider_receipt), key, expected
+        )
         attempt["provider_receipt"] = provider_receipt
         attempt["provider_attempt"] = {
             **(attempt.get("provider_attempt") or {}),

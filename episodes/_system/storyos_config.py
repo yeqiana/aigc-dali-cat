@@ -301,6 +301,16 @@ def validate(data: dict | None = None) -> list[str]:
             jsonl_root = runtime_store.get("jsonl_root")
             if not isinstance(jsonl_root, str) or not jsonl_root.strip():
                 errors.append("storage.runtime_store.jsonl_root must be a non-empty string")
+        episode_meta_store = storage.get("episode_meta_store")
+        if not isinstance(episode_meta_store, dict):
+            errors.append("storage.episode_meta_store must be a mapping")
+        elif str(episode_meta_store.get("mode") or "").lower() not in {"json", "dual"}:
+            errors.append("storage.episode_meta_store.mode must be json or dual")
+        hot_state = storage.get("hot_state")
+        if not isinstance(hot_state, dict):
+            errors.append("storage.hot_state must be a mapping")
+        elif str(hot_state.get("mode") or "").lower() not in {"file", "dual"}:
+            errors.append("storage.hot_state.mode must be file or dual")
     return errors
 
 

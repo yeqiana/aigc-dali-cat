@@ -87,6 +87,12 @@ _STORAGE_CONFIG = (
     ("runtime_store_mode", "storage.runtime_store.mode", "STORYOS_RUNTIME_STORE_MODE"),
     ("runtime_jsonl_root", "storage.runtime_store.jsonl_root", "STORYOS_RUNTIME_JSONL_ROOT"),
 )
+_EPISODE_META_STORAGE_CONFIG = (
+    ("episode_meta_store_mode", "storage.episode_meta_store.mode", "STORYOS_EPISODE_META_STORE_MODE"),
+)
+_HOT_STATE_CONFIG = (
+    ("hot_state_mode", "storage.hot_state.mode", "STORYOS_HOT_STATE_MODE"),
+)
 
 
 def _truthy(raw: str) -> bool:
@@ -137,6 +143,22 @@ def snapshot() -> dict:
         else:
             value = resolved_store["mode" if name == "runtime_store_mode" else "jsonl_root"]
             sources[name] = {"value": value, "source": f"{YAML}#{key}"}
+
+    resolved_episode_meta = storage_config.episode_meta_store_config()
+    for name, key, env_var in _EPISODE_META_STORAGE_CONFIG:
+        raw = os.environ.get(env_var, "").strip()
+        sources[name] = {
+            "value": raw if raw else resolved_episode_meta["mode"],
+            "source": f"env:{env_var}" if raw else f"{YAML}#{key}",
+        }
+
+    resolved_hot_state = storage_config.hot_state_config()
+    for name, key, env_var in _HOT_STATE_CONFIG:
+        raw = os.environ.get(env_var, "").strip()
+        sources[name] = {
+            "value": raw if raw else resolved_hot_state["mode"],
+            "source": f"env:{env_var}" if raw else f"{YAML}#{key}",
+        }
 
     out["credential_presence"] = {
         name: {"present": bool(os.environ.get(name, "").strip())} for name in SECRET_ENV

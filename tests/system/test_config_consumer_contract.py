@@ -70,6 +70,7 @@ PRODUCTION_KEYS = (
     "normalize.provider_ratio_crop_exception_enabled",
     "storage.runtime_store.mode",
     "storage.runtime_store.jsonl_root",
+    "storage.episode_meta_store.mode",
 )
 
 # Declared on 2026-09-15 as non-operative and removed. They must not come back
@@ -293,7 +294,11 @@ class EffectiveConfigTests(unittest.TestCase):
         sys.path.insert(0, str(ROOT))
         from platform.repository import runtime_repository_provider as provider
 
-        env = {k: "" for k in ("STORYOS_RUNTIME_JSONL_ROOT", "STORYOS_RUNTIME_STORE_MODE")}
+        env = {k: "" for k in (
+            "STORYOS_RUNTIME_JSONL_ROOT",
+            "STORYOS_RUNTIME_STORE_MODE",
+            "STORYOS_EPISODE_META_STORE_MODE",
+        )}
         with mock.patch.dict(os.environ, env):
             resolved = storage_config.runtime_store_config()
             self.assertEqual(resolved, {"mode": "jsonl", "jsonl_root": ".storyos"})
@@ -304,6 +309,8 @@ class EffectiveConfigTests(unittest.TestCase):
             "value": "jsonl", "source": "config/storyos.yaml#storage.runtime_store.mode"})
         self.assertEqual(sources["runtime_jsonl_root"], {
             "value": ".storyos", "source": "config/storyos.yaml#storage.runtime_store.jsonl_root"})
+        self.assertEqual(sources["episode_meta_store_mode"], {
+            "value": "json", "source": "config/storyos.yaml#storage.episode_meta_store.mode"})
 
         with mock.patch.dict(os.environ, {"STORYOS_RUNTIME_JSONL_ROOT": "/declared/root"}):
             row = effective_config.snapshot()["sources"]["runtime_jsonl_root"]

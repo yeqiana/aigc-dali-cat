@@ -40,6 +40,12 @@ RUNTIME_STORE_ENV_KEYS = {
     "mode": "STORYOS_RUNTIME_STORE_MODE",
     "jsonl_root": "STORYOS_RUNTIME_JSONL_ROOT",
 }
+EPISODE_META_STORE_ENV_KEYS = {
+    "mode": "STORYOS_EPISODE_META_STORE_MODE",
+}
+HOT_STATE_ENV_KEYS = {
+    "mode": "STORYOS_HOT_STATE_MODE",
+}
 
 
 def _section(name: str) -> dict[str, Any]:
@@ -145,6 +151,51 @@ def runtime_store_config(overrides: dict | None = None) -> dict[str, str]:
     return {"mode": mode, "jsonl_root": root}
 
 
+def episode_meta_store_config(overrides: dict | None = None) -> dict[str, str]:
+    """Resolve staged Episode metadata persistence mode.
+
+    ``json`` preserves current behaviour. ``dual`` keeps the compatibility
+    JSON and mirrors supported families to MySQL V2. mysql-only is withheld
+    until all legacy file-path consumers have a repository read path.
+    """
+    overrides = overrides or {}
+    section = _section("episode_meta_store")
+    mode = _text(
+        overrides,
+        "mode",
+        EPISODE_META_STORE_ENV_KEYS["mode"],
+        section.get("mode"),
+    ).lower()
+    if mode not in {"json", "dual"}:
+        raise ValueError(
+            f"CONFIG_INVALID: episode meta store mode {mode!r}; allowed: json, dual"
+        )
+    return {"mode": mode}
+
+
+def hot_state_config(overrides: dict | None = None) -> dict[str, str]:
+    """Resolve Runtime hot-state migration mode.
+
+    ``file`` keeps the compatibility JSON/runtime-workspace path only.
+    ``dual`` mirrors supported current-state projections to Redis while the file
+    path remains readable. redis-only is intentionally withheld until every
+    reader has a Redis-aware fallback and recovery proof.
+    """
+    overrides = overrides or {}
+    section = _section("hot_state")
+    mode = _text(
+        overrides,
+        "mode",
+        HOT_STATE_ENV_KEYS["mode"],
+        section.get("mode"),
+    ).lower()
+    if mode not in {"file", "dual"}:
+        raise ValueError(
+            f"CONFIG_INVALID: hot state mode {mode!r}; allowed: file, dual"
+        )
+    return {"mode": mode}
+
+
 def storage_summary() -> dict[str, Any]:
     """非凭据证据：只输出解析后的拓扑与「密码是否存在」，绝不输出密码值。
 
@@ -154,6 +205,8 @@ def storage_summary() -> dict[str, Any]:
     mysql_section = _section("mysql")
     redis_section = _section("redis")
     runtime_store = runtime_store_config()
+    episode_meta_store = episode_meta_store_config()
+    hot_state = hot_state_config()
     return {
         "mysql": {
             "host": _text({}, "host", MYSQL_ENV_KEYS["host"], mysql_section.get("host")),
@@ -181,5 +234,15 @@ def storage_summary() -> dict[str, Any]:
             **runtime_store,
             "mode_env_provided": _present(os.environ.get(RUNTIME_STORE_ENV_KEYS["mode"])),
             "jsonl_root_env_provided": _present(os.environ.get(RUNTIME_STORE_ENV_KEYS["jsonl_root"])),
+        },
+        "episode_meta_store": {
+            **episode_meta_store,
+            "mode_env_provided": _present(
+                os.environ.get(EPISODE_META_STORE_ENV_KEYS["mode"])
+            ),
+        },
+        "hot_state": {
+            **hot_state,
+            "mode_env_provided": _present(os.environ.get(HOT_STATE_ENV_KEYS["mode"])),
         },
     }

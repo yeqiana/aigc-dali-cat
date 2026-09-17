@@ -22,6 +22,7 @@ import production_ledger
 import production_queue_store
 import production_recovery
 import provider_capability
+import provider_receipt_persistence
 import raw_candidate_budget
 import scheduler_core
 import story_json
@@ -62,8 +63,11 @@ def _receipt_from_error(ep: Path, item: dict, attempt: dict) -> Path | None:
             path.relative_to(Path(ep).resolve())
         except (ValueError, OSError):
             continue
-        if path.is_file():
-            return path
+        # During JSON -> MySQL dual-write cutover the compatibility file may
+        # already have been removed. Keep returning the validated in-Episode
+        # path so provider_receipt_persistence can fall back to MySQL by the
+        # recorded legacy path.
+        return path
     return None
 
 
@@ -108,7 +112,12 @@ def inspect_item(ep: Path, item: dict) -> dict:
     receipt_path = _receipt_from_error(ep, item, attempt)
     if receipt_path is None:
         return {**base, "reason": "provider_receipt_missing"}
-    receipt = _read(receipt_path)
+    loaded_receipt = provider_receipt_persistence.load_by_path(ep, receipt_path)
+    if not loaded_receipt:
+        return {**base, "reason": "provider_receipt_missing"}
+    receipt = loaded_receipt.get("payload") or {}
+    if not isinstance(receipt, dict):
+        return {**base, "reason": "provider_receipt_invalid"}
     if str(receipt.get("frame") or "").zfill(2) != f"{frame:02d}":
         return {**base, "reason": "provider_receipt_frame_mismatch"}
     if str(receipt.get("normalize_decision") or "") != code:

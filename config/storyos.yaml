@@ -295,6 +295,15 @@ storage:
   runtime_store:
     mode: jsonl
     jsonl_root: .storyos
+  # Episode 元数据迁移采用分阶段双写。默认 json 保持现有生产行为；
+  # 只有显式切 dual 才把已支持的 JSON 家族同步写入 MySQL V2。
+  # mysql-only 在全部历史文件路径消费者完成 Repository 化前禁止启用。
+  episode_meta_store:
+    mode: json
+  # Runtime 热状态迁移。file 保持当前行为；dual 在继续写兼容文件的同时
+  # 镜像到 Redis。redis-only 暂不开放，避免 Redis 故障变成生产事实丢失。
+  hot_state:
+    mode: file
 
 compatibility:
   # 契约位：历史 JSON 请求/证据可读，但新的人工配置只写本 YAML。

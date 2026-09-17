@@ -37,6 +37,7 @@ ENV_KEYS = (
     "STORYOS_REDIS_DB",
     "STORYOS_REDIS_PASSWORD",
     "STORYOS_REDIS_TIMEOUT",
+    "STORYOS_EPISODE_META_STORE_MODE",
 )
 
 
@@ -74,6 +75,7 @@ class StorageConfigTests(unittest.TestCase):
         with _CleanEnv():
             mysql = storage_config.mysql_connection_kwargs()
             redis = storage_config.redis_connection_kwargs()
+            episode_meta = storage_config.episode_meta_store_config()
         config = storyos_config.load_config()
         self.assertEqual(mysql["host"], storyos_config.get_path(config, "storage.mysql.host"))
         self.assertEqual(mysql["port"], storyos_config.get_path(config, "storage.mysql.port"))
@@ -88,6 +90,15 @@ class StorageConfigTests(unittest.TestCase):
             redis["timeout"],
             float(storyos_config.get_path(config, "storage.redis.timeout_seconds")),
         )
+        self.assertEqual(episode_meta, {"mode": "json"})
+
+    def test_episode_meta_store_allows_only_safe_migration_modes(self):
+        with _CleanEnv():
+            os.environ["STORYOS_EPISODE_META_STORE_MODE"] = "dual"
+            self.assertEqual(storage_config.episode_meta_store_config(), {"mode": "dual"})
+            os.environ["STORYOS_EPISODE_META_STORE_MODE"] = "mysql"
+            with self.assertRaises(ValueError):
+                storage_config.episode_meta_store_config()
 
     def test_env_overrides_yaml(self):
         with _CleanEnv():

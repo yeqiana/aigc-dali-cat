@@ -358,7 +358,8 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     # P1-1: per-frame identity requirement is derived review evidence. It is
     # deliberately excluded from hash_material so publishing it cannot invalidate
     # historical contract SHAs (same policy as source_binding).
-    identity_requirements = identity_continuity.contract_requirements(ep, n, refs)
+    identity_requirements = identity_continuity.contract_requirements(
+        ep, n, refs, progression.get("shot_progression") or {})
 
     source_trace = {
         "story": {"path": repo_rel(story_path), "sha256": sha256_file(story_path)},
@@ -530,6 +531,11 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     }
     if write_cache:
         write_json(cache_write_path(ep, key), result)
+        # During the migration phase JSON remains the compatibility surface.
+        # Explicit storage.episode_meta_store.mode=dual mirrors the same
+        # resolved contract into MySQL V2; default json mode is a no-op here.
+        import frame_contract_persistence
+        frame_contract_persistence.persist(ep, result)
     return result
 
 

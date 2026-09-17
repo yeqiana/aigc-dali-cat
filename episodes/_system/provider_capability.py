@@ -4,6 +4,7 @@ import argparse, hashlib, json, time
 from pathlib import Path
 from PIL import Image
 import storyos_config
+import provider_receipt_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 _CONFIG = storyos_config.load_config()
@@ -116,7 +117,9 @@ def reference_evidence(references)->list[dict]:
 def write_receipt(ep:Path,frame:int,receipt:dict)->dict:
     path=receipt_path(ep,frame,receipt.get("recorded_at_epoch"));path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-    return {"path":_rel(path),"sha256":sha256_file(path),"receipt":receipt}
+    rel=_rel(path); digest=sha256_file(path)
+    provider_receipt_persistence.persist(ep, receipt, status="RECORDED", legacy_path=rel, legacy_sha256=digest)
+    return {"path":rel,"sha256":digest,"receipt":receipt}
 
 def finalize_receipt(path:Path,normalization:dict,final_path:Path)->dict:
     data=_json(path)
@@ -124,7 +127,9 @@ def finalize_receipt(path:Path,normalization:dict,final_path:Path)->dict:
     data["release_canvas"]={"width":int(normalization["target_size"][0]),"height":int(normalization["target_size"][1]),
         "path":str(final_path),"sha256":sha256_file(final_path)}
     path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-    return {"path":_rel(path),"sha256":sha256_file(path),"receipt":data}
+    rel=_rel(path); digest=sha256_file(path)
+    provider_receipt_persistence.persist(path.resolve().parents[2], data, status="FINALIZED", legacy_path=rel, legacy_sha256=digest)
+    return {"path":rel,"sha256":digest,"receipt":data}
 
 def self_test():
     p=resolve(DEFAULT_MODEL,"codex_subscription")
