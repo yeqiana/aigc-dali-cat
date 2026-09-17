@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "11",
+  "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/11.png",
+  "asset_sha256": "b7ab83af44a5b3b605ff9d81b550461ca7c71f7f86b1ac2e1b53407a3d57e535",
+  "story_sha256": "438ca8248415e21a3d13d47cb76c855ea850525b506b8b315109794f269af8c8",
+  "storyboard_sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5",
+  "visual_contract_sha256": "7f8ca46a725a3831efdcb86bc7d3ca309caea65dfda45b281c5eae2216de8417",
+  "environment_frame_sha256": "e0c20a64006dd1e621f3ac1a088216e36a3fb102e919bffb1a7dbb1cfb09cc6a",
+  "frame_directive_sha256": "d0822f5c9106ac2a1f3a682dfe5561f8478ab5fe82c2bfdacb854f92db930b17",
+  "frame_contract_sha256": "448c4cee1648007f4580fd0449284a760166d722359a75a7e56999b55c4c9245",
+  "source_binding": {
+    "story": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+      "sha256": "438ca8248415e21a3d13d47cb76c855ea850525b506b8b315109794f269af8c8"
+    },
+    "storyboard": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 2,
+    "reviewed_at": "2026-09-14T14:16:41+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/frame-semantic-attempt-2-request.json",
+    "request_id": "frame-semantic-a2-ae99f422137d851d",
+    "request_fingerprint": "ae99f422137d851da99da240c454f5296b30cd0f817e9252ccadd3ead82ce0a9",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "返航斜俯街巷中孩子最先停下手里的事抬头看无人机（裁片确认视线朝上），周围成人多数仍正常做事。",
+  "decision": "pass",
+  "caption_sha256": "4f39327ee9c31ebbd1b4d72fde9f69f9db2b4129f33c627a0c5b9c23c917d9d3"
+}

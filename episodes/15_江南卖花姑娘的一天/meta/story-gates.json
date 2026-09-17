@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "visual_profile": {
+    "mode": "override",
+    "profile_id": "M00_ANCIENT_DAILY_LIFE_V1",
+    "profile_path": "standards/visual_profiles/M00_ANCIENT_DAILY_LIFE_V1.json",
+    "capture_profile": "mobile_album_documentary",
+    "override_reason": "古代普通人生活相册题材，继承M00现实纪实母版并使用古代生活档案子视觉体系"
+  }
+}

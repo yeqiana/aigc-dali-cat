@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "rules": {
+    "delete_frame_test": true,
+    "max_frames_without_strong_progress": 5,
+    "max_repeated_visual_without_new_information": 2
+  },
+  "frames": [
+    {"frame":"01","necessity":{"causal_loss":false,"evidence_loss":false,"suspense_loss":false,"spatial_orientation_loss":false,"emotional_state_change_loss":true},"progress_type":"NEW_CHARACTER_STATE","same_visual_as_previous":false,"new_verifiable_information":true,"note":"情侣凌晨上山自拍，建立旅行关系、车辆、衣着和看日出动机。"},
+    {"frame":"02","necessity":{"causal_loss":true,"evidence_loss":false,"suspense_loss":false,"spatial_orientation_loss":true,"emotional_state_change_loss":false},"progress_type":"NEW_SPACE","same_visual_as_previous":false,"new_verifiable_information":true,"note":"无人机从现实观景点起飞，建立正常云海和航拍基线。"},
+    {"frame":"03","necessity":{"causal_loss":false,"evidence_loss":true,"suspense_loss":true,"spatial_orientation_loss":false,"emotional_state_change_loss":false},"progress_type":"NEW_EVIDENCE","same_visual_as_previous":false,"new_verifiable_information":true,"note":"低云下首次露出不应存在的屋顶和修屋人。"},
+    {"frame":"04","necessity":{"causal_loss":false,"evidence_loss":true,"suspense_loss":false,"spatial_orientation_loss":false,"emotional_state_change_loss":false},"progress_type":"NEW_INFORMATION","same_visual_as_previous":false,"new_verifiable_information":true,"note":"院落、牲畜、孩子、搬木料证明是正常生活区。"},
+    {"frame":"05","necessity":{"causal_loss":false,"evidence_loss":true,"suspense_loss":false,"spatial_orientation_loss":true,"emotional_state_change_loss":false},"progress_type":"NEW_SPACE","same_visual_as_previous":false,"new_verifiable_information":true,"note":"梯田水渠证明长期农业与稳定水利。"},
+    {"frame":"06","necessity":{"causal_loss":false,"evidence_loss":true,"suspense_loss":false,"spatial_orientation_loss":false,"emotional_state_change_loss":false},"progress_type":"NEW_INFORMATION","same_visual_as_previous":false,"new_verifiable_information":true,"note":"石路、作坊、市场和交换行为证明生产运输秩序。"},
+    {"frame":"07","necessity":{"causal_loss":false,"evidence_loss":true,"suspense_loss":true,"spatial_orientation_loss":true,"emotional_state_change_loss":false},"progress_type":"ANOMALY_ESCALATION","same_visual_as_previous":false,"new_verifiable_information":true,"note":"大型在用引水工程把规模从聚落推到社会组织。"},
+    {"frame":"08","necessity":{"causal_loss":false,"evidence_loss":true,"suspense_loss":true,"spatial_orientation_loss":true,"emotional_state_change_loss":false},"progress_type":"ANOMALY_ESCALATION","same_visual_as_previous":false,"new_verifiable_information":true,"note":"云裂后完整山谷城区展开，确认是活着的文明。"},
+    {"frame":"09","necessity":{"causal_loss":false,"evidence_loss":true,"suspense_loss":false,"spatial_orientation_loss":false,"emotional_state_change_loss":false},"progress_type":"NEW_INFORMATION","same_visual_as_previous":false,"new_verifiable_information":true,"note":"道路运输与EP01灯队方向呼应，形成系列回收。"},
+    {"frame":"10","necessity":{"causal_loss":true,"evidence_loss":false,"suspense_loss":false,"spatial_orientation_loss":false,"emotional_state_change_loss":true},"progress_type":"NEW_CHARACTER_STATE","same_visual_as_previous":false,"new_verifiable_information":true,"note":"女友明确要求返航，男主开始执行，打开人物选择问题。"},
+    {"frame":"11","necessity":{"causal_loss":true,"evidence_loss":true,"suspense_loss":true,"spatial_orientation_loss":false,"emotional_state_change_loss":false},"progress_type":"NEW_CAUSALITY","same_visual_as_previous":false,"new_verifiable_information":true,"note":"孩子第一次抬头发现无人机。"},
+    {"frame":"12","necessity":{"causal_loss":true,"evidence_loss":false,"suspense_loss":false,"spatial_orientation_loss":false,"emotional_state_change_loss":true},"progress_type":"NEW_CAUSALITY","same_visual_as_previous":false,"new_verifiable_information":true,"note":"成年人把孩子拉到身边，确认对方把无人机当风险。"},
+    {"frame":"13","necessity":{"causal_loss":true,"evidence_loss":true,"suspense_loss":false,"spatial_orientation_loss":false,"emotional_state_change_loss":false},"progress_type":"ANOMALY_ESCALATION","same_visual_as_previous":false,"new_verifiable_information":true,"note":"避让反应沿街区异步扩散。"},
+    {"frame":"14","necessity":{"causal_loss":false,"evidence_loss":true,"suspense_loss":false,"spatial_orientation_loss":false,"emotional_state_change_loss":true},"progress_type":"NEW_INFORMATION","same_visual_as_previous":false,"new_verifiable_information":true,"note":"浅色头巾年轻女人形成EP04人物接力锚。"},
+    {"frame":"15","necessity":{"causal_loss":true,"evidence_loss":false,"suspense_loss":true,"spatial_orientation_loss":false,"emotional_state_change_loss":true},"progress_type":"REVERSAL","same_visual_as_previous":false,"new_verifiable_information":true,"note":"男主明知该走仍多停几秒，观察者转成闯入者。"},
+    {"frame":"16","necessity":{"causal_loss":true,"evidence_loss":true,"suspense_loss":false,"spatial_orientation_loss":false,"emotional_state_change_loss":true},"progress_type":"NEW_CAUSALITY","same_visual_as_previous":false,"new_verifiable_information":true,"note":"正常清晨因无人机局部中断，主角确认自己正在影响对方生活。"},
+    {"frame":"17","necessity":{"causal_loss":true,"evidence_loss":true,"suspense_loss":true,"spatial_orientation_loss":false,"emotional_state_change_loss":false},"progress_type":"ANOMALY_ESCALATION","same_visual_as_previous":false,"new_verifiable_information":true,"note":"图传定位异常、无人机高度下降，设备越界产生物理后果。"},
+    {"frame":"18","necessity":{"causal_loss":false,"evidence_loss":true,"suspense_loss":true,"spatial_orientation_loss":false,"emotional_state_change_loss":false},"progress_type":"NEW_EVIDENCE","same_visual_as_previous":false,"new_verifiable_information":true,"note":"最后缓存出现模糊亮区和疑似车辆轮廓，但不完成EP05答案。"},
+    {"frame":"19","necessity":{"causal_loss":true,"evidence_loss":false,"suspense_loss":false,"spatial_orientation_loss":false,"emotional_state_change_loss":true},"progress_type":"PAYOFF","same_visual_as_previous":false,"new_verifiable_information":true,"note":"无人机失联触发情侣第一次真正争吵，男主放弃下山寻找。"},
+    {"frame":"20","necessity":{"causal_loss":false,"evidence_loss":false,"suspense_loss":false,"spatial_orientation_loss":true,"emotional_state_change_loss":true},"progress_type":"PAYOFF","same_visual_as_previous":false,"new_verifiable_information":true,"note":"正常日出与缺席的无人机收尾，为EP04/EP05留下实体接力。"}
+  ]
+}

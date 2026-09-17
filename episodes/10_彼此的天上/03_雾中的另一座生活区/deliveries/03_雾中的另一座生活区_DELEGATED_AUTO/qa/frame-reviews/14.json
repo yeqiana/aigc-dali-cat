@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "14",
+  "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/14.png",
+  "asset_sha256": "37b8128ec3920a89db3b929722430ddd68026b93f397d055ffe3b353fcc75126",
+  "story_sha256": "438ca8248415e21a3d13d47cb76c855ea850525b506b8b315109794f269af8c8",
+  "storyboard_sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5",
+  "visual_contract_sha256": "7f8ca46a725a3831efdcb86bc7d3ca309caea65dfda45b281c5eae2216de8417",
+  "environment_frame_sha256": "0cbc4441a18768b9eb8cbe43f0d5ec218cd898f101da8bf9c275c42f105e0f63",
+  "frame_directive_sha256": "e520aada5f55523bc2fa9f145b57b83c561a5c5bf8cf3959800c4aca52c8a62f",
+  "frame_contract_sha256": "3f1a36d84c810e9aa58ec471a42c885e7360c89cbc4cebdc38b5ceb3ff4305ef",
+  "source_binding": {
+    "story": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+      "sha256": "438ca8248415e21a3d13d47cb76c855ea850525b506b8b315109794f269af8c8"
+    },
+    "storyboard": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 2,
+    "reviewed_at": "2026-09-14T14:16:41+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/frame-semantic-attempt-2-request.json",
+    "request_id": "frame-semantic-a2-ae99f422137d851d",
+    "request_fingerprint": "ae99f422137d851da99da240c454f5296b30cd0f817e9252ccadd3ead82ce0a9",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "头裹浅色粗布头巾的年轻女人先把身旁孩子往后带、自己继续抬头看无人机几秒未进屋，普通居民姿态，EP04 人物锚成立；锁后返修已消除侧屋波纹铁皮屋面与院内黑色塑料大盆，改为深色瓦顶木构夯土与竹篾浅筐、木桶、深釉陶缸。",
+  "decision": "pass",
+  "caption_sha256": "12f653e97281eeb3de40980a27a2e36fcea2d754d36dce7e8cc8304d41b719b8"
+}

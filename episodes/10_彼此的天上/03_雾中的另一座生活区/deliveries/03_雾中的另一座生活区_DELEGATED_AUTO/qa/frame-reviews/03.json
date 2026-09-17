@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "03",
+  "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/03.png",
+  "asset_sha256": "37ce7d69844093ef8793ad6a83548a498773914161cb94165550281bdd5d7985",
+  "story_sha256": "438ca8248415e21a3d13d47cb76c855ea850525b506b8b315109794f269af8c8",
+  "storyboard_sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5",
+  "visual_contract_sha256": "7f8ca46a725a3831efdcb86bc7d3ca309caea65dfda45b281c5eae2216de8417",
+  "environment_frame_sha256": "81f8add658ec0c4d90f63b9cc8c70bc98ad46345cbb01d820dc6d819c98acbb3",
+  "frame_directive_sha256": "22d7e9d3ac985e2881af783f816401a64e9e3d6eb70a9325028e6184edbd33fb",
+  "frame_contract_sha256": "1842166ed7fe6315ae0966ae8320f5cf00750d6d8deac265d585cde876b83dd9",
+  "source_binding": {
+    "story": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+      "sha256": "438ca8248415e21a3d13d47cb76c855ea850525b506b8b315109794f269af8c8"
+    },
+    "storyboard": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "580a8dcf8de7d71f61f7fde21659c6784c46f76c0c885d13086877e81f008758"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 2,
+    "reviewed_at": "2026-09-14T14:16:41+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/frame-semantic-attempt-2-request.json",
+    "request_id": "frame-semantic-a2-ae99f422137d851d",
+    "request_fingerprint": "ae99f422137d851da99da240c454f5296b30cd0f817e9252ccadd3ead82ce0a9",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "雾缝下只露出一栋湿旧深色瓦屋顶与正在修屋面的普通人，大部分山谷仍被雾遮挡，异常来自不该出现的人居结构而非发光特效。",
+  "decision": "pass",
+  "caption_sha256": "4cf918161526c6aac92e5a16a35eac7d22a460595bf6df8151fcb5eb78572e03"
+}

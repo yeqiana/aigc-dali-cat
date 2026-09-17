@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "profile_id": "M00_HEAVEN_WORKER_DAILY_V1",
+  "profile_version": "1.0",
+  "platform_min_version": "2.7.0",
+  "profile_name": "天界生活档案",
+  "default_when_unspecified": false,
+  "scope": "episode_explicit_locked_visual_profile",
+  "parent_profile": "M00",
+  "principle": "将幻想世界中的天界表现为普通人的生活空间，重点记录工作、关系和日常，而不是神话展示。",
+  "precedence": [
+    "explicit_episode_visual_profile",
+    "fantasy_world_capture_logic",
+    "M00_visual_language"
+  ],
+  "visual_dna": {
+    "reality_first": true,
+    "fantasy_but_lived_in": true,
+    "ordinary_worker_perspective": true,
+    "composition": "personal_daily_record",
+    "lighting": "natural_environment_light",
+    "people": "ordinary_workers_not_deities",
+    "scale": "small_life_over_large_spectacle",
+    "commercial_fantasy": "forbidden",
+    "movie_poster": "forbidden",
+    "hero_scene": "not_default"
+  },
+  "suitable_scenes": [
+    "cloud_worker_daily",
+    "heaven_mail_delivery",
+    "garden_management",
+    "gate_guard_shift",
+    "ordinary_heaven_lunch_break"
+  ],
+  "forbidden": [
+    "xianxia_battle",
+    "god_king_aura",
+    "massive_palace_showcase",
+    "anime_style",
+    "game_render",
+    "extreme_special_effects",
+    "commercial_fantasy_art"
+  ],
+  "anti_homogeneity": {
+    "lock_texture_not_scene": true,
+    "rule": "统一真实生活记录感，不统一天界建筑、职业、故事空间。"
+  }
+}

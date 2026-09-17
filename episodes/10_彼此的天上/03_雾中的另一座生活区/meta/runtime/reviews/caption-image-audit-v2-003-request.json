@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "request_id": "caption-image-audit-v2-003-a1-64f6dc01e5777f6f",
+  "request_fingerprint": "64f6dc01e5777f6fcb6482b18c6851d7f1517bd4cfad6a482bed9cbc601891c9",
+  "created_at": "2026-09-14T15:48:19+08:00",
+  "status": "FINALIZED",
+  "review_kind": "caption-image-audit-v2-003",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/14.png",
+      "sha256": "d7334a0272184afcc88d3ba18504c813d2deeb4d3471371f5a73a99ed3870f47"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/19.png",
+      "sha256": "9cb6f98e887841ecebb658a05621a1b5d0af1440997cb419124f6256c0dda27d"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/20.png",
+      "sha256": "48a97ee1c0eb6678089d6842fb8df5a2472339612113d1585300c4628bbd4a53"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/subtitles.yaml",
+      "sha256": "d088c1915cdbc5a05c93394fa16a0b0011753280da4da92b40fdff9a6a086e1c"
+    }
+  ],
+  "candidate_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.caption-image-audit-candidate-003.json",
+  "prompt_sha256": "5b8c7076c2fcc53631e5c9d7f06e5ce7b1eabebd282317a9d88fc1be0bb0e373",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are the Story OS final-publish Caption ↔ Image + Subtitle Obstruction Critic.\nReview ONLY the supplied FINAL publish pixels after subtitle rendering.\nFor each frame judge two things:\n1. supported: the caption is honestly supported by the underlying photographed/generated scene; it must not invent a core event, prop, person, UI text, anomaly, action, or causal fact absent from the scene. The rendered subtitle text itself is NEVER visual evidence for supported=true; mentally ignore the overlay when judging support.\n2. subtitle_unobstructed: rendered text does not cover a face, anomaly evidence, hand/action, key prop, native text, or causal clue. Left/middle geometry and line-count are checked deterministically elsewhere; here judge actual pixel obstruction.\nDo not re-review overall story quality, character continuity, or visual style. Empty captions automatically pass both checks.\nMappings:\n- frame 14: final_publish_image=episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/14.png | caption=\"她先把孩子往后带，自己又多看了几秒。\"\n- frame 19: final_publish_image=episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/19.png | caption=\"失联了。她第一次拦着我，说别去了。\"\n- frame 20: final_publish_image=episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/20.png | caption=\"太阳照常升起，云海还是好看。无人机没回来。\"\n\nWrite ONLY JSON to episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.caption-image-audit-candidate-003.json:\n{\"frames\":[{\"frame\":\"01\",\"supported\":true,\"subtitle_unobstructed\":true,\"notes\":\"specific pixel evidence\"}],\"summary\":{\"passed\":true}}\nReturn one row for every attached frame. summary.passed=false if any supported=false or subtitle_unobstructed=false.\n",
+  "attempt_request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/caption-image-audit-v2-003-attempt-1-request.json",
+  "finalized_at": "2026-09-14T15:48:19+08:00",
+  "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/caption-image-audit.json"
+}

@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "02",
+  "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/02.png",
+  "asset_sha256": "a55d1c83a1340c3bf1f8405e8fbacd4ed2351f46e97db146805524f6fd760f51",
+  "story_sha256": "438ca8248415e21a3d13d47cb76c855ea850525b506b8b315109794f269af8c8",
+  "storyboard_sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5",
+  "visual_contract_sha256": "7f8ca46a725a3831efdcb86bc7d3ca309caea65dfda45b281c5eae2216de8417",
+  "environment_frame_sha256": "4e7a41549a0769d794becb9fae2797f2b0e6220a68ef2728d7d46d67371bb7f5",
+  "frame_directive_sha256": "fe787a449b5d807451d2c77979620449fa226395619eaee42f79d229b96c26be",
+  "frame_contract_sha256": "ff516402c7bb7eb8156e6b944fb57aab96429e3563b830b1da73e4a2d6d7a2b9",
+  "source_binding": {
+    "story": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+      "sha256": "438ca8248415e21a3d13d47cb76c855ea850525b506b8b315109794f269af8c8"
+    },
+    "storyboard": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "4ba786e32299c423cdd6739483a8c0ef4095456721bb520dadcbb5f838485810"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 2,
+    "reviewed_at": "2026-09-14T14:16:41+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/frame-semantic-attempt-2-request.json",
+    "request_id": "frame-semantic-a2-ae99f422137d851d",
+    "request_fingerprint": "ae99f422137d851da99da240c454f5296b30cd0f817e9252ccadd3ead82ce0a9",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "湿路旁消费级无人机起飞，自车、雨滴、灰蓝山脊与正常云海同框，无异常；建立现实基线。",
+  "decision": "pass",
+  "caption_sha256": "d74bd504ebf8c1dc31859487d39105bb703f0c722ddfe90811a4541cabce259b"
+}

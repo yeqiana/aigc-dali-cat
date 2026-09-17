@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "request_id": "visual-lock-baseline-a1-6581c3f57c1316f7",
+  "request_fingerprint": "6581c3f57c1316f718cc303b91504db8f2892e57b3957c77982fc008ef5d307a",
+  "created_at": "2026-09-14T11:59:20+08:00",
+  "status": "FINALIZED",
+  "review_kind": "visual-lock-baseline",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-a1aa440d871a-a2.png",
+      "sha256": "25acedcafa2c7a955204835c9dfbb45e69d01ebca2b04dc63f524e9c5347dcf6"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/story-gates.json",
+      "sha256": "4094bb5b71a32b4d2c1060ef140c1efc1db6ba29c4a08919f04c41659d5de6b6"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/character-visual-contract.json",
+      "sha256": "271307e3ca94fef8f09db6317274ccec6fe51a26f09258fd7d8310db968b7c82"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/contracts/frames/01.json",
+      "sha256": "3d145e30ac3e513a217cdb3fdab05c745cf5788d0051f899dea9360cd4aef27d"
+    }
+  ],
+  "candidate_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.visual-lock-baseline-review.candidate.json",
+  "prompt_sha256": "c285872e8993d187afa4345e440b053bb31488ea4c4834cadbce7e8f459bdbfa",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are a fresh isolated Story OS Visual Lock ordinary-baseline actual-pixel reviewer.\nInspect the attached baseline image itself. This PASS unlocks the parallel-three Visual Lock images and may create the provisional character pixel master, so fail closed on visible identity/capture/style problems.\nRequired checks: ['visual_profile_match', 'reality_first', 'ordinary_life_density', 'unposed_capture', 'not_cinematic', 'capture_credibility', 'identity_usable', 'group_members_distinct']\nThe target is an ordinary believable phone/photo baseline: reality-first, unposed, non-cinematic, usable identity, distinct group members where applicable.\nWrite ONLY JSON to episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.visual-lock-baseline-review.candidate.json:\n{\"decision\":\"PASS|FAIL\",\"checks\":{\"visual_profile_match\":\"PASS|FAIL\",\"reality_first\":\"PASS|FAIL\",\"ordinary_life_density\":\"PASS|FAIL\",\"unposed_capture\":\"PASS|FAIL\",\"not_cinematic\":\"PASS|FAIL\",\"capture_credibility\":\"PASS|FAIL\",\"identity_usable\":\"PASS|FAIL\",\"group_members_distinct\":\"PASS|FAIL\"},\"face_boxes\":[{\"character_id\":\"P01\",\"x\":0.0,\"y\":0.0,\"w\":0.1,\"h\":0.1}],\"note\":\"actual-pixel evidence\"}\nFace boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.\nDo not modify source files or the image.\n",
+  "finalized_at": "2026-09-14T11:59:37+08:00",
+  "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/visual-lock-baseline-review.json"
+}

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "profile_id": "M00_ANCIENT_DAILY_LIFE_V1",
+  "profile_version": "1.1",
+  "platform_min_version": "2.2.0",
+  "profile_name": "古代生活纪实档案",
+  "profile_name_en": "Ancient Everyday Documentary Archive",
+  "default_when_unspecified": false,
+  "scope": "episode_explicit_locked_visual_profile",
+  "parent_profile": "M00",
+  "principle": "不是展示古装，而是记录一个古代普通人的真实生活。吸收东方自然美学、江南生活氛围和传统服饰质感，但必须经过现实生活纪实翻译。",
+  "visual_dna": {
+    "reality_first": true,
+    "ordinary_ancient_life_density": "high",
+    "composition": "unposed_personal_record",
+    "people": "ordinary_people_not_models",
+    "subject_awareness": "natural_daily_behavior",
+    "lighting": "natural_environment_light",
+    "cinematic_lighting": "forbidden",
+    "commercial_photography": "forbidden",
+    "beautification": "forbidden",
+    "skin_rendering": "natural",
+    "color": "soft_eastern_natural_palette",
+    "texture": "environment_driven_imperfection",
+    "capture_reason": "required"
+  },
+  "absorbed_visual_language": {
+    "from_reference": [
+      "江南古代生活氛围",
+      "芭蕉避雨环境",
+      "荷叶水边休憩",
+      "读书喝茶梳头等日常行为",
+      "姐妹朋友之间自然互动",
+      "米白浅粉浅青绿色系",
+      "柔和空气感和植物环境"
+    ],
+    "translation_rule": "将古风美学转化为私人生活相册感，而不是汉服写真。"
+  },
+  "preferred_scenes": [
+    "江南小巷",
+    "普通庭院",
+    "河边",
+    "茶馆",
+    "小院植物旁",
+    "雨天屋檐下",
+    "夏日乘凉处"
+  ],
+  "preferred_actions": [
+    "整理花草",
+    "读书",
+    "喝茶",
+    "做饭",
+    "梳头",
+    "聊天",
+    "赶集",
+    "照顾家人"
+  ],
+  "forbidden": [
+    "仙女写真",
+    "汉服商业大片",
+    "宫廷宣传照",
+    "仙侠海报",
+    "巨大奇观植物作为主体",
+    "模特摆拍",
+    "过度飘纱",
+    "概念设计图",
+    "游戏CG"
+  ],
+  "anti_homogeneity": {
+    "lock_texture_not_scene": true,
+    "rule": "统一真实古代生活记录感，不固定剧情空间、人物身份和故事道具。"
+  }
+}

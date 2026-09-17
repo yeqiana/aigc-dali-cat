@@ -1,0 +1,603 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "10-03",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_profile": "auto",
+    "override_reason": null
+  },
+  "story": {
+    "recent5_checked": true,
+    "recent5_evidence_path": "meta/recent5-review.json",
+    "recent5_evidence_note": "registry 真实历史为 09-04《瓶中世界》、10-01《鳌太线·热汤》；build-recent5 结果 PASS，max_similarity_score=5（仅 relationship 结构相同），无 mechanism_veto。本地账号平台数据缺失，不伪造第三方指标。",
+    "four_locks_diff_count": 3,
+    "four_locks_note": "相对同系列上一篇EP002保守计3把不同：越界主体改为消费级无人机设备越界；中段母题改为完整文明尺度展开与天空异物群体反应；闭环改为无人机失联+情侣冲突+主动不下山寻找。关系人物仍为同一对普通情侣，因此不计差异。",
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [
+      3,
+      5,
+      7,
+      8,
+      11,
+      13,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "climax_frame": 19,
+    "payoff_frame": 20,
+    "semantic_review_path": "meta/story-semantic-review.json"
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [
+      1,
+      2,
+      3,
+      8
+    ],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "P01/P02沿用《彼此的天上》系列既有人物身份；Frame01必须为两人清晰正脸旅行自拍，后续不得换脸或重铸年龄印象",
+        "location": "现实侧为川西山地普通观景停车点；异常侧仅通过消费级无人机图传看到同一山谷位置短暂显露的活着前工业文明",
+        "key_prop": "两人自驾家用车、消费级无人机、原装遥控器/图传屏幕；无人机Frame17开始失控并在Frame18前后真实失联",
+        "wardrobe": "雨后凌晨低温旅行装：P01灰色卫衣+深色轻薄防风外套+深灰长裤；P02浅灰卫衣+浅色防风外套+深色直筒长裤",
+        "weather_time": "前夜持续降雨→凌晨雨停降温→低云压谷→短暂穿云可见窗口→日出后云层开始散；夜晚不是必要条件"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "2023年初秋，现代中国大陆情侣川西自驾旅行",
+      "location": "川西山地普通观景停车点与其下方雨后低云山谷；异常侧只由无人机图传短暂进入可见范围",
+      "photographer": "P01为主要记录者和无人机操作者；P02仅在Frame01前置自拍与Frame20日出记录中作为合法第二拍摄者",
+      "shooting_reason": "原计划凌晨上山看日出、拍云海，手机与消费级无人机都只是普通旅行记录工具；异常出现后没有追加专业调查设备",
+      "primary_capture": {
+        "id": "P01_phone_and_drone_control",
+        "device": "P01普通智能手机 + 普通消费级无人机图传（按分镜切换，不同时冒充同一机位）"
+      },
+      "secondary_captures": [
+        {
+          "id": "P02_phone",
+          "device": "普通智能手机",
+          "use": "Frame01情侣前置自拍；Frame20正常日出云海旅行照"
+        },
+        {
+          "id": "drone_camera",
+          "device": "普通消费级无人机相机/图传",
+          "use": "Frame03-17异常侧航拍与失控记录；由P01在现实观景点操控"
+        }
+      ],
+      "secondary_source_explanation": "每帧拍摄源由capture-event-contract明确绑定；无人机画面与手机现场画面不能无因切换，缓存翻拍必须保留真实屏幕反光/压缩。",
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "Frame01-02与Frame19-20为普通手机旅行记录；无人机初段为正常消费级航拍，构图自然、不追求电影化精准",
+        "restricted": "Frame03-16受清晨低照、低云、空气透视、远距离和图传压缩限制；文明越大越必须保留真实尺度参照与雾遮挡",
+        "lost_control": "Frame17图传撕裂、定位跳动、无人机下降；Frame18只允许翻拍低清缓存，禁止后期把疑似车辆增强成确定证据"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": null,
+        "photographer_may_be_fully_visible": true,
+        "photographer_visibility_explanation": "Frame01由P02使用前置镜头自拍，因此摄影者P02可以自然完整入镜；其余摄影者不要求完整入镜。"
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "worst_condition": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "first_major_anomaly": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "schema_version": 2,
+      "policy": "four_admission_v21",
+      "items": [
+        {
+          "id": "V-B",
+          "role": "ordinary_baseline",
+          "frame": 1,
+          "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-a1aa440d871a-a2.png",
+          "sha256": "25acedcafa2c7a955204835c9dfbb45e69d01ebca2b04dc63f524e9c5347dcf6",
+          "decision": "passed",
+          "frame_contract_sha256": "aae597981822af8ed333adc8fbb017412d95183b688696dc073619687c3070ba",
+          "note": "baseline separately PASS; parallel-three may start",
+          "contract_sha256": "aae597981822af8ed333adc8fbb017412d95183b688696dc073619687c3070ba"
+        },
+        {
+          "id": "V-W",
+          "role": "worst_capture_condition",
+          "frame": 2,
+          "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/02-acfd0925c8d1-a1.png",
+          "sha256": "a55d1c83a1340c3bf1f8405e8fbacd4ed2351f46e97db146805524f6fd760f51",
+          "decision": "passed",
+          "frame_contract_sha256": "ff516402c7bb7eb8156e6b944fb57aab96429e3563b830b1da73e4a2d6d7a2b9",
+          "note": "",
+          "contract_sha256": "ff516402c7bb7eb8156e6b944fb57aab96429e3563b830b1da73e4a2d6d7a2b9"
+        },
+        {
+          "id": "V-A",
+          "role": "first_major_anomaly",
+          "frame": 3,
+          "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/03-d4eee699fd7a-a1.png",
+          "sha256": "37ce7d69844093ef8793ad6a83548a498773914161cb94165550281bdd5d7985",
+          "decision": "passed",
+          "frame_contract_sha256": "1842166ed7fe6315ae0966ae8320f5cf00750d6d8deac265d585cde876b83dd9",
+          "note": "",
+          "contract_sha256": "1842166ed7fe6315ae0966ae8320f5cf00750d6d8deac265d585cde876b83dd9"
+        },
+        {
+          "id": "V-H",
+          "role": "high_impact_admission",
+          "frame": 8,
+          "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/08-703b627c5d9b-a1.png",
+          "sha256": "c86f1a1f86bd66d99b5bedecaccff79c5bf93354fedcd17eb6e071f426652c31",
+          "decision": "passed",
+          "frame_contract_sha256": "de72611d20afd13e534caba099ba67f232e955fab72adaecf8c09cca4c9db1c7",
+          "note": "",
+          "contract_sha256": "de72611d20afd13e534caba099ba67f232e955fab72adaecf8c09cca4c9db1c7"
+        }
+      ],
+      "finalizer_reconciled": true,
+      "finalizer_source": "meta/visual-lock-final-report.json"
+    },
+    "calibration_contact_sheet": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/review/contact-sheets/visual-lock-admission.jpg",
+      "sha256": "638d75796f51d1922320e065a750f0cd438d73c08043feba89e524893908162a"
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "early_autumn_2023",
+      "baseline": {
+        "condition": "前夜持续降雨后的川西山地凌晨，雨刚停、气温下降、低云和湿雾压入山谷；现实观景点地面潮湿，日出尚未完全出现",
+        "time_of_day": "pre_dawn_to_sunrise",
+        "temperature_feel": "cold_damp_mountain_dawn",
+        "ground_state": "现实观景点湿路面和车身有雨后水迹；异常侧屋顶、土路、石路、梯田同样呈现雨后潮湿状态",
+        "visibility": "现实侧山脊和近处车辆可读，山谷被大片低云分层遮挡；无人机穿云后异常侧由雾缝逐级显露，不允许一开始全景通透",
+        "wind": "山顶有间歇冷风，低云缓慢横移；无人机存在轻微风漂",
+        "precipitation": "当前无降水，只有前夜雨水残留",
+        "physical_cues": [
+          "湿路面、车身水迹和人物防风外套共同证明前夜降雨与清晨低温",
+          "低云必须真实遮挡山谷不同深度，不能只做统一白雾滤镜",
+          "异常侧所有屋顶、土路、石桥、水渠和市场都保留雨后湿润材质",
+          "Frame07-08的大型文明尺度必须同时保留人、牲畜、民居或道路作为现实尺度参照",
+          "Frame20日出只改变自然亮度与云顶颜色，不新增异常"
+        ]
+      },
+      "segments": [
+        {
+          "id": "reality_dawn_setup",
+          "start_frame": 1,
+          "end_frame": 2,
+          "condition": "现实观景点正常雨后清晨旅行记录",
+          "physical_cues": [
+            "湿路面",
+            "未散低云",
+            "冷风中的普通旅行外套",
+            "自己的车与消费级无人机"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "overlap_civilization_reveal",
+          "start_frame": 3,
+          "end_frame": 9,
+          "condition": "无人机越过低云后短暂进入另一侧可见范围，文明由局部屋顶逐级展开到整个山谷",
+          "physical_cues": [
+            "真实低云遮挡",
+            "雨后湿屋顶和道路",
+            "人/牲畜/市场/梯田/水渠持续在用",
+            "远处城区受空气透视和雾影响"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "文明尺度越大，远端细节越受雾和空气透视限制；生活动作仍要能以尺度参照读出",
+              "when": [
+                "frame>=5",
+                "frame<=9"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "noticed_and_return",
+          "start_frame": 10,
+          "end_frame": 16,
+          "condition": "P02要求返航，对面居民逐步发现无人机，反应异步扩散",
+          "physical_cues": [
+            "现实侧手机/遥控器短暂切回",
+            "对面仍是同一雨后晨光",
+            "门窗关闭和收货动作必须逐步发生而非同步"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "越接近Frame16，人群局部避让越明显，但仍保留未发现或继续劳作的人",
+              "when": [
+                "frame>=11",
+                "frame<=16"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "device_loss",
+          "start_frame": 17,
+          "end_frame": 18,
+          "condition": "返航过程中图传/定位异常，无人机下降并最终失联",
+          "physical_cues": [
+            "图传撕裂与压缩",
+            "机位倾斜下降",
+            "缓存屏幕反光和低清像素",
+            "疑似车辆轮廓不可确认"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "失控只通过真实设备状态和构图恶化体现，禁止添加空间裂缝或数字特效门",
+              "when": [
+                "frame=17",
+                "frame=18"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ordinary_sunrise_after_loss",
+          "start_frame": 19,
+          "end_frame": 20,
+          "condition": "现实观景点争吵后太阳升起，云顶变亮，异常不再继续出现",
+          "physical_cues": [
+            "自己的车仍在几步外",
+            "湿地面仍在",
+            "自然晨光增强",
+            "无人机缺席"
+          ],
+          "conditional_effects": []
+        }
+      ],
+      "frame_overrides": {
+        "03": {
+          "visibility_priority": "雾缝中的湿屋顶与正在修屋的人必须同时可读；异常不靠字幕成立"
+        },
+        "08": {
+          "visibility_priority": "全谷文明可见但部分城区仍被晨雾遮挡；必须有人流/道路/民居作为尺度参照"
+        },
+        "14": {
+          "visibility_priority": "浅色头巾年轻女人先保护孩子、自己多看几秒；不得神秘化或主角化"
+        },
+        "17": {
+          "visibility_priority": "真实失控：倾斜、下降、图传撕裂；仍保留屋顶/石路尺度，禁止纯故障花屏"
+        },
+        "18": {
+          "visibility_priority": "只允许模糊亮区+极小白色四方轮廓；不得看清柏油路、护栏、车旁两人"
+        },
+        "20": {
+          "visibility_priority": "正常日出云海，没有新异常；用无人机缺席完成余波"
+        }
+      }
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "情侣自然自拍",
+          "自己的车",
+          "湿路面",
+          "低云"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "消费级无人机起飞",
+          "现实山脊",
+          "正常云海"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "03": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "雾缝中的湿屋顶",
+          "正在修屋的人",
+          "真实低云遮挡"
+        ],
+        "scale_reference": "人和屋顶的正常比例",
+        "escalation_from": 2
+      },
+      "04": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "院落",
+          "牲畜",
+          "孩子",
+          "搬木料或收湿物"
+        ],
+        "scale_reference": "普通家庭院落和成年人",
+        "escalation_from": 3
+      },
+      "05": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "连续梯田",
+          "人工水渠",
+          "田间劳作人"
+        ],
+        "scale_reference": "人物、梯田层级与民居",
+        "escalation_from": 4
+      },
+      "06": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "石路",
+          "作坊",
+          "早市",
+          "搬货交换"
+        ],
+        "scale_reference": "摊位、牲畜和普通成年人",
+        "escalation_from": 5
+      },
+      "07": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 4,
+        "required_visual_cues": [
+          "在用大型石质引水结构",
+          "民居",
+          "道路",
+          "维护或通行的人"
+        ],
+        "scale_reference": "民居与人相对大型引水工程的体量差",
+        "escalation_from": 6
+      },
+      "08": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 4,
+        "required_visual_cues": [
+          "台地住宅",
+          "公共建筑",
+          "道路网络",
+          "远处城区",
+          "普通生活人流"
+        ],
+        "scale_reference": "道路、民居、人流与整个山谷城区",
+        "escalation_from": 7
+      },
+      "09": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "文明外围运输道路",
+          "运输队",
+          "浅色粗布生活材料"
+        ],
+        "scale_reference": "运输者与固定道路",
+        "escalation_from": 8
+      },
+      "10": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "P02",
+          "遥控器屏幕",
+          "现实侧车旁环境",
+          "返航动作"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "11": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "孩子最先抬头",
+          "周围其他人仍做自己的事"
+        ],
+        "scale_reference": "孩子与街边成年人",
+        "escalation_from": 10
+      },
+      "12": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "成年人顺视线抬头",
+          "把孩子拉到身边"
+        ],
+        "scale_reference": "成年人和孩子的自然距离",
+        "escalation_from": 11
+      },
+      "13": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "收货",
+          "领孩子进门",
+          "关窗",
+          "仍有人继续劳作"
+        ],
+        "scale_reference": "多个相邻家庭/院落和一段街道",
+        "escalation_from": 11
+      },
+      "14": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "浅色头巾年轻女人",
+          "孩子",
+          "先保护再多看几秒"
+        ],
+        "scale_reference": "普通路边低墙与人物",
+        "escalation_from": 13
+      },
+      "15": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "无人机仍悬停",
+          "下方人群继续避让",
+          "返航没有立即完成"
+        ],
+        "scale_reference": "悬停无人机视角与一段街区反应",
+        "escalation_from": 13
+      },
+      "16": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "门窗关闭",
+          "孩子被带走",
+          "局部街面变空",
+          "仍有未发现的人"
+        ],
+        "scale_reference": "完整街段与多个家庭",
+        "escalation_from": 15
+      },
+      "17": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "倾斜下降机位",
+          "逼近屋顶石路围栏",
+          "图传撕裂"
+        ],
+        "scale_reference": "屋顶、道路与低空无人机距离",
+        "escalation_from": 16
+      },
+      "18": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "缓存屏幕",
+          "异质亮区",
+          "极小模糊白色四方轮廓"
+        ],
+        "scale_reference": "屏幕像素与遥控器边框",
+        "escalation_from": 17
+      },
+      "19": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "失联提示/遥控器",
+          "自己的车",
+          "P01/P02争吵",
+          "最终不下山"
+        ],
+        "scale_reference": "两个人、车辆与缺失无人机的现实距离",
+        "escalation_from": 17
+      },
+      "20": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "正常日出",
+          "云海",
+          "空旷天空",
+          "无人机缺席"
+        ],
+        "scale_reference": "现实观景点和正常山谷",
+        "escalation_from": 19
+      }
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": true,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "passed",
+    "subtitle": "passed",
+    "production": "passed",
+    "recommendation_fit": "passed",
+    "publish": "passed"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 2,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true
+  },
+  "release": {
+    "final_candidate_snapshot": {
+      "schema_version": 1,
+      "enabled": true,
+      "delivery_must_consume_snapshot": true,
+      "snapshot_is_authority": false
+    }
+  }
+}

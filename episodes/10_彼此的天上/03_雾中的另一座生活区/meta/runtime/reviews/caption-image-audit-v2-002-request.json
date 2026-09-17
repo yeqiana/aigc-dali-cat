@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "request_id": "caption-image-audit-v2-002-a1-d7a5a2504ad6bbf1",
+  "request_fingerprint": "d7a5a2504ad6bbf119610ff67212a3cf5ed4c15552e819203243ccc2378cf815",
+  "created_at": "2026-09-14T15:48:18+08:00",
+  "status": "FINALIZED",
+  "review_kind": "caption-image-audit-v2-002",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/08.png",
+      "sha256": "0b396eb720ac9fb5e106db033b0c174af993dd02a7208d43c08f65731e453f00"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/09.png",
+      "sha256": "781174946857bc8e182e2b38dd3756440d1c51fafeb21e8967474e42206c9a7b"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/11.png",
+      "sha256": "e60c500bdfe9d8a324cc9e33653b4ae6544b20b84f60dcc3caa9523225b993a8"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/12.png",
+      "sha256": "98980ae71e6136208bedaf3e602ef3435e4d8fd427446790a172cbf6062de5cc"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/13.png",
+      "sha256": "b266c7e97fe0e1b8283adb5722411107ad48c1dffe11e4775c529161648a629f"
+    },
+    {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/subtitles.yaml",
+      "sha256": "d088c1915cdbc5a05c93394fa16a0b0011753280da4da92b40fdff9a6a086e1c"
+    }
+  ],
+  "candidate_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.caption-image-audit-candidate-002.json",
+  "prompt_sha256": "c66180af2df011dcdb9feafde91421e8e5f129075f70a90406052d0d9a51c948",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are the Story OS final-publish Caption ↔ Image + Subtitle Obstruction Critic.\nReview ONLY the supplied FINAL publish pixels after subtitle rendering.\nFor each frame judge two things:\n1. supported: the caption is honestly supported by the underlying photographed/generated scene; it must not invent a core event, prop, person, UI text, anomaly, action, or causal fact absent from the scene. The rendered subtitle text itself is NEVER visual evidence for supported=true; mentally ignore the overlay when judging support.\n2. subtitle_unobstructed: rendered text does not cover a face, anomaly evidence, hand/action, key prop, native text, or causal clue. Left/middle geometry and line-count are checked deterministically elsewhere; here judge actual pixel obstruction.\nDo not re-review overall story quality, character continuity, or visual style. Empty captions automatically pass both checks.\nMappings:\n- frame 08: final_publish_image=episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/08.png | caption=\"云一散，后面全是屋顶。这哪是村子。\"\n- frame 09: final_publish_image=episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/09.png | caption=\"那条路上，人和牲口一直没断过。\"\n- frame 11: final_publish_image=episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/11.png | caption=\"有个小孩先看见了它。\"\n- frame 12: final_publish_image=episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/12.png | caption=\"大人跟着抬头，先把孩子拉到身后。\"\n- frame 13: final_publish_image=episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/13.png | caption=\"有人开始收摊，也有人还没察觉。\"\n\nWrite ONLY JSON to episodes/10_彼此的天上/03_雾中的另一座生活区/meta/.caption-image-audit-candidate-002.json:\n{\"frames\":[{\"frame\":\"01\",\"supported\":true,\"subtitle_unobstructed\":true,\"notes\":\"specific pixel evidence\"}],\"summary\":{\"passed\":true}}\nReturn one row for every attached frame. summary.passed=false if any supported=false or subtitle_unobstructed=false.\n",
+  "attempt_request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/caption-image-audit-v2-002-attempt-1-request.json",
+  "finalized_at": "2026-09-14T15:48:19+08:00",
+  "final_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/caption-image-audit.json"
+}

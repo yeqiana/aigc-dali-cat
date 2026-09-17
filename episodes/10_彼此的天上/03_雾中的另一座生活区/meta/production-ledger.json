@@ -1,0 +1,3066 @@
+{
+  "schema_version": 1,
+  "engine_version": "1.2",
+  "created_at": "2026-09-14T11:50:54+08:00",
+  "updated_at": "2026-09-14T13:59:42+08:00",
+  "note": "Per-frame production transaction ledger. This is NOT an episode stage source.",
+  "canvas": {
+    "aspect_ratio": "4:5",
+    "width": 1080,
+    "height": 1350,
+    "source": "manifest"
+  },
+  "policy": {
+    "default_aspect_ratio": "4:5",
+    "prompt_char_limit": 260,
+    "prompt_byte_limit": 900,
+    "max_content_repairs_per_frame": 1,
+    "technical_failures_consume_content_repair": false,
+    "image_quality": "high",
+    "normalize_enabled": true,
+    "preserve_raw": true,
+    "final_format": "PNG",
+    "resize_algorithm": "Lanczos",
+    "default_crop": "forbidden",
+    "imageops_fit": "exception_only",
+    "automatic_ratio_delta_max": 0.01,
+    "review_ratio_delta_max": 0.03,
+    "reject_ratio_delta_above": 0.03,
+    "noop_when_exact_match": true,
+    "technical_failure_triggers_generation": false
+  },
+  "asset_roots": {
+    "raw": "media/raw",
+    "originals": "media/candidates/originals",
+    "repairs": "media/candidates/repairs",
+    "approved": "media/approved",
+    "publish": "media/publish",
+    "contact_sheets": "media/review/contact-sheets"
+  },
+  "frames": {
+    "01": {
+      "number": 1,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [
+        {
+          "at": "2026-09-14T11:50:55+08:00",
+          "attempt_id": "d8c3385bc581",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=1; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\03_雾中的另一座生活区\\meta\\image-workers\\01-a1aa440d871a-a1.jsonl"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt_id": "d8c3385bc581",
+          "started_at": "2026-09-14T11:50:54+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "01",
+            "kind": "original",
+            "prompt_sha256": "5e6e9cae4f9b27727963e17dad3f8cc671ed468be7d589bed604b1a991835e0e",
+            "prompt_chars": 113,
+            "prompt_bytes": 323,
+            "capture_id": "visual-lock-01",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/01_情侣自拍_正脸.png",
+                "role": "series_character_identity:P01",
+                "kind": "identity",
+                "sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/01.json",
+              "contract_sha256": "aae597981822af8ed333adc8fbb017412d95183b688696dc073619687c3070ba"
+            },
+            "frame_contract_sha256": "aae597981822af8ed333adc8fbb017412d95183b688696dc073619687c3070ba",
+            "batch_id": null
+          },
+          "request_fingerprint": "14692cae95cb0bbeeec1518d7e3e9585d012f33e481c53d42c4e6b8edcdc48b4",
+          "notes": "phase6 scheduler item=a1aa440d871a scope=visual_lock",
+          "result": "technical_failure",
+          "runtime_transaction_id": "3faeadd29c954b90b4b6cbb9d15485a9",
+          "completed_at": "2026-09-14T11:50:55+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=1; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\03_雾中的另一座生活区\\meta\\image-workers\\01-a1aa440d871a-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "902ff2eda975",
+          "started_at": "2026-09-14T11:51:28+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "01",
+            "kind": "original",
+            "prompt_sha256": "5e6e9cae4f9b27727963e17dad3f8cc671ed468be7d589bed604b1a991835e0e",
+            "prompt_chars": 113,
+            "prompt_bytes": 323,
+            "capture_id": "visual-lock-01",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/01_情侣自拍_正脸.png",
+                "role": "series_character_identity:P01",
+                "kind": "identity",
+                "sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/01.json",
+              "contract_sha256": "aae597981822af8ed333adc8fbb017412d95183b688696dc073619687c3070ba"
+            },
+            "frame_contract_sha256": "aae597981822af8ed333adc8fbb017412d95183b688696dc073619687c3070ba",
+            "batch_id": null
+          },
+          "request_fingerprint": "14692cae95cb0bbeeec1518d7e3e9585d012f33e481c53d42c4e6b8edcdc48b4",
+          "notes": "phase6 scheduler item=a1aa440d871a scope=visual_lock",
+          "result": "success",
+          "runtime_transaction_id": "3faeadd29c954b90b4b6cbb9d15485a9",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/01-1789358172.json",
+            "sha256": "9113f6f9ef5dcea5147b79f88e4968966b39dec2993cad35b0c14843c78f86c1",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T11:56:13+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-a1aa440d871a-a2.png",
+            "sha256": "25acedcafa2c7a955204835c9dfbb45e69d01ebca2b04dc63f524e9c5347dcf6",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T11:56:13+08:00",
+            "kind": "original",
+            "attempt_id": "902ff2eda975"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-a1aa440d871a-a2.png",
+        "sha256": "25acedcafa2c7a955204835c9dfbb45e69d01ebca2b04dc63f524e9c5347dcf6",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T11:56:13+08:00",
+        "kind": "original",
+        "attempt_id": "902ff2eda975"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/01.png",
+        "sha256": "25acedcafa2c7a955204835c9dfbb45e69d01ebca2b04dc63f524e9c5347dcf6",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:41:51+08:00",
+        "source_sha256": "25acedcafa2c7a955204835c9dfbb45e69d01ebca2b04dc63f524e9c5347dcf6"
+      },
+      "lock": {
+        "at": "2026-09-14T12:57:59+08:00",
+        "sha256": "25acedcafa2c7a955204835c9dfbb45e69d01ebca2b04dc63f524e9c5347dcf6",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T11:59:33+08:00",
+          "decision": "pass",
+          "notes": "Visual Lock ordinary baseline separate PASS"
+        }
+      ]
+    },
+    "02": {
+      "number": 2,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "d420dd8bf23a",
+          "started_at": "2026-09-14T11:59:44+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "02",
+            "kind": "original",
+            "prompt_sha256": "208f0fb5d28d7be65d11487abdd7653947cae8daf5e3c455dac3ecb9e7b09e00",
+            "prompt_chars": 98,
+            "prompt_bytes": 294,
+            "capture_id": "visual-lock-02",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/02.json",
+              "contract_sha256": "ff516402c7bb7eb8156e6b944fb57aab96429e3563b830b1da73e4a2d6d7a2b9"
+            },
+            "frame_contract_sha256": "ff516402c7bb7eb8156e6b944fb57aab96429e3563b830b1da73e4a2d6d7a2b9",
+            "batch_id": null
+          },
+          "request_fingerprint": "aecd69a10c495035efb783bc2a9c9ff290c4428de706fd70a3cfa2f72ec046b0",
+          "notes": "phase6 scheduler item=acfd0925c8d1 scope=visual_lock",
+          "result": "success",
+          "runtime_transaction_id": "cf8f8faf1a1948cc884a516c7f85df37",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/02-1789358496.json",
+            "sha256": "e326950dd9ccd5654b95aae8b176ff4ae2ccdd30744b19c0263b63df3e7a0cc2",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:01:37+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/02-acfd0925c8d1-a1.png",
+            "sha256": "a55d1c83a1340c3bf1f8405e8fbacd4ed2351f46e97db146805524f6fd760f51",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:01:37+08:00",
+            "kind": "original",
+            "attempt_id": "d420dd8bf23a"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/02-acfd0925c8d1-a1.png",
+        "sha256": "a55d1c83a1340c3bf1f8405e8fbacd4ed2351f46e97db146805524f6fd760f51",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:01:37+08:00",
+        "kind": "original",
+        "attempt_id": "d420dd8bf23a"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/02.png",
+        "sha256": "a55d1c83a1340c3bf1f8405e8fbacd4ed2351f46e97db146805524f6fd760f51",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:41:52+08:00",
+        "source_sha256": "a55d1c83a1340c3bf1f8405e8fbacd4ed2351f46e97db146805524f6fd760f51"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:00+08:00",
+        "sha256": "a55d1c83a1340c3bf1f8405e8fbacd4ed2351f46e97db146805524f6fd760f51",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:14+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：湿路旁消费级无人机起飞，自车与雨滴、灰蓝山脊和低云云海同框，天未亮低照带噪点，普通旅行记录感，无异常。符合 normal_record 与 required cues（消费级无人机起飞/现实山脊/正常云海）。"
+        }
+      ]
+    },
+    "03": {
+      "number": 3,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "051b0ad761b4",
+          "started_at": "2026-09-14T11:59:43+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "03",
+            "kind": "original",
+            "prompt_sha256": "387ba03635461a1c12a1ba8080cc0a57cd7e1c0e3ab125429bf2431cbe8f51d1",
+            "prompt_chars": 95,
+            "prompt_bytes": 285,
+            "capture_id": "visual-lock-03",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/03.json",
+              "contract_sha256": "1842166ed7fe6315ae0966ae8320f5cf00750d6d8deac265d585cde876b83dd9"
+            },
+            "frame_contract_sha256": "1842166ed7fe6315ae0966ae8320f5cf00750d6d8deac265d585cde876b83dd9",
+            "batch_id": null
+          },
+          "request_fingerprint": "f6cfc380703bed69e9226b0659f1b7fcee7292d0f920bf76338a2f2a87ae45f6",
+          "notes": "phase6 scheduler item=d4eee699fd7a scope=visual_lock",
+          "result": "success",
+          "runtime_transaction_id": "e263ed322b774fc982a65de4a414c242",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/03-1789358469.json",
+            "sha256": "d3e3c06d6f439dd8df677419245e5481e85b5da093c26e74b99a817770010792",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:01:10+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/03-d4eee699fd7a-a1.png",
+            "sha256": "37ce7d69844093ef8793ad6a83548a498773914161cb94165550281bdd5d7985",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:01:10+08:00",
+            "kind": "original",
+            "attempt_id": "051b0ad761b4"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/03-d4eee699fd7a-a1.png",
+        "sha256": "37ce7d69844093ef8793ad6a83548a498773914161cb94165550281bdd5d7985",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:01:10+08:00",
+        "kind": "original",
+        "attempt_id": "051b0ad761b4"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/03.png",
+        "sha256": "37ce7d69844093ef8793ad6a83548a498773914161cb94165550281bdd5d7985",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:41:53+08:00",
+        "source_sha256": "37ce7d69844093ef8793ad6a83548a498773914161cb94165550281bdd5d7985"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:02+08:00",
+        "sha256": "37ce7d69844093ef8793ad6a83548a498773914161cb94165550281bdd5d7985",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:16+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：雾缝下只露出一栋潮湿旧瓦屋顶与正在修屋面的普通人，大部分山谷仍被雾遮挡，异常来自不该出现的人居结构而非发光特效。符合 first_major_anomaly required cues。"
+        }
+      ]
+    },
+    "04": {
+      "number": 4,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "d88f14946831",
+          "started_at": "2026-09-14T12:07:26+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "04",
+            "kind": "original",
+            "prompt_sha256": "78e467f64a2313032a4832d09911f4df90166c89ebc091d832012c31638b4143",
+            "prompt_chars": 99,
+            "prompt_bytes": 297,
+            "capture_id": "batch-04",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/04.json",
+              "contract_sha256": "4e716bf393fc42290937711cb3c38d5bb1066e427a5e503caa162b7a429b241f"
+            },
+            "frame_contract_sha256": "4e716bf393fc42290937711cb3c38d5bb1066e427a5e503caa162b7a429b241f",
+            "batch_id": null
+          },
+          "request_fingerprint": "2c63ef0295312e73384f6215c25af8698b004f6563775745352a3e13065cb3bf",
+          "notes": "V2.4 batch scheduler item=c1e98b433a27",
+          "result": "success",
+          "runtime_transaction_id": "82f27efc995f42eda9f70e8129e51227",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/04-1789358969.json",
+            "sha256": "b9aafead966d6865aeb8dfb0aba84b681c2142e9b37e7ab189f7784c3e787113",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:09:30+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/04-c1e98b433a27-a1.png",
+            "sha256": "5524904f12fcdeef3f980c2251de6b8a985a5bde90da0f5b7499515f3a4edbde",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:09:30+08:00",
+            "kind": "original",
+            "attempt_id": "d88f14946831"
+          }
+        },
+        {
+          "attempt_id": "162f2dc999ba",
+          "started_at": "2026-09-14T13:00:39+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "04",
+            "kind": "repair",
+            "prompt_sha256": "e22980eb3341005afafab4723323a49c9222d3fd9f1915c1c62221211ea5d155",
+            "prompt_chars": 193,
+            "prompt_bytes": 561,
+            "capture_id": "repair-04-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/04.json",
+              "contract_sha256": "4e716bf393fc42290937711cb3c38d5bb1066e427a5e503caa162b7a429b241f"
+            },
+            "frame_contract_sha256": "4e716bf393fc42290937711cb3c38d5bb1066e427a5e503caa162b7a429b241f",
+            "batch_id": null
+          },
+          "request_fingerprint": "dc0d447029b100fe05163550890b2cf5a002ef704f8b4ca07318174a5bc0b354",
+          "notes": "phase6 scheduler item=194da31848b2 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "86aa8182da464972beef282b11dc5264",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/04-1789362143.json",
+            "sha256": "0b32a5304264fb635d54161ee086115066371e74a2f064f4f4fd40cc2f5e175d",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T13:02:24+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/04-194da31848b2-a1.png",
+            "sha256": "f9eb262827dd1bbe87a4c3fd5135e99f330dace403663ec832f7f3885d505589",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T13:02:24+08:00",
+            "kind": "repair",
+            "attempt_id": "162f2dc999ba"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/04-194da31848b2-a1.png",
+        "sha256": "f9eb262827dd1bbe87a4c3fd5135e99f330dace403663ec832f7f3885d505589",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T13:02:24+08:00",
+        "kind": "repair",
+        "attempt_id": "162f2dc999ba"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/04.png",
+        "sha256": "f9eb262827dd1bbe87a4c3fd5135e99f330dace403663ec832f7f3885d505589",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T13:04:26+08:00",
+        "source_sha256": "f9eb262827dd1bbe87a4c3fd5135e99f330dace403663ec832f7f3885d505589"
+      },
+      "lock": {
+        "at": "2026-09-14T13:04:27+08:00",
+        "sha256": "f9eb262827dd1bbe87a4c3fd5135e99f330dace403663ec832f7f3885d505589",
+        "reason": "Production lock v2: 锁后 delegated_auto_review 规范内返修完成并通过真实像素复核，approved 资产 SHA-256 重新冻结。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:17+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：俯看雨后院落，牲畜、孩子、搬木料与收湿物同框，泥地和生活用品潮湿真实，读作正在生活而非遗迹，符合 required cues（院落/牲畜/孩子/搬木料或收湿物）。"
+        },
+        {
+          "at": "2026-09-14T13:04:25+08:00",
+          "decision": "pass",
+          "notes": "锁后返修真实像素复核：院落改为夯土与木板墙、深色湿瓦顶民居，湿泥石块地面，晾晒为浅灰米色粗织布，器具为木桶木盆石槽竹筐瓦罐与柴垛，家禽与驮畜在场，门口只有油灯级暖光。原粉蓝塑料盆桶、印刷标签、塑料晾衣夹与波纹铁皮雨棚已消除；院落生活成立，符合 required cues（院落/牲畜/孩子/搬木料或收湿物）。"
+        }
+      ],
+      "superseded_locks": [
+        {
+          "at": "2026-09-14T12:58:27+08:00",
+          "lock": {
+            "at": "2026-09-14T12:58:03+08:00",
+            "sha256": "5524904f12fcdeef3f980c2251de6b8a985a5bde90da0f5b7499515f3a4edbde",
+            "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+          },
+          "approved_asset": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/04.png",
+            "sha256": "5524904f12fcdeef3f980c2251de6b8a985a5bde90da0f5b7499515f3a4edbde",
+            "width": 1080,
+            "height": 1350,
+            "promoted_at": "2026-09-14T12:41:55+08:00",
+            "source_sha256": "5524904f12fcdeef3f980c2251de6b8a985a5bde90da0f5b7499515f3a4edbde"
+          },
+          "reason": "delegated auto review found a content defect after lock"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-14T12:58:27+08:00",
+        "note": "自动审核 delegated_auto_review 在真实像素复核中发现异常侧院落出现现代工业物件：粉蓝色塑料盆桶、印刷标签、塑料晾衣夹与波纹铁皮雨棚。违反 Story『仍在正常运转的完整前工业文明、无法对应任何具体朝代』、Series 世界视觉锚点『石基+木结构、湿泥土路+局部碎石、火把/简单油灯、浅灰米色粗织布』及分镜硬约束 3。按每帧一次内容返修预算执行规范内定向返修。",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "05": {
+      "number": 5,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "881934eab012",
+          "started_at": "2026-09-14T12:10:36+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "05",
+            "kind": "original",
+            "prompt_sha256": "79dfbd321c288bbf809be9985e6d5ba3a749a3b1f62e55de7a18c2db9e47e14c",
+            "prompt_chars": 89,
+            "prompt_bytes": 267,
+            "capture_id": "batch-05",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/05.json",
+              "contract_sha256": "31072724f2fe3d15c4983686c71702778b4117f5a2534caec3bb0605bce176d8"
+            },
+            "frame_contract_sha256": "31072724f2fe3d15c4983686c71702778b4117f5a2534caec3bb0605bce176d8",
+            "batch_id": null
+          },
+          "request_fingerprint": "291a3bfea5a85c85bdf3fa7f26a867c0c130b3af2c43d26b9983338693f0061b",
+          "notes": "V2.4 batch scheduler item=1b7de508a3fc",
+          "result": "success",
+          "runtime_transaction_id": "f9ecc9cb1eac45ad80a24c70fea27e00",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/05-1789359124.json",
+            "sha256": "2afd0cc52281c69c020e270e4bdbf6ef11658babd5fe6c49e389d6fa989c19ba",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:12:05+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/05-1b7de508a3fc-a1.png",
+            "sha256": "d7bdfe0fa7c52d32279fcfd1bb0e1dd38e99efdfb5a1ba492cfecc9cf4b3a0e8",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:12:05+08:00",
+            "kind": "original",
+            "attempt_id": "881934eab012"
+          }
+        },
+        {
+          "attempt_id": "411d589f64f0",
+          "started_at": "2026-09-14T12:58:59+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "05",
+            "kind": "repair",
+            "prompt_sha256": "006e3cd9de8c600d8a7e3faaf42571ed7207e415cc35376ca2d8c81d6d364495",
+            "prompt_chars": 178,
+            "prompt_bytes": 516,
+            "capture_id": "repair-05-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/05.json",
+              "contract_sha256": "31072724f2fe3d15c4983686c71702778b4117f5a2534caec3bb0605bce176d8"
+            },
+            "frame_contract_sha256": "31072724f2fe3d15c4983686c71702778b4117f5a2534caec3bb0605bce176d8",
+            "batch_id": null
+          },
+          "request_fingerprint": "cfcbbd0083c47b1ee369d847c70f6501b68eb6e63752c49d9036c8213b215ffd",
+          "notes": "phase6 scheduler item=761127723699 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "8060f5fe7dcc4ddc8f46bf2da034c51e",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/05-1789362051.json",
+            "sha256": "6bae7b2d9e5eabad0d3c22fb694d676c648964501ab27ad592923299d894ff43",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T13:00:51+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/05-761127723699-a1.png",
+            "sha256": "01d1b4a19c1ad67f5effcfd6fe7bcc7e5b7607c7c9de0430149319cb57625f4b",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T13:00:51+08:00",
+            "kind": "repair",
+            "attempt_id": "411d589f64f0"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/05-761127723699-a1.png",
+        "sha256": "01d1b4a19c1ad67f5effcfd6fe7bcc7e5b7607c7c9de0430149319cb57625f4b",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T13:00:51+08:00",
+        "kind": "repair",
+        "attempt_id": "411d589f64f0"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/05.png",
+        "sha256": "01d1b4a19c1ad67f5effcfd6fe7bcc7e5b7607c7c9de0430149319cb57625f4b",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T13:04:29+08:00",
+        "source_sha256": "01d1b4a19c1ad67f5effcfd6fe7bcc7e5b7607c7c9de0430149319cb57625f4b"
+      },
+      "lock": {
+        "at": "2026-09-14T13:04:30+08:00",
+        "sha256": "01d1b4a19c1ad67f5effcfd6fe7bcc7e5b7607c7c9de0430149319cb57625f4b",
+        "reason": "Production lock v2: 锁后 delegated_auto_review 规范内返修完成并通过真实像素复核，approved 资产 SHA-256 重新冻结。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:18+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：连续梯田、固定田埂与人工水渠成立，雨水沿渠流动，田间有零散劳作者与民居作尺度参照，远距雾与空气透视自然，看出是长期维护的农业系统。"
+        },
+        {
+          "at": "2026-09-14T13:04:28+08:00",
+          "decision": "pass",
+          "notes": "锁后返修真实像素复核：连续梯田、固定田埂与石砌土渠成立，雨水沿渠流动并有小跌水，田间是有斗笠的劳作者与背篓，民居为夯土墙与深色瓦顶，另有陶罐竹器。原混凝土二层硬化房、波纹铁皮屋顶、架空电线与电线杆、疑似机动车与输水管件已消除；能读出长期维护的农业系统。"
+        }
+      ],
+      "superseded_locks": [
+        {
+          "at": "2026-09-14T12:58:28+08:00",
+          "lock": {
+            "at": "2026-09-14T12:58:04+08:00",
+            "sha256": "d7bdfe0fa7c52d32279fcfd1bb0e1dd38e99efdfb5a1ba492cfecc9cf4b3a0e8",
+            "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+          },
+          "approved_asset": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/05.png",
+            "sha256": "d7bdfe0fa7c52d32279fcfd1bb0e1dd38e99efdfb5a1ba492cfecc9cf4b3a0e8",
+            "width": 1080,
+            "height": 1350,
+            "promoted_at": "2026-09-14T12:41:56+08:00",
+            "source_sha256": "d7bdfe0fa7c52d32279fcfd1bb0e1dd38e99efdfb5a1ba492cfecc9cf4b3a0e8"
+          },
+          "reason": "delegated auto review found a content defect after lock"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-14T12:58:28+08:00",
+        "note": "自动审核 delegated_auto_review 在真实像素复核中发现异常侧梯田段右侧出现现代工业物件：混凝土/塑灰二层硬化住宅、波纹铁皮屋顶、架空电线与电线杆，并有疑似机动车与输水管件。违反 Story 前工业文明设定与 Series 世界视觉锚点材质（石基木构、夯土墙、深色瓦顶、土渠石渠）。按每帧一次内容返修预算执行规范内定向返修。",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "06": {
+      "number": 6,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "bc66d39e5d84",
+          "started_at": "2026-09-14T12:10:36+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "06",
+            "kind": "original",
+            "prompt_sha256": "994d774c09a851b291e5efcefcf760f80d560a091d8a1be27b3db4667bd82774",
+            "prompt_chars": 89,
+            "prompt_bytes": 267,
+            "capture_id": "batch-06",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/06.json",
+              "contract_sha256": "17213b1dd8dec7898bc85fed2dc671f29c59405d69eaf48bf53d7b5f8ee9e05b"
+            },
+            "frame_contract_sha256": "17213b1dd8dec7898bc85fed2dc671f29c59405d69eaf48bf53d7b5f8ee9e05b",
+            "batch_id": null
+          },
+          "request_fingerprint": "e9814013a94f597768196461a5cef58b4a2aa81724f6d5804421cff502142865",
+          "notes": "V2.4 batch scheduler item=33b083e4a446",
+          "result": "success",
+          "runtime_transaction_id": "f083929ae2c74769b6133bd0956f800e",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/06-1789359129.json",
+            "sha256": "12cd09ea51b924b56c68af065f892918d39ed6cd45e3e10a2e7c594db9509db4",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:12:10+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/06-33b083e4a446-a1.png",
+            "sha256": "6d4fcdb9c41859e8d633691fc6550ffae8d0a677b7371db04bc934fbc71c101b",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:12:10+08:00",
+            "kind": "original",
+            "attempt_id": "bc66d39e5d84"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/06-33b083e4a446-a1.png",
+        "sha256": "6d4fcdb9c41859e8d633691fc6550ffae8d0a677b7371db04bc934fbc71c101b",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:12:10+08:00",
+        "kind": "original",
+        "attempt_id": "bc66d39e5d84"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/06.png",
+        "sha256": "6d4fcdb9c41859e8d633691fc6550ffae8d0a677b7371db04bc934fbc71c101b",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:41:57+08:00",
+        "source_sha256": "6d4fcdb9c41859e8d633691fc6550ffae8d0a677b7371db04bc934fbc71c101b"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:05+08:00",
+        "sha256": "6d4fcdb9c41859e8d633691fc6550ffae8d0a677b7371db04bc934fbc71c101b",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:19+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：石路沿线低矮作坊与早市摆货、搬货、驮运与交换同时发生，建筑古老但无宫殿化与可辨识朝代制式，无中文匾额，符合 required cues（石路/作坊/早市/搬货交换）。"
+        }
+      ]
+    },
+    "07": {
+      "number": 7,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "1bc6eb8be5fe",
+          "started_at": "2026-09-14T12:10:36+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "07",
+            "kind": "original",
+            "prompt_sha256": "56d34b11733968a433a50400a5d564eba132f0c34764b0b4d4e8a0cb36aecdc3",
+            "prompt_chars": 92,
+            "prompt_bytes": 274,
+            "capture_id": "batch-07",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/07.json",
+              "contract_sha256": "0bc7348c59db8bad187b1afffb5de427728b7c335de201612ea891128e8f6bf2"
+            },
+            "frame_contract_sha256": "0bc7348c59db8bad187b1afffb5de427728b7c335de201612ea891128e8f6bf2",
+            "batch_id": null
+          },
+          "request_fingerprint": "2677e7e82b74195d2039c664ccb993544a02624d66ed0c71b1ca3ab970c37e9e",
+          "notes": "V2.4 batch scheduler item=f93646f1cc9f",
+          "result": "success",
+          "runtime_transaction_id": "56e19acb400749a38db9dc33b751a85d",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/07-1789359121.json",
+            "sha256": "83d5b9c15fec6a289d12246f827d99998aaab5936ae50d75cc6709efa4a2db28",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:12:01+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/07-f93646f1cc9f-a1.png",
+            "sha256": "6d80106006fb4b24e3189b9b04248507c9021618fb6bc3113734b930705fe89b",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:12:01+08:00",
+            "kind": "original",
+            "attempt_id": "1bc6eb8be5fe"
+          }
+        },
+        {
+          "attempt_id": "687767ccf5a7",
+          "started_at": "2026-09-14T12:58:59+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "07",
+            "kind": "repair",
+            "prompt_sha256": "e5609470aac84f8d874ff76913557e760f0a6fc629563fe655a90cf57e0e4819",
+            "prompt_chars": 186,
+            "prompt_bytes": 540,
+            "capture_id": "repair-07-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/07.json",
+              "contract_sha256": "0bc7348c59db8bad187b1afffb5de427728b7c335de201612ea891128e8f6bf2"
+            },
+            "frame_contract_sha256": "0bc7348c59db8bad187b1afffb5de427728b7c335de201612ea891128e8f6bf2",
+            "batch_id": null
+          },
+          "request_fingerprint": "fba4b3b0623ddc8fdeb52223e30a3bb6e8c3c9e9d2c4eb22a30f0199e887c474",
+          "notes": "phase6 scheduler item=0562822463df scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "ccfeb43d0e844141a82b1f02efd4deca",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/07-1789362068.json",
+            "sha256": "e80d874f04860deacb81105734ba8ec2e07019745e1bebcfc535c4cfdc6daf97",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T13:01:09+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/07-0562822463df-a1.png",
+            "sha256": "951849281b36f086646ac0b064974d5dcc473d0ed4549442dc3617e5ca4e7f67",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T13:01:09+08:00",
+            "kind": "repair",
+            "attempt_id": "687767ccf5a7"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/07-0562822463df-a1.png",
+        "sha256": "951849281b36f086646ac0b064974d5dcc473d0ed4549442dc3617e5ca4e7f67",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T13:01:09+08:00",
+        "kind": "repair",
+        "attempt_id": "687767ccf5a7"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/07.png",
+        "sha256": "951849281b36f086646ac0b064974d5dcc473d0ed4549442dc3617e5ca4e7f67",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T13:04:32+08:00",
+        "source_sha256": "951849281b36f086646ac0b064974d5dcc473d0ed4549442dc3617e5ca4e7f67"
+      },
+      "lock": {
+        "at": "2026-09-14T13:04:33+08:00",
+        "sha256": "951849281b36f086646ac0b064974d5dcc473d0ed4549442dc3617e5ca4e7f67",
+        "reason": "Production lock v2: 锁后 delegated_auto_review 规范内返修完成并通过真实像素复核，approved 资产 SHA-256 重新冻结。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:20+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：山腰大型石质引水结构横跨不同台地且仍在使用，下方民居、道路、行人与驮畜作尺度参照，非废墟非神庙，符合 required cues（在用大型石质引水结构/民居/道路/维护或通行的人）。"
+        },
+        {
+          "at": "2026-09-14T13:04:31+08:00",
+          "decision": "pass",
+          "notes": "锁后返修真实像素复核：山腰大型石质引水结构以石墩石拱横跨不同台地并仍在使用，渠水沿顶面流动并在右端跌落入谷，右段为木脚手架维修痕迹；下方为石基木构与夯土墙、深色瓦顶民居，湿泥土石路、行人与驮畜作尺度参照。原锈蚀波纹铁皮屋顶、水泥抹面与硬化路面已消除；非废墟非神庙。"
+        }
+      ],
+      "superseded_locks": [
+        {
+          "at": "2026-09-14T12:58:29+08:00",
+          "lock": {
+            "at": "2026-09-14T12:58:06+08:00",
+            "sha256": "6d80106006fb4b24e3189b9b04248507c9021618fb6bc3113734b930705fe89b",
+            "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+          },
+          "approved_asset": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/07.png",
+            "sha256": "6d80106006fb4b24e3189b9b04248507c9021618fb6bc3113734b930705fe89b",
+            "width": 1080,
+            "height": 1350,
+            "promoted_at": "2026-09-14T12:41:58+08:00",
+            "source_sha256": "6d80106006fb4b24e3189b9b04248507c9021618fb6bc3113734b930705fe89b"
+          },
+          "reason": "delegated auto review found a content defect after lock"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-14T12:58:29+08:00",
+        "note": "自动审核 delegated_auto_review 在真实像素复核中发现异常侧民居出现现代工业建材：锈蚀波纹铁皮屋顶、白灰水泥抹面墙与硬化铺装路面，与『古老但仍在使用的大型石质引水结构』所处的石基木构、夯土墙、深色瓦顶、湿泥土石路锚点冲突。违反 Story 前工业文明设定与 Series 世界视觉锚点。按每帧一次内容返修预算执行规范内定向返修。",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "08": {
+      "number": 8,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "d61171e74b0e",
+          "started_at": "2026-09-14T11:59:43+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "08",
+            "kind": "original",
+            "prompt_sha256": "cb3cbea8814ff1485f63e85728df044f83791da7647e5b394b0dc6f34d747023",
+            "prompt_chars": 94,
+            "prompt_bytes": 282,
+            "capture_id": "visual-lock-08",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/08.json",
+              "contract_sha256": "de72611d20afd13e534caba099ba67f232e955fab72adaecf8c09cca4c9db1c7"
+            },
+            "frame_contract_sha256": "de72611d20afd13e534caba099ba67f232e955fab72adaecf8c09cca4c9db1c7",
+            "batch_id": null
+          },
+          "request_fingerprint": "6d5955b6401a31cbcb7b398382f798df0da89f4e48725c43501992057fc4bbb8",
+          "notes": "phase6 scheduler item=703b627c5d9b scope=visual_lock",
+          "result": "success",
+          "runtime_transaction_id": "94279ccd597744acbe43d563d5decec9",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/08-1789358493.json",
+            "sha256": "0a19f10cf1831c84502332f1b32f0006f2c2d71aa1af616c6a7357b57e994e85",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:01:34+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/08-703b627c5d9b-a1.png",
+            "sha256": "c86f1a1f86bd66d99b5bedecaccff79c5bf93354fedcd17eb6e071f426652c31",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:01:34+08:00",
+            "kind": "original",
+            "attempt_id": "d61171e74b0e"
+          }
+        },
+        {
+          "attempt_id": "34996009e910",
+          "started_at": "2026-09-14T12:37:58+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "08",
+            "kind": "repair",
+            "prompt_sha256": "97d28353d2259e8625a91db4695c42d7f1e086a39ac53b7866dd295e4936fa13",
+            "prompt_chars": 233,
+            "prompt_bytes": 681,
+            "capture_id": "repair-08-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/08.json",
+              "contract_sha256": "de72611d20afd13e534caba099ba67f232e955fab72adaecf8c09cca4c9db1c7"
+            },
+            "frame_contract_sha256": "de72611d20afd13e534caba099ba67f232e955fab72adaecf8c09cca4c9db1c7",
+            "batch_id": null
+          },
+          "request_fingerprint": "843f384ec601ac7faf3e737630a0a4a2ff522f28b87dbaf660cf17d1e01f1b21",
+          "notes": "phase6 scheduler item=d489a3e518f1 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "63d31ce825034d03a372d31b0646d45a",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/08-1789360797.json",
+            "sha256": "1c6a9d23a1e3428434e11ae86ff85f0704e7107d0e2495be5367467ac0de5cdf",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:39:58+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/08-d489a3e518f1-a1.png",
+            "sha256": "fe764fbc18a18ba59b875481c7cc7aad96748d5659dcdf3ec2b5853a428f5758",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:39:58+08:00",
+            "kind": "repair",
+            "attempt_id": "34996009e910"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/08-d489a3e518f1-a1.png",
+        "sha256": "fe764fbc18a18ba59b875481c7cc7aad96748d5659dcdf3ec2b5853a428f5758",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:39:58+08:00",
+        "kind": "repair",
+        "attempt_id": "34996009e910"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/08.png",
+        "sha256": "fe764fbc18a18ba59b875481c7cc7aad96748d5659dcdf3ec2b5853a428f5758",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:41:59+08:00",
+        "source_sha256": "fe764fbc18a18ba59b875481c7cc7aad96748d5659dcdf3ec2b5853a428f5758"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:07+08:00",
+        "sha256": "fe764fbc18a18ba59b875481c7cc7aad96748d5659dcdf3ec2b5853a428f5758",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:29:18+08:00",
+          "decision": "repair",
+          "notes": "WORK_ISOLATED 真实像素复核（1100px 放大）：云裂后城区出现现代混凝土多层公寓楼、沿河大体量白色公共建筑与红色塑胶跑道/操场，路面另有小型机动车。与 Story『仍在正常运转的完整前工业文明…无法对应任何具体朝代』、Series 世界视觉锚点（石基+木结构、湿泥土路）及 Environment Contract（异常侧土路/石路）冲突，判内容返修。"
+        },
+        {
+          "at": "2026-09-14T12:41:21+08:00",
+          "decision": "pass",
+          "notes": "返修后真实像素复核：石阶与木构瓦顶聚落沿河谷层层展开，驮畜、背篓人流、梯田、油灯级暖光与炊烟同时成立，远处城区没入晨雾；原先的现代混凝土公寓、塑胶跑道操场与机动车已消除，前工业设定恢复。残余风险：飞檐、廊桥与远景塔状轮廓仍偏东亚古城语汇，属风格余量，需发布前人工确认。"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-14T12:29:26+08:00",
+        "note": "自动审核（delegated_auto_review）在真实像素中发现异常侧出现现代工业物件（机动车与蓝牌、电线杆电线、塑料器具、混凝土街面、现代公寓楼与塑胶跑道、中文门楣），违反 Story 前工业文明设定、Series 世界视觉锚点与 Environment Contract 异常侧材质；按每帧一次内容返修预算执行规范内定向返修。",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "09": {
+      "number": 9,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "b46b45847213",
+          "started_at": "2026-09-14T12:10:36+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "09",
+            "kind": "original",
+            "prompt_sha256": "6c82011ea9f3592685e965bd46790cfa3945f076a8b724025e5518b854231cc0",
+            "prompt_chars": 91,
+            "prompt_bytes": 265,
+            "capture_id": "batch-09",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/09.json",
+              "contract_sha256": "bf4e872365c75d28fda3b4929ac84f0f59edd60875bad349e731a17b38bf8559"
+            },
+            "frame_contract_sha256": "bf4e872365c75d28fda3b4929ac84f0f59edd60875bad349e731a17b38bf8559",
+            "batch_id": null
+          },
+          "request_fingerprint": "d7eb2aa17ac39507990e273564673674b201e6862b10e8d2c6f67b88f6a5c238",
+          "notes": "V2.4 batch scheduler item=2cd6427a8254",
+          "result": "success",
+          "runtime_transaction_id": "b1fb4c9502294cea964fea3aa5906eb5",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/09-1789359217.json",
+            "sha256": "c2c3694ff2bc2352a202c092829740921d3a231ec762220223c527b8a52fa052",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:13:38+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/09-2cd6427a8254-a1.png",
+            "sha256": "98ba7b2c0b7c5f36f7c1eab4c9f4218550d3bb8f15d91b1d76325960859d862f",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:13:38+08:00",
+            "kind": "original",
+            "attempt_id": "b46b45847213"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/09-2cd6427a8254-a1.png",
+        "sha256": "98ba7b2c0b7c5f36f7c1eab4c9f4218550d3bb8f15d91b1d76325960859d862f",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:13:38+08:00",
+        "kind": "original",
+        "attempt_id": "b46b45847213"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/09.png",
+        "sha256": "98ba7b2c0b7c5f36f7c1eab4c9f4218550d3bb8f15d91b1d76325960859d862f",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:42:00+08:00",
+        "source_sha256": "98ba7b2c0b7c5f36f7c1eab4c9f4218550d3bb8f15d91b1d76325960859d862f"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:08+08:00",
+        "sha256": "98ba7b2c0b7c5f36f7c1eab4c9f4218550d3bb8f15d91b1d76325960859d862f",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:22+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：文明外围固定运输道路上一小队人与驮畜沿山腰移动，浅色粗布包裹反复出现，远距真实、无字幕解释，符合 required cues（运输道路/运输队/浅色粗布生活材料）。"
+        }
+      ]
+    },
+    "10": {
+      "number": 10,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "6af9f536dc82",
+          "started_at": "2026-09-14T12:10:36+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "10",
+            "kind": "original",
+            "prompt_sha256": "569a859a810557bce3706e4e52d4bc96264f9b222455932d9a0d172455e63e3c",
+            "prompt_chars": 89,
+            "prompt_bytes": 249,
+            "capture_id": "batch-10",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/11_车内夜间_正侧脸.png",
+                "role": "series_character_identity:P02",
+                "kind": "identity",
+                "sha256": "d5bc8e55dadbd4eaabefcb926e1d4816f7e72453e4c17b50ed7453aff2b4da32"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/10.json",
+              "contract_sha256": "54a41735da679337550e026246d6dd4e4c2862b548c825a1f1e22018ae9ae256"
+            },
+            "frame_contract_sha256": "54a41735da679337550e026246d6dd4e4c2862b548c825a1f1e22018ae9ae256",
+            "batch_id": null
+          },
+          "request_fingerprint": "6f7774be1da5735d6b18d6c36aedb08c8cd1be60a2c8eaa1b3bd347c908a73eb",
+          "notes": "V2.4 batch scheduler item=09e028e79c16",
+          "result": "success",
+          "runtime_transaction_id": "dedff88aa75642839fdcaf7da1c86c4f",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/10-1789359220.json",
+            "sha256": "4a7d71bef6f9a98d08ae034cf7e40db346ed6deae0ea088e7a8527e96d3de593",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:13:41+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/10-09e028e79c16-a1.png",
+            "sha256": "4917f7a513d738e5fa1cf0785b0e627e68651c98b70b4f2ac5ef3fa3f816f7ae",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:13:41+08:00",
+            "kind": "original",
+            "attempt_id": "6af9f536dc82"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/10-09e028e79c16-a1.png",
+        "sha256": "4917f7a513d738e5fa1cf0785b0e627e68651c98b70b4f2ac5ef3fa3f816f7ae",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:13:41+08:00",
+        "kind": "original",
+        "attempt_id": "6af9f536dc82"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/10.png",
+        "sha256": "4917f7a513d738e5fa1cf0785b0e627e68651c98b70b4f2ac5ef3fa3f816f7ae",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:42:01+08:00",
+        "source_sha256": "4917f7a513d738e5fa1cf0785b0e627e68651c98b70b4f2ac5ef3fa3f816f7ae"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:09+08:00",
+        "sha256": "4917f7a513d738e5fa1cf0785b0e627e68651c98b70b4f2ac5ef3fa3f816f7ae",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:23+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：现实侧手机记录，P01手持原装遥控器与实时图传屏幕、P02同框近前，自车、湿路面与低云仍在，构图轻微歪斜，符合 required cues（P02/遥控器屏幕/现实侧车旁环境/返航动作）。"
+        }
+      ]
+    },
+    "11": {
+      "number": 11,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "314f4af02bf5",
+          "started_at": "2026-09-14T12:13:48+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "11",
+            "kind": "original",
+            "prompt_sha256": "254879ddaf2b718a78fcf38caf12e8b1b25f66de4bff0944b9e3101290d67363",
+            "prompt_chars": 81,
+            "prompt_bytes": 243,
+            "capture_id": "batch-11",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/11.json",
+              "contract_sha256": "448c4cee1648007f4580fd0449284a760166d722359a75a7e56999b55c4c9245"
+            },
+            "frame_contract_sha256": "448c4cee1648007f4580fd0449284a760166d722359a75a7e56999b55c4c9245",
+            "batch_id": null
+          },
+          "request_fingerprint": "d4da1e6092d8e64ac1ad19d9f876ebad810d13b18d67571bbf94a65316b02b3c",
+          "notes": "V2.4 batch scheduler item=78f002d2c396",
+          "result": "success",
+          "runtime_transaction_id": "30c3a47d80a549f3bef7b536963f7e28",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/11-1789359339.json",
+            "sha256": "5c45386d0ebff78994ccad3875364ef59c5f7f5aa801f57f31368df90280c8d0",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:15:40+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/11-78f002d2c396-a1.png",
+            "sha256": "3944dcf9c07833065299f97c58a894dc6d0a3651c263570aa1d3cd6964244b4f",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:15:40+08:00",
+            "kind": "original",
+            "attempt_id": "314f4af02bf5"
+          }
+        },
+        {
+          "attempt_id": "02d586a70f79",
+          "started_at": "2026-09-14T12:29:58+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "11",
+            "kind": "repair",
+            "prompt_sha256": "e3558039cc95661e93687b3b1b3decc7faf56427d50213bab2b9f1b6fee871b9",
+            "prompt_chars": 260,
+            "prompt_bytes": 762,
+            "capture_id": "repair-11-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/11.json",
+              "contract_sha256": "448c4cee1648007f4580fd0449284a760166d722359a75a7e56999b55c4c9245"
+            },
+            "frame_contract_sha256": "448c4cee1648007f4580fd0449284a760166d722359a75a7e56999b55c4c9245",
+            "batch_id": null
+          },
+          "request_fingerprint": "4b1886a45b1c0f19ae77906b210bf00999bd3408cac37bc4d82b5a1f96422b0c",
+          "notes": "phase6 scheduler item=3a52b2dd3738 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "1408d96cdde348e7aa0b2163ab4212cb",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/11-1789360322.json",
+            "sha256": "d8ee999ae841de204dc6c0c8dad7b55241d13afc88f9624ea57940ef0f650dba",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:32:02+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/11-3a52b2dd3738-a1.png",
+            "sha256": "b7ab83af44a5b3b605ff9d81b550461ca7c71f7f86b1ac2e1b53407a3d57e535",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:32:02+08:00",
+            "kind": "repair",
+            "attempt_id": "02d586a70f79"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/11-3a52b2dd3738-a1.png",
+        "sha256": "b7ab83af44a5b3b605ff9d81b550461ca7c71f7f86b1ac2e1b53407a3d57e535",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:32:02+08:00",
+        "kind": "repair",
+        "attempt_id": "02d586a70f79"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/11.png",
+        "sha256": "b7ab83af44a5b3b605ff9d81b550461ca7c71f7f86b1ac2e1b53407a3d57e535",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:42:02+08:00",
+        "source_sha256": "b7ab83af44a5b3b605ff9d81b550461ca7c71f7f86b1ac2e1b53407a3d57e535"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:10+08:00",
+        "sha256": "b7ab83af44a5b3b605ff9d81b550461ca7c71f7f86b1ac2e1b53407a3d57e535",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:29:20+08:00",
+          "decision": "repair",
+          "notes": "WORK_ISOLATED 真实像素复核（8 倍放大）：返航航拍街巷中出现一台浅灰色现代小型货车/皮卡，车厢堆货，车尾可见蓝色中国大陆制式车牌，并伴电线杆与架空电线。与『前工业文明』设定冲突，判内容返修。"
+        },
+        {
+          "at": "2026-09-14T12:41:24+08:00",
+          "decision": "pass",
+          "notes": "返修后真实像素复核：返航斜俯街巷中孩子最先停下手里的事抬头看无人机，周围成人多数仍正常做事；驮畜背篓、木轮推车与粗织布包裹替代了原机动车，浅灰货车与蓝色车牌已消除，符合 required cues。"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-14T12:29:27+08:00",
+        "note": "自动审核（delegated_auto_review）在真实像素中发现异常侧出现现代工业物件（机动车与蓝牌、电线杆电线、塑料器具、混凝土街面、现代公寓楼与塑胶跑道、中文门楣），违反 Story 前工业文明设定、Series 世界视觉锚点与 Environment Contract 异常侧材质；按每帧一次内容返修预算执行规范内定向返修。",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "12": {
+      "number": 12,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-09-14T12:37:34+08:00",
+          "attempt_id": "5f985d85b850",
+          "code": "RATE_LIMIT_429",
+          "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\03_雾中的另一座生活区\\meta\\image-workers\\12-b17429e118d7-a1.jsonl"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt_id": "8e3256fd6e9d",
+          "started_at": "2026-09-14T12:13:48+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "12",
+            "kind": "original",
+            "prompt_sha256": "9af0bf88b1cdf5e9b53f635d1a2e079defe9906506e861ee7bf3a1ff3fe3b865",
+            "prompt_chars": 82,
+            "prompt_bytes": 246,
+            "capture_id": "batch-12",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/12.json",
+              "contract_sha256": "753c53317d71f400be257dedf17adb1171110f3d9b73ca7a43be081fac4e0499"
+            },
+            "frame_contract_sha256": "753c53317d71f400be257dedf17adb1171110f3d9b73ca7a43be081fac4e0499",
+            "batch_id": null
+          },
+          "request_fingerprint": "8383c0865bc77c6aaf2ee9e8138adb8d96d0e17f568c3f84d4d326b4c611d2c1",
+          "notes": "V2.4 batch scheduler item=a5252199c4d5",
+          "result": "success",
+          "runtime_transaction_id": "04e60d260b4444d98610b0269a6ae3fc",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/12-1789359349.json",
+            "sha256": "202b2b6e03844a03044cd2a137458b3a94af04a4c66da641a68b21be1da6784b",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:15:50+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/12-a5252199c4d5-a1.png",
+            "sha256": "34dba7690a9332ac5c98f90c895550227c3e76e72c28c2e0cacef1ab83a98c1e",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:15:50+08:00",
+            "kind": "original",
+            "attempt_id": "8e3256fd6e9d"
+          }
+        },
+        {
+          "attempt_id": "5f985d85b850",
+          "started_at": "2026-09-14T12:31:36+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "12",
+            "kind": "repair",
+            "prompt_sha256": "0e847441cd94ca2629f97e2f1b47d96a7e943451702c9f017c973924c33535f1",
+            "prompt_chars": 207,
+            "prompt_bytes": 603,
+            "capture_id": "repair-12-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/12.json",
+              "contract_sha256": "753c53317d71f400be257dedf17adb1171110f3d9b73ca7a43be081fac4e0499"
+            },
+            "frame_contract_sha256": "753c53317d71f400be257dedf17adb1171110f3d9b73ca7a43be081fac4e0499",
+            "batch_id": null
+          },
+          "request_fingerprint": "70083f3c1a0598ea7e4aadb0f4c5df335e8e1d945fcd8721a676b9a403dc685e",
+          "notes": "phase6 scheduler item=b17429e118d7 scope=repair",
+          "result": "technical_failure",
+          "runtime_transaction_id": "d541fddd65b24e2a8d1827949ad97e27",
+          "completed_at": "2026-09-14T12:37:34+08:00",
+          "error": {
+            "code": "RATE_LIMIT_429",
+            "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\03_雾中的另一座生活区\\meta\\image-workers\\12-b17429e118d7-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "59f57b6b3f0c",
+          "started_at": "2026-09-14T12:37:58+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "12",
+            "kind": "repair",
+            "prompt_sha256": "0e847441cd94ca2629f97e2f1b47d96a7e943451702c9f017c973924c33535f1",
+            "prompt_chars": 207,
+            "prompt_bytes": 603,
+            "capture_id": "repair-12-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/12.json",
+              "contract_sha256": "753c53317d71f400be257dedf17adb1171110f3d9b73ca7a43be081fac4e0499"
+            },
+            "frame_contract_sha256": "753c53317d71f400be257dedf17adb1171110f3d9b73ca7a43be081fac4e0499",
+            "batch_id": null
+          },
+          "request_fingerprint": "70083f3c1a0598ea7e4aadb0f4c5df335e8e1d945fcd8721a676b9a403dc685e",
+          "notes": "phase6 scheduler item=b17429e118d7 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "d541fddd65b24e2a8d1827949ad97e27",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/12-1789360797.json",
+            "sha256": "dd2a62bdfa1a8a13c051bb35213bebb9b50658f138c1841faa25e4521f01a97a",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:39:58+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/12-b17429e118d7-a2.png",
+            "sha256": "496c230e5182b3e6b3d1ba84e5eb547d6a758d636a95a1d2278f5212516921b5",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:39:58+08:00",
+            "kind": "repair",
+            "attempt_id": "59f57b6b3f0c"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/12-b17429e118d7-a2.png",
+        "sha256": "496c230e5182b3e6b3d1ba84e5eb547d6a758d636a95a1d2278f5212516921b5",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:39:58+08:00",
+        "kind": "repair",
+        "attempt_id": "59f57b6b3f0c"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/12.png",
+        "sha256": "496c230e5182b3e6b3d1ba84e5eb547d6a758d636a95a1d2278f5212516921b5",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:42:03+08:00",
+        "source_sha256": "496c230e5182b3e6b3d1ba84e5eb547d6a758d636a95a1d2278f5212516921b5"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:11+08:00",
+        "sha256": "496c230e5182b3e6b3d1ba84e5eb547d6a758d636a95a1d2278f5212516921b5",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:29:21+08:00",
+          "decision": "repair",
+          "notes": "WORK_ISOLATED 真实像素复核：同一街巷出现白色塑料桶与塑料器具、混凝土路面、电线杆与架空电线、波纹铁皮棚。与 Environment Contract 异常侧土路/石路及前工业设定冲突，判内容返修。"
+        },
+        {
+          "at": "2026-09-14T12:41:25+08:00",
+          "decision": "pass",
+          "notes": "返修后真实像素复核：同一街巷成人顺视线抬头后把孩子拢到身边，反应不同步且保留普通清晨背景；石基木构瓦顶与湿泥土石路面替代了原混凝土街面，塑料器具、电线杆与波纹铁皮已消除，符合 required cues。"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-14T12:29:28+08:00",
+        "note": "自动审核（delegated_auto_review）在真实像素中发现异常侧出现现代工业物件（机动车与蓝牌、电线杆电线、塑料器具、混凝土街面、现代公寓楼与塑胶跑道、中文门楣），违反 Story 前工业文明设定、Series 世界视觉锚点与 Environment Contract 异常侧材质；按每帧一次内容返修预算执行规范内定向返修。",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "13": {
+      "number": 13,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "363d884e0a26",
+          "started_at": "2026-09-14T12:13:48+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "13",
+            "kind": "original",
+            "prompt_sha256": "0aaf90d4823a3e3489be518a59f9585debcca677b53223e1134f14ecb4f74306",
+            "prompt_chars": 86,
+            "prompt_bytes": 258,
+            "capture_id": "batch-13",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/13.json",
+              "contract_sha256": "d0d3c297677c6bc6d8621a6d809686d916f88d37250cce707439a3803feeab96"
+            },
+            "frame_contract_sha256": "d0d3c297677c6bc6d8621a6d809686d916f88d37250cce707439a3803feeab96",
+            "batch_id": null
+          },
+          "request_fingerprint": "dce80233ee7d9bd5ca972f6b94b0f39d1e65f975bf842ad157ce5e2f31451a5b",
+          "notes": "V2.4 batch scheduler item=05159b490fdd",
+          "result": "success",
+          "runtime_transaction_id": "e3c0b116fd794882a40592a35442a820",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/13-1789359356.json",
+            "sha256": "2bdcfb1fc99461569a5d925d005909d0f9fca007ca5a8aeea6adbd8cd548cf45",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:15:57+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/13-05159b490fdd-a1.png",
+            "sha256": "456bbefbd755de01d0ceb79ab17147be9f2b62660d38a5a295c3c34d6ed03931",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:15:57+08:00",
+            "kind": "original",
+            "attempt_id": "363d884e0a26"
+          }
+        },
+        {
+          "attempt_id": "93214f0e5d9c",
+          "started_at": "2026-09-14T12:29:58+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "13",
+            "kind": "repair",
+            "prompt_sha256": "ba16ed50ccdaf731e9335a0918546c94b7b9daad05ed9523a8b6e64cff83bced",
+            "prompt_chars": 229,
+            "prompt_bytes": 669,
+            "capture_id": "repair-13-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/13.json",
+              "contract_sha256": "d0d3c297677c6bc6d8621a6d809686d916f88d37250cce707439a3803feeab96"
+            },
+            "frame_contract_sha256": "d0d3c297677c6bc6d8621a6d809686d916f88d37250cce707439a3803feeab96",
+            "batch_id": null
+          },
+          "request_fingerprint": "62d0dbedb97b023c6bec56f942b4d5d5c83e06fc3d7c7584508afb39c03e41e0",
+          "notes": "phase6 scheduler item=fba6320e121c scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "94185902d11043df820113ae78d5d35e",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/13-1789360295.json",
+            "sha256": "70d82965499771086a6671af7e7d3ff9d09b8483502edf921e7b63a0d079752e",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:31:36+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/13-fba6320e121c-a1.png",
+            "sha256": "00e33b9e17b307dee4f7feb1e40a97e9c37ab7b2a26f724272897e909e96f530",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:31:36+08:00",
+            "kind": "repair",
+            "attempt_id": "93214f0e5d9c"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/13-fba6320e121c-a1.png",
+        "sha256": "00e33b9e17b307dee4f7feb1e40a97e9c37ab7b2a26f724272897e909e96f530",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:31:36+08:00",
+        "kind": "repair",
+        "attempt_id": "93214f0e5d9c"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/13.png",
+        "sha256": "00e33b9e17b307dee4f7feb1e40a97e9c37ab7b2a26f724272897e909e96f530",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:42:04+08:00",
+        "source_sha256": "00e33b9e17b307dee4f7feb1e40a97e9c37ab7b2a26f724272897e909e96f530"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:12+08:00",
+        "sha256": "00e33b9e17b307dee4f7feb1e40a97e9c37ab7b2a26f724272897e909e96f530",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:29:22+08:00",
+          "decision": "repair",
+          "notes": "WORK_ISOLATED 真实像素复核：街区出现电线杆与架空电线、波纹铁皮、塑料筐，以及门楣红色贴纸/匾额式中文装饰。与『不可对应具体朝代、无中文匾额』及前工业设定冲突，判内容返修。"
+        },
+        {
+          "at": "2026-09-14T12:41:26+08:00",
+          "decision": "pass",
+          "notes": "返修后真实像素复核：街区反应明显异步——有人收拢货物、有人领孩子进门、有人倚窗、仍有人低头劳作；竹木陶容器与粗织布替代原塑料筐，电线杆、架空电线与中文门楣装饰已消除，符合 required cues。"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-14T12:29:29+08:00",
+        "note": "自动审核（delegated_auto_review）在真实像素中发现异常侧出现现代工业物件（机动车与蓝牌、电线杆电线、塑料器具、混凝土街面、现代公寓楼与塑胶跑道、中文门楣），违反 Story 前工业文明设定、Series 世界视觉锚点与 Environment Contract 异常侧材质；按每帧一次内容返修预算执行规范内定向返修。",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "14": {
+      "number": 14,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [
+        {
+          "at": "2026-09-14T13:40:37+08:00",
+          "attempt_id": "ba4467ac0147",
+          "code": "IMAGE_BACKEND_ERROR",
+          "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\03_雾中的另一座生活区\\meta\\image-workers\\14-dba250461e3b-a1.jsonl"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt_id": "85f1f741d61a",
+          "started_at": "2026-09-14T12:13:48+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "14",
+            "kind": "original",
+            "prompt_sha256": "aa4cb9e8051f9665f6d33a8c487bb6167cbfef550baf8cdf84a7d728b558b63e",
+            "prompt_chars": 96,
+            "prompt_bytes": 280,
+            "capture_id": "batch-14",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/14.json",
+              "contract_sha256": "3f1a36d84c810e9aa58ec471a42c885e7360c89cbc4cebdc38b5ceb3ff4305ef"
+            },
+            "frame_contract_sha256": "3f1a36d84c810e9aa58ec471a42c885e7360c89cbc4cebdc38b5ceb3ff4305ef",
+            "batch_id": null
+          },
+          "request_fingerprint": "59d9d351b6b5ae6a4cebb856dde43ce4444f9dce11f0c9e3abe2609146276772",
+          "notes": "V2.4 batch scheduler item=596ff3a43d5f",
+          "result": "success",
+          "runtime_transaction_id": "720b5ff2befc4da2a703be17bc0703ca",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/14-1789359451.json",
+            "sha256": "975578c0fe7cad96e4b16119719a8d073abe4a0f3fd0578c92cda2e791ee0df1",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:17:32+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/14-596ff3a43d5f-a1.png",
+            "sha256": "f1bf668900de57574358e08e18d695acfc6862a553d47cc2459d9826038d4d10",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:17:32+08:00",
+            "kind": "original",
+            "attempt_id": "85f1f741d61a"
+          }
+        },
+        {
+          "attempt_id": "ba4467ac0147",
+          "started_at": "2026-09-14T13:34:33+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "14",
+            "kind": "repair",
+            "prompt_sha256": "27cdcdfad118bc1c9f7dbcb635650b14026b7c5442e6ef40abbd83ab6b50fc60",
+            "prompt_chars": 201,
+            "prompt_bytes": 585,
+            "capture_id": "repair-14-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/14.json",
+              "contract_sha256": "3f1a36d84c810e9aa58ec471a42c885e7360c89cbc4cebdc38b5ceb3ff4305ef"
+            },
+            "frame_contract_sha256": "3f1a36d84c810e9aa58ec471a42c885e7360c89cbc4cebdc38b5ceb3ff4305ef",
+            "batch_id": null
+          },
+          "request_fingerprint": "c7e618aadbf6408190d271b91da2570307c36ad98aacde6102cb7a82e88c810b",
+          "notes": "phase6 scheduler item=dba250461e3b scope=repair",
+          "result": "technical_failure",
+          "runtime_transaction_id": "fecefdf4c0aa4607a4d9bf41014bf838",
+          "completed_at": "2026-09-14T13:40:37+08:00",
+          "error": {
+            "code": "IMAGE_BACKEND_ERROR",
+            "message": "Codex image worker failed rc=0; no_valid_image=true; log=D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\10_彼此的天上\\03_雾中的另一座生活区\\meta\\image-workers\\14-dba250461e3b-a1.jsonl"
+          }
+        },
+        {
+          "attempt_id": "ae0ea3f6fec0",
+          "started_at": "2026-09-14T13:50:02+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "14",
+            "kind": "repair",
+            "prompt_sha256": "27cdcdfad118bc1c9f7dbcb635650b14026b7c5442e6ef40abbd83ab6b50fc60",
+            "prompt_chars": 201,
+            "prompt_bytes": 585,
+            "capture_id": "repair-14-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/14.json",
+              "contract_sha256": "3f1a36d84c810e9aa58ec471a42c885e7360c89cbc4cebdc38b5ceb3ff4305ef"
+            },
+            "frame_contract_sha256": "3f1a36d84c810e9aa58ec471a42c885e7360c89cbc4cebdc38b5ceb3ff4305ef",
+            "batch_id": null
+          },
+          "request_fingerprint": "c7e618aadbf6408190d271b91da2570307c36ad98aacde6102cb7a82e88c810b",
+          "notes": "phase6 scheduler item=dba250461e3b scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "fecefdf4c0aa4607a4d9bf41014bf838",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/14-1789365124.json",
+            "sha256": "a58cbb0be5e1e96dcc236fafb8b6835dda805f588784c79b41367e7026771601",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T13:52:05+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/14-dba250461e3b-a2.png",
+            "sha256": "37b8128ec3920a89db3b929722430ddd68026b93f397d055ffe3b353fcc75126",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T13:52:05+08:00",
+            "kind": "repair",
+            "attempt_id": "ae0ea3f6fec0"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/14-dba250461e3b-a2.png",
+        "sha256": "37b8128ec3920a89db3b929722430ddd68026b93f397d055ffe3b353fcc75126",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T13:52:05+08:00",
+        "kind": "repair",
+        "attempt_id": "ae0ea3f6fec0"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/14.png",
+        "sha256": "37b8128ec3920a89db3b929722430ddd68026b93f397d055ffe3b353fcc75126",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T13:59:40+08:00",
+        "source_sha256": "37b8128ec3920a89db3b929722430ddd68026b93f397d055ffe3b353fcc75126"
+      },
+      "lock": {
+        "at": "2026-09-14T13:59:42+08:00",
+        "sha256": "37b8128ec3920a89db3b929722430ddd68026b93f397d055ffe3b353fcc75126",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；锁后 delegated_auto_review 规范内返修（14 现代材料缺陷）后重新冻结 SHA。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:27+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：头裹浅色粗布头巾的年轻女人先把身旁孩子往后带、自己继续抬头看无人机几秒未进屋，像普通居民而非主角姿势，为EP04保留可识别人物锚，符合 required cues。"
+        },
+        {
+          "at": "2026-09-14T13:59:39+08:00",
+          "decision": "pass",
+          "notes": "锁后 delegated auto 返修真实像素复核：原缺陷为侧屋波纹铁皮屋面与院内黑色塑料大盆。新候选 14-dba250461e3b-a2 已复核，屋面仅深色瓦顶与木构夯土墙体，院内为竹篾浅筐盛菜、木桶与深釉陶水缸，无铁皮、无塑料器皿；头裹浅色粗布头巾的年轻女人仍先把孩子往后带并继续抬头看无人机几秒，普通居民姿态，EP04 人物锚保留，符合 required cues。"
+        }
+      ],
+      "superseded_locks": [
+        {
+          "at": "2026-09-14T13:33:40+08:00",
+          "lock": {
+            "at": "2026-09-14T12:58:13+08:00",
+            "sha256": "f1bf668900de57574358e08e18d695acfc6862a553d47cc2459d9826038d4d10",
+            "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+          },
+          "approved_asset": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/14.png",
+            "sha256": "f1bf668900de57574358e08e18d695acfc6862a553d47cc2459d9826038d4d10",
+            "width": 1080,
+            "height": 1350,
+            "promoted_at": "2026-09-14T12:42:05+08:00",
+            "source_sha256": "f1bf668900de57574358e08e18d695acfc6862a553d47cc2459d9826038d4d10"
+          },
+          "reason": "delegated auto review found a content defect after lock"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-14T13:33:40+08:00",
+        "note": "delegated auto review: frame 14 approved asset still shows modern manufactured materials against the pre-industrial anchor: corrugated metal sheet roofing on the side extension (upper-left roof zone) and a large black plastic basin in the yard (lower-left). Same defect class as repaired frames 04/05/07/08/11/12/13/15/16.",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "15": {
+      "number": 15,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "8667672b0776",
+          "started_at": "2026-09-14T12:13:48+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "15",
+            "kind": "original",
+            "prompt_sha256": "859a55744b641f6b5799fe8e5e1df984fb23f2fc9c1d26214dcb246df657c04f",
+            "prompt_chars": 91,
+            "prompt_bytes": 273,
+            "capture_id": "batch-15",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/15.json",
+              "contract_sha256": "4848807887c59a3af9f6a0b1a8f6c965468f2ce2f07c9322f348e18e5cb83e19"
+            },
+            "frame_contract_sha256": "4848807887c59a3af9f6a0b1a8f6c965468f2ce2f07c9322f348e18e5cb83e19",
+            "batch_id": null
+          },
+          "request_fingerprint": "fac4ac15444ea0485985927fec6afe8c16e6f6cac125d972b8991aaa32200622",
+          "notes": "V2.4 batch scheduler item=d2cb69693d5d",
+          "result": "success",
+          "runtime_transaction_id": "699a1b8515654ec3aa9378ef5c25832a",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/15-1789359446.json",
+            "sha256": "2f86d7c1621f230b00eaa3c5e9dac1ee4f0a674104f3da9b020fdb4e6d2335ac",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:17:27+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/15-d2cb69693d5d-a1.png",
+            "sha256": "55c21a3afb8230b0f8646a486bbe0881bb599abf337d602535c2e1ecc48b7023",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:17:27+08:00",
+            "kind": "original",
+            "attempt_id": "8667672b0776"
+          }
+        },
+        {
+          "attempt_id": "99d587fe86e1",
+          "started_at": "2026-09-14T12:58:59+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "15",
+            "kind": "repair",
+            "prompt_sha256": "67b093a5c1bc286f25b1a762938611338f2704421ebd13da784ea29bbe51d554",
+            "prompt_chars": 188,
+            "prompt_bytes": 546,
+            "capture_id": "repair-15-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/15.json",
+              "contract_sha256": "4848807887c59a3af9f6a0b1a8f6c965468f2ce2f07c9322f348e18e5cb83e19"
+            },
+            "frame_contract_sha256": "4848807887c59a3af9f6a0b1a8f6c965468f2ce2f07c9322f348e18e5cb83e19",
+            "batch_id": null
+          },
+          "request_fingerprint": "75fd04634fc19dd74ad92a0cb0afec528e4622eef2b8b652e5baa96835cdb40d",
+          "notes": "phase6 scheduler item=cbd513841fff scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "636439051f9d45138944b12046abcea4",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/15-1789362038.json",
+            "sha256": "b8d16195f099a428b8149356bf1c0500a0bef541d4237f0ad70fc3c011caa1e4",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T13:00:39+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/15-cbd513841fff-a1.png",
+            "sha256": "16b47f11b263551610c5e91e752d46e5a0ec9c1a471163f66ffd886b03dd79f0",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T13:00:39+08:00",
+            "kind": "repair",
+            "attempt_id": "99d587fe86e1"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/15-cbd513841fff-a1.png",
+        "sha256": "16b47f11b263551610c5e91e752d46e5a0ec9c1a471163f66ffd886b03dd79f0",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T13:00:39+08:00",
+        "kind": "repair",
+        "attempt_id": "99d587fe86e1"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/15.png",
+        "sha256": "16b47f11b263551610c5e91e752d46e5a0ec9c1a471163f66ffd886b03dd79f0",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T13:04:35+08:00",
+        "source_sha256": "16b47f11b263551610c5e91e752d46e5a0ec9c1a471163f66ffd886b03dd79f0"
+      },
+      "lock": {
+        "at": "2026-09-14T13:04:36+08:00",
+        "sha256": "16b47f11b263551610c5e91e752d46e5a0ec9c1a471163f66ffd886b03dd79f0",
+        "reason": "Production lock v2: 锁后 delegated_auto_review 规范内返修完成并通过真实像素复核，approved 资产 SHA-256 重新冻结。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:28+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：无人机仍停在生活区上空并带轻微风漂痕迹，下方有人继续收物、带孩子回屋，停留影响由悬停状态与持续避让直接读出而非字幕，符合 required cues（无人机仍悬停/下方人群继续避让/返航没有立即完成）。"
+        },
+        {
+          "at": "2026-09-14T13:04:34+08:00",
+          "decision": "pass",
+          "notes": "锁后返修真实像素复核：无人机仍停在生活区上空并保留轻微风漂，下方为夯土与木构民居、深色弧形瓦顶、湿泥石阶街巷；院内是竹筐、编织筛盘、陶石容器、木架与浅色粗织布，浅色头巾女人先把孩子带在身边，门口仅油灯级暖光。原电线杆与架空电线、波纹铁皮屋顶、带印刷标签的白色塑料桶与 PVC/金属管件已消除；停留影响仍由悬停与避让直接读出。"
+        }
+      ],
+      "superseded_locks": [
+        {
+          "at": "2026-09-14T12:58:26+08:00",
+          "lock": {
+            "at": "2026-09-14T12:58:14+08:00",
+            "sha256": "55c21a3afb8230b0f8646a486bbe0881bb599abf337d602535c2e1ecc48b7023",
+            "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+          },
+          "approved_asset": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/15.png",
+            "sha256": "55c21a3afb8230b0f8646a486bbe0881bb599abf337d602535c2e1ecc48b7023",
+            "width": 1080,
+            "height": 1350,
+            "promoted_at": "2026-09-14T12:42:06+08:00",
+            "source_sha256": "55c21a3afb8230b0f8646a486bbe0881bb599abf337d602535c2e1ecc48b7023"
+          },
+          "reason": "delegated auto review found a content defect after lock"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-14T12:58:26+08:00",
+        "note": "自动审核 delegated_auto_review 在真实像素复核中发现异常侧生活区上空出现现代工业物件：满屏电线杆与架空电线、波纹铁皮屋顶、带印刷红标签的白色塑料桶与 PVC/金属管件。违反 Story 前工业文明设定、Series 世界视觉锚点（火把/简单油灯、石基木构、深色瓦顶、粗织布）与分镜硬约束 3。按每帧一次内容返修预算执行规范内定向返修。",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "16": {
+      "number": 16,
+      "status": "LOCKED",
+      "content_repairs_used": 1,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "51517284a058",
+          "started_at": "2026-09-14T12:17:35+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "16",
+            "kind": "original",
+            "prompt_sha256": "7e7dc517184ca03f7cacfeeecd17ad6330f5750f4407e68990275f91fc30af0e",
+            "prompt_chars": 87,
+            "prompt_bytes": 261,
+            "capture_id": "batch-16",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/16.json",
+              "contract_sha256": "b9297972cde7466a1757d236145838fb38032e3078c8171070e2e7d5ab57a5e1"
+            },
+            "frame_contract_sha256": "b9297972cde7466a1757d236145838fb38032e3078c8171070e2e7d5ab57a5e1",
+            "batch_id": null
+          },
+          "request_fingerprint": "5784922342c2feb910cabe7324b1a92d400a0074a63d4e3e8df9b1d08549e569",
+          "notes": "V2.4 batch scheduler item=3d8906b138f9",
+          "result": "success",
+          "runtime_transaction_id": "5853320020e54353a0a4e083892bf5d3",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/16-1789359559.json",
+            "sha256": "1df032e3fdaa897e9bde5e3de31a0f224d218d2a56b1b4ce9c8fc3d1a0fd1a20",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:19:20+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/16-3d8906b138f9-a1.png",
+            "sha256": "7607bee879379101bb712d3699c39ebc17f548ce69f25478ba27e08cd213fc33",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:19:20+08:00",
+            "kind": "original",
+            "attempt_id": "51517284a058"
+          }
+        },
+        {
+          "attempt_id": "804db8b63e8a",
+          "started_at": "2026-09-14T12:29:58+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "16",
+            "kind": "repair",
+            "prompt_sha256": "1ef28b43cdd35aaa4871e8cec706d8dce7670b1dc609f0013ea04c4dcc85aeeb",
+            "prompt_chars": 203,
+            "prompt_bytes": 591,
+            "capture_id": "repair-16-preindustrial",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/16.json",
+              "contract_sha256": "b9297972cde7466a1757d236145838fb38032e3078c8171070e2e7d5ab57a5e1"
+            },
+            "frame_contract_sha256": "b9297972cde7466a1757d236145838fb38032e3078c8171070e2e7d5ab57a5e1",
+            "batch_id": null
+          },
+          "request_fingerprint": "09e3d9813890e74c6ed2e9f9339ea819a5e3177ce3c5fb45d017219f030d69cd",
+          "notes": "phase6 scheduler item=27cc71bd2553 scope=repair",
+          "result": "success",
+          "runtime_transaction_id": "abada9813e1145ea840a350edaa40413",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/16-1789360297.json",
+            "sha256": "a354265076c3802a1335cfc3d125b964372c83306148cbbd8a3a72ca8bb92f33",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:31:37+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/16-27cc71bd2553-a1.png",
+            "sha256": "1ca6812fcb83da840c14df84fe0866cb1bc39781d50dd367b319504a6c5ccffa",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:31:37+08:00",
+            "kind": "repair",
+            "attempt_id": "804db8b63e8a"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/16-27cc71bd2553-a1.png",
+        "sha256": "1ca6812fcb83da840c14df84fe0866cb1bc39781d50dd367b319504a6c5ccffa",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:31:37+08:00",
+        "kind": "repair",
+        "attempt_id": "804db8b63e8a"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/16.png",
+        "sha256": "1ca6812fcb83da840c14df84fe0866cb1bc39781d50dd367b319504a6c5ccffa",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:42:07+08:00",
+        "source_sha256": "1ca6812fcb83da840c14df84fe0866cb1bc39781d50dd367b319504a6c5ccffa"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:15+08:00",
+        "sha256": "1ca6812fcb83da840c14df84fe0866cb1bc39781d50dd367b319504a6c5ccffa",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:29:23+08:00",
+          "decision": "repair",
+          "notes": "WORK_ISOLATED 真实像素复核：街巷出现红色机动三轮车、摩托车与带轮塑料垃圾桶，街面为混凝土。与『前工业文明』设定冲突，判内容返修。"
+        },
+        {
+          "at": "2026-09-14T12:41:29+08:00",
+          "decision": "pass",
+          "notes": "返修后真实像素复核：返航高位俯视，局部街面因设备空出、木门窗关闭、孩子被带走，远处仍有人继续做事；红色机动三轮、摩托车、带轮垃圾桶与混凝土街面已消除，符合 required cues。"
+        }
+      ],
+      "repair_authorization": {
+        "at": "2026-09-14T12:29:30+08:00",
+        "note": "自动审核（delegated_auto_review）在真实像素中发现异常侧出现现代工业物件（机动车与蓝牌、电线杆电线、塑料器具、混凝土街面、现代公寓楼与塑胶跑道、中文门楣），违反 Story 前工业文明设定、Series 世界视觉锚点与 Environment Contract 异常侧材质；按每帧一次内容返修预算执行规范内定向返修。",
+        "user_approved": false,
+        "delegated_auto_review": true,
+        "approval_basis": "delegated_auto_review"
+      }
+    },
+    "17": {
+      "number": 17,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "b771b86145d9",
+          "started_at": "2026-09-14T12:17:36+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "17",
+            "kind": "original",
+            "prompt_sha256": "0189df872a73da42005e95ac1ab8567d2d2e290ee3dd8b2b7d6dc225952302da",
+            "prompt_chars": 82,
+            "prompt_bytes": 246,
+            "capture_id": "batch-17",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/17.json",
+              "contract_sha256": "75398d5455952af514b77702bcb81e9bfc07b34840ef0a009c74f77bd5741c13"
+            },
+            "frame_contract_sha256": "75398d5455952af514b77702bcb81e9bfc07b34840ef0a009c74f77bd5741c13",
+            "batch_id": null
+          },
+          "request_fingerprint": "d14a8760de0a34b5cb13d074eba3de368ffaa96ace5a8d78aba6277c0a09c0b0",
+          "notes": "V2.4 batch scheduler item=8c208bf68d1b",
+          "result": "success",
+          "runtime_transaction_id": "0d7cf56828eb49218d0cebbc9390b095",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/17-1789359538.json",
+            "sha256": "f421255cf0710658a2adf4ad1c083b38447e97e73b428e172331cb637a95c4d0",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:18:59+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/17-8c208bf68d1b-a1.png",
+            "sha256": "066e3de55f384a3de29ad6bcb43ceaef26a78201cf2e63728a20a3ef7815d67a",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:18:59+08:00",
+            "kind": "original",
+            "attempt_id": "b771b86145d9"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/17-8c208bf68d1b-a1.png",
+        "sha256": "066e3de55f384a3de29ad6bcb43ceaef26a78201cf2e63728a20a3ef7815d67a",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:18:59+08:00",
+        "kind": "original",
+        "attempt_id": "b771b86145d9"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/17.png",
+        "sha256": "066e3de55f384a3de29ad6bcb43ceaef26a78201cf2e63728a20a3ef7815d67a",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:42:08+08:00",
+        "source_sha256": "066e3de55f384a3de29ad6bcb43ceaef26a78201cf2e63728a20a3ef7815d67a"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:16+08:00",
+        "sha256": "066e3de55f384a3de29ad6bcb43ceaef26a78201cf2e63728a20a3ef7815d67a",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:30+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：失控下降的低空倾斜机位，屋顶、石路与低围栏明显逼近，前景运动模糊与块状压缩伪影可见，仍保留可读空间信息，无科幻裂缝或纯花屏，符合 required cues（倾斜下降机位/逼近屋顶石路围栏/图传撕裂）。"
+        }
+      ]
+    },
+    "18": {
+      "number": 18,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "83cdc5c3dcae",
+          "started_at": "2026-09-14T12:17:36+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "18",
+            "kind": "original",
+            "prompt_sha256": "6c8daf7b2a35487b94cc24584771a9e9fa612dd9b72f111a5fd2b21ab0a1631a",
+            "prompt_chars": 96,
+            "prompt_bytes": 288,
+            "capture_id": "batch-18",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/18.json",
+              "contract_sha256": "6adcdba3c0ff8ec770692564a89731c41c26de15bc0f64604ccf1e6cbe66b160"
+            },
+            "frame_contract_sha256": "6adcdba3c0ff8ec770692564a89731c41c26de15bc0f64604ccf1e6cbe66b160",
+            "batch_id": null
+          },
+          "request_fingerprint": "dc6f6bf0d83a9b5b272b644a9b53bc887eb76d659c1d690727030b94eb352736",
+          "notes": "V2.4 batch scheduler item=6aa400e8f33e",
+          "result": "success",
+          "runtime_transaction_id": "d8a1f067d42e42a38bff4302ecc55e10",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/18-1789359549.json",
+            "sha256": "b95b2c678f090434e7f23bb0c0f9e7ed49c7148e01a70c621090b6fd6c481694",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:19:10+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/18-6aa400e8f33e-a1.png",
+            "sha256": "48f4266c286c21002c96ccbda897d087d55a8d1db58c223089760310286e202a",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:19:10+08:00",
+            "kind": "original",
+            "attempt_id": "83cdc5c3dcae"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/18-6aa400e8f33e-a1.png",
+        "sha256": "48f4266c286c21002c96ccbda897d087d55a8d1db58c223089760310286e202a",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:19:10+08:00",
+        "kind": "original",
+        "attempt_id": "83cdc5c3dcae"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/18.png",
+        "sha256": "48f4266c286c21002c96ccbda897d087d55a8d1db58c223089760310286e202a",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:42:09+08:00",
+        "source_sha256": "48f4266c286c21002c96ccbda897d087d55a8d1db58c223089760310286e202a"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:17+08:00",
+        "sha256": "48f4266c286c21002c96ccbda897d087d55a8d1db58c223089760310286e202a",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:31+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核（4倍与6倍放大）：现实侧手机近摄遥控器缓存屏幕，保留屏幕反光与压缩像素质感；缓存画面中出现一小块质感与当地不同的更亮区域，其中白色轮廓极小且模糊，不足以确认车辆，也未出现可辨柏油路、护栏或车旁人物。命中 required cues（缓存屏幕/异质亮区/极小模糊白色四方轮廓），满足 framing_constraint 不得拍清白色轮廓。"
+        }
+      ]
+    },
+    "19": {
+      "number": 19,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "4abba4f71f7c",
+          "started_at": "2026-09-14T12:17:36+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "19",
+            "kind": "original",
+            "prompt_sha256": "e0652d04d85fd8fa1c1dda11c069a6a688b7249da57c83aa8e17f0b50215dcc8",
+            "prompt_chars": 97,
+            "prompt_bytes": 279,
+            "capture_id": "batch-19",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [
+              {
+                "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/01_情侣自拍_正脸.png",
+                "role": "series_character_identity:P01",
+                "kind": "identity",
+                "sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c"
+              }
+            ],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/19.json",
+              "contract_sha256": "d50623f046bccc88d4e76a0ccb75072567843207c1bfe418d29aa827a56036ce"
+            },
+            "frame_contract_sha256": "d50623f046bccc88d4e76a0ccb75072567843207c1bfe418d29aa827a56036ce",
+            "batch_id": null
+          },
+          "request_fingerprint": "b9b4d0f77f4ef8dd6b52982f8519c502b3f86b950a27e33b8992f801c74543ab",
+          "notes": "V2.4 batch scheduler item=3641df8815f2",
+          "result": "success",
+          "runtime_transaction_id": "f019a496d49a462a8bf4b7df3f96fcc4",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/19-1789359644.json",
+            "sha256": "4edb22a5c347f313d1cd083bc59dd0215364dfdbee76544df2de6e7693e7d1e6",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:20:44+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/19-3641df8815f2-a1.png",
+            "sha256": "eb4a1efa377b12cc2b3b6c0001d1bbc7dc125f2b4dbb947727aa6450abdb8c1c",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:20:44+08:00",
+            "kind": "original",
+            "attempt_id": "4abba4f71f7c"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/19-3641df8815f2-a1.png",
+        "sha256": "eb4a1efa377b12cc2b3b6c0001d1bbc7dc125f2b4dbb947727aa6450abdb8c1c",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:20:44+08:00",
+        "kind": "original",
+        "attempt_id": "4abba4f71f7c"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/19.png",
+        "sha256": "eb4a1efa377b12cc2b3b6c0001d1bbc7dc125f2b4dbb947727aa6450abdb8c1c",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:42:10+08:00",
+        "source_sha256": "eb4a1efa377b12cc2b3b6c0001d1bbc7dc125f2b4dbb947727aa6450abdb8c1c"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:18+08:00",
+        "sha256": "eb4a1efa377b12cc2b3b6c0001d1bbc7dc125f2b4dbb947727aa6450abdb8c1c",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:32+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：现实侧车旁低位手持，遥控器显示失联提示、自车在几步外，P01伸手想沿山路下去、P02抬手掌心向外明确拒绝，构图截断歪斜，非戏剧化对峙海报，符合 climax required cues。"
+        }
+      ]
+    },
+    "20": {
+      "number": 20,
+      "status": "LOCKED",
+      "content_repairs_used": 0,
+      "technical_failures": [],
+      "attempts": [
+        {
+          "attempt_id": "984c6906f90f",
+          "started_at": "2026-09-14T12:17:36+08:00",
+          "kind": "original",
+          "request": {
+            "frame": "20",
+            "kind": "original",
+            "prompt_sha256": "673d30a87e8680016e27a2478fec8877b4a536c8d310801320ea719b4e416c37",
+            "prompt_chars": 96,
+            "prompt_bytes": 282,
+            "capture_id": "batch-20",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/20.json",
+              "contract_sha256": "b561c818d3d4e76580cf7e1466afbd28295ab102790cbbad7269b7b3d190e0fb"
+            },
+            "frame_contract_sha256": "b561c818d3d4e76580cf7e1466afbd28295ab102790cbbad7269b7b3d190e0fb",
+            "batch_id": null
+          },
+          "request_fingerprint": "786f6426222679acec67fa07ce443e84d2e8577a3875446d239a2ad874ed151d",
+          "notes": "V2.4 batch scheduler item=d7d61ea6481e",
+          "result": "success",
+          "runtime_transaction_id": "960c36158f404c4d883f0df5eda1cb8f",
+          "provider_receipt": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/provider-receipts/20-1789359627.json",
+            "sha256": "0131cf3929d183afe21a372853b8b79caf3962c980b3f98049938ceefb3c1f3f",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false
+          },
+          "completed_at": "2026-09-14T12:20:28+08:00",
+          "candidate": {
+            "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/20-d7d61ea6481e-a1.png",
+            "sha256": "374d8402a545bff303aa8614d9adcdee4dddcc97c3ce25f836d6fa9d4ffff65a",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-14T12:20:28+08:00",
+            "kind": "original",
+            "attempt_id": "984c6906f90f"
+          }
+        }
+      ],
+      "current_candidate": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/20-d7d61ea6481e-a1.png",
+        "sha256": "374d8402a545bff303aa8614d9adcdee4dddcc97c3ce25f836d6fa9d4ffff65a",
+        "width": 1080,
+        "height": 1350,
+        "recorded_at": "2026-09-14T12:20:28+08:00",
+        "kind": "original",
+        "attempt_id": "984c6906f90f"
+      },
+      "approved_asset": {
+        "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/20.png",
+        "sha256": "374d8402a545bff303aa8614d9adcdee4dddcc97c3ce25f836d6fa9d4ffff65a",
+        "width": 1080,
+        "height": 1350,
+        "promoted_at": "2026-09-14T12:42:11+08:00",
+        "source_sha256": "374d8402a545bff303aa8614d9adcdee4dddcc97c3ce25f836d6fa9d4ffff65a"
+      },
+      "lock": {
+        "at": "2026-09-14T12:58:19+08:00",
+        "sha256": "374d8402a545bff303aa8614d9adcdee4dddcc97c3ce25f836d6fa9d4ffff65a",
+        "reason": "Production lock: V2.6.1 EP003 生产完成，approved 资产 SHA-256 冻结；后续全片集语义审核若发现内容缺陷，按 delegated_auto_review 车道走锁后规范内返修。"
+      },
+      "reviews": [
+        {
+          "at": "2026-09-14T12:41:33+08:00",
+          "decision": "pass",
+          "notes": "真实像素复核：P02按原计划拍摄正常日出云海，太阳照亮云顶、湿路与山谷恢复普通旅行景象，天空中没有无人机，无新增异常或神秘亮光，符合 required cues（正常日出/云海/空旷天空/无人机缺席）。"
+        }
+      ]
+    }
+  },
+  "batches": []
+}

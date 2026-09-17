@@ -1,0 +1,105 @@
+{
+  "_schema_version": "recommendation_fit_v1.4",
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "episode": "10-03",
+  "title": "雾中的另一座生活区",
+  "series": "10_彼此的天上",
+  "generated_at": "2026-09-14T14:26:59+08:00",
+  "status": "FINAL",
+  "recommendation_fit": {
+    "audience": {
+      "core": [
+        "第一人称现实怪谈",
+        "川西/川藏自驾旅行内容",
+        "未知文明/世界结构题材",
+        "真实手机相册感",
+        "克制悬疑"
+      ],
+      "adjacent": [
+        "旅行悬疑",
+        "都市传说",
+        "手机与无人机摄影",
+        "民俗想象",
+        "世界观脑洞"
+      ],
+      "mismatch": [
+        "血腥猎奇",
+        "怪兽爽文",
+        "仙侠",
+        "硬核科幻科普",
+        "纯灵异鬼片"
+      ],
+      "score": 8.8
+    },
+    "diversity": {
+      "compared_recent_works": [
+        {
+          "title": "10-01 鳌太线·热汤",
+          "similarity_score": 5,
+          "matched_dimensions": [
+            "relationship"
+          ]
+        },
+        {
+          "title": "09-04 瓶中世界",
+          "similarity_score": 0,
+          "matched_dimensions": []
+        }
+      ],
+      "max_similarity_score": 5,
+      "risk_level": "minimal",
+      "mechanism_copy_veto": false,
+      "dimensions": {
+        "core_anomaly_mechanism": "特殊天气与地形下山地空间的短时重合，短暂暴露一个仍在正常运转的完整前工业社会",
+        "story_engine": "设备越界（消费级无人机）撞见异常，普通人的求证欲在明知该停时仍然失控",
+        "entry_mode": "自驾旅行 + 凌晨上山看日出、拍云海",
+        "anomaly_carrier": "消费级无人机图传 + 低云/雾缝",
+        "visual_space": "川西山地普通观景停车点与其下方被晨雾分层遮挡的山谷聚落/城区",
+        "mid_escalation": "从单栋湿屋顶逐级放大到整个山谷的梯田、水渠、石桥、街市与远处城区，并出现对面异步避让",
+        "climax_form": "明知女友已要求返航仍多停几秒确认，导致无人机失联与情侣首次真正争吵",
+        "relationship": "同一对普通情侣（与 10-01 关系结构相同，因此 recent5 仅命中 relationship）",
+        "reality_residue_or_closure": "无人机没有回来；日出云海照片很好看，但缺少原本该在画面里的那架无人机"
+      },
+      "notes": [
+        "recent5 真实历史为 10-01《鳌太线·热汤》与 09-04《瓶中世界》，max_similarity_score=5（仅 relationship 结构相同），无 mechanism_veto。",
+        "账号平台后台数据当前缺失，不伪造第三方指标；本卡只使用本仓库可复核证据。"
+      ]
+    },
+    "search": {
+      "primary_intents": [
+        "川藏自驾遇到的怪事",
+        "第一人称悬疑故事",
+        "山区异常现象"
+      ],
+      "core_entities": [
+        "川西山区",
+        "山谷低云",
+        "消费级无人机",
+        "前工业聚落",
+        "云海日出"
+      ],
+      "long_tail_queries": [
+        "雾中的另一座生活区故事",
+        "无人机拍到山里的另一个世界",
+        "川藏自驾遇到怪事",
+        "真实手机相册感怪谈"
+      ],
+      "score": 8.5,
+      "asset_type": "系列连载 · 第一人称图文（正文 20 图）"
+    },
+    "governance": {
+      "status": "PASS",
+      "risks": [],
+      "review_notes": "真实旅行地名只作背景锚点，异常点位为虚构；不使用可辨识朝代或民俗复刻；不出现科学解释、专业调查身份、神秘组织或续集钩子。",
+      "disclosure": "人物、地点细节与异常情节均为虚构创作；画面由 AI 生成。"
+    }
+  },
+  "evidence": {
+    "recent5_review_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/recent5-review.json",
+    "recent5_max_similarity_score": 5,
+    "recent5_mechanism_veto": false,
+    "propagation_core_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/story-semantic-review.json",
+    "propagation_core_verified": true
+  }
+}

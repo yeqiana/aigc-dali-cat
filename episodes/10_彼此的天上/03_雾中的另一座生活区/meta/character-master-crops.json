@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "source_master_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-a1aa440d871a-a2.png",
+  "source_master_sha256": "25acedcafa2c7a955204835c9dfbb45e69d01ebca2b04dc63f524e9c5347dcf6",
+  "source_master_status": "LOCKED",
+  "created_at": "2026-09-14T11:59:37+08:00",
+  "updated_at": "2026-09-14T12:04:20+08:00",
+  "items": {
+    "P01": {
+      "character_id": "P01",
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/identity/character-masters/P01.png",
+      "sha256": "811b73381d6ff687419fd4b92443eca27a4bbc27159cf82986608c7b241218c5",
+      "face_box": {
+        "x": 0.29,
+        "y": 0.26,
+        "w": 0.165,
+        "h": 0.285
+      },
+      "crop_size": [
+        338,
+        846
+      ],
+      "derived_not_generated": true
+    },
+    "P02": {
+      "character_id": "P02",
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/identity/character-masters/P02.png",
+      "sha256": "07f4e140fe04c10e52a8700baaebb5d86a5a9568460b155c80744811ca1938e5",
+      "face_box": {
+        "x": 0.49,
+        "y": 0.3,
+        "w": 0.185,
+        "h": 0.28
+      },
+      "crop_size": [
+        379,
+        831
+      ],
+      "derived_not_generated": true
+    }
+  }
+}

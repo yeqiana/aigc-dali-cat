@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "episode_id": "EP015",
+  "title": "江南卖花姑娘的一天",
+  "series": "不存在的人生记录",
+  "stage": "IDEA_LOCKED",
+  "visual_profile": "M00_ANCIENT_DAILY_LIFE_V1",
+  "description": "记录一位古代江南普通卖花姑娘的一天，采用真实生活相册视角，而非古风写真。",
+  "created_from": "runtime_request",
+  "production_mode": "preparation"
+}

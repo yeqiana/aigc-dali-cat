@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "selected_family": "state_occasion_trip",
+  "reference": "最近上班有些疲惫，刚好趁着周末，我和几个朋友去了XXX。",
+  "variants": [
+    "最近上学有些倦怠，刚好趁着周末，我和几个朋友去了XXX。",
+    "最近生活有点闷，刚好快到XXX节，我和几个朋友去了XXX。",
+    "最近工作有些累，刚好趁着休假，我和几个朋友去了XXX。"
+  ],
+  "rule": "状态词、生活场景和时机必须跟人物真实身份匹配，不能机械替换。",
+  "recent5_families": [
+    "state_occasion_trip"
+  ],
+  "title_policy": {
+    "generate": true,
+    "count": 1,
+    "usage": "internal_candidate_only",
+    "required_for_publish_ready": false,
+    "default_include_in_delivery": false,
+    "default_include_in_intro": false
+  },
+  "final_text_must_be_natural": true,
+  "template_is_reference_not_literal_output": true
+}

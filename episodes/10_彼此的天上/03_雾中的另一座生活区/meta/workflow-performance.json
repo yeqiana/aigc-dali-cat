@@ -1,0 +1,376 @@
+{
+  "schema_version": 1,
+  "note": "Performance evidence only; NOT a stage source.",
+  "runs": [
+    {
+      "run_id": "1789357241-work",
+      "runtime": "WORK",
+      "mode": "run",
+      "started_at": "2026-09-14T11:40:41+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.266,
+          "recorded_at": "2026-09-14T11:40:42+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.031,
+          "recorded_at": "2026-09-14T11:40:42+08:00",
+          "note": " \"host-494623dfefeb5e19\", \"request_fingerprint\": \"494623dfefeb5e19c734bb5843a56cca7120cd1ff4f8a891910b1710db91b236\", \"created_at\": \"2026-09-14T11:40:42+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-494623dfefeb5e19.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        }
+      ],
+      "status": "HOST_WAIT",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 1.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.703
+      },
+      "finished_at": "2026-09-14T11:40:42+08:00",
+      "total_seconds": 0.891,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.266,
+          "recorded_at": "2026-09-14T11:40:42+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.031,
+          "recorded_at": "2026-09-14T11:40:42+08:00",
+          "note": " \"host-494623dfefeb5e19\", \"request_fingerprint\": \"494623dfefeb5e19c734bb5843a56cca7120cd1ff4f8a891910b1710db91b236\", \"created_at\": \"2026-09-14T11:40:42+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-494623dfefeb5e19.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        }
+      ]
+    },
+    {
+      "run_id": "1789357253-work",
+      "runtime": "WORK",
+      "mode": "run",
+      "started_at": "2026-09-14T11:40:53+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.266,
+          "recorded_at": "2026-09-14T11:40:54+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.031,
+          "recorded_at": "2026-09-14T11:40:54+08:00",
+          "note": " \"host-494623dfefeb5e19\", \"request_fingerprint\": \"494623dfefeb5e19c734bb5843a56cca7120cd1ff4f8a891910b1710db91b236\", \"created_at\": \"2026-09-14T11:40:42+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-494623dfefeb5e19.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        }
+      ],
+      "status": "HOST_WAIT",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 1.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.703
+      },
+      "finished_at": "2026-09-14T11:40:54+08:00",
+      "total_seconds": 0.89,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.266,
+          "recorded_at": "2026-09-14T11:40:54+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.031,
+          "recorded_at": "2026-09-14T11:40:54+08:00",
+          "note": " \"host-494623dfefeb5e19\", \"request_fingerprint\": \"494623dfefeb5e19c734bb5843a56cca7120cd1ff4f8a891910b1710db91b236\", \"created_at\": \"2026-09-14T11:40:42+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-494623dfefeb5e19.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        }
+      ]
+    },
+    {
+      "run_id": "1789357528-work",
+      "runtime": "WORK",
+      "mode": "run",
+      "started_at": "2026-09-14T11:45:28+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.625,
+          "recorded_at": "2026-09-14T11:45:29+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:45:30+08:00",
+          "note": "target already valid"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.047,
+          "recorded_at": "2026-09-14T11:45:30+08:00",
+          "note": " \"host-ad78701aa7444355\", \"request_fingerprint\": \"ad78701aa7444355f71447c2e90b9eb5fdb34109db7795f96f550046f33d0e77\", \"created_at\": \"2026-09-14T11:45:30+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-ad78701aa7444355.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        }
+      ],
+      "status": "HOST_WAIT",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 2.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.664
+      },
+      "finished_at": "2026-09-14T11:45:30+08:00",
+      "total_seconds": 2.797,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.625,
+          "recorded_at": "2026-09-14T11:45:29+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.047,
+          "recorded_at": "2026-09-14T11:45:30+08:00",
+          "note": " \"host-ad78701aa7444355\", \"request_fingerprint\": \"ad78701aa7444355f71447c2e90b9eb5fdb34109db7795f96f550046f33d0e77\", \"created_at\": \"2026-09-14T11:45:30+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-ad78701aa7444355.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:45:30+08:00",
+          "note": "target already valid"
+        }
+      ]
+    },
+    {
+      "run_id": "1789357557-work",
+      "runtime": "WORK",
+      "mode": "run",
+      "started_at": "2026-09-14T11:45:57+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.734,
+          "recorded_at": "2026-09-14T11:45:58+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:46:00+08:00",
+          "note": "target already valid"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.078,
+          "recorded_at": "2026-09-14T11:46:01+08:00",
+          "note": " \"host-ad78701aa7444355\", \"request_fingerprint\": \"ad78701aa7444355f71447c2e90b9eb5fdb34109db7795f96f550046f33d0e77\", \"created_at\": \"2026-09-14T11:45:30+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-ad78701aa7444355.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        }
+      ],
+      "status": "HOST_WAIT",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 4.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.797
+      },
+      "finished_at": "2026-09-14T11:46:01+08:00",
+      "total_seconds": 3.609,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.734,
+          "recorded_at": "2026-09-14T11:45:58+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.078,
+          "recorded_at": "2026-09-14T11:46:01+08:00",
+          "note": " \"host-ad78701aa7444355\", \"request_fingerprint\": \"ad78701aa7444355f71447c2e90b9eb5fdb34109db7795f96f550046f33d0e77\", \"created_at\": \"2026-09-14T11:45:30+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-ad78701aa7444355.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:46:00+08:00",
+          "note": "target already valid"
+        }
+      ]
+    },
+    {
+      "run_id": "1789357601-work",
+      "runtime": "WORK",
+      "mode": "run",
+      "started_at": "2026-09-14T11:46:41+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.594,
+          "recorded_at": "2026-09-14T11:46:42+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:46:43+08:00",
+          "note": "target already valid"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:46:44+08:00",
+          "note": "preproduction handoff already valid"
+        }
+      ],
+      "status": "COMPLETE",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 3.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.802
+      },
+      "finished_at": "2026-09-14T11:46:44+08:00",
+      "total_seconds": 2.843,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.594,
+          "recorded_at": "2026-09-14T11:46:42+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:46:43+08:00",
+          "note": "target already valid"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:46:44+08:00",
+          "note": "preproduction handoff already valid"
+        }
+      ]
+    },
+    {
+      "run_id": "1789357633-work",
+      "runtime": "WORK",
+      "mode": "run",
+      "started_at": "2026-09-14T11:47:13+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.688,
+          "recorded_at": "2026-09-14T11:47:14+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:47:15+08:00",
+          "note": "target already valid"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:47:16+08:00",
+          "note": "preproduction handoff already valid"
+        },
+        {
+          "step": "VISUAL_LOCK",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.062,
+          "recorded_at": "2026-09-14T11:47:16+08:00",
+          "note": " \"host-120849a4e6a3cc63\", \"request_fingerprint\": \"120849a4e6a3cc63cbaf85413351bdaed501026f06adf0934f4400709b88a8ce\", \"created_at\": \"2026-09-14T11:47:16+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-120849a4e6a3cc63.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        },
+        {
+          "step": "SPECULATIVE_PRODUCTION",
+          "status": "SKIPPED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:47:16+08:00",
+          "note": "{\"status\": \"SKIPPED\", \"reason\": \"critic_not_current_technical_blocked\", \"generated_or_attempted\": [], \"elapsed_seconds\": 0.0}"
+        }
+      ],
+      "status": "HOST_WAIT",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 3.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.75
+      },
+      "finished_at": "2026-09-14T11:47:16+08:00",
+      "total_seconds": 3.734,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.688,
+          "recorded_at": "2026-09-14T11:47:14+08:00",
+          "note": "{\n  \"episode\": \"episodes/10_彼此的天上/03_雾中的另一座生活区\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "VISUAL_LOCK",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.062,
+          "recorded_at": "2026-09-14T11:47:16+08:00",
+          "note": " \"host-120849a4e6a3cc63\", \"request_fingerprint\": \"120849a4e6a3cc63cbaf85413351bdaed501026f06adf0934f4400709b88a8ce\", \"created_at\": \"2026-09-14T11:47:16+08:00\", \"request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/host-requests/host-120849a4e6a3cc63.json\", \"current_request_path\": \"episodes/10_\\u5f7c\\u6b64\\u7684\\u5929\\u4e0a/03_\\u96fe\\u4e2d\\u7684\\u53e6\\u4e00\\u5ea7\\u751f\\u6d3b\\u533a/meta/runtime/product-host-request.json\"}"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:47:15+08:00",
+          "note": "target already valid"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:47:16+08:00",
+          "note": "preproduction handoff already valid"
+        },
+        {
+          "step": "SPECULATIVE_PRODUCTION",
+          "status": "SKIPPED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-14T11:47:16+08:00",
+          "note": "{\"status\": \"SKIPPED\", \"reason\": \"critic_not_current_technical_blocked\", \"generated_or_attempted\": [], \"elapsed_seconds\": 0.0}"
+        }
+      ]
+    }
+  ],
+  "updated_at": "2026-09-14T11:47:16+08:00",
+  "generated_at": "2026-09-14T11:40:41+08:00",
+  "kind": "workflow_performance",
+  "performance_budget_updated_at": "2026-09-14T11:47:16+08:00"
+}

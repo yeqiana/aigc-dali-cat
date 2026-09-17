@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "generated_at": "2026-09-14T11:50:18+08:00",
+  "policy": {
+    "baseline_first": true,
+    "remaining_three_parallelizable": true,
+    "calibration_count": 4,
+    "baseline_selection": "opening_social_anchor",
+    "baseline_frame": 1,
+    "opening_social_anchor_machine_priority": true
+  },
+  "items": [
+    {
+      "id": "V-B",
+      "frame": 1,
+      "mode": "normal_record",
+      "role": "ordinary_baseline",
+      "impact": 0,
+      "scale_reference": "",
+      "environment_severity": 12,
+      "contract_sha256": "aae597981822af8ed333adc8fbb017412d95183b688696dc073619687c3070ba",
+      "depends_on": []
+    },
+    {
+      "id": "V-W",
+      "frame": 2,
+      "mode": "normal_record",
+      "role": "worst_capture_condition",
+      "impact": 0,
+      "scale_reference": "",
+      "environment_severity": 12,
+      "contract_sha256": "ff516402c7bb7eb8156e6b944fb57aab96429e3563b830b1da73e4a2d6d7a2b9",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-A",
+      "frame": 3,
+      "mode": "anomaly_reveal",
+      "role": "first_major_anomaly",
+      "impact": 2,
+      "scale_reference": "人和屋顶的正常比例",
+      "environment_severity": 11,
+      "contract_sha256": "1842166ed7fe6315ae0966ae8320f5cf00750d6d8deac265d585cde876b83dd9",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-H",
+      "frame": 8,
+      "mode": "anomaly_amplified",
+      "role": "high_impact_admission",
+      "impact": 4,
+      "scale_reference": "道路、民居、人流与整个山谷城区",
+      "environment_severity": 11,
+      "contract_sha256": "de72611d20afd13e534caba099ba67f232e955fab72adaecf8c09cca4c9db1c7",
+      "depends_on": [
+        1
+      ]
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "initial_state": {
+    "time": "2023年初秋，雨后凌晨天亮前",
+    "location": "中国大陆川西山地普通观景停车点及其下方山谷",
+    "weather": "前夜持续降雨刚停，气温下降，低云和湿雾压在山谷，地面潮湿",
+    "characters": {
+      "P01": {
+        "gender": "male",
+        "age": 24,
+        "build": "普通年轻人体型",
+        "hair": "黑色短碎发，耳上长度，日常自然蓬松",
+        "clothing_anchor": "灰色连帽卫衣外加深色轻薄防风外套+深灰休闲长裤+普通运动鞋，符合雨后清晨山地低温",
+        "device_anchor": "普通智能手机",
+        "status": "present"
+      },
+      "P02": {
+        "gender": "female",
+        "age": 24,
+        "build": "普通年轻人体型",
+        "hair": "锁骨长度自然黑发，旅行时低马尾或自然放下，保持EP001/EP002身份一致",
+        "clothing_anchor": "浅灰卫衣外加浅色日常防风外套+深色直筒长裤+普通运动鞋，符合雨后清晨山地低温",
+        "status": "present"
+      }
+    },
+    "recorder": {
+      "photographer_id": "P02",
+      "active_device": "普通智能手机"
+    },
+    "props": {
+      "vehicle": "两人自驾使用的普通中国大陆家用车，停在观景点几步外",
+      "P01_phone": "普通智能手机",
+      "P02_phone": "普通智能手机",
+      "drone": "普通消费级无人机",
+      "drone_controller": "原装遥控器/图传屏幕",
+      "drone_status": "packed_then_ready"
+    },
+    "anomaly": {
+      "phase": "ordinary",
+      "mechanism": "少数山区在连续降雨后雨停降温、低云压谷时，两个正常生活的空间可能短暂局部重合；不解释来源且不可稳定复现"
+    }
+  },
+  "frames": {
+    "01": {
+      "delta": {"props": {"drone_status": "packed"}},
+      "story_event": "两人在观景点等日出，P02先拍普通情侣自拍。"
+    },
+    "02": {
+      "delta": {
+        "recorder": {"photographer_id": "P01", "active_device": "普通智能手机"},
+        "props": {"drone_status": "airborne_normal"}
+      },
+      "story_event": "P01从车旁放飞消费级无人机拍云海，自己用手机顺手记录起飞。"
+    },
+    "03": {
+      "delta": {
+        "recorder": {"photographer_id": "P01", "active_device": "消费级无人机相机/图传"},
+        "anomaly": {"phase": "first_overlap", "visible_zone": "低云裂口下出现湿屋顶、土路和修屋人"}
+      },
+      "story_event": "无人机穿过低云后第一次拍到不属于现实山谷的生活结构。"
+    },
+    "04": {"delta": {"anomaly": {"phase": "ordinary_life_confirmed", "remote_scene": "院落、牲畜、孩子、搬木料与收湿物"}}, "story_event": "更多普通生活动作出现，确认不是废墟。"},
+    "05": {"delta": {"anomaly": {"phase": "long_term_settlement", "remote_scene": "连续梯田与人工水渠"}}, "story_event": "长期农业和水利证明聚落稳定存在。"},
+    "06": {"delta": {"anomaly": {"phase": "social_order_visible", "remote_scene": "石路、作坊、早市、搬货和交换"}}, "story_event": "生产、运输与交换秩序出现。"},
+    "07": {"delta": {"anomaly": {"phase": "public_infrastructure_visible", "remote_scene": "仍在使用的大型石质引水工程"}}, "story_event": "公共工程规模证明更高层级社会组织。"},
+    "08": {"delta": {"anomaly": {"phase": "civilization_revealed", "remote_scene": "台地住宅、道路、公共建筑和远处城区沿山谷延伸"}}, "story_event": "云层短暂裂开，完整活着的前工业文明第一次成立。"},
+    "09": {"delta": {"anomaly": {"phase": "series_echo", "remote_scene": "文明外围运输道路与浅色粗布生活材料"}}, "story_event": "外围运输形态与此前夜行灯队、玻璃后生活材料形成视觉回收。"},
+    "10": {
+      "delta": {"recorder": {"photographer_id": "P01", "active_device": "普通智能手机"}},
+      "story_event": "P02要求拉回来，P01开始返航并短暂用手机记录现实一侧的反应。"
+    },
+    "11": {
+      "delta": {
+        "recorder": {"photographer_id": "P01", "active_device": "消费级无人机相机/图传"},
+        "anomaly": {"phase": "remote_notices_device", "remote_action": "孩子最先抬头追随无人机"}
+      },
+      "story_event": "返航转向时，对面孩子第一次发现无人机。"
+    },
+    "12": {"delta": {"anomaly": {"phase": "remote_protection", "remote_action": "成年人把孩子拉到身边"}}, "story_event": "对方出现普通保护反应。"},
+    "13": {"delta": {"anomaly": {"phase": "reaction_spreads", "remote_action": "收货、带孩子进门、关窗与继续劳作同时存在"}}, "story_event": "反应沿生活区异步扩散，不是同步仪式。"},
+    "14": {"delta": {"anomaly": {"phase": "headscarf_woman_anchor", "remote_action": "浅色头巾年轻女人先把孩子往后带，自己多看几秒"}}, "story_event": "EP04需要回收的年轻女人以普通居民身份被记录。"},
+    "15": {"delta": {"anomaly": {"phase": "protagonist_overstays", "local_action": "P01返航动作短暂停住，再确认几秒"}}, "story_event": "P01明知应该离开仍多停几秒。"},
+    "16": {"delta": {"anomaly": {"phase": "human_consequence", "remote_action": "门窗关闭、孩子被带走、局部街面空出"}}, "story_event": "P01终于全力返航，并看见自己的设备正在影响对方正常生活。"},
+    "17": {
+      "delta": {
+        "props": {"drone_status": "signal_unstable_descending"},
+        "anomaly": {"phase": "device_boundary_failure", "local_effect": "图传撕裂、定位跳动、返航方向偏离、无人机异常下降"}
+      },
+      "story_event": "无人机返航途中失控，设备越界产生物理后果。"
+    },
+    "18": {
+      "delta": {
+        "recorder": {"photographer_id": "P01", "active_device": "普通智能手机"},
+        "props": {"drone_status": "lost", "last_cache": "模糊亮区与极小白色四方轮廓"},
+        "anomaly": {"phase": "ambiguous_modern_hint", "residue": "亮区像现实侧材质，白色轮廓像车但无法确认道路或人物"}
+      },
+      "story_event": "无人机彻底失联，P01翻拍最后缓存，只得到疑似自己车辆的模糊轮廓。"
+    },
+    "19": {
+      "delta": {"anomaly": {"phase": "ordinary_after_loss"}},
+      "story_event": "P01想下山找无人机，P02拒绝，两人第一次真正争吵，最终不下山。"
+    },
+    "20": {
+      "delta": {
+        "time": "日出时刻",
+        "weather": "雨后低云开始被晨光照亮，部分云层散开，地面仍潮湿",
+        "recorder": {"photographer_id": "P02", "active_device": "普通智能手机"},
+        "anomaly": {"phase": "ordinary"}
+      },
+      "story_event": "太阳照常升起，P02拍下正常云海；无人机没有回来，两人准备离开。"
+    }
+  }
+}

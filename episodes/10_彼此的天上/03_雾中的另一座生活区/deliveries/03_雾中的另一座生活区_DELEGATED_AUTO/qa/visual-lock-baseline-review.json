@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "decision": "PASS",
+  "created_at": "2026-09-14T11:59:19+08:00",
+  "role": "ordinary_baseline",
+  "frame": 1,
+  "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-a1aa440d871a-a2.png",
+  "sha256": "25acedcafa2c7a955204835c9dfbb45e69d01ebca2b04dc63f524e9c5347dcf6",
+  "frame_contract_sha256": "aae597981822af8ed333adc8fbb017412d95183b688696dc073619687c3070ba",
+  "queue_item_id": "a1aa440d871a",
+  "reviewer_scope": "delegated_pixel_review",
+  "checks": {
+    "visual_profile_match": "PASS",
+    "reality_first": "PASS",
+    "ordinary_life_density": "PASS",
+    "unposed_capture": "PASS",
+    "not_cinematic": "PASS",
+    "capture_credibility": "PASS",
+    "identity_usable": "PASS",
+    "group_members_distinct": "PASS"
+  },
+  "face_boxes": [
+    {
+      "character_id": "P01",
+      "x": 0.29,
+      "y": 0.26,
+      "w": 0.165,
+      "h": 0.285
+    },
+    {
+      "character_id": "P02",
+      "x": 0.49,
+      "y": 0.3,
+      "w": 0.185,
+      "h": 0.28
+    }
+  ],
+  "note": "实拍像素证据：凌晨雨后观景停车点，P02举手机前置自拍、P01贴近入镜，两人面部清晰且为可辨识的普通中国年轻人；皮肤有自然纹理与少量瑕疵，无AI磨皮网红脸，发型与衣着（男黑色外套+灰围脖、女米白外套+灰帽衫）明显区分。背景带出车窗雨滴、湿路面停车线、低矮石栏、信息牌与山谷低云，属于普通旅行相册的随手记录；画面略有低位软焦与清晨低照噪点，前置自拍手臂外伸、构图轻微歪斜，未见电影级打光、滤镜或异常主体。身份可用，可作临时组身份母版。",
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-14T11:59:32+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/visual-lock-baseline-attempt-1-request.json",
+    "request_id": "visual-lock-baseline-a1-6581c3f57c1316f7",
+    "request_fingerprint": "6581c3f57c1316f718cc303b91504db8f2892e57b3957c77982fc008ef5d307a"
+  },
+  "approved_at": "2026-09-14T11:59:33+08:00",
+  "provisional_master_created": true
+}

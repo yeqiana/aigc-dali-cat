@@ -1,0 +1,551 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "approvals": {
+    "story_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "story_lock",
+      "approved_at": "2026-09-14T11:45:11+08:00",
+      "artifacts": [
+        {
+          "role": "story",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+          "sha256": "438ca8248415e21a3d13d47cb76c855ea850525b506b8b315109794f269af8c8"
+        },
+        {
+          "role": "storyboard",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+          "sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5"
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/story-semantic-review.json",
+          "sha256": "2d56376f20e03a1448c2a7017574148da1f95e060c01d2e809cbdf170f91d65f"
+        }
+      ],
+      "note": "用户授权全自动推进至 PUBLISH_READY；Story Lock 依据真实 Story Critic PASS（WORK_ISOLATED attempt 1）+ recent5 PASS（max=5，无 veto）自动审核记录，非用户亲审。"
+    },
+    "visual_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "visual_lock",
+      "approved_at": "2026-09-14T12:05:31+08:00",
+      "artifacts": [
+        {
+          "role": "visual_spec",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/04_雾中的另一座生活区_视觉规范_DRAFT_V1.0.md",
+          "sha256": "11f02c5eb2ffc25cbb6a82a730be1913c1ab9c53bcbfb54362db8d14e3cdee64"
+        },
+        {
+          "role": "calibration_contact_sheet",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/review/contact-sheets/visual-lock-admission.jpg",
+          "sha256": "638d75796f51d1922320e065a750f0cd438d73c08043feba89e524893908162a"
+        },
+        {
+          "role": "visual_profile:M00",
+          "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+          "sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/visual-profile-review.json",
+          "sha256": "c5ccbb1c3ff1412cccc995d26fa7719bbb00b9e2775cba1322510f4b88454e30"
+        }
+      ],
+      "note": "用户授权全自动推进至 PUBLISH_READY；Visual Lock 依据真实实拍像素审核：baseline 单独 PASS（P01/P02 临时身份母版+派生裁剪）+ 四图四入册 critic PASS（WORK_ISOLATED attempt 1，18 项检查全 true），并已生成 admission 联络单，非用户亲审。",
+      "resolved_visual_profile": {
+        "selection": "default",
+        "profile_id": "M00",
+        "profile_name": "现实生活纪实母版",
+        "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+        "capture_profile": "auto",
+        "override_reason": null,
+        "rule": "默认视觉母风格只约束视觉语言；具体年代/设备物理表现优先。",
+        "authority_source": "story-gates/default"
+      }
+    },
+    "release_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "release_lock",
+      "approved_at": "2026-09-14T15:55:14+08:00",
+      "artifacts": [
+        {
+          "role": "release_manifest",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/release-manifest.json",
+          "archive_path": "release-manifest.json",
+          "sha256": "40b944602cf9e8f7778b10f30eca1fd03ad5f2b36e9283df4ec94d4849ece705",
+          "bytes": 5262
+        },
+        {
+          "role": "body:01",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/01.png",
+          "archive_path": "publish/01.png",
+          "sha256": "33d2c0b12a72f7fbb52d1195d4161da8d7c543152c0432aa6ace9df0164943c2",
+          "bytes": 2151356
+        },
+        {
+          "role": "body:02",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/02.png",
+          "archive_path": "publish/02.png",
+          "sha256": "5465d017aac262bcf46ea694afb7337bf2cea196ffa72f9168354abc403a989f",
+          "bytes": 2228842
+        },
+        {
+          "role": "body:03",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/03.png",
+          "archive_path": "publish/03.png",
+          "sha256": "9850b29c9ee1dcf28f0a3cf146ddd0cf051e880c86e52a8563c7c5fd3e87599b",
+          "bytes": 1686051
+        },
+        {
+          "role": "body:04",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/04.png",
+          "archive_path": "publish/04.png",
+          "sha256": "9d30f74d0d6a5b8fbd050772d4d4b3f56b9d4d2b571148db59133165256d62ee",
+          "bytes": 2332843
+        },
+        {
+          "role": "body:05",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/05.png",
+          "archive_path": "publish/05.png",
+          "sha256": "8e3af122b8a1ee43aacee9d22c38bee66f0b2e41972a848ca60acfa170b0af29",
+          "bytes": 2529562
+        },
+        {
+          "role": "body:06",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/06.png",
+          "archive_path": "publish/06.png",
+          "sha256": "abd3f6a6b0074b4833d7f904129c3f18a8599a6869fc7b4c51aa39a9f59d7692",
+          "bytes": 2625031
+        },
+        {
+          "role": "body:07",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/07.png",
+          "archive_path": "publish/07.png",
+          "sha256": "8be604434358f5b656f59698cd1740d2ac7ec6666ba0e7be7812ab72dde614bd",
+          "bytes": 2315769
+        },
+        {
+          "role": "body:08",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/08.png",
+          "archive_path": "publish/08.png",
+          "sha256": "0b396eb720ac9fb5e106db033b0c174af993dd02a7208d43c08f65731e453f00",
+          "bytes": 2573395
+        },
+        {
+          "role": "body:09",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/09.png",
+          "archive_path": "publish/09.png",
+          "sha256": "781174946857bc8e182e2b38dd3756440d1c51fafeb21e8967474e42206c9a7b",
+          "bytes": 2469694
+        },
+        {
+          "role": "body:10",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/10.png",
+          "archive_path": "publish/10.png",
+          "sha256": "6b0a28276f7e10e7ceed1709767c837f9339de510a7c6958721bb135e23f52ba",
+          "bytes": 2105864
+        },
+        {
+          "role": "body:11",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/11.png",
+          "archive_path": "publish/11.png",
+          "sha256": "e60c500bdfe9d8a324cc9e33653b4ae6544b20b84f60dcc3caa9523225b993a8",
+          "bytes": 2602131
+        },
+        {
+          "role": "body:12",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/12.png",
+          "archive_path": "publish/12.png",
+          "sha256": "98980ae71e6136208bedaf3e602ef3435e4d8fd427446790a172cbf6062de5cc",
+          "bytes": 2327585
+        },
+        {
+          "role": "body:13",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/13.png",
+          "archive_path": "publish/13.png",
+          "sha256": "b266c7e97fe0e1b8283adb5722411107ad48c1dffe11e4775c529161648a629f",
+          "bytes": 2649196
+        },
+        {
+          "role": "body:14",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/14.png",
+          "archive_path": "publish/14.png",
+          "sha256": "d7334a0272184afcc88d3ba18504c813d2deeb4d3471371f5a73a99ed3870f47",
+          "bytes": 2636849
+        },
+        {
+          "role": "body:15",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/15.png",
+          "archive_path": "publish/15.png",
+          "sha256": "6e0433f7ee12dc3d07c7cf06fee09646516cd25d8577bf23d0c6976228d84d70",
+          "bytes": 2593938
+        },
+        {
+          "role": "body:16",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/16.png",
+          "archive_path": "publish/16.png",
+          "sha256": "20dde54690d3330dfbb24a261c37e3cb33f706cfa388226e843cf8c647a3c482",
+          "bytes": 2781574
+        },
+        {
+          "role": "body:17",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/17.png",
+          "archive_path": "publish/17.png",
+          "sha256": "646b12d48e6758dfc2fcb3e36390f736cb15a10965ae1ba1dafc9640ce158da9",
+          "bytes": 2010763
+        },
+        {
+          "role": "body:18",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/18.png",
+          "archive_path": "publish/18.png",
+          "sha256": "74cdc1a99b9edabb4348d46f8220678b9e4b246797b94acca4f9655d156e4fe9",
+          "bytes": 1799511
+        },
+        {
+          "role": "body:19",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/19.png",
+          "archive_path": "publish/19.png",
+          "sha256": "9cb6f98e887841ecebb658a05621a1b5d0af1440997cb419124f6256c0dda27d",
+          "bytes": 2285133
+        },
+        {
+          "role": "body:20",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/20.png",
+          "archive_path": "publish/20.png",
+          "sha256": "48a97ee1c0eb6678089d6842fb8df5a2472339612113d1585300c4628bbd4a53",
+          "bytes": 2152801
+        },
+        {
+          "role": "cover",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/cover/cover.png",
+          "archive_path": "cover.png",
+          "sha256": "827465225c7dac24d11c2d731bfbf48ef963c88d4d46f0952f8e6ac09b2c8b94",
+          "bytes": 2095748
+        },
+        {
+          "role": "captions",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/subtitles.yaml",
+          "archive_path": "text/subtitles.yaml",
+          "sha256": "d088c1915cdbc5a05c93394fa16a0b0011753280da4da92b40fdff9a6a086e1c",
+          "bytes": 2917
+        },
+        {
+          "role": "publish_copy",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/06_雾中的另一座生活区_最终发布文案_V2.0.md",
+          "archive_path": "text/06_雾中的另一座生活区_最终发布文案_V2.0.md",
+          "sha256": "5fbb49c6916da88d7a7d81f2641c79d1f9f7fd6c93e3e971595a6d9bb8f0f91c",
+          "bytes": 3466
+        },
+        {
+          "role": "propagation_card",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/recommendation-fit.json",
+          "archive_path": "text/recommendation-fit.json",
+          "sha256": "d24e308d92683c9b6959568e688e011af687633a0b4d7feb1a24e6d76ac2d5bc",
+          "bytes": 4257
+        },
+        {
+          "role": "production_ledger",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/production-ledger.json",
+          "archive_path": "evidence/production-ledger.json",
+          "sha256": "6df47a510683af2562f7ba8eb8aabb3431c4e4dbda0aca6d1bed196ffa76bb75",
+          "bytes": 146602
+        },
+        {
+          "role": "frame_semantic_review",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-semantic-review.json",
+          "archive_path": "qa/frame-semantic-review.json",
+          "sha256": "dbbf57d85a9dfef8fb0d90a69297d754e2905691338d4e4d1ba99ea8f1aec4b0",
+          "bytes": 11927
+        },
+        {
+          "role": "frame_semantic_audit",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-semantic-audit.json",
+          "archive_path": "qa/frame-semantic-audit.json",
+          "sha256": "1fce0607da716ab9f8dc947e48b0fa15283cc94a3b85012fb11ef9f52e2be1e3",
+          "bytes": 6163
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/story-semantic-review.json",
+          "archive_path": "qa/story-semantic-review.json",
+          "sha256": "2d56376f20e03a1448c2a7017574148da1f95e060c01d2e809cbdf170f91d65f",
+          "bytes": 9770
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/visual-profile-review.json",
+          "archive_path": "qa/visual-profile-review.json",
+          "sha256": "c5ccbb1c3ff1412cccc995d26fa7719bbb00b9e2775cba1322510f4b88454e30",
+          "bytes": 6825
+        },
+        {
+          "role": "subtitle_layout_audit",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/subtitle-layout-audit.json",
+          "archive_path": "qa/subtitle-layout-audit.json",
+          "sha256": "3e36b6ca178049a3ecd6fb2cad58f437cd34d050961a2991e1d80d8d10270ab6",
+          "bytes": 18878
+        },
+        {
+          "role": "text_audit",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/text-audit.json",
+          "archive_path": "qa/text-audit.json",
+          "sha256": "2d1b197d8aad17385e845cbcd644a4aeee717ee110f227760ac90445c4943de4",
+          "bytes": 597
+        },
+        {
+          "role": "release_semantic_review",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/release-semantic-review.json",
+          "archive_path": "qa/release-semantic-review.json",
+          "sha256": "126e265049b7f8a36b9a3894c573c15a2685ff479037d7c70c9c5a101ece54b3",
+          "bytes": 10213
+        },
+        {
+          "role": "publish_compliance",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/publish-compliance.json",
+          "archive_path": "qa/publish-compliance.json",
+          "sha256": "326242f8d48717e1b642fe3782903230d7c671730f1a54e0d96456aee595374b",
+          "bytes": 435
+        },
+        {
+          "role": "recent5_review",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/recent5-review.json",
+          "archive_path": "qa/recent5-review.json",
+          "sha256": "14ea0c840eb8e2e2c25285eeac2fc470f29071ca1aa849dfbcd0a125a1266ea8",
+          "bytes": 2000
+        },
+        {
+          "role": "recent5_semantic_review",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/recent5-semantic-review.json",
+          "archive_path": "qa/recent5-semantic-review.json",
+          "sha256": "17be11fd16ae0c207e99f556d4c07c3f2f829557c62e6b982131f89043b7ac6f",
+          "bytes": 2435
+        },
+        {
+          "role": "frame_contract_index",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/contracts/frame-contract-index.json",
+          "archive_path": "evidence/frame-contract-index.json",
+          "sha256": "ef06865a782adc76b059821ca850b32e32e19b41bc87d80f62150e85a4c04c74",
+          "bytes": 8873
+        },
+        {
+          "role": "visual_lock_baseline_review",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/visual-lock-baseline-review.json",
+          "archive_path": "qa/visual-lock-baseline-review.json",
+          "sha256": "0d746cf44bed0fbff0efcdbea82ba039626f80a14da6b466d7588ecb038bb873",
+          "bytes": 2328
+        },
+        {
+          "role": "visual_final_freeze",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/visual-final-freeze.json",
+          "archive_path": "qa/visual-final-freeze.json",
+          "sha256": "2bf8a8be6bb403624836fb8c082f0fbb8245a72355954fe939f0c5981d2daf58",
+          "bytes": 13675
+        },
+        {
+          "role": "caption_image_audit",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/caption-image-audit.json",
+          "archive_path": "qa/caption-image-audit.json",
+          "sha256": "22b27ef579d1129dd1b0c3102167a552b31972d1f9d0e23bad89a9850e753e62",
+          "bytes": 25208
+        },
+        {
+          "role": "character_pixel_master_metadata",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/character-pixel-master.json",
+          "archive_path": "evidence/character-pixel-master.json",
+          "sha256": "767e6b0031031267faa04254e3e07684e5fae6753d266f472f19ace3d70eb0a9",
+          "bytes": 1033
+        },
+        {
+          "role": "character_master_crops_metadata",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/character-master-crops.json",
+          "archive_path": "evidence/character-master-crops.json",
+          "sha256": "6e71bcd5070d252a9ab7b3eae081fad7d967891fa2239d7af59f649d2cfd9fd0",
+          "bytes": 1291
+        },
+        {
+          "role": "frame_review:01",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/01.json",
+          "archive_path": "qa/frame-reviews/01.json",
+          "sha256": "a4fe290b69b53124e96e8d54250d0956492c4201f6669c63e534a74e87a94837",
+          "bytes": 3514
+        },
+        {
+          "role": "frame_review:02",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/02.json",
+          "archive_path": "qa/frame-reviews/02.json",
+          "sha256": "75225319c9daceabcbb1b136137de2dffc45dea22ebff56750e5b640c9e767d5",
+          "bytes": 3428
+        },
+        {
+          "role": "frame_review:03",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/03.json",
+          "archive_path": "qa/frame-reviews/03.json",
+          "sha256": "eee1ef267dc5974f1198644965cf208e636ec40829e344d77d8a6205e9d7b081",
+          "bytes": 3476
+        },
+        {
+          "role": "frame_review:04",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/04.json",
+          "archive_path": "qa/frame-reviews/04.json",
+          "sha256": "82337c559fa30c600480d86807c04955d8f0f5572e116b364e064531c71e1830",
+          "bytes": 3482
+        },
+        {
+          "role": "frame_review:05",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/05.json",
+          "archive_path": "qa/frame-reviews/05.json",
+          "sha256": "16d06bc7fcc9235e5925a3683c160e47805d480c8867dc01ba68a8fb36971ff6",
+          "bytes": 3485
+        },
+        {
+          "role": "frame_review:06",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/06.json",
+          "archive_path": "qa/frame-reviews/06.json",
+          "sha256": "5157f4152b99c0a3b277327d74dc417c581d61968fd345617118aabbf86cc77a",
+          "bytes": 3449
+        },
+        {
+          "role": "frame_review:07",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/07.json",
+          "archive_path": "qa/frame-reviews/07.json",
+          "sha256": "403eee54da86ef98914323683eaf3ec413b365f12a10b41f69f010846c7c385e",
+          "bytes": 3500
+        },
+        {
+          "role": "frame_review:08",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/08.json",
+          "archive_path": "qa/frame-reviews/08.json",
+          "sha256": "11888bdeaa0f80ba756c9b0f6a0a4bf322fbeaf2f346bea3cb704fb66d762800",
+          "bytes": 3527
+        },
+        {
+          "role": "frame_review:09",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/09.json",
+          "archive_path": "qa/frame-reviews/09.json",
+          "sha256": "d6ba9a0492266b2b717e7f58b318793255931956f81abcf7669ff88104114b88",
+          "bytes": 3485
+        },
+        {
+          "role": "frame_review:10",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/10.json",
+          "archive_path": "qa/frame-reviews/10.json",
+          "sha256": "d97a1dbfe1fc61d3b6c8bd8fd236b02b1757a05804ac0d943cf85e88fd3e90f1",
+          "bytes": 3476
+        },
+        {
+          "role": "frame_review:11",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/11.json",
+          "archive_path": "qa/frame-reviews/11.json",
+          "sha256": "606fc3f4a88215d4a8d8c95f2dba9161acd6bfb1b799147a0b860928dc8dcf64",
+          "bytes": 3458
+        },
+        {
+          "role": "frame_review:12",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/12.json",
+          "archive_path": "qa/frame-reviews/12.json",
+          "sha256": "c279e5b0b2898c59fa9cf1e3be4bbaba578ae4d5ec7d2d4f19ef788a369802ed",
+          "bytes": 3488
+        },
+        {
+          "role": "frame_review:13",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/13.json",
+          "archive_path": "qa/frame-reviews/13.json",
+          "sha256": "b9e4a6cb730ab51c1dd7015fd73a3818ea13157701b14039f2a69403e6009d9d",
+          "bytes": 3503
+        },
+        {
+          "role": "frame_review:14",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/14.json",
+          "archive_path": "qa/frame-reviews/14.json",
+          "sha256": "fd59bc03c26faf0fe0a8482902cec11908cbeab8bc5addd330fe74e80020f1c8",
+          "bytes": 3628
+        },
+        {
+          "role": "frame_review:15",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/15.json",
+          "archive_path": "qa/frame-reviews/15.json",
+          "sha256": "9e386afd5c600fb95870345e2518c6536a00d88e0e918adafb109429cefeddef",
+          "bytes": 3551
+        },
+        {
+          "role": "frame_review:16",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/16.json",
+          "archive_path": "qa/frame-reviews/16.json",
+          "sha256": "f6f5a78ffacf27158cdd0920bef72b719e4722c1d41d6b80ee9a47393374f41c",
+          "bytes": 3500
+        },
+        {
+          "role": "frame_review:17",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/17.json",
+          "archive_path": "qa/frame-reviews/17.json",
+          "sha256": "42cbb5618af75b36521a29f93c78b747581dee0706a0f368e9e5b178061e4451",
+          "bytes": 3506
+        },
+        {
+          "role": "frame_review:18",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/18.json",
+          "archive_path": "qa/frame-reviews/18.json",
+          "sha256": "17ca9719d09b703af76d21fac835a1478139a4588f5e0364166640224d816a40",
+          "bytes": 3590
+        },
+        {
+          "role": "frame_review:19",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/19.json",
+          "archive_path": "qa/frame-reviews/19.json",
+          "sha256": "88cc3e0067fd2838881045ef27756f67714041c3d054b856a2004b7af8533e4b",
+          "bytes": 3520
+        },
+        {
+          "role": "frame_review:20",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/frame-reviews/20.json",
+          "archive_path": "qa/frame-reviews/20.json",
+          "sha256": "0e82ebe7b46a554db4f7712285986cd12dc0b1860c7f7f2fb7ed5922dfd3ba00",
+          "bytes": 3456
+        },
+        {
+          "role": "character_pixel_master_asset",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-a1aa440d871a-a2.png",
+          "archive_path": "evidence/character-master/01-a1aa440d871a-a2.png",
+          "sha256": "25acedcafa2c7a955204835c9dfbb45e69d01ebca2b04dc63f524e9c5347dcf6",
+          "bytes": 2101058
+        },
+        {
+          "role": "character_crop:P01",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/identity/character-masters/P01.png",
+          "archive_path": "evidence/character-master/crops/P01.png",
+          "sha256": "811b73381d6ff687419fd4b92443eca27a4bbc27159cf82986608c7b241218c5",
+          "bytes": 639949
+        },
+        {
+          "role": "character_crop:P02",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/identity/character-masters/P02.png",
+          "archive_path": "evidence/character-master/crops/P02.png",
+          "sha256": "07f4e140fe04c10e52a8700baaebb5d86a5a9568460b155c80744811ca1938e5",
+          "bytes": 708621
+        },
+        {
+          "role": "final_candidate_snapshot",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/final-candidate-snapshot.json",
+          "archive_path": "evidence/final-candidate-snapshot.json",
+          "sha256": "3c2f7bc5c372fd9afaa10056dfaebf14dd4b43fdd260c0282ca62d747c6d76d3",
+          "bytes": 45930
+        },
+        {
+          "role": "delegated_zip",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/deliveries/03_雾中的另一座生活区_DELEGATED_AUTO.zip",
+          "sha256": "b83bae4a49c9e362e00b1a1812ecc394fd095f995e227ed7747f35557c41e582"
+        }
+      ],
+      "note": "Story OS V2.6.1 全自动：按 EP001/EP002 口径重写 EP003 字幕（20 帧全部单行）与简介后，重渲染 20 帧发布像素并重建证据——text-audit hard=0/warnings=0、subtitle-layout-audit canonical PASS、caption-image-audit 20/20 PASS（13 帧因新字幕重审、7 帧 SHA 未漂移复用）、frame semantic caption 绑定按官方 rebind 重新绑定、release_preflight 六组 PASS、Final Candidate Snapshot 重新 build+verify、delegated ZIP 重建；delegated_auto_review，无 direct user approval，未实际发布。"
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode": {
+    "id": "10-03",
+    "series": "10_彼此的天上",
+    "title": "雾中的另一座生活区",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "4:5"
+  },
+  "release": {
+    "version": "V2.0",
+    "body_frame_count": 20,
+    "publish_dir": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish",
+    "body_glob": "[0-9][0-9].png",
+    "cover_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/cover/cover.png",
+    "contact_sheet_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/contact-sheets/publish-final.jpg"
+  },
+  "artifacts": {
+    "story": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+    "storyboard": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+    "visual_spec": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/04_雾中的另一座生活区_视觉规范_DRAFT_V1.0.md",
+    "captions": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/subtitles.yaml",
+    "publish_copy": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/06_雾中的另一座生活区_最终发布文案_V2.0.md",
+    "production_review": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/05_雾中的另一座生活区_终审_V2.0.md",
+    "propagation_card": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/recommendation-fit.json"
+  },
+  "quality": {
+    "production_gate": "pass",
+    "propagation_score": 8.8,
+    "s_min_score": 8.5,
+    "propagation_decision": "publishable",
+    "publish_decision": "go",
+    "decision_note": "Story OS V2.6.1 全自动终审通过（delegated_auto_review）；20/20 帧 LOCKED，字幕 20 帧全部有稿，无静默帧。"
+  },
+  "publication": {
+    "platform": "douyin",
+    "actual_title": "我们等了一场同样的雨，雾散以后，山谷里多出了一整片人家",
+    "description": "凌晨四点我们就上山了，就为了等一个日出。\n\n前两次进山都在下雨。这回雨刚停，气温一下子降下来，低云压满整个山谷。她说能看到这儿就够了吧，我说再等一下，先把无人机放上去转一圈。\n\n无人机升高，镜头穿过一片压得很低的云。先露出一块湿屋顶。然后是第二块屋顶，一条潮土路。有人在收昨晚淋湿的衣服，有孩子蹲在水沟边踩水。\n\n我以为那只是个藏在山谷里的小聚落。\n\n镜头顺着云缝往里滑，屋顶却没有结束——土路接上石路，山坡上一整片梯田铺下去，水渠还在放水；再往前是石桥、作坊、路口，两边已经摆上摊子；半山腰那道石砌的水道，比村里的房子还大。\n\n云一散开，后面全是屋顶、道路和人。这哪是村子。\n\n她说别飞了，拉回来。我手已经在往回推。底下有个小孩先抬起头，直直看着我们的无人机。旁边的大人跟着抬头，一把把孩子拉到身后。有人开始收摊，也有人还什么都没发现。路边那个裹着浅色头巾的年轻女人，先把孩子往后带，自己又站在那儿多看了几秒。\n\n那一刻我才反应过来：让一整个清早开始躲的，是我们的无人机。\n\n想全力拉回来的时候，画面开始卡，高度往下掉。最后几秒，屏幕边上有一小块不对劲的亮。我想再往前翻一帧，图传就彻底冻结了。\n\n遥控器上跳出失联三个字。\n\n我第一反应是沿山路下去找。她第一次明确拦我：别去了。我说我就是想再确认一下。她说：你刚才也说，只多看几秒。\n\n我们在这趟旅行里第一次真正吵了起来。\n\n最后我们没有下山，也没有去找那片地方。\n\n太阳照常升起，云海还是好看。她用手机拍了一张，照片很好看。\n\n只是那架本来应该飞在画面里的无人机，一直没有回来……\n\n人物、地点、情节均为虚构，画面由AI生成。",
+    "topics": [
+      "AI故事",
+      "彼此的天空",
+      "第一人称悬疑",
+      "川西自驾",
+      "云海",
+      "抖音图文"
+    ],
+    "pinned_comment": "回头看：02 那句先放无人机转一圈，18 最后几秒屏幕边上那一小块不对劲的亮，20 日出云海里缺席的无人机。这一篇的因果一直挂在同一件东西上。\n\n那一小块亮到底是什么？是雾里的反光，是我们停在山上的那辆车，还是别的什么？我们最后没有下山，所以这个问题一直没有答案。",
+    "published_at": null,
+    "timing_window": null,
+    "post_url": null
+  },
+  "data_review": {
+    "report_path": "reports/数据验收报告.md",
+    "completed_checkpoints": [],
+    "first_hour_metrics": {
+      "captured_at": null,
+      "exposure": null,
+      "plays": null,
+      "likes": null,
+      "comments": null,
+      "saves": null,
+      "shares": null,
+      "followers_gained": null,
+      "profile_visits": null,
+      "avg_images_viewed": null,
+      "swipe_away_rate": null,
+      "caption_expand_rate": null
+    }
+  }
+}

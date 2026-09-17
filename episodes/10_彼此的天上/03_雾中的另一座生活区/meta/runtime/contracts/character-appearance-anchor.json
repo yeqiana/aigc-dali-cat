@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "contract_version": "2.2.1",
+  "derived_cache": true,
+  "world_identity_profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+  "world_identity_effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b",
+  "character_contract_path": "meta/character-contract.json",
+  "character_contract_sha256": "6aeb744e6c2f07e5c6040925834312583ec625aca21384a068564073badcb27f",
+  "character_visual_contract_path": "meta/character-visual-contract.json",
+  "character_visual_contract_sha256": "271307e3ca94fef8f09db6317274ccec6fe51a26f09258fd7d8310db968b7c82",
+  "members": {
+    "P01": {
+      "character_id": "P01",
+      "nationality_context": "Chinese",
+      "resident_context": "mainland Chinese local residents",
+      "gender": "male",
+      "age": 24,
+      "build": "普通年轻人体型",
+      "body_build": "lean_proportionate_natural",
+      "hair": {
+        "character_contract_anchor": "黑色短碎发，耳上长度，日常自然蓬松",
+        "haircut_anchor": "自然黑色短碎发，顶部轻微蓬松，无明显烫染",
+        "hair_length_anchor": "耳上短发，后颈不过领"
+      },
+      "clothing_anchor": "灰色连帽卫衣外加深色轻薄防风外套+深灰休闲长裤+普通运动鞋，符合雨后清晨山地低温",
+      "device_anchor": "普通智能手机",
+      "visual_priority": "primary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_visible_texture",
+        "allowed_variation": ["wet", "windblown", "messy", "hood_up", "tied_or_untied_with_story_reason"],
+        "forbidden_unmotivated_drift": ["nationality/cultural identity", "apparent age", "face identity", "haircut or hair length", "body build", "character role", "clothing anchor unless wardrobe contract changes it"]
+      }
+    },
+    "P02": {
+      "character_id": "P02",
+      "nationality_context": "Chinese",
+      "resident_context": "mainland Chinese local residents",
+      "gender": "female",
+      "age": 24,
+      "build": "普通年轻人体型",
+      "body_build": "slim_proportionate_natural",
+      "hair": {
+        "character_contract_anchor": "锁骨长度自然黑发，旅行时低马尾或自然放下，保持EP001/EP002身份一致",
+        "haircut_anchor": "自然黑发，旅行户外以低马尾为主；风大时可有少量碎发被吹散",
+        "hair_length_anchor": "锁骨长度"
+      },
+      "clothing_anchor": "浅灰卫衣外加浅色日常防风外套+深色直筒长裤+普通运动鞋，符合雨后清晨山地低温",
+      "device_anchor": null,
+      "visual_priority": "primary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_visible_texture",
+        "allowed_variation": ["wet", "windblown", "messy", "hood_up", "tied_or_untied_with_story_reason"],
+        "forbidden_unmotivated_drift": ["nationality/cultural identity", "apparent age", "face identity", "haircut or hair length", "body build", "character role", "clothing anchor unless wardrobe contract changes it"]
+      }
+    }
+  },
+  "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+  "anchor_sha256": "eb1d4738febe5c32b7f253b86e95ae0258e503e887cdbccfa2b04a5e6c30f31e"
+}

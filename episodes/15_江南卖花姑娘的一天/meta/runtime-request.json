@@ -1,0 +1,21 @@
+{
+  "request_id": "EP015_JIANGNAN_FLOWER_GIRL",
+  "intent": "create_episode",
+  "title": "江南卖花姑娘的一天",
+  "runtime": {
+    "execution_mode": "dag",
+    "production_mode": "preparation"
+  },
+  "visual_profile": "M00_ANCIENT_DAILY_LIFE_V1",
+  "story_direction": {
+    "theme": "古代普通人的生活相册",
+    "tone": "温暖、真实、生活记录",
+    "avoid": [
+      "仙女写真",
+      "仙侠大片",
+      "商业汉服摄影"
+    ]
+  },
+  "image_model": "gpt-image-2",
+  "image_quality": "high"
+}

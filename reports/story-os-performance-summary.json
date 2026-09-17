@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T11:10:58.590+08:00",
-  "sample_size": 2,
-  "p50_total_seconds": 42715.471,
-  "p90_total_seconds": 43251.654,
-  "average_total_seconds": 42715.471,
+  "generated_at": "2026-09-14T15:16:54.792+08:00",
+  "sample_size": 3,
+  "p50_total_seconds": 42045.243,
+  "p90_total_seconds": 43117.609,
+  "average_total_seconds": 34852.678,
   "episodes": [
     {
       "episode": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉",
@@ -20,6 +20,38 @@
         "max_attempt_seconds": null
       },
       "stage_wall": {}
+    },
+    {
+      "episode": "episodes/10_彼此的天上/03_雾中的另一座生活区",
+      "total_wall_seconds": 19127.091,
+      "final_status": "PUBLISH_READY",
+      "images": {
+        "attempts": 0,
+        "successful_attempts": 0,
+        "repair_attempts": 0,
+        "technical_failures_or_retries": 0,
+        "image_backend_seconds": 0,
+        "average_attempt_seconds": null,
+        "max_attempt_seconds": null
+      },
+      "stage_wall": {
+        "INCREMENTAL_PLAN": {
+          "wall_seconds": 4.341,
+          "runs": 6
+        },
+        "CREATIVE_STORY": {
+          "wall_seconds": 594.947,
+          "runs": 4
+        },
+        "PREIMAGE_COMPILE": {
+          "wall_seconds": 148.977,
+          "runs": 2
+        },
+        "VISUAL_LOCK": {
+          "wall_seconds": 0,
+          "runs": 1
+        }
+      }
     },
     {
       "episode": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳",

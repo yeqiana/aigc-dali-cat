@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "episode_id": "10-03",
+  "status": "COMPLETED",
+  "completed_at": "2026-09-14T14:26:37+08:00",
+  "source": "meta/voice-contract.json",
+  "source_status": "LOCKED",
+  "subtitle_source": "meta/subtitles.yaml",
+  "silent_frames": [],
+  "voice_card": {
+    "person": "P01",
+    "role": "普通年轻人/情侣自驾当事人",
+    "age": 24,
+    "education_and_knowledge_boundary": "普通上班族和普通旅行者常识；会用手机和消费级无人机拍旅行素材，能看懂基础返航/图传/定位提示，但不知道异常机制、另一侧社会来源与空间关系。",
+    "recording_reason": "记录情侣自驾、日出和云海；无人机原本只用于旅行风景航拍，异常出现后也只是保留当事人能看到的画面。",
+    "knows_now": "前几次异常都发生在山区雨后降温、低云或大雾条件附近；本次无人机确实拍到一个长期生活、结构完整的前工业社会，并且那里的人开始对无人机作出避让。",
+    "does_not_know": "不知道两个地方为何重合、是否属于过去未来或平行世界，不知道模糊亮区是否真是自己的车，也不能把特殊天气总结成可预测公式。",
+    "stress_language": "短句、停顿、自我修正、生活口语；先说自己看到的动作和位置，不使用报告腔或科普腔。",
+    "fear_language_change": "前半段仍是旅行聊天；发现完整文明后话变少；无人机被发现和失控时句子明显变短；结尾争吵只围绕再确认几秒和要不要下山找，不上升到宏大理论。",
+    "ordinary_vocabulary": "云海、雾、无人机、屋顶、路、孩子、拉回来、再看一下、失联、别去了。",
+    "forbidden_technical_terms": "维度、量子、频率、时空裂缝、虫洞、实验体、能量场、传送门、空间坐标校准。"
+  },
+  "subtitle_policy": {
+    "max_visible_chars": 48,
+    "continuous_three_frame_test": true,
+    "read_aloud_test": true,
+    "delete_subtitle_test": true,
+    "do_not_repeat_visible_anomaly": true,
+    "allow_short_fragments_and_self_correction": true
+  },
+  "note": "正式字幕渲染前完成声音卡：人物/身份/知识边界/记录原因/已知与未知/紧张与恐惧语言变化/普通话口语/禁用术语均已登记，与 LOCKED voice-contract 同源；本文件是显式登记副本，不建立第二权威。"
+}

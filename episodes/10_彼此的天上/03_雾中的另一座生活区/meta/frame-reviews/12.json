@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "12",
+  "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/12.png",
+  "asset_sha256": "496c230e5182b3e6b3d1ba84e5eb547d6a758d636a95a1d2278f5212516921b5",
+  "story_sha256": "438ca8248415e21a3d13d47cb76c855ea850525b506b8b315109794f269af8c8",
+  "storyboard_sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5",
+  "visual_contract_sha256": "7f8ca46a725a3831efdcb86bc7d3ca309caea65dfda45b281c5eae2216de8417",
+  "environment_frame_sha256": "e0c20a64006dd1e621f3ac1a088216e36a3fb102e919bffb1a7dbb1cfb09cc6a",
+  "frame_directive_sha256": "f3630e536b3746dbb4fb7d90cd8ce22a63c206072f3741bed1d485260990df5d",
+  "frame_contract_sha256": "753c53317d71f400be257dedf17adb1171110f3d9b73ca7a43be081fac4e0499",
+  "source_binding": {
+    "story": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+      "sha256": "438ca8248415e21a3d13d47cb76c855ea850525b506b8b315109794f269af8c8"
+    },
+    "storyboard": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+      "sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5"
+    },
+    "extraction_mode": "whole_storyboard_fallback",
+    "frame_sha256": "38e1ea5e998e3711828f68ac974122157e8b1f164ac988d34564726ef6976ea5"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 2,
+    "reviewed_at": "2026-09-14T14:16:41+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/frame-semantic-attempt-2-request.json",
+    "request_id": "frame-semantic-a2-ae99f422137d851d",
+    "request_fingerprint": "ae99f422137d851da99da240c454f5296b30cd0f817e9252ccadd3ead82ce0a9",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "同一街巷成人顺视线抬头后把孩子拢到身边，群体反应不同步，保留普通清晨背景；原塑料器具、混凝土街面与电线杆已消除。",
+  "decision": "pass",
+  "caption_sha256": "1059d87f531c9b9bf4629ca1c131a010631935970beb5234e106f95396b4edea"
+}
