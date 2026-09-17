@@ -33,6 +33,7 @@ import raw_candidate_budget
 import storyos_config
 import scheduler_core
 import batch_scheduler
+import production_queue_store
 import runtime_router
 import product_runtime_adapter
 import resource_library
@@ -583,7 +584,13 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
         [],handler,consume,workers=max_workers,admit=admit_more,completed=completed)
 
     final_q=load_queue(ep)
-    return _scheduler_terminal_rc(final_q,has_block=has_block,has_failure=has_failure,ep=ep)
+    rc=_scheduler_terminal_rc(final_q,has_block=has_block,has_failure=has_failure,ep=ep)
+    try:
+        import workflow_observability
+        workflow_observability.collect(ep,write=True)
+    except Exception:
+        pass
+    return rc
 
 
 def _scheduler_terminal_rc(q:dict,*,has_block:bool,has_failure:bool,ep:Path|None=None)->int:

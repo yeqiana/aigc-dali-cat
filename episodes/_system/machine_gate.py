@@ -13,6 +13,8 @@ from story_os_contract import FOUR_ADMISSION_V21_POLICY
 from incremental_frame_review import review_required as semantic_frame_review_required, verify_episode as verify_frame_semantic_episode
 from final_acceptance import allows as acceptance_allows
 import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
+import character_visual_contract
+import character_appearance_anchor
 import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
 import story_dna_trace  # STORY_OS_V3_E003_STORY_DNA_TRACE
 import visual_reality_score  # STORY_OS_V3_E005_VISUAL_REALITY_SCORE
@@ -706,6 +708,9 @@ def validate(episode_dir: Path, target: str, *, metadata_only: bool = False) -> 
         return findings
     idx = STATE_MIN[target]
     repo_root = repo_root_from_script()
+    if idx >= STATE_MIN["STORYBOARD_LOCKED"] and character_appearance_anchor.required(episode_dir):
+        for error in character_visual_contract.validate(episode_dir, require_locked=True):
+            findings.append(Finding("FAIL", "character_visual_contract", error))
     if idx >= STATE_MIN["VISUAL_CALIBRATED"]:
         check_authenticity_card(gates, manifest, findings)
         check_calibration(repo_root, gates, manifest, findings, metadata_only=metadata_only)

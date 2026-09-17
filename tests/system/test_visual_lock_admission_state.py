@@ -178,6 +178,37 @@ class VisualLockAdmissionStateTests(unittest.TestCase):
         self.assertLessEqual(len(prompt), 245)
         self.assertLessEqual(len(prompt.encode("utf-8")), 850)
 
+    def test_first_major_anomaly_prefers_locked_story_semantics_over_preimage_hint(self):
+        rows = [
+            {"frame": 3, "mode": "anomaly_reveal", "impact": 2, "anomaly_logic_stage": "ordinary"},
+            {"frame": 6, "mode": "normal_record", "impact": 1, "anomaly_logic_stage": "discovery"},
+            {"frame": 7, "mode": "anomaly_reveal", "impact": 2, "anomaly_logic_stage": "confirmation"},
+        ]
+        selected = visual_lock_v21._semantic_first_anomaly_candidates(rows)
+        self.assertEqual([row["frame"] for row in selected], [6, 7])
+
+    def test_reprepare_preserves_same_contract_baseline_but_resets_changed_role(self):
+        old = {"visual": {"calibration": {"items": [
+            {"id": "V-B", "role": "ordinary_baseline", "frame": 1, "asset_path": "old.png", "sha256": "pixel", "decision": "passed", "frame_contract_sha256": "same", "note": "keep"},
+            {"id": "V-A", "role": "first_major_anomaly", "frame": 3, "asset_path": "bad.png", "sha256": "bad", "decision": "failed", "frame_contract_sha256": "old", "note": "old"},
+        ]}}}
+        plan = {"items": [
+            {"id": "V-B", "role": "ordinary_baseline", "frame": 1, "contract_sha256": "same"},
+            {"id": "V-A", "role": "first_major_anomaly", "frame": 6, "contract_sha256": "new"},
+        ]}
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True)
+            (ep / "meta/story-gates.json").write_text(json.dumps(old), encoding="utf-8")
+            with patch.object(visual_lock_v21, "choose_plan", return_value=plan):
+                visual_lock_v21.prepare(ep)
+            items = json.loads((ep / "meta/story-gates.json").read_text(encoding="utf-8"))["visual"]["calibration"]["items"]
+        self.assertEqual(items[0]["decision"], "passed")
+        self.assertEqual(items[0]["asset_path"], "old.png")
+        self.assertEqual(items[1]["frame"], 6)
+        self.assertEqual(items[1]["decision"], "pending")
+        self.assertIsNone(items[1]["asset_path"])
+
     def test_candidate_prompt_carries_concrete_frame_contract_pixel_evidence(self):
         row = {
             "frame": 5,

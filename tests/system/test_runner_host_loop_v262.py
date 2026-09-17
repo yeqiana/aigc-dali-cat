@@ -21,6 +21,7 @@ import image_artifact_collector
 import image_blocked_recovery
 import image_model_policy
 import image_scheduler
+import identity_continuity
 import machine_action_executor
 import next_action
 import production_ledger
@@ -572,6 +573,32 @@ class VisionAutoRepairTests(unittest.TestCase):
         self.assertTrue(needed)
         self.assertIsNone(character_id)
         self.assertEqual(reason, "visual_lock_human_present")
+
+    def test_visual_lock_named_hand_fragment_keeps_named_character_identity(self):
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True)
+            (ep / "meta/character-visual-contract.json").write_text(
+                json.dumps({"members": {"P01": {}, "P02": {}}}), encoding="utf-8"
+            )
+            hm = {"shot_progression": {"primary_subject": "P01手突然离开镜头边缘", "human_present": True}}
+            needed, character_id, reason = reference_arbitrator._identity_need(ep, hm, [], scope="visual_lock")
+        self.assertTrue(needed)
+        self.assertEqual(character_id, "P01")
+        self.assertEqual(reason, "visual_lock_non_face_character_fragment")
+
+    def test_frame_contract_identity_intent_exists_before_pixel_master(self):
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            (ep / "meta").mkdir(parents=True)
+            (ep / "meta/story-gates.json").write_text(
+                json.dumps({"visual": {"references": {"required": False, "items": []}}}), encoding="utf-8"
+            )
+            reqs = identity_continuity.contract_requirements(
+                ep, 17, [], {"human_present": True, "primary_subject": "P01手臂", "action": "P01伸向P02"})
+        self.assertEqual([row["character_id"] for row in reqs], ["P01", "P02"])
+        self.assertTrue(all(row["anchor_state"] == "pending_pixel_master" for row in reqs))
+        self.assertTrue(all(row["requirement_source"] == "shot_progression" for row in reqs))
 
     def test_repair_scope_baseline_dependency_uses_current_baseline_approval(self):
         q = {"items": [{"frame": 1, "status": "generated"}]}

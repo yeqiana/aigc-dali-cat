@@ -176,15 +176,47 @@ def identity_contract(ep) -> dict:
     }
 
 
-def contract_requirements(ep, frame, refs=None) -> list:
-    """Per-frame declared identity requirement for the Frame Contract (advisory).
+def _shot_character_ids(shot_progression) -> list[str]:
+    if not isinstance(shot_progression, dict) or shot_progression.get("human_present") is not True:
+        return []
+    interaction = shot_progression.get("interaction") if isinstance(shot_progression.get("interaction"), dict) else {}
+    text = " | ".join(str(value or "") for value in (
+        shot_progression.get("primary_subject"),
+        shot_progression.get("action"),
+        interaction.get("actor"),
+        interaction.get("target"),
+        interaction.get("action"),
+    ))
+    return list(dict.fromkeys(match.group(1).upper() for match in P_ID_RE.finditer(text)))
 
-    This is the identity scope the Frame Contract publishes; the gate still reads
-    the frame review for execution evidence. It never changes contract_sha256.
+
+def _current_character_anchor(ep: Path, character_id: str) -> dict | None:
+    crops = read_json(ep / CHARACTER_CROPS_REL, {}) or {}
+    item = ((crops.get("items") or {}).get(character_id)) if isinstance(crops, dict) else None
+    if isinstance(item, dict):
+        path = repo_abs(item.get("path"))
+        if path is not None and path.is_file():
+            return {"path": repo_rel(path), "sha256": sha256_file(path)}
+    master = read_json(ep / PIXEL_MASTER_REL, {}) or {}
+    path = repo_abs(master.get("asset_path")) if isinstance(master, dict) else None
+    if path is not None and path.is_file():
+        return {"path": repo_rel(path), "sha256": sha256_file(path)}
+    return None
+
+
+def contract_requirements(ep, frame, refs=None, shot_progression=None) -> list:
+    """Per-frame identity intent published by the Frame Contract (advisory).
+
+    Declared story-gates anchors remain authoritative when present. For a locked
+    human-present shot, character IDs visible in shot progression are also
+    published even before a Pixel Master exists. This separates identity intent
+    from anchor materialization and prevents pre-baseline compiles from silently
+    publishing identity_requirements=[]. It never changes contract_sha256.
     """
     ep = Path(ep)
     gates = read_json(ep / GATES_REL, {}) or {}
     out = []
+    seen = set()
     for item in identity_reference_items(gates):
         scope = frame_scope_of(item)
         if scope is not None and int(frame) not in scope:
@@ -193,7 +225,19 @@ def contract_requirements(ep, frame, refs=None) -> list:
         anchor = anchor_of(item)
         if not cid or not anchor:
             continue
-        out.append({"character_id": cid, "reference_anchor": anchor})
+        out.append({"character_id": cid, "reference_anchor": anchor, "requirement_source": "story_gates"})
+        seen.add(cid)
+    for cid in _shot_character_ids(shot_progression):
+        if cid in seen:
+            continue
+        anchor = _current_character_anchor(ep, cid)
+        out.append({
+            "character_id": cid,
+            "reference_anchor": anchor,
+            "requirement_source": "shot_progression",
+            "anchor_state": "bound" if anchor else "pending_pixel_master",
+        })
+        seen.add(cid)
     return out
 
 

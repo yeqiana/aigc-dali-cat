@@ -32,6 +32,7 @@ import character_visual_contract
 import visual_lock_baseline_gate
 import visual_narrative_core_v22  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 import propagation_core_gate
+import shot_progression_gate
 import critic_runtime_v211  # STORY_OS_V211_PERF_RECOVERY
 import codex_user_runner
 import codex_critic_runner as critic_runner
@@ -200,16 +201,29 @@ def _rows(ep: Path) -> list[dict]:
     for n in range(1, total + 1):
         resolved = environment_contract.resolve_frame(ep, n)
         d = resolved.get("directive") or {}
+        shot = shot_progression_gate.resolve_frame(ep, n).get("shot_progression") or {}
         rows.append({
             "frame": n,
             "mode": str(d.get("frame_mode") or ""),
             "role": str(d.get("narrative_role") or ""),
             "impact": int(d.get("impact_level") or 0),
             "scale_reference": str(d.get("scale_reference") or ""),
+            "anomaly_logic_stage": str(shot.get("anomaly_logic_stage") or "ordinary"),
             "environment_severity": _severity(resolved.get("environment") or {}),
             "contract_sha256": frame_contract.compile_frame(ep, n, write_cache=True)["contract_sha256"],
         })
     return rows
+
+
+def _semantic_first_anomaly_candidates(rows: list[dict]) -> list[dict]:
+    """Prefer locked Story semantics over downstream PREIMAGE render hints."""
+    semantic = [
+        r for r in rows
+        if str(r.get("anomaly_logic_stage") or "ordinary") != "ordinary"
+    ]
+    if semantic:
+        return semantic
+    return [r for r in rows if r["mode"] == "anomaly_reveal" or r["impact"] >= 2] or rows
 
 def _opening_social_baseline(ep: Path, rows: list[dict]) -> dict | None:
     p=ep/"meta/opening-social-anchor.json"
@@ -286,9 +300,7 @@ def choose_plan(ep: Path) -> dict:
             and r["role"] in {"transition", "escalation", "climax", "payoff"}
         ] or [r for r in rows if r["frame"] != baseline["frame"]]
     else:
-        first_anomaly_candidates = [
-            r for r in rows if r["mode"] == "anomaly_reveal" or r["impact"] >= 2
-        ] or rows
+        first_anomaly_candidates = _semantic_first_anomaly_candidates(rows)
     first_anomaly = take(sorted(
         first_anomaly_candidates,
         key=lambda r: (r["frame"], -r["impact"])
@@ -331,21 +343,30 @@ def prepare(ep: Path) -> dict:
     g = read_json(gates_path)
     visual = g.setdefault("visual", {})
     calibration = visual.setdefault("calibration", {})
+    previous = {
+        (str(item.get("role") or ""), int(item.get("frame") or 0)): item
+        for item in (calibration.get("items") or []) if isinstance(item, dict)
+    }
     calibration["schema_version"] = 2
     calibration["policy"] = FOUR_ADMISSION_V21_POLICY
-    calibration["items"] = [
-        {
-            "id": row["id"],
-            "role": row["role"],
-            "frame": row["frame"],
-            "asset_path": None,
-            "sha256": None,
-            "decision": "pending",
-            "frame_contract_sha256": row["contract_sha256"],
-            "note": "",
-        }
-        for row in plan["items"]
-    ]
+    refreshed = []
+    for row in plan["items"]:
+        old = previous.get((row["role"], int(row["frame"])))
+        same_contract = old and str(old.get("frame_contract_sha256") or "") == str(row["contract_sha256"])
+        if same_contract:
+            refreshed.append({
+                "id": row["id"], "role": row["role"], "frame": row["frame"],
+                "asset_path": old.get("asset_path"), "sha256": old.get("sha256"),
+                "decision": old.get("decision") or "pending",
+                "frame_contract_sha256": row["contract_sha256"], "note": old.get("note") or "",
+            })
+        else:
+            refreshed.append({
+                "id": row["id"], "role": row["role"], "frame": row["frame"],
+                "asset_path": None, "sha256": None, "decision": "pending",
+                "frame_contract_sha256": row["contract_sha256"], "note": "",
+            })
+    calibration["items"] = refreshed
     write_json(gates_path, g)
     return plan
 

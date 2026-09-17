@@ -5,6 +5,7 @@ import argparse, datetime, hashlib, json, os, shutil, subprocess, sys, time, uui
 import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import execution_capsule
 import character_contract
+import character_visual_contract
 import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
 import character_appearance_anchor  # STORY_OS_V221_CHARACTER_CONTINUITY
 import inflight_codex_task  # STORY_OS_V262_INFLIGHT_ATTACH
@@ -222,6 +223,7 @@ def prompt(ep,step):
     if step=="CREATIVE_STORY":
         directing_quality.enable(ep)
         character_contract.prepare(ep,force=False)
+        character_visual_contract.prepare(ep,force=False)
         resource_library.resolve(ep,write=True)
     if step in {"PREIMAGE_COMPILE","VISUAL_LOCK"}:
         resource_library.resolve(ep,write=True)

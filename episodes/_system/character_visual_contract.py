@@ -175,6 +175,14 @@ def validate(ep,require_locked=True):
     if rp.get("reference_is_not_identity_master") is not True:e.append("reference image must not become identity master")
     primary=set(str(x) for x in (d.get("primary_cast_ids") or []));members=d.get("members") or {}
     if not members:e.append("character visual members missing")
+    cp_path=ep/"meta/character-contract.json"
+    if cp_path.is_file():
+        cp=read_json(cp_path)
+        expected_ids={str(m.get("id") or "") for m in (((cp.get("cast") or {}).get("members") or [])) if str(m.get("id") or "")}
+        actual_ids={str(cid) for cid in members}
+        missing=sorted(expected_ids-actual_ids);extra=sorted(actual_ids-expected_ids)
+        if missing:e.append("character visual members missing cast ids: "+", ".join(missing))
+        if extra:e.append("character visual members contain unknown cast ids: "+", ".join(extra))
     for cid,row in members.items():
         face=row.get("face_identity") or {};hair=row.get("hair") or {};pres=row.get("presentation") or {}
         if effective_world is not None:

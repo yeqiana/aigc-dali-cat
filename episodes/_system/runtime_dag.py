@@ -7,6 +7,7 @@ from pathlib import Path
 import quota_observability
 import execution_capsule
 import character_contract
+import character_visual_contract
 import provisional_release
 import preproduction_handoff
 import resource_library
@@ -367,10 +368,11 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             directing_quality.before_step(ep,s.step_id)
             preparation_started=proto.now()
             character_contract.prepare(ep,force=False)
+            character_visual_contract.prepare(ep,force=False)
             runtime_node_evidence.record(
                 ep,node_id="character_prepare",start_time=preparation_started,end_time=proto.now(),
-                status="PASS",attempt=1,output="character_contract.prepare completed",
-                evidence=["meta/character-contract.json"])
+                status="PASS",attempt=1,output="character + character_visual contract scaffolds prepared",
+                evidence=["meta/character-contract.json","meta/character-visual-contract.json"])
         prior=(proto.load_state(ep).get("steps") or {}).get(s.step_id) or {}
         attempt=int(prior.get("attempt") or 0)+1
         input_hash=proto.evidence_hash(ep,["meta/runtime-request.json","meta/episode-state.json",*s.evidence_paths])
