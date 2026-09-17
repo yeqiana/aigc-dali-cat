@@ -1,0 +1,128 @@
+{
+  "schema_version": 2,
+  "status": "LOCKED",
+  "created_at": "2026-09-17T16:22:00+08:00",
+  "lock_model": "identity_spec__provisional_baseline_master__final_visual_lock_master",
+  "primary_cast_ids": [
+    "P01"
+  ],
+  "members": {
+    "P01": {
+      "visual_priority": "primary",
+      "attractiveness": "moderately_above_average_but_real",
+      "body_build": "lean_proportionate_natural",
+      "body_build_story_override_reason": "",
+      "face_identity": {
+        "original_character": true,
+        "independently_distinct_face": true,
+        "celebrity_likeness": false,
+        "influencer_face": false,
+        "fashion_model_styling": false,
+        "reference_similarity_target": "low",
+        "skin_texture": "natural_visible_texture",
+        "slight_asymmetry": true,
+        "identity_spec_locked": true
+      },
+      "hair": {
+        "haircut_anchor": "灰褐色短毛，两侧剪短、头顶自然乱；头顶偏后位置生出一对没褪净的獐子耳，耳内绒毛同色",
+        "hair_length_anchor": "短发，额头碎发压到眉上，耳侧露出人耳与獐耳共存的轮廓",
+        "allowed_state_variation": [
+          "被山风吹乱",
+          "沾雾水打湿贴额",
+          "熬夜值更后压扁"
+        ],
+        "exact_reference_hairstyle_copy": false
+      },
+      "world_identity": {
+        "profile_id": "EPISODE_WORLD_IDENTITY_OVERRIDE",
+        "nationality_context": "妖族（狮驼岭未褪尽人形的小妖）",
+        "resident_context": "狮驼岭底层巡山小妖（守卡、敲梆子、领后厨泔水的杂兵）",
+        "effective_sha256": "1e8b4e997ed5e4904f7f5ae302668e3193648418ae02f663860b9544bf6200e6"
+      },
+      "presentation": {
+        "heavy_makeup": false,
+        "porcelain_skin": false,
+        "excessive_face_symmetry": false,
+        "ai_beauty_face": false,
+        "camera_friendly_but_believable": true
+      }
+    },
+    "P02": {
+      "visual_priority": "secondary",
+      "attractiveness": "ordinary_camera_friendly",
+      "body_build": "story_specific",
+      "body_build_story_override_reason": "原文明确他是野猪精，体格必须明显比獐子精 P01 更宽更壮（膀大腰圆、脖子短粗、嘴外翻出两枚獠牙），并使用通用青年体型常量会抹掉这一体型差。",
+      "face_identity": {
+        "original_character": true,
+        "independently_distinct_face": true,
+        "celebrity_likeness": false,
+        "influencer_face": false,
+        "fashion_model_styling": false,
+        "reference_similarity_target": "low",
+        "skin_texture": "natural_visible_texture",
+        "slight_asymmetry": true,
+        "identity_spec_locked": true
+      },
+      "hair": {
+        "haircut_anchor": "粗硬黑棕色鬃毛，从额头顶连着后颈，短、乱、不打理；额角有两撮立起的硬毛",
+        "hair_length_anchor": "短发偏扎，鬃毛盖到后脖颈，露出短粗的颈线",
+        "allowed_state_variation": [
+          "沾泥结块",
+          "狂奔后竖起",
+          "被汗打湿贴皮"
+        ],
+        "exact_reference_hairstyle_copy": false
+      },
+      "world_identity": {
+        "profile_id": "EPISODE_WORLD_IDENTITY_OVERRIDE",
+        "nationality_context": "妖族（狮驼岭未褪尽人形的小妖）",
+        "resident_context": "狮驼岭底层巡山小妖（守卡、敲梆子、领后厨泔水的杂兵）",
+        "effective_sha256": "1e8b4e997ed5e4904f7f5ae302668e3193648418ae02f663860b9544bf6200e6"
+      },
+      "presentation": {
+        "heavy_makeup": false,
+        "porcelain_skin": false,
+        "excessive_face_symmetry": false,
+        "ai_beauty_face": false,
+        "camera_friendly_but_believable": true
+      }
+    }
+  },
+  "reference_policy": {
+    "allowed_reference_roles": [
+      "age_vibe",
+      "attractiveness_range",
+      "realism",
+      "capture_style",
+      "clothing_direction",
+      "color_mood"
+    ],
+    "must_not_copy": [
+      "exact_face_geometry",
+      "exact_eye_nose_mouth_combination",
+      "exact_hairstyle",
+      "distinctive_personal_markers",
+      "celebrity_identity"
+    ],
+    "reference_is_not_identity_master": true,
+    "real_person_exact_likeness_forbidden": true
+  },
+  "master_policy": {
+    "preferred_identity_source": [
+      "character_individual_crop",
+      "character_pixel_master",
+      "ordinary_baseline_group_selfie",
+      "original_character_library_asset"
+    ],
+    "preproduction_only_must_not_generate_master_images": true,
+    "ordinary_baseline_can_become_group_identity_master": true,
+    "pixel_master_artifact": "meta/character-pixel-master.json",
+    "crop_manifest_artifact": "meta/character-master-crops.json",
+    "provisional_master_after_baseline_review_pass": true,
+    "final_master_after_four_admission_pass": true,
+    "derived_crops_are_not_new_identity_generation": true
+  },
+  "realism_priority": true,
+  "note": "Story Lock 只锁文字身份规格。本集没有真实人物参考图；獐子精 P01 与野猪精 P02 均为原创角色，保留兽形残留特征（獐耳、獠牙、鬃毛、蹄状脚趾），不得美化成偶像脸。baseline 单独 PASS 后再建立临时像素母版。",
+  "locked_at": "2026-09-17T16:22:00+08:00"
+}

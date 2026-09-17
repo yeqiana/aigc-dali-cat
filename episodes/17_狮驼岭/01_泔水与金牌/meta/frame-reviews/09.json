@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "09",
+  "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/09.png",
+  "asset_sha256": "1ca421f7254900ab56582bcb1e6febc34240a303133f086a0a778665e4029f9c",
+  "story_sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446",
+  "storyboard_sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079",
+  "visual_contract_sha256": "0837199bec975871f017be085868192731ac1168b38557cd2dc84426bbca9ae2",
+  "environment_frame_sha256": "b96a989ee236fc29cfd0d3bfe19ff117db9754dccc41017242e2a185e2550bb2",
+  "frame_directive_sha256": "47846b80b13a0d4fcb3d7f183f78eb4df4649b375b5650319b73a83ddd640eb6",
+  "frame_contract_sha256": "38677edeb1ecff528b38ffea3f23829a03284115f7b69e97f3d8e2227205f7e9",
+  "source_binding": {
+    "story": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+      "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+    },
+    "storyboard": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+      "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "fabe70de0ba7892cd1c574393839e38b16bd89b0be0524e32a2473c5b23a4bbc"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-17T17:57:55+08:00",
+    "request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/frame-semantic-attempt-1-request.json",
+    "request_id": "frame-semantic-a1-c4b26706a6afcb82",
+    "request_fingerprint": "c4b26706a6afcb828f1c63354383c027d8282fb9fcc1afbbbe10679312ae9083",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "草棚门口，中间一只裂了口的大陶盆；左侧一只野猪形杂兵蹲着，一只手扶着盆沿（外翻獠牙与粗壮手臂可读）；右前景一个近身杂兵伸手去推那只盆，他的毛发在像素上是褐灰色绒毛，2 倍放大后仍看不出明确的鹿角形状；盆的位移在画面上成立。背景是粗木草棚与棚下挂着的捆状物。",
+  "decision": "pass",
+  "caption_sha256": "fc91905ac1dc9f4220172fcf805f6706fcefe098dfa76bb7257c44ab7d80ced1"
+}

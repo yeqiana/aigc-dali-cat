@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "inherit_default": false,
+  "profile_id": "EPISODE_WORLD_IDENTITY_OVERRIDE",
+  "description": "狮驼岭南麓妖国底层小妖世界身份显式覆盖",
+  "world": {
+    "country": "狮驼岭妖国（幻想世界·西牛贺洲）",
+    "region": "西牛贺洲·狮驼岭南麓第二道哨卡一线",
+    "culture_context": "层层分级的妖寨山寨秩序：峰顶大王、回廊头目校尉、山下轮班杂兵，一切按森严骨阶分配",
+    "language_context": "古白话中文（说书人语气的第一人称自述）",
+    "architecture_context": "骨石混筑的妖寨：峰顶白骨洞、骨髓磨粉砌墙、皮肉挂满山崖作风幡、木栅哨卡与低矮杂兵窝棚",
+    "traffic_context": "story/location appropriate",
+    "consumer_goods_context": "story/location appropriate"
+  },
+  "population": {
+    "nationality_context": "妖族（狮驼岭未褪尽人形的小妖）",
+    "resident_context": "狮驼岭底层巡山小妖（守卡、敲梆子、领后厨泔水的杂兵）",
+    "default_protagonist_age_range": [19, 30],
+    "default_protagonist_identity": "狮驼岭南麓第二道哨卡的巡山小妖（獐子精），本集第一人称自述者",
+    "ethnicity_policy": "story_defined",
+    "foreign_character_policy": "story_defined"
+  },
+  "visual_rules": {
+    "visible_text_context": "古白话中文（骨牌刻字、金牌令箭铭文）",
+    "do_not_import_foreign_architecture_by_default": false,
+    "do_not_import_foreign_population_by_default": false,
+    "do_not_import_foreign_cultural_props_by_default": false,
+    "preserve_location_specific_chinese_regional_detail": false
+  },
+  "note": "本集为幻想世界志怪寓言，显式覆盖默认 Mainland China 世界身份：现代现实世界规则不适用，人物为狮驼岭底层妖族杂兵。禁止把现代城市、现代人群、现代消费品、现代建筑与仪表带入画面。"
+}

@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "04",
+  "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/04.png",
+  "asset_sha256": "ecef6ccb1d15c06ea00153e022f7b17c575e39042d5545fac47c5ef9d23c5590",
+  "story_sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446",
+  "storyboard_sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079",
+  "visual_contract_sha256": "0837199bec975871f017be085868192731ac1168b38557cd2dc84426bbca9ae2",
+  "environment_frame_sha256": "f2af6deadb8eae5ada2d904f9884fbd1726cd859988fc2611a01d1e2659cfbc1",
+  "frame_directive_sha256": "c30aff53b991bb41765010e75c3abf42eb1ed16c572ebdd808360aab7b05f7dd",
+  "frame_contract_sha256": "76270877abb6dd8e8e6f0e83d4f075c64d449cc236c49967ef61d800edd88a85",
+  "source_binding": {
+    "story": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+      "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+    },
+    "storyboard": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+      "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "d1ea1eb17f0e2e0025df04a76297393981d5008a89c62b9c2653444dc002e986"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-17T17:57:55+08:00",
+    "request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/frame-semantic-attempt-1-request.json",
+    "request_id": "frame-semantic-a1-c4b26706a6afcb82",
+    "request_fingerprint": "c4b26706a6afcb828f1c63354383c027d8282fb9fcc1afbbbe10679312ae9083",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "仰视视角里崖壁木构上挂着一排排破旧布片与风幡，边角磨烂、有洞，逆着光只剩轮廓；低日头在上右，从其中一片布后透出来形成强眩光，远处崖上还有成排挂件；画面下角只有一团虚焦的暗色前景，像素上辨不出它是肩背还是木构。挂件被风翻动的方向一致。",
+  "decision": "pass",
+  "caption_sha256": "88b09b201fcbccf8241cf06b26691fa396b37ed17019bfc4edceecd98d81a36d"
+}

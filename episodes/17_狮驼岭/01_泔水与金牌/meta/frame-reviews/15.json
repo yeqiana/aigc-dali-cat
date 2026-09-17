@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "15",
+  "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/15.png",
+  "asset_sha256": "2b8a3678ca14876101c009bd55c9bf7e8843a0e905ec50539487b398737bdb51",
+  "story_sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446",
+  "storyboard_sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079",
+  "visual_contract_sha256": "0837199bec975871f017be085868192731ac1168b38557cd2dc84426bbca9ae2",
+  "environment_frame_sha256": "268d2daed25f2b6185ad9f607b093139c2d358bcc2c8e610a1a8af377f5b891d",
+  "frame_directive_sha256": "9fb416519b403026d5d50f6afc3af784a2bfc603f510c720336e7fe0714545dc",
+  "frame_contract_sha256": "1e90039ee4c4547d4dfb6ae698257f7c4f2376e6f3b870b007c7dc162bc5cca5",
+  "source_binding": {
+    "story": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+      "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+    },
+    "storyboard": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+      "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "6c7450b7f3117d8809a1bf5d4aa337c1e6b3ce0ecb3697b98fe87c9ffac77934"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-17T17:57:55+08:00",
+    "request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/frame-semantic-attempt-1-request.json",
+    "request_id": "frame-semantic-a1-c4b26706a6afcb82",
+    "request_fingerprint": "c4b26706a6afcb828f1c63354383c027d8282fb9fcc1afbbbe10679312ae9083",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "逆光剪影：一头毛多的深色身影占满画面，左臂高举一把宽刃尖角的粗短刀，嘴张到最大、头往后仰；只有边缘一线阳光把毛发与衣服勾亮，脸与獠牙基本落在暗部——把眼睛凑近看，耳的轮廓与张开的嘴部边缘仍能辨出，獠牙细节读不出。背后是刺眼的日头、淡蓝天空与尖峭岩峰。",
+  "decision": "pass",
+  "caption_sha256": "afecc8a2cf90b17c9fdacf64035f6cfdd1e3454455a530a192f9be4a41ff3c44"
+}

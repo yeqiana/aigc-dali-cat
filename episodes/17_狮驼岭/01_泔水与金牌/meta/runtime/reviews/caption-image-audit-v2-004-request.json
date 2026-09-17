@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "request_id": "caption-image-audit-v2-004-a1-df7a7f3b510182a5",
+  "request_fingerprint": "df7a7f3b510182a5b3e1cd55253a986c4a303271f03dfc8dcbd841c470c06c5a",
+  "created_at": "2026-09-17T19:16:23+08:00",
+  "status": "FINALIZED",
+  "review_kind": "caption-image-audit-v2-004",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/16.png",
+      "sha256": "e32e5d45910bba10e23b4787290b5df6a5a68fbdd71ef8115c77d20b3f10b828"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/17.png",
+      "sha256": "9fdf80b8a21536f7f6621a41b9f452a03f48c0775acabbc7b44c0afb97978314"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/18.png",
+      "sha256": "f6edce14baae858c649540af7d79b16f6405e158e0c8ddc73a1a1e9298a78a8d"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/19.png",
+      "sha256": "558c31156d8781deb7b7aa7b2ebd1c2728715b459f2b6b8c83315779508000e8"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/20.png",
+      "sha256": "90bd7770a00d88aff3296571d51f94348b49805747d20869f34ffba25b5a152f"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/subtitles.yaml",
+      "sha256": "dcebb90aef33e205ddeff4c5b71aa128429d054bb4df1cb1eb91756d701bfb1a"
+    }
+  ],
+  "candidate_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/.caption-image-audit-candidate-004.json",
+  "prompt_sha256": "480dc49afd4e843be9d37d0f3b656681fd95de3a1a6f29e97b66f12f4f57427c",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are the Story OS final-publish Caption ↔ Image + Subtitle Obstruction Critic.\nReview ONLY the supplied FINAL publish pixels after subtitle rendering.\nFor each frame judge two things:\n1. supported: the caption is honestly supported by the underlying photographed/generated scene; it must not invent a core event, prop, person, UI text, anomaly, action, or causal fact absent from the scene. The rendered subtitle text itself is NEVER visual evidence for supported=true; mentally ignore the overlay when judging support.\n2. subtitle_unobstructed: rendered text does not cover a face, anomaly evidence, hand/action, key prop, native text, or causal clue. Left/middle geometry and line-count are checked deterministically elsewhere; here judge actual pixel obstruction.\nDo not re-review overall story quality, character continuity, or visual style. Empty captions automatically pass both checks.\nMappings:\n- frame 16: final_publish_image=episodes/17_狮驼岭/01_泔水与金牌/production/publish/16.png | caption=\"他喊着要立头功，\\\\n换半碗唐僧肉尝尝长生的滋味。\"\n- frame 17: final_publish_image=episodes/17_狮驼岭/01_泔水与金牌/production/publish/17.png | caption=\"满山的人都往上涌，\\\\n我手里的梆子停在半空，没跟着走。\"\n- frame 18: final_publish_image=episodes/17_狮驼岭/01_泔水与金牌/production/publish/18.png | caption=\"敲了一夜，指节冻得发红，\\\\n我一次也没把它放下。\"\n- frame 19: final_publish_image=episodes/17_狮驼岭/01_泔水与金牌/production/publish/19.png | caption=\"我握着冰凉的梆子，在满山的欢呼里\\\\n只觉得后脖颈发凉。\"\n- frame 20: final_publish_image=episodes/17_狮驼岭/01_泔水与金牌/production/publish/20.png | caption=\"我们连剩汤都要抢破头，\\\\n这肉真能顺着骨阶淌到我们嘴里吗？\"\n\nWrite ONLY JSON to episodes/17_狮驼岭/01_泔水与金牌/meta/.caption-image-audit-candidate-004.json:\n{\"frames\":[{\"frame\":\"01\",\"supported\":true,\"subtitle_unobstructed\":true,\"notes\":\"specific pixel evidence\"}],\"summary\":{\"passed\":true}}\nReturn one row for every attached frame. summary.passed=false if any supported=false or subtitle_unobstructed=false.\n",
+  "attempt_request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/caption-image-audit-v2-004-attempt-1-request.json",
+  "finalized_at": "2026-09-17T19:16:41+08:00",
+  "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/caption-image-audit.json"
+}

@@ -1,0 +1,943 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_temporal_sha256": "4c1090242bb0f640bc596cfed43ab3bce4f1073003403114b3dd61ca34f4edff",
+  "rules": {
+    "wardrobe_changes_follow_scene_weather_temperature_activity": true,
+    "female_lead_default_body": "slim_proportionate_natural",
+    "pretty_clothes_allowed_when_physical_context_supports_them": true,
+    "camisole_in_cold_outdoor_requires_warm_outer_layer": true,
+    "skirt_in_cold_requires_thick_tights_and_warm_layer": true,
+    "high_altitude_outdoor_requires_wind_or_insulation_layer": true,
+    "outfit_change_requires_reason": true,
+    "no_eroticized_framing_requirement": true
+  },
+  "frames": {
+    "01": {
+      "scene_context": "第二道哨卡内侧，低头看腰上的骨头腰牌",
+      "location_type": "outdoor_mountain_sentry_post",
+      "temperature_band": "cool",
+      "weather": "山谷晨雾",
+      "activity": "轮值前低头确认自己那块「巡」字腰牌",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "02": {
+      "scene_context": "第二道哨卡内侧，木桩与栅栏之间",
+      "location_type": "outdoor_mountain_sentry_post",
+      "temperature_band": "cool",
+      "weather": "山谷晨雾",
+      "activity": "把半块干粮扔给同卡的野猪精",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "03": {
+      "scene_context": "哨卡外崖边，抬头看三层山体",
+      "location_type": "outdoor_cliff_edge",
+      "temperature_band": "cool",
+      "weather": "山谷晨雾",
+      "activity": "站在崖边把整座山从上到下看一遍",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "04": {
+      "scene_context": "崖下，仰视崖壁上垂下来的挂件",
+      "location_type": "outdoor_cliff_edge",
+      "temperature_band": "cool",
+      "weather": "山谷晨雾",
+      "activity": "被山风吹动的一排挂件吸引，抬头看了一眼",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "05": {
+      "scene_context": "三层台阶下，过肩往上望",
+      "location_type": "outdoor_mountain_stairs",
+      "temperature_band": "cool",
+      "weather": "山谷晨雾",
+      "activity": "顺着台阶往上量三层之间的距离",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "06": {
+      "scene_context": "半山回廊外侧，往上看廊下的碗与酒坛",
+      "location_type": "outdoor_corridor_under",
+      "temperature_band": "cool",
+      "weather": "山谷晨雾",
+      "activity": "路过回廊底下，抬头看了一眼第二层在吃什么",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "07": {
+      "scene_context": "哨卡外土路上，贴地看一排走过的脚",
+      "location_type": "outdoor_mountain_path",
+      "temperature_band": "mild",
+      "weather": "山谷晨雾",
+      "activity": "往坡下走，被一排快步通过的人挤到路边",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "08": {
+      "scene_context": "坡下后厨倒泔水的空地",
+      "location_type": "outdoor_swill_ground",
+      "temperature_band": "mild",
+      "weather": "山谷晨雾",
+      "activity": "蹲下看今天这一盆泔水",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "09": {
+      "scene_context": "草棚门口",
+      "location_type": "outdoor_lean_to",
+      "temperature_band": "mild",
+      "weather": "山谷晨雾",
+      "activity": "两个人蹲着分这一盆，把盆往对面推了半寸",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "10": {
+      "scene_context": "哨卡前沿，往雾里的山道尽头看",
+      "location_type": "outdoor_mountain_sentry_post",
+      "temperature_band": "mild",
+      "weather": "山谷晨雾",
+      "activity": "收拾手里的东西时抬眼，看见雾里那点反光",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "11": {
+      "scene_context": "哨卡前沿，抬头看整条下行山道",
+      "location_type": "outdoor_mountain_sentry_post",
+      "temperature_band": "mild",
+      "weather": "山谷晨雾",
+      "activity": "退后两步，想弄清那点光到底是什么",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "12": {
+      "scene_context": "哨卡里，平视带出远处另几处哨卡",
+      "location_type": "outdoor_mountain_sentry_post",
+      "temperature_band": "mild",
+      "weather": "晴",
+      "activity": "各处哨卡同时抬头，他跟着转头",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "13": {
+      "scene_context": "哨卡外的空地，俯看磨刀石",
+      "location_type": "outdoor_mountain_clearing",
+      "temperature_band": "mild",
+      "weather": "晴",
+      "activity": "蹲在空地边，周围全是磨刀的声音",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "14": {
+      "scene_context": "哨卡栅栏正面",
+      "location_type": "outdoor_mountain_sentry_post",
+      "temperature_band": "mild",
+      "weather": "晴",
+      "activity": "同卡的野猪精一头撞碎自家栅栏",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "15": {
+      "scene_context": "碎掉的栅栏外，仰视举刀的剪影",
+      "location_type": "outdoor_mountain_sentry_post",
+      "temperature_band": "mild",
+      "weather": "晴",
+      "activity": "站在原地看野猪精举刀冲山上喊",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "L02_SENTRY_PLAIN",
+          "garments": [
+            "胸襟敞开的粗麻单衣",
+            "斜搭在肩上的脏污兽皮"
+          ],
+          "outer_layer": "脏污兽皮",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "赤脚（蹄状脚趾）",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "16": {
+      "scene_context": "哨卡前沿，往外看整座点满火把的山",
+      "location_type": "outdoor_mountain_sentry_post",
+      "temperature_band": "cool",
+      "weather": "无云",
+      "activity": "天黑之后他一个人站在原地，看火把一层层连到峰顶",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": false,
+          "look_id": "",
+          "garments": [],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "",
+          "change_reason": ""
+        }
+      }
+    },
+    "17": {
+      "scene_context": "哨卡前沿人群靠后位置",
+      "location_type": "outdoor_mountain_sentry_post",
+      "temperature_band": "cool",
+      "weather": "无云",
+      "activity": "一片人往上涌，他站在原地没动",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": false,
+          "look_id": "",
+          "garments": [],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "",
+          "change_reason": ""
+        }
+      }
+    },
+    "18": {
+      "scene_context": "哨卡前沿，低头看手里的梆子",
+      "location_type": "outdoor_mountain_sentry_post",
+      "temperature_band": "cool",
+      "weather": "无云",
+      "activity": "低头看了一眼一直没放下的梆子",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": false,
+          "look_id": "",
+          "garments": [],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "",
+          "change_reason": ""
+        }
+      }
+    },
+    "19": {
+      "scene_context": "哨卡前沿，抬头看峰顶方向",
+      "location_type": "outdoor_mountain_sentry_post",
+      "temperature_band": "cool",
+      "weather": "无云",
+      "activity": "第一次认真抬头看峰顶，火光落在后颈上",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": false,
+          "look_id": "",
+          "garments": [],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "",
+          "change_reason": ""
+        }
+      }
+    },
+    "20": {
+      "scene_context": "草棚门口，往回走时经过那盆泔水",
+      "location_type": "outdoor_lean_to",
+      "temperature_band": "cool",
+      "weather": "无云",
+      "activity": "往回走，经过草棚门口那盆没动过的泔水",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "L01_SENTRY_PLAIN",
+          "garments": [
+            "洗得发灰的粗布短褂",
+            "麻布围腰",
+            "草绳束腰",
+            "沾泥的布绑腿"
+          ],
+          "outer_layer": "",
+          "leg_layer": "布绑腿",
+          "headwear": "",
+          "footwear": "草鞋",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "ordinary_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": false,
+          "look_id": "",
+          "garments": [],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "",
+          "change_reason": ""
+        }
+      }
+    }
+  }
+}

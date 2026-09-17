@@ -1,0 +1,290 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "principle": "A frame must first be a credible capture event, then a narrative image.",
+  "max_causal_defects_per_frame": 2,
+  "device_note": "故事世界里没有摄影器物：本集把「记录原点」定义为 P01 站在哨位上的双眼与身体，所有限制（雾、逆光、低照度、遮挡）都来自环境本身。",
+  "frames": {
+    "01": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他低头把腰牌翻过来确认背面的字，这动作每天早上都要做一次。",
+      "device_position": "低头俯看腰侧，视线离腰牌不到一臂，两只手都在画面里",
+      "subject_awareness": "not_applicable",
+      "operator_state": "刚被换班的推醒，人还没完全醒，注意力全在那几个刻歪的字上",
+      "framing_constraint": "拂晓雾里的平光很暗，背景全进了雾，只有腰牌和手能读清",
+      "retained_reason": "记住自己这一层唯一的那点身份：没有名字，只有一块刻歪的「巡」字骨头牌。",
+      "causal_defects": [
+        "距离太近，腰牌占满画面，边缘的手指出了画",
+        "雾里的平光没有方向，骨面几乎看不出起伏"
+      ]
+    },
+    "02": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他把半块干粮扔给蹲在栅栏边的野猪精，顺手看了一眼自己这一班的家当。",
+      "device_position": "站在哨卡内侧平视，略微偏向栅栏那一侧",
+      "subject_awareness": "unaware",
+      "operator_state": "值了大半夜，肚子里空，动作懒",
+      "framing_constraint": "木桩、梆子架、栅栏、草棚挤在一个平视画面里，只能都拍个大概",
+      "retained_reason": "记下这一班只有两个人、一道栅栏和一间草棚。",
+      "causal_defects": [
+        "平视构图没有取舍，四样东西都只拍到一半",
+        "半块干粮在半空，落点没框进去"
+      ]
+    },
+    "03": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他走到崖边抬头，像每天一样把这座山从上到下看一遍。",
+      "device_position": "站在崖边，肩背微驼，仰视抬头看整座山",
+      "subject_awareness": "not_applicable",
+      "operator_state": "平静，甚至有点走神；这是他最熟的一张画",
+      "framing_constraint": "仰视要同时装下峰顶、半山和山脚，雾把最上面那层压得只剩一点轮廓",
+      "retained_reason": "他每天都要确认一遍自己站在哪一层。",
+      "causal_defects": [
+        "仰视下最下面那层被自己的脚和小腿挡住一角",
+        "雾太厚，最上面只剩一点光，细节全部读不出"
+      ]
+    },
+    "04": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "山风把崖壁上那一排东西吹起来，他抬了一下眼，又低下去。",
+      "device_position": "站在崖下仰视，逆着光看那一排东西的下缘",
+      "subject_awareness": "not_applicable",
+      "operator_state": "没当回事，看了就走",
+      "framing_constraint": "强逆光下只有轮廓边缘，一片都看不出是什么",
+      "retained_reason": "记下这一排东西每天都被风吹着，路过的人没一个抬头。",
+      "causal_defects": [
+        "逆光下只剩剪影，看不出材质",
+        "画面下角自己的肩背入画，挡住一小块"
+      ]
+    },
+    "05": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他顺着台阶往上望了一眼，把三层之间的距离又量了一次。",
+      "device_position": "站在台阶下，过肩往前上方看",
+      "subject_awareness": "not_applicable",
+      "operator_state": "没什么情绪，就是习惯性看一眼",
+      "framing_constraint": "过肩视线里最上面那层只剩一点光，中间的回廊被雾吃掉大半",
+      "retained_reason": "记住从自己这一层到最上面那一层有多远。",
+      "causal_defects": [
+        "过肩构图里自己的肩线占了左边一大条",
+        "上亮下暗，一张画面里曝光拉不平"
+      ]
+    },
+    "06": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "从山脚往上看，半山回廊底下的碗和酒坛摆了一排，肉味顺风飘下来。",
+      "device_position": "站在回廊外侧仰角往上看，视线被柱子和廊檐影子割断",
+      "subject_awareness": "unaware",
+      "operator_state": "肚子正饿，视线在那些碗上多停了一下",
+      "framing_constraint": "柱子和廊檐影子挡住大半桌面，只留出数量",
+      "retained_reason": "记下第二层在吃什么，和自己这一层差多少。",
+      "causal_defects": [
+        "柱子正好挡在最中间",
+        "仰角加暗部，桌面细节几乎读不出，只数得出量"
+      ]
+    },
+    "07": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他往坡下走的路上，一排人从他身边快步走过，没一个停。",
+      "device_position": "贴地低角度，几乎贴着地面看一排脚从面前过去",
+      "subject_awareness": "unaware",
+      "operator_state": "被挤到路边，有点不耐烦",
+      "framing_constraint": "贴地视角看不到脸，头顶垂下来的东西只进画面边缘",
+      "retained_reason": "记下这一层的日常：所有人都从这些东西底下走过，脚步没有变过。",
+      "causal_defects": [
+        "低角度下头顶的东西只剩边缘的形状",
+        "一排脚速度不一，画面糊掉几只"
+      ]
+    },
+    "08": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他蹲到后厨倒泔水的地方，看了一眼今天这一盆。",
+      "device_position": "蹲下俯看陶盆，离盆沿大约一臂",
+      "subject_awareness": "not_applicable",
+      "operator_state": "饿，但也没什么期待",
+      "framing_constraint": "天光平光下盆里的东西已经看不出原形，只有盆沿那个缺口是清楚的",
+      "retained_reason": "记住这一天唯一还带热气的吃食长什么样。",
+      "causal_defects": [
+        "俯拍离得近，盆沿的缺口比盆里的东西更清楚",
+        "平光没有层次，盆底和残渣糊在一起"
+      ]
+    },
+    "09": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "两个人蹲在草棚门口分这一盆，他把盆往对面推了半寸。",
+      "device_position": "蹲在草棚门口平视，画面里是两只手和两个人的膝盖",
+      "subject_awareness": "partial",
+      "operator_state": "不说话，动作是习惯",
+      "framing_constraint": "草棚低矮只能蹲着，画面被棚檐压掉上面一半",
+      "retained_reason": "记下同一层里分东西的方式：不用说话，只推半寸。",
+      "causal_defects": [
+        "棚檐压掉上面一半，两个人的脸都在画外",
+        "盆在中间，推过去的那半寸在画面里几乎看不出来"
+      ]
+    },
+    "10": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他正低头收拾手里的东西，抬眼的时候看见雾里山道尽头有一点反光在往下走。",
+      "device_position": "站在哨卡前沿，前景是两只手，视线往山道尽头的雾里看",
+      "subject_awareness": "not_applicable",
+      "operator_state": "还没意识到那是什么，只觉得那点光的位置不对",
+      "framing_constraint": "雾把远处理没了，那点反光很小，只有方向能读出来",
+      "retained_reason": "记下他比别人先看见的那一点——它在往下走。",
+      "causal_defects": [
+        "远景太小，反光只占几个像素",
+        "前景两只手拍实了，远景就更虚"
+      ]
+    },
+    "11": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他退后两步抬头看整条山道，想弄清那点光到底是什么。",
+      "device_position": "站在哨卡前沿抬头，尽量把整条山道收进画面",
+      "subject_awareness": "unaware",
+      "operator_state": "开始紧张，但还是个旁观者",
+      "framing_constraint": "一条山道从峰顶到山脚要装进一张画面，每一层的人只能拍到一小撮",
+      "retained_reason": "记下消息是怎么往下走的：它不是一句话，是一件要一层层递下来的东西。",
+      "causal_defects": [
+        "俯瞰下每一层的人都只有几个点",
+        "雾还没散尽，中间两段接不上"
+      ]
+    },
+    "12": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "前后左右的哨卡在同一瞬间抬头，他跟着转了一下头。",
+      "device_position": "站在哨卡里平视，前景是两个人的肩线，背景带出远处另几处哨卡",
+      "subject_awareness": "unaware",
+      "operator_state": "愣住，第一次意识到这不是他一个人的反应",
+      "framing_constraint": "远处几处哨卡距离太远，只能给出抬头的动作轮廓",
+      "retained_reason": "记下整座山在同一瞬间看向同一个方向。",
+      "causal_defects": [
+        "前景肩线和远景哨卡差了好几档，一张画面里景深拉不平",
+        "雾刚散，远处还是发灰"
+      ]
+    },
+    "13": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他回到空地上，周围已经全是磨刀的声音。",
+      "device_position": "蹲在空地边俯看磨刀石，手离刀很近",
+      "subject_awareness": "unaware",
+      "operator_state": "被这个声音围住，后脖颈开始发凉",
+      "framing_constraint": "俯拍只装得下一把刀和一小块地面，装不下全山都在磨",
+      "retained_reason": "记下全山转成同一个声音的那一刻。",
+      "causal_defects": [
+        "俯拍只能给一把刀，画面外还有几十把同样的声音",
+        "硬日照下刀身的亮面过曝"
+      ]
+    },
+    "14": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "同蹲一个盆的野猪精突然站起来，一头撞进自家栅栏。",
+      "device_position": "站在栅栏正面略低处平视，画面边缘是他自己伸出去的手",
+      "subject_awareness": "unaware",
+      "operator_state": "被惊到，下意识伸手但没拦住",
+      "framing_constraint": "撞栏发生得太快，碎木屑飞起时人形已经出框一半",
+      "retained_reason": "记下同一天里同一个人从蹲着分食到撞栏的突变。",
+      "causal_defects": [
+        "动作太快，半个人形出框",
+        "碎木屑在硬日照下发白，糊成一片"
+      ]
+    },
+    "15": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "野猪精站在碎掉的栅栏外，举着那把豁口短刀冲着山上喊。",
+      "device_position": "站在他侧后方仰视，逆着光看一个举刀的剪影",
+      "subject_awareness": "unaware",
+      "operator_state": "站在原地没跟上去",
+      "framing_constraint": "逆光下只剩轮廓，脸和獠牙的细节全部丢掉",
+      "retained_reason": "记下底层给自己算出来的那个价码：半碗。",
+      "causal_defects": [
+        "逆光剪影里脸完全读不出",
+        "仰视把刀举得比实际更高"
+      ]
+    },
+    "16": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "天黑了，他从哨卡前沿往外看，火把已经从山脚一层层连到峰顶。",
+      "device_position": "站在哨卡前沿往外看整座山，位置离山体很远",
+      "subject_awareness": "not_applicable",
+      "operator_state": "只剩他一个人了，看得很久",
+      "framing_constraint": "夜色里只有火把和最高处那线金光能被看见，山体本身只剩黑",
+      "retained_reason": "用光的边界量一次：这一层和上面几层到底差多少。",
+      "causal_defects": [
+        "夜里只有火把可用，山体细节全部落进黑",
+        "最高处那线金光在最远端，小得几乎读不出"
+      ]
+    },
+    "17": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "周围一片人往山上涌，他站在原地没动，梆子停在半空。",
+      "device_position": "站在人群靠后位置平视，前景是自己的手和梆子，远处是一片往前的脚",
+      "subject_awareness": "not_applicable",
+      "operator_state": "没有跟着喊，也没有跟着走",
+      "framing_constraint": "火把光只照到前景的手，往前的那些人只有轮廓",
+      "retained_reason": "记下动和不动挤在同一张画面里的那一下。",
+      "causal_defects": [
+        "前景实、远景糊，一张画面里两个速度",
+        "火把光跳，前景亮度很不稳"
+      ]
+    },
+    "18": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他低头看了一眼还握在手里的梆子——敲了一夜，一直没放下。",
+      "device_position": "胸口高度俯看自己手里的梆子，距离很近",
+      "subject_awareness": "not_applicable",
+      "operator_state": "手冻得发僵，但没松手",
+      "framing_constraint": "只有火把照到的一小块，背景只能是模糊的火光与人影",
+      "retained_reason": "这是全篇唯一的私人物件，也是他没参与的物证。",
+      "causal_defects": [
+        "近距离俯拍，梆子占满画面，背景只剩色块",
+        "低照度下冻红的指节和木色几乎分不开"
+      ]
+    },
+    "19": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他第一次真正抬起头，往峰顶那个方向看。",
+      "device_position": "镜头在他身后略高处，只拍后颈与肩，脸留在阴影里",
+      "subject_awareness": "not_applicable",
+      "operator_state": "不再想跟着去了；他抬头是因为想看清自己这一层在哪",
+      "framing_constraint": "火光只落在后颈一条，其余全是暗部；脸始终不给",
+      "retained_reason": "把「后脖颈发凉」拍成落在皮肤上的那一道光。",
+      "causal_defects": [
+        "只有后颈一条受光，脸和后脑完全沉进黑",
+        "略微仰角，肩线被拉平"
+      ]
+    },
+    "20": {
+      "photographer_id": "P01",
+      "capture_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+      "why_capture_now": "他往回走，经过草棚门口，那盆泔水还在原处，一点没动。",
+      "device_position": "站在草棚门口平视，前景是那盆泔水，远处是亮到峰顶的山道",
+      "subject_awareness": "not_applicable",
+      "operator_state": "平静，已经知道自己的结论了",
+      "framing_constraint": "前景那盆留在暗里，远景一路亮到峰顶，两头曝光差得极大",
+      "retained_reason": "记下全山狂欢之后，最下面那一层一点没变。",
+      "causal_defects": [
+        "前景暗、远景亮，一张画面里两头都拉不满",
+        "棚檐把上面裁掉一条"
+      ]
+    }
+  }
+}

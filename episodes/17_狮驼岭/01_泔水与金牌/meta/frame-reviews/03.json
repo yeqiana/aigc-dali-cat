@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "03",
+  "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/03.png",
+  "asset_sha256": "90be318f75a323c98d68ad970195bdd5603a0d27dfc8e865a4985ae0271776fe",
+  "story_sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446",
+  "storyboard_sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079",
+  "visual_contract_sha256": "0837199bec975871f017be085868192731ac1168b38557cd2dc84426bbca9ae2",
+  "environment_frame_sha256": "b96a989ee236fc29cfd0d3bfe19ff117db9754dccc41017242e2a185e2550bb2",
+  "frame_directive_sha256": "ebd01b61e48b18557a3f79bf0330a858c00f53d137c0d4cd4b7118408d1264ff",
+  "frame_contract_sha256": "bc082bc945cb95e37bc5b409f82b7b5518139530377eb22f14d6128ea8f231b5",
+  "source_binding": {
+    "story": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+      "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+    },
+    "storyboard": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+      "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "6a923f6c58e0dc706ee3f3f11ff32fe70c653c5bf7f404079a8ef46637ec2099"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-17T17:57:55+08:00",
+    "request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/frame-semantic-attempt-1-request.json",
+    "request_id": "frame-semantic-a1-c4b26706a6afcb82",
+    "request_fingerprint": "c4b26706a6afcb828f1c63354383c027d8282fb9fcc1afbbbe10679312ae9083",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "仰视一整面灰白岩壁：上段几处洞窟开口（含一处宽拱形），中段一条由细密立柱撑起的窄长廊道与深色廊檐横过整幅，下段是粗棚顶聚落与细枝栅栏；大片晨雾把上段压得只剩轮廓，只有几株暗色树形可读。三层山体同框，同一种骨白由亮到暗。",
+  "decision": "pass",
+  "caption_sha256": "aae806681cc7ba724da9a8ecfad43f85f18098e25c76a054d6beeba44505795a"
+}

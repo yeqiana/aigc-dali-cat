@@ -1,0 +1,155 @@
+{
+  "release_checks": {
+    "cover_title_match": true,
+    "cover_frame01_handoff": true,
+    "first3_coherence": true,
+    "climax_upgrade": true,
+    "payoff_honesty": true,
+    "description_consistency": true,
+    "no_caption_invented_core_evidence": true,
+    "subtitle_left_middle_and_unobstructed": true,
+    "caption_conversational_hook_quality": true
+  },
+  "governance_checks": {
+    "ai_generated_declared": true,
+    "platform_ai_label_planned": true,
+    "fiction_context_not_misrepresented_as_official_fact": true,
+    "no_unverifiable_real_group_accusation": true,
+    "real_location_handled_as_fictional_story_context": true
+  },
+  "issue_codes": [],
+  "notes": [
+    "封面与图01是同一张 publish/01.png：一只粗糙的手把发白的骨头腰牌举在画面中段，牌面裂纹、污渍与刻痕可读，字幕两行压在骨面上缘与雾底（y=486，ratio 0.36，避让对象为腰牌背面「巡」字刻痕）。标题「山上说吃一口唐僧肉能长生，我连大王剩的肉汤都轮不到」与封面承诺同一个故事：最低那一层的无名巡山小妖。",
+    "cover_frame01_handoff 零落差（封面即首图）；图01–03 构成一条可读入场路径：身份物件（骨牌）→ 第二道哨卡与同卡野猪精 → 八百里狮驼岭妖魔四万八千（三层山体）。",
+    "climax_upgrade：高潮图19 从背后拍记录者本人，后颈与左肩那一条被暖橙火光打亮、脸整条留在阴影里，背景是黑天空下的巨大城垒轮廓与零散火点；相对图01 的静物特写，是尺度与身体证据的双重升级，且他第一次认真抬头这一动作不可逆。",
+    "payoff_honesty：回报图20 前景下左仍是那只口沿有缺口的大盆、盆里浑水映着几点火光、一点没动过，远处一条山道打着折一路亮到峰顶最下面那层仍在暗处。该画面直接回收图08/图09 的盆与图16–17 的全山火光，未引入任何新机制。",
+    "no_caption_invented_core_evidence：全 20 帧经 SHA 绑定的分块像素评审（meta/caption-image-audit.json，summary.passed=true，20/20 supported 与 subtitle_unobstructed 均 true）。其中图06 与图08 的字幕讲的是上一层的事，属画面之外的旁述而非本帧证据，已在 caption-image-audit 的逐帧 notes 里如实登记；本集核心视觉证据（图11 金牌令箭、图14 撞栏、图17/18 停在半空与没放下的梆子、图19 后颈火光、图20 那盆没动过的泔水）全部在像素里成立。",
+    "subtitle_left_middle_and_unobstructed：subtitle-layout-audit.json（canonical_renderer=true）逐帧给出 x=72 左对齐、最多 2 行、y_ratio 与当前 publish 输出 SHA；11 帧位于左中默认带以外者均带 safe_zone_override_reason 并写明避让对象（如 09 避让蹲姿与陶盆、13 避让刀身亮面与碎木屑、18 避让梆子浅坑与发红指节）。caption-image-audit.json 在同一批 publish 像素上判定无实际遮挡：图07 只有腿脚与挂件边缘、无一张抬头的脸；图12 抬起的肩线、图13 磨刀石与刀身亮面、图18 梆子浅坑与指节均在字幕行上方完整露出。",
+    "caption_conversational_hook_quality：字幕为第一人称当口语（「我腰上这块牌子是骨头磨的」「轮到我们，等的是后厨倒出来那盆馊泔水」），无书面小说腔与模板块，逐帧只承担一个叙事功能，渲染行数经 layout audit 逐帧确认为最多 2 行。",
+    "description_consistency：发布正文与话题只描述本篇虚构故事，不宣称官方事实、真实案件或故事之外的证据；话题（民俗怪谈/第一人称/妖国底层/细思极恐/AI图文故事/西游记/狮驼岭）与图序内容一致。",
+    "治理：publish-copy.md 正文末行写明「人物、地点、情节均为虚构；内容由 AI 生成。」，置顶评论再现一次；传播卡风险栏写明发布页须打开平台 AI 声明并保留置顶说明；本篇为《西游记》狮驼岭公共母题的幻想志怪，不指涉真实地区、民族、宗教、组织或可识别个人，不存在可被追责的现实指控。",
+    "传播卡实评：总分 8.9、S 项短板 8.7、decision=publishable、publish_decision=go；证据纪律（首次兑现图 09、第一次规则证明图 12、第一次作用于主角图 15/19）与最终图序核对一致。"
+  ],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "artifacts": {
+    "cover": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/01.png",
+      "sha256": "a262f658533fa4283882ae7798b1c4a2a56bbb436cd3757a260952780b530c1f"
+    },
+    "body01": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/01.png",
+      "sha256": "a262f658533fa4283882ae7798b1c4a2a56bbb436cd3757a260952780b530c1f"
+    },
+    "body02": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/02.png",
+      "sha256": "439ed2c3720e32d2bb84b452659db08df71eac249a270ef36686ddb2eac4c283"
+    },
+    "body03": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/03.png",
+      "sha256": "eb625044d72772a11de0fd52ef3571ccf42a0985f238434ac1971c772fefc9d1"
+    },
+    "body04": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/04.png",
+      "sha256": "e1836f245f3af7f546e5ac7ba67c6db6dd71c443fe23ab762fd9a948d3b83012"
+    },
+    "body05": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/05.png",
+      "sha256": "5a51184e9f3858eae8dfd69693580e59aafb9389b4d250aadef73ff9b3e5bbaf"
+    },
+    "body06": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/06.png",
+      "sha256": "68f136ef10b69c80edc9c8aada8620236bac36fbc6e3f3556243dcc6ce04c3b0"
+    },
+    "body07": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/07.png",
+      "sha256": "bfb2ee5d8650fe9efda3831918ae0323e95f259ac39bb14176cf13f76d115765"
+    },
+    "body08": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/08.png",
+      "sha256": "df358f166663d7359995ca53a96d9e14a05c9c4a7496e2878cd03111af77a27f"
+    },
+    "body09": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/09.png",
+      "sha256": "5c69316201ab23072f9225acf64e677ff31b7645471e4568c953edac6a5ad42e"
+    },
+    "body10": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/10.png",
+      "sha256": "d22905bb3d2ef1c426866798e43d9e734a485297fd3d9b47d4bcadcc1e30545a"
+    },
+    "body11": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/11.png",
+      "sha256": "6f74dccbb9681ed3452ee88cacf2d5518e9f42dcec09b8e5f004a754e963c59e"
+    },
+    "body12": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/12.png",
+      "sha256": "6b7b901d75d5c375c48e9e31b4f16c5d291e0ff28bc2c85332d39ed507b6cf73"
+    },
+    "body13": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/13.png",
+      "sha256": "70b311265869523866553d35cf56a3ee862887bade24752f8a3912087de9a651"
+    },
+    "body14": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/14.png",
+      "sha256": "4624976823f6fd07c01b67d6c74f96c67f634935648c71e73a7b9e765c7ab5ea"
+    },
+    "body15": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/15.png",
+      "sha256": "8323b7be2590cde2e9f52fb30332d75ee037706d7f576bdfe0930134e672d1c9"
+    },
+    "body16": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/16.png",
+      "sha256": "e32e5d45910bba10e23b4787290b5df6a5a68fbdd71ef8115c77d20b3f10b828"
+    },
+    "body17": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/17.png",
+      "sha256": "9fdf80b8a21536f7f6621a41b9f452a03f48c0775acabbc7b44c0afb97978314"
+    },
+    "body18": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/18.png",
+      "sha256": "f6edce14baae858c649540af7d79b16f6405e158e0c8ddc73a1a1e9298a78a8d"
+    },
+    "body19": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/19.png",
+      "sha256": "558c31156d8781deb7b7aa7b2ebd1c2728715b459f2b6b8c83315779508000e8"
+    },
+    "body20": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/20.png",
+      "sha256": "90bd7770a00d88aff3296571d51f94348b49805747d20869f34ffba25b5a152f"
+    },
+    "climax": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/19.png",
+      "sha256": "558c31156d8781deb7b7aa7b2ebd1c2728715b459f2b6b8c83315779508000e8"
+    },
+    "payoff": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/20.png",
+      "sha256": "90bd7770a00d88aff3296571d51f94348b49805747d20869f34ffba25b5a152f"
+    },
+    "captions": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/subtitles.yaml",
+      "sha256": "dcebb90aef33e205ddeff4c5b71aa128429d054bb4df1cb1eb91756d701bfb1a"
+    },
+    "publish_copy": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/release/publish-copy.md",
+      "sha256": "2dc5bb2a0601228566f3d11a2080ee8ada2544d49d654394e29f99b2716a0246"
+    },
+    "propagation_card": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/release/propagation-card.md",
+      "sha256": "5c60146501c525f5ec01b4645e7d0b8dc2e5433c90fb42208d31f9aedff463d9"
+    }
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-17T19:17:41+08:00",
+    "request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/release-semantic-attempt-1-request.json",
+    "request_id": "release-semantic-a1-69bf93ca36f328b3",
+    "request_fingerprint": "69bf93ca36f328b396bd4f04ab2c3a6f283c5d0f329a9a7b2573a0cc88933715"
+  }
+}

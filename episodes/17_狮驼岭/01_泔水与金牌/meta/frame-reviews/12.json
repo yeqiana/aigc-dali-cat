@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "12",
+  "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/12.png",
+  "asset_sha256": "10076c3eaa8dc25fcf7c0ba294c618d4419292cf384fd27bb0a366629dffe142",
+  "story_sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446",
+  "storyboard_sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079",
+  "visual_contract_sha256": "0837199bec975871f017be085868192731ac1168b38557cd2dc84426bbca9ae2",
+  "environment_frame_sha256": "268d2daed25f2b6185ad9f607b093139c2d358bcc2c8e610a1a8af377f5b891d",
+  "frame_directive_sha256": "96d8b068ea70a1af66c41869f2b40ce65a105c698d97c3e66d0610ca94d3744f",
+  "frame_contract_sha256": "366334730d6660f2ead739bd770341138ee7aa6f17afedae94f0ad4ae994b8ad",
+  "source_binding": {
+    "story": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+      "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+    },
+    "storyboard": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+      "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "8414eae086666185328aafa874acdd6dacf1dd58bdeea94729784dcf273bf85d"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-17T17:57:55+08:00",
+    "request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/frame-semantic-attempt-1-request.json",
+    "request_id": "frame-semantic-a1-c4b26706a6afcb82",
+    "request_fingerprint": "c4b26706a6afcb828f1c63354383c027d8282fb9fcc1afbbbe10679312ae9083",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "前景两个人背对镜头站在木构哨卡上，同时抬起一只手遮在额前朝远处看，动作整齐但两个姿势不同；两人穿深色破旧皮布衣、绳带、缠臂，右边那人背后斜背一件短兵器；哨卡由原木尖桩、平台、梯子与了望塔组成，远处塔上还有几个同样在张望的小身影；梁上挂着褪色的暗红布幡，硬光把木廊影子投得很清楚。",
+  "decision": "pass",
+  "caption_sha256": "e6dbaa02f482daeaa758dbb41ca8b37ef15fb385c559676b8eec79ba2a34bb52"
+}

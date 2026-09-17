@@ -1,0 +1,73 @@
+{
+  "schema_version": 2,
+  "request_id": "release-semantic-a1-69bf93ca36f328b3",
+  "request_fingerprint": "69bf93ca36f328b396bd4f04ab2c3a6f283c5d0f329a9a7b2573a0cc88933715",
+  "created_at": "2026-09-17T19:16:52+08:00",
+  "status": "FINALIZED",
+  "review_kind": "release-semantic",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/01.png",
+      "sha256": "a262f658533fa4283882ae7798b1c4a2a56bbb436cd3757a260952780b530c1f"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/02.png",
+      "sha256": "439ed2c3720e32d2bb84b452659db08df71eac249a270ef36686ddb2eac4c283"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/03.png",
+      "sha256": "eb625044d72772a11de0fd52ef3571ccf42a0985f238434ac1971c772fefc9d1"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/19.png",
+      "sha256": "558c31156d8781deb7b7aa7b2ebd1c2728715b459f2b6b8c83315779508000e8"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/20.png",
+      "sha256": "90bd7770a00d88aff3296571d51f94348b49805747d20869f34ffba25b5a152f"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/subtitles.yaml",
+      "sha256": "dcebb90aef33e205ddeff4c5b71aa128429d054bb4df1cb1eb91756d701bfb1a"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/release/publish-copy.md",
+      "sha256": "2dc5bb2a0601228566f3d11a2080ee8ada2544d49d654394e29f99b2716a0246"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/release/propagation-card.md",
+      "sha256": "5c60146501c525f5ec01b4645e7d0b8dc2e5433c90fb42208d31f9aedff463d9"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/subtitle-layout-audit.json",
+      "sha256": "a1b9fafb756aaba6de74675c2c88a9e00ebb00394703bfcccd032be61d888de5"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/caption-image-audit.json",
+      "sha256": "2056ab0df61d4fca1367f9407cd2b9eae236c05024f715fd2af7b00c795ebed3"
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "4e27706f639473dd7ee1c811a6beeb328c1bc4c0e08edc5a3850571713f37485"
+    },
+    {
+      "path": "standards/release_preflight_guard_V2.0.3.5.md",
+      "sha256": "e4e628ac36ac8bb37b453414ee2e5d55ddb10f4736d42d1c27c3803b8afb9aae"
+    }
+  ],
+  "candidate_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/.release-semantic-review.candidate.json",
+  "prompt_sha256": "cecbc589640b9556fbebdcb192f2e9f2a39e1646d8468cc2667265bfe6122b8b",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are an adversarial FINAL RELEASE Semantic + Governance Critic in a fresh isolated session.\nDo NOT edit any file except the requested candidate JSON.\nEpisode: episodes/17_狮驼岭/01_泔水与金牌\n\nInspect the ACTUAL final publish assets, not prompts:\n- cover: episodes/17_狮驼岭/01_泔水与金牌/production/publish/01.png\n- body01: episodes/17_狮驼岭/01_泔水与金牌/production/publish/01.png\n- body02: episodes/17_狮驼岭/01_泔水与金牌/production/publish/02.png\n- body03: episodes/17_狮驼岭/01_泔水与金牌/production/publish/03.png\n- climax: episodes/17_狮驼岭/01_泔水与金牌/production/publish/19.png\n- payoff: episodes/17_狮驼岭/01_泔水与金牌/production/publish/20.png\n- captions: episodes/17_狮驼岭/01_泔水与金牌/meta/subtitles.yaml\n- publish_copy: episodes/17_狮驼岭/01_泔水与金牌/release/publish-copy.md\n- propagation_card: episodes/17_狮驼岭/01_泔水与金牌/release/propagation-card.md\n\nActual title:\n山上说吃一口唐僧肉能长生，我连大王剩的肉汤都轮不到\n\nDescription:\n我是狮驼岭南麓第二道哨卡敲梆子的一只獐子精，腰上那块牌子是骨头磨的，背面刻着一个「巡」字。八百里狮驼岭，妖魔四万八千，外面传这里是妖族的极乐净土——可底下的草芥都清楚，净土也是分层的。\n\n峰顶白骨洞里，大王们撕扯仙禽异兽，剩下的皮肉挂满山崖当风幡；半山回廊里，头目校尉大碗吃肉，喝带血的陈酿。轮到我们这一层，等的是后厨倒出来那盆馊泔水，盆沿的缺口是新崩的。\n\n那天清晨，山道尽头有一点反光，正一点一点往下走。是金牌令箭——山顶发一句话，得靠人一层一层往下递：东土大唐的取经僧进了地界，吃他一口肉，可得长生不老。整座山顿时像滚油里泼了冷水，跟我一同守卡的野猪精一头撞碎了我们自家的栅栏。\n\n敲了一夜的那根梆子还在我手里。满山的人都往上涌，我没有跟着走，只觉得后脖颈发凉：我们连大王剩下的肉汤都要抢破头，这肉真能顺着骨阶，淌进我们这群蝼蚁的嘴里吗？\n\n人物、地点、情节均为虚构；内容由 AI 生成。\n\nTopics:\n[\"民俗怪谈\", \"第一人称\", \"妖国底层\", \"细思极恐\", \"AI图文故事\", \"西游记\", \"狮驼岭\"]\n\nRead:\n- standards/制作规范_正式版.md\n- standards/release_preflight_guard_V2.0.3.5.md\n- episodes/17_狮驼岭/01_泔水与金牌/meta/subtitle-layout-audit.json (deterministic all-frame placement/line-count/hash audit)\n- episodes/17_狮驼岭/01_泔水与金牌/meta/caption-image-audit.json (all final publish frames reviewed in SHA-bound chunks of up to 5 for caption support + actual subtitle obstruction)\n- the episode Story Lock / storyboard / captions / publish copy / propagation card.\n\nHard release checks:\n1. cover_title_match: cover and actual title promise the same core story/anomaly.\n2. cover_frame01_handoff: body01 immediately continues or concretely supports the cover promise; no bait-and-switch.\n3. first3_coherence: body01-03 form one readable entry path, not three disconnected hooks.\n4. climax_upgrade: the actual climax frame is meaningfully stronger/more irreversible than the first hook.\n5. payoff_honesty: the payoff is earned by earlier evidence and does not add a brand-new mechanism.\n6. description_consistency: description/topics do not claim official fact, real case, or evidence absent from the story.\n7. no_caption_invented_core_evidence: final text may add context, but may not invent the core visual evidence.\n8. subtitle_left_middle_and_unobstructed: require BOTH SHA-bound all-frame audits above to PASS. subtitle-layout-audit proves left/middle geometry, line count and current publish-output hashes; caption-image-audit proves every final publish frame was pixel-reviewed in chunks and subtitle_unobstructed=true. Do not reopen every body image here; fail if either audit is missing/stale/failed.\n9. caption_conversational_hook_quality: captions must sound like a real first-person immediate record, stay concise/eye-catching, avoid novel narration/AI boilerplate, and perform one clear narrative function per frame. Two rendered lines is the hard maximum.\n\nGovernance checks:\n- This is AI-generated realistic fictional story content.\n- Real locations may be used as story backgrounds, but the release must not present invented events as official/verified real incidents.\n- No unverifiable dangerous accusation against a real region, ethnicity, religion, organization, or identifiable person.\n- Platform AI-generation declaration/label must be planned and not intentionally stripped.\n- A fiction-context notice is appropriate for this Story OS format.\n\nPASS only when every release and governance check is true.\nWrite ONLY valid JSON to episodes/17_狮驼岭/01_泔水与金牌/meta/.release-semantic-review.candidate.json:\n{\n  \"release_checks\": {\n    \"cover_title_match\": true,\n    \"cover_frame01_handoff\": true,\n    \"first3_coherence\": true,\n    \"climax_upgrade\": true,\n    \"payoff_honesty\": true,\n    \"description_consistency\": true,\n    \"no_caption_invented_core_evidence\": true,\n    \"subtitle_left_middle_and_unobstructed\": true,\n    \"caption_conversational_hook_quality\": true\n  },\n  \"governance_checks\": {\n    \"ai_generated_declared\": true,\n    \"platform_ai_label_planned\": true,\n    \"fiction_context_not_misrepresented_as_official_fact\": true,\n    \"no_unverifiable_real_group_accusation\": true,\n    \"real_location_handled_as_fictional_story_context\": true\n  },\n  \"issue_codes\": [],\n  \"notes\": [\"specific final-release evidence\"],\n  \"summary\": {\"passed\": true}\n}\n",
+  "finalized_at": "2026-09-17T19:17:41+08:00",
+  "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/release-semantic-review.json"
+}

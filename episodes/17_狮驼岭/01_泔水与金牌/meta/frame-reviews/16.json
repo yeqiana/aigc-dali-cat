@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "frame": "16",
+  "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/16.png",
+  "asset_sha256": "7b42b58e042e1b0fb909910310801ad1c5afedecfcfd9aed89bc0f41776bc349",
+  "story_sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446",
+  "storyboard_sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079",
+  "visual_contract_sha256": "0837199bec975871f017be085868192731ac1168b38557cd2dc84426bbca9ae2",
+  "environment_frame_sha256": "d31192ac1d85f960423dcee2fab38c247c657b8127892e3e1c6448ad544d27da",
+  "frame_directive_sha256": "980946f11e3e8bba17f693e5545b439ba774c3f8f151ba98549238685f5d56c0",
+  "frame_contract_sha256": "c5ea40ef7e564b50614c2cc4779877bb78a5a1df83e142a336abd17a4c9c134a",
+  "source_binding": {
+    "story": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+      "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+    },
+    "storyboard": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+      "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+    },
+    "extraction_mode": "text_frame",
+    "frame_sha256": "e51dcc24186a02f50c2f048a742e7673331f3689486d5b1f336b6d02f69f0bd9"
+  },
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-17T17:57:55+08:00",
+    "request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/frame-semantic-attempt-1-request.json",
+    "request_id": "frame-semantic-a1-c4b26706a6afcb82",
+    "request_fingerprint": "c4b26706a6afcb828f1c63354383c027d8282fb9fcc1afbbbe10679312ae9083",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "checks": {
+    "scene_storyboard_fidelity": true,
+    "story_beat_fidelity": true,
+    "key_prop_fidelity": true,
+    "character_identity": true,
+    "wardrobe_continuity": true,
+    "pov_photographer_legality": true,
+    "spatial_continuity": true,
+    "temporal_continuity": true,
+    "anomaly_readability": true,
+    "caption_image_support": true,
+    "actual_information_gain": true,
+    "environment_physics_fidelity": true,
+    "anomaly_escalation_fidelity": true,
+    "scale_reference_fidelity": true,
+    "camera_authorship_physical": true,
+    "moment_capture_credibility": true,
+    "narrative_evidence_gain": true,
+    "shot_grammar_diversity": true,
+    "camera_defect_physics": true,
+    "screen_content_physics": true,
+    "visual_memory_continuity": true,
+    "world_identity_fidelity": true,
+    "character_appearance_anchor_fidelity": true,
+    "cultural_environment_fidelity": true,
+    "shot_scale_fidelity": true,
+    "scene_position_uniqueness_fidelity": true,
+    "cinematic_structure_translation_fidelity": true,
+    "practical_lighting_design_fidelity": true,
+    "anomaly_concealment_fidelity": true
+  },
+  "issue_codes": [],
+  "notes": "入夜后的整座山：从山脚到峰顶成百上千点小火焰沿着台地、山道和成片窝棚连成线一路爬上去，山体被这些光的边界切成一层层，天空近乎全黑；近前景是土路、两侧尖桩栅栏与几支烧着的火把柱，右侧一间敞口草棚里有火光；画面里没有可辨认的人。最高处只读出成片火光与聚落轮廓，无法把「一线金光往下淌」单独从像素里分离出来；山脚到峰顶的落差与横向铺开宽度成立。",
+  "decision": "pass",
+  "caption_sha256": "67620c0c5cbdd67cfb6ab8d6cbb0853ec2197e2445c2c8ec274db913fdc98460"
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "request_id": "visual-lock-baseline-a1-07b362501ae844aa",
+  "request_fingerprint": "07b362501ae844aad8edf806553158706b655a26cf3a2b56208e35a31e1e0043",
+  "created_at": "2026-09-17T17:02:29+08:00",
+  "status": "FINALIZED",
+  "review_kind": "visual-lock-baseline",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/candidates/scheduled/01-7df397dc164b-a1.png",
+      "sha256": "d7c4b3a4caec076d865463db060ca79d848b7274929458ec202c7544064c40c3"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/story-gates.json",
+      "sha256": "f344cef39257d8ebc311a6563bc7c71972dea6455b9852f0063e108036803de7"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/character-visual-contract.json",
+      "sha256": "bd83122651d09b3a1961f9f970657ff16bb6d35d53344df955c1340d1c8df179"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/contracts/frames/01.json",
+      "sha256": "8cd87092babb19fd54f2d8d267919e3da9214d26fb50297bd19c54332a3fd8ed"
+    }
+  ],
+  "candidate_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/.visual-lock-baseline-review.candidate.json",
+  "prompt_sha256": "9bd7399cb322166e7f21a219213dc832c331dfddeb9e8f536e712dcf9884c2ce",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are a fresh isolated Story OS Visual Lock ordinary-baseline actual-pixel reviewer.\nInspect the attached baseline image itself. This PASS unlocks the parallel-three Visual Lock images and may create the provisional character pixel master, so fail closed on visible identity/capture/style problems.\nRequired checks: ['visual_profile_match', 'reality_first', 'ordinary_life_density', 'unposed_capture', 'not_cinematic', 'capture_credibility', 'identity_usable', 'group_members_distinct']\nThe target is an ordinary believable phone/photo baseline: reality-first, unposed, non-cinematic, usable identity, distinct group members where applicable.\nWrite ONLY JSON to episodes/17_狮驼岭/01_泔水与金牌/meta/.visual-lock-baseline-review.candidate.json:\n{\"decision\":\"PASS|FAIL\",\"checks\":{\"visual_profile_match\":\"PASS|FAIL\",\"reality_first\":\"PASS|FAIL\",\"ordinary_life_density\":\"PASS|FAIL\",\"unposed_capture\":\"PASS|FAIL\",\"not_cinematic\":\"PASS|FAIL\",\"capture_credibility\":\"PASS|FAIL\",\"identity_usable\":\"PASS|FAIL\",\"group_members_distinct\":\"PASS|FAIL\"},\"face_boxes\":[{\"character_id\":\"P01\",\"x\":0.0,\"y\":0.0,\"w\":0.1,\"h\":0.1}],\"note\":\"actual-pixel evidence\"}\nFace boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.\nDo not modify source files or the image.\n",
+  "attempt_request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/visual-lock-baseline-attempt-1-request.json",
+  "finalized_at": "2026-09-17T17:03:00+08:00",
+  "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/visual-lock-baseline-review.json"
+}

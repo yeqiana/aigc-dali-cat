@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "audited_at": "2026-09-17T17:43:02+08:00",
+  "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\aigc-dali-cat\\episodes\\17_狮驼岭\\01_泔水与金牌\\meta\\subtitles.yaml",
+  "caption_count": 20,
+  "silent_frames": [],
+  "hard_errors": [],
+  "warnings": [],
+  "summary": {
+    "hard_error_count": 0,
+    "warning_count": 0,
+    "passed": true
+  },
+  "voice_contract_sha256": "e1d9aa0636f88b368438dd6fd045be6c7eab6727be12d3215bb9fcaf380b39b3",
+  "source_sha256": "dcebb90aef33e205ddeff4c5b71aa128429d054bb4df1cb1eb91756d701bfb1a"
+}

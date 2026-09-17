@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "selected_family": "identity_discovery",
+  "reference": "XXX是XXX大学的研二学生，最近他发现了……",
+  "variants": [],
+  "rule": "“不老泉|”等题名不属于简介固定前缀；只保留身份→最近发现的叙事结构。",
+  "recent5_families": [],
+  "title_policy": {
+    "generate": true,
+    "count": 1,
+    "usage": "internal_candidate_only",
+    "required_for_publish_ready": false,
+    "default_include_in_delivery": false,
+    "default_include_in_intro": false
+  },
+  "final_text_must_be_natural": true,
+  "template_is_reference_not_literal_output": true
+}

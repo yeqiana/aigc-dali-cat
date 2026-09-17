@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "request_id": "20260917_154942_238d8ecc",
+  "created_at": "2026-09-17T15:49:42+08:00",
+  "mode": "full_auto",
+  "repository": {
+    "branch": "story",
+    "source": "user_explicit"
+  },
+  "topic": {
+    "title": "泔水与金牌",
+    "raw": "泔水与金牌"
+  },
+  "story_input": {
+    "mode": "locked_story",
+    "raw": "我的腰牌是骨头磨的，背面刻着歪歪扭扭的“巡”字。\n\n我是狮驼岭南麓的一只獐子精，负责在第二道哨卡敲梆子。八百里狮驼岭，妖魔四万八千，威名震动三界。人间传言这里是妖族的极乐净土，可只有底层的草芥才知道，净土也是分层的。\n\n大王们在峰顶的白骨洞里撕扯仙禽异兽，骨髓磨成粉砌墙，皮肉挂满山崖当风幡；头目校尉们坐在回廊里大碗吃肉，喝着带血的陈酿；而像我们这些连人形都没褪干净的杂兵，只能在腥臭的风里轮班，等着后厨倒出来的馊泔水。\n\n那天清晨，金牌令箭从山顶一路传下：东土大唐的取经僧进了地界，吃他一口肉，可得长生不老。\n\n整个山头瞬间像滚油里泼了冷水，小妖们磨刀霍霍，眼里全是贪婪的血丝。和我一同守卡的野猪精甚至激狂地撞碎了哨卡的栅栏，叫嚷着要立头功，换半碗唐僧肉尝尝长生的滋味。\n\n我握着冰凉的梆子，在狂热的欢呼声里只觉得后脖颈发凉。我们连大王剩下的肉汤都要抢破头，这等能逆天改命的金贵血肉，真能顺着这森严的骨阶，淌进我们这群蝼蚁的嘴里吗？",
+    "constraints": [],
+    "rewrite_policy": "logic_polish_only",
+    "preserve_core_intent": true,
+    "allow_structure_rewrite": false
+  },
+  "intent": {
+    "intent": "CREATE_EPISODE",
+    "source": "deterministic_rules",
+    "confidence": 1.0,
+    "reason_codes": [
+      "DEFAULT_CREATE"
+    ],
+    "normalized_request_sha256": "1011d83fbb9006ff77a5668b159eb877a7c83bcaa937c568192f494f92bec2e5",
+    "normalized_request": "读取 story 分支。全自动制作《泔水与金牌》,做到最终交付。\n不要改剧情:\n我的腰牌是骨头磨的,背面刻着歪歪扭扭的“巡”字。\n我是狮驼岭南麓的一只獐子精,负责在第二道哨卡敲梆子。八百里狮驼岭,妖魔四万八千,威名震动三界。人间传言这里是妖族的极乐净土,可只有底层的草芥才知道,净土也是分层的。\n大王们在峰顶的白骨洞里撕扯仙禽异兽,骨髓磨成粉砌墙,皮肉挂满山崖当风幡;头目校尉们坐在回廊里大碗吃肉,喝着带血的陈酿;而像我们这些连人形都没褪干净的杂兵,只能在腥臭的风里轮班,等着后厨倒出来的馊泔水。\n那天清晨,金牌令箭从山顶一路传下:东土大唐的取经僧进了地界,吃他一口肉,可得长生不老。\n整个山头瞬间像滚油里泼了冷水,小妖们磨刀霍霍,眼里全是贪婪的血丝。和我一同守卡的野猪精甚至激狂地撞碎了哨卡的栅栏,叫嚷着要立头功,换半碗唐僧肉尝尝长生的滋味。\n我握着冰凉的梆子,在狂热的欢呼声里只觉得后脖颈发凉。我们连大王剩下的肉汤都要抢破头,这等能逆天改命的金贵血肉,真能顺着这森严的骨阶,淌进我们这群蝼蚁的嘴里吗?",
+    "requires_llm_rewrite": false,
+    "requires_clarification": false
+  },
+  "creative_hints": [],
+  "image_model": "gpt-image-2",
+  "image_quality": "high",
+  "image": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "source": "system_default",
+    "strict_model": false,
+    "quality": "high"
+  },
+  "runtime": {
+    "execution_mode": "dag",
+    "continuous_execution": true,
+    "resume": true,
+    "max_image_workers": 3,
+    "fail_soft": true,
+    "incremental_reuse": true
+  },
+  "delivery": {
+    "mode": "auto",
+    "zip_required_for_completion": false
+  },
+  "user_intent": {
+    "full_auto_authorized": true,
+    "allow_story_strengthening": false,
+    "allow_story_rewrite": false,
+    "ask_before_each_step": false
+  },
+  "provenance": {
+    "source": "natural_language",
+    "original_request": "读取 story 分支。全自动制作《泔水与金牌》，做到最终交付。\n\n不要改剧情：\n我的腰牌是骨头磨的，背面刻着歪歪扭扭的“巡”字。\n\n我是狮驼岭南麓的一只獐子精，负责在第二道哨卡敲梆子。八百里狮驼岭，妖魔四万八千，威名震动三界。人间传言这里是妖族的极乐净土，可只有底层的草芥才知道，净土也是分层的。\n\n大王们在峰顶的白骨洞里撕扯仙禽异兽，骨髓磨成粉砌墙，皮肉挂满山崖当风幡；头目校尉们坐在回廊里大碗吃肉，喝着带血的陈酿；而像我们这些连人形都没褪干净的杂兵，只能在腥臭的风里轮班，等着后厨倒出来的馊泔水。\n\n那天清晨，金牌令箭从山顶一路传下：东土大唐的取经僧进了地界，吃他一口肉，可得长生不老。\n\n整个山头瞬间像滚油里泼了冷水，小妖们磨刀霍霍，眼里全是贪婪的血丝。和我一同守卡的野猪精甚至激狂地撞碎了哨卡的栅栏，叫嚷着要立头功，换半碗唐僧肉尝尝长生的滋味。\n\n我握着冰凉的梆子，在狂热的欢呼声里只觉得后脖颈发凉。我们连大王剩下的肉汤都要抢破头，这等能逆天改命的金贵血肉，真能顺着这森严的骨阶，淌进我们这群蝼蚁的嘴里吗？"
+  }
+}

@@ -1,0 +1,506 @@
+{
+  "schema_version": 1,
+  "story_os": "2.1",
+  "step": "VISUAL_LOCK",
+  "current_state": "STORYBOARD_LOCKED",
+  "runtime_request": {
+    "schema_version": 1,
+    "request_id": "20260917_154942_238d8ecc",
+    "created_at": "2026-09-17T15:49:42+08:00",
+    "mode": "full_auto",
+    "repository": {
+      "branch": "story",
+      "source": "user_explicit"
+    },
+    "topic": {
+      "title": "泔水与金牌",
+      "raw": "泔水与金牌"
+    },
+    "story_input": {
+      "mode": "locked_story",
+      "raw": "我的腰牌是骨头磨的，背面刻着歪歪扭扭的“巡”字。\n\n我是狮驼岭南麓的一只獐子精，负责在第二道哨卡敲梆子。八百里狮驼岭，妖魔四万八千，威名震动三界。人间传言这里是妖族的极乐净土，可只有底层的草芥才知道，净土也是分层的。\n\n大王们在峰顶的白骨洞里撕扯仙禽异兽，骨髓磨成粉砌墙，皮肉挂满山崖当风幡；头目校尉们坐在回廊里大碗吃肉，喝着带血的陈酿；而像我们这些连人形都没褪干净的杂兵，只能在腥臭的风里轮班，等着后厨倒出来的馊泔水。\n\n那天清晨，金牌令箭从山顶一路传下：东土大唐的取经僧进了地界，吃他一口肉，可得长生不老。\n\n整个山头瞬间像滚油里泼了冷水，小妖们磨刀霍霍，眼里全是贪婪的血丝。和我一同守卡的野猪精甚至激狂地撞碎了哨卡的栅栏，叫嚷着要立头功，换半碗唐僧肉尝尝长生的滋味。\n\n我握着冰凉的梆子，在狂热的欢呼声里只觉得后脖颈发凉。我们连大王剩下的肉汤都要抢破头，这等能逆天改命的金贵血肉，真能顺着这森严的骨阶，淌进我们这群蝼蚁的嘴里吗？",
+      "constraints": [],
+      "rewrite_policy": "logic_polish_only",
+      "preserve_core_intent": true,
+      "allow_structure_rewrite": false
+    },
+    "intent": {
+      "intent": "CREATE_EPISODE",
+      "source": "deterministic_rules",
+      "confidence": 1.0,
+      "reason_codes": [
+        "DEFAULT_CREATE"
+      ],
+      "normalized_request_sha256": "1011d83fbb9006ff77a5668b159eb877a7c83bcaa937c568192f494f92bec2e5",
+      "normalized_request": "读取 story 分支。全自动制作《泔水与金牌》,做到最终交付。\n不要改剧情:\n我的腰牌是骨头磨的,背面刻着歪歪扭扭的“巡”字。\n我是狮驼岭南麓的一只獐子精,负责在第二道哨卡敲梆子。八百里狮驼岭,妖魔四万八千,威名震动三界。人间传言这里是妖族的极乐净土,可只有底层的草芥才知道,净土也是分层的。\n大王们在峰顶的白骨洞里撕扯仙禽异兽,骨髓磨成粉砌墙,皮肉挂满山崖当风幡;头目校尉们坐在回廊里大碗吃肉,喝着带血的陈酿;而像我们这些连人形都没褪干净的杂兵,只能在腥臭的风里轮班,等着后厨倒出来的馊泔水。\n那天清晨,金牌令箭从山顶一路传下:东土大唐的取经僧进了地界,吃他一口肉,可得长生不老。\n整个山头瞬间像滚油里泼了冷水,小妖们磨刀霍霍,眼里全是贪婪的血丝。和我一同守卡的野猪精甚至激狂地撞碎了哨卡的栅栏,叫嚷着要立头功,换半碗唐僧肉尝尝长生的滋味。\n我握着冰凉的梆子,在狂热的欢呼声里只觉得后脖颈发凉。我们连大王剩下的肉汤都要抢破头,这等能逆天改命的金贵血肉,真能顺着这森严的骨阶,淌进我们这群蝼蚁的嘴里吗?",
+      "requires_llm_rewrite": false,
+      "requires_clarification": false
+    },
+    "creative_hints": [],
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "image": {
+      "provider": "openai",
+      "model": "gpt-image-2",
+      "source": "system_default",
+      "strict_model": false,
+      "quality": "high"
+    },
+    "runtime": {
+      "execution_mode": "dag",
+      "continuous_execution": true,
+      "resume": true,
+      "max_image_workers": 3,
+      "fail_soft": true,
+      "incremental_reuse": true
+    },
+    "delivery": {
+      "mode": "auto",
+      "zip_required_for_completion": false
+    },
+    "user_intent": {
+      "full_auto_authorized": true,
+      "allow_story_strengthening": false,
+      "allow_story_rewrite": false,
+      "ask_before_each_step": false
+    },
+    "provenance": {
+      "source": "natural_language",
+      "original_request": "读取 story 分支。全自动制作《泔水与金牌》，做到最终交付。\n\n不要改剧情：\n我的腰牌是骨头磨的，背面刻着歪歪扭扭的“巡”字。\n\n我是狮驼岭南麓的一只獐子精，负责在第二道哨卡敲梆子。八百里狮驼岭，妖魔四万八千，威名震动三界。人间传言这里是妖族的极乐净土，可只有底层的草芥才知道，净土也是分层的。\n\n大王们在峰顶的白骨洞里撕扯仙禽异兽，骨髓磨成粉砌墙，皮肉挂满山崖当风幡；头目校尉们坐在回廊里大碗吃肉，喝着带血的陈酿；而像我们这些连人形都没褪干净的杂兵，只能在腥臭的风里轮班，等着后厨倒出来的馊泔水。\n\n那天清晨，金牌令箭从山顶一路传下：东土大唐的取经僧进了地界，吃他一口肉，可得长生不老。\n\n整个山头瞬间像滚油里泼了冷水，小妖们磨刀霍霍，眼里全是贪婪的血丝。和我一同守卡的野猪精甚至激狂地撞碎了哨卡的栅栏，叫嚷着要立头功，换半碗唐僧肉尝尝长生的滋味。\n\n我握着冰凉的梆子，在狂热的欢呼声里只觉得后脖颈发凉。我们连大王剩下的肉汤都要抢破头，这等能逆天改命的金贵血肉，真能顺着这森严的骨阶，淌进我们这群蝼蚁的嘴里吗？"
+    }
+  },
+  "runtime_execution": null,
+  "effective_execution_mode": "full_auto",
+  "runtime_fast_path": {
+    "schema_version": 1,
+    "module_version": "2.6.0",
+    "enabled": true,
+    "goal": "runtime_fast_path_without_creative_rule_changes",
+    "capability_cache_ttl_seconds": 21600,
+    "resume_capsule_required_on_context_restore": true,
+    "rolling_review_requires_verified_vision": true,
+    "raw_candidate_budget": {
+      "original": 2,
+      "repair": 2,
+      "exception": 2
+    },
+    "performance_slo": {
+      "green_seconds": 5400,
+      "yellow_seconds": 7200,
+      "red_above_seconds": 7200,
+      "gate": false,
+      "incident_above_seconds": 10800
+    },
+    "policies": {
+      "no_broad_repository_rescan_when_resume_capsule_fresh": true,
+      "technical_failure_does_not_consume_raw_candidate_budget": true,
+      "rolling_review_without_verified_vision": "UNCERTAIN",
+      "rolling_review_without_verified_vision_may_emit_repair_now": false,
+      "fast_path_fail_soft": true,
+      "source_authority_wins_on_sha_mismatch": true,
+      "candidate_budget_enforced_at_generation_entrypoints": true,
+      "queue_item_token_is_idempotent": true,
+      "technical_failure_releases_candidate_budget": true,
+      "budget_exhaustion_is_non_regenerating_block": true,
+      "atomic_candidate_budget": true,
+      "candidate_commit_before_review": true,
+      "review_failure_may_release_committed_candidate": false,
+      "caption_change_invalidates_visual_review": false,
+      "cross_shell_safe_argv_only": true,
+      "bash_heredoc_allowed": false,
+      "powershell_here_string_allowed": false,
+      "shell_true_allowed": false
+    },
+    "episode_candidate_budget": {
+      "formula": "min(60,max(20,frame_count+15))"
+    }
+  },
+  "runtime_capabilities": null,
+  "resume_capsule": null,
+  "character_contract": {
+    "schema_version": 1,
+    "status": "LOCKED",
+    "derived_from_pools": false,
+    "not_episode_stage": true,
+    "created_at": "2026-09-17T16:20:00+08:00",
+    "selection_seed": 3923833927929210367,
+    "era": {
+      "bucket": "2004_2010",
+      "year": null,
+      "source": "story_defined_fantasy_era",
+      "note": "本集是幻想世界志怪寓言，故事不发生在任何现实年代。era.bucket 只是生产线枚举兼容字段（供 intro family 打分与 resource tag 使用），不代表故事年代；真实世界规则由 meta/world-identity.json 显式覆盖。"
+    },
+    "world_identity": {
+      "profile_id": "EPISODE_WORLD_IDENTITY_OVERRIDE",
+      "country": "狮驼岭妖国（幻想世界·西牛贺洲）",
+      "region": "西牛贺洲·狮驼岭南麓第二道哨卡一线",
+      "nationality_context": "妖族（狮驼岭未褪尽人形的小妖）",
+      "resident_context": "狮驼岭底层巡山小妖（守卡、敲梆子、领后厨泔水的杂兵）",
+      "effective_sha256": "1e8b4e997ed5e4904f7f5ae302668e3193648418ae02f663860b9544bf6200e6"
+    },
+    "cast": {
+      "type": "pair",
+      "size": 2,
+      "relationship": "同守第二道哨卡的两名底层杂兵，同一班轮值",
+      "members": [
+        {
+          "id": "P01",
+          "pov": true,
+          "gender": "male",
+          "age": 22,
+          "species": "獐子精（人形未褪尽）",
+          "build": "瘦小精瘦，肩背微驼，站姿是长期在风里缩着肩膀的样子",
+          "hair": "灰褐色短毛，两侧短、头顶乱，发丛里露出一对没褪净的獐子耳",
+          "clothing_anchor": "洗得发灰的粗布短褂配麻布围腰，草绳束腰，小腿缠着沾泥的布绑腿，赤脚穿草鞋，肩背处露出一点黄褐色的绒毛",
+          "device_anchor": null,
+          "prop_anchor": "骨头磨的腰牌（背面歪歪扭扭刻着一个“巡”字）与敲更报点用的旧木梆子",
+          "nationality_context": "妖族（狮驼岭未褪尽人形的小妖）",
+          "resident_context": "狮驼岭底层巡山小妖（守卡、敲梆子、领后厨泔水的杂兵）"
+        },
+        {
+          "id": "P02",
+          "pov": false,
+          "gender": "male",
+          "age": 26,
+          "species": "野猪精（人形未褪尽）",
+          "build": "膀大腰圆，脖子短粗，两枚向上翻的獠牙露在嘴外",
+          "hair": "粗硬的黑棕色鬃毛，从额头顶一直连到后颈，短而杂乱",
+          "clothing_anchor": "胸襟敞开的粗麻单衣，肩上斜搭一条脏污兽皮，腰上系麻绳，赤脚露出蹄状脚趾",
+          "device_anchor": null,
+          "prop_anchor": "腰后别着一把豁了口的短刀",
+          "nationality_context": "妖族（狮驼岭未褪尽人形的小妖）",
+          "resident_context": "狮驼岭底层巡山小妖（守卡、敲梆子、领后厨泔水的杂兵）"
+        }
+      ]
+    },
+    "pov": {
+      "character_id": "P01",
+      "first_person": true
+    },
+    "entry": {
+      "type": "casual_work",
+      "label": "生活化工作",
+      "source": "story_defined",
+      "reason": "他是被排到第二道哨卡当差的守卡杂兵，上卡轮值是日常，不是主动出行；故事从他已经站在哨位上的一天讲起。",
+      "hard_rule_note": "守卡身份只解释他为什么站在这里，不提供任何解决手段；他全程没有职业能力、没有工具、也没有去调查任何东西。"
+    },
+    "scene": {
+      "primary_category": "mountain_sentry_post",
+      "primary_place": "狮驼岭南麓第二道哨卡（木栅栅栏、梆子架、草棚窝棚）与后厨倒泔水的坡下空地"
+    },
+    "role_policy": {
+      "protagonist_role": "狮驼岭底层巡山小妖（第一人称自述者）",
+      "career_function": "arrival_only",
+      "solves_anomaly_professionally": false
+    },
+    "no_anomaly_test": {
+      "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+      "ordinary_day_plan": "狮驼岭南麓第二道哨卡的一名杂兵，天亮前被换班的推醒，抓起梆子在腥臭的山风里敲点报更；白天被头目支使着搬骨料、清栅栏、赶山里的野物，跟同卡的野猪精在栅栏边啃干粮、打盹、说些没指望的闲话；天黑后下到坡下，去后厨领一勺别人剩的馊泔水，回窝棚接着值夜。删掉本集的全部异常之后，这仍是一个完整的、自洽的底层轮班日。",
+      "pass": true,
+      "must_be_rechecked_before_story_lock": true,
+      "rechecked_against_final_story": true,
+      "recheck_note": "对照 docs/02_泔水与金牌_StoryLock_V1.0.md 与 docs/03_泔水与金牌_20张正式分镜_V1.0.md 复核：主角全程只有守卡、敲梆子、听令箭、看同伴发狂、自己在心里发凉这几件事，没有任何专业手段，也没有解决任何问题，去留由他自己走开一步决定。"
+    },
+    "continuity_policy": {
+      "member_count_changes_require_story_event": true,
+      "pov_character_id_stable": true,
+      "clothing_and_device_anchors_propagate_to_frame_contract": true
+    },
+    "ordinary_person_score": 100,
+    "forbidden_role_check": {
+      "pass": true,
+      "hits": []
+    },
+    "story_build_note": "这是 Story Build Input Contract，不是新 Stage，也不是 Episode 阶段事实源。本集为幻想世界志怪寓言，Cast 手写为两名未褪尽人形的小妖：P01 为第一人称视角（獐子精），P02 为原文点名的同卡野猪精。两人都不是功能型职业角色，也不解决任何问题。Story Lock 前已将 status 改为 LOCKED 并逐字复核 NO-ANOMALY TEST。",
+    "locked_at": "2026-09-17T16:20:00+08:00"
+  },
+  "invariants": {
+    "zip_is_delivery_adapter_not_stage_gate": true,
+    "codex_production_complete_at_publish_ready": true,
+    "concept_ambition_before_story_lock": true,
+    "image_first_propagation_gate": true,
+    "reality_limits_capture_not_concept": true,
+    "environment_is_physics_not_filter": true,
+    "resolved_frame_contract_is_derived_cache": true,
+    "generation_and_review_bind_same_frame_contract_sha": true,
+    "visual_lock_four_admissions": true,
+    "max_parallel_image_workers": 3,
+    "production_ledger_single_writer": true,
+    "technical_failure_does_not_consume_content_repair": true,
+    "scheduler_fail_soft": true,
+    "fast_scout_never_final_pass": true,
+    "final_candidate_snapshot_before_publish_ready": true,
+    "delivery_consumes_verified_snapshot": true,
+    "runtime_request_immutable_after_bind": true,
+    "auto_create_story_when_missing": true,
+    "user_seed_requires_strengthen_and_rewrite": true,
+    "default_image_model": "gpt-image-2",
+    "default_image_quality": "high",
+    "explicit_image_model_no_silent_fallback": true,
+    "current_visual_lock_calibration_count": 4,
+    "visual_lock_real_1_plus_3_barrier": true,
+    "visual_lock_dependents_require_baseline_review_pass": true,
+    "reference_arbitration_max_refs": 2,
+    "final_snapshot_locks_character_master_assets": true,
+    "human_response_interaction_enabled": true,
+    "emotion_intensity_max": 4,
+    "interaction_density_min_one_per_5_human_frames": true,
+    "performance_telemetry_fail_soft": true
+  },
+  "authority_files": [
+    {
+      "path": "config/storyos.yaml",
+      "exists": true,
+      "sha256": "dca7d1852c4c9e2ba2e31cd2bb4e84a9fe1187d358d4834d965ecf94dc25153c",
+      "bytes": 8447
+    },
+    {
+      "path": "config/index.yaml",
+      "exists": true,
+      "sha256": "e2b06340a9f7dde742b93dddcd25e849ad09f333974a540deec983aa317c1c9e",
+      "bytes": 8515
+    },
+    {
+      "path": "START_HERE.md",
+      "exists": true,
+      "sha256": "bb5566119d97768987b6a0371b04bda0af1d1d62eb3b3407b9e8a1f678baec34",
+      "bytes": 22306
+    },
+    {
+      "path": "SKILL.md",
+      "exists": true,
+      "sha256": "3fc79a98ccc3fbcb09a9ef451735847623f97e7aa304f90d5da1e2f816f5dd37",
+      "bytes": 28932
+    },
+    {
+      "path": "AGENTS.md",
+      "exists": true,
+      "sha256": "6feceb46849bb65ada13b908d609d453a2713618b8c0aa0d4d3b29c778201a6f",
+      "bytes": 20040
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "exists": true,
+      "sha256": "4e27706f639473dd7ee1c811a6beeb328c1bc4c0e08edc5a3850571713f37485",
+      "bytes": 64721
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "exists": true,
+      "sha256": "d68ad4c09eefaac04a0a7552d10add17c37b3ac09a826363387f9988a297e69c",
+      "bytes": 18816
+    },
+    {
+      "path": "standards/Character_And_Entry_Pool_V1.0.md",
+      "exists": true,
+      "sha256": "c5288a7c1d2037216e53946f6b6ebca29125dc30cbbfcfa340b20f584d6612e7",
+      "bytes": 2054
+    },
+    {
+      "path": "standards/character-pools.json",
+      "exists": true,
+      "sha256": "e4a13a6579cd286d71124d985ddb21a4ac281a66851223811b6f988a2ec9c061",
+      "bytes": 2769
+    },
+    {
+      "path": "standards/entry-motivation-pools.json",
+      "exists": true,
+      "sha256": "e968f2c0068f1c698426a566424374d47f524269e379a3e0fd704b066ec2939e",
+      "bytes": 4210
+    },
+    {
+      "path": "standards/scene-pools.json",
+      "exists": true,
+      "sha256": "31b8aeb7b2c368b82cdb30c27b906b1e5c3a3a15964cc36d657d012658767185",
+      "bytes": 2168
+    },
+    {
+      "path": "standards/forbidden-character-roles.json",
+      "exists": true,
+      "sha256": "c0b18e39cd4141f999a4b30bc190fa0bb59c5eb84bfe8b67828cde6ad2eb5459",
+      "bytes": 1179
+    },
+    {
+      "path": "runtimes/runtime-mode-contract-r2.json",
+      "exists": true,
+      "sha256": "0e14ce9d20a177fafafc2b76c146f31022793278560005376ddbfdfa8c5c47af",
+      "bytes": 1249
+    },
+    {
+      "path": "runtimes/runtime-fast-path-v251.json",
+      "exists": true,
+      "sha256": "dc6de81f01121080057ebf765b0ce86aa0626bc8010e57e9ee9ea7e3b7cfedae",
+      "bytes": 1567
+    },
+    {
+      "path": "library/catalog.json",
+      "exists": true,
+      "sha256": "20ecd1817b3dc4f9ffb01873307f32aa5c354b21831d463764473d588e8d3dc4",
+      "bytes": 3167
+    },
+    {
+      "path": "library/copy/intro-openers.json",
+      "exists": true,
+      "sha256": "b5b2b0bbc16329c0369f75040fe4fdde4a8d0d304b513ebcd7ab9463f9347f3f",
+      "bytes": 2572
+    },
+    {
+      "path": "standards/AIGC_Directing_Quality_V1.0.md",
+      "exists": true,
+      "sha256": "c7dc75dabe8ce6820a6637751cf48aadb1b5ebb17039682fb65bd77581446e33",
+      "bytes": 4525
+    },
+    {
+      "path": "standards/Character_Visual_And_Wardrobe_V1.0.md",
+      "exists": true,
+      "sha256": "8a372a254e4256a9eaa1cd085f9a28218827c9719ddf71112104c1d3dac179e7",
+      "bytes": 3036
+    },
+    {
+      "path": "standards/Character_Master_Final_Closure_V1.0.md",
+      "exists": true,
+      "sha256": "a8c741fa93e4ccc745bc64a4d888bf35579983c054498181f0c65693da339de5",
+      "bytes": 2241
+    },
+    {
+      "path": "standards/Human_Response_Interaction_V1.0.md",
+      "exists": true,
+      "sha256": "60f0e393bd11eaec516340e142e4bf30a6f5fc76f965abb74befb1b0d0cc7023",
+      "bytes": 2806
+    },
+    {
+      "path": "standards/wardrobe-scenario-profiles.json",
+      "exists": true,
+      "sha256": "e2a519a8378f140e98b3e4f7f9189a34d331e136b214b17adc707435b25bf689",
+      "bytes": 2553
+    },
+    {
+      "path": "config/profiles/account_creative/default.json",
+      "exists": true,
+      "sha256": "63b23f526c11601f5692718d4a9f7749f1908a96fcf274548d6f7396c52cbad9",
+      "bytes": 2358
+    },
+    {
+      "path": "standards/directing_grammar_v1.json",
+      "exists": true,
+      "sha256": "908456e0a314e7133308121853da2d3cec26b55b7c32098ec3db0c19b8222990",
+      "bytes": 5147
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "config/storyos.yaml",
+      "exists": true,
+      "sha256": "dca7d1852c4c9e2ba2e31cd2bb4e84a9fe1187d358d4834d965ecf94dc25153c",
+      "bytes": 8447
+    },
+    {
+      "path": "meta/runtime-execution.json",
+      "exists": false
+    },
+    {
+      "path": "meta/runtime-request.json",
+      "exists": true,
+      "sha256": "62893e6f6f14a919045c2cbaa21e2583a398f45e1c6be743c0f153775645461c",
+      "bytes": 5481
+    },
+    {
+      "path": "meta/episode-state.json",
+      "exists": true,
+      "sha256": "4b7b3801f5eef6147cf4a090cd4f5e004c88f0fee1c420ce962ffadd52e8e58a",
+      "bytes": 815
+    },
+    {
+      "path": "meta/character-contract.json",
+      "exists": true,
+      "sha256": "0bec599b6f4ec616933bca1b7d72e48765e2f59eab6bf7530bdf231cdb3dbf38",
+      "bytes": 5566
+    },
+    {
+      "path": "meta/concept-ambition-review.json",
+      "exists": true,
+      "sha256": "56ecc3be134795b49907c00877e797a65643c84bd830ffb103489e686e97fea2",
+      "bytes": 11768
+    },
+    {
+      "path": "meta/directing-quality.json",
+      "exists": true,
+      "sha256": "78ade6fa472d04ea93453e3e6842a3974dd147363b9636c08b610908fe245690",
+      "bytes": 759
+    },
+    {
+      "path": "meta/character-visual-contract.json",
+      "exists": true,
+      "sha256": "bd83122651d09b3a1961f9f970657ff16bb6d35d53344df955c1340d1c8df179",
+      "bytes": 5243
+    },
+    {
+      "path": "meta/visual-lock-baseline-review.json",
+      "exists": false
+    },
+    {
+      "path": "meta/character-pixel-master.json",
+      "exists": false
+    },
+    {
+      "path": "meta/character-master-crops.json",
+      "exists": false
+    },
+    {
+      "path": "meta/shot-progression-review.json",
+      "exists": true,
+      "sha256": "24ab8794be4a2ec9bd587894d1890cfc6847a7fc350cf2407fa645ccac83391b",
+      "bytes": 37196
+    },
+    {
+      "path": "meta/capture-event-contract.json",
+      "exists": true,
+      "sha256": "3b151489b4e585cfb920876f9313d026a40d9a575a87342f4009ed5bed2fdfe2",
+      "bytes": 17524
+    },
+    {
+      "path": "meta/world-state.json",
+      "exists": true,
+      "sha256": "0bdede58964efe7360e842e379213b0c5e1524a86e0c90e330a1717506344d74",
+      "bytes": 5817
+    },
+    {
+      "path": "meta/temporal-continuity.json",
+      "exists": true,
+      "sha256": "4c1090242bb0f640bc596cfed43ab3bce4f1073003403114b3dd61ca34f4edff",
+      "bytes": 5581
+    },
+    {
+      "path": "meta/wardrobe-contract.json",
+      "exists": true,
+      "sha256": "00277b3c993e3076d809de06cd49b65dbc9809e4f7b0c007bc8eece642e494ca",
+      "bytes": 29721
+    },
+    {
+      "path": "meta/visual-lock-plan.json",
+      "exists": false
+    },
+    {
+      "path": "meta/runtime/contracts/frame-contract-index.json",
+      "exists": true,
+      "sha256": "9da98c2ac7dce845e1ea8a2170961670b6a698f054faf90991c32ee11869df10",
+      "bytes": 9933
+    },
+    {
+      "path": "meta/runtime/contracts/character-appearance-anchor.json",
+      "exists": true,
+      "sha256": "2b81352e50befe60ad37d85703b5946de81e5146b7d1fa705364d05dfd21901a",
+      "bytes": 4285
+    },
+    {
+      "path": "meta/story-gates.json",
+      "exists": true,
+      "sha256": "aa39d9939d4ec02e534912a4662e5c3618f63bf9dbb2d1a1d687ce450ba8fc46",
+      "bytes": 20061
+    }
+  ],
+  "authority_policy": "Derived cache only. If capsule conflicts with source authority, source authority wins.",
+  "read_policy": "Fast Path: consume resume_capsule + runtime_capabilities + this step capsule first. Do not broad-rescan repository files while source SHA is unchanged; open source authority only for missing details, SHA drift, or conflict resolution.",
+  "source_sha256": "1977c72a692f75c6c45f5bfc0c5a6dd19d79ccf5f4fb0c4ad2973b8977a7aa30",
+  "compiled_at": "2026-09-17T16:30:18+08:00"
+}

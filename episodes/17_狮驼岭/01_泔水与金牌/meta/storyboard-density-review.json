@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "rules": {
+    "delete_frame_test": true,
+    "max_frames_without_strong_progress": 5,
+    "max_repeated_visual_without_new_information": 2
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "用一枚骨头工牌建立身份与它在骨阶里的位置"
+    },
+    {
+      "frame": "02",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_SPACE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "建立这一班轮值的两个人和哨卡的日常基线"
+    },
+    {
+      "frame": "03",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_SPACE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "一张画面里同时给出峰顶洞窟、半山回廊、山脚草棚三层"
+    },
+    {
+      "frame": "04",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "让观众先读成晾晒的布，再意识到不是"
+    },
+    {
+      "frame": "05",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "让观众跟着这双眼睛亲手量一次三层之间的距离"
+    },
+    {
+      "frame": "06",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "把第二层的吃食拍成逆光轮廓，与山脚的泔水形成级差"
+    },
+    {
+      "frame": "07",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "让日常通行和头顶的东西同时成立"
+    },
+    {
+      "frame": "08",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "给出这一层一天里唯一还带热气的吃食"
+    },
+    {
+      "frame": "09",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "把底层分配写成一次不用说话的推让"
+    },
+    {
+      "frame": "10",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "让观众比画面里的人先看见那点光，并意识到它在往下移动"
+    },
+    {
+      "frame": "11",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "ANOMALY_ESCALATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "把消息拍成一条会往下流的实体，每过一层围上来的人多一层"
+    },
+    {
+      "frame": "12",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "ANOMALY_ESCALATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "把两个人的反应放大成整座山的反应"
+    },
+    {
+      "frame": "13",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "ANOMALY_ESCALATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "用一连串磨刀动作把全山的贪婪落成同一个声音"
+    },
+    {
+      "frame": "14",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "REVERSAL",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "把同一具身体从蹲着分食到撞栏的突变放在同一天里"
+    },
+    {
+      "frame": "15",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "用剪影给出狂热的量，不给出脸与獠牙的细节"
+    },
+    {
+      "frame": "16",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "ANOMALY_ESCALATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "把个人悲剧推成四万八千人的群体规模"
+    },
+    {
+      "frame": "17",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "REVERSAL",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "动与不动挤在同一张画面里"
+    },
+    {
+      "frame": "18",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "把全篇唯一的私人物件放大到整幅"
+    },
+    {
+      "frame": "19",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "PAYOFF",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "把「后脖颈发凉」的身体直觉拍成落在皮肤上的光"
+    },
+    {
+      "frame": "20",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "PAYOFF",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "把全篇的分层结论压回最初那盆泔水上"
+    }
+  ]
+}

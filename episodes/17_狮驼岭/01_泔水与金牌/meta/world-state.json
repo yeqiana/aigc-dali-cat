@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "initial_state": {
+    "time": "同一天的拂晓（天没亮透，山谷起雾）",
+    "location": "狮驼岭南麓第二道哨卡",
+    "weather": "山谷晨雾",
+    "characters": {
+      "P01": {
+        "gender": "male",
+        "age": 22,
+        "build": "瘦小精瘦，肩背微驼，站姿是长期在风里缩着肩膀的样子",
+        "hair": "灰褐色短毛，两侧短、头顶乱，发丛里露出一对没褪净的獐子耳",
+        "clothing_anchor": "洗得发灰的粗布短褂配麻布围腰，草绳束腰，小腿缠着沾泥的布绑腿，赤脚穿草鞋",
+        "device_anchor": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+        "status": "present"
+      },
+      "P02": {
+        "gender": "male",
+        "age": 26,
+        "build": "膀大腰圆，脖子短粗，两枚向上翻的獠牙露在嘴外",
+        "hair": "粗硬的黑棕色鬃毛，从额头顶一直连到后颈，短而杂乱",
+        "clothing_anchor": "胸襟敞开的粗麻单衣，肩上斜搭一条脏污兽皮，腰上系麻绳，赤脚露出蹄状脚趾",
+        "device_anchor": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）",
+        "status": "present"
+      }
+    },
+    "recorder": {
+      "photographer_id": "P01",
+      "active_device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）"
+    },
+    "props": {},
+    "anomaly": {
+      "phase": "ordinary"
+    }
+  },
+  "frames": {
+    "01": {
+      "delta": {
+        "props": {
+          "identity_tag": "骨头磨的腰牌，背面刻着歪歪扭扭的「巡」字"
+        }
+      },
+      "story_event": ""
+    },
+    "02": {
+      "delta": {
+        "location": "狮驼岭南麓第二道哨卡内侧（木桩、梆子架、木栅栅栏、草棚）",
+        "props": {
+          "ration": "半块干粮，两个人分"
+        }
+      },
+      "story_event": ""
+    },
+    "03": {
+      "delta": {
+        "props": {
+          "three_tiers": "峰顶白骨洞、半山回廊柱、山脚草棚与木栅，同一时间入画"
+        }
+      },
+      "story_event": ""
+    },
+    "04": {
+      "delta": {
+        "props": {
+          "cliff_streamers": "崖壁上垂下来的一排片状物，风吹就动，看不出是什么"
+        }
+      },
+      "story_event": ""
+    },
+    "05": {
+      "delta": {
+        "props": {}
+      },
+      "story_event": ""
+    },
+    "06": {
+      "delta": {
+        "props": {
+          "tier2_meal": "半山回廊下的大碗与酒坛摆了一排，只看得到数量"
+        }
+      },
+      "story_event": ""
+    },
+    "07": {
+      "delta": {
+        "props": {
+          "overhead_strips": "垂到胸口高度的挂件，从下面走过的人都不抬头"
+        }
+      },
+      "story_event": ""
+    },
+    "08": {
+      "delta": {
+        "props": {
+          "swill_basin": "豁口陶盆里的馊泔水，盆沿缺口是新崩的"
+        }
+      },
+      "story_event": ""
+    },
+    "09": {
+      "delta": {
+        "props": {
+          "swill_basin": "陶盆被往对面推了半寸"
+        }
+      },
+      "story_event": ""
+    },
+    "10": {
+      "delta": {
+        "weather": "山谷晨雾（山道尽头）",
+        "anomaly": {
+          "phase": "discovery"
+        },
+        "props": {
+          "token_glint": "雾里山道尽头有一点反光，正在往下移动"
+        }
+      },
+      "story_event": ""
+    },
+    "11": {
+      "delta": {
+        "props": {
+          "gold_token": "金牌令箭沿同一条山道一层层往下递，每过一层围上来的人多一层"
+        }
+      },
+      "story_event": ""
+    },
+    "12": {
+      "delta": {
+        "props": {
+          "lookup": "各处哨卡在同一瞬间抬头，看的是同一个方向"
+        }
+      },
+      "story_event": ""
+    },
+    "13": {
+      "delta": {
+        "weather": "晴（晨雾散尽）",
+        "props": {
+          "whetstone": "磨刀石上刀身新磨出的亮面，地上新崩的碎木屑"
+        }
+      },
+      "story_event": ""
+    },
+    "14": {
+      "delta": {
+        "anomaly": {
+          "phase": "causal_contradiction"
+        },
+        "props": {
+          "broken_fence": "自家哨卡的栅栏被野猪精一头撞碎，碎木屑飞起"
+        }
+      },
+      "story_event": ""
+    },
+    "15": {
+      "delta": {
+        "props": {
+          "raised_blade": "野猪精举着豁口短刀站在碎栅栏外，冲着山上喊"
+        }
+      },
+      "story_event": ""
+    },
+    "16": {
+      "delta": {
+        "time": "同一天入夜（天黑之后）",
+        "weather": "无云",
+        "anomaly": {
+          "phase": "escalation"
+        },
+        "characters": {
+          "P02": {
+            "status": "absent"
+          }
+        },
+        "props": {
+          "mountain_torches": "火把从山脚一层层连到峰顶，最高处一线金光往下淌"
+        }
+      },
+      "story_event": "同卡的野猪精早跟着第一批人往上涌了，只剩他一个人站在哨卡前沿"
+    },
+    "17": {
+      "delta": {
+        "props": {
+          "bangzi": "敲了一整夜的旧木梆子停在他手里，没有放下"
+        }
+      },
+      "story_event": ""
+    },
+    "18": {
+      "delta": {
+        "props": {}
+      },
+      "story_event": ""
+    },
+    "19": {
+      "delta": {
+        "anomaly": {
+          "phase": "reversal"
+        }
+      },
+      "story_event": ""
+    },
+    "20": {
+      "delta": {
+        "props": {
+          "swill_basin": "全山狂欢之后，草棚门口那盆泔水一点没动"
+        }
+      },
+      "story_event": ""
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+ "schema_version": 1,
+ "tool_version": "2.6.1",
+ "episode": {
+  "id": "17-01",
+  "series": "17_狮驼岭",
+  "title": "泔水与金牌",
+  "format": "douyin_photo_carousel",
+  "aspect_ratio": "4:5"
+ },
+ "release": {
+  "version": "v1.0",
+  "body_frame_count": 20,
+  "publish_dir": "episodes/17_狮驼岭/01_泔水与金牌/production/publish",
+  "body_glob": "[0-9][0-9].png",
+  "cover_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/01.png",
+  "contact_sheet_path": "episodes/17_狮驼岭/01_泔水与金牌/media/review/contact-sheets/production-20-batch.jpg"
+ },
+ "artifacts": {
+  "story": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+  "storyboard": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+  "visual_spec": "standards/visual_profiles/M00_HEAVEN_WORKER_DAILY_V1.json",
+  "captions": "episodes/17_狮驼岭/01_泔水与金牌/meta/subtitles.yaml",
+  "publish_copy": "episodes/17_狮驼岭/01_泔水与金牌/release/publish-copy.md",
+  "production_review": "episodes/17_狮驼岭/01_泔水与金牌/release/production-review.md",
+  "propagation_card": "episodes/17_狮驼岭/01_泔水与金牌/release/propagation-card.md"
+ },
+ "quality": {
+  "production_gate": "pass",
+  "propagation_score": 8.9,
+  "s_min_score": 8.7,
+  "propagation_decision": "publishable",
+  "publish_decision": "go",
+  "decision_note": "九项传播卡总分 8.9 / 短板 8.7（S 项）=> publishable；封面主体是一件静物（骨头腰牌），异常本身不在封面里，靠标题与图03/09 承接。发布页须打开 AI 声明并保留虚构声明。推荐适配卡见 release/recommendation-fit.md。"
+ },
+ "publication": {
+  "platform": "douyin",
+  "actual_title": "山上说吃一口唐僧肉能长生，我连大王剩的肉汤都轮不到",
+  "description": "我是狮驼岭南麓第二道哨卡敲梆子的一只獐子精，腰上那块牌子是骨头磨的，背面刻着一个「巡」字。八百里狮驼岭，妖魔四万八千，外面传这里是妖族的极乐净土——可底下的草芥都清楚，净土也是分层的。\n\n峰顶白骨洞里，大王们撕扯仙禽异兽，剩下的皮肉挂满山崖当风幡；半山回廊里，头目校尉大碗吃肉，喝带血的陈酿。轮到我们这一层，等的是后厨倒出来那盆馊泔水，盆沿的缺口是新崩的。\n\n那天清晨，山道尽头有一点反光，正一点一点往下走。是金牌令箭——山顶发一句话，得靠人一层一层往下递：东土大唐的取经僧进了地界，吃他一口肉，可得长生不老。整座山顿时像滚油里泼了冷水，跟我一同守卡的野猪精一头撞碎了我们自家的栅栏。\n\n敲了一夜的那根梆子还在我手里。满山的人都往上涌，我没有跟着走，只觉得后脖颈发凉：我们连大王剩下的肉汤都要抢破头，这肉真能顺着骨阶，淌进我们这群蝼蚁的嘴里吗？\n\n人物、地点、情节均为虚构；内容由 AI 生成。",
+  "topics": [
+   "民俗怪谈",
+   "第一人称",
+   "妖国底层",
+   "细思极恐",
+   "AI图文故事",
+   "西游记",
+   "狮驼岭"
+  ],
+  "pinned_comment": "回头看最后一张：火把从山脚一路连到峰顶，最下面那层还是那盆没动过的泔水。有两种读法——长生肉本来就只在最上面两层的名单里；或者，往上冲的这些人本身就是被分下去的东西。我记住的是另一件事：我没有动。虚构故事，AI 生成。",
+  "published_at": null,
+  "timing_window": null,
+  "post_url": null
+ },
+ "data_review": {
+  "report_path": "reports/数据验收报告.md",
+  "completed_checkpoints": [],
+  "first_hour_metrics": {
+   "captured_at": null,
+   "exposure": null,
+   "plays": null,
+   "likes": null,
+   "comments": null,
+   "saves": null,
+   "shares": null,
+   "followers_gained": null,
+   "profile_visits": null,
+   "avg_images_viewed": null,
+   "swipe_away_rate": null,
+   "caption_expand_rate": null
+  }
+ }
+}

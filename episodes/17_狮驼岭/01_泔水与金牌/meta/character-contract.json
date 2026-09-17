@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "derived_from_pools": false,
+  "not_episode_stage": true,
+  "created_at": "2026-09-17T16:20:00+08:00",
+  "selection_seed": 3923833927929210367,
+  "era": {
+    "bucket": "2004_2010",
+    "year": null,
+    "source": "story_defined_fantasy_era",
+    "note": "本集是幻想世界志怪寓言，故事不发生在任何现实年代。era.bucket 只是生产线枚举兼容字段（供 intro family 打分与 resource tag 使用），不代表故事年代；真实世界规则由 meta/world-identity.json 显式覆盖。"
+  },
+  "world_identity": {
+    "profile_id": "EPISODE_WORLD_IDENTITY_OVERRIDE",
+    "country": "狮驼岭妖国（幻想世界·西牛贺洲）",
+    "region": "西牛贺洲·狮驼岭南麓第二道哨卡一线",
+    "nationality_context": "妖族（狮驼岭未褪尽人形的小妖）",
+    "resident_context": "狮驼岭底层巡山小妖（守卡、敲梆子、领后厨泔水的杂兵）",
+    "effective_sha256": "1e8b4e997ed5e4904f7f5ae302668e3193648418ae02f663860b9544bf6200e6"
+  },
+  "cast": {
+    "type": "pair",
+    "size": 2,
+    "relationship": "同守第二道哨卡的两名底层杂兵，同一班轮值",
+    "members": [
+      {
+        "id": "P01",
+        "pov": true,
+        "gender": "male",
+        "age": 22,
+        "species": "獐子精（人形未褪尽）",
+        "build": "瘦小精瘦，肩背微驼，站姿是长期在风里缩着肩膀的样子",
+        "hair": "灰褐色短毛，两侧短、头顶乱，发丛里露出一对没褪净的獐子耳",
+        "clothing_anchor": "洗得发灰的粗布短褂配麻布围腰，草绳束腰，小腿缠着沾泥的布绑腿，赤脚穿草鞋，肩背处露出一点黄褐色的绒毛",
+        "device_anchor": null,
+        "prop_anchor": "骨头磨的腰牌（背面歪歪扭扭刻着一个“巡”字）与敲更报点用的旧木梆子",
+        "nationality_context": "妖族（狮驼岭未褪尽人形的小妖）",
+        "resident_context": "狮驼岭底层巡山小妖（守卡、敲梆子、领后厨泔水的杂兵）"
+      },
+      {
+        "id": "P02",
+        "pov": false,
+        "gender": "male",
+        "age": 26,
+        "species": "野猪精（人形未褪尽）",
+        "build": "膀大腰圆，脖子短粗，两枚向上翻的獠牙露在嘴外",
+        "hair": "粗硬的黑棕色鬃毛，从额头顶一直连到后颈，短而杂乱",
+        "clothing_anchor": "胸襟敞开的粗麻单衣，肩上斜搭一条脏污兽皮，腰上系麻绳，赤脚露出蹄状脚趾",
+        "device_anchor": null,
+        "prop_anchor": "腰后别着一把豁了口的短刀",
+        "nationality_context": "妖族（狮驼岭未褪尽人形的小妖）",
+        "resident_context": "狮驼岭底层巡山小妖（守卡、敲梆子、领后厨泔水的杂兵）"
+      }
+    ]
+  },
+  "pov": {
+    "character_id": "P01",
+    "first_person": true
+  },
+  "entry": {
+    "type": "casual_work",
+    "label": "生活化工作",
+    "source": "story_defined",
+    "reason": "他是被排到第二道哨卡当差的守卡杂兵，上卡轮值是日常，不是主动出行；故事从他已经站在哨位上的一天讲起。",
+    "hard_rule_note": "守卡身份只解释他为什么站在这里，不提供任何解决手段；他全程没有职业能力、没有工具、也没有去调查任何东西。"
+  },
+  "scene": {
+    "primary_category": "mountain_sentry_post",
+    "primary_place": "狮驼岭南麓第二道哨卡（木栅栅栏、梆子架、草棚窝棚）与后厨倒泔水的坡下空地"
+  },
+  "role_policy": {
+    "protagonist_role": "狮驼岭底层巡山小妖（第一人称自述者）",
+    "career_function": "arrival_only",
+    "solves_anomaly_professionally": false
+  },
+  "no_anomaly_test": {
+    "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+    "ordinary_day_plan": "狮驼岭南麓第二道哨卡的一名杂兵，天亮前被换班的推醒，抓起梆子在腥臭的山风里敲点报更；白天被头目支使着搬骨料、清栅栏、赶山里的野物，跟同卡的野猪精在栅栏边啃干粮、打盹、说些没指望的闲话；天黑后下到坡下，去后厨领一勺别人剩的馊泔水，回窝棚接着值夜。删掉本集的全部异常之后，这仍是一个完整的、自洽的底层轮班日。",
+    "pass": true,
+    "must_be_rechecked_before_story_lock": true,
+    "rechecked_against_final_story": true,
+    "recheck_note": "对照 docs/02_泔水与金牌_StoryLock_V1.0.md 与 docs/03_泔水与金牌_20张正式分镜_V1.0.md 复核：主角全程只有守卡、敲梆子、听令箭、看同伴发狂、自己在心里发凉这几件事，没有任何专业手段，也没有解决任何问题，去留由他自己走开一步决定。"
+  },
+  "continuity_policy": {
+    "member_count_changes_require_story_event": true,
+    "pov_character_id_stable": true,
+    "clothing_and_device_anchors_propagate_to_frame_contract": true
+  },
+  "ordinary_person_score": 100,
+  "forbidden_role_check": {
+    "pass": true,
+    "hits": []
+  },
+  "story_build_note": "这是 Story Build Input Contract，不是新 Stage，也不是 Episode 阶段事实源。本集为幻想世界志怪寓言，Cast 手写为两名未褪尽人形的小妖：P01 为第一人称视角（獐子精），P02 为原文点名的同卡野猪精。两人都不是功能型职业角色，也不解决任何问题。Story Lock 前已将 status 改为 LOCKED 并逐字复核 NO-ANOMALY TEST。",
+  "locked_at": "2026-09-17T16:20:00+08:00"
+}

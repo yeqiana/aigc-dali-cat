@@ -1,0 +1,586 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "17-01",
+  "visual_profile": {
+    "mode": "override",
+    "profile_id": "M00_HEAVEN_WORKER_DAILY_V1",
+    "profile_path": "standards/visual_profiles/M00_HEAVEN_WORKER_DAILY_V1.json",
+    "capture_profile": "auto",
+    "override_reason": "本集是幻想世界志怪寓言的第一人称底层视角，全片记录的是妖国杂兵一天的轮班、领泔水与被上头支使，属于“幻想世界中的普通人生活记录”。M00 现实生活纪实母版仍是唯一真实性母版；本覆盖只把记录对象从现代人换成狮驼岭底层小妖，禁止仙侠海报、游戏 CG、妖王威压与巨型宫殿展示。"
+  },
+  "story": {
+    "recent5_checked": true,
+    "four_locks_diff_count": 4,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      1,
+      3,
+      10
+    ],
+    "escalation_frames": [
+      6,
+      11,
+      12,
+      13,
+      14,
+      16
+    ],
+    "climax_frame": 19,
+    "payoff_frame": 20,
+    "semantic_review_path": "meta/story-semantic-review.json"
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [
+      1,
+      16,
+      10,
+      19
+    ],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "P01：22 岁獐子精杂兵，瘦小精瘦、灰褐短毛、一对没褪净的獐子耳；洗得发灰的粗布短褂 + 麻布围腰 + 草绳束腰 + 沾泥的布绑腿 + 草鞋；腰上的骨头腰牌与旧木梆子从不离身。",
+        "location": "狮驼岭南麓第二道哨卡（木桩、梆子架、木栅栅栏、草棚）+ 坡下后厨倒泔水的空地 + 抬头可见的三层山体（峰顶白骨洞、半山回廊、山脚草棚与木栅）。",
+        "key_prop": "骨头磨的腰牌（背面歪歪扭扭刻着「巡」字）、旧木梆子（表面有一圈敲出来的浅坑）、豁口陶盆（盆沿缺口是新崩的）、野猪精腰后那把豁口短刀。",
+        "wardrobe": "全片不换装。P01：粗布短褂 + 麻布围腰 + 布绑腿 + 草鞋；P02：敞襟粗麻单衣 + 脏污兽皮 + 赤脚。只发生湿、脏、皱与磨破的状态变化。",
+        "weather_time": "同一天：拂晓起晨雾，白昼雾散转晴，入夜后无云。昼为天光，夜为火把低照度。"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "幻想世界·狮驼岭妖国的某一天（故事世界内部没有现实年代；记录介质不是摄影器材）",
+      "location": "西牛贺洲·八百里狮驼岭南麓第二道哨卡一线（木桩哨卡、草棚窝棚、坡下后厨倒泔水的空地，以及抬头可见的三层山体与峰顶白骨洞）",
+      "photographer": "P01 本人：22 岁獐子精杂兵，人形未褪尽，是这一班的守卡者。他不是在拍照，而是用自己眼睛所在的位置在记录——画面原点就是他站在哨位上时的视线高度与身体遮挡。",
+      "shooting_reason": "这一班轮值里他反复看的几样东西：自己腰上那块骨头腰牌、同卡的野猪精、抬头就能看见的三层山体、后厨倒出来的那盆泔水，以及那天清晨从山顶一路下行的金牌令箭。",
+      "primary_capture": {
+        "id": "CP01",
+        "device": "P01 自身双眼与身体（妖国没有摄影器物，记录原点就是他站在哨位上的视线高度）"
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": null,
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "白天在哨卡与坡下空地上，视线稳定，手里的物件与脚下的地面都能读清；这是全片占多数的状态。",
+        "restricted": "晨雾里与逆光下：最上面那一层只剩一点光，崖壁挂件只能读出逆光轮廓。视线受限来自雾与逆光，不是器材故障。",
+        "lost_control": "天光落尽之后只剩火把：视线变成低照度下的局部可见——只有被火光照到的那一条（后颈、手里的梆子、脚下地面）能读清，其余落进暗部。"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": "故事世界里没有任何摄影器物，所以画面里也不会出现现代器材；唯一能被拍到的是他自己的手、手里的梆子与腰上的骨头腰牌。",
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": "P01 是第一人称记录原点，全程不给清晰正脸；只出现手、腰牌、梆子、后颈、肩背与脚。Frame 19 也只给后颈与肩，脸始终在阴影里。"
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "worst_condition": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "first_major_anomaly": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "schema_version": 2,
+      "policy": "four_admission_v21",
+      "items": [
+        {
+          "id": "V-B",
+          "role": "ordinary_baseline",
+          "frame": 1,
+          "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/candidates/scheduled/01-7df397dc164b-a1.png",
+          "sha256": "d7c4b3a4caec076d865463db060ca79d848b7274929458ec202c7544064c40c3",
+          "decision": "passed",
+          "frame_contract_sha256": "8fad1677f50a88889f40337766e87a2c4a13e737f30833e2852252d5a48099fd",
+          "note": "baseline separately PASS; parallel-three may start",
+          "contract_sha256": "8fad1677f50a88889f40337766e87a2c4a13e737f30833e2852252d5a48099fd"
+        },
+        {
+          "id": "V-W",
+          "role": "worst_capture_condition",
+          "frame": 16,
+          "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/candidates/scheduled/16-daa08d47e29c-a1.png",
+          "sha256": "7b42b58e042e1b0fb909910310801ad1c5afedecfcfd9aed89bc0f41776bc349",
+          "decision": "passed",
+          "frame_contract_sha256": "c5ea40ef7e564b50614c2cc4779877bb78a5a1df83e142a336abd17a4c9c134a",
+          "note": "",
+          "contract_sha256": "c5ea40ef7e564b50614c2cc4779877bb78a5a1df83e142a336abd17a4c9c134a"
+        },
+        {
+          "id": "V-A",
+          "role": "first_major_anomaly",
+          "frame": 10,
+          "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/candidates/scheduled/10-9e264bc18eb4-a1.png",
+          "sha256": "a618819b2556a0cae1c1d7e2d777655950db7750239abbc5df49e27370668947",
+          "decision": "passed",
+          "frame_contract_sha256": "a20fe5e4b004b843b01e3d361657a26f32036751d175aaff0f2a3fd5ee0c7ffc",
+          "note": "",
+          "contract_sha256": "a20fe5e4b004b843b01e3d361657a26f32036751d175aaff0f2a3fd5ee0c7ffc"
+        },
+        {
+          "id": "V-H",
+          "role": "high_impact_admission",
+          "frame": 19,
+          "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/candidates/scheduled/19-d671c8b8ec1c-a1.png",
+          "sha256": "3dd17f3aed826181af568c7e4a23c295cdd388990eb3b669b13bcc8a2e488af4",
+          "decision": "passed",
+          "frame_contract_sha256": "5e26a023d23024e593e89be111e2296c0c49bb10cd01f17e4c57d2ea52d35b94",
+          "note": "",
+          "contract_sha256": "5e26a023d23024e593e89be111e2296c0c49bb10cd01f17e4c57d2ea52d35b94"
+        }
+      ],
+      "finalizer_reconciled": true,
+      "finalizer_source": "meta/visual-lock-final-report.json"
+    },
+    "calibration_contact_sheet": {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/review/contact-sheets/visual-lock-admission.jpg",
+      "sha256": "d41994050612b19d999ec0cc21d02b74ec969166562b6c4ce92a36a2e81f2232"
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "幻想世界妖国的深秋（山高风硬、昼夜温差大、山谷晨雾重）",
+      "baseline": {
+        "condition": "晨雾与晴昼交替的山地天气：拂晓山谷起雾，天亮后雾在逆光里变薄，日头升高后雾散转晴，入夜后无云。哨卡没有任何取暖与照明设施，天黑之后整座山只剩火把。",
+        "time_of_day": "同一天：拂晓 → 清晨 → 白昼 → 入夜（20 帧不跨日，15 → 16 之间跳过黄昏）",
+        "temperature_feel": "山地凉偏寒，拂晓与入夜最冷；夜里握梆子的指节冻得发红",
+        "ground_state": "哨卡内外是夯土与碎石地面，拂晓有露水与夜里踩出来的湿痕；坡下后厨倒泔水的地方地面常年油滑发暗；山道台阶是踩出来的土石面，白天干燥起灰。",
+        "visibility": "正常可读，受限处只来自环境本身：拂晓与清晨的大片晨雾把最上面那一层压成只剩一点光；逆光时崖壁挂件只剩轮廓；夜里只有火把照到的那一条能读清。",
+        "wind": "山口有持续的山风，雾与崖壁挂件随风移动；夜里火把的火焰被风吹得偏向一侧",
+        "precipitation": "全片无降水，只有拂晓的露水与山谷湿气",
+        "physical_cues": [
+          "雾是真实山谷晨雾：它随日头升高而变薄、散尽，不能当成滤镜压在整片上",
+          "拂晓、清晨、白昼、入夜四段的照度必须来自天光与火把本身，不新增任何电影灯",
+          "夜里只有火把能照亮的地方可读：后颈、手里的梆子、脚下的地面；其余必须落进暗部",
+          "崖壁挂件与三层山体必须共享同一套雾与同一套光，不能各帧随意改浓度",
+          "夯土地面的湿干要跟雾与露水同源：拂晓湿、白天干、夜里返潮",
+          "火把是唯一的人造光源，且必须真的是火把——不做光柱、不做粒子、不做体积光"
+        ]
+      },
+      "segments": [
+        {
+          "id": "sentry_dawn_fog",
+          "start_frame": 1,
+          "end_frame": 11,
+          "condition": "拂晓到清晨的第二道哨卡一线，山谷晨雾未散",
+          "physical_cues": [
+            "大片晨雾把峰顶那层压成只剩一点光",
+            "夯土地面有露水，脚下留湿痕",
+            "崖壁挂件在逆光里只剩翻动的轮廓边缘",
+            "第二层回廊的碗与酒坛只在柱子和廊檐影子的缝隙里可读"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "雾越到画面上方越厚，最上面那一层只允许出现轮廓与一点光，不给任何内部细节",
+              "when": [
+                "frame>=1",
+                "frame<=11"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sentry_clearing_day",
+          "start_frame": 12,
+          "end_frame": 15,
+          "condition": "雾散后的白昼，硬日照落到哨卡与空地上，影子连成一片",
+          "physical_cues": [
+            "雾已散尽，远处只剩一层被日头晒白的灰",
+            "硬日照在夯土地上投出方向一致的影子",
+            "磨刀石旁新崩的碎木屑在硬光下发白",
+            "碎掉的栅栏断面是新茬，颜色比周围木头浅"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "动作帧只允许出现真实的运动模糊，不做慢动作碎片、不做动作片特效",
+              "when": [
+                "frame>=14",
+                "frame<=15"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mountain_night_torches",
+          "start_frame": 16,
+          "end_frame": 20,
+          "condition": "入夜后的哨卡前沿，无云，唯一光源是从山脚连到峰顶的火把",
+          "physical_cues": [
+            "火把从山脚一层层连到峰顶，山体被光的边界切成横向的层",
+            "最高处一线金光往下淌，尺度远到只剩一条线",
+            "火光照不到的地方必须真的黑，不给补光",
+            "火把光在风里跳动，同一帧内前景亮度不稳定"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "低照度只保留火把照亮的那一条（后颈 / 手里的梆子 / 脚下地面），其余落进暗部",
+              "when": [
+                "frame>=16",
+                "frame<=20"
+              ]
+            },
+            {
+              "effect": "火把光的跳动必须与山风同源，不允许为了好看把火焰画成静态发光体",
+              "when": [
+                "frame>=16",
+                "frame<=20"
+              ]
+            }
+          ]
+        }
+      ],
+      "frame_overrides": {
+        "01": {
+          "visibility_priority": "拂晓雾里的平光只够读清骨头腰牌与指甲缝里的黑泥，背景全部沉进雾"
+        },
+        "04": {
+          "visibility_priority": "强逆光，崖壁挂件只留翻动的轮廓边缘，一片都看不出是什么"
+        },
+        "07": {
+          "visibility_priority": "贴地视角看不到脸，头顶垂下来的东西只作为画面边缘的形状"
+        },
+        "10": {
+          "visibility_priority": "前景两只手拍实，雾里山道尽头那点反光很小，但方向必须读出是朝下"
+        },
+        "16": {
+          "visibility_priority": "火把从山脚一层层连到峰顶，山体由光的边界切成横向的层，最高处一线金光"
+        },
+        "19": {
+          "visibility_priority": "火光只落在后颈一条，脸始终在阴影里；后颈与肩的轮廓必须清楚"
+        },
+        "20": {
+          "visibility_priority": "前景那盆泔水留在暗处，远处山道一路亮到峰顶，最下面那一层还是暗的"
+        }
+      }
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "骨头磨的腰牌背面刻着歪歪扭扭的「巡」字",
+          "指甲缝里的黑泥",
+          "只出现手与腰牌"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "木桩、梆子架、栅栏与草棚同框",
+          "蹲在栅栏边的野猪精",
+          "半块干粮停在空中"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "03": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "峰顶洞窟轮廓、半山回廊柱、山脚草棚与木栅同框",
+          "大片晨雾做负空间",
+          "同一种骨白由亮到暗的三层"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "04": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "逆光里只剩轮廓的一排片状挂件",
+          "挂件被风翻动",
+          "画面下角主角的肩背"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "05": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "过肩视线沿三层台阶往上看",
+          "上亮下暗，最上一层只剩一点光"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "06": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "廊柱与廊檐影子挡住大半",
+          "只给出碗与酒坛的数量感"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "07": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "贴地低角度里一排快步走过的脚",
+          "垂到胸口高度的挂件只作为画面边缘形状"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "08": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "豁口陶盆",
+          "看不出原形的残渣",
+          "盆沿新崩的缺口"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "09": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "两个人蹲在草棚门口",
+          "陶盆在中间被往对面推了半寸"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "10": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "前景两只手握着梆子与短刀",
+          "雾里山道尽头一点反光",
+          "反光的方向朝下"
+        ],
+        "scale_reference": "哨卡前沿到雾里山道尽头的实际山道距离",
+        "escalation_from": null
+      },
+      "11": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "同一条山道从峰顶看到山脚",
+          "金牌令箭在雾里一层层往下递",
+          "每过一层围上来的人多一层"
+        ],
+        "scale_reference": "峰顶到山脚的整条山道与三层山体的实际落差",
+        "escalation_from": 10
+      },
+      "12": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "前景两个人的肩线同时抬起",
+          "背景远处另几处哨卡也在抬",
+          "动作整齐但姿势各不相同"
+        ],
+        "scale_reference": "前景两人的肩线到远处另几处哨卡之间的距离",
+        "escalation_from": 11
+      },
+      "13": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "磨刀石与刀身上新磨出的亮面",
+          "地上新崩的碎木屑"
+        ],
+        "scale_reference": "一把刀与全山同时响起的磨刀声",
+        "escalation_from": 12
+      },
+      "14": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "野猪精的肩膀撞进自家哨卡的栅栏",
+          "飞起的碎木屑",
+          "主角在画框边缘伸出的手"
+        ],
+        "scale_reference": "一个人撞栏的力度与整座哨卡栅栏的尺寸",
+        "escalation_from": 13
+      },
+      "15": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "逆光剪影里举过头顶的豁口短刀",
+          "张到最大的嘴",
+          "不给脸与獠牙的细节"
+        ],
+        "scale_reference": "一个人举刀的高度与峰顶之间的距离",
+        "escalation_from": 14
+      },
+      "16": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 4,
+        "required_visual_cues": [
+          "火把从山脚一层层连到峰顶",
+          "山体被光的边界切成横向的层",
+          "最高处一线金光往下淌"
+        ],
+        "scale_reference": "山脚到峰顶的完整海拔与四万八千妖众铺开的横向宽度",
+        "escalation_from": 15
+      },
+      "17": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "前景停在半空不动的梆子",
+          "远处一片往前的脚与火把"
+        ],
+        "scale_reference": "一个人站在原地与全山往前涌之间的距离",
+        "escalation_from": 16
+      },
+      "18": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "旧木梆子上被敲出来的一圈浅坑",
+          "冻得发红的指节",
+          "背景模糊的火光与人影"
+        ],
+        "scale_reference": "一件随身木梆子与整座山的比例",
+        "escalation_from": 17
+      },
+      "19": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 4,
+        "required_visual_cues": [
+          "只落在后颈一条的火光",
+          "脸始终留在阴影里",
+          "后颈与肩的轮廓清楚"
+        ],
+        "scale_reference": "后颈那一条光的宽度与峰顶到第二道哨卡的垂直落差",
+        "escalation_from": 16
+      },
+      "20": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "草棚门口那盆一点没动过的泔水",
+          "远处一路亮到峰顶的山道",
+          "最下面那一层仍然暗"
+        ],
+        "scale_reference": "草棚前一盆泔水与整座三层山体的对照",
+        "escalation_from": null
+      }
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": true,
+    "layout_audit_path": "meta/subtitle-layout-audit.json",
+    "review_evidence": {
+      "checked_at": "2026-09-17T18:20:00+08:00",
+      "basis": "delegated_auto_review",
+      "voice_contract": "meta/voice-contract.json",
+      "text_audit": "meta/text-audit.json",
+      "layout_audit": "meta/subtitle-layout-audit.json",
+      "note": "声音卡 LOCKED 且与 meta/subtitles.yaml 同源；text_audit hard=0 warnings=0；20 帧排版审计 PASS，合成后发布像素复核未遮挡人物、道具与异常证据。"
+    }
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "passed",
+    "subtitle": "passed",
+    "production": "passed",
+    "recommendation_fit": "passed",
+    "publish": "passed"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 1,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true,
+    "production_review": {
+      "checked_at": "2026-09-17T18:05:00+08:00",
+      "basis": "delegated_auto_review",
+      "review_path": "episodes/17_狮驼岭/01_泔水与金牌/release/production-review.md",
+      "frame_semantic_review": "meta/frame-semantic-review.json",
+      "frame_review_dir": "meta/frame-reviews",
+      "incremental_audit": "meta/incremental-frame-audit.json",
+      "attempt": 1,
+      "review_scope": "FULL_FRAME_SET",
+      "note": "20/20 帧按 29 项检查逐帧复核实际发布像素，SHA 绑定当前 approved 资产、Story/Storyboard、环境与帧合同；来源为 WORK isolated host 通道的委托自动评审，不是用户本人亲眼验收。像素级局限已在生产验收记录中如实登记。"
+    }
+  },
+  "release": {
+    "review_evidence": {
+      "checked_at": "2026-09-17T19:10:00+08:00",
+      "basis": "delegated_auto_review",
+      "propagation_card": "episodes/17_狮驼岭/01_泔水与金牌/release/propagation-card.md",
+      "recommendation_fit": "episodes/17_狮驼岭/01_泔水与金牌/release/recommendation-fit.md",
+      "publish_copy": "episodes/17_狮驼岭/01_泔水与金牌/release/publish-copy.md",
+      "propagation_score": 8.9,
+      "s_min_score": 8.7,
+      "propagation_decision": "publishable",
+      "publish_decision": "go",
+      "note": "九项传播结构卡与推荐适配卡分开打分（规范 12.4/12.4.3）；治理风险 PASS，不参与平均分。来源为委托自动评审，不是用户本人亲眼验收。"
+    },
+    "final_candidate_snapshot": {
+      "schema_version": 1,
+      "enabled": true,
+      "delivery_must_consume_snapshot": true,
+      "snapshot_is_authority": false
+    }
+  }
+}

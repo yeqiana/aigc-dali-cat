@@ -1,0 +1,903 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "built_at": "2026-09-17T19:18:18+08:00",
+  "derived_evidence": true,
+  "authority": "locked source files listed by SHA",
+  "snapshot_is_authority": false,
+  "lock": {
+    "schema_version": 1,
+    "episode": {
+      "id": "17-01",
+      "series": "17_狮驼岭",
+      "title": "泔水与金牌",
+      "aspect_ratio": "4:5"
+    },
+    "release_version": "v1.0",
+    "publication": {
+      "platform": "douyin",
+      "actual_title": "山上说吃一口唐僧肉能长生，我连大王剩的肉汤都轮不到",
+      "description": "我是狮驼岭南麓第二道哨卡敲梆子的一只獐子精，腰上那块牌子是骨头磨的，背面刻着一个「巡」字。八百里狮驼岭，妖魔四万八千，外面传这里是妖族的极乐净土——可底下的草芥都清楚，净土也是分层的。\n\n峰顶白骨洞里，大王们撕扯仙禽异兽，剩下的皮肉挂满山崖当风幡；半山回廊里，头目校尉大碗吃肉，喝带血的陈酿。轮到我们这一层，等的是后厨倒出来那盆馊泔水，盆沿的缺口是新崩的。\n\n那天清晨，山道尽头有一点反光，正一点一点往下走。是金牌令箭——山顶发一句话，得靠人一层一层往下递：东土大唐的取经僧进了地界，吃他一口肉，可得长生不老。整座山顿时像滚油里泼了冷水，跟我一同守卡的野猪精一头撞碎了我们自家的栅栏。\n\n敲了一夜的那根梆子还在我手里。满山的人都往上涌，我没有跟着走，只觉得后脖颈发凉：我们连大王剩下的肉汤都要抢破头，这肉真能顺着骨阶，淌进我们这群蝼蚁的嘴里吗？\n\n人物、地点、情节均为虚构；内容由 AI 生成。",
+      "topics": [
+        "民俗怪谈",
+        "第一人称",
+        "妖国底层",
+        "细思极恐",
+        "AI图文故事",
+        "西游记",
+        "狮驼岭"
+      ],
+      "pinned_comment": "回头看最后一张：火把从山脚一路连到峰顶，最下面那层还是那盆没动过的泔水。有两种读法——长生肉本来就只在最上面两层的名单里；或者，往上冲的这些人本身就是被分下去的东西。我记住的是另一件事：我没有动。虚构故事，AI 生成。",
+      "published_at": null,
+      "timing_window": null,
+      "post_url": null
+    },
+    "publication_sha256": "d5a7ed144131e8914ddba74d1e02e79c20108cefe3a92362d6f4a3f7661a1ab6",
+    "story": {
+      "role": "story",
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+      "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446",
+      "bytes": 9539
+    },
+    "storyboard": {
+      "role": "storyboard",
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+      "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079",
+      "bytes": 11365
+    },
+    "story_gates_contract_sha256": "c970f7dad28a4373f78ccffc5c34b03a138d55465830b4f14ec3b32ca12fc02a",
+    "release_manifest": {
+      "role": "release_manifest",
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/release-manifest.json",
+      "sha256": "f4b952316aa25697dea3db5ad674f8bcd3b47474f2f1742148f4ce4be5dd0a71",
+      "bytes": 4027,
+      "archive_path": "release-manifest.json"
+    },
+    "cover": {
+      "role": "cover",
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/01.png",
+      "sha256": "a262f658533fa4283882ae7798b1c4a2a56bbb436cd3757a260952780b530c1f",
+      "bytes": 1952450,
+      "archive_path": "cover.png"
+    },
+    "body": [
+      {
+        "role": "body:01",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/01.png",
+        "sha256": "a262f658533fa4283882ae7798b1c4a2a56bbb436cd3757a260952780b530c1f",
+        "bytes": 1952450,
+        "archive_path": "publish/01.png"
+      },
+      {
+        "role": "body:02",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/02.png",
+        "sha256": "439ed2c3720e32d2bb84b452659db08df71eac249a270ef36686ddb2eac4c283",
+        "bytes": 2261724,
+        "archive_path": "publish/02.png"
+      },
+      {
+        "role": "body:03",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/03.png",
+        "sha256": "eb625044d72772a11de0fd52ef3571ccf42a0985f238434ac1971c772fefc9d1",
+        "bytes": 1784354,
+        "archive_path": "publish/03.png"
+      },
+      {
+        "role": "body:04",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/04.png",
+        "sha256": "e1836f245f3af7f546e5ac7ba67c6db6dd71c443fe23ab762fd9a948d3b83012",
+        "bytes": 2063432,
+        "archive_path": "publish/04.png"
+      },
+      {
+        "role": "body:05",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/05.png",
+        "sha256": "5a51184e9f3858eae8dfd69693580e59aafb9389b4d250aadef73ff9b3e5bbaf",
+        "bytes": 1987740,
+        "archive_path": "publish/05.png"
+      },
+      {
+        "role": "body:06",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/06.png",
+        "sha256": "68f136ef10b69c80edc9c8aada8620236bac36fbc6e3f3556243dcc6ce04c3b0",
+        "bytes": 1396231,
+        "archive_path": "publish/06.png"
+      },
+      {
+        "role": "body:07",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/07.png",
+        "sha256": "bfb2ee5d8650fe9efda3831918ae0323e95f259ac39bb14176cf13f76d115765",
+        "bytes": 2267909,
+        "archive_path": "publish/07.png"
+      },
+      {
+        "role": "body:08",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/08.png",
+        "sha256": "df358f166663d7359995ca53a96d9e14a05c9c4a7496e2878cd03111af77a27f",
+        "bytes": 2663251,
+        "archive_path": "publish/08.png"
+      },
+      {
+        "role": "body:09",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/09.png",
+        "sha256": "5c69316201ab23072f9225acf64e677ff31b7645471e4568c953edac6a5ad42e",
+        "bytes": 2320241,
+        "archive_path": "publish/09.png"
+      },
+      {
+        "role": "body:10",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/10.png",
+        "sha256": "d22905bb3d2ef1c426866798e43d9e734a485297fd3d9b47d4bcadcc1e30545a",
+        "bytes": 2051543,
+        "archive_path": "publish/10.png"
+      },
+      {
+        "role": "body:11",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/11.png",
+        "sha256": "6f74dccbb9681ed3452ee88cacf2d5518e9f42dcec09b8e5f004a754e963c59e",
+        "bytes": 2135832,
+        "archive_path": "publish/11.png"
+      },
+      {
+        "role": "body:12",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/12.png",
+        "sha256": "6b7b901d75d5c375c48e9e31b4f16c5d291e0ff28bc2c85332d39ed507b6cf73",
+        "bytes": 2226980,
+        "archive_path": "publish/12.png"
+      },
+      {
+        "role": "body:13",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/13.png",
+        "sha256": "70b311265869523866553d35cf56a3ee862887bade24752f8a3912087de9a651",
+        "bytes": 2626348,
+        "archive_path": "publish/13.png"
+      },
+      {
+        "role": "body:14",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/14.png",
+        "sha256": "4624976823f6fd07c01b67d6c74f96c67f634935648c71e73a7b9e765c7ab5ea",
+        "bytes": 2468762,
+        "archive_path": "publish/14.png"
+      },
+      {
+        "role": "body:15",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/15.png",
+        "sha256": "8323b7be2590cde2e9f52fb30332d75ee037706d7f576bdfe0930134e672d1c9",
+        "bytes": 1517967,
+        "archive_path": "publish/15.png"
+      },
+      {
+        "role": "body:16",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/16.png",
+        "sha256": "e32e5d45910bba10e23b4787290b5df6a5a68fbdd71ef8115c77d20b3f10b828",
+        "bytes": 2018017,
+        "archive_path": "publish/16.png"
+      },
+      {
+        "role": "body:17",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/17.png",
+        "sha256": "9fdf80b8a21536f7f6621a41b9f452a03f48c0775acabbc7b44c0afb97978314",
+        "bytes": 1931136,
+        "archive_path": "publish/17.png"
+      },
+      {
+        "role": "body:18",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/18.png",
+        "sha256": "f6edce14baae858c649540af7d79b16f6405e158e0c8ddc73a1a1e9298a78a8d",
+        "bytes": 1993307,
+        "archive_path": "publish/18.png"
+      },
+      {
+        "role": "body:19",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/19.png",
+        "sha256": "558c31156d8781deb7b7aa7b2ebd1c2728715b459f2b6b8c83315779508000e8",
+        "bytes": 1297772,
+        "archive_path": "publish/19.png"
+      },
+      {
+        "role": "body:20",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/20.png",
+        "sha256": "90bd7770a00d88aff3296571d51f94348b49805747d20869f34ffba25b5a152f",
+        "bytes": 1692261,
+        "archive_path": "publish/20.png"
+      }
+    ],
+    "text_artifacts": [
+      {
+        "role": "captions",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/subtitles.yaml",
+        "sha256": "dcebb90aef33e205ddeff4c5b71aa128429d054bb4df1cb1eb91756d701bfb1a",
+        "bytes": 4354,
+        "archive_path": "text/subtitles.yaml"
+      },
+      {
+        "role": "publish_copy",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/release/publish-copy.md",
+        "sha256": "2dc5bb2a0601228566f3d11a2080ee8ada2544d49d654394e29f99b2716a0246",
+        "bytes": 1729,
+        "archive_path": "text/publish-copy.md"
+      },
+      {
+        "role": "propagation_card",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/release/propagation-card.md",
+        "sha256": "5c60146501c525f5ec01b4645e7d0b8dc2e5433c90fb42208d31f9aedff463d9",
+        "bytes": 4121,
+        "archive_path": "text/propagation-card.md"
+      }
+    ],
+    "evidence": [
+      {
+        "role": "production_ledger",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/production-ledger.json",
+        "sha256": "0f1cd31ed6cac434737c88f84ac76f9bf64cdaac8b06ec6c607c60deb148da8f",
+        "bytes": 102350,
+        "archive_path": "evidence/production-ledger.json"
+      },
+      {
+        "role": "frame_semantic_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-semantic-review.json",
+        "sha256": "839749a5b8d4c800ab0048e0d1e56c234e8540976795c58f1c3995d8d09beb75",
+        "bytes": 12247,
+        "archive_path": "qa/frame-semantic-review.json"
+      },
+      {
+        "role": "frame_semantic_audit",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-semantic-audit.json",
+        "sha256": "7d4913ab4c23d37a574ae970b31c6a3f64d44f1e4082f141f5964bc5caf7d388",
+        "bytes": 6163,
+        "archive_path": "qa/frame-semantic-audit.json"
+      },
+      {
+        "role": "story_semantic_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/story-semantic-review.json",
+        "sha256": "77c65d5815fdefdb85c3b498cd871fd994ac375a3436c06f94fa4498eebcfdcb",
+        "bytes": 7982,
+        "archive_path": "qa/story-semantic-review.json"
+      },
+      {
+        "role": "visual_profile_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/visual-profile-review.json",
+        "sha256": "d2ea9467d1dc0a4f5084bdca4d51b3f3e3cff14ddb1342c39631bf4ec2b79f6d",
+        "bytes": 8806,
+        "archive_path": "qa/visual-profile-review.json"
+      },
+      {
+        "role": "subtitle_layout_audit",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/subtitle-layout-audit.json",
+        "sha256": "a1b9fafb756aaba6de74675c2c88a9e00ebb00394703bfcccd032be61d888de5",
+        "bytes": 19751,
+        "archive_path": "qa/subtitle-layout-audit.json"
+      },
+      {
+        "role": "text_audit",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/text-audit.json",
+        "sha256": "692c669f6d2625117c9af6d395752188ad290187cb87bc96bc9dd8205f75ce9b",
+        "bytes": 579,
+        "archive_path": "qa/text-audit.json"
+      },
+      {
+        "role": "release_semantic_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/release-semantic-review.json",
+        "sha256": "24d310b64ca7740b85e53ee2b8d37d48ad1edd6255060a3129a2135dfd033b63",
+        "bytes": 9971,
+        "archive_path": "qa/release-semantic-review.json"
+      },
+      {
+        "role": "publish_compliance",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/publish-compliance.json",
+        "sha256": "7253c813eae05e019ee2b32cc6ef30a57884231822cd61e95440dec6a0dcc94c",
+        "bytes": 435,
+        "archive_path": "qa/publish-compliance.json"
+      },
+      {
+        "role": "recent5_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/recent5-review.json",
+        "sha256": "69af11ac0c5e064b094fe2fe3c64fe5fa5235f586cb66875416017c010079ca8",
+        "bytes": 1904,
+        "archive_path": "qa/recent5-review.json"
+      },
+      {
+        "role": "recent5_semantic_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/recent5-semantic-review.json",
+        "sha256": "35196c3738e0c7b0fe1af255197354c98d4777e2c88f05082a66ed35191a47ed",
+        "bytes": 2137,
+        "archive_path": "qa/recent5-semantic-review.json"
+      },
+      {
+        "role": "frame_contract_index",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/contracts/frame-contract-index.json",
+        "sha256": "9da98c2ac7dce845e1ea8a2170961670b6a698f054faf90991c32ee11869df10",
+        "bytes": 9933,
+        "archive_path": "evidence/frame-contract-index.json"
+      },
+      {
+        "role": "visual_lock_baseline_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/visual-lock-baseline-review.json",
+        "sha256": "51b3366ce0cb68cf7d6ad489f406c850898b57c08544a70b4264ebe7c08fe673",
+        "bytes": 2528,
+        "archive_path": "qa/visual-lock-baseline-review.json"
+      },
+      {
+        "role": "visual_final_freeze",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/visual-final-freeze.json",
+        "sha256": "36fa6dd0d12a29b702c06faee85405e4eb9a92bd2864cd9430e6fadeab256262",
+        "bytes": 13315,
+        "archive_path": "qa/visual-final-freeze.json"
+      },
+      {
+        "role": "caption_image_audit",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/caption-image-audit.json",
+        "sha256": "2056ab0df61d4fca1367f9407cd2b9eae236c05024f715fd2af7b00c795ebed3",
+        "bytes": 27868,
+        "archive_path": "qa/caption-image-audit.json"
+      },
+      {
+        "role": "frame_review:01",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/01.json",
+        "sha256": "7243cb66b814a7678f6727216c1fda49642ab5a78abf899a70780a1b91f68e42",
+        "bytes": 3608,
+        "archive_path": "qa/frame-reviews/01.json"
+      },
+      {
+        "role": "frame_review:02",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/02.json",
+        "sha256": "fcaeb6b7e2fbb9066b981251f44a2d1ced584338f53574d451d7e543c1990d72",
+        "bytes": 3560,
+        "archive_path": "qa/frame-reviews/02.json"
+      },
+      {
+        "role": "frame_review:03",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/03.json",
+        "sha256": "4e448eb672ab0ae18c3bd84799d47e0a6dbaf95c6d23bd970b3b640b55b5ff86",
+        "bytes": 3524,
+        "archive_path": "qa/frame-reviews/03.json"
+      },
+      {
+        "role": "frame_review:04",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/04.json",
+        "sha256": "cfbd1791d4c38e735cf4b8aa8b47bbf595325886c10fde82f91da413bfe1f706",
+        "bytes": 3545,
+        "archive_path": "qa/frame-reviews/04.json"
+      },
+      {
+        "role": "frame_review:05",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/05.json",
+        "sha256": "789191e78f32a2237128de93720339a8f5f0418933c87bb484c594e09401b4bb",
+        "bytes": 3617,
+        "archive_path": "qa/frame-reviews/05.json"
+      },
+      {
+        "role": "frame_review:06",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/06.json",
+        "sha256": "ab93303f4b7f9454b2166fc1b2e294a4e63652cfb7f70dc9db9eded00314f419",
+        "bytes": 3530,
+        "archive_path": "qa/frame-reviews/06.json"
+      },
+      {
+        "role": "frame_review:07",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/07.json",
+        "sha256": "27e132cea4eeff1d324621187e805a6a2b9df590162be234895cf5fc12220a66",
+        "bytes": 3554,
+        "archive_path": "qa/frame-reviews/07.json"
+      },
+      {
+        "role": "frame_review:08",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/08.json",
+        "sha256": "d996bc3991943649417fb91f2ca4d30f85fc5084725aab5b38482448172d23ec",
+        "bytes": 3536,
+        "archive_path": "qa/frame-reviews/08.json"
+      },
+      {
+        "role": "frame_review:09",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/09.json",
+        "sha256": "188f936089adae887a25b5b27e7354f06d932da9485b6c5d2ce29f9ab40b93d9",
+        "bytes": 3577,
+        "archive_path": "qa/frame-reviews/09.json"
+      },
+      {
+        "role": "frame_review:10",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/10.json",
+        "sha256": "9b3b9f2e0f49b6b6c12dc98900b66a3a29d8b9fc27cabe6b133bc85471726c5d",
+        "bytes": 3638,
+        "archive_path": "qa/frame-reviews/10.json"
+      },
+      {
+        "role": "frame_review:11",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/11.json",
+        "sha256": "e4dc5cfc7564818ee69b8fef26af6765f2149e97bd034e1f2d60421b0990e84a",
+        "bytes": 3656,
+        "archive_path": "qa/frame-reviews/11.json"
+      },
+      {
+        "role": "frame_review:12",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/12.json",
+        "sha256": "797fddd2a8d962355dcf9f50d3282f608fec5b3db7bb6208faee2afe841189e1",
+        "bytes": 3614,
+        "archive_path": "qa/frame-reviews/12.json"
+      },
+      {
+        "role": "frame_review:13",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/13.json",
+        "sha256": "4aab69bffd12e97343f02378d0fbaadcfea80d6dcdeec8091d6e1c498b9807bd",
+        "bytes": 3614,
+        "archive_path": "qa/frame-reviews/13.json"
+      },
+      {
+        "role": "frame_review:14",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/14.json",
+        "sha256": "b1aa07f01cf616650f5a44f64a524ea7b6bd5bfb1d7a90bf46e6f174d45152d8",
+        "bytes": 3626,
+        "archive_path": "qa/frame-reviews/14.json"
+      },
+      {
+        "role": "frame_review:15",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/15.json",
+        "sha256": "fb495bd1812a1758c78130533b960425361eaeeaa13df0cd0dce83304dd88810",
+        "bytes": 3572,
+        "archive_path": "qa/frame-reviews/15.json"
+      },
+      {
+        "role": "frame_review:16",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/16.json",
+        "sha256": "88b17d75e892fa8f5bc482d510f48fdd530ccca31a25decc3994e9eb170de88d",
+        "bytes": 3704,
+        "archive_path": "qa/frame-reviews/16.json"
+      },
+      {
+        "role": "frame_review:17",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/17.json",
+        "sha256": "420b9737c084d547cabf770be7dc2461d70cac98fc4149cd62615ad900fb5bd7",
+        "bytes": 3515,
+        "archive_path": "qa/frame-reviews/17.json"
+      },
+      {
+        "role": "frame_review:18",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/18.json",
+        "sha256": "650a7b1ba5869f52628967b99f3383dc3259aab5f49428ddeecec751a4b01ec9",
+        "bytes": 3554,
+        "archive_path": "qa/frame-reviews/18.json"
+      },
+      {
+        "role": "frame_review:19",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/19.json",
+        "sha256": "879888d3f3fe3ccbe94d405602ae3c82cf28ffc09adf1b8c3401025414592a45",
+        "bytes": 3548,
+        "archive_path": "qa/frame-reviews/19.json"
+      },
+      {
+        "role": "frame_review:20",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/20.json",
+        "sha256": "910ef2077d6cc644ce3a000eeab8dc3fa981e21d987643ab82fe7c24da32fbfa",
+        "bytes": 3689,
+        "archive_path": "qa/frame-reviews/20.json"
+      }
+    ],
+    "delivery_files": [
+      {
+        "role": "release_manifest",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/release-manifest.json",
+        "sha256": "f4b952316aa25697dea3db5ad674f8bcd3b47474f2f1742148f4ce4be5dd0a71",
+        "bytes": 4027,
+        "archive_path": "release-manifest.json"
+      },
+      {
+        "role": "body:01",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/01.png",
+        "sha256": "a262f658533fa4283882ae7798b1c4a2a56bbb436cd3757a260952780b530c1f",
+        "bytes": 1952450,
+        "archive_path": "publish/01.png"
+      },
+      {
+        "role": "body:02",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/02.png",
+        "sha256": "439ed2c3720e32d2bb84b452659db08df71eac249a270ef36686ddb2eac4c283",
+        "bytes": 2261724,
+        "archive_path": "publish/02.png"
+      },
+      {
+        "role": "body:03",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/03.png",
+        "sha256": "eb625044d72772a11de0fd52ef3571ccf42a0985f238434ac1971c772fefc9d1",
+        "bytes": 1784354,
+        "archive_path": "publish/03.png"
+      },
+      {
+        "role": "body:04",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/04.png",
+        "sha256": "e1836f245f3af7f546e5ac7ba67c6db6dd71c443fe23ab762fd9a948d3b83012",
+        "bytes": 2063432,
+        "archive_path": "publish/04.png"
+      },
+      {
+        "role": "body:05",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/05.png",
+        "sha256": "5a51184e9f3858eae8dfd69693580e59aafb9389b4d250aadef73ff9b3e5bbaf",
+        "bytes": 1987740,
+        "archive_path": "publish/05.png"
+      },
+      {
+        "role": "body:06",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/06.png",
+        "sha256": "68f136ef10b69c80edc9c8aada8620236bac36fbc6e3f3556243dcc6ce04c3b0",
+        "bytes": 1396231,
+        "archive_path": "publish/06.png"
+      },
+      {
+        "role": "body:07",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/07.png",
+        "sha256": "bfb2ee5d8650fe9efda3831918ae0323e95f259ac39bb14176cf13f76d115765",
+        "bytes": 2267909,
+        "archive_path": "publish/07.png"
+      },
+      {
+        "role": "body:08",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/08.png",
+        "sha256": "df358f166663d7359995ca53a96d9e14a05c9c4a7496e2878cd03111af77a27f",
+        "bytes": 2663251,
+        "archive_path": "publish/08.png"
+      },
+      {
+        "role": "body:09",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/09.png",
+        "sha256": "5c69316201ab23072f9225acf64e677ff31b7645471e4568c953edac6a5ad42e",
+        "bytes": 2320241,
+        "archive_path": "publish/09.png"
+      },
+      {
+        "role": "body:10",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/10.png",
+        "sha256": "d22905bb3d2ef1c426866798e43d9e734a485297fd3d9b47d4bcadcc1e30545a",
+        "bytes": 2051543,
+        "archive_path": "publish/10.png"
+      },
+      {
+        "role": "body:11",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/11.png",
+        "sha256": "6f74dccbb9681ed3452ee88cacf2d5518e9f42dcec09b8e5f004a754e963c59e",
+        "bytes": 2135832,
+        "archive_path": "publish/11.png"
+      },
+      {
+        "role": "body:12",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/12.png",
+        "sha256": "6b7b901d75d5c375c48e9e31b4f16c5d291e0ff28bc2c85332d39ed507b6cf73",
+        "bytes": 2226980,
+        "archive_path": "publish/12.png"
+      },
+      {
+        "role": "body:13",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/13.png",
+        "sha256": "70b311265869523866553d35cf56a3ee862887bade24752f8a3912087de9a651",
+        "bytes": 2626348,
+        "archive_path": "publish/13.png"
+      },
+      {
+        "role": "body:14",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/14.png",
+        "sha256": "4624976823f6fd07c01b67d6c74f96c67f634935648c71e73a7b9e765c7ab5ea",
+        "bytes": 2468762,
+        "archive_path": "publish/14.png"
+      },
+      {
+        "role": "body:15",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/15.png",
+        "sha256": "8323b7be2590cde2e9f52fb30332d75ee037706d7f576bdfe0930134e672d1c9",
+        "bytes": 1517967,
+        "archive_path": "publish/15.png"
+      },
+      {
+        "role": "body:16",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/16.png",
+        "sha256": "e32e5d45910bba10e23b4787290b5df6a5a68fbdd71ef8115c77d20b3f10b828",
+        "bytes": 2018017,
+        "archive_path": "publish/16.png"
+      },
+      {
+        "role": "body:17",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/17.png",
+        "sha256": "9fdf80b8a21536f7f6621a41b9f452a03f48c0775acabbc7b44c0afb97978314",
+        "bytes": 1931136,
+        "archive_path": "publish/17.png"
+      },
+      {
+        "role": "body:18",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/18.png",
+        "sha256": "f6edce14baae858c649540af7d79b16f6405e158e0c8ddc73a1a1e9298a78a8d",
+        "bytes": 1993307,
+        "archive_path": "publish/18.png"
+      },
+      {
+        "role": "body:19",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/19.png",
+        "sha256": "558c31156d8781deb7b7aa7b2ebd1c2728715b459f2b6b8c83315779508000e8",
+        "bytes": 1297772,
+        "archive_path": "publish/19.png"
+      },
+      {
+        "role": "body:20",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/20.png",
+        "sha256": "90bd7770a00d88aff3296571d51f94348b49805747d20869f34ffba25b5a152f",
+        "bytes": 1692261,
+        "archive_path": "publish/20.png"
+      },
+      {
+        "role": "cover",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/01.png",
+        "sha256": "a262f658533fa4283882ae7798b1c4a2a56bbb436cd3757a260952780b530c1f",
+        "bytes": 1952450,
+        "archive_path": "cover.png"
+      },
+      {
+        "role": "captions",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/subtitles.yaml",
+        "sha256": "dcebb90aef33e205ddeff4c5b71aa128429d054bb4df1cb1eb91756d701bfb1a",
+        "bytes": 4354,
+        "archive_path": "text/subtitles.yaml"
+      },
+      {
+        "role": "publish_copy",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/release/publish-copy.md",
+        "sha256": "2dc5bb2a0601228566f3d11a2080ee8ada2544d49d654394e29f99b2716a0246",
+        "bytes": 1729,
+        "archive_path": "text/publish-copy.md"
+      },
+      {
+        "role": "propagation_card",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/release/propagation-card.md",
+        "sha256": "5c60146501c525f5ec01b4645e7d0b8dc2e5433c90fb42208d31f9aedff463d9",
+        "bytes": 4121,
+        "archive_path": "text/propagation-card.md"
+      },
+      {
+        "role": "production_ledger",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/production-ledger.json",
+        "sha256": "0f1cd31ed6cac434737c88f84ac76f9bf64cdaac8b06ec6c607c60deb148da8f",
+        "bytes": 102350,
+        "archive_path": "evidence/production-ledger.json"
+      },
+      {
+        "role": "frame_semantic_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-semantic-review.json",
+        "sha256": "839749a5b8d4c800ab0048e0d1e56c234e8540976795c58f1c3995d8d09beb75",
+        "bytes": 12247,
+        "archive_path": "qa/frame-semantic-review.json"
+      },
+      {
+        "role": "frame_semantic_audit",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-semantic-audit.json",
+        "sha256": "7d4913ab4c23d37a574ae970b31c6a3f64d44f1e4082f141f5964bc5caf7d388",
+        "bytes": 6163,
+        "archive_path": "qa/frame-semantic-audit.json"
+      },
+      {
+        "role": "story_semantic_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/story-semantic-review.json",
+        "sha256": "77c65d5815fdefdb85c3b498cd871fd994ac375a3436c06f94fa4498eebcfdcb",
+        "bytes": 7982,
+        "archive_path": "qa/story-semantic-review.json"
+      },
+      {
+        "role": "visual_profile_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/visual-profile-review.json",
+        "sha256": "d2ea9467d1dc0a4f5084bdca4d51b3f3e3cff14ddb1342c39631bf4ec2b79f6d",
+        "bytes": 8806,
+        "archive_path": "qa/visual-profile-review.json"
+      },
+      {
+        "role": "subtitle_layout_audit",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/subtitle-layout-audit.json",
+        "sha256": "a1b9fafb756aaba6de74675c2c88a9e00ebb00394703bfcccd032be61d888de5",
+        "bytes": 19751,
+        "archive_path": "qa/subtitle-layout-audit.json"
+      },
+      {
+        "role": "text_audit",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/text-audit.json",
+        "sha256": "692c669f6d2625117c9af6d395752188ad290187cb87bc96bc9dd8205f75ce9b",
+        "bytes": 579,
+        "archive_path": "qa/text-audit.json"
+      },
+      {
+        "role": "release_semantic_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/release-semantic-review.json",
+        "sha256": "24d310b64ca7740b85e53ee2b8d37d48ad1edd6255060a3129a2135dfd033b63",
+        "bytes": 9971,
+        "archive_path": "qa/release-semantic-review.json"
+      },
+      {
+        "role": "publish_compliance",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/publish-compliance.json",
+        "sha256": "7253c813eae05e019ee2b32cc6ef30a57884231822cd61e95440dec6a0dcc94c",
+        "bytes": 435,
+        "archive_path": "qa/publish-compliance.json"
+      },
+      {
+        "role": "recent5_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/recent5-review.json",
+        "sha256": "69af11ac0c5e064b094fe2fe3c64fe5fa5235f586cb66875416017c010079ca8",
+        "bytes": 1904,
+        "archive_path": "qa/recent5-review.json"
+      },
+      {
+        "role": "recent5_semantic_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/recent5-semantic-review.json",
+        "sha256": "35196c3738e0c7b0fe1af255197354c98d4777e2c88f05082a66ed35191a47ed",
+        "bytes": 2137,
+        "archive_path": "qa/recent5-semantic-review.json"
+      },
+      {
+        "role": "frame_contract_index",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/contracts/frame-contract-index.json",
+        "sha256": "9da98c2ac7dce845e1ea8a2170961670b6a698f054faf90991c32ee11869df10",
+        "bytes": 9933,
+        "archive_path": "evidence/frame-contract-index.json"
+      },
+      {
+        "role": "visual_lock_baseline_review",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/visual-lock-baseline-review.json",
+        "sha256": "51b3366ce0cb68cf7d6ad489f406c850898b57c08544a70b4264ebe7c08fe673",
+        "bytes": 2528,
+        "archive_path": "qa/visual-lock-baseline-review.json"
+      },
+      {
+        "role": "visual_final_freeze",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/visual-final-freeze.json",
+        "sha256": "36fa6dd0d12a29b702c06faee85405e4eb9a92bd2864cd9430e6fadeab256262",
+        "bytes": 13315,
+        "archive_path": "qa/visual-final-freeze.json"
+      },
+      {
+        "role": "caption_image_audit",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/caption-image-audit.json",
+        "sha256": "2056ab0df61d4fca1367f9407cd2b9eae236c05024f715fd2af7b00c795ebed3",
+        "bytes": 27868,
+        "archive_path": "qa/caption-image-audit.json"
+      },
+      {
+        "role": "frame_review:01",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/01.json",
+        "sha256": "7243cb66b814a7678f6727216c1fda49642ab5a78abf899a70780a1b91f68e42",
+        "bytes": 3608,
+        "archive_path": "qa/frame-reviews/01.json"
+      },
+      {
+        "role": "frame_review:02",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/02.json",
+        "sha256": "fcaeb6b7e2fbb9066b981251f44a2d1ced584338f53574d451d7e543c1990d72",
+        "bytes": 3560,
+        "archive_path": "qa/frame-reviews/02.json"
+      },
+      {
+        "role": "frame_review:03",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/03.json",
+        "sha256": "4e448eb672ab0ae18c3bd84799d47e0a6dbaf95c6d23bd970b3b640b55b5ff86",
+        "bytes": 3524,
+        "archive_path": "qa/frame-reviews/03.json"
+      },
+      {
+        "role": "frame_review:04",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/04.json",
+        "sha256": "cfbd1791d4c38e735cf4b8aa8b47bbf595325886c10fde82f91da413bfe1f706",
+        "bytes": 3545,
+        "archive_path": "qa/frame-reviews/04.json"
+      },
+      {
+        "role": "frame_review:05",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/05.json",
+        "sha256": "789191e78f32a2237128de93720339a8f5f0418933c87bb484c594e09401b4bb",
+        "bytes": 3617,
+        "archive_path": "qa/frame-reviews/05.json"
+      },
+      {
+        "role": "frame_review:06",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/06.json",
+        "sha256": "ab93303f4b7f9454b2166fc1b2e294a4e63652cfb7f70dc9db9eded00314f419",
+        "bytes": 3530,
+        "archive_path": "qa/frame-reviews/06.json"
+      },
+      {
+        "role": "frame_review:07",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/07.json",
+        "sha256": "27e132cea4eeff1d324621187e805a6a2b9df590162be234895cf5fc12220a66",
+        "bytes": 3554,
+        "archive_path": "qa/frame-reviews/07.json"
+      },
+      {
+        "role": "frame_review:08",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/08.json",
+        "sha256": "d996bc3991943649417fb91f2ca4d30f85fc5084725aab5b38482448172d23ec",
+        "bytes": 3536,
+        "archive_path": "qa/frame-reviews/08.json"
+      },
+      {
+        "role": "frame_review:09",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/09.json",
+        "sha256": "188f936089adae887a25b5b27e7354f06d932da9485b6c5d2ce29f9ab40b93d9",
+        "bytes": 3577,
+        "archive_path": "qa/frame-reviews/09.json"
+      },
+      {
+        "role": "frame_review:10",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/10.json",
+        "sha256": "9b3b9f2e0f49b6b6c12dc98900b66a3a29d8b9fc27cabe6b133bc85471726c5d",
+        "bytes": 3638,
+        "archive_path": "qa/frame-reviews/10.json"
+      },
+      {
+        "role": "frame_review:11",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/11.json",
+        "sha256": "e4dc5cfc7564818ee69b8fef26af6765f2149e97bd034e1f2d60421b0990e84a",
+        "bytes": 3656,
+        "archive_path": "qa/frame-reviews/11.json"
+      },
+      {
+        "role": "frame_review:12",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/12.json",
+        "sha256": "797fddd2a8d962355dcf9f50d3282f608fec5b3db7bb6208faee2afe841189e1",
+        "bytes": 3614,
+        "archive_path": "qa/frame-reviews/12.json"
+      },
+      {
+        "role": "frame_review:13",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/13.json",
+        "sha256": "4aab69bffd12e97343f02378d0fbaadcfea80d6dcdeec8091d6e1c498b9807bd",
+        "bytes": 3614,
+        "archive_path": "qa/frame-reviews/13.json"
+      },
+      {
+        "role": "frame_review:14",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/14.json",
+        "sha256": "b1aa07f01cf616650f5a44f64a524ea7b6bd5bfb1d7a90bf46e6f174d45152d8",
+        "bytes": 3626,
+        "archive_path": "qa/frame-reviews/14.json"
+      },
+      {
+        "role": "frame_review:15",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/15.json",
+        "sha256": "fb495bd1812a1758c78130533b960425361eaeeaa13df0cd0dce83304dd88810",
+        "bytes": 3572,
+        "archive_path": "qa/frame-reviews/15.json"
+      },
+      {
+        "role": "frame_review:16",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/16.json",
+        "sha256": "88b17d75e892fa8f5bc482d510f48fdd530ccca31a25decc3994e9eb170de88d",
+        "bytes": 3704,
+        "archive_path": "qa/frame-reviews/16.json"
+      },
+      {
+        "role": "frame_review:17",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/17.json",
+        "sha256": "420b9737c084d547cabf770be7dc2461d70cac98fc4149cd62615ad900fb5bd7",
+        "bytes": 3515,
+        "archive_path": "qa/frame-reviews/17.json"
+      },
+      {
+        "role": "frame_review:18",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/18.json",
+        "sha256": "650a7b1ba5869f52628967b99f3383dc3259aab5f49428ddeecec751a4b01ec9",
+        "bytes": 3554,
+        "archive_path": "qa/frame-reviews/18.json"
+      },
+      {
+        "role": "frame_review:19",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/19.json",
+        "sha256": "879888d3f3fe3ccbe94d405602ae3c82cf28ffc09adf1b8c3401025414592a45",
+        "bytes": 3548,
+        "archive_path": "qa/frame-reviews/19.json"
+      },
+      {
+        "role": "frame_review:20",
+        "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-reviews/20.json",
+        "sha256": "910ef2077d6cc644ce3a000eeab8dc3fa981e21d987643ab82fe7c24da32fbfa",
+        "bytes": 3689,
+        "archive_path": "qa/frame-reviews/20.json"
+      }
+    ]
+  },
+  "snapshot_sha256": "42af6f169f93f5ef81cebd6bfeab536ad00894973155f72274187ebb54e3c175",
+  "release_review_binding": {
+    "release_semantic_review_sha256": "24d310b64ca7740b85e53ee2b8d37d48ad1edd6255060a3129a2135dfd033b63",
+    "reuse_status": "BOUND"
+  }
+}

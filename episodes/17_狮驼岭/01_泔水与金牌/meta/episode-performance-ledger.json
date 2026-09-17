@@ -1,0 +1,776 @@
+{
+  "schema_version": 1,
+  "kind": "episode_performance",
+  "generated_at": "2026-09-17T15:47:23.222+08:00",
+  "telemetry_only": true,
+  "not_stage_gate": true,
+  "fail_soft": true,
+  "episode_path": "episodes/17_狮驼岭/01_泔水与金牌",
+  "started_at": "2026-09-17T15:47:23.224+08:00",
+  "updated_at": "2026-09-17T19:24:00.847+08:00",
+  "finalized_at": "2026-09-17T19:24:00.847+08:00",
+  "final_status": "PUBLISH_READY",
+  "total_wall_seconds": 12997.623,
+  "stages": {
+    "INCREMENTAL_PLAN": {
+      "runs": [
+        {
+          "run_id": "4045ed41da6e",
+          "started_at": "2026-09-17T15:51:29.685+08:00",
+          "ended_at": "2026-09-17T15:51:30.218+08:00",
+          "duration_seconds": 0.533,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 1
+          }
+        },
+        {
+          "run_id": "95034b1d64b3",
+          "started_at": "2026-09-17T15:51:35.849+08:00",
+          "ended_at": "2026-09-17T15:51:36.378+08:00",
+          "duration_seconds": 0.529,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 2
+          }
+        },
+        {
+          "run_id": "4011ce7a08ce",
+          "started_at": "2026-09-17T16:25:07.224+08:00",
+          "ended_at": "2026-09-17T16:25:08.088+08:00",
+          "duration_seconds": 0.864,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 3
+          }
+        },
+        {
+          "run_id": "2e1376bd17a1",
+          "started_at": "2026-09-17T16:30:00.846+08:00",
+          "ended_at": "2026-09-17T16:30:01.748+08:00",
+          "duration_seconds": 0.902,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 4
+          }
+        },
+        {
+          "run_id": "bd062a3270a9",
+          "started_at": "2026-09-17T16:30:07.957+08:00",
+          "ended_at": "2026-09-17T16:30:08.882+08:00",
+          "duration_seconds": 0.925,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 5
+          }
+        },
+        {
+          "run_id": "5d78e466c9d9",
+          "started_at": "2026-09-17T16:30:15.692+08:00",
+          "ended_at": "2026-09-17T16:30:16.627+08:00",
+          "duration_seconds": 0.935,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "machine_incremental_plan",
+            "target_state": null,
+            "rc": 0,
+            "attempt": 6
+          }
+        }
+      ]
+    },
+    "CREATIVE_STORY": {
+      "runs": [
+        {
+          "run_id": "df078d5da4db",
+          "started_at": "2026-09-17T15:51:30.249+08:00",
+          "ended_at": "2026-09-17T16:30:03.553+08:00",
+          "duration_seconds": 2313.304,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "STORYBOARD_LOCKED",
+            "reused": true
+          }
+        },
+        {
+          "run_id": "430827b8fe34",
+          "started_at": "2026-09-17T15:51:36.397+08:00",
+          "ended_at": "2026-09-17T16:25:09.975+08:00",
+          "duration_seconds": 2013.578,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "STORYBOARD_LOCKED",
+            "reused": true
+          }
+        },
+        {
+          "run_id": "38c6f1fd876c",
+          "started_at": "2026-09-17T16:30:10.718+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "STORYBOARD_LOCKED"
+          },
+          "ended_at": "2026-09-17T16:30:10.718+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "3aea7130c8b4",
+          "started_at": "2026-09-17T16:30:18.456+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "target_state": "STORYBOARD_LOCKED"
+          },
+          "ended_at": "2026-09-17T16:30:18.456+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    "PREIMAGE_COMPILE": {
+      "runs": [
+        {
+          "run_id": "d5063659e12d",
+          "started_at": "2026-09-17T16:25:09.988+08:00",
+          "ended_at": "2026-09-17T16:30:03.835+08:00",
+          "duration_seconds": 293.847,
+          "status": "PASS",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": null,
+            "reused": true,
+            "reason": "preproduction handoff already valid"
+          }
+        },
+        {
+          "run_id": "e51638fb81d8",
+          "started_at": "2026-09-17T16:30:11.065+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "reason": "preproduction handoff already valid"
+          },
+          "ended_at": "2026-09-17T16:30:11.065+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        },
+        {
+          "run_id": "2a6e95ce05ff",
+          "started_at": "2026-09-17T16:30:18.703+08:00",
+          "source": "recovered",
+          "metadata": {
+            "reused": true,
+            "reason": "preproduction handoff already valid"
+          },
+          "ended_at": "2026-09-17T16:30:18.703+08:00",
+          "duration_seconds": 0.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    "VISUAL_LOCK": {
+      "runs": [
+        {
+          "run_id": "0445412150b3",
+          "started_at": "2026-09-17T16:30:03.890+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "VISUAL_CALIBRATED"
+          }
+        },
+        {
+          "run_id": "f21852152b93",
+          "started_at": "2026-09-17T16:30:11.120+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "VISUAL_CALIBRATED"
+          }
+        },
+        {
+          "run_id": "875885d020e9",
+          "started_at": "2026-09-17T16:30:18.762+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag",
+          "metadata": {
+            "executor": "scoped_model",
+            "target_state": "VISUAL_CALIBRATED"
+          }
+        }
+      ]
+    }
+  },
+  "named_spans": {
+    "HOST_ACTION_CREATIVE_STORY": {
+      "runs": [
+        {
+          "run_id": "41c596ae3774",
+          "started_at": "2026-09-17T15:51:30.287+08:00",
+          "ended_at": "2026-09-17T16:25:08.104+08:00",
+          "duration_seconds": 2017.817,
+          "status": "PASS",
+          "source": "runtime_dag:CREATIVE_STORY",
+          "metadata": {
+            "request_id": "host-44b6641f0b0e823b",
+            "runtime": "WORK",
+            "next_step": "CREATIVE_STORY"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_CONCEPT-AMBITION": {
+      "runs": [
+        {
+          "run_id": "2f1b01f0dad3",
+          "started_at": "2026-09-17T16:15:48.400+08:00",
+          "ended_at": "2026-09-17T16:16:27.371+08:00",
+          "duration_seconds": 38.971,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "concept-ambition-a1-32e08e48ae37d201",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/concept-ambition-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_RECENT5-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "1b06d6a0a279",
+          "started_at": "2026-09-17T16:23:37.993+08:00",
+          "ended_at": "2026-09-17T16:23:53.487+08:00",
+          "duration_seconds": 15.494,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "recent5-semantic-a1-e0e833f17b75ee73",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/recent5-semantic-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_STORY-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "2cc4ff44671d",
+          "started_at": "2026-09-17T16:24:02.421+08:00",
+          "ended_at": "2026-09-17T16:24:37.508+08:00",
+          "duration_seconds": 35.087,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "story-semantic-a1-09b810367326e33c",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/story-semantic-review.json"
+          }
+        }
+      ]
+    },
+    "HOST_ACTION_PREIMAGE_COMPILE": {
+      "runs": [
+        {
+          "run_id": "e90608d6117f",
+          "started_at": "2026-09-17T16:25:10.047+08:00",
+          "ended_at": "2026-09-17T16:30:01.804+08:00",
+          "duration_seconds": 291.757,
+          "status": "PASS",
+          "source": "runtime_dag:PREIMAGE_COMPILE",
+          "metadata": {
+            "request_id": "host-c4cfa3c62b92c891",
+            "runtime": "WORK",
+            "next_step": "PREIMAGE_COMPILE"
+          }
+        }
+      ]
+    },
+    "HOST_ACTION_VISUAL_LOCK": {
+      "runs": [
+        {
+          "run_id": "f0a70581b6bd",
+          "started_at": "2026-09-17T16:30:03.962+08:00",
+          "ended_at": null,
+          "duration_seconds": null,
+          "status": "RUNNING",
+          "source": "runtime_dag:VISUAL_LOCK",
+          "metadata": {
+            "request_id": "host-293c1e8c7969570a",
+            "runtime": "WORK",
+            "next_step": "VISUAL_LOCK"
+          }
+        }
+      ]
+    },
+    "VISUAL_LOCK_BASELINE_REVIEW": {
+      "runs": [
+        {
+          "run_id": "f690ed95cf3d",
+          "started_at": "2026-09-17T17:02:28.447+08:00",
+          "ended_at": "2026-09-17T17:03:00.047+08:00",
+          "duration_seconds": 31.6,
+          "status": "PASS",
+          "source": "visual_lock_baseline_gate",
+          "metadata": {
+            "frame": 1,
+            "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/candidates/scheduled/01-7df397dc164b-a1.png",
+            "pixel_master_status": null
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_VISUAL-LOCK-BASELINE": {
+      "runs": [
+        {
+          "run_id": "a9689e41a48e",
+          "started_at": "2026-09-17T17:02:29.381+08:00",
+          "ended_at": "2026-09-17T17:03:00.059+08:00",
+          "duration_seconds": 30.678,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-baseline-a1-07b362501ae844aa",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/visual-lock-baseline-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_VISUAL-LOCK": {
+      "runs": [
+        {
+          "run_id": "6452a79e88ba",
+          "started_at": "2026-09-17T17:03:23.025+08:00",
+          "ended_at": "2026-09-17T17:04:13.395+08:00",
+          "duration_seconds": 50.37,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "visual-lock-a1-06268b8bc4206825",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/visual-profile-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_FRAME-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "7d6c30e1e012",
+          "started_at": "2026-09-17T17:52:14.956+08:00",
+          "ended_at": "2026-09-17T17:58:24.193+08:00",
+          "duration_seconds": 369.237,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "frame-semantic-a1-c4b26706a6afcb82",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-semantic-review.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-001": {
+      "runs": [
+        {
+          "run_id": "89506e49b33c",
+          "started_at": "2026-09-17T18:09:14.303+08:00",
+          "ended_at": "2026-09-17T19:16:41.066+08:00",
+          "duration_seconds": 4046.763,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-001-a1-bea2921d6578d929",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/caption-image-audit.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-002": {
+      "runs": [
+        {
+          "run_id": "a836ee2a8c09",
+          "started_at": "2026-09-17T19:07:20.511+08:00",
+          "ended_at": "2026-09-17T19:16:41.081+08:00",
+          "duration_seconds": 560.57,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-002-a1-754db2b78092041b",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/caption-image-audit.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-003": {
+      "runs": [
+        {
+          "run_id": "5414301f5afc",
+          "started_at": "2026-09-17T19:15:58.890+08:00",
+          "ended_at": "2026-09-17T19:16:41.096+08:00",
+          "duration_seconds": 42.206,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-003-a1-2c7c2bf1eb2d04d2",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/caption-image-audit.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-004": {
+      "runs": [
+        {
+          "run_id": "fca795c18a58",
+          "started_at": "2026-09-17T19:16:23.010+08:00",
+          "ended_at": "2026-09-17T19:16:41.112+08:00",
+          "duration_seconds": 18.102,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "caption-image-audit-v2-004-a1-df7a7f3b510182a5",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/caption-image-audit.json"
+          }
+        }
+      ]
+    },
+    "PRODUCT_REVIEW_RELEASE-SEMANTIC": {
+      "runs": [
+        {
+          "run_id": "4cbc513192a8",
+          "started_at": "2026-09-17T19:16:52.371+08:00",
+          "ended_at": "2026-09-17T19:17:41.272+08:00",
+          "duration_seconds": 48.901,
+          "status": "PASS",
+          "source": "product_review_adapter",
+          "metadata": {
+            "request_id": "release-semantic-a1-69bf93ca36f328b3",
+            "attempt": 1,
+            "runtime": "WORK",
+            "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/release-semantic-review.json"
+          }
+        }
+      ]
+    }
+  },
+  "state_transitions": [
+    {
+      "from": "IDEA_LOCKED",
+      "to": "STORYBOARD_LOCKED",
+      "at": "2026-09-17T16:25:03+08:00"
+    },
+    {
+      "from": "STORYBOARD_LOCKED",
+      "to": "VISUAL_CALIBRATED",
+      "at": "2026-09-17T17:07:57+08:00"
+    },
+    {
+      "from": "VISUAL_CALIBRATED",
+      "to": "PRODUCTION_PASSED",
+      "at": "2026-09-17T18:03:33+08:00"
+    },
+    {
+      "from": "PRODUCTION_PASSED",
+      "to": "PUBLISH_READY",
+      "at": "2026-09-17T19:23:37+08:00"
+    },
+    {
+      "from": "PRODUCTION_PASSED",
+      "to": "PUBLISH_READY",
+      "at": "2026-09-17T19:24:00+08:00"
+    }
+  ],
+  "image_attempts": [],
+  "summary": {
+    "stage_wall": {
+      "INCREMENTAL_PLAN": {
+        "wall_seconds": 4.688,
+        "runs": 6
+      },
+      "CREATIVE_STORY": {
+        "wall_seconds": 4326.882,
+        "runs": 4
+      },
+      "PREIMAGE_COMPILE": {
+        "wall_seconds": 293.847,
+        "runs": 3
+      },
+      "VISUAL_LOCK": {
+        "wall_seconds": 0,
+        "runs": 3
+      }
+    },
+    "named_span_wall": {
+      "HOST_ACTION_CREATIVE_STORY": {
+        "wall_seconds": 2017.817,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_CONCEPT-AMBITION": {
+        "wall_seconds": 38.971,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_RECENT5-SEMANTIC": {
+        "wall_seconds": 15.494,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_STORY-SEMANTIC": {
+        "wall_seconds": 35.087,
+        "runs": 1
+      },
+      "HOST_ACTION_PREIMAGE_COMPILE": {
+        "wall_seconds": 291.757,
+        "runs": 1
+      },
+      "HOST_ACTION_VISUAL_LOCK": {
+        "wall_seconds": 0,
+        "runs": 1
+      },
+      "VISUAL_LOCK_BASELINE_REVIEW": {
+        "wall_seconds": 31.6,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_VISUAL-LOCK-BASELINE": {
+        "wall_seconds": 30.678,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_VISUAL-LOCK": {
+        "wall_seconds": 50.37,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_FRAME-SEMANTIC": {
+        "wall_seconds": 369.237,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-001": {
+        "wall_seconds": 4046.763,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-002": {
+        "wall_seconds": 560.57,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-003": {
+        "wall_seconds": 42.206,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_CAPTION-IMAGE-AUDIT-V2-004": {
+        "wall_seconds": 18.102,
+        "runs": 1
+      },
+      "PRODUCT_REVIEW_RELEASE-SEMANTIC": {
+        "wall_seconds": 48.901,
+        "runs": 1
+      }
+    },
+    "critical_path": {
+      "kind": "observed_end_to_end_wall",
+      "critical_path_seconds": 12997.623,
+      "image_backend_union_wall_seconds": 0.0,
+      "image_backend_resource_seconds": 0.0,
+      "parallel_saved_seconds": 0.0,
+      "dependency_chain": [
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "4045ed41da6e",
+          "status": "PASS",
+          "started_at": "2026-09-17T15:51:29.685+08:00",
+          "ended_at": "2026-09-17T15:51:30.218+08:00",
+          "duration_seconds": 0.533
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "df078d5da4db",
+          "status": "PASS",
+          "started_at": "2026-09-17T15:51:30.249+08:00",
+          "ended_at": "2026-09-17T16:30:03.553+08:00",
+          "duration_seconds": 2313.304
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "95034b1d64b3",
+          "status": "PASS",
+          "started_at": "2026-09-17T15:51:35.849+08:00",
+          "ended_at": "2026-09-17T15:51:36.378+08:00",
+          "duration_seconds": 0.529
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "430827b8fe34",
+          "status": "PASS",
+          "started_at": "2026-09-17T15:51:36.397+08:00",
+          "ended_at": "2026-09-17T16:25:09.975+08:00",
+          "duration_seconds": 2013.578
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "4011ce7a08ce",
+          "status": "PASS",
+          "started_at": "2026-09-17T16:25:07.224+08:00",
+          "ended_at": "2026-09-17T16:25:08.088+08:00",
+          "duration_seconds": 0.864
+        },
+        {
+          "stage": "PREIMAGE_COMPILE",
+          "run_id": "d5063659e12d",
+          "status": "PASS",
+          "started_at": "2026-09-17T16:25:09.988+08:00",
+          "ended_at": "2026-09-17T16:30:03.835+08:00",
+          "duration_seconds": 293.847
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "2e1376bd17a1",
+          "status": "PASS",
+          "started_at": "2026-09-17T16:30:00.846+08:00",
+          "ended_at": "2026-09-17T16:30:01.748+08:00",
+          "duration_seconds": 0.902
+        },
+        {
+          "stage": "VISUAL_LOCK",
+          "run_id": "0445412150b3",
+          "status": "RUNNING",
+          "started_at": "2026-09-17T16:30:03.890+08:00",
+          "ended_at": null,
+          "duration_seconds": null
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "bd062a3270a9",
+          "status": "PASS",
+          "started_at": "2026-09-17T16:30:07.957+08:00",
+          "ended_at": "2026-09-17T16:30:08.882+08:00",
+          "duration_seconds": 0.925
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "38c6f1fd876c",
+          "status": "PASS",
+          "started_at": "2026-09-17T16:30:10.718+08:00",
+          "ended_at": "2026-09-17T16:30:10.718+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "PREIMAGE_COMPILE",
+          "run_id": "e51638fb81d8",
+          "status": "PASS",
+          "started_at": "2026-09-17T16:30:11.065+08:00",
+          "ended_at": "2026-09-17T16:30:11.065+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "VISUAL_LOCK",
+          "run_id": "f21852152b93",
+          "status": "RUNNING",
+          "started_at": "2026-09-17T16:30:11.120+08:00",
+          "ended_at": null,
+          "duration_seconds": null
+        },
+        {
+          "stage": "INCREMENTAL_PLAN",
+          "run_id": "5d78e466c9d9",
+          "status": "PASS",
+          "started_at": "2026-09-17T16:30:15.692+08:00",
+          "ended_at": "2026-09-17T16:30:16.627+08:00",
+          "duration_seconds": 0.935
+        },
+        {
+          "stage": "CREATIVE_STORY",
+          "run_id": "3aea7130c8b4",
+          "status": "PASS",
+          "started_at": "2026-09-17T16:30:18.456+08:00",
+          "ended_at": "2026-09-17T16:30:18.456+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "PREIMAGE_COMPILE",
+          "run_id": "2a6e95ce05ff",
+          "status": "PASS",
+          "started_at": "2026-09-17T16:30:18.703+08:00",
+          "ended_at": "2026-09-17T16:30:18.703+08:00",
+          "duration_seconds": 0.0
+        },
+        {
+          "stage": "VISUAL_LOCK",
+          "run_id": "875885d020e9",
+          "status": "RUNNING",
+          "started_at": "2026-09-17T16:30:18.762+08:00",
+          "ended_at": null,
+          "duration_seconds": null
+        }
+      ],
+      "note": "End-to-end wall is the user-visible critical path; image resource time is overlap-aware and is not added to stage wall."
+    },
+    "performance_slo": {
+      "health": "RED",
+      "active_wall_seconds": 12997.623,
+      "green_max_seconds": 5400,
+      "yellow_max_seconds": 7200,
+      "gate": false
+    },
+    "images": {
+      "attempts": 0,
+      "successful_attempts": 0,
+      "repair_attempts": 0,
+      "technical_failures_or_retries": 0,
+      "image_backend_seconds": 0,
+      "average_attempt_seconds": null,
+      "max_attempt_seconds": null
+    },
+    "note": "stage wall time and image backend resource time can overlap; do not add them together."
+  },
+  "start_sources": [
+    "episode_state.init"
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "contract": {
+    "protagonist": "P01「我」，狮驼岭南麓第二道哨卡敲梆子的獐子精，连人形都没褪干净，腰上是骨头磨的、背面刻着歪歪扭扭「巡」字的腰牌。",
+    "presence_reason": "被排到第二道哨卡轮夜班守卡敲梆子。他在这里只是因为这是妖国最底下那一层的差事，不是来调查、不是来救援、也不是被谁派来的。",
+    "personal_stake": "他手里没有别的筹码，只有这一层：连大王剩下的肉汤都要抢破头，后厨倒出来的馊泔水是他一天里唯一还带热气的吃食。长生肉的消息把「他这一层到底能不能往上挪一格」的问题直接摆到他脸上。",
+    "core_anomaly": "骨阶分发：同一条消息与同一份吃食都按等级一层层往下分，越往下传越响、能分到的越少，最底层永远只剩后厨倒出来的馊泔水。",
+    "rule": "份量由层级决定。峰顶白骨洞里撕扯仙禽异兽，半山回廊大碗吃肉喝带血的陈酿，山脚哨卡的杂兵在腥臭的风里轮班等泔水；同一条金牌令箭落在三层上的重量完全不同。",
+    "trigger": "那天清晨，金牌令箭从山顶一路传下：东土大唐的取经僧进了地界，吃他一口肉，可得长生不老。",
+    "direct_consequence": "整座山同时炸开：小妖磨刀霍霍，各处哨卡在同一瞬间抬头，和他同班的野猪精当场撞碎自家栅栏，举着那把豁口短刀要去立头功换半碗唐僧肉。",
+    "midpoint_reframe": "金牌令箭沿同一条山道一层层往下递、每过一层围上来的人多一层，把前半段那幅三层山体从「风景」改读成一张分配表：三层不是高低，是名单。",
+    "climax_choice": "全山往上涌的时候他不去，把敲了一夜的梆子握在手里没放下，站在原地让山顶的火光落在后颈上。他选择留在最下面那一层，代价就是看清楚自己这一层永远在最下面。",
+    "ending_recontextualization": [
+      "开场那块骨头腰牌上没有名字、只有一个刻歪的「巡」字；结尾他还是那块牌、还是那个位置——他从一开始就只是这一层里的一个功能。",
+      "他和野猪精为一盆泔水推让半寸的那一下，结尾证明那种同一层里的「公平」也就只有半寸，往上数一层就不成立了。",
+      "他抬头看见的三层山体当时像风景，结尾再看是分配表：最上面那点亮到峰顶，最下面那层还是暗的。",
+      "后厨倒出来那盆看不出原形的残渣，就是「越往下越少」的最后一级；全山狂欢之后，那盆一点没动。"
+    ]
+  },
+  "propagation_core": {
+    "retell_sentence": "我是狮驼岭守第二道哨卡的小妖，金牌令箭传下来说吃唐僧肉能长生不老，整座山都疯了，跟我一起守卡的野猪精当场撞碎了栅栏——可我连大王剩下的肉汤都轮不到，这下真能轮到我吗？",
+    "protagonist_action": "全山往上涌的时候，他站在原地没有跟着去，把敲了一夜的梆子握在手里没放下。",
+    "abnormal_response": "金牌令箭沿同一条山道一层层往下传，每过一层围上来的人多一层；和他同蹲一个盆分泔水的野猪精，就在同一天当场撞碎自家栅栏，举着豁口短刀要拿命去换半碗唐僧肉。",
+    "consequence": "火把从山脚一层层连到峰顶、金光在最高处往下淌，而他这一层什么也没分到；他第一次抬头把层数数了一遍，确认自己这一层永远在最下面，梆子还在手里。",
+    "response_latency": "immediate",
+    "visual_causality": "strong",
+    "retellable_in_10s": true,
+    "social_send_impulse": "strong",
+    "trigger_frame": 10,
+    "response_frame": 14,
+    "payoff_frame": 19,
+    "late_trigger_exception_reason": "",
+    "surface_copy_guard": {
+      "structural_reference_only": true,
+      "copied_surface_elements": []
+    }
+  },
+  "blind_retell": {
+    "protagonist_and_reason": "一只连名字都没有的獐子精，被排到狮驼岭南麓第二道哨卡轮夜班敲梆子；腰牌是骨头磨的，背面刻着歪歪扭扭的「巡」字。",
+    "core_anomaly_rule": "这座山按层分东西：峰顶的大王撕扯仙禽异兽，半山回廊的头目大碗吃肉喝带血的陈酿，山脚的杂兵等后厨倒出来的馊泔水。同一条消息也是这么分的：越往下传越响，越往下能分到的越少。",
+    "worsening_choice": "金牌令箭传下说吃唐僧肉能长生不老之后，整座山同时抬头、同时磨刀，和他同班的野猪精撞碎自家栅栏要去立头功；而这一切的起因只是山顶往下递了一句话。",
+    "climax_resolution": "他没有跟着去，也没有走，把敲了一夜的梆子握在手里站在原地；山顶的火光落在后颈上，他第一次认真把从山脚到峰顶的层数数了一遍。",
+    "ending_reinterpretation": "全山亮成一片之后，山脚最下面那一层还是那盆没动过的泔水；一路往下分的一直是活儿，不是肉，而那块骨头腰牌和那根梆子还是他的。"
+  },
+  "hard_checks": {
+    "clarity": true,
+    "causal_chain": true,
+    "mechanism_consistency": true,
+    "motivation_stake": true,
+    "trigger_consequence": true,
+    "midpoint_reframe": true,
+    "climax_payoff": true,
+    "ending_payoff": true,
+    "storyboard_information_gain": true,
+    "delete_frame_test": true
+  },
+  "issue_codes": [],
+  "notes": [
+    "单一机制可解释全部画面证据：三层吃食差（06/08）、集体默认（07）、同一层内部的半寸公平（09）、消息的层级递减（10/11）、群体同步（12）、同伴突变（13/14/15）、全山尺度（16）、他不参与（17/18/19）、余波（20）全部由「骨阶分发」这一条规则导出。",
+    "本集的高潮是认知转向而不是动作高潮：他没有做出任何破坏性举动，高潮由「选择不参与 + 看清自己的位置」构成，因此 climax_payoff 依赖 rule payoff 与 identity turn 而不是反转事件；这是 Runtime Request locked_story 与用户原文结尾的疑问句结构共同决定的形式，不是评审放宽。",
+    "触发链：10（雾里那点反光，消息下行的第一个可见信号）→ 14（同卡野猪精撞碎自家栅栏）→ 19（后颈落上火光、第一次抬头数层数）。触发帧 10 恰为总图数 20 的 50%，未超过上限。",
+    "结尾重读四个具体前文事实（无名的骨头腰牌、半寸推让、三层山体、后厨那盆残渣），未引入任何新的异常行为。",
+    "主动动作在强度上偏克制：他做的是「不动」而不是「出手」。传播链依赖的是同层同伴的突变与全山同步作为可见回应，因此 social_send_impulse 的支撑主要来自 14 与 16 两帧，而不是主角自身的动作幅度。",
+    "风险记录：本篇为用户 origin 短文的忠实展开（locked_story / allow_structure_rewrite=false），闭环强度低于本仓库自选题的平均水平；若发布后 48h 数据偏低，应优先怀疑「高潮无动作」而不是画面质量。"
+  ],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "story_sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446",
+  "storyboard_sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079",
+  "revision_count": 0,
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-17T16:24:37+08:00",
+    "request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/story-semantic-attempt-1-request.json",
+    "request_id": "story-semantic-a1-09b810367326e33c",
+    "request_fingerprint": "09b810367326e33c78d20d0131cbeb00275368bc1521b4bc0dfcf9f45452f2d8"
+  }
+}

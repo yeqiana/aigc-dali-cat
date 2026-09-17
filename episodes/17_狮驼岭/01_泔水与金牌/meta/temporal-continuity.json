@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_world_state_sha256": "0bdede58964efe7360e842e379213b0c5e1524a86e0c90e330a1717506344d74",
+  "world_state_synced": true,
+  "frames": [
+    {
+      "frame": "01",
+      "elapsed_minutes_from_prev": 0,
+      "daypart": "dawn",
+      "weather": "山谷晨雾",
+      "precipitation": "无",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "02",
+      "elapsed_minutes_from_prev": 15,
+      "daypart": "dawn",
+      "weather": "山谷晨雾",
+      "precipitation": "无",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "03",
+      "elapsed_minutes_from_prev": 5,
+      "daypart": "dawn",
+      "weather": "山谷晨雾",
+      "precipitation": "无",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "04",
+      "elapsed_minutes_from_prev": 20,
+      "daypart": "morning",
+      "weather": "山谷晨雾",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "日头出山后山谷亮起来，晨雾被逆光打薄"
+    },
+    {
+      "frame": "05",
+      "elapsed_minutes_from_prev": 5,
+      "daypart": "morning",
+      "weather": "山谷晨雾",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "06",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "morning",
+      "weather": "山谷晨雾",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "07",
+      "elapsed_minutes_from_prev": 5,
+      "daypart": "morning",
+      "weather": "山谷晨雾",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "08",
+      "elapsed_minutes_from_prev": 5,
+      "daypart": "morning",
+      "weather": "山谷晨雾",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "09",
+      "elapsed_minutes_from_prev": 5,
+      "daypart": "morning",
+      "weather": "山谷晨雾",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "10",
+      "elapsed_minutes_from_prev": 20,
+      "daypart": "morning",
+      "weather": "山谷晨雾",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "11",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "morning",
+      "weather": "山谷晨雾",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "12",
+      "elapsed_minutes_from_prev": 30,
+      "daypart": "day",
+      "weather": "晴",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "日头升高，山谷晨雾散尽，已经到了正午前后"
+    },
+    {
+      "frame": "13",
+      "elapsed_minutes_from_prev": 40,
+      "daypart": "day",
+      "weather": "晴",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "14",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "day",
+      "weather": "晴",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "15",
+      "elapsed_minutes_from_prev": 5,
+      "daypart": "day",
+      "weather": "晴",
+      "precipitation": "无",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "16",
+      "elapsed_minutes_from_prev": 420,
+      "daypart": "night",
+      "weather": "无云",
+      "precipitation": "无",
+      "ambient_light": "artificial_night",
+      "large_transition": true,
+      "transition_reason": "磨刀与集结从晌午一直持续到傍晚，天黑之后整座山点起火把"
+    },
+    {
+      "frame": "17",
+      "elapsed_minutes_from_prev": 15,
+      "daypart": "night",
+      "weather": "无云",
+      "precipitation": "无",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "18",
+      "elapsed_minutes_from_prev": 5,
+      "daypart": "night",
+      "weather": "无云",
+      "precipitation": "无",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "19",
+      "elapsed_minutes_from_prev": 5,
+      "daypart": "night",
+      "weather": "无云",
+      "precipitation": "无",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "20",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "无云",
+      "precipitation": "无",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    }
+  ]
+}

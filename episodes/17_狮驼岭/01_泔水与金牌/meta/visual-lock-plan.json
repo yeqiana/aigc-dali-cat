@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "generated_at": "2026-09-17T16:32:27+08:00",
+  "policy": {
+    "baseline_first": true,
+    "remaining_three_parallelizable": true,
+    "calibration_count": 4,
+    "baseline_selection": "ordinary_fallback",
+    "baseline_frame": 1,
+    "opening_social_anchor_machine_priority": true
+  },
+  "items": [
+    {
+      "id": "V-B",
+      "frame": 1,
+      "mode": "normal_record",
+      "role": "ordinary_baseline",
+      "impact": 0,
+      "scale_reference": "",
+      "environment_severity": 13,
+      "contract_sha256": "8fad1677f50a88889f40337766e87a2c4a13e737f30833e2852252d5a48099fd",
+      "depends_on": []
+    },
+    {
+      "id": "V-W",
+      "frame": 16,
+      "mode": "anomaly_amplified",
+      "role": "worst_capture_condition",
+      "impact": 4,
+      "scale_reference": "山脚到峰顶的完整海拔与四万八千妖众铺开的横向宽度",
+      "environment_severity": 14,
+      "contract_sha256": "c5ea40ef7e564b50614c2cc4779877bb78a5a1df83e142a336abd17a4c9c134a",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-A",
+      "frame": 10,
+      "mode": "anomaly_reveal",
+      "role": "first_major_anomaly",
+      "impact": 2,
+      "scale_reference": "哨卡前沿到雾里山道尽头的实际山道距离",
+      "environment_severity": 13,
+      "contract_sha256": "a20fe5e4b004b843b01e3d361657a26f32036751d175aaff0f2a3fd5ee0c7ffc",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-H",
+      "frame": 19,
+      "mode": "climax_impact",
+      "role": "high_impact_admission",
+      "impact": 4,
+      "scale_reference": "后颈那一条光的宽度与峰顶到第二道哨卡的垂直落差",
+      "environment_severity": 14,
+      "contract_sha256": "5e26a023d23024e593e89be111e2296c0c49bb10cd01f17e4c57d2ea52d35b94",
+      "depends_on": [
+        1
+      ]
+    }
+  ]
+}

@@ -1,0 +1,524 @@
+{
+  "schema_version": 2,
+  "request_id": "frame-semantic-a1-c4b26706a6afcb82",
+  "request_fingerprint": "c4b26706a6afcb828f1c63354383c027d8282fb9fcc1afbbbe10679312ae9083",
+  "created_at": "2026-09-17T17:52:14+08:00",
+  "status": "FINALIZED",
+  "review_kind": "frame-semantic",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+      "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+      "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/meta/story-gates.json",
+      "sha256": "c24b24cca607d61394bedfe7421fbffe77c38f67aeb4deca00ae440152f039a5"
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "sha256": "4e27706f639473dd7ee1c811a6beeb328c1bc4c0e08edc5a3850571713f37485"
+    },
+    {
+      "path": "standards/生产帧语义强制规范_V1.0.md",
+      "sha256": "9520cdd866b01a8a1c052f8f5af48ec85b2aeceed8c5f00c30ff705a8c113e9a"
+    },
+    {
+      "path": "standards/Resolved_Frame_Contract规范_V1.0.md",
+      "sha256": "2bbcaeac083a2dff391e1700737fd94d89699877dc5fec52f522e7517f9f3caf"
+    },
+    {
+      "path": "standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md",
+      "sha256": "cc8053886ae8eca0499f94107dec657cedb9e376c0098b84715cced3d4c2d933"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/01.png",
+      "sha256": "d7c4b3a4caec076d865463db060ca79d848b7274929458ec202c7544064c40c3"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/02.png",
+      "sha256": "ad5db1f368766f8c4ce0388370aec609d302be88d84158b930966e15d5dff013"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/03.png",
+      "sha256": "90be318f75a323c98d68ad970195bdd5603a0d27dfc8e865a4985ae0271776fe"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/04.png",
+      "sha256": "ecef6ccb1d15c06ea00153e022f7b17c575e39042d5545fac47c5ef9d23c5590"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/05.png",
+      "sha256": "8824f8f98f869781e131d97ca0179df12758a60a67cf3613679b07727d75eca0"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/06.png",
+      "sha256": "d159093670e537861d8fea6cd629a27210933a9140571ff8ec4cf949639ae9c8"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/07.png",
+      "sha256": "c936b057300658a288ecbe52980d0582e93579319f25a9978012a5676b8c45dd"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/08.png",
+      "sha256": "fb5a9ebe6f82b02a5656884619c37ca8ed98f905d9c42b9428867d18a953a225"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/09.png",
+      "sha256": "1ca421f7254900ab56582bcb1e6febc34240a303133f086a0a778665e4029f9c"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/10.png",
+      "sha256": "a618819b2556a0cae1c1d7e2d777655950db7750239abbc5df49e27370668947"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/11.png",
+      "sha256": "c968debe8965fc60a9a9ad790504efe92d96eee9612bfdd66667320a4118fee0"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/12.png",
+      "sha256": "10076c3eaa8dc25fcf7c0ba294c618d4419292cf384fd27bb0a366629dffe142"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/13.png",
+      "sha256": "19b55c980039c171046fb13ecf4dbbedc7089bc785a6e8118d73459052aa04c5"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/14.png",
+      "sha256": "9ab15e39a73bd1cf7e3d5e4854840114ab8b93e9106f8d0e233ccc2b2b43eea1"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/15.png",
+      "sha256": "2b8a3678ca14876101c009bd55c9bf7e8843a0e905ec50539487b398737bdb51"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/16.png",
+      "sha256": "7b42b58e042e1b0fb909910310801ad1c5afedecfcfd9aed89bc0f41776bc349"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/17.png",
+      "sha256": "c3d8484293fe361177555706249e007cba2546244210b742fee79427ed22ebb7"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/18.png",
+      "sha256": "7f327a96b9af6fc32e2e87f05c3f3fc8454d2d811a2131469dceb9d6857a83a4"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/19.png",
+      "sha256": "3dd17f3aed826181af568c7e4a23c295cdd388990eb3b669b13bcc8a2e488af4"
+    },
+    {
+      "path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/20.png",
+      "sha256": "31392bdd82d4a97495b7fbc50515f10dadca8eb69d801dd3277a40dceeb05055"
+    }
+  ],
+  "candidate_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/.frame-semantic-review.candidate.json",
+  "prompt_sha256": "fc2807c01bcd58281fcaf68795a521d6f17e837d235361bd0e642bedac0079f4",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial review pass in the product runtime.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are an adversarial Production Frame Semantic Critic in a FRESH isolated session.\nDo NOT generate or edit images. Do NOT rewrite the story. Do NOT trust previous PASS labels.\nYou are reviewing the COMPLETE final approved frame set for exactly episodes/17_狮驼岭/01_泔水与金牌.\n\nRead these locked sources before judging:\n- episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md\n- episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md\n- episodes/17_狮驼岭/01_泔水与金牌/meta/story-gates.json\n- standards/制作规范_正式版.md\n- standards/生产帧语义强制规范_V1.0.md\n- standards/Resolved_Frame_Contract规范_V1.0.md\n- standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md\nFast Scout evidence is triage only. Do NOT trust PASS_FAST as a final pass; independently judge every supplied actual frame.\nResolved Frame Contracts: episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/contracts/frames/NN.json. The frame review must honor the SAME contract SHA used by the generation attempt.\n\nAttached images are in numeric order and map as follows:\n- attachment/frame 01: episodes/17_狮驼岭/01_泔水与金牌/media/approved/01.png\n- attachment/frame 02: episodes/17_狮驼岭/01_泔水与金牌/media/approved/02.png\n- attachment/frame 03: episodes/17_狮驼岭/01_泔水与金牌/media/approved/03.png\n- attachment/frame 04: episodes/17_狮驼岭/01_泔水与金牌/media/approved/04.png\n- attachment/frame 05: episodes/17_狮驼岭/01_泔水与金牌/media/approved/05.png\n- attachment/frame 06: episodes/17_狮驼岭/01_泔水与金牌/media/approved/06.png\n- attachment/frame 07: episodes/17_狮驼岭/01_泔水与金牌/media/approved/07.png\n- attachment/frame 08: episodes/17_狮驼岭/01_泔水与金牌/media/approved/08.png\n- attachment/frame 09: episodes/17_狮驼岭/01_泔水与金牌/media/approved/09.png\n- attachment/frame 10: episodes/17_狮驼岭/01_泔水与金牌/media/approved/10.png\n- attachment/frame 11: episodes/17_狮驼岭/01_泔水与金牌/media/approved/11.png\n- attachment/frame 12: episodes/17_狮驼岭/01_泔水与金牌/media/approved/12.png\n- attachment/frame 13: episodes/17_狮驼岭/01_泔水与金牌/media/approved/13.png\n- attachment/frame 14: episodes/17_狮驼岭/01_泔水与金牌/media/approved/14.png\n- attachment/frame 15: episodes/17_狮驼岭/01_泔水与金牌/media/approved/15.png\n- attachment/frame 16: episodes/17_狮驼岭/01_泔水与金牌/media/approved/16.png\n- attachment/frame 17: episodes/17_狮驼岭/01_泔水与金牌/media/approved/17.png\n- attachment/frame 18: episodes/17_狮驼岭/01_泔水与金牌/media/approved/18.png\n- attachment/frame 19: episodes/17_狮驼岭/01_泔水与金牌/media/approved/19.png\n- attachment/frame 20: episodes/17_狮驼岭/01_泔水与金牌/media/approved/20.png\n\nThis is critic attempt 1. Judge the ACTUAL pixels against Story Lock + storyboard + authenticity/continuity anchors.\nEpisode contract version: 2.6.1. V2.2-only Visual Narrative checks and issue codes apply ONLY when version >= 2.2.0. Earlier episodes must not fail on V2.2-only criteria.\nThe visual-profile critic is a different job. A frame can look perfectly M00 and STILL FAIL here if it depicts the wrong person, wrong wardrobe, wrong timeline, illegal camera viewpoint, wrong prop, unreadable anomaly, or merely lets the caption claim evidence that the pixels do not show.\n\nHard rules for EVERY frame:\n1. scene_storyboard_fidelity: the actual place/action/composition must be the storyboarded scene, not a generic substitute.\n2. story_beat_fidelity: the image must visibly carry the intended narrative beat. Do not let prose rescue a missing event.\n3. key_prop_fidelity: locked prop structure, material, scale, count and state must match. A generic green beer bottle cannot stand in for a locked thick micro-city glass vessel if the story depends on the city being visibly inside it.\n4. character_identity + wardrobe_continuity: character age/sex/identity/garment anchors must not drift. If a frame suddenly shows another protagonist, FAIL.\n5. pov_photographer_legality: obey the authenticity card. If the first-person photographer is fully visible or both hands are occupied while no legal second capture source exists, FAIL. Unexplained third-person coverage is a hard failure.\n6. spatial_continuity + temporal_continuity: location relationships and timeline must agree with neighboring frames. A father who already left for hospital cannot silently reappear in the factory.\n7. anomaly_readability: the abnormal fact the frame is supposed to prove must be visually legible. If the caption says a river tilted, a red mark aligned with a chimney, or old photos all contain one white arc, those relationships must actually be readable in pixels.\n8. caption_image_support: planned text may add context but must not invent the core visual evidence.\n9. actual_information_gain: compare ACTUAL adjacent images, not just storyboard descriptions.\n10. environment_physics_fidelity: V2.1 weather/environment must obey the resolved physical conditions; weather is not a blanket filter.\n11. anomaly_escalation_fidelity: impact 3-4 / anomaly_amplified / climax_impact must visibly exceed escalation_from; caption-only escalation fails.\n12. scale_reference_fidelity: high-impact frames must visibly use the locked real-world scale reference so abnormal size is readable.\n13. camera_authorship_physical: photographer/camera source must exist physically; ghost/floating/omniscient coverage is a hard failure.\n14. moment_capture_credibility: frame must feel captured during an action with a plausible save reason, not posed after the event.\n15. narrative_evidence_gain: each frame after the opening must add real story/evidence information; another angle of the same unchanged fact is NARRATIVE_REDUNDANCY.\n16. shot_grammar_diversity: first-person is diegetic camera logic, not a repeated hand+phone+distant-anomaly template.\n17. camera_defect_physics: blur/noise/reflection/underexposure must have a plausible physical cause.\n18. screen_content_physics: phone/map/dashboard/time/camera UI must be internally, perspectivally and narratively coherent.\n19. visual_memory_continuity: character/wardrobe/vehicle/props/route/weather/light/anomaly evidence must persist unless explicitly changed.\n20. For shot-progression schema_version >=3 only: shot_scale_fidelity must match the locked shot_scale; scene_position_uniqueness_fidelity must not collapse different planned positions into visibly repeated camera setups; cinematic_structure_translation_fidelity must use the locked structural technique without becoming an exact film-still recreation; practical_lighting_design_fidelity must honor the declared real light source/contrast/suspense function; anomaly_concealment_fidelity must visibly use the locked mirror/water/glass/fog/light-shadow/screen/occlusion carrier when declared.\n21. PASS only if all required checks are true, issue_codes is empty and decision=pass.\n\nUse issue codes only from this set:\nACTUAL_INFORMATION_GAIN_MISSING, ANOMALY_CONCEALMENT_MISSING, ANOMALY_SCALE_UNDERDELIVERED, ANOMALY_UNREADABLE, CAMERA_DEFECT_UNMOTIVATED, CAMERA_OWNER_UNRESOLVED, CAPTION_DEPENDENCY, CHARACTER_APPEARANCE_DRIFT, CINEMATIC_TRANSLATION_FAILED, CULTURAL_CONTEXT_DRIFT, FRAME_SCENE_MISMATCH, GHOST_CAMERA, IDENTITY_DRIFT, KEY_PROP_DRIFT, LIGHTING_DESIGN_MISMATCH, MOMENT_RESULT_ONLY, NARRATIVE_REDUNDANCY, NEAR_DUPLICATE_ACTUAL_FRAMES, POV_ILLEGAL, SCALE_REFERENCE_MISSING, SCENE_POSITION_VISUAL_REPEAT, SCREEN_CONTENT_PHYSICS_BROKEN, SHOT_GRAMMAR_REPEAT, SHOT_SCALE_MISMATCH, SPATIAL_CONTINUITY_BROKEN, STORY_BEAT_NOT_VISIBLE, TEMPORAL_CONTRADICTION, UNEXPLAINED_THIRD_PERSON, UNPLANNED_RECORDER, VISUAL_MEMORY_BROKEN, WARDROBE_DRIFT, WEATHER_CONTINUITY_BROKEN, WEATHER_PHYSICS_MISMATCH, WORLD_IDENTITY_DRIFT\n\nWrite ONLY valid JSON to episodes/17_狮驼岭/01_泔水与金牌/meta/.frame-semantic-review.candidate.json. Do not modify any other repository file.\nRequired shape:\n{\n  \"frames\": [\n    {\n      \"frame\": \"01\",\n      \"checks\": {\n        \"scene_storyboard_fidelity\": true,\n        \"story_beat_fidelity\": true,\n        \"key_prop_fidelity\": true,\n        \"character_identity\": true,\n        \"wardrobe_continuity\": true,\n        \"pov_photographer_legality\": true,\n        \"spatial_continuity\": true,\n        \"temporal_continuity\": true,\n        \"anomaly_readability\": true,\n        \"caption_image_support\": true,\n        \"actual_information_gain\": true,\n        \"environment_physics_fidelity\": true,\n        \"anomaly_escalation_fidelity\": true,\n        \"scale_reference_fidelity\": true,\n        \"camera_authorship_physical\": true,\n        \"moment_capture_credibility\": true,\n        \"narrative_evidence_gain\": true,\n        \"shot_grammar_diversity\": true,\n        \"camera_defect_physics\": true,\n        \"screen_content_physics\": true,\n        \"visual_memory_continuity\": true,\n        \"world_identity_fidelity\": true,\n        \"character_appearance_anchor_fidelity\": true,\n        \"cultural_environment_fidelity\": true,\n        \"shot_scale_fidelity\": true,\n        \"scene_position_uniqueness_fidelity\": true,\n        \"cinematic_structure_translation_fidelity\": true,\n        \"practical_lighting_design_fidelity\": true,\n        \"anomaly_concealment_fidelity\": true\n      },\n      \"issue_codes\": [],\n      \"notes\": \"specific pixel-level evidence\",\n      \"decision\": \"pass\"\n    }\n  ],\n  \"issue_codes\": [],\n  \"summary\": {\"passed\": true, \"notes\": \"overall continuity/payoff judgment\"}\n}\nReturn one row for EVERY attached frame. If any hard check fails, mark it false, add the specific issue code, set that frame decision=fail and summary.passed=false.\n",
+  "source_bindings": {
+    "story_os_version": "2.6.1",
+    "contexts": {
+      "story_sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446",
+      "storyboard_sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079",
+      "visual_contract_sha256": "0837199bec975871f017be085868192731ac1168b38557cd2dc84426bbca9ae2"
+    },
+    "frames": {
+      "01": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/01.png",
+        "asset_sha256": "d7c4b3a4caec076d865463db060ca79d848b7274929458ec202c7544064c40c3",
+        "environment_frame_sha256": "7b33de2d18f91eeb8ddd8b02e15bd9e5fccd15070b6486a792ba045a1580d057",
+        "frame_directive_sha256": "7ba9111f3c85e1041080b5db9cd4dd3ae0f8f255eb0145378a06b7453e648368",
+        "frame_contract_sha256": "8fad1677f50a88889f40337766e87a2c4a13e737f30833e2852252d5a48099fd",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "fd9912f78e1b3e35e14bfd510eeeb6f77e8cbb93f81903d175fc033f2376e164"
+        }
+      },
+      "02": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/02.png",
+        "asset_sha256": "ad5db1f368766f8c4ce0388370aec609d302be88d84158b930966e15d5dff013",
+        "environment_frame_sha256": "b96a989ee236fc29cfd0d3bfe19ff117db9754dccc41017242e2a185e2550bb2",
+        "frame_directive_sha256": "bb61ea3577d4a70a9184a902e1f124f6ae74ac109ac8033f78d6ea099b90a386",
+        "frame_contract_sha256": "9ada3216f2f869c5149b87659adf241a4b1a7a7a0ebc9288cb36473fc9d7871e",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "01fe1b8670f3e1a4eccf6e1961c7976058b027d20f1f0bb54a98d7f86d291861"
+        }
+      },
+      "03": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/03.png",
+        "asset_sha256": "90be318f75a323c98d68ad970195bdd5603a0d27dfc8e865a4985ae0271776fe",
+        "environment_frame_sha256": "b96a989ee236fc29cfd0d3bfe19ff117db9754dccc41017242e2a185e2550bb2",
+        "frame_directive_sha256": "ebd01b61e48b18557a3f79bf0330a858c00f53d137c0d4cd4b7118408d1264ff",
+        "frame_contract_sha256": "bc082bc945cb95e37bc5b409f82b7b5518139530377eb22f14d6128ea8f231b5",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "6a923f6c58e0dc706ee3f3f11ff32fe70c653c5bf7f404079a8ef46637ec2099"
+        }
+      },
+      "04": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/04.png",
+        "asset_sha256": "ecef6ccb1d15c06ea00153e022f7b17c575e39042d5545fac47c5ef9d23c5590",
+        "environment_frame_sha256": "f2af6deadb8eae5ada2d904f9884fbd1726cd859988fc2611a01d1e2659cfbc1",
+        "frame_directive_sha256": "c30aff53b991bb41765010e75c3abf42eb1ed16c572ebdd808360aab7b05f7dd",
+        "frame_contract_sha256": "76270877abb6dd8e8e6f0e83d4f075c64d449cc236c49967ef61d800edd88a85",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "d1ea1eb17f0e2e0025df04a76297393981d5008a89c62b9c2653444dc002e986"
+        }
+      },
+      "05": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/05.png",
+        "asset_sha256": "8824f8f98f869781e131d97ca0179df12758a60a67cf3613679b07727d75eca0",
+        "environment_frame_sha256": "b96a989ee236fc29cfd0d3bfe19ff117db9754dccc41017242e2a185e2550bb2",
+        "frame_directive_sha256": "4ab7dfa8b20d8672d6df3879dd730f1d36219062540ef4f398317de942770d85",
+        "frame_contract_sha256": "d82fedfd4093627b171b12dee40d231b9c4ca23ca6d5d3e88322e04e664e2023",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "394169e932fc4d8287a7e19ef5646b44bf74975ca1c7ff0fce1b300d3c2f1afe"
+        }
+      },
+      "06": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/06.png",
+        "asset_sha256": "d159093670e537861d8fea6cd629a27210933a9140571ff8ec4cf949639ae9c8",
+        "environment_frame_sha256": "b96a989ee236fc29cfd0d3bfe19ff117db9754dccc41017242e2a185e2550bb2",
+        "frame_directive_sha256": "e2257357442374d4109fda12f35f5d4e6904c68798c37822bc8d1c71ba3c3d65",
+        "frame_contract_sha256": "66bdc48c1a83d2c6b01f3e3d83b32c2a491e5e578034f245a3472efd73a5c6be",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "059bb9622bb3f681678072b928c3e90e9713c74a0afbdae03069d66a044c20d4"
+        }
+      },
+      "07": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/07.png",
+        "asset_sha256": "c936b057300658a288ecbe52980d0582e93579319f25a9978012a5676b8c45dd",
+        "environment_frame_sha256": "f939f5a38e5f47eaa713999acb42c66f004f4e57709a981986983ec74cbeaa6a",
+        "frame_directive_sha256": "1cd741f4dbb391ea7012c374d758df14452f49f71526d0b4d1ba055f57e60944",
+        "frame_contract_sha256": "470ab407c9acc0b6c0a95b45625139115a5b80b2f3ded5e2717e577e853bb555",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "30fbd447d6b77af1ffa95cf27b931fe948b92555e4829b53a390c6cf6d45e984"
+        }
+      },
+      "08": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/08.png",
+        "asset_sha256": "fb5a9ebe6f82b02a5656884619c37ca8ed98f905d9c42b9428867d18a953a225",
+        "environment_frame_sha256": "b96a989ee236fc29cfd0d3bfe19ff117db9754dccc41017242e2a185e2550bb2",
+        "frame_directive_sha256": "8048ab2e433d65b99d476777c5e5e365cb3cf5942c5fb59a8ede9f5a0e57d748",
+        "frame_contract_sha256": "d50ccec060cbcf797c3b4f63e27e3948e86776c0f19ecfdb2fe3cd46e22b2298",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "9f66f6e208809669968c527a3c3b558a93ee3a97afd3490cc4cee320b959c02d"
+        }
+      },
+      "09": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/09.png",
+        "asset_sha256": "1ca421f7254900ab56582bcb1e6febc34240a303133f086a0a778665e4029f9c",
+        "environment_frame_sha256": "b96a989ee236fc29cfd0d3bfe19ff117db9754dccc41017242e2a185e2550bb2",
+        "frame_directive_sha256": "47846b80b13a0d4fcb3d7f183f78eb4df4649b375b5650319b73a83ddd640eb6",
+        "frame_contract_sha256": "38677edeb1ecff528b38ffea3f23829a03284115f7b69e97f3d8e2227205f7e9",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "fabe70de0ba7892cd1c574393839e38b16bd89b0be0524e32a2473c5b23a4bbc"
+        }
+      },
+      "10": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/10.png",
+        "asset_sha256": "a618819b2556a0cae1c1d7e2d777655950db7750239abbc5df49e27370668947",
+        "environment_frame_sha256": "fb49e2c5902afb3442b534f09bc70bc8d9e3a284c58cb9f7e0e5c0997f740aed",
+        "frame_directive_sha256": "d34a08c84f25fc8a25db295c9565b5d2b41a190f6c7b73ecfb415c9947119382",
+        "frame_contract_sha256": "a20fe5e4b004b843b01e3d361657a26f32036751d175aaff0f2a3fd5ee0c7ffc",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "765480756d80bf30956d297ea0f5a61656ac7905bd462f278cfef97f5c9f08b0"
+        }
+      },
+      "11": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/11.png",
+        "asset_sha256": "c968debe8965fc60a9a9ad790504efe92d96eee9612bfdd66667320a4118fee0",
+        "environment_frame_sha256": "b96a989ee236fc29cfd0d3bfe19ff117db9754dccc41017242e2a185e2550bb2",
+        "frame_directive_sha256": "ee03b54f06c701612c308f3a4c34dd08edd4ab27f2c9717502f6b70489779e3f",
+        "frame_contract_sha256": "7258f37500482401a15e0911a30ee2da4f9ffe8979eb11ef7a8659cacedb20ef",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "37795e17ff8cfb108de29c3d10f5ccbe469b8c7ee98b838217ab21dcc224dfcf"
+        }
+      },
+      "12": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/12.png",
+        "asset_sha256": "10076c3eaa8dc25fcf7c0ba294c618d4419292cf384fd27bb0a366629dffe142",
+        "environment_frame_sha256": "268d2daed25f2b6185ad9f607b093139c2d358bcc2c8e610a1a8af377f5b891d",
+        "frame_directive_sha256": "96d8b068ea70a1af66c41869f2b40ce65a105c698d97c3e66d0610ca94d3744f",
+        "frame_contract_sha256": "366334730d6660f2ead739bd770341138ee7aa6f17afedae94f0ad4ae994b8ad",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "8414eae086666185328aafa874acdd6dacf1dd58bdeea94729784dcf273bf85d"
+        }
+      },
+      "13": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/13.png",
+        "asset_sha256": "19b55c980039c171046fb13ecf4dbbedc7089bc785a6e8118d73459052aa04c5",
+        "environment_frame_sha256": "268d2daed25f2b6185ad9f607b093139c2d358bcc2c8e610a1a8af377f5b891d",
+        "frame_directive_sha256": "d6b0ed0c48003bab365295b2778ecfaef3a07e45bfb3ad921556ac913b45c76e",
+        "frame_contract_sha256": "5774feb29a2a482c554e5308160fe6c6048728c7f8197321d0e4b8396e43e2a0",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "994d8a357a085c9d372ae3a668e28c3fc3ffef2e3f60a503af27b404528ce55d"
+        }
+      },
+      "14": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/14.png",
+        "asset_sha256": "9ab15e39a73bd1cf7e3d5e4854840114ab8b93e9106f8d0e233ccc2b2b43eea1",
+        "environment_frame_sha256": "268d2daed25f2b6185ad9f607b093139c2d358bcc2c8e610a1a8af377f5b891d",
+        "frame_directive_sha256": "faf9757f0a965fa259bd22d15fcf7200fe11729893d30232ba07ce93316ecb58",
+        "frame_contract_sha256": "6e334b914596bf0fcb32ee75125e5cd0e283558acfd86bbfab5f0d059b0d016e",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "6acad53123d70d45c9cfd4a8a7b2fb5882a5c3ce58c48e30d5451380276fd7f7"
+        }
+      },
+      "15": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/15.png",
+        "asset_sha256": "2b8a3678ca14876101c009bd55c9bf7e8843a0e905ec50539487b398737bdb51",
+        "environment_frame_sha256": "268d2daed25f2b6185ad9f607b093139c2d358bcc2c8e610a1a8af377f5b891d",
+        "frame_directive_sha256": "9fb416519b403026d5d50f6afc3af784a2bfc603f510c720336e7fe0714545dc",
+        "frame_contract_sha256": "1e90039ee4c4547d4dfb6ae698257f7c4f2376e6f3b870b007c7dc162bc5cca5",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "6c7450b7f3117d8809a1bf5d4aa337c1e6b3ce0ecb3697b98fe87c9ffac77934"
+        }
+      },
+      "16": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/16.png",
+        "asset_sha256": "7b42b58e042e1b0fb909910310801ad1c5afedecfcfd9aed89bc0f41776bc349",
+        "environment_frame_sha256": "d31192ac1d85f960423dcee2fab38c247c657b8127892e3e1c6448ad544d27da",
+        "frame_directive_sha256": "980946f11e3e8bba17f693e5545b439ba774c3f8f151ba98549238685f5d56c0",
+        "frame_contract_sha256": "c5ea40ef7e564b50614c2cc4779877bb78a5a1df83e142a336abd17a4c9c134a",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "e51dcc24186a02f50c2f048a742e7673331f3689486d5b1f336b6d02f69f0bd9"
+        }
+      },
+      "17": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/17.png",
+        "asset_sha256": "c3d8484293fe361177555706249e007cba2546244210b742fee79427ed22ebb7",
+        "environment_frame_sha256": "1494061fe16e1e35222380f022831c0dc83f0bb7928d541024ceb2a5f90277ff",
+        "frame_directive_sha256": "ca2486b5a7de41c92af8213ec69c389cfa06a9e86dfface7b30f53235ebefe34",
+        "frame_contract_sha256": "e9b7c522693d30fd3f344894a2a15e5ac2f5ce4f72ff7e6d49dcbdb5c405677a",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "8ba9c2a8786e0164351268bf39a8cbb5edee996df700b23b252e3ed60fd7df04"
+        }
+      },
+      "18": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/18.png",
+        "asset_sha256": "7f327a96b9af6fc32e2e87f05c3f3fc8454d2d811a2131469dceb9d6857a83a4",
+        "environment_frame_sha256": "1494061fe16e1e35222380f022831c0dc83f0bb7928d541024ceb2a5f90277ff",
+        "frame_directive_sha256": "8f3e49bbad2fe29f486fff0466986cfd086c7dd99d339d9de78dd3d106c14f72",
+        "frame_contract_sha256": "0bcb1c59841d0302fc48776a87e73503456a809b65b7bb3c6f7b6a527e0d01ff",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "0b46b4abb1a1f8dd269e0313e623bcf28a8683fb0961aad71a4acd7c11347793"
+        }
+      },
+      "19": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/19.png",
+        "asset_sha256": "3dd17f3aed826181af568c7e4a23c295cdd388990eb3b669b13bcc8a2e488af4",
+        "environment_frame_sha256": "07dcf35eafa402deab3d24222cdb5291b4beae5cf3ae52ff7976f78b41824402",
+        "frame_directive_sha256": "b22e84e75e3243c9f1d0d59b403322a355a4e952835a1f7d00714ee32e1031aa",
+        "frame_contract_sha256": "5e26a023d23024e593e89be111e2296c0c49bb10cd01f17e4c57d2ea52d35b94",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "011ea9a9e436b29e6ab6c1c35dd21d1f4db52a8c736acc634a099c87dd3da9f2"
+        }
+      },
+      "20": {
+        "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/20.png",
+        "asset_sha256": "31392bdd82d4a97495b7fbc50515f10dadca8eb69d801dd3277a40dceeb05055",
+        "environment_frame_sha256": "c55da8066829e1574fdc20633d1bac0c2525f37ab47746cc96d731ce51601d67",
+        "frame_directive_sha256": "92d9f1be4b0aac1550e61c74c0a74f12c6a881d76368e072051030cd537ad1a6",
+        "frame_contract_sha256": "c74c98cce544650124922bdddff749502239096d8bc5eaadac5947b75ef2b40b",
+        "source_binding": {
+          "story": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/02_泔水与金牌_StoryLock_V1.0.md",
+            "sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446"
+          },
+          "storyboard": {
+            "path": "episodes/17_狮驼岭/01_泔水与金牌/docs/03_泔水与金牌_20张正式分镜_V1.0.md",
+            "sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079"
+          },
+          "extraction_mode": "text_frame",
+          "frame_sha256": "bb94bfca71975020a87c836382d0d16660cb904239c8e130e2f6fbaadbd0e91b"
+        }
+      }
+    }
+  },
+  "attempt_request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/frame-semantic-attempt-1-request.json",
+  "finalized_at": "2026-09-17T17:58:24+08:00",
+  "final_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/frame-semantic-review.json"
+}

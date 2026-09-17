@@ -1,0 +1,1013 @@
+{
+  "schema_version": 3,
+  "status": "LOCKED",
+  "genre_family": "folk_horror",
+  "anomaly_applicable": true,
+  "anomaly_exception_reason": "",
+  "interaction_applicable": true,
+  "interaction_exception_reason": "",
+  "rules": {
+    "max_identical_setup_consecutive": 2,
+    "min_unique_setups_in_5_frames": 3,
+    "frame10_requires_new_question_or_evidence": true,
+    "scale_only_escalation_is_not_enough": true,
+    "max_passive_human_frames_after_confirmation": 2,
+    "emotion_intensity_range": [
+      0,
+      4
+    ],
+    "emotion_trigger_required_at_intensity_gte": 2,
+    "synchronized_theatrical_reaction_forbidden": true,
+    "max_consecutive_urgent_frames": 2,
+    "min_meaningful_interaction_per_5_human_frames": 1,
+    "max_meaningful_interaction_ratio": 0.75,
+    "opening_social_natural_interaction_required": false,
+    "require_large_and_small_scene": true,
+    "exact_scene_position_reuse_forbidden": true,
+    "min_cinematic_reference_frames": 2,
+    "practical_lighting_required": true,
+    "suspense_genre_requires_concealed_anomaly": true
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "camera_position": "主角胸前高度俯看腰侧，第一人称手持",
+      "subject_distance": "极近（贴到手背）",
+      "primary_subject": "骨头磨的腰牌与主角的手",
+      "action": "拇指把腰牌翻过来，蹭过背面歪歪扭扭的「巡」字",
+      "visual_function": "用一枚骨头工牌建立身份与它在骨阶里的位置",
+      "capture_purpose": "人物锚点 + 关键道具锚点",
+      "pov_mode": "first_person_handheld",
+      "location_zone": "第二道哨卡·木栅边",
+      "shot_scale": "detail",
+      "scene_position_id": "EP17_POS01_BONE_TAG",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "none",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "02",
+      "camera_position": "哨卡内侧平视，第一人称站立视角",
+      "subject_distance": "中等（三米内）",
+      "primary_subject": "木桩、梆子架、栅栏与蹲在旁边的野猪精",
+      "action": "把半块干粮扔给蹲在栅栏边的野猪精",
+      "visual_function": "建立这一班轮值的两个人和哨卡的日常基线",
+      "capture_purpose": "同层关系锚点 + 空间基线",
+      "pov_mode": "first_person_eye_level",
+      "location_zone": "第二道哨卡·木栅内侧",
+      "shot_scale": "medium",
+      "scene_position_id": "EP17_POS02_SENTRY_POST",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "none",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "P01",
+        "target": "P02",
+        "action": "把半块干粮扔给蹲着的野猪精",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "03",
+      "camera_position": "哨卡外崖边，垂直仰视整段山体",
+      "subject_distance": "极远（整段山体入画）",
+      "primary_subject": "云雾中露出的上中下三段山体",
+      "action": "抬头顺着山体往上看到看不见为止",
+      "visual_function": "一张画面里同时给出峰顶洞窟、半山回廊、山脚草棚三层",
+      "capture_purpose": "世界观层级封面",
+      "pov_mode": "first_person_eye_level",
+      "location_zone": "第二道哨卡·崖边仰视位",
+      "shot_scale": "extreme_wide",
+      "scene_position_id": "EP17_POS03_THREE_TIERS",
+      "cinematic_reference": {
+        "reference_id": "NEGATIVE_SPACE_SUSPENSE",
+        "technique_translation": "用大片没散尽的晨雾作负空间，把峰顶的骨白洞窟与山脚的草棚压在同一竖幅的上下两端，层级落差靠留白成立而不是靠特效",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "backlit_silhouette",
+        "suspense_function": "create_negative_space",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "fog_or_mist",
+        "purpose": "让三层结构先以轮廓浮出来，不直接展示白骨洞内部",
+        "physical_anchor": "山谷里没散尽的晨雾",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "observe",
+      "human_present": false,
+      "emotion": {
+        "state": "curious",
+        "intensity": 2,
+        "trigger": "抬头才发现这座山是分三层的，最上面那层亮得不像同一个地方",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "04",
+      "camera_position": "崖壁下方平视，逆着晨光",
+      "subject_distance": "远（整面崖壁）",
+      "primary_subject": "崖壁上被风吹动的一排排片状物",
+      "action": "顺着一排排挂件往上看到崖顶",
+      "visual_function": "让观众先读成晾晒的布，再意识到不是",
+      "capture_purpose": "恐怖地貌的认知反转",
+      "pov_mode": "first_person_eye_level",
+      "location_zone": "山道·崖壁下通道口",
+      "shot_scale": "wide",
+      "scene_position_id": "EP17_POS04_CLIFF_STREAMERS",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sunlight",
+        "contrast_mode": "backlit_silhouette",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "silhouette",
+        "purpose": "只用逆光把挂件打成没有细节的轮廓，让观众自己完成认知反转，避免任何血腥展示",
+        "physical_anchor": "背后的晨光与崖壁上的木杆",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "notice",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "风一吹整面崖壁都在动，路过的人没有一个抬头",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "05",
+      "camera_position": "山道台阶下仰拍，过肩视角",
+      "subject_distance": "远（沿视线纵深）",
+      "primary_subject": "主角的肩背与纵深里的三层山体",
+      "action": "站在台阶下抬头，视线一层层往上走",
+      "visual_function": "让观众跟着这双眼睛亲手量一次三层之间的距离",
+      "capture_purpose": "尺度感的主观确认",
+      "pov_mode": "first_person_over_shoulder",
+      "location_zone": "山道·三层台阶下",
+      "shot_scale": "medium",
+      "scene_position_id": "EP17_POS05_LOOKING_UP",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "soft_directional",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "observe",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "越往上越亮，也越往上越安静",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "06",
+      "camera_position": "半山回廊外侧仰角，从廊下往上看",
+      "subject_distance": "中近（廊柱与廊面）",
+      "primary_subject": "回廊上摆着的大碗、酒坛与垂下来的影子",
+      "action": "从廊下经过，抬眼看廊面上摆满的东西",
+      "visual_function": "把第二层的吃食拍成逆光轮廓，与山脚的泔水形成级差",
+      "capture_purpose": "骨阶第二层的实物证据",
+      "pov_mode": "first_person_eye_level",
+      "location_zone": "半山·回廊外廊下",
+      "shot_scale": "medium",
+      "scene_position_id": "EP17_POS06_CORRIDOR_UNDER",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "partial_illumination",
+        "suspense_function": "hide_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "foreground_occlusion",
+        "purpose": "用廊柱和垂下来的影子挡住碗里的东西，只给出数量的量感，不做食物特写",
+        "physical_anchor": "回廊木柱与廊檐投下来的影子",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "notice",
+      "human_present": false,
+      "emotion": {
+        "state": "curious",
+        "intensity": 2,
+        "trigger": "廊下摆着大碗和成排的酒坛，肉味是从上面飘下来的",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "07",
+      "camera_position": "贴地低角度，平视跟随一排脚",
+      "subject_distance": "近（脚与地面）",
+      "primary_subject": "一排杂兵的脚与崖壁下低压的通道",
+      "action": "跟着前面的人从垂下来的挂件底下快步走过",
+      "visual_function": "让日常通行和头顶的东西同时成立",
+      "capture_purpose": "集体默认的日常证据",
+      "pov_mode": "first_person_low_angle",
+      "location_zone": "山道·崖壁下阴影通道",
+      "shot_scale": "close",
+      "scene_position_id": "EP17_POS07_UNDER_THE_STRIPS",
+      "cinematic_reference": {
+        "reference_id": "OCCLUSION_REVEAL",
+        "technique_translation": "用垂下来的片状物挡住通道两边的视野，只留脚下一条能看见的路，信息由遮挡的缝隙给出",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sunlight",
+        "contrast_mode": "partial_illumination",
+        "suspense_function": "separate_foreground_background",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "foreground_occlusion",
+        "purpose": "把头顶的东西压成画面边缘上的形状，让观众先看脚下的日常",
+        "physical_anchor": "垂到人胸口高度的片状挂件",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "08",
+      "camera_position": "坡下空地俯视陶盆",
+      "subject_distance": "近（盆口满框）",
+      "primary_subject": "豁口陶盆里泡着的馊泔水",
+      "action": "把盆端到草棚门口放下",
+      "visual_function": "给出这一层一天里唯一还带热气的吃食",
+      "capture_purpose": "骨阶第三层的实物证据",
+      "pov_mode": "first_person_handheld",
+      "location_zone": "坡下空地·后厨倒泔水处",
+      "shot_scale": "close",
+      "scene_position_id": "EP17_POS08_SWILL_BASIN",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "hide_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "observe",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "盆里泡着的残渣已经看不出原形",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "09",
+      "camera_position": "草棚门口平视，略低",
+      "subject_distance": "中近（两人与盆同框）",
+      "primary_subject": "蹲着的两个杂兵与中间的陶盆",
+      "action": "把陶盆往对面推了半寸",
+      "visual_function": "把底层分配写成一次不用说话的推让",
+      "capture_purpose": "同层关系锚点 + 分配动作",
+      "pov_mode": "first_person_eye_level",
+      "location_zone": "坡下空地·草棚门口",
+      "shot_scale": "medium",
+      "scene_position_id": "EP17_POS09_SHARING",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "soft_directional",
+        "suspense_function": "separate_foreground_background",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "P01",
+        "target": "P02",
+        "action": "把陶盆往野猪精那边推半寸",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "10",
+      "camera_position": "哨卡前沿，透过雾看向山道尽头",
+      "subject_distance": "远（雾里一点）",
+      "primary_subject": "前景两只握着梆子和短刀的手，与雾里山道尽头的一点反光",
+      "action": "握着梆子站在原地，看见雾里那点光在往下走",
+      "visual_function": "让观众比画面里的人先看见那点光，并意识到它在往下移动",
+      "capture_purpose": "消息下行的第一个可见信号（触发）",
+      "pov_mode": "first_person_over_shoulder",
+      "location_zone": "第二道哨卡·前沿栏杆",
+      "shot_scale": "wide",
+      "scene_position_id": "EP17_POS10_LIGHT_IN_FOG",
+      "cinematic_reference": {
+        "reference_id": "DEEP_BACKGROUND_ANOMALY",
+        "technique_translation": "前景把手和工具拍实拍清，异常只作为远景里一个正在移动的小亮点，靠景深和雾距把信息放进背景深处",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "backlit_silhouette",
+        "suspense_function": "create_negative_space",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "fog_or_mist",
+        "purpose": "让那点反光保持不可辨认，只给出它在往下走的运动方向",
+        "physical_anchor": "山道上的雾与远处金属反光",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "notice",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "雾里山道尽头有一点反光，正一点一点往下走",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "11",
+      "camera_position": "俯瞰同一条山道，从峰顶一路看到山脚",
+      "subject_distance": "极远（整条山道）",
+      "primary_subject": "雾中下行的金牌令箭与沿路围上来的人",
+      "action": "一层一层往下传递金牌令箭",
+      "visual_function": "把消息拍成一条会往下流的实体，每过一层围上来的人多一层",
+      "capture_purpose": "世界观规则确认",
+      "pov_mode": "third_person_observational",
+      "location_zone": "全山·峰顶至山脚的骨阶山道",
+      "shot_scale": "extreme_wide",
+      "scene_position_id": "EP17_POS11_TOKEN_DESCENDING",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sunlight",
+        "contrast_mode": "backlit_silhouette",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "observe",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "金牌令箭从山顶一路传下：吃他一口肉，可得长生不老",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "12",
+      "camera_position": "哨卡上平视，背景带出远处另几处哨卡",
+      "subject_distance": "中等（两人）到远（其他哨卡）",
+      "primary_subject": "同时抬头的两个杂兵与远处也在抬头的哨卡",
+      "action": "在同一瞬间抬头看向山上的方向",
+      "visual_function": "把两个人的反应放大成整座山的反应",
+      "capture_purpose": "群体同步的尺度证据",
+      "pov_mode": "third_person_observational",
+      "location_zone": "第二道哨卡·空地与远山哨卡连线",
+      "shot_scale": "medium",
+      "scene_position_id": "EP17_POS12_SYNCHRONIZED_LOOKUP",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sunlight",
+        "contrast_mode": "hard_directional",
+        "suspense_function": "separate_foreground_background",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "notice",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "整座山在同一瞬间抬头",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "shared_attention",
+        "actor": "P01",
+        "target": "P02",
+        "action": "两个人同时抬头看向山顶的同一个方向",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "13",
+      "camera_position": "空地上俯拍磨刀石与手",
+      "subject_distance": "近（磨刀石与刀）",
+      "primary_subject": "磨刀石、刀身上新磨出的亮面与地上新崩的碎木屑",
+      "action": "把刀按在磨刀石上来回推",
+      "visual_function": "用一连串磨刀动作把全山的贪婪落成同一个声音",
+      "capture_purpose": "群体状态的可听可见证据",
+      "pov_mode": "first_person_handheld",
+      "location_zone": "哨卡下·空地磨刀处",
+      "shot_scale": "close",
+      "scene_position_id": "EP17_POS13_WHETSTONE",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sunlight",
+        "contrast_mode": "hard_directional",
+        "suspense_function": "shadow_contradiction",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "磨刀声从四面八方连成一片",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "14",
+      "camera_position": "哨卡栅栏正面平视，略低",
+      "subject_distance": "中等（半身到整段栅栏）",
+      "primary_subject": "撞进栅栏的野猪精与飞起来的碎木屑",
+      "action": "用肩膀撞碎自家哨卡的栅栏冲出去",
+      "visual_function": "把同一具身体从蹲着分食到撞栏的突变放在同一天里",
+      "capture_purpose": "狂热的第一处物理后果（直接回应）",
+      "pov_mode": "third_person_observational",
+      "location_zone": "第二道哨卡·栅栏缺口",
+      "shot_scale": "medium",
+      "scene_position_id": "EP17_POS14_FENCE_BREAK",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sunlight",
+        "contrast_mode": "hard_directional",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "observe",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 4,
+        "trigger": "野猪精撞碎哨卡的栅栏，叫嚷着要立头功换半碗唐僧肉",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "15",
+      "camera_position": "仰角，逆着日光拍喊话的人",
+      "subject_distance": "中等（半身剪影）",
+      "primary_subject": "举着豁口短刀喊叫的野猪精（逆光剪影）",
+      "action": "把豁口短刀举过头顶，对着山上喊",
+      "visual_function": "用剪影给出狂热的量，不给出脸与獠牙的细节",
+      "capture_purpose": "底层给自己算出来的价码",
+      "pov_mode": "first_person_eye_level",
+      "location_zone": "哨卡下·坡边",
+      "shot_scale": "close",
+      "scene_position_id": "EP17_POS15_RAISED_BLADE",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sunlight",
+        "contrast_mode": "backlit_silhouette",
+        "suspense_function": "create_negative_space",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "silhouette",
+        "purpose": "只给举刀的轮廓和张开的口型，不做獠牙与面部细节，避免把人物拍成海报",
+        "physical_anchor": "背后的天光",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "consequence",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 4,
+        "trigger": "他举着刀对着山上喊，嘴张到最大",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "16",
+      "camera_position": "全山夜景远景，从山脚抬头看整座山",
+      "subject_distance": "极远",
+      "primary_subject": "从山脚到峰顶连成一片的火把，与最高处往下淌的一线金光",
+      "action": "一整座山同时亮起来",
+      "visual_function": "把个人悲剧推成四万八千人的群体规模",
+      "capture_purpose": "全篇最大的尺度跃迁",
+      "pov_mode": "third_person_observational",
+      "location_zone": "全山·夜",
+      "shot_scale": "extreme_wide",
+      "scene_position_id": "EP17_POS16_MOUNTAIN_ABLAZE",
+      "cinematic_reference": {
+        "reference_id": "LIGHT_BOUNDARY_REVEAL",
+        "technique_translation": "用火把的光边界把山体切成一层层的横带，层级由亮度分层给出，不靠旁白说明",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fire_or_stove",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "observe",
+      "human_present": false,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "火把从山脚一层层连到峰顶，金光在最高处往下淌",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "17",
+      "camera_position": "人群中段平视，前景是主角的手",
+      "subject_distance": "近（前景手）到远（人群脚下）",
+      "primary_subject": "前景停在半空的梆子与远处一片往前的脚和火把",
+      "action": "站在往前涌的人群里没有动",
+      "visual_function": "动与不动挤在同一张画面里",
+      "capture_purpose": "主角与全山的错位",
+      "pov_mode": "first_person_handheld",
+      "location_zone": "山道·人群中的空位",
+      "shot_scale": "medium",
+      "scene_position_id": "EP17_POS17_STANDING_STILL",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fire_or_stove",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "reversal",
+      "human_action_stage": "consequence",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "欢呼声最高的时候，他手里那只手还停在原来的高度",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "18",
+      "camera_position": "胸口高度俯看手里那根梆子",
+      "subject_distance": "极近（梆子满框）",
+      "primary_subject": "主角握着旧木梆子的手，指节冻得发红",
+      "action": "把敲了一夜的梆子握紧，没有放下",
+      "visual_function": "把全篇唯一的私人物件放大到整幅",
+      "capture_purpose": "主角没有参与的物证",
+      "pov_mode": "first_person_handheld",
+      "location_zone": "山道·人群边缘",
+      "shot_scale": "close",
+      "scene_position_id": "EP17_POS18_IN_HAND",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fire_or_stove",
+        "contrast_mode": "partial_illumination",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "reversal",
+      "human_action_stage": "consequence",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "野猪精的喊声就在耳边，梆子还是冰凉的",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P02",
+        "target": "P01",
+        "action": "野猪精隔着人喊他一起上山",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "19",
+      "camera_position": "身后略高处，拍他的后颈与肩背轮廓",
+      "subject_distance": "近（后颈与肩）",
+      "primary_subject": "主角的后颈，与落在上面的一片火光",
+      "action": "微微仰头，第一次认真看向山顶",
+      "visual_function": "把「后脖颈发凉」的身体直觉拍成落在皮肤上的光",
+      "capture_purpose": "本集情绪落点（高潮）",
+      "pov_mode": "third_person_over_shoulder",
+      "location_zone": "山道·人群边缘的暗处",
+      "shot_scale": "close",
+      "scene_position_id": "EP17_POS19_LIGHT_ON_NAPE",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fire_or_stove",
+        "contrast_mode": "partial_illumination",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "light_and_shadow",
+        "purpose": "火光只落在后颈一条，脸始终留在阴影里，主角身份不靠正脸建立",
+        "physical_anchor": "山顶火把投下来的一片光斑",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "consequence",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "后颈一阵发凉，他第一次抬头看山顶",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "20",
+      "camera_position": "草棚门口，前景那盆泔水与远处一路亮到峰顶的山道",
+      "subject_distance": "极远（山道全线）到近（前景盆）",
+      "primary_subject": "前景那盆没动过的泔水与远处一路亮到峰顶的骨阶",
+      "action": "站在原地，把从山脚到山顶的层数又数了一遍",
+      "visual_function": "把全篇的分层结论压回最初那盆泔水上",
+      "capture_purpose": "终局重读 + 不选边的留白",
+      "pov_mode": "first_person_eye_level",
+      "location_zone": "坡下空地·草棚门口",
+      "shot_scale": "wide",
+      "scene_position_id": "EP17_POS20_SAME_BASIN",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fire_or_stove",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "create_negative_space",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "consequence",
+      "human_present": false,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "我们连大王剩下的肉汤都要抢破头",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    }
+  ]
+}

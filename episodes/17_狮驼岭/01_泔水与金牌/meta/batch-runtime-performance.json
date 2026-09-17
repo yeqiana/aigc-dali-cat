@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "batches": [
+    {
+      "batch_id": "BATCH_1a7d58250286",
+      "planned_count": 1,
+      "returned_count": 1,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 1,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-17T17:24:49+08:00"
+    },
+    {
+      "batch_id": "BATCH_caffe0eca964",
+      "planned_count": 5,
+      "returned_count": 5,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 3,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-17T17:26:00+08:00"
+    },
+    {
+      "batch_id": "BATCH_cc0d467beb86",
+      "planned_count": 5,
+      "returned_count": 5,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 3,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-17T17:26:10+08:00"
+    },
+    {
+      "batch_id": "BATCH_83b46e49adfa",
+      "planned_count": 5,
+      "returned_count": 5,
+      "provider": "codex_subscription",
+      "logical_batch": true,
+      "native_multi_image": false,
+      "single_http_request": false,
+      "execution_mode": "logical_parallel_fanout",
+      "max_workers": 3,
+      "evidence_not_authority": true,
+      "finished_at": "2026-09-17T17:26:19+08:00"
+    }
+  ],
+  "kind": "batch_runtime_performance",
+  "generated_at": "2026-09-17T17:24:49+08:00"
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "authority": "Story Build Voice Contract",
+  "voice_card": {
+    "person": "P01",
+    "role": "狮驼岭南麓第二道哨卡敲梆子的巡山小妖（獐子精），连人形都没褪干净，腰上是骨头磨的腰牌",
+    "age": 22,
+    "education_and_knowledge_boundary": "没念过书，不识字法，只会认自己腰牌背面那个刻歪的「巡」字；不知道唐僧是谁、取经是干什么的，也不知道长生不老意味着什么。整座山的规矩是他从轮班里一天一天看出来的：上面三层吃的不一样，下面的活儿不一样。",
+    "recording_reason": "轮夜班守卡，梆子要按点数敲到换班；空下来就把眼前的事在心里过一遍，怕自己哪天连哪一层该吃什么都会忘。没有人让他讲，他是讲给自己听的。",
+    "knows_now": "他知道这座山是分三层的，知道峰顶和回廊吃什么、自己这一层等什么；他知道那天清晨金牌令箭从山顶一路传下来说吃唐僧肉能长生不老；他知道同卡的野猪精当场撞碎了自家栅栏。",
+    "does_not_know": "他不知道唐僧肉到底会不会分下来、会怎么分、自己能不能分到；不知道金牌令箭是谁发的；不知道大王和上面那两层在打什么算盘，也不知道这件事最后会落到谁头上。",
+    "stress_language": "越到后面话越短，把看见的顺序一件一件摆出来，先说上面、再说自己这一层；句子主动加「我们」「咱们」，把话从自己身上挪到整层人身上。",
+    "fear_language_change": "发凉的时候不加形容词，改成一个很具体的身体动作：握住、没有放下、没有跟着走；句尾从陈述变成自问，用「真能……吗」收尾。",
+    "ordinary_vocabulary": "只用「梆子」「腰牌」「栅栏」「哨卡」「轮班」「后厨」「泔水」「盆」「山上」「下面」这类身边能摸到的词，不用「仙气」「道行」「业障」「宿命」「阶层」「分配」这类词。",
+    "forbidden_technical_terms": "不出现任何宗教、修行、经文法器类说法，不出现现代社会学与管理学词汇（阶层、分配、制度、公平、内卷），不使用诵念式或经文式句式。"
+  },
+  "subtitle_policy": {
+    "max_visible_chars": 48,
+    "continuous_three_frame_test": true,
+    "read_aloud_test": true,
+    "delete_subtitle_test": true,
+    "do_not_repeat_visible_anomaly": true,
+    "allow_short_fragments_and_self_correction": true
+  }
+}

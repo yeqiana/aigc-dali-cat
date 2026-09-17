@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "runtime": "Story OS V2.7",
+  "generated_at": "2026-09-17T17:06:19.570007+08:00",
+  "stage": "VISUAL_LOCK_FINAL_VERIFY",
+  "episode": "01_泔水与金牌",
+  "decision": "PASS",
+  "checks": {
+    "baseline_review": true,
+    "four_admission_roles": true,
+    "visual_lock_plan_exists": true
+  },
+  "frames": [
+    {
+      "frame": 1,
+      "role": "ordinary_baseline",
+      "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/candidates/scheduled/01-7df397dc164b-a1.png",
+      "sha256": "d7c4b3a4caec076d865463db060ca79d848b7274929458ec202c7544064c40c3",
+      "contract_sha256": "8fad1677f50a88889f40337766e87a2c4a13e737f30833e2852252d5a48099fd",
+      "frame_contract_sha256": "8fad1677f50a88889f40337766e87a2c4a13e737f30833e2852252d5a48099fd"
+    },
+    {
+      "frame": 16,
+      "role": "worst_capture_condition",
+      "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/candidates/scheduled/16-daa08d47e29c-a1.png",
+      "sha256": "7b42b58e042e1b0fb909910310801ad1c5afedecfcfd9aed89bc0f41776bc349",
+      "contract_sha256": "c5ea40ef7e564b50614c2cc4779877bb78a5a1df83e142a336abd17a4c9c134a",
+      "frame_contract_sha256": "c5ea40ef7e564b50614c2cc4779877bb78a5a1df83e142a336abd17a4c9c134a"
+    },
+    {
+      "frame": 10,
+      "role": "first_major_anomaly",
+      "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/candidates/scheduled/10-9e264bc18eb4-a1.png",
+      "sha256": "a618819b2556a0cae1c1d7e2d777655950db7750239abbc5df49e27370668947",
+      "contract_sha256": "a20fe5e4b004b843b01e3d361657a26f32036751d175aaff0f2a3fd5ee0c7ffc",
+      "frame_contract_sha256": "a20fe5e4b004b843b01e3d361657a26f32036751d175aaff0f2a3fd5ee0c7ffc"
+    },
+    {
+      "frame": 19,
+      "role": "high_impact_admission",
+      "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/candidates/scheduled/19-d671c8b8ec1c-a1.png",
+      "sha256": "3dd17f3aed826181af568c7e4a23c295cdd388990eb3b669b13bcc8a2e488af4",
+      "contract_sha256": "5e26a023d23024e593e89be111e2296c0c49bb10cd01f17e4c57d2ea52d35b94",
+      "frame_contract_sha256": "5e26a023d23024e593e89be111e2296c0c49bb10cd01f17e4c57d2ea52d35b94"
+    }
+  ],
+  "next_stage": "VISUAL_CALIBRATED"
+}

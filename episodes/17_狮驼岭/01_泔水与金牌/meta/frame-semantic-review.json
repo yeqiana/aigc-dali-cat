@@ -1,0 +1,261 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "story_sha256": "c6d8feebd0e3c0c77cdf1fde048968ec30bf74986acfa7d16259028656d19446",
+  "storyboard_sha256": "2236f78e7002d4eec300275d674f5f43eab5acd5164af1e6fbcf1ef483971079",
+  "visual_contract_sha256": "0837199bec975871f017be085868192731ac1168b38557cd2dc84426bbca9ae2",
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-17T17:57:55+08:00",
+    "request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/frame-semantic-attempt-1-request.json",
+    "request_id": "frame-semantic-a1-c4b26706a6afcb82",
+    "request_fingerprint": "c4b26706a6afcb828f1c63354383c027d8282fb9fcc1afbbbe10679312ae9083",
+    "review_scope": "FULL_FRAME_SET"
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "asset_sha256": "d7c4b3a4caec076d865463db060ca79d848b7274929458ec202c7544064c40c3"
+    },
+    {
+      "frame": "02",
+      "asset_sha256": "ad5db1f368766f8c4ce0388370aec609d302be88d84158b930966e15d5dff013"
+    },
+    {
+      "frame": "03",
+      "asset_sha256": "90be318f75a323c98d68ad970195bdd5603a0d27dfc8e865a4985ae0271776fe"
+    },
+    {
+      "frame": "04",
+      "asset_sha256": "ecef6ccb1d15c06ea00153e022f7b17c575e39042d5545fac47c5ef9d23c5590"
+    },
+    {
+      "frame": "05",
+      "asset_sha256": "8824f8f98f869781e131d97ca0179df12758a60a67cf3613679b07727d75eca0"
+    },
+    {
+      "frame": "06",
+      "asset_sha256": "d159093670e537861d8fea6cd629a27210933a9140571ff8ec4cf949639ae9c8"
+    },
+    {
+      "frame": "07",
+      "asset_sha256": "c936b057300658a288ecbe52980d0582e93579319f25a9978012a5676b8c45dd"
+    },
+    {
+      "frame": "08",
+      "asset_sha256": "fb5a9ebe6f82b02a5656884619c37ca8ed98f905d9c42b9428867d18a953a225"
+    },
+    {
+      "frame": "09",
+      "asset_sha256": "1ca421f7254900ab56582bcb1e6febc34240a303133f086a0a778665e4029f9c"
+    },
+    {
+      "frame": "10",
+      "asset_sha256": "a618819b2556a0cae1c1d7e2d777655950db7750239abbc5df49e27370668947"
+    },
+    {
+      "frame": "11",
+      "asset_sha256": "c968debe8965fc60a9a9ad790504efe92d96eee9612bfdd66667320a4118fee0"
+    },
+    {
+      "frame": "12",
+      "asset_sha256": "10076c3eaa8dc25fcf7c0ba294c618d4419292cf384fd27bb0a366629dffe142"
+    },
+    {
+      "frame": "13",
+      "asset_sha256": "19b55c980039c171046fb13ecf4dbbedc7089bc785a6e8118d73459052aa04c5"
+    },
+    {
+      "frame": "14",
+      "asset_sha256": "9ab15e39a73bd1cf7e3d5e4854840114ab8b93e9106f8d0e233ccc2b2b43eea1"
+    },
+    {
+      "frame": "15",
+      "asset_sha256": "2b8a3678ca14876101c009bd55c9bf7e8843a0e905ec50539487b398737bdb51"
+    },
+    {
+      "frame": "16",
+      "asset_sha256": "7b42b58e042e1b0fb909910310801ad1c5afedecfcfd9aed89bc0f41776bc349"
+    },
+    {
+      "frame": "17",
+      "asset_sha256": "c3d8484293fe361177555706249e007cba2546244210b742fee79427ed22ebb7"
+    },
+    {
+      "frame": "18",
+      "asset_sha256": "7f327a96b9af6fc32e2e87f05c3f3fc8454d2d811a2131469dceb9d6857a83a4"
+    },
+    {
+      "frame": "19",
+      "asset_sha256": "3dd17f3aed826181af568c7e4a23c295cdd388990eb3b669b13bcc8a2e488af4"
+    },
+    {
+      "frame": "20",
+      "asset_sha256": "31392bdd82d4a97495b7fbc50515f10dadca8eb69d801dd3277a40dceeb05055"
+    }
+  ],
+  "perceptual_hashes": [
+    {
+      "frame": "01",
+      "asset_sha256": "d7c4b3a4caec076d865463db060ca79d848b7274929458ec202c7544064c40c3",
+      "dhash256": "82c651c7c4c5cf0c4e9f4eea49a449904c9b055a243c23ec107e0c9f0e9d8b11",
+      "ahash256": "0fff07ffdfff8fff0fbf0fdf1fef1b2119e01f300df0078007f801f800300000"
+    },
+    {
+      "frame": "02",
+      "asset_sha256": "ad5db1f368766f8c4ce0388370aec609d302be88d84158b930966e15d5dff013",
+      "dhash256": "dcb89466946614a6148c9c8fa4efa4e7ac876f47ad33b4a21c3906904380e4c0",
+      "ahash256": "9dffbdffbdfd3dff3dffbdfeadd00d0080000000a000200010000c03060303ff"
+    },
+    {
+      "frame": "03",
+      "asset_sha256": "90be318f75a323c98d68ad970195bdd5603a0d27dfc8e865a4985ae0271776fe",
+      "dhash256": "623ee03e580779331b3922286c017f000b3001b8007a321f1200c78034a43122",
+      "ahash256": "ffffffffffffffffffffffffc03ff00f3e03030000c000380000000000000000"
+    },
+    {
+      "frame": "04",
+      "asset_sha256": "ecef6ccb1d15c06ea00153e022f7b17c575e39042d5545fac47c5ef9d23c5590",
+      "dhash256": "64fe267f2617628e80db8054a055a8466c4a234f844f428fc943c12080c94172",
+      "ahash256": "0fff0dff0cff07bf07ff07ff03f800ff003f003f003f001f0007000300000000"
+    },
+    {
+      "frame": "05",
+      "asset_sha256": "8824f8f98f869781e131d97ca0179df12758a60a67cf3613679b07727d75eca0",
+      "dhash256": "8c03ec036c07248d249d48bfc87f427e96bf99bb0db163fdc96384bb2cd34af5",
+      "ahash256": "01ff00ff00ff0dff0fff0fff03fc07e00000100008000680020001c001800080"
+    },
+    {
+      "frame": "06",
+      "asset_sha256": "d159093670e537861d8fea6cd629a27210933a9140571ff8ec4cf949639ae9c8",
+      "dhash256": "9d9f9fbf9fb739972d9b3d9f3dbd3d9b91ed312b0a1b08938068000100040020",
+      "ahash256": "3e003e003f003f007f807f80ffa0ffb037fa03fc007400000000000000000000"
+    },
+    {
+      "frame": "07",
+      "asset_sha256": "c936b057300658a288ecbe52980d0582e93579319f25a9978012a5676b8c45dd",
+      "dhash256": "508bd80967654321d969e1896194c4d4c690e4876cbdc344c33e02f30dc9cf28",
+      "ahash256": "003f001f401f400f8007c003c10185a08dbf0dbf0ffa0fff07fc3fe0ff029c00"
+    },
+    {
+      "frame": "08",
+      "asset_sha256": "fb5a9ebe6f82b02a5656884619c37ca8ed98f905d9c42b9428867d18a953a225",
+      "dhash256": "0ce1098201d1883a3f1f4389b6cc5c890d83872670199d239d168a5ea6560e4c",
+      "ahash256": "09df01ff0ff700f7003c7f3fffbffbbe7fbe04390032300438381e300c000000"
+    },
+    {
+      "frame": "09",
+      "asset_sha256": "1ca421f7254900ab56582bcb1e6febc34240a303133f086a0a778665e4029f9c",
+      "dhash256": "4ee4dfa45ed69b53395969d2bcd6fe56ce56c74da34eb1c51fccc35cc1de402e",
+      "ahash256": "fc00f803f80cf00ff0076004f00df00d800d041806198000ff00fff00ffc07fc"
+    },
+    {
+      "frame": "10",
+      "asset_sha256": "a618819b2556a0cae1c1d7e2d777655950db7750239abbc5df49e27370668947",
+      "dhash256": "8677c677330f1c8f0e1f039d02f7026e91ae544e657de31e3a63b6c5c6249f31",
+      "ahash256": "fffedffe7ffc7ffc7ffc1ffa0ff807f003500000004000002004000000000000"
+    },
+    {
+      "frame": "11",
+      "asset_sha256": "c968debe8965fc60a9a9ad790504efe92d96eee9612bfdd66667320a4118fee0",
+      "dhash256": "8bff931f004fc011519dd81f9c1f7c077c0219890b8407c685b490dcb0f75a6c",
+      "ahash256": "bfff1fff03ff007f017f00fe007f00ff607f331f1fbf1fbf070b000000000000"
+    },
+    {
+      "frame": "12",
+      "asset_sha256": "10076c3eaa8dc25fcf7c0ba294c618d4419292cf384fd27bb0a366629dffe142",
+      "dhash256": "e24091009490843bc103c9278338a8fa25386534e54aa5d2071c54da23ccc36c",
+      "ahash256": "01ff07ff03ff01ff03fe03fe03e103e00fe30461000100010c010400078007c0"
+    },
+    {
+      "frame": "13",
+      "asset_sha256": "19b55c980039c171046fb13ecf4dbbedc7089bc785a6e8118d73459052aa04c5",
+      "dhash256": "7846160bcb4a909b049c0e468cd4ccd87808e98e8c828d31a190a41c9c0c3a2e",
+      "ahash256": "e0ff14ff1ff417f00ff83ffc3bffdbf3c2fbc17ff91f98070001003000383078"
+    },
+    {
+      "frame": "14",
+      "asset_sha256": "9ab15e39a73bd1cf7e3d5e4854840114ab8b93e9106f8d0e233ccc2b2b43eea1",
+      "dhash256": "321a92da93ac9b143f348bb1cb9666b86d3dec6de4e2c8c6c39c2e7f66da46b8",
+      "ahash256": "fff7b7f0be19fe09fc40120200000c314870c8588d808388de307de0e480fc01"
+    },
+    {
+      "frame": "15",
+      "asset_sha256": "2b8a3678ca14876101c009bd55c9bf7e8843a0e905ec50539487b398737bdb51",
+      "dhash256": "ce57e8bec37cca5dc633cc22e38373126a9f609fb04218111a08582478b47496",
+      "ahash256": "fdfffbffcfffdfff8fff8fff873f403f00300000000000000000000000000000"
+    },
+    {
+      "frame": "16",
+      "asset_sha256": "7b42b58e042e1b0fb909910310801ad1c5afedecfcfd9aed89bc0f41776bc349",
+      "dhash256": "883f003b0c3e206f084f001e304ea46ece07d02c8da18edba659132b1c2d9717",
+      "ahash256": "006001f001f803f803fe02f867fceffcc01cc0201bc31fb00eb000f600400028"
+    },
+    {
+      "frame": "17",
+      "asset_sha256": "c3d8484293fe361177555706249e007cba2546244210b742fee79427ed22ebb7",
+      "dhash256": "856e83566398774c904604d73237a646a4860d8138e3385f93cec3a44b991856",
+      "ahash256": "0fc00e006f377fff07fd03e004200cfc0dfd180733c77bf09790840008001080"
+    },
+    {
+      "frame": "18",
+      "asset_sha256": "7f327a96b9af6fc32e2e87f05c3f3fc8454d2d811a2131469dceb9d6857a83a4",
+      "dhash256": "366911adb1d9133315b244b8423918710c960d856724a7c6c6864c8379812782",
+      "ahash256": "3ff33ff8f7b0ffe47fe70de300e700e71d801f027e09af808c00400000000000"
+    },
+    {
+      "frame": "19",
+      "asset_sha256": "3dd17f3aed826181af568c7e4a23c295cdd388990eb3b669b13bcc8a2e488af4",
+      "dhash256": "00000022092021410a102b12649a7cc97cc070810c9a4df396d63c9b48fadae6",
+      "ahash256": "0000004002000006000020004000f000e00060003f801fe03f807fb0ffc0ff80"
+    },
+    {
+      "frame": "20",
+      "asset_sha256": "31392bdd82d4a97495b7fbc50515f10dadca8eb69d801dd3277a40dceeb05055",
+      "dhash256": "6c1e60dee39be2f3ec5fce0fcd23ec16ad16a3323cbce16f01b22711c021403a",
+      "ahash256": "01ff47ffc7f487e681fc807c800480008000a000700000d87fff7e3f007f00ff"
+    }
+  ],
+  "near_duplicate_pairs": [],
+  "issue_codes": [],
+  "critic_summary": {
+    "passed": true,
+    "notes": "20/20 帧按 29 项检查逐帧看实际发布像素（4:5 / 1080x1350 approved），并为 01/05/09/11/15/18/19 追加 2 倍放大裁切复核身份与道具细节。全片无相邻或非相邻近重复帧；同一日四段环境（01-11 晨雾、12-15 雾散硬日照、16-20 火把夜）光位与地面干湿按段连续；P01 全程第一人称，只出手、腰牌、梆子、后颈、肩背与脚，无清晰正脸，故事世界里没有出现任何摄影器物；20 帧主体与信息增量各不相同，字幕只补画面里确实存在的东西。已如实记录的像素级局限：01 的「巡」字只成立为歪扭旧刻痕、读不出可逐笔辨认的汉字；15 逆光边缘仍可辨出耳的轮廓与张开的嘴部边缘；16 无法把「一线金光往下淌」单独从成片火光里分离出来；04 下角虚焦前景辨不出是否为主角肩背。以上均不影响帧级判定，但按规范如实登记。"
+  },
+  "summary": {
+    "passed": true
+  },
+  "caption_source": "episodes/17_狮驼岭/01_泔水与金牌/meta/subtitles.yaml",
+  "caption_source_sha256": "dcebb90aef33e205ddeff4c5b71aa128429d054bb4df1cb1eb91756d701bfb1a",
+  "caption_mode": "per_frame",
+  "caption_frame_sha256": {
+    "01": "3b596e0278bb3d2e7884cc0e0a6248dc2e78453d302a9f14b53f727abb2e16a9",
+    "02": "85c30b1b25699779cddb774f8891213dba9afc5737c1bf7a3ce936dcda0b61eb",
+    "03": "aae806681cc7ba724da9a8ecfad43f85f18098e25c76a054d6beeba44505795a",
+    "04": "88b09b201fcbccf8241cf06b26691fa396b37ed17019bfc4edceecd98d81a36d",
+    "05": "10be6d14f94c9a28fd288e08acedbd7b0b368bf996f1e69d962e772a6234360e",
+    "06": "776b9ae7e2fcf79a4c320f172206fc1089948aa8b79aeb24e609247f9170261b",
+    "07": "a6dcbd79d8c11515c6869c4084df8f46d2241f3992337c1c202e8f9e359d2a21",
+    "08": "e594a42f2b3132189ac55050fee7523f1c96bd59b23623240a3f998d5f6959f2",
+    "09": "fc91905ac1dc9f4220172fcf805f6706fcefe098dfa76bb7257c44ab7d80ced1",
+    "10": "6bf60564c5f5c997b3c742b59847ef995215bc8910891ccec647f26e4524c042",
+    "11": "eef4b76c1219352d146707a6b58b5702d98fd7a25e11813f175b5252adb1d4e7",
+    "12": "e6dbaa02f482daeaa758dbb41ca8b37ef15fb385c559676b8eec79ba2a34bb52",
+    "13": "1f616ba45763f970395a3d950666adf171e7876827a9ad97bd4ebbf25b863ed8",
+    "14": "c858efc79c7b7b1cd8b788947cd28b66fe6457a842c06b54d97a99385c4db458",
+    "15": "afecc8a2cf90b17c9fdacf64035f6cfdd1e3454455a530a192f9be4a41ff3c44",
+    "16": "67620c0c5cbdd67cfb6ab8d6cbb0853ec2197e2445c2c8ec274db913fdc98460",
+    "17": "933506a5b5ddd4edf3a4642de39aa659c97c44072745c56a4de64e39299e6f40",
+    "18": "80cd8882fd96c885a7bc032989476a988344a2f3d1183c4d03d9938488463f8c",
+    "19": "e3c36aed93654d781ff2f986430f9f8623ab9078c3a7b0da30fb80efcd8f0969",
+    "20": "f7ea97289fbd07466eafa58f34f9ca6721a353163ebd1b7caf11c56b16f6c08c"
+  },
+  "incremental_contract": {
+    "version": 1,
+    "mode": "full_baseline"
+  }
+}

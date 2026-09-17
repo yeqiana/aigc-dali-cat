@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "applicable": false,
+  "mode": "not_applicable",
+  "reason": "多人同行的旅行/返乡/出行故事默认用前 1-2 张自拍合照建立人物关系与正常世界。",
+  "exception_reason": "本集设定在狮驼岭妖国，全片没有任何拍摄设备，也没有手机、车辆、签到类现代出行行为；主角是第一人称自述的巡山小妖，无法自拍也无法合照。开头两张改为用骨头腰牌特写与哨卡日常建立人物关系与正常世界，符合「先在异常之前建立日常」的本意，因此按不适用处理。",
+  "opening_frames": [],
+  "rules": {
+    "preferred_frame_range": [
+      1,
+      2
+    ],
+    "preferred_contexts": [
+      "vehicle",
+      "destination_checkin"
+    ],
+    "selfie_required_when_applicable": true,
+    "minimum_people_visible": 2,
+    "establish_relationship_before_anomaly": true,
+    "strong_anomaly_forbidden_in_opening_anchor": true,
+    "commercial_or_staged_group_photo_forbidden": true,
+    "allow_exception_with_reason": true
+  }
+}

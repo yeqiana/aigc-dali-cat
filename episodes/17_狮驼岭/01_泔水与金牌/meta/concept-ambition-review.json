@@ -1,0 +1,261 @@
+{
+  "candidates": [
+    {
+      "id": "C01",
+      "ambition_band": "A2",
+      "scores": {
+        "one_line_hook": 14,
+        "hero_frame": 14,
+        "escalation_ceiling": 9,
+        "climax_visual_payoff": 8,
+        "mechanism_novelty": 9,
+        "discussion_space": 6
+      },
+      "concept_voltage": 60,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": false,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "骨头磨的腰牌是极少数能替代台词的底层身份物件，特写本身自带陌生感和可读性，封面帧成立。",
+        "结尾把骨牌踩碎是原剧情里唯一一次角色主动动作，物件线能一路收束到落点。"
+      ],
+      "risks": [
+        "整条线停在物件特写层面，升级只有'金牌流光'一次对照，撑不起 20 帧的像素级递进。",
+        "中段与高潮的视觉差别主要是同一双手和同一枚牌，容易连续多帧只换角度，触发分镜密度红线。"
+      ]
+    },
+    {
+      "id": "C02",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 18,
+        "escalation_ceiling": 14,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 80,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "一张垂直构图同时装下回廊的肉与草棚的陶盆，中间用层层石阶连接，世界观不需要一个字就讲完。",
+        "豁口陶盆里的静止水面倒映峰顶灯火，是全池成本最低、杀伤最高的一次对照，纯像素可读。"
+      ],
+      "risks": [
+        "叙事线以空间对照为主，角色行动偏被动，需要在分镜中额外补足'消息传下来'的因果推进帧。",
+        "前景陶盆与远景灯火的反差需要现场光比真实成立，否则容易拍成拼贴式海报。"
+      ]
+    },
+    {
+      "id": "C03",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 14,
+        "hero_frame": 13,
+        "escalation_ceiling": 14,
+        "climax_visual_payoff": 9,
+        "mechanism_novelty": 9,
+        "discussion_space": 7
+      },
+      "concept_voltage": 66,
+      "wordless_test": {
+        "stop_scroll": false,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "'敲给谁听'这个疑问天然适合第一人称自述，声音先行的节奏与'单帧单拍'口播结构契合。",
+        "层层响上去的梆子、喊声、铜锣能用同一动作在整座山重复，尺度扩张是可拍的。"
+      ],
+      "risks": [
+        "核心是声音事件，静止画面无法直接承载'第几声''有多响'，封面帧钩子偏弱。",
+        "依赖字幕解释敲击次数，属于典型文本依赖型揭示，与无字测试相抵触。"
+      ]
+    },
+    {
+      "id": "C04",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 15,
+        "hero_frame": 17,
+        "escalation_ceiling": 15,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 79,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "认知反转发生在观众脑内：先读成晾晒的布，第二眼才意识到是什么，无字理解成本极低。",
+        "高潮靠风向改变后整面崖壁齐刷刷翻向一侧，不出现一滴血仍把恐怖推到规模层面，完全符合不以血腥肢解作抓力的规范。"
+      ],
+      "risks": [
+        "恐怖地貌一旦拍实容易被读成血腥展示，需要严格控制为远景轮廓加逆光，实际出图容错率低。",
+        "该线以地貌为主角，第一人称小妖的主动动作与结尾落点需要额外设计，否则与已锁剧情的收束脱节。"
+      ]
+    },
+    {
+      "id": "C05",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 17,
+        "escalation_ceiling": 19,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 10,
+        "discussion_space": 8
+      },
+      "concept_voltage": 83,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "'四万八千个肚子，一个名额'把长生肉从一个传闻变成一道粗糙的算术题，讨论空间硬。",
+        "从两人一盆泔水推到整山火把连成一片的夜景全景，是本池唯一一次真正的量级跃迁，无字也能读出放大。"
+      ],
+      "risks": [
+        "极远景全山图在 4:5 竖幅里容易糊成一团火点，尺度参照物（哨卡、栅栏、陶盆）必须始终留在画面里。",
+        "群体尺度叙事会稀释第一人称的贴身感，需靠固定 P01 的前景锚点把视角拉回来。"
+      ]
+    },
+    {
+      "id": "C06",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 13,
+        "escalation_ceiling": 12,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 9,
+        "discussion_space": 9
+      },
+      "concept_voltage": 69,
+      "wordless_test": {
+        "stop_scroll": false,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "'半碗'这个量词本身就是全篇最狠的讽刺，讨论问题直指分配而不是猎奇，评论区承接力强。",
+        "从蹲着分食到撞碎栅栏，同一个身体隔着一条消息完成突变，前后对照在同一空间内成立。"
+      ],
+      "risks": [
+        "抽象命题天然依赖那句'换半碗唐僧肉尝尝长生滋味'的台词，属文本依赖型钩子，封面第一眼不抓人。",
+        "高潮画面按设定没有肉只有喊，视觉爆点偏平，难以承担 20 帧的 payoff。"
+      ]
+    },
+    {
+      "id": "C07",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 12,
+        "discussion_space": 9
+      },
+      "concept_voltage": 86,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "把'极乐净土'这个词和画面里的骨白色直接对撞：一张垂直构图里从上到下三层山体用同一种骨白由亮到暗串起来，世界观当场成立。",
+        "仰拍过肩视角让观众跟着小妖的眼睛亲手量一次那三层的高度，距离感不是解释出来的，是走出来的。",
+        "高潮把'金牌令箭'当成实体河流来拍：一条雾中山道一路下行，每过一层围上来的人就多一层，谣言的手感和传播的速度同时可见。",
+        "与已锁剧情完全同源，不需要新增设定，却能把全篇从'底层抱怨'升级为'世界规则本身就是这样分层的'，讨论问题落在公平性上。"
+      ],
+      "risks": [
+        "三层山体同色系需要在光比和雾量上做严格区分，否则容易糊成一张没有层次的骨白海报。",
+        "垂直分层封面在第一眼容易被读成仙侠世界观展示图，必须在画面里保留草棚、栅栏、泔水盆等底层现实锚点，才与禁用清单里的仙侠海报区分开。",
+        "'金牌令箭下行'这种把消息具象化的拍法需要在分镜约束里锁死为真实雾中山道的物理下坡，不能拍成发光特效轨道。"
+      ]
+    },
+    {
+      "id": "C08",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 17,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 81,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "把消息本身当成主角来拍：同一张画面里塞进三个高度上的三个瞬间，传播速度可视，机制新鲜度高于同池多数方案。",
+        "高潮用'主角已经跑出画面、只剩满地扔下的工具'收尾，是一次有胆量的缺席式终点，纯像素成立。"
+      ],
+      "risks": [
+        "多人多时刻并置的构图在单帧静态图里容易被读成废片，需要极强的位置设计，出图容错率低。",
+        "高潮缺席主角会削弱第一人称贴身感与结尾'踩碎骨牌'的连续性，情绪落点可能悬空。"
+      ]
+    },
+    {
+      "id": "C09",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 14,
+        "hero_frame": 15,
+        "escalation_ceiling": 11,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 8,
+        "discussion_space": 7
+      },
+      "concept_voltage": 65,
+      "wordless_test": {
+        "stop_scroll": false,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "以'没动的手'作为静场核心，情绪完全靠对比产生，符合底部视角的克制气质。",
+        "把'后脖颈发凉'这种身体直觉落成落在后颈上的火光，是一次诚实且不需要台词的转译。"
+      ],
+      "risks": [
+        "全篇建立在'不动'上，动作差几乎为零，20 帧里极易出现连续同构图，触发分镜密度与机位签名红线。",
+        "尺度扩升空间小，高潮止于一次抬头，视觉爆点无法与 C05/C07 的量级竞争。"
+      ]
+    }
+  ],
+  "selected_id": "C07",
+  "selection_reason": "C07《净土是分层的》是本池里唯一能把已锁剧情的核心命题直接拍成一张图的候选：垂直构图用同一种骨白色把峰顶白骨洞、半山回廊、山脚草棚串成三层，'极乐净土'这个词和画面自己打架，无字即可读；17 帧级递进不靠新增设定，而靠仰拍视角一层层往上走、以及金牌令箭沿雾中山道下行时每过一层围上来的人多一层，把消息拍成一条物理存在的河。它同时满足三件事：无需字幕就能讲完世界观（stop_scroll）、层级差距在像素上可测（escalation_readable）、以及'为什么长生总是轮不到最下面的人'这一开放问题（curiosity_gap）。相对 C05 的纯尺度扩张，C07 保留了第一人称贴身锚点与结尾'踩碎骨牌'的收束路径；相对 C02 的双桌对照，它的升级余地更大、可延伸到全片高潮；相对 C04/C08 的高容错风险方案，它完全不需要血腥展示或多人多时刻并置，出图风险最低。C05、C08、C02、C04 作为并列 A4/A5 方向保留，用于视觉锁阶段的高冲击准入校准。",
+  "issue_codes": [],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "candidates_sha256": "2a4d33415cb4642c2c341d06c25530da71950d540e826c8476960fb008d2b31f",
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-17T16:16:27+08:00",
+    "request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/concept-ambition-attempt-1-request.json",
+    "request_id": "concept-ambition-a1-32e08e48ae37d201",
+    "request_fingerprint": "32e08e48ae37d201810b49112cc65d486726c7684964dbd9d997cb27f04bf661"
+  }
+}

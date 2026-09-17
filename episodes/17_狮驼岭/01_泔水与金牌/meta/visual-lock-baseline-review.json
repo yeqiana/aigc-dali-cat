@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "decision": "PASS",
+  "created_at": "2026-09-17T17:02:28+08:00",
+  "role": "ordinary_baseline",
+  "frame": 1,
+  "asset_path": "episodes/17_狮驼岭/01_泔水与金牌/media/candidates/scheduled/01-7df397dc164b-a1.png",
+  "sha256": "d7c4b3a4caec076d865463db060ca79d848b7274929458ec202c7544064c40c3",
+  "frame_contract_sha256": "8fad1677f50a88889f40337766e87a2c4a13e737f30833e2852252d5a48099fd",
+  "queue_item_id": "7df397dc164b",
+  "reviewer_scope": "delegated_pixel_review",
+  "checks": {
+    "visual_profile_match": "PASS",
+    "reality_first": "PASS",
+    "ordinary_life_density": "PASS",
+    "unposed_capture": "PASS",
+    "not_cinematic": "PASS",
+    "capture_credibility": "PASS",
+    "identity_usable": "PASS",
+    "group_members_distinct": "PASS"
+  },
+  "face_boxes": [
+    {
+      "character_id": "P01",
+      "x": null,
+      "y": null,
+      "w": null,
+      "h": null
+    }
+  ],
+  "note": "actual-pixel evidence, frame 01 (EP17_POS01_BONE_TAG), asset media/candidates/scheduled/01-7df397dc164b-a1.png: 真实感近景记录照片，一只瘦小、指缝有黑泥、手背带灰褐短毛的手把骨头腰牌的背面托在掌心；骨牌哑光骨白、边缘磨圆、有旧划痕与灰渍，背面有一组歪斜的刀刻痕迹（一道长弯托底、上方数道短斜笔），刻痕积灰、边缘毛糙，呈歪扭手刻的旧物感；远处只有一片灰蓝雾，没有建筑、旗帜、发射光或特效。构图不居中、不对称、不摆拍，属于拍照人低头看自己随身旧物的日常记录，符合 M00 现实优先口径；画面不含任何摄影器物，记录介质即 P01 自身双眼。局限（如实记录）：该刻痕在本帧尺度下只呈现为歪扭的旧刻痕，不构成可放大逐笔辨认的清晰汉字；『巡』字的语义由字幕与后续帧承担，本帧只承担“腰牌背后有旧刻痕”的视觉锚点。",
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-17T17:02:59+08:00",
+    "request_path": "episodes/17_狮驼岭/01_泔水与金牌/meta/runtime/reviews/visual-lock-baseline-attempt-1-request.json",
+    "request_id": "visual-lock-baseline-a1-07b362501ae844aa",
+    "request_fingerprint": "07b362501ae844aad8edf806553158706b655a26cf3a2b56208e35a31e1e0043"
+  },
+  "approved_at": "2026-09-17T17:03:00+08:00",
+  "provisional_master_created": false
+}

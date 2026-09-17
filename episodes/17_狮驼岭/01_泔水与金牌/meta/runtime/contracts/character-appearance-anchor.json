@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "contract_version": "2.2.1",
+  "derived_cache": true,
+  "world_identity_profile_id": "EPISODE_WORLD_IDENTITY_OVERRIDE",
+  "world_identity_effective_sha256": "1e8b4e997ed5e4904f7f5ae302668e3193648418ae02f663860b9544bf6200e6",
+  "character_contract_path": "meta/character-contract.json",
+  "character_contract_sha256": "0bec599b6f4ec616933bca1b7d72e48765e2f59eab6bf7530bdf231cdb3dbf38",
+  "character_visual_contract_path": "meta/character-visual-contract.json",
+  "character_visual_contract_sha256": "bd83122651d09b3a1961f9f970657ff16bb6d35d53344df955c1340d1c8df179",
+  "members": {
+    "P01": {
+      "character_id": "P01",
+      "nationality_context": "妖族（狮驼岭未褪尽人形的小妖）",
+      "resident_context": "狮驼岭底层巡山小妖（守卡、敲梆子、领后厨泔水的杂兵）",
+      "gender": "male",
+      "age": 22,
+      "build": "瘦小精瘦，肩背微驼，站姿是长期在风里缩着肩膀的样子",
+      "body_build": "lean_proportionate_natural",
+      "hair": {
+        "character_contract_anchor": "灰褐色短毛，两侧短、头顶乱，发丛里露出一对没褪净的獐子耳",
+        "haircut_anchor": "灰褐色短毛，两侧剪短、头顶自然乱；头顶偏后位置生出一对没褪净的獐子耳，耳内绒毛同色",
+        "hair_length_anchor": "短发，额头碎发压到眉上，耳侧露出人耳与獐耳共存的轮廓"
+      },
+      "clothing_anchor": "洗得发灰的粗布短褂配麻布围腰，草绳束腰，小腿缠着沾泥的布绑腿，赤脚穿草鞋，肩背处露出一点黄褐色的绒毛",
+      "device_anchor": null,
+      "visual_priority": "primary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_visible_texture",
+        "allowed_variation": [
+          "被山风吹乱",
+          "沾雾水打湿贴额",
+          "熬夜值更后压扁"
+        ],
+        "forbidden_unmotivated_drift": [
+          "nationality/cultural identity",
+          "apparent age",
+          "face identity",
+          "haircut or hair length",
+          "body build",
+          "character role",
+          "clothing anchor unless wardrobe contract changes it"
+        ]
+      }
+    },
+    "P02": {
+      "character_id": "P02",
+      "nationality_context": "妖族（狮驼岭未褪尽人形的小妖）",
+      "resident_context": "狮驼岭底层巡山小妖（守卡、敲梆子、领后厨泔水的杂兵）",
+      "gender": "male",
+      "age": 26,
+      "build": "膀大腰圆，脖子短粗，两枚向上翻的獠牙露在嘴外",
+      "body_build": "story_specific",
+      "hair": {
+        "character_contract_anchor": "粗硬的黑棕色鬃毛，从额头顶一直连到后颈，短而杂乱",
+        "haircut_anchor": "粗硬黑棕色鬃毛，从额头顶连着后颈，短、乱、不打理；额角有两撮立起的硬毛",
+        "hair_length_anchor": "短发偏扎，鬃毛盖到后脖颈，露出短粗的颈线"
+      },
+      "clothing_anchor": "胸襟敞开的粗麻单衣，肩上斜搭一条脏污兽皮，腰上系麻绳，赤脚露出蹄状脚趾",
+      "device_anchor": null,
+      "visual_priority": "secondary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_visible_texture",
+        "allowed_variation": [
+          "沾泥结块",
+          "狂奔后竖起",
+          "被汗打湿贴皮"
+        ],
+        "forbidden_unmotivated_drift": [
+          "nationality/cultural identity",
+          "apparent age",
+          "face identity",
+          "haircut or hair length",
+          "body build",
+          "character role",
+          "clothing anchor unless wardrobe contract changes it"
+        ]
+      }
+    }
+  },
+  "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+  "anchor_sha256": "e18a28283f1e763932d12ea75be35e32b4a9a73e83c6fbc17b2b9df0c79f5e04"
+}

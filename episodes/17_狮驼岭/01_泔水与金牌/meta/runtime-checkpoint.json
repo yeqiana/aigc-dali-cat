@@ -1,0 +1,165 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "last_completed": "RUNTIME_INITIALIZED",
+  "next_action": "READ_EPISODE_STATE",
+  "locked_frames": [],
+  "failed_frames": [],
+  "step_runs": [
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "564205ca61ec934ce35e1af4b42845ae8ffc32a3d5284706b7e4d5f4e85469c5",
+      "output_hash": "f989d0829a9ea31d16c1508afc36a1107a8762d844f540592f5da6ca3e306c40",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:25:07+08:00",
+      "note": "{\n  \"episode\": \"episodes/17_狮驼岭/01_泔水与金牌\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "a52de9452dc52f23d276526d8160023259279c8edb60898ba373d79e670b5972",
+      "output_hash": "2c087afb45823daa22455e1cd0cba3fc0e857f86e2417ac6d57a26c5c980a85d",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:25:09+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "HOST_WAIT",
+      "input_hash": "f944403d778d2718bd2c47696ee525cf10698d47a7ecc7ba6635c60be7664e0a",
+      "output_hash": "81cb7040a702033bb9ce4240533b313af54b22b2fb0b7b2e2d1bc33c9dd6f506",
+      "attempt": 1,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:25:10+08:00",
+      "note": "p of Story/PREIMAGE/Review/Release\", \"deterministic_scripts\": \"may run locally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-c4cfa3c62b92c891\", \"request_fingerprint\": \"c4cfa3c62b92c891d3d39d6ea3db6b4d41eab67e02b9669a646ac28d07162ee3\", \"created_at\": \"2026-09-17T16:25:10+08:00\", \"request_path\": \"episodes/17_\\u72ee\\u9a7c\\u5cad/01_\\u6cd4\\u6c34\\u4e0e\\u91d1\\u724c/meta/runtime/host-requests/host-c4cfa3c62b92c891.json\", \"current_request_path\": \"episodes/17_\\u72ee\\u9a7c\\u5cad/01_\\u6cd4\\u6c34\\u4e0e\\u91d1\\u724c/meta/runtime/product-host-request.json\"}"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "544a1e52f75b510cf1146b61cb897c2877862e2169747bd50501598d7066fc79",
+      "output_hash": "f90c52cc4417bd0a7bd3c5e0ace2d7b1b567eea6523eee4d1f924344f433eecb",
+      "attempt": 4,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:01+08:00",
+      "note": "{\n  \"episode\": \"episodes/17_狮驼岭/01_泔水与金牌\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "13aaad83f97dbb4b20db9b02a9385520c64576154c53a55214c60a53f3936d89",
+      "output_hash": "eb6cd5d1f35c182404b4e9d391c188db101e504cee8aff3396c02f5a4d7c2693",
+      "attempt": 4,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:03+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "REUSED",
+      "input_hash": "41a8a9ca9dc2c54419b40267b1ed806c1ab507fed198183ec8bec44c1ba252ec",
+      "output_hash": "6f2e113b91e96ff3d10e9e980aa52c0647ff7acfddc990ff34d51aee69054ef3",
+      "attempt": 2,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:03+08:00",
+      "note": "preproduction handoff already valid"
+    },
+    {
+      "step": "VISUAL_LOCK",
+      "status": "HOST_WAIT",
+      "input_hash": "417c69f911d26ced3054ab7a3f4f9efe587a98e321c198eb5444ef6ca27e93ee",
+      "output_hash": "367cde954ec4654e961ee62cce9e0ba16dc08b9cd7cc6c5b297b36336bb94ce6",
+      "attempt": 1,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:03+08:00",
+      "note": "p of Story/PREIMAGE/Review/Release\", \"deterministic_scripts\": \"may run locally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-293c1e8c7969570a\", \"request_fingerprint\": \"293c1e8c7969570a8b156b14551f56100817e5c1aab46d6348b549ce4995c911\", \"created_at\": \"2026-09-17T16:30:03+08:00\", \"request_path\": \"episodes/17_\\u72ee\\u9a7c\\u5cad/01_\\u6cd4\\u6c34\\u4e0e\\u91d1\\u724c/meta/runtime/host-requests/host-293c1e8c7969570a.json\", \"current_request_path\": \"episodes/17_\\u72ee\\u9a7c\\u5cad/01_\\u6cd4\\u6c34\\u4e0e\\u91d1\\u724c/meta/runtime/product-host-request.json\"}"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "2dd8cabc01534056773e2afbb61d5b89fe0c82a67a326eb9d480601454cb7739",
+      "output_hash": "170646d080802e2d610a0a3d512da03e1f3bbdc2f5a15133d007445c3bfb24a2",
+      "attempt": 5,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:08+08:00",
+      "note": "{\n  \"episode\": \"episodes/17_狮驼岭/01_泔水与金牌\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "13aaad83f97dbb4b20db9b02a9385520c64576154c53a55214c60a53f3936d89",
+      "output_hash": "eb6cd5d1f35c182404b4e9d391c188db101e504cee8aff3396c02f5a4d7c2693",
+      "attempt": 5,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:10+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "REUSED",
+      "input_hash": "41a8a9ca9dc2c54419b40267b1ed806c1ab507fed198183ec8bec44c1ba252ec",
+      "output_hash": "6f2e113b91e96ff3d10e9e980aa52c0647ff7acfddc990ff34d51aee69054ef3",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:10+08:00",
+      "note": "preproduction handoff already valid"
+    },
+    {
+      "step": "VISUAL_LOCK",
+      "status": "HOST_WAIT",
+      "input_hash": "417c69f911d26ced3054ab7a3f4f9efe587a98e321c198eb5444ef6ca27e93ee",
+      "output_hash": "367cde954ec4654e961ee62cce9e0ba16dc08b9cd7cc6c5b297b36336bb94ce6",
+      "attempt": 2,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:11+08:00",
+      "note": "p of Story/PREIMAGE/Review/Release\", \"deterministic_scripts\": \"may run locally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-293c1e8c7969570a\", \"request_fingerprint\": \"293c1e8c7969570a8b156b14551f56100817e5c1aab46d6348b549ce4995c911\", \"created_at\": \"2026-09-17T16:30:03+08:00\", \"request_path\": \"episodes/17_\\u72ee\\u9a7c\\u5cad/01_\\u6cd4\\u6c34\\u4e0e\\u91d1\\u724c/meta/runtime/host-requests/host-293c1e8c7969570a.json\", \"current_request_path\": \"episodes/17_\\u72ee\\u9a7c\\u5cad/01_\\u6cd4\\u6c34\\u4e0e\\u91d1\\u724c/meta/runtime/product-host-request.json\"}"
+    },
+    {
+      "step": "INCREMENTAL_PLAN",
+      "status": "PASS",
+      "input_hash": "39731468bd7c306ee3e3a873236db685034847447523b7ca814db9409e6b7918",
+      "output_hash": "6b3e4254498bc7d132ebc3c2b28b3c8f13af4d9336d501de4c702a1cf05ea953",
+      "attempt": 6,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:16+08:00",
+      "note": "{\n  \"episode\": \"episodes/17_狮驼岭/01_泔水与金牌\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+    },
+    {
+      "step": "CREATIVE_STORY",
+      "status": "REUSED",
+      "input_hash": "13aaad83f97dbb4b20db9b02a9385520c64576154c53a55214c60a53f3936d89",
+      "output_hash": "eb6cd5d1f35c182404b4e9d391c188db101e504cee8aff3396c02f5a4d7c2693",
+      "attempt": 6,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:18+08:00",
+      "note": "target already valid"
+    },
+    {
+      "step": "PREIMAGE_COMPILE",
+      "status": "REUSED",
+      "input_hash": "41a8a9ca9dc2c54419b40267b1ed806c1ab507fed198183ec8bec44c1ba252ec",
+      "output_hash": "6f2e113b91e96ff3d10e9e980aa52c0647ff7acfddc990ff34d51aee69054ef3",
+      "attempt": 4,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:18+08:00",
+      "note": "preproduction handoff already valid"
+    },
+    {
+      "step": "VISUAL_LOCK",
+      "status": "HOST_WAIT",
+      "input_hash": "417c69f911d26ced3054ab7a3f4f9efe587a98e321c198eb5444ef6ca27e93ee",
+      "output_hash": "367cde954ec4654e961ee62cce9e0ba16dc08b9cd7cc6c5b297b36336bb94ce6",
+      "attempt": 3,
+      "started_at": null,
+      "finished_at": "2026-09-17T16:30:18+08:00",
+      "note": "p of Story/PREIMAGE/Review/Release\", \"deterministic_scripts\": \"may run locally when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated product review turn, then finalize it.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-293c1e8c7969570a\", \"request_fingerprint\": \"293c1e8c7969570a8b156b14551f56100817e5c1aab46d6348b549ce4995c911\", \"created_at\": \"2026-09-17T16:30:03+08:00\", \"request_path\": \"episodes/17_\\u72ee\\u9a7c\\u5cad/01_\\u6cd4\\u6c34\\u4e0e\\u91d1\\u724c/meta/runtime/host-requests/host-293c1e8c7969570a.json\", \"current_request_path\": \"episodes/17_\\u72ee\\u9a7c\\u5cad/01_\\u6cd4\\u6c34\\u4e0e\\u91d1\\u724c/meta/runtime/product-host-request.json\"}"
+    }
+  ],
+  "note": "Recovery evidence only; NOT a stage source.",
+  "runtime": "WORK",
+  "continuous_execution_authorized": true,
+  "approval_basis": "delegated_continuous_execution",
+  "updated_at": "2026-09-17T16:30:19+08:00"
+}

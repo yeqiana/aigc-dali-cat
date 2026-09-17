@@ -1,0 +1,444 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "engine": "story_os_subtitle_layout_v1",
+  "canonical_renderer": true,
+  "source": "episodes/17_狮驼岭/01_泔水与金牌/meta/subtitles.yaml",
+  "source_sha256": "dcebb90aef33e205ddeff4c5b71aa128429d054bb4df1cb1eb91756d701bfb1a",
+  "policy": {
+    "punctuation_only_second_line": "drop_entire_second_line",
+    "max_lines": 2,
+    "font": "Microsoft YaHei Bold",
+    "font_size": 42,
+    "stroke_width": 4,
+    "left_margin": 72,
+    "horizontal_alignment": "left",
+    "default_y_ratio": 0.52,
+    "preferred_vertical_zone": [
+      0.42,
+      0.62
+    ],
+    "outside_zone_requires_reason": true
+  },
+  "frames": {
+    "01": {
+      "caption": "我腰上这块牌子是骨头磨的，\n背面刻着一个「巡」字。",
+      "lines": [
+        "我腰上这块牌子是骨头磨的，",
+        "背面刻着一个「巡」字。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 486,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/01.png",
+      "base_sha256": "d7c4b3a4caec076d865463db060ca79d848b7274929458ec202c7544064c40c3",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/01.png",
+      "output_sha256": "a262f658533fa4283882ae7798b1c4a2a56bbb436cd3757a260952780b530c1f",
+      "y_ratio": 0.36,
+      "safe_zone_override_reason": "腰牌特写占满全幅，中段 0.52 正好是背面歪扭「巡」字的刻线所在；字幕上移到 0.36 的骨面边缘与雾底，避让对象：骨头腰牌背面的「巡」字刻痕。"
+    },
+    "02": {
+      "caption": "我是狮驼岭南麓的獐子精，\n守第二道哨卡，敲梆子。",
+      "lines": [
+        "我是狮驼岭南麓的獐子精，",
+        "守第二道哨卡，敲梆子。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 705,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/02.png",
+      "base_sha256": "ad5db1f368766f8c4ce0388370aec609d302be88d84158b930966e15d5dff013",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/02.png",
+      "output_sha256": "439ed2c3720e32d2bb84b452659db08df71eac249a270ef36686ddb2eac4c283",
+      "y_ratio": 0.5222,
+      "safe_zone_override_reason": ""
+    },
+    "03": {
+      "caption": "八百里狮驼岭，妖魔四万八千。",
+      "lines": [
+        "八百里狮驼岭，妖魔四万八千。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 576,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/03.png",
+      "base_sha256": "90be318f75a323c98d68ad970195bdd5603a0d27dfc8e865a4985ae0271776fe",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/03.png",
+      "output_sha256": "eb625044d72772a11de0fd52ef3571ccf42a0985f238434ac1971c772fefc9d1",
+      "y_ratio": 0.4267,
+      "safe_zone_override_reason": ""
+    },
+    "04": {
+      "caption": "外面传这里是妖族的极乐净土，\n只有底下的草芥知道，净土也是分层的。",
+      "lines": [
+        "外面传这里是妖族的极乐净土，",
+        "只有底下的草芥知道，净土也是分层的。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 609,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/04.png",
+      "base_sha256": "ecef6ccb1d15c06ea00153e022f7b17c575e39042d5545fac47c5ef9d23c5590",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/04.png",
+      "output_sha256": "e1836f245f3af7f546e5ac7ba67c6db6dd71c443fe23ab762fd9a948d3b83012",
+      "y_ratio": 0.4511,
+      "safe_zone_override_reason": ""
+    },
+    "05": {
+      "caption": "我这一层连人形都没褪干净。",
+      "lines": [
+        "我这一层连人形都没褪干净。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 741,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/05.png",
+      "base_sha256": "8824f8f98f869781e131d97ca0179df12758a60a67cf3613679b07727d75eca0",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/05.png",
+      "output_sha256": "5a51184e9f3858eae8dfd69693580e59aafb9389b4d250aadef73ff9b3e5bbaf",
+      "y_ratio": 0.5489,
+      "safe_zone_override_reason": ""
+    },
+    "06": {
+      "caption": "峰顶白骨洞里，大王们撕扯仙禽异兽，\n剩下的挂满山崖当风幡。",
+      "lines": [
+        "峰顶白骨洞里，大王们撕扯仙禽异兽，",
+        "剩下的挂满山崖当风幡。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 486,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/06.png",
+      "base_sha256": "d159093670e537861d8fea6cd629a27210933a9140571ff8ec4cf949639ae9c8",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/06.png",
+      "output_sha256": "68f136ef10b69c80edc9c8aada8620236bac36fbc6e3f3556243dcc6ce04c3b0",
+      "y_ratio": 0.36,
+      "safe_zone_override_reason": "主体现居中段，中段边缘能量 4.6 高于全帧中位数 3.1；字幕上移到 0.36 的低信息暗部，避让对象：回廊上的大碗、酒坛与垂下来的影子。"
+    },
+    "07": {
+      "caption": "崖上那些东西每天从我们头顶晃过去，\n一个抬头的都没有。",
+      "lines": [
+        "崖上那些东西每天从我们头顶晃过去，",
+        "一个抬头的都没有。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 573,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/07.png",
+      "base_sha256": "c936b057300658a288ecbe52980d0582e93579319f25a9978012a5676b8c45dd",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/07.png",
+      "output_sha256": "bfb2ee5d8650fe9efda3831918ae0323e95f259ac39bb14176cf13f76d115765",
+      "y_ratio": 0.4244,
+      "safe_zone_override_reason": ""
+    },
+    "08": {
+      "caption": "头目校尉坐在回廊里，大碗吃肉，\n喝带血的陈酿。",
+      "lines": [
+        "头目校尉坐在回廊里，大碗吃肉，",
+        "喝带血的陈酿。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 921,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/08.png",
+      "base_sha256": "fb5a9ebe6f82b02a5656884619c37ca8ed98f905d9c42b9428867d18a953a225",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/08.png",
+      "output_sha256": "df358f166663d7359995ca53a96d9e14a05c9c4a7496e2878cd03111af77a27f",
+      "y_ratio": 0.6822,
+      "safe_zone_override_reason": "豁口陶盆与盆沿新崩的缺口占满中段，边缘能量 24.8 高于全帧中位数 19.4；字幕下移到 0.68，避让对象：豁口陶盆与盆沿缺口。"
+    },
+    "09": {
+      "caption": "轮到我们，等的是后厨倒出来那盆馊泔水。",
+      "lines": [
+        "轮到我们，等的是后厨倒出来那盆馊泔水。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 894,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/09.png",
+      "base_sha256": "1ca421f7254900ab56582bcb1e6febc34240a303133f086a0a778665e4029f9c",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/09.png",
+      "output_sha256": "5c69316201ab23072f9225acf64e677ff31b7645471e4568c953edac6a5ad42e",
+      "y_ratio": 0.6622,
+      "safe_zone_override_reason": "蹲着的两个杂兵与中间那只陶盆在中段（边缘能量 13.7，高于全帧中位数 13.5）；字幕下移到 0.66 的低信息暗部，避让对象：两个人的蹲姿与陶盆。"
+    },
+    "10": {
+      "caption": "那天清晨，山道尽头有一点反光，\n正一点一点往下走。",
+      "lines": [
+        "那天清晨，山道尽头有一点反光，",
+        "正一点一点往下走。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 570,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/10.png",
+      "base_sha256": "a618819b2556a0cae1c1d7e2d777655950db7750239abbc5df49e27370668947",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/10.png",
+      "output_sha256": "d22905bb3d2ef1c426866798e43d9e734a485297fd3d9b47d4bcadcc1e30545a",
+      "y_ratio": 0.4222,
+      "safe_zone_override_reason": ""
+    },
+    "11": {
+      "caption": "是金牌令箭。",
+      "lines": [
+        "是金牌令箭。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 585,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/11.png",
+      "base_sha256": "c968debe8965fc60a9a9ad790504efe92d96eee9612bfdd66667320a4118fee0",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/11.png",
+      "output_sha256": "6f74dccbb9681ed3452ee88cacf2d5518e9f42dcec09b8e5f004a754e963c59e",
+      "y_ratio": 0.4333,
+      "safe_zone_override_reason": ""
+    },
+    "12": {
+      "caption": "山顶上发一句话，\n得靠人一层一层往下递。",
+      "lines": [
+        "山顶上发一句话，",
+        "得靠人一层一层往下递。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 864,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/12.png",
+      "base_sha256": "10076c3eaa8dc25fcf7c0ba294c618d4419292cf384fd27bb0a366629dffe142",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/12.png",
+      "output_sha256": "6b7b901d75d5c375c48e9e31b4f16c5d291e0ff28bc2c85332d39ed507b6cf73",
+      "y_ratio": 0.64,
+      "safe_zone_override_reason": "前景两个人的肩线落在中段（边缘能量 16.4，高于全帧中位数 12.8）；字幕下移到 0.64 的低信息暗部，避让对象：同时抬起的肩线。"
+    },
+    "13": {
+      "caption": "那句话是：东土大唐的取经僧进了地界，\n吃他一口肉，可得长生不老。",
+      "lines": [
+        "那句话是：东土大唐的取经僧进了地界，",
+        "吃他一口肉，可得长生不老。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 921,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/13.png",
+      "base_sha256": "19b55c980039c171046fb13ecf4dbbedc7089bc785a6e8118d73459052aa04c5",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/13.png",
+      "output_sha256": "70b311265869523866553d35cf56a3ee862887bade24752f8a3912087de9a651",
+      "y_ratio": 0.6822,
+      "safe_zone_override_reason": "磨刀石与刀身上新磨出的亮面占满中段，边缘能量 27.2 远高于全帧中位数 19.4；字幕下移到 0.68 的低信息地面暗部，避让对象：刀身亮面与地上碎木屑。"
+    },
+    "14": {
+      "caption": "整座山顿时像滚油里泼了冷水。",
+      "lines": [
+        "整座山顿时像滚油里泼了冷水。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 750,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/14.png",
+      "base_sha256": "9ab15e39a73bd1cf7e3d5e4854840114ab8b93e9106f8d0e233ccc2b2b43eea1",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/14.png",
+      "output_sha256": "4624976823f6fd07c01b67d6c74f96c67f634935648c71e73a7b9e765c7ab5ea",
+      "y_ratio": 0.5556,
+      "safe_zone_override_reason": ""
+    },
+    "15": {
+      "caption": "跟我一同守卡的野猪精，\n一头撞碎了我们自家的栅栏。",
+      "lines": [
+        "跟我一同守卡的野猪精，",
+        "一头撞碎了我们自家的栅栏。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 918,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/15.png",
+      "base_sha256": "2b8a3678ca14876101c009bd55c9bf7e8843a0e905ec50539487b398737bdb51",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/15.png",
+      "output_sha256": "8323b7be2590cde2e9f52fb30332d75ee037706d7f576bdfe0930134e672d1c9",
+      "y_ratio": 0.68,
+      "safe_zone_override_reason": "逆光剪影里举过头顶的豁口短刀与张嘴轮廓在中段（边缘能量 4.7，高于全帧中位数 4.3）；字幕下移到 0.68，避让对象：举刀的剪影轮廓。"
+    },
+    "16": {
+      "caption": "他喊着要立头功，\n换半碗唐僧肉尝尝长生的滋味。",
+      "lines": [
+        "他喊着要立头功，",
+        "换半碗唐僧肉尝尝长生的滋味。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 705,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/16.png",
+      "base_sha256": "7b42b58e042e1b0fb909910310801ad1c5afedecfcfd9aed89bc0f41776bc349",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/16.png",
+      "output_sha256": "e32e5d45910bba10e23b4787290b5df6a5a68fbdd71ef8115c77d20b3f10b828",
+      "y_ratio": 0.5222,
+      "safe_zone_override_reason": ""
+    },
+    "17": {
+      "caption": "满山的人都往上涌，\n我手里的梆子停在半空，没跟着走。",
+      "lines": [
+        "满山的人都往上涌，",
+        "我手里的梆子停在半空，没跟着走。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 921,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/17.png",
+      "base_sha256": "c3d8484293fe361177555706249e007cba2546244210b742fee79427ed22ebb7",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/17.png",
+      "output_sha256": "9fdf80b8a21536f7f6621a41b9f452a03f48c0775acabbc7b44c0afb97978314",
+      "y_ratio": 0.6822,
+      "safe_zone_override_reason": "前景停在半空的梆子落在中段（边缘能量 8.7，高于全帧中位数 7.1）；字幕下移到 0.68 的低信息暗部，避让对象：停在半空的梆子。"
+    },
+    "18": {
+      "caption": "敲了一夜，指节冻得发红，\n我一次也没把它放下。",
+      "lines": [
+        "敲了一夜，指节冻得发红，",
+        "我一次也没把它放下。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 921,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/18.png",
+      "base_sha256": "7f327a96b9af6fc32e2e87f05c3f3fc8454d2d811a2131469dceb9d6857a83a4",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/18.png",
+      "output_sha256": "f6edce14baae858c649540af7d79b16f6405e158e0c8ddc73a1a1e9298a78a8d",
+      "y_ratio": 0.6822,
+      "safe_zone_override_reason": "旧木梆子与冻红的指节占满中段，中段是全幅细节最密处（边缘能量 11.9，全帧中位数 5.9）；字幕下移到 0.68 的背景暗部，避让对象：梆子上的一圈浅坑与发红的指节。"
+    },
+    "19": {
+      "caption": "我握着冰凉的梆子，在满山的欢呼里\n只觉得后脖颈发凉。",
+      "lines": [
+        "我握着冰凉的梆子，在满山的欢呼里",
+        "只觉得后脖颈发凉。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 570,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/19.png",
+      "base_sha256": "3dd17f3aed826181af568c7e4a23c295cdd388990eb3b669b13bcc8a2e488af4",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/19.png",
+      "output_sha256": "558c31156d8781deb7b7aa7b2ebd1c2728715b459f2b6b8c83315779508000e8",
+      "y_ratio": 0.4222,
+      "safe_zone_override_reason": ""
+    },
+    "20": {
+      "caption": "我们连剩汤都要抢破头，\n这肉真能顺着骨阶淌到我们嘴里吗？",
+      "lines": [
+        "我们连剩汤都要抢破头，",
+        "这肉真能顺着骨阶淌到我们嘴里吗？"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 630,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/17_狮驼岭/01_泔水与金牌/media/approved/20.png",
+      "base_sha256": "31392bdd82d4a97495b7fbc50515f10dadca8eb69d801dd3277a40dceeb05055",
+      "output_path": "episodes/17_狮驼岭/01_泔水与金牌/production/publish/20.png",
+      "output_sha256": "90bd7770a00d88aff3296571d51f94348b49805747d20869f34ffba25b5a152f",
+      "y_ratio": 0.4667,
+      "safe_zone_override_reason": ""
+    }
+  },
+  "summary": {
+    "passed": true,
+    "frame_count": 20
+  }
+}

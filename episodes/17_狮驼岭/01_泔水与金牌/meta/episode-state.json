@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "17-01",
+  "series": "17_狮驼岭",
+  "title": "泔水与金牌",
+  "current_state": "PUBLISH_READY",
+  "updated_at": "2026-09-17T19:24:00+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-17T15:47:23+08:00",
+      "note": "Runtime Request locked_story ；17_狮驼岭 EP01/3 ；用户原文完整给定，不改剧情结构"
+    },
+    {
+      "state": "STORYBOARD_LOCKED",
+      "at": "2026-09-17T16:25:03+08:00",
+      "mode": "advance",
+      "note": "CREATIVE_STORY 收口：locked_story 原文忠实展开，20 帧 StoryLock/分镜落盘；concept-ambition、story-semantic、recent5-semantic、density、shot-progression、directing-quality 全部 PASS；story_lock 走 delegated_auto_review"
+    },
+    {
+      "state": "VISUAL_CALIBRATED",
+      "at": "2026-09-17T17:07:57+08:00",
+      "mode": "advance",
+      "note": "V2.1 four-admission Visual Lock: baseline frame 01 PASS separately, then frame 16/10/19 bound from production queue, 18-check isolated critic PASS, visual lock finalizer PASS, contact sheet rebuilt, delegated auto visual_lock locked"
+    },
+    {
+      "state": "PRODUCTION_PASSED",
+      "at": "2026-09-17T18:03:33+08:00",
+      "mode": "advance",
+      "note": "20 帧通过 WORK isolated 委托自动评审（29 项检查 x 20 帧，FULL_FRAME_SET，attempt 1），stage+字幕+声音卡+排版审计全 PASS；字幕 20/20 帧齐备（原文末句自问承担结局，不做静默收尾）；machine_gate / validate_episode / evidence_gate 三门禁 PASS"
+    },
+    {
+      "state": "PUBLISH_READY",
+      "at": "2026-09-17T19:24:00+08:00",
+      "mode": "advance",
+      "note": "RELEASE gouhuan: final candidate snapshot verify + delegated delivery verify + delegated release_lock; evidence gate all PASS"
+    }
+  ]
+}

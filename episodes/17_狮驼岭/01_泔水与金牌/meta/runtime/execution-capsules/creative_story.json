@@ -1,0 +1,540 @@
+{
+  "schema_version": 1,
+  "story_os": "2.1",
+  "step": "CREATIVE_STORY",
+  "current_state": "IDEA_LOCKED",
+  "runtime_request": {
+    "schema_version": 1,
+    "request_id": "20260917_154942_238d8ecc",
+    "created_at": "2026-09-17T15:49:42+08:00",
+    "mode": "full_auto",
+    "repository": {
+      "branch": "story",
+      "source": "user_explicit"
+    },
+    "topic": {
+      "title": "泔水与金牌",
+      "raw": "泔水与金牌"
+    },
+    "story_input": {
+      "mode": "locked_story",
+      "raw": "我的腰牌是骨头磨的，背面刻着歪歪扭扭的“巡”字。\n\n我是狮驼岭南麓的一只獐子精，负责在第二道哨卡敲梆子。八百里狮驼岭，妖魔四万八千，威名震动三界。人间传言这里是妖族的极乐净土，可只有底层的草芥才知道，净土也是分层的。\n\n大王们在峰顶的白骨洞里撕扯仙禽异兽，骨髓磨成粉砌墙，皮肉挂满山崖当风幡；头目校尉们坐在回廊里大碗吃肉，喝着带血的陈酿；而像我们这些连人形都没褪干净的杂兵，只能在腥臭的风里轮班，等着后厨倒出来的馊泔水。\n\n那天清晨，金牌令箭从山顶一路传下：东土大唐的取经僧进了地界，吃他一口肉，可得长生不老。\n\n整个山头瞬间像滚油里泼了冷水，小妖们磨刀霍霍，眼里全是贪婪的血丝。和我一同守卡的野猪精甚至激狂地撞碎了哨卡的栅栏，叫嚷着要立头功，换半碗唐僧肉尝尝长生的滋味。\n\n我握着冰凉的梆子，在狂热的欢呼声里只觉得后脖颈发凉。我们连大王剩下的肉汤都要抢破头，这等能逆天改命的金贵血肉，真能顺着这森严的骨阶，淌进我们这群蝼蚁的嘴里吗？",
+      "constraints": [],
+      "rewrite_policy": "logic_polish_only",
+      "preserve_core_intent": true,
+      "allow_structure_rewrite": false
+    },
+    "intent": {
+      "intent": "CREATE_EPISODE",
+      "source": "deterministic_rules",
+      "confidence": 1.0,
+      "reason_codes": [
+        "DEFAULT_CREATE"
+      ],
+      "normalized_request_sha256": "1011d83fbb9006ff77a5668b159eb877a7c83bcaa937c568192f494f92bec2e5",
+      "normalized_request": "读取 story 分支。全自动制作《泔水与金牌》,做到最终交付。\n不要改剧情:\n我的腰牌是骨头磨的,背面刻着歪歪扭扭的“巡”字。\n我是狮驼岭南麓的一只獐子精,负责在第二道哨卡敲梆子。八百里狮驼岭,妖魔四万八千,威名震动三界。人间传言这里是妖族的极乐净土,可只有底层的草芥才知道,净土也是分层的。\n大王们在峰顶的白骨洞里撕扯仙禽异兽,骨髓磨成粉砌墙,皮肉挂满山崖当风幡;头目校尉们坐在回廊里大碗吃肉,喝着带血的陈酿;而像我们这些连人形都没褪干净的杂兵,只能在腥臭的风里轮班,等着后厨倒出来的馊泔水。\n那天清晨,金牌令箭从山顶一路传下:东土大唐的取经僧进了地界,吃他一口肉,可得长生不老。\n整个山头瞬间像滚油里泼了冷水,小妖们磨刀霍霍,眼里全是贪婪的血丝。和我一同守卡的野猪精甚至激狂地撞碎了哨卡的栅栏,叫嚷着要立头功,换半碗唐僧肉尝尝长生的滋味。\n我握着冰凉的梆子,在狂热的欢呼声里只觉得后脖颈发凉。我们连大王剩下的肉汤都要抢破头,这等能逆天改命的金贵血肉,真能顺着这森严的骨阶,淌进我们这群蝼蚁的嘴里吗?",
+      "requires_llm_rewrite": false,
+      "requires_clarification": false
+    },
+    "creative_hints": [],
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "image": {
+      "provider": "openai",
+      "model": "gpt-image-2",
+      "source": "system_default",
+      "strict_model": false,
+      "quality": "high"
+    },
+    "runtime": {
+      "execution_mode": "dag",
+      "continuous_execution": true,
+      "resume": true,
+      "max_image_workers": 3,
+      "fail_soft": true,
+      "incremental_reuse": true
+    },
+    "delivery": {
+      "mode": "auto",
+      "zip_required_for_completion": false
+    },
+    "user_intent": {
+      "full_auto_authorized": true,
+      "allow_story_strengthening": false,
+      "allow_story_rewrite": false,
+      "ask_before_each_step": false
+    },
+    "provenance": {
+      "source": "natural_language",
+      "original_request": "读取 story 分支。全自动制作《泔水与金牌》，做到最终交付。\n\n不要改剧情：\n我的腰牌是骨头磨的，背面刻着歪歪扭扭的“巡”字。\n\n我是狮驼岭南麓的一只獐子精，负责在第二道哨卡敲梆子。八百里狮驼岭，妖魔四万八千，威名震动三界。人间传言这里是妖族的极乐净土，可只有底层的草芥才知道，净土也是分层的。\n\n大王们在峰顶的白骨洞里撕扯仙禽异兽，骨髓磨成粉砌墙，皮肉挂满山崖当风幡；头目校尉们坐在回廊里大碗吃肉，喝着带血的陈酿；而像我们这些连人形都没褪干净的杂兵，只能在腥臭的风里轮班，等着后厨倒出来的馊泔水。\n\n那天清晨，金牌令箭从山顶一路传下：东土大唐的取经僧进了地界，吃他一口肉，可得长生不老。\n\n整个山头瞬间像滚油里泼了冷水，小妖们磨刀霍霍，眼里全是贪婪的血丝。和我一同守卡的野猪精甚至激狂地撞碎了哨卡的栅栏，叫嚷着要立头功，换半碗唐僧肉尝尝长生的滋味。\n\n我握着冰凉的梆子，在狂热的欢呼声里只觉得后脖颈发凉。我们连大王剩下的肉汤都要抢破头，这等能逆天改命的金贵血肉，真能顺着这森严的骨阶，淌进我们这群蝼蚁的嘴里吗？"
+    }
+  },
+  "runtime_execution": null,
+  "effective_execution_mode": "full_auto",
+  "runtime_fast_path": {
+    "schema_version": 1,
+    "module_version": "2.6.0",
+    "enabled": true,
+    "goal": "runtime_fast_path_without_creative_rule_changes",
+    "capability_cache_ttl_seconds": 21600,
+    "resume_capsule_required_on_context_restore": true,
+    "rolling_review_requires_verified_vision": true,
+    "raw_candidate_budget": {
+      "original": 2,
+      "repair": 2,
+      "exception": 2
+    },
+    "performance_slo": {
+      "green_seconds": 5400,
+      "yellow_seconds": 7200,
+      "red_above_seconds": 7200,
+      "gate": false,
+      "incident_above_seconds": 10800
+    },
+    "policies": {
+      "no_broad_repository_rescan_when_resume_capsule_fresh": true,
+      "technical_failure_does_not_consume_raw_candidate_budget": true,
+      "rolling_review_without_verified_vision": "UNCERTAIN",
+      "rolling_review_without_verified_vision_may_emit_repair_now": false,
+      "fast_path_fail_soft": true,
+      "source_authority_wins_on_sha_mismatch": true,
+      "candidate_budget_enforced_at_generation_entrypoints": true,
+      "queue_item_token_is_idempotent": true,
+      "technical_failure_releases_candidate_budget": true,
+      "budget_exhaustion_is_non_regenerating_block": true,
+      "atomic_candidate_budget": true,
+      "candidate_commit_before_review": true,
+      "review_failure_may_release_committed_candidate": false,
+      "caption_change_invalidates_visual_review": false,
+      "cross_shell_safe_argv_only": true,
+      "bash_heredoc_allowed": false,
+      "powershell_here_string_allowed": false,
+      "shell_true_allowed": false
+    },
+    "episode_candidate_budget": {
+      "formula": "min(60,max(20,frame_count+15))"
+    }
+  },
+  "runtime_capabilities": null,
+  "resume_capsule": null,
+  "character_contract": {
+    "schema_version": 1,
+    "status": "DRAFT",
+    "derived_from_pools": true,
+    "not_episode_stage": true,
+    "created_at": "2026-09-17T15:51:30+08:00",
+    "selection_seed": 3923833927929210367,
+    "era": {
+      "bucket": "modern_2020s",
+      "year": 2026,
+      "source": "explicit_hint_or_weighted"
+    },
+    "world_identity": {
+      "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+      "country": "China",
+      "region": "Mainland China",
+      "nationality_context": "Chinese",
+      "resident_context": "mainland Chinese local residents",
+      "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+    },
+    "cast": {
+      "type": "mixed_friend_group_4_5",
+      "size": 4,
+      "relationship": "朋友带朋友的小圈子",
+      "members": [
+        {
+          "id": "P01",
+          "pov": true,
+          "gender": "male",
+          "age": 25,
+          "build": "普通年轻人体型",
+          "hair": "普通黑色日常发型",
+          "clothing_anchor": "黑色短袖+深灰工装裤+运动鞋",
+          "device_anchor": "普通智能手机",
+          "nationality_context": "Chinese",
+          "resident_context": "mainland Chinese local residents"
+        },
+        {
+          "id": "P02",
+          "pov": false,
+          "gender": "male",
+          "age": 24,
+          "build": "普通年轻人体型",
+          "hair": "普通黑色日常发型",
+          "clothing_anchor": "灰色卫衣/短袖+休闲长裤+运动鞋",
+          "device_anchor": null,
+          "nationality_context": "Chinese",
+          "resident_context": "mainland Chinese local residents"
+        },
+        {
+          "id": "P03",
+          "pov": false,
+          "gender": "female",
+          "age": 25,
+          "build": "普通年轻人体型",
+          "hair": "普通黑色日常发型",
+          "clothing_anchor": "普通短袖+长裙+平底鞋",
+          "device_anchor": null,
+          "nationality_context": "Chinese",
+          "resident_context": "mainland Chinese local residents"
+        },
+        {
+          "id": "P04",
+          "pov": false,
+          "gender": "female",
+          "age": 24,
+          "build": "普通年轻人体型",
+          "hair": "普通黑色日常发型",
+          "clothing_anchor": "浅色短袖+牛仔裤+运动鞋",
+          "device_anchor": null,
+          "nationality_context": "Chinese",
+          "resident_context": "mainland Chinese local residents"
+        }
+      ]
+    },
+    "pov": {
+      "character_id": "P01",
+      "first_person": true
+    },
+    "entry": {
+      "type": "casual_work",
+      "label": "生活化工作",
+      "source": "weighted",
+      "reason": "由 Story Build 基于该生活化动机具体化"
+    },
+    "scene": {
+      "primary_category": "travel_road",
+      "primary_place": "服务区"
+    },
+    "role_policy": {
+      "protagonist_role": "普通年轻人/普通朋友小团体",
+      "career_function": "arrival_only",
+      "solves_anomaly_professionally": false
+    },
+    "no_anomaly_test": {
+      "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+      "ordinary_day_plan": "原本只是完成普通工作任务后返程",
+      "pass": true,
+      "must_be_rechecked_before_story_lock": true,
+      "rechecked_against_final_story": false
+    },
+    "continuity_policy": {
+      "member_count_changes_require_story_event": true,
+      "pov_character_id_stable": true,
+      "clothing_and_device_anchors_propagate_to_frame_contract": true
+    },
+    "ordinary_person_score": 100,
+    "forbidden_role_check": {
+      "pass": true,
+      "hits": []
+    },
+    "story_build_note": "这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。"
+  },
+  "invariants": {
+    "zip_is_delivery_adapter_not_stage_gate": true,
+    "codex_production_complete_at_publish_ready": true,
+    "concept_ambition_before_story_lock": true,
+    "image_first_propagation_gate": true,
+    "reality_limits_capture_not_concept": true,
+    "environment_is_physics_not_filter": true,
+    "resolved_frame_contract_is_derived_cache": true,
+    "generation_and_review_bind_same_frame_contract_sha": true,
+    "visual_lock_four_admissions": true,
+    "max_parallel_image_workers": 3,
+    "production_ledger_single_writer": true,
+    "technical_failure_does_not_consume_content_repair": true,
+    "scheduler_fail_soft": true,
+    "fast_scout_never_final_pass": true,
+    "final_candidate_snapshot_before_publish_ready": true,
+    "delivery_consumes_verified_snapshot": true,
+    "runtime_request_immutable_after_bind": true,
+    "auto_create_story_when_missing": true,
+    "user_seed_requires_strengthen_and_rewrite": true,
+    "default_image_model": "gpt-image-2",
+    "default_image_quality": "high",
+    "explicit_image_model_no_silent_fallback": true,
+    "current_visual_lock_calibration_count": 4,
+    "visual_lock_real_1_plus_3_barrier": true,
+    "visual_lock_dependents_require_baseline_review_pass": true,
+    "reference_arbitration_max_refs": 2,
+    "final_snapshot_locks_character_master_assets": true,
+    "human_response_interaction_enabled": true,
+    "emotion_intensity_max": 4,
+    "interaction_density_min_one_per_5_human_frames": true,
+    "performance_telemetry_fail_soft": true
+  },
+  "authority_files": [
+    {
+      "path": "config/storyos.yaml",
+      "exists": true,
+      "sha256": "dca7d1852c4c9e2ba2e31cd2bb4e84a9fe1187d358d4834d965ecf94dc25153c",
+      "bytes": 8447
+    },
+    {
+      "path": "config/index.yaml",
+      "exists": true,
+      "sha256": "e2b06340a9f7dde742b93dddcd25e849ad09f333974a540deec983aa317c1c9e",
+      "bytes": 8515
+    },
+    {
+      "path": "START_HERE.md",
+      "exists": true,
+      "sha256": "bb5566119d97768987b6a0371b04bda0af1d1d62eb3b3407b9e8a1f678baec34",
+      "bytes": 22306
+    },
+    {
+      "path": "SKILL.md",
+      "exists": true,
+      "sha256": "3fc79a98ccc3fbcb09a9ef451735847623f97e7aa304f90d5da1e2f816f5dd37",
+      "bytes": 28932
+    },
+    {
+      "path": "AGENTS.md",
+      "exists": true,
+      "sha256": "6feceb46849bb65ada13b908d609d453a2713618b8c0aa0d4d3b29c778201a6f",
+      "bytes": 20040
+    },
+    {
+      "path": "standards/制作规范_正式版.md",
+      "exists": true,
+      "sha256": "4e27706f639473dd7ee1c811a6beeb328c1bc4c0e08edc5a3850571713f37485",
+      "bytes": 64721
+    },
+    {
+      "path": "runtimes/workflow-contract.json",
+      "exists": true,
+      "sha256": "d68ad4c09eefaac04a0a7552d10add17c37b3ac09a826363387f9988a297e69c",
+      "bytes": 18816
+    },
+    {
+      "path": "standards/Character_And_Entry_Pool_V1.0.md",
+      "exists": true,
+      "sha256": "c5288a7c1d2037216e53946f6b6ebca29125dc30cbbfcfa340b20f584d6612e7",
+      "bytes": 2054
+    },
+    {
+      "path": "standards/character-pools.json",
+      "exists": true,
+      "sha256": "e4a13a6579cd286d71124d985ddb21a4ac281a66851223811b6f988a2ec9c061",
+      "bytes": 2769
+    },
+    {
+      "path": "standards/entry-motivation-pools.json",
+      "exists": true,
+      "sha256": "e968f2c0068f1c698426a566424374d47f524269e379a3e0fd704b066ec2939e",
+      "bytes": 4210
+    },
+    {
+      "path": "standards/scene-pools.json",
+      "exists": true,
+      "sha256": "31b8aeb7b2c368b82cdb30c27b906b1e5c3a3a15964cc36d657d012658767185",
+      "bytes": 2168
+    },
+    {
+      "path": "standards/forbidden-character-roles.json",
+      "exists": true,
+      "sha256": "c0b18e39cd4141f999a4b30bc190fa0bb59c5eb84bfe8b67828cde6ad2eb5459",
+      "bytes": 1179
+    },
+    {
+      "path": "runtimes/runtime-mode-contract-r2.json",
+      "exists": true,
+      "sha256": "0e14ce9d20a177fafafc2b76c146f31022793278560005376ddbfdfa8c5c47af",
+      "bytes": 1249
+    },
+    {
+      "path": "runtimes/runtime-fast-path-v251.json",
+      "exists": true,
+      "sha256": "dc6de81f01121080057ebf765b0ce86aa0626bc8010e57e9ee9ea7e3b7cfedae",
+      "bytes": 1567
+    },
+    {
+      "path": "library/catalog.json",
+      "exists": true,
+      "sha256": "20ecd1817b3dc4f9ffb01873307f32aa5c354b21831d463764473d588e8d3dc4",
+      "bytes": 3167
+    },
+    {
+      "path": "library/copy/intro-openers.json",
+      "exists": true,
+      "sha256": "b5b2b0bbc16329c0369f75040fe4fdde4a8d0d304b513ebcd7ab9463f9347f3f",
+      "bytes": 2572
+    },
+    {
+      "path": "standards/AIGC_Directing_Quality_V1.0.md",
+      "exists": true,
+      "sha256": "c7dc75dabe8ce6820a6637751cf48aadb1b5ebb17039682fb65bd77581446e33",
+      "bytes": 4525
+    },
+    {
+      "path": "standards/Character_Visual_And_Wardrobe_V1.0.md",
+      "exists": true,
+      "sha256": "8a372a254e4256a9eaa1cd085f9a28218827c9719ddf71112104c1d3dac179e7",
+      "bytes": 3036
+    },
+    {
+      "path": "standards/Character_Master_Final_Closure_V1.0.md",
+      "exists": true,
+      "sha256": "a8c741fa93e4ccc745bc64a4d888bf35579983c054498181f0c65693da339de5",
+      "bytes": 2241
+    },
+    {
+      "path": "standards/Human_Response_Interaction_V1.0.md",
+      "exists": true,
+      "sha256": "60f0e393bd11eaec516340e142e4bf30a6f5fc76f965abb74befb1b0d0cc7023",
+      "bytes": 2806
+    },
+    {
+      "path": "standards/wardrobe-scenario-profiles.json",
+      "exists": true,
+      "sha256": "e2a519a8378f140e98b3e4f7f9189a34d331e136b214b17adc707435b25bf689",
+      "bytes": 2553
+    },
+    {
+      "path": "config/profiles/account_creative/default.json",
+      "exists": true,
+      "sha256": "63b23f526c11601f5692718d4a9f7749f1908a96fcf274548d6f7396c52cbad9",
+      "bytes": 2358
+    },
+    {
+      "path": "standards/directing_grammar_v1.json",
+      "exists": true,
+      "sha256": "908456e0a314e7133308121853da2d3cec26b55b7c32098ec3db0c19b8222990",
+      "bytes": 5147
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "config/storyos.yaml",
+      "exists": true,
+      "sha256": "dca7d1852c4c9e2ba2e31cd2bb4e84a9fe1187d358d4834d965ecf94dc25153c",
+      "bytes": 8447
+    },
+    {
+      "path": "meta/runtime-execution.json",
+      "exists": false
+    },
+    {
+      "path": "meta/episode-state.json",
+      "exists": true,
+      "sha256": "dc1ad5cf214d8b4d7c6a881608b634f403583fb6610b88cb7a0dee103b71db07",
+      "bytes": 435
+    },
+    {
+      "path": "meta/resource-selection.json",
+      "exists": false
+    },
+    {
+      "path": "meta/story-gates.json",
+      "exists": true,
+      "sha256": "b9861e886551faf03acc944c6ededa50b294d1a400f2c11f967d6462414e5e7b",
+      "bytes": 3207
+    },
+    {
+      "path": "reports/account-learning-index.json",
+      "exists": true,
+      "sha256": "2976035a2a10efe5e1c484db5861d68cc4f79b39605bd86e148a60125f4cb5f6",
+      "bytes": 838
+    },
+    {
+      "path": "meta/directing-quality.json",
+      "exists": true,
+      "sha256": "78ade6fa472d04ea93453e3e6842a3974dd147363b9636c08b610908fe245690",
+      "bytes": 759
+    },
+    {
+      "path": "meta/voice-contract.json",
+      "exists": false
+    },
+    {
+      "path": "meta/storyboard-density-review.json",
+      "exists": false
+    },
+    {
+      "path": "meta/opening-social-anchor.json",
+      "exists": false
+    },
+    {
+      "path": "meta/character-visual-contract.json",
+      "exists": false
+    },
+    {
+      "path": "meta/shot-progression-review.json",
+      "exists": false
+    },
+    {
+      "path": "config/profiles/account_creative/default.json",
+      "exists": true,
+      "sha256": "63b23f526c11601f5692718d4a9f7749f1908a96fcf274548d6f7396c52cbad9",
+      "bytes": 2358
+    },
+    {
+      "path": "standards/directing_grammar_v1.json",
+      "exists": true,
+      "sha256": "908456e0a314e7133308121853da2d3cec26b55b7c32098ec3db0c19b8222990",
+      "bytes": 5147
+    },
+    {
+      "path": "story_os_manifest.json",
+      "exists": true,
+      "sha256": "16c74be95b16bf9168995716e6bdaa033756cf8e586b02b5d79911f4cbf4dc64",
+      "bytes": 22775
+    },
+    {
+      "path": "meta/runtime-request.json",
+      "exists": true,
+      "sha256": "62893e6f6f14a919045c2cbaa21e2583a398f45e1c6be743c0f153775645461c",
+      "bytes": 5481
+    },
+    {
+      "path": "meta/character-contract.json",
+      "exists": true,
+      "sha256": "4ae62f1346b4b1d4dcc97c543fc3fe337ccd50647abbab449083d20d78e06c6e",
+      "bytes": 3654
+    },
+    {
+      "path": "meta/world-identity.json",
+      "exists": false
+    },
+    {
+      "path": "config/profiles/world_identity/default.json",
+      "exists": true,
+      "sha256": "6abdb8eb90bc79fc983e3d045fb25eb8a894501d44d5576b9ce1d099cdfe01a9",
+      "bytes": 2649
+    },
+    {
+      "path": "standards/character-pools.json",
+      "exists": true,
+      "sha256": "e4a13a6579cd286d71124d985ddb21a4ac281a66851223811b6f988a2ec9c061",
+      "bytes": 2769
+    },
+    {
+      "path": "standards/entry-motivation-pools.json",
+      "exists": true,
+      "sha256": "e968f2c0068f1c698426a566424374d47f524269e379a3e0fd704b066ec2939e",
+      "bytes": 4210
+    },
+    {
+      "path": "standards/scene-pools.json",
+      "exists": true,
+      "sha256": "31b8aeb7b2c368b82cdb30c27b906b1e5c3a3a15964cc36d657d012658767185",
+      "bytes": 2168
+    },
+    {
+      "path": "standards/forbidden-character-roles.json",
+      "exists": true,
+      "sha256": "c0b18e39cd4141f999a4b30bc190fa0bb59c5eb84bfe8b67828cde6ad2eb5459",
+      "bytes": 1179
+    },
+    {
+      "path": "standards/传播核与动作回应链规范_V1.0.md",
+      "exists": true,
+      "sha256": "a9850316fb512274ab052e281ae72933f2594d333539bdea662f6316e618f4c8",
+      "bytes": 4214
+    }
+  ],
+  "authority_policy": "Derived cache only. If capsule conflicts with source authority, source authority wins.",
+  "read_policy": "Fast Path: consume resume_capsule + runtime_capabilities + this step capsule first. Do not broad-rescan repository files while source SHA is unchanged; open source authority only for missing details, SHA drift, or conflict resolution.",
+  "source_sha256": "fc89fb8bf34eebdadbb04dfd2468200f613b8d5dd4e06b22921e8f8cfe0a08e4",
+  "compiled_at": "2026-09-17T15:51:36+08:00"
+}
