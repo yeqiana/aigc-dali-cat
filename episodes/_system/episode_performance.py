@@ -401,7 +401,8 @@ def _execution_summary(d):
         out["wall_seconds"]=_interval_union_seconds(all_intervals)
         out.update({"session_id":session.get("session_id"),"source":session.get("source"),"status":session.get("status")})
         return out
-    latest=one(sessions[-1]) if sessions else None
+    session_summaries=[one(session) for session in sessions]
+    latest=session_summaries[-1] if session_summaries else None
     total={state.lower()+"_seconds":_interval_union_seconds(aggregate[state]) for state in sorted(EXECUTION_STATES)}
     return {"session_count":len(sessions),"latest":latest,"aggregate":total,
             "active_wall_seconds":None if latest is None else latest["active_seconds"]}
@@ -410,7 +411,8 @@ def _refresh_summary(d):
     def bucket_summary(v):
         runs=v.get("runs") or []
         return {"wall_seconds":_run_wall(v),"resource_seconds":_run_total(v),"runs":len(runs),
-                "unclosed_runs":sum(1 for x in runs if x.get("status")=="RUNNING")}
+                "unclosed_runs":sum(1 for x in runs if x.get("status")=="RUNNING"),
+                "metric_kind":"elapsed_stage_span","may_include_wait":True,"not_execution_time":True}
     stages={k:bucket_summary(v) for k,v in (d.get("stages") or {}).items()}
     spans={k:bucket_summary(v) for k,v in (d.get("named_spans") or {}).items()}
     imgs=d.get("image_attempts") or []
@@ -422,6 +424,24 @@ def _refresh_summary(d):
     critical_path=_critical_path_summary(d)  # STORY_OS_V211_RUNTIME_CLOSURE_R3
     # STORY_OS_V2_5_1_RUNTIME_FAST_PATH: advisory active-wall SLO; never a gate.
     execution_wall=_execution_summary(d)
+    aggregate_execution=execution_wall.get("aggregate") or {}
+    latest_execution=execution_wall.get("latest") or {}
+    duration_breakdown={
+      "runtime_active_seconds":aggregate_execution.get("active_seconds"),
+      "host_wait_seconds":aggregate_execution.get("host_wait_seconds"),
+      "user_wait_seconds":aggregate_execution.get("user_wait_seconds"),
+      "idle_seconds":aggregate_execution.get("idle_seconds"),
+      "latest_session_active_seconds":latest_execution.get("active_seconds"),
+      "latest_session_host_wait_seconds":latest_execution.get("host_wait_seconds"),
+      "latest_session_user_wait_seconds":latest_execution.get("user_wait_seconds"),
+      "latest_session_idle_seconds":latest_execution.get("idle_seconds"),
+      "primary_runtime_metric":"latest_session_active_seconds",
+      "aggregate_scope":"all_execution_sessions_interval_union",
+      "stage_wall_includes_wait":True,
+      "external_host_execution_seconds":None,
+      "external_host_execution_policy":"measure only explicit host start/complete evidence; never infer execution from HOST_WAIT",
+      "note":"episode aggregate covers all execution sessions with interval-union de-duplication; current efficiency/SLO uses the latest session active wall. stage_wall may include HOST_WAIT and is not production execution time.",
+    }
     active_wall=execution_wall.get("active_wall_seconds")
     if not isinstance(active_wall,(int,float)): active_wall=((d.get("run_wall") or {}).get("active_wall_seconds"))
     if not isinstance(active_wall,(int,float)): active_wall=d.get("total_wall_seconds")
@@ -434,6 +454,7 @@ def _refresh_summary(d):
       "named_span_wall":spans,
       "critical_path":critical_path,
       "execution_wall":execution_wall,
+      "duration_breakdown":duration_breakdown,
       "performance_slo":performance_slo,
       "images":{
         "attempts":len(imgs),"successful_attempts":len(completed),"repair_attempts":len(repair),
@@ -442,7 +463,7 @@ def _refresh_summary(d):
         "average_attempt_seconds":round(statistics.mean(vals),3) if vals else None,
         "max_attempt_seconds":round(max(vals),3) if vals else None,
       },
-      "note":"stage/named wall_seconds are interval unions; resource_seconds sum run durations and may overlap. Do not add resource time to wall time."
+      "note":"stage/named wall_seconds are elapsed interval unions and may include HOST_WAIT; they are not production execution time. resource_seconds sum run durations and may overlap. Use duration_breakdown/execution_wall for wait attribution and do not add resource time to wall time."
     }
 
 def episode_summary(ep):

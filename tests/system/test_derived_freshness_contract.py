@@ -52,3 +52,24 @@ def test_workflow_observability_read_rebuilds_after_ledger_drift():
         second = workflow_observability.load_fresh(ep, write=True)
         assert second["source_fingerprint"] != first["source_fingerprint"]
         assert second["production"]["ledger_status_counts"] == {"PASSED": 1}
+
+
+def test_workflow_observability_read_rebuilds_after_image_attempt_drift():
+    test_root = ROOT / "episodes/_tests"
+    test_root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=test_root) as td:
+        ep = Path(td)
+        _write(ep / "meta/episode-state.json", {"current_state": "STORYBOARD_LOCKED"})
+        _write(ep / "meta/episode-performance-ledger.json", {"image_attempts": []})
+        first = workflow_observability.collect(ep, write=True)
+        _write(ep / "meta/episode-performance-ledger.json", {
+            "image_attempts": [
+                {"status": "generated", "kind": "original"},
+                {"status": "generated", "kind": "repair"},
+            ]
+        })
+        second = workflow_observability.load_fresh(ep, write=True)
+        assert second["source_fingerprint"] != first["source_fingerprint"]
+        assert second["production"]["image_attempt_count"] == 2
+        assert second["production"]["image_attempt_status_counts"] == {"generated": 2}
+        assert second["production"]["image_attempt_kind_counts"] == {"original": 1, "repair": 1}

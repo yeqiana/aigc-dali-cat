@@ -39,6 +39,9 @@ def test_stage_wall_uses_interval_union_and_keeps_resource_time_separate():
     assert row["wall_seconds"] == 15.0
     assert row["resource_seconds"] == 20.0
     assert row["unclosed_runs"] == 0
+    assert row["metric_kind"] == "elapsed_stage_span"
+    assert row["may_include_wait"] is True
+    assert row["not_execution_time"] is True
 
 
 def test_finalize_closes_open_telemetry_without_claiming_pass():
@@ -107,6 +110,15 @@ def test_execution_sessions_split_active_host_user_and_idle_wall():
     assert latest["idle_seconds"] == 5.0
     assert latest["wall_seconds"] == 40.0
     assert data["summary"]["performance_slo"]["active_wall_seconds"] == 15.0
+    duration = data["summary"]["duration_breakdown"]
+    assert duration["runtime_active_seconds"] == 15.0
+    assert duration["host_wait_seconds"] == 15.0
+    assert duration["user_wait_seconds"] == 5.0
+    assert duration["primary_runtime_metric"] == "latest_session_active_seconds"
+    assert duration["latest_session_active_seconds"] == 15.0
+    assert duration["aggregate_scope"] == "all_execution_sessions_interval_union"
+    assert duration["stage_wall_includes_wait"] is True
+    assert duration["external_host_execution_seconds"] is None
 
 
 def test_new_execution_session_closes_previous_wait_and_latest_slo_ignores_history():
@@ -126,8 +138,15 @@ def test_new_execution_session_closes_previous_wait_and_latest_slo_ignores_histo
         assert data["execution_sessions"][0]["status"] == "HANDOFF_TO_NEXT_SESSION"
         assert data["execution_sessions"][0]["states"][-1]["state"] == "HOST_WAIT"
         assert data["execution_sessions"][0]["states"][-1]["duration_seconds"] == 90.0
-        latest = data["summary"]["execution_wall"]["latest"]
+        execution = data["summary"]["execution_wall"]
+        latest = execution["latest"]
         assert latest["active_seconds"] == 20.0
+        assert execution["aggregate"]["active_seconds"] == 30.0
+        assert execution["aggregate"]["host_wait_seconds"] == 90.0
+        duration = data["summary"]["duration_breakdown"]
+        assert duration["runtime_active_seconds"] == 30.0
+        assert duration["latest_session_active_seconds"] == 20.0
+        assert duration["host_wait_seconds"] == 90.0
         assert data["summary"]["performance_slo"]["active_wall_seconds"] == 20.0
 
 

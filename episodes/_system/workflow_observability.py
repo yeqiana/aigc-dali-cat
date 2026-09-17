@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parents[2]
 REL = runtime_observability.WORKFLOW_OBSERVABILITY_REL
 SOURCE_RELS = (
     "meta/episode-state.json", "meta/runtime-checkpoint.json",
+    runtime_observability.EPISODE_PERFORMANCE_REL,
     runtime_observability.WORKFLOW_PERFORMANCE_REL,
     runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL,
     production_queue_store.REL.as_posix(), "meta/production-ledger.json",
@@ -82,6 +83,7 @@ def counts(rows, key):
 def collect(ep: Path, *, write: bool = True) -> dict:
     state = maybe(ep, "meta/episode-state.json")
     checkpoint = runtime_checkpoint.load(ep, {})
+    episode_performance = maybe(ep, runtime_observability.EPISODE_PERFORMANCE_REL)
     performance = maybe(ep, runtime_observability.WORKFLOW_PERFORMANCE_REL)
     scheduler = maybe(ep, runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL)
     queue_path = production_queue_store.read_path(ep)
@@ -110,6 +112,7 @@ def collect(ep: Path, *, write: bool = True) -> dict:
 
     qitems = queue.get("items") or []
     ledger_rows = list((ledger.get("frames") or {}).values())
+    image_attempts = episode_performance.get("image_attempts") or []
     scout_rows = scout.get("rows") or []
 
     failure_taxonomy = {
@@ -143,6 +146,9 @@ def collect(ep: Path, *, write: bool = True) -> dict:
         "production": {
             "ledger_status_counts": counts(ledger_rows, "status"),
             "queue_status_counts": counts(qitems, "status"),
+            "image_attempt_count": len(image_attempts),
+            "image_attempt_status_counts": counts(image_attempts, "status"),
+            "image_attempt_kind_counts": counts(image_attempts, "kind"),
             "scheduler_wave_count": len(waves),
             "max_observed_parallel": max(parallel) if parallel else 0,
             "adaptive_parallel_current": scheduler.get("adaptive_parallel"),

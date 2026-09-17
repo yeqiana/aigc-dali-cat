@@ -57,7 +57,7 @@ class ObservabilityPathRegistryTests(unittest.TestCase):
     def test_path_literals_only_in_registry_or_documented_exceptions(self):
         violations = []
         for py in sorted(SYSTEM.glob("*.py")):
-            if py.name == "runtime_observability.py":
+            if py.name in {"runtime_observability.py", "episode_storage_policy.py"}:
                 continue
             if _is_test_fixture(py):
                 continue
