@@ -12,6 +12,7 @@ import threading
 from pathlib import Path
 
 import runtime_workspace
+import hot_state_bridge
 
 REL = Path("meta/runtime-runner-state.json")
 LOCK_REL = Path("meta/runtime-runner.lock")
@@ -40,6 +41,7 @@ def save(episode: Path, **fields) -> dict:
         current.update(fields)
         current["heartbeat"] = _now()
         runtime_workspace.write_json(episode, REL, current)
+        hot_state_bridge.mirror(episode, "RUNNER_STATE", current)
         return current
 
 

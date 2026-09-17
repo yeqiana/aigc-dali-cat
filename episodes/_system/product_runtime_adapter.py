@@ -29,6 +29,7 @@ import storyos_config
 import story_json
 import runtime_memory_advice
 import runtime_workspace
+import hot_state_bridge
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUEST_REL = Path("meta/runtime/product-host-request.json")
@@ -61,6 +62,25 @@ def _write_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
 
 
+def _read_current_request(ep: Path) -> dict | None:
+    ep = Path(ep).resolve()
+    hot = hot_state_bridge.read(ep, "HOST_REQUEST_CURRENT")
+    if isinstance(hot.get("value"), dict):
+        return hot["value"]
+    current_path = runtime_workspace.resolve_read_path(ep, REQUEST_REL)
+    if not current_path.is_file():
+        return None
+    current = _read_json(current_path)
+    return current if isinstance(current, dict) else None
+
+
+def _write_current_request(ep: Path, data: dict) -> Path:
+    ep = Path(ep).resolve()
+    current_path = runtime_workspace.write_json(ep, REQUEST_REL, data)
+    hot_state_bridge.mirror(ep, "HOST_REQUEST_CURRENT", data)
+    return current_path
+
+
 def _display_path(path: Path) -> str:
     try:
         return path.resolve().relative_to(ROOT.resolve()).as_posix()
@@ -84,10 +104,9 @@ def _state_at_least(current: str, target: str) -> bool:
 
 def reconcile(ep: Path) -> dict | None:
     """Finalize a stale current host pointer when canonical evidence already proves completion."""
-    current_path = runtime_workspace.resolve_read_path(ep, REQUEST_REL)
-    if not current_path.is_file():
+    current = _read_current_request(ep)
+    if current is None:
         return None
-    current = _read_json(current_path)
     if current.get("status") != "HOST_ACTION_REQUIRED":
         return current
     request_id = str(current.get("request_id") or "")
@@ -170,7 +189,7 @@ def _persist_request(ep: Path, payload: dict, *, category: str) -> dict:
         **stored,
         "request_path": _display_path(history_path),
     }
-    current_path = runtime_workspace.write_json(ep, REQUEST_REL, current)
+    current_path = _write_current_request(ep, current)
     return {
         **stored,
         "request_path": _display_path(history_path),
@@ -547,17 +566,15 @@ def mark_complete(ep: Path, request_id: str, *, result: dict | None = None) -> d
     if result is not None:
         data["result"] = result
     runtime_workspace.write_json(ep, request_rel, data)
-    current_path = runtime_workspace.resolve_read_path(ep, REQUEST_REL)
-    if current_path.is_file():
-        current = _read_json(current_path)
-        if current.get("request_id") == request_id:
-            current.update({
-                "status": "FINALIZED",
-                "finalized_at": data["finalized_at"],
-            })
-            if result is not None:
-                current["result"] = result
-            runtime_workspace.write_json(ep, REQUEST_REL, current)
+    current = _read_current_request(ep)
+    if current is not None and current.get("request_id") == request_id:
+        current.update({
+            "status": "FINALIZED",
+            "finalized_at": data["finalized_at"],
+        })
+        if result is not None:
+            current["result"] = result
+        _write_current_request(ep, current)
     return data
 
 

@@ -45,6 +45,7 @@ import runtime_atomic_store
 import runtime_timeout_policy
 import runtime_ownership
 import story_json
+import hot_state_bridge
 
 # `driver status` is read by the host to decide whether the Driver is alive and
 # how far it got. On this machine the console defaults to cp936, which turns the
@@ -85,6 +86,9 @@ def _record_path(ep: Path) -> Path:
 
 
 def _read_record(ep: Path) -> dict:
+    hot = hot_state_bridge.read(Path(ep), "DRIVER_STATE")
+    if isinstance(hot.get("value"), dict):
+        return hot["value"]
     return story_json.read_json(_record_path(ep), default={}) or {}
 
 
@@ -96,6 +100,7 @@ def _write_record(ep: Path, fields: dict) -> dict:
     current["schema_version"] = SCHEMA_VERSION
     current["updated_at"] = now()
     runtime_atomic_store.atomic_write_json(path, current)
+    hot_state_bridge.mirror(ep, "DRIVER_STATE", current)
     return current
 
 
@@ -107,6 +112,7 @@ def _begin_record(ep: Path, fields: dict) -> dict:
     current["schema_version"] = SCHEMA_VERSION
     current["updated_at"] = now()
     runtime_atomic_store.atomic_write_json(path, current)
+    hot_state_bridge.mirror(ep, "DRIVER_STATE", current)
     return current
 
 
@@ -127,10 +133,14 @@ def write_beacon(ep: Path, pid: int, *, beat: int | None = None) -> dict:
         "beat": int(previous.get("beat") or 0) + 1 if beat is None else int(beat),
     }
     runtime_atomic_store.atomic_write_json(path, data)
+    hot_state_bridge.mirror(ep, "DRIVER_HEARTBEAT", data)
     return data
 
 
 def _read_beacon(ep: Path) -> dict:
+    hot = hot_state_bridge.read(Path(ep), "DRIVER_HEARTBEAT")
+    if isinstance(hot.get("value"), dict):
+        return hot["value"]
     return story_json.read_json(_beacon_path(ep), default={}) or {}
 
 

@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Callable
 
 import production_queue_store
+import hot_state_bridge
 
 ROOT = Path(__file__).resolve().parents[2]
 QUEUE_REL = production_queue_store.REL
@@ -127,13 +128,17 @@ def load_queue(ep: Path, *, max_parallel: int | None = None) -> dict:
     Missing file returns EMPTY_QUEUE (same semantics as both scheduler lanes'
     private copies).
     """
-    p = production_queue_store.read_path(Path(ep).resolve())
-    if not p.is_file():
-        q = dict(EMPTY_QUEUE)
-        if max_parallel is not None:
-            q["max_parallel"] = int(max_parallel)
-        return q
-    q = read_json(p)
+    ep = Path(ep).resolve()
+    hot = hot_state_bridge.read(ep, "QUEUE")
+    q = hot.get("value") if isinstance(hot.get("value"), dict) else None
+    if q is None:
+        p = production_queue_store.read_path(ep)
+        if not p.is_file():
+            q = dict(EMPTY_QUEUE)
+            if max_parallel is not None:
+                q["max_parallel"] = int(max_parallel)
+            return q
+        q = read_json(p)
     import runtime_portability
 
     errors = runtime_portability.queue_path_errors(q)
@@ -150,6 +155,7 @@ def save_queue(ep: Path, q: dict) -> None:
     with queue_transaction(ep):
         q["updated_at"] = now()
         write_json(production_queue_store.write_path(ep), q)
+        hot_state_bridge.mirror(ep, "QUEUE", q)
 
 
 def progress(ep: Path, q: dict, *, requested_workers: int = 3) -> dict:

@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 import runtime_atomic_store as atomic
+import hot_state_bridge
 
 REL = Path("meta/runtime/circuit-breaker.json")
 HARD_CODES = {
@@ -47,6 +48,11 @@ def record_failure(ep, route: str, code: str, *, threshold: int = 2, cooldown_se
         d["updated_at"] = now()
         result.update(row)
     atomic.update_json(ep / REL, default_state, mutate)
+    hot_state_bridge.mirror(
+        ep,
+        "CIRCUIT_BREAKER",
+        atomic.read_json(ep / REL, default_state()),
+    )
     return result
 
 def record_success(ep, route: str) -> None:
@@ -59,10 +65,18 @@ def record_success(ep, route: str) -> None:
                 row["open_until"] = None
         d["updated_at"] = now()
     atomic.update_json(ep / REL, default_state, mutate)
+    hot_state_bridge.mirror(
+        ep,
+        "CIRCUIT_BREAKER",
+        atomic.read_json(ep / REL, default_state()),
+    )
 
 def blocking(ep, route: str) -> dict | None:
     ep = Path(ep).resolve()
-    d = atomic.read_json(ep / REL, default_state())
+    hot = hot_state_bridge.read(ep, "CIRCUIT_BREAKER")
+    d = hot.get("value") if isinstance(hot.get("value"), dict) else None
+    if d is None:
+        d = atomic.read_json(ep / REL, default_state())
     for row in (d.get("circuits") or {}).values():
         if row.get("route") != route or row.get("state") != "OPEN":
             continue

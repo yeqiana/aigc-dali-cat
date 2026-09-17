@@ -57,6 +57,7 @@ def test_runtime_consumers_do_not_hardcode_queue_physical_path():
     allowed_literal_owners = {
         "production_queue_store.py",  # canonical physical boundary
         "runtime_asset_policy.py",   # asset classification only
+        "episode_storage_policy.py", # persistence migration classification only
         "migrate_v21.py",            # legacy logical gate declaration
     }
     offenders = []

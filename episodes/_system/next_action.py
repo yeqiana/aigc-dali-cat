@@ -40,6 +40,7 @@ import visual_lock_candidate_pool
 import visual_lock_v21
 import story_json
 import episode_lifecycle
+import hot_state_bridge
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/runtime/next-action.json")
@@ -58,6 +59,9 @@ def read_json(path: Path) -> dict:
 
 def load(ep: Path) -> dict:
     """Read the derived next action from Runtime Workspace with legacy fallback."""
+    hot = hot_state_bridge.read(Path(ep), "NEXT_ACTION")
+    if isinstance(hot.get("value"), dict):
+        return hot["value"]
     data = runtime_workspace.read_json(Path(ep), REL, default={})
     return data if isinstance(data, dict) else {}
 
@@ -899,6 +903,7 @@ def apply_runtime_block_semantics(data: dict) -> dict:
 def write(ep: Path) -> dict:
     data = apply_runtime_block_semantics(derive(ep))
     runtime_workspace.write_json(Path(ep), REL, data)
+    hot_state_bridge.mirror(Path(ep), "NEXT_ACTION", data)
     return data
 
 
