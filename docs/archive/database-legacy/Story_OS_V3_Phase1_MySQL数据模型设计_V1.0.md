@@ -1,5 +1,7 @@
 # Story OS V3 Phase1 MySQL 数据模型设计 V1.0
 
+> 状态：**HISTORICAL_BASELINE**。本文保留 Phase1 历史设计证据；2026-09-17 起新增 DDL 的命名、字符集、索引、约束与存储分层统一以 `docs/standards/Story_OS_数据库开发规范_V1.0.md` 和 `docs/architecture/Story_OS_数据持久化分层与JSON瘦身改造方案_V1.0.md` 为准，不得继续照本文的小写表名/字段名、`idx/uk` 或旧 collation 新建设施。
+
 更新时间：
 
 2026-09-09

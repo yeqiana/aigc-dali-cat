@@ -1,5 +1,7 @@
 # Story OS 数据库与数据模型设计 V1.0
 
+> 状态：**HISTORICAL_BASELINE**。本文保留 2026-09-09 的历史数据模型思路；2026-09-17 起新增 DDL 与 JSON/Redis/File 边界统一以 `docs/standards/Story_OS_数据库开发规范_V1.0.md` 和 `docs/architecture/Story_OS_数据持久化分层与JSON瘦身改造方案_V1.0.md` 为准。
+
 更新时间：
 
 2026-09-09

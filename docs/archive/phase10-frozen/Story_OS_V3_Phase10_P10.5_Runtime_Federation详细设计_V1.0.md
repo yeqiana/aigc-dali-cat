@@ -1,5 +1,7 @@
 # Story OS V3 Phase10-P10.5 Runtime Federation 详细设计 V1.0
 
+> 状态：**FROZEN / CURRENTLY NOT IMPLEMENTED**。2026-09-17 从 active architecture 归档；仅保留历史设计参考，不作为当前生产路线或实施入口。
+
 更新时间：2026-09-11
 
 项目：Story OS
