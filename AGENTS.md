@@ -1,5 +1,18 @@
 # 项目协作规则（Codex 自动读取）
 
+## StoryOS 前端 / UI 任务入口
+
+涉及 Web Console、Production Monitor、Run Detail、Dashboard、Data Grid、Drawer、UI 改版、视觉精修、截图评审或“去 AI 味”时：
+
+1. 先读取根 `DESIGN.md`；
+2. 再读取 `skills/storyos-ui-design/SKILL.md`；
+3. 先识别现有 Theme / Token / Shared Components，再决定 Direction / Extract / Audit / Build / Polish 模式；
+4. 不得用外部 Skill 覆盖 StoryOS 已有 Design Contract、业务状态语义或 API Contract；
+5. CREATE / VISUAL REDESIGN / POLISH 完成前按 `skills/storyos-ui-design/checklists/visual-review.md` 做视觉验收；
+6. UI 默认目标是高密度生产控制台，不是营销页、AI SaaS 模板或赛博朋克大屏。
+
+外部 UI Skill 只作为参考知识；吸收来源和边界记录在 `skills/storyos-ui-design/references/external-skills.md`。
+
 ## Story OS 当前执行入口
 
 涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须先读取仓库根目录 `START_HERE.md`，再读取 `SKILL.md`。

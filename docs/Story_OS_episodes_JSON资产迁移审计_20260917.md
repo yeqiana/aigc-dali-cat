@@ -84,6 +84,9 @@
 | `prompt-packages/*.json` | 生成态 Prompt | MySQL `TB_PROMPT_PACKAGE` | 否，源 Prompt 可留文件 |
 | `episode-performance-ledger.json` | 性能账本 | MySQL Event/Trace/Metric | 否 |
 | `workflow-observability.json` 等 | 派生观测 | MySQL metric view / API 现算 | 否 |
+| `validation/*_validation_report.json` / `preproduction-validation.json` | 机器验证与门禁检查结果 | MySQL `TB_REVIEW_RECORD`，完整报告按需导出 | 否 |
+| `post-publish-metrics.json` | 6h/24h/48h/7d 平台数值快照 | MySQL `TB_METRIC_SNAPSHOT`，原始平台凭证留文件/对象 | 否 |
+| `post-publish-review.json` / `next-story-learning.json` | 派生复盘与证据学习投影 | MySQL 小型摘要 + 人读报告导出 | 否 |
 | `release-manifest.json` | 发布投影 | MySQL Release + Artifact；交付时导出 | EXPORT_ONLY |
 | `final-candidate-snapshot.json` | 冻结快照 | MySQL Release/Artifact/SHA | EXPORT_ONLY |
 | `character-pixel-master.json` | 图片母版元数据 | MySQL Artifact/Contract；图片本体留 media | JSON 否，图片保留 |
@@ -144,4 +147,3 @@
 4. 它是否必须纳入 Git？
 
 无法回答则默认**不允许新增长期 JSON**。
-
