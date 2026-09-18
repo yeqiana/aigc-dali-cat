@@ -84,7 +84,9 @@ def test_runtime_env_file_loads_only_allowed_storyos_keys(tmp_path):
     path.write_text(
         "STORYOS_MYSQL_HOST=db.internal\n"
         "STORYOS_MYSQL_PORT=9000\n"
-        "STORYOS_MYSQL_PWD=secret\n",
+        "STORYOS_MYSQL_PWD=secret\n"
+        "STORYOS_EPISODE_META_STORE_MODE=dual\n"
+        "STORYOS_HOT_STATE_MODE=dual\n",
         encoding="utf-8",
     )
     env, keys = load_runtime_env_file(path, {"KEEP": "1"})
@@ -92,7 +94,15 @@ def test_runtime_env_file_loads_only_allowed_storyos_keys(tmp_path):
     assert env["KEEP"] == "1"
     assert env["STORYOS_MYSQL_HOST"] == "db.internal"
     assert env["STORYOS_MYSQL_PWD"] == "secret"
-    assert keys == ("STORYOS_MYSQL_HOST", "STORYOS_MYSQL_PORT", "STORYOS_MYSQL_PWD")
+    assert env["STORYOS_EPISODE_META_STORE_MODE"] == "dual"
+    assert env["STORYOS_HOT_STATE_MODE"] == "dual"
+    assert keys == (
+        "STORYOS_EPISODE_META_STORE_MODE",
+        "STORYOS_HOT_STATE_MODE",
+        "STORYOS_MYSQL_HOST",
+        "STORYOS_MYSQL_PORT",
+        "STORYOS_MYSQL_PWD",
+    )
 
 
 def test_runtime_env_file_rejects_unknown_keys(tmp_path):

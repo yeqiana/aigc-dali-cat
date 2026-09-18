@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import json
 from typing import Protocol
 
 from platform.core.contracts.trace_contract import TraceContract
 from platform.repository.mysql.mysql_connection import MySqlConnection
+from platform.repository.mysql.payload_policy import bounded_json
 
 
 class TraceRepository(Protocol):
@@ -62,10 +62,10 @@ class MySqlTraceRepository:
             trace.parent_span_id,
             trace.ended_at,
             trace.duration_ms,
-            json.dumps(trace.inputs, ensure_ascii=False),
-            json.dumps(trace.outputs, ensure_ascii=False),
+            bounded_json(trace.inputs, entity="trace inputs"),
+            bounded_json(trace.outputs, entity="trace outputs"),
             trace.error,
-            json.dumps(trace.attributes, ensure_ascii=False),
+            bounded_json(trace.attributes, entity="trace attributes"),
         ))
 
     def get(self, trace_id: str, span_id: str) -> dict | None:

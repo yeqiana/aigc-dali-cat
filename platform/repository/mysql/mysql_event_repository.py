@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from platform.repository.mysql.payload_policy import bounded_json
 from typing import Protocol
 
 from platform.core.contracts.event_contract import EventContract
@@ -54,8 +55,8 @@ class MySqlEventRepository:
             event.occurred_at,
             event.trace_id,
             event.task_id,
-            json.dumps(event.payload, ensure_ascii=False),
-            json.dumps(event.metadata, ensure_ascii=False),
+            bounded_json(event.payload, entity="event payload"),
+            bounded_json(event.metadata, entity="event metadata"),
         ))
 
     def get(self, event_id: str) -> dict | None:

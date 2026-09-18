@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import runtime_observability
+import batch_capability_probe
+import codex_logical_batch_worker
 
 def _read(path:Path)->dict:
     if not path.is_file():return {}
@@ -12,9 +14,9 @@ def _read(path:Path)->dict:
     except Exception:return {}
 
 def collect(ep:Path)->dict:
-    perf=_read(ep/runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL)
-    cap=_read(ep/"meta/batch-provider-capability.json")
-    codex=_read(ep/"meta/codex-subscription-batch-capability.json")
+    perf=runtime_observability.read_summary(ep,runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL,default={})
+    cap=batch_capability_probe.read(ep)
+    codex=codex_logical_batch_worker.read(ep)
     decision_dir=ep/"meta/batch-repair-decisions"
     decisions=[]
     if decision_dir.is_dir():

@@ -8,6 +8,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 import story_json
+import hot_state_bridge
 
 STATE_REL = Path('meta/transport-state.json')
 LEDGER_REL = Path('meta/production-ledger.json')
@@ -35,6 +36,8 @@ def load_json(path: Path) -> dict:
 
 def save_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
+    if path.name == STATE_REL.name and path.parent.name == "meta":
+        hot_state_bridge.mirror(path.parent.parent, "TRANSPORT_STATE", data)
 
 
 def resolve_episode(raw: str) -> Path:
@@ -46,6 +49,9 @@ def resolve_episode(raw: str) -> Path:
 
 def ensure_state(ep: Path) -> tuple[Path, dict]:
     path = ep / STATE_REL
+    hot = hot_state_bridge.read(ep, "TRANSPORT_STATE")
+    if hot.get("redis_read") and isinstance(hot.get("value"), dict):
+        return path, hot["value"]
     if path.exists():
         return path, load_json(path)
     data = {

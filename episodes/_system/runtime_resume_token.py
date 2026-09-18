@@ -10,6 +10,7 @@ import datetime as dt
 from pathlib import Path
 
 import runtime_workspace
+import hot_state_bridge
 
 REL = Path("meta/runtime-resume-token.json")
 
@@ -34,9 +35,13 @@ def save(episode: Path, *, stage: str, step: str, attempt: int,
         "updated_at": now(),
     }
     runtime_workspace.write_json(episode, REL, payload)
+    hot_state_bridge.mirror(episode, "RESUME_TOKEN", payload)
 
 
 def load(episode: Path) -> dict:
+    hot = hot_state_bridge.read(episode, "RESUME_TOKEN")
+    if hot.get("redis_read") and isinstance(hot.get("value"), dict):
+        return hot["value"]
     data = runtime_workspace.read_json(episode, REL, default={})
     return data if isinstance(data, dict) else {}
 

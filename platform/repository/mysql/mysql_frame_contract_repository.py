@@ -4,6 +4,9 @@ import hashlib
 import json
 from copy import deepcopy
 
+from platform.repository.frame_contract_projection import make_projection
+from platform.repository.mysql.payload_policy import bounded_json
+
 
 _LATEST_SQL = """
 SELECT FRAME_CONTRACT_ID, VERSION_NO, SHA256
@@ -11,6 +14,36 @@ FROM TB_FRAME_CONTRACT
 WHERE EPISODE_ID=%s AND FRAME_NO=%s
 ORDER BY VERSION_NO DESC
 LIMIT 1
+""".strip()
+
+_LOAD_LATEST_SQL = """
+SELECT FRAME_CONTRACT_ID, EPISODE_ID, FRAME_NO, VERSION_NO,
+       STATUS, SHA256, SOURCE_SHA256, PAYLOAD
+FROM TB_FRAME_CONTRACT
+WHERE EPISODE_ID=%s AND FRAME_NO=%s
+ORDER BY VERSION_NO DESC
+LIMIT 1
+""".strip()
+
+_LIST_SQL = """
+SELECT FRAME_CONTRACT_ID, EPISODE_ID, FRAME_NO, VERSION_NO,
+       STATUS, SHA256, SOURCE_SHA256, PAYLOAD
+FROM TB_FRAME_CONTRACT
+ORDER BY EPISODE_ID, FRAME_NO, VERSION_NO
+""".strip()
+
+_BY_ID_SQL = """
+SELECT FRAME_CONTRACT_ID, EPISODE_ID, FRAME_NO, VERSION_NO,
+       STATUS, SHA256, SOURCE_SHA256, PAYLOAD
+FROM TB_FRAME_CONTRACT
+WHERE FRAME_CONTRACT_ID=%s
+LIMIT 1
+""".strip()
+
+_COMPACT_PAYLOAD_SQL = """
+UPDATE TB_FRAME_CONTRACT
+SET PAYLOAD=%s
+WHERE FRAME_CONTRACT_ID=%s
 """.strip()
 
 _UPSERT_SQL = """
@@ -35,7 +68,7 @@ class MySqlFrameContractRepository:
 
     A repeated compile with the same SHA updates the current version in-place.
     A semantic/source change that produces a new SHA appends a new VERSION_NO.
-    JSON cache files remain the compatibility read surface during dual-write.
+    MySQL is the preferred read surface in dual mode; JSON remains fallback.
     """
 
     def __init__(self, connection):
@@ -64,9 +97,10 @@ class MySqlFrameContractRepository:
             version_no = int(latest.get("VERSION_NO") or latest.get("version_no") or 0) + 1
             contract_id = _contract_id(episode_id, frame_no, sha)
 
-        payload = json.dumps(
-            row["payload"], ensure_ascii=False, sort_keys=True, separators=(",", ":")
-        )
+        payload_value = row["payload"]
+        if row.get("payload_ref") is not None:
+            payload_value = make_projection(payload_value, row["payload_ref"])
+        payload = bounded_json(payload_value, entity="frame contract")
         self.connection.execute(
             _UPSERT_SQL,
             (
@@ -88,3 +122,42 @@ class MySqlFrameContractRepository:
             "sha256": sha,
         }
 
+    def get_latest(self, episode_id: str, frame_no: int) -> dict | None:
+        row = self.connection.query_one(_LOAD_LATEST_SQL, (str(episode_id), int(frame_no)))
+        return self._decode_row(row)
+
+    def list_versions(self) -> list[dict]:
+        return [self._decode_row(row) for row in self.connection.query_all(_LIST_SQL) if row]
+
+    def get_by_id(self, contract_id: str) -> dict | None:
+        return self._decode_row(self.connection.query_one(_BY_ID_SQL, (str(contract_id),)))
+
+    def compact_payload(self, contract_id: str, payload: dict, document_ref: dict) -> dict:
+        projection = make_projection(payload, document_ref)
+        encoded = bounded_json(projection, entity="frame contract projection")
+        affected = self.connection.execute(_COMPACT_PAYLOAD_SQL, (encoded, str(contract_id)))
+        return {
+            "frame_contract_id": str(contract_id),
+            "payload_bytes": len(encoded.encode("utf-8")),
+            "affected": affected,
+        }
+
+    @staticmethod
+    def _decode_row(row: dict | None) -> dict | None:
+        if not row:
+            return None
+        payload = row.get("PAYLOAD") if "PAYLOAD" in row else row.get("payload")
+        if isinstance(payload, str):
+            payload = json.loads(payload)
+        if not isinstance(payload, dict):
+            return None
+        return {
+            "frame_contract_id": row.get("FRAME_CONTRACT_ID") or row.get("frame_contract_id"),
+            "episode_id": row.get("EPISODE_ID") or row.get("episode_id"),
+            "frame_no": row.get("FRAME_NO") or row.get("frame_no"),
+            "version_no": row.get("VERSION_NO") or row.get("version_no"),
+            "status": row.get("STATUS") or row.get("status"),
+            "sha256": row.get("SHA256") or row.get("sha256"),
+            "source_sha256": row.get("SOURCE_SHA256") or row.get("source_sha256"),
+            "payload": payload,
+        }

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from platform.repository.mysql.payload_policy import bounded_json
 from copy import deepcopy
 from typing import Any
 
@@ -65,5 +66,5 @@ class MySqlLatestRecordStore:
         key = str(row.get(self.key_field) or "").strip()
         if not key:
             raise ValueError(f"record missing {self.key_field}")
-        payload = json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        payload = bounded_json(row, entity="latest record")
         self.connection.execute(_UPSERT_SQL, (self.namespace, key, payload))

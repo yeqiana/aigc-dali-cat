@@ -2,7 +2,7 @@
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, uuid
 from pathlib import Path
-import request_intent, storyos_config
+import request_intent, storyos_config, hot_state_bridge
 
 ROOT=Path(__file__).resolve().parents[2]
 _CONFIG=storyos_config.load_config()
@@ -37,7 +37,9 @@ def decide(ep,request):
         "reason_codes":[f"MODE_{mode.upper()}",f"INTENT_{expected}","DETERMINISTIC_ROUTE"]}
 def write_decision(ep,decision):
     p=ep/str(_cfg().get("decision_path") or "meta/runtime-route.json");p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(decision,ensure_ascii=False,indent=2)+"\n",encoding="utf-8");return p
+    p.write_text(json.dumps(decision,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    hot_state_bridge.mirror(ep, "RUNTIME_ROUTE", decision)
+    return p
 def route_episode(ep,request,*,write=True):
     d=decide(ep,request)
     if write:write_decision(ep,d)

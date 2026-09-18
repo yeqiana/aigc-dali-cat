@@ -37,6 +37,7 @@ from pathlib import Path
 import codex_user_runner
 import runtime_atomic_store
 import story_json
+import hot_state_bridge
 
 REL = Path("meta/runtime/in-flight-codex.json")
 SCHEMA_VERSION = 1
@@ -58,6 +59,9 @@ def _path(ep: Path) -> Path:
 
 
 def _read(ep: Path) -> dict:
+    hot = hot_state_bridge.read(ep, "INFLIGHT")
+    if hot.get("redis_read") and isinstance(hot.get("value"), dict):
+        return hot["value"]
     return story_json.read_json(_path(ep), default={}) or {}
 
 
@@ -65,6 +69,7 @@ def _write(ep: Path, data: dict) -> None:
     path = _path(ep)
     path.parent.mkdir(parents=True, exist_ok=True)
     runtime_atomic_store.atomic_write_json(path, data)
+    hot_state_bridge.mirror(ep, "INFLIGHT", data)
 
 
 def fingerprint(*, step: str, prompt: str, source_sha256: str = "") -> str:

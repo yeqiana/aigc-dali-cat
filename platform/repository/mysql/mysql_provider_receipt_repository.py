@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
+from platform.repository.mysql.payload_policy import bounded_json
 
 
 _UPSERT_SQL = """
@@ -43,9 +44,7 @@ class MySqlProviderReceiptRepository:
             raise ValueError(
                 "provider receipt missing required fields: " + ", ".join(missing)
             )
-        payload = json.dumps(
-            row["payload"], ensure_ascii=False, sort_keys=True, separators=(",", ":")
-        )
+        payload = bounded_json(row["payload"], entity="provider receipt")
         self.connection.execute(
             _UPSERT_SQL,
             (

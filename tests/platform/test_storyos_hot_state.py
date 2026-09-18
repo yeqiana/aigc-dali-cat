@@ -35,3 +35,20 @@ def test_hot_state_uses_default_ttl_and_is_rebuildable():
     hot.delete("ep-1", "NEXT_ACTION")
     assert hot.get("ep-1", "NEXT_ACTION") is None
 
+
+def test_extended_runtime_hot_state_kinds_have_typed_keys_and_ttl():
+    kinds = (
+        "RUNTIME_ROUTE",
+        "RESUME_TOKEN",
+        "RESUME_CAPSULE",
+        "FAST_PATH",
+        "FULL_AUTO_STATUS",
+        "TRACE_CURRENT",
+        "TRANSPORT_STATE",
+        "BATCH_CAPABILITY",
+        "CODEX_BATCH_CAPABILITY",
+    )
+    for kind in kinds:
+        key = episode_key("ep-1", kind)
+        assert key.startswith("STORYOS:EP:ep-1:")
+        assert SPECS[kind].ttl_seconds > 0

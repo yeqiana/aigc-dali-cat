@@ -6,11 +6,20 @@ from pathlib import Path
 
 import storage_config
 import story_json
+import episode_identity
+import runtime_workspace
+
+from platform.repository.frame_contract_projection import (
+    document_reference,
+    json_sha256,
+)
+
+
+CONTRACT_DOCUMENT_ROOT = "meta/runtime/contracts/frames"
 
 
 def _episode_id(ep: Path) -> str:
-    state = story_json.read_json(Path(ep) / "meta/episode-state.json", default={})
-    return str((state or {}).get("episode_id") or Path(ep).name)
+    return episode_identity.storage_episode_id(ep)
 
 
 def _source_sha(row: dict) -> str | None:
@@ -19,6 +28,26 @@ def _source_sha(row: dict) -> str | None:
         return None
     payload = json.dumps(material, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def externalize(ep: Path, row: dict) -> dict:
+    """Persist the full contract outside MySQL and return its bounded reference."""
+    ref = document_reference_for(row)
+    rel = ref["rel"]
+    path = runtime_workspace.write_json(ep, rel, row)
+    ref["bytes"] = path.stat().st_size
+    return ref
+
+
+def document_reference_for(row: dict, *, bytes_size: int = 0) -> dict:
+    """Build the deterministic external reference without writing the document."""
+    frame = int(row["frame"])
+    document_sha = json_sha256(row)
+    return {
+        "rel": f"{CONTRACT_DOCUMENT_ROOT}/{frame:02d}-{document_sha}.json",
+        "sha256": document_sha,
+        "bytes": int(bytes_size),
+    }
 
 
 def persist(ep: Path, row: dict, *, status: str = "ACTIVE") -> dict:
@@ -36,6 +65,7 @@ def persist(ep: Path, row: dict, *, status: str = "ACTIVE") -> dict:
     kwargs = storage_config.mysql_connection_kwargs({"database": DATABASE_NAME})
     connection = MySqlConnection(**kwargs)
     try:
+        document_ref = externalize(Path(ep).resolve(), row)
         saved = MySqlFrameContractRepository(connection).save_version(
             {
                 "episode_id": _episode_id(Path(ep).resolve()),
@@ -44,9 +74,53 @@ def persist(ep: Path, row: dict, *, status: str = "ACTIVE") -> dict:
                 "sha256": row["contract_sha256"],
                 "source_sha256": _source_sha(row),
                 "payload": row,
+                "payload_ref": document_ref,
             }
         )
-        return {"mode": mode, "mysql_written": True, **saved}
+        return {"mode": mode, "mysql_written": True, "document_ref": document_ref, **saved}
     finally:
         connection.close()
 
+
+def load_latest(ep: Path, frame: int | str, *, legacy_path: str | Path | None = None) -> dict | None:
+    """Read latest Frame Contract from MySQL in dual/mysql mode, then JSON fallback."""
+    ep = Path(ep).resolve()
+    mode = storage_config.episode_meta_store_config()["mode"]
+    if mode in {"dual", "mysql"}:
+        from platform.repository.mysql.mysql_connection import MySqlConnection
+        from platform.repository.mysql.mysql_frame_contract_repository import (
+            MySqlFrameContractRepository,
+        )
+        from platform.repository.mysql.schema_v2 import DATABASE_NAME
+
+        kwargs = storage_config.mysql_connection_kwargs({"database": DATABASE_NAME})
+        connection = None
+        try:
+            connection = MySqlConnection(**kwargs)
+            row = MySqlFrameContractRepository(connection).get_latest(_episode_id(ep), int(frame))
+            if row and isinstance(row.get("payload"), dict):
+                ref = document_reference(row["payload"])
+                if ref:
+                    document = runtime_workspace.read_json(ep, ref.get("rel"), default=None)
+                    if (
+                        isinstance(document, dict)
+                        and json_sha256(document) == str(ref.get("sha256") or "").lower()
+                        and str(document.get("contract_sha256") or "").lower()
+                        == str(row.get("sha256") or "").lower()
+                    ):
+                        return document
+                else:
+                    return row["payload"]
+        except Exception:
+            # Compatibility JSON remains the fail-soft read path during migration.
+            pass
+        finally:
+            if connection is not None:
+                connection.close()
+
+    if legacy_path is None:
+        legacy_path = ep / "meta/runtime/contracts/frames" / f"{int(frame):02d}.json"
+    path = Path(legacy_path)
+    if path.is_file():
+        return story_json.read_json(path, default=None)
+    return None

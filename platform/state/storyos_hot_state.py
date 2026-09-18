@@ -29,6 +29,15 @@ SPECS = {
     "EFFECTIVE_CONFIG": HotStateSpec("EFFECTIVE_CONFIG", 3600),
     "RUNTIME_CAPABILITIES": HotStateSpec("RUNTIME_CAPABILITIES", 300),
     "RUNNER_STATE": HotStateSpec("RUNNER_STATE", 120),
+    "RUNTIME_ROUTE": HotStateSpec("RUNTIME_ROUTE", 900),
+    "RESUME_TOKEN": HotStateSpec("RESUME_TOKEN", 900),
+    "RESUME_CAPSULE": HotStateSpec("RESUME_CAPSULE", 1800),
+    "FAST_PATH": HotStateSpec("FAST_PATH", 900),
+    "FULL_AUTO_STATUS": HotStateSpec("FULL_AUTO_STATUS", 900),
+    "TRACE_CURRENT": HotStateSpec("TRACE_CURRENT", 300),
+    "TRANSPORT_STATE": HotStateSpec("TRANSPORT_STATE", 300),
+    "BATCH_CAPABILITY": HotStateSpec("BATCH_CAPABILITY", 3600),
+    "CODEX_BATCH_CAPABILITY": HotStateSpec("CODEX_BATCH_CAPABILITY", 3600),
 }
 
 
@@ -69,4 +78,3 @@ class EpisodeHotStateStore:
 
     def delete(self, episode_id: str, kind: str) -> None:
         self.store.delete_state(episode_key(episode_id, kind))
-

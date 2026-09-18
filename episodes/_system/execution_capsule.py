@@ -56,6 +56,8 @@ def current_state(ep):
     return d.get("current_state")
 def compile_capsule(ep,step,write=True):
     if step not in STEP_EVIDENCE: raise ValueError(f"unsupported step: {step}")
+    import runtime_capability_cache
+    import runtime_resume_capsule
     wf=read_json(ROOT/"runtimes/workflow-contract.json") or {}
     rules=wf.get("rules") or {}
     request=read_json(ep/"meta/runtime-request.json")
@@ -63,8 +65,8 @@ def compile_capsule(ep,step,write=True):
     effective_mode=runtime_execution.effective_mode(ep)
     # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
     runtime_fast_path=read_json(ROOT/"runtimes/runtime-fast-path-v251.json")
-    runtime_capabilities=read_json(ep/"meta/runtime/runtime-capabilities.json")
-    resume_capsule=read_json(ep/"meta/runtime/resume-capsule.json")
+    runtime_capabilities=runtime_capability_cache.load(ep, create=False)
+    resume_capsule=runtime_resume_capsule.load_fresh(ep, write=False)
     authority=[file_row(ROOT/x,ROOT) for x in AUTHORITY_FILES]
     evidence=[]
     evidence_paths=list(STEP_EVIDENCE[step])

@@ -1,6 +1,6 @@
 # Story OS 数据持久化分层与 JSON 瘦身改造方案 V1.0
 
-更新时间：2026-09-17
+更新时间：2026-09-18
 
 状态：**ACTIVE DESIGN / 目标是显著减少 Episode JSON，小文件不再承担数据库职责**
 
@@ -186,6 +186,34 @@ trace-summary.json
 
 目标：事件/Trace 原始事实写 `TB_EVENT_LOG / TB_TRACE_SPAN`，需要查询的阶段聚合写 `TB_METRIC_SNAPSHOT`。这些 JSON 以后只作为按需导出的诊断报告。
 
+### 4.7 Validation / Data Review
+
+验证报告需要结构化，但不等于把整篇报告逐字段搬进数据库：
+
+| 内容 | MySQL 结构化事实 | 文件/对象存储 |
+| --- | --- | --- |
+| `meta/validation/*_validation_report.json` | 验证阶段、最终状态、校验器版本、下一状态、每个 Check 的名称/状态/路径/SHA/失败原因 | 完整原始报告作为可重建导出或证据引用 |
+| `meta/preproduction-validation.json` | 验证批次、Episode、状态、检查项结果、绑定源指纹 | 原始报告与人工说明 |
+| `meta/post-publish-metrics.json` | 每个 `6h/24h/48h/7d` checkpoint 的观测时间、来源、数值指标、修正标记 | 平台原始导出、截图、采集凭证 |
+| `meta/post-publish-review.json` | 最新 checkpoint、关键漏斗数值、计算版本、证据引用 | 人读诊断正文与历史叙述 |
+
+具体落表：门禁验证结果复用 `TB_REVIEW_RECORD`，发布后数值复用 `TB_METRIC_SNAPSHOT`；需要筛选、排序或对账的字段必须是列或子记录，低频检查详情、平台扩展字段和长文本才允许留在小型 `PAYLOAD JSON`。`data-review-state.json` 在 authority cutover 前仍是阶段门禁权威，不能因为结构化而直接删除。
+
+### 4.8 MySQL JSON 行大小硬边界
+
+`PAYLOAD` 不是完整业务文档的存储位置。所有 MySQL JSON 写入口统一执行 **16KB 单行内嵌上限**：
+
+- 小于上限：只保留确实需要随记录读取的低频扩展字段；查询、筛选、对账字段必须使用表列；
+- 超过上限：完整文档写入 Runtime Workspace，表内只保留 `projection_type`、版本、来源 SHA/字节数、外部文档相对路径，以及少量业务摘要；
+- 读取时按文档 SHA 校验后回读完整文档；外部文档缺失时不得把不完整投影冒充完整事实；
+- 迁移脚本与应用写入使用同一规则；已有历史大行必须单独执行“外置完整文档 → 投影回写 → 回读校验”的回填，不与普通 JSON 删除混做。
+
+当前重点投影：Frame Contract、Prompt Package、Runtime Review Request、Metric Snapshot、Approval Record、Release Record。长 Prompt、source 列表、execution session、文件明细和审核 bundle 不再重复塞入 MySQL。
+
+验证报告遵循同一边界：MySQL 只保存验证阶段、状态、Check 名称/状态/路径，以及短 detail；长 detail 只保存 SHA-256、字节数和有限预览，Check 数量过多时退化为总数、PASS/FAIL 计数和整体 SHA。完整报告仍保留为 `meta/validation/*_validation_report.json` 文件证据。
+
+历史回填在 16KB 硬边界之外又执行了 12KB、8KB 两级近阈值清理；当前真实库 23 个 JSON 列在 8KB 阈值下均无超限行。未来新写入仍以 16KB 作为统一拒绝上限，优先写小型投影。
+
 ## 五、Redis 承载范围
 
 以下内容属于**热状态**，不应该继续永久写 Episode JSON：
@@ -301,4 +329,3 @@ Redis = 当前热状态
 Object/File = 媒体与源资产
 Episode目录 = 人类可读入口 + 必要源稿 + 媒体工作区
 ```
-

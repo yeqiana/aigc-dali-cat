@@ -17,6 +17,9 @@ from typing import Any
 import runner_health_monitor
 import runtime_workspace
 import production_queue_store
+import next_action as next_action_store
+import runner_state_store
+import scheduler_core
 
 SCHEMA_VERSION = 1
 EPISODE_STATE_REL = Path("meta/episode-state.json")
@@ -156,10 +159,10 @@ def snapshot(episode: Path) -> dict[str, Any]:
     ep = Path(episode).resolve()
     episode_state = _read(ep / EPISODE_STATE_REL)
     dag = runtime_workspace.read_json(ep, DAG_STATE_REL, default={}) or {}
-    runner = runtime_workspace.read_json(ep, RUNNER_STATE_REL, default={}) or {}
-    next_action_raw = runtime_workspace.read_json(ep, NEXT_ACTION_REL, default={}) or {}
+    runner = runner_state_store.load(ep)
+    next_action_raw = next_action_store.load(ep)
     ledger = _read(ep / LEDGER_REL)
-    queue = _read(production_queue_store.read_path(ep))
+    queue = scheduler_core.load_queue(ep)
     admissions = _read(ep / ADMISSIONS_REL)
 
     production_stage = str(episode_state.get("current_state") or "") or None

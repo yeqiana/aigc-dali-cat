@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import json
 from typing import Protocol
 
 from platform.core.contracts.artifact_contract import ArtifactContract
 from platform.repository.mysql.mysql_connection import MySqlConnection
+from platform.repository.mysql.payload_policy import bounded_json
 
 
 class ArtifactRepository(Protocol):
@@ -59,7 +59,7 @@ class MySqlArtifactRepository:
             artifact.created_at,
             artifact.trace_id,
             artifact.task_id,
-            json.dumps(artifact.metadata, ensure_ascii=False),
+            bounded_json(artifact.metadata, entity="artifact metadata"),
         ))
 
     def get(self, artifact_id: str) -> dict | None:
