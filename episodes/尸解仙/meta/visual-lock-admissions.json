@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-16T17:09:39+08:00",
+  "items": {
+    "V-B": {
+      "id": "V-B",
+      "role": "ordinary_baseline",
+      "frame": 1,
+      "sha256": "d6aaf0f185b21895128fe8b911902a12096487d19ede01a5244aa7dc3dba71c7",
+      "frame_contract_sha256": "b8f4214b2a06e953bbccc407ec28fd33a5df44f3931be3bbb4181c0866b8a8c5",
+      "profile_sha256": "9eb5996e47c6373ded1bf546b4926e9d2ce1553d281618dc1c46d703e1364f20",
+      "story_os_version": "2.6.1",
+      "status": "PASS",
+      "reviewed_at": "2026-09-16T13:16:52+08:00",
+      "attempt": 1,
+      "review_row": {
+        "id": "V-B",
+        "checks": {
+          "visual_profile_match": true,
+          "reality_first": true,
+          "ordinary_life_density": true,
+          "available_light": true,
+          "unposed_capture": true,
+          "not_cinematic": true,
+          "causal_imperfection": true,
+          "environment_physics_fidelity": true,
+          "capture_credibility": true,
+          "anomaly_scale_delivery": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true
+        },
+        "issues": [],
+        "notes": "车内广角自拍有明确的持机人、手臂前景、安全带、车门和随车行李；两人衣着与表情自然，村口“下寨村”牌坊、山村道路和午后自然光共同建立了可信的同行抵达与日常生活基线。",
+        "sha256": "d6aaf0f185b21895128fe8b911902a12096487d19ede01a5244aa7dc3dba71c7",
+        "frame_contract_sha256": "b8f4214b2a06e953bbccc407ec28fd33a5df44f3931be3bbb4181c0866b8a8c5",
+        "frame": 1,
+        "role": "ordinary_baseline",
+        "ledger_review_warnings": [
+          "review requires ready candidate, got PASSED\n"
+        ]
+      },
+      "provenance": {
+        "schema_version": 2,
+        "runtime": "CODEX_ISOLATED",
+        "base_runtime": "CODEX",
+        "isolated_session": true,
+        "execution_source": "local_codex_cli",
+        "attempt": 1,
+        "reviewed_at": "2026-09-16T13:16:51+08:00",
+        "log": "episodes/尸解仙/meta/visual-lock-critic-attempt-1.jsonl",
+        "review_capability": "vision",
+        "ephemeral": true,
+        "session_reused_from_generation": false,
+        "review_scope": "VISUAL_LOCK_DIRTY_ADMISSION"
+      }
+    },
+    "V-W": {
+      "id": "V-W",
+      "role": "worst_capture_condition",
+      "frame": 8,
+      "sha256": "c1b14163a6496229667b86d6c03461739d8db1f1fa883de1370f6fa0c4b7a6fe",
+      "frame_contract_sha256": "c933b6d75c0f876c167f31e560d2b0832c1f1e1f7f45dc33f6eb51883c1057ba",
+      "profile_sha256": "9eb5996e47c6373ded1bf546b4926e9d2ce1553d281618dc1c46d703e1364f20",
+      "story_os_version": "2.6.1",
+      "status": "PASS",
+      "reviewed_at": "2026-09-16T13:16:52+08:00",
+      "attempt": 1,
+      "review_row": {
+        "id": "V-W",
+        "checks": {
+          "visual_profile_match": true,
+          "reality_first": true,
+          "ordinary_life_density": true,
+          "available_light": true,
+          "unposed_capture": true,
+          "not_cinematic": true,
+          "causal_imperfection": true,
+          "environment_physics_fidelity": true,
+          "capture_credibility": true,
+          "anomaly_scale_delivery": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true
+        },
+        "issues": [],
+        "notes": "昏暗老屋仅由裸灯和环境残光照亮，暗部、旧木桌、香案、茶杯、烟盒和散乱纸张保留真实生活痕迹。画面下方可见同行者手臂，女性正在指读纸条，构成可信的近距离现场记录；纸条文字是嵌入日常物件中的异常线索，而非概念化特效。",
+        "sha256": "c1b14163a6496229667b86d6c03461739d8db1f1fa883de1370f6fa0c4b7a6fe",
+        "frame_contract_sha256": "c933b6d75c0f876c167f31e560d2b0832c1f1e1f7f45dc33f6eb51883c1057ba",
+        "frame": 8,
+        "role": "worst_capture_condition"
+      },
+      "provenance": {
+        "schema_version": 2,
+        "runtime": "CODEX_ISOLATED",
+        "base_runtime": "CODEX",
+        "isolated_session": true,
+        "execution_source": "local_codex_cli",
+        "attempt": 1,
+        "reviewed_at": "2026-09-16T13:16:51+08:00",
+        "log": "episodes/尸解仙/meta/visual-lock-critic-attempt-1.jsonl",
+        "review_capability": "vision",
+        "ephemeral": true,
+        "session_reused_from_generation": false,
+        "review_scope": "VISUAL_LOCK_DIRTY_ADMISSION"
+      }
+    },
+    "V-A": {
+      "id": "V-A",
+      "role": "first_major_anomaly",
+      "frame": 3,
+      "sha256": "16cf408b48d6aab22b800f8b27f124835936416acb3494f19471ae65e61c0ee4",
+      "frame_contract_sha256": "51a7f709283cc12d9c1ddb1f42ebb197df960a39f22135ed53d2ca2b945a33dc",
+      "profile_sha256": "9eb5996e47c6373ded1bf546b4926e9d2ce1553d281618dc1c46d703e1364f20",
+      "story_os_version": "2.6.1",
+      "status": "WEAK_PASS",
+      "reviewed_at": "2026-09-16T17:09:39+08:00",
+      "attempt": 7,
+      "review_row": {
+        "id": "V-A",
+        "checks": {
+          "visual_profile_match": true,
+          "reality_first": true,
+          "ordinary_life_density": true,
+          "available_light": true,
+          "unposed_capture": true,
+          "not_cinematic": true,
+          "causal_imperfection": true,
+          "environment_physics_fidelity": true,
+          "capture_credibility": true,
+          "anomaly_scale_delivery": false,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true
+        },
+        "issues": [
+          "ANOMALY_NOT_READABLE"
+        ],
+        "notes": "画面具备可信的旧宅日常密度：灰尘、供桌、遗像、搪瓷杯与两人探看动作均成立，门框前景和自然窗光也支持随手记录感。但作为 frame=03 的 first_major_anomaly/anomaly_reveal，遗像、香炉与旧屋本身只构成阴森氛围，没有可辨识的超常现象、异常变化或可被保存的异常证据；观者无法仅凭像素确认“异常已侵入现实”。",
+        "sha256": "16cf408b48d6aab22b800f8b27f124835936416acb3494f19471ae65e61c0ee4",
+        "frame_contract_sha256": "51a7f709283cc12d9c1ddb1f42ebb197df960a39f22135ed53d2ca2b945a33dc",
+        "frame": 3,
+        "role": "first_major_anomaly"
+      },
+      "provenance": {
+        "policy": "attempt_over_3_auto_release"
+      },
+      "weak_pass": {
+        "weak_pass": true,
+        "weak_pass_reason": "content attempts=7 exceeded 3; only soft visual-quality findings remain",
+        "failed_checks": [
+          "anomaly_scale_delivery"
+        ],
+        "issue_codes": [
+          "ANOMALY_NOT_READABLE"
+        ],
+        "content_attempts": 7,
+        "technical_attempts": 8,
+        "approved_by_policy": "attempt_over_3_auto_release"
+      }
+    },
+    "V-H": {
+      "id": "V-H",
+      "role": "high_impact_admission",
+      "frame": 16,
+      "sha256": "9b8a23269c77b05407bc76eb662c094c33d1a966952a151913539f47ed648f12",
+      "frame_contract_sha256": "ac5489a4712afae30c7c76e2b1683e74f12a526c82c83de01dff6829cdc2b050",
+      "profile_sha256": "9eb5996e47c6373ded1bf546b4926e9d2ce1553d281618dc1c46d703e1364f20",
+      "story_os_version": "2.6.1",
+      "status": "PASS",
+      "reviewed_at": "2026-09-16T13:16:52+08:00",
+      "attempt": 1,
+      "review_row": {
+        "id": "V-H",
+        "checks": {
+          "visual_profile_match": true,
+          "reality_first": true,
+          "ordinary_life_density": true,
+          "available_light": true,
+          "unposed_capture": true,
+          "not_cinematic": true,
+          "causal_imperfection": true,
+          "environment_physics_fidelity": true,
+          "capture_credibility": true,
+          "anomaly_scale_delivery": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true
+        },
+        "issues": [],
+        "notes": "手持翻开破旧日历的近距离证据照具有清晰的持机与持物物理逻辑；桌面、毛巾、搪瓷杯、铁皮盒和纸张磨损均保持真实老宅环境。普通2024年日历页上并置两个人名及2018.6.3、2024.11.12日期，且P01手部同框，异常后果可被直接读取，日历页和手部提供了有效现实尺度参照。",
+        "sha256": "9b8a23269c77b05407bc76eb662c094c33d1a966952a151913539f47ed648f12",
+        "frame_contract_sha256": "ac5489a4712afae30c7c76e2b1683e74f12a526c82c83de01dff6829cdc2b050",
+        "frame": 16,
+        "role": "high_impact_admission"
+      },
+      "provenance": {
+        "schema_version": 2,
+        "runtime": "CODEX_ISOLATED",
+        "base_runtime": "CODEX",
+        "isolated_session": true,
+        "execution_source": "local_codex_cli",
+        "attempt": 1,
+        "reviewed_at": "2026-09-16T13:16:51+08:00",
+        "log": "episodes/尸解仙/meta/visual-lock-critic-attempt-1.jsonl",
+        "review_capability": "vision",
+        "ephemeral": true,
+        "session_reused_from_generation": false,
+        "review_scope": "VISUAL_LOCK_DIRTY_ADMISSION"
+      }
+    }
+  }
+}

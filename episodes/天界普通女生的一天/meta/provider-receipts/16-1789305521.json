@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "recorded_at_epoch": 1789305521,
+  "frame": "16",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "generation_route": "codex_subscription",
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "requested_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": 0.8
+  },
+  "provider_raw_canvas": {
+    "width": 1122,
+    "height": 1402,
+    "aspect_ratio": 0.800285307,
+    "exact_requested_canvas": false,
+    "resize_direction_to_release": "downscale"
+  },
+  "ratio_delta": 0.000356633,
+  "normalize_decision": "AUTO_NORMALIZE",
+  "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通女生的一天\\media\\raw\\16-1789305403.png",
+  "raw_sha256": "91b7b67c5cf216448a9d6ed069990c71c88f06545e7881caf5cede08e4459de2",
+  "provider_attestation": false,
+  "exact_raw_canvas_guaranteed": false,
+  "receipt_is_evidence_not_authority": true,
+  "reference_transport": "codex_subscription_cli_attachment",
+  "references": [
+    {
+      "order": 1,
+      "path": "episodes/天界普通女生的一天/media/candidates/scheduled/01-d27055ffab33-a3.png",
+      "sha256": "e969b3384137f03d5df69e58163bb91076b129b57b5c3648178f9d28bd55eb48"
+    }
+  ],
+  "normalization": {
+    "operation": "RESIZE_LANCZOS",
+    "ratio_delta": 0.000357,
+    "crop_applied": false,
+    "reencoded": true,
+    "local_attempts": 1
+  },
+  "release_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通女生的一天\\media\\candidates\\scheduled\\16-d885f781fe3a-a2.png",
+    "sha256": "07a100f70b2c4ad4b5f99325c60109936a454ebc19c851d285d33f66d4ec32b9"
+  }
+}

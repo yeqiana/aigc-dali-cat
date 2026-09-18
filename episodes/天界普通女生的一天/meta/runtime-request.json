@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "request_id": "20260915_161322_913acd7a",
+  "created_at": "2026-09-15T16:13:22+08:00",
+  "mode": "full_auto",
+  "repository": {
+    "branch": "story",
+    "source": "system_default"
+  },
+  "topic": {
+    "title": "天界普通女生的一天",
+    "raw": "天界普通女生的一天"
+  },
+  "story_input": {
+    "mode": "auto_create",
+    "raw": null,
+    "constraints": [],
+    "rewrite_policy": "auto_create",
+    "preserve_core_intent": true,
+    "allow_structure_rewrite": true
+  },
+  "intent": {
+    "intent": "CREATE_EPISODE",
+    "source": "deterministic_rules",
+    "confidence": 1.0,
+    "reason_codes": [
+      "DEFAULT_CREATE"
+    ],
+    "normalized_request_sha256": "f5502b5ff4a2ad1f702154c3d2aed821635adb460a8a63f4247919cf55b99fe9",
+    "normalized_request": "全自动做一篇「天界普通女生的一天」。",
+    "requires_llm_rewrite": false,
+    "requires_clarification": false
+  },
+  "creative_hints": [],
+  "image_model": "gpt-image-2.5-flare",
+  "image_quality": "high",
+  "image": {
+    "provider": "openai",
+    "model": "gpt-image-2.5-flare",
+    "source": "system_default",
+    "strict_model": false,
+    "quality": "high"
+  },
+  "runtime": {
+    "execution_mode": "dag",
+    "continuous_execution": true,
+    "resume": true,
+    "max_image_workers": 3,
+    "fail_soft": true,
+    "incremental_reuse": true
+  },
+  "delivery": {
+    "mode": "auto",
+    "zip_required_for_completion": false
+  },
+  "user_intent": {
+    "full_auto_authorized": true,
+    "allow_story_strengthening": true,
+    "allow_story_rewrite": true,
+    "ask_before_each_step": false
+  },
+  "provenance": {
+    "source": "natural_language",
+    "original_request": "一位长相好看但真实自然的天界普通女生，以第一人称手机相册视角记录自己在天界的日常一天：清晨先来一张自拍，随后出门穿过云间街巷，与几位男女好友相聚，一起闲聊、吃饭、办日常差事、散步看景，直到傍晚结伴回去休息。整体保持古风天界生活气质，普通人日常感强，人物互动自然，现代元素不超过10%，不涉及恐怖、不涉及调查或探秘，第一张必须是自拍；除这些明确要求外，其余规则遵循仓库默认生产规范，整体采用偏写实的真实照片感风格，避免明显插画感、过度梦幻感和强摆拍感。",
+    "image_model_migration": {
+      "from": "gpt-image-2",
+      "to": "gpt-image-2.5-flare",
+      "at": "2026-09-15T16:13:22+08:00",
+      "source_request_id": "20260913_013729_f5502b5f",
+      "reason": "system_default_upgrade"
+    }
+  },
+  "visual_profile": "M04_HEAVEN_MUNDANE_LIFE_V1",
+  "visual_profile_resolution": {
+    "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\standards\\visual_profiles\\profiles\\M04_HEAVEN_MUNDANE_LIFE_V1.json",
+    "resolved_profile_id": "M04_HEAVEN_MUNDANE_LIFE_V1",
+    "requested_profile_id": "M04_HEAVEN_MUNDANE_LIFE_V1",
+    "registered": true,
+    "fallback": false,
+    "resolution": "registry",
+    "registry": "standards/visual_profiles/index.json"
+  },
+  "visual_profile_selection": {
+    "adapter_version": "1.0",
+    "source": "selector",
+    "status": "selected",
+    "lifecycle_state": "SELECTED",
+    "selected_profile": "M04_HEAVEN_MUNDANE_LIFE_V1",
+    "lock_path": "meta/visual-profile.json",
+    "written": true,
+    "requires_confirmation": true,
+    "selection_evidence": {
+      "selector_version": "1.0",
+      "source": "rule_engine",
+      "registry": "standards/visual_profiles/index.json",
+      "inputs_digest": "sha256:dddef49bc6103c0668020e3279ad559f98ee82110e01be8b540518292145d61c",
+      "inputs_summary": {
+        "world": "fictional",
+        "era": "unspecified",
+        "theme": "daily_life",
+        "genre": "daily_life",
+        "location": "",
+        "experience_type": "immersive_first_person",
+        "series": "",
+        "previous_profile": "",
+        "realism": "maximum",
+        "immersion": "high",
+        "fantasy_level": "high",
+        "forced_profile_id": ""
+      },
+      "matched_rules": [
+        "world=fictional",
+        "fantasy_level=high"
+      ],
+      "rejected": [
+        {
+          "profile": "M00_REAL_WORLD_DOCUMENTARY_V1",
+          "reason": "not matched: world=real"
+        },
+        {
+          "profile": "M01_ANCIENT_MUNDANE_LIFE_V1",
+          "reason": "not matched: world=historical_real, era=ancient"
+        },
+        {
+          "profile": "M03_JIANGNAN_IMMERSIVE_LIFE_V1",
+          "reason": "not matched: location=jiangnan, experience_type=immersive_first_person"
+        }
+      ],
+      "reason": [
+        "prio=semantic"
+      ],
+      "candidate_count": 1,
+      "notes": [
+        "theme=daily_life"
+      ]
+    }
+  }
+}

@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "title": "尸解仙",
+  "creative_doctrine": "概念不要克制，镜头必须真实；真实性约束怎么拍，不限制发生什么。",
+  "pool_note": "民俗与古籍规则改编的同题发散。十个候选都遵守三条硬约束：独占机制是痕迹与主人解绑、不用影子作为证据通道、主角是二十多岁普通年轻人。",
+  "candidates": [
+    {
+      "id": "C01",
+      "title": "痕不认尸",
+      "one_line_hook": "奶奶走了三个月，老屋的灶每天照样生火，碗筷每天摆成两副。",
+      "concept_class": "民俗与古籍规则改编 · 痕迹与主人解绑",
+      "discussion_question": "如果属于一个人的生活痕迹还在继续，她算不算真的走了？",
+      "anomaly_ceiling": {
+        "initial": "锅里温着饭，灶灰是当天新烧的，屋里没有人",
+        "middle": "晾衣绳每天换衣、旧黄历每天被划掉一格，划痕还是往前数的",
+        "climax": "痕尽之日灶冷碗空；要留住她，只能有人替她把这一天过完"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "凌晨五点空无一人的灶房，灶膛里自己亮着新火，桌上摆着两副碗筷",
+          "why_stop": "画面里一个人都没有，但一顿饭正在被准备"
+        },
+        "mid": {
+          "visual": "手机屏幕照着旧黄历，每天的划痕是往前数的，只剩三格",
+          "why_stop": "倒计时被读出来了，观众会开始算日子"
+        },
+        "climax": {
+          "visual": "第六天清晨冷灶前，年轻人自己点火、自己摆上第二副碗筷",
+          "why_stop": "他把自己接进了那个空着的位置"
+        }
+      },
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 19,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 14,
+        "discussion_space": 10
+      },
+      "concept_voltage": 94
+    },
+    {
+      "id": "C02",
+      "title": "晾衣绳上的第三件",
+      "one_line_hook": "老院晾衣绳每天多出一件刚洗的旧衣，地上却没有一滴水。",
+      "concept_class": "民俗与古籍规则改编 · 生活器物自行补全",
+      "discussion_question": "如果没人洗衣服，衣服为什么在变干净？",
+      "anomaly_ceiling": {
+        "initial": "绳上多一件半干的旧衬衫，滴水位置是干的",
+        "middle": "每天固定时间绳上换一轮衣服，顺序和奶奶生前的作息完全一致",
+        "climax": "绳上出现主角当天穿过还没洗的衣服，衣角还是他刚蹭上的灰"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "逆光下的晾衣绳，第七件衣服在风里动，绳下地面是干的",
+          "why_stop": "违反常识的干湿关系一眼可见"
+        },
+        "mid": {
+          "visual": "三件衣服依次排开，衣服的位置拼出屋里家具的摆法",
+          "why_stop": "衣服成了另一种语言"
+        },
+        "climax": {
+          "visual": "主角低头看自己衣服上的灰，绳上那件有一模一样的灰",
+          "why_stop": "异常第一次指向活着的人"
+        }
+      },
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 17,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 82
+    },
+    {
+      "id": "C03",
+      "title": "黄历少一页",
+      "one_line_hook": "老黄历每天自己翻页，翻开的那页写着当天会发生的事。",
+      "concept_class": "民俗与古籍规则改编 · 择日书预支事实",
+      "discussion_question": "如果书先写了这一天，人还有得选吗？",
+      "anomaly_ceiling": {
+        "initial": "黄历自己翻到今天，宜忌栏多出两个铅笔字",
+        "middle": "字迹每天写准当天的小事，用的是已经过世的人的手写体",
+        "climax": "最新一页写着主角自己的名字和返程日期"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "台灯下摊开的老黄历，今天的格子里有两行新铅笔字",
+          "why_stop": "旧物上出现了没人能写的字"
+        },
+        "mid": {
+          "visual": "一沓黄历页按日期排列，铅笔字连成一段生活记录",
+          "why_stop": "预支的事实形成了完整生活"
+        },
+        "climax": {
+          "visual": "主角名字出现在明天的格子里",
+          "why_stop": "异常从记录变成点名"
+        }
+      },
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 16,
+        "escalation_ceiling": 15,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 78
+    },
+    {
+      "id": "C04",
+      "title": "鞋口朝外",
+      "one_line_hook": "门口两双鞋每天换朝向，一双朝里，一双朝外。",
+      "concept_class": "民俗与古籍规则改编 · 出入方位禁忌",
+      "discussion_question": "朝外的那双鞋，是在等人回来，还是在告诉人快走？",
+      "anomaly_ceiling": {
+        "initial": "门槛边两双鞋鞋尖朝外，鞋跟里侧有刚踩过的灰",
+        "middle": "两双鞋朝向每天跟随村里的红白事变化",
+        "climax": "主角自己的鞋被摆成朝外，和他准备离开的方向相反"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "门槛边两双鞋，一双朝屋外，鞋垫压着新鲜的土",
+          "why_stop": "静物里藏着刚发生的动作"
+        },
+        "mid": {
+          "visual": "一周七天的鞋位照片排开，朝向有固定规律",
+          "why_stop": "规律本身成为证据"
+        },
+        "climax": {
+          "visual": "主角的鞋被调转方向，和他手里的行李箱方向相反",
+          "why_stop": "异常开始对他本人下手"
+        }
+      },
+      "scores": {
+        "one_line_hook": 15,
+        "hero_frame": 14,
+        "escalation_ceiling": 14,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 10,
+        "discussion_space": 7
+      },
+      "concept_voltage": 70
+    },
+    {
+      "id": "C05",
+      "title": "留痕者",
+      "one_line_hook": "旧抄本上写：人走不必留尸，留痕即可；痕断，人才算真走。",
+      "concept_class": "古籍规则改编 · 留痕代尸",
+      "discussion_question": "如果一个人把日子留给别人替她过，那个人还是她自己吗？",
+      "anomaly_ceiling": {
+        "initial": "箱底抄本第一页写着留痕的规矩，纸是旧的墨也是旧的",
+        "middle": "老屋里每一天的生活痕迹都在按抄本条目一条条补全",
+        "climax": "抄本最后一页写着：痕尽之日，须有人续，否则人解"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "手电下摊开的旧抄本，印着留痕的规矩和一行小字",
+          "why_stop": "规则本身就是一个悬念"
+        },
+        "mid": {
+          "visual": "抄本条目和屋里的痕迹一一对上，像一份打勾清单",
+          "why_stop": "观众会自己开始核对屋里还剩什么"
+        },
+        "climax": {
+          "visual": "最后一页那句要求后面，是一行还没干的新墨",
+          "why_stop": "规则在等人做决定"
+        }
+      },
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 20,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 13,
+        "discussion_space": 8
+      },
+      "concept_voltage": 92
+    },
+    {
+      "id": "C06",
+      "title": "替日",
+      "one_line_hook": "老规矩：人走后头七，每天要有人替她把这一天过一遍。",
+      "concept_class": "民俗与古籍规则改编 · 替日头七",
+      "discussion_question": "替人过的那一天，到底算谁的？",
+      "anomaly_ceiling": {
+        "initial": "头七第一天，灶和碗按老规矩自己走完了流程",
+        "middle": "没人替她过，痕迹就一天比一天完整，第七天摆满整院",
+        "climax": "第七天摆出的是两个人的份量，其中一份是主角自己的习惯"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "院里摆着一整桌没人动过的饭菜，筷子架得整整齐齐",
+          "why_stop": "仪式感里缺了人"
+        },
+        "mid": {
+          "visual": "七天的痕迹按天数排开，量一天比一天多",
+          "why_stop": "进度条式升级一眼可读"
+        },
+        "climax": {
+          "visual": "桌上多出的一份，是主角自己平时吃的东西",
+          "why_stop": "异常完成了对他的复制"
+        }
+      },
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 88
+    },
+    {
+      "id": "C07",
+      "title": "井底的第二天",
+      "one_line_hook": "老井会把昨天说过的话，原封不动再说一遍。",
+      "concept_class": "民俗与古籍规则改编 · 井声复述",
+      "discussion_question": "如果井只重复昨天，那今天说的话去哪了？",
+      "anomaly_ceiling": {
+        "initial": "井里传回声，内容和几分钟前一模一样",
+        "middle": "回声开始出现还没说过的话，且是过世的人的口音",
+        "climax": "第七天井里传出的是主角自己的声音，说的却是他没说过的话"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "井口俯拍，水面很静，回音却在响",
+          "why_stop": "视觉安静和听觉异常对不上"
+        },
+        "mid": {
+          "visual": "主角对着屏幕回放录音，波形比说话早一拍",
+          "why_stop": "证据出现在时间轴上"
+        },
+        "climax": {
+          "visual": "井里传出他自己的声音，说着他没说过的话",
+          "why_stop": "异常的边界收回到主角身上"
+        }
+      },
+      "scores": {
+        "one_line_hook": 15,
+        "hero_frame": 15,
+        "escalation_ceiling": 14,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 10,
+        "discussion_space": 8
+      },
+      "concept_voltage": 73
+    },
+    {
+      "id": "C08",
+      "title": "纸人过寿",
+      "one_line_hook": "村里扎的纸人每天在院里自己走一圈，鞋底越走越薄。",
+      "concept_class": "民俗与古籍规则改编 · 纸扎代行",
+      "discussion_question": "替活人办事的纸人，替的到底是谁的事？",
+      "anomaly_ceiling": {
+        "initial": "纸人脚底的黄纸出现磨损，位置比昨天靠外",
+        "middle": "纸人每天按村里丧俗流程走一圈，屋里痕迹跟着少一件",
+        "climax": "纸人走到主角床前，鞋底磨穿的形状和主角的鞋印一样"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "纸人立在院里，脚边一圈新踩过的浮土",
+          "why_stop": "静止的纸人却有运动痕迹"
+        },
+        "mid": {
+          "visual": "纸人每天的落位连成一条线，正好绕完院子",
+          "why_stop": "路径本身是证据"
+        },
+        "climax": {
+          "visual": "纸人脚底的磨损和主角鞋底的磨损对得上",
+          "why_stop": "替身关系被指认"
+        }
+      },
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 86
+    },
+    {
+      "id": "C09",
+      "title": "墨迹未干",
+      "one_line_hook": "奶奶的手抄本每天多出一页新字，字迹是她的。",
+      "concept_class": "古籍规则改编 · 死后书写",
+      "discussion_question": "如果本子还在写，写的人是谁？",
+      "anomaly_ceiling": {
+        "initial": "抄本最后一页是新的，墨没干",
+        "middle": "新页每天写当天屋里的安排，连主角要吃什么都写",
+        "climax": "最新一页写着让主角把本子烧掉，字迹比前几天更用力"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "台灯下摊开的本子，最后一页墨迹反光",
+          "why_stop": "旧本子上出现了刚刚写的字"
+        },
+        "mid": {
+          "visual": "本子一页页翻过去，内容精确记录屋里发生的事",
+          "why_stop": "书写者和主角在同一个时空"
+        },
+        "climax": {
+          "visual": "那一页写着烧掉，纸背有用力压出的痕",
+          "why_stop": "规则第一次提出要求"
+        }
+      },
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 88
+    },
+    {
+      "id": "C10",
+      "title": "老座钟多走一格",
+      "one_line_hook": "老座钟每天多走一格，走满一圈就有人回来。",
+      "concept_class": "民俗与古籍规则改编 · 钟表计数",
+      "discussion_question": "钟在数的，是人回来的日子，还是人走的日子？",
+      "anomaly_ceiling": {
+        "initial": "座钟的指针比正确时间多走一格，钟摆还在动",
+        "middle": "每多一格，屋里就少一件奶奶的旧物，像在结算",
+        "climax": "指针走满一圈，钟自己停在主角进门的那一刻"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "手机时间与座钟时间并排，差了整整一格",
+          "why_stop": "时间被量化成可见的差"
+        },
+        "mid": {
+          "visual": "旧物一件件消失，对应钟上的格数排成表",
+          "why_stop": "观众会自己数还剩几件"
+        },
+        "climax": {
+          "visual": "钟停在他进门的那一刻，指针指着门的方向",
+          "why_stop": "时间锚定在主角身上"
+        }
+      },
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 16,
+        "escalation_ceiling": 15,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 78
+    }
+  ]
+}

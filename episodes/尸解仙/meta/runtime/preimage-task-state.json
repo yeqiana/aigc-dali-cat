@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "934b5066e5fc77eefb985aaaf3e15b7a69269806d3a5ba7c02a46d895d1957a8",
+  "not_episode_stage": true,
+  "not_gate_authority": true,
+  "canonical_stage_source": "meta/episode-state.json",
+  "tasks": {
+    "CHARACTER_FINALIZE": {
+      "task_id": "preimage-character_finalize-934b5066e5fc",
+      "status": "COMPLETED",
+      "request_id": "preimage-45b0177743b2756d",
+      "candidate_path": "meta/runtime/preimage-candidates/character-finalize.json",
+      "updated_at": "2026-09-16T11:49:44+08:00",
+      "execution": {
+        "started_at": "2026-09-16T11:49:20.380274+08:00",
+        "worker_id": "work-devspace-main",
+        "finished_at": "2026-09-16T11:49:44.312885+08:00"
+      }
+    },
+    "ENVIRONMENT_PREPARE": {
+      "task_id": "preimage-environment_prepare-934b5066e5fc",
+      "status": "COMPLETED",
+      "request_id": "preimage-3d63cc8d0872d572",
+      "candidate_path": "meta/runtime/preimage-candidates/environment.json",
+      "updated_at": "2026-09-16T11:51:11+08:00",
+      "execution": {
+        "started_at": "2026-09-16T11:50:30.404162+08:00",
+        "worker_id": "work-devspace-main",
+        "finished_at": "2026-09-16T11:51:11.042797+08:00"
+      }
+    },
+    "WORLD_PREPARE": {
+      "task_id": "preimage-world_prepare-934b5066e5fc",
+      "status": "COMPLETED",
+      "request_id": "preimage-bf64ead268a47f69",
+      "candidate_path": "meta/runtime/preimage-candidates/world.json",
+      "updated_at": "2026-09-16T11:52:04+08:00",
+      "execution": {
+        "started_at": "2026-09-16T11:51:34.914698+08:00",
+        "worker_id": "work-devspace-main",
+        "finished_at": "2026-09-16T11:52:04.560884+08:00"
+      }
+    },
+    "VISUAL_NARRATIVE_PREPARE": {
+      "task_id": "preimage-visual_narrative_prepare-934b5066e5fc",
+      "status": "COMPLETED",
+      "request_id": "preimage-b961ce428c938f73",
+      "candidate_path": "meta/runtime/preimage-candidates/visual-narrative.json",
+      "updated_at": "2026-09-16T11:48:11+08:00",
+      "execution": {
+        "started_at": "2026-09-16T11:46:52.872705+08:00",
+        "worker_id": "work-devspace-main",
+        "finished_at": "2026-09-16T11:48:11.014636+08:00"
+      }
+    }
+  },
+  "updated_at": "2026-09-16T11:52:04+08:00"
+}

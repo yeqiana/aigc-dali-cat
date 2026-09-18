@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "initial_state": {
+    "time": "morning",
+    "location": "P01 home cloud corridor",
+    "weather": "clear mild dry",
+    "characters": {
+      "P01": {"gender":"female","age":24,"build":"纤细匀称、真实自然的年轻女性体型","hair":"自然黑色长发，日常低马尾或散发","clothing_anchor":"米白与浅青为主的朴素天界日常襦裙与轻薄外衫","device_anchor":"随身留影玉牌（自带留影功能）","status":"present"},
+      "P02": {"gender":"female","age":24,"build":"健康自然的年轻女性体型","hair":"自然黑色齐肩发，半束发","clothing_anchor":"藕粉灰与米白的朴素日常衣裙","status":"present"},
+      "P03": {"gender":"male","age":25,"build":"清瘦自然的年轻男性体型","hair":"自然黑色短发，略微蓬松","clothing_anchor":"灰蓝短褂与深灰长裤","status":"present"},
+      "P04": {"gender":"male","age":23,"build":"普通健康的年轻男性体型","hair":"自然黑色短发，额前略乱","clothing_anchor":"浅褐短衫与青灰长裤","status":"present"}
+    },
+    "recorder": {"photographer_id":"P01","active_device":"随身留影玉牌（自带留影功能）"},
+    "props": {"snack_parcel":{"state":"not_yet_bought"},"wooden_hairpin":{"state":"not_yet_bought"}},
+    "anomaly": {"phase":"ordinary","applicable":false}
+  },
+  "frames": {
+    "01":{"delta":{"time":"morning","location":"P01 home cloud corridor"},"story_event":"morning selfie before going downstairs"},
+    "02":{"delta":{"location":"residential stone steps"},"story_event":"friends walk downstairs"},
+    "03":{"delta":{"location":"breakfast stall"},"story_event":"breakfast begins"},
+    "04":{"delta":{"location":"breakfast table","props":{"snack_parcel":{"state":"P04 brought a small apology snack bag"}}},"story_event":"P04 arrives late and joins breakfast"},
+    "05":{"delta":{"time":"late morning","location":"ordinary commute cloud bridge"},"story_event":"group walks toward public area"},
+    "06":{"delta":{"location":"public duty room"},"story_event":"P01 completes a short ordinary duty"},
+    "07":{"delta":{"location":"public duty room window"},"story_event":"friends wait for P01 to finish"},
+    "08":{"delta":{"time":"midday","location":"family eatery second floor"},"story_event":"group finds a lunch table"},
+    "09":{"delta":{"location":"family eatery window table"},"story_event":"ordinary lunch together"},
+    "10":{"delta":{"location":"street outside eatery"},"story_event":"P02 proposes a spontaneous detour to old cloud market"},
+    "11":{"delta":{"time":"afternoon","location":"old cloud market main lane"},"story_event":"group enters old market"},
+    "12":{"delta":{"location":"hairpin stall","props":{"wooden_hairpin":{"state":"bought after P02 tries it"}}},"story_event":"P02 tries a wooden hairpin and P01 helps with her hair"},
+    "13":{"delta":{"location":"old market lane","props":{"snack_parcel":{"state":"several small parcels carried by group"}}},"story_event":"friends buy snacks and keep walking"},
+    "14":{"delta":{"location":"old market tea stall"},"story_event":"group sits down for tea"},
+    "15":{"delta":{"location":"tea stall small table"},"story_event":"friends chat about ordinary trivial things"},
+    "16":{"delta":{"time":"dusk","location":"route toward west cloud bridge"},"story_event":"P02 suggests staying longer to see sunset"},
+    "17":{"delta":{"location":"west cloud bridge overlook","recorder":{"photographer_id":"P02","active_device":"随身留影玉牌（自带留影功能）"}},"story_event":"P02 temporarily takes P01's image-jade to photograph P01/P03/P04 against the sunset cloud sea; P02 stays behind the camera with only sleeve/hand/device-edge evidence allowed"},
+    "18":{"delta":{"location":"west cloud bridge edge","recorder":{"photographer_id":"P01","active_device":"随身留影玉牌（自带留影功能）"},"props":{"snack_parcel":{"state":"last parcel opened and split into four"}}},"story_event":"P02 returns the image-jade to P01 before the four friends split the last snack"},
+    "19":{"delta":{"time":"early evening","location":"residential street junction"},"story_event":"friends say goodbye and take different lanes home"},
+    "20":{"delta":{"location":"P01 home cloud corridor","props":{"snack_parcel":{"state":"empty wrapper"},"wooden_hairpin":{"state":"kept as today's small purchase"}}},"story_event":"P01 returns home and puts away the image-jade device"}
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "schema_version": 2,
+  "status": "AVAILABLE_CONTENT_FAIL",
+  "consecutive_technical_failures": 0,
+  "last_fingerprint": null,
+  "events": [
+    {
+      "at": "2026-09-16T13:16:52+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 1,
+      "issue_codes": [
+        "ANOMALY_NOT_READABLE"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/尸解仙/meta/visual-lock-critic-attempt-1.jsonl",
+      "visual_lock_run_id": "34d3d372595a",
+      "visual_lock_started_at": "2026-09-16T11:59:08.470+08:00"
+    },
+    {
+      "at": "2026-09-16T13:28:23+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 2,
+      "issue_codes": [
+        "ANOMALY_NOT_READABLE"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/尸解仙/meta/visual-lock-critic-attempt-2.jsonl",
+      "visual_lock_run_id": "34d3d372595a",
+      "visual_lock_started_at": "2026-09-16T11:59:08.470+08:00"
+    },
+    {
+      "at": "2026-09-16T15:14:36+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 3,
+      "issue_codes": [
+        "ANOMALY_NOT_READABLE"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/尸解仙/meta/visual-lock-critic-attempt-3.jsonl",
+      "visual_lock_run_id": "34d3d372595a",
+      "visual_lock_started_at": "2026-09-16T11:59:08.470+08:00"
+    },
+    {
+      "at": "2026-09-16T15:20:14+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 4,
+      "issue_codes": [
+        "ANOMALY_NOT_READABLE",
+        "STAGED_CINEMATIC_INTERIOR_COMPOSITION",
+        "DOCUMENTARY_CAPTURE_INSUFFICIENT",
+        "MOMENT_NOT_ONGOING"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/尸解仙/meta/visual-lock-critic-attempt-4.jsonl",
+      "visual_lock_run_id": "34d3d372595a",
+      "visual_lock_started_at": "2026-09-16T11:59:08.470+08:00"
+    },
+    {
+      "at": "2026-09-16T16:00:17+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 5,
+      "issue_codes": [
+        "ANOMALY_NOT_READABLE"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/尸解仙/meta/visual-lock-critic-attempt-5.jsonl",
+      "visual_lock_run_id": "34d3d372595a",
+      "visual_lock_started_at": "2026-09-16T11:59:08.470+08:00"
+    },
+    {
+      "at": "2026-09-16T16:15:30+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 6,
+      "issue_codes": [
+        "ANOMALY_NOT_READABLE"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/尸解仙/meta/visual-lock-critic-attempt-6.jsonl",
+      "visual_lock_run_id": "34d3d372595a",
+      "visual_lock_started_at": "2026-09-16T11:59:08.470+08:00"
+    }
+  ],
+  "speculative_production_allowed": false,
+  "last_issue_codes": [
+    "ANOMALY_NOT_READABLE"
+  ],
+  "last_event_at": "2026-09-16T16:15:30+08:00",
+  "last_visual_lock_run_id": "34d3d372595a"
+}

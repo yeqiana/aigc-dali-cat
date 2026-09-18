@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "frame": "08",
+  "risk_level": "HIGH",
+  "risk_score": 78,
+  "risk_tags": [
+    "first_anomaly",
+    "impact_2",
+    "reveal"
+  ],
+  "frame_contract_sha256": "c933b6d75c0f876c167f31e560d2b0832c1f1e1f7f45dc33f6eb51883c1057ba",
+  "asset_path": "episodes/尸解仙/media/candidates/scheduled/08-b8ef6ddd30ff-a2.png",
+  "asset_sha256": "c1b14163a6496229667b86d6c03461739d8db1f1fa883de1370f6fa0c4b7a6fe",
+  "scouted_at": "2026-09-16T13:11:43+08:00",
+  "final_critic_still_required": true,
+  "decision": "PASS_FAST",
+  "issue_codes": [],
+  "notes": "P02's beige knitwear and shoulder-length dark hair match the contract; P01 is physically present only as the foreground hand, supporting the stated first-person phone capture. The handwritten rule page, bare-bulb night interior, altar/table clutter, and ongoing joint reading are all visibly consistent. No obvious early defect found.",
+  "confidence": 0.96,
+  "model_called": true,
+  "scout_status": "model_complete",
+  "critic_log": "episodes/尸解仙/meta/frame-scouts/08.jsonl"
+}

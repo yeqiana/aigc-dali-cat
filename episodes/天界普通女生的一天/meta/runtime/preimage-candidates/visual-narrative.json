@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "task_id": "preimage-visual_narrative_prepare-fedc3470fb71",
+  "task_type": "VISUAL_NARRATIVE_PREPARE",
+  "snapshot_id": "fedc3470fb71a09b5dfc45ac61e1814fd850221ef8d6011eb8df1e6b12254f19",
+  "source_authority_sha256": {
+    "owned_scopes": {
+      "character.finalize": "a8c28494d508a29e55d3e10479d68e683b0f8682ca0cf67145639da3e1b037c4",
+      "visual.environment_contract": "43930972a41e43773f1c54628b9cd7624bb267b859d0c4a92d18c09332be0edc",
+      "visual.frame_directives": "cf16ed89eb47e30bf399d73c7470588f9d2f0b58a49f9833235a55149e55201a",
+      "visual.world_identity": "35d4da7b9dff682ce879569e2856253d8e6f98adea7c4bb83ce172134e9e2961",
+      "visual.world_state": "35b33d1b2e3f448525d32597e9f9b04af142613ad17017bc369fe13831002458",
+      "visual.temporal_continuity": "e771b36f52a94459b38d8d0fd7d0c9d3242e36ec82a8a322599af9182ebc2434",
+      "visual.wardrobe": "d3eaa58e341062b64c349766bdf310e9197e89f4bbe11ce85fb82f6e761622fc",
+      "visual.narrative_core": "87e635ba0f2254eb21ec57a821c0edce8bf0c8b09d073d65a63ad1d0180359da",
+      "visual.shot_progression": "24a9b415efcbff84eee7020eee3c05cd4e7f3659d3c3e095ae12213e84f55217",
+      "visual.capture_grammar": "abec40e13ad7d44d74e9e331b14ad7d593b2181959866a6e983b8ed3e9534bee"
+    },
+    "character_contract": "9d4d0635e2ef11c893ba82a3894eacef3d474481010f010e61b49bf54f5c2df2",
+    "world_identity": "02634a0440ab6fcc7856a050d6cb7567a59f91e086a3124bcecf9d3f914c9fc1",
+    "runtime_request": "3ef98432540a8230627ad88ed80aa2db5649c8dd30a0c7c029ff13261ed0517e",
+    "story_lock": "fdd7f4ac06fcfd6decd33c8545c7009ff8e2c73721e710dff7e2ea64431d053c",
+    "visual_profile": "e1cefbd26880f41ccc050710d5e3877c5297d66c393cc5a8a282361d569ba78e"
+  },
+  "generated_at": "2026-09-15T15:03:17+08:00",
+  "status": "COMPLETED",
+  "authority_scope": [
+    "visual.narrative_core",
+    "visual.shot_progression",
+    "visual.capture_grammar"
+  ],
+  "payload": {
+    "visual.narrative_core": {
+      "story_mode": "ordinary_daily_life",
+      "anomaly_applicable": false,
+      "core_visual_contrast": "vast celestial geography versus tiny ordinary friendship actions",
+      "relationship_arc": "morning meetup -> shared errands/meals -> spontaneous afternoon extension -> sunset pause -> goodbye",
+      "midpoint": "Frame10 spontaneous detour to old cloud market",
+      "visual_emotional_peak": "Frames17-18 sunset cloud sea and splitting the last snack",
+      "ending": "Frame20 reduces the vast day to shoes, empty wrapper, wooden hairpin and remaining dusk",
+      "forbidden": [
+        "horror",
+        "mystery",
+        "investigation",
+        "anomaly injection",
+        "hero pose",
+        "commercial group portrait",
+        "over-retouched faces"
+      ]
+    },
+    "visual.shot_progression": {
+      "source": "meta/shot-progression-review.json",
+      "grammar": "realistic casual album capture",
+      "scale_arc": "close selfie -> residential medium/wide -> market mixed scales -> extreme-wide sunset climax -> close residue",
+      "interaction_density": "meaningful friend interaction appears regularly but does not dominate every frame",
+      "scene_reuse": "no exact scene_position_id reuse",
+      "lighting": "only physically motivated morning/day/afternoon/dusk/lantern light",
+      "frame01_rule": "natural selfie with clearly readable P01 face; friends enter casually",
+      "frame17_rule": "largest world-scale daily-life image; P02 temporarily takes P01's image-jade and stays behind the camera, leaving only a dusty-pink sleeve/hand/device-edge fragment at the frame edge; P01/P03/P04 remain three distant off-center figures continuing to watch/chat/lean without looking toward camera; dusk sun stays off-axis or partly outside frame, distant city loses contrast in atmospheric haze, and ordinary-device backlight preserves clipped highlights/underexposure instead of golden HDR or poster polish"
+    },
+    "visual.capture_grammar": {
+      "device": "P01 handheld image-jade album device; friend-taken/placed shots only when diegetically justified; Frame17 is explicitly P02 temporarily handholding P01's device, with P02 remaining behind camera and only a sleeve/hand/device-edge fragment allowed as camera-owner evidence",
+      "photo_feel": "realistic private mobile-album immediacy, slight imperfection, natural skin texture, non-cinematic posing; Frame17 explicitly favors ordinary-device exposure loss and atmospheric depth over golden-hour HDR, rim-light polish, or fantasy tourism imagery",
+      "composition": "subject-first casual framing with lived-in background; avoid symmetrical poster composition; Frame17 must keep asymmetric friend-taken framing, P01/P03/P04 small and off-center against the vast cloud sea, visible P02 edge evidence, natural railing/clothing occlusion, no subject looking or turning for camera, sun off-axis or outside frame, softened distant skyline, and no tourism-poster lineup",
+      "modern_budget": "device metaphor is the primary modern-like element; visible scene content remains >90% old-world celestial",
+      "continuity": "P01/P02/P03/P04 identities and clothing anchors remain stable; no identity master is claimed before Visual Lock",
+      "anomaly_progression": "NOT_APPLICABLE; keep all frames ordinary"
+    }
+  }
+}

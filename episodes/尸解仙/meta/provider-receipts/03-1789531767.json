@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "recorded_at_epoch": 1789531767,
+  "frame": "03",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "generation_route": "codex_subscription",
+  "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+  "requested_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": 0.8
+  },
+  "provider_raw_canvas": {
+    "width": 1122,
+    "height": 1402,
+    "aspect_ratio": 0.800285307,
+    "exact_requested_canvas": false,
+    "resize_direction_to_release": "downscale"
+  },
+  "ratio_delta": 0.000356633,
+  "normalize_decision": "AUTO_NORMALIZE",
+  "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\尸解仙\\media\\raw\\03-1789531696.png",
+  "raw_sha256": "f2ca272781d497be6f1db516066f55152504249a7946d83cec84fa4c3c49b9e5",
+  "provider_attestation": false,
+  "exact_raw_canvas_guaranteed": false,
+  "receipt_is_evidence_not_authority": true,
+  "reference_transport": "codex_subscription_cli_attachment",
+  "references": [],
+  "normalization": {
+    "operation": "RESIZE_LANCZOS",
+    "ratio_delta": 0.000357,
+    "crop_applied": false,
+    "reencoded": true,
+    "local_attempts": 1
+  },
+  "release_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\尸解仙\\media\\candidates\\scheduled\\03-94e13a84736b-a1.png",
+    "sha256": "f92f07bee39925e90572e4319a81b63f9e87f1af0b8e1a472b1e77dd3c85c45a"
+  }
+}

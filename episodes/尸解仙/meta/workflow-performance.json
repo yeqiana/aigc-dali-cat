@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "note": "Performance evidence only; NOT a stage source.",
+  "runs": [
+    {
+      "run_id": "1789439327-work",
+      "runtime": "WORK",
+      "mode": "run",
+      "started_at": "2026-09-15T10:28:47+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.171,
+          "recorded_at": "2026-09-15T10:28:48+08:00",
+          "note": "{\n  \"episode\": \"episodes/ʬ����\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.031,
+          "recorded_at": "2026-09-15T10:28:48+08:00",
+          "note": "carrier for suspense/strange genres. Run shot_progression_gate.py validate before completing CREATIVE_STORY.\"], \"schema_version\": 2, \"request_id\": \"host-3224565290c90cec\", \"request_fingerprint\": \"3224565290c90cec2d4b9587b3c930985dca3fc442d1b66ac1107630f289c874\", \"created_at\": \"2026-09-15T10:28:48+08:00\", \"request_path\": \"episodes/\\u5c38\\u89e3\\u4ed9/meta/runtime/host-requests/host-3224565290c90cec.json\", \"current_request_path\": \"episodes/\\u5c38\\u89e3\\u4ed9/meta/runtime/product-host-request.json\"}"
+        },
+        {
+          "step": "HOST_LOOP",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.015,
+          "recorded_at": "2026-09-15T10:28:48+08:00",
+          "note": "stop_cycle=1 host_owns=CREATIVE_STORY"
+        }
+      ],
+      "status": "HOST_WAIT",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 1.0,
+        "generation_utilization_upper_bound": 3181.0,
+        "unclassified_wall_ratio": 0.783
+      },
+      "finished_at": "2026-09-15T10:28:48+08:00",
+      "total_seconds": 0.782,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.171,
+          "recorded_at": "2026-09-15T10:28:48+08:00",
+          "note": "{\n  \"episode\": \"episodes/ʬ����\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.031,
+          "recorded_at": "2026-09-15T10:28:48+08:00",
+          "note": "carrier for suspense/strange genres. Run shot_progression_gate.py validate before completing CREATIVE_STORY.\"], \"schema_version\": 2, \"request_id\": \"host-3224565290c90cec\", \"request_fingerprint\": \"3224565290c90cec2d4b9587b3c930985dca3fc442d1b66ac1107630f289c874\", \"created_at\": \"2026-09-15T10:28:48+08:00\", \"request_path\": \"episodes/\\u5c38\\u89e3\\u4ed9/meta/runtime/host-requests/host-3224565290c90cec.json\", \"current_request_path\": \"episodes/\\u5c38\\u89e3\\u4ed9/meta/runtime/product-host-request.json\"}"
+        },
+        {
+          "step": "HOST_LOOP",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.015,
+          "recorded_at": "2026-09-15T10:28:48+08:00",
+          "note": "stop_cycle=1 host_owns=CREATIVE_STORY"
+        }
+      ]
+    }
+  ],
+  "updated_at": "2026-09-15T10:28:48+08:00",
+  "generated_at": "2026-09-15T10:28:47+08:00",
+  "kind": "workflow_performance",
+  "performance_budget_updated_at": "2026-09-16T16:15:46+08:00"
+}

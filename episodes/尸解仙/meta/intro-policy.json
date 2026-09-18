@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "selected_family": "approaching_event",
+  "reference": "临近XXX，我和几个朋友决定去XXX。",
+  "variants": [
+    "临近国庆，我和几个朋友决定去XXX玩几天。",
+    "快到暑假，我和几个朋友决定去XXX。",
+    "临近毕业，我们几个决定去XXX待两天。"
+  ],
+  "rule": "时间节点必须在 Story 时间线上真实存在。",
+  "recent5_families": [
+    "state_occasion_trip"
+  ],
+  "title_policy": {
+    "generate": true,
+    "count": 1,
+    "usage": "internal_candidate_only",
+    "required_for_publish_ready": false,
+    "default_include_in_delivery": false,
+    "default_include_in_intro": false
+  },
+  "final_text_must_be_natural": true,
+  "template_is_reference_not_literal_output": true
+}

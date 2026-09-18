@@ -1,0 +1,92 @@
+{
+  "runtime": "WORK",
+  "status": "FINALIZED",
+  "source": "runtime_dag:PREIMAGE_COMPILE",
+  "episode": "episodes/尸解仙",
+  "episode_state": "STORYBOARD_LOCKED",
+  "execution_mode": "full_auto",
+  "resume": true,
+  "next_step": "PREIMAGE_CHARACTER_FINALIZE",
+  "task": {
+    "schema_version": 1,
+    "task_id": "preimage-character_finalize-934b5066e5fc",
+    "task_type": "CHARACTER_FINALIZE",
+    "node_id": "character_finalize",
+    "episode": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\尸解仙",
+    "snapshot_id": "934b5066e5fc77eefb985aaaf3e15b7a69269806d3a5ba7c02a46d895d1957a8",
+    "depends_on": [
+      "story_lock"
+    ],
+    "required_read": [
+      "meta/story-gates.json",
+      "meta/character-contract.json",
+      "meta/character-visual-contract.json"
+    ],
+    "input_contract": {
+      "source_authority_sha256": {
+        "owned_scopes": {
+          "character.finalize": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.environment_contract": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.frame_directives": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.world_identity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.world_state": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.temporal_continuity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.wardrobe": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.narrative_core": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.shot_progression": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.capture_grammar": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+        },
+        "character_contract": "cd14312235a129548d6ad3cae5764c1974433b0f9ec71c2705c37c23c88ae84f",
+        "world_identity": null,
+        "runtime_request_preimage": "f00ad2b01a85f8ac9789096e48c8f05cca71ad75ccdc83ad13d4d2830f04734b",
+        "story_lock": "62904b475e91e8452340e6381b1c3dbcceff320b41859af0d563ddc1a902ac0b",
+        "visual_profile": "9eb5996e47c6373ded1bf546b4926e9d2ce1553d281618dc1c46d703e1364f20"
+      }
+    },
+    "candidate_output": "meta/runtime/preimage-candidates/character-finalize.json",
+    "verifier": "verify_character_finalize_candidate",
+    "retry_policy": {
+      "retry_failed_only": true,
+      "stale_requires_new_snapshot": true
+    },
+    "authority_scope": [
+      "character.finalize"
+    ],
+    "target": "candidate_only_no_shared_authority_write",
+    "status": "PENDING",
+    "resume": true
+  },
+  "snapshot_id": "934b5066e5fc77eefb985aaaf3e15b7a69269806d3a5ba7c02a46d895d1957a8",
+  "candidate_output_path": "meta/runtime/preimage-candidates/character-finalize.json",
+  "resume_token": "preimage-character_finalize-934b5066e5fc",
+  "required_read": [
+    "meta/story-gates.json",
+    "meta/character-contract.json",
+    "meta/character-visual-contract.json"
+  ],
+  "target_contract": "candidate_only_no_shared_authority_write",
+  "host_contract": {
+    "stage_authority": "meta/episode-state.json",
+    "must_not_claim_pass_without_evidence": true,
+    "must_not_write_shared_authority": true,
+    "candidate_return_required": true,
+    "execution_start_handshake_required": true,
+    "workspace_transport": "DEVSPACE",
+    "webcodex_allowed": false
+  },
+  "instructions": [
+    "Perform only this bounded PREIMAGE task.",
+    "Before model/work execution, claim this request with product_runtime_adapter.py start-preimage using this request_id and a stable worker_id.",
+    "Write/return the declared Candidate JSON only.",
+    "Do not modify story-gates.json, episode-state.json, or release-manifest.json."
+  ],
+  "schema_version": 2,
+  "request_id": "preimage-45b0177743b2756d",
+  "request_fingerprint": "45b0177743b2756d6a74ccfe67c7c13bbe34f071aaafdf656fde61ec47aa93fe",
+  "created_at": "2026-09-16T11:45:34+08:00",
+  "started_at": "2026-09-16T11:49:20.380274+08:00",
+  "worker_id": "work-devspace-main",
+  "finalized_at": "2026-09-16T11:49:44.312885+08:00",
+  "finished_at": "2026-09-16T11:49:44.312885+08:00",
+  "candidate_path": "meta/runtime/preimage-candidates/character-finalize.json"
+}

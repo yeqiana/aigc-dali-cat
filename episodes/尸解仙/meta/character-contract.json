@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "derived_from_pools": true,
+  "not_episode_stage": true,
+  "created_at": "2026-09-15T10:28:48+08:00",
+  "locked_at": "2026-09-15T11:20:00+08:00",
+  "selection_seed": 14577042295231105492,
+  "era": {
+    "bucket": "modern_2020s",
+    "year": 2026,
+    "source": "user_text",
+    "world_era": null
+  },
+  "world_identity": {
+    "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+    "country": "China",
+    "region": "Mainland China",
+    "nationality_context": "Chinese",
+    "resident_context": "mainland Chinese local residents",
+    "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b"
+  },
+  "fictional_world": null,
+  "cast": {
+    "type": "pair",
+    "size": 2,
+    "relationship": "同村发小（一起在老院长大，成年后各自在城里打工）",
+    "members": [
+      {
+        "id": "P01",
+        "pov": true,
+        "gender": "male",
+        "age": 25,
+        "build": "普通年轻人体型",
+        "hair": "普通黑色短发，额前自然碎发，鬓角略长未修",
+        "clothing_anchor": "深灰薄外套+黑色短袖+深灰工装裤+运动鞋",
+        "device_anchor": "手机手持拍摄",
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents"
+      },
+      {
+        "id": "P02",
+        "pov": false,
+        "gender": "female",
+        "age": 25,
+        "build": "普通年轻人体型",
+        "hair": "普通黑色齐肩直发，发尾自然外翻，无造型感",
+        "clothing_anchor": "米色薄针织外套+浅色短袖+牛仔裤+运动鞋",
+        "device_anchor": null,
+        "nationality_context": "Chinese",
+        "resident_context": "mainland Chinese local residents"
+      }
+    ]
+  },
+  "pov": {
+    "character_id": "P01",
+    "first_person": true
+  },
+  "entry": {
+    "type": "return_home",
+    "label": "回家/回老家",
+    "source": "story_build",
+    "reason": "奶奶过世三个月，老屋要在旧村改造前交给村里，主角回村收拾并交接"
+  },
+  "scene": {
+    "primary_category": "village_home",
+    "primary_place": "老屋"
+  },
+  "role_policy": {
+    "protagonist_role": "普通年轻人/普通朋友小团体",
+    "career_function": "arrival_only",
+    "solves_anomaly_professionally": false
+  },
+  "no_anomaly_test": {
+    "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+    "ordinary_day_plan": "原本只是回村收拾奶奶留下的老屋、把钥匙交给村里、和发小一起整理旧物后返程",
+    "pass": true,
+    "must_be_rechecked_before_story_lock": true,
+    "rechecked_against_final_story": true,
+    "recheck_note": "最终故事里主角仍是回村交房、和朋友整理旧物的普通年轻人；去掉异常后整天依然成立。"
+  },
+  "continuity_policy": {
+    "member_count_changes_require_story_event": true,
+    "pov_character_id_stable": true,
+    "clothing_and_device_anchors_propagate_to_frame_contract": true
+  },
+  "ordinary_person_score": 100,
+  "forbidden_role_check": {
+    "pass": true,
+    "hits": []
+  },
+  "story_build_note": "这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。"
+}

@@ -1,0 +1,1015 @@
+{
+  "schema_version": 3,
+  "status": "LOCKED",
+  "genre_family": "folk_horror",
+  "anomaly_applicable": true,
+  "anomaly_exception_reason": "",
+  "interaction_applicable": true,
+  "interaction_exception_reason": "",
+  "created_at": "2026-09-15T11:50:00+08:00",
+  "frame_count": 20,
+  "rules": {
+    "max_identical_setup_consecutive": 2,
+    "min_unique_setups_in_5_frames": 3,
+    "frame10_requires_new_question_or_evidence": true,
+    "scale_only_escalation_is_not_enough": true,
+    "max_passive_human_frames_after_confirmation": 2,
+    "emotion_intensity_range": [
+      0,
+      4
+    ],
+    "emotion_trigger_required_at_intensity_gte": 2,
+    "synchronized_theatrical_reaction_forbidden": true,
+    "max_consecutive_urgent_frames": 2,
+    "min_meaningful_interaction_per_5_human_frames": 1,
+    "max_meaningful_interaction_ratio": 0.75,
+    "opening_social_natural_interaction_required": true,
+    "require_large_and_small_scene": true,
+    "exact_scene_position_reuse_forbidden": true,
+    "min_cinematic_reference_frames": 2,
+    "practical_lighting_required": true,
+    "suspense_genre_requires_concealed_anomaly": true
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "camera_position": "驾驶座一侧，本人右手举着手机向前伸出的自拍机位",
+      "subject_distance": "一臂距离的近景",
+      "primary_subject": "P01 与 P02 的上半身",
+      "action": "车刚停稳，两个人一起对着手机镜头自拍",
+      "visual_function": "建立人物关系与正常世界：老同学一起回村",
+      "capture_purpose": "出发前留个记录",
+      "pov_mode": "第一人称手持自拍",
+      "location_zone": "村口停车处（车内）",
+      "shot_scale": "medium",
+      "scene_position_id": "POS01_村口车内前排自拍位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sunlight",
+        "contrast_mode": "soft_directional",
+        "suspense_function": "none",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "开场不藏异常，先把正常生活基线拍出来",
+        "physical_anchor": "车窗与车内仪表台",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "shared_but_unsynchronized"
+      },
+      "interaction": {
+        "type": "group_selfie",
+        "actor": "P02",
+        "target": "P01",
+        "action": "举着手机把两个人一起框进画面",
+        "meaningful": true
+      },
+      "new_information": false,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "02",
+      "camera_position": "站在门槛外退后半步，手机竖持把门框和院子一起拍进去",
+      "subject_distance": "三米左右的中全景",
+      "primary_subject": "老屋门框、门槛与两个人",
+      "action": "P02 把一直留着的钥匙递给 P01，两个人站在门口",
+      "visual_function": "用真实门框把院里的晾衣绳框进画面，交代地点与关系",
+      "capture_purpose": "进门前拍一张门脸",
+      "pov_mode": "第一人称手持",
+      "location_zone": "老屋门口",
+      "shot_scale": "wide",
+      "scene_position_id": "POS02_老屋门槛外退后半步全景位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sunlight",
+        "contrast_mode": "soft_directional",
+        "suspense_function": "none",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "doorway_or_window",
+        "purpose": "让门框成为第二层画框，把院里的晾衣绳先框住，为后面的痕迹做铺垫",
+        "physical_anchor": "老屋的木门框与门楣",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "P02",
+        "target": "P01",
+        "action": "把老屋钥匙递到 P01 手里",
+        "meaningful": true
+      },
+      "new_information": false,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "03",
+      "camera_position": "门口向内平视，手机大概胸口高度",
+      "subject_distance": "四米左右的正面全景",
+      "primary_subject": "盖着布的老家具、条案与茶缸",
+      "action": "P01 推门进屋，两个人站在门口往里看",
+      "visual_function": "第一个“不对”：家具全盖着布，只有茶缸是干净有水的",
+      "capture_purpose": "进屋随手拍的记录",
+      "pov_mode": "第一人称手持",
+      "location_zone": "老屋堂屋",
+      "shot_scale": "wide",
+      "scene_position_id": "POS03_堂屋门口向内平视位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "window_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "notice",
+      "human_present": true,
+      "emotion": {
+        "state": "curious",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "04",
+      "camera_position": "蹲在灶膛前，手机从侧面斜着对灶门",
+      "subject_distance": "半米多的近景",
+      "primary_subject": "灶膛里的余火与锅盖边的水汽",
+      "action": "P01 掀开锅盖看，回头喊 P02 过来",
+      "visual_function": "异常的第一处直接证据：火是当天新烧的",
+      "capture_purpose": "给我自己留个证据",
+      "pov_mode": "第一人称手持",
+      "location_zone": "灶房灶门口",
+      "shot_scale": "medium",
+      "scene_position_id": "POS04_灶房灶膛前蹲下的侧位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fire_or_stove",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "fog_or_mist",
+        "purpose": "用锅盖揭起来那一瞬的蒸汽挡住灶膛深处，只露出余火的亮度",
+        "physical_anchor": "铁锅锅盖与锅沿的蒸汽",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "observe",
+      "human_present": true,
+      "emotion": {
+        "state": "curious",
+        "intensity": 2,
+        "trigger": "灶膛里的火还是温的，锅盖边挂着水汽",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P01",
+        "target": "P02",
+        "action": "掀开锅盖回头喊她过来看",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "05",
+      "camera_position": "站在桌边俯拍桌面，手机压得很低",
+      "subject_distance": "贴着桌面的特写",
+      "primary_subject": "桌面上摆着的那两副碗筷",
+      "action": "两个人还没坐，桌上已经摆好了两副碗筷",
+      "visual_function": "把“第二副”摆成信息点：一副是他，一副的位置对着奶奶常坐的方向",
+      "capture_purpose": "拍细节",
+      "pov_mode": "第一人称俯拍",
+      "location_zone": "灶房八仙桌",
+      "shot_scale": "detail",
+      "scene_position_id": "POS05_八仙桌面俯拍的近位",
+      "cinematic_reference": {
+        "reference_id": "NEGATIVE_SPACE_SUSPENSE",
+        "technique_translation": "把两副碗筷压在画面一侧，把奶奶常坐的空位留成观众会一直检查的第二信息区；机位仍是随手放下的手机高度",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "window_light",
+        "contrast_mode": "soft_directional",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "observe",
+      "human_present": false,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 0,
+        "trigger": "",
+        "response_sync": "not_applicable"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "06",
+      "camera_position": "站在晾衣绳侧下方仰着拍绳上的衣服",
+      "subject_distance": "两米多的中景",
+      "primary_subject": "绳上刚洗过的旧衬衫与绳下地面",
+      "action": "P02 伸手拨开绳上的衣服，两个人低头看地面",
+      "visual_function": "干湿矛盾：衣服还在滴水的位置，地面是干的",
+      "capture_purpose": "觉得不对劲，拍下来对照",
+      "pov_mode": "第一人称手持",
+      "location_zone": "院子晾衣绳",
+      "shot_scale": "medium",
+      "scene_position_id": "POS06_晾衣绳侧下方仰角位",
+      "cinematic_reference": {
+        "reference_id": "DEEP_BACKGROUND_ANOMALY",
+        "technique_translation": "前景两个人在说话，异常先在远处绳上的衣服上成立，清晰度符合手机中景与当时日照",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sunlight",
+        "contrast_mode": "hard_directional",
+        "suspense_function": "hide_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "foreground_occlusion",
+        "purpose": "用前景挂着的另一件旧外套挡住绳中段，先从缝里看到那件刚洗的衬衫",
+        "physical_anchor": "晾衣绳上另一件旧外套",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "绳上衣服还湿着，下面地面却是干的",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "07",
+      "camera_position": "俯身在条案前，手机几乎贴到黄历上",
+      "subject_distance": "贴纸近景",
+      "primary_subject": "摊开的老黄历与被划掉的格子",
+      "action": "P01 数被划掉的格子，发现划痕是往前数的",
+      "visual_function": "把倒数读出来：剩下的格子只剩三格",
+      "capture_purpose": "怕自己记错，拍下来数",
+      "pov_mode": "第一人称近拍",
+      "location_zone": "堂屋条案",
+      "shot_scale": "close",
+      "scene_position_id": "POS07_条案前俯身近拍黄历位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "window_light",
+        "contrast_mode": "partial_illumination",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "黄历上被划掉的格子是从今天往前数的",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "08",
+      "camera_position": "在条案边的长凳上坐下，手机对着翻出来的那页手抄纸",
+      "subject_distance": "一尺左右的近景",
+      "primary_subject": "黄历夹层里奶奶的手抄页",
+      "action": "P02 把那页纸念出来，两个人凑在一起看",
+      "visual_function": "确认规则：留痕代尸，痕尽之日须有人续",
+      "capture_purpose": "把规矩拍清楚",
+      "pov_mode": "第一人称手持",
+      "location_zone": "堂屋条案（手抄页）",
+      "shot_scale": "close",
+      "scene_position_id": "POS08_条案边长凳上坐下的近位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "create_negative_space",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "discuss",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "那页纸写着：痕尽之日，须有人续，否则人解",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P02",
+        "target": "P01",
+        "action": "把纸上那三行字念出来",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "09",
+      "camera_position": "站在他侧后方，手机越过肩膀拍灶膛",
+      "subject_distance": "一米多的过肩中景",
+      "primary_subject": "他点火的背影与灶膛里的火",
+      "action": "他蹲下来自己点火，把第二副碗筷摆上桌",
+      "visual_function": "主动动作：普通人会做的事——替她把这一天过完",
+      "capture_purpose": "留下这一步的证据",
+      "pov_mode": "第一人称过肩",
+      "location_zone": "灶房灶前",
+      "shot_scale": "medium",
+      "scene_position_id": "POS09_灶前侧后方的过肩位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fire_or_stove",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 3,
+        "trigger": "他决定按规矩替奶奶把今天过完",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "10",
+      "camera_position": "清晨站在条案前，单手举手机俯拍翻开的黄历",
+      "subject_distance": "贴纸近景",
+      "primary_subject": "黄历上那一格空着的位置与旁边的新墨",
+      "action": "他翻开黄历，昨天该划的那一格空着，旁边多出一个字",
+      "visual_function": "新证据：倒数停了，多出一个“续”字",
+      "capture_purpose": "昨天做过的事有没有留下痕迹",
+      "pov_mode": "第一人称俯拍",
+      "location_zone": "堂屋条案（次日清晨）",
+      "shot_scale": "close",
+      "scene_position_id": "POS10_条案前单手持机俯拍位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "该划的格子空着，旁边多出一行没干的新墨：续",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "11",
+      "camera_position": "站在晾衣绳正前方一步远，手机平举",
+      "subject_distance": "一米多的中景",
+      "primary_subject": "绳上挂着的那件衬衫与衣角",
+      "action": "他伸手把绳上的衣服翻过来看衣角",
+      "visual_function": "异常指向他本人：绳上是昨天他自己穿过的那件",
+      "capture_purpose": "不敢信，拍下来看",
+      "pov_mode": "第一人称手持",
+      "location_zone": "院子晾衣绳（次日）",
+      "shot_scale": "medium",
+      "scene_position_id": "POS11_晾衣绳正面一步位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sunlight",
+        "contrast_mode": "soft_directional",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "绳上挂的是他昨天穿过、衣角带灰的衬衫",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "12",
+      "camera_position": "站在房门外的走道上平视拍门",
+      "subject_distance": "两米左右的中全景",
+      "primary_subject": "关着的木门、门缝和门里侧的插销",
+      "action": "他伸手推门，门从里面插着，他回头指给 P02 看",
+      "visual_function": "空间矛盾：屋里没人，门却从里面插着",
+      "capture_purpose": "拍下门的状态",
+      "pov_mode": "第一人称手持",
+      "location_zone": "奶奶房间门口",
+      "shot_scale": "wide",
+      "scene_position_id": "POS12_房门外侧走道平视位",
+      "cinematic_reference": {
+        "reference_id": "FRAME_WITHIN_FRAME",
+        "technique_translation": "用现场真实门框形成框中框，把异常限制在被框住的门缝小区域里，不额外搭景",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "window_light",
+        "contrast_mode": "partial_illumination",
+        "suspense_function": "hide_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "doorway_or_window",
+        "purpose": "让门框成为第二层画框，先只给出门缝的宽度和插销的位置",
+        "physical_anchor": "木门框与门缝",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 3,
+        "trigger": "奶奶的房门从里面插着，屋里没有人",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "point_out",
+        "actor": "P01",
+        "target": "P02",
+        "action": "指着门里侧的插销让她看",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "13",
+      "camera_position": "进门两步站在床边，手机平视拍床和柜子",
+      "subject_distance": "两米左右的中景",
+      "primary_subject": "收得很整齐的房间与枕头",
+      "action": "两个人站在床边看，枕头上有一道新的压痕",
+      "visual_function": "中点反转：不是等人回来，是给续的人留的位置",
+      "capture_purpose": "看屋里到底动过什么",
+      "pov_mode": "第一人称手持",
+      "location_zone": "奶奶房间内",
+      "shot_scale": "medium",
+      "scene_position_id": "POS13_床边向内两步的平视位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "window_light",
+        "contrast_mode": "partial_illumination",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "reversal",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "屋里东西收得很整齐，只有枕头上有一道新压痕",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "14",
+      "camera_position": "隔着八仙桌坐在对面，手机放在桌上稍稍仰起",
+      "subject_distance": "一臂多一点的近景",
+      "primary_subject": "P02 的脸与桌上的碗筷",
+      "action": "P02 说要下山，他劝她再留一晚",
+      "visual_function": "人的后果：这段关系开始被这件事消耗",
+      "capture_purpose": "没想拍，手机就放在桌上",
+      "pov_mode": "第一人称桌上机位",
+      "location_zone": "灶房八仙桌（夜）",
+      "shot_scale": "close",
+      "scene_position_id": "POS14_桌对面隔桌近位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "bare_bulb",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "separate_foreground_background",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "discuss",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "P02 说明天一早就下山",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "talk",
+        "actor": "P02",
+        "target": "P01",
+        "action": "说明天一早就要下山",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "15",
+      "camera_position": "手机几乎贴到条案上，从侧面拍杯子和黄历",
+      "subject_distance": "贴面特写",
+      "primary_subject": "被洗净归位的杯子与黄历上的字迹",
+      "action": "他发现自己的杯子被洗净归位，黄历上出现了他的字迹",
+      "visual_function": "因果矛盾：被续的人已经换成他自己",
+      "capture_purpose": "对一下是不是自己的东西",
+      "pov_mode": "第一人称贴拍",
+      "location_zone": "堂屋条案（第三天）",
+      "shot_scale": "detail",
+      "scene_position_id": "POS15_条案上台灯下的贴面位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "window_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "他自己昨晚放下的杯子被洗净归位，黄历上出现了他的字迹",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "16",
+      "camera_position": "低头站在条案前，手机向下对着翻开的最后一页",
+      "subject_distance": "贴近纸面的近景",
+      "primary_subject": "黄历最后一页上的两个名字",
+      "action": "他翻开最后一页，两个名字并排，他的名字在下",
+      "visual_function": "反转：再续下去，被留下的就是他自己",
+      "capture_purpose": "必须拍下来确认",
+      "pov_mode": "第一人称俯拍",
+      "location_zone": "堂屋条案（最后一页）",
+      "shot_scale": "close",
+      "scene_position_id": "POS16_条案前低头看最后一页位",
+      "cinematic_reference": {
+        "reference_id": "OCCLUSION_REVEAL",
+        "technique_translation": "先用翻起的纸角挡住名字的下半行，等纸角落下去才露出第二个名字",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "phone_screen",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "reversal",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 4,
+        "trigger": "最后一页上两个名字并排，他的名字在下面",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "17",
+      "camera_position": "站在桌子侧边，手机侧着拍桌上的纸箱和碗筷",
+      "subject_distance": "一米多的中景",
+      "primary_subject": "纸箱、两副碗筷与两个人的手",
+      "action": "他把第二副碗筷收进纸箱，P02 帮他把奶奶的东西装起来",
+      "visual_function": "选择不续：把第二副收起来，痕断",
+      "capture_purpose": "收东西的时候随手拍",
+      "pov_mode": "第一人称手持",
+      "location_zone": "灶房八仙桌",
+      "shot_scale": "medium",
+      "scene_position_id": "POS17_桌前侧身拍装箱位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "window_light",
+        "contrast_mode": "soft_directional",
+        "suspense_function": "separate_foreground_background",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 3,
+        "trigger": "他把第二副碗筷收进箱子，决定不再续",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "pack_together",
+        "actor": "P02",
+        "target": "P01",
+        "action": "帮他把奶奶的东西一件件放进纸箱",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "18",
+      "camera_position": "蹲在灶门前，手机对着灶膛里的火",
+      "subject_distance": "半米左右的近景",
+      "primary_subject": "灶膛里的火与那张被投进去的纸",
+      "action": "他把那页手抄纸撕下来投进灶膛，纸卷起来烧完",
+      "visual_function": "兑现：痕断，规则被他自己终结",
+      "capture_purpose": "最后拍一张",
+      "pov_mode": "第一人称手持",
+      "location_zone": "灶房灶前",
+      "shot_scale": "close",
+      "scene_position_id": "POS18_灶门前单手近拍位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fire_or_stove",
+        "contrast_mode": "low_light_practical",
+        "suspense_function": "guide_attention_without_staging",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 3,
+        "trigger": "他把那张手抄页撕下来投进灶膛",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "19",
+      "camera_position": "退到台阶下两步，回头看门和院子",
+      "subject_distance": "三米多的中全景",
+      "primary_subject": "锁上的木门、冷灶的方向与空晾衣绳",
+      "action": "他锁上门，回头看了一眼灶房和院子",
+      "visual_function": "现实残留：灶冷、碗空、晾衣绳是空的",
+      "capture_purpose": "走之前拍一张",
+      "pov_mode": "第一人称手持",
+      "location_zone": "老屋门口",
+      "shot_scale": "wide",
+      "scene_position_id": "POS19_门外台阶下两步的回望位",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "create_negative_space",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "direct_visible",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "consequence",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 2,
+        "trigger": "锁门的时候手在抖",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "20",
+      "camera_position": "坐回车里，手机举在方向盘上方",
+      "subject_distance": "一臂距离的近景",
+      "primary_subject": "两个人的手、交接单与车窗玻璃",
+      "action": "他把签好的老屋交接单递给 P02，翻手机相册看最后一张",
+      "visual_function": "屏幕反光里给出结束后的现实：院子是空的",
+      "capture_purpose": "交接完随手拍一张",
+      "pov_mode": "第一人称手持",
+      "location_zone": "村口停车处（回程）",
+      "shot_scale": "medium",
+      "scene_position_id": "POS20_回程车内副驾位手持位",
+      "cinematic_reference": {
+        "reference_id": "REFLECTION_SECOND_LAYER",
+        "technique_translation": "现实层是车里两个人看交接单，屏幕反光给出院子的第二份信息；反射方向与亮度按现场成立",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "phone_screen",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "make_reflection_legible",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "screen_reflection",
+        "purpose": "用手机屏幕在车窗上的反光把空院子映出来，作为整件事之后的现实残留",
+        "physical_anchor": "手机屏幕与车窗玻璃",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "consequence",
+      "human_present": true,
+      "emotion": {
+        "state": "relaxed",
+        "intensity": 2,
+        "trigger": "翻到相册最后一张，院子是空的",
+        "response_sync": "asynchronous"
+      },
+      "interaction": {
+        "type": "hand_item",
+        "actor": "P01",
+        "target": "P02",
+        "action": "把签好的老屋交接单递给她收着",
+        "meaningful": true
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    }
+  ]
+}

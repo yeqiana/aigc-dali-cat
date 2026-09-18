@@ -1,0 +1,156 @@
+{
+  "runtime": "WORK",
+  "status": "FINALIZED",
+  "source": "runtime_dag:PREIMAGE_COMPILE",
+  "episode": "episodes/尸解仙",
+  "episode_state": "STORYBOARD_LOCKED",
+  "execution_mode": "full_auto",
+  "resume": true,
+  "next_step": "PREIMAGE_WORLD",
+  "task": {
+    "schema_version": 1,
+    "task_id": "preimage-world_prepare-934b5066e5fc",
+    "task_type": "WORLD_PREPARE",
+    "node_id": "world_prepare",
+    "episode": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\尸解仙",
+    "snapshot_id": "934b5066e5fc77eefb985aaaf3e15b7a69269806d3a5ba7c02a46d895d1957a8",
+    "depends_on": [
+      "story_lock"
+    ],
+    "required_read": [
+      "meta/story-gates.json",
+      "meta/world-identity.json",
+      "meta/character-contract.json"
+    ],
+    "input_contract": {
+      "source_authority_sha256": {
+        "owned_scopes": {
+          "character.finalize": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.environment_contract": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.frame_directives": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.world_identity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.world_state": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.temporal_continuity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.wardrobe": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.narrative_core": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.shot_progression": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "visual.capture_grammar": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+        },
+        "character_contract": "cd14312235a129548d6ad3cae5764c1974433b0f9ec71c2705c37c23c88ae84f",
+        "world_identity": null,
+        "runtime_request_preimage": "f00ad2b01a85f8ac9789096e48c8f05cca71ad75ccdc83ad13d4d2830f04734b",
+        "story_lock": "62904b475e91e8452340e6381b1c3dbcceff320b41859af0d563ddc1a902ac0b",
+        "visual_profile": "9eb5996e47c6373ded1bf546b4926e9d2ce1553d281618dc1c46d703e1364f20"
+      }
+    },
+    "candidate_output": "meta/runtime/preimage-candidates/world.json",
+    "verifier": "verify_world_prepare_candidate",
+    "retry_policy": {
+      "retry_failed_only": true,
+      "stale_requires_new_snapshot": true
+    },
+    "authority_scope": [
+      "visual.world_identity",
+      "visual.world_state",
+      "visual.temporal_continuity",
+      "visual.wardrobe"
+    ],
+    "target": "candidate_only_no_shared_authority_write",
+    "status": "PENDING",
+    "resume": true
+  },
+  "snapshot_id": "934b5066e5fc77eefb985aaaf3e15b7a69269806d3a5ba7c02a46d895d1957a8",
+  "candidate_output_path": "meta/runtime/preimage-candidates/world.json",
+  "resume_token": "preimage-world_prepare-934b5066e5fc",
+  "required_read": [
+    "meta/story-gates.json",
+    "meta/world-identity.json",
+    "meta/character-contract.json"
+  ],
+  "target_contract": "candidate_only_no_shared_authority_write",
+  "host_contract": {
+    "stage_authority": "meta/episode-state.json",
+    "must_not_claim_pass_without_evidence": true,
+    "must_not_write_shared_authority": true,
+    "candidate_return_required": true,
+    "execution_start_handshake_required": true,
+    "workspace_transport": "DEVSPACE",
+    "webcodex_allowed": false
+  },
+  "instructions": [
+    "Perform only this bounded PREIMAGE task.",
+    "Before model/work execution, claim this request with product_runtime_adapter.py start-preimage using this request_id and a stable worker_id.",
+    "Write/return the declared Candidate JSON only.",
+    "Do not modify story-gates.json, episode-state.json, or release-manifest.json."
+  ],
+  "schema_version": 2,
+  "request_id": "preimage-bf64ead268a47f69",
+  "request_fingerprint": "bf64ead268a47f690b2bf465ddbc590fbbc5d0301955eec69fd3d7b62655289e",
+  "created_at": "2026-09-16T11:45:34+08:00",
+  "started_at": "2026-09-16T11:51:34.914698+08:00",
+  "worker_id": "work-devspace-main",
+  "finalized_at": "2026-09-16T11:52:04.560884+08:00",
+  "finished_at": "2026-09-16T11:52:04.560884+08:00",
+  "candidate_path": "meta/runtime/preimage-candidates/world.json",
+  "authority_commit": {
+    "status": "PASS",
+    "committed": true,
+    "transaction": {
+      "status": "PASS",
+      "snapshot_id": "934b5066e5fc77eefb985aaaf3e15b7a69269806d3a5ba7c02a46d895d1957a8",
+      "committed": true,
+      "atomic": true,
+      "partial_commit": false,
+      "input_sha": "3559895f12f099f12e3536253172696dfd072a3ffbb04fbab100f04c984d0ee3",
+      "output_sha": "a4cf9f3d722de875d6aedbd4b1a3159c73094de5ba04f7d690e48485cf403d0d"
+    },
+    "committed_snapshot": {
+      "schema_version": 1,
+      "snapshot_id": "7cb6de1e94a9656f8d5a7409a122aabb7d88d1fcb5d2822637961ea746682649",
+      "snapshot_kind": "PREIMAGE_COMMITTED_SNAPSHOT",
+      "created_at": "2026-09-16T11:52:04+08:00",
+      "authority_sha256": {
+        "owned_scopes": {
+          "character.finalize": "1ac5289430ca33fcc352a710df3a8c9f649bcc93dc349f917bb91924c4278d7a",
+          "visual.environment_contract": "00fd617c5f0b1258190d74f97d4b74602b9d85be25557a0e97f3cba98f0e192c",
+          "visual.frame_directives": "95702f1d9c9e24a775726135054fae38a25c54d6b7da56f3aec71a509821f728",
+          "visual.world_identity": "9e76a479321a1bbf9334c624fc22ed97b9036e89065bbea288bc14afaaa3f53a",
+          "visual.world_state": "2f7ef61a48563c9bb29783d50fe784f975f0473bdbbfd80e4587dde2fc996893",
+          "visual.temporal_continuity": "725f307f6dc0fe268283a5e8d66ddf3d7575138966c7a90e40a1886e56d4db50",
+          "visual.wardrobe": "07e744c7faa1258f9707bdf7d7e0c3203f7e59b44f90389855cb08abc6787a8e",
+          "visual.narrative_core": "5c53225d52769703ca620b4377c520db01ce3a0e3451f4a8dfe68ec66546acb4",
+          "visual.shot_progression": "1df3650b26d2cc1f26b52a898b27100118fdb75720b0488a0811e33b641d2f82",
+          "visual.capture_grammar": "45a54af514bcadafe9a0952a54659540738ace361224fb70aed6c60219b9595a"
+        },
+        "character_contract": "cd14312235a129548d6ad3cae5764c1974433b0f9ec71c2705c37c23c88ae84f",
+        "world_identity": null,
+        "runtime_request_preimage": "f00ad2b01a85f8ac9789096e48c8f05cca71ad75ccdc83ad13d4d2830f04734b",
+        "story_lock": "62904b475e91e8452340e6381b1c3dbcceff320b41859af0d563ddc1a902ac0b",
+        "visual_profile": "9eb5996e47c6373ded1bf546b4926e9d2ce1553d281618dc1c46d703e1364f20"
+      },
+      "whole_authority_sha256": {
+        "story_gates": "a4cf9f3d722de875d6aedbd4b1a3159c73094de5ba04f7d690e48485cf403d0d",
+        "character_contract": "cd14312235a129548d6ad3cae5764c1974433b0f9ec71c2705c37c23c88ae84f",
+        "world_identity": null,
+        "runtime_request_preimage": "f00ad2b01a85f8ac9789096e48c8f05cca71ad75ccdc83ad13d4d2830f04734b",
+        "story_lock": "62904b475e91e8452340e6381b1c3dbcceff320b41859af0d563ddc1a902ac0b",
+        "visual_profile": "9eb5996e47c6373ded1bf546b4926e9d2ce1553d281618dc1c46d703e1364f20"
+      },
+      "derived_execution_evidence": true,
+      "episode_state_mutated": false,
+      "gate_pass": null
+    },
+    "barrier": {
+      "schema_version": 1,
+      "name": "PREIMAGE_AUTHORITY_READY",
+      "not_episode_stage": true,
+      "not_gate_authority": true,
+      "canonical_stage_source": "meta/episode-state.json",
+      "status": "READY",
+      "input_snapshot_id": "934b5066e5fc77eefb985aaaf3e15b7a69269806d3a5ba7c02a46d895d1957a8",
+      "committed_snapshot_id": "7cb6de1e94a9656f8d5a7409a122aabb7d88d1fcb5d2822637961ea746682649",
+      "created_at": "2026-09-16T11:52:04+08:00",
+      "commit_count": 1
+    }
+  }
+}

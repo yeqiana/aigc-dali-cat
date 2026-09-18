@@ -1,0 +1,86 @@
+{
+  "contract": {
+    "protagonist": "P01 陈亦航，25 岁，在城里做室内设计助理的普通年轻人；全片第一人称手机拍摄。",
+    "presence_reason": "奶奶三个月前去世，老屋月底要交回村里做旧村改造清点，他回来签字、收东西；同村发小 P02 留着一把钥匙，陪他一起上老屋。",
+    "personal_stake": "这是他从小学住到大的屋子，也是他和奶奶最后一段关系；他既不想把奶奶的东西当成一堆待清的旧货打包了事，也不肯承认她真的走了。",
+    "core_anomaly": "奶奶去世三个月，属于她的生活痕迹每天照旧发生并且继续推进：灶膛里的火是当天新烧的、锅里是温的、碗筷每天摆成两副、晾衣绳每天换一轮刚洗的衣服、老黄历每天被划掉一格。痕迹与主人解绑——人已经不在，痕迹自己在过日子。",
+    "rule": "奶奶手抄在黄历夹层的一张纸：人走不必留尸，留痕即可；痕在，人未散，痕断，人乃解；痕尽之日，须有人续，否则人解。配套读法是：黄历上被划掉的格子是往前数的，也就是倒数剩下的日子；替她把这一天过完的人，自己的痕迹会被写进那本黄历。",
+    "trigger": "第 09 图，他按这页纸的规矩，在冷灶前自己点火、摆上第二副碗筷，替奶奶把这一天过完。",
+    "direct_consequence": "第 10 图清晨，黄历上该划掉的那一格空着，旁边多出一行还没干的新墨“续”；第 11 图晾衣绳上挂的换成他昨天穿过、衣角带灰的衬衫——异常的直接回应从奶奶转到了他自己身上。",
+    "midpoint_reframe": "第 13-15 图把规则翻了个面：留痕不是给死人留位置，是给续的人留位置——他每替奶奶过一天，自己的痕迹（杯子被洗净归位、黄历上出现他的字迹）就被写进去一格。",
+    "climax_choice": "第 16-18 图，黄历最后一页两个名字并排，他的名字在下面。他选择不再续：把第二副碗筷收进纸箱，把那张手抄页撕下来投进灶膛烧掉。代价是奶奶的痕从他手上断了，她这一次是真的解了。",
+    "ending_recontextualization": [
+      "第一天的灶灰“是当天新烧的”——不是有人回来做饭，而是天数在按时数走。",
+      "一直摆在桌上的两副碗筷——第二副不是给家里人留的，是给续的人预备的位置。",
+      "黄历上被划掉的格子——不是记录已经过去的日子，是在倒数剩下的日子。",
+      "那件带灰的衬衫出现在晾衣绳上——痕迹的归属那天就已经换了人，他从第一天就被算进去了。",
+      "奶奶生前常说的“人走不用留尸，留痕就行”——当时只当是老人的玩笑话，其实是规则说明书。"
+    ]
+  },
+  "propagation_core": {
+    "retell_sentence": "他按奶奶抄的老规矩替她把这一天过完，第二天黄历上多出来的名字是他自己。",
+    "protagonist_action": "他在冷灶前自己点火、摆上第二副碗筷，替去世的奶奶把这一天过完。",
+    "abnormal_response": "第二天清晨黄历上该划的格子空着，旁边多出一行没干的新墨“续”；晾衣绳上换成他昨天穿过、衣角带灰的衬衫。",
+    "consequence": "他每替一天，自己的痕迹就被写进黄历一格；翻到最后一页，两个名字并排，他的名字在下——再续下去，被留下的是他自己。",
+    "response_latency": "short",
+    "visual_causality": "strong",
+    "retellable_in_10s": true,
+    "social_send_impulse": "strong",
+    "trigger_frame": 9,
+    "response_frame": 10,
+    "payoff_frame": 18,
+    "late_trigger_exception_reason": "",
+    "surface_copy_guard": {
+      "structural_reference_only": true,
+      "copied_surface_elements": []
+    }
+  },
+  "blind_retell": {
+    "protagonist_and_reason": "一个 25 岁的普通年轻人回老家，因为奶奶三个月前去世、老屋月底要交回村里清点，他得回来签字收东西；发小陪他一起上老屋。",
+    "core_anomaly_rule": "人死后只要生活痕迹还继续，她就还没解；黄历被划的格子是倒数剩下的日子；痕尽之日要有人替她把这一天过完，替过的人会被写进那本黄历。",
+    "worsening_choice": "他按规矩替奶奶过完一天，自己就被算进去一天：黄历上出现他的字迹，他的杯子被洗净归位，晾衣绳上换成他的衬衫。",
+    "climax_resolution": "最后一页两个名字并排，他的名字在下。他把第二副碗筷收进纸箱，把那页手抄纸撕下来烧了，用自己的手停掉了这条痕。",
+    "ending_reinterpretation": "灶冷、碗空、晾衣绳空了：她终于解了；而第一天那顿温着的饭、一直摆着的第二副碗筷、被划着的黄历，从那一刻起都变成了倒数和点名。"
+  },
+  "hard_checks": {
+    "clarity": true,
+    "causal_chain": true,
+    "mechanism_consistency": true,
+    "motivation_stake": true,
+    "trigger_consequence": true,
+    "midpoint_reframe": true,
+    "climax_payoff": true,
+    "ending_payoff": true,
+    "storyboard_information_gain": true,
+    "delete_frame_test": true
+  },
+  "issue_codes": [],
+  "notes": [
+    "单一机制贯穿全片：所有证据都是生活痕迹（灶火/饭/碗筷/晾衣/黄历划痕/杯子/枕头压痕），没有任何一帧出现奶奶本人或影子证据，符合三条硬约束。",
+    "触发在第 09 图（9/20=0.45），回应第 10 图，兑现第 18 图，动作→回应→后果的顺序可画。",
+    "高潮是选择与代价（收碗筷、烧规则），不是单纯的发现；结局重构了至少 5 个先前事实。"
+  ],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "story_sha256": "b3b43391451619d6285c1b468fbc7d61950b9a238febeaefdc3cfd4e38114dac",
+  "storyboard_sha256": "6c106801cea5106f3f482a23bf3328a0cd2dd2a678e4dc344d9dee3803e663f4",
+  "revision_count": 0,
+  "critic_provenance": {
+    "schema_version": 2,
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-15T11:37:30+08:00",
+    "workspace_transport": "DEVSPACE",
+    "isolation_mode": "fresh_product_review_turn",
+    "webcodex_used": false,
+    "request_path": "episodes/尸解仙/meta/runtime/reviews/story-semantic-attempt-1-request.json",
+    "request_id": "story-semantic-a1-1f3d565e439baa09",
+    "request_fingerprint": "1f3d565e439baa099834e1ef6345c4594945d4cdd3bc0b1ea52c0f228c042192"
+  }
+}

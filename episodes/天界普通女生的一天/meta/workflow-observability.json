@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-14T14:16:18+08:00",
+  "kind": "workflow_observability",
+  "diagnostic_only": true,
+  "stage_source": "meta/episode-state.json",
+  "episode": "episodes/天界普通女生的一天",
+  "current_state": "STORYBOARD_LOCKED",
+  "latest_workflow_run": {
+    "run_id": "1789366437-work",
+    "status": "BLOCKED",
+    "total_seconds": 140.735,
+    "slowest_steps": [
+      {
+        "step": "PREIMAGE_COMPILE",
+        "status": "PASS",
+        "elapsed_seconds": 3.984,
+        "recorded_at": "2026-09-14T14:14:10+08:00",
+        "note": "{\"deterministic_step\": \"PREIMAGE_FRAME_CONTRACT_COMPILE\", \"frame_contract_index_sha256\": \"44d462612c3a9854009ba5681745038022f32bc904c409e40a47e6b709406809\"}\npreproduction_handoff=558c3a882b747542f826172c4b88183e123831d5cca41d6318c494137c143f4a"
+      },
+      {
+        "step": "VISUAL_LOCK",
+        "status": "HOST_WAIT",
+        "elapsed_seconds": 2.828,
+        "recorded_at": "2026-09-14T14:14:13+08:00",
+        "note": "on/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-cd0e8f2941e957cd\", \"request_fingerprint\": \"cd0e8f2941e957cd7e350263b9918d75f4eb92512d9905918df5523f28ecfe46\", \"created_at\": \"2026-09-13T12:05:15+08:00\", \"request_path\": \"episodes/\\u5929\\u754c\\u666e\\u901a\\u5973\\u751f\\u7684\\u4e00\\u5929/meta/runtime/host-requests/host-cd0e8f2941e957cd.json\", \"current_request_path\": \"episodes/\\u5929\\u754c\\u666e\\u901a\\u5973\\u751f\\u7684\\u4e00\\u5929/meta/runtime/product-host-request.json\"}"
+      },
+      {
+        "step": "INCREMENTAL_PLAN",
+        "status": "PASS",
+        "elapsed_seconds": 1.234,
+        "recorded_at": "2026-09-14T14:13:59+08:00",
+        "note": "     \"11\": \"PENDING\",\n      \"12\": \"PENDING\",\n      \"13\": \"PENDING\",\n      \"14\": \"PENDING\",\n      \"15\": \"PENDING\",\n      \"17\": \"AUTHORITY_REFRESH_AUTHORIZED\",\n      \"18\": \"PENDING\",\n      \"19\": \"PENDING\",\n      \"20\": \"PENDING\"\n    },\n    \"authority_refresh_frames\": [\n      \"17\"\n    ],\n    \"accepted_known_defect_frames\": [],\n    \"accepted_reasons\": {},\n    \"caption_mode\": \"deferred_until_production_ready\"\n  },\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"VISUAL_REVIEW_REQUIRED\",\n  \"missing\": []\n}\n"
+      },
+      {
+        "step": "CREATIVE_STORY",
+        "status": "REUSED",
+        "elapsed_seconds": 0.0,
+        "recorded_at": "2026-09-14T14:14:03+08:00",
+        "note": "target already valid"
+      }
+    ]
+  },
+  "production": {
+    "ledger_status_counts": {
+      "PASSED": 3,
+      "PENDING": 16,
+      "TECH_FAILED": 1
+    },
+    "queue_status_counts": {
+      "generated": 11,
+      "superseded": 17,
+      "blocked": 1
+    },
+    "scheduler_wave_count": 0,
+    "max_observed_parallel": 0,
+    "adaptive_parallel_current": null
+  },
+  "review": {
+    "scout_decisions": {},
+    "scout_summary_passed": null
+  },
+  "release": {
+    "snapshot_present": false,
+    "snapshot_sha256": null
+  },
+  "post_publish": {
+    "latest_checkpoint": null,
+    "completed_checkpoints": []
+  },
+  "runtime_trace": {
+    "schema_version": 1,
+    "generated_at": "2026-09-14T14:16:18.261+08:00",
+    "diagnostic_only": true,
+    "stage_authority": false,
+    "latest_trace_id": "ST_fb8125f248274bc4",
+    "event_count": 1101,
+    "span_end_count": 487,
+    "status_counts": {
+      "PASS": 177,
+      "HOST_WAIT": 149,
+      "BLOCKED": 4,
+      "REUSED": 152,
+      "FAILED": 5
+    },
+    "elapsed_ms_by_category": {
+      "workflow_step": 344565.0,
+      "image_generation": 3230110.0
+    },
+    "slowest_spans": [
+      {
+        "name": "image.generate.frame.01",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 276203.0,
+        "span_id": "SP_fc2bc36858ae4947"
+      },
+      {
+        "name": "image.generate.frame.17",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 268641.0,
+        "span_id": "SP_98a4d8041f2144dc"
+      },
+      {
+        "name": "image.generate.frame.01",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 242140.0,
+        "span_id": "SP_939d33305b1d458e"
+      },
+      {
+        "name": "image.generate.frame.17",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 199703.0,
+        "span_id": "SP_9164099380b04f60"
+      },
+      {
+        "name": "image.generate.frame.17",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 143813.0,
+        "span_id": "SP_8c672efa981f4214"
+      },
+      {
+        "name": "image.generate.frame.01",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 133281.0,
+        "span_id": "SP_c117f5933c7e461a"
+      },
+      {
+        "name": "image.generate.frame.17",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 131047.0,
+        "span_id": "SP_c1ad3f1b05944408"
+      },
+      {
+        "name": "image.generate.frame.16",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 130672.0,
+        "span_id": "SP_a8923964fb454bc3"
+      },
+      {
+        "name": "image.generate.frame.17",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 129266.0,
+        "span_id": "SP_2267563a8a07472d"
+      },
+      {
+        "name": "image.generate.frame.01",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 122891.0,
+        "span_id": "SP_a165fcb9585347d9"
+      },
+      {
+        "name": "image.generate.frame.17",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 122781.0,
+        "span_id": "SP_607a44a584f04199"
+      },
+      {
+        "name": "image.generate.frame.17",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 122781.0,
+        "span_id": "SP_efb55c1b0a6145e1"
+      }
+    ]
+  },
+  "batch_runtime": {
+    "enabled": false,
+    "batch_count": 0,
+    "logical_codex_batch_count": 0,
+    "images_requested": 0,
+    "images_returned": 0,
+    "fallback_single_frames": 0,
+    "provider_counts": {},
+    "native_multi_image_supported": null,
+    "single_http_request": null,
+    "provider": null,
+    "transport": null,
+    "provider_requested_images": null,
+    "provider_returned_images": null,
+    "codex_logical_batch": {
+      "enabled": false,
+      "provider": null,
+      "transport": null,
+      "logical_batch": null,
+      "native_multi_image": null,
+      "requested_count": null,
+      "successful_count": null,
+      "failed_count": null,
+      "initial_max_inflight": null,
+      "recommended_concurrency": null,
+      "rounds": [],
+      "elapsed_seconds": null
+    },
+    "early_high_high_repairs": 0,
+    "ordinary_repairs_after_barrier": 0,
+    "wait_batch_decisions": 0
+  },
+  "runtime_handoff": {
+    "awaiting_product_host": true,
+    "host_wait_steps": [
+      {
+        "step": "HOST_LOOP",
+        "status": "HOST_WAIT",
+        "input_hash": null,
+        "output_hash": null,
+        "attempt": 1,
+        "started_at": null,
+        "finished_at": "2026-09-14T14:10:59+08:00",
+        "note": "stop_cycle=1 host_owns=PREIMAGE_COMPILE elapsed=0.078s"
+      },
+      {
+        "step": "VISUAL_LOCK",
+        "status": "HOST_WAIT",
+        "input_hash": "a41f73be531595c368e9cb5cd96a7059678aa5a938506f8b32f074e0d3379859",
+        "output_hash": "2eea54f64d63ff63f54e84983737c14ac839af27893a37297565aeb401aa34bd",
+        "attempt": 78,
+        "started_at": null,
+        "finished_at": "2026-09-14T14:14:13+08:00",
+        "note": "en they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated WORK review turn using DevSpace only, then finalize it.\", \"Do not use WebCodex for repository access or review execution.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-cd0e8f2941e957cd\", \"request_fingerprint\": \"cd0e8f2941e957cd7e350263b9918d75f4eb92512d9905918df5523f28ecfe46\", \"created_at\": \"2026-09-13T12:05:15+08:00\", \"request_path\": \"episodes/\\u5929\\u754c\\u666e\\u901a\\u5973\\u751f\\u7684\\u4e00\\u5929/meta/runtime/host-requests/host-cd0e8f2941e957cd.json\", \"current_request_path\": \"episodes/\\u5929\\u754c\\u666e\\u901a\\u5973\\u751f\\u7684\\u4e00\\u5929/meta/runtime/product-host-request.json\"}"
+      }
+    ],
+    "host_wait_is_failure": false
+  },
+  "failure_taxonomy": {
+    "technical_failures": 0,
+    "dependency_or_hard_blocked": 1,
+    "scout_repair": 0,
+    "content_failed": 0,
+    "failed_frames_checkpoint": 0,
+    "scout_unresolved": 0
+  },
+  "health": {
+    "has_blockers": true,
+    "awaiting_product_host": true,
+    "workflow_status": "BLOCKED"
+  }
+}

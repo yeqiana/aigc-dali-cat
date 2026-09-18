@@ -1,0 +1,280 @@
+{
+  "candidates": [
+    {
+      "id": "C01",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 20,
+        "hero_frame": 19,
+        "escalation_ceiling": 19,
+        "climax_visual_payoff": 15,
+        "mechanism_novelty": 12,
+        "discussion_space": 10
+      },
+      "concept_voltage": 95,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "贫困饭桌→荒坡极端决定→母亲反向护孙，三段视觉升级非常清楚",
+        "不依赖神迹或文字说明，核心冲突单靠人物动作和生活物件就能成立",
+        "反转来自被供养者主动拒绝牺牲式孝顺，价值表达有情感而不是口号"
+      ],
+      "risks": [
+        "荒坡段必须避免猎奇和伤害儿童的直观刺激，应停在决定与阻止动作上",
+        "母亲台词必须朴素克制，不能写成现代价值宣言"
+      ]
+    },
+    {
+      "id": "C02",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 16,
+        "escalation_ceiling": 15,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 79,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": false
+      },
+      "strengths": [
+        "饭碗和藏饼非常生活化，适合真实古代家庭纪实"
+      ],
+      "risks": [
+        "高潮尺度偏小，容易变成温情短故事而不是强传播题"
+      ]
+    },
+    {
+      "id": "C03",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 11,
+        "discussion_space": 9
+      },
+      "concept_voltage": 86,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "卧冰典故辨识度高，现实化后身体代价直观",
+        "母亲把被子裹给儿子的反转温暖有效"
+      ],
+      "risks": [
+        "冰河场景季节和服装物理要求高",
+        "更接近自我伤害式愚孝，家庭代际冲突不如 C01 丰富"
+      ]
+    },
+    {
+      "id": "C04",
+      "ambition_band": "A2",
+      "scores": {
+        "one_line_hook": 15,
+        "hero_frame": 14,
+        "escalation_ceiling": 13,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 10,
+        "discussion_space": 7
+      },
+      "concept_voltage": 69,
+      "wordless_test": {
+        "stop_scroll": false,
+        "escalation_readable": true,
+        "curiosity_gap": false
+      },
+      "strengths": [
+        "蚊帐补丁作为结尾物证很生活"
+      ],
+      "risks": [
+        "冲突规模偏小，20帧容易注水"
+      ]
+    },
+    {
+      "id": "C05",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 87,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "把神迹拆成邻里互助，有现实温度",
+        "冬竹林空手而归的画面能反向解构典故"
+      ],
+      "risks": [
+        "与用户点名的‘愚孝’批判相比，冲突更偏神迹解构"
+      ]
+    },
+    {
+      "id": "C06",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 16,
+        "escalation_ceiling": 15,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 78,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": false
+      },
+      "strengths": [
+        "牛车、空粮缸、病父与孩子同框，资源冲突具体"
+      ],
+      "risks": [
+        "和普遍家庭伦理题接近，二十四孝辨识度不够强"
+      ]
+    },
+    {
+      "id": "C07",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 18,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 14,
+        "discussion_space": 9
+      },
+      "concept_voltage": 92,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "用账本把‘孝顺建立在谁的牺牲上’视觉化，非常适合讨论",
+        "账本烧掉是明确高潮动作"
+      ],
+      "risks": [
+        "过度依赖账本文字会削弱无字传播，需要用谷粒/饭碗同步表达"
+      ]
+    },
+    {
+      "id": "C08",
+      "ambition_band": "A2",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 16,
+        "escalation_ceiling": 13,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 9,
+        "discussion_space": 7
+      },
+      "concept_voltage": 72,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": false,
+        "curiosity_gap": false
+      },
+      "strengths": [
+        "饭桌动作非常真实，易拍且温暖"
+      ],
+      "risks": [
+        "升级不足，像一个单场景公益短片"
+      ]
+    },
+    {
+      "id": "C09",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 17,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 12,
+        "discussion_space": 9
+      },
+      "concept_voltage": 87,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "把牺牲配偶的隐性愚孝拍成具体财产流失，现实讨论空间大",
+        "婆婆把旧簪还给儿媳的动作有情感修复力"
+      ],
+      "risks": [
+        "主题会从‘二十四孝愚孝’偏向夫妻财产权，需要更多典故连接"
+      ]
+    },
+    {
+      "id": "C10",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 20,
+        "hero_frame": 20,
+        "escalation_ceiling": 19,
+        "climax_visual_payoff": 15,
+        "mechanism_novelty": 14,
+        "discussion_space": 10
+      },
+      "concept_voltage": 98,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "门外大红孝字与门内冷灶孩子同框，封面传播力最强",
+        "把个体愚孝扩展到社会奖励机制，讨论空间最大"
+      ],
+      "risks": [
+        "容易变成概念先行的社会寓言，牺牲用户要求的普通家庭贴身情感",
+        "牌坊/孝名需要谨慎控制时代与制度细节，避免历史硬伤"
+      ]
+    }
+  ],
+  "selected_id": "C01",
+  "selection_reason": "C10 的社会尺度最高，但 C01 更贴合用户明确要求的郭巨埋儿母题，也更符合账号‘普通人真实生活相册’的贴身视角。它拥有饭桌、抱孩子离家、荒坡、母亲追来护孙、最后一口粮回到孩子手中等连续可拍动作，20帧升级空间充足；最重要的是反转来自母亲本人拒绝被用孙辈生命供养，既批判愚孝又保留亲情，不需要说教。",
+  "issue_codes": [],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "candidates_sha256": "f995a9a4ef020d942b8a2271eafc49b72a4d16ee2c9d7ca9bd9d0615b854392a",
+  "critic_provenance": {
+    "schema_version": 2,
+    "runtime": "WORK_DEVSPACE_BOUNDED",
+    "base_runtime": "WORK",
+    "isolated_session": false,
+    "execution_source": "product_runtime",
+    "workspace_transport": "DEVSPACE",
+    "isolation_mode": "bounded_request_only",
+    "webcodex_used": false,
+    "full_auto_user_authorized": true,
+    "ordinary_life_only": true,
+    "attempt": 1,
+    "reviewed_at": "2026-09-16T17:40:13+08:00",
+    "request_path": "episodes/埋儿那天_娘把我拦住了/meta/runtime/reviews/concept-ambition-attempt-1-request.json",
+    "request_id": "concept-ambition-a1-540e17674a615063",
+    "request_fingerprint": "540e17674a6150639e1327f6d643f68df68679e000703db99c0ffca0409f39ba"
+  }
+}

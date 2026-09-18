@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "approvals": {
+    "story_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "story_lock",
+      "approved_at": "2026-09-13T10:37:22+08:00",
+      "artifacts": [
+        {
+          "role": "story",
+          "path": "episodes/天界普通女生的一天/docs/02_天界普通女生的一天_StoryLock_V1.0.md",
+          "sha256": "f0123089568b626465a9c47fcb5ae61dac956061a251a81a5244c8eb419e6990"
+        },
+        {
+          "role": "storyboard",
+          "path": "episodes/天界普通女生的一天/docs/03_天界普通女生的一天_20张正式分镜_V1.0.md",
+          "sha256": "f3ff7edb1d6b267f7002bfc84d5d8b160c31a3cb17e2068a83fe115fab490cf7"
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/天界普通女生的一天/meta/story-semantic-review.json",
+          "sha256": "96ed977e9b07dedc28c37c32fe7a298684f514eefb1bbc25d94a73890cf200a8"
+        }
+      ],
+      "note": "Full-auto delegated story approval after Concept Ambition, Recent-5 and Story Semantic bounded DevSpace reviews passed. Not direct user review."
+    }
+  }
+}

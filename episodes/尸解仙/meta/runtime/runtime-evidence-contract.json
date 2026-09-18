@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "contract": "runtime_evidence_complete_before_production_pass",
+  "required_sinks": [
+    "meta/episode-performance-ledger.json",
+    "meta/runtime/trace-events.jsonl",
+    "meta/runtime/node-execution.jsonl",
+    "meta/runtime/authority-commit.jsonl"
+  ],
+  "armed_at": "2026-09-16T11:45:34+08:00",
+  "last_seen_at": "2026-09-16T16:15:40+08:00",
+  "source": "episode_runner",
+  "historical_backfill_allowed": false,
+  "gate_pass": null,
+  "episode_state_mutated": false
+}

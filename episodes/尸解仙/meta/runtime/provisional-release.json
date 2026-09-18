@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "status": "PROVISIONAL",
+  "episode_id": "尸解仙",
+  "generated_from": {
+    "story": "episodes/尸解仙/docs/02_尸解仙_StoryLock_DRAFT_V1.0.md",
+    "storyboard": "episodes/尸解仙/docs/03_尸解仙_20张正式分镜_DRAFT_V1.0.md",
+    "voice_contract": "episodes/尸解仙/meta/voice-contract.json",
+    "intro_policy": "episodes/尸解仙/meta/intro-policy.json",
+    "episode_state_at_generation": "STORYBOARD_LOCKED"
+  },
+  "title_candidates": [
+    "奶奶走后，老屋的灶天天照样生火；我替她把那天过完，黄历上多出来的名字是我"
+  ],
+  "intro_candidates": [
+    "老屋月底就要交回村里清点，我请了一天假，约上发小回村收拾奶奶留下的东西。灶是冷的，碗筷照旧摆着两副。"
+  ],
+  "cover_copy_candidates": [
+    "我替奶奶把这一天过完，第二天黄历上多出来的名字是我",
+    "奶奶临走前说过：人走不用留尸，留痕就行"
+  ],
+  "caption_semantic_drafts": [
+    {
+      "frame": "01",
+      "text": "老屋月底要交回村里，我请了假回村收拾东西。"
+    },
+    {
+      "frame": "02",
+      "text": "钥匙她一直替我留着，说哪天回来都能进。"
+    },
+    {
+      "frame": "03",
+      "text": "家具都盖着布，只有那个茶缸是干净的。"
+    },
+    {
+      "frame": "04",
+      "text": "锅盖一掀，里头的饭还是温的。"
+    },
+    {
+      "frame": "05",
+      "text": "我们还没坐，桌上已经摆好两副碗筷。"
+    },
+    {
+      "frame": "06",
+      "text": "衣服像刚洗完，底下的地却是干的。"
+    },
+    {
+      "frame": "07",
+      "text": "黄历上的格子不是往后划，是往前数的。"
+    },
+    {
+      "frame": "08",
+      "text": "这页是她自己抄的，我一个不懂的人都能看懂。"
+    },
+    {
+      "frame": "09",
+      "text": "我照她写的，自己把灶点着，坐下来陪她吃完这顿。"
+    },
+    {
+      "frame": "10",
+      "text": "该划的那一格空着，旁边是没人碰过的新墨。"
+    },
+    {
+      "frame": "11",
+      "text": "挂着的这件，是我昨天穿的那件。"
+    },
+    {
+      "frame": "12",
+      "text": "屋里一个人没有，门是从里头插上的。"
+    },
+    {
+      "frame": "13",
+      "text": "被子收得很整齐，枕头上的印子是新的。"
+    },
+    {
+      "frame": "14",
+      "text": "她说要下山，我说再陪我留一晚。"
+    },
+    {
+      "frame": "15",
+      "text": "我的杯子被洗过，规规矩矩放回了原处。"
+    },
+    {
+      "frame": "16",
+      "text": "最后一页上并排两个名字，我那个在下面。"
+    },
+    {
+      "frame": "17",
+      "text": "我把那副碗筷收进箱子，不打算再摆出来了。"
+    },
+    {
+      "frame": "18",
+      "text": "那页纸我撕下来，扔进了灶膛。"
+    },
+    {
+      "frame": "19",
+      "text": "锁门的时候，灶是冷的，绳子是空的。"
+    },
+    {
+      "frame": "20",
+      "text": "交接单签完了，相册最后一张还是那个院子。"
+    }
+  ],
+  "topic_candidates": [
+    "民俗怪谈",
+    "古籍志怪",
+    "第一视角",
+    "回乡",
+    "细思极恐",
+    "AI图文故事",
+    "中式悬疑"
+  ],
+  "warnings": [
+    "Must be finalized against actual PASS images",
+    "本文件为 PRE-PRODUCTION PASS 的临时草稿，未绑定任何图片 SHA，不构成最终发布批准",
+    "20 条字幕均为语义草稿：发布前必须逐条对照实际像素确认时间关系、证据可见性与左侧中部安全区避让，必要时改写",
+    "标题仅为 1 个内部候选，不作为 PUBLISH_READY 必填项；平台标题需在发布阶段按实际封面与首图重新核对",
+    "正文简介、置顶评论与最终话题列表尚未生成，需在 RELEASE 步骤补充",
+    "封面文案需在封面帧（图16 或图18）确定后再定稿"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "天界普通女生的一天",
+  "series": "天界生活日常",
+  "title": "天界普通女生的一天",
+  "current_state": "STORYBOARD_LOCKED",
+  "updated_at": "2026-09-13T10:38:05+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-13T01:37:29+08:00",
+      "note": "一句话入口创建 Episode；后续阶段只由 canonical state transition 推进"
+    },
+    {
+      "state": "STORYBOARD_LOCKED",
+      "at": "2026-09-13T10:38:05+08:00",
+      "mode": "advance",
+      "note": "Story Lock 三层 Gate + delegated_auto_review 通过；Concept/Recent5/Story Semantic 使用诚实 WORK_DEVSPACE_BOUNDED provenance。"
+    }
+  ]
+}
