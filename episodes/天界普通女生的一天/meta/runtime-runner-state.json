@@ -1,9 +1,0 @@
-{
-  "status": "HOST_WAIT",
-  "pid": 18664,
-  "resume_enabled": true,
-  "heartbeat": "2026-09-15T16:55:33+08:00",
-  "attempt": 1,
-  "return_code": 20,
-  "last_action": "WAIT_HOST"
-}

@@ -1,30 +1,7 @@
 {
   "pid": 0,
-  "episode": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通女生的一天",
-  "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通女生的一天\\meta\\runtime\\driver-logs\\driver_20260915_165048.log",
-  "cmd": [
-    "C:\\Users\\79873\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
-    "-u",
-    "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\_system\\runtime_driver.py",
-    "_serve_task",
-    "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通女生的一天",
-    "--interval",
-    "10",
-    "--log",
-    "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通女生的一天\\meta\\runtime\\driver-logs\\driver_20260915_165048.log",
-    "--resume"
-  ],
-  "codex": "",
-  "interval": 10,
-  "resume": true,
-  "started_at": "2026-09-15T16:50:48+08:00",
-  "rc": "20 2026-09-15T16:55:33+08:00",
-  "carrier": "WINDOWS_TASK_SCHEDULER",
-  "direct_detach_error": "HOST_JOB_BREAKAWAY_DENIED",
+  "rc": "20 2026-09-18T19:27:07+08:00",
   "schema_version": 1,
-  "updated_at": "2026-09-15T16:55:33+08:00",
-  "carrier_task": "StoryOSDriver-49fe8e041d1b72c0",
-  "carrier_user": "RENRP\\yeqian",
-  "carrier_user_source": "current_interactive_identity",
-  "exited_at": "2026-09-15T16:55:33+08:00"
+  "updated_at": "2026-09-18T19:27:07+08:00",
+  "exited_at": "2026-09-18T19:27:07+08:00"
 }

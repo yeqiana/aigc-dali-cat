@@ -1,1 +1,0 @@
-返修Frame16。严格保持当前Frame Contract、人物身份/服装/地点/事件与世界设定，不改故事。重点修复：visual_profile_match、reality_first、available_light、unposed_capture、not_cinematic、causal_imperfection。改成可信的普通手机随手拍：自然不对称构图、真实皮肤与曝光、非电影布光、非海报化；保留生活杂物和轻微摄影瑕疵，天界设定照合同保留但不过度特效化。

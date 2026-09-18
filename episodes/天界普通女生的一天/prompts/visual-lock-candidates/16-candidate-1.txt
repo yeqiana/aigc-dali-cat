@@ -1,1 +1,0 @@
-VL候选1 F16 角色=worst_capture_condition。保持Frame Contract、身份、服装、事件，不改剧情。修正：visual_profile_match、reality_first、not_cinematic。真实逆光/遮挡/走动模糊，脸可偏暗或局部过曝；禁止金色日落、HDR、整齐站位和旅游宣传构图。

@@ -1,30 +1,80 @@
 {
   "schema_version": 1,
-  "status": "LOCKED",
+  "status": "DRAFT",
   "derived_from_pools": true,
   "not_episode_stage": true,
-  "created_at": "2026-09-13T01:37:29+08:00",
-  "locked_at": "2026-09-13T01:50:00+08:00",
-  "selection_seed": 5694859121043832524,
-  "era": {"bucket":"modern_2020s","year":2026,"source":"fictional_world_human_baseline","world_era":"fictional"},
-  "world_identity": {"profile_id":"CELESTIAL_MUNDANE_WORLD_V1","country":"天界（虚构世界）","region":"云海普通居民区、公共生活区与基层设施","nationality_context":"天界居民（虚构世界身份，不映射现实国籍）","resident_context":"天界普通本地居民","effective_sha256":"dd4f59b2df967f640d82e58c64be2b6272d530d5a172207c7be71b6e414851e2"},
-  "fictional_world": {"profile_id":"M04_HEAVEN_MUNDANE_LIFE_V1","reality_basis":"fictional_world_mundane","ordinary_life_rule":"天界按普通居民的生活秩序运转，主角和朋友都是普通居民，不承担岗位强制、英雄、调查或神秘任务","capture_device":"随身留影玉牌（仅承担私人相册记录功能）"},
+  "created_at": "2026-09-18T16:22:05+08:00",
+  "selection_seed": 16055810322655993470,
+  "era": {
+    "bucket": "2004_2010",
+    "year": 2006,
+    "source": "explicit_hint_or_weighted",
+    "world_era": null
+  },
+  "world_identity": null,
+  "fictional_world": null,
   "cast": {
-    "type":"mixed_friend_group","size":4,"relationship":"相识多年的普通好友",
-    "members":[
-      {"id":"P01","pov":true,"gender":"female","age":24,"build":"纤细匀称、真实自然的年轻女性体型","hair":"自然黑色长发，日常低马尾或散发","clothing_anchor":"米白与浅青为主的朴素天界日常襦裙与轻薄外衫，真实布料褶皱，无华丽仙袍","device_anchor":"随身留影玉牌（自带留影功能）","nationality_context":"天界居民（虚构世界身份，不映射现实国籍）","resident_context":"天界普通本地居民与基层工作人员"},
-      {"id":"P02","pov":false,"gender":"female","age":24,"build":"健康自然的年轻女性体型","hair":"自然黑色齐肩发，半束发","clothing_anchor":"藕粉灰与米白的朴素日常衣裙，轻便耐走","device_anchor":null,"nationality_context":"天界居民（虚构世界身份，不映射现实国籍）","resident_context":"天界普通本地居民与基层工作人员"},
-      {"id":"P03","pov":false,"gender":"male","age":25,"build":"清瘦自然的年轻男性体型","hair":"自然黑色短发，略微蓬松","clothing_anchor":"灰蓝短褂与深灰长裤，普通天界青年日常穿着","device_anchor":null,"nationality_context":"天界居民（虚构世界身份，不映射现实国籍）","resident_context":"天界普通本地居民与基层工作人员"},
-      {"id":"P04","pov":false,"gender":"male","age":23,"build":"普通健康的年轻男性体型","hair":"自然黑色短发，额前略乱","clothing_anchor":"浅褐短衫与青灰长裤，干净但有日常使用痕迹","device_anchor":null,"nationality_context":"天界居民（虚构世界身份，不映射现实国籍）","resident_context":"天界普通本地居民与基层工作人员"}
+    "type": "pair",
+    "size": 2,
+    "relationship": "高中同学/发小",
+    "members": [
+      {
+        "id": "P01",
+        "pov": true,
+        "gender": "male",
+        "age": 20,
+        "build": "普通年轻人体型",
+        "hair": "普通黑色日常发型",
+        "clothing_anchor": "灰色短袖T恤+深蓝牛仔裤+普通运动鞋",
+        "device_anchor": "功能机/翻盖手机/滑盖手机"
+      },
+      {
+        "id": "P02",
+        "pov": false,
+        "gender": "female",
+        "age": 21,
+        "build": "普通年轻人体型",
+        "hair": "普通黑色日常发型",
+        "clothing_anchor": "普通印花短袖+过膝裙+运动鞋",
+        "device_anchor": null
+      }
     ]
   },
-  "pov":{"character_id":"P01","first_person":true},
-  "entry":{"type":"daily_life","label":"普通生活日常","source":"visual_profile:M04_HEAVEN_MUNDANE_LIFE_V1","reason":"女主以休息日和朋友相处、吃饭、闲逛与生活琐事为主，短暂轮值只是一天里的普通插曲"},
-  "scene":{"primary_category":"modern_indoor","primary_place":"天界普通居民区、云街与公共生活区"},
-  "role_policy":{"protagonist_role":"天界普通年轻女生","career_function":"none","solves_anomaly_professionally":false},
-  "no_anomaly_test":{"question":"如果删掉所有异常，这一天是否仍像真实生活？","ordinary_day_plan":"起床自拍、出门吃早饭、和朋友会合、做普通轮值与生活差事、一起吃饭闲聊、傍晚看云海后回家","pass":true,"must_be_rechecked_before_story_lock":true,"rechecked_against_final_story":true},
-  "continuity_policy":{"member_count_changes_require_story_event":true,"pov_character_id_stable":true,"clothing_and_device_anchors_propagate_to_frame_contract":true},
-  "ordinary_person_score":100,
-  "forbidden_role_check":{"pass":true,"hits":[]},
-  "story_build_note":"本集是纯天界生活日常。P01 为好看但真实自然的普通女生，P02/P03/P04 是她的普通好友；不调查、不探秘、不处理异常，不英雄化。现代元素只保留留影玉牌这一相册记录功能，其余视觉与生活方式以东方古风天界为主。"
+  "pov": {
+    "character_id": "P01",
+    "first_person": true
+  },
+  "entry": {
+    "type": "travel",
+    "label": "旅行/出游",
+    "source": "weighted",
+    "reason": "由 Story Build 基于该生活化动机具体化"
+  },
+  "scene": {
+    "primary_category": "travel_road",
+    "primary_place": "省道"
+  },
+  "role_policy": {
+    "protagonist_role": "普通年轻人/普通朋友小团体",
+    "career_function": "arrival_only",
+    "solves_anomaly_professionally": false
+  },
+  "no_anomaly_test": {
+    "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+    "ordinary_day_plan": "原本只是正常旅行、吃饭、住宿、拍照后返回",
+    "pass": true,
+    "must_be_rechecked_before_story_lock": true,
+    "rechecked_against_final_story": false
+  },
+  "continuity_policy": {
+    "member_count_changes_require_story_event": true,
+    "pov_character_id_stable": true,
+    "clothing_and_device_anchors_propagate_to_frame_contract": true
+  },
+  "ordinary_person_score": 100,
+  "forbidden_role_check": {
+    "pass": true,
+    "hits": []
+  },
+  "story_build_note": "这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。"
 }
