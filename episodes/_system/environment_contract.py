@@ -15,6 +15,7 @@ from pathlib import Path
 from story_os_contract import story_os_version
 import story_json
 import visual_profile
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 MIN_VERSION = (2, 1, 0)
@@ -37,7 +38,11 @@ def version_tuple(raw: object) -> tuple[int,...]:
 
 def episode_version(ep: Path) -> str:
     versions=[]
-    for rel in ("meta/episode-state.json","meta/release-manifest.json","meta/story-gates.json"):
+    state=episode_state_persistence.load(Path(ep).resolve()) or {}
+    raw=str(state.get("tool_version") or "")
+    vt=version_tuple(raw)
+    if vt!=(0,):versions.append((vt,raw))
+    for rel in ("meta/release-manifest.json","meta/story-gates.json"):
         p=ep/rel
         if not p.is_file():continue
         try:

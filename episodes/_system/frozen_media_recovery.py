@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Iterable
 
 import story_json
+import production_ledger
 
 ROOT = Path(__file__).resolve().parents[2]
 FROZEN_STATES = {"PRODUCTION_PASSED", "PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED"}
@@ -77,7 +78,7 @@ def _snapshot_rows(ep: Path) -> Iterable[dict]:
 
 
 def _ledger_rows(ep: Path) -> Iterable[dict]:
-    ledger = _read(ep / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     for frame_key, frame in (ledger.get("frames") or {}).items():
         if not isinstance(frame, dict):
             continue

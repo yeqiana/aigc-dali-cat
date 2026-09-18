@@ -13,6 +13,7 @@ import time
 from pathlib import Path
 from canvas_spec import resolve_canvas_spec
 import storyos_config
+import production_ledger
 
 _CONFIG = storyos_config.load_config()
 AUTO_RATIO_DELTA_MAX = float(storyos_config.get_path(_CONFIG, 'normalize.automatic_ratio_delta_max'))
@@ -42,9 +43,8 @@ def read_canvas(ep: Path) -> tuple[int, int, str]:
         data = json.loads(manifest.read_text(encoding='utf-8'))
         manifest_ratio = str(((data.get('episode') or {}).get('aspect_ratio')) or '4:5')
         manifest_spec = resolve_canvas_spec(manifest_ratio)
-    ledger = ep / 'meta' / 'production-ledger.json'
-    if ledger.is_file():
-        data = json.loads(ledger.read_text(encoding='utf-8'))
+    data = production_ledger.load_authority(Path(ep).resolve(), default=None)
+    if isinstance(data, dict):
         canvas = data.get('canvas') or {}
         w, h = canvas.get('width'), canvas.get('height')
         if isinstance(w, int) and isinstance(h, int) and w > 0 and h > 0:

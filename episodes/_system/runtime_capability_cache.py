@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse, datetime as dt, json, os, shutil
 from pathlib import Path
 import story_json
+import hot_state_bridge
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/runtime-capabilities.json")
@@ -22,6 +23,11 @@ def read_json(p):
     return story_json.read_json(p)
 def write_json(p,d):
     story_json.write_json(p, d)
+def persist(ep,d):
+    ep=Path(ep).resolve()
+    write_json(ep/REL,d)
+    hot_state_bridge.mirror(ep,"RUNTIME_CAPABILITIES",d)
+    return d
 def ttl_seconds():
     try:return int(read_json(CFG).get("capability_cache_ttl_seconds") or 21600)
     except Exception:return 21600
@@ -42,10 +48,16 @@ def auto_detect(ep):
       "source":"cheap_auto_detect_no_model_probe",
       "note":"Set/record vision_review=verified only after a real pixel-vision probe succeeds."
     }
-    write_json(ep/REL,data); return data
+    return persist(ep,data)
 
 def load(ep,create=False):
-    p=Path(ep).resolve()/REL
+    ep=Path(ep).resolve()
+    hot=hot_state_bridge.read(ep,"RUNTIME_CAPABILITIES")
+    if isinstance(hot.get("value"),dict):
+        return hot["value"]
+    if not hot_state_bridge.file_fallback_allowed(hot):
+        return auto_detect(ep) if create else None
+    p=ep/REL
     if p.is_file():
         try:return read_json(p)
         except Exception:return None
@@ -73,10 +85,11 @@ def record(ep,*,vision=None,image_route=None,text_worker=None,sandbox_risk=None,
     if sandbox_risk is not None:d["sandbox_risk"]=sandbox_risk
     if note is not None:d["note"]=note
     d["generated_at"]=now(); d["source"]="explicit_runtime_record"
-    write_json(ep/REL,d); return d
+    return persist(ep,d)
 def invalidate(ep):
-    p=Path(ep).resolve()/REL
+    ep=Path(ep).resolve(); p=ep/REL
     if p.exists(): p.unlink()
+    hot_state_bridge.delete(ep,"RUNTIME_CAPABILITIES")
 def self_test():
     assert not vision_verified({"vision_review":"unverified"})
     assert vision_verified({"vision_review":"verified"})

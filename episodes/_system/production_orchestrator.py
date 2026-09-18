@@ -62,6 +62,7 @@ import story_creator  # noqa: E402
 import story_intent_parser  # noqa: E402
 import story_json  # noqa: E402
 import runtime_workspace  # noqa: E402
+import episode_state_persistence  # noqa: E402
 import hot_state_bridge  # noqa: E402
 import runtime_request as runtime_request_contract  # noqa: E402
 import visual_profile_lock_adapter as adapter  # noqa: E402
@@ -128,6 +129,16 @@ FULL_AUTO_STATUSES = (
     FULL_AUTO_STATUS_PUBLISH_READY,
     FULL_AUTO_STATUS_FAILED,
 )
+
+def load_full_auto_status(episode_dir: Path) -> dict:
+    ep = Path(episode_dir).resolve()
+    hot = hot_state_bridge.read(ep, "FULL_AUTO_STATUS")
+    data = hot_state_bridge.value_or_fallback(
+        hot,
+        lambda: runtime_workspace.read_json(ep, STATUS_DOC_REL, default={}),
+        default={},
+    )
+    return data if isinstance(data, dict) else {}
 
 # Delegated confirmation is only the Phase 4.2 mode vocabulary applied to the Selector's
 # already deterministic choice. It is never a fabricated direct user approval.
@@ -212,7 +223,7 @@ def plan(
         lifecycle_state = str(draft.get("lifecycle_state") or "")
         lock_path = None
     else:
-        episode_dir = story_creator.create_episode(root, episode_title, selector_input=payload)
+        episode_dir = story_creator.create_episode(root, episode_title, selector_input=payload, runtime_request_text=idea)
         episode_rel = _rel(Path(episode_dir), Path(root))
         lock, _source = adapter.read_lock(episode_dir)
         profile_id = str((lock or {}).get("profile_id") or "")
@@ -363,9 +374,9 @@ def _stage_index(stage):
 
 
 def _read_stage(episode):
-    """Read the only stage authority: meta/episode-state.json."""
-    data = story_json.read_json(Path(episode) / EPISODE_STATE_REL, default={})
-    return str((data or {}).get("current_state") or "").strip() or None
+    """Read the canonical Episode stage through its persistence owner."""
+    data = episode_state_persistence.load(Path(episode).resolve()) or {}
+    return str(data.get("current_state") or "").strip() or None
 
 
 def _profile_id_of(lock) -> str:
@@ -382,8 +393,7 @@ def _ensure_canonical_runtime_request(episode, idea, episode_title) -> dict:
     execution. Visual-profile provenance already written by the bootstrap is preserved.
     """
     episode = Path(episode)
-    path = episode / "meta/runtime-request.json"
-    existing = story_json.read_json(path, default={})
+    existing = runtime_request_contract.authority_for_episode(episode) or {}
     if isinstance(existing, dict) and existing:
         try:
             if not runtime_request_contract.validate_request(existing):
@@ -405,7 +415,7 @@ def _ensure_canonical_runtime_request(episode, idea, episode_title) -> dict:
             "canonical Runtime Request correction failed: " + "; ".join(errors),
             ERROR_PLAN_INVALID,
         )
-    story_json.write_json(path, canonical)
+    runtime_request_contract.bind_data(canonical, episode, force=True, repository_root=episode.parents[1])
     return canonical
 
 
@@ -677,12 +687,12 @@ def run_full_auto(root, idea, *, title=None, frames: int = DEFAULT_FRAME_COUNT,
         )
 
     created = False
-    if not (episode_dir / EPISODE_STATE_REL).is_file():
+    if episode_state_persistence.load(episode_dir) is None:
         if resume:
             raise ProductionOrchestratorError(
                 "resume requested but no Episode state exists at " + episode_dir.as_posix(),
                 ERROR_PLAN_INVALID)
-        story_creator.create_episode(root, episode_title, selector_input=payload)
+        story_creator.create_episode(root, episode_title, selector_input=payload, runtime_request_text=idea)
         created = True
 
     story_creator.ensure_episode_core_documents(

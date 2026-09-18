@@ -10,6 +10,7 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import formal_evidence_bridge  # noqa: E402
+import episode_identity  # noqa: E402
 import runtime_asset_policy  # noqa: E402
 
 
@@ -36,7 +37,10 @@ def test_bridge_indexes_formal_evidence_not_runtime_state(tmp_path):
     assert "meta/runtime/next-action.json" not in paths
     assert "meta/runtime/contracts/frames/01.json" not in paths
     assert all(row["artifact_type"] == "EVIDENCE" for row in index["artifact_registration_rows"])
-    assert all(row["owner_id"] == "EP-X" for row in index["artifact_registration_rows"])
+    expected_owner_id = episode_identity.storage_episode_id(ep)
+    assert expected_owner_id != "EP-X"
+    assert index["owner_id"] == expected_owner_id
+    assert all(row["owner_id"] == expected_owner_id for row in index["artifact_registration_rows"])
 
 
 def test_index_is_formal_evidence_but_not_self_hashed(tmp_path):

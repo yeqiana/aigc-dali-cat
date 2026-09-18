@@ -261,11 +261,11 @@ class ProductRuntimeFirstTests(unittest.TestCase):
                 ep, runtime="WORK", mode="full_auto", resume=False, source="test"
             )
             self.assertEqual(first["request_id"], second["request_id"])
-            history = list((ep / product_runtime_adapter.REQUEST_HISTORY_REL).glob("*.json"))
+            history = product_runtime_adapter.host_request_persistence.list_all(ep)
             self.assertEqual(len(history), 1)
             final = product_runtime_adapter.mark_complete(ep, first["request_id"], result={"ok": True})
             self.assertEqual(final["status"], "FINALIZED")
-            current = json.loads((ep / product_runtime_adapter.REQUEST_REL).read_text(encoding="utf-8"))
+            current = product_runtime_adapter._read_current_request(ep)
             self.assertEqual(current["status"], "FINALIZED")
 
     def test_stale_preimage_committed_snapshot_routes_back_to_task_set(self) -> None:
@@ -327,7 +327,7 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             with mock.patch.object(product_runtime_adapter.preproduction_handoff, "verify", return_value=[]):
                 reconciled = product_runtime_adapter.reconcile(ep)
             self.assertEqual(reconciled["status"], "FINALIZED")
-            current = json.loads((ep / product_runtime_adapter.REQUEST_REL).read_text(encoding="utf-8"))
+            current = product_runtime_adapter._read_current_request(ep)
             self.assertEqual(current["status"], "FINALIZED")
 
     def test_visual_product_review_is_legacy_residue_when_codex_vision_owns_pixels(self) -> None:

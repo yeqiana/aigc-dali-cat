@@ -94,9 +94,13 @@ def load(ep: Path, kind: str) -> dict | None:
                         return full
                 else:
                     return payload
-        except Exception: pass
+        except Exception:
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None: connection.close()
+        if mode == "mysql":
+            return None
     path=ep/REL_BY_TYPE[kind]
     return story_json.read_json(path,default=None) if path.is_file() else None
 

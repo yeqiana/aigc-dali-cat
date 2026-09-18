@@ -5,12 +5,14 @@ class FakeConnection:
     def __init__(self):
         self.executed = []
         self.row = None
+        self.queries = []
 
     def execute(self, sql, params=()):
         self.executed.append((sql, params))
         return 1
 
     def query_one(self, sql, params=()):
+        self.queries.append((sql, params))
         return self.row
 
 
@@ -33,6 +35,7 @@ def test_review_record_upsert_and_load():
         "REVIEWER_TYPE": "POLICY", "PAYLOAD": '{"status":"BOOTSTRAP_VALIDATE_PASS"}',
     }
     loaded = repo.get_by_id(saved["review_id"])
+    assert conn.queries[-1][1] == (saved["review_id"],)
     assert loaded["payload"] == {"status": "BOOTSTRAP_VALIDATE_PASS"}
 
 

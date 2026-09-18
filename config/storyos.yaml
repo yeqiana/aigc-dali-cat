@@ -301,7 +301,8 @@ storage:
   episode_meta_store:
     mode: json
   # Runtime 热状态迁移。file 保持当前行为；dual 在继续写兼容文件的同时
-  # 镜像到 Redis。redis-only 暂不开放，避免 Redis 故障变成生产事实丢失。
+  # 镜像到 Redis；redis 使 Redis 成为读权威并对连接/写失败 fail-closed。
+  # Cutover 期间兼容文件允许继续影子写，验证完成后再按存储清单物理删除。
   hot_state:
     mode: file
 

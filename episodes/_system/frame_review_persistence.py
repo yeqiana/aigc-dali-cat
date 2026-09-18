@@ -69,10 +69,13 @@ def load(ep: Path, frame: int | str) -> dict | None:
             if row and isinstance(row.get("payload"), dict):
                 return row["payload"]
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return None
     path = _legacy_path(ep, frame)
     return story_json.read_json(path, default=None) if path.is_file() else None
 
@@ -90,16 +93,16 @@ def list_all(ep: Path) -> list[dict]:
             rows = MySqlFrameReviewRepository(connection).list_episode(_episode_id(ep))
             payloads = [row["payload"] for row in rows
                         if row.get("review_type") == REVIEW_TYPE and isinstance(row.get("payload"), dict)]
-            # DB-first, but keep legacy-file fallback for old/test Episodes that
-            # have not been backfilled yet. After mysql-only cutover deletes the
-            # legacy files, production naturally remains pure MySQL.
             if payloads:
                 return payloads
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return []
     out = []
     review_dir = ep / REL
     if review_dir.is_dir():

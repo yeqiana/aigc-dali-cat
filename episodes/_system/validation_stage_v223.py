@@ -268,6 +268,10 @@ def write_report(episode_dir: Path, result: dict) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     out = out_dir / f"{result['stage']}_validation_report.json"
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    # The file remains a human/debug export during cutover. Queryable gate
+    # facts are written to TB_REVIEW_RECORD in dual/mysql mode.
+    import validation_report_persistence
+    validation_report_persistence.persist(episode_dir, result)
     return out
 
 

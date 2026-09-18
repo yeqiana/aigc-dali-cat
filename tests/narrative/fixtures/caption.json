@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "category": "caption",
+  "fixtures": [
+    {
+      "id": "CAP_REAL_POS_001",
+      "polarity": "positive",
+      "source_type": "real",
+      "source_episode": "婚礼前夜·记忆麻醉",
+      "source_evidence": [
+        "frame 05",
+        "caption-image-audit.json"
+      ],
+      "scenario": {
+        "caption": "醒来，脚踝还红着。",
+        "visual": "画面可辨脚踝浅红压痕。",
+        "knowledge_boundary": "仍不能证明是药物或男人造成。"
+      },
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "reason": "字幕只陈述角色此刻可知事实，没有把相关性升级成因果。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["CaptionContract", "DisclosureBoundary"]
+    },
+    {
+      "id": "CAP_SYN_NEG_001",
+      "polarity": "negative",
+      "source_type": "synthetic_mutation",
+      "source_episode": "婚礼前夜·记忆麻醉",
+      "source_evidence": ["基于 frames 03-05 的真实揭露边界构造"],
+      "scenario": {
+        "caption": "原来他一直在给我下药，梦里的铁链也是他干的。",
+        "visual": "当前只看到梦中铁链/陌生手/现实红痕。",
+        "knowledge_boundary": "男人身份、药效与红痕因果均未被证明。"
+      },
+      "expected": {
+        "decision": "FAIL",
+        "issue_codes": ["EARLY_REVEAL", "UNSUPPORTED_CAUSAL_CLAIM"],
+        "reason": "字幕越过画面证据和角色知识边界，提前宣布尚未确认的真相。"
+      },
+      "current_coverage": "partial",
+      "future_capability": ["CaptionContract", "StoryFact", "DisclosureBoundary"]
+    },
+    {
+      "id": "CAP_REAL_BOUNDARY_001",
+      "polarity": "boundary",
+      "source_type": "real",
+      "source_episode": "泔水与金牌",
+      "source_evidence": [
+        "caption-image-audit.json frame 06/08"
+      ],
+      "scenario": "字幕包含峰顶/上层的旁述，而当前帧像素只展示第二层回廊或底层泔水；审计明确这些文字是画面之外的叙事旁述，没有冒充当前帧可见证据。",
+      "expected": {
+        "decision": "PASS_WITH_NOTE",
+        "issue_codes": [],
+        "reason": "字幕不要求每个事实都在当前像素中出现；关键是不能把 off-frame narration 伪装成当前帧视觉证据。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["CaptionContract", "EvidenceVerifier"]
+    },
+    {
+      "id": "CAP_SYN_NEG_002",
+      "polarity": "negative",
+      "source_type": "synthetic_mutation",
+      "source_episode": "generic",
+      "source_evidence": ["字幕人话化规范：删字幕测试"],
+      "scenario": {
+        "caption": "我看到红鞋鞋底焊着两个铁环。",
+        "visual": "画面中央已经清楚展示翻转后的红鞋与两个铁环，没有额外人物判断、感受或时间信息。"
+      },
+      "expected": {
+        "decision": "WARNING",
+        "issue_codes": ["CAPTION_VISUAL_DUPLICATION"],
+        "reason": "属于机械翻译画面；除非承担节奏/声音卡等明确功能，否则应压缩或改为补充信息。"
+      },
+      "current_coverage": "covered_by_standard_not_hard_gate",
+      "future_capability": ["CaptionContract"]
+    }
+  ]
+}
+

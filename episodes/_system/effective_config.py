@@ -39,6 +39,7 @@ if str(ROOT / "episodes/_system") not in sys.path:
 import runtime_router  # noqa: E402
 import storyos_config  # noqa: E402
 import storage_config  # noqa: E402
+import hot_state_bridge  # noqa: E402
 
 REL = Path("meta/runtime/effective-config.json")
 SCHEMA_VERSION = 1
@@ -177,7 +178,20 @@ def write(ep) -> dict:
     runtime_portability.assert_episode_directory(ep)
     data = snapshot()
     runtime_workspace.write_json(ep, REL, data)
+    hot_state_bridge.mirror(ep, "EFFECTIVE_CONFIG", data)
     return data
+
+
+def load(ep) -> dict:
+    """Read Redis projection first in dual mode, then compatibility file."""
+    ep = Path(ep).resolve()
+    hot = hot_state_bridge.read(ep, "EFFECTIVE_CONFIG")
+    value = hot_state_bridge.value_or_fallback(
+        hot,
+        lambda: runtime_workspace.read_json(ep, REL, default={}),
+        default={},
+    )
+    return value if isinstance(value, dict) else {}
 
 
 def main() -> int:

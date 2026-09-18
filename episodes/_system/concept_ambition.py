@@ -10,7 +10,9 @@ import runtime_router
 import runtime_provenance
 import product_review_adapter
 import story_json
+import runtime_review_persistence
 import runtime_timeout_policy
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 CANDIDATES_REL = Path("meta/concept-candidates.json")
@@ -46,7 +48,11 @@ def version_tuple(raw):
 
 def episode_contract_version(ep):
     versions = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    raw = str(state.get("tool_version") or "")
+    vt = version_tuple(raw)
+    if vt != (0,): versions.append((vt, raw))
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file(): continue
         try:
@@ -339,13 +345,11 @@ def re_review_plan(ep: Path) -> dict:
     reviewed_sha = str(review.get("candidates_sha256") or "").lower()
     drifted = bool(reviewed_sha and reviewed_sha != current_sha.lower())
     attempts = []
-    review_root = ep / "meta/runtime/reviews"
-    if review_root.is_dir():
-        for path in review_root.glob("concept-ambition-attempt-*-request.json"):
-            try:
-                attempts.append(int(path.name.split("-attempt-", 1)[1].split("-", 1)[0]))
-            except Exception:
-                continue
+    for row in runtime_review_persistence.list_attempts(ep, "concept-ambition"):
+        try:
+            attempts.append(int((row.get("payload") or {}).get("attempt") or 0))
+        except (TypeError, ValueError):
+            continue
     reviewed_attempt = int(((review.get("critic_provenance") or {}).get("attempt") or 0)) if isinstance(review, dict) else 0
     next_attempt = max([reviewed_attempt, *attempts, 0]) + 1
     return {

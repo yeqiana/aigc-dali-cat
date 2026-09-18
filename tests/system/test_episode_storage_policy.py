@@ -46,6 +46,22 @@ def test_release_projection_is_mysql_with_export_only_legacy_file():
     assert decision.legacy_file == "EXPORT_ONLY"
 
 
+def test_validation_and_post_publish_reports_have_explicit_ownership():
+    for rel, family in (
+        ("meta/validation/bootstrap_validation_report.json", "validation"),
+        ("meta/validation/preproduction_validation_report.json", "validation"),
+        ("meta/preproduction-validation.json", "validation"),
+        ("meta/post-publish-metrics.json", "metrics"),
+        ("meta/post-publish-review.json", "review"),
+        ("meta/next-story-learning.json", "learning"),
+        ("meta/publish-event.json", "publication"),
+    ):
+        decision = policy.classify(rel)
+        assert decision.target == policy.MYSQL
+        assert decision.legacy_file == "REMOVE_AFTER_CUTOVER"
+        assert decision.family == family
+
+
 def test_historical_revision_and_worker_logs_leave_active_episode_metadata():
     revision = policy.classify("meta/preimage-revisions/20260909/before/meta/story-gates.json")
     assert revision.target == policy.FILE
@@ -61,4 +77,3 @@ def test_gates_budgets_and_runtime_projections_have_explicit_targets():
     assert policy.classify("meta/runtime/trace-current.json").target == policy.REDIS
     assert policy.classify("meta/runtime/trace-summary.json").target == policy.MYSQL
     assert policy.classify("meta/runtime-execution.json").target == policy.MYSQL
-

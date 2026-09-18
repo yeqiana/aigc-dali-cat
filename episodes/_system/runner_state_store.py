@@ -25,7 +25,12 @@ def _now() -> str:
 
 
 def load(episode: Path) -> dict:
-    data = runtime_workspace.read_json(episode, REL, default={})
+    hot = hot_state_bridge.read(episode, "RUNNER_STATE")
+    data = hot_state_bridge.value_or_fallback(
+        hot,
+        lambda: runtime_workspace.read_json(episode, REL, default={}),
+        default={},
+    )
     return data if isinstance(data, dict) else {}
 
 

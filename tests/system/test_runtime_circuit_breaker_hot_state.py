@@ -56,6 +56,37 @@ def test_blocking_prefers_redis_projection(monkeypatch, tmp_path):
     assert row and row["code"] == "AUTH_401"
 
 
+def test_redis_authority_update_ignores_stale_file(monkeypatch, tmp_path):
+    ep = tmp_path / "ep"
+    ep.mkdir()
+    stale = breaker.default_state()
+    stale["circuits"] = {
+        "image:AUTH_401": {
+            "route": "image", "code": "AUTH_401", "state": "OPEN", "failures": 9,
+        }
+    }
+    breaker.atomic.atomic_write_json(ep / breaker.REL, stale)
+    mirrored = []
+    monkeypatch.setattr(
+        breaker.hot_state_bridge,
+        "read",
+        lambda *_args, **_kwargs: {
+            "mode": "redis", "redis_read": False, "value": None, "authoritative_missing": True,
+        },
+    )
+    monkeypatch.setattr(
+        breaker.hot_state_bridge,
+        "mirror",
+        lambda _ep, _kind, value: mirrored.append(dict(value)) or {"mode": "redis", "redis_written": True},
+    )
+
+    row = breaker.record_failure(ep, "image", "AUTH_401", threshold=2)
+
+    assert row["failures"] == 1
+    assert row["state"] == "CLOSED"
+    assert mirrored[-1]["circuits"]["image:AUTH_401"]["failures"] == 1
+
+
 def test_blocking_falls_back_to_file_when_redis_missing(monkeypatch, tmp_path):
     ep = tmp_path / "ep"
     ep.mkdir()

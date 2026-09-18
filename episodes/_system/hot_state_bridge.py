@@ -4,11 +4,30 @@ from pathlib import Path
 
 import storage_config
 import story_json
+import episode_identity
+
+
+class HotStateAuthorityError(RuntimeError):
+    """Redis authority is unavailable in redis-only mode."""
+
+
+def file_fallback_allowed(result: dict) -> bool:
+    """Compatibility files are readable only before Redis becomes authority."""
+    return str((result or {}).get("mode") or "") != "redis"
+
+
+def value_or_fallback(result: dict, fallback, *, default=None):
+    """Return Redis value, otherwise compatibility fallback only outside redis mode."""
+    value = (result or {}).get("value")
+    if isinstance(value, dict):
+        return value
+    if file_fallback_allowed(result):
+        return fallback()
+    return default
 
 
 def _episode_id(ep: Path) -> str:
-    state = story_json.read_json(Path(ep) / "meta/episode-state.json", default={})
-    return str((state or {}).get("episode_id") or Path(ep).name)
+    return episode_identity.storage_episode_id(ep)
 
 
 def mirror(ep: Path, kind: str, value: dict) -> dict:
@@ -26,19 +45,25 @@ def mirror(ep: Path, kind: str, value: dict) -> dict:
     from platform.state.redis_runtime_state_store import RedisRuntimeStateStore
     from platform.state.storyos_hot_state import EpisodeHotStateStore
 
-    connection = RedisConnection(**storage_config.redis_connection_kwargs())
+    connection = None
     try:
+        connection = RedisConnection(**storage_config.redis_connection_kwargs())
         store = EpisodeHotStateStore(RedisRuntimeStateStore(connection.client))
         store.put(_episode_id(Path(ep).resolve()), kind, value)
         return {"mode": mode, "redis_written": True}
-    except Exception as exc:  # Redis is an accelerator, not a fact authority.
+    except Exception as exc:
+        if mode == "redis":
+            raise HotStateAuthorityError(
+                f"REDIS_HOT_STATE_WRITE_FAILED kind={kind}: {type(exc).__name__}: {exc}"
+            ) from exc
         return {
             "mode": mode,
             "redis_written": False,
             "error": f"{type(exc).__name__}: {exc}",
         }
     finally:
-        connection.close()
+        if connection is not None:
+            connection.close()
 
 
 def read(ep: Path, kind: str) -> dict:
@@ -56,16 +81,22 @@ def read(ep: Path, kind: str) -> dict:
     from platform.state.redis_runtime_state_store import RedisRuntimeStateStore
     from platform.state.storyos_hot_state import EpisodeHotStateStore
 
-    connection = RedisConnection(**storage_config.redis_connection_kwargs())
+    connection = None
     try:
+        connection = RedisConnection(**storage_config.redis_connection_kwargs())
         store = EpisodeHotStateStore(RedisRuntimeStateStore(connection.client))
         value = store.get(_episode_id(Path(ep).resolve()), kind)
         return {
             "mode": mode,
-            "redis_read": value is not None,
+            "redis_read": isinstance(value, dict),
             "value": value if isinstance(value, dict) else None,
+            "authoritative_missing": mode == "redis" and not isinstance(value, dict),
         }
-    except Exception as exc:  # Redis remains a rebuildable accelerator.
+    except Exception as exc:
+        if mode == "redis":
+            raise HotStateAuthorityError(
+                f"REDIS_HOT_STATE_READ_FAILED kind={kind}: {type(exc).__name__}: {exc}"
+            ) from exc
         return {
             "mode": mode,
             "redis_read": False,
@@ -73,5 +104,37 @@ def read(ep: Path, kind: str) -> dict:
             "error": f"{type(exc).__name__}: {exc}",
         }
     finally:
-        connection.close()
+        if connection is not None:
+            connection.close()
+
+
+def delete(ep: Path, kind: str) -> dict:
+    """Best-effort removal of one rebuildable Redis hot-state projection."""
+    mode = storage_config.hot_state_config()["mode"]
+    if mode == "file":
+        return {"mode": mode, "redis_deleted": False}
+
+    from platform.state.redis_connection import RedisConnection
+    from platform.state.redis_runtime_state_store import RedisRuntimeStateStore
+    from platform.state.storyos_hot_state import EpisodeHotStateStore
+
+    connection = None
+    try:
+        connection = RedisConnection(**storage_config.redis_connection_kwargs())
+        store = EpisodeHotStateStore(RedisRuntimeStateStore(connection.client))
+        store.delete(_episode_id(Path(ep).resolve()), kind)
+        return {"mode": mode, "redis_deleted": True}
+    except Exception as exc:
+        if mode == "redis":
+            raise HotStateAuthorityError(
+                f"REDIS_HOT_STATE_DELETE_FAILED kind={kind}: {type(exc).__name__}: {exc}"
+            ) from exc
+        return {
+            "mode": mode,
+            "redis_deleted": False,
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+    finally:
+        if connection is not None:
+            connection.close()
 

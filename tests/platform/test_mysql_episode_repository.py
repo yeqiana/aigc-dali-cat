@@ -5,6 +5,7 @@ class FakeConnection:
     def __init__(self):
         self.executed = []
         self.row = None
+        self.rows = []
 
     def execute(self, sql, params=None):
         self.executed.append((sql, params))
@@ -12,6 +13,9 @@ class FakeConnection:
 
     def query_one(self, sql, params=None):
         return self.row
+
+    def query_all(self, sql, params=None):
+        return self.rows
 
 
 def test_upsert_keeps_storage_and_business_identity_separate():
@@ -43,3 +47,37 @@ def test_get_maps_database_columns():
     row = MySqlEpisodeRepository(conn).get("EPU_abc")
     assert row["business_episode_id"] == "10-01"
     assert row["episode_namespace"] == "10_series/01_title"
+
+
+
+def test_get_by_namespace_maps_database_columns():
+    conn = FakeConnection()
+    conn.row = {
+        "EPISODE_ID": "EPU_abc",
+        "BUSINESS_EPISODE_ID": "10-01",
+        "EPISODE_NAMESPACE": "10_series/01_title",
+        "SERIES_ID": "10_series",
+        "TITLE": "title",
+        "TOOL_VERSION": "3",
+        "DISPOSITION": "ACTIVE",
+    }
+    row = MySqlEpisodeRepository(conn).get_by_namespace("10_series/01_title")
+    assert row["episode_id"] == "EPU_abc"
+
+
+def test_list_namespaces_returns_canonical_episode_paths():
+    conn = FakeConnection()
+    conn.rows = [
+        {"EPISODE_NAMESPACE": "series/a"},
+        {"EPISODE_NAMESPACE": "series/b"},
+    ]
+    assert MySqlEpisodeRepository(conn).list_namespaces() == ["series/a", "series/b"]
+
+
+def test_update_disposition_is_compare_and_set():
+    conn = FakeConnection()
+    MySqlEpisodeRepository(conn).update_disposition(
+        "EPU_abc", "ABANDONED", expected="ACTIVE"
+    )
+    _sql, params = conn.executed[-1]
+    assert params == ("ABANDONED", "EPU_abc", "ACTIVE")

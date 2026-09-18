@@ -23,6 +23,8 @@ import runtime_provenance
 import episode_performance
 import story_json
 import runtime_timeout_policy
+import runtime_review_persistence
+import runtime_request as runtime_request_contract
 
 ROOT = Path(__file__).resolve().parents[2]
 HOST_ACTION_REQUIRED_RC = 20
@@ -50,6 +52,11 @@ def _sha256_text(text: str) -> str:
 
 
 def _read_json(path: Path) -> dict:
+    if runtime_review_persistence.is_request_path(path):
+        data = runtime_review_persistence.load_path(path)
+        if not isinstance(data, dict):
+            raise ProductReviewError(f"runtime review request missing or invalid: {path}")
+        return data
     data = json.loads(path.read_text(encoding="utf-8-sig"))
     if not isinstance(data, dict):
         raise ProductReviewError(f"JSON root must be object: {path}")
@@ -57,7 +64,14 @@ def _read_json(path: Path) -> dict:
 
 
 def _write_json(path: Path, data: dict) -> None:
+    if runtime_review_persistence.is_request_path(path):
+        runtime_review_persistence.save_path(path, data)
+        return
     story_json.write_json(path, data)
+
+
+def _request_exists(path: Path) -> bool:
+    return runtime_review_persistence.exists_path(path)
 
 
 def _repo_rel(path: Path) -> str:
@@ -94,7 +108,7 @@ def _persist_lifecycle(ep: Path, kind: str, attempt: int, req: dict) -> None:
     scoped = request_path(ep, kind, attempt=attempt)
     _write_json(scoped, req)
     current_path = request_path(ep, kind)
-    if current_path.is_file():
+    if _request_exists(current_path):
         current = _read_json(current_path)
         if current.get("request_id") == req.get("request_id") or int(current.get("attempt") or 0) == attempt:
             current.update(req)
@@ -188,8 +202,8 @@ def _devspace_bounded_allowed(ep: Path) -> bool:
     episodes continue to require a genuinely isolated critic.
     """
     try:
-        runtime_request = _read_json(ep / "meta/runtime-request.json")
-        authorized = ((runtime_request.get("user_intent") or {}).get("full_auto_authorized")) is True
+        request = runtime_request_contract.authority_for_episode(ep) or {}
+        authorized = ((request.get("user_intent") or {}).get("full_auto_authorized")) is True
         shot = _read_json(ep / "meta/shot-progression-review.json")
         ordinary = shot.get("anomaly_applicable") is False and bool(str(shot.get("anomaly_exception_reason") or "").strip())
         return authorized and ordinary
@@ -219,11 +233,11 @@ def _frozen_source_key(source_files) -> tuple[tuple[str, str], ...]:
 
 def _previous_attempt_request(ep: Path, kind: str, attempt: int) -> dict | None:
     scoped = request_path(ep, kind, attempt=attempt)
-    if scoped.is_file():
+    if _request_exists(scoped):
         return _read_json(scoped)
     # Compatibility with requests written before V2.6.1.1: only the alias exists.
     legacy = request_path(ep, kind)
-    if legacy.is_file():
+    if _request_exists(legacy):
         data = _read_json(legacy)
         if int(data.get("attempt") or 0) == attempt:
             return data
@@ -248,7 +262,7 @@ def _reject_redundant_second_attempt(ep: Path, kind: str, sources: list[dict]) -
     re-invoking run-critic to re-read an existing request must stay idempotent,
     and such existing residue is answered by answered_request() at the consumer.
     """
-    if request_path(ep, kind, attempt=2).is_file():
+    if _request_exists(request_path(ep, kind, attempt=2)):
         return
     try:
         previous = _previous_attempt_request(ep, kind, 1)
@@ -275,7 +289,7 @@ def _validate_attempt(ep: Path, kind: str, attempt: int, sources: list[dict]) ->
     if kind not in _EXTENDED_SOURCE_DRIFT_KINDS:
         raise ProductReviewError("attempt must be 1 or 2")
     previous_path = request_path(ep, kind, attempt=attempt - 1)
-    if not previous_path.is_file():
+    if not _request_exists(previous_path):
         raise ProductReviewError(f"extended review attempt requires previous attempt: {previous_path}")
     previous = _read_json(previous_path)
     if previous.get("status") != "FINALIZED":
@@ -336,19 +350,16 @@ def answered_request(ep: Path, request: dict) -> dict | None:
     except (OSError, ValueError):
         return None
     request_paths = {str(request.get("path") or "")}
-    review_dir = ep / "meta/runtime/reviews"
-    if not review_dir.is_dir():
-        return None
-    for sibling in sorted(review_dir.glob(f"{kind}*-request.json")):
+    for sibling_row in runtime_review_persistence.list_attempts(ep, kind):
+        sibling = sibling_row["path"]
         try:
             rel = _repo_rel(sibling)
         except ValueError:
             continue
         if rel in request_paths:
             continue
-        try:
-            data = _read_json(sibling)
-        except (OSError, ValueError, ProductReviewError):
+        data = sibling_row.get("payload")
+        if not isinstance(data, dict):
             continue
         # Exact kind: "visual-lock" is a string prefix of "visual-lock-baseline",
         # so the glob alone over-collects.
@@ -497,7 +508,7 @@ def prepare(
         req["source_bindings"] = source_bindings
     req["deadline_at"] = _deadline_for(req["created_at"])
     attempt_path = request_path(ep, kind, attempt=attempt)
-    if attempt_path.is_file():
+    if _request_exists(attempt_path):
         existing = _read_json(attempt_path)
         if existing.get("request_fingerprint") != fingerprint:
             existing_candidate = (ROOT / str(existing.get("candidate_path") or "")).resolve()
@@ -524,11 +535,11 @@ def prepare(
 
 def _resolve_request(ep: Path, kind: str, attempt: int) -> tuple[Path, dict]:
     scoped = request_path(ep, kind, attempt=attempt)
-    if scoped.is_file():
+    if _request_exists(scoped):
         return scoped, _read_json(scoped)
     # Compatibility with requests written before V2.6.1.1.
     legacy = request_path(ep, kind)
-    if legacy.is_file():
+    if _request_exists(legacy):
         req = _read_json(legacy)
         if int(req.get("attempt") or 0) == attempt:
             return legacy, req
@@ -622,7 +633,7 @@ def mark_complete(ep: Path, kind: str, *, final_path: Path, attempt: int | None 
     req["final_path"] = _repo_rel(final_path)
     _write_json(scoped_path, req)
     current_path = request_path(ep, kind)
-    if current_path.is_file():
+    if _request_exists(current_path):
         current = _read_json(current_path)
         if (
             current.get("request_id") == req.get("request_id")

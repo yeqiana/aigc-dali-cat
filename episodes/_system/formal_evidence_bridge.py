@@ -15,6 +15,7 @@ from pathlib import Path
 
 import runtime_asset_policy
 import runtime_portability
+import episode_identity
 
 INDEX_REL = Path("meta/formal-evidence-index.json")
 SCHEMA_VERSION = 1
@@ -29,16 +30,7 @@ def _sha256(path: Path) -> str:
 
 
 def _episode_id(ep: Path) -> str:
-    state = ep / "meta/episode-state.json"
-    if state.is_file():
-        try:
-            data = json.loads(state.read_text(encoding="utf-8-sig"))
-            for key in ("episode_id", "id"):
-                if data.get(key):
-                    return str(data[key])
-        except (OSError, json.JSONDecodeError):
-            pass
-    return ep.name
+    return episode_identity.storage_episode_id(ep)
 
 
 def evidence_rows(ep: Path) -> list[dict]:

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
 from collections import Counter
 from pathlib import Path
@@ -18,7 +19,9 @@ import story_json
 import runtime_observability
 import derived_freshness
 import runtime_checkpoint
+import episode_state_persistence
 import production_queue_store
+import scheduler_core
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = runtime_observability.WORKFLOW_OBSERVABILITY_REL
@@ -43,6 +46,11 @@ def read_json(path: Path) -> dict:
 
 
 def maybe(ep: Path, rel: Path | str) -> dict:
+    try:
+        runtime_observability.resolve_known_path(rel)
+        return runtime_observability.read_summary(ep, rel, default={})
+    except ValueError:
+        pass
     p = ep / rel
     return read_json(p) if p.is_file() else {}
 
@@ -51,10 +59,30 @@ def source_snapshot(ep: Path) -> tuple[list[dict], str]:
     rows = []
     for rel in SOURCE_RELS:
         logical = str(rel).replace("\\", "/")
+        if logical == episode_state_persistence.REL.as_posix():
+            payload = episode_state_persistence.load(ep)
+            rows.append({
+                "path": logical,
+                "sha256": episode_state_persistence.authority_sha256(payload),
+            })
+            continue
         if logical == runtime_checkpoint.REL.as_posix():
-            path = runtime_checkpoint.read_path(ep)
+            payload = runtime_checkpoint.load(ep, {})
+            rows.append({
+                "path": logical,
+                "sha256": runtime_checkpoint.authority_sha256(payload),
+            })
+            continue
         elif logical == production_queue_store.REL.as_posix():
-            path = production_queue_store.read_path(ep)
+            payload = scheduler_core.load_queue(ep)
+            raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            rows.append({"path": logical, "sha256": hashlib.sha256(raw).hexdigest()})
+            continue
+        elif Path(rel) in runtime_observability.KNOWN_PATHS.values():
+            payload = runtime_observability.read_summary(ep, rel, default={})
+            raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            rows.append({"path": logical, "sha256": hashlib.sha256(raw).hexdigest()})
+            continue
         else:
             path = ep / rel
         rows.append({"path": logical, "sha256": derived_freshness.sha256_file(path)})
@@ -86,8 +114,7 @@ def collect(ep: Path, *, write: bool = True) -> dict:
     episode_performance = maybe(ep, runtime_observability.EPISODE_PERFORMANCE_REL)
     performance = maybe(ep, runtime_observability.WORKFLOW_PERFORMANCE_REL)
     scheduler = maybe(ep, runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL)
-    queue_path = production_queue_store.read_path(ep)
-    queue = read_json(queue_path) if queue_path.is_file() else {}
+    queue = scheduler_core.load_queue(ep)
     ledger = maybe(ep, "meta/production-ledger.json")
     scout = maybe(ep, "meta/frame-scout-summary.json")
     snapshot = maybe(ep, "meta/final-candidate-snapshot.json")
@@ -134,7 +161,7 @@ def collect(ep: Path, *, write: bool = True) -> dict:
         "diagnostic_only": True,
         "source_files": source_files,
         "source_fingerprint": source_fingerprint,
-        "stage_source": "meta/episode-state.json",
+        "stage_source": "episode_state_authority",
         "episode": ep.relative_to(ROOT).as_posix(),
         "current_state": state.get("current_state"),
         "latest_workflow_run": {
@@ -180,14 +207,20 @@ def collect(ep: Path, *, write: bool = True) -> dict:
         },
     }
     if write:
-        write_json(ep / REL, report)
+        runtime_observability.write_summary(ep,REL,kind="workflow_observability",payload=report)
     return report
 
 
 def load_fresh(ep: Path, *, write: bool = True) -> dict:
     ep = Path(ep).resolve()
     existing = maybe(ep, REL)
-    return existing if derived_freshness.is_fresh(ep, existing, SOURCE_RELS) else collect(ep, write=write)
+    _rows, current = source_snapshot(ep)
+    if (
+        isinstance(existing, dict)
+        and str(existing.get("source_fingerprint") or "").lower() == current.lower()
+    ):
+        return existing
+    return collect(ep, write=write)
 
 
 def self_test() -> None:

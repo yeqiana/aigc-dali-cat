@@ -21,6 +21,7 @@ import hashlib
 import json
 from pathlib import Path
 from typing import Any
+import episode_state_persistence
 
 import capture_grammar_v228
 import shot_progression_gate
@@ -75,11 +76,12 @@ def _version_tuple(raw: object) -> tuple[int, ...]:
 def episode_version(ep: Path) -> str:
     ep = Path(ep)
     versions: list[tuple[tuple[int, ...], str]] = []
-    for rel in (
-        "meta/episode-state.json",
-        "meta/release-manifest.json",
-        "meta/story-gates.json",
-    ):
+    state = episode_state_persistence.load(ep) or {}
+    raw = str(state.get("tool_version") or "")
+    vt = _version_tuple(raw)
+    if vt != (0,):
+        versions.append((vt, raw))
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -306,8 +308,7 @@ def _camera_authorship_errors(ep: Path, n: int, row: dict) -> list[str]:
     primary = str(row.get("primary_subject") or "").lower()
     if _device_pov(row) and any(token.lower() in primary for token in SELF_CAMERA_SUBJECT_TOKENS):
         errors.append(f"SELF_CAMERA_VISIBLE:{n:02d}:active camera cannot depict its own device body")
-    capture_path = Path(ep) / capture_event_contract.REL
-    if not capture_path.is_file():
+    if not capture_event_contract.exists(ep):
         return errors
     try:
         capture = capture_event_contract.resolve_frame(ep, n).get("capture_event") or {}
@@ -356,7 +357,7 @@ def resolve_frame(ep: Path, frame: int | str) -> dict:
         raise ValueError(f"VISUAL_NARRATIVE_MISSING:{key}")
 
     capture = capture_grammar_v228.compile_capture_contract(ep)
-    capture_event = (capture_event_contract.resolve_frame(ep, n).get("capture_event") or {}) if (ep / capture_event_contract.REL).is_file() else {}
+    capture_event = (capture_event_contract.resolve_frame(ep, n).get("capture_event") or {}) if capture_event_contract.exists(ep) else {}
     act = activation(ep)
 
     contract = {

@@ -86,7 +86,7 @@ def inspect_item(ep: Path, item: dict) -> dict:
     if frame <= 0 or code not in SUPPORTED_AUTO_CODES:
         return {**base, "reason": "unsupported_non_regenerating_failure"}
 
-    ledger = _read(ep / LEDGER_REL)
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     attempt = _latest_attempt(ledger, frame)
     tx = str(((item.get("execution") or {}).get("transaction_id")) or "")
     if attempt.get("result") != "technical_failure" or not tx or str(attempt.get("runtime_transaction_id") or "") != tx:
@@ -167,7 +167,7 @@ def inspect_item(ep: Path, item: dict) -> dict:
 
 def inspect(ep: Path, items: list[dict] | None = None) -> list[dict]:
     ep = Path(ep).resolve()
-    queue = _read(production_queue_store.read_path(ep))
+    queue = scheduler_core.load_queue(ep)
     rows = items if items is not None else [
         row for row in (queue.get("items") or [])
         if isinstance(row, dict) and row.get("status") == "blocked"
@@ -178,7 +178,7 @@ def inspect(ep: Path, items: list[dict] | None = None) -> list[dict]:
 def _recover_locked(ep: Path, *, frames: list[int] | None = None) -> dict:
     """Recover eligible blocked RAWs while the caller owns the Queue lock."""
     ep = Path(ep).resolve()
-    queue = _read(production_queue_store.read_path(ep))
+    queue = scheduler_core.load_queue(ep)
     wanted = {int(x) for x in (frames or [])}
     rows = [
         row for row in (queue.get("items") or [])

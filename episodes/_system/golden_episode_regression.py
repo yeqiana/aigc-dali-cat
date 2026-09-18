@@ -10,7 +10,10 @@ import argparse, datetime as dt, json
 from pathlib import Path
 import storyboard_density_gate, voice_contract, capture_event_contract, world_state, asset_lineage
 import propagation_core_gate  # STORY_OS_V2_5_PROPAGATION_CORE
+import episode_state_persistence
+import story_review
 import story_json
+import production_ledger
 
 ROOT=Path(__file__).resolve().parents[2]
 REG=ROOT/"reports/golden-episode-registry.json"
@@ -40,21 +43,20 @@ def registry():
 def metrics(ep):
     ep=Path(ep).resolve()
     ta=read_json(ep/"meta/text-audit.json") if (ep/"meta/text-audit.json").is_file() else {}
-    ledger=read_json(ep/"meta/production-ledger.json") if (ep/"meta/production-ledger.json").is_file() else {}
+    ledger=production_ledger.load_authority(ep,default={}) or {}
     attempts=0;repairs=0
     for row in (ledger.get("frames") or {}).values():
         ats=row.get("attempts") or [];attempts+=len(ats)
         repairs+=sum(1 for x in ats if str(x.get("kind") or "").lower()=="repair")
     return {
       "density_error_count":len(storyboard_density_gate.validate(ep,True)) if (ep/storyboard_density_gate.REL).is_file() else None,
-      "voice_error_count":len(voice_contract.validate(ep,True)) if (ep/voice_contract.REL).is_file() else None,
-      "capture_event_error_count":len(capture_event_contract.validate(ep,True)) if (ep/capture_event_contract.REL).is_file() else None,
+      "voice_error_count":len(voice_contract.validate(ep,True)) if voice_contract.exists(ep) else None,
+      "capture_event_error_count":len(capture_event_contract.validate(ep,True)) if capture_event_contract.exists(ep) else None,
       "world_state_error_count":len(world_state.validate(ep,True)) if (ep/world_state.REL).is_file() else None,
       "lineage_error_count":len(asset_lineage.verify(ep)) if (ep/asset_lineage.REL).is_file() else None,
       "propagation_core_error_count":(
           len(propagation_core_gate.verify(ep, force=True))
-          if (ep/"meta/story-semantic-review.json").is_file()
-          and isinstance(read_json(ep/"meta/story-semantic-review.json").get("propagation_core"), dict)
+          if isinstance((story_review.load_review(ep) or {}).get("propagation_core"), dict)
           else None
       ),
       "text_hard_errors":((ta.get("summary") or {}).get("hard_error_count")),
@@ -66,8 +68,7 @@ def metrics(ep):
 def qualification(ep):
     ep=Path(ep).resolve()
     blockers=[]
-    state_path=ep/"meta/episode-state.json"
-    state=read_json(state_path) if state_path.is_file() else {}
+    state=episode_state_persistence.load(ep) or {}
     current_state=str(state.get("current_state") or "UNKNOWN")
     if current_state not in RELEASE_STATES:
         blockers.append(f"state={current_state}; requires PUBLISH_READY+")

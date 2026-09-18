@@ -77,7 +77,8 @@ def load_by_path(ep: Path, legacy_path: str | Path) -> dict | None:
         rel = file_path.relative_to(ROOT).as_posix()
     except ValueError:
         rel = str(file_path)
-    if storage_config.episode_meta_store_config()["mode"] in {"dual", "mysql"}:
+    mode = storage_config.episode_meta_store_config()["mode"]
+    if mode in {"dual", "mysql"}:
         from platform.repository.mysql.mysql_connection import MySqlConnection
         from platform.repository.mysql.mysql_provider_receipt_repository import MySqlProviderReceiptRepository
         from platform.repository.mysql.schema_v2 import DATABASE_NAME
@@ -99,11 +100,14 @@ def load_by_path(ep: Path, legacy_path: str | Path) -> dict | None:
                     "receipt_id": row.get("receipt_id"),
                 }
         except Exception:
-            # MySQL is preferred in dual mode, but recovery must remain fail-soft.
-            pass
+            # dual remains recoverable from compatibility JSON; mysql does not.
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return None
 
     if file_path.is_file():
         payload = json.loads(file_path.read_text(encoding="utf-8-sig"))

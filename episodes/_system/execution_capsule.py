@@ -8,7 +8,10 @@ Codex worker reread the whole repository policy stack before doing bounded work.
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json
 import runtime_execution
+import runtime_request
+import episode_state_persistence
 import runtime_workspace
+import character_contract
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -52,7 +55,7 @@ def file_row(path,base):
 def read_json(path):
     return story_json.read_json(path, default=None)
 def current_state(ep):
-    d=read_json(ep/"meta/episode-state.json") or {}
+    d=episode_state_persistence.load(ep) or {}
     return d.get("current_state")
 def compile_capsule(ep,step,write=True):
     if step not in STEP_EVIDENCE: raise ValueError(f"unsupported step: {step}")
@@ -60,7 +63,7 @@ def compile_capsule(ep,step,write=True):
     import runtime_resume_capsule
     wf=read_json(ROOT/"runtimes/workflow-contract.json") or {}
     rules=wf.get("rules") or {}
-    request=read_json(ep/"meta/runtime-request.json")
+    request=runtime_request.authority_for_episode(ep)
     execution=read_json(ep/"meta/runtime-execution.json")
     effective_mode=runtime_execution.effective_mode(ep)
     # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
@@ -99,7 +102,7 @@ def compile_capsule(ep,step,write=True):
       "runtime_fast_path":runtime_fast_path,
       "runtime_capabilities":runtime_capabilities,
       "resume_capsule":resume_capsule,
-      "character_contract":read_json(ep/"meta/character-contract.json"),
+      "character_contract":character_contract.load(ep),
       "preimage_task": preimage_task,
       "invariants":{k:rules.get(k) for k in RULE_KEYS if k in rules},
       "authority_files":authority,

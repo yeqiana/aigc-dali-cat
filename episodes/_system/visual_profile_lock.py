@@ -49,13 +49,13 @@ from pathlib import Path
 from typing import Any
 
 import story_json
+import runtime_request
 import visual_profile_registry as registry
 
 ROOT = Path(__file__).resolve().parents[2]
 
 LOCK_REL = Path("meta/visual-profile.json")
 LOCK_ALT_REL = Path("meta/visual_profile.json")
-RUNTIME_REQUEST_REL = Path("meta/runtime-request.json")
 LOCK_SCHEMA_REL = Path("standards/visual_profiles/schema/visual-lock.schema.json")
 
 # A pre-governance V2.2.4 episode meta lock carries profile_id / profile_path plus
@@ -201,7 +201,7 @@ def confirmation_mode(lock) -> str:
 def visual_profile_requirement(episode) -> dict[str, Any]:
     """Does this Episode declare that it needs a governed Visual Lock?"""
     ep = Path(episode)
-    request = read_json(ep / RUNTIME_REQUEST_REL, default={}) or {}
+    request = runtime_request.authority_for_episode(ep) or {}
     if not isinstance(request, dict):
         request = {}
     if isinstance(request.get("visual_profile_selection"), dict):

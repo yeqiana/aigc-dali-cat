@@ -87,9 +87,12 @@ def _record_path(ep: Path) -> Path:
 
 def _read_record(ep: Path) -> dict:
     hot = hot_state_bridge.read(Path(ep), "DRIVER_STATE")
-    if isinstance(hot.get("value"), dict):
-        return hot["value"]
-    return story_json.read_json(_record_path(ep), default={}) or {}
+    value = hot_state_bridge.value_or_fallback(
+        hot,
+        lambda: story_json.read_json(_record_path(ep), default={}),
+        default={},
+    )
+    return value if isinstance(value, dict) else {}
 
 
 def _write_record(ep: Path, fields: dict) -> dict:
@@ -139,9 +142,12 @@ def write_beacon(ep: Path, pid: int, *, beat: int | None = None) -> dict:
 
 def _read_beacon(ep: Path) -> dict:
     hot = hot_state_bridge.read(Path(ep), "DRIVER_HEARTBEAT")
-    if isinstance(hot.get("value"), dict):
-        return hot["value"]
-    return story_json.read_json(_beacon_path(ep), default={}) or {}
+    value = hot_state_bridge.value_or_fallback(
+        hot,
+        lambda: story_json.read_json(_beacon_path(ep), default={}),
+        default={},
+    )
+    return value if isinstance(value, dict) else {}
 
 
 def beacon_age(ep: Path, pid: int) -> float | None:

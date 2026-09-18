@@ -52,7 +52,7 @@ def ensure_state(ep: Path) -> tuple[Path, dict]:
     hot = hot_state_bridge.read(ep, "TRANSPORT_STATE")
     if hot.get("redis_read") and isinstance(hot.get("value"), dict):
         return path, hot["value"]
-    if path.exists():
+    if hot_state_bridge.file_fallback_allowed(hot) and path.exists():
         return path, load_json(path)
     data = {
         'schema_version': SCHEMA_VERSION,

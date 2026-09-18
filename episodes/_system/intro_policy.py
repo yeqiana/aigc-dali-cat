@@ -6,6 +6,7 @@ import argparse, hashlib, json
 from pathlib import Path
 import multi_level_cache as cache
 import story_json
+import character_contract
 
 ROOT=Path(__file__).resolve().parents[2]
 POOL=ROOT/"library/copy/intro-openers.json"
@@ -26,7 +27,7 @@ def recent_families(ep):
     return out
 def resolve(ep,write=True):
     ep=Path(ep).resolve(); pool=read_json(POOL)
-    cp=read_json(ep/"meta/character-contract.json") if (ep/"meta/character-contract.json").is_file() else {}
+    cp=character_contract.load(ep) or {}
     era=(cp.get("era") or {}).get("bucket");entry=(cp.get("entry") or {}).get("type")
     recent=recent_families(ep); rows=[]
     for fam in pool["families"]:

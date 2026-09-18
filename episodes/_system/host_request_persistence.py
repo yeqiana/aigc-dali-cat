@@ -89,10 +89,13 @@ def load(ep: Path, request_id: str) -> dict | None:
             if row and isinstance(row.get("payload"), dict):
                 return row["payload"]
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return None
     for path in runtime_workspace.read_candidates(ep, request_rel(request_id)):
         if path.is_file():
             data = story_json.read_json(path, default=None)
@@ -118,10 +121,13 @@ def list_all(ep: Path) -> list[dict]:
                 if isinstance(payload, dict) and payload.get("request_id"):
                     rows[str(payload["request_id"])] = payload
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return list(rows.values())
     for history in runtime_workspace.read_candidates(ep, REL):
         if not history.is_dir():
             continue

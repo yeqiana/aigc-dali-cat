@@ -69,10 +69,13 @@ def load(ep: Path, frame: int | str) -> dict | None:
             if row and isinstance(row.get("payload"), dict):
                 return row["payload"]
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return None
     path = _legacy_path(ep, frame)
     return story_json.read_json(path, default=None) if path.is_file() else None
 
@@ -97,10 +100,13 @@ def list_all(ep: Path) -> list[dict]:
             if payloads:
                 return payloads
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return []
     out = []
     root = ep / REL
     if root.is_dir():

@@ -10,6 +10,7 @@ import json, os, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
 import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import frame_contract
+import rolling_review_persistence
 import runtime_capability_cache  # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
 import runtime_router
 import runtime_timeout_policy
@@ -44,7 +45,8 @@ def review(ep,frame,image,codex_raw=None,timeout=None):
             "returncode":0,
         }
     contract=frame_contract.compile_frame(ep,int(frame),write_cache=True)
-    out=ep/REL/f"{int(frame):02d}-{int(time.time())}.json"; out.parent.mkdir(parents=True,exist_ok=True)
+    attempt_no=int(time.time())
+    out=ep/REL/f"{int(frame):02d}-{attempt_no}.json"; out.parent.mkdir(parents=True,exist_ok=True)
     prompt=f"""Review the attached generated frame as an actual-pixel PRE-FINAL Story OS review.
 Frame contract:
 {contract["prompt_contract"]}
@@ -78,6 +80,7 @@ REPAIR_NOW only for clear visible defects. UNCERTAIN if evidence is ambiguous.
     except Exception: return {"decision":"UNCERTAIN","reason":"invalid_json","returncode":cp.returncode}
     if data.get("decision") not in VALID: data["decision"]="UNCERTAIN"
     data["final_pass_authority"]=False
+    rolling_review_persistence.save(ep,data,attempt_no=attempt_no,candidate_path=out)
     return data
 def self_test():
     assert "PASS_PREVIEW" in VALID

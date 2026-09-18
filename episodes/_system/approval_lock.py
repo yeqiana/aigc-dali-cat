@@ -8,8 +8,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from visual_profile import resolve_profile
-from story_review import review_required as story_review_required, verify as verify_story_review
+from story_review import REVIEW_REL as STORY_REVIEW_REL, review_authority_sha256, review_required as story_review_required, verify as verify_story_review
 from visual_review import review_required as visual_review_required, verify as verify_visual_review
+import visual_profile_review_persistence
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -71,6 +72,34 @@ def row_for_path(path: Path, role: str) -> dict:
     }
 
 
+
+def row_for_story_review_authority(ep: Path) -> dict:
+    digest = review_authority_sha256(ep)
+    if not digest:
+        raise SystemExit('story semantic review authority missing')
+    return {
+        'role': 'story_semantic_review',
+        'path': STORY_REVIEW_REL.as_posix(),
+        'sha256': digest,
+        'kind': 'authority',
+        'authority': 'TB_REVIEW_RECORD:STORY_SEMANTIC',
+    }
+
+
+
+def row_for_visual_review_authority(ep: Path) -> dict:
+    digest = visual_profile_review_persistence.authority_sha256(ep)
+    if not digest:
+        raise SystemExit('visual profile review authority missing')
+    return {
+        'role': 'visual_profile_review',
+        'path': visual_profile_review_persistence.LEGACY_REL.as_posix(),
+        'sha256': digest,
+        'kind': 'authority',
+        'authority': 'TB_REVIEW_RECORD:VISUAL_PROFILE',
+    }
+
+
 def story_assets(ep: Path) -> list[dict]:
     manifest = load_json(ep / MANIFEST_REL)
     artifacts = manifest.get('artifacts') or {}
@@ -81,7 +110,7 @@ def story_assets(ep: Path) -> list[dict]:
         errors = verify_story_review(ep)
         if errors:
             raise SystemExit('story semantic review failed: ' + '; '.join(errors))
-        rows.append(row_for_path(ep / 'meta/story-semantic-review.json', 'story_semantic_review'))
+        rows.append(row_for_story_review_authority(ep))
     return rows
 
 
@@ -155,7 +184,7 @@ def visual_assets(ep: Path) -> tuple[list[dict], dict]:
         errors = verify_visual_review(ep)
         if errors:
             raise SystemExit('visual profile review failed: ' + '; '.join(errors))
-        rows.append(row_for_path(ep / 'meta/visual-profile-review.json', 'visual_profile_review'))
+        rows.append(row_for_visual_review_authority(ep))
     return rows, profile
 
 
@@ -192,6 +221,23 @@ def verify_lock(ep: Path, kind: str) -> list[str]:
             continue
         raw = row.get('path')
         expected = str(row.get('sha256') or '')
+        if row.get('kind') == 'authority':
+            role = row.get('role')
+            if role == 'story_semantic_review':
+                actual = review_authority_sha256(ep)
+            elif role == 'visual_profile_review':
+                actual = visual_profile_review_persistence.authority_sha256(ep)
+            else:
+                errors.append(f'{kind}: unknown authority artifact role {role}')
+                continue
+            if not actual:
+                errors.append(f'{kind}: {role} authority missing')
+            elif actual.lower() != expected.lower():
+                errors.append(
+                    f'{kind}: authority SHA256 drift {raw}\n'
+                    f'expected={expected}\nactual  ={actual}'
+                )
+            continue
         try:
             p = repo_path(raw, f'{kind}.artifact')
         except SystemExit as e:

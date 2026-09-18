@@ -28,6 +28,7 @@ from visual_profile import compile_prompt_contract
 import environment_contract
 import frame_contract
 import production_queue_store
+import scheduler_core
 import character_visual_contract
 import visual_lock_baseline_gate
 import visual_narrative_core_v22  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
@@ -44,10 +45,13 @@ import story_json
 import visual_review_schema
 import runtime_timeout_policy
 import visual_lock_admission_state
+import episode_state_persistence
+import visual_profile_review_persistence
+import production_ledger
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path("meta/story-gates.json")
-REVIEW_REL = Path("meta/visual-profile-review.json")
+REVIEW_REL = visual_profile_review_persistence.LEGACY_REL
 PLAN_REL = Path("meta/visual-lock-plan.json")
 CANDIDATE_REL = Path("meta/.visual-lock-review.candidate.json")
 MIN_VERSION = (2, 1, 0)
@@ -118,7 +122,14 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 def episode_version(ep: Path) -> str:
     versions = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    try:
+        raw = str((episode_state_persistence.load(Path(ep).resolve()) or {}).get("tool_version") or "")
+        vt = version_tuple(raw)
+        if vt != (0,):
+            versions.append((vt, raw))
+    except Exception:
+        pass
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -374,10 +385,9 @@ def prepare(ep: Path) -> dict:
 def _find_attempt_binding(ep: Path, frame: int, asset_sha: str) -> list[str]:
     if not frame_contract.required(ep):
         return []
-    ledger_path = ep / "meta/production-ledger.json"
-    if not ledger_path.is_file():
+    ledger = production_ledger.load_authority(ep, default=None)
+    if not isinstance(ledger, dict):
         return [f"frame {frame:02d} production ledger missing"]
-    ledger = read_json(ledger_path)
     row = (ledger.get("frames") or {}).get(f"{frame:02d}")
     if not isinstance(row, dict):
         return [f"frame {frame:02d} production ledger row missing"]
@@ -490,8 +500,7 @@ def stale_generation_bindings(ep: Path) -> list[dict]:
         return []
     gates = read_json(ep / GATES_REL)
     items = ((((gates.get("visual") or {}).get("calibration") or {}).get("items")) or [])
-    ledger_path = ep / "meta/production-ledger.json"
-    ledger = read_json(ledger_path) if ledger_path.is_file() else {}
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     ledger_frames = ledger.get("frames") or {}
     stale: list[dict] = []
     for item in items:
@@ -547,12 +556,8 @@ def dirty_admission_frames(ep: Path) -> list[int]:
 
 
 def bind_from_queue(ep: Path) -> dict:
-    qpath = production_queue_store.read_path(ep)
-    if not qpath.is_file():
-        raise ValueError("production queue missing")
-    q = read_json(qpath)
-    ledger_path = ep / "meta/production-ledger.json"
-    ledger = read_json(ledger_path) if ledger_path.is_file() else {"frames": {}}
+    q = scheduler_core.load_queue(ep)
+    ledger = production_ledger.load_authority(ep, default={"frames": {}}) or {"frames": {}}
     generated = {}
     for item in q.get("items") or []:
         if item.get("scope") not in {"visual_lock", "repair", "baseline_candidate"}:
@@ -671,13 +676,12 @@ def verify(ep: Path, *, metadata_only: bool = False) -> list[str]:
     """
     if not required(ep):
         return []
-    path = ep / REVIEW_REL
-    if not path.is_file():
+    data = visual_profile_review_persistence.load(ep)
+    if not isinstance(data, dict):
         return ["meta/visual-profile-review.json missing"]
     try:
         contract = compile_prompt_contract(ep)
         assets = calibration_assets(ep, metadata_only=metadata_only)
-        data = read_json(path)
         errors = validate_payload(data, contract=contract, assets=assets, version=episode_version(ep))
         weak_ids = {
             str(asset.get("id") or "")
@@ -908,7 +912,12 @@ def _finalize_review_payload(
     technical_codes = critic_runtime_v211.classify_issue_codes(data.get("issue_codes") or [])
     evidence_ref = provenance.get("log") or provenance.get("request_path") or "product_runtime_review"
     if technical_codes:
-        write_json(ep / REVIEW_REL, data)
+        visual_profile_review_persistence.save(
+            ep,
+            data,
+            decision="TECHNICAL_FAILURE",
+            source_sha256=contract["profile_sha256"],
+        )
         (ep / CANDIDATE_REL).unlink(missing_ok=True)
         health = critic_runtime_v211.record_technical_failure(
             ep,
@@ -936,7 +945,12 @@ def _finalize_review_payload(
         provenance=provenance,
         attempt=attempt,
     )
-    write_json(ep / REVIEW_REL, data)
+    visual_profile_review_persistence.save(
+        ep,
+        data,
+        decision="PASS" if not errors else "FAIL",
+        source_sha256=contract["profile_sha256"],
+    )
     (ep / CANDIDATE_REL).unlink(missing_ok=True)
     critic_runtime_v211.record_content_result(
         ep,
@@ -989,7 +1003,18 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
         attempt=attempt,
     )
     if rc == 0:
-        product_review_adapter.mark_complete(ep, "visual-lock", attempt=attempt, final_path=ep / REVIEW_REL)
+        final_export = visual_profile_review_persistence.materialize_export(
+            ep,
+            visual_profile_review_persistence.load(ep),
+        )
+        if final_export is None:
+            raise RuntimeError("visual profile review export missing after PASS")
+        product_review_adapter.mark_complete(
+            ep,
+            "visual-lock",
+            attempt=attempt,
+            final_path=final_export,
+        )
     return rc
 
 
@@ -1001,10 +1026,9 @@ def _direct_user_exception_frames(ep: Path, assets: list[dict]) -> list[int]:
     current calibration asset so an older exception authorization cannot bless a
     newer unrelated image.
     """
-    ledger_path = Path(ep) / "meta/production-ledger.json"
-    if not ledger_path.is_file():
+    ledger = production_ledger.load_authority(Path(ep).resolve(), default=None)
+    if not isinstance(ledger, dict):
         return []
-    ledger = read_json(ledger_path)
     result = []
     for asset in assets:
         try:

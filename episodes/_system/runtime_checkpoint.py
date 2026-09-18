@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
 from pathlib import Path
 
 import runtime_workspace
+import runtime_checkpoint_persistence
 import story_json
-from runtime_atomic_store import update_json as atomic_update_json
+from runtime_atomic_store import FileLock, update_json as atomic_update_json
 
 REL = Path("meta/runtime-checkpoint.json")
 VALID_STEP_STATUS = {"PASS", "REUSED", "DIRTY", "FAILED", "BLOCKED", "HOST_WAIT", "SKIPPED_NOT_APPLICABLE"}
@@ -28,11 +30,27 @@ def write_path(episode_dir: Path) -> Path:
 
 
 def exists(episode_dir: Path) -> bool:
-    return read_path(episode_dir).is_file()
+    ep = Path(episode_dir).resolve()
+    mode = runtime_checkpoint_persistence.mode()
+    if mode in {"dual", "mysql"}:
+        data = runtime_checkpoint_persistence.load(ep)
+        if isinstance(data, dict):
+            return True
+        if mode == "mysql":
+            return False
+    return read_path(ep).is_file()
 
 
 def load(episode_dir: Path, default: dict | None = None) -> dict:
-    path = read_path(episode_dir)
+    ep = Path(episode_dir).resolve()
+    mode = runtime_checkpoint_persistence.mode()
+    if mode in {"dual", "mysql"}:
+        data = runtime_checkpoint_persistence.load(ep)
+        if isinstance(data, dict):
+            return data
+        if mode == "mysql":
+            return dict(default or {})
+    path = read_path(ep)
     if not path.is_file():
         return dict(default or {})
     data = story_json.read_json(path, default=default or {}, require_object=False)
@@ -41,9 +59,37 @@ def load(episode_dir: Path, default: dict | None = None) -> dict:
     return data
 
 
+def authority_sha256(data: dict | None) -> str | None:
+    if not isinstance(data, dict):
+        return None
+    raw = json.dumps(
+        data, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def materialize_export(episode_dir: Path) -> Path | None:
+    ep = Path(episode_dir).resolve()
+    existing = read_path(ep)
+    if existing.is_file():
+        return existing
+    data = load(ep, {})
+    if not data:
+        return None
+    target = runtime_workspace.workspace_path(
+        ep, Path("exports/runtime-checkpoint.json")
+    )
+    story_json.write_json(target, data)
+    return target
+
+
 def save(episode_dir: Path, data: dict) -> Path:
-    path = write_path(episode_dir)
-    story_json.write_json(path, data)
+    ep = Path(episode_dir).resolve()
+    path = write_path(ep)
+    mode = runtime_checkpoint_persistence.mode()
+    if mode != "mysql":
+        story_json.write_json(path, data)
+    runtime_checkpoint_persistence.persist(ep, data)
     return path
 
 
@@ -55,7 +101,24 @@ def update(episode_dir: Path, mutator, *, require_existing: bool = False):
     def default_factory() -> dict:
         return load(ep, {})
 
-    return atomic_update_json(write_path(ep), default_factory, mutator)
+    mode = runtime_checkpoint_persistence.mode()
+    if mode == "mysql":
+        path = write_path(ep)
+        with FileLock(path):
+            current = load(ep, {})
+            if not isinstance(current, dict):
+                current = {}
+            result = mutator(current)
+            runtime_checkpoint_persistence.persist(ep, current)
+            return result
+
+    result = atomic_update_json(write_path(ep), default_factory, mutator)
+    if mode == "dual":
+        current = story_json.read_json(write_path(ep), default={}, require_object=False)
+        if not isinstance(current, dict):
+            raise SystemExit("runtime checkpoint root must be object")
+        runtime_checkpoint_persistence.persist(ep, current)
+    return result
 
 
 def ensure_shape(d: dict) -> dict:
@@ -73,7 +136,9 @@ def ensure_shape(d: dict) -> dict:
 def record_step(episode_dir: Path, *, step: str, status: str, attempt: int = 1,
                 started_at: str | None = None, finished_at: str | None = None,
                 note: str = "", input_hash: str | None = None,
-                output_hash: str | None = None) -> dict:
+                output_hash: str | None = None,
+                elapsed_seconds: float | None = None,
+                returncode: int | None = None) -> dict:
     """Append one Runtime step record without spawning a second Python process."""
     if status not in VALID_STEP_STATUS:
         raise ValueError(f"invalid runtime checkpoint status: {status}")
@@ -89,6 +154,10 @@ def record_step(episode_dir: Path, *, step: str, status: str, attempt: int = 1,
         "finished_at": finished_at or now(),
         "note": str(note),
     }
+    if elapsed_seconds is not None:
+        row["elapsed_seconds"] = round(float(elapsed_seconds), 6)
+    if returncode is not None:
+        row["returncode"] = int(returncode)
 
     def mutate(data: dict):
         ensure_shape(data)
@@ -106,7 +175,7 @@ def main() -> int:
     p = sub.add_parser("init"); p.add_argument("episode_dir"); p.add_argument("--runtime", required=True, choices=["CODEX", "WORK", "WEB"]); p.add_argument("--full-auto", action="store_true")
     p = sub.add_parser("show"); p.add_argument("episode_dir")
     p = sub.add_parser("set"); p.add_argument("episode_dir"); p.add_argument("--last-completed"); p.add_argument("--next-action"); p.add_argument("--lock-frame", action="append", default=[]); p.add_argument("--fail-frame", action="append", default=[])
-    p = sub.add_parser("record-step"); p.add_argument("episode_dir"); p.add_argument("--step", required=True); p.add_argument("--status", required=True, choices=sorted(VALID_STEP_STATUS)); p.add_argument("--input-hash"); p.add_argument("--output-hash"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--started-at"); p.add_argument("--finished-at"); p.add_argument("--note", default="")
+    p = sub.add_parser("record-step"); p.add_argument("episode_dir"); p.add_argument("--step", required=True); p.add_argument("--status", required=True, choices=sorted(VALID_STEP_STATUS)); p.add_argument("--input-hash"); p.add_argument("--output-hash"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--started-at"); p.add_argument("--finished-at"); p.add_argument("--elapsed-seconds", type=float); p.add_argument("--returncode", type=int); p.add_argument("--note", default="")
     sub.add_parser("self-test")
     a = ap.parse_args()
     if a.cmd == "self-test":
@@ -135,6 +204,7 @@ def main() -> int:
             ep, step=a.step, status=a.status, attempt=a.attempt,
             started_at=a.started_at, finished_at=a.finished_at, note=a.note,
             input_hash=a.input_hash, output_hash=a.output_hash,
+            elapsed_seconds=a.elapsed_seconds, returncode=a.returncode,
         )
         print(write_path(ep)); return 0
     if a.last_completed: d["last_completed"] = a.last_completed

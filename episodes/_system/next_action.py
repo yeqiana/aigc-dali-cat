@@ -30,6 +30,7 @@ import product_review_adapter
 import product_runtime_adapter
 import raw_candidate_budget
 import runner_health_monitor
+import scheduler_core
 import runtime_execution
 import runtime_router
 import runtime_portability
@@ -40,7 +41,9 @@ import visual_lock_candidate_pool
 import visual_lock_v21
 import story_json
 import episode_lifecycle
+import episode_state_persistence
 import hot_state_bridge
+import runtime_review_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/runtime/next-action.json")
@@ -60,14 +63,16 @@ def read_json(path: Path) -> dict:
 def load(ep: Path) -> dict:
     """Read the derived next action from Runtime Workspace with legacy fallback."""
     hot = hot_state_bridge.read(Path(ep), "NEXT_ACTION")
-    if isinstance(hot.get("value"), dict):
-        return hot["value"]
-    data = runtime_workspace.read_json(Path(ep), REL, default={})
+    data = hot_state_bridge.value_or_fallback(
+        hot,
+        lambda: runtime_workspace.read_json(Path(ep), REL, default={}),
+        default={},
+    )
     return data if isinstance(data, dict) else {}
 
 
 def state(ep: Path) -> str:
-    return str(read_json(ep / "meta/episode-state.json").get("current_state") or "UNKNOWN")
+    return str((episode_state_persistence.load(ep) or {}).get("current_state") or "UNKNOWN")
 
 
 def _pending_product_review_scan(ep: Path, *, current_state: str | None = None) -> tuple[dict | None, list[dict]]:
@@ -76,15 +81,11 @@ def _pending_product_review_scan(ep: Path, *, current_state: str | None = None) 
     Only alias files are considered here: they are the current pointer, and
     per-attempt files are read on demand by product_review_adapter.
     """
-    root = ep / REVIEW_DIR
-    if not root.is_dir():
-        return None, []
     rows = []
     residue: list[dict] = []
-    for p in root.glob("*-request.json"):
-        if "-attempt-" in p.name:
-            continue
-        d = read_json(p)
+    for current in runtime_review_persistence.list_current(ep):
+        p = current["path"]
+        d = current.get("payload") or {}
         kind = str(d.get("review_kind") or "")
         # Actual-pixel authority now belongs to CODEX_VISION. Historical WORK
         # product-review requests for visual tasks are compatibility residue and
@@ -142,14 +143,10 @@ def redundant_product_review_residue(ep: Path, *, current_state: str | None = No
 
 def product_review_lifecycle_events(ep: Path) -> list[dict]:
     """Current terminal request lifecycle evidence for next-action/audit."""
-    root = Path(ep) / REVIEW_DIR
-    if not root.is_dir():
-        return []
     out: list[dict] = []
-    for p in sorted(root.glob("*-request.json")):
-        if "-attempt-" in p.name:
-            continue
-        d = read_json(p)
+    for current in runtime_review_persistence.list_current(Path(ep)):
+        p = current["path"]
+        d = current.get("payload") or {}
         status = str(d.get("status") or "")
         if status not in {"EXPIRED", "CANCELLED", "SUPERSEDED"}:
             continue
@@ -188,7 +185,7 @@ def host_loop(ep: Path) -> dict:
 
 
 def queue_summary(ep: Path) -> dict:
-    q = read_json(production_queue_store.read_path(ep))
+    q = scheduler_core.load_queue(ep)
     counts: dict[str, int] = {}
     queued_frames = []
     items = [row for row in (q.get("items") or []) if isinstance(row, dict)]
@@ -202,7 +199,7 @@ def queue_summary(ep: Path) -> dict:
     # same frame supersedes them. An older original success must not hide a newer
     # repair failure (the exact failure mode that previously routed back to a
     # stale WORK review instead of RETRY_TECHNICAL_FAILURES).
-    ledger = read_json(ep / "meta/production-ledger.json").get("frames") or {}
+    ledger = (production_ledger.load_authority(ep, default={}) or {}).get("frames") or {}
     tech_failed = []
     for idx, row in enumerate(items):
         if row.get("status") != "tech_failed":
@@ -404,8 +401,7 @@ def derive(ep: Path) -> dict:
             for row in residue
         ],
     }
-    import scheduler_core
-    base["progress"] = scheduler_core.progress(ep, read_json(production_queue_store.read_path(ep)))
+    base["progress"] = scheduler_core.progress(ep, scheduler_core.load_queue(ep))
     def action_result(**kwargs):
         hard_stop = bool(kwargs.pop("hard_stop", False))
         auto = bool(kwargs.pop("auto_recoverable", True))
@@ -447,7 +443,7 @@ def derive(ep: Path) -> dict:
                         request_path=review.get("path"), review_kind=review.get("review_kind"),
                         candidate_path=review.get("candidate_path"),
                         reason="fresh isolated product review is awaiting completion")
-            current_request = runtime_workspace.read_json(ep, HOST_REL, default={}) or {}
+            current_request = product_runtime_adapter.load_current_request(ep) or {}
             return action_result(
                 action="PREIMAGE_COMPILE",
                 executor=runtime,
@@ -462,7 +458,7 @@ def derive(ep: Path) -> dict:
     qs = queue_summary(ep)
     q = qs["raw"]
     if q:
-        ledger_frames = read_json(ep / "meta/production-ledger.json").get("frames") or {}
+        ledger_frames = (production_ledger.load_authority(ep, default={}) or {}).get("frames") or {}
         unresolved_blocked = list(qs.get("blocked_items") or [])
         recompilable_prompt_blocks = [
             row for row in unresolved_blocked
@@ -710,7 +706,7 @@ def derive(ep: Path) -> dict:
 
         if cur in {"VISUAL_CALIBRATED", "PRODUCTION_PASSED", "PUBLISH_READY"}:
             expected=_expected_frames(ep)
-            ledger_frames=read_json(ep/"meta/production-ledger.json").get("frames") or {}
+            ledger_frames=(production_ledger.load_authority(ep, default={}) or {}).get("frames") or {}
             ready_statuses=set(production_ledger.READY_LEDGER_STATES) | set(production_ledger.ACCEPTED_LEDGER_STATES)
             complete_candidates=(
                 expected>0 and len([k for k in ledger_frames if str(k).isdigit()])>=expected
@@ -780,7 +776,7 @@ def derive(ep: Path) -> dict:
                             frames=list(range(1,expected+1)),
                             reason="all production frames are semantic-reviewed and LOCKED; deterministic image-production gate finalization remains")
 
-    ledger_frames = read_json(ep / "meta/production-ledger.json").get("frames") or {}
+    ledger_frames = (production_ledger.load_authority(ep, default={}) or {}).get("frames") or {}
     needs_user_frames = sorted(
         int(key) for key, value in ledger_frames.items()
         if str(key).isdigit() and isinstance(value, dict) and value.get("status") == "NEEDS_USER"

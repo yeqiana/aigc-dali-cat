@@ -5,7 +5,9 @@ from __future__ import annotations
 import argparse, datetime as dt, json
 from pathlib import Path
 import character_visual_contract
+import episode_state_persistence
 import visual_lock_v21
+import visual_profile_review_persistence
 import story_json
 ROOT=Path(__file__).resolve().parents[2]
 SAFE_STATES={"VISUAL_CALIBRATED","PRODUCTION_PASSED"}
@@ -13,18 +15,18 @@ def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespe
 def read_json(p):
     return story_json.read_json(p)
 def state(ep):
-    p=Path(ep)/"meta/episode-state.json";return str(read_json(p).get("current_state") or "") if p.is_file() else ""
+    return str((episode_state_persistence.load(Path(ep).resolve()) or {}).get("current_state") or "")
 def base_visual_lock_errors(ep):
-    ep=Path(ep).resolve();p=ep/visual_lock_v21.REVIEW_REL
-    if not p.is_file():return ["visual-profile-review missing"]
+    ep=Path(ep).resolve();review=visual_profile_review_persistence.load(ep)
+    if not isinstance(review,dict):return ["visual-profile-review missing"]
     try:
         contract=visual_lock_v21.compile_prompt_contract(ep);assets=visual_lock_v21.calibration_assets(ep)
-        return visual_lock_v21.validate_payload(read_json(p),contract=contract,assets=assets,version=visual_lock_v21.episode_version(ep))
+        return visual_lock_v21.validate_payload(review,contract=contract,assets=assets,version=visual_lock_v21.episode_version(ep))
     except Exception as exc:return [str(exc)]
 def backfill_episode(ep):
     ep=Path(ep).resolve()
     if state(ep) not in SAFE_STATES:return {"status":"SKIP","reason":"state_not_safe_for_derived_backfill","state":state(ep)}
-    if not (ep/character_visual_contract.REL).is_file():return {"status":"SKIP","reason":"character_visual_contract_missing"}
+    if not character_visual_contract.exists(ep):return {"status":"SKIP","reason":"character_visual_contract_missing"}
     if not character_visual_contract.pixel_master_required(ep):return {"status":"SKIP","reason":"pixel_master_not_required"}
     if (ep/character_visual_contract.PIXEL_MASTER_REL).is_file():
         existing_errors=character_visual_contract.validate_pixel_master(ep)
@@ -45,8 +47,7 @@ def backfill_all():
     import episode_discovery
     results=[]
     for ep in episode_discovery.iter_episode_roots(ROOT/"episodes"):
-        p=ep/"meta/visual-profile-review.json"
-        if not p.is_file():continue
+        if not isinstance(visual_profile_review_persistence.load(ep),dict):continue
         try:r=backfill_episode(ep)
         except Exception as exc:r={"status":"ERROR","error":str(exc)}
         if r.get("status")!="SKIP":results.append({"episode":ep.relative_to(ROOT).as_posix(),**r})

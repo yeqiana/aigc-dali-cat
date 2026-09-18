@@ -20,6 +20,8 @@ def _read(ep:Path)->dict:
     hot = hot_state_bridge.read(ep, "CODEX_BATCH_CAPABILITY")
     if hot.get("redis_read") and isinstance(hot.get("value"), dict):
         return hot["value"]
+    if not hot_state_bridge.file_fallback_allowed(hot):
+        return {}
     p=ep/REL
     if not p.is_file():
         return {}

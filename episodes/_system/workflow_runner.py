@@ -99,7 +99,7 @@ def plan(ep: Path) -> dict:
 
 
 def record_checkpoint_step(ep: Path, step: str, status: str, elapsed: float, note: str = "") -> None:
-    run([sys.executable, SYSTEM / "runtime_checkpoint.py", "record-step", ep, "--step", step, "--status", status, "--finished-at", perf.now(), "--note", f"{note} elapsed={elapsed:.3f}s"])
+    run([sys.executable, SYSTEM / "runtime_checkpoint.py", "record-step", ep, "--step", step, "--status", status, "--finished-at", perf.now(), "--elapsed-seconds", str(round(float(elapsed), 6)), "--note", note])
 
 
 def continuous_host_loop_enabled() -> bool:

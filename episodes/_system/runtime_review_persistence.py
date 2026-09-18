@@ -152,10 +152,13 @@ def load_path(path: Path) -> dict | None:
                 else:
                     return payload
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return None
     if path.is_file():
         data = story_json.read_json(path, default=None)
         return data if isinstance(data, dict) else None
@@ -180,10 +183,13 @@ def list_current(ep: Path) -> list[dict]:
                     for row in rows
                 ]
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return []
     root = ep / REL
     out = []
     if root.is_dir():
@@ -211,10 +217,13 @@ def list_attempts(ep: Path, kind: str) -> list[dict]:
                     for row in rows
                 ]
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return []
     root = ep / REL
     out = []
     if root.is_dir():

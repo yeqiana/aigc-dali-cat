@@ -5,8 +5,11 @@ from __future__ import annotations
 import argparse, hashlib, json
 from pathlib import Path
 import story_json
+import character_contract
+import episode_contract_persistence
 
 REL=Path("meta/wardrobe-contract.json")
+CONTRACT_TYPE="WARDROBE"
 COLD={"cold","very_cold"}
 COOL_COLD={"cool","cold","very_cold"}
 OUTDOOR={"outdoor","roadside","scenic_checkin","hiking","mountain_stop"}
@@ -20,6 +23,34 @@ def read_json(p):
     return story_json.read_json(p)
 def write_json(p,d):
     story_json.write_json(p, d)
+
+
+
+def load(ep):
+    ep=Path(ep).resolve()
+    return episode_contract_persistence.load_latest(
+        ep, CONTRACT_TYPE, legacy_path=ep/REL
+    )
+
+
+def exists(ep):
+    return isinstance(load(ep),dict)
+
+
+def save(ep,data):
+    ep=Path(ep).resolve()
+    episode_contract_persistence.save(
+        ep, CONTRACT_TYPE, REL, data,
+        status=str(data.get("status") or "ACTIVE"),
+    )
+    return data
+
+
+def authority_sha256(ep):
+    data=load(ep)
+    if not isinstance(data,dict):return None
+    raw=json.dumps(data,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def frame_count(ep):
     d=read_json(Path(ep)/"meta/release-manifest.json")
@@ -34,13 +65,13 @@ def _txt(outfit):
 def _has(text,words):return any(w.lower() in text for w in words)
 
 def prepare(ep,force=False,destructive_reset=False):
-    ep=Path(ep).resolve();target=ep/REL
-    if target.is_file():
-        existing=read_json(target)
+    ep=Path(ep).resolve()
+    existing=load(ep)
+    if isinstance(existing,dict):
         if not force:return existing
         if existing.get("status")=="LOCKED" and not destructive_reset:
             raise ValueError("refusing destructive wardrobe prepare --force on LOCKED authority; use rebind-source or --destructive-reset")
-    cp=read_json(ep/"meta/character-contract.json")
+    cp=character_contract.load(ep) or {}
     members=((cp.get("cast") or {}).get("members") or [])
     total=frame_count(ep);frames={}
     for n in range(1,total+1):
@@ -62,12 +93,12 @@ def prepare(ep,force=False,destructive_reset=False):
          "high_altitude_outdoor_requires_wind_or_insulation_layer":True,
          "outfit_change_requires_reason":True,"no_eroticized_framing_requirement":True},
        "frames":frames}
-    write_json(target,d);return d
+    return save(ep,d)
 
 def validate(ep,require_locked=True,ignore_source_binding=False):
-    ep=Path(ep).resolve();p=ep/REL
-    if not p.is_file():return ["meta/wardrobe-contract.json missing"]
-    d=read_json(p);e=[];total=frame_count(ep)
+    ep=Path(ep).resolve();d=load(ep)
+    if not isinstance(d,dict):return ["meta/wardrobe-contract.json missing"]
+    e=[];total=frame_count(ep)
     if d.get("schema_version")!=1:e.append("wardrobe schema_version must be 1")
     if require_locked and d.get("status")!="LOCKED":e.append("wardrobe contract must be LOCKED")
     temporal=ep/"meta/temporal-continuity.json"
@@ -110,12 +141,12 @@ def validate(ep,require_locked=True,ignore_source_binding=False):
     return e
 
 def rebind_source(ep,reason):
-    ep=Path(ep).resolve();target=ep/REL;temporal=ep/"meta/temporal-continuity.json"
-    if not target.is_file():raise ValueError("meta/wardrobe-contract.json missing")
+    ep=Path(ep).resolve();temporal=ep/"meta/temporal-continuity.json"
+    d=load(ep)
+    if not isinstance(d,dict):raise ValueError("meta/wardrobe-contract.json missing")
     if not temporal.is_file():raise ValueError("temporal continuity missing for wardrobe")
     reason=str(reason or "").strip()
     if not reason:raise ValueError("rebind-source requires a non-empty reason")
-    d=read_json(target)
     if d.get("status")!="LOCKED":raise ValueError("rebind-source requires LOCKED wardrobe authority")
     content_errors=validate(ep,True,ignore_source_binding=True)
     if content_errors:raise ValueError("wardrobe content invalid; refusing source rebind: "+"; ".join(content_errors[:8]))
@@ -124,13 +155,13 @@ def rebind_source(ep,reason):
     if old.lower()==new.lower():return d
     d["source_temporal_sha256"]=new
     d.setdefault("source_rebind_history",[]).append({"from":old,"to":new,"reason":reason})
-    write_json(target,d)
+    save(ep,d)
     errors=validate(ep,True)
     if errors:raise ValueError("wardrobe source rebind failed validation: "+"; ".join(errors[:8]))
     return d
 
 def resolve_frame(ep,frame):
-    ep=Path(ep).resolve();d=read_json(ep/REL);key=f"{int(frame):02d}"
+    ep=Path(ep).resolve();d=load(ep) or {};key=f"{int(frame):02d}"
     return {"frame":key,"wardrobe":(d.get("frames") or {}).get(key) or {}}
 
 def self_test():
@@ -156,5 +187,5 @@ def main():
         if e:[print("FAIL:",x) for x in e];return 2
         print("WARDROBE CONTRACT VERIFIED");return 0
     if a.cmd=="resolve-frame":print(json.dumps(resolve_frame(ep,a.frame),ensure_ascii=False,indent=2));return 0
-    p=ep/REL;print(p.read_text(encoding="utf-8-sig") if p.is_file() else "{}");return 0
+    print(json.dumps(load(ep) or {},ensure_ascii=False,indent=2));return 0
 if __name__=="__main__":raise SystemExit(main())

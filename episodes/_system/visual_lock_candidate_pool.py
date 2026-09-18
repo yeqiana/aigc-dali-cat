@@ -16,12 +16,14 @@ import frame_contract
 import character_visual_contract
 import image_model_policy
 import production_queue_store
+import scheduler_core
 import story_json
 import storyos_config
 import visual_lock_admission_state
+import visual_profile_review_persistence
 
 LEDGER_REL = Path("meta/production-ledger.json")
-REVIEW_REL = Path("meta/visual-profile-review.json")
+REVIEW_REL = visual_profile_review_persistence.LEGACY_REL
 PLAN_REL = Path("meta/visual-lock-plan.json")
 GATES_REL = Path("meta/story-gates.json")
 CANDIDATE_POLICY_REVISION = "v2-semantic-anchor"
@@ -69,7 +71,7 @@ def baseline_frame(ep: Path) -> int:
 
 
 def failed_rows(ep: Path) -> list[dict]:
-    review = _read(Path(ep) / REVIEW_REL)
+    review = visual_profile_review_persistence.load(Path(ep).resolve()) or {}
     rows = []
     for row in review.get("calibration") or []:
         if not isinstance(row, dict):
@@ -84,7 +86,7 @@ def failed_rows(ep: Path) -> list[dict]:
 
 
 def candidate_items(ep: Path, frame: int) -> list[dict]:
-    q = _read(production_queue_store.read_path(Path(ep)))
+    q = scheduler_core.load_queue(Path(ep))
     return [
         row for row in (q.get("items") or [])
         if isinstance(row, dict)
@@ -209,7 +211,7 @@ def apply_weak_passes(ep: Path, frames: list[int] | None = None) -> dict:
     """Apply the speed policy to exact current candidates; never generate new pixels."""
     ep = Path(ep).resolve()
     wanted = sorted({int(x) for x in (frames or weak_pass_eligible_frames(ep)) if int(x) > 0})
-    review = _read(ep / REVIEW_REL)
+    review = visual_profile_review_persistence.load(ep) or {}
     profile_sha = str(review.get("profile_sha256") or "")
     version = str(review.get("story_os_version") or "")
     applied = []

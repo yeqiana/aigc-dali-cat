@@ -60,18 +60,19 @@ def _new(ep):
 
 def load(ep,create=True):
     ep=Path(ep).resolve();p=ep/REL
-    if p.is_file():
-        try:return read_json(p)
-        except Exception:
-            if not create:raise
+    try:
+        loaded=runtime_observability.read_summary(ep,REL,default={})
+        if loaded:return loaded
+    except Exception:
+        if not create:raise
     d=_new(ep)
-    if create:write_json(p,d)
+    if create:runtime_observability.write_summary(ep,REL,kind="episode_performance",payload=d)
     return d
 
 def save(ep,d):
     d["updated_at"]=now()
     _refresh_summary(d)
-    write_json(Path(ep).resolve()/REL,d)
+    runtime_observability.write_summary(Path(ep).resolve(),REL,kind="episode_performance",payload=d)
     return d
 
 def safe_start_episode(ep,source="runtime"):

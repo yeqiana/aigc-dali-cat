@@ -77,14 +77,14 @@ def test_scheduler_and_recovery_observe_workspace_authority_then_latest_queue_su
     assert production_queue_store.read_path(ep) == workspace
     assert any(row.get("id") == "recovery-visible-v2" for row in scheduler_core.load_queue(ep)["items"])
 
-    seen_paths: list[Path] = []
-    real_read = production_recovery._read
+    seen_episodes: list[Path] = []
+    real_load = production_recovery.scheduler_core.load_queue
 
-    def recording_read(path: Path):
-        seen_paths.append(Path(path))
-        return real_read(path)
+    def recording_load(episode: Path):
+        seen_episodes.append(Path(episode).resolve())
+        return real_load(episode)
 
-    monkeypatch.setattr(production_recovery, "_read", recording_read)
+    monkeypatch.setattr(production_recovery.scheduler_core, "load_queue", recording_load)
     try:
         production_recovery._recover_user_runner_success_locked(
             ep, 2, "11111111-1111-1111-1111-111111111111"
@@ -94,8 +94,7 @@ def test_scheduler_and_recovery_observe_workspace_authority_then_latest_queue_su
     else:
         raise AssertionError("recovery fixture unexpectedly completed")
 
-    assert workspace in seen_paths
-    assert legacy not in seen_paths[:1]
+    assert ep.resolve() in seen_episodes
 
     assert production_queue_cutover.rollback(ep)["status"] == "PASS"
     assert production_queue_store.read_path(ep) == legacy
@@ -105,6 +104,6 @@ def test_scheduler_and_recovery_observe_workspace_authority_then_latest_queue_su
 
 def test_recovery_source_and_sink_remain_store_and_scheduler_boundaries():
     source = (SYSTEM / "production_recovery.py").read_text(encoding="utf-8")
-    assert "_read(production_queue_store.read_path(ep))" in source
+    assert "scheduler_core.load_queue(ep)" in source
     assert "scheduler_core.save_queue(ep, queue)" in source
     assert "meta/production-queue.json" not in source

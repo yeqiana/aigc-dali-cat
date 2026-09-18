@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, uuid
 from pathlib import Path
 import request_intent, storyos_config, hot_state_bridge
+import episode_state_persistence
 
 ROOT=Path(__file__).resolve().parents[2]
 _CONFIG=storyos_config.load_config()
@@ -13,9 +14,8 @@ def _cfg():
     if not isinstance(d,dict):raise ValueError("router config root must be object")
     return d
 def _state(ep):
-    p=ep/"meta/episode-state.json"
-    if not p.is_file():return None
-    d=json.loads(p.read_text(encoding="utf-8-sig"));return d.get("current_state") if isinstance(d,dict) else None
+    d=episode_state_persistence.load(Path(ep).resolve())
+    return d.get("current_state") if isinstance(d,dict) else None
 def _sha(req):return hashlib.sha256(json.dumps(req,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()).hexdigest()
 def decide(ep,request):
     cfg=_cfg();mode=str(request.get("mode") or "");routes=cfg.get("routes") or {}
@@ -40,6 +40,15 @@ def write_decision(ep,decision):
     p.write_text(json.dumps(decision,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     hot_state_bridge.mirror(ep, "RUNTIME_ROUTE", decision)
     return p
+def read_decision(ep):
+    ep=Path(ep).resolve();hot=hot_state_bridge.read(ep,"RUNTIME_ROUTE")
+    if hot.get("redis_read") and isinstance(hot.get("value"),dict):return hot["value"]
+    if not hot_state_bridge.file_fallback_allowed(hot):return {}
+    p=ep/str(_cfg().get("decision_path") or "meta/runtime-route.json")
+    if not p.is_file():return {}
+    try:
+        d=json.loads(p.read_text(encoding="utf-8-sig"));return d if isinstance(d,dict) else {}
+    except (OSError,UnicodeError,json.JSONDecodeError):return {}
 def route_episode(ep,request,*,write=True):
     d=decide(ep,request)
     if write:write_decision(ep,d)

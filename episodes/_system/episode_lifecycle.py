@@ -11,6 +11,7 @@ import datetime as dt
 from pathlib import Path
 
 import story_json
+import episode_state_persistence
 
 STATE_REL = Path("meta/episode-state.json")
 ACTIVE = "ACTIVE"
@@ -23,7 +24,7 @@ def now() -> str:
 
 
 def state(ep: Path) -> dict:
-    return story_json.read_json(Path(ep).resolve() / STATE_REL, default={})
+    return episode_state_persistence.load(Path(ep).resolve()) or {}
 
 
 def disposition(ep: Path) -> str:
@@ -52,20 +53,20 @@ def terminate(ep: Path, *, target: str, source: str, reason: str) -> dict:
         raise ValueError(f"terminal disposition must be one of {sorted(TERMINAL)}")
     if not source or not reason:
         raise ValueError("termination source and reason are required")
-    path = ep / STATE_REL
-    data = story_json.read_json(path)
+    data = state(ep)
+    if not data:
+        raise ValueError("Episode state authority missing")
     current = str(data.get("disposition") or ACTIVE).upper()
     if current in TERMINAL:
         raise ValueError(f"episode already terminated: {current}")
     if current != ACTIVE:
         raise ValueError(f"invalid current disposition: {current}")
     at = now()
-    data["disposition"] = target
-    data["disposition_updated_at"] = at
-    data.setdefault("disposition_history", []).append({
-        "from": ACTIVE, "to": target, "at": at, "source": source, "reason": reason,
-        "stage_at_termination": data.get("current_state"),
-    })
-    data["updated_at"] = at
-    story_json.write_json(path, data)
-    return data
+    return episode_state_persistence.update_disposition(
+        ep,
+        data,
+        target=target,
+        source=source,
+        reason=reason,
+        at=at,
+    )

@@ -37,9 +37,6 @@ COPY_READY_EXACT = frozenset({
 })
 COPY_READY_PREFIXES = (
     "meta/runtime/execution-capsules/",
-    "meta/runtime/prompt-packages/",
-    "meta/runtime/contracts/frames/",
-    "meta/runtime/host-requests/",
 )
 
 

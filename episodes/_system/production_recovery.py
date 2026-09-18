@@ -22,6 +22,7 @@ import production_queue_store
 import scheduler_core
 import image_model_policy
 import runtime_timeout_policy
+import provider_receipt_persistence
 from runtime_atomic_store import atomic_write_json, update_json
 
 # Repository root, derived from this module's checked-in location like every
@@ -191,6 +192,19 @@ def _safe_output(ep: Path, raw: object) -> Path | None:
     return path if path.is_file() else None
 
 
+def _safe_episode_reference(ep: Path, raw: object) -> Path | None:
+    """Resolve an episode-local reference without requiring a physical file."""
+    if not raw:
+        return None
+    path = Path(str(raw))
+    path = (ROOT / path).resolve() if not path.is_absolute() else path.resolve()
+    try:
+        path.relative_to(Path(ep).resolve())
+    except ValueError:
+        return None
+    return path
+
+
 def _current_contract_sha(ep: Path, frame: int) -> str | None:
     """Current resolved Frame Contract SHA without writing the derived cache.
 
@@ -214,7 +228,7 @@ def _commit_success(ep: Path, item: dict, lifecycle: dict) -> tuple[bool, str]:
     item_tx = str((item.get("execution") or {}).get("transaction_id") or "")
     if lifecycle.get("transaction_id") != item_tx:
         return False, "lifecycle transaction does not match queue item"
-    frame_row = _ledger_frame(_read(Path(ep) / LEDGER_REL), int(item.get("frame") or 0))
+    frame_row = _ledger_frame(production_ledger.load_authority(Path(ep).resolve(), default={}) or {}, int(item.get("frame") or 0))
     active = _active_ledger_attempt(frame_row)
     if active:
         active_tx = str(active.get("runtime_transaction_id") or "")
@@ -242,9 +256,11 @@ def _commit_success(ep: Path, item: dict, lifecycle: dict) -> tuple[bool, str]:
     if output is None:
         return False, "lifecycle output is absent or outside the episode"
     receipt = (((result.get("payload") or {}).get("provider_receipt") or {}).get("path"))
-    receipt_path = _safe_output(ep, receipt) if receipt else None
+    receipt_path = _safe_episode_reference(ep, receipt) if receipt else None
     if receipt and receipt_path is None:
         return False, "lifecycle provider receipt is absent or outside the episode"
+    if receipt_path is not None and not provider_receipt_persistence.load_by_path(ep, receipt_path):
+        return False, "lifecycle provider receipt is missing from both MySQL and compatibility JSON"
     args = SimpleNamespace(
         episode_dir=str(ep), frame=f"{int(item['frame']):02d}", path=str(output),
         provider_receipt=str(receipt_path) if receipt_path else None,
@@ -302,7 +318,7 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
     no path here calls a provider or changes an Episode stage.
     """
     ep = Path(ep).resolve()
-    ledger = _read(ep / LEDGER_REL)
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     report = {"schema_version": 1, "reconciled_at": now(), "rows": []}
     for item in queue.get("items") or []:
         if not isinstance(item, dict) or item.get("status") not in {"running", "generated", "interrupted_unknown"}:
@@ -329,7 +345,7 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
             outcome = "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT"
             report["rows"].append({"item_id": item.get("id"), "frame": frame, "outcome": outcome,
                                    "ledger_status": ledger_status, "lifecycle_state": lifecycle_state})
-            ledger = _read(ep / LEDGER_REL)
+            ledger = production_ledger.load_authority(ep, default={}) or {}
             continue
 
         # A committed candidate remains a valid historical queue row after its
@@ -350,7 +366,7 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
                 outcome = "REVIEWED_CANDIDATE_RETAINED"
                 report["rows"].append({"item_id": item.get("id"), "frame": frame, "outcome": outcome,
                                        "ledger_status": ledger_status, "lifecycle_state": lifecycle_state})
-                ledger = _read(ep / LEDGER_REL)
+                ledger = production_ledger.load_authority(ep, default={}) or {}
                 continue
 
         if ledger_status in READY_LEDGER_STATES:
@@ -477,7 +493,7 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
             outcome = "QUEUE_LEDGER_MISMATCH"
         report["rows"].append({"item_id": item.get("id"), "frame": frame, "outcome": outcome,
                                "ledger_status": ledger_status, "lifecycle_state": lifecycle_state})
-        ledger = _read(ep / LEDGER_REL)
+        ledger = production_ledger.load_authority(ep, default={}) or {}
     atomic_write_json(ep / "meta/runtime/production-reconciliation.json", report)
     return report
 
@@ -501,7 +517,7 @@ def _recover_user_runner_success_locked(ep: Path, frame: int, request_id: str, *
     import raw_candidate_budget
 
     ep = Path(ep).resolve()
-    queue = queue_override if isinstance(queue_override, dict) else _read(production_queue_store.read_path(ep))
+    queue = queue_override if isinstance(queue_override, dict) else scheduler_core.load_queue(ep)
     rows = [x for x in queue.get("items") or []
             if isinstance(x, dict) and int(x.get("frame") or 0) == int(frame)
             and x.get("status") in {"interrupted_unknown", "running", "tech_failed", "external_blocked"}]
@@ -662,7 +678,7 @@ def _recover_user_runner_success_locked(ep: Path, frame: int, request_id: str, *
     }
     write_lifecycle(ep, item, "SUCCEEDED", worker_pid=None, result=result,
                     recovery="interrupted_user_runner_success", runner_request_id=str(request_id))
-    frame_row = _ledger_frame(_read(ep / LEDGER_REL), int(frame))
+    frame_row = _ledger_frame(production_ledger.load_authority(ep, default={}) or {}, int(frame))
     latest = _latest_ledger_attempt(frame_row)
     if latest.get("result") == "technical_failure":
         correction_args = SimpleNamespace(

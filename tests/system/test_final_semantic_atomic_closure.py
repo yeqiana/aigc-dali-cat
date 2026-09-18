@@ -100,6 +100,7 @@ def test_final_semantic_applies_failure_escalation_before_new_pass_lock():
             patch.object(frame_semantic_review, "episode_contract_version", return_value="test"), \
             patch.object(frame_semantic_review, "directing_v3_required", return_value=False), \
             patch.object(frame_semantic_review, "read_json", return_value=ledger), \
+            patch.object(frame_semantic_review.production_ledger, "load_authority", return_value=ledger), \
             patch.object(frame_semantic_review, "_ledger_frame", side_effect=ledger_frame), \
             patch.object(frame_semantic_review, "write_json"), \
             patch.object(frame_semantic_review.production_ledger, "content_repair_limit", return_value=1), \

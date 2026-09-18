@@ -117,8 +117,7 @@ def _migrate_system_default_locked(episode_dir: Path, *, target_model: str | Non
     import provider_capability
     provider_capability.resolve(target,"codex_subscription")
 
-    queue_path=production_queue_store.read_path(ep)
-    queue=runtime_request.read_json(queue_path) if queue_path.is_file() else {"items":[]}
+    queue=scheduler_core.load_queue(ep)
     active=[x for x in (queue.get("items") or []) if isinstance(x,dict) and x.get("status")=="running"]
     if active:
         raise ValueError(f"IMAGE_MODEL_MIGRATION_BLOCKED: {len(active)} image item(s) still running")
@@ -150,7 +149,7 @@ def _migrate_system_default_locked(episode_dir: Path, *, target_model: str | Non
         updated+=1
 
     if old_model==target:
-        if queue_path.is_file() and reclassified:
+        if reclassified:
             scheduler_core.save_queue(ep,queue)
         evidence_path=ep/"meta/runtime/image-model-migration.json"
         existing=runtime_request.read_json(evidence_path) if evidence_path.is_file() else {}
@@ -186,7 +185,7 @@ def _migrate_system_default_locked(episode_dir: Path, *, target_model: str | Non
         raise ValueError("; ".join(errors))
     compiled=runtime_request.write_compiled(corrected)
     runtime_request.bind_request(compiled,ep,force=True)
-    if queue_path.is_file():
+    if updated or reclassified:
         scheduler_core.save_queue(ep,queue)
     evidence={
         "schema_version":1,"status":"MIGRATED","episode":str(ep),"at":stamp,

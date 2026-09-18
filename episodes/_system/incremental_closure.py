@@ -9,6 +9,10 @@ from pathlib import Path
 
 from story_os_contract import canonical_stages
 import story_json
+import episode_state_persistence
+import story_review
+import visual_profile_review_persistence
+import production_ledger
 import runtime_command
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -26,7 +30,7 @@ def read_json(path: Path) -> dict:
 
 
 def current_state(ep: Path) -> str:
-    return str(read_json(ep / "meta/episode-state.json").get("current_state") or "UNKNOWN")
+    return str((episode_state_persistence.load(ep) or {}).get("current_state") or "UNKNOWN")
 
 
 def state_at_least(state: str, target: str) -> bool:
@@ -58,22 +62,22 @@ def plan(ep: Path) -> dict:
         "missing": [],
     }
 
-    story_path = ep / "meta/story-semantic-review.json"
-    if story_path.is_file():
+    story_data = story_review.load_review(ep)
+    if isinstance(story_data, dict):
         ok, _ = command_ok("story_review.py", "verify", ep)
         result["story"] = "CLEAN" if ok else "DIRTY"
     elif state_at_least(state, "STORYBOARD_LOCKED"):
         result["story"] = "MISSING"; result["missing"].append("meta/story-semantic-review.json")
 
-    visual_path = ep / "meta/visual-profile-review.json"
-    if visual_path.is_file():
+    visual_data = visual_profile_review_persistence.load(ep)
+    if isinstance(visual_data, dict):
         ok, _ = command_ok("visual_review.py", "verify", ep)
         result["visual"] = "CLEAN" if ok else "DIRTY"
     elif state_at_least(state, "VISUAL_CALIBRATED"):
         result["visual"] = "MISSING"; result["missing"].append("meta/visual-profile-review.json")
 
-    ledger = ep / "meta/production-ledger.json"
-    if ledger.is_file():
+    ledger_data = production_ledger.load_authority(ep, default=None)
+    if isinstance(ledger_data, dict):
         rc, out = run([sys.executable, SYSTEM / "incremental_frame_review.py", "plan", ep])
         if rc == 0:
             try:

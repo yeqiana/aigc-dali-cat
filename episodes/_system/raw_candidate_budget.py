@@ -11,6 +11,8 @@ from pathlib import Path
 import runtime_atomic_store as atomic
 import frame_contract
 import story_json
+import production_ledger
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/runtime/raw-candidate-budget.json")
@@ -41,17 +43,21 @@ def limits() -> dict:
 
 def frame_count(ep: Path) -> int:
     ep = Path(ep)
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json"):
-        d = _read_json(ep / rel)
-        for key in ("frame_count", "body_frame_count"):
-            raw = d.get(key)
-            if isinstance(raw, int) and raw > 0:
-                return raw
-        release = d.get("release") or {}
-        raw = release.get("body_frame_count")
+    state = episode_state_persistence.load(ep) or {}
+    for key in ("frame_count", "body_frame_count"):
+        raw = state.get(key)
         if isinstance(raw, int) and raw > 0:
             return raw
-    ledger = _read_json(ep / "meta/production-ledger.json")
+    d = _read_json(ep / "meta/release-manifest.json")
+    for key in ("frame_count", "body_frame_count"):
+        raw = d.get(key)
+        if isinstance(raw, int) and raw > 0:
+            return raw
+    release = d.get("release") or {}
+    raw = release.get("body_frame_count")
+    if isinstance(raw, int) and raw > 0:
+        return raw
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     frames = ledger.get("frames") or {}
     if isinstance(frames, dict) and frames:
         return len(frames)
@@ -430,7 +436,7 @@ def blocked_queue_context(ep: Path, items: list[dict]) -> dict:
     }
 
 def _authority_refresh_authorization(ep: Path, frame_key: str, semantic_key: str) -> dict:
-    ledger = _read_json(Path(ep).resolve() / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(Path(ep).resolve(), default={}) or {}
     frame = (ledger.get("frames") or {}).get(frame_key) or {}
     auth = frame.get("authority_refresh_authorization") or {}
     direct_user = (
@@ -461,7 +467,7 @@ def _authority_refresh_authorization(ep: Path, frame_key: str, semantic_key: str
     return {"approved": bool(direct_user or machine_verified), "source": source}
 
 def _user_continuation_authorization(ep: Path, frame_key: str, semantic_key: str) -> dict:
-    ledger = _read_json(Path(ep).resolve() / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(Path(ep).resolve(), default={}) or {}
     frame = (ledger.get("frames") or {}).get(frame_key) or {}
     rows = frame.get("user_continuation_authorizations") or []
     auth = rows[-1] if rows and isinstance(rows[-1], dict) else {}

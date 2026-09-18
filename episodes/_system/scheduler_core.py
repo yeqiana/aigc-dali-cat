@@ -131,7 +131,11 @@ def load_queue(ep: Path, *, max_parallel: int | None = None) -> dict:
     ep = Path(ep).resolve()
     hot = hot_state_bridge.read(ep, "QUEUE")
     q = hot.get("value") if isinstance(hot.get("value"), dict) else None
-    if q is None:
+    if q is None and not hot_state_bridge.file_fallback_allowed(hot):
+        q = dict(EMPTY_QUEUE)
+        if max_parallel is not None:
+            q["max_parallel"] = int(max_parallel)
+    elif q is None:
         p = production_queue_store.read_path(ep)
         if not p.is_file():
             q = dict(EMPTY_QUEUE)
@@ -163,11 +167,12 @@ def progress(ep: Path, q: dict, *, requested_workers: int = 3) -> dict:
     import storyos_config
     import raw_candidate_budget
     import story_json
+    import episode_state_persistence
     configured = min(3, int(storyos_config.get_path(storyos_config.load_config(),
                                                   "production.max_inflight_images")))
     rows = list((ledger(ep).get("frames") or {}).values())
     pending = sum(x.get("status") == "queued" for x in q.get("items") or [])
-    stage = story_json.read_json(ep / "meta/episode-state.json", default={})
+    stage = episode_state_persistence.load(ep) or {}
     manifest = story_json.read_json(ep / "meta/release-manifest.json", default={})
     last = next((w for w in reversed(q.get("waves") or []) if "inflight_after" in w), {})
     return {
@@ -234,10 +239,8 @@ def queue_transaction(ep: Path):
 
 
 def ledger(ep: Path) -> dict:
-    p = Path(ep).resolve() / "meta/production-ledger.json"
-    if not p.is_file():
-        return {}
-    data = read_json(p)
+    from production_ledger_core import load_authority
+    data = load_authority(Path(ep).resolve(), default={})
     return data if isinstance(data, dict) else {}
 
 

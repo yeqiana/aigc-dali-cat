@@ -263,10 +263,9 @@ def _pending_ledger_plan(ep: Path) -> dict | None:
     states belong to image generation/recovery. In particular, an authority refresh is
     a deliberate regeneration boundary, not a malformed production-passed frame.
     """
-    ledger_path = ep / "meta/production-ledger.json"
-    if not ledger_path.is_file():
+    ledger = production_ledger.load_authority(ep, default=None)
+    if not isinstance(ledger, dict):
         return None
-    ledger = read_json(ledger_path)
     frames = ledger.get("frames")
     if not isinstance(frames, dict) or not frames:
         return None

@@ -18,8 +18,10 @@ from pathlib import Path
 
 import image_model_policy
 import production_queue_store
+import scheduler_core
 import story_json
 import storyos_config
+import production_ledger
 
 ROOT = Path(__file__).resolve().parents[2]
 LEDGER_REL = Path("meta/production-ledger.json")
@@ -54,14 +56,14 @@ def max_additional_candidates() -> int:
 
 
 def _ledger_frame(ep: Path, frame: int) -> dict:
-    ledger = _read(Path(ep) / LEDGER_REL)
+    ledger = production_ledger.load_authority(Path(ep).resolve(), default={}) or {}
     row = (ledger.get("frames") or {}).get(f"{int(frame):02d}") or {}
     return row if isinstance(row, dict) else {}
 
 
 def candidate_items(ep: Path) -> list[dict]:
     frame = _baseline_frame(ep)
-    q = _read(production_queue_store.read_path(Path(ep)))
+    q = scheduler_core.load_queue(Path(ep))
     return [
         row for row in (q.get("items") or [])
         if isinstance(row, dict)

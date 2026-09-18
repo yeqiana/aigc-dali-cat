@@ -4,10 +4,15 @@ import datetime as dt, hashlib, json
 from pathlib import Path
 import runtime_request
 import story_json
+import character_contract
+import character_visual_contract
+import review_record_persistence
+import world_identity_contract
 
 REL=Path("meta/runtime/preimage-authority-snapshot.json")
 PATHS={"story_gates":"meta/story-gates.json","character_contract":"meta/character-contract.json",
-       "world_identity":"meta/world-identity.json"}
+       "character_visual_contract":"meta/character-visual-contract.json",
+       "story_semantic_review":"meta/story-semantic-review.json","world_identity":"meta/world-identity.json"}
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def sha(path: Path):
     return hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
@@ -33,9 +38,15 @@ def _scope_value(gates: dict, scope: str):
     return cursor
 def _common(ep: Path, gates: dict | None = None) -> dict:
     ep=Path(ep)
-    out={key:sha(ep/rel) for key,rel in PATHS.items() if key != "story_gates"}
-    request_path=ep/"meta/runtime-request.json"
-    request_data=story_json.read_json(request_path,default={}) if request_path.is_file() else {}
+    out={
+        "character_contract":character_contract.authority_sha256(ep),
+        "character_visual_contract":character_visual_contract.authority_sha256(ep),
+        "story_semantic_review":review_record_persistence.authority_sha256(
+            ep,"STORY_SEMANTIC",legacy_path=ep/PATHS["story_semantic_review"]
+        ),
+        "world_identity":world_identity_contract.override_sha256(ep),
+    }
+    request_data=runtime_request.authority_for_episode(ep) or {}
     out["runtime_request_preimage"]=runtime_request.preimage_authority_projection_sha256(request_data)
     if gates is None:
         gates=story_json.read_json(ep/"meta/story-gates.json",default={}) or {}
@@ -77,7 +88,7 @@ def _recorded(snapshot: dict) -> dict:
 def _migration_evidence_valid(ep: Path, projection_sha: str) -> bool:
     ep=Path(ep)
     evidence=story_json.read_json(ep/"meta/runtime/image-model-migration.json",default={}) or {}
-    request_data=story_json.read_json(ep/"meta/runtime-request.json",default={}) or {}
+    request_data=runtime_request.authority_for_episode(ep) or {}
     migration=(request_data.get("provenance") or {}).get("image_model_migration") or {}
     return bool(
         evidence.get("preimage_authority_preserved") is True

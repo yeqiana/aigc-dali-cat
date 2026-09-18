@@ -20,6 +20,7 @@ import product_review_adapter
 from story_os_contract import story_os_version
 import story_json
 import runtime_timeout_policy
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -77,7 +78,12 @@ def required(contract_version: str) -> bool:
 
 def episode_contract_version(ep: Path) -> str:
     versions: list[tuple[tuple[int, ...], str]] = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    raw = str(state.get("tool_version") or "")
+    vt = version_tuple(raw)
+    if vt != (0,):
+        versions.append((vt, raw))
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue

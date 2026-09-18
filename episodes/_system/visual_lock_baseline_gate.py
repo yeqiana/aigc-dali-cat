@@ -11,12 +11,15 @@ import codex_critic_runner
 import episode_performance
 import product_review_adapter
 import production_queue_store
+import scheduler_core
 import runtime_provenance
 import runtime_router
 import storyos_config
 import story_json
 import runtime_timeout_policy
 import runtime_command
+import production_ledger
+import production_ledger_persistence
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -49,7 +52,7 @@ def baseline_plan(ep):
 def baseline_frame(ep):return int(baseline_plan(ep)["frame"])
 
 def generated_baseline(ep):
-    ep=Path(ep).resolve();frame=baseline_frame(ep);q=read_json(production_queue_store.read_path(ep))
+    ep=Path(ep).resolve();frame=baseline_frame(ep);q=scheduler_core.load_queue(ep)
     rows=[x for x in (q.get("items") or []) if int(x.get("frame") or -1)==frame and x.get("scope") in {"visual_lock","repair","baseline_candidate"} and x.get("status")=="generated" and x.get("output_path")]
     if not rows:raise ValueError(f"ordinary_baseline frame {frame:02d} is not generated")
     row=rows[-1];asset=repo_file(row["output_path"])
@@ -58,7 +61,7 @@ def generated_baseline(ep):
 def prepare_review(ep,force=False):
     ep=Path(ep).resolve();p=ep/REL
     if p.is_file() and not force:return read_json(p)
-    src=generated_baseline(ep);cv=read_json(ep/character_visual_contract.REL);primary=[str(x) for x in (cv.get("primary_cast_ids") or [])]
+    src=generated_baseline(ep);cv=character_visual_contract.load(ep) or {};primary=[str(x) for x in (cv.get("primary_cast_ids") or [])]
     d={"schema_version":1,"status":"DRAFT","decision":"PENDING","created_at":now(),"role":"ordinary_baseline",**src,
        "reviewer_scope":"delegated_pixel_review","checks":{k:"PENDING" for k in CHECKS},
        "face_boxes":[{"character_id":cid,"x":None,"y":None,"w":None,"h":None} for cid in primary],
@@ -70,7 +73,7 @@ def prepare_review(ep,force=False):
 
 def _box_errors(ep,review):
     if not character_visual_contract.pixel_master_required(ep):return []
-    primary=set(str(x) for x in (read_json(Path(ep)/character_visual_contract.REL).get("primary_cast_ids") or []));boxes=review.get("face_boxes") or [];seen=set();e=[]
+    primary=set(str(x) for x in ((character_visual_contract.load(Path(ep)) or {}).get("primary_cast_ids") or []));boxes=review.get("face_boxes") or [];seen=set();e=[]
     for row in boxes:
         cid=str((row or {}).get("character_id") or "")
         if cid not in primary:continue
@@ -106,14 +109,14 @@ def _mark_baseline_pass(ep,review):
     write_json(gpath,g)
 
 def _ledger_pass(ep,frame):
-    lp=Path(ep)/"meta/production-ledger.json"
-    if not lp.is_file():return
+    ep=Path(ep).resolve()
+    if not production_ledger.authority_exists(ep):return
     key=f"{int(frame):02d}"
-    d=read_json(lp);row=((d.get("frames") or {}).get(key) or {});status=str(row.get("status") or "")
+    d=production_ledger.load_authority(ep,default={}) or {};row=((d.get("frames") or {}).get(key) or {});status=str(row.get("status") or "")
     if status in {"ORIGINAL_READY","REPAIR_READY"}:
         cp=runtime_command.run_argv([sys.executable,str(SYSTEM/"production_ledger.py"),"review",str(ep),"--frame",key,"--decision","pass","--notes","Visual Lock ordinary baseline separate PASS"],cwd=ROOT,capture=True)
         if cp.returncode!=0:raise ValueError("baseline ledger PASS failed: "+cp.stdout[-1200:])
-        d=read_json(lp);row=((d.get("frames") or {}).get(key) or {});status=str(row.get("status") or "")
+        d=production_ledger.load_authority(ep,default={}) or {};row=((d.get("frames") or {}).get(key) or {});status=str(row.get("status") or "")
     # A baseline PASS is already a real actual-pixel approval. Leaving the row
     # PASSED with approved_asset=null breaks incremental review and later release
     # binding. Promote the exact SHA-bound candidate immediately; locking still
@@ -158,7 +161,9 @@ The CLI will persist your final JSON response to {repo_rel(candidate)}.
 def run_product_critic(ep,attempt=1):
     ep=Path(ep).resolve();draft=prepare_review(ep,force=False);runtime,_=runtime_router.detect()
     if runtime not in {"WORK","WEB"}:raise ValueError("baseline product critic requires WORK/WEB")
-    sources=[repo_file(draft["asset_path"]),ep/"meta/story-gates.json",ep/character_visual_contract.REL]
+    spec_source=character_visual_contract.materialize_export(ep)
+    sources=[repo_file(draft["asset_path"]),ep/"meta/story-gates.json"]
+    if spec_source is not None:sources.append(spec_source)
     prov=frame_contract.provenance(ep,int(draft["frame"]))
     if prov and prov.get("path"):
         prov_path=(ep/str(prov["path"])).resolve()
@@ -233,7 +238,7 @@ def approve(ep):
     if needs_master:
         master=character_visual_contract.lock_provisional_pixel_master(ep,frame=review["frame"],asset_path=review["asset_path"],asset_sha256=review["sha256"],frame_contract_sha256=review["frame_contract_sha256"],baseline_review_sha256=review_sha,face_boxes=review.get("face_boxes") or [])
         if Path(review["asset_path"]).suffix.lower()==".png":
-            primary=set(str(x) for x in (read_json(ep/character_visual_contract.REL).get("primary_cast_ids") or []));made=set(((read_json(ep/character_visual_contract.CROPS_REL).get("items") or {}).keys())) if (ep/character_visual_contract.CROPS_REL).is_file() else set();missing=primary-made
+            primary=set(str(x) for x in ((character_visual_contract.load(ep) or {}).get("primary_cast_ids") or []));made=set(((read_json(ep/character_visual_contract.CROPS_REL).get("items") or {}).keys())) if (ep/character_visual_contract.CROPS_REL).is_file() else set();missing=primary-made
             if missing:raise ValueError("primary derived crops missing: "+",".join(sorted(missing)))
     episode_performance.safe_end_named_span(ep,"VISUAL_LOCK_BASELINE_REVIEW",status="PASS",
                                             metadata={"frame":review["frame"],"pixel_master_status":(master or {}).get("status")})
@@ -246,10 +251,12 @@ def approved(ep):
     # are superseded evidence only and must not satisfy dependency gates.
     try:
         frame = baseline_frame(ep)
-        ledger = read_json(ep/"meta/production-ledger.json")
+        ledger = production_ledger.load_authority(ep,default={}) or {}
         row = ((ledger.get("frames") or {}).get(f"{int(frame):02d}") or {})
         if str(row.get("status") or "") not in {"PASSED", "LOCKED"}:
             return False
+    except production_ledger_persistence.ProductionLedgerAuthorityIncomplete:
+        raise
     except Exception:
         return False
     if validate_review(ep):return False
@@ -327,7 +334,7 @@ def main():
             e=validate_review(ep)
             if e:[print("FAIL:",x) for x in e];return 2
             print("VISUAL LOCK BASELINE REVIEW VERIFIED");return 0
-        queue_path=production_queue_store.read_path(ep)
-        print(json.dumps({"approved":approved(ep),"awaiting_review":awaiting_review(ep,read_json(queue_path)) if queue_path.is_file() else False},ensure_ascii=False,indent=2));return 0
+        queue=scheduler_core.load_queue(ep)
+        print(json.dumps({"approved":approved(ep),"awaiting_review":awaiting_review(ep,queue)},ensure_ascii=False,indent=2));return 0
     except Exception as exc:print("BASELINE GATE ERROR:",exc);return 3
 if __name__=="__main__":raise SystemExit(main())

@@ -43,8 +43,10 @@ import json
 from pathlib import Path
 
 import evidence_time
+import frame_review_persistence
 import story_json
 import runtime_workspace
+import production_ledger
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_REL = Path("meta/release-manifest.json")
@@ -298,7 +300,7 @@ def verify(ep, *, ledger=None, metadata_only=False) -> list:
         return []
     if not required(ep):
         return []
-    ledger = ledger if isinstance(ledger, dict) else (read_json(ep / LEDGER_REL, {}) or {})
+    ledger = ledger if isinstance(ledger, dict) else (production_ledger.load_authority(ep, default={}) or {})
     marker = ledger.get("story_semantic_trace_evidence")
     if not isinstance(marker, dict) or marker.get("schema_version") != 1:
         # Ledger produced before the semantic trace existed: legacy scope.
@@ -316,7 +318,7 @@ def verify(ep, *, ledger=None, metadata_only=False) -> list:
         started_at = str(attempt.get("started_at") or "")
         if enforced_from and started_at and started_at < enforced_from:
             continue
-        review = read_json(review_path(ep, int(key)), {}) or {}
+        review = frame_review_persistence.load(ep, int(key)) or {}
         trace = trace_from_review(review)
         for code, message in validate_frame(trace, requirement, attempt_contract_sha(attempt)):
             errors.append(f"frame {key}: {code}: {message}")
@@ -338,9 +340,10 @@ def attach(ep, frame, *, method, source, confidence, story_role=None, beat_deliv
     """Merge one frame story semantic trace into meta/frame-reviews/{frame}.json."""
     ep = Path(ep).resolve()
     path = review_path(ep, frame)
-    review = read_json(path)
+    review = frame_review_persistence.load(ep, frame)
     if not isinstance(review, dict):
         raise ValueError(f"frame review missing or invalid: {path}")
+    review.setdefault("frame", f"{int(frame):02d}")
     requirement = contract_requirements(ep, frame)
     lock = dict(requirement.get("story_lock") or {})
     if story_lock_path is not None:
@@ -368,7 +371,7 @@ def attach(ep, frame, *, method, source, confidence, story_role=None, beat_deliv
     })
     review["story_semantic_trace"] = trace
     if write:
-        write_json(path, review)
+        frame_review_persistence.save(ep, review)
     return review
 
 

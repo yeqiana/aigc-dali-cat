@@ -13,11 +13,22 @@ from pathlib import Path
 
 import runtime_workspace
 import story_json
+import episode_state_persistence
+
+
+def _state(ep: str | Path) -> dict:
+    return episode_state_persistence.load(Path(ep).resolve()) or {}
+
+
+def storage_episode_id_from_business(ep: str | Path, business_episode_id: str) -> str:
+    ep = Path(ep).resolve()
+    material = f"{episode_namespace(ep).casefold()}|{str(business_episode_id).casefold()}"
+    return "EPU_" + hashlib.sha256(material.encode("utf-8")).hexdigest()[:40]
 
 
 def business_episode_id(ep: str | Path) -> str:
     ep = Path(ep).resolve()
-    state = story_json.read_json(ep / "meta/episode-state.json", default={}) or {}
+    state = _state(ep)
     return str(state.get("episode_id") or state.get("id") or ep.name).strip()
 
 
@@ -28,17 +39,16 @@ def episode_namespace(ep: str | Path) -> str:
 def storage_episode_id(ep: str | Path) -> str:
     """Return a globally unique, deterministic <=64 char Episode storage UID."""
     ep = Path(ep).resolve()
-    state = story_json.read_json(ep / "meta/episode-state.json", default={}) or {}
+    state = _state(ep)
     explicit = str(state.get("storage_episode_id") or "").strip()
     if explicit:
         return explicit
-    material = f"{episode_namespace(ep).casefold()}|{business_episode_id(ep).casefold()}"
-    return "EPU_" + hashlib.sha256(material.encode("utf-8")).hexdigest()[:40]
+    return storage_episode_id_from_business(ep, business_episode_id(ep))
 
 
 def identity_record(ep: str | Path) -> dict:
     ep = Path(ep).resolve()
-    state = story_json.read_json(ep / "meta/episode-state.json", default={}) or {}
+    state = _state(ep)
     return {
         "storage_episode_id": storage_episode_id(ep),
         "business_episode_id": business_episode_id(ep),

@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 import storage_config
 import story_json
@@ -112,11 +117,15 @@ def load_latest(ep: Path, frame: int | str, *, legacy_path: str | Path | None = 
                 else:
                     return row["payload"]
         except Exception:
-            # Compatibility JSON remains the fail-soft read path during migration.
-            pass
+            # dual remains fail-soft; mysql is the durable authority and must not
+            # silently resurrect compatibility JSON on repository failure.
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return None
 
     if legacy_path is None:
         legacy_path = ep / "meta/runtime/contracts/frames" / f"{int(frame):02d}.json"

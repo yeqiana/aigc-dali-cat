@@ -22,10 +22,10 @@ def now() -> str:
 
 
 def read(ep: Path) -> dict:
-    p = ep / REL
-    if not p.is_file():
-        return {"schema_version": 1, "note": "Performance evidence only; NOT a stage source.", "runs": []}
-    data = json.loads(p.read_text(encoding="utf-8-sig"))
+    data = runtime_observability.read_summary(
+        ep, REL,
+        default={"schema_version": 1, "note": "Performance evidence only; NOT a stage source.", "runs": []},
+    )
     if not isinstance(data, dict):
         raise ValueError("workflow performance root must be object")
     data.setdefault("runs", [])
@@ -33,12 +33,8 @@ def read(ep: Path) -> dict:
 
 
 def write(ep: Path, data: dict) -> None:
-    p = ep / REL
-    p.parent.mkdir(parents=True, exist_ok=True)
     data = runtime_observability.summary_document("workflow_performance", data)
-    tmp = p.with_suffix(p.suffix + ".tmp")
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-    tmp.replace(p)
+    runtime_observability.write_summary(ep, REL, kind="workflow_performance", payload=data)
 
 
 def append_log(ep: Path, row: dict) -> None:

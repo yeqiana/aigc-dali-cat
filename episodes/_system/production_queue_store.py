@@ -14,6 +14,7 @@ from pathlib import Path
 import production_queue_activation as activation
 import runtime_workspace
 import story_json
+import episode_state_persistence
 
 REL = Path("meta/production-queue.json")
 STORAGE_MODE = "activation_guarded"
@@ -33,7 +34,7 @@ def workspace_candidate(episode_dir: Path) -> Path:
 
 def native_workspace_default(episode_dir: Path) -> bool:
     ep = Path(episode_dir).resolve()
-    state = story_json.read_json(ep / STATE_REL, default={})
+    state = episode_state_persistence.load(ep) or {}
     if not isinstance(state, dict):
         return False
     storage = state.get("runtime_storage") or {}

@@ -13,9 +13,13 @@ import argparse, binascii, datetime as dt, hashlib, json, struct, zlib
 from pathlib import Path
 import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
 import story_json
+import character_contract
+import episode_contract_persistence
+import runtime_workspace
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/character-visual-contract.json")
+CONTRACT_TYPE="CHARACTER_VISUAL"
 PIXEL_MASTER_REL=Path("meta/character-pixel-master.json")
 CROPS_REL=Path("meta/character-master-crops.json")
 CROPS_DIR=Path("media/identity/character-masters")
@@ -30,6 +34,47 @@ def read_json(p):
     return story_json.read_json(p)
 def write_json(p,d):
     story_json.write_json(p, d)
+
+
+
+def load(ep):
+    ep=Path(ep).resolve()
+    return episode_contract_persistence.load_latest(
+        ep, CONTRACT_TYPE, legacy_path=ep/REL
+    )
+
+
+def exists(ep):
+    return isinstance(load(ep),dict)
+
+
+def save(ep,data):
+    ep=Path(ep).resolve()
+    episode_contract_persistence.save(
+        ep, CONTRACT_TYPE, REL, data,
+        status=str(data.get("status") or "ACTIVE"),
+    )
+    return data
+
+
+def authority_sha256(ep):
+    data=load(ep)
+    if not isinstance(data,dict):return None
+    raw=json.dumps(data,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def materialize_export(ep):
+    ep=Path(ep).resolve()
+    legacy=ep/REL
+    if legacy.is_file():
+        return legacy
+    data=load(ep)
+    if not isinstance(data,dict):
+        return None
+    return runtime_workspace.write_json(
+        ep, "exports/character-visual-contract.json", data
+    )
 def sha_file(p):
     h=hashlib.sha256()
     with Path(p).open("rb") as f:
@@ -94,9 +139,10 @@ def _primary_ids(cp):
     return ids[:2]
 
 def prepare(ep,force=False):
-    ep=Path(ep).resolve();target=ep/REL
-    if target.is_file() and not force:return read_json(target)
-    cp=read_json(ep/"meta/character-contract.json")
+    ep=Path(ep).resolve()
+    existing=load(ep)
+    if isinstance(existing,dict) and not force:return existing
+    cp=character_contract.load(ep) or {}
     members=((cp.get("cast") or {}).get("members") or [])
     world_identity = world_identity_contract.effective(ep) if world_identity_contract.required(ep) else None
     primary=set(_primary_ids(cp));rows={}
@@ -155,16 +201,16 @@ def prepare(ep,force=False):
       "realism_priority":True,
       "note":"Story Lock 只锁规格；baseline 单独 PASS 后建立临时像素母版，四项 Visual Lock 全 PASS 后升级为正式母版。"
     }
-    write_json(target,d);return d
+    return save(ep,d)
 
 def _identity_spec_locked(face):
     if "identity_spec_locked" in face:return face.get("identity_spec_locked") is True
     return face.get("master_identity_locked") is True
 
 def validate(ep,require_locked=True):
-    ep=Path(ep).resolve();p=ep/REL
-    if not p.is_file():return ["meta/character-visual-contract.json missing"]
-    d=read_json(p);e=[]
+    ep=Path(ep).resolve();d=load(ep)
+    if not isinstance(d,dict):return ["meta/character-visual-contract.json missing"]
+    e=[]
     effective_world = world_identity_contract.effective(ep) if world_identity_contract.required(ep) else None
     if effective_world is not None:
         e.extend(world_identity_contract.verify(ep))
@@ -175,9 +221,8 @@ def validate(ep,require_locked=True):
     if rp.get("reference_is_not_identity_master") is not True:e.append("reference image must not become identity master")
     primary=set(str(x) for x in (d.get("primary_cast_ids") or []));members=d.get("members") or {}
     if not members:e.append("character visual members missing")
-    cp_path=ep/"meta/character-contract.json"
-    if cp_path.is_file():
-        cp=read_json(cp_path)
+    cp=character_contract.load(ep)
+    if isinstance(cp,dict):
         expected_ids={str(m.get("id") or "") for m in (((cp.get("cast") or {}).get("members") or [])) if str(m.get("id") or "")}
         actual_ids={str(cid) for cid in members}
         missing=sorted(expected_ids-actual_ids);extra=sorted(actual_ids-expected_ids)
@@ -230,7 +275,7 @@ def _pixel_master_data(ep,*,frame,asset_path,asset_sha256,frame_contract_sha256,
       "schema_version":2,"status":status,"created_at":old.get("created_at") or now(),"updated_at":now(),
       "source_role":"ordinary_baseline","frame":f"{int(frame):02d}","asset_path":repo_rel(asset),"sha256":actual,
       "frame_contract_sha256":str(frame_contract_sha256 or ""),"character_visual_contract_path":REL.as_posix(),
-      "character_visual_contract_sha256":sha_file(ep/REL),
+      "character_visual_contract_sha256":authority_sha256(ep),
       "baseline_review_path":"meta/visual-lock-baseline-review.json" if baseline_review_sha256 else old.get("baseline_review_path"),
       "baseline_review_sha256":baseline_review_sha256 or old.get("baseline_review_sha256"),
       "crop_manifest_path":CROPS_REL.as_posix() if (ep/CROPS_REL).is_file() else old.get("crop_manifest_path"),
@@ -271,9 +316,9 @@ def validate_pixel_master(ep,expected=None,allow_provisional=False):
     if int(d.get("schema_version") or 1) not in {1,2}:e.append("unsupported character pixel master schema_version")
     allowed={"LOCKED","PROVISIONAL"} if allow_provisional else {"LOCKED"}
     if d.get("status") not in allowed:e.append(f"character pixel master status must be one of {sorted(allowed)}")
-    spec=ep/REL
-    if not spec.is_file():e.append("character visual spec missing")
-    elif str(d.get("character_visual_contract_sha256") or "").lower()!=sha_file(spec).lower():e.append("character pixel master spec sha stale")
+    spec_sha=authority_sha256(ep)
+    if not spec_sha:e.append("character visual spec missing")
+    elif str(d.get("character_visual_contract_sha256") or "").lower()!=spec_sha.lower():e.append("character pixel master spec sha stale")
     try:
         asset=_repo_asset(d.get("asset_path"))
         if not asset.is_file():e.append("character pixel master asset missing")
@@ -347,7 +392,7 @@ def _validate_box(row):
     return cid,x,y,w,h
 
 def derive_face_crops(ep,face_boxes,allow_non_png=False):
-    ep=Path(ep).resolve();master=read_json(ep/PIXEL_MASTER_REL);src=_repo_asset(master.get("asset_path"));primary=set(str(x) for x in (read_json(ep/REL).get("primary_cast_ids") or []));valid=[]
+    ep=Path(ep).resolve();master=read_json(ep/PIXEL_MASTER_REL);src=_repo_asset(master.get("asset_path"));primary=set(str(x) for x in ((load(ep) or {}).get("primary_cast_ids") or []));valid=[]
     for row in face_boxes or []:
         cid,x,y,bw,bh=_validate_box(row)
         if cid in primary:valid.append((cid,x,y,bw,bh))
@@ -402,7 +447,11 @@ def main():
     elif a.cmd=="verify-pixel-master":e=validate_pixel_master(ep,allow_provisional=a.allow_provisional)
     elif a.cmd=="verify-crops":e=validate_crops(ep)
     else:
-        p=ep/(PIXEL_MASTER_REL if a.cmd=="show-pixel-master" else REL);print(p.read_text(encoding="utf-8-sig") if p.is_file() else "{}");return 0
+        if a.cmd=="show-pixel-master":
+            p=ep/PIXEL_MASTER_REL;print(p.read_text(encoding="utf-8-sig") if p.is_file() else "{}")
+        else:
+            print(json.dumps(load(ep) or {},ensure_ascii=False,indent=2))
+        return 0
     if e:[print("FAIL:",x) for x in e];return 2
     print("VERIFIED");return 0
 if __name__=="__main__":raise SystemExit(main())

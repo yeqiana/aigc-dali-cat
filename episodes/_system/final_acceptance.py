@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 import story_json
 import runtime_portability
+import approval_persistence
 
 REL = Path("meta/final-acceptance.json")
 EVENT_REL = Path("meta/runtime/final-acceptance-events.jsonl")
@@ -69,12 +70,8 @@ def _append_event(ep: Path, payload: dict) -> None:
 def valid(episode_dir) -> dict | None:
     """Return the acceptance payload when valid for gates, else None."""
     ep = Path(episode_dir).resolve()
-    path = ep / REL
-    if not path.is_file():
-        return None
-    try:
-        data = read_json(path)
-    except Exception:
+    data = approval_persistence.load(ep, approval_persistence.FINAL_ACCEPTANCE)
+    if not isinstance(data, dict):
         return None
     if data.get("schema_version") != 1:
         return None
@@ -160,7 +157,7 @@ def record(episode_dir, *, user_statement: str, known_defect_frames: list[int], 
     # Event first is fail-closed: a crash can leave an inert event, but never an
     # active acceptance without its audit event.
     _append_event(ep, event)
-    story_json.write_json(ep / REL, payload)
+    approval_persistence.save(ep, approval_persistence.FINAL_ACCEPTANCE, payload)
     return payload
 
 
@@ -171,7 +168,7 @@ def revoke(episode_dir, *, user_statement: str, declared_at: str | None = None) 
     statement = str(user_statement or "").strip()
     if not statement:
         raise ValueError("direct user revocation statement is required")
-    current = read_json(ep / REL) if (ep / REL).is_file() else {}
+    current = approval_persistence.load(ep, approval_persistence.FINAL_ACCEPTANCE) or {}
     at = str(declared_at or now()).strip()
     event = {
         "schema_version": 1,
@@ -192,7 +189,7 @@ def revoke(episode_dir, *, user_statement: str, declared_at: str | None = None) 
         "known_defect_frames": _normalized_frames(current.get("known_defect_frames")),
         "accepted_scopes": _normalized_scopes(current.get("accepted_scopes"), legacy_default=True),
     }
-    story_json.write_json(ep / REL, payload)
+    approval_persistence.save(ep, approval_persistence.FINAL_ACCEPTANCE, payload)
     return payload
 
 

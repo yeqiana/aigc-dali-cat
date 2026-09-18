@@ -10,6 +10,7 @@ import argparse, datetime as dt, json
 from pathlib import Path
 import story_json
 import runtime_workspace
+import runtime_request
 
 REL=Path("meta/runtime-execution.json")
 MODES={"full_auto","preproduction_only","image_continue","resume","repair_only","release_only","data_review"}
@@ -19,9 +20,9 @@ def read_json(p):
     return story_json.read_json(p)
 def write_json(p,d): story_json.write_json(p, d)
 def request_mode(ep):
-    p=ep/"meta/runtime-request.json"
-    if not p.is_file():return "full_auto"
-    try:return str(read_json(p).get("mode") or "full_auto")
+    try:
+        request=runtime_request.authority_for_episode(Path(ep).resolve()) or {}
+        return str(request.get("mode") or "full_auto")
     except Exception:return "full_auto"
 def effective_mode(ep):
     p=runtime_workspace.resolve_read_path(ep,REL)

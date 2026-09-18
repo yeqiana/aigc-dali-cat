@@ -17,6 +17,7 @@ import story_json
 import runtime_timeout_policy
 import runtime_command
 import runtime_checkpoint
+import episode_state_persistence
 STAGES=tuple(canonical_stages())
 SPECIAL = {"repair_only","release_only","data_review"}
 
@@ -24,8 +25,8 @@ def read_json(path: Path) -> dict:
     return story_json.read_json(path)
 
 def state(ep: Path) -> str | None:
-    p=ep/"meta/episode-state.json"
-    return str(read_json(p).get("current_state") or "") if p.is_file() else None
+    data=episode_state_persistence.load(Path(ep).resolve())
+    return str(data.get("current_state") or "") if isinstance(data,dict) else None
 
 def at_least(cur: str | None, target: str) -> bool:
     return cur in STAGES and target in STAGES and STAGES.index(cur) >= STAGES.index(target)

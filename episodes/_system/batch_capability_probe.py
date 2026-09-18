@@ -14,6 +14,7 @@ def read(ep:Path)->dict:
     hot = hot_state_bridge.read(ep, "BATCH_CAPABILITY")
     if hot.get("redis_read") and isinstance(hot.get("value"), dict):
         return hot["value"]
+    if not hot_state_bridge.file_fallback_allowed(hot): return {}
     p=ep/REL
     if not p.is_file(): return {}
     data=json.loads(p.read_text(encoding="utf-8-sig"))

@@ -12,6 +12,7 @@ import runtime_resume_token
 import runner_state_store
 import runtime_checkpoint
 import production_queue_store
+import scheduler_core
 import next_action
 import runtime_timeout_policy
 import runtime_evidence_contract
@@ -19,6 +20,7 @@ import episode_lifecycle
 import episode_performance
 import runtime_portability
 import runtime_ownership
+import production_ledger
 
 TERMINAL = {"PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED"}
 
@@ -197,8 +199,8 @@ def progress_marker(episode:Path):
     row or stage changes.  Include those existing facts so three successful local
     machine actions cannot be misclassified as CAPABILITY_WAIT/no-progress.
     """
-    queue=next_action.read_json(production_queue_store.read_path(episode))
-    ledger=next_action.read_json(episode/"meta/production-ledger.json")
+    queue=scheduler_core.load_queue(episode)
+    ledger=production_ledger.load_authority(episode,default={}) or {}
     action=next_action.load(episode)
     frames=ledger.get("frames") or {}
     ledger_marker=tuple(sorted(

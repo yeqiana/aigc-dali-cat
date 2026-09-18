@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from copy import deepcopy
-from platform.repository.mysql.payload_policy import bounded_json
+from platform.repository.mysql.payload_policy import bounded_json, projection_envelope
 
 
 _UPSERT_SQL = """
@@ -24,6 +24,23 @@ SELECT REVIEW_ID, EPISODE_ID, REVIEW_TYPE, ATTEMPT_NO, DECISION,
 FROM TB_REVIEW_RECORD
 WHERE REVIEW_ID=%s
 LIMIT 1
+""".strip()
+
+_LATEST_SQL = """
+SELECT REVIEW_ID, EPISODE_ID, REVIEW_TYPE, ATTEMPT_NO, DECISION,
+       SOURCE_SHA256, REVIEWER_TYPE, PAYLOAD, CREATE_TIME
+FROM TB_REVIEW_RECORD
+WHERE EPISODE_ID=%s AND REVIEW_TYPE=%s
+ORDER BY ATTEMPT_NO DESC
+LIMIT 1
+""".strip()
+
+_LIST_TYPE_SQL = """
+SELECT REVIEW_ID, EPISODE_ID, REVIEW_TYPE, ATTEMPT_NO, DECISION,
+       SOURCE_SHA256, REVIEWER_TYPE, PAYLOAD, CREATE_TIME
+FROM TB_REVIEW_RECORD
+WHERE EPISODE_ID=%s AND REVIEW_TYPE=%s
+ORDER BY ATTEMPT_NO ASC
 """.strip()
 
 
@@ -48,7 +65,19 @@ class MySqlReviewRecordRepository:
         if attempt_no < 1:
             raise ValueError("review record attempt_no must be >= 1")
         rid = str(row.get("review_id") or review_id(episode_id, review_type, attempt_no))
-        payload = bounded_json(row["payload"], entity="review record")
+        payload_value = row["payload"]
+        if row.get("payload_ref") is not None:
+            payload_value = projection_envelope(
+                payload_value,
+                row["payload_ref"],
+                "EPISODE_REVIEW_REF",
+                {
+                    "review_type": review_type,
+                    "decision": str(row["decision"]),
+                    "attempt_no": attempt_no,
+                },
+            )
+        payload = bounded_json(payload_value, entity="review record")
         self.connection.execute(
             _UPSERT_SQL,
             (
@@ -65,6 +94,19 @@ class MySqlReviewRecordRepository:
 
     def get_by_id(self, review_id_value: str) -> dict | None:
         return self._decode(self.connection.query_one(_BY_ID_SQL, (str(review_id_value),)))
+
+    def get_latest(self, episode_id: str, review_type: str) -> dict | None:
+        return self._decode(
+            self.connection.query_one(
+                _LATEST_SQL, (str(episode_id), str(review_type))
+            )
+        )
+
+    def list_attempts(self, episode_id: str, review_type: str) -> list[dict]:
+        rows = self.connection.query_all(
+            _LIST_TYPE_SQL, (str(episode_id), str(review_type))
+        ) or []
+        return [decoded for row in rows if (decoded := self._decode(row)) is not None]
 
     @staticmethod
     def _decode(row: dict | None) -> dict | None:

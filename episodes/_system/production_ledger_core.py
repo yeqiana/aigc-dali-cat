@@ -16,6 +16,8 @@ from visual_profile import compile_prompt_contract
 import frame_contract as resolved_frame_contract
 import storyos_config
 import episode_lifecycle
+import episode_state_persistence
+import production_ledger_persistence
 from runtime_atomic_store import atomic_write_json
 
 LEDGER_FILE = Path("meta/production-ledger.json")
@@ -77,8 +79,44 @@ def load_json(path: Path) -> dict:
 def save_json(path: Path, data: dict) -> None:
     path = Path(path).resolve()
     if path.name == LEDGER_FILE.name and path.parent.name == "meta":
-        episode_lifecycle.assert_writable(path.parent.parent, "production_ledger.write")
+        ep = path.parent.parent
+        episode_lifecycle.assert_writable(ep, "production_ledger.write")
+        production_ledger_persistence.assert_full_authority_available()
+        atomic_write_json(path, data)
+        production_ledger_persistence.persist_projection(ep, data)
+        return
     atomic_write_json(path, data)
+
+
+
+def load_authority(ep: Path, default=None):
+    """Read the complete Production Ledger authority without creating it.
+
+    json/dual keep the complete document in the Episode while MySQL receives a
+    typed projection. mysql-only remains fail-closed until every extended frame
+    field has a lossless typed mapping.
+    """
+    ep = Path(ep).resolve()
+    production_ledger_persistence.assert_full_authority_available()
+    path = ep / LEDGER_FILE
+    if not path.is_file():
+        return default
+    return load_json(path)
+
+
+def authority_exists(ep: Path) -> bool:
+    production_ledger_persistence.assert_full_authority_available()
+    return (Path(ep).resolve() / LEDGER_FILE).is_file()
+
+
+def authority_sha256(ep: Path) -> str | None:
+    data = load_authority(ep, default=None)
+    if not isinstance(data, dict):
+        return None
+    raw = json.dumps(
+        data, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
 
 
 def episode_dir(raw: str) -> Path:
@@ -189,6 +227,7 @@ def blank_frame(number: int) -> dict:
 
 
 def init_ledger(ep: Path, *, count: int | None = None, ratio: str | None = None, overwrite: bool = False) -> dict:
+    production_ledger_persistence.assert_full_authority_available()
     path = ep / LEDGER_FILE
     if path.exists() and not overwrite:
         return load_json(path)
@@ -243,6 +282,7 @@ def init_ledger(ep: Path, *, count: int | None = None, ratio: str | None = None,
 
 
 def get_ledger(ep: Path) -> tuple[Path, dict]:
+    production_ledger_persistence.assert_full_authority_available()
     path = ep / LEDGER_FILE
     if not path.exists():
         data = init_ledger(ep)
@@ -326,15 +366,19 @@ def _version_tuple(raw: object) -> tuple[int, ...]:
 
 
 def creative_enforcement_required(ep: Path) -> bool:
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json"):
-        p = ep / rel
-        if not p.is_file():
-            continue
+    try:
+        state = episode_state_persistence.load(ep) or {}
+        if _version_tuple(state.get("tool_version")) >= (2, 0, 3, 2):
+            return True
+    except Exception:
+        pass
+    p = ep / "meta/release-manifest.json"
+    if p.is_file():
         try:
             if _version_tuple(load_json(p).get("tool_version")) >= (2, 0, 3, 2):
                 return True
         except Exception:
-            continue
+            pass
     return False
 
 

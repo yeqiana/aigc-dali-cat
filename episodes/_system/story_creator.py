@@ -14,6 +14,8 @@ import re
 from pathlib import Path
 
 import episode_state
+import episode_state_persistence
+import runtime_request
 import story_json
 import visual_profile_selector
 import world_identity_contract
@@ -81,7 +83,23 @@ def ensure_episode_core_documents(
     }
     documents = {"state": state, "manifest": manifest, "gates": gates}
     created = []
-    for key, path in paths.items():
+    existing_state, state_source = episode_state_persistence.load_with_source(episode)
+    state_path = paths["state"]
+    if existing_state is None:
+        episode_state_persistence.save_initial(
+            episode, state, source="story_creator.bootstrap"
+        )
+        if state_path.is_file():
+            created.append(state_path.relative_to(episode).as_posix())
+    elif (
+        episode_state_persistence.authority_mode() == "dual"
+        and state_source == "mysql"
+        and not state_path.is_file()
+    ):
+        story_json.write_json(state_path, existing_state)
+        created.append(state_path.relative_to(episode).as_posix())
+    for key in ("manifest", "gates"):
+        path = paths[key]
         if path.is_file():
             continue
         story_json.write_json(path, documents[key])
@@ -117,6 +135,7 @@ def create_episode(
     selector_input: dict | None = None,
     episode_context: dict | None = None,
     audience_expectation: dict | None = None,
+    runtime_request_text: str | None = None,
 ) -> Path:
     """Create an Episode skeleton and its Visual Lock draft.
 
@@ -188,28 +207,69 @@ def create_episode(
     )
     world_identity_contract.ensure_visual_profile_override(episode, effective_profile_id)
 
-    request = {
-        "schema_version": 1,
-        "intent": "CREATE_EPISODE",
-        "request": title,
-        "execution_mode": "dag",
-        "visual_profile": (resolved or {}).get("profile_id") or "",
-        "visual_profile_resolution": {
-            "source": resolved["source"] if resolved else None,
-            "resolved_profile_id": resolved["profile_id"] if resolved else None,
-            "requested_profile_id": (
-                resolved.get("requested_profile_id", visual_profile) if resolved else None
-            ),
-            "registered": resolved.get("registered", True) if resolved else False,
-            "fallback": resolved.get("fallback", False) if resolved else False,
-            "resolution": resolved.get("resolution") if resolved else "needs_confirmation",
-            "registry": "standards/visual_profiles/index.json",
-        },
+    target_profile = (resolved or {}).get("profile_id") or ""
+    profile_resolution = {
+        "source": resolved["source"] if resolved else None,
+        "resolved_profile_id": resolved["profile_id"] if resolved else None,
+        "requested_profile_id": (
+            resolved.get("requested_profile_id", visual_profile) if resolved else None
+        ),
+        "registered": resolved.get("registered", True) if resolved else False,
+        "fallback": resolved.get("fallback", False) if resolved else False,
+        "resolution": resolved.get("resolution") if resolved else "needs_confirmation",
+        "registry": "standards/visual_profiles/index.json",
     }
-    if lock_report["source"] == "selector":
-        request["visual_profile_selection"] = selection_record(lock_report)
-
-    (meta / "runtime-request.json").write_text(
-        json.dumps(request, ensure_ascii=False, indent=2), encoding="utf-8")
+    existing_request = runtime_request.authority_for_episode(episode)
+    existing_valid = (
+        isinstance(existing_request, dict)
+        and not runtime_request.validate_request(existing_request)
+    )
+    if not existing_valid:
+        source_text = str(runtime_request_text or "").strip()
+        if not source_text:
+            source_text = f"全自动做一篇「{title}」。"
+        try:
+            request = runtime_request.compile_request(source_text)
+        except ValueError:
+            if source_text == str(title).strip():
+                compile_text = f"全自动做一篇「{title}」。"
+            else:
+                compile_text = f"全自动做一篇「{title}」。剧情大概是：{source_text}"
+            request = runtime_request.compile_request(compile_text)
+        request["topic"]["title"] = title
+        request["provenance"]["original_request"] = source_text
+        request["visual_profile"] = target_profile
+        request["visual_profile_resolution"] = profile_resolution
+        if lock_report["source"] == "selector":
+            request["visual_profile_selection"] = selection_record(lock_report)
+        errors = runtime_request.validate_request(request)
+        if errors:
+            raise ValueError("canonical Runtime Request bootstrap invalid: " + "; ".join(errors))
+        runtime_request.bind_data(
+            request,
+            episode,
+            force=existing_request is not None,
+            repository_root=root,
+        )
+    else:
+        request = dict(existing_request)
+        changed = False
+        if (
+            request.get("visual_profile") != target_profile
+            or request.get("visual_profile_resolution") != profile_resolution
+        ):
+            request["visual_profile"] = target_profile
+            request["visual_profile_resolution"] = profile_resolution
+            changed = True
+        if lock_report["source"] == "existing" and "visual_profile_selection" in request:
+            request.pop("visual_profile_selection", None)
+            changed = True
+        if changed:
+            runtime_request.bind_data(
+                request,
+                episode,
+                force=True,
+                repository_root=root,
+            )
 
     return episode

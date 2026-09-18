@@ -12,8 +12,11 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import baseline_candidate_pool
+import capture_event_contract
+import character_contract
 import delegated_approval
 import episode_state
+import episode_state_persistence
 import frame_contract
 import frame_semantic_review
 import image_blocked_recovery
@@ -22,6 +25,7 @@ import production_ledger
 import production_ledger_manage
 import production_prompt_materializer
 import story_json
+import wardrobe_contract
 import visual_lock_baseline_gate
 import visual_lock_candidate_pool
 import visual_lock_finalizer
@@ -44,8 +48,8 @@ def local_machine_action(action: dict) -> str | None:
 
 
 def _state(ep: Path) -> str:
-    data = story_json.read_json(ep / "meta/episode-state.json", default={})
-    return str((data or {}).get("current_state") or "")
+    data = episode_state_persistence.load(ep) or {}
+    return str(data.get("current_state") or "")
 
 
 def _read(ep: Path, rel: str) -> dict:
@@ -57,11 +61,11 @@ def _materialize_visual_machine_contract(ep: Path) -> dict:
     """Backfill strict Visual Gate fields from already-locked authority only."""
     gates_path = ep / "meta/story-gates.json"
     gates = _read(ep, "meta/story-gates.json")
-    character = _read(ep, "meta/character-contract.json")
-    capture = _read(ep, "meta/capture-event-contract.json")
+    character = character_contract.load(ep) or {}
+    capture = capture_event_contract.load(ep) or {}
     world = _read(ep, "meta/world-state.json")
     temporal = _read(ep, "meta/temporal-continuity.json")
-    wardrobe = _read(ep, "meta/wardrobe-contract.json")
+    wardrobe = wardrobe_contract.load(ep) or {}
     manifest = _read(ep, "meta/release-manifest.json")
     visual = gates.setdefault("visual", {})
     frames = capture.get("frames") or {}
@@ -122,7 +126,7 @@ def _materialize_visual_machine_contract(ep: Path) -> dict:
 
 
 def _finalize_production_images(ep: Path) -> dict:
-    ledger = _read(ep, "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     frames = ledger.get("frames") or {}
     if not frames:
         raise MachineActionError("production ledger frames missing")

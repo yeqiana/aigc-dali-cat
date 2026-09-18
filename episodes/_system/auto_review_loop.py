@@ -41,11 +41,13 @@ if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
 import identity_continuity  # noqa: E402
+import frame_review_persistence  # noqa: E402
 import repair_engine  # noqa: E402
 import story_json  # noqa: E402
 import story_semantic_trace  # noqa: E402
 import visual_profile_gate  # noqa: E402
 import runtime_workspace  # noqa: E402
+import production_ledger  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -93,7 +95,7 @@ def read_json(path, default=None):
 def ledger_of(ep, ledger=None) -> dict:
     if isinstance(ledger, dict):
         return ledger
-    data = read_json(Path(ep) / LEDGER_REL, {})
+    data = production_ledger.load_authority(Path(ep).resolve(), default={}) or {}
     return data if isinstance(data, dict) else {}
 
 
@@ -105,6 +107,11 @@ def frame_numbers(ep, ledger=None) -> list:
         try:
             numbers.add(int(key))
         except (TypeError, ValueError):
+            continue
+    for review in frame_review_persistence.list_all(ep):
+        try:
+            numbers.add(int(review.get("frame")))
+        except (AttributeError, TypeError, ValueError):
             continue
     contract_dirs = runtime_workspace.read_candidates(ep, CONTRACT_CACHE_REL)
     for folder in (ep / REVIEW_DIR, *contract_dirs):
@@ -158,7 +165,7 @@ def evaluate_frame(ep, frame, *, ledger=None, story_root=None) -> dict:
     ledger = ledger_of(ep, ledger)
     key = "%02d" % int(frame)
     row = (ledger.get("frames") or {}).get(key)
-    review = read_json(ep / REVIEW_DIR / (key + ".json"), {})
+    review = frame_review_persistence.load(ep, int(frame)) or {}
     review = review if isinstance(review, dict) else {}
     issues: list = []
 

@@ -16,6 +16,7 @@ from pathlib import Path
 
 import story_json
 import frame_contract
+import production_ledger
 
 REL = Path("meta/visual-lock-admissions.json")
 GATES_REL = Path("meta/story-gates.json")
@@ -266,7 +267,7 @@ def reconcile_historical_passes(
     Later stochastic re-reviews of the unchanged binding cannot erase it.
     """
     ep = Path(ep)
-    ledger = _read(ep / LEDGER_REL)
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     by_id = {str(asset.get("id") or ""): asset for asset in assets}
     recovered: dict[str, dict] = {}
     logs = sorted((ep / "meta").glob("visual-lock-critic-attempt-*.jsonl"), key=lambda p: p.stat().st_mtime)
@@ -378,7 +379,7 @@ def restore_ledger_pass(ep: Path, *, asset: dict, evidence_note: str) -> bool:
     """
     ep = Path(ep)
     path = ep / LEDGER_REL
-    ledger = _read(path)
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     frame_key = f"{int(asset.get('frame') or 0):02d}"
     frame = (ledger.get("frames") or {}).get(frame_key)
     if not isinstance(frame, dict):
@@ -398,7 +399,7 @@ def restore_ledger_pass(ep: Path, *, asset: dict, evidence_note: str) -> bool:
     })
     frame["status"] = "PASSED"
     ledger["updated_at"] = now()
-    story_json.write_json(path, ledger)
+    production_ledger.save_json(path, ledger)
     return True
 
 
@@ -447,7 +448,7 @@ def restore_ledger_weak_pass(ep: Path, *, asset: dict, weak_pass: dict) -> bool:
     """Accept only the exact current candidate SHA and retain the quality debt explicitly."""
     ep = Path(ep)
     path = ep / LEDGER_REL
-    ledger = _read(path)
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     frame_key = f"{int(asset.get('frame') or 0):02d}"
     frame = (ledger.get("frames") or {}).get(frame_key)
     if not isinstance(frame, dict):
@@ -470,5 +471,5 @@ def restore_ledger_weak_pass(ep: Path, *, asset: dict, weak_pass: dict) -> bool:
     })
     frame["status"] = "WEAK_PASS"
     ledger["updated_at"] = now()
-    story_json.write_json(path, ledger)
+    production_ledger.save_json(path, ledger)
     return True

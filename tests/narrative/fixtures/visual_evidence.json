@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "category": "visual_evidence",
+  "fixtures": [
+    {
+      "id": "EVID_REAL_POS_001",
+      "polarity": "positive",
+      "source_type": "real",
+      "source_episode": "婚礼前夜·记忆麻醉",
+      "source_evidence": ["frame 03"],
+      "scenario": "梦境中铁链被扯直且与床脚接触清晰，但两端都在画外；没有脚镣全貌、药或看守脸。",
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "observed": ["CHAIN_VISIBLE", "CHAIN_ENDPOINTS_UNKNOWN"],
+        "reason": "关键异常证据清楚，同时保留来源未知。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["FrameContract", "EvidenceVerifier"]
+    },
+    {
+      "id": "EVID_REAL_POS_002",
+      "polarity": "positive",
+      "source_type": "real",
+      "source_episode": "婚礼前夜·记忆麻醉",
+      "source_evidence": ["frame 11"],
+      "scenario": "掀开红布后，铁栏横贯窗洞且与窗框固定关系清晰，第一次给出房间具有限制行动功能的直接物证。",
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "observed": ["HIDDEN_BARS_VISIBLE", "BARS_FIXED_TO_WINDOW"],
+        "reason": "该帧承担新的、不可由前帧替代的确认性证据。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["FrameContract", "EvidenceVerifier"]
+    },
+    {
+      "id": "EVID_REAL_NEG_001",
+      "polarity": "negative",
+      "source_type": "real",
+      "source_episode": "婚礼前夜·记忆麻醉 V1",
+      "source_evidence": ["生产复盘：旧 frame 11 没有新证据"],
+      "scenario": "镜头在叙事上被安排为升级点，但实际没有提供相对前帧可辨认的新视觉证据。",
+      "expected": {
+        "decision": "FAIL",
+        "issue_codes": ["REQUIRED_VISUAL_EVIDENCE_MISSING", "INSUFFICIENT_INFORMATION_GAIN"],
+        "reason": "漂亮或氛围正确不能替代镜头承担的叙事证据。"
+      },
+      "current_coverage": "partial",
+      "future_capability": ["FrameContract", "EvidenceVerifier"]
+    },
+    {
+      "id": "EVID_REAL_BOUNDARY_001",
+      "polarity": "boundary",
+      "source_type": "real",
+      "source_episode": "泔水与金牌",
+      "source_evidence": ["frame 01 visual-profile-review/frame-review"],
+      "scenario": "水洼倒影里人物五官和尖耳轮廓可读，但骨牌上的“巡”字在当前尺度不可逐笔辨认；评审明确登记这一像素局限，由字幕/叙事承担文字语义。",
+      "expected": {
+        "decision": "PASS_WITH_NOTE",
+        "issue_codes": [],
+        "reason": "不是所有故事事实都必须成为当前帧可读像素；应区分 required evidence 与 narration-supported fact。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["EvidenceVerifier"]
+    },
+    {
+      "id": "EVID_REAL_BOUNDARY_002",
+      "polarity": "boundary",
+      "source_type": "real",
+      "source_episode": "EP003 雾中的另一座生活区（历史归档）",
+      "source_evidence": ["frame 18"],
+      "scenario": "失联前缓存中只有极小、模糊、四方的白色轮廓，只能“像车”，不能读出柏油路、护栏或车旁人物。",
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "reason": "低置信证据是设计要求；Reviewer 不应擅自把模糊方向性证据升级成确认性事实。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["StoryFact", "EvidenceVerifier", "DisclosureBoundary"]
+    }
+  ]
+}
+

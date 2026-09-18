@@ -4,6 +4,8 @@ import argparse, datetime as dt, json, threading, time, uuid
 from collections import Counter, defaultdict
 from pathlib import Path
 import storyos_config
+import runtime_observability
+import hot_state_bridge
 
 ROOT=Path(__file__).resolve().parents[2]
 _CONFIG=storyos_config.load_config()
@@ -39,8 +41,14 @@ def start_run(ep,run_id,request_data,runtime,route_decision=None):
          "runtime":runtime,"started_at":now(),"route_id":(route_decision or {}).get("route_id")}
     p=_path(ep,"current_path");p.parent.mkdir(parents=True,exist_ok=True)
     p.write_text(json.dumps(cur,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    hot_state_bridge.mirror(ep, "TRACE_CURRENT", cur)
     emit(ep,{"event":"TRACE_START",**cur,"status":"RUNNING"});return trace_id
 def current(ep):
+    hot = hot_state_bridge.read(ep, "TRACE_CURRENT")
+    if hot.get("redis_read") and isinstance(hot.get("value"), dict):
+        return hot["value"]
+    if not hot_state_bridge.file_fallback_allowed(hot):
+        return {}
     p=_path(ep,"current_path")
     if not p.is_file():return {}
     try:
@@ -82,8 +90,7 @@ def summarize(ep,*,write=True):
        "elapsed_ms_by_category":{k:round(v,3) for k,v in by.items()},
        "slowest_spans":[{k:r.get(k) for k in ("name","category","status","elapsed_ms","span_id")} for r in slow]}
     if write:
-        p=_path(ep,"summary_path");p.parent.mkdir(parents=True,exist_ok=True)
-        p.write_text(json.dumps(s,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+        runtime_observability.write_summary(ep,runtime_observability.TRACE_SUMMARY_REL,kind="trace_summary",payload=s)
     return s
 def finish_run(ep,trace_id,run_id,status,*,note=""):
     emit(ep,{"event":"TRACE_END","trace_id":trace_id,"run_id":run_id,"status":status,"note":note});return summarize(ep,write=True)

@@ -151,10 +151,13 @@ def load(ep: Path, stage: str, *, legacy_path: Path | None = None) -> dict | Non
             if row and isinstance(row.get("payload"), dict):
                 return row["payload"]
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return None
     if legacy_path and Path(legacy_path).is_file():
         data = story_json.read_json(Path(legacy_path), default=None)
         return data if isinstance(data, dict) else None

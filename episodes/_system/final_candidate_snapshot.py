@@ -22,6 +22,10 @@ from final_acceptance import allows as acceptance_allows
 from release_preflight_verify import release_evidence_errors
 import story_json
 import runtime_observability
+import frame_review_persistence
+import story_review
+import visual_profile_review_persistence
+import episode_state_persistence
 
 ROOT=Path(__file__).resolve().parents[2]
 SNAPSHOT_REL=Path("meta/final-candidate-snapshot.json")
@@ -159,8 +163,8 @@ def preflight(ep:Path, *, write_evidence:bool=True)->None:  # STORY_OS_V2_5_R31_
         crop_errors=character_visual_contract.validate_crops(ep)
         if master_errors or crop_errors:raise ValueError("character master snapshot preflight failed: "+"; ".join((master_errors+crop_errors)[:8]))
     elif character_visual_contract.pixel_master_required(ep):
-        state_path=ep/"meta/episode-state.json"
-        state=str(read_json(state_path).get("current_state") or "") if state_path.is_file() else ""
+        state_data=episode_state_persistence.load(ep) or {}
+        state=str(state_data.get("current_state") or "")
         if state not in {"PUBLISH_READY","PUBLISHED","DATA_REVIEWED"}:
             raise ValueError("character pixel master required before Final Candidate Snapshot")
 
@@ -182,12 +186,18 @@ def build_lock(ep:Path, *, write_evidence:bool=True)->dict:
     propagation=repo_file(art.get("propagation_card"),"manifest.artifacts.propagation_card")
 
     evidence=[]
+    story_review_export=story_review.materialize_review_export(ep,story_review.load_review(ep))
+    if story_review_export is not None and story_review_export.is_file():
+        evidence.append(file_row(story_review_export,"story_semantic_review","qa/story-semantic-review.json"))
+    visual_review_export=visual_profile_review_persistence.materialize_export(
+        ep,visual_profile_review_persistence.load(ep)
+    )
+    if visual_review_export is not None and visual_review_export.is_file():
+        evidence.append(file_row(visual_review_export,"visual_profile_review","qa/visual-profile-review.json"))
     specs=[
         ("meta/production-ledger.json","production_ledger","evidence/production-ledger.json"),
         ("meta/frame-semantic-review.json","frame_semantic_review","qa/frame-semantic-review.json"),
         ("meta/frame-semantic-audit.json","frame_semantic_audit","qa/frame-semantic-audit.json"),
-        ("meta/story-semantic-review.json","story_semantic_review","qa/story-semantic-review.json"),
-        ("meta/visual-profile-review.json","visual_profile_review","qa/visual-profile-review.json"),
         ("meta/subtitle-layout-audit.json","subtitle_layout_audit","qa/subtitle-layout-audit.json"),
         ("meta/text-audit.json","text_audit","qa/text-audit.json"),
         ("meta/release-semantic-review.json","release_semantic_review","qa/release-semantic-review.json"),
@@ -196,7 +206,9 @@ def build_lock(ep:Path, *, write_evidence:bool=True)->dict:
         ("meta/recent5-semantic-review.json","recent5_semantic_review","qa/recent5-semantic-review.json"),
         ("meta/series-lock-binding.json","series_lock_binding","evidence/series-lock-binding.json"),
         ("meta/frame-scout-summary.json","frame_scout_summary","qa/frame-scout-summary.json"),
-        (runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL.as_posix(),"image_scheduler_performance","evidence/image-scheduler-performance.json"),
+        # Runtime performance metrics are durable MySQL diagnostics after the
+        # storage cutover. They are not publishable source files and must not
+        # be materialized back into the Episode merely to enter a delivery ZIP.
         ("meta/runtime/contracts/frame-contract-index.json","frame_contract_index","evidence/frame-contract-index.json"),
         ("meta/visual-lock-baseline-review.json","visual_lock_baseline_review","qa/visual-lock-baseline-review.json"),
         ("meta/visual-final-freeze.json","visual_final_freeze","qa/visual-final-freeze.json"),
@@ -207,9 +219,7 @@ def build_lock(ep:Path, *, write_evidence:bool=True)->dict:
     for rp,role,arc in specs:
         row=_optional(ep,rp,role,arc)
         if row:evidence.append(row)
-    review_dir=ep/"meta/frame-reviews"
-    if review_dir.is_dir():
-        for p in sorted(review_dir.glob("[0-9][0-9].json")):evidence.append(file_row(p,f"frame_review:{p.stem}",f"qa/frame-reviews/{p.name}"))
+    frame_review_db_evidence=frame_review_persistence.evidence_digest(ep)
     master_meta=ep/character_visual_contract.PIXEL_MASTER_REL
     if master_meta.is_file():
         md=read_json(master_meta);mp=repo_file(md.get("asset_path"),"character_pixel_master.asset_path")
@@ -235,6 +245,7 @@ def build_lock(ep:Path, *, write_evidence:bool=True)->dict:
         "episode":{"id":episode.get("id"),"series":episode.get("series"),"title":episode.get("title"),"aspect_ratio":episode.get("aspect_ratio")},
         "release_version":release.get("version"),
         "publication":publication,
+        "frame_review_db_evidence":frame_review_db_evidence,
         "publication_sha256":sha256_json(publication),
         "story":file_row(story,"story"),
         "storyboard":file_row(storyboard,"storyboard"),

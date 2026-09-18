@@ -1,19 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import annotations
-import argparse, concurrent.futures as cf, json, subprocess, sys, time
+import argparse, concurrent.futures as cf, hashlib, json, subprocess, sys, time
 from pathlib import Path
 
 import quota_observability
 import execution_capsule
 import character_contract
 import character_visual_contract
+import capture_event_contract
+import voice_contract
+import wardrobe_contract
+import episode_state_persistence
+import review_record_persistence
+import visual_profile_review_persistence
+import production_ledger
 import provisional_release
 import preproduction_handoff
 import resource_library
 import intro_policy
 import multi_level_cache
 import runtime_execution
+import runtime_request
 import scoped_codex_worker
 import runtime_mode_router
 import directing_quality
@@ -66,6 +74,50 @@ INCREMENTAL_PLAN_INPUTS=[
 ]
 
 
+def _story_review_authority_sha(ep):
+    return review_record_persistence.authority_sha256(
+        Path(ep).resolve(),
+        "STORY_SEMANTIC",
+        legacy_path=Path(ep).resolve()/"meta/story-semantic-review.json",
+    )
+
+
+AUTHORITY_HASHERS={
+    "meta/episode-state.json":episode_state_persistence.authority_sha256,
+    character_contract.REL.as_posix():character_contract.authority_sha256,
+    character_visual_contract.REL.as_posix():character_visual_contract.authority_sha256,
+    capture_event_contract.REL.as_posix():capture_event_contract.authority_sha256,
+    voice_contract.REL.as_posix():voice_contract.authority_sha256,
+    wardrobe_contract.REL.as_posix():wardrobe_contract.authority_sha256,
+    "meta/story-semantic-review.json":_story_review_authority_sha,
+    "meta/visual-profile-review.json":visual_profile_review_persistence.authority_sha256,
+    "meta/production-ledger.json":production_ledger.authority_sha256,
+}
+
+
+def _evidence_input_hash(ep,paths):
+    files=[];authority=[]
+    for rel in paths:
+        rel=str(rel)
+        hasher=AUTHORITY_HASHERS.get(rel)
+        if hasher is None:
+            files.append(rel)
+            continue
+        digest=hasher(Path(ep).resolve())
+        authority.append(f"{rel}={digest or 'MISSING'}")
+    file_hash=proto.evidence_hash(ep,files)
+    return hashlib.sha256(
+        ("|".join([file_hash,*authority])).encode("utf-8")
+    ).hexdigest()
+
+
+def _step_input_hash(ep, paths):
+    evidence_hash=_evidence_input_hash(ep,paths)
+    request=runtime_request.authority_for_episode(ep) or {}
+    request_hash=runtime_request.authority_sha256(request)
+    return hashlib.sha256((request_hash+"|"+evidence_hash).encode("utf-8")).hexdigest()
+
+
 def reconcile_visual_profile_closure(ep):
     """Phase 4.6.1: reconcile the Visual Profile closure before the DAG resumes.
 
@@ -100,9 +152,7 @@ def load_dag():
     if d.get("schema_version")!=1: raise ValueError("invalid runtime-dag schema")
     return d
 def state(ep):
-    p=ep/"meta/episode-state.json"
-    if not p.is_file(): return None
-    return json.loads(p.read_text(encoding="utf-8-sig")).get("current_state")
+    return (episode_state_persistence.load(Path(ep).resolve()) or {}).get("current_state")
 def stage_at_least(cur,target):
     return cur in STAGES and target in STAGES and STAGES.index(cur)>=STAGES.index(target)
 def request_mode(ep):
@@ -139,11 +189,12 @@ def stop_target_reached(ep,target):
     if not ok:
         return False,"gate rejected "+target+": "+str(msg)[-800:]
     return True,"PASS"
-def checkpoint(ep,step,status,elapsed,note,attempt=1,input_hash=None,output_hash=None):
+def checkpoint(ep,step,status,elapsed,note,attempt=1,input_hash=None,output_hash=None,returncode=None):
     try:
         runtime_checkpoint.record_step(
             ep,step=step,status=status,attempt=attempt,finished_at=proto.now(),note=note,
-            input_hash=input_hash,output_hash=output_hash)
+            input_hash=input_hash,output_hash=output_hash,
+            elapsed_seconds=elapsed,returncode=returncode)
     except FileNotFoundError:
         # Compatibility with the former subprocess path: runtime_checkpoint.py
         # returned non-zero when the file was absent, but DAG intentionally did
@@ -375,9 +426,9 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 evidence=["meta/character-contract.json","meta/character-visual-contract.json"])
         prior=(proto.load_state(ep).get("steps") or {}).get(s.step_id) or {}
         attempt=int(prior.get("attempt") or 0)+1
-        input_hash=proto.evidence_hash(ep,["meta/runtime-request.json","meta/episode-state.json",*s.evidence_paths])
+        input_hash=_step_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
         if s.step_id==INCREMENTAL_PLAN_STEP:
-            input_hash=proto.evidence_hash(ep,INCREMENTAL_PLAN_INPUTS)
+            input_hash=_evidence_input_hash(ep,INCREMENTAL_PLAN_INPUTS)
         if s.step_id=="PREIMAGE_COMPILE":
             handoff_valid=False
             try:
@@ -386,7 +437,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 handoff_valid=False
             if handoff_valid or stage_at_least(cur,"VISUAL_CALIBRATED"):
                 reason="preproduction handoff already valid" if handoff_valid else "downstream stage already valid; legacy preimage not backfilled"
-                out_hash=proto.evidence_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+                out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
                 res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,reason,0)
                 proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,reason,attempt,input_hash,out_hash)
                 if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,reason)
@@ -407,7 +458,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
         if (s.step_id==INCREMENTAL_PLAN_STEP and prior.get("status") in {"PASS","REUSED"}
                 and prior.get("input_hash")==input_hash):
             reason="plan inputs unchanged since last run"
-            out_hash=proto.evidence_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+            out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
             res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,reason,0)
             proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,reason,attempt,input_hash,out_hash)
             if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,reason)
@@ -423,7 +474,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
         if s.target_state and stage_at_least(cur,s.target_state):
             ok,msg=validate_target(ep,s.target_state)
             if ok:
-                out_hash=proto.evidence_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+                out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
                 res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,"target already valid",0)
                 proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,"target already valid",attempt,input_hash,out_hash)
                 if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,"target already valid")
@@ -569,9 +620,9 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             ok,msg=validate_target(ep,s.target_state)
             if not ok: rc=4; note=(note+"\nPOSTCONDITION FAIL\n"+msg)[-5000:]
         status="PASS" if rc==0 else ("HOST_WAIT" if rc==product_runtime_adapter.HOST_ACTION_REQUIRED_RC else ("BLOCKED" if rc in {124,3,4} else "FAILED"))
-        out_hash=proto.evidence_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+        out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
         res=proto.StepResult(s.step_id,status,attempt,started_at,proto.now(),elapsed,input_hash,out_hash,note,rc)
-        proto.save_result(ep,res); checkpoint(ep,s.step_id,status,elapsed,note[-1200:],attempt,input_hash,out_hash)
+        proto.save_result(ep,res); checkpoint(ep,s.step_id,status,elapsed,note[-1200:],attempt,input_hash,out_hash,returncode=rc)
         runtime_node_evidence.record(
             ep,node_id=s.step_id,start_time=started_at,end_time=res.finished_at,status=status,
             attempt=attempt,output=note[-1200:],evidence=s.evidence_paths)

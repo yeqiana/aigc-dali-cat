@@ -304,13 +304,13 @@ def validate(data: dict | None = None) -> list[str]:
         episode_meta_store = storage.get("episode_meta_store")
         if not isinstance(episode_meta_store, dict):
             errors.append("storage.episode_meta_store must be a mapping")
-        elif str(episode_meta_store.get("mode") or "").lower() not in {"json", "dual"}:
-            errors.append("storage.episode_meta_store.mode must be json or dual")
+        elif str(episode_meta_store.get("mode") or "").lower() not in {"json", "dual", "mysql"}:
+            errors.append("storage.episode_meta_store.mode must be json, dual or mysql")
         hot_state = storage.get("hot_state")
         if not isinstance(hot_state, dict):
             errors.append("storage.hot_state must be a mapping")
-        elif str(hot_state.get("mode") or "").lower() not in {"file", "dual"}:
-            errors.append("storage.hot_state.mode must be file or dual")
+        elif str(hot_state.get("mode") or "").lower() not in {"file", "dual", "redis"}:
+            errors.append("storage.hot_state.mode must be file, dual or redis")
     return errors
 
 

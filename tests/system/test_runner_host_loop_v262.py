@@ -384,6 +384,7 @@ class VisualLockBaselineAuthorityTests(unittest.TestCase):
             (ep / "meta").mkdir(parents=True, exist_ok=True)
             (ep / "meta/production-queue.json").write_text("{}", encoding="utf-8")
             with patch.object(visual_lock_v21, "read_json", side_effect=fake_read), \
+                    patch.object(visual_lock_v21.scheduler_core, "load_queue", return_value=queue), \
                     patch.object(visual_lock_v21, "write_json", side_effect=lambda _p,d: written.update(d)), \
                     patch.object(visual_lock_v21, "repo_file", side_effect=fake_repo_file), \
                     patch.object(visual_lock_v21, "repo_rel", side_effect=lambda p: str(p).replace("\\", "/")), \
@@ -537,7 +538,8 @@ class VisionAutoRepairTests(unittest.TestCase):
             ep = Path(td)
             (ep / "meta").mkdir(parents=True, exist_ok=True)
             (ep / "meta/production-ledger.json").write_text("{}", encoding="utf-8")
-            with patch.object(visual_lock_baseline_gate, "read_json", side_effect=[ready, passed]), \
+            with patch.object(visual_lock_baseline_gate.production_ledger, "authority_exists", return_value=True), \
+                    patch.object(visual_lock_baseline_gate.production_ledger, "load_authority", side_effect=[ready, passed]), \
                     patch.object(visual_lock_baseline_gate.subprocess, "run", return_value=completed) as run:
                 visual_lock_baseline_gate._ledger_pass(ep, 1)
         commands = [call.args[0] for call in run.call_args_list]
@@ -760,6 +762,8 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
                 patch.object(next_action.runtime_router, "image_execution_runtime", return_value=("CODEX", "test")), \
                 patch.object(next_action.runtime_router, "vision_review_runtime", return_value=("CODEX", "test")), \
                 patch.object(next_action.runtime_execution, "effective_mode", return_value="full_auto"), \
+                patch.object(next_action.scheduler_core, "load_queue", return_value=queue), \
+                patch.object(next_action.production_ledger, "load_authority", return_value={"frames": ledger}), \
                 patch.object(next_action, "pending_product_review", return_value=None), \
                 patch.object(next_action.product_runtime_adapter, "reconcile", return_value=None), \
                 patch.object(next_action, "_handoff_valid", return_value=handoff_valid), \
@@ -917,7 +921,8 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
             {"id": "new", "frame": 17, "status": "generated", "completed_at": "2026-09-14T11:00:00+08:00"},
         ]}
         ledger = {"frames": {"17": {"status": "REPAIR_READY", "current_candidate": {"sha256": "new", "recorded_at": "2026-09-14T11:00:00+08:00"}}}}
-        with patch.object(next_action, "read_json", side_effect=lambda path: queue if str(path).replace("\\", "/").endswith("production-queue.json") else ledger):
+        with patch.object(next_action.scheduler_core, "load_queue", return_value=queue), \
+                patch.object(next_action.production_ledger, "load_authority", return_value=ledger):
             summary = next_action.queue_summary(Path("ep"))
         self.assertEqual(summary["counts"]["blocked"], 0)
         self.assertEqual(summary["blocked_items"], [])

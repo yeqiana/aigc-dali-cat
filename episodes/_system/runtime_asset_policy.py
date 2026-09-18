@@ -109,7 +109,14 @@ def classify(path: str | PurePosixPath) -> RuntimeAssetPolicy:
             "freshness-bound resume projection; rebuildable from canonical runtime sources",
         )
 
-    if rel == "meta/runtime-execution.json" or rel == "meta/runtime/product-host-request.json" or rel.startswith("meta/runtime/host-requests/"):
+    if rel.startswith("meta/runtime/host-requests/"):
+        return RuntimeAssetPolicy(
+            FORMAL_EVIDENCE,
+            MIGRATION_CANDIDATE,
+            "durable Host request lifecycle is stored in MySQL; JSON is migration-only compatibility evidence",
+        )
+
+    if rel == "meta/runtime-execution.json" or rel == "meta/runtime/product-host-request.json":
         return RuntimeAssetPolicy(
             OPERATIONAL_STATE,
             PRESERVE_UNTIL_ARCHIVED,

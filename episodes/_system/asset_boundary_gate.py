@@ -10,6 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import story_json
+import production_ledger
 
 
 TEST_ROOTS = (
@@ -66,7 +67,7 @@ def production_asset_references(ep: Path) -> list[tuple[str, str]]:
     """Return paths that are authoritative production/release asset references."""
     ep = Path(ep).resolve()
     refs: list[tuple[str, str]] = []
-    ledger = story_json.read_json(ep / "meta/production-ledger.json", default={})
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     for frame, row in (ledger.get("frames") or {}).items():
         if not isinstance(row, dict):
             continue

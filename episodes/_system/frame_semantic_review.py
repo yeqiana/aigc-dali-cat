@@ -23,9 +23,11 @@ import runtime_router
 import runtime_provenance
 import product_review_adapter
 import production_ledger
+import frame_review_persistence
 import story_json
 import runtime_timeout_policy
 import runtime_workspace
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_DIR = Path("meta/frame-reviews")
@@ -204,7 +206,10 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 
 def review_required(ep: Path) -> bool:
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    if version_tuple(state.get("tool_version")) >= TARGET_CONTRACT:
+        return True
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -218,7 +223,12 @@ def review_required(ep: Path) -> bool:
 
 def episode_contract_version(ep: Path) -> str:
     versions: list[tuple[tuple[int, ...], str]] = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    raw = str(state.get("tool_version") or "")
+    vt = version_tuple(raw)
+    if vt != (0,):
+        versions.append((vt, raw))
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -320,7 +330,7 @@ def phase4_binding_errors(ep: Path, frames: list[dict]) -> list[str]:
 
 
 def frame_records(ep: Path, *, require_files: bool) -> list[dict]:
-    ledger = read_json(ep / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     frames = ledger.get("frames")
     if not isinstance(frames, dict) or not frames:
         raise ValueError("production ledger frames missing")
@@ -360,7 +370,7 @@ def reviewable_frame_records(ep: Path, *, require_files: bool) -> list[dict]:
     ``approved_asset`` exists; otherwise approval and review wait on each
     other.  Already-approved rows are reused by SHA.
     """
-    ledger = read_json(ep / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     frames = ledger.get("frames")
     if not isinstance(frames, dict) or not frames:
         raise ValueError("production ledger frames missing")
@@ -404,7 +414,7 @@ def reviewable_phase4_binding_errors(ep: Path, frames: list[dict]) -> list[str]:
     """Verify generation-contract binding for approved assets or live candidates."""
     if not phase4_contract.required(ep):
         return []
-    ledger = read_json(ep / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     errors: list[str] = []
     for row in frames:
         key = row["frame"]
@@ -603,7 +613,7 @@ def _pending_request_payload(ep: Path, frames: list[dict], attempt: int) -> dict
 
 
 def _ledger_frame(ep: Path, frame: str) -> dict:
-    return ((read_json(ep / "meta/production-ledger.json").get("frames") or {}).get(str(frame).zfill(2)) or {})
+    return (((production_ledger.load_authority(ep, default={}) or {}).get("frames") or {}).get(str(frame).zfill(2)) or {})
 
 
 def _apply_candidate_gate(
@@ -639,7 +649,7 @@ def _apply_candidate_gate(
     # promoted and locked.  We still keep per-frame durable writes, but all known
     # state/policy incompatibilities are resolved into an explicit plan first and
     # failures are applied before passes.
-    ledger_data = read_json(ep / "meta/production-ledger.json")
+    ledger_data = production_ledger.load_authority(ep, default={}) or {}
     ledger_frames = ledger_data.get("frames") or {}
     repair_limit = production_ledger.content_repair_limit(ledger_data)
     plan: list[tuple[str, dict, dict, str]] = []
@@ -935,12 +945,11 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
 
     directing_v3 = directing_v3_required(ep)
     for frame in frames:
-        path = ep / REVIEW_DIR / f"{frame['frame']}.json"
-        if not path.is_file():
-            errors.append(f"missing frame semantic review: {path.relative_to(ep)}")
+        data = frame_review_persistence.load(ep, int(frame["frame"]))
+        if not isinstance(data, dict):
+            errors.append(f"missing frame semantic review: {REVIEW_DIR.as_posix()}/{frame['frame']}.json")
             continue
         try:
-            data = read_json(path)
             errors.extend(validate_bound_review(data, frame=frame, contexts=contexts, version=expected_version, metadata_only=metadata_only, phase3_contexts=phase3_context_hashes(ep, frame["frame"]), directing_v3=directing_v3, ep=ep))
         except Exception as exc:
             errors.append(f"frame {frame['frame']} review source validation failed: {exc}")
@@ -1703,8 +1712,6 @@ def _persist_candidate(
         candidate_errors.append("critic summary.passed must be true")
 
     rows_by_frame = {str(row.get("frame") or "").zfill(2): row for row in (data.get("frames") or []) if isinstance(row, dict)}
-    review_dir = ep / REVIEW_DIR
-    review_dir.mkdir(parents=True, exist_ok=True)
     for frame in current:
         source = rows_by_frame.get(frame["frame"], {})
         bound = {
@@ -1721,7 +1728,7 @@ def _persist_candidate(
             "notes": source.get("notes") or "",
             "decision": source.get("decision") or "fail",
         }
-        write_json(review_dir / f"{frame['frame']}.json", bound)
+        frame_review_persistence.save(ep, bound)
 
     summary = {
         "schema_version": SCHEMA_VERSION,
@@ -1969,7 +1976,7 @@ def _exception_context_keys(all_keys: list[str], targets: list[str]) -> list[str
 
 
 def _exception_review_records(ep: Path, targets: list[str], *, require_files: bool = True) -> tuple[list[dict], list[str]]:
-    ledger = read_json(ep / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     frames = ledger.get("frames") or {}
     all_keys = sorted(k for k in frames if str(k).isdigit())
     missing = [key for key in targets if key not in frames]
@@ -2144,9 +2151,7 @@ def _apply_exception_review(ep: Path, *, data: dict, rows: list[dict], targets: 
                 "notes": result.get("notes") or "",
                 "decision": "pass",
             }
-            review_dir = ep / REVIEW_DIR
-            review_dir.mkdir(parents=True, exist_ok=True)
-            write_json(review_dir / f"{key}.json", bound)
+            frame_review_persistence.save(ep, bound)
         else:
             production_ledger.cmd_review(SimpleNamespace(
                 episode_dir=str(ep), frame=key, decision="repair", notes=note[:500]))
@@ -2256,7 +2261,7 @@ def _ordinary_patch_review_records(ep: Path, targets: list[str], *, require_file
     patch only while every non-target frame is still LOCKED.  Context frames are
     read-only review evidence; only targets may mutate the Production Ledger.
     """
-    ledger = read_json(ep / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     frames = ledger.get("frames") or {}
     all_keys = sorted(k for k in frames if str(k).isdigit())
     missing = [key for key in targets if key not in frames]
@@ -2321,7 +2326,7 @@ def ordinary_patch_eligible(ep: Path, targets: list[str]) -> bool:
     targets = sorted({str(x).zfill(2) for x in targets if str(x)})
     try:
         rows, _ = _ordinary_patch_review_records(ep, targets, require_files=True)
-        ledger = read_json(ep / "meta/production-ledger.json")
+        ledger = production_ledger.load_authority(ep, default={}) or {}
         frames = ledger.get("frames") or {}
         contexts = context_hashes(ep)
         version = episode_contract_version(ep)
@@ -2338,10 +2343,9 @@ def ordinary_patch_eligible(ep: Path, targets: list[str]) -> bool:
             sha = str(approved.get("sha256") or "").lower()
             path = repo_path(raw_path, f"ordinary patch sibling {key} approved_asset")
             record = {"frame": key, "path": path, "path_rel": repo_rel(path), "sha256": sha}
-            review_path = ep / REVIEW_DIR / f"{key}.json"
-            if not review_path.is_file():
+            review = frame_review_persistence.load(ep, int(key))
+            if not isinstance(review, dict):
                 return False
-            review = read_json(review_path)
             if review.get("decision") != "pass" or review.get("issue_codes") not in ([], None):
                 return False
             if validate_bound_review(
@@ -2540,9 +2544,7 @@ def _apply_ordinary_patch_review(ep: Path, *, data: dict, rows: list[dict], targ
             "notes": result.get("notes") or "",
             "decision": "pass",
         }
-        review_dir = ep / REVIEW_DIR
-        review_dir.mkdir(parents=True, exist_ok=True)
-        write_json(review_dir / f"{key}.json", bound)
+        frame_review_persistence.save(ep, bound)
 
     evidence["failed_targets"] = failures
     evidence["completed_at"] = now()
@@ -2604,7 +2606,7 @@ def run_patch_critic(ep: Path, *, targets: list[str], attempt: int, codex_raw: s
 
 
 def _continuation_review_records(ep: Path, targets: list[str], *, require_files: bool = True) -> tuple[list[dict], int]:
-    ledger = read_json(ep / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     frames = ledger.get("frames") or {}
     all_keys = sorted(k for k in frames if str(k).isdigit())
     missing = [key for key in targets if key not in frames]
@@ -2797,9 +2799,7 @@ def _apply_continuation_review(ep: Path, *, data: dict, rows: list[dict], target
                 "notes": result.get("notes") or "",
                 "decision": "pass",
             }
-            review_dir = ep / REVIEW_DIR
-            review_dir.mkdir(parents=True, exist_ok=True)
-            write_json(review_dir / f"{key}.json", bound)
+            frame_review_persistence.save(ep, bound)
         else:
             production_ledger.cmd_review(SimpleNamespace(
                 episode_dir=str(ep), frame=key, decision="repair", notes=note[:500]))

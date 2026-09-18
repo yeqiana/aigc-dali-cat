@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Iterable
 
 from episode_state import MANIFEST_FILE, STATE_FILE, GATES_FILE, STATES, SYSTEM_VERSION
+import episode_state_persistence
 from canvas_spec import resolve_canvas_spec
 from concept_ambition import required as concept_ambition_required, verify as verify_concept_ambition
 from propagation_core_gate import required as propagation_core_required, verify as verify_propagation_core  # STORY_OS_V2_5_PROPAGATION_CORE
@@ -576,7 +577,13 @@ def check_story_os_for_effective(repo_root: Path, state: dict, manifest: dict, g
 
 def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, target_state: str | None = None) -> list[Finding]:
     findings: list[Finding] = []
-    state = load_json(episode_dir / STATE_FILE, findings)
+    try:
+        state = episode_state_persistence.load(episode_dir)
+    except Exception as exc:
+        findings.append(Finding("FAIL", "state_authority", f"Episode state authority read failed: {exc}"))
+        state = None
+    if state is None:
+        findings.append(Finding("FAIL", "state_authority", "Episode state authority missing"))
     manifest = load_json(episode_dir / MANIFEST_FILE, findings)
     if state is None or manifest is None:
         return findings

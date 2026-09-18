@@ -135,7 +135,10 @@ def _result(status: str, code=None, **extra: Any) -> dict:
 # --------------------------------------------------------------------------- #
 
 def load_ledger(episode) -> dict:
-    data = story_json.read_json(Path(episode) / LEDGER_REL, default={})
+    # Local import avoids a production_ledger_manage -> visual_profile_closure
+    # import cycle while still enforcing the canonical Ledger authority boundary.
+    from production_ledger_core import load_authority
+    data = load_authority(Path(episode).resolve(), default={})
     return data if isinstance(data, dict) else {}
 
 

@@ -37,6 +37,9 @@ import preimage_authority_snapshot
 import runtime_node_execution
 import storyos_config
 import runtime_workspace
+import storage_config
+import production_ledger
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
@@ -85,7 +88,12 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 def episode_version(ep: Path) -> str:
     versions: list[tuple[tuple[int, ...], str]] = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    raw = str(state.get("tool_version") or "")
+    vt = version_tuple(raw)
+    if vt != (0,):
+        versions.append((vt, raw))
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -329,16 +337,16 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     story_path, storyboard_path = artifact_paths(ep)
     g = gates(ep)
     visual = g.get("visual") or {}
-    character = read_json(ep / character_contract.REL) if (ep / character_contract.REL).is_file() else {}
+    character = character_contract.load(ep) or {}
     visual_profile = compile_prompt_contract(ep)
     env = environment_contract.resolve_frame(ep, n)
     directive = env.get("directive") or {}
-    capture_event = capture_event_contract.resolve_frame(ep,n) if (ep/capture_event_contract.REL).is_file() else {"capture_event":{},"capture_event_sha256":None}
+    capture_event = capture_event_contract.resolve_frame(ep,n) if capture_event_contract.exists(ep) else {"capture_event":{},"capture_event_sha256":None}
     world = world_state.resolve_frame(ep,n) if (ep/world_state.REL).is_file() else {"world_state":{},"world_state_sha256":None}
-    character_visual = read_json(ep/character_visual_contract.REL) if (ep/character_visual_contract.REL).is_file() else {}
+    character_visual = character_visual_contract.load(ep) or {}
     progression = shot_progression_gate.resolve_frame(ep,n) if (ep/shot_progression_gate.REL).is_file() else {"shot_progression":{}}
     temporal = temporal_continuity_gate.resolve_frame(ep,n) if (ep/temporal_continuity_gate.REL).is_file() else {"temporal_state":{}}
-    wardrobe = wardrobe_contract.resolve_frame(ep,n) if (ep/wardrobe_contract.REL).is_file() else {"wardrobe":{}}
+    wardrobe = wardrobe_contract.resolve_frame(ep,n) if wardrobe_contract.exists(ep) else {"wardrobe":{}}
     visual_narrative_active = visual_narrative_core_v22.required(ep)
     visual_narrative = visual_narrative_core_v22.resolve_frame(ep,n) if visual_narrative_active else None
     world_identity_active = world_identity_contract.required(ep)
@@ -371,16 +379,16 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         },
         "character_contract": {
             "path": character_contract.REL.as_posix(),
-            "sha256": sha256_file(ep / character_contract.REL) if (ep / character_contract.REL).is_file() else None,
+            "sha256": character_contract.authority_sha256(ep),
         },
-        "capture_event_contract": {"path":capture_event_contract.REL.as_posix(),"sha256":sha256_file(ep/capture_event_contract.REL) if (ep/capture_event_contract.REL).is_file() else None},
+        "capture_event_contract": {"path":capture_event_contract.REL.as_posix(),"sha256":capture_event_contract.authority_sha256(ep)},
         "world_state": {"path":world_state.REL.as_posix(),"sha256":sha256_file(ep/world_state.REL) if (ep/world_state.REL).is_file() else None},
-        "character_visual_contract": {"path":character_visual_contract.REL.as_posix(),"sha256":sha256_file(ep/character_visual_contract.REL) if (ep/character_visual_contract.REL).is_file() else None},
+        "character_visual_contract": {"path":character_visual_contract.REL.as_posix(),"sha256":character_visual_contract.authority_sha256(ep)},
         "shot_progression": {"path":shot_progression_gate.REL.as_posix(),"sha256":sha256_file(ep/shot_progression_gate.REL) if (ep/shot_progression_gate.REL).is_file() else None},
         "temporal_continuity": {"path":temporal_continuity_gate.REL.as_posix(),"sha256":sha256_file(ep/temporal_continuity_gate.REL) if (ep/temporal_continuity_gate.REL).is_file() else None},
-        "wardrobe_contract": {"path":wardrobe_contract.REL.as_posix(),"sha256":sha256_file(ep/wardrobe_contract.REL) if (ep/wardrobe_contract.REL).is_file() else None},
+        "wardrobe_contract": {"path":wardrobe_contract.REL.as_posix(),"sha256":wardrobe_contract.authority_sha256(ep)},
         "world_identity_default": {"path":world_identity_contract.DEFAULT_REL.as_posix(),"sha256":sha256_file(ROOT/world_identity_contract.DEFAULT_REL) if world_identity_active else None},
-        "world_identity_override": {"path":world_identity_contract.OVERRIDE_REL.as_posix(),"sha256":sha256_file(ep/world_identity_contract.OVERRIDE_REL) if world_identity_active and (ep/world_identity_contract.OVERRIDE_REL).is_file() else None},
+        "world_identity_override": {"path":world_identity_contract.OVERRIDE_REL.as_posix(),"sha256":world_identity_contract.override_sha256(ep) if world_identity_active else None},
         "character_appearance_anchor": {"path":character_appearance_anchor.REL.as_posix(),"sha256":sha256_file(ep/character_appearance_anchor.REL) if world_identity_active and (ep/character_appearance_anchor.REL).is_file() else None},
     }
 
@@ -530,10 +538,11 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         "prompt_contract": "\n".join(prompt_lines),
     }
     if write_cache:
-        write_json(cache_write_path(ep, key), result)
-        # During the migration phase JSON remains the compatibility surface.
-        # Explicit storage.episode_meta_store.mode=dual mirrors the same
-        # resolved contract into MySQL V2; default json mode is a no-op here.
+        mode = storage_config.episode_meta_store_config()["mode"]
+        if mode != "mysql":
+            write_json(cache_write_path(ep, key), result)
+        # json keeps only the compatibility cache; dual writes both; mysql
+        # persists the contract without recreating the per-frame JSON cache.
         import frame_contract_persistence
         frame_contract_persistence.persist(ep, result)
     return result
@@ -644,6 +653,15 @@ def cache_read_dirs(ep: Path) -> tuple[Path, ...]:
 def cache_path(ep: Path, frame: int | str) -> Path:
     """Backward-compatible physical read path for the derived frame cache."""
     return cache_read_path(ep, frame)
+
+
+def load_cached_contract(ep: Path, frame: int | str) -> dict | None:
+    """Repository-first read in dual mode, with the physical cache as fallback."""
+    import frame_contract_persistence
+
+    return frame_contract_persistence.load_latest(
+        Path(ep).resolve(), frame, legacy_path=cache_read_path(ep, frame)
+    )
 
 
 def _monotonic_projection_fill(old: object, new: object) -> bool:
@@ -772,13 +790,9 @@ def verify_frame(ep: Path, frame: int | str) -> list[str]:
     if not required(ep):
         return []
     current = compile_frame(ep, frame, write_cache=False)
-    path = cache_path(ep, frame)
-    if not path.is_file():
+    cached = load_cached_contract(ep, frame)
+    if not isinstance(cached, dict):
         return [f"resolved frame contract cache missing: {cache_rel(frame).as_posix()}"]
-    try:
-        cached = read_json(path)
-    except Exception as exc:
-        return [str(exc)]
     errors = []
     if cached.get("derived_cache") is not True:
         errors.append(f"frame {int(frame):02d} cache must declare derived_cache=true")
@@ -814,9 +828,8 @@ def verify_all(ep: Path) -> list[str]:
                 for n in range(1, total + 1):
                     row = compile_frame(ep, n, write_cache=False)
                     effective_contract_sha = row["contract_sha256"]
-                    cached_path = cache_path(ep, n)
-                    if cached_path.is_file():
-                        cached = read_json(cached_path)
+                    cached = load_cached_contract(ep, n)
+                    if isinstance(cached, dict):
                         cached_sha = str(cached.get("contract_sha256") or "")
                         if cached_sha and recorded_contract_matches_current(ep, n, cached_sha):
                             # Keep the committed PREIMAGE index immutable when the
@@ -857,11 +870,10 @@ def verify_approved_asset_binding(ep: Path, frame: int | str, asset_sha256: str)
     if not required(ep):
         return []
     key = f"{int(frame):02d}"
-    ledger_path = ep / "meta/production-ledger.json"
-    if not ledger_path.is_file():
-        return [f"frame {key} production ledger missing for frame-contract binding"]
     try:
-        ledger = read_json(ledger_path)
+        ledger = production_ledger.load_authority(ep, default=None)
+        if not isinstance(ledger, dict):
+            return [f"frame {key} production ledger missing for frame-contract binding"]
         row = (ledger.get("frames") or {}).get(key)
         if not isinstance(row, dict):
             return [f"frame {key} production ledger row missing"]

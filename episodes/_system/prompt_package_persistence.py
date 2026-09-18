@@ -72,10 +72,13 @@ def load_latest(ep: Path, frame: int | str) -> dict | None:
                 else:
                     return payload
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return None
     rel = REL / f"{int(frame):02d}.json"
     path = runtime_workspace.resolve_read_path(ep, rel)
     if path.is_file():

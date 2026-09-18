@@ -7,6 +7,7 @@ import json
 import shutil
 from pathlib import Path
 import story_json
+import frame_review_persistence
 
 GATES_FILE = Path("meta/story-gates.json")
 MANIFEST_FILE = Path("meta/release-manifest.json")
@@ -85,23 +86,20 @@ def cmd_init_reviews(args: argparse.Namespace) -> None:
     total = frame_count(ep)
     gates = load_json(ep / GATES_FILE)
     evidence = gates.setdefault("production_evidence", {})
-    rel = evidence.get("frame_review_dir", "meta/frame-reviews")
-    out = ep / rel
-    out.mkdir(parents=True, exist_ok=True)
     created = 0
     for n in range(1, total + 1):
-        path = out / f"{n:02d}.json"
-        if path.exists() and not args.force:
+        current = frame_review_persistence.load(ep, n)
+        if isinstance(current, dict) and not args.force:
             continue
         item = json.loads(json.dumps(REVIEW_TEMPLATE))
         item["frame"] = f"{n:02d}"
-        save_json(path, item)
+        frame_review_persistence.save(ep, item)
         created += 1
-    evidence["frame_review_dir"] = rel
+    evidence["frame_review_dir"] = frame_review_persistence.REL.as_posix()
     evidence["require_all_frames"] = True
     evidence["review_schema_version"] = 1
     save_json(ep / GATES_FILE, gates)
-    print(f"review templates ready: {out} ({created} created, total={total})")
+    print(f"review templates ready: frame_review_persistence ({created} created, total={total})")
 
 
 def cmd_import_review(args: argparse.Namespace) -> None:
@@ -116,12 +114,8 @@ def cmd_import_review(args: argparse.Namespace) -> None:
     data = load_json(src)
     if str(data.get("frame") or "").zfill(2) != f"{n:02d}":
         raise SystemExit(f"review frame mismatch: expected {n:02d}")
-    gates = load_json(ep / GATES_FILE)
-    rel = (gates.get("production_evidence") or {}).get("frame_review_dir", "meta/frame-reviews")
-    dst = ep / rel / f"{n:02d}.json"
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    save_json(dst, data)
-    print(f"imported review: {dst}")
+    frame_review_persistence.save(ep, data)
+    print(f"imported review: frame {n:02d}")
 
 
 def cmd_import_authenticity(args: argparse.Namespace) -> None:

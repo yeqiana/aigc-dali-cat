@@ -10,6 +10,7 @@ from pathlib import Path
 from story_os_contract import canonical_stages, story_os_version
 import storyos_config
 import runtime_timeout_policy
+import episode_state_persistence
 
 SYSTEM_DIR = Path(__file__).resolve().parent
 ROOT = SYSTEM_DIR.parents[1]
@@ -26,28 +27,26 @@ GATE_HINTS = {
 
 
 def load_state(ep: Path):
-    p = ep / "meta/episode-state.json"
-    if not p.exists(): return None
-    return json.loads(p.read_text(encoding="utf-8-sig"))
+    return episode_state_persistence.load(Path(ep).resolve())
 
 
 def cmd_status(ep: Path):
     s = load_state(ep)
     if not s:
-        print("NO_STATE: 该剧集尚未接入 episode-state.json"); return 1
+        print("NO_STATE: 该剧集尚未接入 Episode State authority"); return 1
     print(s.get("current_state", "UNKNOWN")); return 0
 
 
 def cmd_next(ep: Path):
     s = load_state(ep)
     if not s:
-        print("当前剧集没有 meta/episode-state.json。")
+        print("当前剧集没有 Episode State authority。")
         print(f"先初始化：python episodes/_system/episode_state.py init \"{ep}\" --id <id> --series <series> --title <title> --frame-count <N>")
         return 1
     cur = s.get("current_state")
     print(f"Current: {cur}")
     if cur not in STATES:
-        print("状态不在 Story OS 七阶段中，请先修复 episode-state.json。"); return 2
+        print("状态不在 Story OS 七阶段中，请先修复 Episode State authority。"); return 2
     idx = STATES.index(cur); print(f"Now: {GATE_HINTS[cur]}")
     if idx == len(STATES) - 1:
         print("Next: 已完成数据复盘；下一步进入新选题，不再推进本集状态。"); return 0
@@ -151,7 +150,7 @@ def main():
         # modules: Story Intent -> Episode -> Visual Lock -> the Runtime DAG
         # (workflow_runner + runtime_dag + image_scheduler) -> auto_review_loop ->
         # repair_engine -> the canonical repair lane -> Release Candidate. The runtime
-        # DAG, the ledger, the gates and meta/episode-state.json stay authoritative;
+        # DAG, the ledger, the gates and canonical Episode State authority stay authoritative;
         # this CLI never forks a second production chain.
         import production_orchestrator
 

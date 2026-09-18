@@ -117,6 +117,23 @@ def prompt_package_projection(payload: dict[str, Any], reference: dict[str, Any]
     return projection_envelope(payload, reference, "PROMPT_PACKAGE_REF", fields)
 
 
+def runtime_request_projection(payload: dict[str, Any], reference: dict[str, Any]) -> dict[str, Any]:
+    story_input = payload.get("story_input")
+    image = payload.get("image")
+    user_intent = payload.get("user_intent")
+    fields: dict[str, Any] = {
+        "request_id": payload.get("request_id"),
+        "mode": payload.get("mode"),
+        "story_mode": story_input.get("mode") if isinstance(story_input, dict) else None,
+        "image_model": image.get("model") if isinstance(image, dict) else payload.get("image_model"),
+        "image_quality": image.get("quality") if isinstance(image, dict) else payload.get("image_quality"),
+        "full_auto_authorized": user_intent.get("full_auto_authorized")
+        if isinstance(user_intent, dict) else None,
+        "created_at": payload.get("created_at"),
+    }
+    return projection_envelope(payload, reference, "RUNTIME_REQUEST_REF", fields)
+
+
 def runtime_review_projection(payload: dict[str, Any], reference: dict[str, Any]) -> dict[str, Any]:
     source_files = payload.get("source_files")
     source_bindings = payload.get("source_bindings")

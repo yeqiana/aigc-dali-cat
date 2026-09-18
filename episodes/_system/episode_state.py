@@ -14,6 +14,7 @@ from story_os_contract import canonical_stages, story_os_version
 import episode_performance
 import story_json
 import episode_lifecycle
+import episode_state_persistence
 
 STATES = canonical_stages()
 STATE_FILE = Path("meta/episode-state.json")
@@ -32,6 +33,10 @@ def load_json(path: Path) -> dict:
 
 def save_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
+
+
+def load_state(episode_dir: Path) -> dict:
+    return episode_state_persistence.load(Path(episode_dir).resolve()) or {}
 
 
 def child_process_env() -> dict[str, str]:
@@ -285,7 +290,7 @@ def init_cmd(args: argparse.Namespace) -> None:
     state_path = episode_dir / STATE_FILE
     manifest_path = episode_dir / MANIFEST_FILE
     gates_path = episode_dir / GATES_FILE
-    if state_path.exists() or manifest_path.exists() or gates_path.exists():
+    if episode_state_persistence.load(episode_dir) is not None or manifest_path.exists() or gates_path.exists():
         raise SystemExit("meta already exists; refusing to overwrite")
 
     state, manifest, gates = initial_documents(
@@ -298,7 +303,7 @@ def init_cmd(args: argparse.Namespace) -> None:
         note=args.note,
         strict=True,
     )
-    save_json(state_path, state)
+    episode_state_persistence.save_initial(episode_dir, state, source="episode_state.init")
     save_json(manifest_path, manifest)
     save_json(gates_path, gates)
     episode_performance.safe_start_episode(episode_dir,source="episode_state.init")
@@ -316,9 +321,9 @@ def migrate_gates_cmd(args: argparse.Namespace) -> None:
     gates_path = episode_dir / GATES_FILE
     if gates_path.exists():
         raise SystemExit(f"story gates already exist: {gates_path}")
-    if not state_path.exists() or not manifest_path.exists():
-        raise SystemExit("legacy episode must already have episode-state.json + release-manifest.json")
-    state = load_json(state_path)
+    state = episode_state_persistence.load(episode_dir)
+    if state is None or not manifest_path.exists():
+        raise SystemExit("legacy episode must already have Episode state authority + release-manifest.json")
     manifest = load_json(manifest_path)
     episode_id = state.get("episode_id") or (manifest.get("episode") or {}).get("id")
     if not isinstance(episode_id, str) or not episode_id.strip():
@@ -354,11 +359,9 @@ def enable_machine_cmd(args: argparse.Namespace) -> None:
 
 def transition_cmd(args: argparse.Namespace) -> None:
     episode_dir = ensure_episode_dir(args.episode_dir)
-    state_path = episode_dir / STATE_FILE
-    if not state_path.exists():
-        raise SystemExit(f"missing state file: {state_path}")
-
-    data = load_json(state_path)
+    data = episode_state_persistence.load(episode_dir)
+    if data is None:
+        raise SystemExit(f"missing Episode state authority: {episode_dir}")
     episode_lifecycle.assert_writable(episode_dir, "episode_state.transition")
     current = data.get("current_state")
     target = args.target
@@ -405,13 +408,16 @@ def transition_cmd(args: argparse.Namespace) -> None:
         )
 
     at = now_iso()
-    data["current_state"] = target
-    data["updated_at"] = at
     data["tool_version"] = SYSTEM_VERSION
-    data.setdefault("history", []).append(
-        {"state": target, "at": at, "mode": mode, "note": args.note}
+    data = episode_state_persistence.transition(
+        episode_dir,
+        data,
+        target,
+        transition_mode=mode,
+        source="episode_state.transition",
+        reason=args.note,
+        at=at,
     )
-    save_json(state_path, data)
     episode_performance.safe_record_state_transition(episode_dir,current,target,at)
     print(f"{current} -> {target}")
 
@@ -426,7 +432,7 @@ def terminate_cmd(args: argparse.Namespace) -> None:
 def show_cmd(args: argparse.Namespace) -> None:
     episode_dir = ensure_episode_dir(args.episode_dir)
     data = {
-        "state": load_json(episode_dir / STATE_FILE),
+        "state": episode_state_persistence.load(episode_dir) or {},
         "manifest": load_json(episode_dir / MANIFEST_FILE),
     }
     gates = episode_dir / GATES_FILE

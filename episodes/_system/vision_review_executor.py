@@ -20,6 +20,8 @@ import runtime_timeout_policy
 import visual_lock_baseline_gate
 import visual_lock_candidate_pool
 import visual_lock_v21
+import visual_profile_review_persistence
+import production_ledger
 
 ALLOWED_ACTIONS = {
     "REVIEW_ORDINARY_BASELINE",
@@ -116,7 +118,7 @@ def execute(ep: Path, action: dict) -> dict:
         if rc == 11:
             return {"status": "TECHNICAL_FAILURE", "action": name, "runtime": "CODEX_VISION", "returncode": rc, "attempt": attempt}
         if rc != 0:
-            review = visual_lock_v21.read_json(ep / visual_lock_v21.REVIEW_REL)
+            review = visual_profile_review_persistence.load(ep) or {}
             repairs = []
             for row in review.get("calibration") or []:
                 checks = row.get("checks") or {}
@@ -214,7 +216,7 @@ def execute(ep: Path, action: dict) -> dict:
             ))
         if repairs and any(r.get("status") in {"REPAIR_ENQUEUED", "REPAIR_ALREADY_PENDING"} for r in repairs):
             return {"status": "REPAIR_ENQUEUED", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "repairs": repairs}
-        ledger = story_json.read_json(ep / "meta/production-ledger.json", default={})
+        ledger = production_ledger.load_authority(ep, default={}) or {}
         needs_user = [
             str(key).zfill(2) for key, value in ((ledger.get("frames") or {}).items())
             if isinstance(value, dict) and value.get("status") == "NEEDS_USER"
@@ -239,7 +241,7 @@ def execute(ep: Path, action: dict) -> dict:
             return {"status": "PASS", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "frames": frames}
         if rc not in {2, 3}:
             return {"status": "TECHNICAL_FAILURE", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "frames": frames, "returncode": rc}
-        ledger = story_json.read_json(ep / "meta/production-ledger.json", default={})
+        ledger = production_ledger.load_authority(ep, default={}) or {}
         needs_user = [
             str(key).zfill(2) for key, value in ((ledger.get("frames") or {}).items())
             if isinstance(value, dict) and value.get("status") == "NEEDS_USER"

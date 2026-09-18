@@ -64,7 +64,7 @@ ROOT = Path(__file__).resolve().parents[2]
 # deliberately adds no fourth store.
 LOCK_REL = Path("meta/visual-profile.json")
 LOCK_ALT_REL = Path("meta/visual_profile.json")
-RUNTIME_REQUEST_REL = Path("meta/runtime-request.json")
+RUNTIME_REQUEST_REL = Path("meta/runtime-request.json")  # compatibility label only; Runtime Request authority is owner-backed
 
 ADAPTER_VERSION = "1.0"
 

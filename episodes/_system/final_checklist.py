@@ -8,6 +8,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 import runtime_command
+import episode_state_persistence
+import production_ledger
 
 SYSTEM_DIR = Path(__file__).resolve().parent
 ROOT = SYSTEM_DIR.parents[1]
@@ -57,10 +59,10 @@ def run_cmd(cmd):
 
 def build(ep: Path, target: str | None, run_validators: bool):
     meta = ep / "meta"
-    state = load(meta / "episode-state.json") or {}
+    state = episode_state_persistence.load(ep) or {}
     gates = load(meta / "story-gates.json") or {}
     release = load(meta / "release-manifest.json") or {}
-    ledger = load(meta / "production-ledger.json") or {}
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     text_audit = load(meta / "text-audit.json") or {}
     release_package = load(meta / "release-package.json") or {}
     final_snapshot = load(meta / "final-candidate-snapshot.json") or {}
@@ -85,10 +87,10 @@ def build(ep: Path, target: str | None, run_validators: bool):
         "",
         "## A. 机器事实",
         "",
-        f"- {mark((meta/'episode-state.json').exists())} `episode-state.json` 存在",
+        f"- {mark(bool(state))} Episode State authority 就绪",
         f"- {mark((meta/'story-gates.json').exists())} `story-gates.json` 存在",
         f"- {mark((meta/'release-manifest.json').exists())} `release-manifest.json` 存在",
-        f"- {mark((meta/'production-ledger.json').exists() or not strict)} strict 模式 production ledger 就绪",
+        f"- {mark(bool(ledger) or not strict)} strict 模式 production ledger authority 就绪",
         f"- {mark(bool(reviews.get('story') == 'passed'))} story review passed",
         f"- {mark(bool(reviews.get('visual_admission') == 'passed'))} visual admission passed",
         f"- {mark(bool(reviews.get('authenticity') == 'passed'))} authenticity passed",

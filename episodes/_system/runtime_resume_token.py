@@ -40,9 +40,11 @@ def save(episode: Path, *, stage: str, step: str, attempt: int,
 
 def load(episode: Path) -> dict:
     hot = hot_state_bridge.read(episode, "RESUME_TOKEN")
-    if hot.get("redis_read") and isinstance(hot.get("value"), dict):
-        return hot["value"]
-    data = runtime_workspace.read_json(episode, REL, default={})
+    data = hot_state_bridge.value_or_fallback(
+        hot,
+        lambda: runtime_workspace.read_json(episode, REL, default={}),
+        default={},
+    )
     return data if isinstance(data, dict) else {}
 
 

@@ -6,14 +6,25 @@ import argparse, json
 from pathlib import Path
 import episode_performance, execution_capsule, raw_candidate_budget, runtime_capability_cache, runtime_resume_capsule
 import runtime_observability
+import hot_state_bridge
 ROOT=Path(__file__).resolve().parents[2]
+REL=Path("meta/runtime/fast-path-state.json")
 def slo(ep):
-    ep=Path(ep).resolve();p=ep/runtime_observability.EPISODE_PERFORMANCE_REL
-    if not p.is_file():return {"health":"UNKNOWN","active_wall_seconds":None,"gate":False}
-    d=json.loads(p.read_text(encoding="utf-8-sig"));active=((d.get("run_wall") or {}).get("active_wall_seconds"));active=active if isinstance(active,(int,float)) else d.get("total_wall_seconds")
+    ep=Path(ep).resolve();d=episode_performance.load(ep,False)
+    if not d:return {"health":"UNKNOWN","active_wall_seconds":None,"gate":False}
+    active=((d.get("run_wall") or {}).get("active_wall_seconds"));active=active if isinstance(active,(int,float)) else d.get("total_wall_seconds")
     if not isinstance(active,(int,float)):return {"health":"UNKNOWN","active_wall_seconds":None,"gate":False}
     health="GREEN" if active<=5400 else ("YELLOW" if active<=7200 else "RED")
     return {"health":health,"active_wall_seconds":round(float(active),3),"green_max_seconds":5400,"yellow_max_seconds":7200,"gate":False}
+def read_state(ep):
+    ep=Path(ep).resolve();hot=hot_state_bridge.read(ep,"FAST_PATH")
+    if hot.get("redis_read") and isinstance(hot.get("value"),dict):return hot["value"]
+    if not hot_state_bridge.file_fallback_allowed(hot):return {}
+    p=ep/REL
+    if not p.is_file():return {}
+    try:
+        d=json.loads(p.read_text(encoding="utf-8-sig"));return d if isinstance(d,dict) else {}
+    except (OSError,UnicodeError,json.JSONDecodeError):return {}
 def prepare(ep):
     ep=Path(ep).resolve();rid=episode_performance.safe_begin_named_span(ep,"CONTEXT_RECOVERY",source="runtime_fast_path_v251")
     caps=runtime_capability_cache.ensure(ep);resume=runtime_resume_capsule.compile_capsule(ep,True);step=resume.get("runtime_step")
@@ -22,7 +33,8 @@ def prepare(ep):
         try:capsule=execution_capsule.compile_capsule(ep,step,write=True)
         except Exception:capsule=None
     state={"schema_version":1,"module_version":"2.6.0","resume_capsule":(ep/runtime_resume_capsule.REL).relative_to(ep).as_posix(),"runtime_step":step,"capability_cache_fresh":runtime_capability_cache.is_fresh(caps),"execution_capsule_compiled":bool(capsule),"performance_slo":slo(ep),"fast_path_policy":"resume capsule first; no broad rescan while source SHA is unchanged"}
-    out=ep/"meta/runtime/fast-path-state.json";out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(state,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    out=ep/REL;out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(state,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    hot_state_bridge.mirror(ep, "FAST_PATH", state)
     episode_performance.safe_end_named_span(ep,"CONTEXT_RECOVERY",status="PASS",metadata={"fast_path":"2.6.0"})
     return {"state":state,"resume":resume,"capabilities":caps}
 def self_test():

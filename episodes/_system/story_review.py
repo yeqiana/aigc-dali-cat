@@ -19,9 +19,13 @@ import runtime_provenance
 import product_review_adapter
 import story_json
 import runtime_timeout_policy
+import episode_state_persistence
+import review_record_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_REL = Path("meta/story-semantic-review.json")
+REVIEW_TYPE = "STORY_SEMANTIC"
+EXPORT_REL = Path("meta/runtime/review-exports/story-semantic.json")
 CANDIDATE_REL = Path("meta/.story-semantic-review.candidate.json")
 TARGET_CONTRACT = (2, 0, 3, 2)
 
@@ -77,6 +81,48 @@ def write_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
 
 
+
+def load_review(ep: Path) -> dict | None:
+    ep = Path(ep).resolve()
+    return review_record_persistence.load_latest(
+        ep, REVIEW_TYPE, legacy_path=ep / REVIEW_REL
+    )
+
+
+def review_authority_sha256(ep: Path) -> str | None:
+    return review_record_persistence.authority_sha256(
+        Path(ep).resolve(), REVIEW_TYPE, legacy_path=Path(ep).resolve() / REVIEW_REL
+    )
+
+
+def save_review(
+    ep: Path,
+    data: dict,
+    *,
+    decision: str,
+    source_sha256: str | None = None,
+) -> dict:
+    provenance = data.get("critic_provenance") or {}
+    return review_record_persistence.save(
+        Path(ep).resolve(),
+        REVIEW_TYPE,
+        REVIEW_REL,
+        data,
+        decision=decision,
+        reviewer_type=str(provenance.get("runtime") or "") or None,
+        source_sha256=source_sha256,
+    )
+
+
+def materialize_review_export(ep: Path, data: dict | None = None) -> Path | None:
+    return review_record_persistence.materialize_export(
+        Path(ep).resolve(),
+        REVIEW_TYPE,
+        payload=data,
+        filename="story-semantic.json",
+    )
+
+
 def version_tuple(raw: object) -> tuple[int, ...]:
     try:
         return tuple(int(x) for x in str(raw or "").split("."))
@@ -86,7 +132,15 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 def episode_contract_version(ep: Path) -> str:
     versions = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    try:
+        state = episode_state_persistence.load(Path(ep).resolve()) or {}
+        raw = str(state.get("tool_version") or "")
+        vt = version_tuple(raw)
+        if vt != (0,):
+            versions.append((vt, raw))
+    except Exception:
+        pass
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -101,15 +155,19 @@ def episode_contract_version(ep: Path) -> str:
 
 
 def review_required(ep: Path) -> bool:
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json"):
-        p = ep / rel
-        if not p.is_file():
-            continue
+    try:
+        if version_tuple(
+            (episode_state_persistence.load(Path(ep).resolve()) or {}).get("tool_version")
+        ) >= TARGET_CONTRACT:
+            return True
+    except Exception:
+        pass
+    p = Path(ep).resolve() / "meta/release-manifest.json"
+    if p.is_file():
         try:
-            if version_tuple(read_json(p).get("tool_version")) >= TARGET_CONTRACT:
-                return True
+            return version_tuple(read_json(p).get("tool_version")) >= TARGET_CONTRACT
         except Exception:
-            continue
+            pass
     return False
 
 
@@ -190,12 +248,11 @@ def validate_payload(data: dict, *, story_sha: str, storyboard_sha: str, version
 def verify(ep: Path) -> list[str]:
     if not review_required(ep):
         return []
-    path = ep / REVIEW_REL
-    if not path.is_file():
+    data = load_review(ep)
+    if not isinstance(data, dict):
         return ["meta/story-semantic-review.json missing"]
     try:
         story, storyboard = story_paths(ep)
-        data = read_json(path)
     except Exception as exc:
         return [str(exc)]
     errors = validate_payload(
@@ -334,8 +391,11 @@ def _finalize_review(ep: Path, data: dict, *, attempt: int, before_story: str, b
         storyboard_sha=before_board,
         version=episode_contract_version(ep),
     )
-    final = ep / REVIEW_REL
-    write_json(final, data)
+    decision = "PASS" if not errors else "FAIL"
+    source_sha = hashlib.sha256(
+        f"{before_story}|{before_board}".encode("utf-8")
+    ).hexdigest()
+    save_review(ep, data, decision=decision, source_sha256=source_sha)
     (ep / CANDIDATE_REL).unlink(missing_ok=True)
     if propagation_core_gate.required(ep):
         errors.extend(propagation_core_gate.verify(ep))
@@ -370,7 +430,12 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str, bounded_dev
         provenance=provenance,
     )
     if rc == 0:
-        product_review_adapter.mark_complete(ep, "story-semantic", attempt=attempt, final_path=ep / REVIEW_REL)
+        final_export = materialize_review_export(ep, load_review(ep))
+        if final_export is None:
+            raise RuntimeError("story semantic review export missing after PASS")
+        product_review_adapter.mark_complete(
+            ep, "story-semantic", attempt=attempt, final_path=final_export
+        )
     return rc
 
 
@@ -518,8 +583,7 @@ def main() -> int:
             print("STORY SEMANTIC REVIEW FINALIZE ERROR:", exc)
             return 3
     if args.cmd == "show":
-        path = ep / REVIEW_REL
-        print(path.read_text(encoding="utf-8") if path.is_file() else "{}")
+        print(json.dumps(load_review(ep) or {}, ensure_ascii=False, indent=2))
         return 0
     errors = verify(ep)
     if errors:

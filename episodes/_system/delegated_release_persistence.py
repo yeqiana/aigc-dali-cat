@@ -79,10 +79,13 @@ def load(ep: Path, *, release_type: str = RELEASE_TYPE) -> dict | None:
                 else:
                     return payload
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
         finally:
             if connection is not None:
                 connection.close()
+        if mode == "mysql":
+            return None
     path = ep / (REL if release_type == RELEASE_TYPE else LEGACY_REL)
     return story_json.read_json(path, default=None) if path.is_file() else None
 

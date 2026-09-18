@@ -26,6 +26,7 @@ import story_json
 import temporal_continuity_gate
 import wardrobe_contract
 import world_state
+import character_contract
 
 BARRIER_REL = Path("meta/runtime/preimage-authority-barrier.json")
 SHOT_REL = Path("meta/shot-progression-review.json")
@@ -382,7 +383,7 @@ def ensure(ep: Path) -> dict:
     barrier = _read(ep / BARRIER_REL)
     if barrier.get("status") != "READY" or not barrier.get("committed_snapshot_id"):
         raise ValueError("PREIMAGE authority barrier must be READY before directing-contract materialization")
-    character = _read(ep / CHARACTER_REL)
+    character = character_contract.load(ep) or {}
     shots = _shot_rows(ep)
     total = _frame_count(ep)
     if len(shots) != total:

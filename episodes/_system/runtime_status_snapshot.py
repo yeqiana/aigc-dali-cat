@@ -15,11 +15,14 @@ from pathlib import Path
 from typing import Any
 
 import runner_health_monitor
+import hot_state_bridge
 import runtime_workspace
 import production_queue_store
 import next_action as next_action_store
 import runner_state_store
 import scheduler_core
+import episode_state_persistence
+import production_ledger
 
 SCHEMA_VERSION = 1
 EPISODE_STATE_REL = Path("meta/episode-state.json")
@@ -157,11 +160,12 @@ def _dag_summary(dag: dict[str, Any]) -> dict[str, Any]:
 def snapshot(episode: Path) -> dict[str, Any]:
     """Build one stable Console/Platform read model without mutating the Episode."""
     ep = Path(episode).resolve()
-    episode_state = _read(ep / EPISODE_STATE_REL)
+    episode_state, episode_state_source = episode_state_persistence.load_with_source(ep)
+    episode_state = episode_state or {}
     dag = runtime_workspace.read_json(ep, DAG_STATE_REL, default={}) or {}
     runner = runner_state_store.load(ep)
     next_action_raw = next_action_store.load(ep)
-    ledger = _read(ep / LEDGER_REL)
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     queue = scheduler_core.load_queue(ep)
     admissions = _read(ep / ADMISSIONS_REL)
 
@@ -221,16 +225,53 @@ def snapshot(episode: Path) -> dict[str, Any]:
         "visual_lock_admissions": ADMISSIONS_REL,
     }
     external_runtime_sources = {"runtime_dag_state", "runtime_runner_state", "next_action"}
+    hot_runtime_sources = {
+        "runtime_runner_state": "RUNNER_STATE",
+        "next_action": "NEXT_ACTION",
+    }
 
     def source_info(name: str, rel: Path) -> dict[str, Any]:
+        if name == "episode_state":
+            return {
+                "path": str(rel).replace("\\", "/"),
+                "present": bool(episode_state),
+                "source_kind": episode_state_source,
+            }
         if name == "production_queue":
-            resolved = production_queue_store.read_path(ep)
+            hot = hot_state_bridge.read(ep, "QUEUE")
+            if hot.get("redis_read") and isinstance(hot.get("value"), dict):
+                return {
+                    "path": str(rel).replace("\\", "/"),
+                    "present": True,
+                    "source_kind": "redis",
+                }
+            if not hot_state_bridge.file_fallback_allowed(hot):
+                return {
+                    "path": str(rel).replace("\\", "/"),
+                    "present": False,
+                    "source_kind": "redis",
+                }
+            resolved = scheduler_core.queue_read_path(ep)
             legacy = production_queue_store.legacy_path(ep) if hasattr(production_queue_store, "legacy_path") else ep / rel
             return {
                 "path": str(rel).replace("\\", "/"),
                 "present": resolved.is_file(),
                 "source_kind": "episode" if resolved == legacy else "runtime_workspace",
             }
+        if name in hot_runtime_sources:
+            hot = hot_state_bridge.read(ep, hot_runtime_sources[name])
+            if hot.get("redis_read") and isinstance(hot.get("value"), dict):
+                return {
+                    "path": str(rel).replace("\\", "/"),
+                    "present": True,
+                    "source_kind": "redis",
+                }
+            if not hot_state_bridge.file_fallback_allowed(hot):
+                return {
+                    "path": str(rel).replace("\\", "/"),
+                    "present": False,
+                    "source_kind": "redis",
+                }
         if name in external_runtime_sources:
             resolved = runtime_workspace.resolve_read_path(ep, rel)
             return {

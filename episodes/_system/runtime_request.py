@@ -13,6 +13,8 @@ from pathlib import Path
 import storyos_config
 import request_intent
 import story_json
+import runtime_request_persistence
+import storage_config
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUESTS_DIR = ROOT / "runtime" / "requests"
@@ -73,6 +75,12 @@ def preimage_authority_projection(data):
 
 def preimage_authority_projection_sha256(data):
     raw=json.dumps(preimage_authority_projection(data),ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def authority_sha256(data):
+    row=data if isinstance(data,dict) else {}
+    raw=json.dumps(row,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
     return hashlib.sha256(raw).hexdigest()
 
 def parse_topic(text):
@@ -306,23 +314,36 @@ def validate_request(data):
 
 def write_compiled(data,output=None):
     target=output.resolve() if output else REQUESTS_DIR/f"{data['request_id']}.json"; write_json(target,data); return target
-def bind_request(request_path,episode_dir,force=False):
-    request_path=request_path.resolve(); episode_dir=episode_dir.resolve()
-    if not request_path.is_file():raise ValueError(f"request file missing: {request_path}")
-    try:episode_dir.relative_to(ROOT.resolve())
+def bind_data(data,episode_dir,force=False,repository_root=None):
+    episode_dir=Path(episode_dir).resolve()
+    repo_root=Path(repository_root).resolve() if repository_root is not None else ROOT.resolve()
+    try:episode_dir.relative_to(repo_root)
     except ValueError as exc:raise ValueError("episode must be inside repository") from exc
-    data=read_json(request_path); errors=validate_request(data)
+    errors=validate_request(data)
     if errors:raise ValueError("; ".join(errors))
     target=episode_dir/EPISODE_REL
-    if target.is_file() and not force:
-        existing=read_json(target)
+    existing=authority_for_episode(episode_dir)
+    if existing is not None and not force:
         if existing!=data:raise ValueError("episode already has a different immutable runtime-request; use --force only for explicit correction")
         return target
-    write_json(target,data); return target
+    mode=storage_config.episode_meta_store_config()["mode"]
+    if mode!="mysql":
+        write_json(target,data)
+    runtime_request_persistence.persist(episode_dir,data)
+    return target
+
+def bind_request(request_path,episode_dir,force=False):
+    request_path=request_path.resolve()
+    if not request_path.is_file():raise ValueError(f"request file missing: {request_path}")
+    return bind_data(read_json(request_path),episode_dir,force=force)
+
+def authority_for_episode(episode_dir):
+    return runtime_request_persistence.load(Path(episode_dir).resolve())
+
 def effective_for_episode(episode_dir):
-    p=episode_dir/EPISODE_REL
-    if not p.is_file():return None
-    data=read_json(p); errors=validate_request(data)
+    data=authority_for_episode(episode_dir)
+    if data is None:return None
+    errors=validate_request(data)
     if errors:raise ValueError("; ".join(errors))
     return data
 

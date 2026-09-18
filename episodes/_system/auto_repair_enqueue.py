@@ -21,6 +21,7 @@ import ledger_call
 import production_queue_store
 import scheduler_core
 import story_json
+import production_ledger
 
 ROOT = Path(__file__).resolve().parents[2]
 LEDGER_REL = Path("meta/production-ledger.json")
@@ -36,14 +37,14 @@ def _read(path: Path) -> dict:
 
 
 def _ledger_frame(ep: Path, frame: int) -> dict:
-    data = _read(ep / LEDGER_REL)
+    data = production_ledger.load_authority(ep, default={}) or {}
     rows = data.get("frames") or {}
     row = rows.get(f"{int(frame):02d}") or rows.get(str(int(frame))) or {}
     return row if isinstance(row, dict) else {}
 
 
 def _queue_items(ep: Path, frame: int) -> list[dict]:
-    q = _read(production_queue_store.read_path(ep))
+    q = scheduler_core.load_queue(ep)
     return [
         row for row in (q.get("items") or [])
         if isinstance(row, dict) and int(row.get("frame") or -1) == int(frame)
@@ -72,7 +73,7 @@ def enqueue_marked_repairs(ep: Path) -> dict:
     repair transaction so ``REPAIR_FAILED_IMAGES`` cannot become an empty loop.
     """
     ep = Path(ep).resolve()
-    q = _read(production_queue_store.read_path(ep))
+    q = scheduler_core.load_queue(ep)
     marked = [row for row in (q.get("items") or []) if isinstance(row, dict) and row.get("status") == "scout_repair"]
     results = []
     supersede_ids: set[str] = set()
@@ -101,7 +102,7 @@ def enqueue_marked_repairs(ep: Path) -> dict:
             supersede_ids.add(str(row.get("id") or ""))
     if supersede_ids:
         with scheduler_core.queue_transaction(ep):
-            latest = _read(production_queue_store.read_path(ep))
+            latest = scheduler_core.load_queue(ep)
             for row in latest.get("items") or []:
                 if str(row.get("id") or "") in supersede_ids and row.get("status") == "scout_repair":
                     row["status"] = "superseded"
@@ -184,7 +185,7 @@ def enqueue_authority_refresh(ep: Path, frame: int) -> dict:
 
 def enqueue_authority_refreshes(ep: Path) -> dict:
     ep = Path(ep).resolve()
-    ledger = _read(ep / LEDGER_REL)
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     frames = sorted(
         int(key) for key, row in (ledger.get("frames") or {}).items()
         if isinstance(row, dict) and row.get("status") == "AUTHORITY_REFRESH_AUTHORIZED"

@@ -7,11 +7,13 @@ import json
 import os
 import re
 from pathlib import Path
+import production_ledger
 
 from story_os_contract import story_os_version
 from canvas_spec import CANONICAL_SIZES
 from text_audit import captions_from_text, discover_input, parse_simple_subtitles_yaml
 import story_json
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT_REL = Path("meta/subtitle-layout-audit.json")
@@ -49,15 +51,16 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 
 def layout_required(ep: Path) -> bool:
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json"):
-        p = ep / rel
-        if not p.is_file():
-            continue
+    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    if version_tuple(state.get("tool_version")) >= TARGET_CONTRACT:
+        return True
+    p = ep / "meta/release-manifest.json"
+    if p.is_file():
         try:
             if version_tuple(read_json(p).get("tool_version")) >= TARGET_CONTRACT:
                 return True
         except Exception:
-            continue
+            pass
     return False
 
 
@@ -241,7 +244,7 @@ def apply_pixel_safe_overrides(ep: Path, repairs: dict[str, dict]) -> dict:
     """
     if not repairs:
         return {"updated": []}
-    ledger = read_json(ep / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     try:
         height = int((ledger.get("canvas") or {}).get("height"))
     except Exception as exc:
@@ -312,8 +315,7 @@ def render_all(
     data = load_caption_data(source)
     frames = data.get("frames") or {}
     silent = set(data.get("silent_frames") or [])
-    ledger_path = ep / "meta/production-ledger.json"
-    ledger = read_json(ledger_path)
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     layout_cfg_path, layout_cfg = _layout_config(ep)
     y_cfg = layout_cfg.get("frames") or {}
     font_path = find_font(font_raw)
@@ -449,11 +451,11 @@ def verify_audit(ep: Path) -> list[str]:
         errors.append("punctuation-only second-line policy missing")
 
     frames = report.get("frames")
-    ledger_path = ep / "meta/production-ledger.json"
-    if not ledger_path.is_file():
+    ledger = production_ledger.load_authority(ep, default=None)
+    if not isinstance(ledger, dict):
         errors.append("production ledger missing for subtitle layout verification")
         return errors
-    ledger_keys = set((read_json(ledger_path).get("frames") or {}).keys())
+    ledger_keys = set((ledger.get("frames") or {}).keys())
     if not isinstance(frames, dict) or not frames:
         errors.append("subtitle layout frame audit missing")
         return errors

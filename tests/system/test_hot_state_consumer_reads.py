@@ -10,6 +10,9 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import batch_runtime_metrics  # noqa: E402
+import production_orchestrator  # noqa: E402
+import request_router  # noqa: E402
+import runtime_fast_path  # noqa: E402
 import runtime_status_snapshot  # noqa: E402
 
 
@@ -17,6 +20,47 @@ def _write(ep: Path, rel: str, data: dict) -> None:
     path = ep / rel
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+
+def test_runtime_route_reader_prefers_redis_and_falls_back_to_file(monkeypatch, tmp_path):
+    ep = tmp_path / "episode"
+    _write(ep, "meta/runtime-route.json", {"workflow_mode": "file"})
+    monkeypatch.setattr(request_router.hot_state_bridge, "read", lambda *_args, **_kwargs: {
+        "mode": "dual", "redis_read": True, "value": {"workflow_mode": "redis"}
+    })
+    assert request_router.read_decision(ep)["workflow_mode"] == "redis"
+    monkeypatch.setattr(request_router.hot_state_bridge, "read", lambda *_args, **_kwargs: {
+        "mode": "dual", "redis_read": False, "value": None
+    })
+    assert request_router.read_decision(ep)["workflow_mode"] == "file"
+
+
+def test_fast_path_reader_prefers_redis_and_falls_back_to_file(monkeypatch, tmp_path):
+    ep = tmp_path / "episode"
+    _write(ep, runtime_fast_path.REL.as_posix(), {"runtime_step": "file"})
+    monkeypatch.setattr(runtime_fast_path.hot_state_bridge, "read", lambda *_args, **_kwargs: {
+        "mode": "dual", "redis_read": True, "value": {"runtime_step": "redis"}
+    })
+    assert runtime_fast_path.read_state(ep)["runtime_step"] == "redis"
+    monkeypatch.setattr(runtime_fast_path.hot_state_bridge, "read", lambda *_args, **_kwargs: {
+        "mode": "dual", "redis_read": False, "value": None
+    })
+    assert runtime_fast_path.read_state(ep)["runtime_step"] == "file"
+
+
+def test_full_auto_status_reader_prefers_redis_and_falls_back_to_workspace(monkeypatch, tmp_path):
+    ep = tmp_path / "episode"
+    monkeypatch.setattr(production_orchestrator.hot_state_bridge, "read", lambda *_args, **_kwargs: {
+        "mode": "dual", "redis_read": True, "value": {"status": "RUNNING", "source": "redis"}
+    })
+    monkeypatch.setattr(production_orchestrator.runtime_workspace, "read_json", lambda *_args, **_kwargs: {
+        "status": "STALE", "source": "file"
+    })
+    assert production_orchestrator.load_full_auto_status(ep)["source"] == "redis"
+    monkeypatch.setattr(production_orchestrator.hot_state_bridge, "read", lambda *_args, **_kwargs: {
+        "mode": "dual", "redis_read": False, "value": None
+    })
+    assert production_orchestrator.load_full_auto_status(ep)["source"] == "file"
 
 
 def test_batch_metrics_reads_capabilities_through_hot_state_consumers(monkeypatch, tmp_path):

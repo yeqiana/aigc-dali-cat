@@ -10,6 +10,7 @@ import argparse, datetime as dt, json
 from pathlib import Path
 import voice_contract, storyboard_density_gate, capture_event_contract, world_state, opening_social_anchor, character_visual_contract, shot_progression_gate, wardrobe_contract, temporal_continuity_gate
 import story_json
+import episode_state_persistence
 
 REL=Path("meta/directing-quality.json")
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -23,8 +24,8 @@ def enabled(ep):
     return p.is_file() and (read_json(p).get("enabled") is True)
 
 def _episode_state(ep):
-    p=Path(ep).resolve()/"meta/episode-state.json"
-    return str((read_json(p).get("current_state") if p.is_file() else "") or "")
+    data=episode_state_persistence.load(Path(ep).resolve()) or {}
+    return str(data.get("current_state") or "")
 
 def advanced_enabled(ep):
     p=Path(ep).resolve()/REL

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "category": "plot",
+  "fixtures": [
+    {
+      "id": "PLOT_REAL_POS_001",
+      "polarity": "positive",
+      "source_type": "real",
+      "source_episode": "婚礼前夜·记忆麻醉",
+      "source_evidence": [
+        "aigc-dali-cat: episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/docs/02_婚礼前夜_StoryLock_V2.0.md",
+        "frames 01-05"
+      ],
+      "scenario": "01只建立婚前记忆缺口；02只交代日常服药与漏服；03梦中看到两端都在画外的铁链；04只出现无法识别身份的手；05现实脚踝红痕，但仍不能证明药物、男人与梦的因果。",
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "reason": "异常逐步增加，但每一帧只释放当前允许信息，没有提前把未证明的因果写成事实。"
+      },
+      "current_coverage": "partial",
+      "future_capability": ["StoryFact", "DisclosureBoundary", "FrameContract"]
+    },
+    {
+      "id": "PLOT_REAL_NEG_001",
+      "polarity": "negative",
+      "source_type": "real",
+      "source_episode": "婚礼前夜·记忆麻醉 V1",
+      "source_evidence": [
+        "aigc-dali-cat: reports/09-05婚礼前夜生产问题复盘_20260910.md §7"
+      ],
+      "scenario": "第一版出图后发现药物出现太早、03-05解释过明确、11没有提供新证据，最终必须重做 Story、分镜、字幕、逐帧合同与 Prompt。",
+      "expected": {
+        "decision": "FAIL",
+        "issue_codes": ["DISCLOSURE_ORDER_VIOLATION", "INSUFFICIENT_INFORMATION_GAIN"],
+        "reason": "揭露顺序与信息增量属于叙事合同问题，不应等到整篇出图后才发现。"
+      },
+      "current_coverage": "manual_only",
+      "future_capability": ["StoryFact", "DisclosureBoundary", "FrameContract"]
+    },
+    {
+      "id": "PLOT_REAL_POS_002",
+      "polarity": "positive",
+      "source_type": "real",
+      "source_episode": "EP003 雾中的另一座生活区（历史归档）",
+      "source_evidence": [
+        "aigc-dali-cat: episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+        "frames 15-20"
+      ],
+      "scenario": "15男主明知应该返航仍多停几秒确认；16对方生活开始避让；17设备失控下降；19失联后与女友发生真实冲突；20正常日出中无人机缺席。",
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "reason": "人物选择→直接后果→关系代价→余波闭环成立，高潮不是单纯发现更大景观。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["FrameContract", "SequenceReview"]
+    },
+    {
+      "id": "PLOT_REAL_BOUNDARY_001",
+      "polarity": "boundary",
+      "source_type": "real",
+      "source_episode": "泔水与金牌",
+      "source_evidence": [
+        "aigc-dali-cat: episodes/17_狮驼岭/01_泔水与金牌/meta/story-semantic-review.json"
+      ],
+      "scenario": "高潮的主角动作是“没有跟着冲、梆子没有放下”，主要升级来自同伴撞栅栏与全山同步狂热。",
+      "expected": {
+        "decision": "PASS_WITH_NOTE",
+        "issue_codes": [],
+        "reason": "高潮可以是克制的选择与认知转向；不能用“主角没有大动作”机械判定为高潮失败。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["SequenceReview"]
+    }
+  ]
+}
+

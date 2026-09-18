@@ -12,6 +12,8 @@ from approval_lock import story_assets, visual_assets
 from story_os_contract import story_os_version
 import story_json
 import runtime_checkpoint
+import approval_persistence
+import delegated_release_persistence
 
 REL = Path('meta/delegated-approvals.json')
 CHECKPOINT = runtime_checkpoint.REL
@@ -68,8 +70,9 @@ def base_payload(kind: str, rows: list[dict], note: str) -> dict:
 
 def load_store(ep: Path) -> tuple[Path, dict]:
     p = ep / REL
-    if p.is_file():
-        return p, read_json(p)
+    data = approval_persistence.load(ep, approval_persistence.DELEGATED_BUNDLE)
+    if isinstance(data, dict):
+        return p, data
     return p, {'schema_version': 1, 'story_os_version': STORY_OS_VERSION, 'approvals': {}}
 
 
@@ -95,10 +98,9 @@ def cmd_record(args: argparse.Namespace) -> int:
     elif args.kind == 'visual_lock':
         rows, profile = visual_assets(ep)
     else:
-        report = ep / 'meta' / 'delegated-release.json'
-        if not report.is_file():
+        d = delegated_release_persistence.load(ep)
+        if not isinstance(d, dict):
             raise SystemExit('delegated release report missing; build delegated delivery first')
-        d = read_json(report)
         rows = d.get('files') or []
         package = d.get('package') or {}
         if not rows or not package.get('path') or not package.get('sha256'):
@@ -115,7 +117,7 @@ def cmd_record(args: argparse.Namespace) -> int:
     path, store = load_store(ep)
     store['story_os_version'] = STORY_OS_VERSION
     store.setdefault('approvals', {})[args.kind] = payload
-    write_json(path, store)
+    approval_persistence.save(ep, approval_persistence.DELEGATED_BUNDLE, store)
     print(f'{args.kind}: DELEGATED AUTO LOCKED')
     return 0
 
@@ -124,10 +126,10 @@ def verify(ep: Path, kind: str) -> list[str]:
     ok, reason = authorized(ep)
     if not ok:
         return ['delegated authorization invalid: ' + reason]
-    path = ep / REL
-    if not path.is_file():
+    store = approval_persistence.load(ep, approval_persistence.DELEGATED_BUNDLE)
+    if not isinstance(store, dict):
         return ['delegated approvals missing']
-    item = (read_json(path).get('approvals') or {}).get(kind)
+    item = (store.get('approvals') or {}).get(kind)
     if not isinstance(item, dict):
         return [f'{kind}: delegated approval missing']
     if item.get('approved') is not True or item.get('delegated_auto_review') is not True or item.get('user_approved') is not False:
@@ -172,8 +174,8 @@ def main() -> int:
     args = ap.parse_args()
     ep = Path(args.episode_dir).resolve()
     if args.cmd == 'show':
-        path = ep / REL
-        print(path.read_text(encoding='utf-8') if path.is_file() else '{}')
+        data = approval_persistence.load(ep, approval_persistence.DELEGATED_BUNDLE) or {}
+        print(json.dumps(data, ensure_ascii=False, indent=2))
         return 0
     if args.cmd == 'record':
         return cmd_record(args)

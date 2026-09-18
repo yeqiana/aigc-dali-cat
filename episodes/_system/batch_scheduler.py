@@ -83,7 +83,7 @@ def load_queue(ep):
 def save_queue(ep,q):
     scheduler_core.save_queue(ep,q)
 def ledger(ep):
-    p=ep/"meta/production-ledger.json";return read_json(p) if p.is_file() else {}
+    return production_ledger.load_authority(ep, default={}) or {}
 def ledger_state(ep,frame):
     return str((((ledger(ep).get("frames") or {}).get(f"{frame:02d}") or {}).get("status") or "PENDING"))
 def dependency_satisfied(ep,q,dep):
@@ -379,8 +379,7 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                 item["scout"]={"decision":"DEFER_TO_FINAL","notes":str(exc),"final_critic_still_required":True}
         item.pop("_defer_scout",None)
     save_queue(ep,q)
-    perf_path=ep/runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL
-    perf=read_json(perf_path) if perf_path.is_file() else {"schema_version":1,"batches":[]}
+    perf=runtime_observability.read_summary(ep,runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL,default={"schema_version":1,"batches":[]})
     submitted_rows=[x for x in q.get("items") or [] if x.get("id") in submitted]
     completed=[x for x in submitted_rows if x.get("output_path")]
     terminal_status_counts={}
@@ -410,7 +409,7 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
         "timeout_count":int(failure_code_counts.get("TIMEOUT",0)),
         "network_connect_count":int(failure_code_counts.get("NETWORK_CONNECT",0)),
         "evidence_not_authority":True,"finished_at":now()})
-    write_json(perf_path,perf)
+    runtime_observability.write_summary(ep,runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL,kind="batch_runtime_performance",payload=perf)
     if has_human_block and not ready_items(ep,load_queue(ep)):
         return HUMAN_REQUIRED
     if has_technical_failure:

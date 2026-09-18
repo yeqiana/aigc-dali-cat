@@ -6,6 +6,7 @@ import argparse, json
 from pathlib import Path
 import storyos_config
 import story_json
+import character_contract
 
 REL=Path("meta/shot-progression-review.json")
 ANOMALY_STAGES={"ordinary","discovery","confirmation","spatial_contradiction","causal_contradiction","human_consequence","reversal","payoff"}
@@ -45,9 +46,9 @@ def frame_count(ep):
     d=read_json(Path(ep)/"meta/release-manifest.json")
     return int(((d.get("release") or {}).get("body_frame_count")) or 0)
 def _multi_person(ep):
-    p=Path(ep)/"meta/character-contract.json"
-    if not p.is_file():return False
-    try:return len((((read_json(p).get("cast") or {}).get("members")) or []))>=2
+    try:
+        data=character_contract.load(Path(ep).resolve()) or {}
+        return len((((data.get("cast") or {}).get("members")) or []))>=2
     except Exception:return False
 def _opening_applicable(ep):
     p=Path(ep)/"meta/opening-social-anchor.json"

@@ -17,10 +17,13 @@ import json
 from pathlib import Path
 from typing import Any
 import story_json
+import episode_contract_persistence
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REL = Path("config/profiles/world_identity/default.json")
 OVERRIDE_REL = Path("meta/world-identity.json")
+CONTRACT_TYPE = "WORLD_IDENTITY"
 MIN_VERSION = (2, 2, 1)
 CELESTIAL_HEAVEN_PROFILES = {
     "M02_HEAVEN_MUNDANE_WORKER_V1",
@@ -34,6 +37,33 @@ def read_json(path: Path) -> dict:
 
 def write_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
+
+
+
+def load_override(ep: Path) -> dict | None:
+    ep = Path(ep).resolve()
+    return episode_contract_persistence.load_latest(
+        ep,
+        CONTRACT_TYPE,
+        legacy_path=ep / OVERRIDE_REL,
+    )
+
+
+def save_override(ep: Path, data: dict) -> dict:
+    ep = Path(ep).resolve()
+    episode_contract_persistence.save(
+        ep,
+        CONTRACT_TYPE,
+        OVERRIDE_REL,
+        data,
+        status=str(data.get("status") or "ACTIVE"),
+    )
+    return data
+
+
+def override_sha256(ep: Path) -> str | None:
+    data = load_override(ep)
+    return sha256_json(data) if isinstance(data, dict) else None
 
 
 def sha256_json(data: Any) -> str:
@@ -61,11 +91,15 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 def episode_version(ep: Path) -> str:
     ep = Path(ep)
     versions = []
-    for rel in (
-        "meta/episode-state.json",
-        "meta/release-manifest.json",
-        "meta/story-gates.json",
-    ):
+    try:
+        state = episode_state_persistence.load(ep) or {}
+        raw = str(state.get("tool_version") or "")
+        vt = version_tuple(raw)
+        if vt != (0,):
+            versions.append((vt, raw))
+    except Exception:
+        pass
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -108,8 +142,7 @@ def default_profile() -> dict:
 def effective(ep: Path) -> dict:
     ep = Path(ep).resolve()
     base = default_profile()
-    override_path = ep / OVERRIDE_REL
-    override = read_json(override_path) if override_path.is_file() else None
+    override = load_override(ep)
 
     if override is None:
         merged = copy.deepcopy(base)
@@ -140,7 +173,7 @@ def effective(ep: Path) -> dict:
                 ),
             }
         source = "EPISODE_OVERRIDE"
-        override_sha = sha256_file(override_path)
+        override_sha = sha256_json(override)
 
     effective_data = {
         "schema_version": 1,
@@ -201,9 +234,8 @@ def verify(ep: Path) -> list[str]:
             "population.default_protagonist_age_range"
         )
 
-    override = ep / OVERRIDE_REL
-    if override.is_file():
-        raw = read_json(override)
+    raw = load_override(ep)
+    if isinstance(raw, dict):
         if raw.get("inherit_default") is False:
             if not isinstance(raw.get("world"), dict):
                 errors.append(
@@ -260,9 +292,9 @@ def ensure_visual_profile_override(ep: Path, profile_id: str | None) -> dict | N
     pid = str(profile_id or "").strip()
     if pid not in CELESTIAL_HEAVEN_PROFILES:
         return None
-    target = ep / OVERRIDE_REL
-    if target.is_file():
-        return read_json(target)
+    existing = load_override(ep)
+    if isinstance(existing, dict):
+        return existing
     resident_mode = pid == "M04_HEAVEN_MUNDANE_LIFE_V1"
     data = {
         "schema_version": 1,
@@ -311,8 +343,7 @@ def ensure_visual_profile_override(ep: Path, profile_id: str | None) -> dict | N
         },
         "note": f"Canonical {pid} world identity override generated from the governed Visual Profile; Story may further specify the fictional locality without reverting to a real-world country default.",
     }
-    write_json(target, data)
-    return data
+    return save_override(ep, data)
 
 
 def set_override(
@@ -361,8 +392,7 @@ def set_override(
             "China profile for this Episode."
         ),
     }
-    write_json(ep / OVERRIDE_REL, data)
-    return data
+    return save_override(ep, data)
 
 
 def self_test() -> None:

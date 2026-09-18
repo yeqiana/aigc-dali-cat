@@ -21,6 +21,7 @@ import runtime_router
 import product_review_adapter
 import subtitle_layout
 import runtime_timeout_policy
+import production_ledger
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/caption-image-audit.json")
@@ -96,7 +97,7 @@ def _review_frame_records(ep: Path) -> tuple[list[dict], dict]:
     if report.get("engine") != subtitle_layout.ENGINE or report.get("canonical_renderer") is not True:
         raise ValueError("subtitle layout audit is not canonical")
     audited = report.get("frames") or {}
-    ledger = base.read_json(ep / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     try:
         canvas_height = int((ledger.get("canvas") or {}).get("height"))
     except Exception as exc:

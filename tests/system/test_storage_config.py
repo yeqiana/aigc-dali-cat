@@ -38,6 +38,7 @@ ENV_KEYS = (
     "STORYOS_REDIS_PASSWORD",
     "STORYOS_REDIS_TIMEOUT",
     "STORYOS_EPISODE_META_STORE_MODE",
+    "STORYOS_HOT_STATE_MODE",
 )
 
 
@@ -97,8 +98,17 @@ class StorageConfigTests(unittest.TestCase):
             os.environ["STORYOS_EPISODE_META_STORE_MODE"] = "dual"
             self.assertEqual(storage_config.episode_meta_store_config(), {"mode": "dual"})
             os.environ["STORYOS_EPISODE_META_STORE_MODE"] = "mysql"
-            with self.assertRaises(ValueError):
-                storage_config.episode_meta_store_config()
+            self.assertEqual(storage_config.episode_meta_store_config(), {"mode": "mysql"})
+
+    def test_hot_state_store_allows_cutover_modes(self):
+        with _CleanEnv():
+            os.environ["STORYOS_HOT_STATE_MODE"] = "dual"
+            self.assertEqual(storage_config.hot_state_config(), {"mode": "dual"})
+            os.environ["STORYOS_HOT_STATE_MODE"] = "redis"
+            self.assertEqual(storage_config.hot_state_config(), {"mode": "redis"})
+            os.environ["STORYOS_HOT_STATE_MODE"] = "invalid"
+            with self.assertRaisesRegex(ValueError, "allowed: file, dual, redis"):
+                storage_config.hot_state_config()
 
     def test_env_overrides_yaml(self):
         with _CleanEnv():

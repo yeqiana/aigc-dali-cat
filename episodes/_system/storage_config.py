@@ -155,8 +155,8 @@ def episode_meta_store_config(overrides: dict | None = None) -> dict[str, str]:
     """Resolve staged Episode metadata persistence mode.
 
     ``json`` preserves current behaviour. ``dual`` keeps the compatibility
-    JSON and mirrors supported families to MySQL V2. mysql-only is withheld
-    until all legacy file-path consumers have a repository read path.
+    JSON and mirrors supported families to MySQL V2. ``mysql`` stops writing
+    supported per-record JSON after their readers have a repository fallback.
     """
     overrides = overrides or {}
     section = _section("episode_meta_store")
@@ -166,9 +166,9 @@ def episode_meta_store_config(overrides: dict | None = None) -> dict[str, str]:
         EPISODE_META_STORE_ENV_KEYS["mode"],
         section.get("mode"),
     ).lower()
-    if mode not in {"json", "dual"}:
+    if mode not in {"json", "dual", "mysql"}:
         raise ValueError(
-            f"CONFIG_INVALID: episode meta store mode {mode!r}; allowed: json, dual"
+            f"CONFIG_INVALID: episode meta store mode {mode!r}; allowed: json, dual, mysql"
         )
     return {"mode": mode}
 
@@ -178,8 +178,8 @@ def hot_state_config(overrides: dict | None = None) -> dict[str, str]:
 
     ``file`` keeps the compatibility JSON/runtime-workspace path only.
     ``dual`` mirrors supported current-state projections to Redis while the file
-    path remains readable. redis-only is intentionally withheld until every
-    reader has a Redis-aware fallback and recovery proof.
+    path remains readable. ``redis`` makes Redis the read authority; compatibility
+    files may remain shadow-written during cutover but are never read as fallback.
     """
     overrides = overrides or {}
     section = _section("hot_state")
@@ -189,9 +189,9 @@ def hot_state_config(overrides: dict | None = None) -> dict[str, str]:
         HOT_STATE_ENV_KEYS["mode"],
         section.get("mode"),
     ).lower()
-    if mode not in {"file", "dual"}:
+    if mode not in {"file", "dual", "redis"}:
         raise ValueError(
-            f"CONFIG_INVALID: hot state mode {mode!r}; allowed: file, dual"
+            f"CONFIG_INVALID: hot state mode {mode!r}; allowed: file, dual, redis"
         )
     return {"mode": mode}
 

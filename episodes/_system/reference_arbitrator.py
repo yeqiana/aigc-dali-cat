@@ -35,7 +35,7 @@ def _contract_rows(ep,frame):
             })
     return c,hm,refs
 def _identity_need(ep,hm,contract_refs,scope="batch"):
-    cv=json.loads((Path(ep)/character_visual_contract.REL).read_text(encoding="utf-8-sig"));ids=[str(x) for x in (cv.get("members") or {}).keys()];shot=hm.get("shot_progression") or {};primary=str(shot.get("primary_subject") or "");matched=[cid for cid in ids if cid and cid in primary]
+    cv=character_visual_contract.load(ep) or {};ids=[str(x) for x in (cv.get("members") or {}).keys()];shot=hm.get("shot_progression") or {};primary=str(shot.get("primary_subject") or "");matched=[cid for cid in ids if cid and cid in primary]
     if matched:
         cid=matched[0];idx=primary.find(cid);fragment=primary[max(0,idx-4):idx+len(cid)+12].lower()
         if any(tok.lower() in fragment for tok in NON_FACE_FRAGMENT_TOKENS):

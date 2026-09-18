@@ -223,6 +223,29 @@ def test_capsule_compiles_and_enriches_every_task(tmp_path):
         assert data["preimage_task"]["task_type"] == task_type
 
 
+def test_preimage_task_embeds_runtime_request_projection_instead_of_fake_file_read(monkeypatch, tmp_path):
+    ep = tmp_path / "ep"
+    (ep / "meta/runtime").mkdir(parents=True)
+    snapshot = {"snapshot_id": "r" * 24, "authority_sha256": {"runtime_request_preimage": "x" * 64}}
+    request = {
+        "topic": {"title": "mysql authority"},
+        "story_input": {"mode": "auto_create"},
+        "creative_hints": ["documentary"],
+        "visual_profile": "M00",
+        "provenance": {"source": "natural_language", "original_request": "seed"},
+    }
+    monkeypatch.setattr(
+        contract.runtime_request,
+        "authority_for_episode",
+        lambda _ep: request,
+    )
+
+    task = contract.task_contract(ep, "ENVIRONMENT_PREPARE", snapshot)
+
+    assert "meta/runtime-request.json" not in task["required_read"]
+    assert task["input_contract"]["runtime_request_preimage"]["topic"]["title"] == "mysql authority"
+
+
 def test_concatenated_names_are_rejected_by_the_capsule(tmp_path):
     """The regression itself: the old names must stay unrecognised."""
     ep = tmp_path / "ep"

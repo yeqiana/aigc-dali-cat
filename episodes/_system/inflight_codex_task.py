@@ -60,9 +60,12 @@ def _path(ep: Path) -> Path:
 
 def _read(ep: Path) -> dict:
     hot = hot_state_bridge.read(ep, "INFLIGHT")
-    if hot.get("redis_read") and isinstance(hot.get("value"), dict):
-        return hot["value"]
-    return story_json.read_json(_path(ep), default={}) or {}
+    value = hot_state_bridge.value_or_fallback(
+        hot,
+        lambda: story_json.read_json(_path(ep), default={}),
+        default={},
+    )
+    return value if isinstance(value, dict) else {}
 
 
 def _write(ep: Path, data: dict) -> None:

@@ -12,6 +12,8 @@ import sys
 import time
 from pathlib import Path
 
+import delegated_release_persistence
+
 ROOT = Path(__file__).resolve().parents[2]
 EPISODES = ROOT / "episodes"
 MEDIA_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".ico", ".tif", ".tiff", ".svg", ".mp4", ".mov", ".avi", ".mkv", ".wav", ".mp3", ".flac", ".zip"}
@@ -73,7 +75,7 @@ def evidence_frozen(ep: Path) -> bool:
     state = episode_state(ep)
     if state in FROZEN_STATES:
         return True
-    return (ep / "meta/delegated-release.json").is_file()
+    return delegated_release_persistence.exists(ep)
 
 
 def ignored_media() -> list[Path]:

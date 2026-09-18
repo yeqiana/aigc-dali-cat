@@ -83,6 +83,7 @@ def test_mysql_persist_only_sends_bounded_projection(monkeypatch, tmp_path):
             return {"review_id": "RV-test"}
 
     monkeypatch.setattr(persistence.storage_config, "episode_meta_store_config", lambda: {"mode": "mysql"})
+    monkeypatch.setattr(persistence.episode_identity, "storage_episode_id", lambda _ep: "EPU_TEST")
     monkeypatch.setattr(persistence, "_repository", lambda _ep: (Connection(), Repository()))
     saved = persistence.persist(tmp_path, {**_result(), "checks": [{
         "name": "long", "status": "FAIL", "detail": "x" * 100000,

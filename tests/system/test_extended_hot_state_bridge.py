@@ -3,6 +3,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = ROOT / "episodes" / "_system"
 if str(SYSTEM) not in sys.path:
@@ -39,6 +41,11 @@ class _FakeConnection:
         pass
 
 
+class _FailingConnection:
+    def __init__(self, **_kwargs):
+        raise OSError("redis offline")
+
+
 def test_extended_hot_state_bridge_round_trips_without_file_cleanup(monkeypatch, tmp_path):
     monkeypatch.setattr(storage_config, "hot_state_config", lambda: {"mode": "dual"})
     monkeypatch.setattr(storage_config, "redis_connection_kwargs", lambda: {})
@@ -69,6 +76,44 @@ def test_extended_hot_state_bridge_round_trips_without_file_cleanup(monkeypatch,
         assert loaded["value"] == value
 
     assert not (ep / "meta").exists()
+
+
+def test_redis_authority_missing_never_uses_file_fallback(monkeypatch, tmp_path):
+    monkeypatch.setattr(storage_config, "hot_state_config", lambda: {"mode": "redis"})
+    monkeypatch.setattr(storage_config, "redis_connection_kwargs", lambda: {})
+    monkeypatch.setattr("platform.state.redis_connection.RedisConnection", _FakeConnection)
+    _FakeConnection.client.data.clear()
+    ep = tmp_path / "episode"
+    ep.mkdir()
+
+    missing = hot_state_bridge.read(ep, "RUNTIME_ROUTE")
+    assert missing["mode"] == "redis"
+    assert missing["redis_read"] is False
+    assert missing["authoritative_missing"] is True
+
+    called = []
+    value = hot_state_bridge.value_or_fallback(
+        missing,
+        lambda: called.append(True) or {"source": "file"},
+        default={},
+    )
+    assert value == {}
+    assert called == []
+
+
+def test_redis_authority_connection_failures_are_fail_closed(monkeypatch, tmp_path):
+    monkeypatch.setattr(storage_config, "hot_state_config", lambda: {"mode": "redis"})
+    monkeypatch.setattr(storage_config, "redis_connection_kwargs", lambda: {})
+    monkeypatch.setattr("platform.state.redis_connection.RedisConnection", _FailingConnection)
+    ep = tmp_path / "episode"
+    ep.mkdir()
+
+    with pytest.raises(hot_state_bridge.HotStateAuthorityError, match="WRITE_FAILED"):
+        hot_state_bridge.mirror(ep, "RUNNER_STATE", {"status": "RUNNING"})
+    with pytest.raises(hot_state_bridge.HotStateAuthorityError, match="READ_FAILED"):
+        hot_state_bridge.read(ep, "RUNNER_STATE")
+    with pytest.raises(hot_state_bridge.HotStateAuthorityError, match="DELETE_FAILED"):
+        hot_state_bridge.delete(ep, "RUNNER_STATE")
 
 
 def test_hot_state_bridge_delete_is_scoped_to_redis(monkeypatch, tmp_path):

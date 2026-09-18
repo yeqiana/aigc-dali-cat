@@ -83,12 +83,12 @@ def test_full_auto_status_writes_only_workspace(monkeypatch, tmp_path):
 
 def test_closure_assets_are_classified_and_copy_ready():
     expected = {
-        "meta/runtime-execution.json": runtime_asset_policy.OPERATIONAL_STATE,
-        "meta/runtime/resume-capsule.json": runtime_asset_policy.DERIVED_CACHE,
-        "meta/runtime/product-host-request.json": runtime_asset_policy.OPERATIONAL_STATE,
-        "meta/runtime/host-requests/host-1.json": runtime_asset_policy.OPERATIONAL_STATE,
-        "meta/runtime/full-auto-status.json": runtime_asset_policy.DERIVED_CACHE,
+        "meta/runtime-execution.json": (runtime_asset_policy.OPERATIONAL_STATE, True),
+        "meta/runtime/resume-capsule.json": (runtime_asset_policy.DERIVED_CACHE, True),
+        "meta/runtime/product-host-request.json": (runtime_asset_policy.OPERATIONAL_STATE, True),
+        "meta/runtime/host-requests/host-1.json": (runtime_asset_policy.FORMAL_EVIDENCE, False),
+        "meta/runtime/full-auto-status.json": (runtime_asset_policy.DERIVED_CACHE, True),
     }
-    for rel, category in expected.items():
+    for rel, (category, copy_ready) in expected.items():
         assert runtime_asset_policy.classify(rel).category == category
-        assert runtime_workspace_migration.copy_ready(rel)
+        assert runtime_workspace_migration.copy_ready(rel) is copy_ready

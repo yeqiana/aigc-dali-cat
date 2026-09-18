@@ -11,6 +11,7 @@ from pathlib import Path
 from story_os_contract import story_os_version
 import text_encoding_health
 import story_json
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -86,7 +87,15 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 def episode_contract_version(ep: Path) -> str:
     versions: list[tuple[tuple[int, ...], str]] = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    try:
+        state = episode_state_persistence.load(ep) or {}
+        raw = str(state.get("tool_version") or "")
+        vt = version_tuple(raw)
+        if vt != (0,):
+            versions.append((vt, raw))
+    except Exception:
+        pass
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -196,7 +205,7 @@ def cmd_bootstrap_registry(_args: argparse.Namespace) -> int:
         except Exception:
             pass
         try:
-            state = read_json(ep / "meta/episode-state.json")
+            state = episode_state_persistence.load(ep) or {}
             updated_at = str(state.get("updated_at") or "")
         except Exception:
             pass

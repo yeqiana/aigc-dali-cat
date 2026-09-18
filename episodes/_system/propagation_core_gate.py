@@ -6,6 +6,8 @@ import argparse, json
 from pathlib import Path
 from story_os_contract import story_os_version
 import story_json
+import episode_state_persistence
+import review_record_persistence
 
 REVIEW_REL=Path("meta/story-semantic-review.json")
 FORMAL_MIN_VERSION=(2,5,0)
@@ -22,7 +24,11 @@ def version_tuple(raw):
 
 def episode_version(ep):
     ep=Path(ep);versions=[]
-    for rel in ("meta/episode-state.json","meta/release-manifest.json","meta/story-gates.json"):
+    try:
+        raw=str((episode_state_persistence.load(ep) or {}).get("tool_version") or "");vt=version_tuple(raw)
+        if vt!=(0,):versions.append((vt,raw))
+    except Exception:pass
+    for rel in ("meta/release-manifest.json","meta/story-gates.json"):
         p=ep/rel
         if not p.is_file():continue
         try:
@@ -99,10 +105,13 @@ def validate_payload(core,total_frames):
 def verify(ep,force=False):
     ep=Path(ep).resolve()
     if not force and not required(ep):return []
-    p=ep/REVIEW_REL
-    if not p.is_file():return ["PROPAGATION_CORE_MISSING:meta/story-semantic-review.json missing"]
-    try:d=read_json(p)
+    try:d=review_record_persistence.load_latest(
+        ep,
+        "STORY_SEMANTIC",
+        legacy_path=ep/REVIEW_REL,
+    )
     except Exception as exc:return [f"PROPAGATION_CORE_MISSING:{exc}"]
+    if not isinstance(d,dict):return ["PROPAGATION_CORE_MISSING:meta/story-semantic-review.json missing"]
     return validate_payload(d.get("propagation_core"),frame_count(ep))
 
 def self_test():
@@ -135,8 +144,8 @@ def main():
     if a.cmd=="self-test":self_test();return 0
     ep=Path(a.episode_dir).resolve()
     if a.cmd=="show":
-        p=ep/REVIEW_REL
-        print(json.dumps((read_json(p).get("propagation_core") or {}) if p.is_file() else {},ensure_ascii=False,indent=2));return 0
+        data=review_record_persistence.load_latest(ep,"STORY_SEMANTIC",legacy_path=ep/REVIEW_REL)
+        print(json.dumps(((data or {}).get("propagation_core") or {}),ensure_ascii=False,indent=2));return 0
     errs=verify(ep,a.force)
     if errs:
         [print("FAIL:",x) for x in errs];return 2

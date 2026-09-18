@@ -19,6 +19,7 @@ import product_runtime_adapter
 import runtime_timeout_policy
 import runtime_request
 import runtime_memory_advice
+import episode_state_persistence
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -68,12 +69,10 @@ def attach_source_sha256(ep:Path,step:str)->str:
     """
     ep=Path(ep)
     if step=="CREATIVE_STORY":
-        request_path=ep/"meta/runtime-request.json"
-        if not request_path.is_file():
+        request=runtime_request.authority_for_episode(ep)
+        if not request:
             return ""
-        request=json.loads(request_path.read_text(encoding="utf-8-sig"))
-        state_path=ep/"meta/episode-state.json"
-        state=json.loads(state_path.read_text(encoding="utf-8-sig")) if state_path.is_file() else {}
+        state=episode_state_persistence.load(ep) or {}
         material={
             "identity_schema_version":2,
             "step":step,
@@ -103,7 +102,7 @@ def runtime_index_block(step):
 STEP_DIRECTIVES={
 "CREATIVE_STORY":"""
 TARGET: reach STORYBOARD_LOCKED and stop there.
-- honor meta/runtime-request.json when present.
+- honor the Runtime Request authority supplied by the owner API/capsule; do not assume an Episode JSON file exists.
 - BEFORE concept/story work, read meta/character-contract.json as the Character/Entry/Scene Story Build Input Contract.
 - Story OS 2.2.1 World Identity: read the effective default/override through `python episodes/_system/world_identity_contract.py show "<episode>"`. Default is Mainland China + ordinary Chinese young adults. Do not randomly introduce foreign characters/architecture/cultural context. If the Story explicitly specifies another country/culture, author meta/world-identity.json as an explicit override instead of fighting the default.
 - default protagonists are ordinary young people from the 2004-2010 or modern-2020s pools; first-person POV still requires a stable character anchor.
@@ -157,7 +156,7 @@ TARGET: reach VISUAL_CALIBRATED and stop there.
 - After all four admissions exist, run the normal bind/critic/final Visual Lock review. FOUR-admission PASS promotes the same baseline image from PROVISIONAL to LOCKED pixel master. Real-person style references never become identity masters.
 - STORY_OS_V211_PERF_RECOVERY: if the unified critic reports technical infrastructure failure (for example INPUT_IMAGES_UNAVAILABLE / Windows sandbox 1385 / critic return code 11), DO NOT convert that into content failure, DO NOT loop content repairs, and DO NOT mutate candidate decisions to failed. Stop this bounded step promptly and preserve meta/visual-critic-runtime.json; the parent DAG may run bounded speculative production.
 - generate/review/repair only those admissions as required.
-- use image model policy from meta/runtime-request.json; the default comes from config/storyos.yaml.
+- use image model policy from Runtime Request authority; the default comes from config/storyos.yaml.
 - record honest delegated visual approval only after evidence passes.
 - advance only to VISUAL_CALIBRATED.
 DO NOT run full Batch or release.
@@ -209,9 +208,8 @@ def prefix(codex):
     return codex_cli_contract.command_prefix(codex)
 
 def request_block(ep,step):
-    p=ep/"meta/runtime-request.json"
-    if not p.is_file(): return "<runtime_request>ABSENT</runtime_request>"
-    data=json.loads(p.read_text(encoding="utf-8-sig"))
+    data=runtime_request.authority_for_episode(ep)
+    if not data: return "<runtime_request>ABSENT</runtime_request>"
     if step=="CREATIVE_STORY":
         payload={"creative_request":runtime_request.creative_request_view(data)}
     else:

@@ -17,6 +17,10 @@ from typing import Any
 
 import runtime_atomic_store as atomic
 import story_json
+import runtime_request
+import character_contract
+import character_visual_contract
+import review_record_persistence
 
 STATE_REL = Path("meta/runtime/preimage-task-state.json")
 CANDIDATE_REL = Path("meta/runtime/preimage-candidates")
@@ -47,7 +51,7 @@ TASK_SPECS = {
         "step": "PREIMAGE_ENVIRONMENT",
         "node_id": "environment_prepare", "candidate": "environment.json",
         "scope": ("visual.environment_contract", "visual.frame_directives"),
-        "required_read": ("meta/story-gates.json", "meta/story-semantic-review.json", "meta/runtime-request.json"),
+        "required_read": ("meta/story-gates.json", "meta/story-semantic-review.json"),
     },
     "WORLD_PREPARE": {
         "step": "PREIMAGE_WORLD",
@@ -59,8 +63,19 @@ TASK_SPECS = {
         "step": "PREIMAGE_VISUAL_NARRATIVE",
         "node_id": "visual_narrative_prepare", "candidate": "visual-narrative.json",
         "scope": ("visual.narrative_core", "visual.shot_progression", "visual.capture_grammar"),
-        "required_read": ("meta/story-gates.json", "meta/shot-progression-review.json", "meta/runtime-request.json"),
+        "required_read": ("meta/story-gates.json", "meta/shot-progression-review.json"),
     },
+}
+
+
+AUTHORITY_INPUT_LOADERS = {
+    "meta/character-contract.json": lambda ep: character_contract.load(ep),
+    "meta/character-visual-contract.json": lambda ep: character_visual_contract.load(ep),
+    "meta/story-semantic-review.json": lambda ep: review_record_persistence.load_latest(
+        ep,
+        "STORY_SEMANTIC",
+        legacy_path=Path(ep).resolve() / "meta/story-semantic-review.json",
+    ),
 }
 
 
@@ -177,6 +192,17 @@ def task_contract(ep: Path, task_type: str, snapshot: dict, *, resume: bool = Fa
         raise ValueError(f"unsupported PREIMAGE task type: {task_type}")
     spec = TASK_SPECS[task_type]
     out = candidate_path(ep, task_type)
+    request = runtime_request.authority_for_episode(Path(ep).resolve()) or {}
+    required_read = []
+    authority_inputs = {}
+    for rel in spec["required_read"]:
+        if rel == runtime_request.EPISODE_REL.as_posix():
+            continue
+        loader = AUTHORITY_INPUT_LOADERS.get(rel)
+        if loader is None:
+            required_read.append(rel)
+        else:
+            authority_inputs[rel] = loader(Path(ep).resolve())
     return {
         "schema_version": 1,
         "task_id": f"preimage-{task_type.lower()}-{snapshot['snapshot_id'][:12]}",
@@ -185,8 +211,12 @@ def task_contract(ep: Path, task_type: str, snapshot: dict, *, resume: bool = Fa
         "episode": str(Path(ep).resolve()),
         "snapshot_id": snapshot["snapshot_id"],
         "depends_on": ["story_lock"],
-        "required_read": list(spec["required_read"]),
-        "input_contract": {"source_authority_sha256": dict(snapshot.get("authority_sha256") or {})},
+        "required_read": required_read,
+        "input_contract": {
+            "source_authority_sha256": dict(snapshot.get("authority_sha256") or {}),
+            "runtime_request_preimage": runtime_request.preimage_authority_projection(request),
+            "authority_inputs": authority_inputs,
+        },
         "candidate_output": out.relative_to(Path(ep)).as_posix(),
         "verifier": f"verify_{task_type.lower()}_candidate",
         "retry_policy": {"retry_failed_only": True, "stale_requires_new_snapshot": True},

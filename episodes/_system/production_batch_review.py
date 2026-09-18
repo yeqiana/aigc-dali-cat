@@ -145,7 +145,7 @@ def record_unit(ep: Path, batch_id: str, unit: dict) -> dict:
 
 
 def batch_items(ep: Path, batch_id: str) -> list[dict]:
-    q = read_json(production_queue_store.read_path(ep))
+    q = scheduler_core.load_queue(ep)
     rows = [x for x in q.get("items") or [] if isinstance(x, dict) and x.get("batch_id") == batch_id and x.get("output_path")]
     return sorted(rows, key=lambda x: int(x.get("frame") or 0))
 
@@ -211,7 +211,7 @@ def _prepare_locked(ep: Path, batch_id: str, *, attempt: int = 1) -> dict:
         if result["pending_frames"] or (final.get("critic_provenance") or {}).get("request_fingerprint") != request.get("request_fingerprint"):
             raise ValueError("finalized batch evidence invalid; prepare a new review attempt")
         return result
-    q = read_json(production_queue_store.read_path(ep))
+    q = scheduler_core.load_queue(ep)
     ids = {x.get("id") for x in rows}
     for row in q.get("items") or []:
         if row.get("id") in ids and row.get("status") == "generated":
@@ -255,7 +255,7 @@ def _apply_review_data_locked(ep: Path, batch_id: str, *, data: dict, provenance
         item = next(x for x in rows if f"{int(x['frame']):02d}" == frame)
         if any(row.get(k) != v for k, v in unit_binding(ep, item).items()):
             raise ValueError(f"batch review unit SHA drift frame {frame}")
-    q = read_json(production_queue_store.read_path(ep))
+    q = scheduler_core.load_queue(ep)
     previous = read_json(final_path(ep, batch_id)) if final_path(ep, batch_id).is_file() else {}
     history = [*(previous.get("unit_history") or []), *(previous.get("frames") or []), *(data.get("unit_history") or [])]
     item_by_frame = {f"{int(x.get('frame') or 0):02d}": x for x in q.get("items") or [] if x.get("batch_id") == batch_id}
@@ -351,7 +351,7 @@ def run_codex_review(ep: Path, batch_id: str, *, attempt: int = 1, codex_raw: st
 
 def pending(ep: Path) -> list[str]:
     ep = Path(ep).resolve()
-    q = read_json(production_queue_store.read_path(ep))
+    q = scheduler_core.load_queue(ep)
     batch_ids = sorted({str(x.get("batch_id")) for x in q.get("items") or []
                         if x.get("batch_id") and x.get("status") in {"generated", "review_pending"}})
     result = []
