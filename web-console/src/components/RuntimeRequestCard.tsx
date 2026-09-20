@@ -103,7 +103,7 @@ export const RuntimeRequestCard: React.FC<RuntimeRequestCardProps> = ({ runtime 
               </span>
             </div>
             <p className="text-[11px] text-[var(--text-tertiary)] mt-0.5">
-              StoryOS 官方标准生产协议 · 规范对应 runtime-request.json 映射规约，未连接 GitHub 前展示标准示例参数
+              StoryOS 官方标准生产协议 · 规范对应 runtime-request.json 映射规约；当前展示前端示例参数，真实 Runtime Request 接入后保持只读映射
             </p>
           </div>
         </div>

@@ -47,7 +47,7 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
   const handleRunInpaint = () => {
     setInpaintDone(true);
     onReviewAction('b4-f18', 'inpaint');
-    onShowToast('Frame #18 倒影瑕疵已执行 Inpaint 修复，质检通过');
+    onShowToast('Frame #18 已更新前端示例 Inpaint 状态 · 未写入 Review Authority');
   };
 
   const toggleFramePass = (frame: BatchItem) => {
@@ -56,7 +56,7 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
       : (frame.status === 'qa_passed' || (frame.frameIndex === 18 && inpaintDone));
     const nextStatus = !currentStatus;
     setPassOverrides(prev => ({ ...prev, [frame.id]: nextStatus }));
-    onShowToast(`Frame #${frame.frameIndex} 状态已真实切换为: ${nextStatus ? '通过 (PASS)' : '标记待修 (WARN)'}`);
+    onShowToast(`Frame #${frame.frameIndex} 前端示例状态: ${nextStatus ? 'PASS' : 'WARN'} · 未写入 Review Authority`);
   };
 
   return (
@@ -147,18 +147,18 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
           <div>
             <strong className="text-[var(--text-primary)]">【质检结论】</strong> 当前批次已产出，
             {inpaintDone ? (
-              <span className="text-[var(--success)] font-medium">Frame #18 倒影重绘完成，24/32 帧全部达标</span>
+              <span className="text-[var(--success)] font-medium">Frame #18 前端示例标记为已修复 · 非生产审核结论</span>
             ) : (
               <span className="text-[var(--warning)] font-medium">Frame #18 检测到玻璃倒影轻微双重重影，可点击一键重绘</span>
             )}
           </div>
         </div>
 
-        {/* 真实文件核准切换卡片 */}
+        {/* 前端示例核准切换卡片；不写入 runtime-request Authority。 */}
         <div className="flex items-center justify-between p-2.5 rounded-[var(--radius-md)] bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-mono">
           <div className="flex items-center gap-2">
-            <span className="text-[var(--text-primary)] font-medium">已更新 runtime-request.json</span>
-            <span className="text-[var(--text-tertiary)] text-[11px] font-bold">+14 行</span>
+            <span className="text-[var(--text-primary)] font-medium">runtime-request 示例配置</span>
+            <span className="text-[var(--text-tertiary)] text-[11px] font-bold">UI DEMO</span>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -166,7 +166,7 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
               onClick={() => {
                 const next = !reviewed;
                 setReviewed(next);
-                onShowToast(next ? '已真实核准 runtime-request 配置' : '已撤销配置核准状态');
+                onShowToast(next ? '已标记前端示例配置为已核准 · 未写入 Runtime Authority' : '已撤销前端示例核准标记');
               }}
               className={`px-3 py-1 rounded text-xs font-semibold transition-colors cursor-pointer ${
                 reviewed
@@ -174,7 +174,7 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
                   : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] border border-[var(--border-normal)]'
               }`}
             >
-              {reviewed ? '已核准配置 ✓' : '点击核准配置'}
+              {reviewed ? '示例已核准 ✓' : '标记示例核准'}
             </button>
           </div>
         </div>
@@ -226,7 +226,7 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
           </div>
         </div>
 
-        {/* 底部单个操作按钮（一键修复与真实切换） */}
+        {/* 底部前端示例操作；不代表真实 Inpaint/Review 已执行。 */}
         <div className="flex justify-end gap-2 pt-2">
           {!inpaintDone ? (
             <button
@@ -235,11 +235,11 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
               className="h-9 px-3.5 rounded-[var(--radius-md)] bg-[var(--primary)] text-white text-xs font-semibold hover:bg-[var(--primary-hover)] transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Wand2 className="w-3.5 h-3.5 text-white" />
-              <span>一键修复 Frame #18 倒影微瑕</span>
+              <span>模拟 Frame #18 Inpaint 状态</span>
             </button>
           ) : (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-[var(--text-tertiary)] font-mono">已完成逐帧修复并入库</span>
+              <span className="text-xs text-[var(--text-tertiary)] font-mono">前端示例已标记修复 · 未入库</span>
               <button
                 type="button"
                 onClick={() => {

@@ -87,6 +87,7 @@ export const VisualLockCard: React.FC<VisualLockCardProps> = ({ visualLocks }) =
               {/* Fullscreen Inspect Icon */}
               <button
                 onClick={() => setActiveModalAsset(vl)}
+                aria-label={`查看 Visual Lock ${vl.title} 详情`}
                 className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 transition-opacity text-white"
                 title="查看高分辨率锁定参数"
               >

@@ -74,7 +74,7 @@ export const PRODUCTION_STAGES: StageStep[] = [
   },
 ];
 
-// 完整的真实 StoryOS 剧集列表，支持任意切换与真实生产交互
+// Web Console 前端示例数据集；仅用于 UI 演示，不是 Episode Authority，也不代表真实生产状态。
 export const MOCK_EPISODES: Episode[] = [
   {
     id: 'ep-04-fogvilla',

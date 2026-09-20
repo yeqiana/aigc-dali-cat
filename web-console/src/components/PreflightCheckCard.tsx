@@ -57,7 +57,7 @@ export const PreflightCheckCard: React.FC<PreflightCheckCardProps> = ({ checks }
         <AlertTriangle className="w-4 h-4 text-[var(--warning)] shrink-0 mt-0.5" />
         <div className="text-[var(--text-secondary)] leading-relaxed">
           <strong className="text-[var(--warning)] font-semibold">阶段互斥与门禁守则：</strong>
-          当前剧集正处于<strong>「生产推进中」</strong>（已渲染 24/32 帧），依照阶段互斥守则，不可标记为「生产通过」；待全部 32 帧渲染且终审放行后方可达成正式「生产通过」，之后才进入「待发布」。当前均为<strong>示例数据</strong>，后续连接 GitHub 时只读并映射 release-manifest 等门禁文件，前端不直接修改状态。
+          当前剧集正处于<strong>「生产推进中」</strong>（已渲染 24/32 帧），依照阶段互斥守则，不可标记为「生产通过」；待全部 32 帧渲染且终审放行后方可达成正式「生产通过」，之后才进入「待发布」。当前均为<strong>示例数据</strong>；后续接入真实 Episode 投影后只读映射 release-manifest 等门禁证据，前端不直接修改状态。
         </div>
       </div>
 

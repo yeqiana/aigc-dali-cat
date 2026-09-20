@@ -58,6 +58,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             type="button"
             onClick={onOpenSearch}
+            aria-label="搜索剧集、分镜或台词"
             className="p-1 hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-[var(--radius-sm)] transition-colors cursor-pointer"
             title="搜索剧集、分镜或台词 (Ctrl+K)"
           >
@@ -66,6 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             type="button"
             onClick={onOpenNotifications}
+            aria-label="查看出图与质检通知"
             className="p-1 hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-[var(--radius-sm)] transition-colors relative cursor-pointer"
             title="查看出图与质检通知"
           >
@@ -140,6 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             type="button"
             onClick={() => setPinnedOpen(!pinnedOpen)}
+            aria-expanded={pinnedOpen}
             className="w-full flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)] hover:text-[var(--text-primary)] px-2 mb-1 cursor-pointer"
           >
             <span className="flex items-center gap-1">
@@ -183,6 +186,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             type="button"
             onClick={() => setSeriesOpen(!seriesOpen)}
+            aria-expanded={seriesOpen}
             className="w-full flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)] hover:text-[var(--text-primary)] px-2 mb-1 cursor-pointer"
           >
             <span className="flex items-center gap-1">
@@ -231,18 +235,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-[10px] text-[var(--text-tertiary)] font-mono leading-tight">4:5 1080×1350 标定</span>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => onSelectTab('settings')}
-          className={`p-1.5 rounded-[4px] transition-colors cursor-pointer ${
-            currentTab === 'settings'
-              ? 'text-[var(--text-primary)] bg-[var(--bg-selected)]'
-              : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-          }`}
-          title="外观与系统设置"
-        >
-          <Settings className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1">
+          <a
+            href="/platform"
+            aria-label="打开 Platform Console"
+            className="p-1.5 rounded-[4px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
+            title="Platform Console"
+          >
+            <LayoutDashboard className="w-4 h-4" />
+          </a>
+          <button
+            type="button"
+            onClick={() => onSelectTab('settings')}
+            aria-label="打开外观与系统设置"
+            className={`p-1.5 rounded-[4px] transition-colors cursor-pointer ${
+              currentTab === 'settings'
+                ? 'text-[var(--text-primary)] bg-[var(--bg-selected)]'
+                : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+            }`}
+            title="外观与系统设置"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </aside>
   );

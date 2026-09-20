@@ -27,9 +27,14 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [shared, setShared] = useState(false);
 
-  const handleShare = () => {
-    setShared(true);
-    setTimeout(() => setShared(false), 1500);
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShared(true);
+      setTimeout(() => setShared(false), 1500);
+    } catch {
+      setShared(false);
+    }
   };
 
   const progressPercent = Math.round((activeEpisode.completedFrames / activeEpisode.totalFrames) * 100);
@@ -42,6 +47,8 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           <button
             type="button"
             onClick={() => setDropdownOpen(!dropdownOpen)}
+            aria-expanded={dropdownOpen}
+            aria-haspopup="listbox"
             className="flex items-center gap-1.5 font-medium text-[var(--text-primary)] transition-colors px-2 py-1 rounded-[var(--radius-sm)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-subtle)] cursor-pointer"
           >
             <span className="font-mono text-[var(--text-tertiary)] font-semibold">{activeEpisode.code}</span>
@@ -91,6 +98,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         <button
           type="button"
           onClick={handleShare}
+          aria-label="复制当前页面链接"
           className="flex items-center gap-1.5 h-8 px-2.5 rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--border-normal)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors text-xs cursor-pointer font-mono"
           title="分享剧目链接"
         >
@@ -102,6 +110,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           <button
             type="button"
             onClick={onToggleContextPanel}
+            aria-expanded={contextPanelOpen}
             className={`h-8 px-2.5 rounded-[var(--radius-sm)] border transition-colors flex items-center gap-1.5 text-xs cursor-pointer font-mono ${
               contextPanelOpen
                 ? 'bg-[var(--primary-soft)] text-[var(--primary-hover)] font-semibold border-[var(--border-normal)]'

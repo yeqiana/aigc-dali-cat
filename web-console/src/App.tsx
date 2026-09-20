@@ -139,7 +139,7 @@ export default function App() {
 
   // 命令输入调度
   const handleCommandSubmit = (commandText: string) => {
-    showToast(`StoryOS 已调度: “${commandText.slice(0, 16)}...”`);
+    showToast(`前端示例指令已应用: “${commandText.slice(0, 16)}...” · 未写入 Runtime/Authority`);
 
     if (commandText.length > 5) {
       const newEp: Episode = {
@@ -165,9 +165,9 @@ export default function App() {
 
   const handleReviewAction = (frameId: string, action: 'pass' | 'inpaint' | 'reject') => {
     if (action === 'inpaint') {
-      showToast(`Frame #${frameId} 已执行 Inpaint 倒影微瑕修复，质检通过`);
+      showToast(`Frame #${frameId} 已更新前端示例 Inpaint 状态 · 未写入 Review Authority`);
     } else if (action === 'pass') {
-      showToast(`Frame #${frameId} 质检已核准通过`);
+      showToast(`Frame #${frameId} 已更新前端示例 PASS 状态 · 未写入 Review Authority`);
     }
   };
 

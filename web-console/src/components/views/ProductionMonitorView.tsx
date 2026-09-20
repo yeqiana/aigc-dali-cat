@@ -215,9 +215,10 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
               setIsRefreshing(true);
               setTimeout(() => {
                 setIsRefreshing(false);
-                onShowToast('生产监控数据已同步刷新');
+                onShowToast('前端监控视图已刷新 · 当前仍为示例数据');
               }, 400);
             }}
+            aria-label="刷新前端监控视图"
             className="h-[32px] w-[32px] flex items-center justify-center rounded-[4px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer"
             title="手动刷新"
           >

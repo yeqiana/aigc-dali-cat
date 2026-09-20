@@ -87,12 +87,13 @@ export const CharacterContractCard: React.FC<CharacterContractCardProps> = ({ ch
                       <h4 className="text-xs font-semibold text-[var(--text-primary)] truncate">{char.name}</h4>
                       <button
                         onClick={() => toggleLock(char.id)}
+                        aria-label={isLocked ? `取消 ${char.name} 的前端示例锁定` : `标记 ${char.name} 为前端示例锁定`}
                         className={`p-1 rounded text-xs transition-colors ${
                           isLocked
                             ? 'text-[var(--success)] hover:bg-[var(--success-soft)]'
                             : 'text-[var(--warning)] hover:bg-[var(--warning-soft)]'
                         }`}
-                        title={isLocked ? '点击解锁面部权重' : '点击锁定面部'}
+                        title={isLocked ? '取消前端示例锁定' : '标记前端示例锁定'}
                       >
                         {isLocked ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
                       </button>

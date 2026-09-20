@@ -104,7 +104,23 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
   };
 
   const handleDownloadAll = () => {
-    onShowToast('已导出当前剧集 4:5 资产清单与生产账本');
+    const previewManifest = {
+      authority: 'FRONTEND_DEMO_NON_AUTHORITY',
+      episode: activeEpisode.code,
+      currentStage: activeEpisode.currentStage,
+      completedFrames: activeEpisode.completedFrames,
+      totalFrames: activeEpisode.totalFrames,
+      runtimeRequest: activeEpisode.runtimeRequest,
+      note: 'Local Web Console preview only. This file does not advance StoryOS state.',
+    };
+    const blob = new Blob([JSON.stringify(previewManifest, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${activeEpisode.code}-web-console-preview.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+    onShowToast('已下载本地 preview JSON · 非生产 Authority/Artifact');
   };
 
   const CustomTooltip = ({ active, payload }: any) => {
@@ -242,9 +258,10 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
             <span className="text-[var(--text-primary)] font-semibold">成片切片包</span>
             <button
               type="button"
-              onClick={() => onShowToast('已新建切片配置')}
-              className="p-1 hover:text-[var(--primary)] rounded-[var(--radius-sm)] hover:bg-[var(--bg-subtle)] cursor-pointer"
-              title="添加新切片规则"
+              disabled
+              aria-label="新增切片规则暂不可用"
+              className="p-1 text-[var(--text-disabled)] rounded-[var(--radius-sm)] cursor-not-allowed"
+              title="未接入写 API，前端禁止新增切片规则"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
@@ -254,35 +271,36 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
             <button
               type="button"
               onClick={() => setActiveJson({
-                title: 'release-manifest.json',
+                title: 'release-manifest.preview.json',
                 json: {
-                  status: '待终审放行',
+                  authority: 'FRONTEND_DEMO_NON_AUTHORITY',
+                  status: 'PREVIEW_ONLY',
                   episode: activeEpisode.code,
                   aspectRatio: '4:5 1080×1350',
                   completedFrames: activeEpisode.completedFrames,
                   totalFrames: activeEpisode.totalFrames,
-                  qaGate: 'PASS'
+                  qaGate: 'DEMO_ONLY'
                 }
               })}
               className="w-full text-left p-2 rounded-[var(--radius-md)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] border border-[var(--border-normal)] cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center justify-between font-mono text-[11px]"
             >
               <div className="flex flex-col truncate">
-                <span className="truncate text-[var(--text-primary)] font-medium">release-manifest.json</span>
-                <span className="text-[10px] text-[var(--text-tertiary)] font-sans">4:5 规格发布清单</span>
+                <span className="truncate text-[var(--text-primary)] font-medium">release-manifest.preview.json</span>
+                <span className="text-[10px] text-[var(--text-tertiary)] font-sans">前端预览 · 非发布 Authority</span>
               </div>
               <span className="storyos-status storyos-status--neutral ml-1 shrink-0 font-mono">
-                就绪
+                PREVIEW
               </span>
             </button>
 
             <button
               type="button"
-              onClick={() => onShowToast(`已归档 ${activeEpisode.completedFrames} 帧 4:5 高清成片切片包`)}
+              onClick={() => onShowToast(`前端示例：当前显示 ${activeEpisode.completedFrames} 帧，不代表已归档生产资产`)}
               className="w-full text-left p-2 rounded-[var(--radius-md)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] border border-[var(--border-normal)] cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center justify-between font-mono text-[11px]"
             >
               <div className="flex flex-col truncate">
-                <span className="truncate text-[var(--text-primary)] font-medium">4:5 原画切片包</span>
-                <span className="text-[10px] text-[var(--text-tertiary)] font-sans">标准 1080×1350 竖版</span>
+                <span className="truncate text-[var(--text-primary)] font-medium">4:5 原画切片预览</span>
+                <span className="text-[10px] text-[var(--text-tertiary)] font-sans">示例计数 · 未验证 Artifact</span>
               </div>
               <span className="storyos-status storyos-status--success ml-1 shrink-0 font-mono">
                 {activeEpisode.completedFrames}帧
@@ -297,9 +315,10 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
             <span className="text-[var(--text-primary)] font-semibold">生产规则与账本</span>
             <button
               type="button"
-              onClick={() => onShowToast('已添加自定义配置映射')}
-              className="p-1 hover:text-[var(--primary)] rounded-[var(--radius-sm)] hover:bg-[var(--bg-subtle)] cursor-pointer"
-              title="添加来源映射"
+              disabled
+              aria-label="添加来源映射暂不可用"
+              className="p-1 text-[var(--text-disabled)] rounded-[var(--radius-sm)] cursor-not-allowed"
+              title="未接入写 API，前端禁止添加来源映射"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
@@ -326,7 +345,7 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
         </div>
       </div>
 
-      {/* 底部一键打包导出 */}
+      {/* 底部本地 preview 导出：真实下载文件，但不冒充生产 Artifact。 */}
       <div className="p-3 border-t border-[var(--border-normal)] bg-[var(--bg-surface)]">
         <button
           type="button"
@@ -334,7 +353,7 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
           className="w-full h-9 rounded-[var(--radius-md)] bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
         >
           <Download className="w-3.5 h-3.5 text-white" />
-          <span>导出当前剧集全量资产</span>
+          <span>下载本地 Preview JSON</span>
         </button>
       </div>
 
@@ -362,6 +381,7 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveJson(null)}
+                  aria-label="关闭 JSON 预览"
                   className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] px-1.5 py-0.5 rounded cursor-pointer"
                 >
                   ✕

@@ -1,23 +1,12 @@
 import React from 'react';
 import {
-  GitBranch,
-  Github,
-  CheckCircle2,
-  Clock,
-  Lock,
-  FileText,
-  ShieldAlert,
-  ExternalLink,
-  RefreshCw,
   Database,
   Layers,
-  Sparkles
 } from 'lucide-react';
 import { WorkspaceSyncStatus } from '../types';
 
 interface WorkspaceSyncBannerProps {
   workspaceStatus?: WorkspaceSyncStatus;
-  onConnectClick?: () => void;
 }
 
 export const WorkspaceSyncBanner: React.FC<WorkspaceSyncBannerProps> = ({
@@ -31,7 +20,6 @@ export const WorkspaceSyncBanner: React.FC<WorkspaceSyncBannerProps> = ({
       releaseManifest: false,
     },
   },
-  onConnectClick,
 }) => {
   const schemaFiles = [
     { name: 'episode-state.json', label: '阶段状态', field: '剧集当前阶段与阻断门禁' },
@@ -46,32 +34,32 @@ export const WorkspaceSyncBanner: React.FC<WorkspaceSyncBannerProps> = ({
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-[var(--border-subtle)]">
         <div className="flex items-start sm:items-center gap-3">
           <div className="w-9 h-9 rounded-[var(--radius-md)] bg-[var(--primary-soft)] text-[var(--primary)] flex items-center justify-center shrink-0">
-            <Github className="w-5 h-5" />
+            <Layers className="w-5 h-5" />
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-xs font-semibold text-[var(--text-primary)] tracking-wide">
-                StoryOS 远端工程工作区状态 (GitHub Workspace)
+                StoryOS Workspace Provider
               </h3>
               <span className="storyos-status storyos-status--warning font-mono">
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)]" />
-                <span>待连接工作区 · 当前所有展示为示例数据</span>
+                <span>WebCodex Provider · Episode 映射尚未接入</span>
               </span>
             </div>
             <p className="text-[11px] text-[var(--text-tertiary)] mt-0.5">
-              安全架构纪律：未连接 GitHub 前所有剧集、人物、帧数、审核结果与配置均为<strong>示例数据</strong>；连接后前端<strong>只读映射</strong>文件，状态推进由 StoryOS 门禁执行。
+              当前 Production Console 仍使用<strong>前端示例 Episode 数据</strong>；WebCodex 只提供 Workspace 访问，不拥有 Episode Authority。后续接入真实 Episode 投影后仍保持<strong>只读映射</strong>，阶段推进只由 StoryOS canonical transition 执行。
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 self-start lg:self-center shrink-0">
-          <button
-            onClick={onConnectClick}
-            className="h-9 flex items-center gap-1.5 px-3 rounded-[var(--radius-md)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs font-semibold transition-colors"
+          <a
+            href="/platform"
+            className="h-9 flex items-center gap-1.5 px-3 rounded-[var(--radius-md)] bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] border border-[var(--border-normal)] text-[var(--text-primary)] text-xs font-semibold transition-colors"
           >
-            <GitBranch className="w-3.5 h-3.5 text-white" />
-            <span>连接 GitHub 仓库</span>
-          </button>
+            <Layers className="w-3.5 h-3.5" />
+            <span>打开 Platform Console</span>
+          </a>
         </div>
       </div>
 
@@ -80,7 +68,7 @@ export const WorkspaceSyncBanner: React.FC<WorkspaceSyncBannerProps> = ({
         <div className="text-[10px] font-mono text-[var(--text-tertiary)] uppercase tracking-wider mb-2 flex items-center justify-between">
           <span className="flex items-center gap-1.5">
             <Database className="w-3.5 h-3.5 text-[var(--primary)]" />
-            <span>StoryOS 核心状态映射文件规约（连接后只读导入 · 前端禁止直接覆写）</span>
+            <span>StoryOS 核心状态映射规约（真实投影接入后只读 · 前端禁止直接覆写）</span>
           </span>
           <span className="text-[var(--text-subtle)]">门禁规则: Read-Only Ingress</span>
         </div>
@@ -96,7 +84,7 @@ export const WorkspaceSyncBanner: React.FC<WorkspaceSyncBannerProps> = ({
                   {file.name}
                 </span>
                 <span className="storyos-status storyos-status--neutral font-mono shrink-0">
-                  待连接
+                  示例
                 </span>
               </div>
               <div className="text-[10px] text-[var(--text-tertiary)] truncate" title={file.field}>

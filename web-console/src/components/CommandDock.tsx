@@ -18,10 +18,10 @@ export const CommandDock: React.FC<CommandDockProps> = ({
   const [showPresets, setShowPresets] = useState(false);
 
   const presets = [
-    '生成接下来 5 帧雨夜长廊探索镜头，保持主角林澈 4:5 肖像基准与冷调光影',
-    '调度局部重绘，修复 Frame #18 窗玻璃重影瑕疵并同步入库',
-    '锁定当前分镜景别轴线，推进至第 5 逻辑批次 (Frame #21 - #25)',
-    '执行 4:5 1080×1350 全量合规预检，准备发布归档',
+    '前端示例：生成接下来 5 帧雨夜长廊探索镜头，保持主角林澈 4:5 肖像基准与冷调光影',
+    '前端示例：填写 Frame #18 窗玻璃重影局部重绘指令',
+    '前端示例：填写第 5 逻辑批次 (Frame #21 - #25) 调度指令',
+    '前端示例：填写 4:5 1080×1350 合规预检指令',
   ];
 
   const handleSubmit = (e?: React.FormEvent) => {
@@ -50,10 +50,11 @@ export const CommandDock: React.FC<CommandDockProps> = ({
         {showPresets && (
           <div className="storyos-elevated mb-2 p-2 text-xs space-y-1">
             <div className="px-2 py-1 text-[11px] font-mono text-[var(--text-tertiary)] border-b border-[var(--border-subtle)] flex items-center justify-between">
-              <span>快捷故事生产指令模版</span>
+              <span>前端示例指令模板 · NOT AUTHORITY</span>
               <button
                 type="button"
                 onClick={() => setShowPresets(false)}
+                aria-label="关闭示例指令模板"
                 className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer"
               >
                 ✕
@@ -87,7 +88,7 @@ export const CommandDock: React.FC<CommandDockProps> = ({
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="输入剧本故事台词、分镜景别微调，或调度批次出图指令..."
+              placeholder="输入前端示例指令；当前不会写入 Runtime 或 Episode Authority..."
               className="w-full bg-transparent text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] focus:outline-none resize-none font-sans leading-relaxed"
             />
           </div>
@@ -99,6 +100,8 @@ export const CommandDock: React.FC<CommandDockProps> = ({
               <button
                 type="button"
                 onClick={() => setShowPresets(!showPresets)}
+                aria-label="打开示例指令模板"
+                aria-expanded={showPresets}
                 className={`p-1 rounded transition-colors cursor-pointer ${
                   showPresets
                     ? 'bg-[var(--primary-soft)] text-[var(--primary)]'
@@ -118,12 +121,12 @@ export const CommandDock: React.FC<CommandDockProps> = ({
                 {strictGate ? (
                   <>
                     <ShieldCheck className="w-3 h-3 text-[var(--primary)]" />
-                    <span>StoryOS 严格门禁</span>
+                    <span>示例严格门禁</span>
                   </>
                 ) : (
                   <>
                     <ShieldAlert className="w-3 h-3 text-[var(--text-tertiary)]" />
-                    <span>宽松调试模式</span>
+                    <span>示例宽松模式</span>
                   </>
                 )}
               </button>
@@ -135,6 +138,8 @@ export const CommandDock: React.FC<CommandDockProps> = ({
                 <button
                   type="button"
                   onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
+                  aria-expanded={modelDropdownOpen}
+                  aria-label="选择前端示例模型与画幅"
                   className="flex items-center gap-1 text-[11px] font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-surface)] border border-[var(--border-normal)] px-2 py-0.5 rounded-[var(--radius-sm)] transition-colors cursor-pointer"
                 >
                   <span>{selectedModel} · {selectedAspect}</span>
@@ -144,7 +149,7 @@ export const CommandDock: React.FC<CommandDockProps> = ({
                 {modelDropdownOpen && (
                   <div className="storyos-elevated absolute right-0 bottom-full mb-1.5 w-56 p-1 z-50 text-xs font-mono">
                     <div className="px-2 py-1 text-[10px] text-[var(--text-tertiary)] uppercase border-b border-[var(--border-subtle)]">
-                      选择生图引擎与画幅
+                      前端示例模型与画幅 · 不修改 Runtime Request
                     </div>
                     {[
                       { model: 'gpt-image-2 (high)', aspect: '4:5' },
@@ -180,6 +185,7 @@ export const CommandDock: React.FC<CommandDockProps> = ({
                 }}
                 className="p-1 text-[var(--text-tertiary)] hover:text-[var(--primary)] transition-colors cursor-pointer"
                 title="快速录入指令"
+                aria-label="快速填入示例指令"
               >
                 <Sparkles className="w-3.5 h-3.5" />
               </button>
@@ -187,12 +193,13 @@ export const CommandDock: React.FC<CommandDockProps> = ({
               <button
                 type="submit"
                 disabled={!inputText.trim() || isLoading}
+                aria-label="应用前端示例指令"
                 className={`w-7 h-7 rounded-[var(--radius-sm)] flex items-center justify-center transition-colors ${
                   inputText.trim() && !isLoading
                     ? 'bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] cursor-pointer'
                     : 'bg-[var(--bg-muted)] text-[var(--text-disabled)] cursor-not-allowed'
                 }`}
-                title="发送生产指令 (Enter)"
+                title="应用前端示例指令 (Enter)"
               >
                 <ArrowUp className="w-3.5 h-3.5 stroke-[2.5]" />
               </button>

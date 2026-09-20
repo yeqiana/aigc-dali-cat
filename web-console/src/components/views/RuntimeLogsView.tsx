@@ -53,11 +53,12 @@ export const RuntimeLogsView: React.FC = () => {
             className="storyos-control h-9 flex items-center gap-1.5 px-3 text-xs font-mono transition-colors cursor-pointer"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-[var(--success)]" /> : <Download className="w-3.5 h-3.5" />}
-            <span>{copied ? '已复制日志' : '导出日志'}</span>
+            <span>{copied ? '已复制日志' : '复制日志'}</span>
           </button>
           <button
             type="button"
             onClick={handleClear}
+            aria-label="清空前端日志视图"
             className="storyos-control h-9 w-9 flex items-center justify-center text-[var(--text-tertiary)] hover:text-[var(--danger)] transition-colors cursor-pointer"
             title="清空日志"
           >
