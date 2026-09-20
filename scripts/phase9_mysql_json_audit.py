@@ -23,6 +23,7 @@ if str(SYSTEM) not in sys.path:
 import storage_config  # noqa: E402
 from platform.repository.mysql.mysql_connection import MySqlConnection  # noqa: E402
 from platform.repository.mysql.payload_policy import MAX_INLINE_PAYLOAD_BYTES  # noqa: E402
+from platform.repository.mysql.json_column_policy import APPROVED_JSON_COLUMNS  # noqa: E402
 from scripts.phase9_runtime_launcher import load_runtime_env_file  # noqa: E402
 
 
@@ -56,6 +57,8 @@ def audit(connection, threshold: int = MAX_INLINE_PAYLOAD_BYTES) -> dict:
         rows.append({
             "table": table,
             "column": name,
+            "usage": APPROVED_JSON_COLUMNS.get((table.upper(), name.upper()), "UNAPPROVED"),
+            "should_split": bool(int(result.get("oversized_rows") or 0)),
             "total_rows": int(result.get("total_rows") or 0),
             "total_bytes": int(result.get("total_bytes") or 0),
             "max_bytes": int(result.get("max_bytes") or 0),
@@ -67,6 +70,7 @@ def audit(connection, threshold: int = MAX_INLINE_PAYLOAD_BYTES) -> dict:
         "threshold_bytes": threshold,
         "json_columns": len(rows),
         "oversized_columns": sum(1 for row in rows if row["oversized_rows"]),
+        "unapproved_columns": sum(1 for row in rows if row["usage"] == "UNAPPROVED"),
         "rows": rows,
         "read_only": True,
     }
@@ -75,6 +79,8 @@ def audit(connection, threshold: int = MAX_INLINE_PAYLOAD_BYTES) -> dict:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--threshold", type=int, default=MAX_INLINE_PAYLOAD_BYTES)
+    parser.add_argument("--strict", action="store_true",
+                        help="oversized or unapproved JSON columns return exit code 2")
     parser.add_argument("--runtime-env-file", default=str(ROOT / ".storyos/runtime-launcher/runtime.env"))
     args = parser.parse_args(argv)
     env, loaded = load_runtime_env_file(Path(args.runtime_env_file), dict(os.environ))
@@ -85,6 +91,8 @@ def main(argv=None) -> int:
         result["runtime_env_keys"] = list(loaded)
         result["secret_values_printed"] = False
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        if args.strict and (result["oversized_columns"] or result["unapproved_columns"]):
+            return 2
         return 0
     finally:
         connection.close()
