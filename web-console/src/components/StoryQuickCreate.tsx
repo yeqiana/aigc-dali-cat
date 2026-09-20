@@ -88,7 +88,7 @@ export const StoryQuickCreate: React.FC<StoryQuickCreateProps> = ({
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="例如：几个大学生夜里误入废弃温泉镇，手机相册里开始出现明天的照片..."
-                className="storyos-control w-full h-12 pl-4 pr-10 text-sm placeholder:text-[var(--text-subtle)] outline-none focus:border-[var(--focus)] focus:ring-3 focus:ring-[rgba(22,119,255,.10)] font-sans"
+                className="storyos-control w-full h-12 pl-4 pr-10 text-sm placeholder:text-[var(--text-subtle)] outline-none focus:border-[var(--focus)] font-sans"
               />
               {prompt && (
                 <button
@@ -105,7 +105,7 @@ export const StoryQuickCreate: React.FC<StoryQuickCreateProps> = ({
               id="auto-generate-plan-btn"
               onClick={handleStartGeneration}
               disabled={isGenerating || !prompt.trim()}
-              className="h-12 px-6 rounded-[var(--radius-md)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold text-xs tracking-wide flex items-center justify-center gap-2 shadow-[var(--shadow-xs)] transition-colors shrink-0 cursor-pointer disabled:opacity-50"
+              className="h-12 px-6 rounded-[var(--radius-md)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold text-xs tracking-wide flex items-center justify-center gap-2 transition-colors shrink-0 cursor-pointer disabled:opacity-50"
             >
               {isGenerating ? (
                 <>

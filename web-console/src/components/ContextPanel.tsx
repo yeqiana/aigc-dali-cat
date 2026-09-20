@@ -331,7 +331,7 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
         <button
           type="button"
           onClick={handleDownloadAll}
-          className="w-full h-9 rounded-[var(--radius-md)] bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-[var(--shadow-xs)]"
+          className="w-full h-9 rounded-[var(--radius-md)] bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
         >
           <Download className="w-3.5 h-3.5 text-white" />
           <span>导出当前剧集全量资产</span>

@@ -45,7 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const seriesEpisodes = allEpisodes.slice(3);
 
   return (
-    <aside className="w-[var(--sidebar-width)] shrink-0 bg-[var(--bg-sidebar)] border-r border-[rgba(15,23,42,.06)] flex flex-col h-full select-none text-[13px] font-sans antialiased text-[var(--text-secondary)]">
+    <aside className="w-[var(--sidebar-width)] shrink-0 bg-[var(--bg-sidebar)] border-r border-[var(--border-subtle)] flex flex-col h-full select-none text-[13px] font-sans antialiased text-[var(--text-secondary)]">
       {/* 1. 顶部 Header (StoryOS PRO 与 交互搜索/通知) */}
       <div className="h-[var(--header-height)] px-3 flex items-center justify-between border-b border-[var(--border-subtle)]">
         <div className="flex items-center gap-2 font-semibold text-[var(--text-primary)]">
@@ -85,7 +85,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onSelectTab('workbench');
               if (onNewConversation) onNewConversation();
             }}
-            className="w-full h-10 flex items-center gap-2 px-3 rounded-[var(--radius-lg)] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--text-primary)] font-medium shadow-[var(--shadow-xs)] hover:border-[var(--border-strong)] transition-colors text-xs cursor-pointer"
+            className="w-full h-10 flex items-center gap-2 px-3 rounded-[var(--radius-md)] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--text-primary)] font-medium hover:border-[var(--border-strong)] transition-colors text-xs cursor-pointer"
           >
             <SquarePen className="w-3.5 h-3.5 text-[var(--info)]" />
             <span>新建故事剧本会话</span>
@@ -97,7 +97,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={() => onSelectTab('production_monitor')}
             className={`w-full h-10 flex items-center justify-between px-3 rounded-[var(--radius-lg)] transition-colors text-xs cursor-pointer ${
               currentTab === 'production_monitor'
-                ? 'bg-[var(--bg-surface)] text-[var(--primary-hover)] border border-[var(--border-normal)] shadow-[var(--shadow-xs)] font-semibold'
+                ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-semibold'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
             }`}
           >
@@ -113,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={() => onSelectTab('workbench')}
             className={`w-full h-10 flex items-center gap-2 px-3 rounded-[var(--radius-lg)] transition-colors text-xs cursor-pointer ${
               currentTab === 'workbench'
-                ? 'bg-[var(--bg-surface)] text-[var(--primary-hover)] border border-[var(--border-normal)] shadow-[var(--shadow-xs)] font-medium'
+                ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
             }`}
           >
@@ -126,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={() => onSelectTab('episodes')}
             className={`w-full h-10 flex items-center gap-2 px-3 rounded-[var(--radius-lg)] transition-colors text-xs cursor-pointer ${
               currentTab === 'episodes'
-                ? 'bg-[var(--bg-surface)] text-[var(--primary-hover)] border border-[var(--border-normal)] shadow-[var(--shadow-xs)] font-medium'
+                ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
             }`}
           >
@@ -163,7 +163,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     }}
                     className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-[var(--radius-sm)] transition-all text-left text-xs cursor-pointer ${
                       isActive
-                        ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-normal)] shadow-[var(--shadow-xs)] font-medium'
+                        ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
                         : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
                     }`}
                   >
@@ -206,7 +206,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     }}
                     className={`w-full flex items-center gap-2 px-2 py-1 rounded-[var(--radius-sm)] transition-colors text-left text-xs cursor-pointer ${
                       isActive
-                        ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-normal)] shadow-[var(--shadow-xs)] font-medium'
+                        ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
                         : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
                     }`}
                   >
@@ -221,9 +221,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* 3. 底部用户信息与系统设置 */}
-      <div className="h-[var(--header-height)] px-3 border-t border-[rgba(15,23,42,.06)] flex items-center justify-between bg-[var(--bg-sidebar)]">
+      <div className="h-[var(--header-height)] px-3 border-t border-[var(--border-subtle)] flex items-center justify-between bg-[var(--bg-sidebar)]">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--primary)] flex items-center justify-center text-xs font-bold font-mono shadow-[var(--shadow-xs)]">
+          <div className="w-6 h-6 rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--primary)] flex items-center justify-center text-xs font-bold font-mono">
             S
           </div>
           <div className="flex flex-col">
@@ -236,7 +236,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onClick={() => onSelectTab('settings')}
           className={`p-1.5 rounded-[4px] transition-colors cursor-pointer ${
             currentTab === 'settings'
-              ? 'text-[var(--primary-hover)] bg-[var(--bg-surface)] border border-[var(--border-normal)] shadow-[var(--shadow-xs)]'
+              ? 'text-[var(--text-primary)] bg-[var(--bg-selected)]'
               : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
           }`}
           title="外观与系统设置"

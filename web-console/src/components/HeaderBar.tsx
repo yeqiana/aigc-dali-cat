@@ -35,7 +35,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
   const progressPercent = Math.round((activeEpisode.completedFrames / activeEpisode.totalFrames) * 100);
 
   return (
-    <header className="h-[var(--header-height)] px-4 border-b border-[var(--border-normal)] bg-[rgba(247,248,250,.92)] backdrop-blur-md text-[var(--text-secondary)] flex items-center justify-between shrink-0 select-none z-20 text-xs">
+    <header className="h-[var(--header-height)] px-4 border-b border-[var(--border-normal)] bg-[var(--bg-workspace)] text-[var(--text-secondary)] flex items-center justify-between shrink-0 select-none z-20 text-xs">
       {/* 左侧：标题与下拉 */}
       <div className="flex items-center gap-2">
         <div className="relative">

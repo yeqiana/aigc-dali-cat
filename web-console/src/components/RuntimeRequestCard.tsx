@@ -128,7 +128,7 @@ export const RuntimeRequestCard: React.FC<RuntimeRequestCardProps> = ({ runtime 
               key={idx}
               className={`p-3 rounded-[var(--radius-md)] border transition-all ${
                 spec.highlight
-                  ? 'bg-[var(--primary-soft)] border-[var(--border-normal)] shadow-[var(--shadow-xs)]'
+                  ? 'bg-[var(--primary-soft)] border-[var(--border-normal)]'
                   : 'bg-[var(--bg-subtle)] border-[var(--border-normal)]'
               }`}
             >

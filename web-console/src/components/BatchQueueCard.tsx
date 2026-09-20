@@ -94,7 +94,7 @@ export const BatchQueueCard: React.FC<BatchQueueCardProps> = ({
                   ? 'border-[var(--warning)] bg-[var(--warning-soft)] ring-1 ring-[var(--warning-soft)]'
                   : isRendering
                   ? 'border-[var(--primary)] bg-[var(--primary-soft)]'
-                  : 'border-[var(--border-normal)] hover:border-[var(--border-strong)] shadow-[var(--shadow-xs)]'
+                  : 'border-[var(--border-normal)] hover:border-[var(--border-strong)]'
               }`}
             >
               {/* Frame Image Aspect Preview (4:5 vertical aspect) */}
@@ -117,7 +117,7 @@ export const BatchQueueCard: React.FC<BatchQueueCardProps> = ({
 
                 {/* Top Badge */}
                 <div className="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between pointer-events-none">
-                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-black/75 text-white border border-white/20 backdrop-blur-xs">
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-black/75 text-white border border-white/20">
                     #{item.frameIndex}
                   </span>
                   <span className={`text-[9px] font-mono px-1 py-0.2 rounded font-bold ${

@@ -77,7 +77,7 @@ export const CommandDock: React.FC<CommandDockProps> = ({
 
         <form
           onSubmit={handleSubmit}
-          className="bg-[rgba(255,255,255,.92)] backdrop-blur-[18px] border border-[var(--border-normal)] rounded-[var(--radius-lg)] shadow-[var(--shadow-floating)] p-2.5 flex flex-col focus-within:border-[var(--focus)] focus-within:ring-3 focus-within:ring-[rgba(22,119,255,.10)] transition-colors"
+          className="bg-[var(--bg-elevated)] border border-[var(--border-normal)] rounded-[var(--radius-lg)] shadow-[var(--shadow-floating)] p-2.5 flex flex-col focus-within:border-[var(--focus)] transition-colors"
         >
           {/* 输入区 */}
           <div className="px-1.5 pt-0.5 pb-1">
@@ -189,7 +189,7 @@ export const CommandDock: React.FC<CommandDockProps> = ({
                 disabled={!inputText.trim() || isLoading}
                 className={`w-7 h-7 rounded-[var(--radius-sm)] flex items-center justify-center transition-all ${
                   inputText.trim() && !isLoading
-                    ? 'bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] cursor-pointer shadow-[var(--shadow-xs)]'
+                    ? 'bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] cursor-pointer'
                     : 'bg-[var(--bg-muted)] text-[var(--text-disabled)] cursor-not-allowed'
                 }`}
                 title="发送生产指令 (Enter)"

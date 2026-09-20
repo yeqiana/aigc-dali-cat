@@ -54,7 +54,7 @@ export const WorkspaceSyncBanner: React.FC<WorkspaceSyncBannerProps> = ({
                 StoryOS 远端工程工作区状态 (GitHub Workspace)
               </h3>
               <span className="storyos-status storyos-status--warning font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)] animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)]" />
                 <span>待连接工作区 · 当前所有展示为示例数据</span>
               </span>
             </div>
@@ -67,7 +67,7 @@ export const WorkspaceSyncBanner: React.FC<WorkspaceSyncBannerProps> = ({
         <div className="flex items-center gap-2 self-start lg:self-center shrink-0">
           <button
             onClick={onConnectClick}
-            className="h-9 flex items-center gap-1.5 px-3 rounded-[var(--radius-md)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs font-semibold transition-colors shadow-[var(--shadow-xs)]"
+            className="h-9 flex items-center gap-1.5 px-3 rounded-[var(--radius-md)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs font-semibold transition-colors"
           >
             <GitBranch className="w-3.5 h-3.5 text-white" />
             <span>连接 GitHub 仓库</span>

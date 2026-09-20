@@ -69,10 +69,10 @@ export const VisualLockCard: React.FC<VisualLockCardProps> = ({ visualLocks }) =
 
               {/* Badges on top */}
               <div className="absolute top-2 left-2 right-2 flex items-center justify-between">
-                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-black/70 text-amber-300 border border-amber-500/30 backdrop-blur-xs">
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-black/70 text-amber-300 border border-amber-500/30">
                   {vl.category}
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 flex items-center gap-1 backdrop-blur-xs">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
                   <Lock className="w-2.5 h-2.5" />
                   <span>{vl.version}</span>
                 </span>

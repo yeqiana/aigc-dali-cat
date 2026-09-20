@@ -69,7 +69,7 @@ export const PerformanceMetricsCard: React.FC<PerformanceMetricsCardProps> = ({
               onClick={() => setSelectedTimeframe(tf)}
               className={`px-2.5 py-1 rounded-[var(--radius-sm)] text-xs font-mono font-semibold transition-all ${
                 selectedTimeframe === tf
-                  ? 'bg-[var(--bg-surface)] text-[var(--primary-hover)] shadow-[var(--shadow-xs)] border border-[var(--border-normal)]'
+                  ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] border border-[var(--border-normal)]'
                   : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
               }`}
             >

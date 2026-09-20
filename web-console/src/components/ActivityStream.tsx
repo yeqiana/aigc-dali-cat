@@ -74,11 +74,11 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
           type="button"
           onClick={onGenerateBatch}
           disabled={isGeneratingBatch}
-          className="h-9 px-3.5 rounded-[var(--radius-md)] bg-[var(--primary)] text-white text-xs font-semibold hover:bg-[var(--primary-hover)] transition-colors shadow-[var(--shadow-xs)] flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          className="h-9 px-3.5 rounded-[var(--radius-md)] bg-[var(--primary)] text-white text-xs font-semibold hover:bg-[var(--primary-hover)] transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
         >
           {isGeneratingBatch ? (
             <>
-              <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-white" />
               <span>正在调度批次出图...</span>
             </>
           ) : (
@@ -118,22 +118,22 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
         </p>
 
         {/* 终端命令代码块（纯黑高对比） */}
-        <div className="rounded-lg bg-[#000000] border border-[#222226] overflow-hidden">
-          <div className="px-3 py-1.5 bg-[#121215] border-b border-[#222226] flex items-center justify-between text-[11px] font-mono text-zinc-400">
-            <span className="flex items-center gap-1.5 text-white">
+        <div className="rounded-[var(--radius-md)] bg-[var(--bg-app)] border border-[var(--border-normal)] overflow-hidden">
+          <div className="px-3 py-1.5 bg-[var(--bg-workspace)] border-b border-[var(--border-subtle)] flex items-center justify-between text-[11px] font-mono text-[var(--text-tertiary)]">
+            <span className="flex items-center gap-1.5 text-[var(--text-primary)]">
               <Terminal className="w-3.5 h-3.5" />
               <span>storyos-cli</span>
             </span>
             <button
               type="button"
               onClick={handleCopy}
-              className="hover:text-white flex items-center gap-1 text-xs cursor-pointer"
+              className="hover:text-[var(--text-primary)] flex items-center gap-1 text-xs cursor-pointer"
             >
-              {copiedCmd ? <Check className="w-3 h-3 text-white" /> : <Copy className="w-3 h-3 text-zinc-400" />}
+              {copiedCmd ? <Check className="w-3 h-3 text-[var(--text-primary)]" /> : <Copy className="w-3 h-3 text-[var(--text-tertiary)]" />}
               <span>{copiedCmd ? '已复制' : '复制代码'}</span>
             </button>
           </div>
-          <div className="p-3 font-mono text-xs text-white overflow-x-auto select-all">
+          <div className="p-3 font-mono text-xs text-[var(--text-primary)] overflow-x-auto select-all">
             <code>{commandText}</code>
           </div>
         </div>
