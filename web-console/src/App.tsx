@@ -1,12 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import Agents from './pages/Agents';
-import Dashboard from './pages/Dashboard';
-import Memory from './pages/Memory';
-import ExecutionExplorer from './pages/ExecutionExplorer';
-import TraceExplorer from './pages/TraceExplorer';
-import PluginConsole from './pages/PluginConsole';
-import RuntimeVisualization from './pages/RuntimeVisualization';
-import ProjectConsole from './pages/ProjectConsole';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { HeaderBar } from './components/HeaderBar';
 import { StatusFlowBanner } from './components/StatusFlowBanner';
@@ -25,40 +17,48 @@ import { MOCK_EPISODES } from './mockData';
 import { Episode, NavigationTab, BatchItem } from './types';
 import { Search, X, CheckCircle2, AlertCircle, Bell, Clock } from 'lucide-react';
 
+const PlatformDashboard = lazy(() => import('./pages/Dashboard'));
+const AgentsConsole = lazy(() => import('./pages/Agents'));
+const MemoryConsole = lazy(() => import('./pages/Memory'));
+const ProjectConsole = lazy(() => import('./pages/ProjectConsole'));
+const ExecutionExplorer = lazy(() => import('./pages/ExecutionExplorer'));
+const TraceExplorer = lazy(() => import('./pages/TraceExplorer'));
+const PluginConsole = lazy(() => import('./pages/PluginConsole'));
+const RuntimeVisualization = lazy(() => import('./pages/RuntimeVisualization'));
+
 // Keep the platform-backed pages reachable while the dense production console
 // remains the default workspace.  These definitions are intentionally kept in
 // one place so the console cannot silently invent a second API contract.
 const BACKEND_ROUTE_CONTRACT = [
-  // path="/" element={<Dashboard />}
-  // path="/agents" element={<Agents />}
-  // path="/memory" element={<Memory />}
-  { path: '/platform', element: <Dashboard /> },
-  { path: '/agents', element: <Agents /> },
-  { path: '/memory', element: <Memory /> },
-  { path: '/projects', element: <ProjectConsole /> },
-  { path: '/executions', element: <ExecutionExplorer /> },
-  { path: '/traces', element: <TraceExplorer /> },
-  { path: '/plugins', element: <PluginConsole /> },
-  { path: '/runtime', element: <RuntimeVisualization /> },
+  { path: '/platform', Component: PlatformDashboard },
+  { path: '/agents', Component: AgentsConsole },
+  { path: '/memory', Component: MemoryConsole },
+  { path: '/projects', Component: ProjectConsole },
+  { path: '/executions', Component: ExecutionExplorer },
+  { path: '/traces', Component: TraceExplorer },
+  { path: '/plugins', Component: PluginConsole },
+  { path: '/runtime', Component: RuntimeVisualization },
 ] as const;
 
 function renderBackendRoute(): React.ReactNode | null {
   const pathname = window.location.pathname;
-  if (pathname === '/platform') return <Dashboard />;
-  if (pathname === '/agents') return <Agents />;
-  if (pathname === '/memory') return <Memory />;
-  if (pathname === '/projects') return <ProjectConsole />;
-  if (pathname === '/executions') return <ExecutionExplorer />;
-  if (pathname === '/traces') return <TraceExplorer />;
-  if (pathname === '/plugins') return <PluginConsole />;
-  if (pathname === '/runtime') return <RuntimeVisualization />;
-  return null;
+  const route = BACKEND_ROUTE_CONTRACT.find((item) => item.path === pathname);
+  if (!route) return null;
+  const Component = route.Component;
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-tertiary)] flex items-center justify-center text-xs font-mono">
+          Loading Platform Console…
+        </div>
+      }
+    >
+      <Component />
+    </Suspense>
+  );
 }
 
-export default function App() {
-  const backendPage = renderBackendRoute();
-  if (backendPage) return backendPage;
-
+function ProductionConsole() {
   const [episodes, setEpisodes] = useState<Episode[]>(MOCK_EPISODES);
   const [activeEpisode, setActiveEpisode] = useState<Episode>(MOCK_EPISODES[0]);
   const [currentTab, setCurrentTab] = useState<NavigationTab>('production_monitor');
@@ -71,9 +71,9 @@ export default function App() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([
-    { id: '1', title: 'Batch #04 质检完成', desc: 'Frame #16 - #20 渲染完成，Frame #18 建议倒影局部微调', time: '5分钟前', unread: true },
-    { id: '2', title: '主角林澈视觉基准锁定', desc: '4:5 1080×1350 肖像一致性评分 98.6%', time: '1小时前', unread: false },
-    { id: '3', title: 'EP-01 生产通过', desc: '已符合 4:5 全量放行标准', time: '昨天', unread: false }
+    { id: '1', title: '[示例] Batch #04 质检状态', desc: '前端示例：Frame #16 - #20 标记完成，Frame #18 建议局部微调', time: '5分钟前', unread: true },
+    { id: '2', title: '[示例] 主角视觉基准', desc: '前端示例：4:5 1080×1350 肖像一致性评分 98.6%', time: '1小时前', unread: false },
+    { id: '3', title: '[示例] EP-01 阶段状态', desc: '前端示例：显示为生产通过，不代表 Episode Authority', time: '昨天', unread: false }
   ]);
 
   const showToast = (msg: string) => {
@@ -188,7 +188,7 @@ export default function App() {
         onSelectEpisode={(ep) => setActiveEpisode(ep)}
         onNewConversation={() => {
           setCurrentTab('workbench');
-          showToast('已进入新剧作会话');
+          showToast('已进入前端示例剧作会话 · 未创建生产 Episode');
         }}
         onOpenSearch={() => setSearchModalOpen(true)}
         onOpenNotifications={() => setNotificationsOpen(true)}
@@ -426,4 +426,8 @@ export default function App() {
       )}
     </div>
   );
+}
+
+export default function App() {
+  return renderBackendRoute() ?? <ProductionConsole />;
 }

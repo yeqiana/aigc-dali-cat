@@ -50,12 +50,12 @@ export const PerformanceMetricsCard: React.FC<PerformanceMetricsCardProps> = ({
             <h3 className="text-xs font-semibold text-[var(--text-primary)] tracking-wide flex items-center gap-2">
               <span>6h / 24h / 48h / 7d 数据复盘与受众归因</span>
               <span className="storyos-status storyos-status--neutral font-mono">
-                {isPublished ? '示例数据 · 历史归档映射' : '示例数据 · 待连接工作区'}
+                示例数据 · 未接真实指标投影
               </span>
             </h3>
             <p className="text-[11px] text-[var(--text-tertiary)]">
               {isPublished
-                ? '全网分发多端实收播放、跳出率节拍与长尾破圈热力（已发布剧集实测回流）'
+                ? '前端历史回流视图示例；真实播放、跳出率与长尾指标投影尚未接入'
                 : '注意：当前剧集生产中尚未发布，以下指标为算法大盘模拟演示数据，严禁伪造已发布事实'}
             </p>
           </div>

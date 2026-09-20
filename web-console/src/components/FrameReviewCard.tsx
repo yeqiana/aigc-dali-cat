@@ -63,7 +63,7 @@ export const FrameReviewCard: React.FC<FrameReviewCardProps> = ({
             <h3 className="text-xs font-semibold text-[var(--text-primary)] tracking-wide flex items-center gap-2">
               <span>逐帧审核与质检报告 (Frame-by-Frame QA & Inspection)</span>
               <span className="storyos-status storyos-status--neutral font-mono">
-                示例数据 · 待连接工作区
+                示例数据 · 未接真实投影
               </span>
             </h3>
             <p className="text-[11px] text-[var(--text-tertiary)]">

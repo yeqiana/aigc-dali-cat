@@ -91,6 +91,13 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           <span className="text-[var(--text-disabled)]">·</span>
           <span>{activeEpisode.completedFrames}/{activeEpisode.totalFrames} 帧 ({progressPercent}%)</span>
         </span>
+        <span
+          className="storyos-status storyos-status--warning font-mono ml-1"
+          title="当前 Production Console 使用前端示例 Episode/Monitor 数据，不代表生产 Authority"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)]" />
+          <span>DEMO DATA · NOT AUTHORITY</span>
+        </span>
       </div>
 
       {/* 右侧：操作按钮（精密工控风格） */}

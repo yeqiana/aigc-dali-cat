@@ -21,7 +21,7 @@ export interface StageStep {
   description: string;
   updatedAt: string;
   status: 'completed' | 'in_progress' | 'pending' | 'blocked';
-  source: '待连接工作区' | '示例数据';
+  source: '未接真实投影' | '示例数据';
   notes?: string;
   subProgressLabel?: string; // e.g. "生产中 · 批次出图 (24/32 帧)"
 }
@@ -47,7 +47,7 @@ export interface RuntimeRequest {
   batchMode: string;           // '5 帧逻辑批次'
   maxConcurrentImages: number; // 3
   executionLayer: string;      // 'StoryOS Engine'
-  sourceBadge: '待连接工作区' | '示例数据';
+  sourceBadge: '未接真实投影' | '示例数据';
   safetyThreshold?: string;
   negativePrompt?: string;
   notes?: string;

@@ -56,7 +56,7 @@ export const BatchQueueCard: React.FC<BatchQueueCardProps> = ({
               </h3>
               {/* Clear Source Badge */}
               <span className="storyos-status storyos-status--neutral font-mono">
-                示例数据 · 待连接工作区
+                示例数据 · 未接真实投影
               </span>
             </div>
             <p className="text-[11px] text-[var(--text-tertiary)] mt-0.5">

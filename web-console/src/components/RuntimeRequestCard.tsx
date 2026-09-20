@@ -32,7 +32,7 @@ export const RuntimeRequestCard: React.FC<RuntimeRequestCardProps> = ({ runtime 
       batchMode: runtime.batchMode || '5 帧逻辑批次',
       maxConcurrentImages: runtime.maxConcurrentImages || 3,
       executionLayer: runtime.executionLayer || 'StoryOS Engine',
-      source: runtime.sourceBadge || '待连接工作区',
+      source: runtime.sourceBadge || '示例数据',
       safetyFilter: runtime.safetyThreshold || 'Level-3',
     };
     navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
@@ -99,7 +99,7 @@ export const RuntimeRequestCard: React.FC<RuntimeRequestCardProps> = ({ runtime 
               {/* Workspace Connection / Example Data Badge */}
               <span className="storyos-status storyos-status--warning font-mono">
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)]" />
-                <span>{runtime.sourceBadge || '待连接工作区'}</span>
+                <span>{runtime.sourceBadge || '示例数据'}</span>
               </span>
             </div>
             <p className="text-[11px] text-[var(--text-tertiary)] mt-0.5">

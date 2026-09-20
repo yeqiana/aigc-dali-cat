@@ -33,7 +33,7 @@ export const PreflightCheckCard: React.FC<PreflightCheckCardProps> = ({ checks }
             <h3 className="text-xs font-semibold text-[var(--text-primary)] tracking-wide flex items-center gap-2">
               <span>发布前门禁检查 (Preflight Gate & Quality Audit)</span>
               <span className="storyos-status storyos-status--neutral font-mono">
-                示例数据 · 待连接工作区
+                示例数据 · 未接真实投影
               </span>
               <span className="storyos-status storyos-status--info font-mono">
                 {passedCount} / {checks.length} 项通过

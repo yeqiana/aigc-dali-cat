@@ -97,7 +97,7 @@ export const MOCK_EPISODES: Episode[] = [
       batchMode: '5 帧逻辑批次',
       maxConcurrentImages: 3,
       executionLayer: 'StoryOS Engine',
-      sourceBadge: '待连接工作区',
+      sourceBadge: '示例数据',
     },
     characters: [
       {
