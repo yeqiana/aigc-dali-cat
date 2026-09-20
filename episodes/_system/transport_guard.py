@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import story_json
 import hot_state_bridge
+import production_ledger
 
 STATE_REL = Path('meta/transport-state.json')
 LEDGER_REL = Path('meta/production-ledger.json')
@@ -71,7 +72,7 @@ def ensure_state(ep: Path) -> tuple[Path, dict]:
 
 
 def ledger_frame(ep: Path, raw_frame: str) -> tuple[str, dict, dict]:
-    ledger = load_json(ep / LEDGER_REL)
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     try:
         key = f'{int(raw_frame):02d}'
     except ValueError:

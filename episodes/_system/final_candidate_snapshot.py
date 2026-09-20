@@ -26,6 +26,7 @@ import frame_review_persistence
 import story_review
 import visual_profile_review_persistence
 import episode_state_persistence
+import production_ledger
 
 ROOT=Path(__file__).resolve().parents[2]
 SNAPSHOT_REL=Path("meta/final-candidate-snapshot.json")
@@ -194,8 +195,10 @@ def build_lock(ep:Path, *, write_evidence:bool=True)->dict:
     )
     if visual_review_export is not None and visual_review_export.is_file():
         evidence.append(file_row(visual_review_export,"visual_profile_review","qa/visual-profile-review.json"))
+    ledger_export=production_ledger.materialize_export(ep)
+    if ledger_export is not None and ledger_export.is_file():
+        evidence.append(file_row(ledger_export,"production_ledger","evidence/production-ledger.json"))
     specs=[
-        ("meta/production-ledger.json","production_ledger","evidence/production-ledger.json"),
         ("meta/frame-semantic-review.json","frame_semantic_review","qa/frame-semantic-review.json"),
         ("meta/frame-semantic-audit.json","frame_semantic_audit","qa/frame-semantic-audit.json"),
         ("meta/subtitle-layout-audit.json","subtitle_layout_audit","qa/subtitle-layout-audit.json"),

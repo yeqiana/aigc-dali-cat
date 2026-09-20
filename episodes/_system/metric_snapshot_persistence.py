@@ -63,20 +63,43 @@ def save(ep: Path, metric_type: str, payload: dict) -> dict | None:
         connection.close()
 
 
+def _resolve_row(ep: Path, row: dict | None) -> dict | None:
+    if not row:
+        return None
+    payload = row.get("payload") or {}
+    document = (
+        payload.get("document")
+        if isinstance(payload, dict)
+        and payload.get("projection_type") == "METRIC_SNAPSHOT_REF"
+        else None
+    )
+    if isinstance(document, dict):
+        full = runtime_workspace.read_json(ep, document.get("rel"), default=None)
+        if not isinstance(full, dict):
+            raise ValueError("metric snapshot authority document missing")
+        if payload_sha256(full) != str(document.get("sha256") or "").lower():
+            raise ValueError("metric snapshot authority document sha256 mismatch")
+        return full
+    return dict(payload) if isinstance(payload, dict) else None
+
+
 def load_latest(ep: Path, metric_type: str) -> dict | None:
     if storage_config.episode_meta_store_config()["mode"] not in {"dual", "mysql"}:
         return None
     connection, repo = _repo()
     try:
         row = repo.get_latest(episode_identity.storage_episode_id(ep), str(metric_type))
-        if not row:
-            return None
-        payload = row.get("payload") or {}
-        document = payload.get("document") if isinstance(payload, dict) and payload.get("projection_type") == "METRIC_SNAPSHOT_REF" else None
-        if isinstance(document, dict):
-            full = runtime_workspace.read_json(ep, document.get("rel"), default=None)
-            if isinstance(full, dict) and payload_sha256(full) == str(document.get("sha256") or "").lower():
-                return full
-        return dict(payload) if isinstance(payload, dict) else None
+        return _resolve_row(Path(ep).resolve(), row)
+    finally:
+        connection.close()
+
+
+def load_by_id(ep: Path, metric_id: str) -> dict | None:
+    """Resolve one exact metric row, including externalized full documents."""
+    if storage_config.episode_meta_store_config()["mode"] not in {"dual", "mysql"}:
+        return None
+    connection, repo = _repo()
+    try:
+        return _resolve_row(Path(ep).resolve(), repo.get_by_id(str(metric_id)))
     finally:
         connection.close()

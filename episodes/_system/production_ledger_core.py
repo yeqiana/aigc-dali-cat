@@ -81,23 +81,36 @@ def save_json(path: Path, data: dict) -> None:
     if path.name == LEDGER_FILE.name and path.parent.name == "meta":
         ep = path.parent.parent
         episode_lifecycle.assert_writable(ep, "production_ledger.write")
-        production_ledger_persistence.assert_full_authority_available()
-        atomic_write_json(path, data)
-        production_ledger_persistence.persist_projection(ep, data)
+        current_mode = production_ledger_persistence.mode()
+        if current_mode in {"dual", "mysql"}:
+            # MySQL is written first. In mysql-only mode the Episode JSON is
+            # not written at all; in dual it remains a compatibility replica.
+            production_ledger_persistence.persist_authority(ep, data)
+        if current_mode != "mysql":
+            atomic_write_json(path, data)
         return
     atomic_write_json(path, data)
 
 
 
 def load_authority(ep: Path, default=None):
-    """Read the complete Production Ledger authority without creating it.
+    """Read the complete Production Ledger from its configured authority.
 
-    json/dual keep the complete document in the Episode while MySQL receives a
-    typed projection. mysql-only remains fail-closed until every extended frame
-    field has a lossless typed mapping.
+    mysql is strict DB authority with no stale-file fallback. dual prefers
+    MySQL and may fall back to the compatibility file during migration.
     """
     ep = Path(ep).resolve()
-    production_ledger_persistence.assert_full_authority_available()
+    current_mode = production_ledger_persistence.mode()
+    if current_mode in {"dual", "mysql"}:
+        try:
+            data = production_ledger_persistence.load_authority(ep)
+            if isinstance(data, dict):
+                return data
+        except Exception:
+            if current_mode == "mysql":
+                raise
+        if current_mode == "mysql":
+            return default
     path = ep / LEDGER_FILE
     if not path.is_file():
         return default
@@ -105,8 +118,7 @@ def load_authority(ep: Path, default=None):
 
 
 def authority_exists(ep: Path) -> bool:
-    production_ledger_persistence.assert_full_authority_available()
-    return (Path(ep).resolve() / LEDGER_FILE).is_file()
+    return isinstance(load_authority(ep, default=None), dict)
 
 
 def authority_sha256(ep: Path) -> str | None:
@@ -117,6 +129,23 @@ def authority_sha256(ep: Path) -> str | None:
         data, ensure_ascii=False, sort_keys=True, separators=(",", ":")
     ).encode("utf-8")
     return hashlib.sha256(raw).hexdigest()
+
+
+def materialize_export(ep: Path) -> Path | None:
+    """Materialize a delivery/export view without restoring file authority."""
+    ep = Path(ep).resolve()
+    compatibility = ep / LEDGER_FILE
+    if production_ledger_persistence.mode() != "mysql" and compatibility.is_file():
+        return compatibility
+    data = load_authority(ep, default=None)
+    if not isinstance(data, dict):
+        return None
+    import runtime_workspace
+    target = runtime_workspace.workspace_path(
+        ep, Path("exports/production-ledger.json")
+    )
+    atomic_write_json(target, data)
+    return target
 
 
 def episode_dir(raw: str) -> Path:

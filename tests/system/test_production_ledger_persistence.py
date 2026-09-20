@@ -39,6 +39,19 @@ class FakeAttempts:
         self.rows.append(dict(record))
 
 
+class FakeAuthority:
+    def __init__(self):
+        self.rows = {}
+
+    def upsert(self, episode_id, document):
+        self.rows[str(episode_id)] = dict(document)
+        return {"episode_id": str(episode_id), "sha256": "a" * 64, "byte_size": 1}
+
+    def get(self, episode_id):
+        document = self.rows.get(str(episode_id))
+        return None if document is None else {"document": dict(document)}
+
+
 def _ledger():
     return {
         "frames": {
@@ -74,6 +87,7 @@ def _ledger():
 def test_dual_projection_writes_frame_and_attempt_facts(monkeypatch, tmp_path):
     frames = FakeFrames()
     attempts = FakeAttempts()
+    authority = FakeAuthority()
     monkeypatch.setattr(
         persistence.storage_config,
         "episode_meta_store_config",
@@ -87,7 +101,7 @@ def test_dual_projection_writes_frame_and_attempt_facts(monkeypatch, tmp_path):
     monkeypatch.setattr(
         persistence,
         "_repositories",
-        lambda: (FakeConnection(), frames, attempts),
+        lambda: (FakeConnection(), authority, frames, attempts),
     )
 
     result = persistence.persist_projection(tmp_path, _ledger())
@@ -110,14 +124,29 @@ def test_json_projection_is_noop(monkeypatch, tmp_path):
     assert result["mysql_written"] is False
 
 
-def test_mysql_mode_fails_closed_until_extended_frame_state_is_typed(monkeypatch):
+def test_mysql_mode_persists_full_authority_and_projection(monkeypatch, tmp_path):
+    frames = FakeFrames()
+    attempts = FakeAttempts()
+    authority = FakeAuthority()
     monkeypatch.setattr(
         persistence.storage_config,
         "episode_meta_store_config",
         lambda: {"mode": "mysql"},
     )
-    with pytest.raises(
-        persistence.ProductionLedgerAuthorityIncomplete,
-        match="PRODUCTION_LEDGER_MYSQL_CUTOVER_INCOMPLETE",
-    ):
-        persistence.assert_full_authority_available()
+    monkeypatch.setattr(
+        persistence.episode_identity,
+        "storage_episode_id",
+        lambda _ep: "EPU_1",
+    )
+    monkeypatch.setattr(
+        persistence,
+        "_repositories",
+        lambda: (FakeConnection(), authority, frames, attempts),
+    )
+
+    result = persistence.persist_authority(tmp_path, _ledger())
+    assert result["mysql_written"] is True
+    assert authority.rows["EPU_1"] == _ledger()
+    assert result["frame_count"] == 2
+    assert result["attempt_count"] == 1
+    assert persistence.assert_full_authority_available() is None

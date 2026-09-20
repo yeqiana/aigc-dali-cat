@@ -57,20 +57,13 @@ def apply(plan: dict, *, reconcile: bool, delete_after_reconcile: bool) -> dict:
         persisted.append((row, str(saved["metric_id"])))
 
     if reconcile or delete_after_reconcile:
-        from platform.repository.mysql.mysql_connection import MySqlConnection
-        from platform.repository.mysql.mysql_metric_snapshot_repository import MySqlMetricSnapshotRepository
-        import storage_config
-
-        connection = MySqlConnection(**storage_config.mysql_connection_kwargs())
-        try:
-            repo = MySqlMetricSnapshotRepository(connection)
-            for row, metric_id_value in persisted:
-                loaded = repo.get_by_id(metric_id_value)
-                if not loaded or loaded.get("payload") != row["payload"]:
-                    raise ValueError(f"metric reconcile mismatch: {row['path']}")
-                reconciled += 1
-        finally:
-            connection.close()
+        for row, metric_id_value in persisted:
+            loaded = metric_snapshot_persistence.load_by_id(
+                row["episode"], metric_id_value
+            )
+            if loaded != row["payload"]:
+                raise ValueError(f"metric reconcile mismatch: {row['path']}")
+            reconciled += 1
 
     # Delete only after the complete batch has been reconciled successfully.
     if delete_after_reconcile:

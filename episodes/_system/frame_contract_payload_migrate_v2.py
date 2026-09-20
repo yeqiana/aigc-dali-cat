@@ -39,14 +39,27 @@ def _encoded_bytes(value: dict) -> int:
 
 
 def episode_map(episodes_root: Path = ROOT / "episodes") -> dict[str, Path]:
+    """Map stable storage IDs plus only unambiguous legacy aliases.
+
+    Business IDs and leaf names are historical compatibility aliases and are
+    not globally unique. A duplicate alias must not make a storage-UID
+    migration fail when every DB row already uses the unambiguous EPU identity.
+    """
     result: dict[str, Path] = {}
+    aliases: dict[str, list[Path]] = {}
     for ep in episode_discovery.iter_episode_roots(episodes_root):
         identity = episode_identity.identity_record(ep)
-        for key in (identity["storage_episode_id"], identity["business_episode_id"], ep.name):
-            previous = result.get(key)
-            if previous is not None and previous != ep:
-                raise ValueError(f"ambiguous episode identity: {key}")
-            result[key] = ep
+        storage_id = str(identity["storage_episode_id"])
+        previous = result.get(storage_id)
+        if previous is not None and previous != ep:
+            raise ValueError(f"ambiguous storage episode identity: {storage_id}")
+        result[storage_id] = ep
+        for key in (str(identity["business_episode_id"]), ep.name):
+            aliases.setdefault(key, []).append(ep)
+    for key, candidates in aliases.items():
+        unique = list(dict.fromkeys(candidates))
+        if len(unique) == 1:
+            result.setdefault(key, unique[0])
     return result
 
 

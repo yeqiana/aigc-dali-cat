@@ -68,9 +68,15 @@ def persist(ep: Path, payload: dict, *, status: str = "BOUND") -> dict:
     payload_ref = _externalize_if_needed(ep, payload)
     connection, repository = _repository(ep)
     try:
+        request_id = str(payload.get("request_id") or "").strip()
+        if not request_id:
+            # Historical Runtime Requests predate request_id. Keep the payload
+            # byte-for-byte equivalent while giving the DB row a deterministic
+            # identity derived from its canonical fingerprint.
+            request_id = "RR_MIG_" + payload_sha256(payload)[:48]
         saved = repository.upsert(
             {
-                "runtime_request_id": str(payload.get("request_id") or ""),
+                "runtime_request_id": request_id,
                 "episode_id": _episode_id(ep),
                 "request_type": str(payload.get("mode") or "UNKNOWN")[:32],
                 "status": str(status)[:32],

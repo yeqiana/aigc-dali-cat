@@ -47,19 +47,19 @@ def test_dual_authority_keeps_complete_document(monkeypatch, tmp_path):
     assert production_ledger.load_authority(tmp_path) == payload
 
 
-def test_mysql_authority_fails_closed_even_with_stale_file(monkeypatch, tmp_path):
+def test_mysql_authority_ignores_stale_file_and_reads_database(monkeypatch, tmp_path):
     _mode(monkeypatch, "mysql")
     meta = tmp_path / "meta"
     meta.mkdir()
     (meta / "production-ledger.json").write_text(
-        '{"frames":{"01":{"status":"LOCKED"}}}', encoding="utf-8"
+        '{"frames":{"01":{"status":"STALE_FILE"}}}', encoding="utf-8"
     )
-    with pytest.raises(
-        persistence.ProductionLedgerAuthorityIncomplete,
-        match="PRODUCTION_LEDGER_MYSQL_CUTOVER_INCOMPLETE",
-    ):
-        production_ledger.load_authority(tmp_path)
-    with pytest.raises(persistence.ProductionLedgerAuthorityIncomplete):
-        production_ledger.authority_exists(tmp_path)
-    with pytest.raises(persistence.ProductionLedgerAuthorityIncomplete):
-        production_ledger.authority_sha256(tmp_path)
+    mysql_document = {"frames": {"01": {"status": "LOCKED"}}, "policy": {"x": 1}}
+    monkeypatch.setattr(
+        persistence, "load_authority", lambda _ep: mysql_document
+    )
+    loaded = production_ledger.load_authority(tmp_path)
+    assert loaded == mysql_document
+    assert loaded["frames"]["01"]["status"] == "LOCKED"
+    assert production_ledger.authority_exists(tmp_path) is True
+    assert production_ledger.authority_sha256(tmp_path)

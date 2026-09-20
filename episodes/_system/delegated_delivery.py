@@ -26,6 +26,7 @@ import frame_review_persistence
 import delegated_release_persistence
 import story_review
 import visual_profile_review_persistence
+import production_ledger
 from final_acceptance import allows as acceptance_allows
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -137,8 +138,8 @@ def gather(ep: Path) -> tuple[list[dict], dict]:
     state_export=episode_state_persistence.materialize_export(ep)
     if state_export is not None and state_export.is_file():
         files.append(row(state_export,'episode_state','evidence/episode-state.json'))
-    ledger=ep/'meta/production-ledger.json'
-    if ledger.is_file(): files.append(row(ledger,'production_ledger','evidence/production-ledger.json'))
+    ledger=production_ledger.materialize_export(ep)
+    if ledger is not None and ledger.is_file(): files.append(row(ledger,'production_ledger','evidence/production-ledger.json'))
     story_review_export=story_review.materialize_review_export(ep,story_review.load_review(ep))
     if story_review_export is not None and story_review_export.is_file():
         files.append(row(story_review_export,'story_semantic_review','qa/story-semantic-review.json'))

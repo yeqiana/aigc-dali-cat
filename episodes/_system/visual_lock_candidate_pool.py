@@ -16,6 +16,7 @@ import frame_contract
 import character_visual_contract
 import image_model_policy
 import production_queue_store
+import production_ledger
 import scheduler_core
 import story_json
 import storyos_config
@@ -151,7 +152,7 @@ def recompilable_prompt_blocked_item(item: dict) -> bool:
 
 
 def _ledger_frame(ep: Path, frame: int) -> dict:
-    ledger = _read(Path(ep) / LEDGER_REL)
+    ledger = production_ledger.load_authority(Path(ep).resolve(), default={}) or {}
     row = (ledger.get("frames") or {}).get(f"{int(frame):02d}") or {}
     return row if isinstance(row, dict) else {}
 

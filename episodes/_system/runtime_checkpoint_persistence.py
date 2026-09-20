@@ -59,6 +59,7 @@ def _repositories():
 
 def _meta_payload(data: dict) -> dict:
     result = deepcopy(data)
+    result["_step_runs_present"] = "step_runs" in data
     result.pop("step_runs", None)
     return result
 
@@ -152,7 +153,10 @@ def _load_mysql(ep: Path) -> dict | None:
                 steps.append((seq, item))
         if meta is None:
             return None
-        meta["step_runs"] = [row for _seq, row in sorted(steps, key=lambda x: x[0])][-200:]
+        step_runs_present = bool(meta.pop("_step_runs_present", False))
+        rebuilt_steps = [row for _seq, row in sorted(steps, key=lambda x: x[0])][-200:]
+        if step_runs_present or rebuilt_steps:
+            meta["step_runs"] = rebuilt_steps
         return meta
     finally:
         if connection is not None:
