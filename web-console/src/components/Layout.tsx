@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -7,11 +6,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       <aside>
         <h2>Story OS V3</h2>
         <nav>
-          <Link to="/">Dashboard</Link><br />
-          <Link to="/agents">Agents</Link><br />
-          <Link to="/executions">Executions</Link><br />
-          <Link to="/traces">Traces</Link><br />
-          <Link to="/memory">Memory</Link>
+          <a href="/">Dashboard</a><br />
+          <a href="/agents">Agents</a><br />
+          <a href="/executions">Executions</a><br />
+          <a href="/traces">Traces</a><br />
+          <a href="/memory">Memory</a>
         </nav>
       </aside>
       <main>{children}</main>

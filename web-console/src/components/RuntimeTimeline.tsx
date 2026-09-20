@@ -3,7 +3,7 @@ type RuntimeStep = {
   status: string;
 };
 
-export default function RuntimeTimeline({ steps }: { steps: RuntimeStep[] }) {
+export default function RuntimeTimeline({ steps = [] }: { steps?: RuntimeStep[] }) {
   return <div>
     <h3>Runtime Timeline</h3>
     <ol>

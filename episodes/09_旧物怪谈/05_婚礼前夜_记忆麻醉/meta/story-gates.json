@@ -32,7 +32,7 @@
     "recommendation_fit": "passed",
     "story": "passed",
     "subtitle": "passed",
-    "visual_admission": "passed"
+    "visual_admission": "failed"
   },
   "schema_version": 1,
   "story": {
@@ -117,40 +117,40 @@
           "id": "V-B",
           "role": "ordinary_baseline",
           "frame": 1,
-          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-0d0b9814d146-a1.png",
-          "sha256": "cef5b7b929e12b720b6becdbfcded43d3b0f34d0a2f82070741097af5fd812f6",
+          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-1298ba331a97-a1.png",
+          "sha256": "64614363fe6f3c45bb68e835692dba001f059390677d5a0f55b16050d5060673",
           "decision": "passed",
-          "frame_contract_sha256": "551c1be47c9686277276019958185a6bce70c1a52232d5dea796c7344f0e1203",
-          "note": ""
+          "frame_contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6",
+          "note": "baseline separately PASS; parallel-three may start"
         },
         {
           "id": "V-W",
           "role": "worst_capture_condition",
           "frame": 12,
-          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-ef634aef4e89-a2.png",
-          "sha256": "946b643d1759ad662f8e9d362bba673925caa000c9fa9f5a3c982822a851a525",
+          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-367cb7a16179-a1.png",
+          "sha256": "442d4a9e7012a79afa2f111c894dacbb772a2d313481ba3836922df17701e210",
           "decision": "passed",
-          "frame_contract_sha256": "d7c69d3a4c1c1ea4564c5a7e64301bb156043270e421fd80ee285430ffb3811e",
+          "frame_contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734",
           "note": ""
         },
         {
           "id": "V-A",
           "role": "first_major_anomaly",
           "frame": 3,
-          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-e631da805486-a1.png",
-          "sha256": "10e5cfdcdd0f96d2829b25f254f8a6f78c6bbc0f76c370c5222fc26318f6157e",
+          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-aceee650e963-a1.png",
+          "sha256": "3aeb1bc78f4efc0f5de88d614c7ce4a6d35f06923abc89af6ff1a470b50af990",
           "decision": "passed",
-          "frame_contract_sha256": "16a5f36eee9f93086c95543a4b346ab1964c23c1aacbfbce32d569d589ae6011",
+          "frame_contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08",
           "note": ""
         },
         {
           "id": "V-H",
           "role": "high_impact_admission",
           "frame": 15,
-          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/15-1e63d6ffb150-a1.png",
-          "sha256": "99050f3d25f8f4ce4c8dae83703f719a3a899bde97df654b2116fa8819e08c41",
-          "decision": "passed",
-          "frame_contract_sha256": "dc8432fd1b88dcd66d9ba4b00a17ffdb9d81c126524a8524b306c941445a6eda",
+          "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/15-4f65f827f737-a1.png",
+          "sha256": "64905b0104672ec57e9bc8d85f364d348111dc34b0bd4e730fac33591d8ccea4",
+          "decision": "failed",
+          "frame_contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5",
           "note": ""
         }
       ],

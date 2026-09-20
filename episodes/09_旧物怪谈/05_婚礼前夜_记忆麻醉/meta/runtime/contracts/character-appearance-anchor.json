@@ -5,9 +5,9 @@
   "world_identity_profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
   "world_identity_effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b",
   "character_contract_path": "meta/character-contract.json",
-  "character_contract_sha256": "ed645046da6ca83dfe8411dabe2331cabe9e2ea9187e21acaca60f733a203507",
+  "character_contract_sha256": "196fc4059a4c1820cea0f7727e48a89dee27f02355b518beaf1ba3aba694cb6f",
   "character_visual_contract_path": "meta/character-visual-contract.json",
-  "character_visual_contract_sha256": "9ff8e5d1cced86170743ad757fe2a5fa4767fa6e350f2d07dcaccd41b8b25368",
+  "character_visual_contract_sha256": "bc4859ee01d8a2226b60d6e5b20406cf4499dd7aa183ee688a4ec92b0d0250f2",
   "members": {
     "P01": {
       "character_id": "P01",
@@ -51,5 +51,5 @@
     }
   },
   "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
-  "anchor_sha256": "6c5874a08cf00ca17cb92643228ce59b8c24ca226314b609ffefffb95142913f"
+  "anchor_sha256": "f747e64cef4d27fe3f88020af1adb19ec9a4f3b67f9d433297080ae89f6ea97e"
 }

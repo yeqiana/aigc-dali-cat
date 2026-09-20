@@ -24,6 +24,7 @@ LOCAL_ONLY_PATTERNS = (
     "episodes/**/meta/runtime/trace-events.jsonl",
     "episodes/**/meta/runtime/node-execution.jsonl",
     "episodes/**/meta/runtime/authority-commit.jsonl",
+    "episodes/**/meta/runtime/preimage-candidates/**",
     "episodes/**/meta/episode-performance-ledger.json",
     "episodes/**/meta/workflow-run.jsonl",
 )
@@ -124,6 +125,7 @@ def self_test() -> None:
     assert "episodes/**/meta/workflow-run.jsonl" in LOCAL_ONLY_PATTERNS
     assert "episodes/**/meta/runtime/node-execution.jsonl" in LOCAL_ONLY_PATTERNS
     assert "episodes/**/meta/runtime/authority-commit.jsonl" in LOCAL_ONLY_PATTERNS
+    assert "episodes/**/meta/runtime/preimage-candidates/**" in LOCAL_ONLY_PATTERNS
     assert "episodes/**/meta/episode-performance-ledger.json" in LOCAL_ONLY_PATTERNS
     sample = "WARN plugin request 429\nimage generation failed: 503 Service Unavailable\nlegacy_notify os error 206"
     assert codex_noise_summary(sample)["noise_lines"] == 2

@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "note": "Performance evidence only; NOT a stage source.",
+  "runs": [
+    {
+      "run_id": "1789869159-work",
+      "runtime": "WORK",
+      "mode": "run",
+      "started_at": "2026-09-20T09:52:39+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.5,
+          "recorded_at": "2026-09-20T09:52:39+08:00",
+          "note": "{\n  \"episode\": \"episodes/狮驼岭第二篇\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.109,
+          "recorded_at": "2026-09-20T09:52:39+08:00",
+          "note": " in memory.\"], \"source_record_count\": 0}, \"schema_version\": 2, \"request_id\": \"host-e68aeac1449c32f2\", \"request_fingerprint\": \"e68aeac1449c32f2c150db16ea26719f97511630f67e22f6931ab40bcbfb95a9\", \"created_at\": \"2026-09-20T09:47:03+08:00\", \"request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/host-requests/host-e68aeac1449c32f2.json\", \"current_request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/product-host-request.json\"}"
+        },
+        {
+          "step": "HOST_LOOP",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.047,
+          "recorded_at": "2026-09-20T09:52:40+08:00",
+          "note": "stop_cycle=1 host_owns=CREATIVE_STORY"
+        }
+      ],
+      "status": "HOST_WAIT",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 1.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.344
+      },
+      "finished_at": "2026-09-20T09:52:40+08:00",
+      "total_seconds": 1.578,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 0.5,
+          "recorded_at": "2026-09-20T09:52:39+08:00",
+          "note": "{\n  \"episode\": \"episodes/狮驼岭第二篇\",\n  \"state\": \"IDEA_LOCKED\",\n  \"story\": \"NOT_APPLICABLE\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.109,
+          "recorded_at": "2026-09-20T09:52:39+08:00",
+          "note": " in memory.\"], \"source_record_count\": 0}, \"schema_version\": 2, \"request_id\": \"host-e68aeac1449c32f2\", \"request_fingerprint\": \"e68aeac1449c32f2c150db16ea26719f97511630f67e22f6931ab40bcbfb95a9\", \"created_at\": \"2026-09-20T09:47:03+08:00\", \"request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/host-requests/host-e68aeac1449c32f2.json\", \"current_request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/product-host-request.json\"}"
+        },
+        {
+          "step": "HOST_LOOP",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.047,
+          "recorded_at": "2026-09-20T09:52:40+08:00",
+          "note": "stop_cycle=1 host_owns=CREATIVE_STORY"
+        }
+      ]
+    },
+    {
+      "run_id": "1789871071-work",
+      "runtime": "WORK",
+      "mode": "run",
+      "started_at": "2026-09-20T10:24:31+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 1.875,
+          "recorded_at": "2026-09-20T10:24:33+08:00",
+          "note": "{\n  \"episode\": \"episodes/狮驼岭第二篇\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-20T10:24:33+08:00",
+          "note": "target already valid"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.359,
+          "recorded_at": "2026-09-20T10:24:34+08:00",
+          "note": "request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/product-host-request.json\"}], \"host_task_count\": 4, \"host_dispatch_contract\": {\"strategy\": \"parallel_start_then_collect\", \"max_parallel\": 4, \"start_all_before_wait\": true, \"completion_order\": \"any\", \"authority_commit\": \"single_writer_after_barrier\", \"host_owned_concurrency\": true, \"measurement\": \"start-preimage/complete-preimage execution intervals\"}, \"not_episode_stage\": true, \"not_gate_authority\": true}"
+        },
+        {
+          "step": "HOST_LOOP",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.062,
+          "recorded_at": "2026-09-20T10:24:34+08:00",
+          "note": "stop_cycle=1 host_owns=PREIMAGE_COMPILE"
+        }
+      ],
+      "status": "HOST_WAIT",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 3.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.2347
+      },
+      "finished_at": "2026-09-20T10:24:34+08:00",
+      "total_seconds": 3.828,
+      "slowest_steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 1.875,
+          "recorded_at": "2026-09-20T10:24:33+08:00",
+          "note": "{\n  \"episode\": \"episodes/狮驼岭第二篇\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.359,
+          "recorded_at": "2026-09-20T10:24:34+08:00",
+          "note": "request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/product-host-request.json\"}], \"host_task_count\": 4, \"host_dispatch_contract\": {\"strategy\": \"parallel_start_then_collect\", \"max_parallel\": 4, \"start_all_before_wait\": true, \"completion_order\": \"any\", \"authority_commit\": \"single_writer_after_barrier\", \"host_owned_concurrency\": true, \"measurement\": \"start-preimage/complete-preimage execution intervals\"}, \"not_episode_stage\": true, \"not_gate_authority\": true}"
+        },
+        {
+          "step": "HOST_LOOP",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.062,
+          "recorded_at": "2026-09-20T10:24:34+08:00",
+          "note": "stop_cycle=1 host_owns=PREIMAGE_COMPILE"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-20T10:24:33+08:00",
+          "note": "target already valid"
+        }
+      ]
+    },
+    {
+      "run_id": "1789871589-work",
+      "runtime": "WORK",
+      "mode": "resume",
+      "started_at": "2026-09-20T10:33:09+08:00",
+      "steps": [
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 2.562,
+          "recorded_at": "2026-09-20T10:33:12+08:00",
+          "note": "{\n  \"episode\": \"episodes/狮驼岭第二篇\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-20T10:33:12+08:00",
+          "note": "target already valid"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "PASS",
+          "elapsed_seconds": 4.765,
+          "recorded_at": "2026-09-20T10:33:30+08:00",
+          "note": "{\"deterministic_step\": \"PREIMAGE_FRAME_CONTRACT_COMPILE\", \"directing_contracts\": {\"meta/capture-event-contract.json\": \"CREATED\", \"meta/world-state.json\": \"CREATED\", \"meta/temporal-continuity.json\": \"CREATED\", \"meta/wardrobe-contract.json\": \"CREATED\"}, \"frame_contract_index_sha256\": \"0a0ba248df2f5c62c92e7d78af6c574f65838d20f0cb13d56288fc80b6128473\"}\npreproduction_handoff=420ba64c4170bd472dac6dc9d4a3c9c659db0f45662945da333f329bedb4483e"
+        },
+        {
+          "step": "VISUAL_LOCK",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 11.204,
+          "recorded_at": "2026-09-20T10:33:41+08:00",
+          "note": "tion/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-040b15d1bf94a9d0\", \"request_fingerprint\": \"040b15d1bf94a9d019a4aa99573be25fb349ac785d09fc0d6032d023e9cee7de\", \"created_at\": \"2026-09-20T10:33:41+08:00\", \"request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/host-requests/host-040b15d1bf94a9d0.json\", \"current_request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/product-host-request.json\"}"
+        },
+        {
+          "step": "HOST_LOOP",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.188,
+          "recorded_at": "2026-09-20T10:33:42+08:00",
+          "note": "stop_cycle=1 host_owns=VISUAL_LOCK"
+        }
+      ],
+      "status": "HOST_WAIT",
+      "performance_budget": {
+        "status": "WITHIN_BUDGET",
+        "elapsed_seconds": 33.0,
+        "generation_utilization_upper_bound": 0.0,
+        "unclassified_wall_ratio": 0.4328
+      },
+      "finished_at": "2026-09-20T10:33:42+08:00",
+      "total_seconds": 34.453,
+      "slowest_steps": [
+        {
+          "step": "VISUAL_LOCK",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 11.204,
+          "recorded_at": "2026-09-20T10:33:41+08:00",
+          "note": "tion/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-040b15d1bf94a9d0\", \"request_fingerprint\": \"040b15d1bf94a9d019a4aa99573be25fb349ac785d09fc0d6032d023e9cee7de\", \"created_at\": \"2026-09-20T10:33:41+08:00\", \"request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/host-requests/host-040b15d1bf94a9d0.json\", \"current_request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/product-host-request.json\"}"
+        },
+        {
+          "step": "PREIMAGE_COMPILE",
+          "status": "PASS",
+          "elapsed_seconds": 4.765,
+          "recorded_at": "2026-09-20T10:33:30+08:00",
+          "note": "{\"deterministic_step\": \"PREIMAGE_FRAME_CONTRACT_COMPILE\", \"directing_contracts\": {\"meta/capture-event-contract.json\": \"CREATED\", \"meta/world-state.json\": \"CREATED\", \"meta/temporal-continuity.json\": \"CREATED\", \"meta/wardrobe-contract.json\": \"CREATED\"}, \"frame_contract_index_sha256\": \"0a0ba248df2f5c62c92e7d78af6c574f65838d20f0cb13d56288fc80b6128473\"}\npreproduction_handoff=420ba64c4170bd472dac6dc9d4a3c9c659db0f45662945da333f329bedb4483e"
+        },
+        {
+          "step": "INCREMENTAL_PLAN",
+          "status": "PASS",
+          "elapsed_seconds": 2.562,
+          "recorded_at": "2026-09-20T10:33:12+08:00",
+          "note": "{\n  \"episode\": \"episodes/狮驼岭第二篇\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+        },
+        {
+          "step": "HOST_LOOP",
+          "status": "HOST_WAIT",
+          "elapsed_seconds": 0.188,
+          "recorded_at": "2026-09-20T10:33:42+08:00",
+          "note": "stop_cycle=1 host_owns=VISUAL_LOCK"
+        },
+        {
+          "step": "CREATIVE_STORY",
+          "status": "REUSED",
+          "elapsed_seconds": 0.0,
+          "recorded_at": "2026-09-20T10:33:12+08:00",
+          "note": "target already valid"
+        }
+      ]
+    }
+  ],
+  "updated_at": "2026-09-20T10:33:42+08:00",
+  "generated_at": "2026-09-20T09:52:39+08:00",
+  "kind": "workflow_performance",
+  "performance_budget_updated_at": "2026-09-20T10:33:42+08:00"
+}

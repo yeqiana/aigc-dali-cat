@@ -1,38 +1,38 @@
 {
   "schema_version": 1,
-  "snapshot_id": "10664f7f892c341bc2a2f36970372f36340bf56e7e91545f601257bb36ebfe71",
+  "snapshot_id": "beeb3d20c90bf35698a8f8c88102274df6555df5439fba54ec1cbf8d4094210d",
   "not_episode_stage": true,
   "not_gate_authority": true,
   "canonical_stage_source": "meta/episode-state.json",
   "tasks": {
     "CHARACTER_FINALIZE": {
-      "task_id": "preimage-character_finalize-10664f7f892c",
+      "task_id": "preimage-character_finalize-beeb3d20c90b",
       "status": "HOST_ACTION_REQUIRED",
-      "request_id": "preimage-08adad7608cd915e",
+      "request_id": "preimage-22285d3d97952350",
       "candidate_path": "meta/runtime/preimage-candidates/character-finalize.json",
-      "updated_at": "2026-09-15T16:21:50+08:00"
+      "updated_at": "2026-09-19T21:42:39+08:00"
     },
     "ENVIRONMENT_PREPARE": {
-      "task_id": "preimage-environment_prepare-10664f7f892c",
+      "task_id": "preimage-environment_prepare-beeb3d20c90b",
       "status": "HOST_ACTION_REQUIRED",
-      "request_id": "preimage-77784ff2395df8a5",
+      "request_id": "preimage-b35d9cfb82bdc944",
       "candidate_path": "meta/runtime/preimage-candidates/environment.json",
-      "updated_at": "2026-09-15T16:21:50+08:00"
+      "updated_at": "2026-09-19T21:42:39+08:00"
     },
     "WORLD_PREPARE": {
-      "task_id": "preimage-world_prepare-10664f7f892c",
+      "task_id": "preimage-world_prepare-beeb3d20c90b",
       "status": "HOST_ACTION_REQUIRED",
-      "request_id": "preimage-6b3aae07c9c8c8a6",
+      "request_id": "preimage-df8907f695bf2ace",
       "candidate_path": "meta/runtime/preimage-candidates/world.json",
-      "updated_at": "2026-09-15T16:21:50+08:00"
+      "updated_at": "2026-09-19T21:42:39+08:00"
     },
     "VISUAL_NARRATIVE_PREPARE": {
-      "task_id": "preimage-visual_narrative_prepare-10664f7f892c",
+      "task_id": "preimage-visual_narrative_prepare-beeb3d20c90b",
       "status": "HOST_ACTION_REQUIRED",
-      "request_id": "preimage-d37d4b499785d51e",
+      "request_id": "preimage-cb6d2b24f69965f7",
       "candidate_path": "meta/runtime/preimage-candidates/visual-narrative.json",
-      "updated_at": "2026-09-15T16:21:50+08:00"
+      "updated_at": "2026-09-19T21:42:39+08:00"
     }
   },
-  "updated_at": "2026-09-15T16:21:50+08:00"
+  "updated_at": "2026-09-19T21:42:39+08:00"
 }

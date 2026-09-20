@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reconciled_at": "2026-09-16T00:47:03+08:00",
+  "reconciled_at": "2026-09-19T22:46:42+08:00",
   "rows": [
     {
       "item_id": "90429a50efaa",
@@ -40,8 +40,8 @@
     {
       "item_id": "4d2d23482356",
       "frame": 15,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "LOCKED",
+      "outcome": "REVIEWED_CANDIDATE_RETAINED",
+      "ledger_status": "AUTHORITY_REFRESH_AUTHORIZED",
       "lifecycle_state": "MISSING"
     },
     {
@@ -50,13 +50,6 @@
       "outcome": "LEDGER_READY_REPLAYED",
       "ledger_status": "LOCKED",
       "lifecycle_state": "MISSING"
-    },
-    {
-      "item_id": "9ac4058b70e5",
-      "frame": 1,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "LOCKED",
-      "lifecycle_state": "SUCCEEDED"
     },
     {
       "item_id": "503127995491",
@@ -129,13 +122,6 @@
       "lifecycle_state": "SUCCEEDED"
     },
     {
-      "item_id": "bfc569e948a0",
-      "frame": 15,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "LOCKED",
-      "lifecycle_state": "SUCCEEDED"
-    },
-    {
       "item_id": "39f96d6ea0ab",
       "frame": 16,
       "outcome": "LEDGER_READY_REPLAYED",
@@ -157,13 +143,6 @@
       "lifecycle_state": "SUCCEEDED"
     },
     {
-      "item_id": "740bc23e704d",
-      "frame": 3,
-      "outcome": "LEDGER_READY_REPLAYED",
-      "ledger_status": "LOCKED",
-      "lifecycle_state": "FAILED"
-    },
-    {
       "item_id": "51e66ee258c8",
       "frame": 7,
       "outcome": "LEDGER_READY_REPLAYED",
@@ -182,6 +161,13 @@
       "frame": 18,
       "outcome": "LEDGER_READY_REPLAYED",
       "ledger_status": "REPAIR_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "1298ba331a97",
+      "frame": 1,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
       "lifecycle_state": "SUCCEEDED"
     }
   ]

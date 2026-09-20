@@ -61,12 +61,12 @@ SELECTOR_THEMES = ("daily_life", "work_life", "anomaly_mystery", "folk_life", "t
 # marker is present; otherwise the level stays low and M02 is not selected.
 FICTIONAL_TOKENS = (
     "天界", "天庭", "仙界", "天宫", "灵界", "冥界", "阴间", "神仙", "仙女", "仙侠",
-    "妖怪", "妖精", "修真", "玄幻", "异世界", "魔法", "天堂", "架空",
+    "妖怪", "妖精", "修真", "玄幻", "异世界", "魔法", "天堂", "架空", "狮驼岭", "西游",
     "heaven", "celestial", "immortal", "fantasy",
 )
 FANTASY_HIGH_TOKENS = (
     "天界", "天庭", "仙界", "天宫", "灵界", "冥界", "阴间", "神仙", "仙女", "仙侠",
-    "妖怪", "妖精", "修真", "玄幻", "异世界", "魔法", "天堂",
+    "妖怪", "妖精", "修真", "玄幻", "异世界", "魔法", "天堂", "狮驼岭", "西游",
     "heaven", "celestial", "immortal", "fantasy",
 )
 HISTORICAL_TOKENS = (
@@ -83,8 +83,8 @@ LOCATION_JIANGNAN_TOKENS = (
 )
 LOCATION_JIANGNAN = "jiangnan"
 IMMERSIVE_TOKENS = (
-    "沉浸", "第一人称", "第一视角", "视角", "相册", "我的一天", "一天", "日记", "vlog",
-    "记录", "亲历", "随手拍", "跟拍",
+    "沉浸", "第一人称", "第一视角", "视角", "相册", "照片", "拍照", "摄影", "拍摄",
+    "我的一天", "一天", "日记", "vlog", "记录", "亲历", "随手拍", "跟拍",
 )
 OBSERVED_TOKENS = ("旁观", "第三人称", "观察者", "路人视角", "旁人视角")
 THEME_ANOMALY_TOKENS = ("异常", "诡异", "怪事", "失踪", "灵异", "怪谈", "神秘事件")

@@ -15,7 +15,7 @@ export default function RuntimeVisualization() {
   return <div>
     <h2>Runtime Visualization</h2>
     <button onClick={() => load('demo-execution')}>Load Runtime</button>
-    <RuntimeTimeline data={runtime} />
-    <TraceGraph data={trace} />
+    <RuntimeTimeline steps={runtime?.steps ?? []} />
+    <TraceGraph nodes={trace?.nodes ?? []} />
   </div>;
 }

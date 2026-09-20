@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "derived_from_pools": true,
+  "not_episode_stage": true,
+  "created_at": "2026-09-20T10:05:00+08:00",
+  "locked_at": "2026-09-20T10:08:00+08:00",
+  "selection_seed": 20260920,
+  "era": {"bucket": "2004_2010", "year": 2008, "source": "fictional_world_human_baseline", "world_era": "fictional"},
+  "world_identity": {"profile_id":"SHITUOLING_MUNDANE_WORKER_V1","country":"狮驼岭（虚构西游神话世界）","region":"狮驼岭山腰炭场、石灶厨房、旧水井与通勤山道","nationality_context":"狮驼岭本地居民与杂役（虚构世界身份）","resident_context":"狮驼岭普通炭场伙计、伙房帮工与山场住户","effective_sha256":"b49f97af9b58934db28d6edf13921cffd1b3bcac9a7206d6fbeccf9f09f051fa"},
+  "fictional_world": {"profile_id":"M02_HEAVEN_MUNDANE_WORKER_V1","reality_basis":"fictional_world_mundane","ordinary_life_rule":"狮驼岭基层炭场按普通工作流程运转，妖怪和神话地貌只是生活背景，人物不是英雄或调查者。","capture_device":"旧留影玉牌（只用于记工和给同伴留影）"},
+  "cast": {"type":"two_person_work_pair","size":2,"relationship":"炭场同班伙计","members":[
+    {"id":"P01","pov":true,"gender":"male","age":24,"build":"普通年轻人体型，肩背有搬炭留下的自然力量感","hair":"短黑发，额前有被汗压开的碎发","clothing_anchor":"洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹","device_anchor":"旧留影玉牌，挂在腰侧布袋里","nationality_context":"狮驼岭本地居民与杂役（虚构世界身份）","resident_context":"狮驼岭普通炭场伙计"},
+    {"id":"P02","pov":false,"gender":"female","age":23,"build":"普通年轻女性体型，动作利落但不英雄化","hair":"黑色低马尾，发尾被炭灰沾出几缕散发","clothing_anchor":"褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰","device_anchor":"无独立设备，偶尔借看P01的留影玉牌","nationality_context":"狮驼岭本地居民与杂役（虚构世界身份）","resident_context":"狮驼岭普通伙房帮工"}
+  ]},
+  "pov": {"character_id":"P01","first_person":true},
+  "entry": {"type":"casual_work","label":"生活化工作","source":"visual_profile:M02_HEAVEN_MUNDANE_WORKER_V1","reason":"给石灶厨房送当日炭料，是普通班次，不是调查任务"},
+  "scene": {"primary_category":"casual_work_site","primary_place":"狮驼岭山腰炭场至石灶厨房的旧水井路段"},
+  "role_policy": {"protagonist_role":"狮驼岭普通炭场伙计","career_function":"none","solves_anomaly_professionally":false},
+  "no_anomaly_test": {"question":"如果删掉所有异常，这一天是否仍像真实生活？","ordinary_day_plan":"清晨装炭、沿山道送到石灶厨房、午间和同班伙计吃冷饭、下午回炭场清点空筐后收工","pass":true,"must_be_rechecked_before_story_lock":true,"rechecked_against_final_story":true,"recheck_note":"异常只是把一次普通送炭班次变得不安；P01和P02没有调查、驱除或解释异常。"},
+  "continuity_policy": {"member_count_changes_require_story_event":true,"pov_character_id_stable":true,"clothing_and_device_anchors_propagate_to_frame_contract":true},
+  "ordinary_person_score": 100,
+  "forbidden_role_check": {"pass":true,"hits":[]},
+  "story_build_note":"第二篇固定为狮驼岭普通炭场班次；工作只是生活本身，人物不因井下声音变成专业探险者。"
+}

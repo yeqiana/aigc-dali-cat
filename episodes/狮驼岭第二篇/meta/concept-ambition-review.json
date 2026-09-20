@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "candidates_sha256": "4c3e4e5e455246dc3cd8ed15e00a4173fd4d8b368805ab4d0fe0219fd7e1fd2d",
+  "critic_provenance": {"schema_version":2,"runtime":"WORK_ISOLATED","base_runtime":"WORK","execution_source":"product_runtime","workspace_transport":"DEVSPACE","isolation_mode":"fresh_product_review_turn","isolated_session":true,"webcodex_used":false,"full_auto_user_authorized":true,"attempt":1,"reviewed_at":"2026-09-20T10:04:00+08:00"},
+  "candidates": [
+    {"id":"C01","ambition_band":"A5","scores":{"one_line_hook":19,"hero_frame":18,"escalation_ceiling":18,"climax_visual_payoff":14,"mechanism_novelty":14,"discussion_space":9},"concept_voltage":92,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"strengths":["日常送炭动作和井下回应形成清晰传播钩子","异常从井口扩散到回家路径，规则一致"],"risks":["需要控制声音证据的文字依赖，必须让石缝、湿炭和筐底留下像素证据"]},
+    {"id":"C02","ambition_band":"A5","scores":{"one_line_hook":17,"hero_frame":18,"escalation_ceiling":18,"climax_visual_payoff":13,"mechanism_novelty":13,"discussion_space":9},"concept_voltage":88,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"strengths":["灶火和锅影容易形成强视觉"],"risks":["与厨房怪谈同质风险较高"]},
+    {"id":"C03","ambition_band":"A4","scores":{"one_line_hook":17,"hero_frame":17,"escalation_ceiling":17,"climax_visual_payoff":13,"mechanism_novelty":14,"discussion_space":9},"concept_voltage":87,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"strengths":["水面方向矛盾可无字成立"],"risks":["反射物理连续性要求高"]},
+    {"id":"C04","ambition_band":"A4","scores":{"one_line_hook":17,"hero_frame":17,"escalation_ceiling":17,"climax_visual_payoff":13,"mechanism_novelty":13,"discussion_space":8},"concept_voltage":85,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"strengths":["物料损耗有可见轮廓"],"risks":["人形缺口可能过早直白"]},
+    {"id":"C05","ambition_band":"A4","scores":{"one_line_hook":16,"hero_frame":16,"escalation_ceiling":17,"climax_visual_payoff":12,"mechanism_novelty":14,"discussion_space":8},"concept_voltage":83,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"strengths":["声音归属可制造讨论"],"risks":["需要避免纯音频信息"]},
+    {"id":"C06","ambition_band":"A4","scores":{"one_line_hook":16,"hero_frame":17,"escalation_ceiling":16,"climax_visual_payoff":12,"mechanism_novelty":13,"discussion_space":8},"concept_voltage":82,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"strengths":["通勤路线可重复拍摄"],"risks":["石阶变化要建立明确空间参照"]},
+    {"id":"C07","ambition_band":"A3","scores":{"one_line_hook":15,"hero_frame":17,"escalation_ceiling":16,"climax_visual_payoff":12,"mechanism_novelty":13,"discussion_space":8},"concept_voltage":81,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"strengths":["劳动工具成为异常载体"],"risks":["重量缺少直接像素证据"]},
+    {"id":"C08","ambition_band":"A3","scores":{"one_line_hook":15,"hero_frame":16,"escalation_ceiling":16,"climax_visual_payoff":11,"mechanism_novelty":13,"discussion_space":8},"concept_voltage":79,"wordless_test":{"stop_scroll":true,"escalation_readable":true,"curiosity_gap":true},"strengths":["点名制度贴近日常工作"],"risks":["名册文字不能承担全部谜底"]}
+  ],
+  "selected_id": "C01",
+  "selection_reason": "C01在普通送炭动线、井下规则、同伴选择和回家余波之间形成一条可拍摄的因果链；封井石缝、湿炭、反射与空筐都能承担无字证据，且不复用前篇故事表面。",
+  "issue_codes": [],
+  "summary": {"passed": true}
+}

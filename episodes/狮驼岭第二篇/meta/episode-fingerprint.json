@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "episode_id": "狮驼岭第二篇",
+  "title": "狮驼岭第二篇：井里敲了三下",
+  "dimensions": {
+    "core_anomaly_mechanism": "封井只对放炭动作回应三下，并把回应附着到空筐和门槛",
+    "story_engine": "普通送炭班次中为不误工选择绕开封井，并承担少交一筐炭的后果",
+    "entry_mode": "狮驼岭山腰炭场普通送炭的第一人称旧留影玉牌记录",
+    "anomaly_carrier": "三块封井石、湿炭、藤编空筐与玉牌反光",
+    "primary_visual_space": "狮驼岭炭场至石灶厨房旧井路段与宿舍门槛",
+    "middle_escalation": "石子未落而三声先从玉牌反光出现，异常从井边移入工具",
+    "climax_form": "阿莲按住P01不掀封石，接受少交炭并不开宿舍门",
+    "relationship": "同班炭场伙计P01与伙房帮工P02",
+    "reality_residue": "空筐在无人炭场转动，三声留在门外"
+  }
+}

@@ -1,0 +1,879 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_temporal_sha256": "6638a5120f9903561d9a43e18afedf7dbc34796779fbdfacd44dc8ea0efe0229",
+  "derived_from_preimage_authority": true,
+  "rules": {
+    "wardrobe_changes_follow_scene_weather_temperature_activity": true,
+    "female_lead_default_body": "slim_proportionate_natural",
+    "pretty_clothes_allowed_when_physical_context_supports_them": true,
+    "camisole_in_cold_outdoor_requires_warm_outer_layer": true,
+    "skirt_in_cold_requires_thick_tights_and_warm_layer": true,
+    "high_altitude_outdoor_requires_wind_or_insulation_layer": true,
+    "outfit_change_requires_reason": true,
+    "no_eroticized_framing_requirement": true
+  },
+  "frames": {
+    "01": {
+      "scene_context": "炭场木棚",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "clear morning",
+      "activity": "ties rope around empty basket",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "02": {
+      "scene_context": "炭场木棚",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "clear morning",
+      "activity": "P02 levels basket while P01 lifts",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "03": {
+      "scene_context": "山腰通勤道",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "clear morning",
+      "activity": "pushes cart downhill",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "04": {
+      "scene_context": "石灶厨房后门",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "clear morning",
+      "activity": "P02 checks weight while P01 wipes sweat",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "05": {
+      "scene_context": "旧水井路段",
+      "location_type": "outdoor",
+      "temperature_band": "cool",
+      "weather": "clear morning",
+      "activity": "walks past with emptying cart",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "06": {
+      "scene_context": "旧井封石边",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "clear morning",
+      "activity": "sets basket down beside well",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "07": {
+      "scene_context": "旧井路肩",
+      "location_type": "outdoor",
+      "temperature_band": "cool",
+      "weather": "clear morning",
+      "activity": "compares wheel noise with seam",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "08": {
+      "scene_context": "旧井封石边",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "clear morning",
+      "activity": "charcoal leaves a short wet mark",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "09": {
+      "scene_context": "伙房角落",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "clear morning",
+      "activity": "P02 taps bowl three times as a joke",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "10": {
+      "scene_context": "旧井封石边",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "dry afternoon",
+      "activity": "basket is being set down as dust rises first",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "11": {
+      "scene_context": "旧井封石边",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "dry afternoon",
+      "activity": "P02 throws pebble while P01 holds device",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "12": {
+      "scene_context": "旧井封石边",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "dry afternoon",
+      "activity": "P02 presses P01 wrist down",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "13": {
+      "scene_context": "伙房后门与旧井远景",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "dry afternoon",
+      "activity": "carries work away from well",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "14": {
+      "scene_context": "石灶厨房内",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "dry afternoon",
+      "activity": "P02 counts the missing basket",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "15": {
+      "scene_context": "伙房门槛",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "dry afternoon",
+      "activity": "reviews frame ten",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "16": {
+      "scene_context": "回炭场上坡道",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "dark night",
+      "activity": "climbs toward dorms",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "17": {
+      "scene_context": "回炭场上坡道",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "dark night",
+      "activity": "holds basket off the ground",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "18": {
+      "scene_context": "宿舍门槛",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "dark night",
+      "activity": "basket pauses before touching floor",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "19": {
+      "scene_context": "宿舍外山道",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "dark night",
+      "activity": "P01 turns image-jade toward yard",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    },
+    "20": {
+      "scene_context": "宿舍门内",
+      "location_type": "indoor",
+      "temperature_band": "cool",
+      "weather": "dark night",
+      "activity": "keeps door closed after third knock",
+      "outfits": {
+        "P01": {
+          "present": true,
+          "look_id": "P01_BASE",
+          "garments": [
+            "洗旧的灰蓝短褂、米白汗巾、深色绑腿和磨旧布鞋，衣角有稳定炭灰痕迹"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        },
+        "P02": {
+          "present": true,
+          "look_id": "P02_BASE",
+          "garments": [
+            "褪色暗红夹袄、深灰裙裤、布鞋和旧围裙，袖口有常年洗不掉的煤灰"
+          ],
+          "outer_layer": "",
+          "leg_layer": "",
+          "headwear": "",
+          "footwear": "",
+          "temperature_fit": "PASS",
+          "weather_fit": "PASS",
+          "activity_fit": "PASS",
+          "identity_consistent": true,
+          "aesthetic_fit": "pretty_realistic",
+          "change_reason": ""
+        }
+      }
+    }
+  }
+}

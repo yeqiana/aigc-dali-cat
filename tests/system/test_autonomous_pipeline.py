@@ -505,6 +505,20 @@ class StoryIntentParserTest(PipelineBase):
                 self.assertEqual(selector.select(payload, story_root=self.root)["status"]
                                  in selector.STATUSES, True)
 
+    def test_everyday_photo_request_is_not_rejected_as_noise(self) -> None:
+        intent = parser.parse(
+            "年轻人聚会后在河边拍照，照片里多出一个现实中不存在的同行者",
+            story_root=self.root,
+        )
+        self.assertEqual(intent["experience_type"], "immersive_first_person")
+        self.assertEqual(intent["evidence"]["signals"][0],
+                         "experience_type=immersive_first_person:照片")
+
+    def test_shituoling_is_recognized_as_fictional_high_fantasy(self) -> None:
+        intent = parser.parse("狮驼岭第二篇", story_root=self.root)
+        self.assertEqual(intent["world"], "fictional")
+        self.assertEqual(intent["fantasy_level"], "high")
+
     def test_parser_fails_closed(self) -> None:
         for bad, code in (("", parser.ERROR_EMPTY), ("   ", parser.ERROR_EMPTY),
                           ("qwerty", parser.ERROR_NO_SIGNAL)):

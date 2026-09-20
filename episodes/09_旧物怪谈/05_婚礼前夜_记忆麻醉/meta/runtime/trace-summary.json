@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-19T22:54:49.935+08:00",
+  "diagnostic_only": true,
+  "stage_authority": false,
+  "latest_trace_id": null,
+  "event_count": 62,
+  "span_end_count": 31,
+  "status_counts": {
+    "PASS": 28,
+    "FAILED": 3
+  },
+  "elapsed_ms_by_category": {
+    "image_generation": 3359501.0
+  },
+  "slowest_spans": [
+    {
+      "name": "image.generate.frame.15",
+      "category": "image_generation",
+      "status": "PASS",
+      "elapsed_ms": 287922.0,
+      "span_id": "SP_93a9e1ea52494226"
+    },
+    {
+      "name": "image.generate.frame.03",
+      "category": "image_generation",
+      "status": "FAILED",
+      "elapsed_ms": 140391.0,
+      "span_id": "SP_256784172c12444e"
+    },
+    {
+      "name": "image.generate.frame.07",
+      "category": "image_generation",
+      "status": "PASS",
+      "elapsed_ms": 129531.0,
+      "span_id": "SP_d67e4c6e16214b0b"
+    },
+    {
+      "name": "image.generate.frame.03",
+      "category": "image_generation",
+      "status": "PASS",
+      "elapsed_ms": 123578.0,
+      "span_id": "SP_f0efe1093580451e"
+    },
+    {
+      "name": "image.generate.frame.09",
+      "category": "image_generation",
+      "status": "PASS",
+      "elapsed_ms": 121860.0,
+      "span_id": "SP_df7c1e9bda88484d"
+    },
+    {
+      "name": "image.generate.frame.12",
+      "category": "image_generation",
+      "status": "PASS",
+      "elapsed_ms": 118141.0,
+      "span_id": "SP_a165292702fe40e6"
+    },
+    {
+      "name": "image.generate.frame.12",
+      "category": "image_generation",
+      "status": "PASS",
+      "elapsed_ms": 114312.0,
+      "span_id": "SP_a318e73faadb4b3f"
+    },
+    {
+      "name": "image.generate.frame.01",
+      "category": "image_generation",
+      "status": "PASS",
+      "elapsed_ms": 113859.0,
+      "span_id": "SP_99fefa918a3e44ec"
+    },
+    {
+      "name": "image.generate.frame.12",
+      "category": "image_generation",
+      "status": "PASS",
+      "elapsed_ms": 108578.0,
+      "span_id": "SP_a39cdefc6c4649cd"
+    },
+    {
+      "name": "image.generate.frame.01",
+      "category": "image_generation",
+      "status": "PASS",
+      "elapsed_ms": 104656.0,
+      "span_id": "SP_fbc0f3a80dd449eb"
+    },
+    {
+      "name": "image.generate.frame.15",
+      "category": "image_generation",
+      "status": "PASS",
+      "elapsed_ms": 104391.0,
+      "span_id": "SP_d1bebf76f4d14710"
+    },
+    {
+      "name": "image.generate.frame.17",
+      "category": "image_generation",
+      "status": "PASS",
+      "elapsed_ms": 103344.0,
+      "span_id": "SP_6eba694e04b946a0"
+    }
+  ],
+  "kind": "trace_summary"
+}

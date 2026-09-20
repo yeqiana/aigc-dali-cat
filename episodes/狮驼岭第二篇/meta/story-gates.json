@@ -1,0 +1,467 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "狮驼岭第二篇",
+  "visual_profile": {
+    "mode": "explicit",
+    "profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1",
+    "profile_path": "standards/visual_profiles/profiles/M02_HEAVEN_MUNDANE_WORKER_V1.json",
+    "capture_profile": "auto",
+    "override_reason": "visual_profile_selector"
+  },
+  "story": {
+    "recent5_checked": true,
+    "recent5_evidence_path": "meta/recent5-review.json",
+    "four_locks_diff_count": 4,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 3,
+    "hook_frames": [
+      1,
+      6,
+      10
+    ],
+    "escalation_frames": [
+      6,
+      10,
+      11,
+      15,
+      18
+    ],
+    "climax_frame": 12,
+    "payoff_frame": 18,
+    "semantic_review_path": "meta/story-semantic-review.json"
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [
+      1,
+      5,
+      10,
+      12
+    ],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "P01阿七与P02阿莲",
+        "location": "狮驼岭山腰炭场至石灶厨房旧水井路段",
+        "key_prop": "旧留影玉牌、藤编炭筐、三块封井石",
+        "wardrobe": "P01灰蓝短褂米白汗巾；P02褪色暗红夹袄旧围裙",
+        "weather_time": "清晨至夜间，干燥山道，炭窑火光与裸灯"
+      }
+    },
+    "authenticity_card": {
+      "story_era": null,
+      "location": null,
+      "photographer": null,
+      "shooting_reason": null,
+      "primary_capture": {
+        "id": null,
+        "device": null
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": null,
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": null,
+        "restricted": null,
+        "lost_control": null
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": null,
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": null
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "worst_condition": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "first_major_anomaly": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      }
+    },
+    "calibration_contact_sheet": {
+      "path": null,
+      "sha256": null
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "dry mountain spring",
+      "baseline": {
+        "condition": "clear morning",
+        "time_of_day": "morning",
+        "temperature_feel": "cool dry air",
+        "ground_state": "dry packed ash and stone",
+        "visibility": "clear",
+        "wind": "light mountain wind",
+        "precipitation": "none",
+        "physical_cues": [
+          "charcoal dust on stone",
+          "dry grass at the well rim",
+          "thin smoke from the kiln"
+        ]
+      },
+      "segments": [
+        {
+          "id": "workday_morning",
+          "start_frame": 1,
+          "end_frame": 9,
+          "condition": "clear morning",
+          "time_of_day": "morning",
+          "physical_cues": [
+            "low side light",
+            "fresh charcoal dust"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "workday_afternoon",
+          "start_frame": 10,
+          "end_frame": 15,
+          "condition": "dry afternoon",
+          "time_of_day": "afternoon",
+          "physical_cues": [
+            "harder side light",
+            "longer basket shadows"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "workday_night",
+          "start_frame": 16,
+          "end_frame": 20,
+          "condition": "dark night",
+          "time_of_day": "night",
+          "physical_cues": [
+            "bare lamp",
+            "kiln ember glow",
+            "cool darkness beyond the door"
+          ],
+          "conditional_effects": []
+        }
+      ],
+      "frame_overrides": {}
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "two workers and charcoal basket"
+        ],
+        "scale_reference": "basket against worker torso",
+        "escalation_from": null
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "hands tying basket"
+        ],
+        "scale_reference": "hands and rope",
+        "escalation_from": null
+      },
+      "03": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "charcoal path and kiln"
+        ],
+        "scale_reference": "workers against path",
+        "escalation_from": null
+      },
+      "04": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "kitchen receiving coal"
+        ],
+        "scale_reference": "basket at stove",
+        "escalation_from": null
+      },
+      "05": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "wet soil by sealed well"
+        ],
+        "scale_reference": "wet mark beside stone",
+        "escalation_from": null
+      },
+      "06": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "second basket set by sealed well",
+          "three knock reaction implied"
+        ],
+        "scale_reference": "basket against sealed stones",
+        "escalation_from": 5
+      },
+      "07": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "workers exchange look",
+          "well remains sealed"
+        ],
+        "scale_reference": "two faces and well gap",
+        "escalation_from": 6
+      },
+      "08": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "charcoal dust and wet finger trace"
+        ],
+        "scale_reference": "finger trace on stone",
+        "escalation_from": 7
+      },
+      "09": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "empty basket moved away"
+        ],
+        "scale_reference": "basket crossing frame",
+        "escalation_from": 8
+      },
+      "10": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "three marks in jade reflection"
+        ],
+        "scale_reference": "reflection beside palm",
+        "escalation_from": 9
+      },
+      "11": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "stone unmoved while ripple appears"
+        ],
+        "scale_reference": "hand versus stone block",
+        "escalation_from": 10
+      },
+      "12": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 4,
+        "required_visual_cues": [
+          "A-Lian restrains hand",
+          "third stone stays closed"
+        ],
+        "scale_reference": "two workers against sealed well",
+        "escalation_from": 11
+      },
+      "13": {
+        "narrative_role": "transition",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "short delivery and darkening slope"
+        ],
+        "scale_reference": "basket smaller than slope",
+        "escalation_from": 12
+      },
+      "14": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "empty basket pulls against hand"
+        ],
+        "scale_reference": "basket weight against arm",
+        "escalation_from": 13
+      },
+      "15": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "extra basket in charcoal yard"
+        ],
+        "scale_reference": "two baskets where one should be",
+        "escalation_from": 14
+      },
+      "16": {
+        "narrative_role": "payoff",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "night return and bare lamp"
+        ],
+        "scale_reference": "workers against dark doorway",
+        "escalation_from": 15
+      },
+      "17": {
+        "narrative_role": "payoff",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "empty basket rotates alone"
+        ],
+        "scale_reference": "basket against still wall",
+        "escalation_from": 16
+      },
+      "18": {
+        "narrative_role": "payoff",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "three knocks at threshold",
+          "door remains closed"
+        ],
+        "scale_reference": "threshold versus two people",
+        "escalation_from": 17
+      },
+      "19": {
+        "narrative_role": "residue",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "quiet yard with no worker"
+        ],
+        "scale_reference": "empty yard and basket",
+        "escalation_from": 18
+      },
+      "20": {
+        "narrative_role": "residue",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "wet mark and three dents remain"
+        ],
+        "scale_reference": "dents in stone",
+        "escalation_from": 19
+      }
+    },
+    "world_identity": {
+      "profile_id": "SHITUOLING_MUNDANE_WORKER_V1",
+      "place": "狮驼岭山腰炭场、石灶厨房、封死旧井与宿舍门槛",
+      "ordinary_world_rule": "神话世界中的普通劳动者按班次送炭，异常不改变日常劳动秩序"
+    },
+    "world_state": {
+      "workday_flow": "清晨装炭、白天送至石灶、傍晚收筐、夜间回宿舍",
+      "physical_residue": "炭灰、湿土、磨损藤筐、裸灯和旧留影玉牌均保持可见物理痕迹"
+    },
+    "temporal_continuity": {
+      "timeline": "同一班次从清晨推进到夜间",
+      "weather": "干燥山风，无滤镜化天气变化",
+      "light_progression": "清晨散射光→午后硬光→灶火与裸灯夜色"
+    },
+    "wardrobe": {
+      "P01": "灰蓝旧短褂、米白汗巾、炭灰鞋，逐帧增加汗湿与炭尘",
+      "P02": "褪色暗红夹袄、旧围裙、布鞋，逐帧增加灰尘与灶火暖色"
+    },
+    "narrative_core": {
+      "hook_frames": [
+        1,
+        6,
+        10
+      ],
+      "escalation_frames": [
+        6,
+        10,
+        11,
+        15,
+        18
+      ],
+      "climax_frame": 12,
+      "payoff_frame": 18,
+      "rule": "放炭触发井下三声，回应从井边附着到空筐和门槛"
+    },
+    "shot_progression": {
+      "frame_count": 20,
+      "progression": "ordinary work→three knocks→spatial contradiction→refusal to lift stone→doorstep residue",
+      "camera_logic": "wide establishes labor space, detail records physical evidence, medium holds human choice, close reserves contradiction"
+    },
+    "capture_grammar": {
+      "device": "旧留影玉牌的第一人称生活记录",
+      "surface": "4:5旧数码/影像玉牌记录，真实炭尘、裸灯、湿痕和手部遮挡",
+      "prohibitions": [
+        "无海报式英雄构图",
+        "无解释字幕替代像素证据",
+        "无专业探灵视角"
+      ],
+      "anomaly_visibility": "先以湿土、受力、反光和空筐重量呈现，再在门槛留下三声"
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": false,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "pending",
+    "continuity": "pending",
+    "visual_admission": "pending",
+    "subtitle": "pending",
+    "production": "pending",
+    "recommendation_fit": "pending",
+    "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 2,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true
+  },
+  "character": {
+    "finalize": {
+      "character": "P01阿七为第一人称普通炭场伙计，P02阿莲为同班伙房帮工",
+      "identity": "沿用已锁定的P01/P02原创建筑、发型、衣着、肤质和世界身份锚点，不新增职业技能",
+      "pov": "P01 first_person；拍摄设备只作为旧留影玉牌记录来源，不改变人物关系",
+      "appearance": "P01灰蓝旧短褂、米白汗巾、炭灰鞋；P02暗红夹袄、旧围裙，汗湿、炭尘、自然不对称面部"
+    }
+  }
+}

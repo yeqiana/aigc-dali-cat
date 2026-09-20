@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "created_at": "2026-09-08T23:58:03+08:00",
-  "updated_at": "2026-09-16T00:48:46+08:00",
+  "updated_at": "2026-09-19T22:54:49+08:00",
   "max_parallel": 3,
   "adaptive_parallel": 3,
   "stable_waves": 0,
@@ -2107,7 +2107,7 @@
       "frame": 1,
       "kind": "repair",
       "scope": "repair",
-      "status": "generated",
+      "status": "superseded",
       "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/authority-refresh/01-authority-refresh.txt",
       "references": [],
       "reference_execution_contract": {
@@ -2157,7 +2157,7 @@
         "prepared_at": "2026-09-15T22:20:23+08:00",
         "expected_lifecycle": "meta/image-workers/01-9ac4058b70e5-a2.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:20:23+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:23:59+08:00"
       },
       "started_at": "2026-09-15T22:20:23+08:00",
       "completed_at": "2026-09-15T22:22:08+08:00"
@@ -2217,7 +2217,7 @@
         "prepared_at": "2026-09-15T22:19:08+08:00",
         "expected_lifecycle": "meta/image-workers/02-503127995491-a2.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:19:08+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:19:08+08:00",
       "completed_at": "2026-09-15T22:20:49+08:00"
@@ -2311,7 +2311,7 @@
         "prepared_at": "2026-09-15T22:07:12+08:00",
         "expected_lifecycle": "meta/image-workers/04-2e6456d0f788-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:07:12+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:07:12+08:00",
       "completed_at": "2026-09-15T22:08:39+08:00"
@@ -2371,7 +2371,7 @@
         "prepared_at": "2026-09-15T22:16:00+08:00",
         "expected_lifecycle": "meta/image-workers/05-35858b4a2df2-a2.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:16:00+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:16:00+08:00",
       "completed_at": "2026-09-15T22:17:40+08:00"
@@ -2436,7 +2436,7 @@
         "prepared_at": "2026-09-15T22:19:18+08:00",
         "expected_lifecycle": "meta/image-workers/06-27516ae179ad-a2.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:19:18+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:19:18+08:00",
       "completed_at": "2026-09-15T22:36:00+08:00",
@@ -2562,7 +2562,7 @@
         "prepared_at": "2026-09-15T22:07:34+08:00",
         "expected_lifecycle": "meta/image-workers/08-3750991c07ba-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:07:34+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:07:34+08:00",
       "completed_at": "2026-09-15T22:09:18+08:00"
@@ -2609,7 +2609,7 @@
         "prepared_at": "2026-09-15T22:08:40+08:00",
         "expected_lifecycle": "meta/image-workers/09-4c08eff05c27-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:08:40+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:08:40+08:00",
       "completed_at": "2026-09-15T22:10:42+08:00"
@@ -2656,7 +2656,7 @@
         "prepared_at": "2026-09-15T22:08:05+08:00",
         "expected_lifecycle": "meta/image-workers/10-7d92291f0b2e-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:08:05+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:08:05+08:00",
       "completed_at": "2026-09-15T22:09:38+08:00"
@@ -2703,7 +2703,7 @@
         "prepared_at": "2026-09-15T22:04:11+08:00",
         "expected_lifecycle": "meta/image-workers/11-d67acb70d975-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:04:11+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:04:11+08:00",
       "completed_at": "2026-09-15T22:05:36+08:00"
@@ -2797,7 +2797,7 @@
         "prepared_at": "2026-09-15T22:05:36+08:00",
         "expected_lifecycle": "meta/image-workers/13-cdbe48518add-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:05:36+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:05:36+08:00",
       "completed_at": "2026-09-15T22:07:12+08:00"
@@ -2857,7 +2857,7 @@
         "prepared_at": "2026-09-15T22:18:48+08:00",
         "expected_lifecycle": "meta/image-workers/14-3c10b4a65646-a2.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:18:49+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:18:49+08:00",
       "completed_at": "2026-09-15T22:20:23+08:00"
@@ -2867,7 +2867,7 @@
       "frame": 15,
       "kind": "repair",
       "scope": "repair",
-      "status": "generated",
+      "status": "superseded",
       "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/authority-refresh/15-authority-refresh.txt",
       "references": [],
       "reference_execution_contract": {
@@ -2904,7 +2904,7 @@
         "prepared_at": "2026-09-15T22:04:11+08:00",
         "expected_lifecycle": "meta/image-workers/15-bfc569e948a0-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:04:11+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:23:59+08:00"
       },
       "started_at": "2026-09-15T22:04:11+08:00",
       "completed_at": "2026-09-15T22:05:56+08:00"
@@ -2951,7 +2951,7 @@
         "prepared_at": "2026-09-15T22:05:56+08:00",
         "expected_lifecycle": "meta/image-workers/16-39f96d6ea0ab-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:05:56+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:05:56+08:00",
       "completed_at": "2026-09-15T22:07:34+08:00"
@@ -3131,7 +3131,7 @@
         "prepared_at": "2026-09-15T22:17:40+08:00",
         "expected_lifecycle": "meta/image-workers/19-407ab497972a-a2.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:17:40+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:17:40+08:00",
       "completed_at": "2026-09-15T22:19:17+08:00"
@@ -3191,7 +3191,7 @@
         "prepared_at": "2026-09-15T22:17:44+08:00",
         "expected_lifecycle": "meta/image-workers/20-737fe5a8663e-a2.lifecycle.json",
         "worker_pending_at": "2026-09-15T22:17:44+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T22:17:44+08:00",
       "completed_at": "2026-09-15T22:19:08+08:00"
@@ -3201,7 +3201,7 @@
       "frame": 3,
       "kind": "repair",
       "scope": "repair",
-      "status": "generated",
+      "status": "superseded",
       "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/repairs/03-final-semantic-user-continuation-01.txt",
       "references": [],
       "reference_execution_contract": {
@@ -3238,7 +3238,7 @@
         "prepared_at": "2026-09-15T23:04:47+08:00",
         "expected_lifecycle": "meta/image-workers/03-740bc23e704d-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T23:04:47+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:23:59+08:00"
       },
       "started_at": "2026-09-15T23:04:47+08:00",
       "technical_failures": [
@@ -3299,7 +3299,7 @@
         "prepared_at": "2026-09-15T23:04:47+08:00",
         "expected_lifecycle": "meta/image-workers/07-51e66ee258c8-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T23:04:47+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T23:04:47+08:00",
       "completed_at": "2026-09-15T23:06:57+08:00"
@@ -3393,7 +3393,7 @@
         "prepared_at": "2026-09-15T23:24:33+08:00",
         "expected_lifecycle": "meta/image-workers/17-db3dbc1276c7-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T23:24:33+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T23:24:33+08:00",
       "completed_at": "2026-09-15T23:26:10+08:00"
@@ -3440,7 +3440,7 @@
         "prepared_at": "2026-09-15T23:24:33+08:00",
         "expected_lifecycle": "meta/image-workers/18-25fcfdd67bf9-a1.lifecycle.json",
         "worker_pending_at": "2026-09-15T23:24:33+08:00",
-        "updated_at": "2026-09-16T00:47:03+08:00"
+        "updated_at": "2026-09-19T22:46:42+08:00"
       },
       "started_at": "2026-09-15T23:24:33+08:00",
       "completed_at": "2026-09-15T23:26:15+08:00"
@@ -3497,7 +3497,7 @@
       "frame": 12,
       "kind": "repair",
       "scope": "repair",
-      "status": "generated",
+      "status": "superseded",
       "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/repairs/12-final-semantic-continuation-user-continuation-02.txt",
       "references": [],
       "reference_execution_contract": {
@@ -3534,10 +3534,413 @@
         "prepared_at": "2026-09-16T00:47:03+08:00",
         "expected_lifecycle": "meta/image-workers/12-613ca3d6dceb-a1.lifecycle.json",
         "worker_pending_at": "2026-09-16T00:47:03+08:00",
-        "updated_at": "2026-09-16T00:48:45+08:00"
+        "updated_at": "2026-09-19T22:23:59+08:00"
       },
       "started_at": "2026-09-16T00:47:03+08:00",
       "completed_at": "2026-09-16T00:48:45+08:00"
+    },
+    {
+      "id": "18f84a1474f8",
+      "frame": 1,
+      "kind": "original",
+      "scope": "visual_lock",
+      "status": "superseded",
+      "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/visual-lock-v21/01.txt",
+      "references": [],
+      "reference_execution_contract": {
+        "selected_at_enqueue": "2026-09-19T22:23:31+08:00",
+        "selected_references": [],
+        "selected_roles": [],
+        "selected_kinds": []
+      },
+      "capture_id": "visual-lock-v21-baseline-01",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": null,
+      "priority": 50,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/01.json",
+        "contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6"
+      },
+      "prompt_package": {
+        "package_sha256": "e633a1b18417fc0f2eceee3d0475f29fbb033fd101147f3a93ff3b449c826fe4",
+        "scene_prompt_sha256": "35781a925fe11fb39c6dedd52f87f06b784d1ba77adb9de66159289fed59f4c6",
+        "frame_contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6"
+      },
+      "attempts": 0,
+      "output_path": null,
+      "log_path": null,
+      "last_error": "cannot begin original from LOCKED",
+      "queued_at": "2026-09-19T22:23:31+08:00",
+      "execution": {
+        "transaction_id": "96c33b0562964492b6799beef3c848c2",
+        "phase": "BEGIN_REJECTED",
+        "prepared_at": "2026-09-19T22:24:00+08:00",
+        "expected_lifecycle": "meta/image-workers/01-18f84a1474f8-a1.lifecycle.json",
+        "updated_at": "2026-09-19T22:24:00+08:00"
+      }
+    },
+    {
+      "id": "a5210309ccba",
+      "frame": 1,
+      "kind": "original",
+      "scope": "visual_lock",
+      "status": "superseded",
+      "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/visual-lock-v21/01.txt",
+      "references": [],
+      "reference_execution_contract": {
+        "selected_at_enqueue": "2026-09-19T22:26:41+08:00",
+        "selected_references": [],
+        "selected_roles": [],
+        "selected_kinds": []
+      },
+      "capture_id": "visual-lock-v21-baseline-01-refresh",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": null,
+      "priority": 50,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/01.json",
+        "contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6"
+      },
+      "prompt_package": {
+        "package_sha256": "e633a1b18417fc0f2eceee3d0475f29fbb033fd101147f3a93ff3b449c826fe4",
+        "scene_prompt_sha256": "35781a925fe11fb39c6dedd52f87f06b784d1ba77adb9de66159289fed59f4c6",
+        "frame_contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6"
+      },
+      "attempts": 0,
+      "output_path": null,
+      "log_path": null,
+      "last_error": "cannot begin original from AUTHORITY_REFRESH_AUTHORIZED",
+      "queued_at": "2026-09-19T22:26:41+08:00",
+      "execution": {
+        "transaction_id": "9032387128224ea994813ed581a824df",
+        "phase": "BEGIN_REJECTED",
+        "prepared_at": "2026-09-19T22:26:49+08:00",
+        "expected_lifecycle": "meta/image-workers/01-a5210309ccba-a1.lifecycle.json",
+        "updated_at": "2026-09-19T22:26:49+08:00"
+      },
+      "superseded_from_status": "blocked",
+      "superseded_at": "2026-09-19T22:28:28+08:00",
+      "superseded_by": {
+        "type": "ledger_candidate",
+        "sha256": "334619eca6a74e2786654440b7633fbc263a59f487bac44c2dd71a4da4140be6",
+        "recorded_at": null
+      }
+    },
+    {
+      "id": "1298ba331a97",
+      "frame": 1,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "generated",
+      "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/authority-refresh/01-authority-refresh.txt",
+      "references": [],
+      "reference_execution_contract": {
+        "selected_at_enqueue": "2026-09-19T22:27:31+08:00",
+        "selected_references": [],
+        "selected_roles": [],
+        "selected_kinds": []
+      },
+      "capture_id": "authority-refresh-01",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": null,
+      "priority": 0,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/01.json",
+        "contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6"
+      },
+      "prompt_package": {
+        "package_sha256": "1ce2b1237b4fe0f0b68fd7d87835a208ad369a9525389d09e8d68de223021739",
+        "scene_prompt_sha256": "e395c16d2dda915de09fb6841ecdc2bfdf0b8ea6ca1633eb2a9d68a378c0abb1",
+        "frame_contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6"
+      },
+      "attempts": 1,
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-1298ba331a97-a1.png",
+      "log_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/image-workers/01-1298ba331a97-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-19T22:27:31+08:00",
+      "execution": {
+        "transaction_id": "14e242cf1f4e4273acc820252bce63a5",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-19T22:28:29+08:00",
+        "expected_lifecycle": "meta/image-workers/01-1298ba331a97-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-19T22:28:29+08:00",
+        "updated_at": "2026-09-19T22:46:42+08:00"
+      },
+      "started_at": "2026-09-19T22:28:29+08:00",
+      "completed_at": "2026-09-19T22:30:24+08:00"
+    },
+    {
+      "id": "c03e9ba9ae66",
+      "frame": 3,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "superseded",
+      "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/authority-refresh/03-authority-refresh.txt",
+      "references": [],
+      "reference_execution_contract": {
+        "selected_at_enqueue": "2026-09-19T22:27:31+08:00",
+        "selected_references": [],
+        "selected_roles": [],
+        "selected_kinds": []
+      },
+      "capture_id": "authority-refresh-03",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": null,
+      "priority": 83,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/03.json",
+        "contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08"
+      },
+      "prompt_package": {
+        "package_sha256": "3128a30592cec37a9dbc4713431bb9d8f581a699a26e16e756e72852a9c36bcd",
+        "scene_prompt_sha256": "f4099bb6b3eb49a9e9c1c692989ee36c60f110398744974b5fad7eebe7e047ed",
+        "frame_contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08"
+      },
+      "attempts": 0,
+      "output_path": null,
+      "log_path": null,
+      "last_error": null,
+      "queued_at": "2026-09-19T22:27:32+08:00"
+    },
+    {
+      "id": "a46bc6dc413c",
+      "frame": 12,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "superseded",
+      "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/authority-refresh/12-authority-refresh.txt",
+      "references": [],
+      "reference_execution_contract": {
+        "selected_at_enqueue": "2026-09-19T22:27:32+08:00",
+        "selected_references": [],
+        "selected_roles": [],
+        "selected_kinds": []
+      },
+      "capture_id": "authority-refresh-12",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": 11,
+      "priority": 110,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/12.json",
+        "contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734"
+      },
+      "prompt_package": {
+        "package_sha256": "455ecc758f961130ea88c6e3f529e523b69fc4bf4c8f59e1c4655fc1771a58da",
+        "scene_prompt_sha256": "9e54e8b3088dafa1f58cc356e16e909469ad57694665c1ee6ea9e20b63d4d5a6",
+        "frame_contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734"
+      },
+      "attempts": 0,
+      "output_path": null,
+      "log_path": null,
+      "last_error": null,
+      "queued_at": "2026-09-19T22:27:32+08:00"
+    },
+    {
+      "id": "0188805d2751",
+      "frame": 15,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "superseded",
+      "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/authority-refresh/15-authority-refresh.txt",
+      "references": [],
+      "reference_execution_contract": {
+        "selected_at_enqueue": "2026-09-19T22:27:33+08:00",
+        "selected_references": [],
+        "selected_roles": [],
+        "selected_kinds": []
+      },
+      "capture_id": "authority-refresh-15",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [],
+      "narrative_escalation_from": 13,
+      "priority": 150,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/15.json",
+        "contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5"
+      },
+      "prompt_package": {
+        "package_sha256": "ba4fa309919f9dee4e7d56df189efe7d9f63835f779afeaffad07dd1cbe87c82",
+        "scene_prompt_sha256": "762aa1b987c5d3ae08e7eaba015c62e02da80ef074dd8c61f3cc3d6760c3695c",
+        "frame_contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5"
+      },
+      "attempts": 0,
+      "output_path": null,
+      "log_path": null,
+      "last_error": null,
+      "queued_at": "2026-09-19T22:27:33+08:00"
+    },
+    {
+      "id": "aceee650e963",
+      "frame": 3,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "generated",
+      "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/authority-refresh/03-authority-refresh.txt",
+      "references": [],
+      "reference_execution_contract": {
+        "selected_at_enqueue": "2026-09-19T22:42:14+08:00",
+        "selected_references": [],
+        "selected_roles": [],
+        "selected_kinds": [],
+        "refresh_reason": "baseline_pixel_master_available"
+      },
+      "capture_id": "authority-refresh-03-after-baseline",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [
+        1
+      ],
+      "narrative_escalation_from": null,
+      "priority": 83,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/03.json",
+        "contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08"
+      },
+      "prompt_package": {
+        "package_sha256": "3128a30592cec37a9dbc4713431bb9d8f581a699a26e16e756e72852a9c36bcd",
+        "scene_prompt_sha256": "f4099bb6b3eb49a9e9c1c692989ee36c60f110398744974b5fad7eebe7e047ed",
+        "frame_contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08"
+      },
+      "attempts": 1,
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-aceee650e963-a1.png",
+      "log_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/image-workers/03-aceee650e963-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-19T22:28:18+08:00",
+      "execution": {
+        "transaction_id": "858546e2277c42efad668dc5509d264d",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-19T22:53:14+08:00",
+        "expected_lifecycle": "meta/image-workers/03-aceee650e963-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-19T22:53:15+08:00",
+        "updated_at": "2026-09-19T22:54:49+08:00"
+      },
+      "started_at": "2026-09-19T22:53:15+08:00",
+      "completed_at": "2026-09-19T22:54:49+08:00"
+    },
+    {
+      "id": "367cb7a16179",
+      "frame": 12,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "generated",
+      "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/authority-refresh/12-authority-refresh.txt",
+      "references": [],
+      "reference_execution_contract": {
+        "selected_at_enqueue": "2026-09-19T22:42:14+08:00",
+        "selected_references": [],
+        "selected_roles": [],
+        "selected_kinds": [],
+        "refresh_reason": "baseline_pixel_master_available"
+      },
+      "capture_id": "authority-refresh-12-after-baseline",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [
+        1
+      ],
+      "narrative_escalation_from": 11,
+      "priority": 110,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/12.json",
+        "contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734"
+      },
+      "prompt_package": {
+        "package_sha256": "455ecc758f961130ea88c6e3f529e523b69fc4bf4c8f59e1c4655fc1771a58da",
+        "scene_prompt_sha256": "9e54e8b3088dafa1f58cc356e16e909469ad57694665c1ee6ea9e20b63d4d5a6",
+        "frame_contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734"
+      },
+      "attempts": 1,
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-367cb7a16179-a1.png",
+      "log_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/image-workers/12-367cb7a16179-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-19T22:28:19+08:00",
+      "execution": {
+        "transaction_id": "f51d47715f24460a98ee90cb2041acb5",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-19T22:51:33+08:00",
+        "expected_lifecycle": "meta/image-workers/12-367cb7a16179-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-19T22:51:34+08:00",
+        "updated_at": "2026-09-19T22:53:14+08:00"
+      },
+      "started_at": "2026-09-19T22:51:34+08:00",
+      "completed_at": "2026-09-19T22:53:14+08:00"
+    },
+    {
+      "id": "4f65f827f737",
+      "frame": 15,
+      "kind": "repair",
+      "scope": "repair",
+      "status": "generated",
+      "prompt_file": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/prompts/authority-refresh/15-authority-refresh.txt",
+      "references": [],
+      "reference_execution_contract": {
+        "selected_at_enqueue": "2026-09-19T22:42:14+08:00",
+        "selected_references": [],
+        "selected_roles": [],
+        "selected_kinds": [],
+        "refresh_reason": "baseline_pixel_master_available"
+      },
+      "capture_id": "authority-refresh-15-after-baseline",
+      "model": "gpt-image-2",
+      "quality": "high",
+      "strict_model": false,
+      "depends_on": [
+        1
+      ],
+      "narrative_escalation_from": 13,
+      "priority": 150,
+      "frame_contract": {
+        "schema_version": 1,
+        "path": "meta/runtime/contracts/frames/15.json",
+        "contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5"
+      },
+      "prompt_package": {
+        "package_sha256": "ba4fa309919f9dee4e7d56df189efe7d9f63835f779afeaffad07dd1cbe87c82",
+        "scene_prompt_sha256": "762aa1b987c5d3ae08e7eaba015c62e02da80ef074dd8c61f3cc3d6760c3695c",
+        "frame_contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5"
+      },
+      "attempts": 1,
+      "output_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/15-4f65f827f737-a1.png",
+      "log_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/image-workers/15-4f65f827f737-a1.jsonl",
+      "last_error": null,
+      "queued_at": "2026-09-19T22:28:19+08:00",
+      "execution": {
+        "transaction_id": "449036e473f94f98993663f8e6669042",
+        "phase": "COMMITTED",
+        "prepared_at": "2026-09-19T22:46:44+08:00",
+        "expected_lifecycle": "meta/image-workers/15-4f65f827f737-a1.lifecycle.json",
+        "worker_pending_at": "2026-09-19T22:46:44+08:00",
+        "updated_at": "2026-09-19T22:51:33+08:00"
+      },
+      "started_at": "2026-09-19T22:46:44+08:00",
+      "completed_at": "2026-09-19T22:51:33+08:00"
     }
   ],
   "waves": [
@@ -5170,6 +5573,86 @@
       "inflight_after": 0,
       "next_parallel": 3,
       "item_id": "613ca3d6dceb"
+    },
+    {
+      "event": 1,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-19T22:28:29+08:00",
+      "frame": 1,
+      "status": "dispatched",
+      "inflight_after": 1,
+      "next_parallel": 1,
+      "item_id": "1298ba331a97"
+    },
+    {
+      "event": 2,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-19T22:30:24+08:00",
+      "frame": 1,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "item_id": "1298ba331a97"
+    },
+    {
+      "event": 1,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-19T22:46:44+08:00",
+      "frame": 15,
+      "status": "dispatched",
+      "inflight_after": 1,
+      "next_parallel": 1,
+      "item_id": "4f65f827f737"
+    },
+    {
+      "event": 2,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-19T22:51:33+08:00",
+      "frame": 15,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "item_id": "4f65f827f737"
+    },
+    {
+      "event": 1,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-19T22:51:34+08:00",
+      "frame": 12,
+      "status": "dispatched",
+      "inflight_after": 1,
+      "next_parallel": 1,
+      "item_id": "367cb7a16179"
+    },
+    {
+      "event": 2,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-19T22:53:14+08:00",
+      "frame": 12,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "item_id": "367cb7a16179"
+    },
+    {
+      "event": 1,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-19T22:53:15+08:00",
+      "frame": 3,
+      "status": "dispatched",
+      "inflight_after": 1,
+      "next_parallel": 1,
+      "item_id": "aceee650e963"
+    },
+    {
+      "event": 2,
+      "mode": "continuous_first_completed",
+      "at": "2026-09-19T22:54:49+08:00",
+      "frame": 3,
+      "status": "generated",
+      "inflight_after": 0,
+      "next_parallel": 1,
+      "item_id": "aceee650e963"
     }
   ],
   "runtime_events": [
@@ -11757,6 +12240,534 @@
         "elapsed_seconds": 102.218
       },
       "at": "2026-09-16T00:48:46+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "1298ba331a97",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "01",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\01-1789828109.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\01-1298ba331a97-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\meta\\image-workers\\01-1298ba331a97-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/01.json",
+              "contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\01-1789828109.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\01-1298ba331a97-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/01-1789828222.json",
+              "sha256": "150a4d80ce65755465e71e2d3d47106593bf50010eea5135a67e1b4695e89d8c"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1789828222,
+              "frame": "01",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\01-1789828109.png",
+              "raw_sha256": "25f354566b548091358b90a91b4ad8877bae7a082c9600ff753da91efab54899",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "reference_transport": "codex_subscription_cli_attachment",
+              "references": [],
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\01-1298ba331a97-a1.png",
+                "sha256": "64614363fe6f3c45bb68e835692dba001f059390677d5a0f55b16050d5060673"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 112.7
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/storyOS/episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-1298ba331a97-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/storyOS/episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/image-workers/01-1298ba331a97-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "1298ba331a97",
+            "frame": "01",
+            "kind": "authority_refresh"
+          },
+          "prompt_package": {
+            "package_sha256": "1ce2b1237b4fe0f0b68fd7d87835a208ad369a9525389d09e8d68de223021739",
+            "scene_prompt_sha256": "e395c16d2dda915de09fb6841ecdc2bfdf0b8ea6ca1633eb2a9d68a378c0abb1",
+            "frame_contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 114.276
+      },
+      "at": "2026-09-19T22:30:24+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "4f65f827f737",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "15",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\15-1789829205.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\15-4f65f827f737-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\meta\\image-workers\\15-4f65f827f737-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/15.json",
+              "contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\15-1789829205.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\15-4f65f827f737-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/15-1789829491.json",
+              "sha256": "2efea366ea7e9e61fafb41ab0990fd80c4fe0f1c6f3b4b643ad4f399a955608a"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1789829491,
+              "frame": "15",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\15-1789829205.png",
+              "raw_sha256": "4cb47bdb4c930278809323ae872a441f8656dc80b47265ef360a12d3225a0d48",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "reference_transport": "codex_subscription_cli_attachment",
+              "references": [],
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\15-4f65f827f737-a1.png",
+                "sha256": "64905b0104672ec57e9bc8d85f364d348111dc34b0bd4e730fac33591d8ccea4"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 286.36
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/storyOS/episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/15-4f65f827f737-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/storyOS/episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/image-workers/15-4f65f827f737-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "4f65f827f737",
+            "frame": "15",
+            "kind": "authority_refresh"
+          },
+          "prompt_package": {
+            "package_sha256": "ba4fa309919f9dee4e7d56df189efe7d9f63835f779afeaffad07dd1cbe87c82",
+            "scene_prompt_sha256": "762aa1b987c5d3ae08e7eaba015c62e02da80ef074dd8c61f3cc3d6760c3695c",
+            "frame_contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 288.332
+      },
+      "at": "2026-09-19T22:51:33+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "367cb7a16179",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "12",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\12-1789829494.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\12-367cb7a16179-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\meta\\image-workers\\12-367cb7a16179-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/12.json",
+              "contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\12-1789829494.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\12-367cb7a16179-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/12-1789829593.json",
+              "sha256": "6cebbddf8c478a8b4b202a959684c45ce05d8e93f71d4195c630a39b37d58ea9"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1789829593,
+              "frame": "12",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\12-1789829494.png",
+              "raw_sha256": "e7c96049da3f81982fee0530a8ff95c1ef47356d7ea1b91c2938b7b006c724f5",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "reference_transport": "codex_subscription_cli_attachment",
+              "references": [],
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\12-367cb7a16179-a1.png",
+                "sha256": "442d4a9e7012a79afa2f111c894dacbb772a2d313481ba3836922df17701e210"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 98.09
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/storyOS/episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-367cb7a16179-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/storyOS/episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/image-workers/12-367cb7a16179-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "367cb7a16179",
+            "frame": "12",
+            "kind": "authority_refresh"
+          },
+          "prompt_package": {
+            "package_sha256": "455ecc758f961130ea88c6e3f529e523b69fc4bf4c8f59e1c4655fc1771a58da",
+            "scene_prompt_sha256": "9e54e8b3088dafa1f58cc356e16e909469ad57694665c1ee6ea9e20b63d4d5a6",
+            "frame_contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 99.733
+      },
+      "at": "2026-09-19T22:53:14+08:00"
+    },
+    {
+      "event": "IMAGE_SUCCESS",
+      "task_id": "aceee650e963",
+      "payload": {
+        "result": {
+          "returncode": 0,
+          "stdout": "",
+          "payload": {
+            "ok": true,
+            "backend": "codex_subscription",
+            "frame": "03",
+            "raw_output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\03-1789829595.png",
+            "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\03-aceee650e963-a1.png",
+            "log": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\meta\\image-workers\\03-aceee650e963-a1.jsonl",
+            "provider_size": "1080x1350",
+            "target_size": [
+              1080,
+              1350
+            ],
+            "aspect_ratio": "4:5",
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "path": "meta/runtime/contracts/frames/03.json",
+              "contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08"
+            },
+            "normalization": {
+              "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\03-1789829595.png",
+              "output": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\03-aceee650e963-a1.png",
+              "source_size": [
+                1122,
+                1402
+              ],
+              "target_size": [
+                1080,
+                1350
+              ],
+              "ratio_delta": 0.000357,
+              "operation": "RESIZE_LANCZOS",
+              "reencoded": true,
+              "crop_applied": false,
+              "policy": "NP01",
+              "local_attempts": 1
+            },
+            "provider_receipt": {
+              "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/03-1789829688.json",
+              "sha256": "8ca8c1003364856953ca0ea8d349abedf0088c08ae226c950c3335ca15284f5e"
+            },
+            "provider_capability": {
+              "schema_version": 1,
+              "recorded_at_epoch": 1789829688,
+              "frame": "03",
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "generation_route": "codex_subscription",
+              "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+              "requested_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "aspect_ratio": 0.8
+              },
+              "provider_raw_canvas": {
+                "width": 1122,
+                "height": 1402,
+                "aspect_ratio": 0.800285307,
+                "exact_requested_canvas": false,
+                "resize_direction_to_release": "downscale"
+              },
+              "ratio_delta": 0.000356633,
+              "normalize_decision": "AUTO_NORMALIZE",
+              "raw_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\raw\\03-1789829595.png",
+              "raw_sha256": "1b859a06fca9883943dfec4d5b7b0d681f9937a6bf74e2545410427eccf47245",
+              "provider_attestation": false,
+              "exact_raw_canvas_guaranteed": false,
+              "receipt_is_evidence_not_authority": true,
+              "reference_transport": "codex_subscription_cli_attachment",
+              "references": [],
+              "normalization": {
+                "operation": "RESIZE_LANCZOS",
+                "ratio_delta": 0.000357,
+                "crop_applied": false,
+                "reencoded": true,
+                "local_attempts": 1
+              },
+              "release_canvas": {
+                "width": 1080,
+                "height": 1350,
+                "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\09_旧物怪谈\\05_婚礼前夜_记忆麻醉\\media\\candidates\\scheduled\\03-aceee650e963-a1.png",
+                "sha256": "3aeb1bc78f4efc0f5de88d614c7ce4a6d35f06923abc89af6ff1a470b50af990"
+              }
+            },
+            "image_model": {
+              "provider": "openai",
+              "model": "gpt-image-2",
+              "quality": "high",
+              "source": "system_default",
+              "strict_model": false,
+              "reproducible_snapshot": false,
+              "enforcement": "runtime_request_to_worker_contract",
+              "provider_attestation": false
+            },
+            "elapsed_seconds": 92.66
+          },
+          "output": "D:/workspace/YeQianWorkSpace/yeqian/storyOS/episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-aceee650e963-a1.png",
+          "log": "D:/workspace/YeQianWorkSpace/yeqian/storyOS/episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/image-workers/03-aceee650e963-a1.jsonl",
+          "attempt": 1,
+          "scout": null,
+          "candidate_budget": {
+            "decision": "COMMITTED",
+            "token": "aceee650e963",
+            "frame": "03",
+            "kind": "authority_refresh"
+          },
+          "prompt_package": {
+            "package_sha256": "3128a30592cec37a9dbc4713431bb9d8f581a699a26e16e756e72852a9c36bcd",
+            "scene_prompt_sha256": "f4099bb6b3eb49a9e9c1c692989ee36c60f110398744974b5fad7eebe7e047ed",
+            "frame_contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08"
+          },
+          "worker_pool": {
+            "mode": "python_warm_pool_codex_ephemeral",
+            "codex_session_reuse": false
+          }
+        },
+        "elapsed_seconds": 94.188
+      },
+      "at": "2026-09-19T22:54:49+08:00"
     }
   ]
 }

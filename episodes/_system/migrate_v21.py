@@ -24,6 +24,15 @@ import story_json
 ROOT = Path(__file__).resolve().parents[2]
 REPORT = ROOT / "reports" / "story-os-v21-migration-report.json"
 MIN_V21 = (2, 1, 0)
+CURRENT_EVIDENCE_KEYS = (
+    "concept_ambition",
+    "environment_contract",
+    "frame_contract_index",
+    "visual_lock_v21",
+    "production_queue",
+    "fast_scout",
+    "final_snapshot",
+)
 
 
 def now() -> str:
@@ -89,7 +98,37 @@ def evidence_presence(ep: Path) -> dict:
         "publish_event": "meta/publish-event.json",
         "post_publish_review": "meta/post-publish-review.json",
     }
-    return {name: (ep / rel).is_file() for name, rel in checks.items()}
+    presence = {name: (ep / rel).is_file() for name, rel in checks.items()}
+    # An index is only evidence when every referenced frame contract is present.
+    # A stale index must not make a legacy episode look production-ready.
+    presence["frame_contract_index"] = frame_contract_index_present(ep)
+    return presence
+
+
+def frame_contract_index_present(ep: Path) -> bool:
+    """Return whether the frame-contract index and all referenced files exist."""
+    index_path = ep / "meta/runtime/contracts/frame-contract-index.json"
+    if not index_path.is_file():
+        return False
+    try:
+        payload = read_json(index_path)
+    except Exception:
+        return False
+    frames = payload.get("frames") if isinstance(payload, dict) else None
+    if not isinstance(frames, list) or not frames:
+        return False
+    root = ep.resolve()
+    for item in frames:
+        if not isinstance(item, dict) or not isinstance(item.get("path"), str):
+            return False
+        candidate = (ep / item["path"]).resolve()
+        try:
+            candidate.relative_to(root)
+        except ValueError:
+            return False
+        if not candidate.is_file():
+            return False
+    return True
 
 
 def classify(ep: Path) -> dict:
@@ -119,7 +158,17 @@ def classify(ep: Path) -> dict:
         "fast_frame_scout": ((visual.get("fast_frame_scout") or {}).get("enabled") is True),
         "final_candidate_snapshot": ((release.get("final_candidate_snapshot") or {}).get("enabled") is True),
     }
+    presence = evidence_presence(ep)
     missing_policy = [k for k, v in active_policies.items() if current_policy_required and not v]
+    missing_evidence = [k for k in CURRENT_EVIDENCE_KEYS if current_policy_required and not presence[k]]
+    if status in {"LEGACY_COMPAT", "UNVERSIONED_COMPAT"}:
+        recommendation = "KEEP_LEGACY_NO_BACKFILL"
+    elif missing_policy:
+        recommendation = "PLAN_EXPLICIT_V21_POLICY_ACTIVATION"
+    elif missing_evidence:
+        recommendation = "PLAN_REPAIR_CURRENT_EVIDENCE"
+    else:
+        recommendation = "CURRENT_V21_OK"
     return {
         "episode": ep.relative_to(ROOT).as_posix(),
         "detected_version": raw_version,
@@ -129,12 +178,9 @@ def classify(ep: Path) -> dict:
         "automatic_evidence_backfill_allowed": False,
         "active_policies": active_policies,
         "missing_current_policy": missing_policy,
-        "evidence_presence": evidence_presence(ep),
-        "recommendation": (
-            "KEEP_LEGACY_NO_BACKFILL"
-            if status in {"LEGACY_COMPAT", "UNVERSIONED_COMPAT"}
-            else ("CURRENT_V21_OK" if not missing_policy else "PLAN_EXPLICIT_V21_POLICY_ACTIVATION")
-        ),
+        "missing_current_evidence": missing_evidence,
+        "evidence_presence": presence,
+        "recommendation": recommendation,
     }
 
 
@@ -174,6 +220,7 @@ def plan(ep: Path) -> dict:
     row["activation_plan"] = {
         "action": "EXPLICIT_ONLY",
         "missing_policy": row["missing_current_policy"],
+        "missing_evidence": row["missing_current_evidence"],
         "warning": "Activating a policy can make fresh evidence required. The migration tool will never author PASS evidence.",
     }
     return row

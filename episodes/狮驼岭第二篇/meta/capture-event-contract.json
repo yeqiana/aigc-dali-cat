@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "principle": "A frame must first be a credible capture event, then a narrative image.",
+  "max_causal_defects_per_frame": 2,
+  "derived_from_preimage_authority": true,
+  "frames": {
+    "01": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "record the start of a normal shift",
+      "device_position": "waist-level beside charcoal rack",
+      "subject_awareness": "partial",
+      "operator_state": "ordinary; ordinary",
+      "framing_constraint": "close",
+      "retained_reason": "ordinary work entry",
+      "causal_defects": []
+    },
+    "02": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "show ordinary cooperation before route",
+      "device_position": "front corner of charcoal shed",
+      "subject_awareness": "aware",
+      "operator_state": "act; relaxed",
+      "framing_constraint": "medium",
+      "retained_reason": "establish work relationship",
+      "causal_defects": []
+    },
+    "03": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "show the work path toward kitchen",
+      "device_position": "behind cart on descending path",
+      "subject_awareness": "partial",
+      "operator_state": "move; ordinary",
+      "framing_constraint": "wide",
+      "retained_reason": "establish route and scale",
+      "causal_defects": []
+    },
+    "04": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "record the delivery being accepted",
+      "device_position": "kitchen back-door scale",
+      "subject_awareness": "aware",
+      "operator_state": "act; ordinary",
+      "framing_constraint": "medium",
+      "retained_reason": "state the practical goal",
+      "causal_defects": []
+    },
+    "05": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "let wet soil enter the record without attention",
+      "device_position": "side of old well path",
+      "subject_awareness": "aware",
+      "operator_state": "move; ordinary",
+      "framing_constraint": "wide; 枯藤、筐沿和干燥山道形成真实遮挡",
+      "retained_reason": "plant the anomaly carrier",
+      "causal_defects": []
+    },
+    "06": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "record the second delivery",
+      "device_position": "at basket rim facing stone seam",
+      "subject_awareness": "partial",
+      "operator_state": "notice; curious",
+      "framing_constraint": "detail; 太阳被山壁遮住，井缝处自然偏暗",
+      "retained_reason": "show trigger action and first response",
+      "causal_defects": []
+    },
+    "07": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "test whether the sound is mechanical",
+      "device_position": "between cart wheel and well seam",
+      "subject_awareness": "aware",
+      "operator_state": "discuss; curious",
+      "framing_constraint": "medium; 筐架和封石形成真实框中框",
+      "retained_reason": "show the first ordinary explanation",
+      "causal_defects": []
+    },
+    "08": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "make the anomaly visible without explanation",
+      "device_position": "ground level beside seam",
+      "subject_awareness": "not_applicable",
+      "operator_state": "observe; ordinary",
+      "framing_constraint": "detail; 地面无水但炭块表面有真实湿亮高光",
+      "retained_reason": "give physical evidence",
+      "causal_defects": []
+    },
+    "09": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "show they choose humor over investigation",
+      "device_position": "low table corner in kitchen",
+      "subject_awareness": "aware",
+      "operator_state": "discuss; relaxed",
+      "framing_constraint": "medium",
+      "retained_reason": "reset ordinary rhythm while repeating rule",
+      "causal_defects": []
+    },
+    "10": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "record response before the object lands",
+      "device_position": "oblique from basket handle",
+      "subject_awareness": "partial",
+      "operator_state": "notice; alert",
+      "framing_constraint": "close; 真实筐沿和地面高度关系",
+      "retained_reason": "open a new causal question",
+      "causal_defects": []
+    },
+    "11": {
+      "photographer_id": "P02",
+      "capture_device": "无独立设备，偶尔借看P01的留影玉牌",
+      "why_capture_now": "show sound arriving before impact",
+      "device_position": "behind P02 shoulder toward well seam",
+      "subject_awareness": "aware",
+      "operator_state": "verify; uneasy",
+      "framing_constraint": "close; 熄屏玉牌表面真实反射封石和震纹",
+      "retained_reason": "prove spatial contradiction",
+      "causal_defects": []
+    },
+    "12": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "show they refuse to investigate",
+      "device_position": "side of raised third stone",
+      "subject_awareness": "aware",
+      "operator_state": "act; urgent",
+      "framing_constraint": "medium; 石板、手腕和井缝的真实遮挡",
+      "retained_reason": "make the human choice visible",
+      "causal_defects": []
+    },
+    "13": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "make the retreat a visible action",
+      "device_position": "kitchen rear door looking back",
+      "subject_awareness": "aware",
+      "operator_state": "move; alert",
+      "framing_constraint": "wide; 木门、火光和山道距离真实存在",
+      "retained_reason": "show consequence of choice",
+      "causal_defects": []
+    },
+    "14": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "connect the anomaly to the kitchen workflow",
+      "device_position": "above sealed stove eye",
+      "subject_awareness": "aware",
+      "operator_state": "adapt; uneasy",
+      "framing_constraint": "close; 灶眼余火和木棚阴影",
+      "retained_reason": "show direct practical cost",
+      "causal_defects": []
+    },
+    "15": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "make the recorded image contradict the present",
+      "device_position": "over P02 shoulder at image-jade",
+      "subject_awareness": "aware",
+      "operator_state": "verify; urgent",
+      "framing_constraint": "detail; 黑屏玉牌、伙房火光和井边反射方向一致",
+      "retained_reason": "reframe earlier evidence",
+      "causal_defects": []
+    },
+    "16": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "show empty tools becoming heavy",
+      "device_position": "long view up return slope",
+      "subject_awareness": "aware",
+      "operator_state": "adapt; uneasy",
+      "framing_constraint": "wide; 低角度天光和坡道背光",
+      "retained_reason": "carry the consequence into the body",
+      "causal_defects": []
+    },
+    "17": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "show rule carried by object",
+      "device_position": "under basket looking at base",
+      "subject_awareness": "partial",
+      "operator_state": "observe; uneasy",
+      "framing_constraint": "detail; 周围干燥石路和汗巾滴水被明确分开",
+      "retained_reason": "provide tactile payoff evidence",
+      "causal_defects": []
+    },
+    "18": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "make the safe place unsafe without entering it",
+      "device_position": "outside dorm threshold",
+      "subject_awareness": "aware",
+      "operator_state": "adapt; alert",
+      "framing_constraint": "medium; 门内单盏裸灯、门槛高度和筐底受力",
+      "retained_reason": "extend rule to home",
+      "causal_defects": []
+    },
+    "19": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "reverse the assumed location of the anomaly",
+      "device_position": "turning back from dorm path",
+      "subject_awareness": "aware",
+      "operator_state": "move; urgent",
+      "framing_constraint": "wide; 远处窑火、山道夜色和筐影方向",
+      "retained_reason": "reveal rule is not contained by well",
+      "causal_defects": []
+    },
+    "20": {
+      "photographer_id": "P01",
+      "capture_device": "旧留影玉牌，挂在腰侧布袋里",
+      "why_capture_now": "leave the ordinary worker's boundary intact",
+      "device_position": "floor at closed dorm door",
+      "subject_awareness": "not_applicable",
+      "operator_state": "adapt; ordinary",
+      "framing_constraint": "detail; 真实门缝、门槛木屑和室内裸灯",
+      "retained_reason": "end on choice and residue",
+      "causal_defects": []
+    }
+  }
+}

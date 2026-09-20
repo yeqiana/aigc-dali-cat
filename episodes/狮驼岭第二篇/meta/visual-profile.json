@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "adapter_version": "1.0",
+  "lifecycle_state": "LOCKED",
+  "lock_policy": "advisory_locked",
+  "status": "selected",
+  "profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1",
+  "profile_path": "standards/visual_profiles/profiles/M02_HEAVEN_MUNDANE_WORKER_V1.json",
+  "selection": {
+    "status": "selected",
+    "source": "rule_engine",
+    "selector_version": "1.0",
+    "candidates": [],
+    "inputs_summary": {
+      "world": "fictional",
+      "era": "unspecified",
+      "theme": "anomaly_mystery",
+      "genre": "anomaly_mystery",
+      "location": "",
+      "experience_type": "immersive_first_person",
+      "series": "",
+      "previous_profile": "",
+      "realism": "high",
+      "immersion": "high",
+      "fantasy_level": "high",
+      "forced_profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1"
+    },
+    "adjudication": {
+      "resolved_profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1",
+      "by": "story_os:full-auto",
+      "at": "2026-09-20T01:52:37.953937+00:00",
+      "source": "lifecycle_confirmation"
+    }
+  },
+  "selection_evidence": {
+    "selector_version": "1.0",
+    "source": "rule_engine",
+    "registry": "standards/visual_profiles/index.json",
+    "inputs_digest": "sha256:e7f356dac507f0b6c7e8a3d72c92836f4c877362ce8de0a79d85fcc4f74b935b",
+    "inputs_summary": {
+      "world": "fictional",
+      "era": "unspecified",
+      "theme": "anomaly_mystery",
+      "genre": "anomaly_mystery",
+      "location": "",
+      "experience_type": "immersive_first_person",
+      "series": "",
+      "previous_profile": "",
+      "realism": "high",
+      "immersion": "high",
+      "fantasy_level": "high",
+      "forced_profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1"
+    },
+    "matched_rules": [
+      "user_override=M02_HEAVEN_MUNDANE_WORKER_V1"
+    ],
+    "rejected": [],
+    "reason": [
+      "prio=user_override"
+    ],
+    "candidate_count": 0,
+    "notes": []
+  },
+  "confirmation_mode": "delegated_auto",
+  "confirmed_by": "story_os:full-auto",
+  "confirmed_at": "2026-09-20T01:52:37.953937+00:00",
+  "draft_created_at": "2026-09-20T01:52:37.489023+00:00",
+  "notes": [
+    "locked by story_os:full-auto at 2026-09-20T01:52:37.953937+00:00"
+  ],
+  "confirmation": {
+    "mode": "delegated_auto",
+    "confirmed_by": "story_os:full-auto",
+    "confirmed_at": "2026-09-20T01:52:37.953937+00:00",
+    "reason": "story_os.py create --full-auto: delegated auto confirmation of the Selector's Visual Profile"
+  }
+}

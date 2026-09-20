@@ -37,6 +37,7 @@ episodes/**/meta/image-workers/
 episodes/**/meta/rolling-review-workers/
 episodes/**/meta/scoped-workers/
 episodes/**/meta/runtime/driver-logs/
+episodes/**/meta/runtime/preimage-candidates/
 # Keep Git ignore policy aligned with runtime_log_policy.LOCAL_ONLY_PATTERNS.
 episodes/**/meta/episode-performance-ledger.json
 episodes/**/meta/runtime-runner.lock

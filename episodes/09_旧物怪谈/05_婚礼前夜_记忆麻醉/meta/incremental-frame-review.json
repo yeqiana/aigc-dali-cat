@@ -1,10 +1,37 @@
 {
   "schema_version": 1,
   "story_os_version": "2.6.1",
-  "planned_at": "2026-09-09T17:53:29+08:00",
-  "action": "NOOP",
-  "dirty_frames": [],
+  "planned_at": "2026-09-19T23:31:41+08:00",
+  "action": "AWAITING_PRODUCTION",
+  "dirty_frames": [
+    "15",
+    "17",
+    "18"
+  ],
   "context_frames": [],
-  "reasons": {},
-  "caption_mode": "per_frame"
+  "reasons": {
+    "15": [
+      "ledger_status:NEEDS_USER"
+    ],
+    "17": [
+      "ledger_status:REPAIR_READY"
+    ],
+    "18": [
+      "ledger_status:REPAIR_READY"
+    ]
+  },
+  "pending_frames": [
+    "15",
+    "17",
+    "18"
+  ],
+  "pending_statuses": {
+    "15": "NEEDS_USER",
+    "17": "REPAIR_READY",
+    "18": "REPAIR_READY"
+  },
+  "authority_refresh_frames": [],
+  "accepted_known_defect_frames": [],
+  "accepted_reasons": {},
+  "caption_mode": "deferred_until_production_ready"
 }

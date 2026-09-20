@@ -10,6 +10,12 @@ from production_ledger_core import *  # noqa: F401,F403  (shared ledger globals)
 import sys
 
 
+def episode_dir(raw: str) -> Path:
+    """Resolve an episode lazily during the ledger facade import cycle."""
+    from production_ledger_core import episode_dir as resolve_episode_dir
+    return resolve_episode_dir(raw)
+
+
 def _freeze_visual_profile_after_promote(ep: Path, key: str) -> None:
     """Phase 4.6-B: the first formal production asset freezes the Visual Profile.
 

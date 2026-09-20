@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --font-sans: Inter, "SF Pro Text", "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, ui-monospace, monospace;
+
+  /* StoryOS UI Baseline v1 Tokens */
+  --bg-app:        #0B0D10;
+  --bg-workspace:  #0F1115;
+  --bg-surface:    #13161B;
+  --bg-elevated:   #171B21;
+  --bg-hover:      #1B2027;
+  --bg-selected:   #20262E;
+
+  --border-subtle: #232830;
+  --border-normal: #2D333D;
+  --border-strong: #3A424E;
+
+  --text-primary:   #F1F3F5;
+  --text-secondary: #A7AFBA;
+  --text-tertiary:  #737D8A;
+  --text-disabled:  #505864;
+
+  --success: #3FB950;
+  --warning: #D29922;
+  --retry:   #E3A008;
+  --danger:  #F85149;
+  --info:    #58A6FF;
+  --focus:   #58A6FF;
+
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --sidebar-width: 224px;
+  --header-height: 48px;
+  --control-height: 32px;
+  --table-header-height: 36px;
+  --table-row-height: 44px;
+  --drawer-width: 440px;
+}
+
+* {
+  border-color: #232830;
+}
+
+html, body {
+  background-color: #0B0D10;
+  color: #F1F3F5;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Monospace font class utility */
+.font-mono, code, pre, kbd, samp {
+  font-family: var(--font-mono) !important;
+}
+
+/* Sleek minimalist scrollbar matching ChatGPT / VS Code Dark */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2e2e2e;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a4a4a;
+}

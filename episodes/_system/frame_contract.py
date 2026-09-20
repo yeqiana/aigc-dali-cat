@@ -88,7 +88,12 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 def episode_version(ep: Path) -> str:
     versions: list[tuple[tuple[int, ...], str]] = []
-    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    # Test/temporary compile fixtures may intentionally omit episode-state.json.
+    # In that case there is no state authority to read; version evidence below
+    # remains the only valid source.  Do not force storage-mode configuration
+    # just to inspect an unversioned derived-cache fixture.
+    state_path = Path(ep).resolve() / "meta/episode-state.json"
+    state = episode_state_persistence.load(Path(ep).resolve()) or {} if state_path.is_file() else {}
     raw = str(state.get("tool_version") or "")
     vt = version_tuple(raw)
     if vt != (0,):

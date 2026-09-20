@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-19T22:54:49+08:00",
+  "kind": "workflow_observability",
+  "diagnostic_only": true,
+  "source_files": [
+    {
+      "path": "meta/episode-state.json",
+      "sha256": "6f1d9a3c4000c219802c60800270dffbd401426e4fa96b0f25edc1b8cbb6b4d4"
+    },
+    {
+      "path": "meta/runtime-checkpoint.json",
+      "sha256": "1c82c2e61aa4bb933e3541b8aca89066fb98726c846647143e6f70295bc886aa"
+    },
+    {
+      "path": "meta/episode-performance-ledger.json",
+      "sha256": "95df1689e7d54d306ce75302328067adbe14930d48bddf3a533680aab8b4dc85"
+    },
+    {
+      "path": "meta/workflow-performance.json",
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "path": "meta/image-scheduler-performance.json",
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "path": "meta/production-queue.json",
+      "sha256": "7034b7b30984607ba0cdbb35b278dcd911426978e3a40f12741aef6623aa5422"
+    },
+    {
+      "path": "meta/production-ledger.json",
+      "sha256": "15f0cbe37fc41ea5960cebd8d27b7f35d5209770662cfa9b8ed25496b6ed0694"
+    },
+    {
+      "path": "meta/frame-scout-summary.json",
+      "sha256": null
+    },
+    {
+      "path": "meta/final-candidate-snapshot.json",
+      "sha256": "b979e9504df596af0099e68646c81323e77b3267f1f45988e5ac4796fc10e766"
+    },
+    {
+      "path": "meta/post-publish-review.json",
+      "sha256": null
+    },
+    {
+      "path": "meta/batch-runtime-performance.json",
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
+  ],
+  "source_fingerprint": "b8acc15a9ee4188e4f5d825f042699ec214f8f35996cb3ae284f3185d572a99d",
+  "stage_source": "episode_state_authority",
+  "episode": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉",
+  "current_state": "PUBLISH_READY",
+  "latest_workflow_run": {
+    "run_id": null,
+    "status": null,
+    "total_seconds": null,
+    "slowest_steps": []
+  },
+  "production": {
+    "ledger_status_counts": {
+      "PASSED": 1,
+      "LOCKED": 14,
+      "REPAIR_READY": 5
+    },
+    "queue_status_counts": {
+      "superseded": 64,
+      "generated": 27
+    },
+    "image_attempt_count": 4,
+    "image_attempt_status_counts": {
+      "generated": 4
+    },
+    "image_attempt_kind_counts": {
+      "repair": 4
+    },
+    "scheduler_wave_count": 0,
+    "max_observed_parallel": 0,
+    "adaptive_parallel_current": null
+  },
+  "review": {
+    "scout_decisions": {},
+    "scout_summary_passed": null
+  },
+  "release": {
+    "snapshot_present": true,
+    "snapshot_sha256": "aaabac0968c9536ecda346fe7478da9a14ed8930595062e4a31e9f5cab69cedf"
+  },
+  "post_publish": {
+    "latest_checkpoint": null,
+    "completed_checkpoints": []
+  },
+  "runtime_trace": {
+    "schema_version": 1,
+    "generated_at": "2026-09-19T22:54:49.935+08:00",
+    "diagnostic_only": true,
+    "stage_authority": false,
+    "latest_trace_id": null,
+    "event_count": 62,
+    "span_end_count": 31,
+    "status_counts": {
+      "PASS": 28,
+      "FAILED": 3
+    },
+    "elapsed_ms_by_category": {
+      "image_generation": 3359501.0
+    },
+    "slowest_spans": [
+      {
+        "name": "image.generate.frame.15",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 287922.0,
+        "span_id": "SP_93a9e1ea52494226"
+      },
+      {
+        "name": "image.generate.frame.03",
+        "category": "image_generation",
+        "status": "FAILED",
+        "elapsed_ms": 140391.0,
+        "span_id": "SP_256784172c12444e"
+      },
+      {
+        "name": "image.generate.frame.07",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 129531.0,
+        "span_id": "SP_d67e4c6e16214b0b"
+      },
+      {
+        "name": "image.generate.frame.03",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 123578.0,
+        "span_id": "SP_f0efe1093580451e"
+      },
+      {
+        "name": "image.generate.frame.09",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 121860.0,
+        "span_id": "SP_df7c1e9bda88484d"
+      },
+      {
+        "name": "image.generate.frame.12",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 118141.0,
+        "span_id": "SP_a165292702fe40e6"
+      },
+      {
+        "name": "image.generate.frame.12",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 114312.0,
+        "span_id": "SP_a318e73faadb4b3f"
+      },
+      {
+        "name": "image.generate.frame.01",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 113859.0,
+        "span_id": "SP_99fefa918a3e44ec"
+      },
+      {
+        "name": "image.generate.frame.12",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 108578.0,
+        "span_id": "SP_a39cdefc6c4649cd"
+      },
+      {
+        "name": "image.generate.frame.01",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 104656.0,
+        "span_id": "SP_fbc0f3a80dd449eb"
+      },
+      {
+        "name": "image.generate.frame.15",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 104391.0,
+        "span_id": "SP_d1bebf76f4d14710"
+      },
+      {
+        "name": "image.generate.frame.17",
+        "category": "image_generation",
+        "status": "PASS",
+        "elapsed_ms": 103344.0,
+        "span_id": "SP_6eba694e04b946a0"
+      }
+    ]
+  },
+  "batch_runtime": {
+    "enabled": false,
+    "batch_count": 0,
+    "logical_codex_batch_count": 0,
+    "images_requested": 0,
+    "images_returned": 0,
+    "fallback_single_frames": 0,
+    "provider_counts": {},
+    "failure_code_counts": {},
+    "empty_batch_count": 0,
+    "timeout_failure_count": 0,
+    "network_connect_failure_count": 0,
+    "native_multi_image_supported": false,
+    "single_http_request": false,
+    "provider": "codex_subscription",
+    "transport": "logical_parallel_fanout",
+    "provider_requested_images": 1,
+    "provider_returned_images": 1,
+    "codex_logical_batch": {
+      "enabled": false,
+      "provider": null,
+      "transport": null,
+      "logical_batch": null,
+      "native_multi_image": null,
+      "requested_count": null,
+      "successful_count": null,
+      "failed_count": null,
+      "initial_max_inflight": null,
+      "recommended_concurrency": null,
+      "rounds": [],
+      "elapsed_seconds": null
+    },
+    "early_high_high_repairs": 0,
+    "ordinary_repairs_after_barrier": 0,
+    "wait_batch_decisions": 0
+  },
+  "runtime_handoff": {
+    "awaiting_product_host": false,
+    "host_wait_steps": [],
+    "host_wait_is_failure": false
+  },
+  "failure_taxonomy": {
+    "technical_failures": 0,
+    "dependency_or_hard_blocked": 0,
+    "scout_repair": 0,
+    "content_failed": 0,
+    "failed_frames_checkpoint": 0,
+    "scout_unresolved": 0
+  },
+  "health": {
+    "has_blockers": false,
+    "awaiting_product_host": false,
+    "workflow_status": "UNKNOWN"
+  }
+}

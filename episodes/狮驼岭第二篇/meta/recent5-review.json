@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "story_os_version": "2.6.1",
+  "episode_id": "狮驼岭第二篇",
+  "generated_at": "2026-09-20T10:22:18+08:00",
+  "candidate_fingerprint_path": "episodes/狮驼岭第二篇/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "073d5b9a68a6bc19ba2a0ad0f3efc06486565e023b99a6fd2976127a3adba6e0",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "comparison_count": 2,
+  "compared": [
+    {
+      "episode_id": "10-01",
+      "title": "鳌太线·热汤",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 0,
+      "similarity_score": 0,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [],
+      "matched_dimensions": []
+    },
+    {
+      "episode_id": "09-04",
+      "title": "瓶中世界",
+      "exact_similarity_score": 0,
+      "semantic_similarity_score": 0,
+      "similarity_score": 0,
+      "exact_mechanism_veto": false,
+      "semantic_mechanism_veto": false,
+      "mechanism_veto": false,
+      "exact_matched_dimensions": [],
+      "semantic_matched_dimensions": [],
+      "matched_dimensions": []
+    }
+  ],
+  "max_similarity_score": 0,
+  "mechanism_veto": false,
+  "decision": "pass",
+  "scoring_policy": "effective=max(exact_string,semantic_equivalence); veto=exact_veto OR semantic_veto",
+  "note": "V2.0.3.6 uses a fresh isolated semantic equivalence matrix so paraphrased/skin-swapped fingerprints cannot bypass Recent-5 by changing wording. Python, not the critic, computes scores.",
+  "semantic_review_path": "episodes/狮驼岭第二篇/meta/recent5-semantic-review.json",
+  "semantic_review_sha256": "9307745eeaeeee56a3e1bb3b4286718d0e473c1f28bf77a17640623b5b98d6f9"
+}

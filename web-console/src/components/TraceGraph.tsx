@@ -3,7 +3,7 @@ type TraceNode = {
   type: string;
 };
 
-export default function TraceGraph({ nodes }: { nodes: TraceNode[] }) {
+export default function TraceGraph({ nodes = [] }: { nodes?: TraceNode[] }) {
   return <div>
     <h3>Trace Graph</h3>
     {nodes.map((node) => (

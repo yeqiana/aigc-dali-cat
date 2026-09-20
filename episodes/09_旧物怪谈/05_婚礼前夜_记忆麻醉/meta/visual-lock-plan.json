@@ -1,14 +1,16 @@
 {
   "schema_version": 1,
   "story_os_version": "2.6.1",
-  "generated_at": "2026-09-10T12:01:07+08:00",
+  "generated_at": "2026-09-19T22:01:32+08:00",
   "policy": {
     "baseline_first": true,
     "remaining_three_parallelizable": true,
     "calibration_count": 4,
     "baseline_selection": "ordinary_fallback",
     "baseline_frame": 1,
-    "opening_social_anchor_machine_priority": true
+    "opening_social_anchor_machine_priority": true,
+    "ordinary_life_override": false,
+    "legacy_first_major_anomaly_semantics": "first_major_anomaly"
   },
   "items": [
     {
@@ -18,8 +20,9 @@
       "role": "ordinary_baseline",
       "impact": 0,
       "scale_reference": "",
+      "anomaly_logic_stage": "ordinary",
       "environment_severity": 10,
-      "contract_sha256": "551c1be47c9686277276019958185a6bce70c1a52232d5dea796c7344f0e1203",
+      "contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6",
       "depends_on": []
     },
     {
@@ -29,8 +32,9 @@
       "role": "worst_capture_condition",
       "impact": 3,
       "scale_reference": "车厢与人、车灯",
+      "anomaly_logic_stage": "human_consequence",
       "environment_severity": 10,
-      "contract_sha256": "d7c69d3a4c1c1ea4564c5a7e64301bb156043270e421fd80ee285430ffb3811e",
+      "contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734",
       "depends_on": [
         1
       ]
@@ -42,8 +46,9 @@
       "role": "first_major_anomaly",
       "impact": 2,
       "scale_reference": "床脚与短铁链，链的两端不入画",
+      "anomaly_logic_stage": "discovery",
       "environment_severity": 8,
-      "contract_sha256": "16a5f36eee9f93086c95543a4b346ab1964c23c1aacbfbce32d569d589ae6011",
+      "contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08",
       "depends_on": [
         1
       ]
@@ -55,8 +60,9 @@
       "role": "high_impact_admission",
       "impact": 4,
       "scale_reference": "未扣合金镯与女主左手、男人伸来的手",
+      "anomaly_logic_stage": "human_consequence",
       "environment_severity": 8,
-      "contract_sha256": "dc8432fd1b88dcd66d9ba4b00a17ffdb9d81c126524a8524b306c941445a6eda",
+      "contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5",
       "depends_on": [
         1
       ]

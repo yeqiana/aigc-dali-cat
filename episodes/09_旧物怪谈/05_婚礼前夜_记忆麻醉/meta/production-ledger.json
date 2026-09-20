@@ -2,7 +2,7 @@
   "schema_version": 1,
   "engine_version": "1.2",
   "created_at": "2026-09-08T23:58:17+08:00",
-  "updated_at": "2026-09-16T00:55:19+08:00",
+  "updated_at": "2026-09-19T22:58:52+08:00",
   "note": "Per-frame production transaction ledger. This is NOT an episode stage source.",
   "canvas": {
     "aspect_ratio": "4:5",
@@ -40,7 +40,7 @@
   "frames": {
     "01": {
       "number": 1,
-      "status": "LOCKED",
+      "status": "PASSED",
       "content_repairs_used": 1,
       "technical_failures": [
         {
@@ -1342,16 +1342,100 @@
             "kind": "repair",
             "attempt_id": "48d2814fc5d9"
           }
+        },
+        {
+          "attempt_id": "ea196350010c",
+          "started_at": "2026-09-19T22:28:29+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "01",
+            "kind": "repair",
+            "prompt_sha256": "e395c16d2dda915de09fb6841ecdc2bfdf0b8ea6ca1633eb2a9d68a378c0abb1",
+            "prompt_chars": 205,
+            "prompt_bytes": 435,
+            "capture_id": "authority-refresh-01",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/01.json",
+              "contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6"
+            },
+            "frame_contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6",
+            "batch_id": null
+          },
+          "request_fingerprint": "775776e1658c7a39d3f391c3efb939cedd2059d78f2a13b7d9e5bde5a9e84036",
+          "notes": "phase6 scheduler item=1298ba331a97 scope=repair",
+          "result": "success",
+          "provider_attempt": {
+            "status": "COMPLETED",
+            "recorded_at": "2026-09-19T22:28:29+08:00",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "completed_at": "2026-09-19T22:30:24+08:00",
+            "provider_receipt_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/01-1789828222.json",
+            "provider_receipt_sha256": "150a4d80ce65755465e71e2d3d47106593bf50010eea5135a67e1b4695e89d8c"
+          },
+          "runtime_transaction_id": "14e242cf1f4e4273acc820252bce63a5",
+          "reference_execution": {
+            "required": false,
+            "selected_references": [],
+            "passed_to_provider": false,
+            "provider": "codex_subscription",
+            "provider_receipt_id": "150a4d80ce65755465e71e2d3d47106593bf50010eea5135a67e1b4695e89d8c",
+            "verified": false,
+            "recorded_at": "2026-09-19T22:28:29+08:00",
+            "provider_receipt_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/01-1789828222.json",
+            "verified_at": "2026-09-19T22:30:24+08:00"
+          },
+          "provider_receipt": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/01-1789828222.json",
+            "sha256": "150a4d80ce65755465e71e2d3d47106593bf50010eea5135a67e1b4695e89d8c",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false,
+            "storage_source": "json"
+          },
+          "completed_at": "2026-09-19T22:30:24+08:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-1298ba331a97-a1.png",
+            "sha256": "64614363fe6f3c45bb68e835692dba001f059390677d5a0f55b16050d5060673",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-19T22:30:24+08:00",
+            "kind": "repair",
+            "attempt_id": "ea196350010c"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-9ac4058b70e5-a2.png",
-        "sha256": "334619eca6a74e2786654440b7633fbc263a59f487bac44c2dd71a4da4140be6",
+        "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-1298ba331a97-a1.png",
+        "sha256": "64614363fe6f3c45bb68e835692dba001f059390677d5a0f55b16050d5060673",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-15T22:22:08+08:00",
+        "recorded_at": "2026-09-19T22:30:24+08:00",
         "kind": "repair",
-        "attempt_id": "48d2814fc5d9"
+        "attempt_id": "ea196350010c"
       },
       "approved_asset": {
         "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/01.png",
@@ -1396,6 +1480,11 @@
           "at": "2026-09-15T22:56:15+08:00",
           "decision": "pass",
           "notes": "Final semantic critic candidate review: Doorway portrait visibly establishes P01 in the floral blouse, dark trousers and cloth shoes; the room, wedding bedding, bare bulb and helpers read as the documented pre-wedding record."
+        },
+        {
+          "at": "2026-09-19T22:41:09+08:00",
+          "decision": "pass",
+          "notes": "Visual Lock ordinary baseline separate PASS"
         }
       ],
       "authority_refresh_history": [
@@ -1530,15 +1619,64 @@
           "authorization_basis": "machine_verified_frame_contract_drift",
           "previous_frame_contract_sha256": "551c1be47c9686277276019958185a6bce70c1a52232d5dea796c7344f0e1203",
           "current_frame_contract_sha256": "ce940153f0e5c77f16a2f04e4ccbbc52678ff510da522965ad6aaebcf41d2fee"
+        },
+        {
+          "at": "2026-09-19T22:26:27+08:00",
+          "previous_status": "LOCKED",
+          "current_candidate": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-9ac4058b70e5-a2.png",
+            "sha256": "334619eca6a74e2786654440b7633fbc263a59f487bac44c2dd71a4da4140be6",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-15T22:22:08+08:00",
+            "kind": "repair",
+            "attempt_id": "48d2814fc5d9"
+          },
+          "reviews": [
+            {
+              "at": "2026-09-09T09:35:25+08:00",
+              "decision": "pass",
+              "notes": "Visual Lock ordinary baseline separate PASS"
+            },
+            {
+              "at": "2026-09-09T15:02:53+08:00",
+              "decision": "pass",
+              "notes": "delegated auto review passed (reveal-order-v2)"
+            },
+            {
+              "at": "2026-09-10T09:53:56+08:00",
+              "decision": "pass",
+              "notes": "delegated auto review: 门口正对镜头唯一露脸帧，无第二清晰人脸/药瓶/锁链；服装场景与02连续"
+            },
+            {
+              "at": "2026-09-10T10:39:01+08:00",
+              "decision": "pass",
+              "notes": "delegated auto review (frontface-01c a6): 婚房门口正对镜头、全篇唯一清晰正脸；二十出头清秀年轻，黑发红绳低马尾、浅色碎花长袖、深色裤；婚房红被木床、囍字、红布窗、土墙生活密度高；无药瓶药片铁栏锁链，画面内无第二张清晰人脸（其他人背身/侧影）；服装与场景与02连续。"
+            },
+            {
+              "at": "2026-09-10T11:16:34+08:00",
+              "decision": "pass",
+              "notes": "delegated auto review passed (scope-fix 01d frontface candidate 0d0b9814d146)"
+            },
+            {
+              "at": "2026-09-15T22:56:15+08:00",
+              "decision": "pass",
+              "notes": "Final semantic critic candidate review: Doorway portrait visibly establishes P01 in the floral blouse, dark trousers and cloth shoes; the room, wedding bedding, bare bulb and helpers read as the documented pre-wedding record."
+            }
+          ],
+          "reason": "current Visual Lock pixels were generated under a stale Frame Contract; deterministic authority refresh",
+          "authorization_basis": "machine_verified_frame_contract_drift",
+          "previous_frame_contract_sha256": "ce940153f0e5c77f16a2f04e4ccbbc52678ff510da522965ad6aaebcf41d2fee",
+          "current_frame_contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6"
         }
       ],
       "authority_refresh_authorization": {
-        "at": "2026-09-15T22:01:50+08:00",
-        "reason": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+        "at": "2026-09-19T22:26:27+08:00",
+        "reason": "current Visual Lock pixels were generated under a stale Frame Contract; deterministic authority refresh",
         "approval_basis": "machine_verified_frame_contract_drift",
-        "frame_contract_sha256": "ce940153f0e5c77f16a2f04e4ccbbc52678ff510da522965ad6aaebcf41d2fee",
-        "previous_frame_contract_sha256": "551c1be47c9686277276019958185a6bce70c1a52232d5dea796c7344f0e1203",
-        "candidate_sha256": "cef5b7b929e12b720b6becdbfcded43d3b0f34d0a2f82070741097af5fd812f6",
+        "frame_contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6",
+        "previous_frame_contract_sha256": "ce940153f0e5c77f16a2f04e4ccbbc52678ff510da522965ad6aaebcf41d2fee",
+        "candidate_sha256": "334619eca6a74e2786654440b7633fbc263a59f487bac44c2dd71a4da4140be6",
         "verification_errors": [
           "frame 01 generation frame_contract_sha256 stale"
         ],
@@ -1607,6 +1745,22 @@
             "height": 1350,
             "promoted_at": "2026-09-10T11:16:35+08:00",
             "source_sha256": "cef5b7b929e12b720b6becdbfcded43d3b0f34d0a2f82070741097af5fd812f6"
+          }
+        },
+        {
+          "at": "2026-09-19T22:26:27+08:00",
+          "lock": {
+            "at": "2026-09-15T22:56:16+08:00",
+            "sha256": "334619eca6a74e2786654440b7633fbc263a59f487bac44c2dd71a4da4140be6",
+            "reason": "final semantic critic attempt 2 PASS"
+          },
+          "approved_asset": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/01.png",
+            "sha256": "334619eca6a74e2786654440b7633fbc263a59f487bac44c2dd71a4da4140be6",
+            "width": 1080,
+            "height": 1350,
+            "promoted_at": "2026-09-15T22:56:16+08:00",
+            "source_sha256": "334619eca6a74e2786654440b7633fbc263a59f487bac44c2dd71a4da4140be6"
           }
         }
       ],
@@ -2087,7 +2241,7 @@
     },
     "03": {
       "number": 3,
-      "status": "LOCKED",
+      "status": "PASSED",
       "content_repairs_used": 0,
       "technical_failures": [
         {
@@ -2409,16 +2563,100 @@
             "kind": "repair",
             "attempt_id": "baccc7a547bf"
           }
+        },
+        {
+          "attempt_id": "c31adcdbe404",
+          "started_at": "2026-09-19T22:53:15+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "03",
+            "kind": "repair",
+            "prompt_sha256": "f4099bb6b3eb49a9e9c1c692989ee36c60f110398744974b5fad7eebe7e047ed",
+            "prompt_chars": 205,
+            "prompt_bytes": 435,
+            "capture_id": "authority-refresh-03-after-baseline",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/03.json",
+              "contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08"
+            },
+            "frame_contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08",
+            "batch_id": null
+          },
+          "request_fingerprint": "ebef65abc5c5f0aeea3ea49b9e408971846f8c1c9888aee3a1ef2a607a1ddd50",
+          "notes": "phase6 scheduler item=aceee650e963 scope=repair",
+          "result": "success",
+          "provider_attempt": {
+            "status": "COMPLETED",
+            "recorded_at": "2026-09-19T22:53:15+08:00",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "completed_at": "2026-09-19T22:54:49+08:00",
+            "provider_receipt_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/03-1789829688.json",
+            "provider_receipt_sha256": "8ca8c1003364856953ca0ea8d349abedf0088c08ae226c950c3335ca15284f5e"
+          },
+          "runtime_transaction_id": "858546e2277c42efad668dc5509d264d",
+          "reference_execution": {
+            "required": false,
+            "selected_references": [],
+            "passed_to_provider": false,
+            "provider": "codex_subscription",
+            "provider_receipt_id": "8ca8c1003364856953ca0ea8d349abedf0088c08ae226c950c3335ca15284f5e",
+            "verified": false,
+            "recorded_at": "2026-09-19T22:53:15+08:00",
+            "provider_receipt_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/03-1789829688.json",
+            "verified_at": "2026-09-19T22:54:49+08:00"
+          },
+          "provider_receipt": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/03-1789829688.json",
+            "sha256": "8ca8c1003364856953ca0ea8d349abedf0088c08ae226c950c3335ca15284f5e",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false,
+            "storage_source": "json"
+          },
+          "completed_at": "2026-09-19T22:54:49+08:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-aceee650e963-a1.png",
+            "sha256": "3aeb1bc78f4efc0f5de88d614c7ce4a6d35f06923abc89af6ff1a470b50af990",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-19T22:54:49+08:00",
+            "kind": "repair",
+            "attempt_id": "c31adcdbe404"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-740bc23e704d-a1.png",
-        "sha256": "12b97a2a55df8da3a2cf70e9ee949ee0016684296c90cc32ddcc710abc652e4c",
+        "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-aceee650e963-a1.png",
+        "sha256": "3aeb1bc78f4efc0f5de88d614c7ce4a6d35f06923abc89af6ff1a470b50af990",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-15T23:07:34+08:00",
+        "recorded_at": "2026-09-19T22:54:49+08:00",
         "kind": "repair",
-        "attempt_id": "baccc7a547bf"
+        "attempt_id": "c31adcdbe404"
       },
       "approved_asset": {
         "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/03.png",
@@ -2453,6 +2691,11 @@
           "at": "2026-09-15T23:20:17+08:00",
           "decision": "pass",
           "notes": "Final semantic critic candidate review: 向下的梦境视角中，深色裤脚和同款旧布鞋旁的短铁链被拉直，链条与床脚关系可读且两端均未给出来源。"
+        },
+        {
+          "at": "2026-09-19T22:58:51+08:00",
+          "decision": "pass",
+          "notes": "Phase5 Visual Lock per-frame SHA-bound admission PASS"
         }
       ],
       "authority_refresh_history": [
@@ -2505,15 +2748,54 @@
           "authorization_basis": "machine_verified_frame_contract_drift",
           "previous_frame_contract_sha256": "16a5f36eee9f93086c95543a4b346ab1964c23c1aacbfbce32d569d589ae6011",
           "current_frame_contract_sha256": "447482052b2501d2dc0941dae852f28019f1fe94a638a75e0db255583c0dd78a"
+        },
+        {
+          "at": "2026-09-19T22:26:27+08:00",
+          "previous_status": "LOCKED",
+          "current_candidate": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-740bc23e704d-a1.png",
+            "sha256": "12b97a2a55df8da3a2cf70e9ee949ee0016684296c90cc32ddcc710abc652e4c",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-15T23:07:34+08:00",
+            "kind": "repair",
+            "attempt_id": "baccc7a547bf"
+          },
+          "reviews": [
+            {
+              "at": "2026-09-09T10:25:34+08:00",
+              "decision": "pass",
+              "notes": "delegated auto review passed"
+            },
+            {
+              "at": "2026-09-09T15:02:54+08:00",
+              "decision": "pass",
+              "notes": "delegated auto review passed (reveal-order-v2)"
+            },
+            {
+              "at": "2026-09-15T22:56:16+08:00",
+              "decision": "repair",
+              "notes": "Final semantic critic candidate review: The pixel chain joins bed furniture across the floor; it never visibly restrains P01's ankle or establishes the locked-body dream fact. The prescribed bed-edge/door-slit composition and wide dream-space scale are absent."
+            },
+            {
+              "at": "2026-09-15T23:20:17+08:00",
+              "decision": "pass",
+              "notes": "Final semantic critic candidate review: 向下的梦境视角中，深色裤脚和同款旧布鞋旁的短铁链被拉直，链条与床脚关系可读且两端均未给出来源。"
+            }
+          ],
+          "reason": "current Visual Lock pixels were generated under a stale Frame Contract; deterministic authority refresh",
+          "authorization_basis": "machine_verified_frame_contract_drift",
+          "previous_frame_contract_sha256": "447482052b2501d2dc0941dae852f28019f1fe94a638a75e0db255583c0dd78a",
+          "current_frame_contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08"
         }
       ],
       "authority_refresh_authorization": {
-        "at": "2026-09-15T22:01:50+08:00",
-        "reason": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+        "at": "2026-09-19T22:26:27+08:00",
+        "reason": "current Visual Lock pixels were generated under a stale Frame Contract; deterministic authority refresh",
         "approval_basis": "machine_verified_frame_contract_drift",
-        "frame_contract_sha256": "447482052b2501d2dc0941dae852f28019f1fe94a638a75e0db255583c0dd78a",
-        "previous_frame_contract_sha256": "16a5f36eee9f93086c95543a4b346ab1964c23c1aacbfbce32d569d589ae6011",
-        "candidate_sha256": "10e5cfdcdd0f96d2829b25f254f8a6f78c6bbc0f76c370c5222fc26318f6157e",
+        "frame_contract_sha256": "882f136e2b3b713afd99aac46067b11ab21f6430d66050b870afd07835c03f08",
+        "previous_frame_contract_sha256": "447482052b2501d2dc0941dae852f28019f1fe94a638a75e0db255583c0dd78a",
+        "candidate_sha256": "12b97a2a55df8da3a2cf70e9ee949ee0016684296c90cc32ddcc710abc652e4c",
         "verification_errors": [
           "frame 03 generation frame_contract_sha256 stale"
         ],
@@ -2534,6 +2816,22 @@
             "height": 1350,
             "promoted_at": "2026-09-09T15:03:08+08:00",
             "source_sha256": "10e5cfdcdd0f96d2829b25f254f8a6f78c6bbc0f76c370c5222fc26318f6157e"
+          }
+        },
+        {
+          "at": "2026-09-19T22:26:27+08:00",
+          "lock": {
+            "at": "2026-09-15T23:20:17+08:00",
+            "sha256": "12b97a2a55df8da3a2cf70e9ee949ee0016684296c90cc32ddcc710abc652e4c",
+            "reason": "final semantic critic attempt 2 PASS"
+          },
+          "approved_asset": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/03.png",
+            "sha256": "12b97a2a55df8da3a2cf70e9ee949ee0016684296c90cc32ddcc710abc652e4c",
+            "width": 1080,
+            "height": 1350,
+            "promoted_at": "2026-09-15T23:20:17+08:00",
+            "source_sha256": "12b97a2a55df8da3a2cf70e9ee949ee0016684296c90cc32ddcc710abc652e4c"
           }
         }
       ],
@@ -5903,7 +6201,7 @@
     },
     "12": {
       "number": 12,
-      "status": "LOCKED",
+      "status": "PASSED",
       "content_repairs_used": 1,
       "technical_failures": [
         {
@@ -6476,16 +6774,100 @@
             "kind": "repair",
             "attempt_id": "a00f9487b222"
           }
+        },
+        {
+          "attempt_id": "2de001b27fd0",
+          "started_at": "2026-09-19T22:51:34+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "12",
+            "kind": "repair",
+            "prompt_sha256": "9e54e8b3088dafa1f58cc356e16e909469ad57694665c1ee6ea9e20b63d4d5a6",
+            "prompt_chars": 205,
+            "prompt_bytes": 435,
+            "capture_id": "authority-refresh-12-after-baseline",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/12.json",
+              "contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734"
+            },
+            "frame_contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734",
+            "batch_id": null
+          },
+          "request_fingerprint": "1639c98764771490678293dd22495a123b285bd145b83977026a14f0decf2fa3",
+          "notes": "phase6 scheduler item=367cb7a16179 scope=repair",
+          "result": "success",
+          "provider_attempt": {
+            "status": "COMPLETED",
+            "recorded_at": "2026-09-19T22:51:34+08:00",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "completed_at": "2026-09-19T22:53:14+08:00",
+            "provider_receipt_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/12-1789829593.json",
+            "provider_receipt_sha256": "6cebbddf8c478a8b4b202a959684c45ce05d8e93f71d4195c630a39b37d58ea9"
+          },
+          "runtime_transaction_id": "f51d47715f24460a98ee90cb2041acb5",
+          "reference_execution": {
+            "required": false,
+            "selected_references": [],
+            "passed_to_provider": false,
+            "provider": "codex_subscription",
+            "provider_receipt_id": "6cebbddf8c478a8b4b202a959684c45ce05d8e93f71d4195c630a39b37d58ea9",
+            "verified": false,
+            "recorded_at": "2026-09-19T22:51:34+08:00",
+            "provider_receipt_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/12-1789829593.json",
+            "verified_at": "2026-09-19T22:53:14+08:00"
+          },
+          "provider_receipt": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/12-1789829593.json",
+            "sha256": "6cebbddf8c478a8b4b202a959684c45ce05d8e93f71d4195c630a39b37d58ea9",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false,
+            "storage_source": "json"
+          },
+          "completed_at": "2026-09-19T22:53:14+08:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-367cb7a16179-a1.png",
+            "sha256": "442d4a9e7012a79afa2f111c894dacbb772a2d313481ba3836922df17701e210",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-19T22:53:14+08:00",
+            "kind": "repair",
+            "attempt_id": "2de001b27fd0"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-613ca3d6dceb-a1.png",
-        "sha256": "4e52e2b2383885fb17934061c3a28b1cda61ca236147fc8223daacd62834558a",
+        "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-367cb7a16179-a1.png",
+        "sha256": "442d4a9e7012a79afa2f111c894dacbb772a2d313481ba3836922df17701e210",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-16T00:48:45+08:00",
+        "recorded_at": "2026-09-19T22:53:14+08:00",
         "kind": "repair",
-        "attempt_id": "a00f9487b222"
+        "attempt_id": "2de001b27fd0"
       },
       "approved_asset": {
         "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/12.png",
@@ -6535,6 +6917,11 @@
           "at": "2026-09-16T00:55:19+08:00",
           "decision": "pass",
           "notes": "Direct-user continuation semantic critic attempt 5: Target pixels satisfy the required reveal: a floral sleeve and hand hold the inside door edge, framing a man at the open rear of a rural cargo truck. Three adult women in red wedding clothing sit inside; their ankle iron cuffs and linking chain are plainly legible. The doorway, truck body, human bodies and hard vehicle backlight provide scale and a physically explainable P01 eye-level record. No drug bottle, P01 face, or P01 red bridal clothing"
+        },
+        {
+          "at": "2026-09-19T22:58:51+08:00",
+          "decision": "pass",
+          "notes": "Phase5 Visual Lock per-frame SHA-bound admission PASS"
         }
       ],
       "authority_refresh_history": [
@@ -6592,15 +6979,69 @@
           "authorization_basis": "machine_verified_frame_contract_drift",
           "previous_frame_contract_sha256": "d7c69d3a4c1c1ea4564c5a7e64301bb156043270e421fd80ee285430ffb3811e",
           "current_frame_contract_sha256": "fa2a37fde5a8c2930986b0f959cddd66f522735b01cd2ee0e4f606642300cdac"
+        },
+        {
+          "at": "2026-09-19T22:26:27+08:00",
+          "previous_status": "LOCKED",
+          "current_candidate": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-613ca3d6dceb-a1.png",
+            "sha256": "4e52e2b2383885fb17934061c3a28b1cda61ca236147fc8223daacd62834558a",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-16T00:48:45+08:00",
+            "kind": "repair",
+            "attempt_id": "a00f9487b222"
+          },
+          "reviews": [
+            {
+              "at": "2026-09-09T10:25:42+08:00",
+              "decision": "pass",
+              "notes": "delegated auto review passed"
+            },
+            {
+              "at": "2026-09-09T15:02:57+08:00",
+              "decision": "pass",
+              "notes": "delegated auto review passed (reveal-order-v2)"
+            },
+            {
+              "at": "2026-09-10T11:53:27+08:00",
+              "decision": "pass",
+              "notes": "delegated auto pixel review (2026-09-10 repair 96e2dbbdd93f/ef634aef4e89 a2): 实拍像素核对通过——车厢尾板上并排坐三个红嫁衣女孩，头脸转向或低垂被暗部与头发遮住，无可辨清晰正脸；三对小腿垂出车外，脚踝光裸、各箍一圈深色金属铁环，环下连着短铁链垂向地面，铁环与皮肤、红嫁衣明暗反差可读，不再是白袜布鞋；男人背对镜头站在车厢后门一侧；P01仅在屋内门缝后，前景只有门框与浅色碎花袖，无第三人称旁观；画面内无药瓶药片。字幕12“车里还有新娘，脚上也带着铁。”现有像素支撑。合同 sha d7c69d3a 未变。"
+            },
+            {
+              "at": "2026-09-15T22:56:16+08:00",
+              "decision": "pass",
+              "notes": "Final semantic critic candidate review: Through the interior door gap, the truck's open rear visibly carries red-clad women while P01's floral shoulder remains in the near foreground; the vehicle and night lighting establish the transport beat."
+            },
+            {
+              "at": "2026-09-15T23:50:46+08:00",
+              "decision": "repair",
+              "notes": "Direct-user exception semantic critic attempt 3: The open truck, the man at its rear, several adult women in red wedding clothes, and the chain across their ankles are readable under the truck headlights. However, the large blurred floral-clothed shoulder and torso occupy the near left foreground as a subject being watched from behind. That composition cannot be produced by P01's own single hand-held first-person camera, and no authorized second photographer, mirror, or fixed camera is establish"
+            },
+            {
+              "at": "2026-09-16T00:45:07+08:00",
+              "decision": "repair",
+              "notes": "Direct-user continuation semantic critic attempt 4: 货车后门旁的男人、车厢内多名红嫁衣成年女性及可辨脚踝铁环均把囚禁扩展到多人，车厢、人物和车灯也提供尺度与夜间现场光依据。但左下角出现大面积碎花上身与深色屈腿，画面仍正向穿过门缝观察，实际读感像镜头位于P01身后/侧后方拍到她，而非P01单手持机的主观眼位；合同没有登记第二拍摄者、固定机位或镜面解释。"
+            },
+            {
+              "at": "2026-09-16T00:55:19+08:00",
+              "decision": "pass",
+              "notes": "Direct-user continuation semantic critic attempt 5: Target pixels satisfy the required reveal: a floral sleeve and hand hold the inside door edge, framing a man at the open rear of a rural cargo truck. Three adult women in red wedding clothing sit inside; their ankle iron cuffs and linking chain are plainly legible. The doorway, truck body, human bodies and hard vehicle backlight provide scale and a physically explainable P01 eye-level record. No drug bottle, P01 face, or P01 red bridal clothing"
+            }
+          ],
+          "reason": "current Visual Lock pixels were generated under a stale Frame Contract; deterministic authority refresh",
+          "authorization_basis": "machine_verified_frame_contract_drift",
+          "previous_frame_contract_sha256": "fa2a37fde5a8c2930986b0f959cddd66f522735b01cd2ee0e4f606642300cdac",
+          "current_frame_contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734"
         }
       ],
       "authority_refresh_authorization": {
-        "at": "2026-09-15T22:01:51+08:00",
-        "reason": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+        "at": "2026-09-19T22:26:27+08:00",
+        "reason": "current Visual Lock pixels were generated under a stale Frame Contract; deterministic authority refresh",
         "approval_basis": "machine_verified_frame_contract_drift",
-        "frame_contract_sha256": "fa2a37fde5a8c2930986b0f959cddd66f522735b01cd2ee0e4f606642300cdac",
-        "previous_frame_contract_sha256": "d7c69d3a4c1c1ea4564c5a7e64301bb156043270e421fd80ee285430ffb3811e",
-        "candidate_sha256": "946b643d1759ad662f8e9d362bba673925caa000c9fa9f5a3c982822a851a525",
+        "frame_contract_sha256": "de13b0066ae05bb2d6e64b4156df5e7ebd3c1cd55c15e237b80fd58fdab2e734",
+        "previous_frame_contract_sha256": "fa2a37fde5a8c2930986b0f959cddd66f522735b01cd2ee0e4f606642300cdac",
+        "candidate_sha256": "4e52e2b2383885fb17934061c3a28b1cda61ca236147fc8223daacd62834558a",
         "verification_errors": [
           "frame 12 generation frame_contract_sha256 stale"
         ],
@@ -6654,6 +7095,22 @@
             "height": 1350,
             "promoted_at": "2026-09-15T22:56:16+08:00",
             "source_sha256": "ce415f673790fdbb82987bf6b83136be0decbff9f1021d6fc7e5b62371276c61"
+          }
+        },
+        {
+          "at": "2026-09-19T22:26:27+08:00",
+          "lock": {
+            "at": "2026-09-16T00:55:19+08:00",
+            "sha256": "4e52e2b2383885fb17934061c3a28b1cda61ca236147fc8223daacd62834558a",
+            "reason": "direct-user continuation semantic critic attempt 5 PASS"
+          },
+          "approved_asset": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/12.png",
+            "sha256": "4e52e2b2383885fb17934061c3a28b1cda61ca236147fc8223daacd62834558a",
+            "width": 1080,
+            "height": 1350,
+            "promoted_at": "2026-09-16T00:55:19+08:00",
+            "source_sha256": "4e52e2b2383885fb17934061c3a28b1cda61ca236147fc8223daacd62834558a"
           }
         }
       ],
@@ -7441,7 +7898,7 @@
     },
     "15": {
       "number": 15,
-      "status": "LOCKED",
+      "status": "NEEDS_USER",
       "content_repairs_used": 0,
       "technical_failures": [],
       "attempts": [
@@ -7653,16 +8110,100 @@
             "kind": "repair",
             "attempt_id": "2389174a02e8"
           }
+        },
+        {
+          "attempt_id": "b302286f09e1",
+          "started_at": "2026-09-19T22:46:44+08:00",
+          "kind": "repair",
+          "request": {
+            "frame": "15",
+            "kind": "repair",
+            "prompt_sha256": "762aa1b987c5d3ae08e7eaba015c62e02da80ef074dd8c61f3cc3d6760c3695c",
+            "prompt_chars": 205,
+            "prompt_bytes": 435,
+            "capture_id": "authority-refresh-15-after-baseline",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "canvas": {
+              "aspect_ratio": "4:5",
+              "width": 1080,
+              "height": 1350
+            },
+            "references": [],
+            "visual_profile": {
+              "profile_id": "M00",
+              "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+              "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+              "capture_profile": "auto"
+            },
+            "frame_contract": {
+              "schema_version": 1,
+              "path": "meta/runtime/contracts/frames/15.json",
+              "contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5"
+            },
+            "frame_contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5",
+            "batch_id": null
+          },
+          "request_fingerprint": "be2529c950c40adbb8c0909795cc4719fd3ec9221a83d2f8d4d7d59de08270f1",
+          "notes": "phase6 scheduler item=4f65f827f737 scope=repair",
+          "result": "success",
+          "provider_attempt": {
+            "status": "COMPLETED",
+            "recorded_at": "2026-09-19T22:46:44+08:00",
+            "model": "gpt-image-2",
+            "quality": "high",
+            "completed_at": "2026-09-19T22:51:33+08:00",
+            "provider_receipt_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/15-1789829491.json",
+            "provider_receipt_sha256": "2efea366ea7e9e61fafb41ab0990fd80c4fe0f1c6f3b4b643ad4f399a955608a"
+          },
+          "runtime_transaction_id": "449036e473f94f98993663f8e6669042",
+          "reference_execution": {
+            "required": false,
+            "selected_references": [],
+            "passed_to_provider": false,
+            "provider": "codex_subscription",
+            "provider_receipt_id": "2efea366ea7e9e61fafb41ab0990fd80c4fe0f1c6f3b4b643ad4f399a955608a",
+            "verified": false,
+            "recorded_at": "2026-09-19T22:46:44+08:00",
+            "provider_receipt_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/15-1789829491.json",
+            "verified_at": "2026-09-19T22:51:33+08:00"
+          },
+          "provider_receipt": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/provider-receipts/15-1789829491.json",
+            "sha256": "2efea366ea7e9e61fafb41ab0990fd80c4fe0f1c6f3b4b643ad4f399a955608a",
+            "capability_id": "OPENAI_GPT_IMAGE_2_DESKTOP_V1",
+            "provider_raw_canvas": {
+              "width": 1122,
+              "height": 1402,
+              "aspect_ratio": 0.800285307,
+              "exact_requested_canvas": false,
+              "resize_direction_to_release": "downscale"
+            },
+            "ratio_delta": 0.000356633,
+            "normalize_decision": "AUTO_NORMALIZE",
+            "provider_attestation": false,
+            "storage_source": "json"
+          },
+          "completed_at": "2026-09-19T22:51:33+08:00",
+          "candidate": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/15-4f65f827f737-a1.png",
+            "sha256": "64905b0104672ec57e9bc8d85f364d348111dc34b0bd4e730fac33591d8ccea4",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-19T22:51:33+08:00",
+            "kind": "repair",
+            "attempt_id": "b302286f09e1"
+          }
         }
       ],
       "current_candidate": {
-        "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/15-bfc569e948a0-a1.png",
-        "sha256": "964a941eaa5d9f9bc81aaa9a6303732f00b5c283e7b0b4b5e740153a945f75c5",
+        "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/15-4f65f827f737-a1.png",
+        "sha256": "64905b0104672ec57e9bc8d85f364d348111dc34b0bd4e730fac33591d8ccea4",
         "width": 1080,
         "height": 1350,
-        "recorded_at": "2026-09-15T22:05:56+08:00",
+        "recorded_at": "2026-09-19T22:51:33+08:00",
         "kind": "repair",
-        "attempt_id": "2389174a02e8"
+        "attempt_id": "b302286f09e1"
       },
       "approved_asset": {
         "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/15.png",
@@ -7692,6 +8233,11 @@
           "at": "2026-09-15T22:56:16+08:00",
           "decision": "pass",
           "notes": "Final semantic critic candidate review: P01 holds the opened bangle at hand scale while the man lunges to take it; the doorway, red bedding and active reach make this the direct confrontation rather than a posed prop shot."
+        },
+        {
+          "at": "2026-09-19T22:58:52+08:00",
+          "decision": "repair",
+          "notes": "Phase5 Visual Lock critic failed actual-pixel admission"
         }
       ],
       "authority_refresh_history": [
@@ -7744,15 +8290,49 @@
           "authorization_basis": "machine_verified_frame_contract_drift",
           "previous_frame_contract_sha256": "dc8432fd1b88dcd66d9ba4b00a17ffdb9d81c126524a8524b306c941445a6eda",
           "current_frame_contract_sha256": "341af718d210a96b479b18daef3e679888e73f755251ab985dd69a07517b9843"
+        },
+        {
+          "at": "2026-09-19T22:26:28+08:00",
+          "previous_status": "LOCKED",
+          "current_candidate": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/15-bfc569e948a0-a1.png",
+            "sha256": "964a941eaa5d9f9bc81aaa9a6303732f00b5c283e7b0b4b5e740153a945f75c5",
+            "width": 1080,
+            "height": 1350,
+            "recorded_at": "2026-09-15T22:05:56+08:00",
+            "kind": "repair",
+            "attempt_id": "2389174a02e8"
+          },
+          "reviews": [
+            {
+              "at": "2026-09-09T10:25:45+08:00",
+              "decision": "pass",
+              "notes": "delegated auto review passed"
+            },
+            {
+              "at": "2026-09-09T15:02:58+08:00",
+              "decision": "pass",
+              "notes": "delegated auto review passed (reveal-order-v2)"
+            },
+            {
+              "at": "2026-09-15T22:56:16+08:00",
+              "decision": "pass",
+              "notes": "Final semantic critic candidate review: P01 holds the opened bangle at hand scale while the man lunges to take it; the doorway, red bedding and active reach make this the direct confrontation rather than a posed prop shot."
+            }
+          ],
+          "reason": "current Visual Lock pixels were generated under a stale Frame Contract; deterministic authority refresh",
+          "authorization_basis": "machine_verified_frame_contract_drift",
+          "previous_frame_contract_sha256": "341af718d210a96b479b18daef3e679888e73f755251ab985dd69a07517b9843",
+          "current_frame_contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5"
         }
       ],
       "authority_refresh_authorization": {
-        "at": "2026-09-15T22:01:52+08:00",
-        "reason": "W-02 frozen Episode closure: Concept Ambition re-review legally changed current Frame Contract; deterministically refresh approved pixels without consuming content repair budget",
+        "at": "2026-09-19T22:26:28+08:00",
+        "reason": "current Visual Lock pixels were generated under a stale Frame Contract; deterministic authority refresh",
         "approval_basis": "machine_verified_frame_contract_drift",
-        "frame_contract_sha256": "341af718d210a96b479b18daef3e679888e73f755251ab985dd69a07517b9843",
-        "previous_frame_contract_sha256": "dc8432fd1b88dcd66d9ba4b00a17ffdb9d81c126524a8524b306c941445a6eda",
-        "candidate_sha256": "99050f3d25f8f4ce4c8dae83703f719a3a899bde97df654b2116fa8819e08c41",
+        "frame_contract_sha256": "2022e3b5f3e0c061f456313101f68f25f04df36cd14707402362fdabce90d1c5",
+        "previous_frame_contract_sha256": "341af718d210a96b479b18daef3e679888e73f755251ab985dd69a07517b9843",
+        "candidate_sha256": "964a941eaa5d9f9bc81aaa9a6303732f00b5c283e7b0b4b5e740153a945f75c5",
         "verification_errors": [
           "frame 15 generation frame_contract_sha256 stale"
         ],
@@ -7773,6 +8353,22 @@
             "height": 1350,
             "promoted_at": "2026-09-09T15:03:13+08:00",
             "source_sha256": "99050f3d25f8f4ce4c8dae83703f719a3a899bde97df654b2116fa8819e08c41"
+          }
+        },
+        {
+          "at": "2026-09-19T22:26:28+08:00",
+          "lock": {
+            "at": "2026-09-15T22:56:16+08:00",
+            "sha256": "964a941eaa5d9f9bc81aaa9a6303732f00b5c283e7b0b4b5e740153a945f75c5",
+            "reason": "final semantic critic attempt 2 PASS"
+          },
+          "approved_asset": {
+            "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/15.png",
+            "sha256": "964a941eaa5d9f9bc81aaa9a6303732f00b5c283e7b0b4b5e740153a945f75c5",
+            "width": 1080,
+            "height": 1350,
+            "promoted_at": "2026-09-15T22:56:16+08:00",
+            "source_sha256": "964a941eaa5d9f9bc81aaa9a6303732f00b5c283e7b0b4b5e740153a945f75c5"
           }
         }
       ]

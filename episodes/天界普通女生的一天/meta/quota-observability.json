@@ -46,9 +46,39 @@
         "warning": "Local counters may not equal product quota accounting."
       },
       "note": "after CREATIVE_STORY"
+    },
+    {
+      "at": "2026-09-19T21:42:38+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {},
+        "files_scanned": [],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after INCREMENTAL_PLAN"
+    },
+    {
+      "at": "2026-09-19T21:42:39+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {},
+        "files_scanned": [],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after CREATIVE_STORY"
     }
   ],
-  "updated_at": "2026-09-18T19:27:06+08:00",
+  "updated_at": "2026-09-19T21:42:39+08:00",
   "kind": "quota_observability",
   "generated_at": "2026-09-18T16:22:05+08:00"
 }

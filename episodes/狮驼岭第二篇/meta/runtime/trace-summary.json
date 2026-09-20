@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-20T10:33:43.030+08:00",
+  "diagnostic_only": true,
+  "stage_authority": false,
+  "latest_trace_id": "ST_35a6fece95754b67",
+  "event_count": 27,
+  "span_end_count": 9,
+  "status_counts": {
+    "PASS": 4,
+    "HOST_WAIT": 3,
+    "REUSED": 2
+  },
+  "elapsed_ms_by_category": {
+    "workflow_step": 34703.0
+  },
+  "slowest_spans": [
+    {
+      "name": "PREIMAGE_COMPILE",
+      "category": "workflow_step",
+      "status": "PASS",
+      "elapsed_ms": 17859.0,
+      "span_id": "SP_4b02dcf1b43f4212"
+    },
+    {
+      "name": "VISUAL_LOCK",
+      "category": "workflow_step",
+      "status": "HOST_WAIT",
+      "elapsed_ms": 11235.0,
+      "span_id": "SP_1314f14c87ab48e5"
+    },
+    {
+      "name": "INCREMENTAL_PLAN",
+      "category": "workflow_step",
+      "status": "PASS",
+      "elapsed_ms": 2609.0,
+      "span_id": "SP_0c9618d4948a497b"
+    },
+    {
+      "name": "INCREMENTAL_PLAN",
+      "category": "workflow_step",
+      "status": "PASS",
+      "elapsed_ms": 1922.0,
+      "span_id": "SP_d202f7828aec47c7"
+    },
+    {
+      "name": "INCREMENTAL_PLAN",
+      "category": "workflow_step",
+      "status": "PASS",
+      "elapsed_ms": 531.0,
+      "span_id": "SP_5bbb6cde7d714ee6"
+    },
+    {
+      "name": "PREIMAGE_COMPILE",
+      "category": "workflow_step",
+      "status": "HOST_WAIT",
+      "elapsed_ms": 406.0,
+      "span_id": "SP_6d89764e94cd4c11"
+    },
+    {
+      "name": "CREATIVE_STORY",
+      "category": "workflow_step",
+      "status": "HOST_WAIT",
+      "elapsed_ms": 141.0,
+      "span_id": "SP_e1b768ffb3b14b40"
+    },
+    {
+      "name": "CREATIVE_STORY",
+      "category": "workflow_step",
+      "status": "REUSED",
+      "elapsed_ms": 0.0,
+      "span_id": "SP_334cb3f542c74ee7"
+    },
+    {
+      "name": "CREATIVE_STORY",
+      "category": "workflow_step",
+      "status": "REUSED",
+      "elapsed_ms": 0.0,
+      "span_id": "SP_d490952cc3c34800"
+    }
+  ],
+  "kind": "trace_summary"
+}

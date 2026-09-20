@@ -12,6 +12,19 @@ import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
 import provider_receipt_persistence
 
 
+def episode_dir(raw: str) -> Path:
+    """Resolve an episode lazily to survive the ledger/frame import cycle.
+
+    ``frame_contract`` imports the ledger facade while the facade imports this
+    runtime command module.  During that bootstrap, a star import from the
+    core can observe the core before its helper definitions are populated.
+    Deferring the lookup keeps the CLI entry point deterministic without
+    changing the public command surface.
+    """
+    from production_ledger_core import episode_dir as resolve_episode_dir
+    return resolve_episode_dir(raw)
+
+
 def _load_provider_receipt_evidence(ep: Path, raw_path: str, key: str, expected: tuple[int, int]):
     loaded = provider_receipt_persistence.load_by_path(ep, raw_path)
     if not loaded:

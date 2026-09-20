@@ -17,6 +17,21 @@ from production_ledger_manage import (cmd_accept_user_exception_candidate,
     cmd_batch_begin, cmd_batch_end, cmd_init, cmd_lock, cmd_promote, cmd_show,
     mark_review_needs_user)
 
+# ``frame_contract -> identity_continuity -> production_ledger`` creates a
+# short bootstrap cycle.  During that cycle the implementation modules can
+# receive a partial ``from production_ledger_core import *`` snapshot.  The
+# core is complete by the time the facade reaches this point, so backfill any
+# public core helpers that were not visible during the early import.  This is
+# limited to missing names and does not alter the command API.
+import production_ledger_core as _ledger_core
+import production_ledger_run as _ledger_run
+import production_ledger_manage as _ledger_manage
+for _module in (_ledger_run, _ledger_manage):
+    for _name, _value in vars(_ledger_core).items():
+        if not _name.startswith("_") and _name not in _module.__dict__:
+            setattr(_module, _name, _value)
+del _module, _name, _value, _ledger_core, _ledger_run, _ledger_manage
+
 
 def parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Story OS V1.2 Production Engine ledger")

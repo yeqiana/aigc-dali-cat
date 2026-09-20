@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-20T10:33:42+08:00",
+  "kind": "workflow_observability",
+  "diagnostic_only": true,
+  "source_files": [
+    {
+      "path": "meta/episode-state.json",
+      "sha256": "cc0df9ba5aac43fc0d7f6c1bc59ad2a441a4395c63002312d0b62ea2aaf1faa0"
+    },
+    {
+      "path": "meta/runtime-checkpoint.json",
+      "sha256": "d9e03a225ce690aff95d3249bba175b526b57614d46fdb04dac09cdd46d35bb7"
+    },
+    {
+      "path": "meta/episode-performance-ledger.json",
+      "sha256": "98673c77e0533f87eb82eddcff925c9e028b0c2e08ad0d96f4b2c8d228a00110"
+    },
+    {
+      "path": "meta/workflow-performance.json",
+      "sha256": "0c45dd6726f8c1868aea9176094a9ca0b8b700f7e378caef588f87b70539dafd"
+    },
+    {
+      "path": "meta/image-scheduler-performance.json",
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "path": "meta/production-queue.json",
+      "sha256": "eaceee4580367c4722da59bde5d81e281b17e586f80825fa38e029949cf92f26"
+    },
+    {
+      "path": "meta/production-ledger.json",
+      "sha256": null
+    },
+    {
+      "path": "meta/frame-scout-summary.json",
+      "sha256": null
+    },
+    {
+      "path": "meta/final-candidate-snapshot.json",
+      "sha256": null
+    },
+    {
+      "path": "meta/post-publish-review.json",
+      "sha256": null
+    },
+    {
+      "path": "meta/batch-runtime-performance.json",
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
+  ],
+  "source_fingerprint": "a71f9c5ddec534828fc4abca80a96f38dd08992982590a178c37d128c7972cdd",
+  "stage_source": "episode_state_authority",
+  "episode": "episodes/狮驼岭第二篇",
+  "current_state": "STORYBOARD_LOCKED",
+  "latest_workflow_run": {
+    "run_id": "1789871589-work",
+    "status": "HOST_WAIT",
+    "total_seconds": 34.453,
+    "slowest_steps": [
+      {
+        "step": "VISUAL_LOCK",
+        "status": "HOST_WAIT",
+        "elapsed_seconds": 11.204,
+        "recorded_at": "2026-09-20T10:33:41+08:00",
+        "note": "tion/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-040b15d1bf94a9d0\", \"request_fingerprint\": \"040b15d1bf94a9d019a4aa99573be25fb349ac785d09fc0d6032d023e9cee7de\", \"created_at\": \"2026-09-20T10:33:41+08:00\", \"request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/host-requests/host-040b15d1bf94a9d0.json\", \"current_request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/product-host-request.json\"}"
+      },
+      {
+        "step": "PREIMAGE_COMPILE",
+        "status": "PASS",
+        "elapsed_seconds": 4.765,
+        "recorded_at": "2026-09-20T10:33:30+08:00",
+        "note": "{\"deterministic_step\": \"PREIMAGE_FRAME_CONTRACT_COMPILE\", \"directing_contracts\": {\"meta/capture-event-contract.json\": \"CREATED\", \"meta/world-state.json\": \"CREATED\", \"meta/temporal-continuity.json\": \"CREATED\", \"meta/wardrobe-contract.json\": \"CREATED\"}, \"frame_contract_index_sha256\": \"0a0ba248df2f5c62c92e7d78af6c574f65838d20f0cb13d56288fc80b6128473\"}\npreproduction_handoff=420ba64c4170bd472dac6dc9d4a3c9c659db0f45662945da333f329bedb4483e"
+      },
+      {
+        "step": "INCREMENTAL_PLAN",
+        "status": "PASS",
+        "elapsed_seconds": 2.562,
+        "recorded_at": "2026-09-20T10:33:12+08:00",
+        "note": "{\n  \"episode\": \"episodes/狮驼岭第二篇\",\n  \"state\": \"STORYBOARD_LOCKED\",\n  \"story\": \"CLEAN\",\n  \"visual\": \"NOT_APPLICABLE\",\n  \"frames\": \"NOT_APPLICABLE\",\n  \"frame_plan\": null,\n  \"subtitle\": \"NOT_APPLICABLE\",\n  \"action\": \"RUN_WORKER\",\n  \"missing\": []\n}\n"
+      },
+      {
+        "step": "HOST_LOOP",
+        "status": "HOST_WAIT",
+        "elapsed_seconds": 0.188,
+        "recorded_at": "2026-09-20T10:33:42+08:00",
+        "note": "stop_cycle=1 host_owns=VISUAL_LOCK"
+      },
+      {
+        "step": "CREATIVE_STORY",
+        "status": "REUSED",
+        "elapsed_seconds": 0.0,
+        "recorded_at": "2026-09-20T10:33:12+08:00",
+        "note": "target already valid"
+      }
+    ]
+  },
+  "production": {
+    "ledger_status_counts": {},
+    "queue_status_counts": {},
+    "image_attempt_count": 0,
+    "image_attempt_status_counts": {},
+    "image_attempt_kind_counts": {},
+    "scheduler_wave_count": 0,
+    "max_observed_parallel": 0,
+    "adaptive_parallel_current": null
+  },
+  "review": {
+    "scout_decisions": {},
+    "scout_summary_passed": null
+  },
+  "release": {
+    "snapshot_present": false,
+    "snapshot_sha256": null
+  },
+  "post_publish": {
+    "latest_checkpoint": null,
+    "completed_checkpoints": []
+  },
+  "runtime_trace": {
+    "schema_version": 1,
+    "generated_at": "2026-09-20T10:33:42.815+08:00",
+    "diagnostic_only": true,
+    "stage_authority": false,
+    "latest_trace_id": "ST_35a6fece95754b67",
+    "event_count": 26,
+    "span_end_count": 9,
+    "status_counts": {
+      "PASS": 4,
+      "HOST_WAIT": 3,
+      "REUSED": 2
+    },
+    "elapsed_ms_by_category": {
+      "workflow_step": 34703.0
+    },
+    "slowest_spans": [
+      {
+        "name": "PREIMAGE_COMPILE",
+        "category": "workflow_step",
+        "status": "PASS",
+        "elapsed_ms": 17859.0,
+        "span_id": "SP_4b02dcf1b43f4212"
+      },
+      {
+        "name": "VISUAL_LOCK",
+        "category": "workflow_step",
+        "status": "HOST_WAIT",
+        "elapsed_ms": 11235.0,
+        "span_id": "SP_1314f14c87ab48e5"
+      },
+      {
+        "name": "INCREMENTAL_PLAN",
+        "category": "workflow_step",
+        "status": "PASS",
+        "elapsed_ms": 2609.0,
+        "span_id": "SP_0c9618d4948a497b"
+      },
+      {
+        "name": "INCREMENTAL_PLAN",
+        "category": "workflow_step",
+        "status": "PASS",
+        "elapsed_ms": 1922.0,
+        "span_id": "SP_d202f7828aec47c7"
+      },
+      {
+        "name": "INCREMENTAL_PLAN",
+        "category": "workflow_step",
+        "status": "PASS",
+        "elapsed_ms": 531.0,
+        "span_id": "SP_5bbb6cde7d714ee6"
+      },
+      {
+        "name": "PREIMAGE_COMPILE",
+        "category": "workflow_step",
+        "status": "HOST_WAIT",
+        "elapsed_ms": 406.0,
+        "span_id": "SP_6d89764e94cd4c11"
+      },
+      {
+        "name": "CREATIVE_STORY",
+        "category": "workflow_step",
+        "status": "HOST_WAIT",
+        "elapsed_ms": 141.0,
+        "span_id": "SP_e1b768ffb3b14b40"
+      },
+      {
+        "name": "CREATIVE_STORY",
+        "category": "workflow_step",
+        "status": "REUSED",
+        "elapsed_ms": 0.0,
+        "span_id": "SP_334cb3f542c74ee7"
+      },
+      {
+        "name": "CREATIVE_STORY",
+        "category": "workflow_step",
+        "status": "REUSED",
+        "elapsed_ms": 0.0,
+        "span_id": "SP_d490952cc3c34800"
+      }
+    ]
+  },
+  "batch_runtime": {
+    "enabled": false,
+    "batch_count": 0,
+    "logical_codex_batch_count": 0,
+    "images_requested": 0,
+    "images_returned": 0,
+    "fallback_single_frames": 0,
+    "provider_counts": {},
+    "failure_code_counts": {},
+    "empty_batch_count": 0,
+    "timeout_failure_count": 0,
+    "network_connect_failure_count": 0,
+    "native_multi_image_supported": null,
+    "single_http_request": null,
+    "provider": null,
+    "transport": null,
+    "provider_requested_images": null,
+    "provider_returned_images": null,
+    "codex_logical_batch": {
+      "enabled": false,
+      "provider": null,
+      "transport": null,
+      "logical_batch": null,
+      "native_multi_image": null,
+      "requested_count": null,
+      "successful_count": null,
+      "failed_count": null,
+      "initial_max_inflight": null,
+      "recommended_concurrency": null,
+      "rounds": [],
+      "elapsed_seconds": null
+    },
+    "early_high_high_repairs": 0,
+    "ordinary_repairs_after_barrier": 0,
+    "wait_batch_decisions": 0
+  },
+  "runtime_handoff": {
+    "awaiting_product_host": true,
+    "host_wait_steps": [
+      {
+        "step": "HOST_LOOP",
+        "status": "HOST_WAIT",
+        "input_hash": null,
+        "output_hash": null,
+        "attempt": 1,
+        "started_at": null,
+        "finished_at": "2026-09-20T10:33:42+08:00",
+        "note": "stop_cycle=1 host_owns=VISUAL_LOCK",
+        "elapsed_seconds": 0.188
+      },
+      {
+        "step": "VISUAL_LOCK",
+        "status": "HOST_WAIT",
+        "input_hash": "0c29ba868e869a17b7f20f56c2ca17ed0300d653fc21b5b1bb07e6700d590f19",
+        "output_hash": "e007a18650d8ea7b1a326ee6ea8b1b10a0ef5f5250f732fda9902989c3bc2cfb",
+        "attempt": 1,
+        "started_at": null,
+        "finished_at": "2026-09-20T10:33:41+08:00",
+        "note": "when they do not invoke a model backend\", \"stage_authority\": \"meta/episode-state.json\", \"must_not_claim_pass_without_evidence\": true}, \"instructions\": [\"Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.\", \"Reuse valid SHA-bound evidence and obey existing Story OS gates.\", \"For independent critics, prepare the product review request, author the candidate in a fresh isolated WORK review turn using DevSpace only, then finalize it.\", \"Do not use WebCodex for repository access or review execution.\", \"When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.\"], \"schema_version\": 2, \"request_id\": \"host-040b15d1bf94a9d0\", \"request_fingerprint\": \"040b15d1bf94a9d019a4aa99573be25fb349ac785d09fc0d6032d023e9cee7de\", \"created_at\": \"2026-09-20T10:33:41+08:00\", \"request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/host-requests/host-040b15d1bf94a9d0.json\", \"current_request_path\": \".storyos/runtime/episodes/\\u72ee\\u9a7c\\u5cad\\u7b2c\\u4e8c\\u7bc7/meta/runtime/product-host-request.json\"}",
+        "elapsed_seconds": 11.204,
+        "returncode": 20
+      }
+    ],
+    "host_wait_is_failure": false
+  },
+  "failure_taxonomy": {
+    "technical_failures": 0,
+    "dependency_or_hard_blocked": 0,
+    "scout_repair": 0,
+    "content_failed": 0,
+    "failed_frames_checkpoint": 0,
+    "scout_unresolved": 0
+  },
+  "health": {
+    "has_blockers": false,
+    "awaiting_product_host": true,
+    "workflow_status": "HOST_WAIT"
+  }
+}

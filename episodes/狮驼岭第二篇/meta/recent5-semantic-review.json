@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "episode_id": "狮驼岭第二篇",
+  "reviewed_at": "2026-09-20T10:22:01+08:00",
+  "candidate_fingerprint_path": "episodes/狮驼岭第二篇/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "073d5b9a68a6bc19ba2a0ad0f3efc06486565e023b99a6fd2976127a3adba6e0",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "history_episode_ids": [
+    "09-04",
+    "10-01"
+  ],
+  "critic_provenance": {
+    "schema_version": 2,
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-20T10:22:01+08:00",
+    "workspace_transport": "DEVSPACE",
+    "isolation_mode": "fresh_product_review_turn",
+    "webcodex_used": false,
+    "request_path": "episodes/狮驼岭第二篇/meta/runtime/reviews/recent5-semantic-attempt-1-request.json",
+    "request_id": "recent5-semantic-a1-8b393ae5d0be25d3",
+    "request_fingerprint": "8b393ae5d0be25d36571143a1d988dca0a117e26d2dcb08fa62107535de537eb"
+  },
+  "comparisons": [
+    {
+      "episode_id": "09-04",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    },
+    {
+      "episode_id": "10-01",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    }
+  ]
+}

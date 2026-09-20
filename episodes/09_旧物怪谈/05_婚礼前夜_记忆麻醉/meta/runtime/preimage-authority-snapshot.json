@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "snapshot_id": "13151f5f61de3b0627ba887af545011b05a671c790332747e4253cfa7cce8987",
+  "snapshot_id": "2493c62d542fe23cb18edeb897756cc472080b50cfc889193e29e2566b54001e",
   "snapshot_kind": "PREIMAGE_INPUT_SNAPSHOT",
-  "created_at": "2026-09-15T21:58:00+08:00",
+  "created_at": "2026-09-19T21:56:51+08:00",
   "authority_sha256": {
     "owned_scopes": {
       "character.finalize": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
@@ -16,7 +16,9 @@
       "visual.shot_progression": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
       "visual.capture_grammar": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
     },
-    "character_contract": "ed645046da6ca83dfe8411dabe2331cabe9e2ea9187e21acaca60f733a203507",
+    "character_contract": "196fc4059a4c1820cea0f7727e48a89dee27f02355b518beaf1ba3aba694cb6f",
+    "character_visual_contract": "bc4859ee01d8a2226b60d6e5b20406cf4499dd7aa183ee688a4ec92b0d0250f2",
+    "story_semantic_review": "68b950cdd5dc47a7d2aa1629684df0434217904a7934afd82564fe663c7ab05c",
     "world_identity": null,
     "runtime_request_preimage": "364050335c0b55b7f9e9f82fe3304303510a1f35f5f7aaf2aa72e655f20b16bb",
     "story_lock": "490fa39bb586496f8ad8ad6f1c110587809ed6b55a04c687f12eb29224a92fa1",
@@ -24,7 +26,9 @@
   },
   "whole_authority_sha256": {
     "story_gates": "f22c591ef5738fd3aed88a3b2dbc06e0256feba1764dda127ee441b3534b0097",
-    "character_contract": "ed645046da6ca83dfe8411dabe2331cabe9e2ea9187e21acaca60f733a203507",
+    "character_contract": "196fc4059a4c1820cea0f7727e48a89dee27f02355b518beaf1ba3aba694cb6f",
+    "character_visual_contract": "bc4859ee01d8a2226b60d6e5b20406cf4499dd7aa183ee688a4ec92b0d0250f2",
+    "story_semantic_review": "68b950cdd5dc47a7d2aa1629684df0434217904a7934afd82564fe663c7ab05c",
     "world_identity": null,
     "runtime_request_preimage": "364050335c0b55b7f9e9f82fe3304303510a1f35f5f7aaf2aa72e655f20b16bb",
     "story_lock": "490fa39bb586496f8ad8ad6f1c110587809ed6b55a04c687f12eb29224a92fa1",

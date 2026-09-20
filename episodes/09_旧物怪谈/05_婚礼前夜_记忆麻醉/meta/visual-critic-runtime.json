@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "status": "AVAILABLE_PASS",
+  "status": "AVAILABLE_CONTENT_FAIL",
   "consecutive_technical_failures": 0,
   "last_fingerprint": null,
   "events": [
@@ -49,10 +49,24 @@
       "log": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/visual-lock-critic-attempt-2.jsonl",
       "visual_lock_run_id": null,
       "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-19T22:58:52+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 1,
+      "issue_codes": [
+        "HIGH_IMPACT_NOT_VISUALLY_DELIVERED"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/visual-lock-critic-attempt-1.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
     }
   ],
   "speculative_production_allowed": false,
-  "last_issue_codes": [],
-  "last_event_at": "2026-09-10T12:07:02+08:00",
+  "last_issue_codes": [
+    "HIGH_IMPACT_NOT_VISUALLY_DELIVERED"
+  ],
+  "last_event_at": "2026-09-19T22:58:52+08:00",
   "last_visual_lock_run_id": null
 }

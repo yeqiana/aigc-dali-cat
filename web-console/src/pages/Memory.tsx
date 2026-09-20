@@ -5,7 +5,7 @@ export default function Memory() {
   const [count, setCount] = useState(0);
 
   async function search() {
-    const result = await memoryApi.search({ query: 'story' });
+    const result = await memoryApi.search('story');
     setCount(Array.isArray(result) ? result.length : 0);
   }
 

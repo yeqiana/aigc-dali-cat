@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "67788437a8d4e86b56c73c4c4ae095f83593f949a762deff4a5aa90e18f32787",
+  "not_episode_stage": true,
+  "not_gate_authority": true,
+  "canonical_stage_source": "meta/episode-state.json",
+  "tasks": {
+    "CHARACTER_FINALIZE": {
+      "task_id": "preimage-character_finalize-67788437a8d4",
+      "status": "COMPLETED",
+      "request_id": "preimage-40d2960cff225495",
+      "candidate_path": "meta/runtime/preimage-candidates/character-finalize.json",
+      "updated_at": "2026-09-20T10:32:54+08:00",
+      "execution": {
+        "started_at": "2026-09-20T10:26:22.811563+08:00",
+        "worker_id": "work-host-char",
+        "finished_at": "2026-09-20T10:32:54.196028+08:00"
+      }
+    },
+    "ENVIRONMENT_PREPARE": {
+      "task_id": "preimage-environment_prepare-67788437a8d4",
+      "status": "COMPLETED",
+      "request_id": "preimage-30ec5565195415a3",
+      "candidate_path": "meta/runtime/preimage-candidates/environment.json",
+      "updated_at": "2026-09-20T10:32:55+08:00",
+      "execution": {
+        "started_at": "2026-09-20T10:26:23.226371+08:00",
+        "worker_id": "work-host-env",
+        "finished_at": "2026-09-20T10:32:54.998798+08:00"
+      }
+    },
+    "WORLD_PREPARE": {
+      "task_id": "preimage-world_prepare-67788437a8d4",
+      "status": "COMPLETED",
+      "request_id": "preimage-9c8cab4fc756257d",
+      "candidate_path": "meta/runtime/preimage-candidates/world.json",
+      "updated_at": "2026-09-20T10:32:55+08:00",
+      "execution": {
+        "started_at": "2026-09-20T10:26:23.646227+08:00",
+        "worker_id": "work-host-world",
+        "finished_at": "2026-09-20T10:32:55.733081+08:00"
+      }
+    },
+    "VISUAL_NARRATIVE_PREPARE": {
+      "task_id": "preimage-visual_narrative_prepare-67788437a8d4",
+      "status": "COMPLETED",
+      "request_id": "preimage-e058e2c5b00c09b3",
+      "candidate_path": "meta/runtime/preimage-candidates/visual-narrative.json",
+      "updated_at": "2026-09-20T10:32:56+08:00",
+      "execution": {
+        "started_at": "2026-09-20T10:26:24.074069+08:00",
+        "worker_id": "work-host-visual",
+        "finished_at": "2026-09-20T10:32:56.644550+08:00"
+      }
+    }
+  },
+  "updated_at": "2026-09-20T10:32:56+08:00"
+}
