@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
 import { Plus, Copy, Check, FileCode, Download, Flame } from 'lucide-react';
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Cell
-} from 'recharts';
 import { Episode } from '../types';
 
 interface ContextPanelProps {
@@ -22,7 +13,7 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
   onClose,
   onShowToast,
 }) => {
-  const [activeJson, setActiveJson] = useState<{ title: string; json: any } | null>(null);
+  const [activeJson, setActiveJson] = useState<{ title: string; json: unknown } | null>(null);
   const [copied, setCopied] = useState(false);
 
   // 计算批次热力数据 (基于每批 5 帧)
@@ -48,10 +39,9 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
       completed: completedInBatch,
       total: totalInBatch,
       rate,
-      // 使用统一 UI token，避免热力图形成第二套颜色体系。
       fillColor: isDone
         ? 'var(--primary)'
-        : (isInProgress ? 'var(--info)' : (completedInBatch > 0 ? 'var(--text-subtle)' : 'var(--border-strong)')),
+        : (isInProgress ? 'var(--info)' : 'var(--border-strong)'),
       status: isDone ? '已交付' : (isInProgress ? '生产中' : '待调度'),
     };
   });
@@ -123,39 +113,10 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
     onShowToast('已下载本地 preview JSON · 非生产 Authority/Artifact');
   };
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="storyos-elevated p-2 text-xs font-mono text-[var(--text-primary)] z-50">
-          <div className="font-bold flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] pb-1 mb-1">
-            <span className="text-[var(--text-primary)]">{data.fullName}</span>
-            <span className="text-[10px] text-[var(--text-tertiary)]">{data.range}</span>
-          </div>
-          <div className="text-[11px] text-[var(--text-secondary)] space-y-0.5">
-            <div className="flex justify-between gap-3">
-              <span className="text-[var(--text-tertiary)]">状态:</span>
-              <span className="text-[var(--text-primary)] font-medium">{data.status}</span>
-            </div>
-            <div className="flex justify-between gap-3">
-              <span className="text-[var(--text-tertiary)]">已产帧数:</span>
-              <span className="text-[var(--text-primary)] font-bold">{data.completed} / {data.total} 帧</span>
-            </div>
-            <div className="flex justify-between gap-3">
-              <span className="text-[var(--text-tertiary)]">批次完成率:</span>
-              <span className="text-[var(--primary)] font-mono">{data.rate}%</span>
-            </div>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <aside className="storyos-drawer w-[var(--drawer-width)] max-w-[38vw] shrink-0 flex flex-col h-full text-xs font-sans select-none text-[var(--text-secondary)]">
       <div className="p-3 space-y-4 overflow-y-auto scrollbar-none flex-1">
-        {/* 0. 生产进度热力一览图 (Recharts) */}
+        {/* 0. 生产进度热力一览图：轻量 CSS 批次柱，不引入图表运行时。 */}
         <div>
           <div className="flex items-center justify-between text-[var(--text-tertiary)] pb-1.5 border-b border-[var(--border-subtle)] text-[11px] font-mono">
             <span className="text-[var(--text-primary)] font-semibold flex items-center gap-1.5">
@@ -168,41 +129,30 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
           </div>
 
           <div className="mt-2.5 p-2 rounded-[var(--radius-md)] bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
-            {/* Recharts 批次热力柱状图 */}
-            <div className="h-28 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={batchHeatData}
-                  margin={{ top: 8, right: 4, left: -22, bottom: 0 }}
+            <div className="h-28 w-full flex items-end gap-1.5 px-1 pt-1">
+              {batchHeatData.map((entry) => (
+                <div
+                  key={entry.batchKey}
+                  className="flex-1 min-w-0 h-full flex flex-col justify-end gap-1 cursor-help"
+                  title={`${entry.fullName} ${entry.range} · ${entry.status} · ${entry.completed}/${entry.total} 帧 · ${entry.rate}%`}
                 >
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fill: 'var(--text-tertiary)', fontSize: 10, fontFamily: 'monospace' }}
-                    axisLine={{ stroke: 'var(--border-normal)' }}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    domain={[0, 5]}
-                    ticks={[0, 2, 5]}
-                    tick={{ fill: 'var(--text-subtle)', fontSize: 9, fontFamily: 'monospace' }}
-                    axisLine={{ stroke: 'var(--border-normal)' }}
-                    tickLine={false}
-                  />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--bg-muted)' }} />
-                  <Bar
-                    dataKey="completed"
-                    radius={[3, 3, 0, 0]}
-                    isAnimationActive={false}
-                  >
-                    {batchHeatData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={entry.fillColor}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+                  <div className="text-[9px] font-mono text-[var(--text-tertiary)] text-center tabular-nums">
+                    {entry.completed}/{entry.total}
+                  </div>
+                  <div className="relative h-20 rounded-[2px] bg-[var(--bg-muted)] border border-[var(--border-subtle)] overflow-hidden">
+                    <div
+                      className="absolute inset-x-0 bottom-0 rounded-[2px]"
+                      style={{
+                        height: `${Math.max(entry.rate, entry.completed > 0 ? 8 : 0)}%`,
+                        backgroundColor: entry.fillColor,
+                      }}
+                    />
+                  </div>
+                  <div className="text-[9px] font-mono text-[var(--text-tertiary)] text-center truncate">
+                    {entry.name}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* 逐帧微型热力网格 (展示全帧 32 格) */}

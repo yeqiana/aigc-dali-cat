@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import {
   Play,
   Pause,
@@ -28,8 +28,9 @@ import {
 } from 'lucide-react';
 import { StoryRunItem, FrameDetailItem, StoryRunStatus, StoryRunStage } from '../../types';
 import { MOCK_STORY_RUNS, MOCK_MONITOR_METRICS } from '../../mockMonitorData';
-import { StoryRunDetailView } from './StoryRunDetailView';
 import { StatusBadge } from '../StatusBadge';
+
+const StoryRunDetailView = lazy(() => import('./StoryRunDetailView').then((module) => ({ default: module.StoryRunDetailView })));
 
 interface ProductionMonitorViewProps {
   onSelectStoryRun?: (run: StoryRunItem) => void;
@@ -156,15 +157,23 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   // 如果点击查看了某个具体的 Story Run，无缝展示高阶独立全量详情页（尸解仙排障与流水线）
   if (selectedRunForDetail) {
     return (
-      <StoryRunDetailView
-        run={selectedRunForDetail}
-        onBack={() => setSelectedRunForDetail(null)}
-        onShowToast={onShowToast}
-        onUpdateRun={(updated) => {
-          setRuns((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
-          setSelectedRunForDetail(updated);
-        }}
-      />
+      <Suspense
+        fallback={
+          <div className="storyos-surface min-h-40 flex items-center justify-center text-[11px] font-mono text-[var(--text-tertiary)]">
+            Loading Story Run Detail…
+          </div>
+        }
+      >
+        <StoryRunDetailView
+          run={selectedRunForDetail}
+          onBack={() => setSelectedRunForDetail(null)}
+          onShowToast={onShowToast}
+          onUpdateRun={(updated) => {
+            setRuns((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+            setSelectedRunForDetail(updated);
+          }}
+        />
+      </Suspense>
     );
   }
 

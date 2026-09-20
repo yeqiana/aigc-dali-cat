@@ -1,17 +1,9 @@
 import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { HeaderBar } from './components/HeaderBar';
-import { StatusFlowBanner } from './components/StatusFlowBanner';
-import { ActivityStream } from './components/ActivityStream';
-import { CommandDock } from './components/CommandDock';
-import { ContextPanel } from './components/ContextPanel';
-import { ProductionStagePanel } from './components/ProductionStagePanel';
 
 // Views
 import { ProductionMonitorView } from './components/views/ProductionMonitorView';
-import { SeriesLibraryView } from './components/views/SeriesLibraryView';
-import { RuntimeLogsView } from './components/views/RuntimeLogsView';
-import { SettingsView } from './components/views/SettingsView';
 
 import { MOCK_EPISODES } from './mockData';
 import { Episode, NavigationTab, BatchItem } from './types';
@@ -25,6 +17,14 @@ const ExecutionExplorer = lazy(() => import('./pages/ExecutionExplorer'));
 const TraceExplorer = lazy(() => import('./pages/TraceExplorer'));
 const PluginConsole = lazy(() => import('./pages/PluginConsole'));
 const RuntimeVisualization = lazy(() => import('./pages/RuntimeVisualization'));
+const StatusFlowBanner = lazy(() => import('./components/StatusFlowBanner').then((module) => ({ default: module.StatusFlowBanner })));
+const ActivityStream = lazy(() => import('./components/ActivityStream').then((module) => ({ default: module.ActivityStream })));
+const CommandDock = lazy(() => import('./components/CommandDock').then((module) => ({ default: module.CommandDock })));
+const ContextPanel = lazy(() => import('./components/ContextPanel').then((module) => ({ default: module.ContextPanel })));
+const ProductionStagePanel = lazy(() => import('./components/ProductionStagePanel').then((module) => ({ default: module.ProductionStagePanel })));
+const SeriesLibraryView = lazy(() => import('./components/views/SeriesLibraryView').then((module) => ({ default: module.SeriesLibraryView })));
+const RuntimeLogsView = lazy(() => import('./components/views/RuntimeLogsView').then((module) => ({ default: module.RuntimeLogsView })));
+const SettingsView = lazy(() => import('./components/views/SettingsView').then((module) => ({ default: module.SettingsView })));
 
 // Keep the platform-backed pages reachable while the dense production console
 // remains the default workspace.  These definitions are intentionally kept in
@@ -55,6 +55,14 @@ function renderBackendRoute(): React.ReactNode | null {
     >
       <Component />
     </Suspense>
+  );
+}
+
+function ConsoleSectionFallback({ label }: { label: string }) {
+  return (
+    <div className="storyos-surface min-h-24 flex items-center justify-center text-[11px] font-mono text-[var(--text-tertiary)]">
+      Loading {label}…
+    </div>
   );
 }
 
@@ -233,77 +241,89 @@ function ProductionConsole() {
 
           {/* 剧集库视图 */}
           {currentTab === 'episodes' && (
-            <div className="max-w-4xl mx-auto">
-              <SeriesLibraryView
-                episodes={episodes}
-                activeEpisode={activeEpisode}
-                onSelectEpisode={(ep) => {
-                  setActiveEpisode(ep);
-                  setCurrentTab('workbench');
-                }}
-                onGoToWorkbench={() => setCurrentTab('workbench')}
-                onNewStoryClick={() => setCurrentTab('workbench')}
-              />
-            </div>
+            <Suspense fallback={<ConsoleSectionFallback label="Episodes" />}>
+              <div className="max-w-4xl mx-auto">
+                <SeriesLibraryView
+                  episodes={episodes}
+                  activeEpisode={activeEpisode}
+                  onSelectEpisode={(ep) => {
+                    setActiveEpisode(ep);
+                    setCurrentTab('workbench');
+                  }}
+                  onGoToWorkbench={() => setCurrentTab('workbench')}
+                  onNewStoryClick={() => setCurrentTab('workbench')}
+                />
+              </div>
+            </Suspense>
           )}
 
           {/* 运行日志审计视图 */}
           {currentTab === 'logs' && (
-            <div className="max-w-4xl mx-auto">
-              <RuntimeLogsView />
-            </div>
+            <Suspense fallback={<ConsoleSectionFallback label="Runtime Logs" />}>
+              <div className="max-w-4xl mx-auto">
+                <RuntimeLogsView />
+              </div>
+            </Suspense>
           )}
 
           {/* 系统设置视图 */}
           {currentTab === 'settings' && (
-            <div className="max-w-4xl mx-auto">
-              <SettingsView />
-            </div>
+            <Suspense fallback={<ConsoleSectionFallback label="Settings" />}>
+              <div className="max-w-4xl mx-auto">
+                <SettingsView />
+              </div>
+            </Suspense>
           )}
 
           {/* 核心工作流：Operator Console / Production Stage 双区 */}
           {currentTab === 'workbench' && (
-            <div className="grid min-h-full grid-cols-1 xl:grid-cols-[minmax(360px,38%)_minmax(0,62%)] gap-4 pb-24">
-              <section aria-label="Operator Console" className="min-w-0">
-                <StatusFlowBanner
-                  currentStage={activeEpisode.currentStage}
-                  completedFrames={activeEpisode.completedFrames}
-                  totalFrames={activeEpisode.totalFrames}
-                />
-                <ActivityStream
-                  activeEpisode={activeEpisode}
-                  onGenerateBatch={handleQuickGenerateNextBatch}
-                  isGeneratingBatch={isGeneratingBatch}
-                  onReviewAction={handleReviewAction}
-                  onShowToast={showToast}
-                />
-              </section>
+            <Suspense fallback={<ConsoleSectionFallback label="Workbench" />}>
+              <div className="grid min-h-full grid-cols-1 xl:grid-cols-[minmax(360px,38%)_minmax(0,62%)] gap-4 pb-24">
+                <section aria-label="Operator Console" className="min-w-0">
+                  <StatusFlowBanner
+                    currentStage={activeEpisode.currentStage}
+                    completedFrames={activeEpisode.completedFrames}
+                    totalFrames={activeEpisode.totalFrames}
+                  />
+                  <ActivityStream
+                    activeEpisode={activeEpisode}
+                    onGenerateBatch={handleQuickGenerateNextBatch}
+                    isGeneratingBatch={isGeneratingBatch}
+                    onReviewAction={handleReviewAction}
+                    onShowToast={showToast}
+                  />
+                </section>
 
-              <ProductionStagePanel
-                activeEpisode={activeEpisode}
-                isGeneratingBatch={isGeneratingBatch}
-                onSelectFrame={(frame) => showToast(`已选中 Frame #${frame.frameIndex} · ${frame.status}`)}
-              />
-            </div>
+                <ProductionStagePanel
+                  activeEpisode={activeEpisode}
+                  isGeneratingBatch={isGeneratingBatch}
+                  onSelectFrame={(frame) => showToast(`已选中 Frame #${frame.frameIndex} · ${frame.status}`)}
+                />
+              </div>
+            </Suspense>
           )}
         </main>
 
         {/* 3. 悬浮极简输入坞（纯黑底白字） */}
         {currentTab === 'workbench' && (
-          <CommandDock
-            onSendMessage={handleCommandSubmit}
-            isLoading={isGeneratingBatch}
-          />
+          <Suspense fallback={null}>
+            <CommandDock
+              onSendMessage={handleCommandSubmit}
+              isLoading={isGeneratingBatch}
+            />
+          </Suspense>
         )}
       </div>
 
       {/* 4. 纯净右侧上下文与资产账本栏 */}
       {contextPanelOpen && currentTab !== 'production_monitor' && (
-        <ContextPanel
-          activeEpisode={activeEpisode}
-          onClose={() => setContextPanelOpen(false)}
-          onShowToast={showToast}
-        />
+        <Suspense fallback={null}>
+          <ContextPanel
+            activeEpisode={activeEpisode}
+            onClose={() => setContextPanelOpen(false)}
+            onShowToast={showToast}
+          />
+        </Suspense>
       )}
 
       {/* 5. 全局搜索模态弹窗 (Ctrl + K / 侧边栏搜索) */}
