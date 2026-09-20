@@ -46,6 +46,7 @@ import runtime_timeout_policy
 import runtime_ownership
 import story_json
 import hot_state_bridge
+import storage_config
 
 # `driver status` is read by the host to decide whether the Driver is alive and
 # how far it got. On this machine the console defaults to cp936, which turns the
@@ -59,6 +60,8 @@ REL = Path("meta/runtime/driver.json")
 BEACON_REL = Path("meta/runtime/driver-beacon.json")
 LOG_DIR = Path("meta/runtime/driver-logs")
 SCHEMA_VERSION = 1
+REPO_ROOT = Path(__file__).resolve().parents[2]
+RUNTIME_ENV_PATH = REPO_ROOT / ".storyos/runtime-launcher/runtime.env"
 
 RUNNING = "RUNNING"
 
@@ -97,12 +100,13 @@ def _read_record(ep: Path) -> dict:
 
 def _write_record(ep: Path, fields: dict) -> dict:
     path = _record_path(ep)
-    path.parent.mkdir(parents=True, exist_ok=True)
     current = _read_record(ep)
     current.update(fields)
     current["schema_version"] = SCHEMA_VERSION
     current["updated_at"] = now()
-    runtime_atomic_store.atomic_write_json(path, current)
+    if hot_state_bridge.compatibility_write_allowed():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        runtime_atomic_store.atomic_write_json(path, current)
     hot_state_bridge.mirror(ep, "DRIVER_STATE", current)
     return current
 
@@ -110,11 +114,12 @@ def _write_record(ep: Path, fields: dict) -> dict:
 def _begin_record(ep: Path, fields: dict) -> dict:
     """Start a fresh Driver epoch without leaking terminal/carrier fields from the last one."""
     path = _record_path(ep)
-    path.parent.mkdir(parents=True, exist_ok=True)
     current = dict(fields)
     current["schema_version"] = SCHEMA_VERSION
     current["updated_at"] = now()
-    runtime_atomic_store.atomic_write_json(path, current)
+    if hot_state_bridge.compatibility_write_allowed():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        runtime_atomic_store.atomic_write_json(path, current)
     hot_state_bridge.mirror(ep, "DRIVER_STATE", current)
     return current
 
@@ -127,7 +132,6 @@ def _beacon_path(ep: Path) -> Path:
 
 def write_beacon(ep: Path, pid: int, *, beat: int | None = None) -> dict:
     path = _beacon_path(ep)
-    path.parent.mkdir(parents=True, exist_ok=True)
     previous = _read_beacon(ep)
     data = {
         "schema_version": SCHEMA_VERSION,
@@ -135,7 +139,9 @@ def write_beacon(ep: Path, pid: int, *, beat: int | None = None) -> dict:
         "at": now(),
         "beat": int(previous.get("beat") or 0) + 1 if beat is None else int(beat),
     }
-    runtime_atomic_store.atomic_write_json(path, data)
+    if hot_state_bridge.compatibility_write_allowed():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        runtime_atomic_store.atomic_write_json(path, data)
     hot_state_bridge.mirror(ep, "DRIVER_HEARTBEAT", data)
     return data
 
@@ -506,6 +512,40 @@ def _wait_for_task_carrier(ep: Path, requested_settle: float) -> dict:
     return latest
 
 
+def _storage_mode_args() -> list[str]:
+    """Serialize only non-secret storage authority modes into detached child argv."""
+    return [
+        "--runtime-store-mode", storage_config.runtime_store_config()["mode"],
+        "--episode-meta-store-mode", storage_config.episode_meta_store_config()["mode"],
+        "--hot-state-mode", storage_config.hot_state_config()["mode"],
+    ]
+
+
+def _load_child_runtime_environment(
+    *,
+    runtime_store_mode: str,
+    episode_meta_store_mode: str,
+    hot_state_mode: str,
+) -> None:
+    """Load local connection secrets, then restore the parent's resolved authority modes."""
+    root = str(REPO_ROOT)
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    from scripts.phase9_runtime_launcher import load_runtime_env_file
+
+    merged, _loaded = load_runtime_env_file(RUNTIME_ENV_PATH, dict(os.environ))
+    os.environ.update(merged)
+    os.environ["STORYOS_RUNTIME_STORE_MODE"] = runtime_store_mode
+    os.environ["STORYOS_EPISODE_META_STORE_MODE"] = episode_meta_store_mode
+    os.environ["STORYOS_HOT_STATE_MODE"] = hot_state_mode
+
+
+def _add_storage_mode_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--runtime-store-mode", choices=("jsonl", "mysql", "dual"), required=True)
+    parser.add_argument("--episode-meta-store-mode", choices=("json", "mysql", "dual"), required=True)
+    parser.add_argument("--hot-state-mode", choices=("file", "redis", "dual"), required=True)
+
+
 def launch(ep: Path, *, codex: str | None = None, interval: int = 10,
            resume: bool = False, settle_seconds: float = 3.0) -> dict:
     """Start the one resident Driver with a carrier that really outlives the host."""
@@ -526,6 +566,7 @@ def launch(ep: Path, *, codex: str | None = None, interval: int = 10,
     log = log_dir / f"driver_{stamp}.log"
     direct_cmd = [sys.executable, "-u", str(Path(__file__).resolve()), "_serve", str(ep),
                   "--interval", str(max(0, int(interval)))]
+    direct_cmd += _storage_mode_args()
     if codex:
         direct_cmd += ["--codex", str(codex)]
     if resume:
@@ -549,6 +590,7 @@ def launch(ep: Path, *, codex: str | None = None, interval: int = 10,
         carrier = "WINDOWS_TASK_SCHEDULER"
         task_cmd = [sys.executable, "-u", str(Path(__file__).resolve()), "_serve_task", str(ep),
                     "--interval", str(max(0, int(interval))), "--log", str(log)]
+        task_cmd += _storage_mode_args()
         if codex:
             task_cmd += ["--codex", str(codex)]
         if resume:
@@ -691,12 +733,21 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("_serve"); p.add_argument("episode_dir")
     p.add_argument("--codex"); p.add_argument("--interval", type=int, default=10)
     p.add_argument("--resume", action="store_true")
+    _add_storage_mode_arguments(p)
 
     p = sub.add_parser("_serve_task"); p.add_argument("episode_dir")
     p.add_argument("--codex"); p.add_argument("--interval", type=int, default=10)
     p.add_argument("--resume", action="store_true"); p.add_argument("--log", required=True)
+    _add_storage_mode_arguments(p)
 
     args = ap.parse_args(argv)
+
+    if args.cmd in {"_serve", "_serve_task"}:
+        _load_child_runtime_environment(
+            runtime_store_mode=args.runtime_store_mode,
+            episode_meta_store_mode=args.episode_meta_store_mode,
+            hot_state_mode=args.hot_state_mode,
+        )
 
     if args.cmd == "_serve":
         return serve(Path(args.episode_dir), codex=args.codex, interval=args.interval, resume=args.resume)

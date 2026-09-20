@@ -20,6 +20,8 @@ if str(ROOT) not in sys.path:
 
 import episode_discovery
 import hot_state_bridge
+from effective_config import REL as EFFECTIVE_CONFIG_REL
+from production_queue_store import REL as PRODUCTION_QUEUE_REL
 import runtime_workspace
 import story_json
 from scripts.phase9_runtime_launcher import load_runtime_env_file
@@ -32,8 +34,8 @@ SOURCES: dict[str, Path] = {
     "CIRCUIT_BREAKER": Path("meta/runtime/circuit-breaker.json"),
     "INFLIGHT": Path("meta/runtime/in-flight-codex.json"),
     "HOST_REQUEST_CURRENT": Path("meta/runtime/product-host-request.json"),
-    "QUEUE": Path("meta/production-queue.json"),
-    "EFFECTIVE_CONFIG": Path("meta/runtime/effective-config.json"),
+    "QUEUE": PRODUCTION_QUEUE_REL,
+    "EFFECTIVE_CONFIG": EFFECTIVE_CONFIG_REL,
     "RUNTIME_CAPABILITIES": Path("meta/runtime/runtime-capabilities.json"),
     "RUNNER_STATE": Path("meta/runtime-runner-state.json"),
     "RUNTIME_ROUTE": Path("meta/runtime-route.json"),

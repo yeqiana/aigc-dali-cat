@@ -250,14 +250,18 @@ class EffectiveConfigTests(unittest.TestCase):
             self.assertEqual(runtime_router.image_execution_runtime()[0], "PRODUCT_RUNTIME")
 
     def test_without_an_override_the_config_file_is_named_as_the_source(self) -> None:
-        env = {k: "" for k in ("STORY_OS_IMAGE_RUNTIME", "STORY_OS_VISION_RUNTIME", "STORY_OS_RUNTIME")}
+        env = {k: "" for k in (
+            "STORY_OS_IMAGE_RUNTIME", "STORY_OS_VISION_RUNTIME", "STORY_OS_RUNTIME",
+            "STORYOS_RUNTIME_STORE_MODE", "STORYOS_EPISODE_META_STORE_MODE", "STORYOS_HOT_STATE_MODE",
+        )}
         with mock.patch.dict(os.environ, env):
-            sources = effective_config.snapshot()["sources"]
+            snapshot = effective_config.snapshot()
+        sources = snapshot["sources"]
         self.assertEqual(sources["image_execution_runtime"]["source"],
                          "config/storyos.yaml#runtime.image_execution_runtime")
         self.assertEqual(sources["runtime"]["source"],
                          "config/storyos.yaml#runtime.preferred_runtime")
-        self.assertEqual(effective_config.snapshot()["overrides_in_force"], [])
+        self.assertEqual(snapshot["overrides_in_force"], [])
 
     def test_the_snapshot_value_agrees_with_the_router_that_decides(self) -> None:
         """Derived evidence must not drift from the thing it describes."""
@@ -301,16 +305,16 @@ class EffectiveConfigTests(unittest.TestCase):
         )}
         with mock.patch.dict(os.environ, env):
             resolved = storage_config.runtime_store_config()
-            self.assertEqual(resolved, {"mode": "jsonl", "jsonl_root": ".storyos"})
+            self.assertEqual(resolved, {"mode": "mysql", "jsonl_root": ".storyos"})
             sources = effective_config.snapshot()["sources"]
             with self.assertRaises(ValueError):
                 provider.build_runtime_repositories()
         self.assertEqual(sources["runtime_store_mode"], {
-            "value": "jsonl", "source": "config/storyos.yaml#storage.runtime_store.mode"})
+            "value": "mysql", "source": "config/storyos.yaml#storage.runtime_store.mode"})
         self.assertEqual(sources["runtime_jsonl_root"], {
             "value": ".storyos", "source": "config/storyos.yaml#storage.runtime_store.jsonl_root"})
         self.assertEqual(sources["episode_meta_store_mode"], {
-            "value": "json", "source": "config/storyos.yaml#storage.episode_meta_store.mode"})
+            "value": "mysql", "source": "config/storyos.yaml#storage.episode_meta_store.mode"})
 
         with mock.patch.dict(os.environ, {"STORYOS_RUNTIME_JSONL_ROOT": "/declared/root"}):
             row = effective_config.snapshot()["sources"]["runtime_jsonl_root"]
