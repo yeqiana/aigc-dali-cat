@@ -39,6 +39,8 @@ ENV_KEYS = (
     "STORYOS_REDIS_TIMEOUT",
     "STORYOS_EPISODE_META_STORE_MODE",
     "STORYOS_HOT_STATE_MODE",
+    "STORYOS_RUNTIME_STORE_MODE",
+    "STORYOS_RUNTIME_JSONL_ROOT",
 )
 
 
@@ -77,6 +79,8 @@ class StorageConfigTests(unittest.TestCase):
             mysql = storage_config.mysql_connection_kwargs()
             redis = storage_config.redis_connection_kwargs()
             episode_meta = storage_config.episode_meta_store_config()
+            hot_state = storage_config.hot_state_config()
+            runtime_store = storage_config.runtime_store_config()
         config = storyos_config.load_config()
         self.assertEqual(mysql["host"], storyos_config.get_path(config, "storage.mysql.host"))
         self.assertEqual(mysql["port"], storyos_config.get_path(config, "storage.mysql.port"))
@@ -91,7 +95,9 @@ class StorageConfigTests(unittest.TestCase):
             redis["timeout"],
             float(storyos_config.get_path(config, "storage.redis.timeout_seconds")),
         )
-        self.assertEqual(episode_meta, {"mode": "json"})
+        self.assertEqual(episode_meta, {"mode": "mysql"})
+        self.assertEqual(hot_state, {"mode": "redis"})
+        self.assertEqual(runtime_store["mode"], "mysql")
 
     def test_episode_meta_store_allows_only_safe_migration_modes(self):
         with _CleanEnv():

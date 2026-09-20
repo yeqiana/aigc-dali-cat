@@ -290,21 +290,19 @@ storage:
     db: 0
     timeout_seconds: 5
     password_env: STORYOS_REDIS_PASSWORD
-  # Runtime event/trace/artifact 的应用层默认。platform/ 不读取 YAML；应用层解析后
-  # 显式注入。STORYOS_RUNTIME_STORE_MODE / STORYOS_RUNTIME_JSONL_ROOT 只做运行时覆盖。
+  # Runtime event/trace/artifact 正式权威为 MySQL；jsonl/dual 仅用于显式兼容或迁移。
+  # platform/ 不读取 YAML；应用层解析后显式注入。
   runtime_store:
-    mode: jsonl
+    mode: mysql
     jsonl_root: .storyos
-  # Episode 元数据迁移采用分阶段双写。默认 json 保持现有生产行为；
-  # 只有显式切 dual 才把已支持的 JSON 家族同步写入 MySQL V2。
-  # mysql-only 在全部历史文件路径消费者完成 Repository 化前禁止启用。
+  # Episode 结构化元数据正式权威为 MySQL。合同/审核/交付等文件型 Artifact
+  # 仍可保留，但不再承担运行状态数据库职责。
   episode_meta_store:
-    mode: json
-  # Runtime 热状态迁移。file 保持当前行为；dual 在继续写兼容文件的同时
-  # 镜像到 Redis；redis 使 Redis 成为读权威并对连接/写失败 fail-closed。
-  # Cutover 期间兼容文件允许继续影子写，验证完成后再按存储清单物理删除。
+    mode: mysql
+  # Runtime 可重建热状态正式权威为 Redis；redis 模式禁止文件 fallback，
+  # 纯热状态也停止生成兼容 JSON 影子副本。
   hot_state:
-    mode: file
+    mode: redis
 
 compatibility:
   # 契约位：历史 JSON 请求/证据可读，但新的人工配置只写本 YAML。
