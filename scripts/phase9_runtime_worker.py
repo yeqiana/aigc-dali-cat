@@ -59,7 +59,7 @@ import subprocess
 import sys
 import time
 from dataclasses import asdict, dataclass, replace
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -69,6 +69,7 @@ DEFAULT_RUNTIME = "V3_RUNTIME"
 DEFAULT_INTERVAL_SECONDS = 30.0
 DEFAULT_CONSISTENCY_EVERY = 10
 DEFAULT_STUCK_MINUTES = 30.0
+DEFAULT_HEALTH_WINDOW_MINUTES = 60.0
 HEARTBEAT_TTL_FACTOR = 3
 SLEEP_CHUNK_SECONDS = 0.25
 ALERT_COMMAND_TIMEOUT_SECONDS = 15
@@ -81,7 +82,12 @@ ALERT_LEVELS = ("INFO", "WARNING", "CRITICAL")
 ALERTING_LEVELS = ("WARNING", "CRITICAL")
 
 # 探针只读的表；名字来自 platform/repository/mysql/schema.py 的 DDL。
-PROBE_TABLES = ("event_log", "trace_span", "artifact_index")
+# 对外指标保留逻辑实体名；实际探针使用 V2 schema 的 TB_* 表名。
+PROBE_TABLES = (
+    ("event_log", "TB_EVENT_LOG"),
+    ("trace_span", "TB_TRACE_SPAN"),
+    ("artifact_index", "TB_ARTIFACT_INDEX"),
+)
 ENTITY_CHOICES = ("event", "trace", "artifact")
 
 
@@ -161,6 +167,7 @@ from platform.repository.trace.mysql_trace_repository import (  # noqa: E402
 )
 from platform.state.worker_heartbeat import WorkerHeartbeat  # noqa: E402
 from platform.trace.jsonl_trace_store import JsonlTraceStore  # noqa: E402
+from platform.repository.trace.mysql_trace_repository import MySqlTraceRepository  # noqa: E402
 
 HAS_MYSQL_DRIVER: bool
 try:
@@ -196,12 +203,81 @@ def _parse_iso(value):
         return None
 
 
+def scope_health_trace_records(
+    trace_records,
+    *,
+    now: datetime,
+    window_seconds: float,
+    instance_started_at: datetime | None,
+) -> tuple[list[dict], dict]:
+    """Scope terminal health samples to this worker instance and a sliding window.
+
+    SUCCESS/FAILED spans are score inputs only when their terminal timestamp
+    (ended_at, falling back to started_at) is at or after both the current
+    worker-instance start and the rolling health window. RUNNING spans remain
+    visible regardless of age so a worker restart cannot hide a genuinely
+    stuck execution.
+    """
+    now_value = _parse_iso(now)
+    if now_value is None:
+        raise ValueError("health scope requires a parseable now")
+    window_seconds = float(window_seconds)
+    if window_seconds <= 0:
+        raise ValueError("health window must be positive")
+
+    instance_start = _parse_iso(instance_started_at)
+    window_start = now_value - timedelta(seconds=window_seconds)
+    effective_start = max(window_start, instance_start) if instance_start else window_start
+
+    source = list(trace_records or ())
+    scoped: list[dict] = []
+    excluded_terminal = 0
+    unparseable_terminal = 0
+    carried_running = 0
+    ignored_status = 0
+
+    for record in source:
+        status = str(record.get("status") or "").strip().upper()
+        if status == "RUNNING":
+            scoped.append(record)
+            started_at = _parse_iso(record.get("started_at"))
+            if started_at is not None and started_at < effective_start:
+                carried_running += 1
+            continue
+        if status not in {"SUCCESS", "FAILED"}:
+            ignored_status += 1
+            continue
+
+        observed_at = _parse_iso(record.get("ended_at")) or _parse_iso(record.get("started_at"))
+        if observed_at is None or observed_at < effective_start:
+            excluded_terminal += 1
+            if observed_at is None:
+                unparseable_terminal += 1
+            continue
+        scoped.append(record)
+
+    return scoped, {
+        "policy": "terminal_after_instance_and_window;running_always_visible",
+        "instance_started_at": _iso(instance_start),
+        "window_seconds": window_seconds,
+        "window_started_at": _iso(window_start),
+        "effective_started_at": _iso(effective_start),
+        "source_records": len(source),
+        "scoped_records": len(scoped),
+        "excluded_terminal": excluded_terminal,
+        "unparseable_terminal": unparseable_terminal,
+        "carried_running": carried_running,
+        "ignored_status": ignored_status,
+    }
+
+
 def is_stuck(record: dict, *, now: datetime, stuck_seconds: float) -> bool:
     """RUNNING 且已超过阈值仍未结束 = 卡住（阈值内算正常在途）。"""
     started_at = _parse_iso(record.get("started_at"))
-    if started_at is None:
+    now_value = _parse_iso(now)
+    if started_at is None or now_value is None:
         return False
-    return (now - started_at).total_seconds() > stuck_seconds
+    return (now_value - started_at).total_seconds() > stuck_seconds
 
 
 def derive_health_inputs(
@@ -520,11 +596,16 @@ class RuntimeOperationsWorker:
         store=None,
         redis_client=None,
         connection=None,
+        trace_repository=None,
+        runtime_store_mode=None,
         jsonl_root: str = DEFAULT_JSONL_ROOT,
         interval_seconds: float = DEFAULT_INTERVAL_SECONDS,
         consistency_every: int = DEFAULT_CONSISTENCY_EVERY,
         consistency_entities=ENTITY_CHOICES,
         stuck_seconds: float = DEFAULT_STUCK_MINUTES * 60,
+        health_window_seconds: float = DEFAULT_HEALTH_WINDOW_MINUTES * 60,
+        instance_id: str | None = None,
+        instance_started_at: datetime | None = None,
         metrics_file=None,
         alert_log=None,
         tick_log=None,
@@ -542,17 +623,28 @@ class RuntimeOperationsWorker:
             raise ValueError("worker_id is required")
         if float(interval_seconds) <= 0:
             raise ValueError("interval_seconds must be positive")
+        if float(health_window_seconds) <= 0:
+            raise ValueError("health_window_seconds must be positive")
 
         self.worker_id = str(worker_id)
         self.runtime = str(runtime)
         self.store = store
         self.redis_client = redis_client
         self.connection = connection
+        self.trace_repository = trace_repository
+        self.runtime_store_mode = runtime_store_mode
         self.jsonl_root = str(jsonl_root)
         self.interval_seconds = float(interval_seconds)
         self.consistency_every = max(1, int(consistency_every))
         self.consistency_entities = tuple(consistency_entities)
         self.stuck_seconds = float(stuck_seconds)
+        self.health_window_seconds = float(health_window_seconds)
+        self.instance_started_at = _parse_iso(instance_started_at) or _parse_iso(clock())
+        if self.instance_started_at is None:
+            raise ValueError("instance_started_at must be parseable")
+        self.instance_id = str(
+            instance_id or f"{self.worker_id}@{self.instance_started_at.isoformat()}"
+        )
         self.metrics_file = Path(metrics_file) if metrics_file else DEFAULT_METRICS_FILE
         self.alert_log = Path(alert_log) if alert_log else DEFAULT_ALERT_LOG
         self.tick_log = Path(tick_log) if tick_log else DEFAULT_TICK_LOG
@@ -637,14 +729,16 @@ class RuntimeOperationsWorker:
         try:
             ping = self.connection.query_one("SELECT 1 AS ok")
             rows = {}
-            for table in PROBE_TABLES:
+            for logical_name, table in PROBE_TABLES:
                 row = self.connection.query_one("SELECT COUNT(*) AS c FROM " + table)
-                rows[table] = int((row or {}).get("c") or 0)
+                rows[logical_name] = int((row or {}).get("c") or 0)
         except Exception as exc:  # noqa: BLE001
             return {"status": "ERROR", "error": f"{type(exc).__name__}: {exc}"}
         return {"status": "OK", "ping": bool(ping and ping.get("ok") == 1), "rows": rows}
 
     def _trace_records(self) -> list:
+        if self.trace_repository is not None:
+            return self.trace_repository.list_all()
         store = JsonlTraceStore(str(Path(self.jsonl_root) / "traces.jsonl"))
         return store.read_all()
 
@@ -667,12 +761,20 @@ class RuntimeOperationsWorker:
                 "health_mapping": self.HEALTH_MAPPING,
             }
 
-        inputs = derive_health_inputs(
+        now = self._clock()
+        scoped_records, health_scope = scope_health_trace_records(
             records,
+            now=now,
+            window_seconds=self.health_window_seconds,
+            instance_started_at=self.instance_started_at,
+        )
+        inputs = derive_health_inputs(
+            scoped_records,
             memory_health=True,
-            now=self._clock(),
+            now=now,
             stuck_seconds=self.stuck_seconds,
         )
+        inputs["scope"] = health_scope
         snapshot = self.health_monitor.evaluate(
             runtime=self.runtime,
             agent_success_rate=inputs["agent_success_rate"],
@@ -698,10 +800,16 @@ class RuntimeOperationsWorker:
             "alert_reason": alert.reason,
             "inputs": inputs,
             "health_mapping": self.HEALTH_MAPPING,
+            "instance_id": self.instance_id,
+            "instance_started_at": _iso(self.instance_started_at),
         }
 
     def _run_consistency_scan(self):
         """返回 (summary, error)。无 MySQL 连接时返回 (None, reason)。"""
+        if self.runtime_store_mode == "mysql":
+            # MySQL 已是唯一事实源；把「MySQL 有、Legacy 没有」误报成
+            # mysql_only 会把正常切换状态打成 WARNING。
+            return None, None
         if self.connection is None:
             return None, "no_mysql_connection"
         root = Path(self.jsonl_root)
@@ -1038,6 +1146,9 @@ class RuntimeOperationsWorker:
         return {
             "worker_id": self.worker_id,
             "runtime": self.runtime,
+            "instance_id": self.instance_id,
+            "instance_started_at": _iso(self.instance_started_at),
+            "health_window_seconds": self.health_window_seconds,
             "ticks": len(self._results),
             "started_at": _iso(self._started_at),
             "finished_at": self._clock().isoformat(),
@@ -1089,10 +1200,14 @@ def build_worker(args) -> RuntimeOperationsWorker:
         store = RedisRuntimeStateStore(redis_client)
 
     connection = None
+    trace_repository = None
+    runtime_store_mode = storage_config.runtime_store_config()["mode"]
     if not args.no_mysql:
         if not HAS_MYSQL_DRIVER:
             raise RuntimeError("pymysql is not installed; use --no-mysql for offline runs")
         connection = MySqlConnection(**storage_config.mysql_connection_kwargs())
+        if runtime_store_mode == "mysql":
+            trace_repository = MySqlTraceRepository(connection)
 
     return RuntimeOperationsWorker(
         worker_id=worker_id,
@@ -1100,10 +1215,14 @@ def build_worker(args) -> RuntimeOperationsWorker:
         store=store,
         redis_client=redis_client,
         connection=connection,
+        trace_repository=trace_repository,
+        runtime_store_mode=runtime_store_mode,
         jsonl_root=jsonl_root,
         interval_seconds=args.interval,
         consistency_every=args.consistency_every,
         stuck_seconds=args.stuck_minutes * 60,
+        health_window_seconds=args.health_window_minutes * 60,
+        instance_id=args.instance_id or os.environ.get("STORYOS_WORKER_INSTANCE_ID"),
         metrics_file=args.metrics_file,
         alert_log=args.alert_log,
         tick_log=args.tick_log,
@@ -1135,6 +1254,11 @@ def _parse_args(argv):
         description="Story OS V3 Phase9 常驻 Runtime Worker 载体（心跳 / 探针 / 巡检 / 指标 / 告警）"
     )
     parser.add_argument("--worker-id", default=None, help="默认 STORYOS_WORKER_ID 或 runtime-worker-<pid>")
+    parser.add_argument(
+        "--instance-id",
+        default=None,
+        help="Worker 运行实例 ID；默认 STORYOS_WORKER_INSTANCE_ID 或由 worker_id+启动时间生成",
+    )
     parser.add_argument("--runtime", default=DEFAULT_RUNTIME)
     parser.add_argument("--interval", type=float, default=DEFAULT_INTERVAL_SECONDS, help="tick 间隔秒")
     parser.add_argument(
@@ -1148,6 +1272,12 @@ def _parse_args(argv):
         type=float,
         default=DEFAULT_STUCK_MINUTES,
         help="RUNNING span 超过该分钟数判为卡住",
+    )
+    parser.add_argument(
+        "--health-window-minutes",
+        type=float,
+        default=DEFAULT_HEALTH_WINDOW_MINUTES,
+        help="健康评分终结 Trace 的滑动时间窗；同时受当前 Worker 实例启动时间约束",
     )
     parser.add_argument("--once", action="store_true", help="只跑一个 tick（CI / 验收用）")
     parser.add_argument("--max-ticks", type=int, default=None)
@@ -1233,6 +1363,9 @@ def main(argv=None, *, install_signals: bool = True) -> int:
                         "interval_seconds": worker.interval_seconds,
                         "consistency_every": worker.consistency_every,
                         "stuck_seconds": worker.stuck_seconds,
+                        "health_window_seconds": worker.health_window_seconds,
+                        "instance_id": worker.instance_id,
+                        "instance_started_at": _iso(worker.instance_started_at),
                         "jsonl_root": worker.jsonl_root,
                         "metrics_file": str(worker.metrics_file),
                         "alert_log": str(worker.alert_log),

@@ -131,6 +131,8 @@ from platform.state.redis_connection import RedisConnection  # noqa: E402
 from platform.state.redis_runtime_state_store import RedisRuntimeStateStore  # noqa: E402
 from platform.state.worker_heartbeat import WorkerHeartbeat  # noqa: E402
 from platform.trace.jsonl_trace_store import JsonlTraceStore  # noqa: E402
+from platform.repository.mysql.mysql_connection import MySqlConnection  # noqa: E402
+from platform.repository.trace.mysql_trace_repository import MySqlTraceRepository  # noqa: E402
 
 
 def derive_health_inputs(trace_records, *, memory_health, now, stuck_seconds):
@@ -209,6 +211,7 @@ class RecoveryDrill:
         clock=time.monotonic,
         sleep=time.sleep,
         env=None,
+        trace_repository=None,
         worker_script=WORKER_SCRIPT,
         watchdog_script=WATCHDOG_SCRIPT,
         watchdog_runner=None,
@@ -225,6 +228,7 @@ class RecoveryDrill:
         self.clock = clock
         self.sleep = sleep
         self.env = dict(env) if env is not None else dict(os.environ)
+        self.trace_repository = trace_repository
         self.worker_script = Path(worker_script)
         self.watchdog_script = Path(watchdog_script)
         self._watchdog_runner = watchdog_runner
@@ -469,6 +473,8 @@ class RecoveryDrill:
     # ---- 评估 ----
 
     def _trace_records(self) -> list:
+        if self.trace_repository is not None:
+            return self.trace_repository.list_all()
         try:
             store = JsonlTraceStore(str(Path(self.jsonl_root) / "traces.jsonl"))
             return store.read_all()
@@ -973,26 +979,37 @@ def main(argv=None) -> int:
         return EXIT_ENV_ERROR
 
     heartbeat = WorkerHeartbeat(RedisRuntimeStateStore(client))
-    drill = RecoveryDrill(
-        client=client,
-        heartbeat=heartbeat,
-        run_root=Path(args.run_root),
-        worker_id=args.worker_id,
-        interval=args.interval,
-        runtime=args.runtime,
-        jsonl_root=args.jsonl_root,
-        stuck_seconds=args.stuck_minutes * 60,
-    )
+    mysql_connection = None
+    trace_repository = None
+    try:
+        if storage_config.runtime_store_config()["mode"] == "mysql":
+            mysql_connection = MySqlConnection(**storage_config.mysql_connection_kwargs())
+            mysql_connection.query_one("SELECT 1 AS ok")
+            trace_repository = MySqlTraceRepository(mysql_connection)
+        drill = RecoveryDrill(
+            client=client,
+            heartbeat=heartbeat,
+            run_root=Path(args.run_root),
+            worker_id=args.worker_id,
+            interval=args.interval,
+            runtime=args.runtime,
+            jsonl_root=args.jsonl_root,
+            stuck_seconds=args.stuck_minutes * 60,
+            trace_repository=trace_repository,
+        )
 
-    if not args.quiet:
-        print("Story OS V3 Phase9 真实 Runtime Recovery Drill")
-        print("  worker_id=" + args.worker_id + " runtime=" + args.runtime)
-        print("  interval=" + str(args.interval) + "s  scenarios="
-              + ",".join(args.scenario or list(SCENARIOS)))
-        print("== 场景 ==")
+        if not args.quiet:
+            print("Story OS V3 Phase9 真实 Runtime Recovery Drill")
+            print("  worker_id=" + args.worker_id + " runtime=" + args.runtime)
+            print("  interval=" + str(args.interval) + "s  scenarios="
+                  + ",".join(args.scenario or list(SCENARIOS)))
+            print("== 场景 ==")
 
-    evidence = drill.run(args.scenario)
-    _write_json(args.evidence_file, evidence)
+        evidence = drill.run(args.scenario)
+        _write_json(args.evidence_file, evidence)
+    finally:
+        if mysql_connection is not None:
+            mysql_connection.close()
 
     summary = evidence["summary"]
     print("== 汇总 ==")

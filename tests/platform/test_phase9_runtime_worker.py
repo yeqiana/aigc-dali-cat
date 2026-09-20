@@ -34,6 +34,7 @@ from scripts.phase9_runtime_worker import (  # noqa: E402
     derive_health_inputs,
     exit_code,
     is_stuck,
+    scope_health_trace_records,
     main,
     render_metrics,
     summarize_consistency,
@@ -97,6 +98,14 @@ class FakeConnection:
         self.closed = True
 
 
+class FakeTraceRepository:
+    def __init__(self, rows):
+        self.rows = rows
+
+    def list_all(self):
+        return list(self.rows)
+
+
 def _worker(tmp_path: Path, **overrides) -> RuntimeOperationsWorker:
     kwargs = {
         "worker_id": "worker-unit",
@@ -148,6 +157,20 @@ def test_derive_health_inputs_groups_by_operation_prefix():
     assert inputs["counts"] == {"total": 3, "success": 2, "failed": 1, "running": 0, "stuck": 0}
 
 
+def test_mysql_authority_reads_health_traces_from_repository(tmp_path):
+    started = datetime(2026, 9, 10, 12, 0, 0)
+    repository = FakeTraceRepository([_trace("agent.execute", "SUCCESS", started)])
+    worker = _worker(tmp_path, trace_repository=repository, runtime_store_mode="mysql")
+
+    assert worker._trace_records() == repository.rows
+
+
+def test_mysql_authority_skips_legacy_consistency_scan(tmp_path):
+    worker = _worker(tmp_path, runtime_store_mode="mysql")
+
+    assert worker._run_consistency_scan() == (None, None)
+
+
 def test_derive_health_inputs_defaults_to_one_without_terminal_spans():
     inputs = derive_health_inputs(
         [], memory_health=True, now=datetime(2026, 9, 10), stuck_seconds=1800
@@ -169,6 +192,59 @@ def test_derive_health_inputs_flags_stuck_running_span():
     assert inputs["counts"]["running"] == 2
     assert inputs["counts"]["stuck"] == 1
     assert inputs["trace_health"] is False
+
+
+def test_health_scope_applies_sliding_window_without_hiding_old_running_span():
+    now = datetime(2026, 9, 10, 12, 0, 0)
+    records = [
+        _trace("agent.execute", "FAILED", now - timedelta(minutes=90)),
+        _trace("agent.execute", "SUCCESS", now - timedelta(minutes=5)),
+        _trace("agent.execute", "RUNNING", now - timedelta(minutes=95)),
+    ]
+
+    scoped, scope = scope_health_trace_records(
+        records,
+        now=now,
+        window_seconds=3600,
+        instance_started_at=now - timedelta(hours=3),
+    )
+    inputs = derive_health_inputs(scoped, memory_health=True, now=now, stuck_seconds=1800)
+
+    assert [row["status"] for row in scoped] == ["SUCCESS", "RUNNING"]
+    assert inputs["agent_success_rate"] == 1.0
+    assert inputs["trace_health"] is False
+    assert scope["excluded_terminal"] == 1
+    assert scope["carried_running"] == 1
+    assert scope["effective_started_at"] == (now - timedelta(hours=1)).isoformat()
+
+
+def test_health_scope_applies_worker_instance_boundary_to_terminal_samples(tmp_path):
+    now = datetime(2026, 9, 10, 12, 0, 0)
+    repository = FakeTraceRepository([
+        _trace("agent.execute", "FAILED", now - timedelta(minutes=30)),
+        _trace("agent.execute", "SUCCESS", now - timedelta(minutes=5)),
+    ])
+    worker = _worker(
+        tmp_path,
+        trace_repository=repository,
+        runtime_store_mode="mysql",
+        clock=lambda: now,
+        health_window_seconds=3600,
+        instance_started_at=now - timedelta(minutes=10),
+        instance_id="worker-unit/run-2",
+    )
+
+    health = worker._build_health({"redis": {"status": "OK"}, "mysql": {"status": "OK"}})
+
+    assert health["status"] == "HEALTHY"
+    assert health["health_score"] == 100
+    assert health["instance_id"] == "worker-unit/run-2"
+    assert health["inputs"]["counts"]["failed"] == 0
+    assert health["inputs"]["counts"]["success"] == 1
+    assert health["inputs"]["scope"]["excluded_terminal"] == 1
+    assert health["inputs"]["scope"]["effective_started_at"] == (
+        now - timedelta(minutes=10)
+    ).isoformat()
 
 
 def test_is_stuck_ignores_unparsable_start_time():
