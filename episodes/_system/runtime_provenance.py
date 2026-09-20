@@ -12,6 +12,7 @@ import datetime as dt
 from typing import Any
 
 import evidence_time
+import workspace_provider
 
 BASE_RUNTIMES = {"CODEX", "WORK", "WEB"}
 ISOLATED_RUNTIME_BY_BASE = {
@@ -20,15 +21,15 @@ ISOLATED_RUNTIME_BY_BASE = {
     "WEB": "WEB_ISOLATED",
 }
 ALLOWED_ISOLATED_RUNTIMES = set(ISOLATED_RUNTIME_BY_BASE.values())
-DEVSPACE_BOUNDED_RUNTIME = "WORK_DEVSPACE_BOUNDED"
-ALLOWED_CRITIC_RUNTIMES = ALLOWED_ISOLATED_RUNTIMES | {DEVSPACE_BOUNDED_RUNTIME}
+LEGACY_DEVSPACE_BOUNDED_RUNTIME = "WORK_DEVSPACE_BOUNDED"
+ALLOWED_CRITIC_RUNTIMES = ALLOWED_ISOLATED_RUNTIMES | {LEGACY_DEVSPACE_BOUNDED_RUNTIME}
 
 # New Story OS product reviews are executed by the surrounding WORK runtime
-# against the repository through DevSpace. WEB/CODEX remain readable here only
-# for historical provenance compatibility and non-review legacy evidence.
-DEVSPACE_WORKSPACE_TRANSPORT = "DEVSPACE"
+# through the configured Workspace Provider. These legacy names remain only so
+# historical DevSpace evidence can still be validated during resume/audit.
+LEGACY_DEVSPACE_WORKSPACE_TRANSPORT = "DEVSPACE"
 VISION_REVIEW_CAPABILITY = "vision"
-CURRENT_PROVENANCE_SCHEMA_VERSION = 2
+CURRENT_PROVENANCE_SCHEMA_VERSION = 3
 
 
 def now() -> str:
@@ -70,25 +71,25 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
         field="critic_provenance.reviewed_at",
         required=schema_version >= CURRENT_PROVENANCE_SCHEMA_VERSION,
     ))
-    if runtime == DEVSPACE_BOUNDED_RUNTIME:
+    if runtime == LEGACY_DEVSPACE_BOUNDED_RUNTIME:
         if provenance.get("isolated_session") is not False:
-            errors.append("bounded DevSpace critic must declare isolated_session=false")
+            errors.append("legacy bounded DevSpace critic must declare isolated_session=false")
         if str(provenance.get("base_runtime") or "").upper() != "WORK":
-            errors.append("bounded DevSpace critic base_runtime must be WORK")
+            errors.append("legacy bounded DevSpace critic base_runtime must be WORK")
         if str(provenance.get("execution_source") or "") != "product_runtime":
-            errors.append("bounded DevSpace critic execution_source must be product_runtime")
-        if str(provenance.get("workspace_transport") or "").upper() != DEVSPACE_WORKSPACE_TRANSPORT:
-            errors.append("bounded DevSpace critic workspace_transport must be DEVSPACE")
+            errors.append("legacy bounded DevSpace critic execution_source must be product_runtime")
+        if str(provenance.get("workspace_transport") or "").upper() != LEGACY_DEVSPACE_WORKSPACE_TRANSPORT:
+            errors.append("legacy bounded DevSpace critic workspace_transport must be DEVSPACE")
         if str(provenance.get("isolation_mode") or "") != "bounded_request_only":
-            errors.append("bounded DevSpace critic isolation_mode must be bounded_request_only")
+            errors.append("legacy bounded DevSpace critic isolation_mode must be bounded_request_only")
         if provenance.get("webcodex_used") is not False:
-            errors.append("bounded DevSpace critic webcodex_used must be false")
+            errors.append("legacy bounded DevSpace critic webcodex_used must be false")
         if provenance.get("full_auto_user_authorized") is not True:
-            errors.append("bounded DevSpace critic requires full_auto_user_authorized=true")
+            errors.append("legacy bounded DevSpace critic requires full_auto_user_authorized=true")
         if provenance.get("ordinary_life_only") is not True:
-            errors.append("bounded DevSpace critic requires ordinary_life_only=true")
+            errors.append("legacy bounded DevSpace critic requires ordinary_life_only=true")
         if attempt_required and provenance.get("attempt") not in {1, 2}:
-            errors.append("bounded DevSpace critic attempt must be 1 or 2")
+            errors.append("legacy bounded DevSpace critic attempt must be 1 or 2")
         return errors
     if provenance.get("isolated_session") is not True:
         errors.append("critic must be an isolated session")
@@ -106,13 +107,24 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
             errors.append("CODEX vision critic must declare ephemeral=true")
         if provenance.get("session_reused_from_generation") is not False:
             errors.append("CODEX vision critic must not reuse the generation session")
-    if schema_version >= 2 and base == "WORK":
-        if str(provenance.get("workspace_transport") or "").upper() != DEVSPACE_WORKSPACE_TRANSPORT:
-            errors.append("WORK critic workspace_transport must be DEVSPACE")
+    if schema_version >= 3 and base == "WORK":
+        provider_id = str(provenance.get("workspace_provider") or "").strip().lower()
+        spec = workspace_provider.PROVIDERS.get(provider_id)
+        if spec is None:
+            errors.append("WORK critic workspace_provider is unsupported")
+        elif str(provenance.get("workspace_transport") or "").upper() != spec.transport:
+            errors.append("WORK critic workspace_transport does not match workspace_provider")
         if str(provenance.get("isolation_mode") or "") != "fresh_product_review_turn":
             errors.append("WORK critic isolation_mode must be fresh_product_review_turn")
+        if spec is not None and provenance.get("webcodex_used") is not spec.is_webcodex:
+            errors.append("WORK critic webcodex_used does not match workspace_provider")
+    elif schema_version >= 2 and base == "WORK":
+        if str(provenance.get("workspace_transport") or "").upper() != LEGACY_DEVSPACE_WORKSPACE_TRANSPORT:
+            errors.append("legacy WORK critic workspace_transport must be DEVSPACE")
+        if str(provenance.get("isolation_mode") or "") != "fresh_product_review_turn":
+            errors.append("legacy WORK critic isolation_mode must be fresh_product_review_turn")
         if provenance.get("webcodex_used") is not False:
-            errors.append("WORK critic webcodex_used must be false")
+            errors.append("legacy WORK critic webcodex_used must be false")
     if attempt_required:
         attempt = provenance.get("attempt")
         extended = (
@@ -141,28 +153,6 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
         if attempt not in {1, 2} and not extended and not user_exception and not user_continuation and not bounded_visual:
             errors.append("critic attempt must be 1 or 2 unless this is source-drift, direct-user-exception, direct-user-continuation, or bounded baseline-candidate vision review")
     return errors
-
-
-def build_devspace_bounded_provenance(*, attempt: int, request_path: str | None = None) -> dict:
-    if attempt not in {1, 2}:
-        raise ValueError("bounded DevSpace critic attempt must be 1 or 2")
-    data = {
-        "schema_version": CURRENT_PROVENANCE_SCHEMA_VERSION,
-        "runtime": DEVSPACE_BOUNDED_RUNTIME,
-        "base_runtime": "WORK",
-        "isolated_session": False,
-        "execution_source": "product_runtime",
-        "workspace_transport": DEVSPACE_WORKSPACE_TRANSPORT,
-        "isolation_mode": "bounded_request_only",
-        "webcodex_used": False,
-        "full_auto_user_authorized": True,
-        "ordinary_life_only": True,
-        "attempt": attempt,
-        "reviewed_at": now(),
-    }
-    if request_path:
-        data["request_path"] = request_path
-    return data
 
 
 def build_vision_critic_provenance(
@@ -236,10 +226,12 @@ def build_critic_provenance(
         "reviewed_at": now(),
     }
     if base == "WORK":
+        workspace = workspace_provider.current()
         data.update({
-            "workspace_transport": DEVSPACE_WORKSPACE_TRANSPORT,
+            "workspace_provider": workspace.provider_id,
+            "workspace_transport": workspace.transport,
             "isolation_mode": "fresh_product_review_turn",
-            "webcodex_used": False,
+            "webcodex_used": workspace.is_webcodex,
         })
     if attempt > 2:
         if allowed_user_exception:
@@ -265,14 +257,11 @@ def self_test() -> None:
     assert vision["ephemeral"] is True
     assert vision["session_reused_from_generation"] is False
     assert validate_critic_provenance(vision) == []
-    bounded = build_devspace_bounded_provenance(attempt=1, request_path="x.json")
-    assert bounded["runtime"] == "WORK_DEVSPACE_BOUNDED"
-    assert bounded["isolated_session"] is False
-    assert validate_critic_provenance(bounded) == []
     work = build_critic_provenance("WORK", attempt=2)
-    assert work["workspace_transport"] == "DEVSPACE"
+    assert work["workspace_provider"] == "webcodex"
+    assert work["workspace_transport"] == "WEBCODEX"
     assert work["isolation_mode"] == "fresh_product_review_turn"
-    assert work["webcodex_used"] is False
+    assert work["webcodex_used"] is True
     assert validate_critic_provenance(work) == []
     assert validate_critic_provenance(build_critic_provenance("WORK", attempt=3, allow_extended_attempt=True)) == []
     assert validate_critic_provenance(build_critic_provenance("CODEX", attempt=3, allow_user_exception_attempt=True)) == []

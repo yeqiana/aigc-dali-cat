@@ -8,6 +8,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+import workspace_provider
+
 try:
     import yaml
 except ImportError as exc:  # pragma: no cover - installation failure path
@@ -121,12 +123,11 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("runtime.codex_image_reasoning_effort must be medium")
     if get_path(cfg, "runtime.local_codex_fallback") != "explicit_only":
         errors.append("runtime.local_codex_fallback must be explicit_only")
+    errors.extend(workspace_provider.validate_config(cfg))
     # Review capability routing. WORK remains text/governance authority; actual-pixel
     # review is a separate isolated Codex capability and does not switch the whole Runtime.
     if str(get_path(cfg, "runtime.review.text.runtime", "")).upper() != "WORK":
         errors.append("runtime.review.text.runtime must be WORK")
-    if str(get_path(cfg, "runtime.review.text.workspace_transport", "")).upper() != "DEVSPACE":
-        errors.append("runtime.review.text.workspace_transport must be DEVSPACE")
     if get_path(cfg, "runtime.review.text.isolated_required") is not True:
         errors.append("runtime.review.text.isolated_required must be true")
     if get_path(cfg, "runtime.review.text.fresh_turn_required") is not True:
@@ -149,26 +150,20 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("runtime.review.vision.max_inflight_final must be an int between 1 and 6")
     if str(get_path(cfg, "runtime.review.governance.runtime", "")).upper() != "WORK":
         errors.append("runtime.review.governance.runtime must be WORK")
-    if str(get_path(cfg, "runtime.review.governance.workspace_transport", "")).upper() != "DEVSPACE":
-        errors.append("runtime.review.governance.workspace_transport must be DEVSPACE")
     if get_path(cfg, "runtime.review.allow_web_runtime") is not False:
         errors.append("runtime.review.allow_web_runtime must be false")
     host_loop_cap = get_path(cfg, "runtime.host_loop_max_cycles")
     if type(host_loop_cap) is not int or not 8 <= host_loop_cap <= 256:
         errors.append("runtime.host_loop_max_cycles must be an int between 8 and 256")
 
-    # Legacy aliases stay validated during migration so old modules fail loudly rather
-    # than silently changing text/governance semantics.
+    # Legacy runtime aliases stay validated during migration. Workspace provider
+    # identity is canonical only under runtime.workspace.
     if str(get_path(cfg, "runtime.review.runtime", "")).upper() != "WORK":
         errors.append("runtime.review.runtime legacy alias must be WORK")
-    if str(get_path(cfg, "runtime.review.workspace_transport", "")).upper() != "DEVSPACE":
-        errors.append("runtime.review.workspace_transport legacy alias must be DEVSPACE")
     if get_path(cfg, "runtime.review.isolated_critic_required") is not True:
         errors.append("runtime.review.isolated_critic_required legacy alias must be true")
     if get_path(cfg, "runtime.review.fresh_product_review_turn_required") is not True:
         errors.append("runtime.review.fresh_product_review_turn_required legacy alias must be true")
-    if get_path(cfg, "runtime.review.allow_webcodex") is not False:
-        errors.append("runtime.review.allow_webcodex must be false")
     if get_path(cfg, "runtime.review.allow_local_codex_review") is not False:
         errors.append("runtime.review.allow_local_codex_review legacy text/governance alias must be false")
     for key, expected in (("runtime.workers.local_codex_preimage",4),("runtime.workers.derived",6)):

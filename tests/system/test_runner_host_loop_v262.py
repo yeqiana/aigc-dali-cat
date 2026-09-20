@@ -34,7 +34,6 @@ import scheduler_core
 import vision_review_executor
 import visual_lock_baseline_gate
 import visual_lock_v21
-import work_host_action_executor
 import workflow_runner
 
 CALL_ID = "exec-863861d5-1e96-49b1-9908-139a45c06cb4"
@@ -116,30 +115,11 @@ class LocalImageDispatchTests(unittest.TestCase):
             self.assertEqual(machine_action_executor.local_machine_action(action), name)
             self.assertEqual(episode_runner.local_host_action(action), name)
 
-    def test_bounded_work_baseline_route_remains_legacy_compatible_only(self):
+    def test_work_actions_remain_host_owned(self):
         baseline = {"action": "REVIEW_ORDINARY_BASELINE", "executor": "WORK"}
-        self.assertEqual(episode_runner.local_host_action(baseline), "REVIEW_ORDINARY_BASELINE")
+        self.assertIsNone(episode_runner.local_host_action(baseline))
         self.assertIsNone(episode_runner.local_host_action({"action": "PRODUCT_REVIEW", "executor": "WORK"}))
         self.assertIsNone(episode_runner.local_host_action({"action": "REVIEW_ORDINARY_BASELINE", "executor": "WEB"}))
-
-    def test_bounded_work_executor_reuses_baseline_finalizer_with_honest_provenance(self):
-        request = {"request_id": "baseline-a1-test", "candidate_path": "episodes/test/meta/candidate.json", "prompt": "inspect pixels"}
-        result = {"status": "PASS", "baseline_review": "PASS"}
-        with tempfile.TemporaryDirectory() as td:
-            episode = Path(td)
-            with patch.object(work_host_action_executor, "_provider", return_value="test-provider"), \
-                    patch.object(work_host_action_executor.visual_lock_baseline_gate, "run_product_critic", return_value=request), \
-                    patch.object(work_host_action_executor, "_run_devspace_review", return_value=ROOT / "episodes/test/meta/runtime/work-host-actions/log.jsonl"), \
-                    patch.object(work_host_action_executor.visual_lock_baseline_gate, "finalize_product_critic", return_value=result) as finalize, \
-                    patch.object(work_host_action_executor.story_json, "write_json") as write:
-                evidence = work_host_action_executor.execute(episode, {"action": "REVIEW_ORDINARY_BASELINE", "executor": "WORK"})
-        finalize.assert_called_once_with(episode.resolve(), attempt=1, runtime="WORK", bounded_devspace=True)
-        self.assertEqual(evidence["runtime"], "WORK_DEVSPACE_BOUNDED")
-        self.assertEqual(evidence["workspace_transport"], "DEVSPACE")
-        self.assertFalse(evidence["webcodex_used"])
-        self.assertFalse(evidence["isolated"])
-        self.assertNotEqual(evidence["runtime"], "WORK_ISOLATED")
-        write.assert_called_once()
 
     def test_non_local_action_is_refused(self):
         with self.assertRaises(ValueError):
@@ -1030,14 +1010,22 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
         self.assertEqual((action["action"], action["executor"]), ("REVIEW_FINAL_PRODUCTION", "CODEX_VISION"))
         self.assertEqual(action["attempt"], 1)
 
-    def test_publish_ready_with_repair_ready_frames_cannot_fall_through_to_complete(self):
+    def test_publish_ready_ignores_stale_ordinary_repair_residue(self):
         queue = {"items": [{"frame": n, "kind": "original", "scope": "batch", "status": "generated"} for n in range(1, 21)]}
         ledger = {f"{n:02d}": {"status": "LOCKED"} for n in range(1, 21)}
         ledger["17"] = {"status": "REPAIR_READY", "content_repairs_used": 1}
         ledger["18"] = {"status": "REPAIR_READY", "content_repairs_used": 1}
         action = self._derive(state="PUBLISH_READY", queue=queue, ledger=ledger)
-        self.assertEqual((action["action"], action["executor"]), ("REVIEW_FINAL_PRODUCTION", "CODEX_VISION"))
-        self.assertTrue(action["work_pending"])
+        self.assertEqual((action["action"], action["executor"]), ("COMPLETE", "WORK"))
+        self.assertFalse(action["work_pending"])
+
+    def test_publish_ready_ignores_stale_needs_user_residue(self):
+        queue = {"items": [{"frame": n, "kind": "original", "scope": "batch", "status": "generated"} for n in range(1, 21)]}
+        ledger = {f"{n:02d}": {"status": "LOCKED"} for n in range(1, 21)}
+        ledger["15"] = {"status": "NEEDS_USER", "content_repairs_used": 2}
+        action = self._derive(state="PUBLISH_READY", queue=queue, ledger=ledger)
+        self.assertEqual((action["action"], action["executor"]), ("COMPLETE", "WORK"))
+        self.assertFalse(action["work_pending"])
 
     def test_publish_ready_direct_user_exception_routes_to_attempt3_exception_review_first(self):
         queue = {"items": [{"frame": n, "kind": "original", "scope": "batch", "status": "generated"} for n in range(1, 21)]}

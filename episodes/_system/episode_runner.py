@@ -101,10 +101,10 @@ def local_host_action(action: dict) -> str | None:
     name = machine_action_executor.local_machine_action(action)
     if name is not None:
         return name
-    # Legacy migration fallback only. Golden Path WORK actions are consumed by
-    # the current ChatGPT WORK host through DevSpace, not by spawning providers.
-    import work_host_action_executor
-    return work_host_action_executor.local_work_action(action)
+    # WORK actions are host-owned and use the configured Workspace Provider.
+    # A provider such as WebCodex is MCP/Runner infrastructure, not a local
+    # subprocess executor owned by the resident Episode Runner.
+    return None
 
 
 def run_local_host_action(episode: Path, action: dict) -> int:
@@ -146,17 +146,7 @@ def run_local_host_action(episode: Path, action: dict) -> int:
             return 21
         finally:
             next_action.write(episode)
-    import work_host_action_executor
-    if work_host_action_executor.local_work_action(action) is None:
-        raise ValueError(f"not a locally executable host action: {action}")
-    try:
-        result = work_host_action_executor.execute(episode, action)
-        return 0 if str((result.get("result") or {}).get("status") or "PASS") == "PASS" else 2
-    except work_host_action_executor.WorkHostActionError as exc:
-        record_event(episode, {"type": "work_host_action_failed", "action": action.get("action"), "error": str(exc)})
-        return 21
-    finally:
-        next_action.write(episode)
+    raise ValueError(f"not a locally executable host action: {action}")
 
 
 def execute_cycle(episode: Path, codex: str | None = None, timeout: int | None = None) -> int:

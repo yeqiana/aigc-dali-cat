@@ -32,6 +32,7 @@ import raw_candidate_budget
 import runner_health_monitor
 import scheduler_core
 import runtime_execution
+import runtime_executor_role
 import runtime_router
 import runtime_portability
 import runtime_workspace
@@ -341,7 +342,11 @@ def _handoff_valid(ep: Path) -> bool:
 def derive(ep: Path) -> dict:
     ep = Path(ep).resolve()
     runtime_portability.assert_episode_directory(ep)
-    runtime, _ = runtime_router.detect()
+    detected_runtime, _ = runtime_router.detect()
+    # Golden Path business actions are always owned by the canonical WORK role.
+    # Runtime detection remains diagnostic/legacy input only; a workspace provider
+    # name or historical WEB/CODEX base runtime must never leak into executor.
+    runtime = runtime_executor_role.WORK
     image_runtime, _ = runtime_router.image_execution_runtime()
     vision_runtime, _ = runtime_router.vision_review_runtime()
     mode = runtime_execution.effective_mode(ep)
@@ -379,7 +384,7 @@ def derive(ep: Path) -> dict:
         "episode_state": cur,
         "episode_disposition": disposition,
         "execution_mode": mode,
-        "authoring_runtime": runtime,
+        "authoring_runtime": detected_runtime,
         "image_execution_runtime": image_runtime,
         "stage_authority": "meta/episode-state.json",
         "derived_runtime_only": True,
@@ -414,6 +419,49 @@ def derive(ep: Path) -> dict:
             "blocking": bool(hard_stop),
             **kwargs,
         }
+    # Canonical production success outranks stale queue/review residue. Once the
+    # Episode authority reaches PUBLISH_READY or later, ordinary repair rows,
+    # NEEDS_USER markers, or unfinished historical reviews must not reopen the
+    # production loop. The only exception is an explicit user-authorized
+    # post-ready candidate, identified by its durable capture id.
+    if cur in {"PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED"}:
+        terminal_ledger = (production_ledger.load_authority(ep, default={}) or {}).get("frames") or {}
+        continuation_frames = sorted(
+            int(key) for key, value in terminal_ledger.items()
+            if str(key).isdigit()
+            and isinstance(value, dict)
+            and str(value.get("status") or "") == "REPAIR_READY"
+            and _current_candidate_capture_id(value).startswith("user-continuation-")
+        )
+        if continuation_frames:
+            return action_result(
+                action="REVIEW_FINAL_CONTINUATION",
+                executor="CODEX_VISION" if vision_runtime == "CODEX" else runtime,
+                frames=continuation_frames,
+                reason="explicit direct-user continuation candidates may reopen review after canonical production success",
+            )
+        exception_frames = sorted(
+            int(key) for key, value in terminal_ledger.items()
+            if str(key).isdigit()
+            and isinstance(value, dict)
+            and str(value.get("status") or "") == "REPAIR_READY"
+            and _current_candidate_capture_id(value).startswith("user-exception-")
+        )
+        if exception_frames:
+            return action_result(
+                action="REVIEW_FINAL_EXCEPTION",
+                executor="CODEX_VISION" if vision_runtime == "CODEX" else runtime,
+                frames=exception_frames,
+                reason="explicit direct-user exception candidates may reopen review after canonical production success",
+            )
+        return action_result(
+            action="COMPLETE",
+            executor=runtime,
+            work_pending=False,
+            auto_recoverable=False,
+            hard_stop=False,
+            reason=f"runtime production goal already reached at {cur}; stale non-user-authorized residue is ignored",
+        )
     # A stale/missing PREIMAGE authority boundary invalidates every downstream
     # image request derived from it. This canonical freshness check must outrank
     # queue recovery, including AUTHORITY_REFRESH_AUTHORIZED, otherwise the host
@@ -898,6 +946,7 @@ def apply_runtime_block_semantics(data: dict) -> dict:
 
 def write(ep: Path) -> dict:
     data = apply_runtime_block_semantics(derive(ep))
+    runtime_executor_role.validate_action(data)
     if hot_state_bridge.compatibility_write_allowed():
         runtime_workspace.write_json(Path(ep), REL, data)
     hot_state_bridge.mirror(Path(ep), "NEXT_ACTION", data)

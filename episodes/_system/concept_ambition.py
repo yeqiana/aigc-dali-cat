@@ -259,11 +259,10 @@ def _finalize_review(ep, review, before, provenance):
     print("CONCEPT AMBITION REVIEW PASS"); return 0
 
 
-def finalize_product_review(ep, attempt, runtime, bounded_devspace=False):
+def finalize_product_review(ep, attempt, runtime):
     cp=ep/CANDIDATES_REL; candidate=ep/CANDIDATE_REVIEW_REL
     review,provenance=product_review_adapter.finalize_candidate(
-        ep,kind="concept-ambition",runtime=runtime,attempt=attempt,candidate_path=candidate,
-        bounded_devspace=bounded_devspace)
+        ep,kind="concept-ambition",runtime=runtime,attempt=attempt,candidate_path=candidate)
     rc=_finalize_review(ep,review,sha256_file(cp),provenance)
     if rc==0: product_review_adapter.mark_complete(ep,"concept-ambition",attempt=attempt,final_path=ep/REVIEW_REL)
     return rc
@@ -367,7 +366,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("init"); p.add_argument("episode_dir")
     p=sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=None)
-    p=sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK"); p.add_argument("--bounded-devspace",action="store_true")
+    p=sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK")
     p=sub.add_parser("verify"); p.add_argument("episode_dir")
     p=sub.add_parser("show"); p.add_argument("episode_dir")
     p=sub.add_parser("re-review-plan"); p.add_argument("episode_dir")
@@ -387,7 +386,7 @@ def main():
         except (OSError,RuntimeError,ValueError,subprocess.TimeoutExpired) as exc:
             print("CONCEPT AMBITION ERROR:",exc); return 3
     if a.cmd=="finalize-review":
-        try: return finalize_product_review(ep,a.attempt,a.runtime,a.bounded_devspace)
+        try: return finalize_product_review(ep,a.attempt,a.runtime)
         except (OSError,RuntimeError,ValueError) as exc:
             print("CONCEPT AMBITION FINALIZE ERROR:",exc); return 3
     errs=verify(ep)

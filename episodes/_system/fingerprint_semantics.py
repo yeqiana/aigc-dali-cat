@@ -367,7 +367,7 @@ def _finalize_review_data(
     return data
 
 
-def finalize_product_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history: list[dict], contract_version: str, runtime: str, bounded_devspace: bool = False) -> dict:
+def finalize_product_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history: list[dict], contract_version: str, runtime: str) -> dict:
     candidate = ep / CANDIDATE_REL
     raw, provenance = product_review_adapter.finalize_candidate(
         ep,
@@ -375,7 +375,6 @@ def finalize_product_review(root: Path, ep: Path, fp_path: Path, registry_path: 
         runtime=runtime,
         attempt=1,
         candidate_path=candidate,
-        bounded_devspace=bounded_devspace,
     )
     data = _finalize_review_data(root, ep, fp_path, registry_path, history, contract_version, raw, provenance)
     product_review_adapter.mark_complete(ep, "recent5-semantic", attempt=1, final_path=ep / REVIEW_REL)
@@ -483,7 +482,6 @@ def main() -> int:
     p = sub.add_parser("finalize-review")
     p.add_argument("episode_dir")
     p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
-    p.add_argument("--bounded-devspace", action="store_true")
     args = ap.parse_args()
     if args.cmd == "self-test":
         return self_test()
@@ -502,7 +500,6 @@ def main() -> int:
             history,
             episode_contract_version(ep),
             args.runtime,
-            args.bounded_devspace,
         )
     except (OSError, RuntimeError, ValueError) as exc:
         print("RECENT5 SEMANTIC FINALIZE ERROR:", exc)

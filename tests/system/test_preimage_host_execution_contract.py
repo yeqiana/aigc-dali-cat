@@ -40,15 +40,15 @@ def test_start_handshake_records_real_worker_and_rejects_double_owner():
         ep = Path(td)
         request_id = "req-1"
         _write(ep / adapter.REQUEST_HISTORY_REL / f"{request_id}.json", _request(request_id))
-        started = adapter.mark_preimage_task_running(ep, request_id, worker_id="devspace-worker-a")
+        started = adapter.mark_preimage_task_running(ep, request_id, worker_id="webcodex-worker-a")
         assert started["status"] == "RUNNING"
-        assert started["worker_id"] == "devspace-worker-a"
+        assert started["worker_id"] == "webcodex-worker-a"
         assert started["started_at"]
         state = json.loads((ep / "meta/runtime/preimage-task-state.json").read_text(encoding="utf-8"))
         execution = state["tasks"]["ENVIRONMENT_PREPARE"]["execution"]
-        assert execution["worker_id"] == "devspace-worker-a"
+        assert execution["worker_id"] == "webcodex-worker-a"
         with pytest.raises(RuntimeError, match="ALREADY_RUNNING"):
-            adapter.mark_preimage_task_running(ep, request_id, worker_id="devspace-worker-b")
+            adapter.mark_preimage_task_running(ep, request_id, worker_id="webcodex-worker-b")
 
 
 def test_metrics_use_only_observed_execution_intervals():

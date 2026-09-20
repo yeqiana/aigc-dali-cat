@@ -30,7 +30,6 @@ DEFAULT_SECONDS: dict[str, int] = {
     "visual_baseline_critic": 300,  # visual lock baseline critic
     "fast_scout": 240,              # fast frame scout
     "review_critic": 900,           # story/visual/caption review critics
-    "review_status_probe": 30,      # one DevSpace agent-status RPC during a review wait
     "codex_auth_probe": 30,         # read-only `codex login status` through the user bridge
     "driver_carrier_control": 60,   # register/query the Windows Driver carrier task
     "image_probe": 900,             # image provider capability probe

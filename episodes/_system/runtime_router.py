@@ -9,6 +9,7 @@ from pathlib import Path
 
 from story_os_contract import story_os_version
 import storyos_config
+import workspace_provider
 
 ROOT = Path(__file__).resolve().parents[2]
 _CONFIG = storyos_config.load_config()
@@ -128,6 +129,7 @@ def capabilities() -> dict:
     text_runtime, text_runtime_reason = text_review_runtime()
     vision_runtime, vision_runtime_reason = vision_review_runtime()
     governance_runtime, governance_runtime_reason = governance_review_runtime()
+    workspace = workspace_provider.current()
     return {
         'story_os_version': story_os_version(),
         'runtime_override': override if override in VALID else None,
@@ -151,10 +153,14 @@ def capabilities() -> dict:
         'vision_review_model': vision_review_model(),
         'governance_review_runtime': governance_runtime,
         'governance_review_runtime_reason': governance_runtime_reason,
+        'workspace_provider': workspace.provider_id,
+        'workspace_transport': workspace.transport,
+        'workspace_execution_mode': workspace.execution_mode,
+        'workspace_host_managed': workspace.host_managed,
         'local_codex_vision_spawn_allowed': bool(codex) and local_codex_vision_allowed(),
         'product_runtime_host_required': effective in {'WORK', 'WEB'},
         'product_runtime_image_host_required': effective in {'WORK', 'WEB'} and image_runtime in {'PRODUCT_RUNTIME', 'AUTO'},
-        'note': 'WORK is the ChatGPT authoring/governance runtime using DevSpace as workspace transport. Image generation/repair and actual-pixel vision review are independently routed Codex capabilities; neither grants Codex Story/PREIMAGE/Release authority.',
+        'note': 'WORK is the ChatGPT authoring/governance runtime. WebCodex is its host-managed Workspace Provider, not a Runtime or Episode authority. Image generation/repair and actual-pixel vision review are independently routed Codex capabilities; neither grants Codex Story/PREIMAGE/Release authority.',
     }
 
 

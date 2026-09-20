@@ -545,7 +545,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 # worker 20 minutes in, with the other three already running.
                 preimage_task_contract.assert_registries_aligned()
                 # This branch is the explicit local-Codex PREIMAGE fallback only.
-                # WORK + DevSpace production goes through the host-action branch above;
+                # WORK + Workspace Provider production goes through the host-action branch above;
                 # its concurrency is owned by the host transport, not this local pool.
                 workers=int(storyos_config.get_path(storyos_config.load_config(),"runtime.workers.local_codex_preimage") or 4)
                 def _worker(task):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Story OS V2.7 Codex user-mode execution bridge tests.
 
-Covers the DevSpace(SYSTEM) -> Codex user-mode runner -> codex exec path:
+Covers the SYSTEM workspace host -> Codex user-mode runner -> codex exec path:
 identity refusal, health, unavailable/dead runner, token auth, fixed codex
 executable, arbitrary-executable rejection, timeout, non-zero rc
 classification, the critic-lane call chain, and credential containment.

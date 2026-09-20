@@ -387,13 +387,14 @@ class EvidenceRecovery(unittest.TestCase):
         return row
 
     def test_batch_prepare_rejects_disabled_review_routes(self):
-        # Runtime realignment: a new product review requires WORK with DevSpace. WEB/WebCodex
-        # and local CODEX review routes are disabled, so prepare must fail closed instead of
+        # Runtime realignment: a new product review requires WORK while workspace access is
+        # supplied by the configured provider. Legacy WEB and local CODEX review routes are
+        # disabled, so prepare must fail closed instead of
         # opening a review the Runtime can never complete.
         self.batch_fixture('WEB')
         with patch.object(batch_review.runtime_router, 'detect', return_value=('WEB', 'test')), patch.object(
                 batch_review.frame_contract, 'compile_frame', return_value={'contract_sha256': 'contract', 'prompt_contract': 'locked scene'}):
-            with self.assertRaisesRegex(product_review.ProductReviewError, 'WORK runtime with DevSpace'):
+            with self.assertRaisesRegex(product_review.ProductReviewError, 'require WORK runtime'):
                 batch_review.prepare(self.ep, 'WEB')
 
     def test_batch_prepare_resume_finalize_preserves_request_and_authority(self):

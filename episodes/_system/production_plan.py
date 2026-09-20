@@ -17,7 +17,7 @@ def build(episode: Path, *, max_workers: int = 2) -> dict:
     config=storyos_config.load_config()
     image_limit = int(storyos_config.get_path(config, "production.max_inflight_images", 3))
     # Logical topology estimate only. `authority` below maps to the explicit
-    # local-Codex fallback pool; WORK+DevSpace host concurrency is intentionally
+    # local-Codex fallback pool; WORK+Workspace-Provider host concurrency is intentionally
     # not invented here. Review has no independent worker knob, and image work is
     # delegated to image_scheduler in production.
     pools={"authority":int(storyos_config.get_path(config,"runtime.workers.local_codex_preimage",4)),

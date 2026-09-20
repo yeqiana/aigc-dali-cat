@@ -15,7 +15,7 @@ import codex_auto_orchestrator
 import runtime_request
 
 
-MIXED = """@DevSpace 读取 story-platform-v3 分支，不要切换分支。
+MIXED = """@WebCodex 读取 story-platform-v3 分支，不要切换分支。
 【执行约束】
 1) 只用这一条命令：python episodes/_system/story_os.py dag run <剧集目录> --codex codex.cmd
 2) 看到 STOP_TARGET_REACHED 就停止，不要推进 Release。

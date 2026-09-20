@@ -410,7 +410,7 @@ def _finalize_review(ep: Path, data: dict, *, attempt: int, before_story: str, b
     return 0
 
 
-def finalize_product_review(ep: Path, *, attempt: int, runtime: str, bounded_devspace: bool = False) -> int:
+def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
     story, storyboard = story_paths(ep)
     candidate = ep / CANDIDATE_REL
     data, provenance = product_review_adapter.finalize_candidate(
@@ -419,7 +419,6 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str, bounded_dev
         runtime=runtime,
         attempt=attempt,
         candidate_path=candidate,
-        bounded_devspace=bounded_devspace,
     )
     rc = _finalize_review(
         ep,
@@ -556,7 +555,6 @@ def main() -> int:
     p.add_argument("episode_dir")
     p.add_argument("--attempt", type=int, default=1)
     p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
-    p.add_argument("--bounded-devspace", action="store_true")
     p = sub.add_parser("verify")
     p.add_argument("episode_dir")
     p = sub.add_parser("show")
@@ -578,7 +576,7 @@ def main() -> int:
             return 3
     if args.cmd == "finalize-review":
         try:
-            return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime, bounded_devspace=args.bounded_devspace)
+            return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime)
         except (OSError, RuntimeError, ValueError) as exc:
             print("STORY SEMANTIC REVIEW FINALIZE ERROR:", exc)
             return 3

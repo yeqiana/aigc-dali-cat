@@ -173,9 +173,9 @@ def run_product_critic(ep,attempt=1):
     request=product_review_adapter.prepare(ep,kind="visual-lock-baseline",runtime=runtime,attempt=attempt,prompt=critic_prompt(ep),source_paths=sources,candidate_path=ep/CANDIDATE_REL)
     return request
 
-def finalize_product_critic(ep,attempt=1,runtime="WORK",bounded_devspace=False):
+def finalize_product_critic(ep,attempt=1,runtime="WORK"):
     ep=Path(ep).resolve();draft=prepare_review(ep,force=False);candidate=ep/CANDIDATE_REL
-    data,provenance=product_review_adapter.finalize_candidate(ep,kind="visual-lock-baseline",runtime=runtime,attempt=attempt,candidate_path=candidate,bounded_devspace=bounded_devspace)
+    data,provenance=product_review_adapter.finalize_candidate(ep,kind="visual-lock-baseline",runtime=runtime,attempt=attempt,candidate_path=candidate)
     review={**draft,"decision":str(data.get("decision") or "FAIL").upper(),"checks":data.get("checks") or {},"face_boxes":data.get("face_boxes") or [],"note":str(data.get("note") or ""),"critic_provenance":provenance}
     write_json(ep/REL,review)
     errors=validate_review(ep)

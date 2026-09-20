@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Host-agent adapter for WORK/WEB Story OS execution.
+"""Host-agent adapter for WORK Story OS execution.
 
 This module deliberately does not invoke a model. It prepares machine-readable,
 idempotent requests for the surrounding ChatGPT product runtime. Local Python
-must never silently fall back to Codex while WORK/WEB is selected.
+must never silently fall back to Codex while WORK is selected. Repository
+access is supplied by the configured Workspace Provider.
 
 V2.6.1.1 keeps immutable request history under meta/runtime/host-requests/ while
 maintaining meta/runtime/product-host-request.json as a compatibility/current
@@ -29,6 +30,7 @@ import storyos_config
 import story_json
 import runtime_memory_advice
 import runtime_workspace
+import workspace_provider
 import hot_state_bridge
 import host_request_persistence
 import episode_state_persistence
@@ -208,7 +210,6 @@ def _persist_request(ep: Path, payload: dict, *, category: str) -> dict:
 
 
 NEW_PRODUCT_RUNTIME = "WORK"
-WORKSPACE_TRANSPORT = "DEVSPACE"
 
 
 def build_request(
@@ -222,7 +223,8 @@ def build_request(
 ) -> dict:
     runtime = str(runtime).upper()
     if runtime != NEW_PRODUCT_RUNTIME:
-        raise ValueError("new product runtime host actions require WORK + DevSpace; WEB/WebCodex is disabled")
+        raise ValueError("new product runtime host actions require WORK; workspace access is provided separately")
+    workspace = workspace_provider.current()
     step, target = next_host_step(ep, mode)
     if step == "PREIMAGE_TASK_SET":
         requests = build_preimage_requests(ep, runtime=runtime, mode=mode, resume=resume, source=source)
@@ -278,9 +280,8 @@ def build_request(
         "local_codex_fallback_allowed": False,
         "host_contract": {
             "actor": "chatgpt_product_runtime",
-            "workspace_access": "use DevSpace/workspace tools directly",
-            "workspace_transport": WORKSPACE_TRANSPORT,
-            "webcodex_allowed": False,
+            "workspace_access": workspace.repository_access,
+            **workspace.contract_fields(),
             "critic_provenance": "WORK_ISOLATED",
             "image_generation": "delegate only the image execution substep according to runtime.image_execution_runtime; CODEX image mode must not take ownership of Story/PREIMAGE/Review/Release",
             "deterministic_scripts": "may run locally when they do not invoke a model backend",
@@ -290,8 +291,8 @@ def build_request(
         "instructions": [
             "Execute the declared non-image host step in the surrounding product runtime; do not hand Story/PREIMAGE/Review/Release ownership to local Codex.",
             "Reuse valid SHA-bound evidence and obey existing Story OS gates.",
-            "For independent critics, prepare the product review request, author the candidate in a fresh isolated WORK review turn using DevSpace only, then finalize it.",
-            "Do not use WebCodex for repository access or review execution.",
+            f"For independent critics, prepare the product review request, author the candidate in a fresh isolated WORK review turn using the configured {workspace.provider_id} Workspace Provider, then finalize it.",
+            "Workspace Provider access does not grant Episode state or release authority.",
             "When a later image scheduler runs, honor runtime.image_execution_runtime. CODEX there means image generation/repair only, not CODEX full-auto.",
             *step_instructions,
         ],
@@ -316,7 +317,8 @@ def build_preimage_requests(ep: Path, *, runtime: str, mode: str, resume: bool, 
     """
     runtime = str(runtime).upper()
     if runtime != NEW_PRODUCT_RUNTIME:
-        raise ValueError("PREIMAGE host tasks require WORK + DevSpace; WEB/WebCodex is disabled")
+        raise ValueError("PREIMAGE host tasks require WORK; workspace access is provided separately")
+    workspace = workspace_provider.current()
     snapshot = preimage_authority_snapshot.build(ep, write=True)
     tasks = preimage_task_contract.plan_tasks(ep, snapshot, resume=resume)
     out=[]
@@ -340,7 +342,7 @@ def build_preimage_requests(ep: Path, *, runtime: str, mode: str, resume: bool, 
                               "execution_start_handshake_required":True,
                               "dispatch_group":"PREIMAGE_TASK_SET","independent_parallelizable":True,
                               "wait_for_siblings_before_start":False,
-                              "workspace_transport":WORKSPACE_TRANSPORT,"webcodex_allowed":False},
+                              **workspace.contract_fields()},
             "instructions":["Perform only this bounded PREIMAGE task.",
                             "This request is independent inside PREIMAGE_TASK_SET: start it without waiting for sibling PREIMAGE requests to finish.",
                             "Before model/work execution, claim this request with product_runtime_adapter.py start-preimage using this request_id and a stable worker_id.",
@@ -509,7 +511,8 @@ def build_image_request(
 ) -> dict:
     runtime = str(runtime).upper()
     if runtime != NEW_PRODUCT_RUNTIME:
-        raise ValueError("product image request requires WORK + DevSpace; WEB/WebCodex is disabled")
+        raise ValueError("product image request requires WORK; workspace access is provided separately")
+    workspace = workspace_provider.current()
     rel = ep.resolve().relative_to(ROOT.resolve()).as_posix()
     items = []
     for row in queue_items:
@@ -537,8 +540,7 @@ def build_image_request(
         "items": items,
         "host_contract": {
             "actor": "chatgpt_product_runtime",
-            "workspace_transport": WORKSPACE_TRANSPORT,
-            "webcodex_allowed": False,
+            **workspace.contract_fields(),
             "image_model_contract": "use each queue item's locked model/quality",
             "continuity_contract": "respect Frame Contract and reference arbitration",
             "file_transport": "save/import real generated RAW assets when the product runtime supports workspace file transfer",
@@ -582,7 +584,7 @@ def print_request(data: dict) -> None:
 def self_test() -> None:
     assert HOST_ACTION_REQUIRED_RC == 20
     assert NEW_PRODUCT_RUNTIME == "WORK"
-    assert WORKSPACE_TRANSPORT == "DEVSPACE"
+    assert workspace_provider.current().transport == "WEBCODEX"
     assert _state_at_least("PUBLISH_READY", "STORYBOARD_LOCKED")
     assert not _state_at_least("IDEA_LOCKED", "STORYBOARD_LOCKED")
     assert STATE_TO_STEP["IDEA_LOCKED"] == ("CREATIVE_STORY", "STORYBOARD_LOCKED")

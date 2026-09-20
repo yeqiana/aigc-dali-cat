@@ -187,6 +187,14 @@ runtime:
   # 本机 codex.exe 不得接管 Story / PREIMAGE / Review / Release。
   preferred_runtime: WORK
 
+  # WORK 只定义创作/治理运行时角色；仓库访问由独立 Workspace Provider 提供。
+  # WebCodex 通过 ChatGPT MCP -> WebCodex Server -> Runner 访问本机 Project。
+  # Provider 不是 Episode Runtime、不是 Authority，也不由 StoryOS shell 启动。
+  workspace:
+    provider: webcodex
+    transport: WEBCODEX
+    execution_mode: host_mcp_runner
+
   # 图片执行是独立执行层。CODEX 表示仅在正式 image generation / image repair 时
   # 显式使用本机 Codex 图片能力；它不改变 preferred_runtime，也不授权 Codex full-auto。
   # 可用 STORY_OS_IMAGE_RUNTIME=CODEX|PRODUCT_RUNTIME|AUTO 临时覆盖。
@@ -199,11 +207,10 @@ runtime:
   next_action_path: meta/runtime/next-action.json
 
   # Review 按能力拆分：WORK 拥有文本/治理审核权；实际像素审核由独立 Codex Vision critic 执行。
-  # ChatGPT Web/App 只是 UI，不映射为 Story OS WEB Runtime；DevSpace 只是 WORK 的本地工作区工具。
+  # ChatGPT Web/App 只是 UI，不映射为 Story OS WEB Runtime；WebCodex 只是 WORK 的 Workspace Provider。
   review:
     text:
       runtime: WORK
-      workspace_transport: DEVSPACE
       isolated_required: true
       fresh_turn_required: true
     vision:
@@ -220,16 +227,13 @@ runtime:
       max_inflight_final: 4
     governance:
       runtime: WORK
-      workspace_transport: DEVSPACE
     allow_web_runtime: false
 
-    # Legacy aliases: existing modules may still read these during the migration.
+    # Legacy runtime aliases: workspace/provider 已迁移到 runtime.workspace。
     # `allow_local_codex_review=false` now means text/governance review only; vision review uses review.vision.
     runtime: WORK
-    workspace_transport: DEVSPACE
     isolated_critic_required: true
     fresh_product_review_turn_required: true
-    allow_webcodex: false
     allow_local_codex_review: false
 
   # 新篇默认走分段 DAG；PREIMAGE_COMPILE 是执行节点，不是新的 Episode stage。
@@ -241,7 +245,7 @@ runtime:
   # 并发量由下面对应的 workers.* 决定，不再有并列的第二套开关。
   preimage_parallel_enabled: true
   # local_codex_preimage → 仅显式本地 CODEX fallback 的 PREIMAGE fan-out；
-  # WORK + DevSpace 正式生产的 PREIMAGE 并发由 Host transport 管理，不伪装成本地指标。
+  # WORK + WebCodex 正式生产的 PREIMAGE 并发由 Workspace Provider/Host 管理，不伪装成本地指标。
   # derived → Frame Contract 本地并行编译并发（frame_contract.py）。
   # 2026-09-15 W-90/W-92：复核确认 composite Runtime DAG 本身保持串行；
   # image 并发属于 image_scheduler，production_plan 仅作 diagnostic planner。
@@ -324,7 +328,6 @@ timeout_policy:
   visual_baseline_critic: 300
   fast_scout: 240
   review_critic: 900
-  review_status_probe: 30
   codex_auth_probe: 30
   driver_carrier_control: 60
   image_probe: 900

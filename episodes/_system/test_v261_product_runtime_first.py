@@ -372,7 +372,7 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             self.assertEqual(derived["review_kind"], "story-semantic")
             self.assertIn("story-semantic-request.json", derived["request_path"])
 
-    def test_product_runtime_request_is_work_devspace_only(self) -> None:
+    def test_product_runtime_request_uses_webcodex_workspace_provider(self) -> None:
         with self.temp_episode() as td:
             ep = Path(td)
             (ep / "meta").mkdir(parents=True, exist_ok=True)
@@ -383,14 +383,17 @@ class ProductRuntimeFirstTests(unittest.TestCase):
                 ep, runtime="WORK", mode="full_auto", resume=False, source="test"
             )
             self.assertEqual(req["runtime"], "WORK")
-            self.assertEqual(req["host_contract"]["workspace_transport"], "DEVSPACE")
-            self.assertFalse(req["host_contract"]["webcodex_allowed"])
+            self.assertEqual(req["host_contract"]["workspace_provider"], "webcodex")
+            self.assertEqual(req["host_contract"]["workspace_transport"], "WEBCODEX")
+            self.assertEqual(req["host_contract"]["workspace_execution_mode"], "host_mcp_runner")
+            self.assertTrue(req["host_contract"]["workspace_host_managed"])
+            self.assertTrue(req["host_contract"]["webcodex_allowed"])
             with self.assertRaises(ValueError):
                 product_runtime_adapter.build_request(
                     ep, runtime="WEB", mode="full_auto", resume=False, source="test"
                 )
 
-    def test_product_review_request_is_work_devspace_only(self) -> None:
+    def test_product_review_request_uses_webcodex_workspace_provider(self) -> None:
         with self.temp_episode() as td:
             ep = Path(td)
             (ep / "meta").mkdir(parents=True, exist_ok=True)
@@ -399,7 +402,7 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             candidate = ep / "meta/candidate.json"
             req = product_review_adapter.prepare(
                 ep,
-                kind="devspace-review",
+                kind="workspace-review",
                 runtime="WORK",
                 attempt=1,
                 prompt="review frozen source",
@@ -408,8 +411,10 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             )
             self.assertEqual(req["runtime"], "WORK")
             self.assertEqual(req["critic_runtime"], "WORK_ISOLATED")
-            self.assertEqual(req["workspace_transport"], "DEVSPACE")
-            self.assertFalse(req["review_execution_contract"]["webcodex_allowed"])
+            self.assertEqual(req["workspace_provider"], "webcodex")
+            self.assertEqual(req["workspace_transport"], "WEBCODEX")
+            self.assertEqual(req["review_execution_contract"]["workspace_provider"], "webcodex")
+            self.assertTrue(req["review_execution_contract"]["webcodex_allowed"])
             self.assertTrue(req["review_execution_contract"]["fresh_product_review_turn_required"])
             with self.assertRaises(product_review_adapter.ProductReviewError):
                 product_review_adapter.prepare(
@@ -422,7 +427,7 @@ class ProductRuntimeFirstTests(unittest.TestCase):
                     candidate_path=ep / "meta/web-candidate.json",
                 )
 
-    def test_product_review_finalize_emits_devspace_provenance(self) -> None:
+    def test_product_review_finalize_emits_webcodex_provider_provenance(self) -> None:
         with self.temp_episode() as td:
             ep = Path(td)
             (ep / "meta").mkdir(parents=True, exist_ok=True)
@@ -431,7 +436,7 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             candidate = ep / "meta/candidate.json"
             product_review_adapter.prepare(
                 ep,
-                kind="devspace-finalize",
+                kind="workspace-finalize",
                 runtime="WORK",
                 attempt=1,
                 prompt="review frozen source",
@@ -441,19 +446,20 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             candidate.write_text(json.dumps({"summary": {"passed": True}}), encoding="utf-8")
             payload, provenance = product_review_adapter.finalize_candidate(
                 ep,
-                kind="devspace-finalize",
+                kind="workspace-finalize",
                 runtime="WORK",
                 attempt=1,
                 candidate_path=candidate,
             )
             self.assertTrue(payload["summary"]["passed"])
             self.assertEqual(provenance["runtime"], "WORK_ISOLATED")
-            self.assertEqual(provenance["workspace_transport"], "DEVSPACE")
+            self.assertEqual(provenance["workspace_provider"], "webcodex")
+            self.assertEqual(provenance["workspace_transport"], "WEBCODEX")
             self.assertEqual(provenance["isolation_mode"], "fresh_product_review_turn")
-            self.assertFalse(provenance["webcodex_used"])
+            self.assertTrue(provenance["webcodex_used"])
             self.assertEqual(runtime_provenance.validate_critic_provenance(provenance), [])
 
-    def test_product_review_bounded_devspace_is_honest_and_daily_life_only(self) -> None:
+    def test_product_review_has_no_local_bounded_workspace_fallback(self) -> None:
         with self.temp_episode() as td:
             ep = Path(td)
             (ep / "meta").mkdir(parents=True, exist_ok=True)
@@ -469,31 +475,17 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             candidate = ep / "meta/candidate.json"
             req = product_review_adapter.prepare(
                 ep,
-                kind="bounded-review",
+                kind="workspace-provider-review",
                 runtime="WORK",
                 attempt=1,
                 prompt="review frozen source",
                 source_paths=[source],
                 candidate_path=candidate,
             )
-            self.assertTrue(req["review_execution_contract"]["devspace_bounded_fallback_allowed"])
-            candidate.write_text(json.dumps({"summary": {"passed": True}}), encoding="utf-8")
-            payload, provenance = product_review_adapter.finalize_candidate(
-                ep,
-                kind="bounded-review",
-                runtime="WORK",
-                attempt=1,
-                candidate_path=candidate,
-                bounded_devspace=True,
-            )
-            self.assertTrue(payload["summary"]["passed"])
-            self.assertEqual(provenance["runtime"], "WORK_DEVSPACE_BOUNDED")
-            self.assertFalse(provenance["isolated_session"])
-            self.assertEqual(provenance["workspace_transport"], "DEVSPACE")
-            self.assertEqual(provenance["isolation_mode"], "bounded_request_only")
-            self.assertTrue(provenance["full_auto_user_authorized"])
-            self.assertTrue(provenance["ordinary_life_only"])
-            self.assertEqual(runtime_provenance.validate_critic_provenance(provenance), [])
+            contract = req["review_execution_contract"]
+            self.assertEqual(contract["workspace_provider"], "webcodex")
+            self.assertNotIn("devspace_bounded_fallback_allowed", contract)
+            self.assertNotIn("bounded_fallback_runtime", contract)
 
     def test_product_review_attempt_is_immutable(self) -> None:
         with self.temp_episode() as td:

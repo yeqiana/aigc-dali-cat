@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Story OS V2.7 Codex user-mode execution bridge.
 
-Problem solved: DevSpace runs as ``NT AUTHORITY\\SYSTEM`` while the Codex
+Problem solved: a workspace/automation host may run as ``NT AUTHORITY\\SYSTEM`` while the Codex
 sign-in, config and model cache belong to the interactive Windows user. A
 SYSTEM process that launches ``codex exec`` therefore dies with
 ``Access Denied`` / ``os error 5`` (for example on
@@ -16,7 +16,7 @@ This module is the single Codex process execution adapter for that boundary:
   Story OS codex call site. It runs codex directly when Story OS already runs
   as the interactive user, and transparently forwards the same task over the
   loopback bridge when Story OS runs as a non-interactive identity.
-- ``exec`` exposes the same transport to a plain shell so a DevSpace command
+- ``exec`` exposes the same transport to a plain shell so a SYSTEM-hosted command
   line can never be forced to read ``C:\\Users\\<user>\\.codex`` itself.
 
 Hard boundaries this adapter keeps:
@@ -1024,7 +1024,7 @@ class RunnerState:
     def persist_result(self, result: ExecResult) -> None:
         """Persist task output before replying to the caller.
 
-        The interactive-user runner can outlive the DevSpace/WORK caller.  A caller
+        The interactive-user runner can outlive the workspace/WORK caller. A caller
         timeout must therefore not erase the only copy of Codex stdout/evidence,
         especially for image tasks where rc=0 with no exported artifact is a real
         technical failure that needs diagnosis rather than a blind retry.

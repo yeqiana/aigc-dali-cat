@@ -34,9 +34,9 @@ ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = ROOT / "episodes/_system"
 
 # Modules that must keep resolving their role timeouts through the policy module
-# (story_os.py facade is the entry that forwards to them).  W-89 added
+# (story_os.py facade is the entry that forwards to them). W-89 added
 # production_recovery.py (recovery namespace carries the image_worker_request
-# default) and work_host_action_executor.py (review_status_probe poll bound).
+# default). Host-managed Workspace Providers do not own local polling timeouts.
 EXPECTED_POLICY_CONSUMERS = {
     "batch_scheduler.py",
     "caption_image_audit.py",
@@ -71,7 +71,6 @@ EXPECTED_POLICY_CONSUMERS = {
     "visual_lock_v21.py",
     "visual_review.py",
     "visual_review_legacy.py",
-    "work_host_action_executor.py",
     "workflow_runner.py",
 }
 
