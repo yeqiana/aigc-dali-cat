@@ -6,6 +6,8 @@ from pathlib import Path
 import storyos_config
 import runtime_observability
 import hot_state_bridge
+import runtime_fact_store
+import storage_config
 
 ROOT=Path(__file__).resolve().parents[2]
 _CONFIG=storyos_config.load_config()
@@ -26,21 +28,22 @@ def _clean(v):
     return str(v)[:200]
 def emit(ep:Path,event:dict):
     if storyos_config.get_path(_CONFIG,"agent_runtime.trace.enabled") is not True:return
-    # Trace channel owner: runtime_observability.append_trace_event is the simple
-    # appender (daemon bridge delegates there). This config-driven agent trace
-    # engine keeps its own guarded append because enabled/_clean/event_path are
-    # config semantics that a fixed-constant helper cannot express; the file is
-    # shared and readers tolerate both line shapes.
-    p=_path(ep,"event_path");p.parent.mkdir(parents=True,exist_ok=True)
-    line=json.dumps({"at":now(),**_clean(event)},ensure_ascii=False,separators=(",",":"))+"\n"
-    with _LOCK:
-        with p.open("a",encoding="utf-8",newline="\n") as f:f.write(line)
+    row={"at":now(),**_clean(event)}
+    mode=storage_config.runtime_store_config()["mode"]
+    if mode in {"dual","mysql"}:
+        runtime_fact_store.record_trace_event(ep,row)
+    if mode != "mysql":
+        p=_path(ep,"event_path");p.parent.mkdir(parents=True,exist_ok=True)
+        line=json.dumps(row,ensure_ascii=False,separators=(",",":"))+"\n"
+        with _LOCK:
+            with p.open("a",encoding="utf-8",newline="\n") as f:f.write(line)
 def start_run(ep,run_id,request_data,runtime,route_decision=None):
     trace_id="ST_"+uuid.uuid4().hex[:16]
     cur={"trace_id":trace_id,"run_id":run_id,"request_id":(request_data or {}).get("request_id"),
          "runtime":runtime,"started_at":now(),"route_id":(route_decision or {}).get("route_id")}
-    p=_path(ep,"current_path");p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(cur,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    if storage_config.hot_state_config()["mode"] != "redis":
+        p=_path(ep,"current_path");p.parent.mkdir(parents=True,exist_ok=True)
+        p.write_text(json.dumps(cur,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     hot_state_bridge.mirror(ep, "TRACE_CURRENT", cur)
     emit(ep,{"event":"TRACE_START",**cur,"status":"RUNNING"});return trace_id
 def current(ep):
@@ -68,6 +71,8 @@ def route_event(ep,decision):
         "route_id":decision.get("route_id"),"intent":decision.get("intent"),"workflow_mode":decision.get("workflow_mode"),
         "entry_step":decision.get("entry_step"),"reason_codes":decision.get("reason_codes"),"status":"DECIDED"})
 def _rows(ep):
+    if storage_config.runtime_store_config()["mode"] == "mysql":
+        return runtime_fact_store.load_trace_events(ep)
     p=_path(ep,"event_path")
     if not p.is_file():return []
     out=[]

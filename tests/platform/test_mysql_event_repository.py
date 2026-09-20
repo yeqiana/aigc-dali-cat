@@ -44,7 +44,7 @@ def test_mysql_event_repository_save():
 
     assert len(connection.executed) == 1
     sql, params = connection.executed[0]
-    assert "INSERT INTO event_log" in sql
+    assert "INSERT INTO TB_EVENT_LOG" in sql
     assert params[0] == "evt_test"
     assert params[1] == "TASK_STARTED"
     assert params[2] == "TASK"

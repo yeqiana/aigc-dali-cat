@@ -4,6 +4,7 @@ import json
 
 import pytest
 
+from platform.repository.mysql import schema_v2
 from platform.repository.mysql.mysql_latest_record_store import MySqlLatestRecordStore
 from platform.repository.mysql.schema import (
     CREATE_PLATFORM_LATEST_RECORD_TABLE_SQL,
@@ -76,4 +77,4 @@ def test_schema_includes_shared_platform_latest_record_table():
     conn = FakeConnection()
     steps = apply_schema(conn)
     assert steps[-1] == "create_platform_latest_record"
-    assert len(conn.executed) == 5
+    assert len(conn.executed) == len(schema_v2.DDL_STEPS) + 1

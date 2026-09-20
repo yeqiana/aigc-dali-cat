@@ -143,7 +143,7 @@ def test_dual_mode_writes_legacy_and_mysql(tmp_path):
     assert repos.event.save(event) == {'legacy': 'OK', 'mysql': 'OK'}
     assert len(_jsonl_rows(tmp_path / 'events.jsonl')) == 1
     sql, params = connection.calls[0]
-    assert 'INSERT INTO event_log' in sql
+    assert 'INSERT INTO TB_EVENT_LOG' in sql
     assert params[0] == 'evt_dual_path'
 
 
@@ -186,7 +186,7 @@ def test_observers_are_bound_to_the_same_repositories(tmp_path):
     assert provider.observers() is observers
 
 
-def test_provider_never_invents_mysql_connection(tmp_path):
+def test_provider_preserves_injected_and_owns_self_created_mysql_connection(tmp_path, monkeypatch):
     injected = FakeConnection()
     provider = RuntimeRepositoryProvider('dual', jsonl_root=str(tmp_path), connection=injected)
     provider.repositories()
@@ -194,9 +194,14 @@ def test_provider_never_invents_mysql_connection(tmp_path):
     provider.close()
     assert injected.closed is False
 
-    missing = RuntimeRepositoryProvider('dual', jsonl_root=str(tmp_path))
-    with pytest.raises(ValueError, match='MySQL connection is required'):
-        missing.repositories()
+    from platform.repository.mysql import mysql_connection as mysql_module
+    monkeypatch.setattr(mysql_module, 'MySqlConnection', FakeConnection)
+    owned = RuntimeRepositoryProvider('dual', jsonl_root=str(tmp_path))
+    owned.repositories()
+    created = owned._connection
+    assert owned._owns_connection is True
+    owned.close()
+    assert created.closed is True
 
 
 def test_platform_has_no_implicit_jsonl_root(monkeypatch):

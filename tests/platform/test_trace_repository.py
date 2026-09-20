@@ -42,10 +42,10 @@ def test_mysql_trace_repository_save():
 
     assert len(connection.executed) == 1
     sql, params = connection.executed[0]
-    assert "INSERT INTO trace_span" in sql
-    assert params[0] == "trace_001"
-    assert params[1] == "span_001"
-    assert params[3] == "SUCCESS"
+    assert "INSERT INTO TB_TRACE_SPAN" in sql
+    assert params[0] == "span_001"
+    assert params[1] == "trace_001"
+    assert params[8] == "SUCCESS"
 
 
 def test_mysql_trace_repository_get():

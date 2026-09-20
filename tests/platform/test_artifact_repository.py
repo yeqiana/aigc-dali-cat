@@ -46,10 +46,10 @@ def test_mysql_artifact_repository_save():
 
     assert len(connection.executed) == 1
     sql, params = connection.executed[0]
-    assert "INSERT INTO artifact_index" in sql
+    assert "INSERT INTO TB_ARTIFACT_INDEX" in sql
     assert params[0] == "artifact_001"
-    assert params[1] == "IMAGE"
-    assert params[3] == "a" * 64
+    assert params[2] == "IMAGE"
+    assert params[4] == "a" * 64
 
 
 def test_mysql_artifact_repository_get():

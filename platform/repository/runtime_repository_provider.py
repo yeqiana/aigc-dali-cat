@@ -134,9 +134,7 @@ def build_runtime_repositories(
     from platform.repository.trace.mysql_trace_repository import MySqlTraceRepository
 
     if connection is None:
-        raise ValueError(
-            "MySQL connection is required for mysql/dual mode; Story OS application layer must inject storage_config.mysql_connection_kwargs()"
-        )
+        connection = MySqlConnection()
 
     mysql_event = MySqlEventRepository(connection)
     mysql_trace = MySqlTraceRepository(connection)
@@ -193,7 +191,10 @@ class RuntimeRepositoryProvider:
 
     def repositories(self) -> RuntimeRepositories:
         if self._repositories is None:
-            self._owns_connection = False
+            self._owns_connection = self._connection is None and self.mode in {
+                RuntimeStoreMode.MYSQL,
+                RuntimeStoreMode.DUAL,
+            }
             self._repositories = build_runtime_repositories(
                 self.mode,
                 jsonl_root=self.jsonl_root,

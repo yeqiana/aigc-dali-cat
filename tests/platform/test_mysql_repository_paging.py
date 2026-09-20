@@ -34,7 +34,7 @@ def test_event_iter_all_pages_by_keyset():
     assert seen == [f"evt_{index:03d}" for index in range(7)]
     assert len(connection.queries) == 3
     assert all(
-        sql.startswith("SELECT * FROM event_log WHERE event_id >")
+        sql.startswith("SELECT * FROM TB_EVENT_LOG WHERE EVENT_ID >")
         for sql, _ in connection.queries
     )
     assert connection.queries[0][1] == ("", 3)
@@ -55,7 +55,7 @@ def test_trace_iter_all_pages_by_composite_key():
     assert seen == [("t1", "s1"), ("t1", "s2"), ("t2", "s1")]
     assert connection.queries[0][1] == ("", "", 2)
     assert connection.queries[1][1] == ("t1", "s2", 2)
-    assert all("(trace_id, span_id) > (%s, %s)" in sql for sql, _ in connection.queries)
+    assert all("(TRACE_ID, SPAN_ID) > (%s, %s)" in sql for sql, _ in connection.queries)
 
 
 def test_artifact_iter_all_pages_by_keyset():

@@ -15,21 +15,26 @@ class EventRepository(Protocol):
 
 
 _EVENT_UPSERT_SQL = (
-    "INSERT INTO event_log "
-    "(event_id, event_type, aggregate_type, aggregate_id, occurred_at, "
-    " trace_id, task_id, payload, metadata) "
-    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) "
+    "INSERT INTO TB_EVENT_LOG "
+    "(EVENT_ID, EVENT_TYPE, AGGREGATE_TYPE, AGGREGATE_ID, EPISODE_ID, OCCURRED_TIME, "
+    " TRACE_ID, TASK_ID, PAYLOAD, METADATA) "
+    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
     "AS new "
     "ON DUPLICATE KEY UPDATE "
-    "event_type=new.event_type, aggregate_type=new.aggregate_type, "
-    "aggregate_id=new.aggregate_id, occurred_at=new.occurred_at, "
-    "trace_id=new.trace_id, task_id=new.task_id, "
-    "payload=new.payload, metadata=new.metadata"
+    "EVENT_TYPE=new.EVENT_TYPE, AGGREGATE_TYPE=new.AGGREGATE_TYPE, "
+    "AGGREGATE_ID=new.AGGREGATE_ID, EPISODE_ID=new.EPISODE_ID, "
+    "OCCURRED_TIME=new.OCCURRED_TIME, TRACE_ID=new.TRACE_ID, TASK_ID=new.TASK_ID, "
+    "PAYLOAD=new.PAYLOAD, METADATA=new.METADATA"
 )
 
-_EVENT_SELECT_SQL = "SELECT * FROM event_log WHERE event_id = %s"
-_EVENT_LIST_SQL = "SELECT * FROM event_log ORDER BY occurred_at"
-_EVENT_PAGE_SQL = "SELECT * FROM event_log WHERE event_id > %s ORDER BY event_id LIMIT %s"
+_EVENT_SELECT_SQL = "SELECT * FROM TB_EVENT_LOG WHERE EVENT_ID = %s"
+_EVENT_LIST_SQL = "SELECT * FROM TB_EVENT_LOG ORDER BY OCCURRED_TIME"
+_EVENT_PAGE_SQL = "SELECT * FROM TB_EVENT_LOG WHERE EVENT_ID > %s ORDER BY EVENT_ID LIMIT %s"
+_EVENT_AGGREGATE_SQL = (
+    "SELECT * FROM TB_EVENT_LOG "
+    "WHERE EVENT_TYPE=%s AND AGGREGATE_TYPE=%s AND AGGREGATE_ID=%s "
+    "ORDER BY OCCURRED_TIME, EVENT_ID"
+)
 
 
 class MySqlEventRepository:
@@ -47,11 +52,17 @@ class MySqlEventRepository:
         return self.connection
 
     def save(self, event: EventContract) -> None:
+        episode_id = (
+            event.aggregate_id
+            if event.aggregate_type.value == "EPISODE"
+            else None
+        )
         self._conn().execute(_EVENT_UPSERT_SQL, (
             event.event_id,
             event.event_type.value,
             event.aggregate_type.value,
             event.aggregate_id,
+            episode_id,
             event.occurred_at,
             event.trace_id,
             event.task_id,
@@ -65,6 +76,14 @@ class MySqlEventRepository:
     def list_all(self) -> list[dict]:
         return self._conn().query_all(_EVENT_LIST_SQL)
 
+    def list_by_aggregate(
+        self, event_type: str, aggregate_type: str, aggregate_id: str
+    ) -> list[dict]:
+        return self._conn().query_all(
+            _EVENT_AGGREGATE_SQL,
+            (str(event_type), str(aggregate_type), str(aggregate_id)),
+        )
+
     def iter_all(self, batch_size: int = 500):
         """按主键 keyset 分页流式读取（P9.27），避免一次性载入全表。"""
         if batch_size <= 0:
@@ -76,6 +95,6 @@ class MySqlEventRepository:
                 return
             for row in rows:
                 yield row
-            last = rows[-1]["event_id"]
+            last = rows[-1].get("EVENT_ID") or rows[-1].get("event_id")
             if len(rows) < batch_size:
                 return

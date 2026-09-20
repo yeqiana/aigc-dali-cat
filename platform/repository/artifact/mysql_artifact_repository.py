@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from typing import Protocol
 
 from platform.core.contracts.artifact_contract import ArtifactContract
 from platform.repository.mysql.mysql_connection import MySqlConnection
-from platform.repository.mysql.payload_policy import bounded_json
+from platform.repository.mysql.payload_policy import canonical_json_bytes
 
 
 class ArtifactRepository(Protocol):
@@ -14,22 +16,25 @@ class ArtifactRepository(Protocol):
 
 
 _ARTIFACT_UPSERT_SQL = (
-    "INSERT INTO artifact_index "
-    "(artifact_id, artifact_type, path, sha256, owner_type, owner_id, "
-    " created_by, created_at, trace_id, task_id, metadata) "
-    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+    "INSERT INTO TB_ARTIFACT_INDEX "
+    "(ARTIFACT_ID, EPISODE_ID, ARTIFACT_TYPE, URI, SHA256, MIME_TYPE, BYTE_SIZE, "
+    " WIDTH_PX, HEIGHT_PX, OWNER_TYPE, OWNER_ID, CREATED_BY, TRACE_ID, TASK_ID, "
+    " METADATA_BLOB, METADATA_SHA256, STATUS, CREATE_TIME) "
+    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
     "AS new "
     "ON DUPLICATE KEY UPDATE "
-    "artifact_type=new.artifact_type, path=new.path, sha256=new.sha256, "
-    "owner_type=new.owner_type, owner_id=new.owner_id, "
-    "created_by=new.created_by, created_at=new.created_at, "
-    "trace_id=new.trace_id, task_id=new.task_id, metadata=new.metadata"
+    "EPISODE_ID=new.EPISODE_ID, ARTIFACT_TYPE=new.ARTIFACT_TYPE, URI=new.URI, "
+    "SHA256=new.SHA256, MIME_TYPE=new.MIME_TYPE, BYTE_SIZE=new.BYTE_SIZE, "
+    "WIDTH_PX=new.WIDTH_PX, HEIGHT_PX=new.HEIGHT_PX, OWNER_TYPE=new.OWNER_TYPE, "
+    "OWNER_ID=new.OWNER_ID, CREATED_BY=new.CREATED_BY, TRACE_ID=new.TRACE_ID, "
+    "TASK_ID=new.TASK_ID, METADATA_BLOB=new.METADATA_BLOB, "
+    "METADATA_SHA256=new.METADATA_SHA256, STATUS=new.STATUS, CREATE_TIME=new.CREATE_TIME"
 )
 
-_ARTIFACT_SELECT_SQL = "SELECT * FROM artifact_index WHERE artifact_id = %s"
-_ARTIFACT_LIST_SQL = "SELECT * FROM artifact_index ORDER BY created_at"
+_ARTIFACT_SELECT_SQL = "SELECT * FROM TB_ARTIFACT_INDEX WHERE ARTIFACT_ID = %s"
+_ARTIFACT_LIST_SQL = "SELECT * FROM TB_ARTIFACT_INDEX ORDER BY CREATE_TIME"
 _ARTIFACT_PAGE_SQL = (
-    "SELECT * FROM artifact_index WHERE artifact_id > %s ORDER BY artifact_id LIMIT %s"
+    "SELECT * FROM TB_ARTIFACT_INDEX WHERE ARTIFACT_ID > %s ORDER BY ARTIFACT_ID LIMIT %s"
 )
 
 
@@ -48,18 +53,33 @@ class MySqlArtifactRepository:
         return self.connection
 
     def save(self, artifact: ArtifactContract) -> None:
+        metadata = dict(artifact.metadata or {})
+        metadata_bytes = canonical_json_bytes(metadata)
+        metadata_sha = hashlib.sha256(metadata_bytes).hexdigest()
+        episode_id = artifact.owner_id if artifact.owner_type.value == "EPISODE" else metadata.get("episode_id")
+        mime_type = metadata.get("mime_type")
+        byte_size = metadata.get("byte_size") or metadata.get("bytes")
+        width = metadata.get("width_px") or metadata.get("width") or metadata.get("w")
+        height = metadata.get("height_px") or metadata.get("height") or metadata.get("h")
         self._conn().execute(_ARTIFACT_UPSERT_SQL, (
             artifact.artifact_id,
+            episode_id,
             artifact.artifact_type.value,
             artifact.path,
             artifact.sha256,
+            mime_type,
+            byte_size,
+            width,
+            height,
             artifact.owner_type.value,
             artifact.owner_id,
             artifact.created_by,
-            artifact.created_at,
             artifact.trace_id,
             artifact.task_id,
-            bounded_json(artifact.metadata, entity="artifact metadata"),
+            metadata_bytes,
+            metadata_sha,
+            "ACTIVE",
+            artifact.created_at,
         ))
 
     def get(self, artifact_id: str) -> dict | None:
@@ -79,6 +99,6 @@ class MySqlArtifactRepository:
                 return
             for row in rows:
                 yield row
-            last = rows[-1]["artifact_id"]
+            last = rows[-1].get("ARTIFACT_ID") or rows[-1].get("artifact_id")
             if len(rows) < batch_size:
                 return

@@ -28,8 +28,8 @@ def test_upserts_use_row_alias_not_deprecated_values_function():
 
 
 def test_upserts_still_target_the_right_table_and_key():
-    assert "INSERT INTO event_log" in _EVENT_UPSERT_SQL
-    assert "INSERT INTO trace_span" in _TRACE_UPSERT_SQL
-    assert "INSERT INTO artifact_index" in _ARTIFACT_UPSERT_SQL
+    assert "INSERT INTO TB_EVENT_LOG" in _EVENT_UPSERT_SQL
+    assert "INSERT INTO TB_TRACE_SPAN" in _TRACE_UPSERT_SQL
+    assert "INSERT INTO TB_ARTIFACT_INDEX" in _ARTIFACT_UPSERT_SQL
     for table, sql in UPSERTS.items():
         assert "ON DUPLICATE KEY UPDATE" in sql, table

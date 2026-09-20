@@ -59,8 +59,8 @@ from uuid import uuid4
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-DEFAULT_SMOKE_MODE = "dual"
-STORAGE_TABLES = ("event_log", "trace_span", "artifact_index")
+DEFAULT_SMOKE_MODE = "mysql"
+STORAGE_TABLES = ("TB_EVENT_LOG", "TB_TRACE_SPAN", "TB_ARTIFACT_INDEX")
 
 RESULTS: list[dict] = []
 
@@ -350,7 +350,7 @@ def group_mysql(ctx: dict) -> None:
         f"db={health.get('database')} charset={health.get('charset')} time_zone={health.get('time_zone')}",
     )
     steps = apply_schema(connection)
-    check("B", "apply_schema 幂等", len(steps) == 4, ",".join(steps))
+    check("B", "apply_schema 幂等", len(steps) >= 20 and steps[-1] == "create_platform_latest_record", ",".join(steps))
 
     baseline = {table: _count_rows(connection, table) for table in STORAGE_TABLES}
     ctx["baseline_rows"] = baseline
@@ -1081,20 +1081,20 @@ def group_cleanup(args, ctx: dict) -> None:
     print("\n== I 清理 ==")
     connection = ctx.get("mysql")
     if connection is not None:
-        deleted = {"event_log": 0, "trace_span": 0, "artifact_index": 0}
+        deleted = {"TB_EVENT_LOG": 0, "TB_TRACE_SPAN": 0, "TB_ARTIFACT_INDEX": 0}
         for event in ctx.get("events", []):
-            deleted["event_log"] += connection.execute(
-                "DELETE FROM story_os_runtime.event_log WHERE event_id=%s", (event.event_id,)
+            deleted["TB_EVENT_LOG"] += connection.execute(
+                "DELETE FROM TB_EVENT_LOG WHERE EVENT_ID=%s", (event.event_id,)
             )
         for trace_id, span_id in ctx.get("trace_keys", []):
-            deleted["trace_span"] += connection.execute(
-                "DELETE FROM story_os_runtime.trace_span WHERE trace_id=%s AND span_id=%s",
+            deleted["TB_TRACE_SPAN"] += connection.execute(
+                "DELETE FROM TB_TRACE_SPAN WHERE TRACE_ID=%s AND SPAN_ID=%s",
                 (trace_id, span_id),
             )
         artifact = ctx.get("artifact")
         if artifact is not None:
-            deleted["artifact_index"] += connection.execute(
-                "DELETE FROM story_os_runtime.artifact_index WHERE artifact_id=%s", (artifact.artifact_id,)
+            deleted["TB_ARTIFACT_INDEX"] += connection.execute(
+                "DELETE FROM TB_ARTIFACT_INDEX WHERE ARTIFACT_ID=%s", (artifact.artifact_id,)
             )
         remaining = {table: _count_rows(connection, table) for table in STORAGE_TABLES}
         check(

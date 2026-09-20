@@ -14,24 +14,24 @@ class TraceRepository(Protocol):
 
 
 _TRACE_UPSERT_SQL = (
-    "INSERT INTO trace_span "
-    "(trace_id, span_id, operation, status, started_at, request_id, episode_id, "
-    " task_id, parent_span_id, ended_at, duration_ms, inputs, outputs, error, attributes) "
-    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+    "INSERT INTO TB_TRACE_SPAN "
+    "(SPAN_ID, TRACE_ID, PARENT_SPAN_ID, EPISODE_ID, REQUEST_ID, TASK_ID, "
+    " SPAN_NAME, CATEGORY, STATUS, START_TIME, END_TIME, ELAPSED_MS, ERROR_TEXT, ATTRIBUTES) "
+    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
     "AS new "
     "ON DUPLICATE KEY UPDATE "
-    "operation=new.operation, status=new.status, started_at=new.started_at, "
-    "request_id=new.request_id, episode_id=new.episode_id, task_id=new.task_id, "
-    "parent_span_id=new.parent_span_id, ended_at=new.ended_at, "
-    "duration_ms=new.duration_ms, inputs=new.inputs, outputs=new.outputs, "
-    "error=new.error, attributes=new.attributes"
+    "TRACE_ID=new.TRACE_ID, PARENT_SPAN_ID=new.PARENT_SPAN_ID, "
+    "EPISODE_ID=new.EPISODE_ID, REQUEST_ID=new.REQUEST_ID, TASK_ID=new.TASK_ID, "
+    "SPAN_NAME=new.SPAN_NAME, CATEGORY=new.CATEGORY, STATUS=new.STATUS, "
+    "START_TIME=new.START_TIME, END_TIME=new.END_TIME, ELAPSED_MS=new.ELAPSED_MS, "
+    "ERROR_TEXT=new.ERROR_TEXT, ATTRIBUTES=new.ATTRIBUTES"
 )
 
-_TRACE_SELECT_SQL = "SELECT * FROM trace_span WHERE trace_id = %s AND span_id = %s"
-_TRACE_LIST_SQL = "SELECT * FROM trace_span ORDER BY started_at"
+_TRACE_SELECT_SQL = "SELECT * FROM TB_TRACE_SPAN WHERE TRACE_ID = %s AND SPAN_ID = %s"
+_TRACE_LIST_SQL = "SELECT * FROM TB_TRACE_SPAN ORDER BY START_TIME"
 _TRACE_PAGE_SQL = (
-    "SELECT * FROM trace_span WHERE (trace_id, span_id) > (%s, %s) "
-    "ORDER BY trace_id, span_id LIMIT %s"
+    "SELECT * FROM TB_TRACE_SPAN WHERE (TRACE_ID, SPAN_ID) > (%s, %s) "
+    "ORDER BY TRACE_ID, SPAN_ID LIMIT %s"
 )
 
 
@@ -50,22 +50,27 @@ class MySqlTraceRepository:
         return self.connection
 
     def save(self, trace: TraceContract) -> None:
+        attrs = {
+            "inputs": trace.inputs,
+            "outputs": trace.outputs,
+            "attributes": trace.attributes,
+        }
+        category = trace.attributes.get("category") if isinstance(trace.attributes, dict) else None
         self._conn().execute(_TRACE_UPSERT_SQL, (
-            trace.trace_id,
             trace.span_id,
+            trace.trace_id,
+            trace.parent_span_id,
+            trace.episode_id,
+            trace.request_id,
+            trace.task_id,
             trace.operation,
+            category,
             trace.status.value,
             trace.started_at,
-            trace.request_id,
-            trace.episode_id,
-            trace.task_id,
-            trace.parent_span_id,
             trace.ended_at,
             trace.duration_ms,
-            bounded_json(trace.inputs, entity="trace inputs"),
-            bounded_json(trace.outputs, entity="trace outputs"),
             trace.error,
-            bounded_json(trace.attributes, entity="trace attributes"),
+            bounded_json(attrs, entity="trace attributes"),
         ))
 
     def get(self, trace_id: str, span_id: str) -> dict | None:
@@ -88,7 +93,7 @@ class MySqlTraceRepository:
                 return
             for row in rows:
                 yield row
-            last_trace = rows[-1]["trace_id"]
-            last_span = rows[-1]["span_id"]
+            last_trace = rows[-1].get("TRACE_ID") or rows[-1].get("trace_id")
+            last_span = rows[-1].get("SPAN_ID") or rows[-1].get("span_id")
             if len(rows) < batch_size:
                 return
