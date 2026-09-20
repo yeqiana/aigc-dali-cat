@@ -23,8 +23,8 @@ export const SettingsView: React.FC = () => {
   // 2. 主题详细配置
   const [darkThemePreset, setDarkThemePreset] = useState('Codex');
   const [accentColor, setAccentColor] = useState('默认');
-  const [bgColor, setBgColor] = useState('#181818');
-  const [fgColor, setFgColor] = useState('#FFFFFF');
+  const [bgColor, setBgColor] = useState('#0B0D10');
+  const [fgColor, setFgColor] = useState('#F1F3F5');
   const [uiFont, setUiFont] = useState('系统默认');
   const [uiFontWeight, setUiFontWeight] = useState('常规');
   const [contentFont, setContentFont] = useState('与界面字体相同');
@@ -66,7 +66,7 @@ export const SettingsView: React.FC = () => {
       contentFont,
     };
     navigator.clipboard.writeText(JSON.stringify(config, null, 2));
-    showToast('已复制 Codex 主题配置至剪贴板');
+    showToast('已复制 StoryOS 主题配置至剪贴板');
   };
 
   return (
@@ -110,7 +110,7 @@ export const SettingsView: React.FC = () => {
         </div>
 
         <div className="text-[11px] font-mono text-[var(--text-tertiary)]">
-          Codex UI Settings v2.4
+          StoryOS UI Settings
         </div>
       </div>
 
@@ -118,7 +118,7 @@ export const SettingsView: React.FC = () => {
         <div className="space-y-8 max-w-3xl">
           {/* ===================== 1. 主题 (Theme) ===================== */}
           <section className="space-y-4">
-            <h2 className="text-sm font-semibold text-white tracking-wide">
+            <h2 className="text-sm font-semibold text-[var(--text-primary)] tracking-wide">
               主题
             </h2>
 
@@ -132,17 +132,17 @@ export const SettingsView: React.FC = () => {
                   showToast('已切换为「系统」模式');
                 }}
                 className={`group flex flex-col items-center gap-2 text-left cursor-pointer focus:outline-hidden ${
-                  themeMode === 'system' ? 'text-white' : 'text-zinc-400 hover:text-zinc-200'
+                  themeMode === 'system' ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'
                 }`}
               >
-                <div className={`w-full aspect-[16/10] rounded-xl overflow-hidden border transition-all relative flex ${
+                <div className={`w-full aspect-[16/10] rounded-[var(--radius-md)] overflow-hidden border transition-colors relative flex ${
                   themeMode === 'system'
-                    ? 'border-white ring-2 ring-white/20'
-                    : 'border-[#2e2e2e] hover:border-[#444]'
+                    ? 'border-[var(--primary)]'
+                    : 'border-[var(--border-normal)] hover:border-[var(--border-strong)]'
                 }`}>
                   {/* 左半浅色 */}
                   <div className="w-1/2 h-full bg-[#8c8c8c] p-2 flex flex-col justify-end relative">
-                    <div className="w-full h-4/5 bg-white/95 rounded-tl-lg p-1.5 space-y-1 shadow-sm">
+                    <div className="w-full h-4/5 bg-white/95 rounded-tl-[var(--radius-sm)] p-1.5 space-y-1">
                       <div className="w-12 h-1 bg-zinc-300 rounded-full" />
                       <div className="w-full h-0.5 bg-zinc-200 rounded-full" />
                       <div className="w-4/5 h-0.5 bg-zinc-200 rounded-full" />
@@ -150,7 +150,7 @@ export const SettingsView: React.FC = () => {
                   </div>
                   {/* 右半深色 */}
                   <div className="w-1/2 h-full bg-[#262626] p-2 flex flex-col justify-end relative">
-                    <div className="w-full h-4/5 bg-[#141414] rounded-tr-lg p-1.5 space-y-1 shadow-sm">
+                    <div className="w-full h-4/5 bg-[#141414] rounded-tr-[var(--radius-sm)] p-1.5 space-y-1">
                       <div className="w-12 h-1 bg-zinc-600 rounded-full" />
                       <div className="w-full h-0.5 bg-zinc-700 rounded-full" />
                       <div className="w-4/5 h-0.5 bg-zinc-700 rounded-full" />
@@ -168,15 +168,15 @@ export const SettingsView: React.FC = () => {
                   showToast('已切换为「浅色」主题模式');
                 }}
                 className={`group flex flex-col items-center gap-2 text-left cursor-pointer focus:outline-hidden ${
-                  themeMode === 'light' ? 'text-white' : 'text-zinc-400 hover:text-zinc-200'
+                  themeMode === 'light' ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'
                 }`}
               >
-                <div className={`w-full aspect-[16/10] rounded-xl overflow-hidden border transition-all p-2 flex flex-col justify-end bg-[#e4e4e7] ${
+                <div className={`w-full aspect-[16/10] rounded-[var(--radius-md)] overflow-hidden border transition-colors p-2 flex flex-col justify-end bg-[#e4e4e7] ${
                   themeMode === 'light'
-                    ? 'border-white ring-2 ring-white/20'
-                    : 'border-[#2e2e2e] hover:border-[#444]'
+                    ? 'border-[var(--primary)]'
+                    : 'border-[var(--border-normal)] hover:border-[var(--border-strong)]'
                 }`}>
-                  <div className="w-full h-4/5 bg-white rounded-t-lg p-2 space-y-1.5 shadow-sm">
+                  <div className="w-full h-4/5 bg-white rounded-t-[var(--radius-sm)] p-2 space-y-1.5">
                     <div className="w-16 h-1.5 bg-zinc-300 rounded-full" />
                     <div className="w-full h-1 bg-zinc-200 rounded-full" />
                     <div className="w-5/6 h-1 bg-zinc-200 rounded-full" />
@@ -194,19 +194,19 @@ export const SettingsView: React.FC = () => {
                   showToast('已切换为「深色」主题模式');
                 }}
                 className={`group flex flex-col items-center gap-2 text-left cursor-pointer focus:outline-hidden ${
-                  themeMode === 'dark' ? 'text-white' : 'text-zinc-400 hover:text-zinc-200'
+                  themeMode === 'dark' ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'
                 }`}
               >
-                <div className={`w-full aspect-[16/10] rounded-xl overflow-hidden border transition-all p-2 flex flex-col justify-end bg-[#262626] ${
+                <div className={`w-full aspect-[16/10] rounded-[var(--radius-md)] overflow-hidden border transition-colors p-2 flex flex-col justify-end bg-[#262626] ${
                   themeMode === 'dark'
-                    ? 'border-white ring-2 ring-white/20'
-                    : 'border-[#2e2e2e] hover:border-[#444]'
+                    ? 'border-[var(--primary)]'
+                    : 'border-[var(--border-normal)] hover:border-[var(--border-strong)]'
                 }`}>
-                  <div className="w-full h-4/5 bg-[#ffffff] rounded-t-lg p-2 space-y-1.5 shadow-sm">
-                    <div className="w-16 h-1.5 bg-zinc-300 rounded-full" />
-                    <div className="w-full h-1 bg-zinc-200 rounded-full" />
-                    <div className="w-5/6 h-1 bg-zinc-200 rounded-full" />
-                    <div className="w-3/4 h-1 bg-zinc-200 rounded-full" />
+                  <div className="w-full h-4/5 bg-[#13161b] rounded-t-[var(--radius-sm)] p-2 space-y-1.5">
+                    <div className="w-16 h-1.5 bg-[#737d8a] rounded-full" />
+                    <div className="w-full h-1 bg-[#2d333d] rounded-full" />
+                    <div className="w-5/6 h-1 bg-[#2d333d] rounded-full" />
+                    <div className="w-3/4 h-1 bg-[#2d333d] rounded-full" />
                   </div>
                 </div>
                 <span className="text-xs font-medium">深色</span>
@@ -214,8 +214,8 @@ export const SettingsView: React.FC = () => {
             </div>
 
             {/* Code Diff Preview (代码差异对比预览组件) */}
-            <div className="rounded-xl border border-[#27272a] bg-[#0c0c0e] font-mono text-[11px] overflow-hidden">
-              <div className="grid grid-cols-2 divide-x divide-[#222226]">
+            <div className="rounded-[var(--radius-md)] border border-[var(--border-normal)] bg-[var(--bg-app)] font-mono text-[11px] overflow-hidden">
+              <div className="grid grid-cols-2 divide-x divide-[var(--border-subtle)]">
                 {/* 左列：红底差异 */}
                 <div className="p-2 space-y-0.5 text-zinc-300 select-text">
                   <div className="flex items-center gap-2 text-zinc-500">
@@ -266,7 +266,7 @@ export const SettingsView: React.FC = () => {
               </div>
 
               {/* 底部微型滚动箭头指示 */}
-              <div className="px-2 py-1 bg-[#101013] border-t border-[#1f1f23] flex items-center justify-between text-zinc-600">
+              <div className="px-2 py-1 bg-[var(--bg-workspace)] border-t border-[var(--border-subtle)] flex items-center justify-between text-[var(--text-disabled)]">
                 <div className="flex items-center gap-1">
                   <ChevronLeft className="w-3 h-3 hover:text-zinc-400 cursor-pointer" />
                 </div>
@@ -276,27 +276,27 @@ export const SettingsView: React.FC = () => {
               </div>
             </div>
 
-            {/* 深色主题参数卡片 (Codex 风格圆角面板) */}
-            <div className="bg-[#141416] border border-[#27272a] rounded-2xl p-4 divide-y divide-[#222226] text-xs">
+            {/* 深色主题参数：使用 StoryOS Design Token，不创建竞争色板。 */}
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-normal)] rounded-[var(--radius-lg)] p-4 divide-y divide-[var(--border-subtle)] text-xs">
               {/* 1. 深色主题选择与动作 */}
               <div className="py-3 first:pt-0 flex items-center justify-between">
-                <span className="text-white font-medium">深色主题</span>
+                <span className="text-[var(--text-primary)] font-medium">深色主题</span>
                 <div className="flex items-center gap-2.5">
                   <button
                     type="button"
                     onClick={() => showToast('已打开主题导入窗口')}
-                    className="text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                    className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                   >
                     导入
                   </button>
                   <button
                     type="button"
                     onClick={handleCopyTheme}
-                    className="text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                    className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                   >
                     复制主题
                   </button>
-                  <div className="px-1.5 py-0.5 rounded bg-[#202024] text-zinc-400 text-[10px] font-mono border border-[#2e2e33]">
+                  <div className="px-1.5 py-0.5 rounded-[var(--radius-xs)] bg-[var(--bg-workspace)] text-[var(--text-secondary)] text-[10px] font-mono border border-[var(--border-normal)]">
                     Aa
                   </div>
                   <div className="relative">
@@ -306,7 +306,7 @@ export const SettingsView: React.FC = () => {
                         setDarkThemePreset(e.target.value);
                         showToast(`已应用主题: ${e.target.value}`);
                       }}
-                      className="appearance-none bg-[#202024] border border-[#2e2e33] hover:border-zinc-500 text-white rounded-lg px-3 py-1.5 pr-7 text-xs font-mono outline-hidden cursor-pointer"
+                      className="appearance-none storyos-control h-8 px-3 pr-7 text-xs font-mono outline-hidden cursor-pointer"
                     >
                       <option value="Codex">Codex</option>
                       <option value="GitHub Dark">GitHub Dark</option>
@@ -320,7 +320,7 @@ export const SettingsView: React.FC = () => {
 
               {/* 2. 强调色 */}
               <div className="py-3 flex items-center justify-between">
-                <span className="text-white font-medium">强调色</span>
+                <span className="text-[var(--text-primary)] font-medium">强调色</span>
                 <div className="relative">
                   <select
                     value={accentColor}
@@ -328,7 +328,7 @@ export const SettingsView: React.FC = () => {
                       setAccentColor(e.target.value);
                       showToast(`强调色已设为: ${e.target.value}`);
                     }}
-                    className="appearance-none bg-[#202024] border border-[#2e2e33] hover:border-zinc-500 text-white rounded-lg px-3 py-1.5 pr-7 text-xs outline-hidden cursor-pointer"
+                    className="appearance-none storyos-control h-8 px-3 pr-7 text-xs outline-hidden cursor-pointer"
                   >
                     <option value="默认">默认</option>
                     <option value="纯白高亮">纯白高亮</option>
@@ -341,39 +341,39 @@ export const SettingsView: React.FC = () => {
 
               {/* 3. 背景颜色 */}
               <div className="py-3 flex items-center justify-between">
-                <span className="text-white font-medium">背景</span>
+                <span className="text-[var(--text-primary)] font-medium">背景</span>
                 <button
                   type="button"
-                  onClick={() => showToast('背景色已锁定: #181818')}
-                  className="px-3 py-1 rounded-lg bg-[#202024] border border-[#2e2e33] hover:border-zinc-400 text-white font-mono text-xs flex items-center gap-2 cursor-pointer"
+                  onClick={() => showToast('背景色已锁定: #0B0D10')}
+                  className="storyos-control h-8 px-3 font-mono text-xs flex items-center gap-2 cursor-pointer"
                 >
-                  <span className="w-2.5 h-2.5 rounded-full border border-zinc-500 bg-[#181818]" />
+                  <span className="w-2.5 h-2.5 rounded-full border border-[var(--border-strong)] bg-[var(--bg-app)]" />
                   <span>{bgColor}</span>
                 </button>
               </div>
 
               {/* 4. 前景颜色 */}
               <div className="py-3 flex items-center justify-between">
-                <span className="text-white font-medium">前景</span>
+                <span className="text-[var(--text-primary)] font-medium">前景</span>
                 <button
                   type="button"
-                  onClick={() => showToast('前景色已锁定: #FFFFFF')}
-                  className="px-3 py-1 rounded-lg bg-white text-black font-mono font-bold text-xs flex items-center gap-2 cursor-pointer shadow-xs hover:bg-zinc-200"
+                  onClick={() => showToast('前景色已锁定: #F1F3F5')}
+                  className="storyos-control h-8 px-3 font-mono font-semibold text-xs flex items-center gap-2 cursor-pointer"
                 >
-                  <span className="w-2.5 h-2.5 rounded-full border border-zinc-300 bg-white" />
+                  <span className="w-2.5 h-2.5 rounded-full border border-[var(--border-strong)] bg-[var(--text-primary)]" />
                   <span>{fgColor}</span>
                 </button>
               </div>
 
               {/* 5. UI 字体 */}
               <div className="py-3 flex items-center justify-between">
-                <span className="text-white font-medium">UI 字体</span>
+                <span className="text-[var(--text-primary)] font-medium">UI 字体</span>
                 <div className="flex items-center gap-2">
                   <div className="relative">
                     <select
                       value={uiFont}
                       onChange={(e) => setUiFont(e.target.value)}
-                      className="appearance-none bg-[#202024] border border-[#2e2e33] text-white rounded-lg px-3 py-1.5 pr-7 text-xs outline-hidden cursor-pointer"
+                      className="appearance-none storyos-control h-8 px-3 pr-7 text-xs outline-hidden cursor-pointer"
                     >
                       <option value="系统默认">系统默认</option>
                       <option value="Inter">Inter</option>
@@ -386,7 +386,7 @@ export const SettingsView: React.FC = () => {
                     <select
                       value={uiFontWeight}
                       onChange={(e) => setUiFontWeight(e.target.value)}
-                      className="appearance-none bg-[#202024] border border-[#2e2e33] text-white rounded-lg px-2.5 py-1.5 pr-6 text-xs outline-hidden cursor-pointer"
+                      className="appearance-none storyos-control h-8 px-2.5 pr-6 text-xs outline-hidden cursor-pointer"
                     >
                       <option value="常规">常规</option>
                       <option value="中粗">中粗</option>
@@ -399,13 +399,13 @@ export const SettingsView: React.FC = () => {
 
               {/* 6. 内容字体 */}
               <div className="py-3 flex items-center justify-between">
-                <span className="text-white font-medium">内容字体</span>
+                <span className="text-[var(--text-primary)] font-medium">内容字体</span>
                 <div className="flex items-center gap-2">
                   <div className="relative">
                     <select
                       value={contentFont}
                       onChange={(e) => setContentFont(e.target.value)}
-                      className="appearance-none bg-[#202024] border border-[#2e2e33] text-white rounded-lg px-3 py-1.5 pr-7 text-xs outline-hidden cursor-pointer"
+                      className="appearance-none storyos-control h-8 px-3 pr-7 text-xs outline-hidden cursor-pointer"
                     >
                       <option value="与界面字体相同">与界面字体相同</option>
                       <option value="等宽代码字体">等宽代码字体</option>
@@ -417,7 +417,7 @@ export const SettingsView: React.FC = () => {
                     <select
                       value={contentFontWeight}
                       onChange={(e) => setContentFontWeight(e.target.value)}
-                      className="appearance-none bg-[#202024] border border-[#2e2e33] text-white rounded-lg px-2.5 py-1.5 pr-6 text-xs outline-hidden cursor-pointer"
+                      className="appearance-none storyos-control h-8 px-2.5 pr-6 text-xs outline-hidden cursor-pointer"
                     >
                       <option value="常规">常规</option>
                       <option value="中粗">中粗</option>
@@ -429,7 +429,7 @@ export const SettingsView: React.FC = () => {
 
               {/* 7. 半透明侧边栏 */}
               <div className="py-3 flex items-center justify-between">
-                <span className="text-white font-medium">半透明侧边栏</span>
+                <span className="text-[var(--text-primary)] font-medium">半透明侧边栏</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -437,16 +437,16 @@ export const SettingsView: React.FC = () => {
                     showToast(translucentSidebar ? '已关闭半透明侧边栏' : '已启用半透明侧边栏');
                   }}
                   className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center cursor-pointer ${
-                    translucentSidebar ? 'bg-[#2563eb] justify-end' : 'bg-[#27272a] justify-start'
+                    translucentSidebar ? 'bg-[var(--primary)] justify-end' : 'bg-[var(--border-strong)] justify-start'
                   }`}
                 >
-                  <span className="w-5 h-5 rounded-full bg-white shadow-md" />
+                  <span className="w-5 h-5 rounded-full bg-[var(--text-primary)]" />
                 </button>
               </div>
 
               {/* 8. 对比度滑动条 */}
               <div className="py-3 last:pb-0 flex items-center justify-between gap-6">
-                <span className="text-white font-medium shrink-0">对比度</span>
+                <span className="text-[var(--text-primary)] font-medium shrink-0">对比度</span>
                 <div className="flex items-center gap-3 w-64">
                   <input
                     type="range"
@@ -454,9 +454,9 @@ export const SettingsView: React.FC = () => {
                     max="100"
                     value={contrastValue}
                     onChange={(e) => setContrastValue(Number(e.target.value))}
-                    className="w-full h-1.5 bg-[#27272a] rounded-lg appearance-none cursor-pointer accent-[#2563eb]"
+                    className="w-full h-1.5 bg-[var(--border-normal)] rounded-[var(--radius-sm)] appearance-none cursor-pointer accent-[var(--primary)]"
                   />
-                  <span className="text-zinc-300 font-mono text-xs w-6 text-right shrink-0">
+                  <span className="text-[var(--text-secondary)] font-mono text-xs w-6 text-right shrink-0">
                     {contrastValue}
                   </span>
                 </div>
@@ -489,7 +489,7 @@ export const SettingsView: React.FC = () => {
                     pointerCursor ? 'bg-[var(--primary)] justify-end' : 'bg-[var(--border-strong)] justify-start'
                   }`}
                 >
-                  <span className="w-5 h-5 rounded-full bg-white shadow-md" />
+                  <span className="w-5 h-5 rounded-full bg-[var(--text-primary)]" />
                 </button>
               </div>
 
@@ -515,7 +515,7 @@ export const SettingsView: React.FC = () => {
                         }}
                         className={`px-3 py-1 rounded-md text-xs transition-colors cursor-pointer ${
                           isActive
-                            ? 'bg-[#323238] text-[var(--text-primary)] font-medium'
+                            ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
                             : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
                         }`}
                       >
@@ -564,7 +564,7 @@ export const SettingsView: React.FC = () => {
                     }}
                     className={`px-3 py-1 rounded-md text-xs transition-colors cursor-pointer ${
                       diffMarker === 'color'
-                        ? 'bg-[#323238] text-[var(--text-primary)] font-medium'
+                        ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
                         : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
@@ -578,7 +578,7 @@ export const SettingsView: React.FC = () => {
                     }}
                     className={`px-3 py-1 rounded-md text-xs transition-colors cursor-pointer ${
                       diffMarker === 'sign'
-                        ? 'bg-[#323238] text-[var(--text-primary)] font-medium'
+                        ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
                         : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
