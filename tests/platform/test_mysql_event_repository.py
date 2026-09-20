@@ -52,7 +52,7 @@ def test_mysql_event_repository_save():
 
 def test_mysql_event_repository_get():
     connection = FakeConnection()
-    connection.one = {"event_id": "evt_test", "event_type": "TASK_STARTED"}
+    connection.one = {"EVENT_ID": "evt_test", "EVENT_TYPE": "TASK_STARTED"}
     repository = MySqlEventRepository(connection)
 
     row = repository.get("evt_test")

@@ -11,13 +11,21 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import episode_identity
+import runtime_workspace
 import storage_config
 
 from platform.repository.mysql.schema_v2 import DATABASE_NAME
+from platform.repository.mysql.payload_policy import (
+    document_reference,
+    payload_bytes,
+    payload_sha256,
+)
 
 
 META_TASK_TYPE = "RUNTIME_CHECKPOINT_META"
 STEP_TASK_TYPE = "RUNTIME_CHECKPOINT_STEP"
+RUNNER_EVENTS_REL = "meta/runtime/checkpoint-events"
+RUNNER_EVENTS_PROJECTION = "RUNTIME_CHECKPOINT_EVENTS_REF"
 
 
 def mode() -> str:
@@ -57,10 +65,34 @@ def _repositories():
     )
 
 
-def _meta_payload(data: dict) -> dict:
+def _runner_events_reference(ep: Path, events: list) -> dict:
+    """Persist lifecycle events as an immutable external document.
+
+    ``TB_TASK.PAYLOAD`` is a bounded query projection.  Runner events are
+    append-only evidence and are therefore stored in the Runtime Workspace;
+    the MySQL row keeps only a typed reference and content hashes.
+    """
+    digest = payload_sha256(events)
+    rel = f"{RUNNER_EVENTS_REL}/{digest}.json"
+    external = runtime_workspace.write_json(ep, rel, events)
+    reference = document_reference(events, rel, bytes_size=external.stat().st_size)
+    return {
+        "projection_type": RUNNER_EVENTS_PROJECTION,
+        "projection_version": 1,
+        "event_count": len(events),
+        "source_sha256": digest,
+        "source_bytes": payload_bytes(events),
+        "document": reference,
+    }
+
+
+def _meta_payload(ep: Path, data: dict) -> dict:
     result = deepcopy(data)
     result["_step_runs_present"] = "step_runs" in data
     result.pop("step_runs", None)
+    events = result.pop("runner_events", None)
+    if isinstance(events, list):
+        result["runner_events_ref"] = _runner_events_reference(ep, events)
     return result
 
 
@@ -92,7 +124,7 @@ def persist(ep: Path, data: dict) -> dict:
                 "end_time": None,
             })
             tasks.delete_run_projection(run_id)
-            meta = _meta_payload(data)
+            meta = _meta_payload(ep, data)
             tasks.upsert({
                 "task_id": _task_id(run_id, META_TASK_TYPE, 0, meta),
                 "episode_id": episode_id,
@@ -154,6 +186,21 @@ def _load_mysql(ep: Path) -> dict | None:
         if meta is None:
             return None
         step_runs_present = bool(meta.pop("_step_runs_present", False))
+        events_ref = meta.pop("runner_events_ref", None)
+        if isinstance(events_ref, dict):
+            document = events_ref.get("document")
+            if not isinstance(document, dict):
+                raise ValueError("runtime checkpoint runner_events document reference missing")
+            events = runtime_workspace.read_json(ep, document.get("rel"), default=None)
+            if not isinstance(events, list):
+                raise ValueError("runtime checkpoint runner_events document missing")
+            expected_sha = str(document.get("sha256") or events_ref.get("source_sha256") or "").lower()
+            actual_sha = payload_sha256(events)
+            if not expected_sha or actual_sha != expected_sha:
+                raise ValueError("runtime checkpoint runner_events sha256 mismatch")
+            if events_ref.get("event_count") is not None and int(events_ref["event_count"]) != len(events):
+                raise ValueError("runtime checkpoint runner_events event_count mismatch")
+            meta["runner_events"] = events
         rebuilt_steps = [row for _seq, row in sorted(steps, key=lambda x: x[0])][-200:]
         if step_runs_present or rebuilt_steps:
             meta["step_runs"] = rebuilt_steps

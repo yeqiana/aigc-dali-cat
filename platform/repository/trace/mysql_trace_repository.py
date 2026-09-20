@@ -35,6 +35,29 @@ _TRACE_PAGE_SQL = (
 )
 
 
+def _normalize_row(row: dict | None) -> dict | None:
+    """将 MySQL 驱动返回的列名统一为仓库约定的小写。"""
+    if row is None:
+        return None
+    normalized = {str(key).lower(): value for key, value in row.items()}
+    # TB_TRACE_SPAN 的数据库命名与 TraceContract 命名不同，读出时统一为契约字段。
+    aliases = {
+        "span_name": "operation",
+        "start_time": "started_at",
+        "end_time": "ended_at",
+        "elapsed_ms": "duration_ms",
+        "error_text": "error",
+    }
+    for source, target in aliases.items():
+        if source in normalized and target not in normalized:
+            normalized[target] = normalized[source]
+    return normalized
+
+
+def _normalize_rows(rows: list[dict]) -> list[dict]:
+    return [_normalize_row(row) or {} for row in rows]
+
+
 class MySqlTraceRepository:
     """Trace/Span 事实的 MySQL 持久化。
 
@@ -74,10 +97,10 @@ class MySqlTraceRepository:
         ))
 
     def get(self, trace_id: str, span_id: str) -> dict | None:
-        return self._conn().query_one(_TRACE_SELECT_SQL, (trace_id, span_id))
+        return _normalize_row(self._conn().query_one(_TRACE_SELECT_SQL, (trace_id, span_id)))
 
     def list_all(self) -> list[dict]:
-        return self._conn().query_all(_TRACE_LIST_SQL)
+        return _normalize_rows(self._conn().query_all(_TRACE_LIST_SQL))
 
     def iter_all(self, batch_size: int = 500):
         """按复合主键 keyset 分页流式读取（P9.27）。"""
@@ -86,14 +109,14 @@ class MySqlTraceRepository:
         last_trace = ""
         last_span = ""
         while True:
-            rows = self._conn().query_all(
+            rows = _normalize_rows(self._conn().query_all(
                 _TRACE_PAGE_SQL, (last_trace, last_span, batch_size)
-            )
+            ))
             if not rows:
                 return
             for row in rows:
                 yield row
-            last_trace = rows[-1].get("TRACE_ID") or rows[-1].get("trace_id")
-            last_span = rows[-1].get("SPAN_ID") or rows[-1].get("span_id")
+            last_trace = rows[-1].get("trace_id") or ""
+            last_span = rows[-1].get("span_id") or ""
             if len(rows) < batch_size:
                 return

@@ -54,11 +54,12 @@ def test_mysql_artifact_repository_save():
 
 def test_mysql_artifact_repository_get():
     connection = FakeConnection()
-    connection.one = {"artifact_id": "artifact_001"}
+    connection.one = {"ARTIFACT_ID": "artifact_001", "SHA256": "a" * 64}
     repository = MySqlArtifactRepository(connection)
 
     row = repository.get("artifact_001")
 
     assert row is not None
     assert row["artifact_id"] == "artifact_001"
+    assert row["sha256"] == "a" * 64
     assert connection.queried[-1][1] == ("artifact_001",)

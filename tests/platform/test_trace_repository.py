@@ -50,11 +50,22 @@ def test_mysql_trace_repository_save():
 
 def test_mysql_trace_repository_get():
     connection = FakeConnection()
-    connection.one = {"trace_id": "trace_001", "span_id": "span_001"}
+    connection.one = {
+        "TRACE_ID": "trace_001",
+        "SPAN_ID": "span_001",
+        "START_TIME": datetime(2026, 1, 1, 0, 0, 0),
+        "END_TIME": datetime(2026, 1, 1, 0, 0, 1),
+        "ELAPSED_MS": 1000,
+        "ERROR_TEXT": None,
+    }
     repository = MySqlTraceRepository(connection)
 
     row = repository.get("trace_001", "span_001")
 
     assert row is not None
     assert row["trace_id"] == "trace_001"
+    assert row["started_at"] == datetime(2026, 1, 1, 0, 0, 0)
+    assert row["ended_at"] == datetime(2026, 1, 1, 0, 0, 1)
+    assert row["duration_ms"] == 1000
+    assert row["error"] is None
     assert connection.queried[-1][1] == ("trace_001", "span_001")

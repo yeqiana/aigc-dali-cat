@@ -37,6 +37,17 @@ _EVENT_AGGREGATE_SQL = (
 )
 
 
+def _normalize_row(row: dict | None) -> dict | None:
+    """将 MySQL 驱动返回的列名统一为仓库约定的小写。"""
+    if row is None:
+        return None
+    return {str(key).lower(): value for key, value in row.items()}
+
+
+def _normalize_rows(rows: list[dict]) -> list[dict]:
+    return [_normalize_row(row) or {} for row in rows]
+
+
 class MySqlEventRepository:
     """Event 事实的 MySQL 持久化。
 
@@ -71,18 +82,18 @@ class MySqlEventRepository:
         ))
 
     def get(self, event_id: str) -> dict | None:
-        return self._conn().query_one(_EVENT_SELECT_SQL, (event_id,))
+        return _normalize_row(self._conn().query_one(_EVENT_SELECT_SQL, (event_id,)))
 
     def list_all(self) -> list[dict]:
-        return self._conn().query_all(_EVENT_LIST_SQL)
+        return _normalize_rows(self._conn().query_all(_EVENT_LIST_SQL))
 
     def list_by_aggregate(
         self, event_type: str, aggregate_type: str, aggregate_id: str
     ) -> list[dict]:
-        return self._conn().query_all(
+        return _normalize_rows(self._conn().query_all(
             _EVENT_AGGREGATE_SQL,
             (str(event_type), str(aggregate_type), str(aggregate_id)),
-        )
+        ))
 
     def iter_all(self, batch_size: int = 500):
         """按主键 keyset 分页流式读取（P9.27），避免一次性载入全表。"""
@@ -90,11 +101,11 @@ class MySqlEventRepository:
             raise ValueError("batch_size must be positive")
         last = ""
         while True:
-            rows = self._conn().query_all(_EVENT_PAGE_SQL, (last, batch_size))
+            rows = _normalize_rows(self._conn().query_all(_EVENT_PAGE_SQL, (last, batch_size)))
             if not rows:
                 return
             for row in rows:
                 yield row
-            last = rows[-1].get("EVENT_ID") or rows[-1].get("event_id")
+            last = rows[-1].get("event_id") or ""
             if len(rows) < batch_size:
                 return

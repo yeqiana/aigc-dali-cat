@@ -13,6 +13,7 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import runtime_checkpoint_persistence as persistence  # noqa: E402
+from platform.repository.mysql.payload_policy import MAX_INLINE_PAYLOAD_BYTES, payload_bytes  # noqa: E402
 
 
 class FakeConnection:
@@ -109,6 +110,40 @@ def test_mysql_projection_round_trips_checkpoint_without_file(monkeypatch, tmp_p
         persistence.META_TASK_TYPE,
         persistence.STEP_TASK_TYPE,
     }
+
+
+def test_runner_events_are_externalized_and_round_trip_with_sha(monkeypatch, tmp_path):
+    _runs, tasks = _wire(monkeypatch, "mysql")
+    monkeypatch.setenv("STORY_OS_RUNTIME_WORKSPACE", str(tmp_path / "runtime"))
+    data = _checkpoint()
+    data["runner_events"] = [
+        {"at": "2026-09-18T00:00:00+00:00", "event": "tick", "detail": "x" * 500}
+        for _ in range(100)
+    ]
+
+    persistence.persist(tmp_path, data)
+    meta = next(row for row in tasks.rows if row["task_type"] == persistence.META_TASK_TYPE)
+    payload = meta["payload"]
+
+    assert "runner_events" not in payload
+    assert payload["runner_events_ref"]["projection_type"] == persistence.RUNNER_EVENTS_PROJECTION
+    assert payload_bytes(payload) <= MAX_INLINE_PAYLOAD_BYTES
+    assert persistence.load(tmp_path)["runner_events"] == data["runner_events"]
+
+
+def test_runner_events_sha_mismatch_fails_closed(monkeypatch, tmp_path):
+    _runs, tasks = _wire(monkeypatch, "mysql")
+    monkeypatch.setenv("STORY_OS_RUNTIME_WORKSPACE", str(tmp_path / "runtime"))
+    data = _checkpoint()
+    data["runner_events"] = [{"event": "tick"}]
+    persistence.persist(tmp_path, data)
+    meta = next(row for row in tasks.rows if row["task_type"] == persistence.META_TASK_TYPE)
+    rel = meta["payload"]["runner_events_ref"]["document"]["rel"]
+    path = persistence.runtime_workspace.workspace_path(tmp_path, rel)
+    path.write_text('[{"event":"tampered"}]', encoding="utf-8")
+
+    with pytest.raises(ValueError, match="sha256 mismatch"):
+        persistence.load(tmp_path)
 
 
 def test_mysql_missing_is_authoritative_absence(monkeypatch, tmp_path):

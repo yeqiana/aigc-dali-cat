@@ -81,10 +81,10 @@ def resolve_known_path(rel: Path | str) -> Path:
 
 
 def read_summary(ep: Path | str, rel: Path | str, *, default: dict | None = None) -> dict:
-    """Read one metric summary from MySQL first, with legacy-file fallback.
+    """Read one metric summary from its configured authority.
 
-    The fallback is intentionally kept even in mysql mode during cutover so an
-    unmigrated legacy metric remains readable until the backfill reconciles it.
+    ``dual`` keeps the compatibility-file fallback. ``mysql`` is fail-closed:
+    a MySQL failure or missing row never resurrects a local JSON projection.
     """
     import story_json
     import storage_config
@@ -92,14 +92,18 @@ def read_summary(ep: Path | str, rel: Path | str, *, default: dict | None = None
     episode = Path(ep).resolve()
     known = resolve_known_path(rel)
     kind = kind_for_path(known)
-    if storage_config.episode_meta_store_config()["mode"] in {"dual", "mysql"}:
+    mode = storage_config.episode_meta_store_config()["mode"]
+    if mode in {"dual", "mysql"}:
         try:
             import metric_snapshot_persistence
             loaded = metric_snapshot_persistence.load_latest(episode, kind)
             if isinstance(loaded, dict):
                 return loaded
         except Exception:
-            pass
+            if mode == "mysql":
+                raise
+        if mode == "mysql":
+            return dict(default or {})
     target = episode / known
     if target.is_file():
         data = story_json.read_json(target, require_object=False)
@@ -110,10 +114,11 @@ def read_summary(ep: Path | str, rel: Path | str, *, default: dict | None = None
 
 def write_summary(ep: Path | str, rel: Path | str, *, kind: str,
                   payload: dict, schema_version: int = 1) -> Path:
-    """Persist one registered summary, using MySQL as authority in mysql mode.
+    """Persist one registered summary using its configured authority.
 
-    If a MySQL write fails, telemetry remains fail-soft by writing the legacy
-    file as a recovery copy instead of silently discarding the observation.
+    ``dual`` remains fail-soft for migration. ``mysql`` propagates persistence
+    failures and never creates a local JSON shadow that could become a false
+    authority.
     """
     import story_json
     import storage_config
@@ -128,6 +133,8 @@ def write_summary(ep: Path | str, rel: Path | str, *, kind: str,
             metric_snapshot_persistence.save(Path(ep).resolve(), kind, data)
             db_saved = True
         except Exception:
+            if mode == "mysql":
+                raise
             db_saved = False
     if mode != "mysql" or not db_saved:
         target.parent.mkdir(parents=True, exist_ok=True)
