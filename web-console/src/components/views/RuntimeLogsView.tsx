@@ -66,17 +66,17 @@ export const RuntimeLogsView: React.FC = () => {
         </div>
       </div>
 
-      {/* 终端日志容器：工程日志保持深色代码面，外围工作台仍遵守浅色系统。 */}
-      <div className="bg-[var(--text-primary)] rounded-[var(--radius-lg)] border border-[var(--border-strong)] text-slate-200 font-mono text-xs overflow-hidden shadow-[var(--shadow-sm)]">
+      {/* 终端日志容器：与 StoryOS Neutral Dark 工作区统一，保留代码面语义。 */}
+      <div className="bg-[var(--bg-app)] rounded-[var(--radius-md)] border border-[var(--border-normal)] text-[var(--text-secondary)] font-mono text-xs overflow-hidden">
         {/* Terminal 顶栏 */}
-        <div className="p-3 bg-slate-950/35 border-b border-white/10 flex items-center justify-between">
+        <div className="p-3 bg-[var(--bg-workspace)] border-b border-[var(--border-subtle)] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-600" />
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-600" />
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-600" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[var(--text-disabled)]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[var(--text-disabled)]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[var(--text-disabled)]" />
             </div>
-            <span className="text-[11px] text-slate-400 ml-2">stdout / storyos_pipeline.log</span>
+            <span className="text-[11px] text-[var(--text-tertiary)] ml-2">stdout / storyos_pipeline.log</span>
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -87,8 +87,8 @@ export const RuntimeLogsView: React.FC = () => {
                 onClick={() => setFilterLevel(lvl)}
                 className={`px-2 py-1 rounded-[var(--radius-sm)] text-[10px] transition-colors cursor-pointer font-semibold border ${
                   filterLevel === lvl
-                    ? 'bg-white text-slate-950 border-white'
-                    : 'bg-white/5 text-slate-400 hover:text-white border-white/10 hover:bg-white/10'
+                    ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] border-[var(--border-strong)]'
+                    : 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] border-[var(--border-subtle)] hover:bg-[var(--bg-hover)]'
                 }`}
               >
                 {lvl}
@@ -100,27 +100,27 @@ export const RuntimeLogsView: React.FC = () => {
         {/* 日志流水 */}
         <div className="p-4 space-y-2 max-h-[500px] overflow-y-auto font-mono scrollbar-thin">
           {filteredLogs.length === 0 ? (
-            <div className="py-8 text-center text-slate-500 text-xs">暂无审计日志</div>
+            <div className="py-8 text-center text-[var(--text-tertiary)] text-xs">暂无审计日志</div>
           ) : (
             filteredLogs.map((log, idx) => (
-              <div key={idx} className="flex items-start gap-3 py-1.5 border-b border-white/5 text-xs">
-                <span className="text-slate-500 text-[11px] shrink-0">{log.time}</span>
+              <div key={idx} className="flex items-start gap-3 py-1.5 border-b border-[var(--border-subtle)] text-xs">
+                <span className="text-[var(--text-tertiary)] text-[11px] shrink-0">{log.time}</span>
                 <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold shrink-0 ${
                   log.level === 'SUCCESS'
-                    ? 'bg-emerald-400/15 text-emerald-300 border border-emerald-400/20'
+                    ? 'bg-[var(--success-soft)] text-[var(--success)] border border-[var(--success)]/25'
                     : log.level === 'WARN'
-                    ? 'bg-amber-400/15 text-amber-300 border border-amber-400/20'
-                    : 'bg-white/5 text-slate-300 border border-white/10'
+                    ? 'bg-[var(--warning-soft)] text-[var(--warning)] border border-[var(--warning)]/25'
+                    : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border-subtle)]'
                 }`}>
                   {log.level}
                 </span>
-                <span className="text-slate-100 shrink-0 font-semibold">[{log.module}]</span>
-                <span className="text-slate-300 leading-relaxed select-text">{log.message}</span>
+                <span className="text-[var(--text-primary)] shrink-0 font-semibold">[{log.module}]</span>
+                <span className="text-[var(--text-secondary)] leading-relaxed select-text">{log.message}</span>
               </div>
             ))
           )}
 
-          <div className="pt-3 text-slate-500 text-[11px] flex items-center gap-2 animate-pulse">
+          <div className="pt-3 text-[var(--text-tertiary)] text-[11px] flex items-center gap-2">
             <span>&gt; StoryOS 引擎待命中: gpt-image-2 (high), 4:5 1080×1350, 5-frame batch, concurrency 3...</span>
           </div>
         </div>

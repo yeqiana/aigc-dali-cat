@@ -986,7 +986,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
         {/* 3. 右侧 Frame 详情抽屉 (Right Drawer) —— UI Baseline v1: 宽度 440px/480px, bg var(--bg-surface) */}
         {/* ========================================================================= */}
         {selectedFrame && (
-          <div className="w-[440px] xl:w-[480px] shrink-0 border-l border-[var(--border-subtle)] bg-[var(--bg-surface)] flex flex-col h-full overflow-y-auto animate-in slide-in-from-right duration-200">
+          <div className="absolute inset-y-0 right-0 z-20 w-[min(440px,90vw)] xl:w-[480px] max-w-[640px] border-l border-[var(--border-subtle)] bg-[var(--bg-surface)] flex flex-col h-full overflow-y-auto animate-in slide-in-from-right duration-200">
             {/* 抽屉头部 */}
             <div className="h-[48px] px-4 border-b border-[var(--border-subtle)] flex items-center justify-between bg-[var(--bg-workspace)] shrink-0">
               <div className="flex items-center gap-2">
@@ -1010,6 +1010,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedFrame(null)}
+                aria-label="关闭 Frame Inspector"
                 className="p-1 hover:text-[var(--text-primary)] rounded-[4px] hover:bg-[var(--bg-muted)] cursor-pointer text-[var(--text-tertiary)]"
               >
                 <X className="w-4 h-4" />
@@ -1278,7 +1279,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setConfirmAction({ type: 'REGENERATE', frame: selectedFrame })}
-                    className="h-[32px] rounded-[4px] bg-[var(--primary)] text-white font-medium hover:bg-[var(--primary)]/90 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                    className="h-[32px] rounded-[4px] bg-[var(--primary)] text-white font-medium hover:bg-[var(--primary)]/90 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
                     <span>重新生成</span>
@@ -1307,7 +1308,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                       setActiveTab('logs');
                       setLogSearch(selectedFrame.frameCode);
                     }}
-                    className="h-[32px] rounded-[4px] bg-[var(--primary)] text-white font-medium hover:bg-[var(--primary)]/90 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                    className="h-[32px] rounded-[4px] bg-[var(--primary)] text-white font-medium hover:bg-[var(--primary)]/90 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <Terminal className="w-3.5 h-3.5" />
                     <span>查看运行日志</span>
@@ -1330,7 +1331,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                   <button
                     type="button"
                     onClick={() => handleImmediateRetry(selectedFrame)}
-                    className="h-[32px] rounded-[4px] bg-[var(--warning)] text-black font-semibold hover:bg-[var(--warning)]/90 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                    className="h-[32px] rounded-[4px] bg-[var(--warning)] text-black font-semibold hover:bg-[var(--warning)]/90 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>立即重试</span>
@@ -1393,7 +1394,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                   <button
                     type="button"
                     onClick={() => handleImmediateRetry(selectedFrame)}
-                    className="h-[32px] rounded-[4px] bg-[var(--primary)] text-white font-medium hover:bg-[var(--primary)]/90 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                    className="h-[32px] rounded-[4px] bg-[var(--primary)] text-white font-medium hover:bg-[var(--primary)]/90 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <Play className="w-3.5 h-3.5" />
                     <span>提前优先执行</span>
@@ -1414,7 +1415,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                 <button
                   type="button"
                   onClick={() => handleImmediateRetry(selectedFrame)}
-                  className="w-full h-[32px] rounded-[4px] bg-[var(--primary)] text-white font-medium hover:bg-[var(--primary)]/90 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                  className="w-full h-[32px] rounded-[4px] bg-[var(--primary)] text-white font-medium hover:bg-[var(--primary)]/90 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <Play className="w-3.5 h-3.5" />
                   <span>立即触发此帧渲染</span>
@@ -1480,6 +1481,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
             <button
               type="button"
               onClick={() => setImageModalUrl(null)}
+              aria-label="关闭原图预览"
               className="absolute -top-10 right-0 p-1.5 rounded-[4px] bg-[var(--bg-subtle)] border border-[var(--border-normal)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] text-[var(--text-secondary)] cursor-pointer transition-colors"
             >
               <X className="w-4 h-4" />

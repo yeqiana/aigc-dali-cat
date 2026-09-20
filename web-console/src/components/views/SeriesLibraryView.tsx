@@ -54,7 +54,7 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
           <button
             type="button"
             onClick={onNewStoryClick}
-            className="h-9 flex items-center gap-1.5 px-3.5 rounded-[var(--radius-md)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs font-semibold shadow-[var(--shadow-xs)] transition-colors cursor-pointer"
+            className="h-9 flex items-center gap-1.5 px-3.5 rounded-[var(--radius-md)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs font-semibold transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 text-white stroke-[2.5]" />
             <span>新建故事项目</span>
@@ -110,9 +110,9 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
           return (
             <div
               key={ep.id}
-              className={`rounded-[var(--radius-lg)] border bg-[var(--bg-surface)] overflow-hidden shadow-[var(--shadow-xs)] transition-all flex flex-col justify-between cursor-pointer ${
+              className={`rounded-[var(--radius-lg)] border bg-[var(--bg-surface)] overflow-hidden transition-colors flex flex-col justify-between cursor-pointer ${
                 isActive
-                  ? 'border-[var(--primary)] ring-2 ring-[rgba(22,119,255,.10)] shadow-[var(--shadow-sm)]'
+                  ? 'border-[var(--primary)] bg-[var(--bg-selected)]'
                   : 'border-[var(--border-normal)] hover:border-[var(--border-strong)]'
               }`}
               onClick={() => {
@@ -131,7 +131,7 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
                   <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black/90 text-white border border-[#333338] backdrop-blur-xs">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black/90 text-white border border-[var(--border-strong)]">
                       {ep.code}
                     </span>
                     {isActive && (
@@ -142,7 +142,7 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
                   </div>
 
                   <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black/90 text-zinc-200 border border-[#333338] backdrop-blur-xs">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black/90 text-white border border-[var(--border-strong)]">
                       {ep.currentStage}
                     </span>
                   </div>

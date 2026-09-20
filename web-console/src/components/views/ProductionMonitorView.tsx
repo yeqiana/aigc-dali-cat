@@ -313,10 +313,10 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       </div>
 
       {/* ======================= 2. Toolbar (高度 44–48px，控件 32px，radius 4px) ======================= */}
-      <div className="h-[44px] px-3 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[6px] flex items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2 flex-1 min-w-[280px]">
+      <div className="min-h-[44px] px-3 py-1.5 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[6px] flex flex-col xl:flex-row xl:items-center justify-between gap-2 text-xs">
+        <div className="flex items-center gap-2 flex-1 min-w-0 w-full xl:w-auto overflow-x-auto">
           {/* 搜索输入框 */}
-          <div className="relative flex-1 min-w-[180px] max-w-xs">
+          <div className="relative flex-1 min-w-[160px] max-w-xs">
             <Search className="w-3.5 h-3.5 text-[var(--text-tertiary)] absolute left-2.5 top-2.5 pointer-events-none" />
             <input
               type="text"
@@ -378,7 +378,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         </div>
 
         {/* 查询与重置按钮 */}
-        <div className="flex items-center gap-2 font-mono">
+        <div className="flex items-center gap-2 font-mono shrink-0 self-end xl:self-auto">
           <button
             type="button"
             onClick={handleResetFilter}
