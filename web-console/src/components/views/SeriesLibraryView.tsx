@@ -78,12 +78,13 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
         <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto scrollbar-none">
           {[
             { id: 'ALL', label: '全部阶段' },
-            { id: 'IDEA_LOCK', label: '创意锁定' },
-            { id: 'STORYBOARD_LOCK', label: '分镜锁定' },
-            { id: 'VISUAL_CALIBRATE', label: '视觉校准' },
-            { id: 'PROD_APPROVED', label: '生产通过' },
-            { id: 'READY_TO_PUBLISH', label: '待发布' },
-            { id: 'PUBLISHED', label: '已发布' }
+            { id: 'IDEA_LOCKED', label: '创意锁定' },
+            { id: 'STORYBOARD_LOCKED', label: '分镜锁定' },
+            { id: 'VISUAL_CALIBRATED', label: '视觉校准' },
+            { id: 'PRODUCTION_PASSED', label: '生产通过' },
+            { id: 'PUBLISH_READY', label: '待发布' },
+            { id: 'PUBLISHED', label: '已发布' },
+            { id: 'DATA_REVIEWED', label: '数据复盘' }
           ].map((item) => (
             <button
               key={item.id}

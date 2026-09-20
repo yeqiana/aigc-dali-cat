@@ -3,15 +3,18 @@ import { runtimeApi } from '../api/runtime';
 import { RuntimeMonitor } from '../components/RuntimeMonitor';
 import RuntimeTimeline from '../components/RuntimeTimeline';
 import TraceGraph from '../components/TraceGraph';
+import type { RuntimeExecutionState, RuntimeTraceState } from '../types/monitoring';
 
 export default function RuntimeVisualization() {
-  const [runtime, setRuntime] = useState<any>();
-  const [trace, setTrace] = useState<any>();
-  const [executionId, setExecutionId] = useState('demo-execution');
+  const [runtime, setRuntime] = useState<RuntimeExecutionState>();
+  const [trace, setTrace] = useState<RuntimeTraceState>();
+  const [executionId, setExecutionId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function load(id: string) {
     setLoading(true);
+    setError(null);
     try {
       const [nextRuntime, nextTrace] = await Promise.all([
         runtimeApi.getExecutionRuntime(id),
@@ -19,6 +22,10 @@ export default function RuntimeVisualization() {
       ]);
       setRuntime(nextRuntime);
       setTrace(nextTrace);
+    } catch (cause) {
+      setRuntime(undefined);
+      setTrace(undefined);
+      setError(cause instanceof Error ? cause.message : 'Runtime 查询失败');
     } finally {
       setLoading(false);
     }
@@ -29,6 +36,7 @@ export default function RuntimeVisualization() {
       <div className="max-w-6xl mx-auto space-y-4">
         <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between pb-3 border-b border-[var(--border-subtle)]">
           <div>
+            <div className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Platform / Runtime</div>
             <h2 className="text-[20px] leading-7 font-semibold text-[var(--text-primary)]">Runtime</h2>
             <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">
               Execution → Timeline → Trace，工程细节按需展开。
@@ -46,6 +54,7 @@ export default function RuntimeVisualization() {
               onChange={(event) => setExecutionId(event.target.value)}
               className="storyos-control h-8 w-56 px-2.5 font-mono text-[11px] outline-none focus:border-[var(--focus)]"
               aria-label="Execution ID"
+              placeholder="execution id"
             />
             <button
               type="submit"
@@ -56,6 +65,12 @@ export default function RuntimeVisualization() {
             </button>
           </form>
         </header>
+
+        {error && (
+          <div className="storyos-surface px-3 py-2 text-xs text-[var(--danger)] border-[var(--danger)]">
+            {error}
+          </div>
+        )}
 
         <RuntimeMonitor
           state={

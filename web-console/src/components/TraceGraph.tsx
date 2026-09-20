@@ -1,9 +1,6 @@
-type TraceNode = {
-  id: string;
-  type: string;
-};
+import type { RuntimeTraceNode } from '../types/monitoring';
 
-export default function TraceGraph({ nodes = [] }: { nodes?: TraceNode[] }) {
+export default function TraceGraph({ nodes = [] }: { nodes?: RuntimeTraceNode[] }) {
   return (
     <section className="storyos-surface overflow-hidden">
       <header className="h-9 px-3 border-b border-[var(--border-subtle)] flex items-center justify-between">

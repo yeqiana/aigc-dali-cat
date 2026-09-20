@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Agents from './pages/Agents';
 import Dashboard from './pages/Dashboard';
 import Memory from './pages/Memory';
+import ExecutionExplorer from './pages/ExecutionExplorer';
+import TraceExplorer from './pages/TraceExplorer';
+import PluginConsole from './pages/PluginConsole';
+import RuntimeVisualization from './pages/RuntimeVisualization';
+import ProjectConsole from './pages/ProjectConsole';
 import { Sidebar } from './components/Sidebar';
 import { HeaderBar } from './components/HeaderBar';
 import { StatusFlowBanner } from './components/StatusFlowBanner';
@@ -17,7 +22,7 @@ import { RuntimeLogsView } from './components/views/RuntimeLogsView';
 import { SettingsView } from './components/views/SettingsView';
 
 import { MOCK_EPISODES } from './mockData';
-import { Episode, NavigationTab, ProductionStage, BatchItem } from './types';
+import { Episode, NavigationTab, BatchItem } from './types';
 import { Search, X, CheckCircle2, AlertCircle, Bell, Clock } from 'lucide-react';
 
 // Keep the platform-backed pages reachable while the dense production console
@@ -27,15 +32,26 @@ const BACKEND_ROUTE_CONTRACT = [
   // path="/" element={<Dashboard />}
   // path="/agents" element={<Agents />}
   // path="/memory" element={<Memory />}
-  { path: '/', element: <Dashboard /> },
+  { path: '/platform', element: <Dashboard /> },
   { path: '/agents', element: <Agents /> },
   { path: '/memory', element: <Memory /> },
+  { path: '/projects', element: <ProjectConsole /> },
+  { path: '/executions', element: <ExecutionExplorer /> },
+  { path: '/traces', element: <TraceExplorer /> },
+  { path: '/plugins', element: <PluginConsole /> },
+  { path: '/runtime', element: <RuntimeVisualization /> },
 ] as const;
 
 function renderBackendRoute(): React.ReactNode | null {
   const pathname = window.location.pathname;
+  if (pathname === '/platform') return <Dashboard />;
   if (pathname === '/agents') return <Agents />;
   if (pathname === '/memory') return <Memory />;
+  if (pathname === '/projects') return <ProjectConsole />;
+  if (pathname === '/executions') return <ExecutionExplorer />;
+  if (pathname === '/traces') return <TraceExplorer />;
+  if (pathname === '/plugins') return <PluginConsole />;
+  if (pathname === '/runtime') return <RuntimeVisualization />;
   return null;
 }
 
@@ -80,19 +96,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // 阶段真实流转切换
-  const handleStageChange = (newStage: ProductionStage) => {
-    const updated: Episode = {
-      ...activeEpisode,
-      currentStage: newStage,
-      updatedAt: '刚刚',
-    };
-    setActiveEpisode(updated);
-    setEpisodes(prev => prev.map(ep => ep.id === updated.id ? updated : ep));
-    showToast(`阶段已真实切换为: ${newStage}`);
-  };
-
-  // 真实批次出图调度（动态累加出图帧数）
+  // 前端演示批次调度；正式生产阶段只由 StoryOS canonical state transition 推进。
   const handleQuickGenerateNextBatch = () => {
     setIsGeneratingBatch(true);
     setTimeout(() => {
@@ -117,7 +121,7 @@ export default function App() {
         ...activeEpisode,
         completedFrames: nextCompleted,
         stageProgressPercent: nextPercent,
-        currentStage: nextCompleted >= activeEpisode.totalFrames ? 'READY_TO_PUBLISH' : 'PROD_APPROVED',
+        currentStage: nextCompleted >= activeEpisode.totalFrames ? 'PUBLISH_READY' : 'PRODUCTION_PASSED',
         currentBatch: {
           batchId: 'BATCH_05',
           batchName: '第 5 批次 (Frame #21 - #25)',
@@ -129,7 +133,7 @@ export default function App() {
 
       setActiveEpisode(updated);
       setEpisodes(prev => prev.map(ep => ep.id === updated.id ? updated : ep));
-      showToast(`第 5 批次 5 帧 (4:5 1080×1350) 已成功生成并入库 (${nextCompleted}/${activeEpisode.totalFrames} 帧)`);
+      showToast(`示例批次已更新 (${nextCompleted}/${activeEpisode.totalFrames} 帧)，未写入生产 Authority`);
     }, 1200);
   };
 
@@ -145,17 +149,17 @@ export default function App() {
         title: commandText.length > 14 ? commandText.slice(0, 14) + '...' : commandText,
         synopsis: commandText,
         logline: commandText,
-        completedFrames: 5,
+        completedFrames: 0,
         totalFrames: 32,
-        currentStage: 'PROD_APPROVED',
-        stageProgressPercent: 16,
+        currentStage: 'IDEA_LOCKED',
+        stageProgressPercent: 0,
         updatedAt: '刚刚',
       };
 
       setEpisodes(prev => [newEp, ...prev]);
       setActiveEpisode(newEp);
       setCurrentTab('workbench');
-      showToast(`已创建并切换至全新生产剧目: ${newEp.code}`);
+      showToast(`已创建前端示例剧目: ${newEp.code}；未写入生产 Authority`);
     }
   };
 
@@ -263,7 +267,6 @@ export default function App() {
               <section aria-label="Operator Console" className="min-w-0">
                 <StatusFlowBanner
                   currentStage={activeEpisode.currentStage}
-                  onStageChange={handleStageChange}
                   completedFrames={activeEpisode.completedFrames}
                   totalFrames={activeEpisode.totalFrames}
                 />

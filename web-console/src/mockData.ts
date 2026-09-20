@@ -9,7 +9,7 @@ export const INSPIRATION_PROMPTS = [
 // 7 大正式机器阶段（严格互斥，只展示正式阶段）
 export const PRODUCTION_STAGES: StageStep[] = [
   {
-    id: 'IDEA_LOCK',
+    id: 'IDEA_LOCKED',
     label: '创意锁定',
     agent: 'NarrativeAgent',
     description: '核心戏剧冲突与高概念锚定',
@@ -18,7 +18,7 @@ export const PRODUCTION_STAGES: StageStep[] = [
     source: '示例数据',
   },
   {
-    id: 'STORYBOARD_LOCK',
+    id: 'STORYBOARD_LOCKED',
     label: '分镜锁定',
     agent: 'DirectorLLM',
     description: '32 镜景别轴线与情绪节拍冻结',
@@ -27,7 +27,7 @@ export const PRODUCTION_STAGES: StageStep[] = [
     source: '示例数据',
   },
   {
-    id: 'VISUAL_CALIBRATE',
+    id: 'VISUAL_CALIBRATED',
     label: '视觉校准',
     agent: 'VisualLockModule',
     description: '主角面容与主场景光影基准锁定',
@@ -36,7 +36,7 @@ export const PRODUCTION_STAGES: StageStep[] = [
     source: '示例数据',
   },
   {
-    id: 'PROD_APPROVED',
+    id: 'PRODUCTION_PASSED',
     label: '生产通过',
     agent: 'QualityAudit-Gate',
     description: '32 帧全量渲染完毕并通过逐帧质检',
@@ -46,7 +46,7 @@ export const PRODUCTION_STAGES: StageStep[] = [
     subProgressLabel: '运行中: 24/32 帧',
   },
   {
-    id: 'READY_TO_PUBLISH',
+    id: 'PUBLISH_READY',
     label: '待发布',
     agent: 'PreflightGuard',
     description: '4:5 1080×1350 规格合规检查',
@@ -64,7 +64,7 @@ export const PRODUCTION_STAGES: StageStep[] = [
     source: '示例数据',
   },
   {
-    id: 'POST_MORTEM',
+    id: 'DATA_REVIEWED',
     label: '数据复盘',
     agent: 'AudiencePulse',
     description: '读者完播与流失归因分析',
@@ -86,7 +86,7 @@ export const MOCK_EPISODES: Episode[] = [
     targetAudience: '图文短剧读者',
     totalFrames: 32,
     completedFrames: 24,
-    currentStage: 'PROD_APPROVED',
+    currentStage: 'PRODUCTION_PASSED',
     stageProgressPercent: 75,
     coverImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
     updatedAt: '刚刚',
@@ -343,7 +343,7 @@ export const MOCK_EPISODES: Episode[] = [
     targetAudience: '图文短剧读者',
     totalFrames: 32,
     completedFrames: 32,
-    currentStage: 'READY_TO_PUBLISH',
+    currentStage: 'PUBLISH_READY',
     stageProgressPercent: 100,
     coverImage: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80',
     updatedAt: '2小时前',
@@ -420,7 +420,7 @@ export const MOCK_EPISODES: Episode[] = [
     targetAudience: '制作团队',
     totalFrames: 16,
     completedFrames: 14,
-    currentStage: 'VISUAL_CALIBRATE',
+    currentStage: 'VISUAL_CALIBRATED',
     stageProgressPercent: 88,
     coverImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80',
     updatedAt: '昨天',
@@ -472,7 +472,7 @@ export const MOCK_EPISODES: Episode[] = [
     targetAudience: '图文短剧读者',
     totalFrames: 28,
     completedFrames: 0,
-    currentStage: 'IDEA_LOCK',
+    currentStage: 'IDEA_LOCKED',
     stageProgressPercent: 5,
     coverImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
     updatedAt: '3天前',
@@ -512,7 +512,7 @@ export const MOCK_EPISODES: Episode[] = [
     targetAudience: '短剧与悬疑漫改读者',
     totalFrames: 30,
     completedFrames: 8,
-    currentStage: 'STORYBOARD_LOCK',
+    currentStage: 'STORYBOARD_LOCKED',
     stageProgressPercent: 28,
     coverImage: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=800&q=80',
     updatedAt: '4天前',

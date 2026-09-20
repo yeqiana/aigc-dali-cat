@@ -1,11 +1,11 @@
 export type ProductionStage =
-  | 'IDEA_LOCK'        // 创意锁定
-  | 'STORYBOARD_LOCK'  // 分镜锁定
-  | 'VISUAL_CALIBRATE' // 视觉校准
-  | 'PROD_APPROVED'    // 生产通过
-  | 'READY_TO_PUBLISH' // 待发布
+  | 'IDEA_LOCKED'        // 创意锁定
+  | 'STORYBOARD_LOCKED'  // 分镜锁定
+  | 'VISUAL_CALIBRATED'  // 视觉校准
+  | 'PRODUCTION_PASSED'  // 生产通过
+  | 'PUBLISH_READY'      // 待发布
   | 'PUBLISHED'        // 已发布
-  | 'POST_MORTEM';     // 数据复盘
+  | 'DATA_REVIEWED';   // 数据复盘
 
 // 生产执行进度子状态（包含在“生产通过”前的运行进度面板中，不作为正式阶段）
 export type ProductionSubStage =

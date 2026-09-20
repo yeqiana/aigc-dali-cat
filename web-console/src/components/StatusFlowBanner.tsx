@@ -4,24 +4,22 @@ import { ProductionStage } from '../types';
 
 interface StatusFlowBannerProps {
   currentStage: ProductionStage;
-  onStageChange?: (stage: ProductionStage) => void;
   completedFrames?: number;
   totalFrames?: number;
 }
 
 const FORMAL_STAGES: { id: ProductionStage; label: string; desc: string }[] = [
-  { id: 'IDEA_LOCK', label: '创意锁定', desc: '剧本核心冲突与高概念锚定' },
-  { id: 'STORYBOARD_LOCK', label: '分镜锁定', desc: '景别轴线与情绪节拍冻结' },
-  { id: 'VISUAL_CALIBRATE', label: '视觉校准', desc: '主角面容与光影基准锁定' },
-  { id: 'PROD_APPROVED', label: '生产通过', desc: '逐帧批次出图与严格质检' },
-  { id: 'READY_TO_PUBLISH', label: '待发布', desc: '4:5 1080×1350 规格终审放行' },
+  { id: 'IDEA_LOCKED', label: '创意锁定', desc: '剧本核心冲突与高概念锚定' },
+  { id: 'STORYBOARD_LOCKED', label: '分镜锁定', desc: '景别轴线与情绪节拍冻结' },
+  { id: 'VISUAL_CALIBRATED', label: '视觉校准', desc: '主角面容与光影基准锁定' },
+  { id: 'PRODUCTION_PASSED', label: '生产通过', desc: '逐帧批次出图与严格质检' },
+  { id: 'PUBLISH_READY', label: '待发布', desc: '4:5 1080×1350 规格终审放行' },
   { id: 'PUBLISHED', label: '已发布', desc: '全渠道矩阵打包上线' },
-  { id: 'POST_MORTEM', label: '数据复盘', desc: '完播率与留存归因分析' },
+  { id: 'DATA_REVIEWED', label: '数据复盘', desc: '完播率与留存归因分析' },
 ];
 
 export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({
   currentStage,
-  onStageChange,
   completedFrames = 24,
   totalFrames = 32,
 }) => {
@@ -43,14 +41,14 @@ export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({
               <React.Fragment key={s.id}>
                 <button
                   type="button"
-                  onClick={() => onStageChange && onStageChange(s.id)}
-                  title={`${s.label}: ${s.desc} (点击切换阶段)`}
-                  className={`flex items-center gap-1.5 px-2 py-1 rounded-[var(--radius-sm)] transition-colors cursor-pointer ${
+                  disabled
+                  title={`${s.label}: ${s.desc} · 阶段只读`}
+                  className={`flex items-center gap-1.5 px-2 py-1 rounded-[var(--radius-sm)] ${
                     isCurrent
                       ? 'bg-[var(--primary-soft)] text-[var(--primary-hover)] border border-[var(--border-normal)] font-semibold'
                       : isCompleted
-                      ? 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] border border-[var(--border-subtle)]'
-                      : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]'
+                      ? 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border-subtle)]'
+                      : 'text-[var(--text-tertiary)]'
                   }`}
                 >
                   {isCompleted ? (
@@ -61,7 +59,7 @@ export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-subtle)] shrink-0" />
                   )}
                   <span className="tracking-tight">{s.label}</span>
-                  {s.id === 'PROD_APPROVED' && (
+                  {s.id === 'PRODUCTION_PASSED' && (
                     <span className={`text-[10px] ml-0.5 font-mono ${isCurrent ? 'text-[var(--primary)]' : 'text-[var(--text-tertiary)]'}`}>
                       ({completedFrames}/{totalFrames})
                     </span>
@@ -99,7 +97,7 @@ export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({
             <span className="text-[var(--text-tertiary)]">• 目标: {activeStageInfo.desc}</span>
             <span className="text-[var(--text-secondary)]">• 生产进度: {completedFrames}/{totalFrames} 帧 ({Math.round((completedFrames/totalFrames)*100)}%)</span>
           </div>
-          <span className="text-[var(--text-tertiary)] shrink-0">点击上方各阶段可直接推进或回溯</span>
+          <span className="text-[var(--text-tertiary)] shrink-0">阶段只读映射，推进由 StoryOS canonical state transition 执行</span>
         </div>
       )}
     </div>

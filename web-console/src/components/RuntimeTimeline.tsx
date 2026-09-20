@@ -1,9 +1,5 @@
 import { AlertCircle, CheckCircle2, Circle, LoaderCircle, RotateCw } from 'lucide-react';
-
-type RuntimeStep = {
-  name: string;
-  status: string;
-};
+import type { RuntimeStep } from '../types/monitoring';
 
 function runtimeStepMeta(status: string) {
   const normalized = status.toUpperCase();
