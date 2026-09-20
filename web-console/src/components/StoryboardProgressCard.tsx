@@ -36,38 +36,38 @@ export const StoryboardProgressCard: React.FC<StoryboardProgressCardProps> = ({
     : beats.filter(b => b.act === selectedAct);
 
   return (
-    <div id="storyboard-progress-card" className="bg-white rounded-xl border border-zinc-200 p-4 shadow-xs">
+    <div id="storyboard-progress-card" className="storyos-surface p-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-zinc-100 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-[var(--border-subtle)] gap-2">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-md bg-zinc-900 text-amber-400">
+          <div className="p-1.5 rounded-[var(--radius-sm)] bg-[var(--primary-soft)] text-[var(--primary)]">
             <Film className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wide">
+              <h3 className="text-xs font-semibold text-[var(--text-primary)] tracking-wide">
                 分镜进度与四幕节拍表 (Storyboard & Beats)
               </h3>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-700 font-semibold border border-zinc-300">
+              <span className="storyos-status storyos-status--neutral font-mono">
                 模拟演示数据 · 生产中
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-800 font-bold border border-zinc-200">
+              <span className="storyos-status storyos-status--info font-mono">
                 {completedFrames} / {totalFrames} 帧
               </span>
             </div>
-            <p className="text-[11px] text-zinc-600 mt-0.5">景别轴线、机位运动方式与戏剧台词节拍映射（正式画幅 4:5 1080×1350）</p>
+            <p className="text-[11px] text-[var(--text-tertiary)] mt-0.5">景别轴线、机位运动方式与戏剧台词节拍映射（正式画幅 4:5 1080×1350）</p>
           </div>
         </div>
 
         {/* Global Progress Bar */}
         <div className="flex items-center gap-2.5 min-w-[200px]">
-          <div className="w-full bg-zinc-100 h-2 rounded-full overflow-hidden border border-zinc-200">
+          <div className="w-full bg-[var(--bg-muted)] h-2 rounded-full overflow-hidden border border-[var(--border-subtle)]">
             <div
-              className="bg-amber-500 h-full rounded-full transition-all duration-500"
+              className="bg-[var(--primary)] h-full rounded-full transition-all duration-500"
               style={{ width: `${Math.round((completedFrames / totalFrames) * 100)}%` }}
             />
           </div>
-          <span className="text-xs font-mono font-bold text-zinc-900 shrink-0">
+          <span className="text-xs font-mono font-semibold text-[var(--text-primary)] shrink-0">
             {Math.round((completedFrames / totalFrames) * 100)}%
           </span>
         </div>
@@ -79,19 +79,19 @@ export const StoryboardProgressCard: React.FC<StoryboardProgressCardProps> = ({
           <button
             key={i}
             onClick={() => setSelectedAct(selectedAct === act.label ? 'ALL' : act.label)}
-            className={`p-2 rounded-lg border text-left text-xs transition-all ${
+            className={`p-2 rounded-[var(--radius-md)] border text-left text-xs transition-all ${
               selectedAct === act.label
-                ? 'bg-amber-50 border-amber-400 font-semibold'
-                : 'bg-zinc-50 border-zinc-200 hover:bg-zinc-100'
+                ? 'bg-[var(--primary-soft)] border-[var(--primary)] font-semibold'
+                : 'bg-[var(--bg-subtle)] border-[var(--border-normal)] hover:bg-[var(--bg-muted)]'
             }`}
           >
-            <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 mb-0.5">
+            <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-tertiary)] mb-0.5">
               <span>幕 {i + 1}</span>
-              <span className={act.status === 'completed' ? 'text-emerald-600 font-bold' : 'text-amber-600'}>
+              <span className={act.status === 'completed' ? 'text-[var(--success)] font-semibold' : 'text-[var(--warning)]'}>
                 {act.frames}
               </span>
             </div>
-            <div className="text-xs font-medium text-zinc-800 truncate">{act.label}</div>
+            <div className="text-xs font-medium text-[var(--text-primary)] truncate">{act.label}</div>
           </button>
         ))}
       </div>
@@ -101,44 +101,44 @@ export const StoryboardProgressCard: React.FC<StoryboardProgressCardProps> = ({
         {filteredBeats.map((beat) => (
           <div
             key={beat.id}
-            className="p-2.5 rounded-lg border border-zinc-200/90 bg-zinc-50/50 hover:bg-zinc-50 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
+            className="p-2.5 rounded-[var(--radius-md)] border border-[var(--border-normal)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-muted)] flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
           >
             <div className="flex items-center gap-3">
               {beat.thumbnailUrl ? (
                 <img
                   src={beat.thumbnailUrl}
                   alt={beat.sceneName}
-                  className="w-14 h-9 rounded object-cover border border-zinc-300 shrink-0 aspect-[21/9]"
+                  className="w-14 h-9 rounded-[var(--radius-sm)] object-cover border border-[var(--border-normal)] shrink-0 aspect-[21/9]"
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <div className="w-14 h-9 rounded bg-zinc-200 flex items-center justify-center text-zinc-400 shrink-0">
+                <div className="w-14 h-9 rounded-[var(--radius-sm)] bg-[var(--bg-muted)] flex items-center justify-center text-[var(--text-subtle)] shrink-0">
                   <Video className="w-4 h-4" />
                 </div>
               )}
 
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold text-zinc-900 bg-zinc-200 px-1.5 py-0.2 rounded text-[10px]">
+                  <span className="font-mono font-semibold text-[var(--text-primary)] bg-[var(--bg-muted)] px-1.5 py-0.5 rounded-[var(--radius-xs)] text-[10px]">
                     BEAT #{beat.beatIndex < 10 ? `0${beat.beatIndex}` : beat.beatIndex}
                   </span>
-                  <h4 className="font-bold text-zinc-900 text-xs">{beat.sceneName}</h4>
-                  <span className="text-[10px] text-zinc-600 font-mono hidden sm:inline">
+                  <h4 className="font-semibold text-[var(--text-primary)] text-xs">{beat.sceneName}</h4>
+                  <span className="text-[10px] text-[var(--text-tertiary)] font-mono hidden sm:inline">
                     [{beat.shotType}]
                   </span>
                 </div>
-                <p className="text-[11px] text-zinc-600 mt-0.5 line-clamp-1">{beat.narration}</p>
+                <p className="text-[11px] text-[var(--text-secondary)] mt-0.5 line-clamp-1">{beat.narration}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3 text-[11px] font-mono shrink-0 self-end md:self-auto">
-              <span className="text-zinc-600 hidden lg:inline">{beat.lighting}</span>
+              <span className="text-[var(--text-tertiary)] hidden lg:inline">{beat.lighting}</span>
               <span className={`px-2 py-0.5 rounded font-bold ${
                 beat.status === 'approved'
-                  ? 'bg-emerald-100 text-emerald-800'
+                  ? 'bg-[var(--success-soft)] text-[var(--success)]'
                   : beat.status === 'in_review'
-                  ? 'bg-amber-100 text-amber-800'
-                  : 'bg-zinc-200 text-zinc-700'
+                  ? 'bg-[var(--warning-soft)] text-[var(--warning)]'
+                  : 'bg-[var(--bg-muted)] text-[var(--text-secondary)]'
               }`}>
                 {beat.status === 'approved' ? '✓ 终审通过' : beat.status === 'in_review' ? '逐帧审核中' : '渲染中'}
               </span>

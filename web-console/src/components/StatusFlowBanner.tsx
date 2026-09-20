@@ -31,8 +31,8 @@ export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({
   const activeStageInfo = FORMAL_STAGES[currentIndex] || FORMAL_STAGES[3];
 
   return (
-    <div className="mb-4 bg-[#0a0a0c] border border-[#222226] rounded-xl p-2.5 text-xs text-zinc-300 shadow-sm select-none">
-      {/* 极简单行 7 大正式流水线 - 黑底白字高对比 */}
+    <div className="mb-3 storyos-surface p-2 text-xs text-[var(--text-secondary)] select-none">
+      {/* 单行正式流水线：状态清晰，但不靠大面积状态色抢占 Stage。 */}
       <div className="flex items-center justify-between gap-3 overflow-x-auto pb-1 scrollbar-none">
         <div className="flex items-center gap-1 shrink-0 text-[11px] font-mono">
           {FORMAL_STAGES.map((s, idx) => {
@@ -45,31 +45,31 @@ export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({
                   type="button"
                   onClick={() => onStageChange && onStageChange(s.id)}
                   title={`${s.label}: ${s.desc} (点击切换阶段)`}
-                  className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-all cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-2 py-1 rounded-[var(--radius-sm)] transition-all cursor-pointer ${
                     isCurrent
-                      ? 'bg-white text-black font-semibold shadow-xs'
+                      ? 'bg-[var(--primary-soft)] text-[var(--primary-hover)] border border-[var(--border-normal)] font-semibold'
                       : isCompleted
-                      ? 'bg-[#141416] text-zinc-300 hover:text-white hover:bg-[#1a1a1e] border border-[#27272a]'
-                      : 'text-zinc-500 hover:text-zinc-200 hover:bg-[#141416]'
+                      ? 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] border border-[var(--border-subtle)]'
+                      : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]'
                   }`}
                 >
                   {isCompleted ? (
-                    <Check className="w-3 h-3 text-zinc-300 stroke-[2.5]" />
+                    <Check className="w-3 h-3 text-[var(--success)] stroke-[2.5]" />
                   ) : isCurrent ? (
-                    <span className="w-1.5 h-1.5 rounded-full bg-black shrink-0 animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shrink-0 animate-pulse" />
                   ) : (
-                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-700 shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-subtle)] shrink-0" />
                   )}
                   <span className="tracking-tight">{s.label}</span>
                   {s.id === 'PROD_APPROVED' && (
-                    <span className={`text-[10px] ml-0.5 font-mono ${isCurrent ? 'text-zinc-700' : 'text-zinc-500'}`}>
+                    <span className={`text-[10px] ml-0.5 font-mono ${isCurrent ? 'text-[var(--primary)]' : 'text-[var(--text-tertiary)]'}`}>
                       ({completedFrames}/{totalFrames})
                     </span>
                   )}
                 </button>
 
                 {idx < FORMAL_STAGES.length - 1 && (
-                  <span className="text-zinc-700 text-[11px] px-0.5">/</span>
+                  <span className="text-[var(--text-subtle)] text-[11px] px-0.5">/</span>
                 )}
               </React.Fragment>
             );
@@ -80,7 +80,7 @@ export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({
           <button
             type="button"
             onClick={() => setShowPrePanel(!showPrePanel)}
-            className="text-[11px] font-mono text-zinc-400 hover:text-white px-2 py-0.5 rounded bg-[#141416] border border-[#27272a] flex items-center gap-1 transition-colors"
+            className="text-[11px] font-mono text-[var(--text-tertiary)] hover:text-[var(--text-primary)] px-2 py-0.5 rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--border-normal)] flex items-center gap-1 transition-colors"
           >
             <span>流水线详情</span>
             <ChevronDown className={`w-3 h-3 transition-transform ${showPrePanel ? 'rotate-180' : ''}`} />
@@ -88,18 +88,18 @@ export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({
         </div>
       </div>
 
-      {/* 阶段运行与指标面板（纯黑底白字折叠） */}
+      {/* 阶段运行与指标面板 */}
       {showPrePanel && (
-        <div className="mt-2 pt-2 border-t border-[#1f1f23] text-[11px] text-zinc-300 font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0e0e11] p-2 rounded-lg">
+        <div className="mt-2 pt-2 border-t border-[var(--border-subtle)] text-[11px] text-[var(--text-secondary)] font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[var(--bg-workspace)] p-2 rounded-[var(--radius-sm)]">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-white font-medium flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-white" />
+            <span className="text-[var(--text-primary)] font-medium flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-[var(--primary)]" />
               当前阶段: {activeStageInfo.label}
             </span>
-            <span className="text-zinc-400">• 目标: {activeStageInfo.desc}</span>
-            <span className="text-zinc-300">• 生产进度: {completedFrames}/{totalFrames} 帧 ({Math.round((completedFrames/totalFrames)*100)}%)</span>
+            <span className="text-[var(--text-tertiary)]">• 目标: {activeStageInfo.desc}</span>
+            <span className="text-[var(--text-secondary)]">• 生产进度: {completedFrames}/{totalFrames} 帧 ({Math.round((completedFrames/totalFrames)*100)}%)</span>
           </div>
-          <span className="text-zinc-400 shrink-0">点击上方各阶段药丸可直接推进或回溯</span>
+          <span className="text-[var(--text-tertiary)] shrink-0">点击上方各阶段可直接推进或回溯</span>
         </div>
       )}
     </div>

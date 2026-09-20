@@ -52,31 +52,31 @@ export const FrameReviewCard: React.FC<FrameReviewCardProps> = ({
   };
 
   return (
-    <div id="frame-review-card" className="bg-white rounded-xl border border-zinc-200 p-4 shadow-xs">
+    <div id="frame-review-card" className="storyos-surface p-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-zinc-100 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-[var(--border-subtle)] gap-2">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-md bg-zinc-900 text-amber-400">
+          <div className="p-1.5 rounded-[var(--radius-sm)] bg-[var(--primary-soft)] text-[var(--primary)]">
             <CheckSquare className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wide flex items-center gap-2">
+            <h3 className="text-xs font-semibold text-[var(--text-primary)] tracking-wide flex items-center gap-2">
               <span>逐帧审核与质检报告 (Frame-by-Frame QA & Inspection)</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 font-bold border border-amber-300">
+              <span className="storyos-status storyos-status--neutral font-mono">
                 示例数据 · 待连接工作区
               </span>
             </h3>
-            <p className="text-[11px] text-zinc-600">
+            <p className="text-[11px] text-[var(--text-tertiary)]">
               4:5 (1080×1350) 正式画幅质检：人脸连戏、解剖结构与光影连续性抽样分析（当前尚有 1 项待修复告警，阻断越级通过）
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 text-xs font-mono">
-          <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-semibold">
+          <span className="storyos-status storyos-status--success font-mono">
             {reviewList.filter(r => r.verdict === 'PASS').length} 通过
           </span>
-          <span className="text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 font-semibold">
+          <span className="storyos-status storyos-status--warning font-mono">
             {reviewList.filter(r => r.verdict === 'WARN').length} 警示待修
           </span>
         </div>
@@ -92,29 +92,29 @@ export const FrameReviewCard: React.FC<FrameReviewCardProps> = ({
           return (
             <div
               key={review.frameId}
-              className={`rounded-lg border p-3 flex flex-col justify-between transition-all ${
+              className={`rounded-[var(--radius-md)] border p-3 flex flex-col justify-between transition-all ${
                 isWarn
-                  ? 'bg-amber-50/30 border-amber-300 ring-1 ring-amber-300/40'
-                  : 'bg-zinc-50/60 border-zinc-200'
+                  ? 'bg-[var(--warning-soft)] border-[var(--warning)] ring-1 ring-[var(--warning-soft)]'
+                  : 'bg-[var(--bg-subtle)] border-[var(--border-normal)]'
               }`}
             >
               <div>
                 {/* Header info */}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-mono font-bold text-xs text-zinc-900">
+                    <span className="font-mono font-semibold text-xs text-[var(--text-primary)]">
                       Frame #{review.frameIndex}
                     </span>
-                    <span className="text-[10px] font-mono text-zinc-500">
+                    <span className="text-[10px] font-mono text-[var(--text-tertiary)]">
                       ({review.frameId})
                     </span>
                   </div>
                   <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded flex items-center gap-1 ${
                     isPass
-                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                      : 'bg-amber-100 text-amber-900 border border-amber-300'
+                      ? 'bg-[var(--success-soft)] text-[var(--success)] border border-[var(--success)]'
+                      : 'bg-[var(--warning-soft)] text-[var(--warning)] border border-[var(--warning)]'
                   }`}>
-                    {isPass ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3 text-amber-600" />}
+                    {isPass ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3 text-[var(--warning)]" />}
                     <span>{review.verdict}</span>
                   </span>
                 </div>
@@ -127,28 +127,28 @@ export const FrameReviewCard: React.FC<FrameReviewCardProps> = ({
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute bottom-1 right-1.5 text-[9px] font-mono bg-black/75 text-zinc-300 px-1 py-0.2 rounded">
+                  <div className="absolute bottom-1 right-1.5 text-[9px] font-mono bg-black/75 text-slate-200 px-1 py-0.5 rounded">
                     {review.shotType}
                   </div>
-                  <div className="absolute top-1.5 left-1.5 text-[9px] font-mono bg-black/75 text-zinc-300 px-1 py-0.2 rounded border border-white/10">
+                  <div className="absolute top-1.5 left-1.5 text-[9px] font-mono bg-black/75 text-slate-200 px-1 py-0.5 rounded border border-white/10">
                     4:5 1080×1350
                   </div>
                 </div>
 
                 {/* Metric Scores Bar */}
                 <div className="grid grid-cols-3 gap-1.5 text-center text-[10px] font-mono mb-2">
-                  <div className="p-1 rounded bg-zinc-100/90 border border-zinc-200">
-                    <div className="text-zinc-500 text-[9px]">人脸相似</div>
-                    <div className="font-bold text-zinc-900">{review.facialScore}%</div>
+                  <div className="p-1 rounded-[var(--radius-xs)] bg-[var(--bg-muted)] border border-[var(--border-subtle)]">
+                    <div className="text-[var(--text-tertiary)] text-[9px]">人脸相似</div>
+                    <div className="font-semibold text-[var(--text-primary)]">{review.facialScore}%</div>
                   </div>
-                  <div className="p-1 rounded bg-zinc-100/90 border border-zinc-200">
-                    <div className="text-zinc-500 text-[9px]">光影吻合</div>
-                    <div className="font-bold text-zinc-900">{review.lightConsistency}%</div>
+                  <div className="p-1 rounded-[var(--radius-xs)] bg-[var(--bg-muted)] border border-[var(--border-subtle)]">
+                    <div className="text-[var(--text-tertiary)] text-[9px]">光影吻合</div>
+                    <div className="font-semibold text-[var(--text-primary)]">{review.lightConsistency}%</div>
                   </div>
                   <div className={`p-1 rounded border ${
-                    review.anatomyScore < 92 ? 'bg-amber-100 border-amber-300 text-amber-900 font-bold' : 'bg-zinc-100/90 border-zinc-200 text-zinc-900'
+                    review.anatomyScore < 92 ? 'bg-[var(--warning-soft)] border-[var(--warning)] text-[var(--warning)] font-semibold' : 'bg-[var(--bg-muted)] border-[var(--border-subtle)] text-[var(--text-primary)]'
                   }`}>
-                    <div className="text-zinc-500 text-[9px]">肢体解剖</div>
+                    <div className="text-[var(--text-tertiary)] text-[9px]">肢体解剖</div>
                     <div>{review.anatomyScore}%</div>
                   </div>
                 </div>
@@ -160,8 +160,8 @@ export const FrameReviewCard: React.FC<FrameReviewCardProps> = ({
                       key={i}
                       className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${
                         isWarn
-                          ? 'bg-amber-100 text-amber-900 border border-amber-200'
-                          : 'bg-zinc-200/80 text-zinc-700'
+                          ? 'bg-[var(--warning-soft)] text-[var(--warning)] border border-[var(--warning)]'
+                          : 'bg-[var(--bg-muted)] text-[var(--text-secondary)]'
                       }`}
                     >
                       {tag}
@@ -170,9 +170,9 @@ export const FrameReviewCard: React.FC<FrameReviewCardProps> = ({
                 </div>
 
                 {/* Reviewer Note */}
-                <div className="text-[11px] text-zinc-600 bg-white p-2 rounded border border-zinc-200/70 mb-2 leading-tight">
-                  <div className="flex items-center gap-1 font-mono text-[10px] text-zinc-600 mb-0.5 font-bold">
-                    <Bot className="w-3 h-3 text-amber-700" />
+                <div className="text-[11px] text-[var(--text-secondary)] bg-[var(--bg-surface)] p-2 rounded-[var(--radius-sm)] border border-[var(--border-subtle)] mb-2 leading-tight">
+                  <div className="flex items-center gap-1 font-mono text-[10px] text-[var(--text-tertiary)] mb-0.5 font-semibold">
+                    <Bot className="w-3 h-3 text-[var(--primary)]" />
                     <span>{review.reviewer}:</span>
                   </div>
                   <p>{review.comment}</p>
@@ -180,32 +180,32 @@ export const FrameReviewCard: React.FC<FrameReviewCardProps> = ({
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-2 border-t border-zinc-200 flex items-center justify-between gap-1.5">
+              <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between gap-1.5">
                 {isWarn ? (
                   <>
                     <button
                       onClick={() => handleAction(review.frameId, 'inpaint')}
                       disabled={isFixing}
-                      className="flex-1 py-1 rounded bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold text-xs flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
+                      className="flex-1 h-8 rounded-[var(--radius-sm)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold text-xs flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
                     >
                       <Wand2 className="w-3 h-3" />
                       <span>{isFixing ? 'Inpaint 修补中...' : '自动局部修补'}</span>
                     </button>
                     <button
                       onClick={() => handleAction(review.frameId, 'pass')}
-                      className="px-2.5 py-1 rounded bg-zinc-200 hover:bg-zinc-300 text-zinc-800 text-xs font-semibold"
+                      className="h-8 px-2.5 rounded-[var(--radius-sm)] bg-[var(--bg-surface)] hover:bg-[var(--bg-muted)] border border-[var(--border-normal)] text-[var(--text-secondary)] text-xs font-semibold"
                       title="忽略告警强制标记通过"
                     >
                       放行
                     </button>
                   </>
                 ) : (
-                  <div className="w-full flex items-center justify-between text-[11px] text-emerald-700 font-mono">
+                  <div className="w-full flex items-center justify-between text-[11px] text-[var(--success)] font-mono">
                     <span className="flex items-center gap-1">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>已录入分镜生产资产库</span>
                     </span>
-                    <span className="text-zinc-400">PASSED</span>
+                    <span className="text-[var(--text-subtle)]">PASSED</span>
                   </div>
                 )}
               </div>

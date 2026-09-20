@@ -45,16 +45,16 @@ export const CommandDock: React.FC<CommandDockProps> = ({
 
   return (
     <div className="absolute bottom-4 left-0 right-0 z-30 flex justify-center px-6 pointer-events-none">
-      <div className="w-full max-w-2xl pointer-events-auto relative">
+      <div className="w-full max-w-[760px] pointer-events-auto relative">
         {/* 预设指令快捷抽屉（点击 + 号展开） */}
         {showPresets && (
-          <div className="mb-2 bg-[#0c0c0e] border border-[#27272a] rounded-xl p-2 shadow-2xl text-xs space-y-1">
-            <div className="px-2 py-1 text-[11px] font-mono text-zinc-400 border-b border-[#1f1f23] flex items-center justify-between">
+          <div className="storyos-elevated mb-2 p-2 text-xs space-y-1">
+            <div className="px-2 py-1 text-[11px] font-mono text-[var(--text-tertiary)] border-b border-[var(--border-subtle)] flex items-center justify-between">
               <span>快捷故事生产指令模版</span>
               <button
                 type="button"
                 onClick={() => setShowPresets(false)}
-                className="hover:text-white cursor-pointer"
+                className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer"
               >
                 ✕
               </button>
@@ -67,7 +67,7 @@ export const CommandDock: React.FC<CommandDockProps> = ({
                   setInputText(preset);
                   setShowPresets(false);
                 }}
-                className="w-full text-left px-2.5 py-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-[#18181b] transition-colors cursor-pointer"
+                className="w-full text-left px-2.5 py-1.5 rounded-[var(--radius-sm)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
               >
                 • {preset}
               </button>
@@ -77,9 +77,9 @@ export const CommandDock: React.FC<CommandDockProps> = ({
 
         <form
           onSubmit={handleSubmit}
-          className="bg-[#0a0a0c] border border-[#27272a] rounded-xl shadow-2xl p-2.5 flex flex-col focus-within:border-white transition-colors"
+          className="bg-[rgba(255,255,255,.92)] backdrop-blur-[18px] border border-[var(--border-normal)] rounded-[var(--radius-lg)] shadow-[var(--shadow-floating)] p-2.5 flex flex-col focus-within:border-[var(--focus)] focus-within:ring-3 focus-within:ring-[rgba(22,119,255,.10)] transition-colors"
         >
-          {/* 输入框 - 纯黑底白字 */}
+          {/* 输入区 */}
           <div className="px-1.5 pt-0.5 pb-1">
             <textarea
               id="storyos-prompt-input"
@@ -88,19 +88,21 @@ export const CommandDock: React.FC<CommandDockProps> = ({
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="输入剧本故事台词、分镜景别微调，或调度批次出图指令..."
-              className="w-full bg-transparent text-[13px] text-white placeholder-zinc-500 focus:outline-hidden resize-none font-sans leading-relaxed"
+              className="w-full bg-transparent text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] focus:outline-none resize-none font-sans leading-relaxed"
             />
           </div>
 
-          {/* 底部控制栏（纯黑底白字高对比） */}
-          <div className="flex items-center justify-between text-xs pt-1.5 border-t border-[#1f1f23]">
+          {/* 底部控制栏 */}
+          <div className="flex items-center justify-between text-xs pt-1.5 border-t border-[var(--border-subtle)]">
             {/* 左侧：+号 与 门禁模式切换 */}
-            <div className="flex items-center gap-2 text-zinc-400">
+            <div className="flex items-center gap-2 text-[var(--text-tertiary)]">
               <button
                 type="button"
                 onClick={() => setShowPresets(!showPresets)}
                 className={`p-1 rounded transition-colors cursor-pointer ${
-                  showPresets ? 'bg-white text-black' : 'hover:text-white hover:bg-[#18181b]'
+                  showPresets
+                    ? 'bg-[var(--primary-soft)] text-[var(--primary)]'
+                    : 'hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]'
                 }`}
                 title="选择生产预设或参考"
               >
@@ -110,17 +112,17 @@ export const CommandDock: React.FC<CommandDockProps> = ({
               <button
                 type="button"
                 onClick={toggleGate}
-                className="flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 bg-[#141416] hover:bg-[#1f1f23] border border-[#27272a] rounded text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                className="flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] border border-[var(--border-normal)] rounded-[var(--radius-sm)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                 title="点击切换门禁模式"
               >
                 {strictGate ? (
                   <>
-                    <ShieldCheck className="w-3 h-3 text-white" />
+                    <ShieldCheck className="w-3 h-3 text-[var(--primary)]" />
                     <span>StoryOS 严格门禁</span>
                   </>
                 ) : (
                   <>
-                    <ShieldAlert className="w-3 h-3 text-zinc-400" />
+                    <ShieldAlert className="w-3 h-3 text-[var(--text-tertiary)]" />
                     <span>宽松调试模式</span>
                   </>
                 )}
@@ -133,15 +135,15 @@ export const CommandDock: React.FC<CommandDockProps> = ({
                 <button
                   type="button"
                   onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
-                  className="flex items-center gap-1 text-[11px] font-mono text-zinc-300 hover:text-white bg-[#141416] border border-[#27272a] px-2 py-0.5 rounded transition-colors cursor-pointer"
+                  className="flex items-center gap-1 text-[11px] font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-surface)] border border-[var(--border-normal)] px-2 py-0.5 rounded-[var(--radius-sm)] transition-colors cursor-pointer"
                 >
                   <span>{selectedModel} · {selectedAspect}</span>
-                  <ChevronDown className="w-3 h-3 text-zinc-400" />
+                  <ChevronDown className="w-3 h-3 text-[var(--text-tertiary)]" />
                 </button>
 
                 {modelDropdownOpen && (
-                  <div className="absolute right-0 bottom-full mb-1.5 w-56 bg-[#0c0c0e] border border-[#27272a] rounded-lg shadow-2xl p-1 z-50 text-xs font-mono">
-                    <div className="px-2 py-1 text-[10px] text-zinc-400 uppercase border-b border-[#1f1f23]">
+                  <div className="storyos-elevated absolute right-0 bottom-full mb-1.5 w-56 p-1 z-50 text-xs font-mono">
+                    <div className="px-2 py-1 text-[10px] text-[var(--text-tertiary)] uppercase border-b border-[var(--border-subtle)]">
                       选择生图引擎与画幅
                     </div>
                     {[
@@ -160,8 +162,8 @@ export const CommandDock: React.FC<CommandDockProps> = ({
                         }}
                         className={`w-full text-left px-2 py-1.5 rounded transition-colors cursor-pointer ${
                           selectedModel === item.model
-                            ? 'bg-white text-black font-semibold'
-                            : 'text-zinc-300 hover:text-white hover:bg-[#18181b]'
+                            ? 'bg-[var(--primary-soft)] text-[var(--primary-hover)] font-semibold'
+                            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]'
                         }`}
                       >
                         {item.model} · {item.aspect}
@@ -176,7 +178,7 @@ export const CommandDock: React.FC<CommandDockProps> = ({
                 onClick={() => {
                   setInputText('快速批量生成第 5 批次分镜，保持林澈面容一致性');
                 }}
-                className="p-1 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                className="p-1 text-[var(--text-tertiary)] hover:text-[var(--primary)] transition-colors cursor-pointer"
                 title="快速录入指令"
               >
                 <Sparkles className="w-3.5 h-3.5" />
@@ -185,10 +187,10 @@ export const CommandDock: React.FC<CommandDockProps> = ({
               <button
                 type="submit"
                 disabled={!inputText.trim() || isLoading}
-                className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                className={`w-7 h-7 rounded-[var(--radius-sm)] flex items-center justify-center transition-all ${
                   inputText.trim() && !isLoading
-                    ? 'bg-white text-black hover:bg-zinc-200 cursor-pointer shadow-xs'
-                    : 'bg-[#18181b] text-zinc-600 cursor-not-allowed'
+                    ? 'bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] cursor-pointer shadow-[var(--shadow-xs)]'
+                    : 'bg-[var(--bg-muted)] text-[var(--text-disabled)] cursor-not-allowed'
                 }`}
                 title="发送生产指令 (Enter)"
               >

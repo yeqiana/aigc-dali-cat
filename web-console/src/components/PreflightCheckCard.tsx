@@ -22,41 +22,41 @@ export const PreflightCheckCard: React.FC<PreflightCheckCardProps> = ({ checks }
   const isAllPassed = passedCount === checks.length;
 
   return (
-    <div id="preflight-check-card" className="bg-white rounded-xl border border-zinc-200 p-4 shadow-xs">
+    <div id="preflight-check-card" className="storyos-surface p-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-zinc-100 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-[var(--border-subtle)] gap-2">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-md bg-zinc-900 text-amber-400">
+          <div className="p-1.5 rounded-[var(--radius-sm)] bg-[var(--primary-soft)] text-[var(--primary)]">
             <ShieldCheck className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wide flex items-center gap-2">
+            <h3 className="text-xs font-semibold text-[var(--text-primary)] tracking-wide flex items-center gap-2">
               <span>发布前门禁检查 (Preflight Gate & Quality Audit)</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 font-bold border border-amber-300">
+              <span className="storyos-status storyos-status--neutral font-mono">
                 示例数据 · 待连接工作区
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-bold border border-amber-200">
+              <span className="storyos-status storyos-status--info font-mono">
                 {passedCount} / {checks.length} 项通过
               </span>
             </h3>
-            <p className="text-[11px] text-zinc-600">工业化严苛门禁：杜绝违规穿帮与面部崩溃，禁止非达标剧集流向公域</p>
+            <p className="text-[11px] text-[var(--text-tertiary)]">工业化严苛门禁：杜绝违规穿帮与面部崩溃，禁止非达标剧集流向公域</p>
           </div>
         </div>
 
         {/* Real Status Gatekeeper Pill */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
-            <Lock className="w-3.5 h-3.5 text-rose-600" />
+          <div className="storyos-status storyos-status--danger">
+            <Lock className="w-3.5 h-3.5 text-[var(--danger)]" />
             <span>发布通道锁定 (阶段互斥阻断)</span>
           </div>
         </div>
       </div>
 
       {/* Honest Warning Notice */}
-      <div className="p-3 rounded-lg bg-amber-50/80 border border-amber-300 mb-3 text-xs flex items-start gap-2.5">
-        <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-        <div className="text-zinc-800 leading-relaxed">
-          <strong className="text-amber-950 font-bold">阶段互斥与门禁守则：</strong>
+      <div className="p-3 rounded-[var(--radius-md)] bg-[var(--warning-soft)] border border-[var(--warning)] mb-3 text-xs flex items-start gap-2.5">
+        <AlertTriangle className="w-4 h-4 text-[var(--warning)] shrink-0 mt-0.5" />
+        <div className="text-[var(--text-secondary)] leading-relaxed">
+          <strong className="text-[var(--warning)] font-semibold">阶段互斥与门禁守则：</strong>
           当前剧集正处于<strong>「生产推进中」</strong>（已渲染 24/32 帧），依照阶段互斥守则，不可标记为「生产通过」；待全部 32 帧渲染且终审放行后方可达成正式「生产通过」，之后才进入「待发布」。当前均为<strong>示例数据</strong>，后续连接 GitHub 时只读并映射 release-manifest 等门禁文件，前端不直接修改状态。
         </div>
       </div>
@@ -72,43 +72,43 @@ export const PreflightCheckCard: React.FC<PreflightCheckCardProps> = ({ checks }
           return (
             <div
               key={chk.id}
-              className={`p-2.5 rounded-lg border text-xs flex items-start gap-2.5 transition-colors ${
+              className={`p-2.5 rounded-[var(--radius-md)] border text-xs flex items-start gap-2.5 transition-colors ${
                 isPassed
-                  ? 'bg-zinc-50/70 border-zinc-200'
+                  ? 'bg-[var(--bg-subtle)] border-[var(--border-normal)]'
                   : isWarning
-                  ? 'bg-amber-50/40 border-amber-300'
+                  ? 'bg-[var(--warning-soft)] border-[var(--warning)]'
                   : isBlocking
-                  ? 'bg-rose-50/30 border-rose-200'
-                  : 'bg-zinc-50/30 border-zinc-200/80'
+                  ? 'bg-[var(--danger-soft)] border-[var(--danger)]'
+                  : 'bg-[var(--bg-subtle)] border-[var(--border-subtle)]'
               }`}
             >
               <div className="mt-0.5 shrink-0">
-                {isPassed && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
-                {isWarning && <AlertTriangle className="w-4 h-4 text-amber-600" />}
-                {isPending && <Clock className="w-4 h-4 text-zinc-400" />}
-                {isBlocking && <Ban className="w-4 h-4 text-rose-600" />}
+                {isPassed && <CheckCircle2 className="w-4 h-4 text-[var(--success)]" />}
+                {isWarning && <AlertTriangle className="w-4 h-4 text-[var(--warning)]" />}
+                {isPending && <Clock className="w-4 h-4 text-[var(--text-subtle)]" />}
+                {isBlocking && <Ban className="w-4 h-4 text-[var(--danger)]" />}
               </div>
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1 mb-0.5">
                   <h4 className={`font-bold text-xs truncate ${
-                    isPassed ? 'text-zinc-900' : isWarning ? 'text-amber-950' : 'text-zinc-700'
+                    isPassed ? 'text-[var(--text-primary)]' : isWarning ? 'text-[var(--warning)]' : 'text-[var(--text-secondary)]'
                   }`}>
                     {chk.title}
                   </h4>
                   <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded shrink-0 font-bold ${
                     isPassed
-                      ? 'bg-emerald-100 text-emerald-800'
+                      ? 'bg-[var(--success-soft)] text-[var(--success)]'
                       : isWarning
-                      ? 'bg-amber-100 text-amber-900'
+                      ? 'bg-[var(--warning-soft)] text-[var(--warning)]'
                       : isBlocking
-                      ? 'bg-rose-100 text-rose-800'
-                      : 'bg-zinc-200 text-zinc-700'
+                      ? 'bg-[var(--danger-soft)] text-[var(--danger)]'
+                      : 'bg-[var(--bg-muted)] text-[var(--text-secondary)]'
                   }`}>
                     {isPassed ? '通过' : isWarning ? '告警' : isBlocking ? '阻断' : '待处理'}
                   </span>
                 </div>
-                <p className="text-[11px] text-zinc-600 leading-tight">{chk.detail}</p>
+                <p className="text-[11px] text-[var(--text-tertiary)] leading-tight">{chk.detail}</p>
               </div>
             </div>
           );
@@ -116,13 +116,13 @@ export const PreflightCheckCard: React.FC<PreflightCheckCardProps> = ({ checks }
       </div>
 
       {/* Release Button State (Honest Disabled Gate) */}
-      <div className="mt-3 pt-3 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
-        <span className="text-zinc-500 font-mono text-[11px]">
+      <div className="mt-3 pt-3 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+        <span className="text-[var(--text-tertiary)] font-mono text-[11px]">
           前置阻断项：Frame #18 质检告警待修、第 28-32 帧待批次渲染、导演组签字待签署
         </span>
         <button
           disabled={!isAllPassed}
-          className="px-4 py-1.5 rounded-md bg-zinc-200 text-zinc-400 font-bold text-xs flex items-center gap-1.5 cursor-not-allowed border border-zinc-300"
+          className="h-9 px-4 rounded-[var(--radius-md)] bg-[var(--bg-muted)] text-[var(--text-disabled)] font-semibold text-xs flex items-center gap-1.5 cursor-not-allowed border border-[var(--border-normal)]"
           title="必须先完成全量帧审核与签字放行"
         >
           <Send className="w-3.5 h-3.5" />

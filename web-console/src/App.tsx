@@ -8,6 +8,7 @@ import { StatusFlowBanner } from './components/StatusFlowBanner';
 import { ActivityStream } from './components/ActivityStream';
 import { CommandDock } from './components/CommandDock';
 import { ContextPanel } from './components/ContextPanel';
+import { ProductionStagePanel } from './components/ProductionStagePanel';
 
 // Views
 import { ProductionMonitorView } from './components/views/ProductionMonitorView';
@@ -47,7 +48,7 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<NavigationTab>('production_monitor');
   const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [contextPanelOpen, setContextPanelOpen] = useState(true);
+  const [contextPanelOpen, setContextPanelOpen] = useState(false);
 
   // Search and Notifications Modals
   const [searchModalOpen, setSearchModalOpen] = useState(false);
@@ -173,7 +174,7 @@ export default function App() {
   );
 
   return (
-    <div id="storyos-workspace-root" className="flex h-screen w-screen overflow-hidden bg-[#000000] text-white font-sans antialiased select-text">
+    <div id="storyos-workspace-root" className="storyos-shell flex h-screen w-screen overflow-hidden font-sans antialiased select-text">
       {/* 1. 纯黑底白字极简左侧边栏 */}
       <Sidebar
         currentTab={currentTab}
@@ -191,7 +192,7 @@ export default function App() {
       />
 
       {/* 2. 中间主工作台 */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden relative min-w-0 bg-[#050507]">
+      <div className="storyos-workspace flex-1 flex flex-col h-screen overflow-hidden relative min-w-0">
         {/* 顶部极简标题栏 */}
         <HeaderBar
           activeEpisode={activeEpisode}
@@ -202,11 +203,11 @@ export default function App() {
         />
 
         {/* 消息与活动主轴 (UI Baseline v1: bg-app #0B0D10, 桌面 padding 16px/20px/24px) */}
-        <main className="flex-1 overflow-y-auto px-4 lg:px-5 py-4 relative scrollbar-thin scrollbar-thumb-[#232830] bg-[#0B0D10]">
+        <main className="flex-1 overflow-y-auto px-4 lg:px-5 py-4 relative bg-[var(--bg-app)]">
           {/* 轻量纯黑白 Toast */}
           {toastMessage && (
-            <div className="fixed top-12 right-6 z-50 bg-[#171B21] text-[#F1F3F5] px-3.5 py-1.5 rounded-[6px] text-xs font-medium flex items-center gap-2 shadow-lg border border-[#2D333D]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#58A6FF]" />
+            <div className="fixed top-12 right-6 z-50 storyos-elevated text-[var(--text-primary)] px-3.5 py-1.5 text-xs font-medium flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--info)]" />
               <span>{toastMessage}</span>
             </div>
           )}
@@ -256,24 +257,29 @@ export default function App() {
             </div>
           )}
 
-          {/* 核心工作流：呼吸感单主轴 */}
+          {/* 核心工作流：Operator Console / Production Stage 双区 */}
           {currentTab === 'workbench' && (
-            <div className="max-w-3xl mx-auto">
-              {/* 单行极简流水线微型指示器（支持真实点击切换生产阶段） */}
-              <StatusFlowBanner
-                currentStage={activeEpisode.currentStage}
-                onStageChange={handleStageChange}
-                completedFrames={activeEpisode.completedFrames}
-                totalFrames={activeEpisode.totalFrames}
-              />
+            <div className="grid min-h-full grid-cols-1 xl:grid-cols-[minmax(360px,38%)_minmax(0,62%)] gap-4 pb-24">
+              <section aria-label="Operator Console" className="min-w-0">
+                <StatusFlowBanner
+                  currentStage={activeEpisode.currentStage}
+                  onStageChange={handleStageChange}
+                  completedFrames={activeEpisode.completedFrames}
+                  totalFrames={activeEpisode.totalFrames}
+                />
+                <ActivityStream
+                  activeEpisode={activeEpisode}
+                  onGenerateBatch={handleQuickGenerateNextBatch}
+                  isGeneratingBatch={isGeneratingBatch}
+                  onReviewAction={handleReviewAction}
+                  onShowToast={showToast}
+                />
+              </section>
 
-              {/* 真正的对话与执行流 */}
-              <ActivityStream
+              <ProductionStagePanel
                 activeEpisode={activeEpisode}
-                onGenerateBatch={handleQuickGenerateNextBatch}
                 isGeneratingBatch={isGeneratingBatch}
-                onReviewAction={handleReviewAction}
-                onShowToast={showToast}
+                onSelectFrame={(frame) => showToast(`已选中 Frame #${frame.frameIndex} · ${frame.status}`)}
               />
             </div>
           )}
@@ -300,27 +306,27 @@ export default function App() {
       {/* 5. 全局搜索模态弹窗 (Ctrl + K / 侧边栏搜索) */}
       {searchModalOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 flex items-start justify-center pt-24 px-4 backdrop-blur-xs"
+          className="storyos-overlay fixed inset-0 z-50 flex items-start justify-center pt-24 px-4"
           onClick={() => setSearchModalOpen(false)}
         >
           <div
-            className="bg-[#0a0a0c] border border-[#2e2e33] rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl"
+            className="storyos-elevated max-w-lg w-full overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-3 border-b border-[#1f1f23] flex items-center gap-2">
-              <Search className="w-4 h-4 text-zinc-400" />
+            <div className="p-3 border-b border-[var(--border-subtle)] flex items-center gap-2">
+              <Search className="w-4 h-4 text-[var(--text-tertiary)]" />
               <input
                 type="text"
                 autoFocus
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 placeholder="搜索剧集编号、标题、剧情关键词..."
-                className="w-full bg-transparent text-sm text-white placeholder-zinc-500 focus:outline-hidden"
+                className="w-full bg-transparent text-sm text-[var(--text-primary)] placeholder:text-[var(--text-subtle)] focus:outline-hidden"
               />
               <button
                 type="button"
                 onClick={() => setSearchModalOpen(false)}
-                className="text-zinc-500 hover:text-white text-xs px-1.5 py-0.5 rounded cursor-pointer"
+                className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] text-xs px-1.5 py-0.5 rounded cursor-pointer"
               >
                 ESC
               </button>
@@ -328,7 +334,7 @@ export default function App() {
 
             <div className="max-h-72 overflow-y-auto p-2 space-y-1">
               {searchResults.length === 0 ? (
-                <div className="py-6 text-center text-xs text-zinc-500 font-mono">未找到匹配的故事资产</div>
+                <div className="py-6 text-center text-xs text-[var(--text-tertiary)] font-mono">未找到匹配的故事资产</div>
               ) : (
                 searchResults.map(ep => (
                   <button
@@ -340,16 +346,16 @@ export default function App() {
                       setSearchModalOpen(false);
                       showToast(`已切换至: ${ep.code} ${ep.title}`);
                     }}
-                    className="w-full text-left p-2 rounded-lg hover:bg-[#141416] transition-colors flex items-center justify-between cursor-pointer"
+                    className="w-full text-left p-2 rounded-[var(--radius-sm)] hover:bg-[var(--bg-hover)] transition-colors flex items-center justify-between cursor-pointer"
                   >
                     <div>
-                      <div className="text-xs font-semibold text-white flex items-center gap-2">
-                        <span className="font-mono text-zinc-400 font-bold">{ep.code}</span>
+                      <div className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2">
+                        <span className="font-mono text-[var(--text-tertiary)] font-semibold">{ep.code}</span>
                         <span>{ep.title}</span>
                       </div>
-                      <div className="text-[11px] text-zinc-400 truncate max-w-sm">{ep.synopsis}</div>
+                      <div className="text-[11px] text-[var(--text-tertiary)] truncate max-w-sm">{ep.synopsis}</div>
                     </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black border border-[#27272a] text-zinc-300">
+                    <span className="storyos-status storyos-status--neutral font-mono">
                       {ep.completedFrames}/{ep.totalFrames} 帧
                     </span>
                   </button>
@@ -363,22 +369,23 @@ export default function App() {
       {/* 6. 通知与流水抽屉 */}
       {notificationsOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/70 flex justify-end backdrop-blur-xs"
+          className="storyos-overlay fixed inset-0 z-50 flex justify-end"
           onClick={() => setNotificationsOpen(false)}
         >
           <div
-            className="w-80 bg-[#0a0a0c] border-l border-[#222226] h-full p-4 flex flex-col space-y-3 shadow-2xl"
+            className="storyos-drawer w-[var(--drawer-width)] max-w-[90vw] h-full p-4 flex flex-col space-y-3"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#1f1f23] pb-3">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
               <div className="flex items-center gap-2">
-                <Bell className="w-4 h-4 text-white" />
-                <span className="text-xs font-bold text-white">生产通知与质检流水</span>
+                <Bell className="w-4 h-4 text-[var(--primary)]" />
+                <span className="text-xs font-semibold text-[var(--text-primary)]">生产通知与质检流水</span>
               </div>
               <button
                 type="button"
                 onClick={() => setNotificationsOpen(false)}
-                className="text-zinc-500 hover:text-white text-xs cursor-pointer"
+                className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] text-xs cursor-pointer"
+                aria-label="关闭通知抽屉"
               >
                 ✕
               </button>
@@ -388,15 +395,15 @@ export default function App() {
               {notifications.map(n => (
                 <div
                   key={n.id}
-                  className={`p-2.5 rounded-xl border text-xs space-y-1 ${
-                    n.unread ? 'bg-[#141416] border-white/40 text-white' : 'bg-[#000000] border-[#1f1f23] text-zinc-400'
+                  className={`p-2.5 rounded-[var(--radius-md)] border text-xs space-y-1 ${
+                    n.unread ? 'bg-[var(--bg-selected)] border-[var(--border-strong)] text-[var(--text-primary)]' : 'bg-[var(--bg-surface)] border-[var(--border-subtle)] text-[var(--text-secondary)]'
                   }`}
                 >
                   <div className="flex items-center justify-between font-semibold">
-                    <span className="text-white">{n.title}</span>
-                    <span className="text-[10px] font-mono text-zinc-500">{n.time}</span>
+                    <span className="text-[var(--text-primary)]">{n.title}</span>
+                    <span className="text-[10px] font-mono text-[var(--text-tertiary)]">{n.time}</span>
                   </div>
-                  <div className="text-[11px] leading-relaxed text-zinc-300">{n.desc}</div>
+                  <div className="text-[11px] leading-relaxed text-[var(--text-secondary)]">{n.desc}</div>
                 </div>
               ))}
             </div>
@@ -407,7 +414,7 @@ export default function App() {
                 setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
                 showToast('已全部标记为已读');
               }}
-              className="w-full py-1.5 rounded-lg bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-colors cursor-pointer shadow-xs"
+              className="storyos-control w-full px-3 font-semibold text-xs cursor-pointer"
             >
               全部标记为已读
             </button>

@@ -61,50 +61,50 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
 
   return (
     <div className="space-y-4 text-[13px] leading-relaxed select-text font-sans pb-32">
-      {/* 极简时间戳 - 纯黑底白字 */}
+      {/* 轻量时间戳 */}
       <div className="text-center my-1">
-        <span className="text-[11px] font-mono text-zinc-400">
+        <span className="text-[11px] font-mono text-[var(--text-tertiary)]">
           今天 14:58 · StoryOS 生产队列
         </span>
       </div>
 
-      {/* 触发操作按钮（黑底白字高对比按钮） */}
+      {/* 主要生产动作 */}
       <div className="flex justify-end items-center gap-2">
         <button
           type="button"
           onClick={onGenerateBatch}
           disabled={isGeneratingBatch}
-          className="px-3.5 py-1.5 rounded-lg bg-white text-black text-xs font-semibold hover:bg-zinc-200 transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          className="h-9 px-3.5 rounded-[var(--radius-md)] bg-[var(--primary)] text-white text-xs font-semibold hover:bg-[var(--primary-hover)] transition-colors shadow-[var(--shadow-xs)] flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
         >
           {isGeneratingBatch ? (
             <>
-              <span className="w-2 h-2 rounded-full bg-black animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-white animate-ping" />
               <span>正在调度批次出图...</span>
             </>
           ) : (
             <>
-              <Play className="w-3.5 h-3.5 fill-current text-black" />
+              <Play className="w-3.5 h-3.5 fill-current text-white" />
               <span>调度出图批次 ({activeEpisode.completedFrames}/{activeEpisode.totalFrames} 帧)</span>
             </>
           )}
         </button>
       </div>
 
-      {/* 核心对话推进卡片（纯黑底白字） */}
-      <div className="bg-[#0a0a0c] rounded-xl border border-[#222226] p-4 text-zinc-300 space-y-3 shadow-sm">
+      {/* Operator Console 主消息面 */}
+      <div className="storyos-surface p-4 text-[var(--text-secondary)] space-y-3">
         {/* 用时折叠 */}
         <div>
           <button
             type="button"
             onClick={() => setTimeStepOpen(!timeStepOpen)}
-            className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 hover:text-white transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 text-xs font-mono text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
           >
             <ChevronRight className={`w-3.5 h-3.5 transition-transform ${timeStepOpen ? 'rotate-90' : ''}`} />
             <span>执行用时 53 秒 · 32 镜图文工业级流水线</span>
           </button>
 
           {timeStepOpen && (
-            <div className="mt-2 pl-4 py-2 border-l border-zinc-700 text-[11px] font-mono text-zinc-300 space-y-1 bg-[#121214] rounded-r-lg">
+            <div className="mt-2 pl-4 py-2 border-l border-[var(--border-strong)] text-[11px] font-mono text-[var(--text-secondary)] space-y-1 bg-[var(--bg-subtle)] rounded-r-[var(--radius-md)]">
               <div>• 校验 gpt-image-2 (high) 模型参数规格与 4:5 1080×1350 竖版分辨率</div>
               <div>• 严格限制最大并发 3 张，杜绝显存溢出与跨批次人脸漂移</div>
               <div>• 批次 5 帧出图完成，已提交至 StoryOS 逐帧质检队列</div>
@@ -113,7 +113,7 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
         </div>
 
         {/* 简洁分析陈述 */}
-        <p className="text-zinc-200 text-xs sm:text-[13px]">
+        <p className="text-[var(--text-primary)] text-xs sm:text-[13px]">
           已解析当前批次（Frame #16 - #20）剧情推进需求，保持主角林澈 4:5 肖像基准与山庄雨夜冷调环境锚点。
         </p>
 
@@ -138,27 +138,27 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
           </div>
         </div>
 
-        {/* 结构化要点（纯黑底白字清晰分层） */}
-        <div className="space-y-1.5 text-xs text-zinc-300 bg-[#111114] p-3 rounded-lg border border-[#1f1f23]">
-          <div><strong className="text-white">【调度目标】</strong> 调度 gpt-image-2 (high) 输出 4:5 1080×1350 批次帧，最大并发 3</div>
-          <div><strong className="text-white">【生效配置】</strong> runtime-request.json、production-ledger.json</div>
-          <div><strong className="text-white">【风控门禁】</strong> 严格限流并发 3，保障一致性评分 ΔE &lt; 0.08</div>
-          <div><strong className="text-white">【画幅验收】</strong> 4:5 竖版标准无裁切，与基准主角保持一致</div>
+        {/* 结构化要点 */}
+        <div className="space-y-1.5 text-xs text-[var(--text-secondary)] bg-[var(--bg-subtle)] p-3 rounded-[var(--radius-md)] border border-[var(--border-subtle)]">
+          <div><strong className="text-[var(--text-primary)]">【调度目标】</strong> 调度 gpt-image-2 (high) 输出 4:5 1080×1350 批次帧，最大并发 3</div>
+          <div><strong className="text-[var(--text-primary)]">【生效配置】</strong> runtime-request.json、production-ledger.json</div>
+          <div><strong className="text-[var(--text-primary)]">【风控门禁】</strong> 严格限流并发 3，保障一致性评分 ΔE &lt; 0.08</div>
+          <div><strong className="text-[var(--text-primary)]">【画幅验收】</strong> 4:5 竖版标准无裁切，与基准主角保持一致</div>
           <div>
-            <strong className="text-white">【质检结论】</strong> 当前批次已产出，
+            <strong className="text-[var(--text-primary)]">【质检结论】</strong> 当前批次已产出，
             {inpaintDone ? (
-              <span className="text-white underline underline-offset-2 font-medium">Frame #18 倒影重绘完成，24/32 帧全部达标</span>
+              <span className="text-[var(--success)] font-medium">Frame #18 倒影重绘完成，24/32 帧全部达标</span>
             ) : (
-              <span className="text-zinc-300 font-medium">Frame #18 检测到玻璃倒影轻微双重重影，可点击一键重绘</span>
+              <span className="text-[var(--warning)] font-medium">Frame #18 检测到玻璃倒影轻微双重重影，可点击一键重绘</span>
             )}
           </div>
         </div>
 
         {/* 真实文件核准切换卡片 */}
-        <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#000000] border border-[#222226] text-xs font-mono">
+        <div className="flex items-center justify-between p-2.5 rounded-[var(--radius-md)] bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-mono">
           <div className="flex items-center gap-2">
-            <span className="text-white font-medium">已更新 runtime-request.json</span>
-            <span className="text-zinc-400 text-[11px] font-bold">+14 行</span>
+            <span className="text-[var(--text-primary)] font-medium">已更新 runtime-request.json</span>
+            <span className="text-[var(--text-tertiary)] text-[11px] font-bold">+14 行</span>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -170,8 +170,8 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
               }}
               className={`px-3 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
                 reviewed
-                  ? 'bg-white text-black shadow-xs'
-                  : 'bg-[#18181b] text-zinc-300 hover:text-white hover:bg-[#222226] border border-[#2e2e33]'
+                  ? 'bg-[var(--success-soft)] text-[var(--success)] border border-[color-mix(in_srgb,var(--success)_20%,var(--border-normal))]'
+                  : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] border border-[var(--border-normal)]'
               }`}
             >
               {reviewed ? '已核准配置 ✓' : '点击核准配置'}
@@ -179,14 +179,14 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
           </div>
         </div>
 
-        {/* 批次 5 帧 4:5 出图极简流（纯黑底白字高对比） */}
-        <div className="pt-3 border-t border-[#1f1f23]">
-          <div className="flex items-center justify-between text-xs font-mono text-zinc-400 mb-2">
-            <span className="text-white font-semibold">当前批次出图 (Batch #04 · 4:5 竖版)</span>
-            <span className="text-zinc-300 font-mono">点击缩略图可预览或切换质检状态</span>
+        {/* 批次 5 帧 Artifact 流 */}
+        <div className="pt-3 border-t border-[var(--border-subtle)]">
+          <div className="flex items-center justify-between text-xs font-mono text-[var(--text-tertiary)] mb-2">
+            <span className="text-[var(--text-primary)] font-semibold">当前批次出图 (Batch #04 · 4:5 竖版)</span>
+            <span className="text-[var(--text-secondary)] font-mono">点击缩略图可预览或切换质检状态</span>
           </div>
 
-          <div className="grid grid-cols-5 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
             {activeEpisode.currentBatch.items.map((item) => {
               const isPassed = passOverrides[item.id] !== undefined
                 ? passOverrides[item.id]
@@ -232,21 +232,21 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
             <button
               type="button"
               onClick={handleRunInpaint}
-              className="px-3.5 py-1.5 rounded-lg bg-white text-black text-xs font-semibold hover:bg-zinc-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="h-9 px-3.5 rounded-[var(--radius-md)] bg-[var(--primary)] text-white text-xs font-semibold hover:bg-[var(--primary-hover)] transition-colors flex items-center gap-1.5 cursor-pointer"
             >
-              <Wand2 className="w-3.5 h-3.5 text-black" />
+              <Wand2 className="w-3.5 h-3.5 text-white" />
               <span>一键修复 Frame #18 倒影微瑕</span>
             </button>
           ) : (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-zinc-400 font-mono">已完成逐帧修复并入库</span>
+              <span className="text-xs text-[var(--text-tertiary)] font-mono">已完成逐帧修复并入库</span>
               <button
                 type="button"
                 onClick={() => {
                   setInpaintDone(false);
                   onShowToast('已重置 Frame #18 为待修状态');
                 }}
-                className="text-xs text-zinc-400 hover:text-white underline cursor-pointer"
+                className="text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer"
               >
                 重置测试
               </button>
@@ -255,28 +255,29 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
         </div>
       </div>
 
-      {/* 质检详情弹窗（黑底白字高对比） */}
+      {/* 质检详情弹窗：工作台浅色壳层，图片本体保留深色背景。 */}
       {selectedFrame && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs"
+          className="storyos-overlay fixed inset-0 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedFrame(null)}
         >
           <div
-            className="bg-[#0a0a0c] border border-[#2e2e33] rounded-2xl max-w-sm w-full p-4 text-white space-y-3 shadow-2xl"
+            className="storyos-elevated rounded-[var(--radius-lg)] max-w-sm w-full p-4 text-[var(--text-primary)] space-y-3"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between text-xs font-mono border-b border-[#1f1f23] pb-2 text-zinc-300">
-              <span className="font-bold text-white">Frame #{selectedFrame.frameIndex} (4:5 1080×1350)</span>
+            <div className="flex items-center justify-between text-xs font-mono border-b border-[var(--border-subtle)] pb-2 text-[var(--text-secondary)]">
+              <span className="font-semibold text-[var(--text-primary)]">Frame #{selectedFrame.frameIndex} (4:5 1080×1350)</span>
               <button
                 type="button"
                 onClick={() => setSelectedFrame(null)}
-                className="text-zinc-400 hover:text-white px-1.5 py-0.5 rounded cursor-pointer"
+                className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] px-1.5 py-0.5 rounded cursor-pointer"
+                aria-label="关闭帧质检详情"
               >
                 ✕
               </button>
             </div>
 
-            <div className="aspect-[4/5] rounded-xl overflow-hidden border border-[#2e2e33] bg-black">
+            <div className="aspect-[4/5] rounded-[var(--radius-md)] overflow-hidden border border-[var(--border-normal)] bg-black">
               <img
                 src={selectedFrame.imageUrl}
                 alt={selectedFrame.prompt}
@@ -285,7 +286,7 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
               />
             </div>
 
-            <div className="text-xs font-mono text-zinc-300 space-y-1.5 bg-[#121215] p-2.5 rounded-lg border border-[#1f1f23]">
+            <div className="text-xs font-mono text-[var(--text-secondary)] space-y-1.5 bg-[var(--bg-subtle)] p-2.5 rounded-[var(--radius-md)] border border-[var(--border-subtle)]">
               <div>• 提示词: {selectedFrame.prompt}</div>
               <div>• 规格: gpt-image-2 (high) · 4:5 竖版</div>
               <div>• 渲染用时: {selectedFrame.renderTime} · 种子: {selectedFrame.seed}</div>
@@ -298,7 +299,7 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
                   toggleFramePass(selectedFrame);
                   setSelectedFrame(null);
                 }}
-                className="flex-1 py-1.5 rounded-lg bg-[#18181b] border border-[#2e2e33] text-white hover:bg-[#242429] text-xs font-medium cursor-pointer"
+                className="flex-1 h-9 rounded-[var(--radius-md)] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] text-xs font-medium cursor-pointer"
               >
                 切换通过/待修状态
               </button>
@@ -310,7 +311,7 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
                     handleRunInpaint();
                     setSelectedFrame(null);
                   }}
-                  className="flex-1 py-1.5 rounded-lg bg-white text-black text-xs font-semibold hover:bg-zinc-200 cursor-pointer"
+                  className="flex-1 h-9 rounded-[var(--radius-md)] bg-[var(--primary)] text-white text-xs font-semibold hover:bg-[var(--primary-hover)] cursor-pointer"
                 >
                   局部重绘 (Inpaint)
                 </button>

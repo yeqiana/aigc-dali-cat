@@ -48,8 +48,10 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
       completed: completedInBatch,
       total: totalInBatch,
       rate,
-      // 黑白层级色彩：100%纯白，进行中灰白，已排期深灰
-      fillColor: isDone ? '#ffffff' : (isInProgress ? '#a1a1aa' : (completedInBatch > 0 ? '#71717a' : '#27272a')),
+      // 使用统一 UI token，避免热力图形成第二套颜色体系。
+      fillColor: isDone
+        ? 'var(--primary)'
+        : (isInProgress ? 'var(--info)' : (completedInBatch > 0 ? 'var(--text-subtle)' : 'var(--border-strong)')),
       status: isDone ? '已交付' : (isInProgress ? '生产中' : '待调度'),
     };
   });
@@ -109,23 +111,23 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-[#0a0a0c] border border-[#2e2e33] p-2 rounded-lg text-xs font-mono text-white shadow-2xl z-50">
-          <div className="font-bold flex items-center justify-between gap-2 border-b border-[#1f1f23] pb-1 mb-1">
-            <span className="text-white">{data.fullName}</span>
-            <span className="text-[10px] text-zinc-400">{data.range}</span>
+        <div className="storyos-elevated p-2 text-xs font-mono text-[var(--text-primary)] z-50">
+          <div className="font-bold flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] pb-1 mb-1">
+            <span className="text-[var(--text-primary)]">{data.fullName}</span>
+            <span className="text-[10px] text-[var(--text-tertiary)]">{data.range}</span>
           </div>
-          <div className="text-[11px] text-zinc-300 space-y-0.5">
+          <div className="text-[11px] text-[var(--text-secondary)] space-y-0.5">
             <div className="flex justify-between gap-3">
-              <span className="text-zinc-400">状态:</span>
-              <span className="text-white font-medium">{data.status}</span>
+              <span className="text-[var(--text-tertiary)]">状态:</span>
+              <span className="text-[var(--text-primary)] font-medium">{data.status}</span>
             </div>
             <div className="flex justify-between gap-3">
-              <span className="text-zinc-400">已产帧数:</span>
-              <span className="text-white font-bold">{data.completed} / {data.total} 帧</span>
+              <span className="text-[var(--text-tertiary)]">已产帧数:</span>
+              <span className="text-[var(--text-primary)] font-bold">{data.completed} / {data.total} 帧</span>
             </div>
             <div className="flex justify-between gap-3">
-              <span className="text-zinc-400">批次完成率:</span>
-              <span className="text-white font-mono">{data.rate}%</span>
+              <span className="text-[var(--text-tertiary)]">批次完成率:</span>
+              <span className="text-[var(--primary)] font-mono">{data.rate}%</span>
             </div>
           </div>
         </div>
@@ -135,21 +137,21 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
   };
 
   return (
-    <aside className="w-64 sm:w-72 shrink-0 bg-[#000000] border-l border-[#1f1f23] flex flex-col h-full text-xs font-sans select-none text-zinc-300">
+    <aside className="storyos-drawer w-[var(--drawer-width)] max-w-[38vw] shrink-0 flex flex-col h-full text-xs font-sans select-none text-[var(--text-secondary)]">
       <div className="p-3 space-y-4 overflow-y-auto scrollbar-none flex-1">
         {/* 0. 生产进度热力一览图 (Recharts) */}
         <div>
-          <div className="flex items-center justify-between text-zinc-400 pb-1.5 border-b border-[#1f1f23] text-[11px] font-mono">
-            <span className="text-white font-semibold flex items-center gap-1.5">
-              <Flame className="w-3.5 h-3.5 text-white" />
+          <div className="flex items-center justify-between text-[var(--text-tertiary)] pb-1.5 border-b border-[var(--border-subtle)] text-[11px] font-mono">
+            <span className="text-[var(--text-primary)] font-semibold flex items-center gap-1.5">
+              <Flame className="w-3.5 h-3.5 text-[var(--primary)]" />
               <span>生产进度热力一览</span>
             </span>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#141416] border border-[#27272a] text-white">
+            <span className="storyos-status storyos-status--info font-mono">
               {activeEpisode.completedFrames}/{activeEpisode.totalFrames} 帧 ({completionPercent}%)
             </span>
           </div>
 
-          <div className="mt-2.5 p-2 rounded-xl bg-[#0a0a0c] border border-[#222226] space-y-2">
+          <div className="mt-2.5 p-2 rounded-[var(--radius-md)] bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
             {/* Recharts 批次热力柱状图 */}
             <div className="h-28 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -159,18 +161,18 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
                 >
                   <XAxis
                     dataKey="name"
-                    tick={{ fill: '#71717a', fontSize: 10, fontFamily: 'monospace' }}
-                    axisLine={{ stroke: '#222226' }}
+                    tick={{ fill: 'var(--text-tertiary)', fontSize: 10, fontFamily: 'monospace' }}
+                    axisLine={{ stroke: 'var(--border-normal)' }}
                     tickLine={false}
                   />
                   <YAxis
                     domain={[0, 5]}
                     ticks={[0, 2, 5]}
-                    tick={{ fill: '#52525b', fontSize: 9, fontFamily: 'monospace' }}
-                    axisLine={{ stroke: '#222226' }}
+                    tick={{ fill: 'var(--text-subtle)', fontSize: 9, fontFamily: 'monospace' }}
+                    axisLine={{ stroke: 'var(--border-normal)' }}
                     tickLine={false}
                   />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: '#141417' }} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--bg-muted)' }} />
                   <Bar
                     dataKey="completed"
                     radius={[3, 3, 0, 0]}
@@ -188,10 +190,10 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
             </div>
 
             {/* 逐帧微型热力网格 (展示全帧 32 格) */}
-            <div className="pt-1.5 border-t border-[#1a1a1e]">
-              <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400 mb-1.5">
+            <div className="pt-1.5 border-t border-[var(--border-subtle)]">
+              <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-tertiary)] mb-1.5">
                 <span>逐帧实施热力分布</span>
-                <span className="text-zinc-500">共 {activeEpisode.totalFrames} 帧</span>
+                <span className="text-[var(--text-subtle)]">共 {activeEpisode.totalFrames} 帧</span>
               </div>
               <div className="grid grid-cols-8 gap-1">
                 {Array.from({ length: activeEpisode.totalFrames }, (_, idx) => {
@@ -205,10 +207,10 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
                       title={`Frame #${frameIndex} · ${isDone ? '已质检交付 (PASS)' : (isCurrentBatch ? '当前正在出图' : '待调度队列')}`}
                       className={`h-2.5 rounded-[2px] transition-colors cursor-help ${
                         isDone
-                          ? 'bg-white'
+                          ? 'bg-[var(--primary)]'
                           : isCurrentBatch
-                          ? 'bg-zinc-600 animate-pulse'
-                          : 'bg-[#18181b] border border-[#27272a]'
+                          ? 'bg-[var(--info)] animate-pulse'
+                          : 'bg-[var(--bg-muted)] border border-[var(--border-normal)]'
                       }`}
                     />
                   );
@@ -216,17 +218,17 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
               </div>
 
               {/* 热力图例 */}
-              <div className="flex items-center justify-between pt-2 text-[10px] font-mono text-zinc-400">
+              <div className="flex items-center justify-between pt-2 text-[10px] font-mono text-[var(--text-tertiary)]">
                 <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-[2px] bg-white inline-block" />
+                  <span className="w-2 h-2 rounded-[2px] bg-[var(--primary)] inline-block" />
                   <span>已交付</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-[2px] bg-zinc-600 inline-block" />
+                  <span className="w-2 h-2 rounded-[2px] bg-[var(--info)] inline-block" />
                   <span>出图中</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-[2px] bg-[#18181b] border border-[#27272a] inline-block" />
+                  <span className="w-2 h-2 rounded-[2px] bg-[var(--bg-muted)] border border-[var(--border-normal)] inline-block" />
                   <span>未排期</span>
                 </div>
               </div>
@@ -236,12 +238,12 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
 
         {/* 1. 交付与成片切片 */}
         <div>
-          <div className="flex items-center justify-between text-zinc-400 pb-1.5 border-b border-[#1f1f23] text-[11px] font-mono">
-            <span className="text-white font-semibold">成片切片包</span>
+          <div className="flex items-center justify-between text-[var(--text-tertiary)] pb-1.5 border-b border-[var(--border-subtle)] text-[11px] font-mono">
+            <span className="text-[var(--text-primary)] font-semibold">成片切片包</span>
             <button
               type="button"
               onClick={() => onShowToast('已新建切片配置')}
-              className="p-1 hover:text-white rounded hover:bg-[#18181b] cursor-pointer"
+              className="p-1 hover:text-[var(--primary)] rounded-[var(--radius-sm)] hover:bg-[var(--bg-subtle)] cursor-pointer"
               title="添加新切片规则"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -262,13 +264,13 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
                   qaGate: 'PASS'
                 }
               })}
-              className="w-full text-left p-2 rounded-lg bg-[#0e0e11] hover:bg-[#18181b] border border-[#222226] cursor-pointer text-zinc-300 hover:text-white transition-colors flex items-center justify-between font-mono text-[11px]"
+              className="w-full text-left p-2 rounded-[var(--radius-md)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] border border-[var(--border-normal)] cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center justify-between font-mono text-[11px]"
             >
               <div className="flex flex-col truncate">
-                <span className="truncate text-white font-medium">release-manifest.json</span>
-                <span className="text-[10px] text-zinc-400 font-sans">4:5 规格发布清单</span>
+                <span className="truncate text-[var(--text-primary)] font-medium">release-manifest.json</span>
+                <span className="text-[10px] text-[var(--text-tertiary)] font-sans">4:5 规格发布清单</span>
               </div>
-              <span className="text-[10px] text-zinc-300 font-bold ml-1 shrink-0 px-1.5 py-0.5 rounded bg-black border border-[#27272a]">
+              <span className="storyos-status storyos-status--neutral ml-1 shrink-0 font-mono">
                 就绪
               </span>
             </button>
@@ -276,27 +278,27 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
             <button
               type="button"
               onClick={() => onShowToast(`已归档 ${activeEpisode.completedFrames} 帧 4:5 高清成片切片包`)}
-              className="w-full text-left p-2 rounded-lg bg-[#0e0e11] hover:bg-[#18181b] border border-[#222226] cursor-pointer text-zinc-300 hover:text-white transition-colors flex items-center justify-between font-mono text-[11px]"
+              className="w-full text-left p-2 rounded-[var(--radius-md)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] border border-[var(--border-normal)] cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center justify-between font-mono text-[11px]"
             >
               <div className="flex flex-col truncate">
-                <span className="truncate text-white font-medium">4:5 原画切片包</span>
-                <span className="text-[10px] text-zinc-400 font-sans">标准 1080×1350 竖版</span>
+                <span className="truncate text-[var(--text-primary)] font-medium">4:5 原画切片包</span>
+                <span className="text-[10px] text-[var(--text-tertiary)] font-sans">标准 1080×1350 竖版</span>
               </div>
-              <span className="text-[10px] text-white font-bold ml-1 shrink-0 px-1.5 py-0.5 rounded bg-white text-black">
+              <span className="storyos-status storyos-status--success ml-1 shrink-0 font-mono">
                 {activeEpisode.completedFrames}帧
               </span>
             </button>
           </div>
         </div>
 
-        {/* 2. 来源与工作区账本（纯黑底白字） */}
+        {/* 2. 来源与工作区账本 */}
         <div>
-          <div className="flex items-center justify-between text-zinc-400 pb-1.5 border-b border-[#1f1f23] text-[11px] font-mono">
-            <span className="text-white font-semibold">生产规则与账本</span>
+          <div className="flex items-center justify-between text-[var(--text-tertiary)] pb-1.5 border-b border-[var(--border-subtle)] text-[11px] font-mono">
+            <span className="text-[var(--text-primary)] font-semibold">生产规则与账本</span>
             <button
               type="button"
               onClick={() => onShowToast('已添加自定义配置映射')}
-              className="p-1 hover:text-white rounded hover:bg-[#18181b] cursor-pointer"
+              className="p-1 hover:text-[var(--primary)] rounded-[var(--radius-sm)] hover:bg-[var(--bg-subtle)] cursor-pointer"
               title="添加来源映射"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -309,13 +311,13 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
                 key={file.name}
                 type="button"
                 onClick={() => setActiveJson({ title: file.name, json: file.data })}
-                className="w-full text-left p-2 rounded-lg bg-[#0e0e11] hover:bg-[#18181b] border border-[#222226] cursor-pointer text-zinc-300 hover:text-white transition-colors font-mono text-[11px]"
+                className="w-full text-left p-2 rounded-[var(--radius-md)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] border border-[var(--border-normal)] cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors font-mono text-[11px]"
               >
-                <div className="flex items-center gap-1.5 text-white font-medium">
-                  <FileCode className="w-3 h-3 text-zinc-400 shrink-0" />
+                <div className="flex items-center gap-1.5 text-[var(--text-primary)] font-medium">
+                  <FileCode className="w-3 h-3 text-[var(--text-tertiary)] shrink-0" />
                   <span className="truncate">{file.name}</span>
                 </div>
-                <div className="text-[10px] text-zinc-400 font-sans mt-0.5 truncate">
+                <div className="text-[10px] text-[var(--text-tertiary)] font-sans mt-0.5 truncate">
                   {file.desc}
                 </div>
               </button>
@@ -325,49 +327,49 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
       </div>
 
       {/* 底部一键打包导出 */}
-      <div className="p-3 border-t border-[#1f1f23] bg-[#050507]">
+      <div className="p-3 border-t border-[var(--border-normal)] bg-[var(--bg-surface)]">
         <button
           type="button"
           onClick={handleDownloadAll}
-          className="w-full py-1.5 rounded-lg bg-white text-black hover:bg-zinc-200 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+          className="w-full h-9 rounded-[var(--radius-md)] bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-[var(--shadow-xs)]"
         >
-          <Download className="w-3.5 h-3.5 text-black" />
+          <Download className="w-3.5 h-3.5 text-white" />
           <span>导出当前剧集全量资产</span>
         </button>
       </div>
 
-      {/* 纯黑底白字 JSON 查看弹窗 */}
+      {/* JSON 查看弹窗：壳层沿用工作台，代码区保持高对比。 */}
       {activeJson && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs"
+          className="storyos-overlay fixed inset-0 z-50 flex items-center justify-center p-4"
           onClick={() => setActiveJson(null)}
         >
           <div
-            className="bg-[#0a0a0c] border border-[#2e2e33] rounded-2xl max-w-lg w-full p-4 text-white space-y-3 font-mono text-xs shadow-2xl"
+            className="storyos-elevated rounded-[var(--radius-lg)] max-w-lg w-full p-4 text-[var(--text-primary)] space-y-3 font-mono text-xs"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#1f1f23] pb-2">
-              <span className="text-white font-bold">{activeJson.title}</span>
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2">
+              <span className="text-[var(--text-primary)] font-bold">{activeJson.title}</span>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="px-2 py-0.5 rounded bg-[#18181b] border border-[#27272a] hover:bg-white hover:text-black transition-colors flex items-center gap-1 text-[11px] cursor-pointer"
+                  className="px-2 py-1 rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--border-normal)] hover:bg-[var(--bg-subtle)] transition-colors flex items-center gap-1 text-[11px] cursor-pointer"
                 >
-                  {copied ? <Check className="w-3 h-3 text-white" /> : <Copy className="w-3 h-3" />}
+                  {copied ? <Check className="w-3 h-3 text-[var(--success)]" /> : <Copy className="w-3 h-3" />}
                   <span>{copied ? '已复制' : '复制 JSON'}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveJson(null)}
-                  className="text-zinc-400 hover:text-white px-1.5 py-0.5 rounded cursor-pointer"
+                  className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] px-1.5 py-0.5 rounded cursor-pointer"
                 >
                   ✕
                 </button>
               </div>
             </div>
 
-            <pre className="max-h-80 overflow-y-auto bg-black p-3 rounded-xl border border-[#1f1f23] text-[11px] text-zinc-300 leading-relaxed scrollbar-thin select-all">
+            <pre className="max-h-80 overflow-y-auto bg-[var(--text-primary)] p-3 rounded-[var(--radius-md)] border border-[var(--border-strong)] text-[11px] text-slate-200 leading-relaxed scrollbar-thin select-all">
               {JSON.stringify(activeJson.json, null, 2)}
             </pre>
           </div>
