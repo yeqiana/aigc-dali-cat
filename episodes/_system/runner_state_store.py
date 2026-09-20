@@ -45,7 +45,8 @@ def save(episode: Path, **fields) -> dict:
                 current.pop(stale, None)
         current.update(fields)
         current["heartbeat"] = _now()
-        runtime_workspace.write_json(episode, REL, current)
+        if hot_state_bridge.compatibility_write_allowed():
+            runtime_workspace.write_json(episode, REL, current)
         hot_state_bridge.mirror(episode, "RUNNER_STATE", current)
         return current
 

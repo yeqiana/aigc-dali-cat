@@ -42,7 +42,8 @@ def _load_state(ep: Path) -> dict:
 
 
 def _save_state(ep: Path, data: dict) -> None:
-    atomic.atomic_write_json(Path(ep) / REL, data)
+    if hot_state_bridge.compatibility_write_allowed():
+        atomic.atomic_write_json(Path(ep) / REL, data)
     hot_state_bridge.mirror(Path(ep), "CIRCUIT_BREAKER", data)
 
 def record_failure(ep, route: str, code: str, *, threshold: int = 2, cooldown_seconds: int = 900) -> dict:

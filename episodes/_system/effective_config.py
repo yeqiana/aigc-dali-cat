@@ -177,7 +177,8 @@ def write(ep) -> dict:
     ep = Path(ep).resolve()
     runtime_portability.assert_episode_directory(ep)
     data = snapshot()
-    runtime_workspace.write_json(ep, REL, data)
+    if hot_state_bridge.compatibility_write_allowed():
+        runtime_workspace.write_json(ep, REL, data)
     hot_state_bridge.mirror(ep, "EFFECTIVE_CONFIG", data)
     return data
 

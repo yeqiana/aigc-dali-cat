@@ -34,7 +34,8 @@ def save(episode: Path, *, stage: str, step: str, attempt: int,
         "resume_action": resume_action,
         "updated_at": now(),
     }
-    runtime_workspace.write_json(episode, REL, payload)
+    if hot_state_bridge.compatibility_write_allowed():
+        runtime_workspace.write_json(episode, REL, payload)
     hot_state_bridge.mirror(episode, "RESUME_TOKEN", payload)
 
 

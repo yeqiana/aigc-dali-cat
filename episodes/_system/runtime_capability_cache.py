@@ -25,7 +25,8 @@ def write_json(p,d):
     story_json.write_json(p, d)
 def persist(ep,d):
     ep=Path(ep).resolve()
-    write_json(ep/REL,d)
+    if hot_state_bridge.compatibility_write_allowed():
+        write_json(ep/REL,d)
     hot_state_bridge.mirror(ep,"RUNTIME_CAPABILITIES",d)
     return d
 def ttl_seconds():

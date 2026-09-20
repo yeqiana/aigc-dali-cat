@@ -85,7 +85,9 @@ def load_current_request(ep: Path) -> dict | None:
 
 def _write_current_request(ep: Path, data: dict) -> Path:
     ep = Path(ep).resolve()
-    current_path = runtime_workspace.write_json(ep, REQUEST_REL, data)
+    current_path = runtime_workspace.workspace_path(ep, REQUEST_REL)
+    if hot_state_bridge.compatibility_write_allowed():
+        current_path = runtime_workspace.write_json(ep, REQUEST_REL, data)
     hot_state_bridge.mirror(ep, "HOST_REQUEST_CURRENT", data)
     return current_path
 

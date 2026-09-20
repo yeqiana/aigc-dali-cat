@@ -33,7 +33,8 @@ def prepare(ep):
         try:capsule=execution_capsule.compile_capsule(ep,step,write=True)
         except Exception:capsule=None
     state={"schema_version":1,"module_version":"2.6.0","resume_capsule":(ep/runtime_resume_capsule.REL).relative_to(ep).as_posix(),"runtime_step":step,"capability_cache_fresh":runtime_capability_cache.is_fresh(caps),"execution_capsule_compiled":bool(capsule),"performance_slo":slo(ep),"fast_path_policy":"resume capsule first; no broad rescan while source SHA is unchanged"}
-    out=ep/REL;out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(state,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    if hot_state_bridge.compatibility_write_allowed():
+        out=ep/REL;out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(state,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
     hot_state_bridge.mirror(ep, "FAST_PATH", state)
     episode_performance.safe_end_named_span(ep,"CONTEXT_RECOVERY",status="PASS",metadata={"fast_path":"2.6.0"})
     return {"state":state,"resume":resume,"capabilities":caps}

@@ -69,9 +69,10 @@ def _read(ep: Path) -> dict:
 
 
 def _write(ep: Path, data: dict) -> None:
-    path = _path(ep)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    runtime_atomic_store.atomic_write_json(path, data)
+    if hot_state_bridge.compatibility_write_allowed():
+        path = _path(ep)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        runtime_atomic_store.atomic_write_json(path, data)
     hot_state_bridge.mirror(ep, "INFLIGHT", data)
 
 

@@ -898,7 +898,8 @@ def apply_runtime_block_semantics(data: dict) -> dict:
 
 def write(ep: Path) -> dict:
     data = apply_runtime_block_semantics(derive(ep))
-    runtime_workspace.write_json(Path(ep), REL, data)
+    if hot_state_bridge.compatibility_write_allowed():
+        runtime_workspace.write_json(Path(ep), REL, data)
     hot_state_bridge.mirror(Path(ep), "NEXT_ACTION", data)
     return data
 

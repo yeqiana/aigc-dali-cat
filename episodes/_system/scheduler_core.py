@@ -158,7 +158,12 @@ def save_queue(ep: Path, q: dict) -> None:
     episode_lifecycle.assert_writable(ep, "production_queue.write")
     with queue_transaction(ep):
         q["updated_at"] = now()
-        write_json(production_queue_store.write_path(ep), q)
+        import storage_config
+        current_mode = storage_config.hot_state_config()["mode"]
+        # Redis-only means Redis is the sole queue authority. File/workspace
+        # writes are retained only for file/dual compatibility modes.
+        if current_mode != "redis":
+            write_json(production_queue_store.write_path(ep), q)
         hot_state_bridge.mirror(ep, "QUEUE", q)
 
 

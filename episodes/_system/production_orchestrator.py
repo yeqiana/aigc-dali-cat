@@ -623,7 +623,8 @@ def _emit(root, episode_dir, *, status, intent, selection, profile_id, lifecycle
         document["written"] = False
         return document
     try:
-        runtime_workspace.write_json(Path(episode_dir), STATUS_DOC_REL, document)
+        if hot_state_bridge.compatibility_write_allowed():
+            runtime_workspace.write_json(Path(episode_dir), STATUS_DOC_REL, document)
         hot_state_bridge.mirror(Path(episode_dir), "FULL_AUTO_STATUS", document)
     except Exception as exc:  # a reporting failure never changes the production outcome
         document["notes"].append("status document not written: " + type(exc).__name__)

@@ -36,8 +36,10 @@ def decide(ep,request):
         "preserve":preserve,"invalidate":invalidate,
         "reason_codes":[f"MODE_{mode.upper()}",f"INTENT_{expected}","DETERMINISTIC_ROUTE"]}
 def write_decision(ep,decision):
-    p=ep/str(_cfg().get("decision_path") or "meta/runtime-route.json");p.parent.mkdir(parents=True,exist_ok=True)
-    p.write_text(json.dumps(decision,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    p=ep/str(_cfg().get("decision_path") or "meta/runtime-route.json")
+    if hot_state_bridge.compatibility_write_allowed():
+        p.parent.mkdir(parents=True,exist_ok=True)
+        p.write_text(json.dumps(decision,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     hot_state_bridge.mirror(ep, "RUNTIME_ROUTE", decision)
     return p
 def read_decision(ep):

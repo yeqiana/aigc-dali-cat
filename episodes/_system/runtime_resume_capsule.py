@@ -86,7 +86,8 @@ def compile_capsule(ep,write=True):
         else:actions.append("continue only the next canonical stage")
     data={"schema_version":1,"module_version":"2.5.1","generated_at":now(),"episode":ep.relative_to(ROOT).as_posix() if ep.is_relative_to(ROOT) else str(ep),"current_state":cur,"next_target":next_target,"runtime_step":STEP_BY_STATE.get(cur),"source_fingerprint":source_fingerprint,"source_files":sources,"ledger":ls,"queue_status_counts":qs,"runtime_capabilities":caps,"next_actions":actions,"read_policy":"Read this capsule first after context loss. Rebuild on source_fingerprint drift; source authority always wins.","authority_policy":"Derived cache only; source authority always wins."}
     if write:
-        runtime_workspace.write_json(ep,REL,data)
+        if hot_state_bridge.compatibility_write_allowed():
+            runtime_workspace.write_json(ep,REL,data)
         hot_state_bridge.mirror(ep, "RESUME_CAPSULE", data)
     return data
 def load_fresh(ep,write=True):

@@ -11,6 +11,11 @@ class HotStateAuthorityError(RuntimeError):
     """Redis authority is unavailable in redis-only mode."""
 
 
+def compatibility_write_allowed() -> bool:
+    """Legacy file/workspace shadows stop once Redis is authoritative."""
+    return storage_config.hot_state_config()["mode"] != "redis"
+
+
 def file_fallback_allowed(result: dict) -> bool:
     """Compatibility files are readable only before Redis becomes authority."""
     return str((result or {}).get("mode") or "") != "redis"
