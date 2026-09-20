@@ -34,44 +34,44 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
   });
 
   return (
-    <div id="series-library-view" className="space-y-4 text-zinc-300 font-sans select-none">
-      {/* 顶部标题区 - 纯黑底白字 */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0a0a0c] p-4 rounded-xl border border-[#222226]">
+    <div id="series-library-view" className="space-y-4 text-[var(--text-secondary)] font-sans select-none">
+      {/* 顶部标题区 */}
+      <div className="storyos-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <Clapperboard className="w-4 h-4 text-white" />
+            <h2 className="text-sm font-semibold text-[var(--text-primary)] tracking-wide flex items-center gap-2">
+              <Clapperboard className="w-4 h-4 text-[var(--primary)]" />
               <span>剧集资产全景总览 (StoryOS Series & Episodes)</span>
             </h2>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white text-black font-bold">
+            <span className="storyos-status storyos-status--neutral font-mono">
               {episodes.length} 剧目就绪
             </span>
           </div>
-          <p className="text-xs text-zinc-400 mt-1">全系列图文故事生产资产库、7 大正式阶段流转状态与出图排期</p>
+          <p className="text-xs text-[var(--text-tertiary)] mt-1">全系列图文故事生产资产库、7 大正式阶段流转状态与出图排期</p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={onNewStoryClick}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-black text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+            className="h-9 flex items-center gap-1.5 px-3.5 rounded-[var(--radius-md)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs font-semibold shadow-[var(--shadow-xs)] transition-colors cursor-pointer"
           >
-            <Plus className="w-3.5 h-3.5 text-black stroke-[2.5]" />
+            <Plus className="w-3.5 h-3.5 text-white stroke-[2.5]" />
             <span>新建故事项目</span>
           </button>
         </div>
       </div>
 
       {/* 过滤与搜索条 */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#0a0a0c] p-3 rounded-xl border border-[#222226] text-xs">
+      <div className="storyos-surface flex flex-col sm:flex-row items-center justify-between gap-3 p-3 text-xs">
         <div className="relative w-full sm:w-80">
-          <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-[var(--text-tertiary)] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="搜索剧目代号、标题或题材类型..."
-            className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-[#000000] border border-[#27272a] focus:outline-hidden focus:border-white text-xs text-white placeholder-zinc-500"
+            className="storyos-control w-full pl-8 pr-3 text-xs outline-none focus:border-[var(--focus)] placeholder:text-[var(--text-subtle)]"
           />
         </div>
 
@@ -89,10 +89,10 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
               key={item.id}
               type="button"
               onClick={() => setFilterStage(item.id)}
-              className={`px-2.5 py-1 rounded-md font-mono text-[11px] font-medium transition-colors shrink-0 cursor-pointer ${
+              className={`h-8 px-2.5 rounded-[var(--radius-sm)] font-mono text-[11px] font-medium transition-colors shrink-0 cursor-pointer border ${
                 filterStage === item.id
-                  ? 'bg-white text-black font-semibold shadow-xs'
-                  : 'bg-[#141416] text-zinc-400 hover:text-white hover:bg-[#1a1a1e] border border-[#27272a]'
+                  ? 'bg-[var(--primary-soft)] text-[var(--primary-hover)] border-[var(--border-normal)] font-semibold'
+                  : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] border-[var(--border-normal)]'
               }`}
             >
               {item.label}
@@ -110,10 +110,10 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
           return (
             <div
               key={ep.id}
-              className={`rounded-xl border bg-[#0a0a0c] overflow-hidden shadow-xs transition-all flex flex-col justify-between cursor-pointer ${
+              className={`rounded-[var(--radius-lg)] border bg-[var(--bg-surface)] overflow-hidden shadow-[var(--shadow-xs)] transition-all flex flex-col justify-between cursor-pointer ${
                 isActive
-                  ? 'border-white ring-1 ring-white/60 shadow-lg'
-                  : 'border-[#222226] hover:border-[#38383e]'
+                  ? 'border-[var(--primary)] ring-2 ring-[rgba(22,119,255,.10)] shadow-[var(--shadow-sm)]'
+                  : 'border-[var(--border-normal)] hover:border-[var(--border-strong)]'
               }`}
               onClick={() => {
                 onSelectEpisode(ep);
@@ -155,39 +155,39 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
 
                 {/* 介绍与指标 */}
                 <div className="p-3.5 space-y-3">
-                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[var(--text-secondary)] line-clamp-2 leading-relaxed">
                     {ep.synopsis}
                   </p>
 
-                  {/* 进度条 - 纯黑白 */}
+                  {/* 进度条 */}
                   <div>
-                    <div className="flex justify-between text-[11px] font-mono text-zinc-400 mb-1">
+                    <div className="flex justify-between text-[11px] font-mono text-[var(--text-tertiary)] mb-1">
                       <span>已完成帧数</span>
-                      <span className="font-bold text-white">
+                      <span className="font-semibold text-[var(--text-primary)] tabular-nums">
                         {ep.completedFrames} / {ep.totalFrames} 帧 ({progressPercent}%)
                       </span>
                     </div>
-                    <div className="w-full bg-[#18181b] h-1.5 rounded-full overflow-hidden border border-[#27272a]">
+                    <div className="w-full bg-[var(--bg-muted)] h-1.5 rounded-full overflow-hidden border border-[var(--border-subtle)]">
                       <div
-                        className="bg-white h-full rounded-full transition-all"
+                        className="bg-[var(--primary)] h-full rounded-full transition-all"
                         style={{ width: `${progressPercent}%` }}
                       />
                     </div>
                   </div>
 
                   {/* 规格 */}
-                  <div className="text-[11px] font-mono text-zinc-300 bg-[#000000] p-2 rounded-lg border border-[#222226] flex items-center justify-between">
-                    <span className="truncate text-zinc-400">
+                  <div className="text-[11px] font-mono text-[var(--text-secondary)] bg-[var(--bg-subtle)] p-2 rounded-[var(--radius-md)] border border-[var(--border-subtle)] flex items-center justify-between">
+                    <span className="truncate text-[var(--text-tertiary)]">
                       {ep.runtimeRequest.imageModel || 'gpt-image-2'}
                     </span>
-                    <span className="text-white font-bold">{ep.runtimeRequest.aspectRatio || '4:5 1080×1350'}</span>
+                    <span className="text-[var(--text-primary)] font-semibold">{ep.runtimeRequest.aspectRatio || '4:5 1080×1350'}</span>
                   </div>
                 </div>
               </div>
 
               {/* 底部操作条 */}
-              <div className="p-3 bg-[#050507] border-t border-[#1f1f23] flex items-center justify-between">
-                <span className="text-[10px] font-mono text-zinc-500">
+              <div className="p-3 bg-[var(--bg-subtle)] border-t border-[var(--border-subtle)] flex items-center justify-between">
+                <span className="text-[10px] font-mono text-[var(--text-tertiary)]">
                   更新于 {ep.updatedAt}
                 </span>
 
@@ -198,7 +198,7 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
                     onSelectEpisode(ep);
                     onGoToWorkbench();
                   }}
-                  className="flex items-center gap-1 text-xs font-bold text-white hover:text-zinc-300 transition-colors px-2 py-1 rounded bg-[#18181b] hover:bg-[#222226] border border-[#2e2e33]"
+                  className="h-8 flex items-center gap-1 text-xs font-semibold text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors px-2 rounded-[var(--radius-sm)] bg-[var(--bg-surface)] hover:bg-[var(--primary-soft)] border border-[var(--border-normal)]"
                 >
                   <span>进入工作台</span>
                   <ArrowRight className="w-3.5 h-3.5" />

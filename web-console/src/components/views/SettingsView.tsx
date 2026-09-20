@@ -70,25 +70,25 @@ export const SettingsView: React.FC = () => {
   };
 
   return (
-    <div id="codex-appearance-settings-view" className="space-y-6 text-zinc-300 font-sans select-none pb-24">
+    <div id="codex-appearance-settings-view" className="space-y-6 text-[var(--text-secondary)] font-sans select-none pb-24">
       {/* Toast 提示 */}
       {toastMessage && (
-        <div className="fixed top-12 right-8 z-50 bg-white text-black px-4 py-2 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2 animate-in fade-in">
-          <Check className="w-4 h-4 text-black" />
+        <div className="storyos-elevated fixed top-12 right-8 z-50 px-4 py-2 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+          <Check className="w-4 h-4 text-[var(--success)]" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* 顶部标签切换：外观参数 与 管线参数 */}
-      <div className="flex items-center justify-between border-b border-[#262626] pb-3">
+      <div className="flex items-center justify-between border-b border-[var(--border-normal)] pb-3">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setActiveSubTab('appearance')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+            className={`h-9 px-3 rounded-[var(--radius-md)] text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 border ${
               activeSubTab === 'appearance'
-                ? 'bg-white text-black font-semibold'
-                : 'text-zinc-400 hover:text-white hover:bg-[#18181b]'
+                ? 'bg-[var(--primary-soft)] text-[var(--primary-hover)] border-[var(--border-normal)] font-semibold'
+                : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border-transparent hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]'
             }`}
           >
             <Palette className="w-3.5 h-3.5" />
@@ -98,10 +98,10 @@ export const SettingsView: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveSubTab('pipeline')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+            className={`h-9 px-3 rounded-[var(--radius-md)] text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 border ${
               activeSubTab === 'pipeline'
-                ? 'bg-white text-black font-semibold'
-                : 'text-zinc-400 hover:text-white hover:bg-[#18181b]'
+                ? 'bg-[var(--primary-soft)] text-[var(--primary-hover)] border-[var(--border-normal)] font-semibold'
+                : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border-transparent hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]'
             }`}
           >
             <Sliders className="w-3.5 h-3.5" />
@@ -109,7 +109,7 @@ export const SettingsView: React.FC = () => {
           </button>
         </div>
 
-        <div className="text-[11px] font-mono text-zinc-500">
+        <div className="text-[11px] font-mono text-[var(--text-tertiary)]">
           Codex UI Settings v2.4
         </div>
       </div>
@@ -466,16 +466,16 @@ export const SettingsView: React.FC = () => {
 
           {/* ===================== 2. 偏好设置 (Preferences) ===================== */}
           <section className="space-y-4">
-            <h2 className="text-sm font-semibold text-white tracking-wide">
+            <h2 className="text-sm font-semibold text-[var(--text-primary)] tracking-wide">
               偏好设置
             </h2>
 
-            <div className="bg-[#141416] border border-[#27272a] rounded-2xl p-4 divide-y divide-[#222226] text-xs">
+            <div className="storyos-surface p-4 divide-y divide-[var(--border-subtle)] text-xs">
               {/* 2.1 使用指针光标 */}
               <div className="py-3 first:pt-0 flex items-center justify-between">
                 <div>
-                  <div className="text-white font-medium">使用指针光标</div>
-                  <div className="text-[11px] text-zinc-400 mt-0.5">
+                  <div className="text-[var(--text-primary)] font-medium">使用指针光标</div>
+                  <div className="text-[11px] text-[var(--text-tertiary)] mt-0.5">
                     悬停交互元素时切换为指针光标
                   </div>
                 </div>
@@ -486,7 +486,7 @@ export const SettingsView: React.FC = () => {
                     showToast(pointerCursor ? '已关闭指针光标' : '已开启指针光标');
                   }}
                   className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center cursor-pointer ${
-                    pointerCursor ? 'bg-[#2563eb] justify-end' : 'bg-[#27272a] justify-start'
+                    pointerCursor ? 'bg-[var(--primary)] justify-end' : 'bg-[var(--border-strong)] justify-start'
                   }`}
                 >
                   <span className="w-5 h-5 rounded-full bg-white shadow-md" />
@@ -496,12 +496,12 @@ export const SettingsView: React.FC = () => {
               {/* 2.2 减少动态效果 */}
               <div className="py-3 flex items-center justify-between">
                 <div>
-                  <div className="text-white font-medium">减少动态效果</div>
-                  <div className="text-[11px] text-zinc-400 mt-0.5">
+                  <div className="text-[var(--text-primary)] font-medium">减少动态效果</div>
+                  <div className="text-[11px] text-[var(--text-tertiary)] mt-0.5">
                     减少动画效果或匹配系统设置
                   </div>
                 </div>
-                <div className="bg-[#202024] p-0.5 rounded-lg border border-[#2e2e33] flex items-center gap-0.5">
+                <div className="bg-[var(--bg-muted)] p-0.5 rounded-[var(--radius-md)] border border-[var(--border-normal)] flex items-center gap-0.5">
                   {(['system', 'on', 'off'] as const).map((mode) => {
                     const labels = { system: '系统', on: '开启', off: '关闭' };
                     const isActive = reducedMotion === mode;
@@ -515,8 +515,8 @@ export const SettingsView: React.FC = () => {
                         }}
                         className={`px-3 py-1 rounded-md text-xs transition-colors cursor-pointer ${
                           isActive
-                            ? 'bg-[#323238] text-white font-medium'
-                            : 'text-zinc-400 hover:text-white'
+                            ? 'bg-[#323238] text-[var(--text-primary)] font-medium'
+                            : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
                         }`}
                       >
                         {labels[mode]}
@@ -529,8 +529,8 @@ export const SettingsView: React.FC = () => {
               {/* 2.3 UI 字号 */}
               <div className="py-3 flex items-center justify-between">
                 <div>
-                  <div className="text-white font-medium">UI 字号</div>
-                  <div className="text-[11px] text-zinc-400 mt-0.5">
+                  <div className="text-[var(--text-primary)] font-medium">UI 字号</div>
+                  <div className="text-[11px] text-[var(--text-tertiary)] mt-0.5">
                     调整 ChatGPT / StoryOS 界面使用的基准字号
                   </div>
                 </div>
@@ -541,21 +541,21 @@ export const SettingsView: React.FC = () => {
                     max="20"
                     value={uiFontSize}
                     onChange={(e) => setUiFontSize(e.target.value)}
-                    className="w-14 bg-[#202024] border border-[#2e2e33] text-white font-mono text-center rounded-lg px-2 py-1 text-xs focus:border-zinc-400 outline-hidden"
+                    className="storyos-control w-14 font-mono text-center px-2 text-xs outline-none focus:border-[var(--focus)]"
                   />
-                  <span className="text-zinc-400 font-mono text-xs">px</span>
+                  <span className="text-[var(--text-tertiary)] font-mono text-xs">px</span>
                 </div>
               </div>
 
               {/* 2.4 差异标记 */}
               <div className="py-3 last:pb-0 flex items-center justify-between">
                 <div>
-                  <div className="text-white font-medium">差异标记</div>
-                  <div className="text-[11px] text-zinc-400 mt-0.5">
+                  <div className="text-[var(--text-primary)] font-medium">差异标记</div>
+                  <div className="text-[11px] text-[var(--text-tertiary)] mt-0.5">
                     使用颜色或 +/- 标记显示更改
                   </div>
                 </div>
-                <div className="bg-[#202024] p-0.5 rounded-lg border border-[#2e2e33] flex items-center gap-0.5">
+                <div className="bg-[var(--bg-muted)] p-0.5 rounded-[var(--radius-md)] border border-[var(--border-normal)] flex items-center gap-0.5">
                   <button
                     type="button"
                     onClick={() => {
@@ -564,8 +564,8 @@ export const SettingsView: React.FC = () => {
                     }}
                     className={`px-3 py-1 rounded-md text-xs transition-colors cursor-pointer ${
                       diffMarker === 'color'
-                        ? 'bg-[#323238] text-white font-medium'
-                        : 'text-zinc-400 hover:text-white'
+                        ? 'bg-[#323238] text-[var(--text-primary)] font-medium'
+                        : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     颜色
@@ -578,8 +578,8 @@ export const SettingsView: React.FC = () => {
                     }}
                     className={`px-3 py-1 rounded-md text-xs transition-colors cursor-pointer ${
                       diffMarker === 'sign'
-                        ? 'bg-[#323238] text-white font-medium'
-                        : 'text-zinc-400 hover:text-white'
+                        ? 'bg-[#323238] text-[var(--text-primary)] font-medium'
+                        : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     +/-
@@ -594,18 +594,18 @@ export const SettingsView: React.FC = () => {
         <div className="space-y-4 max-w-3xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* 模块 1：模型与执行层 */}
-            <div className="bg-[#141416] p-4 rounded-2xl border border-[#27272a] space-y-3.5 text-xs">
-              <div className="flex items-center gap-2 text-white font-bold border-b border-[#222226] pb-2">
-                <Terminal className="w-4 h-4 text-white" />
+            <div className="storyos-surface p-4 space-y-3.5 text-xs">
+              <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold border-b border-[var(--border-subtle)] pb-2">
+                <Terminal className="w-4 h-4 text-[var(--primary)]" />
                 <span>生图模型与任务编排</span>
               </div>
 
               <div>
-                <label className="block text-zinc-300 font-medium mb-1">模型引擎 (Model)</label>
+                <label className="block text-[var(--text-secondary)] font-medium mb-1">模型引擎 (Model)</label>
                 <select
                   value={modelFamily}
                   onChange={(e) => setModelFamily(e.target.value)}
-                  className="w-full p-2.5 rounded-lg bg-[#000000] border border-[#27272a] text-white font-mono text-xs focus:border-white outline-hidden cursor-pointer"
+                  className="storyos-control w-full px-2.5 font-mono text-xs outline-none focus:border-[var(--focus)] cursor-pointer"
                 >
                   <option value="gpt-image-2">gpt-image-2 (官方推荐高质量工业模型)</option>
                   <option value="flux-pro">flux-pro (影视光影高保真渲染)</option>
@@ -613,11 +613,11 @@ export const SettingsView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-zinc-300 font-medium mb-1">渲染质量 (Quality)</label>
+                <label className="block text-[var(--text-secondary)] font-medium mb-1">渲染质量 (Quality)</label>
                 <select
                   value={qualityLevel}
                   onChange={(e) => setQualityLevel(e.target.value)}
-                  className="w-full p-2.5 rounded-lg bg-[#000000] border border-[#27272a] text-white font-mono text-xs focus:border-white outline-hidden cursor-pointer"
+                  className="storyos-control w-full px-2.5 font-mono text-xs outline-none focus:border-[var(--focus)] cursor-pointer"
                 >
                   <option value="high">high (电影级高保真)</option>
                   <option value="standard">standard (标准快速预览)</option>
@@ -625,13 +625,13 @@ export const SettingsView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-zinc-300 font-medium mb-1">任务执行层</label>
-                <div className="p-2.5 rounded-lg bg-[#000000] border border-[#27272a] flex items-center justify-between text-xs">
-                  <span className="font-mono text-white font-bold flex items-center gap-1.5">
-                    <Cpu className="w-3.5 h-3.5 text-white" />
+                <label className="block text-[var(--text-secondary)] font-medium mb-1">任务执行层</label>
+                <div className="p-2.5 rounded-[var(--radius-md)] bg-[var(--bg-subtle)] border border-[var(--border-normal)] flex items-center justify-between text-xs">
+                  <span className="font-mono text-[var(--text-primary)] font-semibold flex items-center gap-1.5">
+                    <Cpu className="w-3.5 h-3.5 text-[var(--primary)]" />
                     <span>{executionLayer}</span>
                   </span>
-                  <span className="text-[10px] font-mono font-bold text-black bg-white px-2 py-0.5 rounded">
+                  <span className="storyos-status storyos-status--running font-mono">
                     RUNNING
                   </span>
                 </div>
@@ -639,18 +639,18 @@ export const SettingsView: React.FC = () => {
             </div>
 
             {/* 模块 2：画幅与并发控制 */}
-            <div className="bg-[#141416] p-4 rounded-2xl border border-[#27272a] space-y-3.5 text-xs">
-              <div className="flex items-center gap-2 text-white font-bold border-b border-[#222226] pb-2">
-                <Camera className="w-4 h-4 text-white" />
+            <div className="storyos-surface p-4 space-y-3.5 text-xs">
+              <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold border-b border-[var(--border-subtle)] pb-2">
+                <Camera className="w-4 h-4 text-[var(--primary)]" />
                 <span>画幅与并发控制</span>
               </div>
 
               <div>
-                <label className="block text-zinc-300 font-medium mb-1">画幅比例 (Aspect Ratio)</label>
+                <label className="block text-[var(--text-secondary)] font-medium mb-1">画幅比例 (Aspect Ratio)</label>
                 <select
                   value={aspectRatio}
                   onChange={(e) => setAspectRatio(e.target.value)}
-                  className="w-full p-2.5 rounded-lg bg-[#000000] border border-[#27272a] text-white font-mono text-xs focus:border-white outline-hidden cursor-pointer"
+                  className="storyos-control w-full px-2.5 font-mono text-xs outline-none focus:border-[var(--focus)] cursor-pointer"
                 >
                   <option value="4:5 1080×1350">4:5 1080×1350 (官方标准竖版)</option>
                   <option value="16:9 1920×1080">16:9 1920×1080 (横屏影院)</option>
@@ -658,11 +658,11 @@ export const SettingsView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-zinc-300 font-medium mb-1">批次组织 (Batch Size)</label>
+                <label className="block text-[var(--text-secondary)] font-medium mb-1">批次组织 (Batch Size)</label>
                 <select
                   value={maxBatchSize}
                   onChange={(e) => setMaxBatchSize(e.target.value)}
-                  className="w-full p-2.5 rounded-lg bg-[#000000] border border-[#27272a] text-white font-mono text-xs focus:border-white outline-hidden cursor-pointer"
+                  className="storyos-control w-full px-2.5 font-mono text-xs outline-none focus:border-[var(--focus)] cursor-pointer"
                 >
                   <option value="5">5 帧逻辑批次</option>
                   <option value="3">3 帧快速调试批次</option>
@@ -671,11 +671,11 @@ export const SettingsView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-zinc-300 font-medium mb-1">同时出图最大并发数</label>
+                <label className="block text-[var(--text-secondary)] font-medium mb-1">同时出图最大并发数</label>
                 <select
                   value={maxConcurrency}
                   onChange={(e) => setMaxConcurrency(e.target.value)}
-                  className="w-full p-2.5 rounded-lg bg-[#000000] border border-[#27272a] text-white font-mono text-xs focus:border-white outline-hidden cursor-pointer"
+                  className="storyos-control w-full px-2.5 font-mono text-xs outline-none focus:border-[var(--focus)] cursor-pointer"
                 >
                   <option value="3">3 张并发 (吞吐保护推荐)</option>
                   <option value="2">2 张并发</option>
