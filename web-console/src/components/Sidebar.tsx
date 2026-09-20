@@ -161,7 +161,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       onSelectEpisode(ep);
                       onSelectTab('workbench');
                     }}
-                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-[var(--radius-sm)] transition-all text-left text-xs cursor-pointer ${
+                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-[var(--radius-sm)] transition-colors text-left text-xs cursor-pointer ${
                       isActive
                         ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
                         : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'

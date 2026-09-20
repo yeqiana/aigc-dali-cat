@@ -98,7 +98,7 @@ export const RuntimeRequestCard: React.FC<RuntimeRequestCardProps> = ({ runtime 
               </h3>
               {/* Workspace Connection / Example Data Badge */}
               <span className="storyos-status storyos-status--warning font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)] animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)]" />
                 <span>{runtime.sourceBadge || '待连接工作区'}</span>
               </span>
             </div>
@@ -126,7 +126,7 @@ export const RuntimeRequestCard: React.FC<RuntimeRequestCardProps> = ({ runtime 
           return (
             <div
               key={idx}
-              className={`p-3 rounded-[var(--radius-md)] border transition-all ${
+              className={`p-3 rounded-[var(--radius-md)] border transition-colors ${
                 spec.highlight
                   ? 'bg-[var(--primary-soft)] border-[var(--border-normal)]'
                   : 'bg-[var(--bg-subtle)] border-[var(--border-normal)]'

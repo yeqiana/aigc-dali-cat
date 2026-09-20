@@ -45,7 +45,7 @@ export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({
                   type="button"
                   onClick={() => onStageChange && onStageChange(s.id)}
                   title={`${s.label}: ${s.desc} (点击切换阶段)`}
-                  className={`flex items-center gap-1.5 px-2 py-1 rounded-[var(--radius-sm)] transition-all cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-2 py-1 rounded-[var(--radius-sm)] transition-colors cursor-pointer ${
                     isCurrent
                       ? 'bg-[var(--primary-soft)] text-[var(--primary-hover)] border border-[var(--border-normal)] font-semibold'
                       : isCompleted
@@ -56,7 +56,7 @@ export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({
                   {isCompleted ? (
                     <Check className="w-3 h-3 text-[var(--success)] stroke-[2.5]" />
                   ) : isCurrent ? (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shrink-0 animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shrink-0" />
                   ) : (
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-subtle)] shrink-0" />
                   )}

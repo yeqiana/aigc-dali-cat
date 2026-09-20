@@ -175,7 +175,7 @@ export const StoryQuickCreate: React.FC<StoryQuickCreateProps> = ({
               {/* Steps Progress */}
               <div className="space-y-3 font-mono text-xs">
                 {/* Step 1 */}
-                <div className={`p-3 rounded-lg border flex items-start gap-3 transition-all ${
+                <div className={`p-3 rounded-[var(--radius-md)] border flex items-start gap-3 transition-colors ${
                   generationStep >= 1 ? 'bg-[var(--primary-soft)] border-[var(--border-normal)]' : 'bg-[var(--bg-subtle)] border-[var(--border-subtle)] opacity-50'
                 }`}>
                   <div className="mt-0.5">
@@ -196,7 +196,7 @@ export const StoryQuickCreate: React.FC<StoryQuickCreateProps> = ({
                 </div>
 
                 {/* Step 2 */}
-                <div className={`p-3 rounded-lg border flex items-start gap-3 transition-all ${
+                <div className={`p-3 rounded-[var(--radius-md)] border flex items-start gap-3 transition-colors ${
                   generationStep >= 2 ? 'bg-[var(--primary-soft)] border-[var(--border-normal)]' : 'bg-[var(--bg-subtle)] border-[var(--border-subtle)] opacity-50'
                 }`}>
                   <div className="mt-0.5">
@@ -217,7 +217,7 @@ export const StoryQuickCreate: React.FC<StoryQuickCreateProps> = ({
                 </div>
 
                 {/* Step 3 */}
-                <div className={`p-3 rounded-lg border flex items-start gap-3 transition-all ${
+                <div className={`p-3 rounded-[var(--radius-md)] border flex items-start gap-3 transition-colors ${
                   generationStep >= 3 ? 'bg-[var(--primary-soft)] border-[var(--border-normal)]' : 'bg-[var(--bg-subtle)] border-[var(--border-subtle)] opacity-50'
                 }`}>
                   <div className="mt-0.5">
@@ -238,7 +238,7 @@ export const StoryQuickCreate: React.FC<StoryQuickCreateProps> = ({
                 </div>
 
                 {/* Step 4 */}
-                <div className={`p-3 rounded-lg border flex items-start gap-3 transition-all ${
+                <div className={`p-3 rounded-[var(--radius-md)] border flex items-start gap-3 transition-colors ${
                   generationStep >= 4 ? 'bg-[var(--primary-soft)] border-[var(--border-normal)]' : 'bg-[var(--bg-subtle)] border-[var(--border-subtle)] opacity-50'
                 }`}>
                   <div className="mt-0.5">
@@ -259,7 +259,7 @@ export const StoryQuickCreate: React.FC<StoryQuickCreateProps> = ({
                 </div>
 
                 {/* Step 5 */}
-                <div className={`p-3 rounded-lg border flex items-start gap-3 transition-all ${
+                <div className={`p-3 rounded-[var(--radius-md)] border flex items-start gap-3 transition-colors ${
                   generationStep >= 5 ? 'bg-[var(--success-soft)] border-[var(--border-normal)]' : 'bg-[var(--bg-subtle)] border-[var(--border-subtle)] opacity-50'
                 }`}>
                   <div className="mt-0.5">

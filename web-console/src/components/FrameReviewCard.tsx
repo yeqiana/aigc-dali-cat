@@ -92,7 +92,7 @@ export const FrameReviewCard: React.FC<FrameReviewCardProps> = ({
           return (
             <div
               key={review.frameId}
-              className={`rounded-[var(--radius-md)] border p-3 flex flex-col justify-between transition-all ${
+              className={`rounded-[var(--radius-md)] border p-3 flex flex-col justify-between transition-colors ${
                 isWarn
                   ? 'bg-[var(--warning-soft)] border-[var(--warning)] ring-1 ring-[var(--warning-soft)]'
                   : 'bg-[var(--bg-subtle)] border-[var(--border-normal)]'

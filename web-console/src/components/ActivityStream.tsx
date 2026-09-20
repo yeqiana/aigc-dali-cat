@@ -168,7 +168,7 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
                 setReviewed(next);
                 onShowToast(next ? '已真实核准 runtime-request 配置' : '已撤销配置核准状态');
               }}
-              className={`px-3 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded text-xs font-semibold transition-colors cursor-pointer ${
                 reviewed
                   ? 'bg-[var(--success-soft)] text-[var(--success)] border border-[color-mix(in_srgb,var(--success)_20%,var(--border-normal))]'
                   : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] border border-[var(--border-normal)]'
@@ -195,15 +195,15 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
               return (
                 <div
                   key={item.id}
-                  className={`group relative rounded-lg overflow-hidden aspect-[4/5] bg-black border transition-all cursor-pointer ${
-                    isPassed ? 'border-[#333338] hover:border-white' : 'border-white ring-1 ring-white/60'
+                  className={`group relative rounded-[var(--radius-md)] overflow-hidden aspect-[4/5] bg-black border transition-colors cursor-pointer ${
+                    isPassed ? 'border-[var(--border-normal)] hover:border-[var(--border-strong)]' : 'border-[var(--warning)]'
                   }`}
                   onClick={() => setSelectedFrame(item)}
                 >
                   <img
                     src={item.imageUrl}
                     alt={item.prompt}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
                   <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 font-mono text-[10px] text-white font-bold">
@@ -211,7 +211,7 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
                   </div>
                   <div className="absolute bottom-1 right-1">
                     {isPassed ? (
-                      <span className="px-1.5 py-0.5 rounded bg-white text-black font-bold text-[10px]">
+                      <span className="px-1.5 py-0.5 rounded bg-black/80 text-[var(--success)] border border-[var(--success)] font-bold text-[10px]">
                         PASS
                       </span>
                     ) : (

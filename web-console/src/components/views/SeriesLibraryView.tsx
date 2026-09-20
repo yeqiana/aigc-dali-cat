@@ -135,7 +135,7 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
                       {ep.code}
                     </span>
                     {isActive && (
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-white text-black">
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[var(--primary)] text-white">
                         当前工作台
                       </span>
                     )}
@@ -149,7 +149,7 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
 
                   <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
                     <h3 className="text-sm font-bold truncate text-white">{ep.title}</h3>
-                    <p className="text-[10px] text-zinc-400 font-mono truncate">{ep.genre}</p>
+                    <p className="text-[10px] text-white/70 font-mono truncate">{ep.genre}</p>
                   </div>
                 </div>
 
@@ -169,7 +169,7 @@ export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
                     </div>
                     <div className="w-full bg-[var(--bg-muted)] h-1.5 rounded-full overflow-hidden border border-[var(--border-subtle)]">
                       <div
-                        className="bg-[var(--primary)] h-full rounded-full transition-all"
+                        className="bg-[var(--primary)] h-full rounded-full transition-[width]"
                         style={{ width: `${progressPercent}%` }}
                       />
                     </div>

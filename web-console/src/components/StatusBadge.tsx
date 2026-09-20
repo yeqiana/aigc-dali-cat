@@ -4,7 +4,6 @@ import { StoryRunStatus } from '../types';
 interface StatusBadgeProps {
   status: StoryRunStatus;
   label?: string;
-  pulse?: boolean;
 }
 
 const STATUS_META: Record<
@@ -35,7 +34,6 @@ const toneColor: Record<StatusBadgeProps['status'], string> = {
 export const StatusBadge: React.FC<StatusBadgeProps> = ({
   status,
   label,
-  pulse = false,
 }) => {
   const meta = STATUS_META[status];
 
@@ -45,7 +43,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       aria-label={`状态：${label || meta.label}`}
     >
       <span
-        className={`w-1.5 h-1.5 rounded-full shrink-0 ${pulse ? 'animate-pulse' : ''}`}
+        className="w-1.5 h-1.5 rounded-full shrink-0"
         style={{ backgroundColor: toneColor[status] }}
       />
       <span>{label || meta.label}</span>

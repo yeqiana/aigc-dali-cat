@@ -85,10 +85,10 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
 
   // 心跳判定函数
   const getHeartbeatStatus = (seconds: number) => {
-    if (seconds < 15) return { color: 'text-emerald-400', dot: 'bg-emerald-400', label: '正常' };
-    if (seconds <= 30) return { color: 'text-zinc-300', dot: 'bg-zinc-400', label: '弱提示' };
-    if (seconds <= 120) return { color: 'text-amber-400', dot: 'bg-amber-400', label: '心跳延迟' };
-    return { color: 'text-red-400', dot: 'bg-red-400', label: '疑似失联' };
+    if (seconds < 15) return { color: 'text-[var(--success)]', dot: 'bg-[var(--success)]', label: '正常' };
+    if (seconds <= 30) return { color: 'text-[var(--text-secondary)]', dot: 'bg-[var(--text-tertiary)]', label: '弱提示' };
+    if (seconds <= 120) return { color: 'text-[var(--warning)]', dot: 'bg-[var(--warning)]', label: '心跳延迟' };
+    return { color: 'text-[var(--danger)]', dot: 'bg-[var(--danger)]', label: '疑似失联' };
   };
 
   const hb = getHeartbeatStatus(run.heartbeatSeconds);
@@ -337,7 +337,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
             </div>
 
             {/* 状态徽章 (严格按 StoryOS 契约渲染) */}
-            <StatusBadge status={run.status} pulse={run.status === 'RUNNING'} />
+            <StatusBadge status={run.status} />
 
             {/* 细分子动作指示器 (用户明确要求的核心指引) */}
             <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs font-mono">
@@ -461,7 +461,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                   </div>
                   <div className="w-full h-1.5 rounded-[2px] bg-[var(--bg-workspace)] overflow-hidden border border-[var(--border-subtle)]">
                     <div
-                      className="h-full bg-[var(--primary)] rounded-[2px] transition-all"
+                      className="h-full bg-[var(--primary)] rounded-[2px] transition-[width]"
                       style={{ width: `${run.progressPercent}%` }}
                     />
                   </div>
@@ -526,7 +526,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                           <div className="space-y-1.5 my-1">
                             <div className="w-full h-1 rounded-[2px] bg-[var(--bg-workspace)] overflow-hidden border border-[var(--border-subtle)]">
                               <div
-                                className="h-full bg-[var(--primary)] rounded-[2px] transition-all"
+                                className="h-full bg-[var(--primary)] rounded-[2px] transition-[width]"
                                 style={{ width: `${(run.completedFrames / run.totalFrames) * 100}%` }}
                               />
                             </div>
@@ -606,7 +606,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                       <span>PASSED (14)</span>
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
                       <span>RUNNING (1)</span>
                     </span>
                     <span className="flex items-center gap-1.5">

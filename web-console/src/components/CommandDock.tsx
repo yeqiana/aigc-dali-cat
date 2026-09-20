@@ -187,7 +187,7 @@ export const CommandDock: React.FC<CommandDockProps> = ({
               <button
                 type="submit"
                 disabled={!inputText.trim() || isLoading}
-                className={`w-7 h-7 rounded-[var(--radius-sm)] flex items-center justify-center transition-all ${
+                className={`w-7 h-7 rounded-[var(--radius-sm)] flex items-center justify-center transition-colors ${
                   inputText.trim() && !isLoading
                     ? 'bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] cursor-pointer'
                     : 'bg-[var(--bg-muted)] text-[var(--text-disabled)] cursor-not-allowed'

@@ -268,10 +268,10 @@ export const SettingsView: React.FC = () => {
               {/* 底部微型滚动箭头指示 */}
               <div className="px-2 py-1 bg-[var(--bg-workspace)] border-t border-[var(--border-subtle)] flex items-center justify-between text-[var(--text-disabled)]">
                 <div className="flex items-center gap-1">
-                  <ChevronLeft className="w-3 h-3 hover:text-zinc-400 cursor-pointer" />
+                  <ChevronLeft className="w-3 h-3 hover:text-[var(--text-secondary)] cursor-pointer" />
                 </div>
                 <div className="flex items-center gap-1">
-                  <ChevronRight className="w-3 h-3 hover:text-zinc-400 cursor-pointer" />
+                  <ChevronRight className="w-3 h-3 hover:text-[var(--text-secondary)] cursor-pointer" />
                 </div>
               </div>
             </div>
@@ -313,7 +313,7 @@ export const SettingsView: React.FC = () => {
                       <option value="Vesper">Vesper</option>
                       <option value="One Dark Pro">One Dark Pro</option>
                     </select>
-                    <ChevronDown className="w-3 h-3 text-zinc-400 absolute right-2 top-2.5 pointer-events-none" />
+                    <ChevronDown className="w-3 h-3 text-[var(--text-tertiary)] absolute right-2 top-2.5 pointer-events-none" />
                   </div>
                 </div>
               </div>
@@ -335,7 +335,7 @@ export const SettingsView: React.FC = () => {
                     <option value="经典蓝">经典蓝 (#2563eb)</option>
                     <option value="翡翠绿">翡翠绿 (#10b981)</option>
                   </select>
-                  <ChevronDown className="w-3 h-3 text-zinc-400 absolute right-2 top-2.5 pointer-events-none" />
+                  <ChevronDown className="w-3 h-3 text-[var(--text-tertiary)] absolute right-2 top-2.5 pointer-events-none" />
                 </div>
               </div>
 
@@ -380,7 +380,7 @@ export const SettingsView: React.FC = () => {
                       <option value="PingFang SC">PingFang SC</option>
                       <option value="JetBrains Mono">JetBrains Mono</option>
                     </select>
-                    <ChevronDown className="w-3 h-3 text-zinc-400 absolute right-2 top-2.5 pointer-events-none" />
+                    <ChevronDown className="w-3 h-3 text-[var(--text-tertiary)] absolute right-2 top-2.5 pointer-events-none" />
                   </div>
                   <div className="relative">
                     <select
@@ -392,7 +392,7 @@ export const SettingsView: React.FC = () => {
                       <option value="中粗">中粗</option>
                       <option value="粗体">粗体</option>
                     </select>
-                    <ChevronDown className="w-3 h-3 text-zinc-400 absolute right-2 top-2.5 pointer-events-none" />
+                    <ChevronDown className="w-3 h-3 text-[var(--text-tertiary)] absolute right-2 top-2.5 pointer-events-none" />
                   </div>
                 </div>
               </div>
@@ -411,7 +411,7 @@ export const SettingsView: React.FC = () => {
                       <option value="等宽代码字体">等宽代码字体</option>
                       <option value="宋体/明朝体 (剧本模式)">宋体/明朝体 (剧本模式)</option>
                     </select>
-                    <ChevronDown className="w-3 h-3 text-zinc-400 absolute right-2 top-2.5 pointer-events-none" />
+                    <ChevronDown className="w-3 h-3 text-[var(--text-tertiary)] absolute right-2 top-2.5 pointer-events-none" />
                   </div>
                   <div className="relative">
                     <select
@@ -422,7 +422,7 @@ export const SettingsView: React.FC = () => {
                       <option value="常规">常规</option>
                       <option value="中粗">中粗</option>
                     </select>
-                    <ChevronDown className="w-3 h-3 text-zinc-400 absolute right-2 top-2.5 pointer-events-none" />
+                    <ChevronDown className="w-3 h-3 text-[var(--text-tertiary)] absolute right-2 top-2.5 pointer-events-none" />
                   </div>
                 </div>
               </div>

@@ -55,7 +55,7 @@ export const VisualLockCard: React.FC<VisualLockCardProps> = ({ visualLocks }) =
         {visualLocks.map((vl) => (
           <div
             key={vl.id}
-            className="group rounded-[var(--radius-md)] border border-[var(--border-normal)] bg-[var(--bg-surface)] overflow-hidden hover:border-[var(--border-strong)] transition-all flex flex-col justify-between"
+            className="group rounded-[var(--radius-md)] border border-[var(--border-normal)] bg-[var(--bg-surface)] overflow-hidden hover:border-[var(--border-strong)] transition-colors flex flex-col justify-between"
           >
             {/* Image Preview Container (4:5 vertical aspect) */}
             <div className="relative aspect-[4/5] bg-zinc-900 overflow-hidden">
@@ -72,16 +72,16 @@ export const VisualLockCard: React.FC<VisualLockCardProps> = ({ visualLocks }) =
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-black/70 text-amber-300 border border-amber-500/30">
                   {vl.category}
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/80 text-[var(--success)] border border-[var(--success)] flex items-center gap-1">
                   <Lock className="w-2.5 h-2.5" />
                   <span>{vl.version}</span>
                 </span>
               </div>
 
               {/* Format tag */}
-              <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between text-[10px] text-zinc-300 font-mono">
+              <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between text-[10px] text-white/75 font-mono">
                 <span>4:5 1080×1350</span>
-                <span className="text-amber-300 font-bold">{vl.consistencyDelta}</span>
+                <span className="text-[var(--warning)] font-bold">{vl.consistencyDelta}</span>
               </div>
 
               {/* Fullscreen Inspect Icon */}
@@ -90,7 +90,7 @@ export const VisualLockCard: React.FC<VisualLockCardProps> = ({ visualLocks }) =
                 className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 transition-opacity text-white"
                 title="查看高分辨率锁定参数"
               >
-                <div className="p-1.5 rounded-full bg-black/70 border border-white/30">
+                <div className="p-1.5 rounded-[var(--radius-sm)] bg-black/70 border border-white/30">
                   <Maximize2 className="w-4 h-4 text-white" />
                 </div>
               </button>

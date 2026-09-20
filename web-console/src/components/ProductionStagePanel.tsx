@@ -78,7 +78,7 @@ export const ProductionStagePanel: React.FC<ProductionStagePanelProps> = ({
           <span className="inline-flex items-center gap-1.5 text-[var(--text-secondary)]">
             <span
               className={`w-1.5 h-1.5 rounded-full ${
-                isGeneratingBatch ? 'bg-[var(--info)] animate-pulse' : 'bg-[var(--success)]'
+                isGeneratingBatch ? 'bg-[var(--info)]' : 'bg-[var(--success)]'
               }`}
             />
             {isGeneratingBatch ? 'GENERATING' : batch.status.toUpperCase()}

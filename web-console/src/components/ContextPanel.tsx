@@ -209,7 +209,7 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
                         isDone
                           ? 'bg-[var(--primary)]'
                           : isCurrentBatch
-                          ? 'bg-[var(--info)] animate-pulse'
+                          ? 'bg-[var(--info)]'
                           : 'bg-[var(--bg-muted)] border border-[var(--border-normal)]'
                       }`}
                     />

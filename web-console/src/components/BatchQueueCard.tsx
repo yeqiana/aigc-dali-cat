@@ -89,7 +89,7 @@ export const BatchQueueCard: React.FC<BatchQueueCardProps> = ({
           return (
             <div
               key={item.id}
-              className={`rounded-[var(--radius-md)] border bg-[var(--bg-surface)] overflow-hidden flex flex-col justify-between transition-all ${
+              className={`rounded-[var(--radius-md)] border bg-[var(--bg-surface)] overflow-hidden flex flex-col justify-between transition-colors ${
                 isWarning
                   ? 'border-[var(--warning)] bg-[var(--warning-soft)] ring-1 ring-[var(--warning-soft)]'
                   : isRendering

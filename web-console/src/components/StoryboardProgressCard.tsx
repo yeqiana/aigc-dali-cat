@@ -63,7 +63,7 @@ export const StoryboardProgressCard: React.FC<StoryboardProgressCardProps> = ({
         <div className="flex items-center gap-2.5 min-w-[200px]">
           <div className="w-full bg-[var(--bg-muted)] h-2 rounded-full overflow-hidden border border-[var(--border-subtle)]">
             <div
-              className="bg-[var(--primary)] h-full rounded-full transition-all duration-500"
+              className="bg-[var(--primary)] h-full rounded-full transition-[width] duration-500"
               style={{ width: `${Math.round((completedFrames / totalFrames) * 100)}%` }}
             />
           </div>
@@ -79,7 +79,7 @@ export const StoryboardProgressCard: React.FC<StoryboardProgressCardProps> = ({
           <button
             key={i}
             onClick={() => setSelectedAct(selectedAct === act.label ? 'ALL' : act.label)}
-            className={`p-2 rounded-[var(--radius-md)] border text-left text-xs transition-all ${
+            className={`p-2 rounded-[var(--radius-md)] border text-left text-xs transition-colors ${
               selectedAct === act.label
                 ? 'bg-[var(--primary-soft)] border-[var(--primary)] font-semibold'
                 : 'bg-[var(--bg-subtle)] border-[var(--border-normal)] hover:bg-[var(--bg-muted)]'

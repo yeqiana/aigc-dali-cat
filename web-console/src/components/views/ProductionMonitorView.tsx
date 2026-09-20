@@ -486,7 +486,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                           </div>
                           <div className="w-full h-[3px] rounded-[2px] bg-[var(--border-subtle)] overflow-hidden">
                             <div
-                              className={`h-full rounded-[2px] transition-all duration-300 ${
+                              className={`h-full rounded-[2px] transition-[width] duration-300 ${
                                 run.status === 'BLOCKED'
                                    ? 'bg-[var(--danger)]'
                                    : run.progressPercent === 100

@@ -67,7 +67,7 @@ export const CharacterContractCard: React.FC<CharacterContractCardProps> = ({ ch
           return (
             <div
               key={char.id}
-              className={`p-3 rounded-[var(--radius-md)] border transition-all flex flex-col justify-between ${
+              className={`p-3 rounded-[var(--radius-md)] border transition-colors flex flex-col justify-between ${
                 isLocked
                   ? 'bg-[var(--bg-subtle)] border-[var(--border-normal)]'
                   : 'bg-[var(--warning-soft)] border-[var(--warning)] ring-1 ring-[var(--warning-soft)]'
