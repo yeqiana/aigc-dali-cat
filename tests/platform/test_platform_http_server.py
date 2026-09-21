@@ -10,10 +10,11 @@ import urllib.request
 from platform.agent.application import AgentApplicationService
 from platform.agent.runtime import AgentContext, AgentExecutionPlan, AgentRuntime, SkillExecutionStep
 from platform.api.contracts import CreateAgentRequest
-from platform.api.controllers import AgentApiController, ExecutionApiController, RuntimeStatusApiController, TraceApiController
+from platform.api.controllers import AgentApiController, ExecutionApiController, RuntimeEventApiController, RuntimeStatusApiController, TraceApiController
 from platform.api.default_app import build_default_controllers
 from platform.api.http_server import PlatformApiDispatcher, build_http_server
 from platform.operations.experience_store import ExperienceStore, RuntimeExperience
+from platform.operations.runtime_event_service import RuntimeEventApiService
 from platform.operations.runtime_status_service import RuntimeStatusApiService
 
 
@@ -375,6 +376,8 @@ def test_runtime_status_list_uses_injected_summary_repository_without_full_proje
 
     assert summaries.calls == [(2, 0)]
     assert page["has_more"] is True
+    assert page["total"] is None
+    assert page["stage_counts"] == {}
     row = page["items"][0]
     assert row["projection_level"] == "summary"
     assert row["episode_id"] == "EPU_1"
@@ -387,6 +390,53 @@ def test_runtime_status_list_uses_injected_summary_repository_without_full_proje
 
 def test_default_composition_exposes_runtime_status_controller():
     assert "RuntimeStatusApiController" in build_default_controllers()
+    assert "RuntimeEventApiController" in build_default_controllers()
+
+
+def test_runtime_events_api_is_bounded_read_only_projection():
+    class EventRepository:
+        def __init__(self):
+            self.calls = []
+
+        def list_recent(self, *, limit=50, offset=0):
+            self.calls.append((limit, offset))
+            return [
+                {
+                    "event_id": "evt_2",
+                    "event_type": "TASK_FINISHED",
+                    "aggregate_type": "TASK",
+                    "aggregate_id": "task-2",
+                    "episode_id": "EPU_2",
+                    "occurred_time": datetime(2026, 9, 21, 5, 0, 0),
+                    "trace_id": "trace-2",
+                    "task_id": "task-2",
+                    "payload": {"must": "not leak"},
+                    "metadata": {"must": "not leak"},
+                },
+                {"event_id": "evt_1", "event_type": "TASK_STARTED"},
+            ]
+
+    repository = EventRepository()
+    dispatcher = PlatformApiDispatcher({
+        "RuntimeEventApiController": RuntimeEventApiController(RuntimeEventApiService(repository))
+    })
+
+    status, payload = dispatcher.dispatch("GET", "/api/v1/runtime/events?limit=1&offset=50")
+
+    assert status == 200
+    assert repository.calls == [(2, 50)]
+    page = payload["data"]
+    assert page["count"] == 1
+    assert page["offset"] == 50
+    assert page["has_more"] is True
+    assert page["items"][0]["event_id"] == "evt_2"
+    assert page["items"][0]["occurred_at"].endswith("+00:00")
+    assert "payload" not in page["items"][0]
+    assert "metadata" not in page["items"][0]
+
+    status, payload = dispatcher.dispatch("GET", "/api/v1/runtime/events?limit=101&offset=0")
+    assert status == 400
+    assert payload["code"] == "INVALID_REQUEST"
 
 
 def test_healthz_is_available_without_business_controllers():

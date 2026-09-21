@@ -115,8 +115,29 @@ export interface RuntimeEpisodeStatus {
 export interface RuntimeEpisodeStatusPage {
   items: RuntimeEpisodeStatus[];
   count: number;
+  total?: number | null;
+  stage_counts?: Record<string, number>;
   limit: number;
   offset: number;
   has_more: boolean;
   errors: Array<{ episode_ref: string; code: string }>;
+}
+
+export interface RuntimeEventItem {
+  event_id?: string | null;
+  event_type?: string | null;
+  aggregate_type?: string | null;
+  aggregate_id?: string | null;
+  episode_id?: string | null;
+  occurred_at?: string | null;
+  trace_id?: string | null;
+  task_id?: string | null;
+}
+
+export interface RuntimeEventPage {
+  items: RuntimeEventItem[];
+  count: number;
+  limit: number;
+  offset: number;
+  has_more: boolean;
 }

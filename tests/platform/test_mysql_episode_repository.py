@@ -102,6 +102,27 @@ def test_list_active_summaries_maps_episode_and_state_rows():
     assert params == (21, 20)
 
 
+def test_active_summary_metrics_aggregate_stage_counts():
+    conn = FakeConnection()
+    conn.rows = [
+        {"CURRENT_STATE": "PUBLISH_READY", "EPISODE_COUNT": 7},
+        {"CURRENT_STATE": "PRODUCTION_PASSED", "EPISODE_COUNT": 3},
+        {"CURRENT_STATE": None, "EPISODE_COUNT": 2},
+    ]
+
+    metrics = MySqlEpisodeRepository(conn).get_active_summary_metrics()
+
+    assert metrics == {
+        "total": 12,
+        "stage_counts": {
+            "PUBLISH_READY": 7,
+            "PRODUCTION_PASSED": 3,
+            "NO_STATE": 2,
+        },
+    }
+    assert "GROUP BY COALESCE(s.CURRENT_STATE, 'NO_STATE')" in conn.queries[-1][0]
+
+
 def test_update_disposition_is_compare_and_set():
     conn = FakeConnection()
     MySqlEpisodeRepository(conn).update_disposition(

@@ -1,6 +1,7 @@
 import { apiClient } from './client';
 import type {
   ExecutionRecord,
+  RuntimeEventPage,
   RuntimeEpisodeStatus,
   RuntimeEpisodeStatusPage,
   TraceRecord,
@@ -21,6 +22,11 @@ export const runtimeApi = {
   listEpisodeStatuses(limit = 20, offset = 0) {
     return apiClient.get<RuntimeEpisodeStatusPage>(
       `/api/v1/runtime/statuses?limit=${limit}&offset=${offset}`,
+    );
+  },
+  listEvents(limit = 50, offset = 0) {
+    return apiClient.get<RuntimeEventPage>(
+      `/api/v1/runtime/events?limit=${limit}&offset=${offset}`,
     );
   },
 };

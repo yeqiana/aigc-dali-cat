@@ -6,6 +6,7 @@ from platform.api.service_ports import (
     ExecutionServicePort,
     MemoryServicePort,
     RegistryServicePort,
+    RuntimeEventServicePort,
     RuntimeStatusServicePort,
     TraceServicePort,
     WorkflowServicePort,
@@ -70,6 +71,17 @@ class RuntimeStatusApiController:
     def list_episode_statuses(self, limit: str = "50", offset: str = "0") -> ApiResponse[dict]:
         try:
             return ApiResponse.ok(self._service.list_episode_statuses(limit=limit, offset=offset))
+        except ValueError as exc:
+            return ApiResponse.error("INVALID_REQUEST", str(exc))
+
+
+class RuntimeEventApiController:
+    def __init__(self, service: RuntimeEventServicePort) -> None:
+        self._service = service
+
+    def list_events(self, limit: str = "50", offset: str = "0") -> ApiResponse[dict]:
+        try:
+            return ApiResponse.ok(self._service.list_events(limit=limit, offset=offset))
         except ValueError as exc:
             return ApiResponse.error("INVALID_REQUEST", str(exc))
 

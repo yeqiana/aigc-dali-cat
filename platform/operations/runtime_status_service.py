@@ -126,9 +126,13 @@ class RuntimeStatusApiService:
                 offset=page_offset,
             )
             selected = rows[:page_limit]
+            metrics_getter = getattr(self._summary_repository, "get_active_summary_metrics", None)
+            metrics = metrics_getter() if callable(metrics_getter) else {}
             return {
                 "items": [self._summary_item(row) for row in selected],
                 "count": len(selected),
+                "total": metrics.get("total"),
+                "stage_counts": metrics.get("stage_counts", {}),
                 "limit": page_limit,
                 "offset": page_offset,
                 "has_more": len(rows) > page_limit,
@@ -157,6 +161,8 @@ class RuntimeStatusApiService:
         return {
             "items": items,
             "count": len(items),
+            "total": None,
+            "stage_counts": {},
             "limit": page_limit,
             "offset": page_offset,
             "has_more": len(refs) > page_offset + page_limit,

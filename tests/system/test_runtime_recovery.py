@@ -32,6 +32,12 @@ class RecoveryTests(unittest.TestCase):
         validator.start(); self.addCleanup(validator.stop)
         root=patch.object(production_recovery,"ROOT",self.ep)
         root.start(); self.addCleanup(root.stop)
+        journal_mode=patch.object(
+            production_recovery.production_recovery_persistence,
+            "mode",
+            return_value="json",
+        )
+        journal_mode.start(); self.addCleanup(journal_mode.stop)
         atomic_write_json(self.ep / "meta/episode-state.json", {"current_state": "VISUAL_CALIBRATED"})
 
     def test_zero_exit_without_progress_is_bounded(self):
@@ -304,6 +310,22 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(q["items"][0]["status"],"generated")
         self.assertTrue(q["items"][0]["output_path"].endswith("candidate.png"))
 
+    def test_recovery_replays_ready_ledger_after_candidate_commit_block(self):
+        item=self._running_item()
+        item["status"]="blocked"
+        item["last_error"]="CANDIDATE_COMMIT_FAILED: frame has no generation attempt"
+        candidate=self.ep/"candidate-commit-recovered.png"; candidate.write_bytes(b"candidate")
+        atomic_write_json(self.ep / batch.QUEUE_REL,{"items":[item]})
+        atomic_write_json(self.ep / "meta/production-ledger.json",{"frames":{"01":{
+            "status":"ORIGINAL_READY", "current_candidate":{"path":str(candidate)}
+        }}})
+        q=batch.load_queue(self.ep)
+        report=production_recovery.reconcile_locked(self.ep,q)
+        self.assertEqual(report["rows"][0]["outcome"],"LEDGER_READY_REPLAYED")
+        self.assertEqual(q["items"][0]["status"],"generated")
+        self.assertIsNone(q["items"][0].get("last_error"))
+        self.assertTrue(q["items"][0]["output_path"].endswith("candidate-commit-recovered.png"))
+
     def test_recovery_replays_durable_worker_success_once(self):
         item=self._running_item()
         production_recovery.prepare_execution(self.ep,item)
@@ -500,6 +522,26 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(q["items"][0]["status"], "tech_failed")
         fresh = production_recovery._read(journal)
         self.assertIn(item["execution"]["transaction_id"], fresh.get("transactions") or {})
+
+    def test_mysql_commit_journal_uses_db_and_stops_json_shadow_write(self):
+        item = self._running_item()
+        journal = self.ep / production_recovery.JOURNAL_REL
+        with patch.object(
+            production_recovery.production_recovery_persistence,
+            "mode",
+            return_value="mysql",
+        ), patch.object(
+            production_recovery.production_recovery_persistence,
+            "update_transaction",
+            return_value={"mode": "mysql", "mysql_written": True},
+        ) as persist:
+            production_recovery.prepare_execution(self.ep, item)
+        self.assertFalse(journal.exists())
+        persist.assert_called_once()
+        args, kwargs = persist.call_args
+        self.assertEqual(args[1], item["execution"]["transaction_id"])
+        self.assertEqual(args[2], "BEGIN_PREPARED")
+        self.assertEqual(kwargs["details"]["item_id"], item["id"])
 
     def test_double_stale_queue_ledger_stays_unknown(self):
         item = self._running_item()

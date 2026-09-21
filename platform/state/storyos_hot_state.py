@@ -14,7 +14,7 @@ LOCK_PREFIX = "STORYOS:LOCK:EP"
 @dataclass(frozen=True)
 class HotStateSpec:
     suffix: str
-    ttl_seconds: int
+    ttl_seconds: int | None
 
 
 SPECS = {
@@ -24,7 +24,9 @@ SPECS = {
     "CIRCUIT_BREAKER": HotStateSpec("CIRCUIT_BREAKER", 300),
     "INFLIGHT": HotStateSpec("INFLIGHT", 600),
     "HOST_REQUEST_CURRENT": HotStateSpec("HOST_REQUEST_CURRENT", 900),
-    "QUEUE": HotStateSpec("QUEUE", 1800),
+    # Pending production work is authoritative Redis hot-state. It must survive
+    # idle review/approval windows; expiring the key silently drops queued frames.
+    "QUEUE": HotStateSpec("QUEUE", None),
     "COUNTERS": HotStateSpec("COUNTERS", 600),
     "EFFECTIVE_CONFIG": HotStateSpec("EFFECTIVE_CONFIG", 3600),
     "RUNTIME_CAPABILITIES": HotStateSpec("RUNTIME_CAPABILITIES", 300),

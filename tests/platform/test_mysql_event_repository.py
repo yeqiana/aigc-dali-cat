@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from platform.core.contracts.event_contract import EventContract
 from platform.core.enums.entity_type import EntityType
@@ -11,6 +11,7 @@ class FakeConnection:
         self.executed = []
         self.queried = []
         self.one = None
+        self.rows = []
 
     def execute(self, sql, params=None):
         self.executed.append((sql, params))
@@ -21,7 +22,8 @@ class FakeConnection:
         return self.one
 
     def query_all(self, sql, params=None):
-        return []
+        self.queried.append((sql, params))
+        return self.rows
 
 
 def _event():
@@ -30,7 +32,7 @@ def _event():
         event_type=EventType.TASK_STARTED,
         aggregate_type=EntityType.TASK,
         aggregate_id="task_test",
-        occurred_at=datetime.utcnow(),
+        occurred_at=datetime.now(timezone.utc),
         payload={"n": 1},
         metadata={"src": "unit"},
     )
@@ -69,3 +71,19 @@ def test_mysql_event_repository_requires_connection():
     except RuntimeError:
         return
     raise AssertionError("expected RuntimeError")
+
+
+def test_mysql_event_repository_lists_recent_events_with_bounded_page():
+    connection = FakeConnection()
+    connection.rows = [
+        {"EVENT_ID": "evt_2", "EVENT_TYPE": "TASK_FINISHED"},
+        {"EVENT_ID": "evt_1", "EVENT_TYPE": "TASK_STARTED"},
+    ]
+    repository = MySqlEventRepository(connection)
+
+    rows = repository.list_recent(limit=51, offset=50)
+
+    assert [row["event_id"] for row in rows] == ["evt_2", "evt_1"]
+    sql, params = connection.queried[-1]
+    assert "ORDER BY OCCURRED_TIME DESC, EVENT_ID DESC" in sql
+    assert params == (51, 50)

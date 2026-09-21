@@ -10,14 +10,17 @@ from platform.api.controllers import (
     AgentApiController,
     ExecutionApiController,
     MemoryApiController,
+    RuntimeEventApiController,
     RuntimeStatusApiController,
     TraceApiController,
 )
 from platform.api.contracts import MemorySearchRequest
 from platform.operations.experience_store import ExperienceStore, RuntimeExperience
+from platform.operations.runtime_event_service import RuntimeEventApiService
 from platform.operations.runtime_status_service import RuntimeStatusApiService
 from platform.repository.mysql.mysql_connection import MySqlConnection
 from platform.repository.mysql.mysql_episode_repository import MySqlEpisodeRepository
+from platform.repository.mysql.mysql_event_repository import MySqlEventRepository
 from platform.repository.platform_record_store_provider import (
     PlatformRecordStores,
     build_platform_record_stores,
@@ -71,6 +74,7 @@ def build_default_controllers(
     *,
     agent_service: AgentApplicationService | None = None,
     experience_store: ExperienceStore | None = None,
+    runtime_event_service: RuntimeEventApiService | None = None,
     runtime_status_service: RuntimeStatusApiService | None = None,
     platform_state_root: str | Path | None = None,
     record_stores: PlatformRecordStores | None = None,
@@ -91,10 +95,14 @@ def build_default_controllers(
     runtime_status_service = runtime_status_service or RuntimeStatusApiService(
         summary_repository=MySqlEpisodeRepository(MySqlConnection()),
     )
+    runtime_event_service = runtime_event_service or RuntimeEventApiService(
+        MySqlEventRepository(MySqlConnection())
+    )
     return {
         "AgentApiController": AgentApiController(agent_service),
         "ExecutionApiController": ExecutionApiController(agent_service),
         "TraceApiController": TraceApiController(agent_service),
         "MemoryApiController": MemoryApiController(memory_service),
+        "RuntimeEventApiController": RuntimeEventApiController(runtime_event_service),
         "RuntimeStatusApiController": RuntimeStatusApiController(runtime_status_service),
     }

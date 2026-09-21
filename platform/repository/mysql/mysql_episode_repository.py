@@ -51,6 +51,16 @@ ORDER BY COALESCE(s.UPDATE_TIME, e.UPDATE_TIME) DESC, e.EPISODE_ID DESC
 LIMIT %s OFFSET %s
 """.strip()
 
+_ACTIVE_SUMMARY_METRICS_SQL = """
+SELECT COALESCE(s.CURRENT_STATE, 'NO_STATE') AS CURRENT_STATE, COUNT(*) AS EPISODE_COUNT
+FROM TB_EPISODE e
+LEFT JOIN TB_EPISODE_STATE s ON s.EPISODE_ID=e.EPISODE_ID
+WHERE e.DISPOSITION='ACTIVE'
+  AND e.EPISODE_NAMESPACE <> ''
+  AND LEFT(e.EPISODE_NAMESPACE, 1) NOT IN ('_', '.')
+GROUP BY COALESCE(s.CURRENT_STATE, 'NO_STATE')
+""".strip()
+
 _UPDATE_DISPOSITION_SQL = """
 UPDATE TB_EPISODE
 SET DISPOSITION=%s
@@ -103,6 +113,18 @@ class MySqlEpisodeRepository:
             (int(limit), int(offset)),
         )
         return [self._decode_summary(row) for row in rows]
+
+    def get_active_summary_metrics(self) -> dict:
+        rows = self.connection.query_all(_ACTIVE_SUMMARY_METRICS_SQL)
+        stage_counts: dict[str, int] = {}
+        for row in rows:
+            stage = str(row.get("CURRENT_STATE") or row.get("current_state") or "NO_STATE")
+            count = int(row.get("EPISODE_COUNT") or row.get("episode_count") or 0)
+            stage_counts[stage] = count
+        return {
+            "total": sum(stage_counts.values()),
+            "stage_counts": stage_counts,
+        }
 
     def update_disposition(
         self, episode_id: str, target: str, *, expected: str = "ACTIVE"

@@ -31,10 +31,22 @@ def test_v2_schema_contains_high_volume_json_targets():
         "TB_PROVIDER_RECEIPT",
         "TB_HOST_REQUEST",
         "TB_PRODUCTION_ATTEMPT",
+        "TB_PRODUCTION_RECOVERY_JOURNAL",
         "TB_METRIC_SNAPSHOT",
         "TB_PROMPT_PACKAGE",
     ):
         assert table in ddl
+
+
+def test_recovery_journal_uses_blob_authority_not_json_column():
+    ddl = "\n".join(sql for _step, sql in schema_v2.DDL_STEPS)
+    marker = "CREATE TABLE IF NOT EXISTS TB_PRODUCTION_RECOVERY_JOURNAL"
+    start = ddl.index(marker)
+    section = ddl[start:].split("\nCREATE TABLE IF NOT EXISTS ", 1)[0]
+    assert "DOCUMENT_BLOB MEDIUMBLOB NOT NULL" in section
+    assert "SHA256 CHAR(64) NOT NULL" in section
+    assert "BYTE_SIZE BIGINT NOT NULL" in section
+    assert "PAYLOAD JSON" not in section
 
 
 def test_apply_schema_is_explicit_and_ordered():

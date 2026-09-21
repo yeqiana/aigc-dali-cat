@@ -12,6 +12,29 @@ if str(SYSTEM) not in sys.path:
 
 import episode_lifecycle  # noqa: E402
 import scheduler_core  # noqa: E402
+from platform.state.storyos_hot_state import EpisodeHotStateStore, SPECS  # noqa: E402
+
+
+class _RecordingStateStore:
+    def __init__(self):
+        self.calls = []
+
+    def set_state(self, key, value, expire_seconds=None):
+        self.calls.append((key, value, expire_seconds))
+
+    def get_state(self, _key):
+        return None
+
+    def delete_state(self, _key):
+        return None
+
+
+def test_production_queue_hot_state_does_not_expire_when_idle():
+    store = _RecordingStateStore()
+    EpisodeHotStateStore(store).put("ep-queue", "QUEUE", {"items": []})
+    assert SPECS["QUEUE"].ttl_seconds is None
+    assert store.calls[0][2] is None
+
 
 
 def test_load_queue_prefers_redis_projection(monkeypatch, tmp_path):

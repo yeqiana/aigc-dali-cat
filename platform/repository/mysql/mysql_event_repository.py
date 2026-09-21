@@ -30,6 +30,10 @@ _EVENT_UPSERT_SQL = (
 _EVENT_SELECT_SQL = "SELECT * FROM TB_EVENT_LOG WHERE EVENT_ID = %s"
 _EVENT_LIST_SQL = "SELECT * FROM TB_EVENT_LOG ORDER BY OCCURRED_TIME"
 _EVENT_PAGE_SQL = "SELECT * FROM TB_EVENT_LOG WHERE EVENT_ID > %s ORDER BY EVENT_ID LIMIT %s"
+_EVENT_RECENT_SQL = (
+    "SELECT * FROM TB_EVENT_LOG "
+    "ORDER BY OCCURRED_TIME DESC, EVENT_ID DESC LIMIT %s OFFSET %s"
+)
 _EVENT_AGGREGATE_SQL = (
     "SELECT * FROM TB_EVENT_LOG "
     "WHERE EVENT_TYPE=%s AND AGGREGATE_TYPE=%s AND AGGREGATE_ID=%s "
@@ -86,6 +90,11 @@ class MySqlEventRepository:
 
     def list_all(self) -> list[dict]:
         return _normalize_rows(self._conn().query_all(_EVENT_LIST_SQL))
+
+    def list_recent(self, *, limit: int = 50, offset: int = 0) -> list[dict]:
+        return _normalize_rows(
+            self._conn().query_all(_EVENT_RECENT_SQL, (int(limit), int(offset)))
+        )
 
     def list_by_aggregate(
         self, event_type: str, aggregate_type: str, aggregate_id: str

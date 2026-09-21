@@ -63,3 +63,28 @@ def test_mysql_authority_ignores_stale_file_and_reads_database(monkeypatch, tmp_
     assert loaded["frames"]["01"]["status"] == "LOCKED"
     assert production_ledger.authority_exists(tmp_path) is True
     assert production_ledger.authority_sha256(tmp_path)
+
+
+def test_mysql_get_ledger_uses_database_not_stale_compatibility_file(monkeypatch, tmp_path):
+    _mode(monkeypatch, "mysql")
+    meta = tmp_path / "meta"
+    meta.mkdir()
+    ledger_path = meta / "production-ledger.json"
+    ledger_path.write_text(
+        '{"frames":{"01":{"status":"PENDING","attempts":[]}}}', encoding="utf-8"
+    )
+    mysql_document = {
+        "frames": {
+            "01": {
+                "status": "GENERATING",
+                "attempts": [{"attempt_id": "mysql-attempt", "result": "pending"}],
+            }
+        }
+    }
+    monkeypatch.setattr(persistence, "load_authority", lambda _ep: mysql_document)
+
+    path, loaded = production_ledger.get_ledger(tmp_path)
+
+    assert path == ledger_path
+    assert loaded == mysql_document
+    assert loaded["frames"]["01"]["attempts"][0]["attempt_id"] == "mysql-attempt"
