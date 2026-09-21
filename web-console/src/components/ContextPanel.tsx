@@ -316,6 +316,9 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
           <div
             className="storyos-elevated rounded-[var(--radius-lg)] max-w-lg w-full p-4 text-[var(--text-primary)] space-y-3 font-mono text-xs"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${activeJson.title} JSON 预览`}
           >
             <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2">
               <span className="text-[var(--text-primary)] font-bold">{activeJson.title}</span>

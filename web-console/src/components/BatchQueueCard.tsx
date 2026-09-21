@@ -189,7 +189,12 @@ export const BatchQueueCard: React.FC<BatchQueueCardProps> = ({
       {/* Frame Detail Modal */}
       {activeItemModal && (
         <div className="storyos-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="storyos-elevated rounded-[var(--radius-lg)] max-w-lg w-full text-[var(--text-primary)] overflow-hidden animate-in fade-in">
+          <div
+            className="storyos-elevated rounded-[var(--radius-lg)] max-w-lg w-full text-[var(--text-primary)] overflow-hidden animate-in fade-in"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Frame #${activeItemModal.frameIndex} 渲染详情`}
+          >
             <div className="p-3 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs text-[var(--primary)] font-semibold">

@@ -264,6 +264,9 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({
           <div
             className="storyos-elevated rounded-[var(--radius-lg)] max-w-sm w-full p-4 text-[var(--text-primary)] space-y-3"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Frame #${selectedFrame.frameIndex} 前端示例质检详情`}
           >
             <div className="flex items-center justify-between text-xs font-mono border-b border-[var(--border-subtle)] pb-2 text-[var(--text-secondary)]">
               <span className="font-semibold text-[var(--text-primary)]">Frame #{selectedFrame.frameIndex} (4:5 1080×1350)</span>

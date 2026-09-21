@@ -335,6 +335,9 @@ function ProductionConsole() {
           <div
             className="storyos-elevated max-w-lg w-full overflow-hidden"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="搜索 StoryOS 示例剧集"
           >
             <div className="p-3 border-b border-[var(--border-subtle)] flex items-center gap-2">
               <Search className="w-4 h-4 text-[var(--text-tertiary)]" />
@@ -398,6 +401,9 @@ function ProductionConsole() {
           <div
             className="storyos-drawer w-[var(--drawer-width)] max-w-[90vw] h-full p-4 flex flex-col space-y-3"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="生产通知与质检流水"
           >
             <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
               <div className="flex items-center gap-2">

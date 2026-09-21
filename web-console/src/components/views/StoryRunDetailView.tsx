@@ -1431,7 +1431,12 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
       {/* ========================================================================= */}
       {confirmAction && (
         <div className="fixed inset-0 z-70 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[6px] max-w-sm w-full p-4 space-y-3.5 text-[var(--text-primary)] shadow-2xl animate-in fade-in">
+          <div
+            className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[6px] max-w-sm w-full p-4 space-y-3.5 text-[var(--text-primary)] shadow-2xl animate-in fade-in"
+            role="dialog"
+            aria-modal="true"
+            aria-label="确认前端示例危险操作"
+          >
             <div className="flex items-center gap-2 text-[var(--warning)] font-semibold text-sm">
               <AlertTriangle className="w-4 h-4 text-[var(--warning)] shrink-0" />
               <span>
@@ -1477,7 +1482,12 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
           className="fixed inset-0 z-80 bg-black/90 flex items-center justify-center p-6 backdrop-blur-md"
           onClick={() => setImageModalUrl(null)}
         >
-          <div className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center">
+          <div
+            className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center"
+            role="dialog"
+            aria-modal="true"
+            aria-label="高清原图预览"
+          >
             <button
               type="button"
               onClick={() => setImageModalUrl(null)}

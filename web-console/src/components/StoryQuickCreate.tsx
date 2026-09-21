@@ -144,7 +144,12 @@ export const StoryQuickCreate: React.FC<StoryQuickCreateProps> = ({
       {/* Plan Generation Breakdown Modal */}
       {showPlanModal && (
         <div className="storyos-overlay fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="storyos-elevated rounded-[var(--radius-lg)] max-w-2xl w-full text-[var(--text-primary)] overflow-hidden">
+          <div
+            className="storyos-elevated rounded-[var(--radius-lg)] max-w-2xl w-full text-[var(--text-primary)] overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="StoryOS 前端示例故事解析进度"
+          >
             {/* Modal Header */}
             <div className="p-4 border-b border-[var(--border-subtle)] flex items-center justify-between bg-[var(--bg-surface)]">
               <div className="flex items-center gap-2.5">

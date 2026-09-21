@@ -128,7 +128,12 @@ export const VisualLockCard: React.FC<VisualLockCardProps> = ({ visualLocks }) =
       {/* Modal for Visual Lock Details */}
       {activeModalAsset && (
         <div className="storyos-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="storyos-elevated rounded-[var(--radius-lg)] max-w-3xl w-full text-[var(--text-primary)] overflow-hidden animate-in fade-in">
+          <div
+            className="storyos-elevated rounded-[var(--radius-lg)] max-w-3xl w-full text-[var(--text-primary)] overflow-hidden animate-in fade-in"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${activeModalAsset.title} Visual Lock 详情`}
+          >
             <div className="p-4 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Lock className="w-4 h-4 text-[var(--primary)]" />
