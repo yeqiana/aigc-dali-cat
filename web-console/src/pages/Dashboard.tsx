@@ -15,7 +15,7 @@ export default function Dashboard() {
 
   const healthy = ['OK', 'HEALTHY', 'UP'].includes(status.toUpperCase());
   const tools = [
-    { href: '/runtime', label: 'Runtime', desc: 'Execution Timeline 与 Trace', Icon: Activity },
+    { href: '/runtime', label: 'Runtime', desc: 'Episode Runtime Status + Execution / Trace', Icon: Activity },
     { href: '/executions', label: 'Executions', desc: '按 Execution ID 查询事实记录', Icon: Workflow },
     { href: '/traces', label: 'Traces', desc: '按 Trace ID 查询链路记录', Icon: GitBranch },
     { href: '/memory', label: 'Memory', desc: '检索 Experience / Memory Store', Icon: Brain },

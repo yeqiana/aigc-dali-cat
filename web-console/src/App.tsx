@@ -37,7 +37,7 @@ const BACKEND_ROUTE_CONTRACT = [
 ] as const;
 
 function renderBackendRoute(): React.ReactNode | null {
-  const pathname = window.location.pathname;
+  const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
   const route = BACKEND_ROUTE_CONTRACT.find((item) => item.path === pathname);
   if (!route) return null;
   const Component = route.Component;
@@ -51,6 +51,24 @@ function renderBackendRoute(): React.ReactNode | null {
     >
       <Component />
     </Suspense>
+  );
+}
+
+function UnsupportedRoute() {
+  return (
+    <main className="storyos-shell min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] p-4 lg:p-6 flex items-center justify-center">
+      <section className="storyos-surface w-full max-w-lg p-5">
+        <div className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)]">StoryOS / Route</div>
+        <h1 className="mt-1 text-lg font-semibold">Unsupported Console Route</h1>
+        <p className="mt-2 text-xs leading-5 text-[var(--text-secondary)]">
+          当前路径没有已接入的 StoryOS Console 能力。未配置的 Platform capability 不会回退成假页面。
+        </p>
+        <div className="mt-4 flex items-center gap-2">
+          <a href="/" className="storyos-control h-8 px-3 inline-flex items-center text-xs">Production Console</a>
+          <a href="/platform" className="h-8 px-3 rounded-[var(--radius-md)] bg-[var(--primary)] text-white inline-flex items-center text-xs font-medium">Platform Console</a>
+        </div>
+      </section>
+    </main>
   );
 }
 
@@ -451,5 +469,8 @@ function ProductionConsole() {
 }
 
 export default function App() {
-  return renderBackendRoute() ?? <ProductionConsole />;
+  const backendPage = renderBackendRoute();
+  if (backendPage) return backendPage;
+  const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+  return pathname === '/' ? <ProductionConsole /> : <UnsupportedRoute />;
 }

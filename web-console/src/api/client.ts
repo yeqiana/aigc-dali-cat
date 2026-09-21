@@ -21,13 +21,20 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     ...options,
   });
 
-  if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
+  let body: ApiResponse<T>;
+  try {
+    body = (await response.json()) as ApiResponse<T>;
+  } catch {
+    throw new Error(
+      response.ok
+        ? 'Platform API returned invalid JSON'
+        : `Platform API request failed: HTTP ${response.status}`,
+    );
   }
 
-  const body = (await response.json()) as ApiResponse<T>;
-  if (body.code !== 'OK') {
-    throw new Error(body.message);
+  if (!response.ok || body.code !== 'OK') {
+    const detail = [body.code, body.message].filter(Boolean).join(': ');
+    throw new Error(detail || `Platform API request failed: HTTP ${response.status}`);
   }
 
   return body.data;

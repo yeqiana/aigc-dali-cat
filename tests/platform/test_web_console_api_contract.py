@@ -36,6 +36,8 @@ def test_main_console_routes_use_real_backend_backed_pages_only():
     assert "/projects" not in app
     assert "/plugins" not in app
     assert '/workflows' not in app
+    assert "Unsupported Console Route" in app
+    assert "pathname === '/' ? <ProductionConsole /> : <UnsupportedRoute />" in app
     assert "apiGet<Health>('/healthz')" in dashboard
 
 
