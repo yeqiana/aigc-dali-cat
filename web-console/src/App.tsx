@@ -142,7 +142,6 @@ function ProductionConsole() {
       const updated: Episode = {
         ...activeEpisode,
         completedFrames: nextCompleted,
-        stageProgressPercent: nextPercent,
         currentStage: nextCompleted >= activeEpisode.totalFrames ? 'PUBLISH_READY' : 'PRODUCTION_PASSED',
         currentBatch: {
           batchId: 'BATCH_05',
@@ -170,11 +169,9 @@ function ProductionConsole() {
         code: `EP-0${episodes.length + 1}`,
         title: commandText.length > 14 ? commandText.slice(0, 14) + '...' : commandText,
         synopsis: commandText,
-        logline: commandText,
         completedFrames: 0,
         totalFrames: 32,
         currentStage: 'IDEA_LOCKED',
-        stageProgressPercent: 0,
         updatedAt: '刚刚',
       };
 

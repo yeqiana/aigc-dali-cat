@@ -65,13 +65,10 @@ export interface Episode {
   code: string;
   title: string;
   synopsis: string;
-  logline: string;
   genre: string;
-  targetAudience: string;
   totalFrames: number;
   completedFrames: number;
   currentStage: ProductionStage;
-  stageProgressPercent: number;
   coverImage: string;
   updatedAt: string;
   runtimeRequest: RuntimeRequest;
@@ -80,19 +77,10 @@ export interface Episode {
 }
 
 export type NavigationTab =
-  | 'overview'           // 总览
   | 'production_monitor' // 生产监控 (核心总控台)
   | 'episodes'           // 剧集管理
-  | 'assets'             // 素材资产
-  | 'agents'             // Agent 管理
-  | 'analytics'          // 数据看板
-  | 'exceptions'         // 异常中心
   | 'settings'           // 系统管理
   | 'workbench'          // 创作工作台 (分镜质检与调度台)
-  | 'visual_lock'        // 视觉锁定
-  | 'batch_gen'          // 批量出图
-  | 'frame_qa'           // 逐帧审核
-  | 'publish_center'     // 发布中心
   | 'logs';              // 运行记录
 
 // ================= StoryOS 生产监控台 V1.0 核心模型 =================
