@@ -69,7 +69,9 @@ def test_production_index_and_logs_do_not_fall_back_to_demo_data():
     series = (WEB / "src/components/views/SeriesLibraryView.tsx").read_text(encoding="utf-8")
     logs = (WEB / "src/components/views/RuntimeLogsView.tsx").read_text(encoding="utf-8")
     header = (WEB / "src/components/HeaderBar.tsx").read_text(encoding="utf-8")
-    demo = (WEB / "src/mockData.ts").read_text(encoding="utf-8")
+    demo = (WEB / "src/workbenchDemoData.ts").read_text(encoding="utf-8")
+    app = (WEB / "src/App.tsx").read_text(encoding="utf-8")
+    workbench = (WEB / "src/components/views/WorkbenchDemoView.tsx").read_text(encoding="utf-8")
 
     assert "runtimeApi.listEpisodeStatuses" in series
     assert "MYSQL AUTHORITY" in series
@@ -79,6 +81,10 @@ def test_production_index_and_logs_do_not_fall_back_to_demo_data():
     assert "MYSQL AUTHORITY · READ ONLY" in header
     assert "export const DEMO_EPISODES" in demo
     assert "SYSTEM_RUNTIME_LOGS" not in demo
+    assert "workbenchDemoData" not in app
+    assert "DEMO_EPISODES" not in app
+    assert "WorkbenchDemoView" in app
+    assert "workbenchDemoData" in workbench
 
 
 def test_runtime_console_uses_only_supported_execution_and_trace_endpoints():
