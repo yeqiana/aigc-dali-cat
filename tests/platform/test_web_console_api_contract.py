@@ -43,11 +43,13 @@ def test_runtime_console_uses_only_supported_execution_and_trace_endpoints():
     client = (WEB / "src/api/client.ts").read_text(encoding="utf-8")
     execution = (WEB / "src/api/execution.ts").read_text(encoding="utf-8")
     runtime = (WEB / "src/api/runtime.ts").read_text(encoding="utf-8")
+    runtime_page = (WEB / "src/pages/RuntimeVisualization.tsx").read_text(encoding="utf-8")
 
     assert "export const apiGet" in client
     assert "import { apiGet } from './client';" in execution
     assert "/api/v1/executions/${id}" in runtime
-    assert "/api/v1/traces/${id}" in runtime
+    assert "/api/v1/traces/${traceId}" in runtime
+    assert "getTrace(nextExecution.trace_id)" in runtime_page
     assert not (WEB / "src/api/monitoring.ts").exists()
     assert not (WEB / "src/api/workflow.ts").exists()
     assert not (WEB / "src/api/permission.ts").exists()

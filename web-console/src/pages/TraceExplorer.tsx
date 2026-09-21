@@ -48,8 +48,12 @@ export default function TraceExplorer() {
           </header>
           {trace ? (
             <div className="divide-y divide-[var(--border-subtle)] text-xs">
-              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Trace ID</span><code className="font-mono text-[var(--text-primary)] break-all">{trace.id}</code></div>
+              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Trace ID</span><code className="font-mono text-[var(--text-primary)] break-all">{trace.trace_id}</code></div>
+              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Span ID</span><code className="font-mono break-all">{trace.span_id}</code></div>
+              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Operation</span><code className="font-mono">{trace.operation}</code></div>
               <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Status</span><span className="font-mono text-[var(--text-primary)]">{trace.status}</span></div>
+              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Task / Episode</span><code className="font-mono">{trace.task_id ?? '-'} / {trace.episode_id ?? '-'}</code></div>
+              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Duration</span><code className="font-mono">{trace.duration_ms ?? '-'} ms</code></div>
             </div>
           ) : <div className="px-3 py-10 text-center text-xs text-[var(--text-tertiary)]">输入 Trace ID 后查询。</div>}
         </section>

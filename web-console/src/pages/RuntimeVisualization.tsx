@@ -3,27 +3,33 @@ import { runtimeApi } from '../api/runtime';
 import { RuntimeMonitor } from '../components/RuntimeMonitor';
 import RuntimeTimeline from '../components/RuntimeTimeline';
 import TraceGraph from '../components/TraceGraph';
-import type { RuntimeExecutionState, RuntimeTraceState } from '../types/monitoring';
+import type { ExecutionRecord, TraceRecord } from '../types/platform';
 
 export default function RuntimeVisualization() {
-  const [runtime, setRuntime] = useState<RuntimeExecutionState>();
-  const [trace, setTrace] = useState<RuntimeTraceState>();
+  const [execution, setExecution] = useState<ExecutionRecord>();
+  const [trace, setTrace] = useState<TraceRecord>();
   const [executionId, setExecutionId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [traceError, setTraceError] = useState<string | null>(null);
 
   async function load(id: string) {
     setLoading(true);
     setError(null);
+    setTraceError(null);
+    setTrace(undefined);
     try {
-      const [nextRuntime, nextTrace] = await Promise.all([
-        runtimeApi.getExecutionRuntime(id),
-        runtimeApi.getTrace(id),
-      ]);
-      setRuntime(nextRuntime);
-      setTrace(nextTrace);
+      const nextExecution = await runtimeApi.getExecution(id);
+      setExecution(nextExecution);
+      if (nextExecution.trace_id) {
+        try {
+          setTrace(await runtimeApi.getTrace(nextExecution.trace_id));
+        } catch (cause) {
+          setTraceError(cause instanceof Error ? cause.message : 'Trace 查询失败');
+        }
+      }
     } catch (cause) {
-      setRuntime(undefined);
+      setExecution(undefined);
       setTrace(undefined);
       setError(cause instanceof Error ? cause.message : 'Runtime 查询失败');
     } finally {
@@ -72,23 +78,11 @@ export default function RuntimeVisualization() {
           </div>
         )}
 
-        <RuntimeMonitor
-          state={
-            runtime
-              ? {
-                  executionId: runtime.executionId ?? executionId,
-                  status: runtime.status ?? 'UNKNOWN',
-                  currentStep: runtime.currentStep,
-                  workerId: runtime.workerId,
-                  heartbeatTime: runtime.heartbeatTime,
-                }
-              : undefined
-          }
-        />
+        <RuntimeMonitor execution={execution} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <RuntimeTimeline steps={runtime?.steps ?? []} />
-          <TraceGraph nodes={trace?.nodes ?? []} />
+          <RuntimeTimeline execution={execution} />
+          <TraceGraph trace={trace} error={traceError} />
         </div>
       </div>
     </div>

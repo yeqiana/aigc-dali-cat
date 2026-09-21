@@ -1,7 +1,7 @@
-import type { RuntimeState } from '../types/monitoring';
+import type { ExecutionRecord } from '../types/platform';
 
-export function RuntimeMonitor({ state }: { state?: RuntimeState }) {
-  const status = (state?.status ?? 'UNKNOWN').toUpperCase();
+export function RuntimeMonitor({ execution }: { execution?: ExecutionRecord }) {
+  const status = (execution?.status ?? 'UNKNOWN').toUpperCase();
   const statusTone =
     ['FAILED', 'BLOCKED', 'ERROR'].includes(status)
       ? 'text-[var(--danger)]'
@@ -21,16 +21,16 @@ export function RuntimeMonitor({ state }: { state?: RuntimeState }) {
         </div>
       </div>
       <div>
-        <div className="text-[10px] uppercase tracking-wide text-[var(--text-tertiary)]">Current Step</div>
-        <div className="mt-0.5 text-[12px] text-[var(--text-primary)]">{state?.currentStep ?? '-'}</div>
+        <div className="text-[10px] uppercase tracking-wide text-[var(--text-tertiary)]">Agent</div>
+        <div className="mt-0.5 text-[12px] font-mono text-[var(--text-primary)]">{execution?.agent_code ?? '-'}</div>
       </div>
       <div>
-        <div className="text-[10px] uppercase tracking-wide text-[var(--text-tertiary)]">Worker</div>
-        <div className="mt-0.5 text-[12px] font-mono text-[var(--text-secondary)]">{state?.workerId ?? '-'}</div>
+        <div className="text-[10px] uppercase tracking-wide text-[var(--text-tertiary)]">Execution Type</div>
+        <div className="mt-0.5 text-[12px] font-mono text-[var(--text-secondary)]">{execution?.execution_type ?? '-'}</div>
       </div>
       <div className="ml-auto">
-        <div className="text-[10px] uppercase tracking-wide text-[var(--text-tertiary)]">Heartbeat</div>
-        <div className="mt-0.5 text-[11px] font-mono text-[var(--text-secondary)]">{state?.heartbeatTime ?? '-'}</div>
+        <div className="text-[10px] uppercase tracking-wide text-[var(--text-tertiary)]">Updated</div>
+        <div className="mt-0.5 text-[11px] font-mono text-[var(--text-secondary)]">{execution?.updated_time ?? '-'}</div>
       </div>
     </section>
   );

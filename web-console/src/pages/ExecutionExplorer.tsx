@@ -48,9 +48,13 @@ export default function ExecutionExplorer() {
           </header>
           {execution ? (
             <div className="divide-y divide-[var(--border-subtle)] text-xs">
-              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Execution ID</span><code className="font-mono text-[var(--text-primary)] break-all">{execution.id}</code></div>
+              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Execution ID</span><code className="font-mono text-[var(--text-primary)] break-all">{execution.execution_id}</code></div>
               <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Status</span><span className="font-mono text-[var(--text-primary)]">{execution.status}</span></div>
+              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Agent</span><code className="font-mono">{execution.agent_code}@{execution.agent_version}</code></div>
+              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Type</span><code className="font-mono">{execution.execution_type}</code></div>
               <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Trace ID</span><code className="font-mono text-[var(--text-secondary)] break-all">{execution.trace_id || '-'}</code></div>
+              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Steps</span><span>{execution.skill_executions.length} skills · {execution.tool_executions.length} tools</span></div>
+              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Updated</span><code className="font-mono">{execution.updated_time}</code></div>
             </div>
           ) : <div className="px-3 py-10 text-center text-xs text-[var(--text-tertiary)]">输入 Execution ID 后查询。</div>}
         </section>
