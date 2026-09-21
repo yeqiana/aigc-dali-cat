@@ -11,9 +11,9 @@ from platform.api.contracts import CreateAgentRequest
 class AgentApplicationService:
     """P7.4 application facade backed by AgentRuntime.
 
-    It satisfies the Agent/Execution/Trace API ports without introducing a DB
-    dependency. Agent definitions are temporary in-process registry data; the
-    execution facts are owned by AgentRuntime's recorder boundary.
+    It satisfies the Agent/Execution/Trace API ports. Agent definitions remain
+    temporary in-process registry data; execution and Trace facts are owned by
+    AgentRuntime and its explicitly injected repositories.
     """
 
     def __init__(self, runtime: AgentRuntime | None = None) -> None:
@@ -54,3 +54,18 @@ class AgentApplicationService:
 
     def get_trace(self, trace_id: str) -> dict[str, Any] | None:
         return self.runtime.get_trace(trace_id)
+
+    def list_traces(
+        self,
+        *,
+        limit: int | str = 50,
+        offset: int | str = 0,
+        episode_id: str = "",
+        trace_id: str = "",
+    ) -> dict[str, Any]:
+        return self.runtime.list_traces(
+            limit=int(limit),
+            offset=int(offset),
+            episode_id=episode_id or None,
+            trace_id=trace_id or None,
+        )

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import annotations
-import argparse, concurrent.futures as cf, hashlib, json, subprocess, sys, time
+import argparse, concurrent.futures as cf, hashlib, json, subprocess, sys, time, uuid
 from pathlib import Path
 
 import quota_observability
@@ -355,6 +355,12 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
     # Reject an unknown target before any reconcile, lock or executor exists.
     if until is not None and until not in STAGES:
         raise ValueError("unknown runtime DAG stop target: "+str(until))
+    # Direct DAG callers (including bounded recovery/test harnesses) may not be
+    # wrapped by workflow_runner. Give their spans a real local context instead
+    # of allowing uncorrelatable SPAN_* events; the normal wrapper still owns
+    # the durable TRACE_START/TRACE_END lifecycle.
+    trace_run_id = run_id or "dag_" + uuid.uuid4().hex
+    trace_id = trace_id or "ST_" + uuid.uuid4().hex[:16]
     blocked=reconcile_visual_profile_closure(ep)
     if blocked is not None:
         # Phase 4.6.1: an unreconcilable Visual Profile closure fails closed. It is never
@@ -464,8 +470,8 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,reason)
             episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"reason":reason})
             _t=time.monotonic()
-            _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"reused":True})
-            runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=run_id,attrs={"reason":reason})
+            _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=trace_run_id,attrs={"reused":True})
+            runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=trace_run_id,attrs={"reason":reason})
             runtime_node_evidence.record(
                 ep,node_id=s.step_id,start_time=res.started_at,end_time=res.finished_at,
                 status="REUSED",attempt=attempt,output=reason,evidence=s.evidence_paths)
@@ -480,8 +486,8 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,"target already valid")
                 episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"target_state":s.target_state})
                 _t=time.monotonic()
-                _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"reused":True})
-                runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=run_id,attrs={"target_state":s.target_state})
+                _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=trace_run_id,attrs={"reused":True})
+                runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=trace_run_id,attrs={"target_state":s.target_state})
                 runtime_node_evidence.record(
                     ep,node_id=s.step_id,start_time=res.started_at,end_time=res.finished_at,
                     status="REUSED",attempt=attempt,output="target already valid",evidence=s.evidence_paths)
@@ -489,7 +495,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 continue
         started_at=proto.now(); t0=time.monotonic(); rc=0; note=""
         episode_performance.safe_begin_stage(ep,s.step_id,source="runtime_dag",metadata={"executor":s.executor,"target_state":s.target_state})
-        trace_span=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"executor":s.executor,"target_state":s.target_state})
+        trace_span=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=trace_run_id,attrs={"executor":s.executor,"target_state":s.target_state})
         if s.step_id=="PREIMAGE_COMPILE":
             resource_library.resolve(ep,write=True)
             intro_policy.resolve(ep,write=True)
@@ -627,7 +633,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             ep,node_id=s.step_id,start_time=started_at,end_time=res.finished_at,status=status,
             attempt=attempt,output=note[-1200:],evidence=s.evidence_paths)
         if run_id: perf.record_step(ep,run_id,s.step_id,status,elapsed,note[-500:])
-        runtime_trace.end_span(ep,trace_span,name=s.step_id,category="workflow_step",status=status,started_monotonic=t0,trace_id=trace_id,run_id=run_id,attrs={"rc":rc,"attempt":attempt})
+        runtime_trace.end_span(ep,trace_span,name=s.step_id,category="workflow_step",status=status,started_monotonic=t0,trace_id=trace_id,run_id=trace_run_id,attrs={"rc":rc,"attempt":attempt})
         if status != "HOST_WAIT":
             episode_performance.safe_end_stage(ep,s.step_id,status=status,metadata={"rc":rc,"attempt":attempt})
         try: quota_observability.snapshot(ep,note=f"after {s.step_id}")

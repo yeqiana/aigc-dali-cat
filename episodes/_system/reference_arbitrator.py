@@ -34,7 +34,16 @@ def _contract_rows(ep,frame):
                 "anchor":row.get("anchor") or row.get("id") or row.get("required_anchor")
             })
     return c,hm,refs
-def _identity_need(ep,hm,contract_refs,scope="batch"):
+def _contract_identity_ids(contract):
+    out=[]
+    for row in (contract or {}).get("identity_requirements") or []:
+        if not isinstance(row,dict):continue
+        cid=str(row.get("character_id") or "").strip().upper()
+        if cid and cid not in out:out.append(cid)
+    return out
+
+
+def _identity_need(ep,hm,contract_refs,scope="batch",identity_requirements=None):
     cv=character_visual_contract.load(ep) or {};ids=[str(x) for x in (cv.get("members") or {}).keys()];shot=hm.get("shot_progression") or {};primary=str(shot.get("primary_subject") or "");matched=[cid for cid in ids if cid and cid in primary]
     if matched:
         cid=matched[0];idx=primary.find(cid);fragment=primary[max(0,idx-4):idx+len(cid)+12].lower()
@@ -54,6 +63,13 @@ def _identity_need(ep,hm,contract_refs,scope="batch"):
     if any(tok.lower() in capture_text.lower() for tok in SELFIE_CAPTURE_TOKENS):
         photographer=str(capture.get("photographer_id") or "").strip()
         return True,photographer or None,"selfie_capture_event"
+    contract_ids=[]
+    for row in identity_requirements or []:
+        if not isinstance(row,dict):continue
+        cid=str(row.get("character_id") or "").strip().upper()
+        if cid and cid not in contract_ids:contract_ids.append(cid)
+    if contract_ids:
+        return True,contract_ids[0],"frame_contract_identity_requirements"
     low=primary.lower()
     if any(tok.lower() in low for tok in HUMAN_TOKENS):return True,None,"human_primary_subject"
     return False,None,"no_human_identity_signal"
@@ -70,7 +86,7 @@ def _master_identity(ep,frame,scope,character_id):
         if crop:return crop,"individual_crop"
     return {k:group[k] for k in ("path","role","kind") if k in group},"group_master"
 def select(ep,frame,scope="batch"):
-    ep=Path(ep).resolve();frame=int(frame);c,hm,contract_refs=_contract_rows(ep,frame);need,cid,need_reason=_identity_need(ep,hm,contract_refs,scope=scope)
+    ep=Path(ep).resolve();frame=int(frame);c,hm,contract_refs=_contract_rows(ep,frame);required_identity_ids=_contract_identity_ids(c);need,cid,need_reason=_identity_need(ep,hm,contract_refs,scope=scope,identity_requirements=c.get("identity_requirements") or [])
     identity_cid=None if need_reason=="selfie_capture_event" else cid
     # Character authority policy: current episode pixel master has priority over
     # historical series assets. Historical assets may supplement continuity but
@@ -87,6 +103,18 @@ def select(ep,frame,scope="batch"):
     if need:
         ident,source=_master_identity(ep,frame,scope,identity_cid)
         if ident:chosen.append(ident);meta["identity_source"]=source
+    # Frame Contract identity intent is execution evidence too.  When a shot
+    # contains multiple named/interaction characters, reserve the remaining
+    # reference slots for their current-episode individual crops before props.
+    if need and len(chosen)<MAX_REFS:
+        allow=scope in {"visual_lock","repair"}
+        for required_cid in required_identity_ids:
+            if required_cid==identity_cid:continue
+            crop=character_visual_contract.crop_reference(ep,required_cid,allow_provisional=allow)
+            if not crop:continue
+            if any(x.get("path")==crop.get("path") for x in chosen):continue
+            chosen.append(crop)
+            if len(chosen)>=MAX_REFS:break
     # Multi-character identity contract: reserve remaining reference capacity for
     # required identity anchors before contextual props/locations. A double-person
     # baseline must not silently degrade into a single-person identity lock.

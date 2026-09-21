@@ -313,10 +313,14 @@ def init_ledger(ep: Path, *, count: int | None = None, ratio: str | None = None,
 def get_ledger(ep: Path) -> tuple[Path, dict]:
     production_ledger_persistence.assert_full_authority_available()
     path = ep / LEDGER_FILE
-    if not path.exists():
+    # Always read through the configured authority facade. In mysql mode the
+    # compatibility JSON may be stale (or intentionally absent) and must never
+    # become the source for a subsequent command in the same ledger lifecycle.
+    # In particular, begin persists its pending attempt to MySQL only; success
+    # must read that same authority or it will lose the generation attempt.
+    data = load_authority(ep, default=None)
+    if not isinstance(data, dict):
         data = init_ledger(ep)
-    else:
-        data = load_json(path)
     return path, data
 
 

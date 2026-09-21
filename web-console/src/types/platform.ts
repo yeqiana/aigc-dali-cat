@@ -67,6 +67,7 @@ export interface TraceRecord {
   request_id?: string | null;
   episode_id?: string | null;
   task_id?: string | null;
+  run_id?: string | null;
   parent_span_id?: string | null;
   ended_at?: string | null;
   duration_ms?: number | null;
@@ -74,6 +75,16 @@ export interface TraceRecord {
   outputs: Record<string, unknown>;
   error?: string | null;
   attributes: Record<string, unknown>;
+}
+
+export interface TracePage {
+  items: TraceRecord[];
+  count: number;
+  limit: number;
+  offset: number;
+  has_more: boolean;
+  episode_id?: string | null;
+  trace_id?: string | null;
 }
 
 export interface RuntimeEpisodeStatus {

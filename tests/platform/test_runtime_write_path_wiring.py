@@ -172,5 +172,6 @@ def test_agent_runtime_trace_sink_persists_completed_span():
     assert [item.status for item in repository.saved] == [TraceStatus.RUNNING, TraceStatus.SUCCESS]
     finished = repository.saved[1]
     assert finished.trace_id == result.trace_id
+    assert finished.run_id == "run-1"
     assert finished.ended_at is not None
     assert finished.duration_ms is not None

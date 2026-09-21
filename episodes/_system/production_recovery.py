@@ -18,6 +18,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import production_ledger
+import production_recovery_persistence
 import production_queue_store
 import scheduler_core
 import image_model_policy
@@ -74,7 +75,22 @@ def _json_safe(value: object) -> object:
 
 
 def _journal(ep: Path, transaction_id: str, phase: str, **details: object) -> None:
-    """Write an append-only-by-id recovery journal using an atomic update."""
+    """Persist recovery transaction evidence.
+
+    MySQL is the authority in mysql/dual modes.  JSON is retained only for
+    json mode and dual-write migration compatibility.
+    """
+    current_mode = production_recovery_persistence.mode()
+    if current_mode in {"mysql", "dual"}:
+        production_recovery_persistence.update_transaction(
+            ep,
+            transaction_id,
+            phase,
+            details={str(key): _json_safe(value) for key, value in details.items()},
+        )
+    if current_mode == "mysql":
+        return
+
     path = Path(ep) / JOURNAL_REL
 
     def mutate(data: dict) -> None:
@@ -321,7 +337,18 @@ def reconcile_locked(ep: Path, queue: dict) -> dict:
     ledger = production_ledger.load_authority(ep, default={}) or {}
     report = {"schema_version": 1, "reconciled_at": now(), "rows": []}
     for item in queue.get("items") or []:
-        if not isinstance(item, dict) or item.get("status") not in {"running", "generated", "interrupted_unknown"}:
+        if not isinstance(item, dict):
+            continue
+        status = str(item.get("status") or "")
+        # A candidate-commit failure means the provider already returned usable
+        # pixels but the final Ledger commit did not close.  It is intentionally
+        # non-regenerating, so once the Ledger is repaired/replayed this blocked
+        # queue row must be eligible for the same READY replay as a running row.
+        commit_blocked = (
+            status == "blocked"
+            and str(item.get("last_error") or "").startswith("CANDIDATE_COMMIT_FAILED:")
+        )
+        if status not in {"running", "generated", "interrupted_unknown"} and not commit_blocked:
             continue
         frame = int(item.get("frame") or 0)
         frame_row = _ledger_frame(ledger, frame)

@@ -13,6 +13,9 @@ ROOT=Path(__file__).resolve().parents[2]
 _CONFIG=storyos_config.load_config()
 _LOCK=threading.Lock()
 
+class TraceContextUnavailable(RuntimeError):
+    """拒绝写入没有 trace_id 的 Span 事件，避免产生不可关联事实。"""
+
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="milliseconds")
 def _cfg():
     rel=storyos_config.get_path(_CONFIG,"agent_runtime.trace.config")
@@ -57,13 +60,20 @@ def current(ep):
     try:
         d=json.loads(p.read_text(encoding="utf-8-sig"));return d if isinstance(d,dict) else {}
     except Exception:return {}
+def _context(ep,trace_id,run_id):
+    cur=current(ep)
+    resolved_trace=trace_id or cur.get("trace_id")
+    resolved_run=run_id or cur.get("run_id")
+    if not resolved_trace:
+        raise TraceContextUnavailable("trace context unavailable: trace_id is required")
+    return resolved_trace,resolved_run
 def start_span(ep,name,*,category,trace_id=None,run_id=None,parent_span_id=None,attrs=None):
-    cur=current(ep);sid="SP_"+uuid.uuid4().hex[:16]
-    emit(ep,{"event":"SPAN_START","trace_id":trace_id or cur.get("trace_id"),"run_id":run_id or cur.get("run_id"),
+    resolved_trace,resolved_run=_context(ep,trace_id,run_id);sid="SP_"+uuid.uuid4().hex[:16]
+    emit(ep,{"event":"SPAN_START","trace_id":resolved_trace,"run_id":resolved_run,
         "span_id":sid,"parent_span_id":parent_span_id,"name":name,"category":category,"status":"RUNNING","attrs":attrs or {}})
     return sid
 def end_span(ep,span_id,*,name,category,status,started_monotonic,trace_id=None,run_id=None,attrs=None):
-    cur=current(ep);emit(ep,{"event":"SPAN_END","trace_id":trace_id or cur.get("trace_id"),"run_id":run_id or cur.get("run_id"),
+    resolved_trace,resolved_run=_context(ep,trace_id,run_id);emit(ep,{"event":"SPAN_END","trace_id":resolved_trace,"run_id":resolved_run,
         "span_id":span_id,"name":name,"category":category,"status":status,
         "elapsed_ms":round((time.monotonic()-started_monotonic)*1000,3),"attrs":attrs or {}})
 def route_event(ep,decision):

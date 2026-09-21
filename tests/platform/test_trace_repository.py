@@ -69,3 +69,25 @@ def test_mysql_trace_repository_get():
     assert row["duration_ms"] == 1000
     assert row["error"] is None
     assert connection.queried[-1][1] == ("trace_001", "span_001")
+
+
+def test_mysql_trace_repository_lists_trace_spans_without_event_projection():
+    connection = FakeConnection()
+    rows = [{
+        "TRACE_ID": "trace_001",
+        "SPAN_ID": "span_001",
+        "START_TIME": datetime(2026, 1, 1, 0, 0, 0),
+    }]
+
+    def query_all(sql, params=None):
+        connection.queried.append((sql, params))
+        return rows
+
+    connection.query_all = query_all
+    repository = MySqlTraceRepository(connection)
+
+    result = repository.list_recent(limit=10, offset=0, trace_id="trace_001")
+
+    assert result[0]["trace_id"] == "trace_001"
+    assert "TB_TRACE_SPAN" in connection.queried[-1][0]
+    assert connection.queried[-1][1] == ("trace_001", 10, 0)

@@ -44,6 +44,7 @@ class AgentRuntime:
             operation="agent.execute",
             episode_id=plan.context.episode_id,
             task_id=plan.context.task_id,
+            run_id=plan.context.workflow_run_id,
             inputs={
                 "execution_id": plan.execution_id,
                 "agent_code": plan.agent_code,
@@ -169,7 +170,52 @@ class AgentRuntime:
 
     def get_trace(self, trace_id: str) -> dict[str, Any] | None:
         trace = self._traces.get(trace_id)
-        return dict(trace) if trace else None
+        if trace:
+            return dict(trace)
+        repository = self.trace_observer.repository
+        list_by_trace = getattr(repository, "list_by_trace", None) if repository else None
+        if callable(list_by_trace):
+            rows = list_by_trace(trace_id)
+            return dict(rows[0]) if rows else None
+        return None
+
+    def list_traces(
+        self,
+        *,
+        limit: int = 50,
+        offset: int = 0,
+        episode_id: str | None = None,
+        trace_id: str | None = None,
+    ) -> dict[str, Any]:
+        repository = self.trace_observer.repository
+        list_recent = getattr(repository, "list_recent", None) if repository else None
+        if callable(list_recent):
+            rows = list_recent(
+                limit=limit + 1,
+                offset=offset,
+                episode_id=episode_id or None,
+                trace_id=trace_id or None,
+            )
+            has_more = len(rows) > limit
+            rows = rows[:limit]
+        else:
+            rows = list(self._traces.values())
+            if trace_id:
+                rows = [row for row in rows if row.get("trace_id") == trace_id]
+            if episode_id:
+                rows = [row for row in rows if row.get("episode_id") == episode_id]
+            rows = sorted(rows, key=lambda row: row.get("started_at") or "", reverse=True)
+            has_more = len(rows) > offset + limit
+            rows = rows[offset:offset + limit]
+        return {
+            "items": [dict(row) for row in rows],
+            "count": len(rows),
+            "limit": limit,
+            "offset": offset,
+            "has_more": has_more,
+            "episode_id": episode_id or None,
+            "trace_id": trace_id or None,
+        }
 
     def _finish_trace(
         self,

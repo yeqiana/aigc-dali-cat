@@ -73,6 +73,22 @@ def _ensure_column(connection, table: str, name: str, ddl: str) -> bool:
     return True
 
 
+def _indexes(connection, table: str) -> set[str]:
+    rows = connection.query_all(
+        "SELECT DISTINCT INDEX_NAME FROM information_schema.STATISTICS "
+        "WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=%s",
+        (table,),
+    )
+    return {str(row.get("INDEX_NAME") or row.get("index_name")) for row in rows}
+
+
+def _ensure_index(connection, table: str, name: str, expression: str) -> bool:
+    if name in _indexes(connection, table):
+        return False
+    connection.execute(f"ALTER TABLE {table} ADD INDEX {name} ({expression})")
+    return True
+
+
 def upgrade_runtime_tables(connection) -> list[str]:
     added: list[str] = []
     specs = {
@@ -97,6 +113,8 @@ def upgrade_runtime_tables(connection) -> list[str]:
         for name, ddl in columns.items():
             if _ensure_column(connection, table, name, ddl):
                 added.append(f"{table}.{name}")
+    if _ensure_index(connection, "TB_TRACE_SPAN", "INDEX_TB_TRACE_SPAN_START_TIME", "START_TIME"):
+        added.append("TB_TRACE_SPAN.INDEX_TB_TRACE_SPAN_START_TIME")
     return added
 
 

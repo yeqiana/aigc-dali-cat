@@ -28,7 +28,23 @@ _TRACE_UPSERT_SQL = (
 )
 
 _TRACE_SELECT_SQL = "SELECT * FROM TB_TRACE_SPAN WHERE TRACE_ID = %s AND SPAN_ID = %s"
-_TRACE_LIST_SQL = "SELECT * FROM TB_TRACE_SPAN ORDER BY START_TIME"
+_TRACE_LIST_SQL = "SELECT * FROM TB_TRACE_SPAN ORDER BY START_TIME, SPAN_ID"
+_TRACE_BY_TRACE_SQL = (
+    "SELECT * FROM TB_TRACE_SPAN WHERE TRACE_ID = %s "
+    "ORDER BY START_TIME, SPAN_ID"
+)
+_TRACE_RECENT_SQL = (
+    "SELECT * FROM TB_TRACE_SPAN "
+    "ORDER BY START_TIME DESC, SPAN_ID DESC LIMIT %s OFFSET %s"
+)
+_TRACE_RECENT_BY_EPISODE_SQL = (
+    "SELECT * FROM TB_TRACE_SPAN WHERE EPISODE_ID = %s "
+    "ORDER BY START_TIME DESC, SPAN_ID DESC LIMIT %s OFFSET %s"
+)
+_TRACE_RECENT_BY_TRACE_SQL = (
+    "SELECT * FROM TB_TRACE_SPAN WHERE TRACE_ID = %s "
+    "ORDER BY START_TIME DESC, SPAN_ID DESC LIMIT %s OFFSET %s"
+)
 _TRACE_PAGE_SQL = (
     "SELECT * FROM TB_TRACE_SPAN WHERE (TRACE_ID, SPAN_ID) > (%s, %s) "
     "ORDER BY TRACE_ID, SPAN_ID LIMIT %s"
@@ -61,7 +77,8 @@ def _normalize_rows(rows: list[dict]) -> list[dict]:
 class MySqlTraceRepository:
     """Trace/Span 事实的 MySQL 持久化。
 
-    以 (trace_id, span_id) 为主键幂等写入。
+    以全局唯一 span_id 作物理主键幂等写入；trace_id/span_id 共同构成
+    Trace 逻辑 identity。
     """
 
     def __init__(self, connection: MySqlConnection | None = None):
@@ -77,6 +94,7 @@ class MySqlTraceRepository:
             "inputs": trace.inputs,
             "outputs": trace.outputs,
             "attributes": trace.attributes,
+            "run_id": trace.run_id,
         }
         category = trace.attributes.get("category") if isinstance(trace.attributes, dict) else None
         self._conn().execute(_TRACE_UPSERT_SQL, (
@@ -101,6 +119,29 @@ class MySqlTraceRepository:
 
     def list_all(self) -> list[dict]:
         return _normalize_rows(self._conn().query_all(_TRACE_LIST_SQL))
+
+    def list_by_trace(self, trace_id: str) -> list[dict]:
+        return _normalize_rows(self._conn().query_all(_TRACE_BY_TRACE_SQL, (str(trace_id),)))
+
+    def list_recent(
+        self,
+        *,
+        limit: int = 50,
+        offset: int = 0,
+        episode_id: str | None = None,
+        trace_id: str | None = None,
+    ) -> list[dict]:
+        params: tuple
+        if trace_id:
+            sql = _TRACE_RECENT_BY_TRACE_SQL
+            params = (str(trace_id), int(limit), int(offset))
+        elif episode_id:
+            sql = _TRACE_RECENT_BY_EPISODE_SQL
+            params = (str(episode_id), int(limit), int(offset))
+        else:
+            sql = _TRACE_RECENT_SQL
+            params = (int(limit), int(offset))
+        return _normalize_rows(self._conn().query_all(sql, params))
 
     def iter_all(self, batch_size: int = 500):
         """按复合主键 keyset 分页流式读取（P9.27）。"""

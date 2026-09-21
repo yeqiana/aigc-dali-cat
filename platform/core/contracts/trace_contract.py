@@ -20,6 +20,9 @@ class TraceContract:
     request_id: str | None = None
     episode_id: str | None = None
     task_id: str | None = None
+    # workflow_run_id 的稳定关联。TB_TRACE_SPAN 暂无独立 typed 列，
+    # repository 会将其放入 ATTRIBUTES，避免伪造新的 Trace Authority。
+    run_id: str | None = None
     parent_span_id: str | None = None
     ended_at: datetime | None = None
     duration_ms: int | None = None

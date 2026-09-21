@@ -135,3 +135,28 @@ class TraceApiController:
         if trace is None:
             return ApiResponse.error("TRACE_NOT_FOUND", f"trace not found: {trace_id}")
         return ApiResponse.ok(trace)
+
+    def list_traces(
+        self,
+        limit: str = "50",
+        offset: str = "0",
+        episode_id: str = "",
+        trace_id: str = "",
+    ) -> ApiResponse[dict]:
+        try:
+            limit_value = int(limit)
+            offset_value = int(offset)
+        except (TypeError, ValueError):
+            return ApiResponse.error("INVALID_REQUEST", "limit and offset must be integers")
+        if limit_value < 1 or limit_value > 100:
+            return ApiResponse.error("INVALID_REQUEST", "limit must be between 1 and 100")
+        if offset_value < 0:
+            return ApiResponse.error("INVALID_REQUEST", "offset must be non-negative")
+        return ApiResponse.ok(
+            self._service.list_traces(
+                limit=limit_value,
+                offset=offset_value,
+                episode_id=episode_id,
+                trace_id=trace_id,
+            )
+        )

@@ -24,5 +24,6 @@ PLATFORM_API_ROUTES: tuple[RouteDefinition, ...] = (
     RouteDefinition("GET", "/api/v1/memory/{id}", "MemoryApiController.get_memory"),
     RouteDefinition("GET", "/api/v1/skills", "RegistryApiController.list_skills"),
     RouteDefinition("GET", "/api/v1/mcp/tools", "RegistryApiController.list_mcp_tools"),
+    RouteDefinition("GET", "/api/v1/traces", "TraceApiController.list_traces"),
     RouteDefinition("GET", "/api/v1/traces/{id}", "TraceApiController.get_trace"),
 )

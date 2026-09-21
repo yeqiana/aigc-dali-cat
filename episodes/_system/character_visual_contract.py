@@ -64,6 +64,26 @@ def authority_sha256(ep):
     return hashlib.sha256(raw).hexdigest()
 
 
+def _legacy_spec_sha_matches_current_authority(ep, stored_sha):
+    """Accept a pre-MySQL pixel-master binding only when semantics are unchanged.
+
+    Historical pixel masters were bound to the byte SHA of
+    meta/character-visual-contract.json. After the contract moved to MySQL,
+    authority_sha256 hashes canonical JSON, so byte formatting alone can
+    change the digest. Preserve the immutable historical binding when (and only
+    when) the stored digest still matches that legacy file and the legacy
+    document is structurally equal to the current MySQL authority.
+    """
+    ep=Path(ep).resolve();legacy=ep/REL;stored=str(stored_sha or "").lower()
+    if not stored or not legacy.is_file():return False
+    try:
+        if sha_file(legacy).lower()!=stored:return False
+        historical=read_json(legacy);current=load(ep)
+    except Exception:
+        return False
+    return isinstance(historical,dict) and isinstance(current,dict) and historical==current
+
+
 def materialize_export(ep):
     ep=Path(ep).resolve()
     legacy=ep/REL
@@ -318,7 +338,10 @@ def validate_pixel_master(ep,expected=None,allow_provisional=False):
     if d.get("status") not in allowed:e.append(f"character pixel master status must be one of {sorted(allowed)}")
     spec_sha=authority_sha256(ep)
     if not spec_sha:e.append("character visual spec missing")
-    elif str(d.get("character_visual_contract_sha256") or "").lower()!=spec_sha.lower():e.append("character pixel master spec sha stale")
+    else:
+        stored_spec_sha=str(d.get("character_visual_contract_sha256") or "").lower()
+        if stored_spec_sha!=spec_sha.lower() and not _legacy_spec_sha_matches_current_authority(ep,stored_spec_sha):
+            e.append("character pixel master spec sha stale")
     try:
         asset=_repo_asset(d.get("asset_path"))
         if not asset.is_file():e.append("character pixel master asset missing")

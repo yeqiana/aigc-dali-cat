@@ -11,7 +11,8 @@ class TraceObserver:
     """Runtime Trace观察器。
 
     记录执行事实，不参与重试、调度和流程决策。
-    P9.27：span 以 (trace_id, span_id) 为主键幂等写入，RUNNING 先落一次，
+    P9.27：span 逻辑 identity 为 (trace_id, span_id)，物理 schema 以全局唯一
+    span_id 作主键幂等写入；RUNNING 先落一次，
     完成态由 save()（AgentRuntime 的 trace_sink）用同一主键覆盖；
     数据库里悬停的 RUNNING 行就是“已开始但没结束”的真实信号。
     """
@@ -25,10 +26,13 @@ class TraceObserver:
         request_id: str | None = None,
         episode_id: str | None = None,
         task_id: str | None = None,
+        run_id: str | None = None,
+        trace_id: str | None = None,
         inputs: dict[str, Any] | None = None,
+        attributes: dict[str, Any] | None = None,
     ) -> TraceContract:
         trace = TraceContract(
-            trace_id=f"trace_{uuid4().hex}",
+            trace_id=trace_id or f"trace_{uuid4().hex}",
             span_id=f"span_{uuid4().hex}",
             operation=operation,
             status=TraceStatus.RUNNING,
@@ -36,7 +40,9 @@ class TraceObserver:
             request_id=request_id,
             episode_id=episode_id,
             task_id=task_id,
+            run_id=run_id,
             inputs=inputs or {},
+            attributes=attributes or {},
         )
         self.save(trace)
         return trace

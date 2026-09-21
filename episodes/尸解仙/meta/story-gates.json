@@ -3,53 +3,31 @@
   "tool_version": "2.6.1",
   "episode_id": "尸解仙",
   "visual_profile": {
-    "mode": "explicit",
-    "profile_id": "M00_REAL_WORLD_DOCUMENTARY_V1",
-    "profile_path": "standards/visual_profiles/profiles/M00_REAL_WORLD_DOCUMENTARY_V1.json",
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
     "capture_profile": "auto",
-    "override_reason": "visual_profile_selector"
+    "override_reason": null
   },
   "story": {
-    "recent5_checked": true,
-    "four_locks_diff_count": 4,
+    "recent5_checked": false,
+    "four_locks_diff_count": 0,
     "mechanism_skin_swap_veto": false,
-    "task_closed": true,
-    "competing_explanations": 3,
+    "task_closed": false,
+    "competing_explanations": 0,
     "hook_frames": [
       1,
       2,
       3
     ],
-    "escalation_frames": [
-      4,
-      6,
-      10,
-      11,
-      15
-    ],
-    "climax_frame": 16,
-    "payoff_frame": 18,
-    "semantic_review_path": "meta/story-semantic-review.json",
-    "four_locks_diff": {
-      "mechanism": "痕迹与主人解绑（死者生活痕迹自行继续），不是容器映射或感知失真",
-      "entry": "2026 年南方山村老屋交接的第一人称手机相册",
-      "evidence_channel": "灶火/碗筷/晾衣/黄历划痕/杯子等生活痕迹，全片不使用影子证据",
-      "climax_form": "主角收走第二副碗筷并烧掉手抄页，主动终止留痕"
-    },
-    "notes": [
-      "Story Lock 与 20 图分镜见 docs/02_尸解仙_StoryLock_DRAFT_V1.0.md 与 docs/03_尸解仙_20张正式分镜_DRAFT_V1.0.md",
-      "recent5 语义复核（WORK_ISOLATED）: max_similarity_score=0，无机制换皮否决",
-      "三条硬约束：独占主机制=痕迹与主人解绑；不使用影子作为主证据通道；主角为 20 多岁普通年轻人"
-    ]
+    "escalation_frames": [],
+    "climax_frame": null,
+    "payoff_frame": null,
+    "semantic_review_path": "meta/story-semantic-review.json"
   },
   "visual": {
     "profile_review_path": "meta/visual-profile-review.json",
-    "admission_frames": [
-      1,
-      3,
-      8,
-      16
-    ],
+    "admission_frames": [],
     "continuity": {
       "required": [
         "location",
@@ -57,29 +35,29 @@
         "weather_time"
       ],
       "anchors": {
-        "protagonist": "P01",
-        "location": "2026 年中国大陆南方山村与一座待交接的旧式民居，所有现实社会、建筑、生活用品和人物都按现代普通乡村物理呈现",
-        "key_prop": "手机手持拍摄",
-        "wardrobe": "locked wardrobe contract",
-        "weather_time": "locked temporal continuity"
+        "protagonist": null,
+        "location": null,
+        "key_prop": null,
+        "wardrobe": null,
+        "weather_time": null
       }
     },
     "authenticity_card": {
-      "story_era": "2026",
-      "location": "2026 年中国大陆南方山村与一座待交接的旧式民居，所有现实社会、建筑、生活用品和人物都按现代普通乡村物理呈现",
-      "photographer": "P01",
-      "shooting_reason": "出发前留个记录",
+      "story_era": null,
+      "location": null,
+      "photographer": null,
+      "shooting_reason": null,
       "primary_capture": {
-        "id": "locked_primary_capture",
-        "device": "手机手持拍摄"
+        "id": null,
+        "device": null
       },
       "secondary_captures": [],
       "secondary_source_explanation": null,
       "aspect_ratio": "4:5",
       "capture_states": {
-        "stable": "locked Capture Event frames use ordinary handheld or explicitly justified fixed capture",
-        "restricted": "walking, close-range, window, backlight and bridge constraints are declared per-frame in Capture Event Contract",
-        "lost_control": "not present in the locked Story; any uncontrolled capture outside the contract is invalid rather than accepted as evidence"
+        "stable": null,
+        "restricted": null,
+        "lost_control": null
       },
       "camera_rules": {
         "current_device_may_be_fully_visible": false,
@@ -109,54 +87,7 @@
         "sha256": null,
         "decision": "pending",
         "note": ""
-      },
-      "schema_version": 2,
-      "policy": "four_admission_v21",
-      "items": [
-        {
-          "id": "V-B",
-          "role": "ordinary_baseline",
-          "frame": 1,
-          "asset_path": "episodes/尸解仙/media/candidates/scheduled/01-a171db41184d-a2.png",
-          "sha256": "d6aaf0f185b21895128fe8b911902a12096487d19ede01a5244aa7dc3dba71c7",
-          "decision": "passed",
-          "frame_contract_sha256": "b8f4214b2a06e953bbccc407ec28fd33a5df44f3931be3bbb4181c0866b8a8c5",
-          "note": "baseline separately PASS; parallel-three may start"
-        },
-        {
-          "id": "V-W",
-          "role": "worst_capture_condition",
-          "frame": 8,
-          "asset_path": "episodes/尸解仙/media/candidates/scheduled/08-b8ef6ddd30ff-a2.png",
-          "sha256": "c1b14163a6496229667b86d6c03461739d8db1f1fa883de1370f6fa0c4b7a6fe",
-          "decision": "passed",
-          "frame_contract_sha256": "c933b6d75c0f876c167f31e560d2b0832c1f1e1f7f45dc33f6eb51883c1057ba",
-          "note": ""
-        },
-        {
-          "id": "V-A",
-          "role": "first_major_anomaly",
-          "frame": 3,
-          "asset_path": "episodes/尸解仙/media/candidates/scheduled/03-14d4b4cd5534-a1.png",
-          "sha256": "16cf408b48d6aab22b800f8b27f124835936416acb3494f19471ae65e61c0ee4",
-          "decision": "passed",
-          "frame_contract_sha256": "51a7f709283cc12d9c1ddb1f42ebb197df960a39f22135ed53d2ca2b945a33dc",
-          "note": "",
-          "weak_pass": true,
-          "weak_pass_reason": "content attempts=7 exceeded 3; only soft visual-quality findings remain",
-          "approved_by_policy": "attempt_over_3_auto_release"
-        },
-        {
-          "id": "V-H",
-          "role": "high_impact_admission",
-          "frame": 16,
-          "asset_path": "episodes/尸解仙/media/candidates/scheduled/16-3be912a5eaac-a1.png",
-          "sha256": "9b8a23269c77b05407bc76eb662c094c33d1a966952a151913539f47ed648f12",
-          "decision": "passed",
-          "frame_contract_sha256": "ac5489a4712afae30c7c76e2b1683e74f12a526c82c83de01dff6829cdc2b050",
-          "note": ""
-        }
-      ]
+      }
     },
     "calibration_contact_sheet": {
       "path": null,
@@ -166,467 +97,6 @@
       "required": false,
       "required_anchors": [],
       "items": []
-    },
-    "environment_contract": {
-      "schema_version": 1,
-      "season": "early autumn in a humid southern Chinese mountain village",
-      "baseline": {
-        "condition": "dry mild rural weather",
-        "time_of_day": "day",
-        "temperature_feel": "mild and slightly humid",
-        "ground_state": "mostly dry stone and packed-earth surfaces",
-        "visibility": "clear at village scale with ordinary mountain haze in the distance",
-        "wind": "light intermittent breeze in the courtyard",
-        "precipitation": "none during the photographed periods",
-        "physical_cues": [
-          "weathered timber and plaster retain natural uneven texture",
-          "courtyard ground is dry except where story props explicitly carry moisture",
-          "window and doorway light changes naturally with time of day",
-          "no supernatural fog, glow, or stylized color cast"
-        ]
-      },
-      "segments": [
-        {
-          "id": "S01_DAY1_AFTERNOON",
-          "start_frame": 1,
-          "end_frame": 7,
-          "condition": "clear dry afternoon",
-          "time_of_day": "afternoon",
-          "physical_cues": [
-            "soft-to-directional natural daylight at village entrance and courtyard",
-            "dry threshold and courtyard ground",
-            "visible daylight through old-house windows"
-          ],
-          "conditional_effects": []
-        },
-        {
-          "id": "S02_DAY1_NIGHT",
-          "start_frame": 8,
-          "end_frame": 9,
-          "condition": "dry quiet night",
-          "time_of_day": "night",
-          "physical_cues": [
-            "bare household bulb in the main room",
-            "stove fire as local warm practical light",
-            "dark exterior beyond doors and windows"
-          ],
-          "conditional_effects": []
-        },
-        {
-          "id": "S03_DAY2_MORNING",
-          "start_frame": 10,
-          "end_frame": 13,
-          "condition": "clear cool morning",
-          "time_of_day": "morning",
-          "physical_cues": [
-            "flat natural morning light on the almanac",
-            "soft daylight over the clothesline",
-            "room interiors lit primarily by windows"
-          ],
-          "conditional_effects": []
-        },
-        {
-          "id": "S04_DAY2_NIGHT",
-          "start_frame": 14,
-          "end_frame": 14,
-          "condition": "dry quiet night",
-          "time_of_day": "night",
-          "physical_cues": [
-            "single bare bulb over the table",
-            "background rooms fall naturally darker",
-            "no added cinematic rim light"
-          ],
-          "conditional_effects": []
-        },
-        {
-          "id": "S05_DAY3_MORNING",
-          "start_frame": 15,
-          "end_frame": 18,
-          "condition": "clear dry morning",
-          "time_of_day": "morning",
-          "physical_cues": [
-            "ordinary window daylight on table and paper surfaces",
-            "stove fire becomes the strongest local practical only when the page is burned",
-            "courtyard and room remain physically consistent with a dry morning"
-          ],
-          "conditional_effects": []
-        },
-        {
-          "id": "S06_DEPARTURE_AFTERNOON",
-          "start_frame": 19,
-          "end_frame": 20,
-          "condition": "clear dry afternoon",
-          "time_of_day": "afternoon",
-          "physical_cues": [
-            "neutral outdoor daylight at the locked doorway",
-            "car interior receives soft side daylight through windows",
-            "screen and window reflection remain subordinate to real ambient light"
-          ],
-          "conditional_effects": []
-        }
-      ],
-      "frame_overrides": {}
-    },
-    "frame_directives": {
-      "01": {
-        "narrative_role": "setup",
-        "frame_mode": "normal_record",
-        "impact_level": 0,
-        "required_visual_cues": [
-          "P01 and P02 natural car selfie",
-          "ordinary village arrival context"
-        ],
-        "scale_reference": "",
-        "escalation_from": null
-      },
-      "02": {
-        "narrative_role": "setup",
-        "frame_mode": "normal_record",
-        "impact_level": 0,
-        "required_visual_cues": [
-          "old timber doorway",
-          "courtyard clothesline",
-          "key handoff between P02 and P01"
-        ],
-        "scale_reference": "",
-        "escalation_from": null
-      },
-      "03": {
-        "narrative_role": "evidence",
-        "frame_mode": "anomaly_reveal",
-        "impact_level": 1,
-        "required_visual_cues": [
-          "dust-covered furniture",
-          "clean enamel tea mug containing fresh water"
-        ],
-        "scale_reference": "",
-        "escalation_from": null
-      },
-      "04": {
-        "narrative_role": "reveal",
-        "frame_mode": "anomaly_reveal",
-        "impact_level": 2,
-        "required_visual_cues": [
-          "recent warm embers in stove",
-          "condensation or steam at pot lid",
-          "ordinary soot and stove scale"
-        ],
-        "scale_reference": "",
-        "escalation_from": 3
-      },
-      "05": {
-        "narrative_role": "evidence",
-        "frame_mode": "anomaly_reveal",
-        "impact_level": 2,
-        "required_visual_cues": [
-          "two complete bowl-and-chopstick settings",
-          "empty habitual grandmother seat remains visible"
-        ],
-        "scale_reference": "",
-        "escalation_from": 4
-      },
-      "06": {
-        "narrative_role": "evidence",
-        "frame_mode": "anomaly_reveal",
-        "impact_level": 2,
-        "required_visual_cues": [
-          "freshly wet old shirt on line",
-          "droplets at fabric edge",
-          "dry ground directly below"
-        ],
-        "scale_reference": "",
-        "escalation_from": 5
-      },
-      "07": {
-        "narrative_role": "evidence",
-        "frame_mode": "anomaly_reveal",
-        "impact_level": 2,
-        "required_visual_cues": [
-          "old almanac close-up",
-          "crossed-out cells visibly count toward remaining three cells"
-        ],
-        "scale_reference": "",
-        "escalation_from": 6
-      },
-      "08": {
-        "narrative_role": "reveal",
-        "frame_mode": "anomaly_reveal",
-        "impact_level": 2,
-        "required_visual_cues": [
-          "grandmother handwritten rule page",
-          "P01 and P02 reading together under ordinary bare bulb"
-        ],
-        "scale_reference": "",
-        "escalation_from": 7
-      },
-      "09": {
-        "narrative_role": "transition",
-        "frame_mode": "normal_record",
-        "impact_level": 1,
-        "required_visual_cues": [
-          "P01 relights cold stove himself",
-          "second bowl setting deliberately placed by P01"
-        ],
-        "scale_reference": "",
-        "escalation_from": null
-      },
-      "10": {
-        "narrative_role": "escalation",
-        "frame_mode": "anomaly_reveal",
-        "impact_level": 2,
-        "required_visual_cues": [
-          "expected crossed-out cell remains blank",
-          "fresh wet ink character 续 beside it"
-        ],
-        "scale_reference": "",
-        "escalation_from": 9
-      },
-      "11": {
-        "narrative_role": "escalation",
-        "frame_mode": "anomaly_reveal",
-        "impact_level": 2,
-        "required_visual_cues": [
-          "shirt on line matches P01 previous-day clothing",
-          "same dusty hem detail identifies it as his"
-        ],
-        "scale_reference": "",
-        "escalation_from": 10
-      },
-      "12": {
-        "narrative_role": "evidence",
-        "frame_mode": "anomaly_reveal",
-        "impact_level": 2,
-        "required_visual_cues": [
-          "closed wooden bedroom door",
-          "inside latch position readable despite empty room"
-        ],
-        "scale_reference": "",
-        "escalation_from": 11
-      },
-      "13": {
-        "narrative_role": "reveal",
-        "frame_mode": "anomaly_reveal",
-        "impact_level": 2,
-        "required_visual_cues": [
-          "otherwise orderly empty bedroom",
-          "fresh pillow indentation"
-        ],
-        "scale_reference": "",
-        "escalation_from": 12
-      },
-      "14": {
-        "narrative_role": "transition",
-        "frame_mode": "normal_record",
-        "impact_level": 1,
-        "required_visual_cues": [
-          "P02 seated across ordinary table",
-          "two bowl settings remain part of scene",
-          "single bare bulb lighting"
-        ],
-        "scale_reference": "",
-        "escalation_from": null
-      },
-      "15": {
-        "narrative_role": "escalation",
-        "frame_mode": "anomaly_amplified",
-        "impact_level": 3,
-        "required_visual_cues": [
-          "P01 own cup has been washed and returned",
-          "new handwriting on almanac visibly matches P01 writing",
-          "both personal traces share one tabletop context"
-        ],
-        "scale_reference": "P01 hand and familiar cup provide direct human-size reference for the transferred traces",
-        "escalation_from": 11
-      },
-      "16": {
-        "narrative_role": "climax",
-        "frame_mode": "climax_impact",
-        "impact_level": 4,
-        "required_visual_cues": [
-          "last almanac page fully readable",
-          "two handwritten names appear together",
-          "P01 name is the lower/newer entry",
-          "P01 hand or phone edge gives ordinary physical scale"
-        ],
-        "scale_reference": "the two names occupy the same ordinary almanac page beside P01 hand, proving the anomaly has moved from grandmother's household traces to P01 himself",
-        "escalation_from": 15
-      },
-      "17": {
-        "narrative_role": "payoff",
-        "frame_mode": "payoff",
-        "impact_level": 2,
-        "required_visual_cues": [
-          "second bowl-and-chopstick setting being packed into cardboard box",
-          "P01 and P02 hands actively packing grandmother's items"
-        ],
-        "scale_reference": "",
-        "escalation_from": 16
-      },
-      "18": {
-        "narrative_role": "payoff",
-        "frame_mode": "payoff",
-        "impact_level": 3,
-        "required_visual_cues": [
-          "handwritten rule page visibly burning in real stove fire",
-          "paper curls and chars naturally",
-          "no magical flame or spirit effect"
-        ],
-        "scale_reference": "ordinary stove mouth, P01 hand, and sheet of paper keep the act at believable household scale",
-        "escalation_from": 17
-      },
-      "19": {
-        "narrative_role": "residue",
-        "frame_mode": "payoff",
-        "impact_level": 1,
-        "required_visual_cues": [
-          "locked old wooden door",
-          "cold stove direction",
-          "empty clothesline",
-          "quiet ordinary courtyard"
-        ],
-        "scale_reference": "",
-        "escalation_from": 18
-      },
-      "20": {
-        "narrative_role": "residue",
-        "frame_mode": "payoff",
-        "impact_level": 1,
-        "required_visual_cues": [
-          "signed house handover form in car",
-          "P01 and P02 hands",
-          "physically plausible phone-screen or car-window reflection showing empty courtyard as secondary information"
-        ],
-        "scale_reference": "",
-        "escalation_from": 19
-      }
-    },
-    "world_identity": {
-      "applicable": true,
-      "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
-      "world": "2026 年中国大陆南方山村与一座待交接的旧式民居，所有现实社会、建筑、生活用品和人物都按现代普通乡村物理呈现",
-      "population": "普通中国大陆本地居民；主要人物是二十多岁返乡青年，不做明星化、网红化或民俗职业化处理",
-      "architecture": "老屋由木门框、旧堂屋、灶房、八仙桌、条案、卧室、院子和晾衣绳组成；空间关系保持可行走、可拍摄且跨帧一致",
-      "technology": "普通智能手机、现代汽车与老屋生活用品可以同时存在；不得把现代背景误做成纯古代民俗场景",
-      "supernatural_boundary": "世界本身保持现实；异常只存在于生活痕迹持续发生与归属转移，不额外建立法术、鬼怪实体或可见灵界"
-    },
-    "world_state": {
-      "applicable": true,
-      "initial_time": "day1 afternoon",
-      "initial_location": "village entrance and grandmother's old house",
-      "recorder": "P01 默认用自己的普通智能手机第一人称记录；Frame01 为自然自拍，个别桌上机位或 P02 临时代拍必须由当帧动作解释",
-      "persistent_locations": [
-        "村口停车处",
-        "老屋门口与院子",
-        "堂屋条案",
-        "灶房与八仙桌",
-        "奶奶房间"
-      ],
-      "persistent_props": [
-        "老黄历",
-        "奶奶手抄页",
-        "两副碗筷",
-        "旧茶缸/杯子",
-        "灶台与铁锅",
-        "晾衣绳",
-        "老屋钥匙",
-        "纸箱",
-        "老屋交接单"
-      ],
-      "character_presence": "P01 与 P02 一起到达老屋并共同经历主要过程；除有明确机位逻辑外，两人不因画面需要凭空消失或同时变成摄影者",
-      "anomaly_phase": "ordinary baseline -> detached daily traces -> rule confirmation -> P01 trace transfer -> deliberate severance -> ordinary residue",
-      "object_rule": "异常改变物件的使用痕迹和归属，不改变物件本身类别、尺寸、材质或现实重力"
-    },
-    "temporal_continuity": {
-      "applicable": true,
-      "timeline": [
-        "Frames01-07: day1 afternoon, first entry and evidence discovery",
-        "Frames08-09: day1 night, rule confirmation and P01 chooses to continue one day",
-        "Frames10-13: day2 morning, direct consequence and spatial contradiction",
-        "Frame14: day2 night, P02 asks to leave",
-        "Frames15-18: day3 morning, traces transfer to P01 and he ends the rule",
-        "Frames19-20: departure afternoon, locked house and car handover residue"
-      ],
-      "weather_rule": "dry mild conditions remain stable; daypart and practical-light changes are caused only by elapsed time and indoor/outdoor position",
-      "prop_state_rule": "黄历划痕、两副碗筷、P01 衬衫、P01 杯子、手抄页和纸箱的状态只能按故事因果向前变化，不允许后帧无理由回退",
-      "anomaly_ownership_rule": "Frames03-09 的痕迹仍指向奶奶；Frames10-16 逐步转向 P01；Frames17-18 主动断痕；Frames19-20 不再出现新的生活痕迹",
-      "continuity_rule": "所有跨日变化必须留下足够的时间/光线/物件状态提示，不能把三天压成同一瞬间"
-    },
-    "wardrobe": {
-      "applicable": true,
-      "temperature_band": "mild early-autumn rural weather",
-      "weather": "dry and mildly humid",
-      "look_policy": "同一人物默认保持锁定日常穿着；只有剧情明确换洗时才允许变化，并且异常痕迹中的衣物必须能和前一日穿着建立清晰对应",
-      "P01": "深灰薄外套 + 黑色短袖 + 深灰工装裤 + 运动鞋；普通返乡年轻人，衣物允许真实褶皱、灰尘和轻微使用痕迹",
-      "P02": "米色薄针织外套 + 浅色短袖 + 牛仔裤 + 运动鞋；黑色齐肩直发可因整理旧物临时扎起",
-      "frame11_requirement": "晾衣绳上的衬衫必须与 P01 前一日可识别的穿着/灰痕建立一致性，不能随机换成另一件无关衣物",
-      "physics": "衣料湿润、晾晒、灰尘、褶皱和灶房环境影响应按现实物理表现，不添加超自然发光或无来源风动"
-    },
-    "narrative_core": {
-      "story_mode": "modern_folk_horror_real_phone_album",
-      "exclusive_mechanism": "痕迹与主人解绑：人已不在，但属于他的生活痕迹每天继续出现，并逐步把续痕者纳入新的痕迹主人",
-      "evidence_channel": "只使用灶火、碗筷、湿衣、黄历划痕、杯子、枕痕、门闩等生活痕迹；影子不得作为主证据通道",
-      "human_core": "P01 与 P02 都是二十多岁的普通年轻人，以处理老屋交接为现实进入理由，不具备道士、调查员、探灵人或异常专业能力",
-      "visual_contrast": "普通南方山村老屋的生活质感，与无人居住房屋里持续出现的当日生活痕迹形成冲突；异常靠现实物件状态成立，不靠怪物或特效",
-      "progression": {
-        "ordinary": "01-02 建立朋友关系、村口与老屋正常基线",
-        "discovery": "03-08 从干净茶缸、温灶、两副碗筷、湿衣、黄历与手抄页逐层确认规则",
-        "attempted_continuation": "09 P01 按普通人的理解替奶奶把这一天过完",
-        "causal_transfer": "10-15 倒数停止、衣物和杯子开始指向 P01，说明续痕正在换主人",
-        "climax": "16 黄历最后一页出现两个名字，P01 的名字在下，确认继续执行会把自己留下",
-        "break_rule": "17-18 收走第二副碗筷并烧掉手抄页，主动停止续痕",
-        "residue": "19-20 冷灶、空绳、锁门与车内相册反光回到现实，证明痕迹已断但经历留下"
-      },
-      "visual_lock_priority": {
-        "ordinary_baseline": "01",
-        "first_major_anomaly": "04",
-        "high_impact_admission": "16",
-        "worst_capture_condition_hint": "14"
-      },
-      "forbidden": [
-        "shadow_as_primary_evidence",
-        "ghost_or_monster_reveal",
-        "taoist_or_investigator_protagonist",
-        "omniscient_ghost_camera",
-        "cinematic_horror_poster_composition",
-        "blue_green_horror_filter",
-        "unmotivated_fog_or_supernatural_glow"
-      ]
-    },
-    "shot_progression": {
-      "source": "meta/shot-progression-review.json",
-      "frame_count": 20,
-      "grammar": "第一人称真实手机相册；每帧是人物当时有理由保存的一张记录，而不是电影分镜截图",
-      "scale_arc": "01 自拍近中景 -> 02-04 门口/堂屋/灶房中全景与近景 -> 05-08 生活物件细节 -> 09-14 人物行动与空间矛盾交替 -> 15-18 纸面/物件近景完成因果与决断 -> 19 宽景现实残留 -> 20 车内近中景收束",
-      "scene_position_policy": "沿用已锁定的唯一 scene_position_id，不复用完全相同机位；同一地点再次出现必须换人物位置、距离或叙事目的",
-      "practical_lighting": "只使用日光、窗光、天光、裸灯、灶火与手机屏幕等现场真实光源，不增加舞台式轮廓光和电影色光",
-      "cinematic_translation": "只吸收负空间、框中框、遮挡揭示、反射第二信息层等结构，不复刻具体电影镜头，不牺牲手机随手拍真实性",
-      "frame01_rule": "必须看清主要人物正脸并建立 P01/P02 普通朋友关系；自然自拍，不做宣传照或海报站姿",
-      "frame04_rule": "首次重大异常靠温灶、余火和锅盖水汽成立；蒸汽只能做真实遮挡，不能做超自然烟雾",
-      "frame16_rule": "高潮必须让黄历最后一页和两个名字成为清晰主信息；纸角遮挡只服务于自然揭示，不能做夸张恐怖特效",
-      "frame17_18_rule": "高潮后的行动必须比表情更重要：收走第二副碗筷、装箱、烧掉手抄页，明确表现普通人主动终止规则",
-      "frame20_rule": "车内交接单是现实层，手机屏幕/车窗反光只作为第二信息层确认空院子；反射方向和亮度必须物理成立"
-    },
-    "capture_grammar": {
-      "device": "2026 年普通智能手机，4:5 正文画幅；以 P01 第一人称手持为主，自拍、桌上临时放置或 P02 短暂代拍必须由当帧动作解释",
-      "camera_authorship": "每帧摄影者必须可在现实空间中解释；禁止无人物可持机的幽灵机位、吊臂视角和不可能的远景第三人称",
-      "photo_feel": "M00 现实生活纪实母版：私人相册即时感、自然皮肤与材质、轻微手持不完美、真实手机曝光；不做商业棚拍和电影海报",
-      "composition": "主体优先但允许轻微歪斜、边缘遮挡和不完美裁切；异常必须和现实尺度参照同时存在，不靠字幕替代像素证据",
-      "capture_defects": "弱光允许轻噪点、轻运动模糊、手机高光溢出或暗部损失，但不得用统一低清滤镜伪造年代感",
-      "continuity": "P01/P02 身份、服装、老屋门框、八仙桌、灶台、黄历、两副碗筷和时间推进必须跨帧稳定；Visual Lock 前不伪造 Pixel Master",
-      "anomaly_progression": "异常始终表现为生活痕迹的物理状态变化：有人刚用过、刚洗过、刚写过、刚睡过；不出现影子主证据、怪物、法术或灵体实体化",
-      "human_response": "反应保持普通人尺度：先记录、核对、讨论、尝试解决，再在证据指向自身后停止续痕；避免连续尖叫、同步戏剧化反应或专业驱魔动作"
-    },
-    "fast_frame_scout": {
-      "schema_version": 1,
-      "enabled": true,
-      "policy": "risk_based_v21",
-      "final_critic_still_required": true,
-      "decisions": [
-        "PASS_FAST",
-        "REPAIR_NOW",
-        "DEFER_TO_FINAL"
-      ],
-      "high_risk_required": true
     }
   },
   "subtitles": {
@@ -639,10 +109,10 @@
     "assets": []
   },
   "reviews": {
-    "story": "passed",
-    "authenticity": "passed",
+    "story": "pending",
+    "authenticity": "pending",
     "continuity": "pending",
-    "visual_admission": "passed",
+    "visual_admission": "pending",
     "subtitle": "pending",
     "production": "pending",
     "recommendation_fit": "pending",
@@ -659,59 +129,5 @@
     "semantic_contract": "actual_frame_v2",
     "sha_bound": true,
     "fresh_isolated_critic": true
-  },
-  "character": {
-    "finalize": {
-      "character": {
-        "cast_type": "pair",
-        "relationship": "同村发小，一起在老院长大，成年后各自在城里打工",
-        "ordinary_person_score": 100,
-        "entry_reason": "奶奶过世三个月，老屋在旧村改造前需要收拾并交给村里",
-        "forbidden_roles": [
-          "道士",
-          "调查员",
-          "探灵人",
-          "异常研究人员",
-          "以专业技能解决异常的功能型职业"
-        ]
-      },
-      "identity": {
-        "P01": {
-          "role": "第一人称主角",
-          "gender": "male",
-          "age": 25,
-          "world_identity": "2026 年中国大陆普通年轻男性",
-          "face_rule": "原创且独立可辨认的普通中国青年面孔，自然肤质、轻微不对称，不像明星或网红",
-          "hair": "普通黑色短发，额前自然碎发，鬓角略长，发旋处一缕不服帖",
-          "body": "普通偏瘦但自然的年轻人体型"
-        },
-        "P02": {
-          "role": "同行发小",
-          "gender": "female",
-          "age": 25,
-          "world_identity": "2026 年中国大陆普通年轻女性",
-          "face_rule": "原创且独立可辨认的普通中国青年面孔，自然肤质、轻微不对称，不像明星或网红",
-          "hair": "普通黑色齐肩直发，发尾自然外翻，平时可用黑色皮筋随手扎起",
-          "body": "自然匀称的普通年轻人体型"
-        }
-      },
-      "pov": {
-        "character_id": "P01",
-        "first_person": true,
-        "device": "普通智能手机手持拍摄",
-        "camera_authorship_rule": "P01 是默认摄影者；自拍、桌上临时放置或 P02 代拍必须在具体帧里有现实动作依据，禁止幽灵机位"
-      },
-      "appearance": {
-        "P01": {
-          "clothing_anchor": "深灰薄外套 + 黑色短袖 + 深灰工装裤 + 运动鞋",
-          "presentation": "普通返乡打工青年，自然皮肤纹理，不浓妆、不精修、不时尚大片化"
-        },
-        "P02": {
-          "clothing_anchor": "米色薄针织外套 + 浅色短袖 + 牛仔裤 + 运动鞋",
-          "presentation": "普通返乡年轻女性，自然皮肤纹理，不浓妆、不瓷白皮、不商业模特化"
-        },
-        "continuity": "两人身份、发型和基础穿着在无明确剧情事件时保持稳定；Visual Lock baseline 通过后才允许建立 provisional Pixel Master，PREIMAGE 不生成身份母版"
-      }
-    }
   }
 }

@@ -43,6 +43,14 @@ class FakeMemoryService:
         return {"id": memory_id} if memory_id == "memory-1" else None
 
 
+class FakeTraceService:
+    def get_trace(self, trace_id):
+        return {"trace_id": trace_id, "span_id": "span-1"}
+
+    def list_traces(self, **kwargs):
+        return {"items": [], "count": 0, **kwargs}
+
+
 def test_agent_api_delegates_to_service_and_wraps_response():
     controller = AgentApiController(FakeAgentService())
 
@@ -90,6 +98,19 @@ def test_memory_search_validates_request_before_service_call():
     assert valid.data[0]["id"] == "memory-1"
 
 
+def test_trace_api_lists_bounded_spans_with_compatible_filters():
+    from platform.api.controllers import TraceApiController
+
+    response = TraceApiController(FakeTraceService()).list_traces(
+        limit="20", offset="5", episode_id="EP001", trace_id="trace-1"
+    )
+
+    assert response.code == "OK"
+    assert response.data["limit"] == 20
+    assert response.data["offset"] == 5
+    assert response.data["episode_id"] == "EP001"
+
+
 def test_platform_route_catalog_matches_p51_contract():
     actual = {(route.method, route.path) for route in PLATFORM_API_ROUTES}
 
@@ -106,6 +127,8 @@ def test_platform_route_catalog_matches_p51_contract():
         ("GET", "/api/v1/memory/{id}"),
         ("GET", "/api/v1/skills"),
         ("GET", "/api/v1/mcp/tools"),
+        ("GET", "/api/v1/runtime/events"),
+        ("GET", "/api/v1/traces"),
         ("GET", "/api/v1/traces/{id}"),
     }
 

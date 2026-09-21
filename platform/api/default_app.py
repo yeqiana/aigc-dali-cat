@@ -21,6 +21,8 @@ from platform.operations.runtime_status_service import RuntimeStatusApiService
 from platform.repository.mysql.mysql_connection import MySqlConnection
 from platform.repository.mysql.mysql_episode_repository import MySqlEpisodeRepository
 from platform.repository.mysql.mysql_event_repository import MySqlEventRepository
+from platform.repository.trace.mysql_trace_repository import MySqlTraceRepository
+from platform.observer.trace_observer import TraceObserver
 from platform.repository.platform_record_store_provider import (
     PlatformRecordStores,
     build_platform_record_stores,
@@ -86,8 +88,13 @@ def build_default_controllers(
     """
     stores = record_stores or build_platform_record_stores(platform_state_root)
     if agent_service is None:
+        trace_observer = TraceObserver(MySqlTraceRepository(MySqlConnection()))
         agent_service = AgentApplicationService(
-            AgentRuntime(recorder=ExecutionRecorder(stores.execution))
+            AgentRuntime(
+                recorder=ExecutionRecorder(stores.execution),
+                trace_observer=trace_observer,
+                trace_sink=trace_observer.save,
+            )
         )
     if experience_store is None:
         experience_store = ExperienceStore(stores.experience)

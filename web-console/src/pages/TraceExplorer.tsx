@@ -7,6 +7,7 @@ import type { TraceRecord } from '../types/platform';
 export default function TraceExplorer() {
   const [id, setId] = useState(() => new URLSearchParams(window.location.search).get('trace') ?? '');
   const [trace, setTrace] = useState<TraceRecord | null>(null);
+  const [rows, setRows] = useState<TraceRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,6 +29,7 @@ export default function TraceExplorer() {
 
   useEffect(() => {
     if (id.trim()) void load();
+    void traceApi.list().then((page) => setRows(page.items)).catch(() => undefined);
   }, []);
 
   return (
@@ -61,6 +63,23 @@ export default function TraceExplorer() {
               <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Duration</span><code className="font-mono">{trace.duration_ms ?? '-'} ms</code></div>
             </div>
           ) : <div className="px-3 py-10 text-center text-xs text-[var(--text-tertiary)]">输入 Trace ID 后查询。</div>}
+        </section>
+        <section className="storyos-surface overflow-hidden">
+          <header className="h-10 px-3 border-b border-[var(--border-subtle)] flex items-center justify-between">
+            <div className="flex items-center gap-2"><GitBranch className="w-3.5 h-3.5 text-[var(--info)]" /><h2 className="text-xs font-semibold">Recent Trace Spans</h2></div>
+            <span className="text-[10px] font-mono text-[var(--text-tertiary)]">TB_TRACE_SPAN · READ ONLY</span>
+          </header>
+          {rows.length ? (
+            <div className="divide-y divide-[var(--border-subtle)] text-xs">
+              {rows.map((row) => (
+                <button key={`${row.trace_id}/${row.span_id}`} type="button" onClick={() => { setId(row.trace_id); setTrace(row); }} className="w-full px-3 py-2 grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_100px] gap-3 text-left hover:bg-[var(--bg-hover)]">
+                  <code className="font-mono truncate">{row.trace_id}</code>
+                  <code className="font-mono truncate text-[var(--text-secondary)]">{row.operation}</code>
+                  <span className="font-mono text-[var(--text-tertiary)]">{row.status}</span>
+                </button>
+              ))}
+            </div>
+          ) : <div className="px-3 py-6 text-center text-xs text-[var(--text-tertiary)]">暂无已持久化 Trace Span。</div>}
         </section>
       </div>
     </main>

@@ -38,6 +38,15 @@ class RegistryServicePort(Protocol):
 class TraceServicePort(Protocol):
     def get_trace(self, trace_id: str) -> dict[str, Any] | None: ...
 
+    def list_traces(
+        self,
+        *,
+        limit: int | str = 50,
+        offset: int | str = 0,
+        episode_id: str = "",
+        trace_id: str = "",
+    ) -> dict[str, Any]: ...
+
 
 class RuntimeStatusServicePort(Protocol):
     def get_episode_status(self, episode_ref: str) -> dict[str, Any] | None: ...

@@ -68,6 +68,11 @@ class TraceTests(unittest.TestCase):
             self.assertGreaterEqual(s["span_end_count"],1)
             self.assertFalse(s["stage_authority"])
 
+    def test_trace_span_requires_context(self):
+        with tempfile.TemporaryDirectory() as td:
+            with self.assertRaises(runtime_trace.TraceContextUnavailable):
+                runtime_trace.start_span(Path(td), "UNIT", category="test")
+
 class PlatformTests(unittest.TestCase):
     def test_platform(self):
         # V2.3 Agent Runtime regression must survive later platform releases.

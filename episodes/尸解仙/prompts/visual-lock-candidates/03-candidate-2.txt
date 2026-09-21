@@ -1,1 +1,0 @@
-VL候选2 F03 角色=first_major_anomaly。保持Frame Contract、身份、服装、事件，不改剧情。修正：anomaly_scale_delivery、ANOMALY_NOT_READABLE。走路随手拍，异常必须在普通生活画面里一眼可辨；允许边缘遮挡和非完美构图，但异常核心形态/动作/反差必须清楚。禁止大全景、极深景深和海报式奇观。 第二候选再降精修感，增加生活杂物与非完美瞬间。
