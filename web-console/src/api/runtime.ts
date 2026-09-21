@@ -1,5 +1,10 @@
 import { apiClient } from './client';
-import type { ExecutionRecord, TraceRecord } from '../types/platform';
+import type {
+  ExecutionRecord,
+  RuntimeEpisodeStatus,
+  RuntimeEpisodeStatusPage,
+  TraceRecord,
+} from '../types/platform';
 
 export const runtimeApi = {
   getExecution(id: string) {
@@ -7,5 +12,15 @@ export const runtimeApi = {
   },
   getTrace(traceId: string) {
     return apiClient.get<TraceRecord>(`/api/v1/traces/${traceId}`);
+  },
+  getEpisodeStatus(episodeRef: string) {
+    return apiClient.get<RuntimeEpisodeStatus>(
+      `/api/v1/runtime/status?episode=${encodeURIComponent(episodeRef)}`,
+    );
+  },
+  listEpisodeStatuses(limit = 20, offset = 0) {
+    return apiClient.get<RuntimeEpisodeStatusPage>(
+      `/api/v1/runtime/statuses?limit=${limit}&offset=${offset}`,
+    );
   },
 };

@@ -72,3 +72,42 @@ export interface TraceRecord {
   error?: string | null;
   attributes: Record<string, unknown>;
 }
+
+export interface RuntimeEpisodeStatus {
+  schema_version?: number;
+  observed_at?: string;
+  episode?: string;
+  episode_ref: string;
+  production_stage?: string | null;
+  execution_status: string;
+  blocking_reason?: string | null;
+  current_action?: string | null;
+  auto_recoverable?: boolean;
+  needs_user?: boolean;
+  next_step?: string | null;
+  image_progress?: {
+    expected_frames?: number;
+    generated_frames?: number;
+    accepted_frames?: number;
+    pending_review_frames?: number;
+    pending_decision_frames?: number;
+    technical_failed_frames?: number;
+  };
+  heartbeat?: {
+    at?: string | null;
+    health?: string | null;
+    runner_status?: string | null;
+    host_loop?: string | null;
+  };
+  consistency_warnings?: string[];
+  error?: string;
+}
+
+export interface RuntimeEpisodeStatusPage {
+  items: RuntimeEpisodeStatus[];
+  count: number;
+  limit: number;
+  offset: number;
+  has_more: boolean;
+  errors: Array<{ episode_ref: string; code: string }>;
+}
