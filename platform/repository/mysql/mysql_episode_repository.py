@@ -38,6 +38,19 @@ WHERE EPISODE_NAMESPACE <> ''
 ORDER BY EPISODE_NAMESPACE ASC
 """.strip()
 
+_ACTIVE_SUMMARIES_SQL = """
+SELECT e.EPISODE_ID, e.BUSINESS_EPISODE_ID, e.EPISODE_NAMESPACE, e.SERIES_ID,
+       e.TITLE, e.TOOL_VERSION, e.DISPOSITION, e.UPDATE_TIME,
+       s.CURRENT_STATE, s.SOURCE AS STATE_SOURCE, s.UPDATE_TIME AS STATE_UPDATE_TIME
+FROM TB_EPISODE e
+LEFT JOIN TB_EPISODE_STATE s ON s.EPISODE_ID=e.EPISODE_ID
+WHERE e.DISPOSITION='ACTIVE'
+  AND e.EPISODE_NAMESPACE <> ''
+  AND LEFT(e.EPISODE_NAMESPACE, 1) NOT IN ('_', '.')
+ORDER BY COALESCE(s.UPDATE_TIME, e.UPDATE_TIME) DESC, e.EPISODE_ID DESC
+LIMIT %s OFFSET %s
+""".strip()
+
 _UPDATE_DISPOSITION_SQL = """
 UPDATE TB_EPISODE
 SET DISPOSITION=%s
@@ -84,6 +97,13 @@ class MySqlEpisodeRepository:
                 result.append(str(value))
         return result
 
+    def list_active_summaries(self, *, limit: int = 50, offset: int = 0) -> list[dict]:
+        rows = self.connection.query_all(
+            _ACTIVE_SUMMARIES_SQL,
+            (int(limit), int(offset)),
+        )
+        return [self._decode_summary(row) for row in rows]
+
     def update_disposition(
         self, episode_id: str, target: str, *, expected: str = "ACTIVE"
     ) -> None:
@@ -109,4 +129,20 @@ class MySqlEpisodeRepository:
             "tool_version": row.get("TOOL_VERSION") or row.get("tool_version"),
             "disposition": row.get("DISPOSITION") or row.get("disposition"),
             "update_time": row.get("UPDATE_TIME") or row.get("update_time"),
+        }
+
+    @staticmethod
+    def _decode_summary(row: dict) -> dict:
+        return {
+            "episode_id": row.get("EPISODE_ID") or row.get("episode_id"),
+            "business_episode_id": row.get("BUSINESS_EPISODE_ID") or row.get("business_episode_id"),
+            "episode_namespace": row.get("EPISODE_NAMESPACE") or row.get("episode_namespace"),
+            "series_id": row.get("SERIES_ID") or row.get("series_id"),
+            "title": row.get("TITLE") or row.get("title"),
+            "tool_version": row.get("TOOL_VERSION") or row.get("tool_version"),
+            "disposition": row.get("DISPOSITION") or row.get("disposition"),
+            "update_time": row.get("UPDATE_TIME") or row.get("update_time"),
+            "current_state": row.get("CURRENT_STATE") or row.get("current_state"),
+            "state_source": row.get("STATE_SOURCE") or row.get("state_source"),
+            "state_update_time": row.get("STATE_UPDATE_TIME") or row.get("state_update_time"),
         }

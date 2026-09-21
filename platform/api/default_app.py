@@ -16,6 +16,8 @@ from platform.api.controllers import (
 from platform.api.contracts import MemorySearchRequest
 from platform.operations.experience_store import ExperienceStore, RuntimeExperience
 from platform.operations.runtime_status_service import RuntimeStatusApiService
+from platform.repository.mysql.mysql_connection import MySqlConnection
+from platform.repository.mysql.mysql_episode_repository import MySqlEpisodeRepository
 from platform.repository.platform_record_store_provider import (
     PlatformRecordStores,
     build_platform_record_stores,
@@ -86,7 +88,9 @@ def build_default_controllers(
     if experience_store is None:
         experience_store = ExperienceStore(stores.experience)
     memory_service = ExperienceMemoryApiService(experience_store)
-    runtime_status_service = runtime_status_service or RuntimeStatusApiService()
+    runtime_status_service = runtime_status_service or RuntimeStatusApiService(
+        summary_repository=MySqlEpisodeRepository(MySqlConnection()),
+    )
     return {
         "AgentApiController": AgentApiController(agent_service),
         "ExecutionApiController": ExecutionApiController(agent_service),

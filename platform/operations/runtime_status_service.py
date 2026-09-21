@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import sys
+import datetime as dt
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Protocol
 
 
 Projector = Callable[[Path], dict[str, Any]]
+
+class EpisodeSummaryRepository(Protocol):
+    def list_active_summaries(self, *, limit: int = 50, offset: int = 0) -> list[dict]: ...
+    def get_by_namespace(self, episode_namespace: str) -> dict | None: ...
 
 
 class RuntimeStatusApiService:
@@ -16,10 +21,16 @@ class RuntimeStatusApiService:
     HTTP surface unable to escape the repository Episode root.
     """
 
-    def __init__(self, repo_root: Path | None = None, projector: Projector | None = None) -> None:
+    def __init__(
+        self,
+        repo_root: Path | None = None,
+        projector: Projector | None = None,
+        summary_repository: EpisodeSummaryRepository | None = None,
+    ) -> None:
         self.repo_root = (repo_root or Path(__file__).resolve().parents[2]).resolve()
         self.episodes_root = (self.repo_root / "episodes").resolve()
         self._projector = projector
+        self._summary_repository = summary_repository
 
     def _resolve_episode(self, episode_ref: str) -> Path:
         raw = str(episode_ref or "").strip().replace("\\", "/")
@@ -49,8 +60,16 @@ class RuntimeStatusApiService:
 
     def get_episode_status(self, episode_ref: str) -> dict[str, Any] | None:
         episode = self._resolve_episode(episode_ref)
-        if not episode.is_dir() or not (episode / "meta/episode-state.json").is_file():
+        if not episode.is_dir():
             return None
+        legacy_state = (episode / "meta/episode-state.json").is_file()
+        if not legacy_state:
+            if self._summary_repository is None:
+                return None
+            namespace = episode.relative_to(self.episodes_root).as_posix()
+            registered = self._summary_repository.get_by_namespace(namespace)
+            if not registered or str(registered.get("disposition") or "ACTIVE").upper() != "ACTIVE":
+                return None
         result = dict(self._load_projector()(episode))
         # Do not leak host-local absolute filesystem paths through the Platform API.
         result.pop("episode_path", None)
@@ -101,6 +120,20 @@ class RuntimeStatusApiService:
     def list_episode_statuses(self, *, limit: int | str = 50, offset: int | str = 0) -> dict[str, Any]:
         page_limit = self._page_value(limit, name="limit", minimum=1, maximum=100)
         page_offset = self._page_value(offset, name="offset", minimum=0, maximum=10000)
+        if self._summary_repository is not None:
+            rows = self._summary_repository.list_active_summaries(
+                limit=page_limit + 1,
+                offset=page_offset,
+            )
+            selected = rows[:page_limit]
+            return {
+                "items": [self._summary_item(row) for row in selected],
+                "count": len(selected),
+                "limit": page_limit,
+                "offset": page_offset,
+                "has_more": len(rows) > page_limit,
+                "errors": [],
+            }
         refs = self._episode_refs(stop_after=page_offset + page_limit + 1)
         selected = refs[page_offset:page_offset + page_limit]
         items: list[dict[str, Any]] = []
@@ -128,4 +161,23 @@ class RuntimeStatusApiService:
             "offset": page_offset,
             "has_more": len(refs) > page_offset + page_limit,
             "errors": errors,
+        }
+
+    @staticmethod
+    def _summary_item(row: dict[str, Any]) -> dict[str, Any]:
+        updated = row.get("state_update_time") or row.get("update_time")
+        if hasattr(updated, "isoformat"):
+            updated = updated.isoformat()
+        return {
+            "schema_version": 1,
+            "projection_level": "summary",
+            "episode_id": row.get("episode_id"),
+            "business_episode_id": row.get("business_episode_id"),
+            "episode": row.get("title"),
+            "title": row.get("title"),
+            "episode_ref": row.get("episode_namespace"),
+            "production_stage": row.get("current_state"),
+            "state_source": row.get("state_source"),
+            "updated_at": updated,
+            "observed_at": dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds"),
         }

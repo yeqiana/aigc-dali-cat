@@ -211,6 +211,67 @@ def test_runtime_status_rejects_episode_path_escape():
         assert payload["code"] == "INVALID_REQUEST"
 
 
+def test_runtime_status_allows_mysql_registered_episode_without_legacy_state_file():
+    class SummaryRepository:
+        def list_active_summaries(self, *, limit=50, offset=0):
+            return []
+
+        def get_by_namespace(self, episode_namespace):
+            if episode_namespace == "尸解仙":
+                return {
+                    "episode_id": "EPU_1",
+                    "episode_namespace": "尸解仙",
+                    "disposition": "ACTIVE",
+                }
+            return None
+
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        episode = root / "episodes" / "尸解仙"
+        (episode / "meta").mkdir(parents=True)
+        service = RuntimeStatusApiService(
+            repo_root=root,
+            projector=lambda ep: {
+                "production_stage": "IDEA_LOCKED",
+                "execution_status": "IDLE",
+                "episode_path": str(ep),
+            },
+            summary_repository=SummaryRepository(),
+        )
+        dispatcher = PlatformApiDispatcher({"RuntimeStatusApiController": RuntimeStatusApiController(service)})
+
+        status, payload = dispatcher.dispatch("GET", "/api/v1/runtime/status?episode=%E5%B0%B8%E8%A7%A3%E4%BB%99")
+
+        assert status == 200
+        assert payload["data"]["episode_ref"] == "尸解仙"
+        assert payload["data"]["production_stage"] == "IDEA_LOCKED"
+        assert "episode_path" not in payload["data"]
+
+
+def test_runtime_status_rejects_unregistered_directory_without_legacy_state_file():
+    class SummaryRepository:
+        def list_active_summaries(self, *, limit=50, offset=0):
+            return []
+
+        def get_by_namespace(self, episode_namespace):
+            return None
+
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        (root / "episodes" / "12_千寻").mkdir(parents=True)
+        service = RuntimeStatusApiService(
+            repo_root=root,
+            projector=lambda _ep: {"execution_status": "IDLE"},
+            summary_repository=SummaryRepository(),
+        )
+        dispatcher = PlatformApiDispatcher({"RuntimeStatusApiController": RuntimeStatusApiController(service)})
+
+        status, payload = dispatcher.dispatch("GET", "/api/v1/runtime/status?episode=12_%E5%8D%83%E5%AF%BB")
+
+        assert status == 404
+        assert payload["code"] == "EPISODE_NOT_FOUND"
+
+
 def test_runtime_status_list_is_bounded_excludes_control_trees_and_isolates_bad_episode():
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
@@ -274,6 +335,54 @@ def test_runtime_status_list_validates_paging_query():
             status, payload = dispatcher.dispatch("GET", f"/api/v1/runtime/statuses?{query}")
             assert status == 400
             assert payload["code"] == "INVALID_REQUEST"
+
+
+def test_runtime_status_list_uses_injected_summary_repository_without_full_projector():
+    class SummaryRepository:
+        def __init__(self):
+            self.calls = []
+
+        def list_active_summaries(self, *, limit=50, offset=0):
+            self.calls.append((limit, offset))
+            return [
+                {
+                    "episode_id": "EPU_1",
+                    "business_episode_id": "09-05",
+                    "episode_namespace": "09_series/05_wedding",
+                    "title": "婚礼前夜",
+                    "current_state": "PUBLISH_READY",
+                    "state_source": "MYSQL_REDIS_CUTOVER",
+                    "state_update_time": "2026-09-20T03:30:24",
+                },
+                {
+                    "episode_id": "EPU_2",
+                    "business_episode_id": "09-04",
+                    "episode_namespace": "09_series/04_bottle",
+                    "title": "瓶中世界",
+                    "current_state": "PUBLISH_READY",
+                    "state_source": "MYSQL_REDIS_CUTOVER",
+                    "state_update_time": "2026-09-20T03:30:23",
+                },
+            ]
+
+    summaries = SummaryRepository()
+    service = RuntimeStatusApiService(
+        projector=lambda _ep: (_ for _ in ()).throw(AssertionError("full projector must not run")),
+        summary_repository=summaries,
+    )
+
+    page = service.list_episode_statuses(limit=1, offset=0)
+
+    assert summaries.calls == [(2, 0)]
+    assert page["has_more"] is True
+    row = page["items"][0]
+    assert row["projection_level"] == "summary"
+    assert row["episode_id"] == "EPU_1"
+    assert row["title"] == "婚礼前夜"
+    assert row["episode_ref"] == "09_series/05_wedding"
+    assert row["production_stage"] == "PUBLISH_READY"
+    assert row["state_source"] == "MYSQL_REDIS_CUTOVER"
+    assert "execution_status" not in row
 
 
 def test_default_composition_exposes_runtime_status_controller():
