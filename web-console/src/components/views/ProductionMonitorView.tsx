@@ -43,13 +43,21 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({ on
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
   const [lastLoadedAt, setLastLoadedAt] = useState<string | null>(null);
+  const [total, setTotal] = useState<number | null>(null);
+  const [stageCounts, setStageCounts] = useState<Record<string, number>>({});
+  const [hasMore, setHasMore] = useState(false);
+  const [offset, setOffset] = useState(0);
 
-  async function loadSummaries({ announce = false }: { announce?: boolean } = {}) {
+  async function loadSummaries(pageOffset = offset, { announce = false }: { announce?: boolean } = {}) {
     setLoading(true);
     setError(null);
     try {
-      const page = await runtimeApi.listEpisodeStatuses(PAGE_SIZE, 0);
+      const page = await runtimeApi.listEpisodeStatuses(PAGE_SIZE, pageOffset);
       setRows(page.items);
+      setOffset(page.offset);
+      setTotal(page.total ?? null);
+      setStageCounts(page.stage_counts ?? {});
+      setHasMore(page.has_more);
       setLastLoadedAt(new Date().toISOString());
       if (announce) onShowToast(`已刷新 ${page.items.length} 条 MySQL Episode 状态投影`);
     } catch (cause) {
@@ -74,15 +82,16 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({ on
   }
 
   useEffect(() => {
-    void loadSummaries();
-    const timer = window.setInterval(() => void loadSummaries(), AUTO_REFRESH_MS);
+    void loadSummaries(offset);
+    const timer = window.setInterval(() => void loadSummaries(offset), AUTO_REFRESH_MS);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [offset]);
 
-  const stages = useMemo(
-    () => Array.from(new Set(rows.map((row) => row.production_stage).filter((value): value is string => Boolean(value)))).sort(),
-    [rows],
-  );
+  const stages = useMemo(() => {
+    const fromMetrics = Object.keys(stageCounts).filter((stage) => stage !== 'NO_STATE');
+    if (fromMetrics.length) return fromMetrics.sort();
+    return Array.from(new Set(rows.map((row) => row.production_stage).filter((value): value is string => Boolean(value)))).sort();
+  }, [rows, stageCounts]);
 
   const filteredRows = useMemo(() => {
     const keyword = searchKeyword.trim().toLowerCase();
@@ -94,10 +103,11 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({ on
     });
   }, [rows, searchKeyword, stageFilter]);
 
-  const publishReady = rows.filter((row) => row.production_stage === 'PUBLISH_READY').length;
-  const productionPassed = rows.filter((row) => row.production_stage === 'PRODUCTION_PASSED').length;
-  const visualCalibrated = rows.filter((row) => row.production_stage === 'VISUAL_CALIBRATED').length;
-  const missingState = rows.filter((row) => !row.production_stage).length;
+  const activeTotal = total ?? rows.length;
+  const publishReady = stageCounts.PUBLISH_READY ?? rows.filter((row) => row.production_stage === 'PUBLISH_READY').length;
+  const productionPassed = stageCounts.PRODUCTION_PASSED ?? rows.filter((row) => row.production_stage === 'PRODUCTION_PASSED').length;
+  const visualCalibrated = stageCounts.VISUAL_CALIBRATED ?? rows.filter((row) => row.production_stage === 'VISUAL_CALIBRATED').length;
+  const missingState = stageCounts.NO_STATE ?? rows.filter((row) => !row.production_stage).length;
 
   return (
     <div id="storyos-production-monitor-view" className="space-y-3 pb-12 text-[var(--text-primary)]">
@@ -117,11 +127,27 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({ on
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-mono text-[var(--text-tertiary)]">
-            {lastLoadedAt ? `UPDATED ${displayTime(lastLoadedAt)} · AUTO 15s` : 'NOT LOADED'}
+            {lastLoadedAt ? `PAGE ${Math.floor(offset / PAGE_SIZE) + 1} · UPDATED ${displayTime(lastLoadedAt)} · AUTO 15s` : 'NOT LOADED'}
           </span>
           <button
             type="button"
-            onClick={() => void loadSummaries({ announce: true })}
+            onClick={() => setOffset((value) => Math.max(0, value - PAGE_SIZE))}
+            disabled={loading || offset === 0}
+            className="storyos-control h-8 px-2.5 text-[11px] font-mono disabled:opacity-50"
+          >
+            PREV
+          </button>
+          <button
+            type="button"
+            onClick={() => setOffset((value) => value + PAGE_SIZE)}
+            disabled={loading || !hasMore}
+            className="storyos-control h-8 px-2.5 text-[11px] font-mono disabled:opacity-50"
+          >
+            NEXT
+          </button>
+          <button
+            type="button"
+            onClick={() => void loadSummaries(offset, { announce: true })}
             disabled={loading}
             className="storyos-control h-8 px-2.5 inline-flex items-center gap-1.5 text-[11px] font-mono disabled:opacity-50"
           >
@@ -139,7 +165,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({ on
       )}
 
       <section className="storyos-surface min-h-14 px-4 py-2 flex items-center gap-6 overflow-x-auto text-xs font-mono">
-        <div className="shrink-0"><span className="text-[var(--text-tertiary)]">ACTIVE EPISODES</span> <strong className="ml-2 text-lg text-[var(--text-primary)]">{rows.length}</strong></div>
+        <div className="shrink-0"><span className="text-[var(--text-tertiary)]">ACTIVE EPISODES</span> <strong className="ml-2 text-lg text-[var(--text-primary)]">{activeTotal}</strong></div>
         <div className="h-4 w-px bg-[var(--border-subtle)] shrink-0" />
         <div className="shrink-0"><span className="text-[var(--text-tertiary)]">PUBLISH READY</span> <strong className="ml-2 text-[var(--success)]">{publishReady}</strong></div>
         <div className="h-4 w-px bg-[var(--border-subtle)] shrink-0" />
@@ -173,7 +199,9 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({ on
               {stages.map((stage) => <option key={stage} value={stage}>{stage}</option>)}
             </select>
           </div>
-          <span className="text-[10px] font-mono text-[var(--text-tertiary)]">{filteredRows.length} / {rows.length} ROWS</span>
+          <span className="text-[10px] font-mono text-[var(--text-tertiary)]">
+            {filteredRows.length} / {rows.length} PAGE ROWS{hasMore ? ` · MORE AVAILABLE · TOTAL ${activeTotal}` : ''}
+          </span>
         </div>
 
         <div className="overflow-x-auto">
@@ -199,7 +227,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({ on
                     key={row.episode_id || row.episode_ref}
                     className={`h-11 border-b border-[var(--border-subtle)] last:border-b-0 hover:bg-[var(--bg-hover)] ${selected ? 'bg-[var(--bg-selected)]' : ''}`}
                   >
-                    <td className="px-3 text-center font-mono text-[var(--text-tertiary)]">{index + 1}</td>
+                    <td className="px-3 text-center font-mono text-[var(--text-tertiary)]">{offset + index + 1}</td>
                     <td className="px-3">
                       <div className="font-medium text-[var(--text-primary)]">{row.title || row.episode || row.business_episode_id || 'Untitled'}</div>
                       <div className="mt-0.5 text-[10px] font-mono text-[var(--text-tertiary)]">{row.business_episode_id || row.episode_id || '—'}</div>

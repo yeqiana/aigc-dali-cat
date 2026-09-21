@@ -62,6 +62,10 @@ def test_production_monitor_uses_real_runtime_projection_not_monitor_mock():
     assert "MOCK_STORY_RUNS" not in monitor
     assert "handleTogglePause" not in monitor
     assert "handleRetryRun" not in monitor
+    assert "listEpisodeStatuses(PAGE_SIZE, pageOffset)" in monitor
+    assert "setOffset((value) => Math.max(0, value - PAGE_SIZE))" in monitor
+    assert "setOffset((value) => value + PAGE_SIZE)" in monitor
+    assert "offset + index + 1" in monitor
     assert "<ProductionMonitorView" in app
 
 
@@ -75,6 +79,9 @@ def test_production_index_and_logs_do_not_fall_back_to_demo_data():
 
     assert "runtimeApi.listEpisodeStatuses" in series
     assert "MYSQL AUTHORITY" in series
+    assert "listEpisodeStatuses(PAGE_SIZE, pageOffset)" in series
+    assert "setOffset((value) => Math.max(0, value - PAGE_SIZE))" in series
+    assert "setOffset((value) => value + PAGE_SIZE)" in series
     assert "CAPABILITY NOT CONNECTED" in logs
     assert "SYSTEM_RUNTIME_LOGS" not in logs
     assert "LOCAL DEMO · NOT AUTHORITY" in header

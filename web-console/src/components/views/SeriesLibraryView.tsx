@@ -3,6 +3,8 @@ import { AlertTriangle, Clapperboard, RefreshCw, Search } from 'lucide-react';
 import { runtimeApi } from '../../api/runtime';
 import type { RuntimeEpisodeStatus } from '../../types/platform';
 
+const PAGE_SIZE = 100;
+
 function displayTime(value?: string | null) {
   if (!value) return '—';
   const date = new Date(value);
@@ -15,13 +17,21 @@ export const SeriesLibraryView: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStage, setFilterStage] = useState('ALL');
+  const [total, setTotal] = useState<number | null>(null);
+  const [stageCounts, setStageCounts] = useState<Record<string, number>>({});
+  const [hasMore, setHasMore] = useState(false);
+  const [offset, setOffset] = useState(0);
 
-  async function load() {
+  async function load(pageOffset = offset) {
     setLoading(true);
     setError(null);
     try {
-      const page = await runtimeApi.listEpisodeStatuses(100, 0);
+      const page = await runtimeApi.listEpisodeStatuses(PAGE_SIZE, pageOffset);
       setRows(page.items);
+      setOffset(page.offset);
+      setTotal(page.total ?? null);
+      setStageCounts(page.stage_counts ?? {});
+      setHasMore(page.has_more);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Episode Index 读取失败');
     } finally {
@@ -30,13 +40,14 @@ export const SeriesLibraryView: React.FC = () => {
   }
 
   useEffect(() => {
-    void load();
-  }, []);
+    void load(offset);
+  }, [offset]);
 
-  const stages = useMemo(
-    () => Array.from(new Set(rows.map((row) => row.production_stage).filter((stage): stage is string => Boolean(stage)))).sort(),
-    [rows],
-  );
+  const stages = useMemo(() => {
+    const fromMetrics = Object.keys(stageCounts).filter((stage) => stage !== 'NO_STATE');
+    if (fromMetrics.length) return fromMetrics.sort();
+    return Array.from(new Set(rows.map((row) => row.production_stage).filter((stage): stage is string => Boolean(stage)))).sort();
+  }, [rows, stageCounts]);
 
   const filteredRows = useMemo(() => {
     const keyword = searchQuery.trim().toLowerCase();
@@ -63,10 +74,14 @@ export const SeriesLibraryView: React.FC = () => {
           </div>
           <p className="mt-1 text-xs text-[var(--text-tertiary)]">只读展示 TB_EPISODE + TB_EPISODE_STATE，不用本地 Demo Episode 补字段。</p>
         </div>
-        <button type="button" onClick={() => void load()} disabled={loading} className="storyos-control h-8 px-2.5 inline-flex items-center gap-1.5 text-[11px] font-mono disabled:opacity-50">
-          <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-          REFRESH
-        </button>
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={() => setOffset((value) => Math.max(0, value - PAGE_SIZE))} disabled={loading || offset === 0} className="storyos-control h-8 px-2.5 text-[11px] font-mono disabled:opacity-50">PREV</button>
+          <button type="button" onClick={() => setOffset((value) => value + PAGE_SIZE)} disabled={loading || !hasMore} className="storyos-control h-8 px-2.5 text-[11px] font-mono disabled:opacity-50">NEXT</button>
+          <button type="button" onClick={() => void load(offset)} disabled={loading} className="storyos-control h-8 px-2.5 inline-flex items-center gap-1.5 text-[11px] font-mono disabled:opacity-50">
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+            REFRESH
+          </button>
+        </div>
       </header>
 
       {error && (
@@ -89,7 +104,9 @@ export const SeriesLibraryView: React.FC = () => {
               {stages.map((stage) => <option key={stage} value={stage}>{stage}</option>)}
             </select>
           </div>
-          <span className="text-[10px] font-mono text-[var(--text-tertiary)]">{filteredRows.length} / {rows.length} EPISODES</span>
+          <span className="text-[10px] font-mono text-[var(--text-tertiary)]">
+            PAGE {Math.floor(offset / PAGE_SIZE) + 1} · {rows.length ? `${offset + 1}-${offset + rows.length}` : '0'} · FILTERED {filteredRows.length}{hasMore ? ' · MORE AVAILABLE' : ''} · TOTAL {total ?? rows.length}
+          </span>
         </div>
 
         <div className="overflow-x-auto">
