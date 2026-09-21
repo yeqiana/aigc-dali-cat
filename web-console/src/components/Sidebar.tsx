@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  Search,
+  Activity,
   Bell,
-  SquarePen,
-  ShieldCheck,
-  ChevronRight,
-  Settings,
   Film,
   FolderOpen,
   LayoutDashboard,
-  Activity,
+  Search,
+  Settings,
+  ShieldCheck,
+  SquarePen,
 } from 'lucide-react';
-import { Episode, NavigationTab } from '../types';
+import type { Episode, NavigationTab } from '../types';
 
 interface SidebarProps {
   currentTab: NavigationTab;
@@ -22,7 +21,12 @@ interface SidebarProps {
   onNewConversation?: () => void;
   onOpenSearch?: () => void;
   onOpenNotifications?: () => void;
-  unreadCount?: number;
+}
+
+function navClass(active: boolean) {
+  return `w-full h-9 flex items-center gap-2 px-3 rounded-[var(--radius-md)] text-xs transition-colors ${active
+    ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
+    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'}`;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -35,224 +39,90 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenSearch,
   onOpenNotifications,
 }) => {
-  const [pinnedOpen, setPinnedOpen] = useState(true);
-  const [seriesOpen, setSeriesOpen] = useState(true);
-
-  // Group episodes into pinned and series
-  const pinnedEpisodes = allEpisodes.slice(0, 3);
-  const seriesEpisodes = allEpisodes.slice(3);
+  const isWorkbench = currentTab === 'workbench';
 
   return (
-    <aside className="w-[var(--sidebar-width)] shrink-0 bg-[var(--bg-sidebar)] border-r border-[var(--border-subtle)] flex flex-col h-full select-none text-[13px] font-sans antialiased text-[var(--text-secondary)]">
-      {/* 1. 顶部 Header (StoryOS PRO 与 交互搜索/通知) */}
+    <aside className="w-[var(--sidebar-width)] shrink-0 bg-[var(--bg-sidebar)] border-r border-[var(--border-subtle)] flex flex-col h-full select-none text-[13px] text-[var(--text-secondary)]">
       <div className="h-[var(--header-height)] px-3 flex items-center justify-between border-b border-[var(--border-subtle)]">
         <div className="flex items-center gap-2 font-semibold text-[var(--text-primary)]">
-          <span className="tracking-wide text-[var(--text-primary)] font-mono text-sm font-bold">StoryOS</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded-[var(--radius-xs)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border-normal)] font-mono font-medium tracking-tight">
-            OPS
-          </span>
+          <span className="tracking-wide font-mono text-sm font-bold">StoryOS</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-[var(--radius-xs)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border-normal)] font-mono">OPS</span>
         </div>
-        <div className="flex items-center gap-1 text-[var(--text-tertiary)]">
-          <button
-            type="button"
-            onClick={onOpenSearch}
-            aria-label="搜索剧集、分镜或台词"
-            className="p-1 hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-[var(--radius-sm)] transition-colors cursor-pointer"
-            title="搜索剧集、分镜或台词 (Ctrl+K)"
-          >
-            <Search className="w-3.5 h-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={onOpenNotifications}
-            aria-label="查看出图与质检通知"
-            className="p-1 hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-[var(--radius-sm)] transition-colors relative cursor-pointer"
-            title="查看出图与质检通知"
-          >
-            <Bell className="w-3.5 h-3.5" />
-            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[var(--info)]" />
-          </button>
-        </div>
+        {isWorkbench && (
+          <div className="flex items-center gap-1 text-[var(--text-tertiary)]">
+            <button type="button" onClick={onOpenSearch} aria-label="搜索本地 Workbench 示例" className="p-1 hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-[var(--radius-sm)]" title="搜索本地 Workbench 示例 (Ctrl+K)">
+              <Search className="w-3.5 h-3.5" />
+            </button>
+            <button type="button" onClick={onOpenNotifications} aria-label="查看本地示例通知" className="p-1 hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-[var(--radius-sm)]" title="本地示例通知">
+              <Bell className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* 2. 核心功能菜单 */}
       <div className="flex-1 overflow-y-auto px-2 py-3 space-y-4 scrollbar-none">
-        {/* 顶部主工作操作项 */}
-        <div className="space-y-1">
-          <button
-            type="button"
-            onClick={() => {
-              onSelectTab('workbench');
-              if (onNewConversation) onNewConversation();
-            }}
-            className="w-full h-10 flex items-center gap-2 px-3 rounded-[var(--radius-md)] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--text-primary)] font-medium hover:border-[var(--border-strong)] transition-colors text-xs cursor-pointer"
-          >
-            <SquarePen className="w-3.5 h-3.5 text-[var(--info)]" />
-            <span>新建故事剧本会话</span>
+        <nav className="space-y-1" aria-label="StoryOS Console">
+          <button type="button" onClick={() => onSelectTab('production_monitor')} className={navClass(currentTab === 'production_monitor')}>
+            <Activity className="w-3.5 h-3.5 text-[var(--info)]" />
+            <span>生产监控</span>
+            <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[var(--success)]" title="MySQL Authority" />
           </button>
-
-          {/* 生产监控台：作为多任务总控主页 */}
-          <button
-            type="button"
-            onClick={() => onSelectTab('production_monitor')}
-            className={`w-full h-10 flex items-center justify-between px-3 rounded-[var(--radius-lg)] transition-colors text-xs cursor-pointer ${
-              currentTab === 'production_monitor'
-                ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-semibold'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <Activity className="w-3.5 h-3.5 text-[var(--info)]" />
-              <span>生产监控 (主控台)</span>
-            </div>
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--info)]" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onSelectTab('workbench')}
-            className={`w-full h-10 flex items-center gap-2 px-3 rounded-[var(--radius-lg)] transition-colors text-xs cursor-pointer ${
-              currentTab === 'workbench'
-                ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
-            <span>分镜质检与调度台</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onSelectTab('episodes')}
-            className={`w-full h-10 flex items-center gap-2 px-3 rounded-[var(--radius-lg)] transition-colors text-xs cursor-pointer ${
-              currentTab === 'episodes'
-                ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-            }`}
-          >
+          <button type="button" onClick={() => onSelectTab('episodes')} className={navClass(currentTab === 'episodes')}>
             <Film className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
-            <span>剧集资产全景总览</span>
+            <span>Episode Index</span>
           </button>
-        </div>
-
-        {/* 置顶剧目：真实可点击切换 */}
-        <div>
-          <button
-            type="button"
-            onClick={() => setPinnedOpen(!pinnedOpen)}
-            aria-expanded={pinnedOpen}
-            className="w-full flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)] hover:text-[var(--text-primary)] px-2 mb-1 cursor-pointer"
-          >
-            <span className="flex items-center gap-1">
-              <ChevronRight className={`w-3 h-3 transition-transform ${pinnedOpen ? 'rotate-90' : ''}`} />
-              <span>当前置顶剧目</span>
-            </span>
-            <span className="text-[10px] text-[var(--text-tertiary)]">{pinnedEpisodes.length}</span>
+          <button type="button" onClick={() => onSelectTab('logs')} className={navClass(currentTab === 'logs')}>
+            <FolderOpen className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+            <span>Runtime Logs</span>
           </button>
+          <div className="pt-2 mt-2 border-t border-[var(--border-subtle)]">
+            <button type="button" onClick={() => onSelectTab('workbench')} className={navClass(isWorkbench)}>
+              <ShieldCheck className="w-3.5 h-3.5 text-[var(--warning)]" />
+              <span>Workbench Demo</span>
+            </button>
+          </div>
+        </nav>
 
-          {pinnedOpen && (
+        {isWorkbench && (
+          <section>
+            <div className="px-2 mb-1 flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-[var(--warning)]">
+              <span>Local Demo Episodes</span>
+              <span>{allEpisodes.length}</span>
+            </div>
             <div className="space-y-0.5">
-              {pinnedEpisodes.map((ep) => {
-                const isActive = ep.id === activeEpisode.id && currentTab === 'workbench';
+              {allEpisodes.map((episode) => {
+                const active = episode.id === activeEpisode.id;
                 return (
                   <button
-                    key={ep.id}
+                    key={episode.id}
                     type="button"
-                    onClick={() => {
-                      onSelectEpisode(ep);
-                      onSelectTab('workbench');
-                    }}
-                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-[var(--radius-sm)] transition-colors text-left text-xs cursor-pointer ${
-                      isActive
-                        ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
-                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-                    }`}
+                    onClick={() => onSelectEpisode(episode)}
+                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-[var(--radius-sm)] text-left text-xs ${active ? 'bg-[var(--bg-selected)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
                   >
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                      isActive ? 'bg-[var(--primary)]' : 'bg-[var(--text-subtle)]'
-                    }`} />
-                    <span className="truncate">{ep.title}</span>
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${active ? 'bg-[var(--warning)]' : 'bg-[var(--text-disabled)]'}`} />
+                    <span className="truncate">{episode.code} · {episode.title}</span>
                   </button>
                 );
               })}
             </div>
-          )}
-        </div>
-
-        {/* 剧目系列库：真实可点击切换 */}
-        <div>
-          <button
-            type="button"
-            onClick={() => setSeriesOpen(!seriesOpen)}
-            aria-expanded={seriesOpen}
-            className="w-full flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)] hover:text-[var(--text-primary)] px-2 mb-1 cursor-pointer"
-          >
-            <span className="flex items-center gap-1">
-              <ChevronRight className={`w-3 h-3 transition-transform ${seriesOpen ? 'rotate-90' : ''}`} />
-              <span>更多系列作品</span>
-            </span>
-            <span className="text-[10px] text-[var(--text-tertiary)]">{seriesEpisodes.length}</span>
-          </button>
-
-          {seriesOpen && (
-            <div className="space-y-0.5">
-              {seriesEpisodes.map((ep) => {
-                const isActive = ep.id === activeEpisode.id && currentTab === 'workbench';
-                return (
-                  <button
-                    key={ep.id}
-                    type="button"
-                    onClick={() => {
-                      onSelectEpisode(ep);
-                      onSelectTab('workbench');
-                    }}
-                    className={`w-full flex items-center gap-2 px-2 py-1 rounded-[var(--radius-sm)] transition-colors text-left text-xs cursor-pointer ${
-                      isActive
-                        ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-medium'
-                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-                    }`}
-                  >
-                    <FolderOpen className="w-3 h-3 text-[var(--text-subtle)] shrink-0" />
-                    <span className="truncate">{ep.title}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
+            <button type="button" onClick={onNewConversation} className="storyos-control mt-2 w-full h-8 px-2 flex items-center justify-center gap-1.5 text-[11px] font-mono">
+              <SquarePen className="w-3.5 h-3.5" />
+              NEW LOCAL DEMO
+            </button>
+          </section>
+        )}
       </div>
 
-      {/* 3. 底部用户信息与系统设置 */}
       <div className="h-[var(--header-height)] px-3 border-t border-[var(--border-subtle)] flex items-center justify-between bg-[var(--bg-sidebar)]">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--primary)] flex items-center justify-center text-xs font-bold font-mono">
-            S
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs font-medium text-[var(--text-primary)] leading-tight">StoryOS 运维</span>
-            <span className="text-[10px] text-[var(--text-tertiary)] font-mono leading-tight">4:5 1080×1350 标定</span>
-          </div>
+        <div>
+          <div className="text-xs font-medium text-[var(--text-primary)]">StoryOS 运维</div>
+          <div className="text-[10px] text-[var(--text-tertiary)] font-mono">{isWorkbench ? 'WORKBENCH DEMO' : 'PRODUCTION READ ONLY'}</div>
         </div>
         <div className="flex items-center gap-1">
-          <a
-            href="/platform"
-            aria-label="打开 Platform Console"
-            className="p-1.5 rounded-[4px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
-            title="Platform Console"
-          >
+          <a href="/platform" aria-label="打开 Platform Console" className="p-1.5 rounded-[4px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]" title="Platform Console">
             <LayoutDashboard className="w-4 h-4" />
           </a>
-          <button
-            type="button"
-            onClick={() => onSelectTab('settings')}
-            aria-label="打开外观与系统设置"
-            className={`p-1.5 rounded-[4px] transition-colors cursor-pointer ${
-              currentTab === 'settings'
-                ? 'text-[var(--text-primary)] bg-[var(--bg-selected)]'
-                : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-            }`}
-            title="外观与系统设置"
-          >
+          <button type="button" onClick={() => onSelectTab('settings')} aria-label="打开设置" className={`p-1.5 rounded-[4px] ${currentTab === 'settings' ? 'text-[var(--text-primary)] bg-[var(--bg-selected)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'}`}>
             <Settings className="w-4 h-4" />
           </button>
         </div>

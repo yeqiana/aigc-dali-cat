@@ -1,211 +1,129 @@
-import React, { useState } from 'react';
-import {
-  Clapperboard,
-  Search,
-  Plus,
-  ArrowRight
-} from 'lucide-react';
-import { Episode } from '../../types';
+import React, { useEffect, useMemo, useState } from 'react';
+import { AlertTriangle, Clapperboard, RefreshCw, Search } from 'lucide-react';
+import { runtimeApi } from '../../api/runtime';
+import type { RuntimeEpisodeStatus } from '../../types/platform';
 
-interface SeriesLibraryViewProps {
-  episodes: Episode[];
-  activeEpisode: Episode;
-  onSelectEpisode: (ep: Episode) => void;
-  onGoToWorkbench: () => void;
-  onNewStoryClick: () => void;
+function displayTime(value?: string | null) {
+  if (!value) return '—';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
 }
 
-export const SeriesLibraryView: React.FC<SeriesLibraryViewProps> = ({
-  episodes,
-  activeEpisode,
-  onSelectEpisode,
-  onGoToWorkbench,
-  onNewStoryClick,
-}) => {
-  const [filterStage, setFilterStage] = useState<string>('ALL');
+export const SeriesLibraryView: React.FC = () => {
+  const [rows, setRows] = useState<RuntimeEpisodeStatus[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterStage, setFilterStage] = useState('ALL');
 
-  const filteredEpisodes = episodes.filter(ep => {
-    const matchesFilter = filterStage === 'ALL' || ep.currentStage === filterStage;
-    const matchesSearch = ep.title.includes(searchQuery) || ep.genre.includes(searchQuery) || ep.code.includes(searchQuery);
-    return matchesFilter && matchesSearch;
-  });
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      const page = await runtimeApi.listEpisodeStatuses(100, 0);
+      setRows(page.items);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Episode Index 读取失败');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void load();
+  }, []);
+
+  const stages = useMemo(
+    () => Array.from(new Set(rows.map((row) => row.production_stage).filter((stage): stage is string => Boolean(stage)))).sort(),
+    [rows],
+  );
+
+  const filteredRows = useMemo(() => {
+    const keyword = searchQuery.trim().toLowerCase();
+    return rows.filter((row) => {
+      if (filterStage !== 'ALL' && (row.production_stage || 'NO_STATE') !== filterStage) return false;
+      if (!keyword) return true;
+      return [row.title, row.episode, row.episode_ref, row.business_episode_id]
+        .some((value) => String(value || '').toLowerCase().includes(keyword));
+    });
+  }, [rows, searchQuery, filterStage]);
 
   return (
-    <div id="series-library-view" className="space-y-4 text-[var(--text-secondary)] font-sans select-none">
-      {/* 顶部标题区 */}
-      <div className="storyos-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4">
+    <div id="series-library-view" className="space-y-3 text-[var(--text-secondary)]">
+      <header className="flex flex-col gap-3 border-b border-[var(--border-subtle)] pb-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-[var(--text-primary)] tracking-wide flex items-center gap-2">
-              <Clapperboard className="w-4 h-4 text-[var(--primary)]" />
-              <span>剧集资产全景总览 (StoryOS Series & Episodes)</span>
-            </h2>
-            <span className="storyos-status storyos-status--neutral font-mono">
-              {episodes.length} 剧目就绪
+          <div className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Production / Episode Index</div>
+          <div className="mt-1 flex items-center gap-2">
+            <Clapperboard className="h-4 w-4 text-[var(--primary)]" />
+            <h2 className="text-[18px] font-semibold text-[var(--text-primary)]">剧集资产全景总览</h2>
+            <span className="storyos-status storyos-status--success font-mono">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
+              MYSQL AUTHORITY
             </span>
           </div>
-          <p className="text-xs text-[var(--text-tertiary)] mt-1">全系列图文故事生产资产库、7 大正式阶段流转状态与出图排期</p>
+          <p className="mt-1 text-xs text-[var(--text-tertiary)]">只读展示 TB_EPISODE + TB_EPISODE_STATE，不用本地 Demo Episode 补字段。</p>
         </div>
+        <button type="button" onClick={() => void load()} disabled={loading} className="storyos-control h-8 px-2.5 inline-flex items-center gap-1.5 text-[11px] font-mono disabled:opacity-50">
+          <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+          REFRESH
+        </button>
+      </header>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={onNewStoryClick}
-            className="h-9 flex items-center gap-1.5 px-3.5 rounded-[var(--radius-md)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs font-semibold transition-colors cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5 text-white stroke-[2.5]" />
-            <span>新建故事项目</span>
-          </button>
+      {error && (
+        <div className="storyos-surface flex items-center gap-2 px-3 py-2 text-xs text-[var(--danger)]">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span>{error}</span>
         </div>
-      </div>
+      )}
 
-      {/* 过滤与搜索条 */}
-      <div className="storyos-surface flex flex-col sm:flex-row items-center justify-between gap-3 p-3 text-xs">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-3.5 h-3.5 text-[var(--text-tertiary)] absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="搜索剧目代号、标题或题材类型..."
-            className="storyos-control w-full pl-8 pr-3 text-xs outline-none focus:border-[var(--focus)] placeholder:text-[var(--text-subtle)]"
-          />
-        </div>
-
-        <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto scrollbar-none">
-          {[
-            { id: 'ALL', label: '全部阶段' },
-            { id: 'IDEA_LOCKED', label: '创意锁定' },
-            { id: 'STORYBOARD_LOCKED', label: '分镜锁定' },
-            { id: 'VISUAL_CALIBRATED', label: '视觉校准' },
-            { id: 'PRODUCTION_PASSED', label: '生产通过' },
-            { id: 'PUBLISH_READY', label: '待发布' },
-            { id: 'PUBLISHED', label: '已发布' },
-            { id: 'DATA_REVIEWED', label: '数据复盘' }
-          ].map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setFilterStage(item.id)}
-              className={`h-8 px-2.5 rounded-[var(--radius-sm)] font-mono text-[11px] font-medium transition-colors shrink-0 cursor-pointer border ${
-                filterStage === item.id
-                  ? 'bg-[var(--primary-soft)] text-[var(--primary-hover)] border-[var(--border-normal)] font-semibold'
-                  : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] border-[var(--border-normal)]'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 剧集网格卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredEpisodes.map((ep) => {
-          const isActive = ep.id === activeEpisode.id;
-          const progressPercent = Math.round((ep.completedFrames / ep.totalFrames) * 100);
-
-          return (
-            <div
-              key={ep.id}
-              className={`rounded-[var(--radius-lg)] border bg-[var(--bg-surface)] overflow-hidden transition-colors flex flex-col justify-between cursor-pointer ${
-                isActive
-                  ? 'border-[var(--primary)] bg-[var(--bg-selected)]'
-                  : 'border-[var(--border-normal)] hover:border-[var(--border-strong)]'
-              }`}
-              onClick={() => {
-                onSelectEpisode(ep);
-              }}
-            >
-              <div>
-                {/* 封面预览 */}
-                <div className="relative aspect-[16/9] bg-black overflow-hidden">
-                  <img
-                    src={ep.coverImage}
-                    alt={ep.title}
-                    className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-
-                  <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black/90 text-white border border-[var(--border-strong)]">
-                      {ep.code}
-                    </span>
-                    {isActive && (
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[var(--primary)] text-white">
-                        当前工作台
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black/90 text-white border border-[var(--border-strong)]">
-                      {ep.currentStage}
-                    </span>
-                  </div>
-
-                  <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
-                    <h3 className="text-sm font-bold truncate text-white">{ep.title}</h3>
-                    <p className="text-[10px] text-white/70 font-mono truncate">{ep.genre}</p>
-                  </div>
-                </div>
-
-                {/* 介绍与指标 */}
-                <div className="p-3.5 space-y-3">
-                  <p className="text-xs text-[var(--text-secondary)] line-clamp-2 leading-relaxed">
-                    {ep.synopsis}
-                  </p>
-
-                  {/* 进度条 */}
-                  <div>
-                    <div className="flex justify-between text-[11px] font-mono text-[var(--text-tertiary)] mb-1">
-                      <span>已完成帧数</span>
-                      <span className="font-semibold text-[var(--text-primary)] tabular-nums">
-                        {ep.completedFrames} / {ep.totalFrames} 帧 ({progressPercent}%)
-                      </span>
-                    </div>
-                    <div className="w-full bg-[var(--bg-muted)] h-1.5 rounded-full overflow-hidden border border-[var(--border-subtle)]">
-                      <div
-                        className="bg-[var(--primary)] h-full rounded-full transition-[width]"
-                        style={{ width: `${progressPercent}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* 规格 */}
-                  <div className="text-[11px] font-mono text-[var(--text-secondary)] bg-[var(--bg-subtle)] p-2 rounded-[var(--radius-md)] border border-[var(--border-subtle)] flex items-center justify-between">
-                    <span className="truncate text-[var(--text-tertiary)]">
-                      {ep.runtimeRequest.imageModel || 'gpt-image-2'}
-                    </span>
-                    <span className="text-[var(--text-primary)] font-semibold">{ep.runtimeRequest.aspectRatio || '4:5 1080×1350'}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* 底部操作条 */}
-              <div className="p-3 bg-[var(--bg-subtle)] border-t border-[var(--border-subtle)] flex items-center justify-between">
-                <span className="text-[10px] font-mono text-[var(--text-tertiary)]">
-                  更新于 {ep.updatedAt}
-                </span>
-
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelectEpisode(ep);
-                    onGoToWorkbench();
-                  }}
-                  className="h-8 flex items-center gap-1 text-xs font-semibold text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors px-2 rounded-[var(--radius-sm)] bg-[var(--bg-surface)] hover:bg-[var(--primary-soft)] border border-[var(--border-normal)]"
-                >
-                  <span>进入工作台</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
+      <section className="storyos-surface overflow-hidden">
+        <div className="min-h-11 px-3 py-1.5 border-b border-[var(--border-subtle)] flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-1 items-center gap-2 min-w-0">
+            <div className="relative flex-1 min-w-[180px] max-w-sm">
+              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+              <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="搜索标题 / namespace / business id" className="storyos-control h-8 w-full pl-8 pr-3 text-xs font-mono outline-none focus:border-[var(--focus)]" />
             </div>
-          );
-        })}
+            <select value={filterStage} onChange={(event) => setFilterStage(event.target.value)} className="storyos-control h-8 min-w-[180px] px-2 text-xs font-mono" aria-label="Episode 阶段筛选">
+              <option value="ALL">ALL STAGES</option>
+              <option value="NO_STATE">NO STATE</option>
+              {stages.map((stage) => <option key={stage} value={stage}>{stage}</option>)}
+            </select>
+          </div>
+          <span className="text-[10px] font-mono text-[var(--text-tertiary)]">{filteredRows.length} / {rows.length} EPISODES</span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[880px] text-left text-xs">
+            <thead className="h-9 border-b border-[var(--border-subtle)] bg-[var(--bg-workspace)] text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)]">
+              <tr>
+                <th className="px-3">Episode</th>
+                <th className="px-3">Business ID</th>
+                <th className="px-3">Namespace</th>
+                <th className="px-3">Current State</th>
+                <th className="px-3">Source</th>
+                <th className="px-3">Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredRows.length === 0 ? (
+                <tr><td colSpan={6} className="px-3 py-10 text-center font-mono text-[var(--text-tertiary)]">{loading ? '正在读取 Episode Index…' : '没有匹配的生产 Episode。'}</td></tr>
+              ) : filteredRows.map((row) => (
+                <tr key={row.episode_id || row.episode_ref} className="h-11 border-b border-[var(--border-subtle)] last:border-b-0 hover:bg-[var(--bg-hover)]">
+                  <td className="px-3 font-medium text-[var(--text-primary)]">{row.title || row.episode || 'Untitled'}</td>
+                  <td className="px-3 font-mono text-[11px] text-[var(--text-secondary)]">{row.business_episode_id || '—'}</td>
+                  <td className="px-3 max-w-[300px] truncate font-mono text-[11px] text-[var(--text-secondary)]" title={row.episode_ref}>{row.episode_ref}</td>
+                  <td className="px-3 font-mono text-[11px] text-[var(--text-primary)]">{row.production_stage || 'NO_STATE'}</td>
+                  <td className="px-3 font-mono text-[11px] text-[var(--text-tertiary)]">{row.state_source || '—'}</td>
+                  <td className="px-3 whitespace-nowrap font-mono text-[11px] text-[var(--text-tertiary)]">{displayTime(row.updated_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div className="text-[10px] font-mono text-[var(--text-tertiary)]">
+        新建 Episode / 状态推进属于写操作能力；当前 Web Console 未接入该 capability，因此本页保持只读。
       </div>
     </div>
   );

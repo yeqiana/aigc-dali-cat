@@ -1,657 +1,263 @@
-import React, { lazy, Suspense, useState, useEffect } from 'react';
-import {
-  Search,
-  Filter,
-  RefreshCw,
-  Cpu,
-  ShieldAlert,
-} from 'lucide-react';
-import { StoryRunItem, StoryRunStatus } from '../../types';
-import { MOCK_STORY_RUNS, MOCK_MONITOR_METRICS } from '../../mockMonitorData';
-import { StatusBadge } from '../StatusBadge';
-
-const StoryRunDetailView = lazy(() => import('./StoryRunDetailView').then((module) => ({ default: module.StoryRunDetailView })));
+import React, { useEffect, useMemo, useState } from 'react';
+import { AlertTriangle, RefreshCw, Search, X } from 'lucide-react';
+import { runtimeApi } from '../../api/runtime';
+import type { RuntimeEpisodeStatus } from '../../types/platform';
 
 interface ProductionMonitorViewProps {
   onShowToast: (msg: string) => void;
 }
 
-export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
-  onShowToast,
-}) => {
-  // 运行数据状态
-  const [runs, setRuns] = useState<StoryRunItem[]>(MOCK_STORY_RUNS);
-  const metrics = MOCK_MONITOR_METRICS;
+const PAGE_SIZE = 50;
+const AUTO_REFRESH_MS = 15_000;
 
-  // 过滤状态
+function displayTime(value?: string | null) {
+  if (!value) return '—';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+}
+
+function stageTone(stage?: string | null) {
+  if (!stage) return 'text-[var(--text-tertiary)]';
+  if (['PUBLISH_READY', 'PUBLISHED', 'DATA_REVIEWED'].includes(stage)) return 'text-[var(--success)]';
+  if (stage === 'PRODUCTION_PASSED') return 'text-[var(--info)]';
+  if (stage === 'VISUAL_CALIBRATED') return 'text-[var(--primary)]';
+  return 'text-[var(--text-secondary)]';
+}
+
+function executionTone(status?: string | null) {
+  const normalized = String(status || '').toUpperCase();
+  if (['BLOCKED', 'ERROR', 'FAILED', 'NEEDS_USER', 'HARD_STOP'].includes(normalized)) return 'text-[var(--danger)]';
+  if (['RUNNING', 'READY'].includes(normalized)) return 'text-[var(--info)]';
+  if (['COMPLETE', 'COMPLETED'].includes(normalized)) return 'text-[var(--success)]';
+  return 'text-[var(--text-secondary)]';
+}
+
+export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({ onShowToast }) => {
+  const [rows, setRows] = useState<RuntimeEpisodeStatus[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [stageFilter, setStageFilter] = useState<string>('all');
-  const [onlyException, setOnlyException] = useState(false);
+  const [stageFilter, setStageFilter] = useState('ALL');
+  const [selectedRef, setSelectedRef] = useState<string | null>(null);
+  const [detail, setDetail] = useState<RuntimeEpisodeStatus>();
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState<string | null>(null);
+  const [lastLoadedAt, setLastLoadedAt] = useState<string | null>(null);
 
-  // 自动刷新机制 (仅增量刷新数据，不触发整页 reload)
-  const [refreshInterval, setRefreshInterval] = useState<number>(5);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // 选中的 Story Run 详情视图
-  const [selectedRunForDetail, setSelectedRunForDetail] = useState<StoryRunItem | null>(null);
-
-  // 模拟增量自动刷新
-  useEffect(() => {
-    if (refreshInterval <= 0) return;
-    const interval = setInterval(() => {
-      setIsRefreshing(true);
-      setTimeout(() => setIsRefreshing(false), 300);
-    }, refreshInterval * 1000);
-    return () => clearInterval(interval);
-  }, [refreshInterval]);
-
-  // 筛选逻辑
-  const filteredRuns = runs.filter((run) => {
-    if (searchKeyword) {
-      const kw = searchKeyword.toLowerCase();
-      const matchName = run.storyName.toLowerCase().includes(kw);
-      const matchRunId = run.runId.toLowerCase().includes(kw);
-      if (!matchName && !matchRunId) return false;
+  async function loadSummaries({ announce = false }: { announce?: boolean } = {}) {
+    setLoading(true);
+    setError(null);
+    try {
+      const page = await runtimeApi.listEpisodeStatuses(PAGE_SIZE, 0);
+      setRows(page.items);
+      setLastLoadedAt(new Date().toISOString());
+      if (announce) onShowToast(`已刷新 ${page.items.length} 条 MySQL Episode 状态投影`);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : '生产状态列表读取失败');
+    } finally {
+      setLoading(false);
     }
-    if (statusFilter !== 'all' && run.status !== statusFilter) {
-      return false;
-    }
-    if (stageFilter !== 'all' && run.currentStage !== stageFilter) {
-      return false;
-    }
-    if (onlyException) {
-      if (run.status !== 'BLOCKED' && run.status !== 'FAILED' && run.status !== 'RETRYING' && run.exceptionType === 'none') {
-        return false;
-      }
-    }
-    return true;
-  });
-
-  // 前端示例操作：仅更新本地 monitor state，不写 Runtime/Queue Authority。
-  const handleTogglePause = (runId: string) => {
-    setRuns((prev) =>
-      prev.map((r) => {
-        if (r.runId === runId) {
-          const isPaused = r.status === 'WAITING' && r.waitingReason === '用户手动暂停';
-          const nextStatus: StoryRunStatus = isPaused ? 'RUNNING' : 'WAITING';
-          const nextReason = isPaused ? undefined : '用户手动暂停';
-          onShowToast(`${r.storyName} 前端示例状态已切换为 ${isPaused ? 'RUNNING' : 'WAITING'} · 未写入 Runtime/Queue Authority`);
-          return {
-            ...r,
-            status: nextStatus,
-            waitingReason: nextReason,
-            lastHeartbeatAgo: '刚刚',
-          };
-        }
-        return r;
-      })
-    );
-  };
-
-  const handleRetryRun = (runId: string) => {
-    setRuns((prev) =>
-      prev.map((r) => {
-        if (r.runId === runId) {
-          onShowToast(`${r.storyName} 前端示例已标记为重试中 · 未派发真实 Retry`);
-          return {
-            ...r,
-            status: 'RUNNING',
-            exceptionSummary: '-',
-            exceptionType: 'none',
-            currentAction: '重新调度生成 Frame',
-            lastHeartbeatAgo: '刚刚',
-          };
-        }
-        return r;
-      })
-    );
-  };
-
-  const handleResetFilter = () => {
-    setSearchKeyword('');
-    setStatusFilter('all');
-    setStageFilter('all');
-    setOnlyException(false);
-    onShowToast('筛选条件已重置');
-  };
-
-  // Heartbeat 心跳状态规则：<15s 正常, 15–30s 弱提示, 30–120s 心跳延迟(黄), >120s 疑似失联(红)
-  const getHeartbeatStatus = (seconds: number) => {
-    if (seconds < 15) return { color: 'text-[var(--success)]', dot: 'bg-[var(--success)]', label: '正常' };
-    if (seconds <= 30) return { color: 'text-[var(--text-secondary)]', dot: 'bg-[var(--text-tertiary)]', label: '弱提示' };
-    if (seconds <= 120) return { color: 'text-[var(--warning)]', dot: 'bg-[var(--warning)]', label: '心跳延迟' };
-    return { color: 'text-[var(--danger)]', dot: 'bg-[var(--danger)]', label: '疑似失联' };
-  };
-
-  // 如果点击查看了某个具体的 Story Run，无缝展示高阶独立全量详情页（尸解仙排障与流水线）
-  if (selectedRunForDetail) {
-    return (
-      <Suspense
-        fallback={
-          <div className="storyos-surface min-h-40 flex items-center justify-center text-[11px] font-mono text-[var(--text-tertiary)]">
-            Loading Story Run Detail…
-          </div>
-        }
-      >
-        <StoryRunDetailView
-          run={selectedRunForDetail}
-          onBack={() => setSelectedRunForDetail(null)}
-          onShowToast={onShowToast}
-          onUpdateRun={(updated) => {
-            setRuns((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
-            setSelectedRunForDetail(updated);
-          }}
-        />
-      </Suspense>
-    );
   }
 
-  const getStageBadge = (label: string) => {
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded-[3px] bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[var(--text-secondary)] text-[11px] font-mono whitespace-nowrap">
-        {label}
-      </span>
-    );
-  };
+  async function inspect(row: RuntimeEpisodeStatus) {
+    setSelectedRef(row.episode_ref);
+    setDetail(undefined);
+    setDetailError(null);
+    setDetailLoading(true);
+    try {
+      setDetail(await runtimeApi.getEpisodeStatus(row.episode_ref));
+    } catch (cause) {
+      setDetailError(cause instanceof Error ? cause.message : 'Episode Full Snapshot 读取失败');
+    } finally {
+      setDetailLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadSummaries();
+    const timer = window.setInterval(() => void loadSummaries(), AUTO_REFRESH_MS);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const stages = useMemo(
+    () => Array.from(new Set(rows.map((row) => row.production_stage).filter((value): value is string => Boolean(value)))).sort(),
+    [rows],
+  );
+
+  const filteredRows = useMemo(() => {
+    const keyword = searchKeyword.trim().toLowerCase();
+    return rows.filter((row) => {
+      if (stageFilter !== 'ALL' && (row.production_stage || 'NO_STATE') !== stageFilter) return false;
+      if (!keyword) return true;
+      return [row.title, row.episode, row.episode_ref, row.business_episode_id, row.episode_id]
+        .some((value) => String(value || '').toLowerCase().includes(keyword));
+    });
+  }, [rows, searchKeyword, stageFilter]);
+
+  const publishReady = rows.filter((row) => row.production_stage === 'PUBLISH_READY').length;
+  const productionPassed = rows.filter((row) => row.production_stage === 'PRODUCTION_PASSED').length;
+  const visualCalibrated = rows.filter((row) => row.production_stage === 'VISUAL_CALIBRATED').length;
+  const missingState = rows.filter((row) => !row.production_stage).length;
 
   return (
-    <div id="storyos-production-monitor-view" className="space-y-4 text-[var(--text-primary)] font-sans pb-16 select-none">
-      {/* 顶部标题与控制栏 (UI Baseline v1: 弱装饰、扁平) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border-subtle)]">
-        <div className="flex items-center gap-3">
-          <h1 className="text-[18px] font-semibold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
-            <span>StoryOS 生产监控台</span>
-            <span className="text-[11px] px-1.5 py-0.5 rounded-[4px] bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border-normal)] font-mono font-normal">
-              Console v1.0
+    <div id="storyos-production-monitor-view" className="space-y-3 pb-12 text-[var(--text-primary)]">
+      <header className="flex flex-col gap-3 border-b border-[var(--border-subtle)] pb-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Production / Runtime Projection</div>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <h1 className="text-[18px] font-semibold tracking-tight">StoryOS 生产监控台</h1>
+            <span className="storyos-status storyos-status--success font-mono">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
+              MYSQL AUTHORITY · READ ONLY
             </span>
-          </h1>
-          <span className="text-xs text-[var(--text-tertiary)] hidden md:inline">
-            Dense Operations Console · 高密度生产调度
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 text-xs font-mono">
-          {/* 自动刷新下拉切换 */}
-          <div className="flex items-center gap-1.5 h-[32px] px-2 rounded-[4px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
-            <span className={`w-1.5 h-1.5 rounded-full ${isRefreshing ? 'bg-[var(--success)] animate-ping' : 'bg-[var(--success)]'}`} />
-            <span className="text-[var(--text-tertiary)]">刷新:</span>
-            <select
-              value={refreshInterval}
-              onChange={(e) => setRefreshInterval(Number(e.target.value))}
-              className="bg-transparent text-[var(--text-primary)] outline-hidden cursor-pointer"
-            >
-              <option value={5} className="bg-[var(--bg-subtle)]">5s</option>
-              <option value={10} className="bg-[var(--bg-subtle)]">10s</option>
-              <option value={30} className="bg-[var(--bg-subtle)]">30s</option>
-              <option value={0} className="bg-[var(--bg-subtle)]">关闭</option>
-            </select>
           </div>
-
+          <p className="mt-1 text-xs text-[var(--text-tertiary)]">
+            主表只读取 TB_EPISODE + TB_EPISODE_STATE；运行细节仅在点击 Full Snapshot 后按需加载。
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono text-[var(--text-tertiary)]">
+            {lastLoadedAt ? `UPDATED ${displayTime(lastLoadedAt)} · AUTO 15s` : 'NOT LOADED'}
+          </span>
           <button
             type="button"
-            onClick={() => {
-              setIsRefreshing(true);
-              setTimeout(() => {
-                setIsRefreshing(false);
-                onShowToast('前端监控视图已刷新 · 当前仍为示例数据');
-              }, 400);
-            }}
-            aria-label="刷新前端监控视图"
-            className="h-[32px] w-[32px] flex items-center justify-center rounded-[4px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer"
-            title="手动刷新"
+            onClick={() => void loadSummaries({ announce: true })}
+            disabled={loading}
+            className="storyos-control h-8 px-2.5 inline-flex items-center gap-1.5 text-[11px] font-mono disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-[var(--text-primary)]' : ''}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+            REFRESH
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* ======================= 1. Operational Status Bar (56–64px，严禁 6 张大 Card 堆砌) ======================= */}
-      <div className="h-[56px] px-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[6px] flex items-center justify-between overflow-x-auto text-xs font-mono">
-        <div className="flex items-center gap-6 shrink-0">
-          <div className="flex items-baseline gap-2">
-            <span className="text-[11px] text-[var(--text-tertiary)]">全部任务</span>
-            <span className="text-[18px] font-semibold text-[var(--text-primary)]">{runs.length}</span>
-          </div>
-
-          <div className="w-[1px] h-4 bg-[var(--border-subtle)]" />
-
-          <div className="flex items-baseline gap-2">
-            <span className="text-[11px] text-[var(--text-tertiary)] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
-              <span>运行中</span>
-            </span>
-            <span className="text-[18px] font-semibold text-[var(--primary)]">
-              {runs.filter(r => r.status === 'RUNNING').length}
-            </span>
-          </div>
-
-          <div className="w-[1px] h-4 bg-[var(--border-subtle)]" />
-
-          <div className="flex items-baseline gap-2">
-            <span className="text-[11px] text-[var(--text-tertiary)] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)]" />
-              <span>等待中</span>
-            </span>
-            <span className="text-[18px] font-semibold text-[var(--warning)]">
-              {runs.filter(r => r.status === 'WAITING').length}
-            </span>
-          </div>
-
-          <div className="w-[1px] h-4 bg-[var(--border-subtle)]" />
-
-          <div className="flex items-baseline gap-2">
-            <span className="text-[11px] text-[var(--text-tertiary)] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)]" />
-              <span>重试中</span>
-            </span>
-            <span className="text-[18px] font-semibold text-[var(--warning)]">
-              {runs.filter(r => r.status === 'RETRYING').length}
-            </span>
-          </div>
-
-          <div className="w-[1px] h-4 bg-[var(--border-subtle)]" />
-
-          <div className="flex items-baseline gap-2">
-            <span className="text-[11px] text-[var(--danger)] font-medium flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--danger)]" />
-              <span>阻塞 (需人工)</span>
-            </span>
-            <span className="text-[18px] font-semibold text-[var(--danger)]">
-              {runs.filter(r => r.status === 'BLOCKED').length}
-            </span>
-          </div>
-
-          <div className="w-[1px] h-4 bg-[var(--border-subtle)]" />
-
-          <div className="flex items-baseline gap-2">
-            <span className="text-[11px] text-[var(--text-tertiary)] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)]" />
-              <span>今日完成</span>
-            </span>
-            <span className="text-[18px] font-semibold text-[var(--text-primary)]">
-              {runs.filter(r => r.status === 'COMPLETED').length + metrics.todayCompletedStories}
-            </span>
-          </div>
+      {error && (
+        <div className="storyos-surface flex items-center gap-2 px-3 py-2 text-xs text-[var(--danger)]">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span>{error}</span>
         </div>
+      )}
 
-        {/* 右侧紧凑型 Worker & Queue 指标 */}
-        <div className="flex items-center gap-4 pl-6 border-l border-[var(--border-subtle)] text-xs text-[var(--text-secondary)] shrink-0">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[var(--text-tertiary)]">并发:</span>
-            <span className="text-[var(--primary)] font-semibold">4 / 4 Slots</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[var(--text-tertiary)]">队列:</span>
-            <span className="text-[var(--warning)] font-semibold">{metrics.runtimeHealth.queueTotal} Queued</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[var(--text-tertiary)]">底层健康:</span>
-            <span className="text-[var(--success)]">100% OK</span>
-          </div>
-        </div>
-      </div>
+      <section className="storyos-surface min-h-14 px-4 py-2 flex items-center gap-6 overflow-x-auto text-xs font-mono">
+        <div className="shrink-0"><span className="text-[var(--text-tertiary)]">ACTIVE EPISODES</span> <strong className="ml-2 text-lg text-[var(--text-primary)]">{rows.length}</strong></div>
+        <div className="h-4 w-px bg-[var(--border-subtle)] shrink-0" />
+        <div className="shrink-0"><span className="text-[var(--text-tertiary)]">PUBLISH READY</span> <strong className="ml-2 text-[var(--success)]">{publishReady}</strong></div>
+        <div className="h-4 w-px bg-[var(--border-subtle)] shrink-0" />
+        <div className="shrink-0"><span className="text-[var(--text-tertiary)]">PRODUCTION PASSED</span> <strong className="ml-2 text-[var(--info)]">{productionPassed}</strong></div>
+        <div className="h-4 w-px bg-[var(--border-subtle)] shrink-0" />
+        <div className="shrink-0"><span className="text-[var(--text-tertiary)]">VISUAL CALIBRATED</span> <strong className="ml-2 text-[var(--primary)]">{visualCalibrated}</strong></div>
+        <div className="h-4 w-px bg-[var(--border-subtle)] shrink-0" />
+        <div className="shrink-0"><span className="text-[var(--text-tertiary)]">MISSING STATE</span> <strong className={`ml-2 ${missingState ? 'text-[var(--warning)]' : 'text-[var(--text-secondary)]'}`}>{missingState}</strong></div>
+      </section>
 
-      {/* ======================= 2. Toolbar (高度 44–48px，控件 32px，radius 4px) ======================= */}
-      <div className="min-h-[44px] px-3 py-1.5 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[6px] flex flex-col xl:flex-row xl:items-center justify-between gap-2 text-xs">
-        <div className="flex items-center gap-2 flex-1 min-w-0 w-full xl:w-auto overflow-x-auto">
-          {/* 搜索输入框 */}
-          <div className="relative flex-1 min-w-[160px] max-w-xs">
-            <Search className="w-3.5 h-3.5 text-[var(--text-tertiary)] absolute left-2.5 top-2.5 pointer-events-none" />
-            <input
-              type="text"
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-              placeholder="搜索剧集名称 / 任务 ID..."
-              className="w-full h-[32px] bg-[var(--bg-workspace)] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-[4px] pl-8 pr-3 text-xs outline-hidden focus:border-[var(--primary)] placeholder:text-[var(--text-disabled)] font-mono transition-colors"
-            />
-          </div>
-
-          {/* 状态下拉筛选 */}
-          <div className="flex items-center gap-1.5">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-[32px] bg-[var(--bg-workspace)] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-[4px] px-2.5 text-xs outline-hidden cursor-pointer"
-            >
-              <option value="all">全部状态</option>
-              <option value="RUNNING">RUNNING (运行中)</option>
-              <option value="WAITING">WAITING (等待中)</option>
-              <option value="RETRYING">RETRYING (重试中)</option>
-              <option value="BLOCKED">BLOCKED (已阻塞)</option>
-              <option value="COMPLETED">COMPLETED (已完成)</option>
-            </select>
-          </div>
-
-          {/* 阶段下拉筛选 */}
-          <div className="flex items-center gap-1.5">
+      <section className="storyos-surface overflow-hidden">
+        <div className="min-h-11 px-3 py-1.5 border-b border-[var(--border-subtle)] flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-1 items-center gap-2 min-w-0">
+            <div className="relative flex-1 min-w-[180px] max-w-sm">
+              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+              <input
+                value={searchKeyword}
+                onChange={(event) => setSearchKeyword(event.target.value)}
+                placeholder="搜索标题 / namespace / business id"
+                className="storyos-control h-8 w-full pl-8 pr-3 text-xs font-mono outline-none focus:border-[var(--focus)]"
+              />
+            </div>
             <select
               value={stageFilter}
-              onChange={(e) => setStageFilter(e.target.value)}
-              className="h-[32px] bg-[var(--bg-workspace)] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-[4px] px-2.5 text-xs outline-hidden cursor-pointer"
+              onChange={(event) => setStageFilter(event.target.value)}
+              className="storyos-control h-8 min-w-[180px] px-2 text-xs font-mono"
+              aria-label="生产阶段筛选"
             >
-              <option value="all">全部阶段</option>
-              <option value="CREATE">Create</option>
-              <option value="STORY_LOCK">Story Lock</option>
-              <option value="STORYBOARD">Storyboard</option>
-              <option value="CHARACTER_CONTRACT">Character Contract</option>
-              <option value="VISUAL_LOCK">Visual Lock</option>
-              <option value="PRODUCTION">Production</option>
-              <option value="REVIEW">Review</option>
-              <option value="COMPLETED">Completed</option>
+              <option value="ALL">ALL STAGES</option>
+              <option value="NO_STATE">NO STATE</option>
+              {stages.map((stage) => <option key={stage} value={stage}>{stage}</option>)}
             </select>
           </div>
-
-          {/* 只看异常复选框 */}
-          <label className="flex items-center gap-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer select-none ml-2">
-            <input
-              type="checkbox"
-              checked={onlyException}
-              onChange={(e) => setOnlyException(e.target.checked)}
-              className="w-3.5 h-3.5 rounded-[3px] border-[var(--border-normal)] bg-[var(--bg-workspace)] text-[var(--danger)] focus:ring-0 cursor-pointer accent-[var(--danger)]"
-            />
-            <span className="text-xs flex items-center gap-1">
-              <ShieldAlert className="w-3.5 h-3.5 text-[var(--warning)]" />
-              <span>只看异常</span>
-            </span>
-          </label>
-        </div>
-
-        {/* 查询与重置按钮 */}
-        <div className="flex items-center gap-2 font-mono shrink-0 self-end xl:self-auto">
-          <button
-            type="button"
-            onClick={handleResetFilter}
-            className="h-[32px] px-3 rounded-[4px] bg-[var(--bg-workspace)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer text-xs"
-          >
-            重置
-          </button>
-          <button
-            type="button"
-            onClick={() => onShowToast(`已过滤 ${filteredRuns.length} 项 Story 生产实例`)}
-            className="h-[32px] px-3 rounded-[4px] bg-[var(--bg-subtle)] border border-[var(--border-normal)] text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-colors cursor-pointer text-xs flex items-center gap-1.5 font-medium"
-          >
-            <Filter className="w-3 h-3 text-[var(--primary)]" />
-            <span>应用筛选</span>
-          </button>
-        </div>
-      </div>
-
-      {/* ======================= 3. Data Table (Core: Header 36px, Row 44px, Cell X 12px, Cell Y 8px) ======================= */}
-      <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[6px] overflow-hidden">
-        <div className="h-[36px] px-3 bg-[var(--bg-workspace)] border-b border-[var(--border-subtle)] flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 text-[var(--text-secondary)] font-medium">
-            <span>Story 调度主表</span>
-            <span className="text-[var(--text-tertiary)] font-mono text-[11px]">({filteredRuns.length} 个实例)</span>
-          </div>
-          <div className="text-[11px] text-[var(--text-tertiary)] font-mono">
-            加权总进度: 前置 (35%) + 生产帧 (45%) + 审核发布 (20%)
-          </div>
+          <span className="text-[10px] font-mono text-[var(--text-tertiary)]">{filteredRows.length} / {rows.length} ROWS</span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="h-[36px] border-b border-[var(--border-subtle)] bg-[var(--bg-workspace)] text-[var(--text-tertiary)] font-mono text-[11px] uppercase tracking-wider font-medium">
+          <table className="w-full min-w-[980px] text-left text-xs">
+            <thead className="h-9 border-b border-[var(--border-subtle)] bg-[var(--bg-workspace)] text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)]">
+              <tr>
                 <th className="px-3 w-10 text-center">#</th>
-                <th className="px-3">剧集名称</th>
-                <th className="px-3">阶段</th>
-                <th className="px-3">状态</th>
-                <th className="px-3 w-36">总进度</th>
-                <th className="px-3">帧数</th>
-                <th className="px-3">当前动作</th>
-                <th className="px-3">Run ID</th>
-                <th className="px-3">耗时</th>
-                <th className="px-3">心跳</th>
-                <th className="px-3">异常摘要</th>
-                <th className="px-3 text-right">操作</th>
+                <th className="px-3">Episode</th>
+                <th className="px-3">Namespace</th>
+                <th className="px-3">Stage</th>
+                <th className="px-3">State Source</th>
+                <th className="px-3">Updated</th>
+                <th className="px-3 text-right">Inspect</th>
               </tr>
             </thead>
-            <tbody className="font-sans text-xs">
-              {filteredRuns.length === 0 ? (
-                <tr>
-                  <td colSpan={12} className="py-12 text-center text-[var(--text-tertiary)] font-mono">
-                    未检索到符合条件的 Story 生产实例
-                  </td>
-                </tr>
-              ) : (
-                filteredRuns.map((run, index) => {
-                  const hb = getHeartbeatStatus(run.heartbeatSeconds);
-                  const isSelected = selectedRunForDetail?.id === run.id;
-                  return (
-                    <tr
-                      key={run.id}
-                      className={`h-[42px] border-b border-[var(--border-subtle)] transition-colors group cursor-pointer relative ${
-                        isSelected
-                          ? 'bg-[var(--bg-muted)]'
-                          : 'hover:bg-[var(--bg-subtle)]'
-                      }`}
-                      onClick={() => setSelectedRunForDetail(run)}
-                    >
-                      {/* 序号与选中指示条 */}
-                      <td className="px-3 text-center text-[var(--text-tertiary)] font-mono text-[11px] relative">
-                        {isSelected && (
-                          <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-[var(--primary)]" />
-                        )}
-                        {index + 1}
-                      </td>
-
-                      {/* 剧集名称 */}
-                      <td className="px-3 font-medium text-[var(--text-primary)]">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[13px] font-medium text-[var(--text-primary)] tracking-tight truncate max-w-[160px]">
-                            {run.storyName}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* 当前阶段 */}
-                      <td className="px-3">
-                        {getStageBadge(run.stageLabel)}
-                      </td>
-
-                      {/* 状态 Badge (Dot + 文字，克制无大胶囊) */}
-                      <td className="px-3 whitespace-nowrap">
-                        <StatusBadge
-                          status={run.status}
-                          label={run.status === 'WAITING' && run.waitingReason ? `Waiting (${run.waitingReason})` : undefined}
-                        />
-                      </td>
-
-                      {/* 总进度 */}
-                      <td className="px-3">
-                        <div className="space-y-1 min-w-[100px]">
-                          <div className="flex items-center justify-between font-mono text-[11px] text-[var(--text-secondary)]">
-                            <span className="text-[var(--text-primary)] font-semibold">{run.progressPercent}%</span>
-                          </div>
-                          <div className="w-full h-[3px] rounded-[2px] bg-[var(--border-subtle)] overflow-hidden">
-                            <div
-                              className={`h-full rounded-[2px] transition-[width] duration-300 ${
-                                run.status === 'BLOCKED'
-                                   ? 'bg-[var(--danger)]'
-                                   : run.progressPercent === 100
-                                   ? 'bg-[var(--success)]'
-                                   : 'bg-[var(--primary)]'
-                              }`}
-                              style={{ width: `${run.progressPercent}%` }}
-                            />
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Frame 进度 */}
-                      <td className="px-3 font-mono text-xs text-[var(--text-secondary)] whitespace-nowrap">
-                        <span className="text-[var(--text-primary)]">{run.completedFrames}</span> / {run.totalFrames}
-                      </td>
-
-                      {/* 当前动作 */}
-                      <td className="px-3 text-xs text-[var(--text-secondary)] font-mono truncate max-w-[130px]" title={run.currentAction}>
-                        {run.currentAction}
-                      </td>
-
-                      {/* Run ID */}
-                      <td className="px-3 font-mono text-[var(--text-tertiary)] text-[11px] whitespace-nowrap">
-                        {run.runId}
-                      </td>
-
-                      {/* 耗时 */}
-                      <td className="px-3 font-mono text-[var(--text-secondary)] text-[11px] whitespace-nowrap">
-                        {run.duration}
-                      </td>
-
-                      {/* 心跳监控 */}
-                      <td className="px-3 font-mono text-[11px] whitespace-nowrap">
-                        <span className={`inline-flex items-center gap-1.5 ${hb.color}`} title={`心跳规则: ${hb.label}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${hb.dot}`} />
-                          <span>{run.lastHeartbeatAgo}</span>
-                        </span>
-                      </td>
-
-                      {/* 异常摘要 */}
-                      <td className="px-3 font-mono text-[11px]">
-                        {run.exceptionSummary !== '-' ? (
-                          <span className="text-[var(--danger)] font-medium bg-[var(--danger)]/10 px-1.5 py-0.5 rounded-[3px] border border-[var(--danger)]/20">
-                            {run.exceptionSummary}
-                          </span>
-                        ) : (
-                          <span className="text-[var(--text-disabled)]">-</span>
-                        )}
-                      </td>
-
-                      {/* 操作栏 (Ghost / Secondary 紧凑按钮) */}
-                      <td className="px-3 text-right space-x-1.5 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedRunForDetail(run)}
-                          className="h-[26px] px-2 rounded-[3px] bg-[var(--bg-subtle)] border border-[var(--border-normal)] text-[var(--text-primary)] hover:bg-[var(--bg-muted)] font-mono text-[11px] cursor-pointer font-medium transition-colors"
-                        >
-                          详情
-                        </button>
-
-                        {run.status === 'RUNNING' && (
-                          <button
-                            type="button"
-                            onClick={() => handleTogglePause(run.runId)}
-                            className="h-[26px] px-2 rounded-[3px] bg-transparent border border-transparent hover:border-[var(--border-subtle)] hover:bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-mono text-[11px] cursor-pointer transition-colors"
-                          >
-                            暂停
-                          </button>
-                        )}
-
-                        {run.status === 'WAITING' && run.waitingReason === '用户手动暂停' && (
-                          <button
-                            type="button"
-                            onClick={() => handleTogglePause(run.runId)}
-                            className="h-[26px] px-2 rounded-[3px] bg-[var(--success)]/10 border border-[var(--success)]/30 text-[var(--success)] hover:bg-[var(--success)]/20 font-mono text-[11px] cursor-pointer transition-colors"
-                          >
-                            恢复
-                          </button>
-                        )}
-
-                        {run.status === 'BLOCKED' && (
-                          <button
-                            type="button"
-                            onClick={() => handleRetryRun(run.runId)}
-                            className="h-[26px] px-2 rounded-[3px] bg-[var(--danger)]/10 text-[var(--danger)] border border-[var(--danger)]/30 hover:bg-[var(--danger)]/20 font-mono text-[11px] cursor-pointer font-medium transition-colors"
-                          >
-                            重试
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
+            <tbody>
+              {filteredRows.length === 0 ? (
+                <tr><td colSpan={7} className="px-3 py-10 text-center font-mono text-[var(--text-tertiary)]">{loading ? '正在读取 MySQL Episode Summary…' : '没有匹配的生产 Episode。'}</td></tr>
+              ) : filteredRows.map((row, index) => {
+                const selected = selectedRef === row.episode_ref;
+                return (
+                  <tr
+                    key={row.episode_id || row.episode_ref}
+                    className={`h-11 border-b border-[var(--border-subtle)] last:border-b-0 hover:bg-[var(--bg-hover)] ${selected ? 'bg-[var(--bg-selected)]' : ''}`}
+                  >
+                    <td className="px-3 text-center font-mono text-[var(--text-tertiary)]">{index + 1}</td>
+                    <td className="px-3">
+                      <div className="font-medium text-[var(--text-primary)]">{row.title || row.episode || row.business_episode_id || 'Untitled'}</div>
+                      <div className="mt-0.5 text-[10px] font-mono text-[var(--text-tertiary)]">{row.business_episode_id || row.episode_id || '—'}</div>
+                    </td>
+                    <td className="px-3 max-w-[280px] truncate font-mono text-[11px] text-[var(--text-secondary)]" title={row.episode_ref}>{row.episode_ref}</td>
+                    <td className={`px-3 font-mono text-[11px] font-medium ${stageTone(row.production_stage)}`}>{row.production_stage || 'NO_STATE'}</td>
+                    <td className="px-3 font-mono text-[11px] text-[var(--text-secondary)]">{row.state_source || '—'}</td>
+                    <td className="px-3 font-mono text-[11px] text-[var(--text-tertiary)] whitespace-nowrap">{displayTime(row.updated_at)}</td>
+                    <td className="px-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => void inspect(row)}
+                        disabled={detailLoading && selected}
+                        className="storyos-control h-7 px-2 text-[10px] font-mono disabled:opacity-50"
+                      >
+                        {detailLoading && selected ? 'LOADING…' : 'FULL SNAPSHOT'}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
-      {/* ======================= 4. Asymmetric Operations Strip (非对称工业台：左侧槽位矩阵，右侧事件排障流水) ======================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 text-xs">
-        {/* 左侧 7 列：并发槽位与队列排队流水 (Active Slots & Queue Pipeline) */}
-        <div className="lg:col-span-7 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[6px] p-3 flex flex-col justify-between">
-          <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
-            <div className="flex items-center gap-2">
-              <Cpu className="w-3.5 h-3.5 text-[var(--primary)]" />
-              <span className="text-[var(--text-primary)] font-medium text-xs">GPU Worker 槽位调度矩阵</span>
-              <span className="text-[10px] font-mono text-[var(--primary)] bg-[var(--primary)]/10 px-1.5 py-0.2 rounded-[3px] border border-[var(--primary)]/20">
-                4 / 4 满载
-              </span>
+      {selectedRef && (
+        <section className="storyos-surface overflow-hidden">
+          <header className="h-10 px-3 border-b border-[var(--border-subtle)] flex items-center justify-between">
+            <div className="min-w-0">
+              <span className="text-xs font-medium text-[var(--text-primary)]">Runtime Inspector</span>
+              <span className="ml-2 text-[10px] font-mono text-[var(--text-tertiary)]">{selectedRef}</span>
             </div>
-            <div className="text-[11px] font-mono text-[var(--text-tertiary)]">
-              队列积压: <span className="text-[var(--warning)] font-semibold">{metrics.queueStats.totalWaiting}</span> 待消费
+            <button type="button" onClick={() => { setSelectedRef(null); setDetail(undefined); setDetailError(null); }} className="h-7 w-7 inline-flex items-center justify-center text-[var(--text-tertiary)] hover:text-[var(--text-primary)]" aria-label="关闭 Runtime Inspector">
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </header>
+          {detailLoading ? (
+            <div className="px-3 py-8 text-center text-[11px] font-mono text-[var(--text-tertiary)]">正在读取 Full Runtime Snapshot…</div>
+          ) : detailError ? (
+            <div className="px-3 py-5 text-xs text-[var(--danger)]">{detailError}</div>
+          ) : detail ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 border-b border-[var(--border-subtle)]">
+              <div className="px-3 py-3 border-r border-[var(--border-subtle)]"><div className="text-[10px] uppercase text-[var(--text-tertiary)]">Execution</div><div className={`mt-1 font-mono text-xs font-medium ${executionTone(detail.execution_status)}`}>{detail.execution_status || '—'}</div></div>
+              <div className="px-3 py-3 border-r border-[var(--border-subtle)]"><div className="text-[10px] uppercase text-[var(--text-tertiary)]">Current Action</div><div className="mt-1 font-mono text-xs text-[var(--text-primary)]">{detail.current_action || detail.next_step || '—'}</div></div>
+              <div className="px-3 py-3 border-r border-[var(--border-subtle)]"><div className="text-[10px] uppercase text-[var(--text-tertiary)]">Images</div><div className="mt-1 font-mono text-xs text-[var(--text-primary)]">{detail.image_progress ? `${detail.image_progress.generated_frames ?? 0}/${detail.image_progress.expected_frames ?? '—'}` : '—'}</div></div>
+              <div className="px-3 py-3"><div className="text-[10px] uppercase text-[var(--text-tertiary)]">Heartbeat</div><div className="mt-1 font-mono text-xs text-[var(--text-primary)]">{detail.heartbeat?.health || '—'}</div></div>
+              <div className="px-3 py-3 border-r border-t border-[var(--border-subtle)]"><div className="text-[10px] uppercase text-[var(--text-tertiary)]">Needs User</div><div className={`mt-1 font-mono text-xs ${detail.needs_user ? 'text-[var(--danger)]' : 'text-[var(--text-secondary)]'}`}>{detail.needs_user ? 'YES' : 'NO'}</div></div>
+              <div className="px-3 py-3 border-r border-t border-[var(--border-subtle)]"><div className="text-[10px] uppercase text-[var(--text-tertiary)]">Blocking Reason</div><div className="mt-1 font-mono text-xs text-[var(--text-secondary)]">{detail.blocking_reason || '—'}</div></div>
+              <div className="px-3 py-3 border-r border-t border-[var(--border-subtle)]"><div className="text-[10px] uppercase text-[var(--text-tertiary)]">Observed</div><div className="mt-1 font-mono text-[11px] text-[var(--text-tertiary)]">{displayTime(detail.observed_at)}</div></div>
+              <div className="px-3 py-3 border-t border-[var(--border-subtle)]"><div className="text-[10px] uppercase text-[var(--text-tertiary)]">Warnings</div><div className="mt-1 font-mono text-xs text-[var(--warning)]">{detail.consistency_warnings?.length ? detail.consistency_warnings.join(', ') : '—'}</div></div>
             </div>
+          ) : null}
+          <div className="px-3 py-2 text-[10px] font-mono text-[var(--text-tertiary)]">
+            Full Snapshot 是按需只读投影；本页不提供 Pause / Retry / Stage Transition 写操作。
           </div>
-
-          {/* 4 个槽位横向排布 */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 my-2.5 font-mono text-[11px]">
-            {metrics.activeWorkers.map((w) => (
-              <div key={w.id} className="p-2.5 rounded-[4px] bg-[var(--bg-workspace)] border border-[var(--border-subtle)] hover:border-[var(--border-normal)] transition-colors flex flex-col justify-between">
-                <div className="flex items-center justify-between text-[var(--text-tertiary)]">
-                  <span className="text-[var(--text-primary)] font-semibold">{w.id}</span>
-                  <span className="inline-flex items-center gap-1 text-[10px] text-[var(--success)]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)]" />
-                    <span>BUSY</span>
-                  </span>
-                </div>
-                <div className="truncate text-[var(--text-secondary)] font-sans mt-1 text-[11px]">{w.storyName}</div>
-                <div className="text-[10px] text-[var(--primary)] mt-0.5">{w.currentFrame}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* 队列进度与分布 */}
-          <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between font-mono text-[11px]">
-            <div className="flex items-center gap-3">
-              <span className="text-[var(--text-tertiary)]">分级流转:</span>
-              <span className="text-[var(--text-secondary)]">生成中 <span className="text-[var(--primary)] font-semibold">4</span></span>
-              <span className="text-[var(--text-tertiary)]">·</span>
-              <span className="text-[var(--text-secondary)]">等待锁 <span className="text-[var(--warning)] font-semibold">18</span></span>
-              <span className="text-[var(--text-tertiary)]">·</span>
-              <span className="text-[var(--text-secondary)]">自动退避 <span className="text-[var(--warning)] font-semibold">2</span></span>
-            </div>
-            <div className="text-[10px] text-[var(--text-tertiary)]">
-              调度器健康度: <span className="text-[var(--success)]">99.8%</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 右侧 5 列：异常分流拦截与系统 Trace 流 (Exceptions & Telemetry Stream) */}
-        <div className="lg:col-span-5 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[6px] p-3 flex flex-col justify-between">
-          <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
-            <div className="flex items-center gap-2">
-              <ShieldAlert className="w-3.5 h-3.5 text-[var(--danger)]" />
-              <span className="text-[var(--text-primary)] font-medium text-xs">异常拦截与实时 Trace</span>
-            </div>
-            <div className="flex items-center gap-2 font-mono text-[10px]">
-              <span className="text-[var(--danger)] bg-[var(--danger)]/10 px-1.5 py-0.5 rounded-[3px] font-medium border border-[var(--danger)]/20">
-                {metrics.exceptionStats.manualActionRequired} 需人工处理
-              </span>
-              <span className="text-[var(--warning)] bg-[var(--warning)]/10 px-1.5 py-0.5 rounded-[3px] border border-[var(--warning)]/20">
-                {metrics.exceptionStats.autoRecovering} 自愈中
-              </span>
-            </div>
-          </div>
-
-          {/* 实时 Trace 事件日志行 (工控风格) */}
-          <div className="space-y-1.5 my-2 font-mono text-[11px]">
-            {metrics.recentEvents.slice(0, 3).map((ev, i) => (
-              <div key={i} className="flex items-center gap-2 p-1.5 rounded-[3px] bg-[var(--bg-workspace)] border border-[var(--border-subtle)]">
-                <span className="text-[var(--text-tertiary)] shrink-0 text-[10px]">{ev.time}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shrink-0" />
-                <span className="text-[var(--text-primary)] font-sans truncate shrink-0 max-w-[90px]">{ev.story}</span>
-                <span className="text-[var(--text-secondary)] truncate text-[10px]">{ev.text}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-[10px] font-mono text-[var(--text-tertiary)]">
-            <span>日志缓冲: 实时就绪</span>
-            <span className="text-[var(--success)]">Trace 延迟 &lt; 80ms</span>
-          </div>
-        </div>
-      </div>
+        </section>
+      )}
     </div>
   );
 };

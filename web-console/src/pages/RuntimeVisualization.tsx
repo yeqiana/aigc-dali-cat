@@ -155,13 +155,16 @@ export default function RuntimeVisualization() {
                     const expected = row.image_progress?.expected_frames ?? 0;
                     return (
                       <tr key={row.episode_ref} className="h-11 border-b border-[var(--border-subtle)] last:border-b-0 hover:bg-[var(--bg-hover)]">
-                        <td className="px-3 font-mono text-[var(--text-primary)]">{row.episode_ref}</td>
+                        <td className="px-3">
+                          <div className="text-[var(--text-primary)]">{row.title || row.episode || row.episode_ref}</div>
+                          <div className="font-mono text-[10px] text-[var(--text-tertiary)]">{row.episode_ref}</div>
+                        </td>
                         <td className="px-3 font-mono">{row.production_stage ?? '-'}</td>
-                        <td className="px-3 font-mono">{row.execution_status}</td>
+                        <td className="px-3 font-mono">{row.execution_status ?? '—'}</td>
                         <td className="px-3 font-mono text-[var(--text-secondary)]">{row.current_action ?? row.next_step ?? '-'}</td>
-                        <td className="px-3 font-mono">{generated}/{expected || '-'}</td>
-                        <td className="px-3 font-mono text-[var(--text-secondary)]">{row.heartbeat?.health ?? '-'}</td>
-                        <td className="px-3 font-mono">{row.needs_user ? 'NEEDS_USER' : '-'}</td>
+                        <td className="px-3 font-mono">{row.image_progress ? `${generated}/${expected || '—'}` : '—'}</td>
+                        <td className="px-3 font-mono text-[var(--text-secondary)]">{row.heartbeat?.health ?? '—'}</td>
+                        <td className="px-3 font-mono">{row.needs_user === undefined ? '—' : row.needs_user ? 'NEEDS_USER' : '-'}</td>
                       </tr>
                     );
                   })}

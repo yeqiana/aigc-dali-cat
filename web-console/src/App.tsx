@@ -5,7 +5,7 @@ import { HeaderBar } from './components/HeaderBar';
 // Views
 import { ProductionMonitorView } from './components/views/ProductionMonitorView';
 
-import { MOCK_EPISODES } from './mockData';
+import { DEMO_EPISODES } from './mockData';
 import { Episode, NavigationTab, BatchItem } from './types';
 import { Search, Bell } from 'lucide-react';
 
@@ -81,8 +81,8 @@ function ConsoleSectionFallback({ label }: { label: string }) {
 }
 
 function ProductionConsole() {
-  const [episodes, setEpisodes] = useState<Episode[]>(MOCK_EPISODES);
-  const [activeEpisode, setActiveEpisode] = useState<Episode>(MOCK_EPISODES[0]);
+  const [episodes, setEpisodes] = useState<Episode[]>(DEMO_EPISODES);
+  const [activeEpisode, setActiveEpisode] = useState<Episode>(DEMO_EPISODES[0]);
   const [currentTab, setCurrentTab] = useState<NavigationTab>('production_monitor');
   const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -106,7 +106,7 @@ function ProductionConsole() {
   // Keyboard shortcut Ctrl/Cmd + K for quick search & Escape to dismiss
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k' && currentTab === 'workbench') {
         e.preventDefault();
         setSearchModalOpen(prev => !prev);
       } else if (e.key === 'Escape') {
@@ -116,7 +116,7 @@ function ProductionConsole() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [currentTab]);
 
   // 前端演示批次调度；正式生产阶段只由 StoryOS canonical state transition 推进。
   const handleQuickGenerateNextBatch = () => {
@@ -217,6 +217,7 @@ function ProductionConsole() {
       <div className="storyos-workspace flex-1 flex flex-col h-screen overflow-hidden relative min-w-0">
         {/* 顶部极简标题栏 */}
         <HeaderBar
+          currentTab={currentTab}
           activeEpisode={activeEpisode}
           allEpisodes={episodes}
           onSelectEpisode={(ep) => setActiveEpisode(ep)}
@@ -247,16 +248,7 @@ function ProductionConsole() {
           {currentTab === 'episodes' && (
             <Suspense fallback={<ConsoleSectionFallback label="Episodes" />}>
               <div className="max-w-4xl mx-auto">
-                <SeriesLibraryView
-                  episodes={episodes}
-                  activeEpisode={activeEpisode}
-                  onSelectEpisode={(ep) => {
-                    setActiveEpisode(ep);
-                    setCurrentTab('workbench');
-                  }}
-                  onGoToWorkbench={() => setCurrentTab('workbench')}
-                  onNewStoryClick={() => setCurrentTab('workbench')}
-                />
+                <SeriesLibraryView />
               </div>
             </Suspense>
           )}
@@ -330,7 +322,7 @@ function ProductionConsole() {
       )}
 
       {/* 5. 全局搜索模态弹窗 (Ctrl + K / 侧边栏搜索) */}
-      {searchModalOpen && (
+      {searchModalOpen && currentTab === 'workbench' && (
         <div
           className="storyos-overlay fixed inset-0 z-50 flex items-start justify-center pt-24 px-4"
           onClick={() => setSearchModalOpen(false)}
@@ -396,7 +388,7 @@ function ProductionConsole() {
       )}
 
       {/* 6. 通知与流水抽屉 */}
-      {notificationsOpen && (
+      {notificationsOpen && currentTab === 'workbench' && (
         <div
           className="storyos-overlay fixed inset-0 z-50 flex justify-end"
           onClick={() => setNotificationsOpen(false)}

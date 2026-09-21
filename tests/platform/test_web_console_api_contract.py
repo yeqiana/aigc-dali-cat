@@ -51,6 +51,36 @@ def test_execution_and_trace_deep_links_auto_query():
     assert "if (id.trim()) void load();" in trace_page
 
 
+def test_production_monitor_uses_real_runtime_projection_not_monitor_mock():
+    monitor = (WEB / "src/components/views/ProductionMonitorView.tsx").read_text(encoding="utf-8")
+    app = (WEB / "src/App.tsx").read_text(encoding="utf-8")
+
+    assert "runtimeApi.listEpisodeStatuses" in monitor
+    assert "runtimeApi.getEpisodeStatus" in monitor
+    assert "MYSQL AUTHORITY · READ ONLY" in monitor
+    assert "mockMonitorData" not in monitor
+    assert "MOCK_STORY_RUNS" not in monitor
+    assert "handleTogglePause" not in monitor
+    assert "handleRetryRun" not in monitor
+    assert "<ProductionMonitorView" in app
+
+
+def test_production_index_and_logs_do_not_fall_back_to_demo_data():
+    series = (WEB / "src/components/views/SeriesLibraryView.tsx").read_text(encoding="utf-8")
+    logs = (WEB / "src/components/views/RuntimeLogsView.tsx").read_text(encoding="utf-8")
+    header = (WEB / "src/components/HeaderBar.tsx").read_text(encoding="utf-8")
+    demo = (WEB / "src/mockData.ts").read_text(encoding="utf-8")
+
+    assert "runtimeApi.listEpisodeStatuses" in series
+    assert "MYSQL AUTHORITY" in series
+    assert "CAPABILITY NOT CONNECTED" in logs
+    assert "SYSTEM_RUNTIME_LOGS" not in logs
+    assert "LOCAL DEMO · NOT AUTHORITY" in header
+    assert "MYSQL AUTHORITY · READ ONLY" in header
+    assert "export const DEMO_EPISODES" in demo
+    assert "SYSTEM_RUNTIME_LOGS" not in demo
+
+
 def test_runtime_console_uses_only_supported_execution_and_trace_endpoints():
     client = (WEB / "src/api/client.ts").read_text(encoding="utf-8")
     execution = (WEB / "src/api/execution.ts").read_text(encoding="utf-8")

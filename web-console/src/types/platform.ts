@@ -78,11 +78,17 @@ export interface TraceRecord {
 
 export interface RuntimeEpisodeStatus {
   schema_version?: number;
+  projection_level?: 'summary' | 'full' | string;
   observed_at?: string;
+  updated_at?: string | null;
+  episode_id?: string;
+  business_episode_id?: string;
   episode?: string;
+  title?: string;
   episode_ref: string;
   production_stage?: string | null;
-  execution_status: string;
+  state_source?: string | null;
+  execution_status?: string;
   blocking_reason?: string | null;
   current_action?: string | null;
   auto_recoverable?: boolean;

@@ -1,7 +1,7 @@
 import { Episode } from './types';
 
-// Web Console 前端示例数据集；仅用于 UI 演示，不是 Episode Authority，也不代表真实生产状态。
-export const MOCK_EPISODES: Episode[] = [
+// Workbench-only local demo dataset. Never use this collection for production monitoring or Episode Authority.
+export const DEMO_EPISODES: Episode[] = [
   {
     id: 'ep-04-fogvilla',
     code: 'EP-04',
@@ -327,11 +327,4 @@ export const MOCK_EPISODES: Episode[] = [
     },
     frameReviews: [],
   },
-];
-
-export const SYSTEM_RUNTIME_LOGS = [
-  { time: '14:55:02', level: 'INFO', module: 'Scheduler', message: 'StoryOS 引擎接收调度指令：批次出图 #04 (Frame 16-20)' },
-  { time: '14:55:04', level: 'INFO', module: 'RuntimeRequest', message: '校验模型: gpt-image-2, quality: high, aspect: 4:5' },
-  { time: '14:56:10', level: 'SUCCESS', module: 'QualityGate', message: 'Frame #16-#17 质检通过' },
-  { time: '14:57:12', level: 'WARN', module: 'QualityGate', message: 'Frame #18 检测到倒影微瑕，建议 Inpaint 修复' },
 ];
