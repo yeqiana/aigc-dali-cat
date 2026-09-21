@@ -4,6 +4,8 @@ import inspect
 import json
 import re
 from dataclasses import dataclass
+from datetime import datetime, timezone
+from enum import Enum
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Callable, Mapping
 from urllib.parse import parse_qs, urlsplit
@@ -15,6 +17,20 @@ from platform.api.contracts import (
     StartWorkflowRunRequest,
 )
 from platform.api.routes import PLATFORM_API_ROUTES, RouteDefinition
+
+
+def _json_default(value: Any) -> Any:
+    """Serialize supported platform fact primitives without masking bad payloads."""
+    if isinstance(value, datetime):
+        normalized = value
+        if normalized.tzinfo is None:
+            normalized = normalized.replace(tzinfo=timezone.utc)
+        else:
+            normalized = normalized.astimezone(timezone.utc)
+        return normalized.isoformat(timespec="milliseconds")
+    if isinstance(value, Enum):
+        return value.value
+    raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
 
 
 REQUEST_FACTORIES: dict[str, Callable[[Mapping[str, Any]], Any]] = {
@@ -203,7 +219,7 @@ class PlatformApiRequestHandler(BaseHTTPRequestHandler):
         self._send(status, payload)
 
     def _send(self, status: int, payload: Mapping[str, Any]) -> None:
-        raw = json.dumps(dict(payload), ensure_ascii=False).encode("utf-8")
+        raw = json.dumps(dict(payload), ensure_ascii=False, default=_json_default).encode("utf-8")
         self.send_response(status)
         self._cors_headers()
         self.send_header("Content-Type", "application/json; charset=utf-8")

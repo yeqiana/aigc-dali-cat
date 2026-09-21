@@ -7,6 +7,9 @@ import threading
 import urllib.error
 import urllib.request
 
+from platform.agent.application import AgentApplicationService
+from platform.agent.runtime import AgentContext, AgentExecutionPlan, AgentRuntime, SkillExecutionStep
+from platform.api.contracts import CreateAgentRequest
 from platform.api.controllers import AgentApiController, ExecutionApiController, RuntimeStatusApiController, TraceApiController
 from platform.api.default_app import build_default_controllers
 from platform.api.http_server import PlatformApiDispatcher, build_http_server
@@ -93,6 +96,50 @@ def test_real_loopback_http_server_serves_platform_api_envelope_and_cors():
             assert response.headers["Access-Control-Allow-Origin"] == "*"
             assert payload["code"] == "OK"
             assert payload["data"]["id"] == "agent-1"
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+def test_real_loopback_http_server_serializes_runtime_trace_datetimes():
+    runtime = AgentRuntime()
+    runtime.skill_adapter.register("trace.probe", lambda input_data, context, invoke_tool: {"ok": True})
+    service = AgentApplicationService(runtime)
+    AgentApiController(service).create_agent(
+        CreateAgentRequest(agent_code="trace-agent", agent_name="Trace Agent", agent_type="TEST")
+    )
+    executed = service.execute_plan(
+        AgentExecutionPlan(
+            agent_code="trace-agent",
+            agent_version="v1",
+            context=AgentContext(task_id="trace-http-probe"),
+            steps=(SkillExecutionStep(skill_code="trace.probe"),),
+        )
+    )
+
+    server = build_http_server(
+        {
+            "ExecutionApiController": ExecutionApiController(service),
+            "TraceApiController": TraceApiController(service),
+        },
+        host="127.0.0.1",
+        port=0,
+    )
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        host, port = server.server_address
+        with urllib.request.urlopen(
+            f"http://{host}:{port}/api/v1/traces/{executed['trace_id']}",
+            timeout=5,
+        ) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+            assert response.status == 200
+            assert payload["data"]["trace_id"] == executed["trace_id"]
+            assert payload["data"]["status"] == "SUCCESS"
+            assert payload["data"]["started_at"].endswith("+00:00")
+            assert payload["data"]["ended_at"].endswith("+00:00")
     finally:
         server.shutdown()
         server.server_close()
