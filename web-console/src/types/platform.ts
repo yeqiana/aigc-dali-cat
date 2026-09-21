@@ -11,11 +11,6 @@ export interface ExecutionRecord {
   trace_id: string;
 }
 
-export interface WorkflowRun {
-  id: string;
-  status: string;
-}
-
 export interface MemoryItem {
   id: string;
   content: string;
