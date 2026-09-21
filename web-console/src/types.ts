@@ -7,39 +7,6 @@ export type ProductionStage =
   | 'PUBLISHED'        // 已发布
   | 'DATA_REVIEWED';   // 数据复盘
 
-// 生产执行进度子状态（包含在“生产通过”前的运行进度面板中，不作为正式阶段）
-export type ProductionSubStage =
-  | 'IN_PRODUCTION'    // 生产中
-  | 'BATCH_DISPATCH'   // 批次出图
-  | 'FRAME_QA'         // 逐帧审核
-  | 'REWORK_INPAINT';  // 返修中
-
-export interface StageStep {
-  id: ProductionStage;
-  label: string;
-  agent: string;
-  description: string;
-  updatedAt: string;
-  status: 'completed' | 'in_progress' | 'pending' | 'blocked';
-  source: '未接真实投影' | '示例数据';
-  notes?: string;
-  subProgressLabel?: string; // e.g. "生产中 · 批次出图 (24/32 帧)"
-}
-
-export interface WorkspaceSyncStatus {
-  connected: boolean;
-  repoUrl?: string;
-  branch?: string;
-  lastSyncedAt?: string;
-  readOnlyFiles: {
-    episodeState: boolean;
-    runtimeRequest: boolean;
-    productionLedger: boolean;
-    frameReviews: boolean;
-    releaseManifest: boolean;
-  };
-}
-
 export interface RuntimeRequest {
   imageModel: string;          // 'gpt-image-2'
   quality: 'high' | 'standard';// 'high'
@@ -52,46 +19,6 @@ export interface RuntimeRequest {
   negativePrompt?: string;
   notes?: string;
   resolution?: string;
-}
-
-export interface CharacterContract {
-  id: string;
-  name: string;
-  role: string;
-  avatar: string;
-  faceEmbeddingId: string;
-  consistencyScore: number;
-  fixedCostume: string;
-  lightingAnchor: string;
-  archetype: string;
-  negativeConstraints: string[];
-  status: 'locked' | 'calibrating' | 'draft';
-}
-
-export interface VisualLockAsset {
-  id: string;
-  title: string;
-  category: '主角面容基准' | '主场景环境' | '关键叙事道具' | '高潮光影基调';
-  imageUrl: string;
-  aspectRatio: string;
-  focalLength: string;
-  colorGrade: string;
-  consistencyDelta: string;
-  isLocked: boolean;
-  version: string;
-  promptSnippet: string;
-}
-
-export interface StoryboardBeat {
-  id: string;
-  beatIndex: number;
-  sceneName: string;
-  act: '第一幕：建立日常' | '第二幕：异常初显' | '第三幕：危机爆发' | '终局：反转回响';
-  shotType: string;
-  lighting: string;
-  narration: string;
-  status: 'approved' | 'in_review' | 'rendering' | 'queued' | 'needs_rework';
-  thumbnailUrl?: string;
 }
 
 export interface BatchItem {
@@ -133,30 +60,6 @@ export interface FrameReviewResult {
   comment: string;
 }
 
-export interface PreflightCheckItem {
-  id: string;
-  title: string;
-  category: '资产合规' | '视觉一致性' | '音画同步' | '审查与分发';
-  status: 'passed' | 'warning' | 'blocking' | 'pending';
-  detail: string;
-  automated: boolean;
-}
-
-export interface PerformanceData {
-  timeframe: '6h' | '24h' | '48h' | '7d';
-  label: string;
-  completionRate: string;
-  completionDelta: string;
-  views: string;
-  viewsDelta: string;
-  shareVelocity: string;
-  retentionSpikeBeat: string;
-  retentionDropBeat: string;
-  viralityIndex: string;
-  audienceSentiment: string;
-  trendData: { time: string; value: number }[];
-}
-
 export interface Episode {
   id: string;
   code: string;
@@ -172,13 +75,8 @@ export interface Episode {
   coverImage: string;
   updatedAt: string;
   runtimeRequest: RuntimeRequest;
-  characters: CharacterContract[];
-  visualLocks: VisualLockAsset[];
-  storyboardBeats: StoryboardBeat[];
   currentBatch: BatchQueue;
   frameReviews: FrameReviewResult[];
-  preflightChecks: PreflightCheckItem[];
-  performance: Record<'6h' | '24h' | '48h' | '7d', PerformanceData>;
 }
 
 export type NavigationTab =
