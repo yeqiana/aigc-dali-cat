@@ -216,7 +216,7 @@ export const BatchQueueCard: React.FC<BatchQueueCardProps> = ({
               <div className="aspect-[4/5] max-h-[380px] bg-black rounded-lg overflow-hidden mx-auto">
                 <img
                   src={activeItemModal.imageUrl}
-                  alt=""
+                  alt={`Frame #${activeItemModal.frameIndex} 前端示例渲染预览`}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />

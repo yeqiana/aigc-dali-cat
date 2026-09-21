@@ -267,11 +267,11 @@ export const SettingsView: React.FC = () => {
 
               {/* 底部微型滚动箭头指示 */}
               <div className="px-2 py-1 bg-[var(--bg-workspace)] border-t border-[var(--border-subtle)] flex items-center justify-between text-[var(--text-disabled)]">
-                <div className="flex items-center gap-1">
-                  <ChevronLeft className="w-3 h-3 hover:text-[var(--text-secondary)] cursor-pointer" />
+                <div className="flex items-center gap-1" aria-hidden="true">
+                  <ChevronLeft className="w-3 h-3 text-[var(--text-disabled)]" />
                 </div>
-                <div className="flex items-center gap-1">
-                  <ChevronRight className="w-3 h-3 hover:text-[var(--text-secondary)] cursor-pointer" />
+                <div className="flex items-center gap-1" aria-hidden="true">
+                  <ChevronRight className="w-3 h-3 text-[var(--text-disabled)]" />
                 </div>
               </div>
             </div>
@@ -284,8 +284,9 @@ export const SettingsView: React.FC = () => {
                 <div className="flex items-center gap-2.5">
                   <button
                     type="button"
-                    onClick={() => showToast('已打开主题导入窗口')}
-                    className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                    disabled
+                    title="主题导入尚未接入文件解析能力"
+                    className="text-[var(--text-disabled)] cursor-not-allowed"
                   >
                     导入
                   </button>
@@ -342,27 +343,25 @@ export const SettingsView: React.FC = () => {
               {/* 3. 背景颜色 */}
               <div className="py-3 flex items-center justify-between">
                 <span className="text-[var(--text-primary)] font-medium">背景</span>
-                <button
-                  type="button"
-                  onClick={() => showToast('背景色已锁定: #0B0D10')}
-                  className="storyos-control h-8 px-3 font-mono text-xs flex items-center gap-2 cursor-pointer"
+                <div
+                  className="storyos-control h-8 px-3 font-mono text-xs flex items-center gap-2"
+                  aria-label="背景色锁定为 #0B0D10"
                 >
                   <span className="w-2.5 h-2.5 rounded-full border border-[var(--border-strong)] bg-[var(--bg-app)]" />
                   <span>{bgColor}</span>
-                </button>
+                </div>
               </div>
 
               {/* 4. 前景颜色 */}
               <div className="py-3 flex items-center justify-between">
                 <span className="text-[var(--text-primary)] font-medium">前景</span>
-                <button
-                  type="button"
-                  onClick={() => showToast('前景色已锁定: #F1F3F5')}
-                  className="storyos-control h-8 px-3 font-mono font-semibold text-xs flex items-center gap-2 cursor-pointer"
+                <div
+                  className="storyos-control h-8 px-3 font-mono font-semibold text-xs flex items-center gap-2"
+                  aria-label="前景色锁定为 #F1F3F5"
                 >
                   <span className="w-2.5 h-2.5 rounded-full border border-[var(--border-strong)] bg-[var(--text-primary)]" />
                   <span>{fgColor}</span>
-                </button>
+                </div>
               </div>
 
               {/* 5. UI 字体 */}

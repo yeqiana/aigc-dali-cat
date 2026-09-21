@@ -90,7 +90,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     return true;
   });
 
-  // 操作处理：暂停 / 恢复 / 重试
+  // 前端示例操作：仅更新本地 monitor state，不写 Runtime/Queue Authority。
   const handleTogglePause = (runId: string) => {
     setRuns((prev) =>
       prev.map((r) => {
@@ -98,7 +98,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
           const isPaused = r.status === 'WAITING' && r.waitingReason === '用户手动暂停';
           const nextStatus: StoryRunStatus = isPaused ? 'RUNNING' : 'WAITING';
           const nextReason = isPaused ? undefined : '用户手动暂停';
-          onShowToast(`${r.storyName} ${isPaused ? '已恢复生产' : '已暂停任务'}`);
+          onShowToast(`${r.storyName} 前端示例状态已切换为 ${isPaused ? 'RUNNING' : 'WAITING'} · 未写入 Runtime/Queue Authority`);
           return {
             ...r,
             status: nextStatus,
@@ -115,7 +115,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     setRuns((prev) =>
       prev.map((r) => {
         if (r.runId === runId) {
-          onShowToast(`${r.storyName} 异常重试已触发`);
+          onShowToast(`${r.storyName} 前端示例已标记为重试中 · 未派发真实 Retry`);
           return {
             ...r,
             status: 'RUNNING',

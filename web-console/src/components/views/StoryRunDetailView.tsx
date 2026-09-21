@@ -118,13 +118,13 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
     setTimeout(() => setCopiedText(null), 2000);
   };
 
-  // 执行 Frame 状态变更高危操作
+  // 前端示例 Frame 状态操作：只更新本地 run state，不写 Production/Review Authority。
   const executeDangerousAction = () => {
     if (!confirmAction) return;
     const { type, frame } = confirmAction;
 
     if (type === 'REGENERATE') {
-      onShowToast(`已为 ${frame.frameCode} 触发重新生成 (Attempt 重置)`);
+      onShowToast(`${frame.frameCode} 前端示例已标记为重新生成 · 未派发真实 Provider 请求`);
       if (onUpdateRun) {
         const updatedFrames = run.frames.map(f => {
           if (f.frameNo === frame.frameNo) {
@@ -145,7 +145,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
         setSelectedFrame(updatedFrames.find(f => f.frameNo === frame.frameNo) || null);
       }
     } else if (type === 'SKIP') {
-      onShowToast(`已跳过 ${frame.frameCode} 并写入占位插槽`);
+      onShowToast(`${frame.frameCode} 前端示例已标记为 SKIP · 未写入生产占位`);
       if (onUpdateRun) {
         const updatedFrames = run.frames.map(f => {
           if (f.frameNo === frame.frameNo) {
@@ -167,7 +167,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
         setSelectedFrame(updatedFrames.find(f => f.frameNo === frame.frameNo) || null);
       }
     } else if (type === 'FORCE_PASS') {
-      onShowToast(`已强制将 ${frame.frameCode} 标记为 PASSED`);
+      onShowToast(`${frame.frameCode} 前端示例已标记为 PASSED · 未写入 Review Authority`);
       if (onUpdateRun) {
         const updatedFrames = run.frames.map(f => {
           if (f.frameNo === frame.frameNo) {
@@ -189,7 +189,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
         setSelectedFrame(updatedFrames.find(f => f.frameNo === frame.frameNo) || null);
       }
     } else if (type === 'CANCEL') {
-      onShowToast(`已取消 ${frame.frameCode} 的当前渲染任务`);
+      onShowToast(`${frame.frameCode} 前端示例已回退为 QUEUED · 未中断真实 Worker`);
       if (onUpdateRun) {
         const updatedFrames = run.frames.map(f => {
           if (f.frameNo === frame.frameNo) {
@@ -211,9 +211,9 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
     setConfirmAction(null);
   };
 
-  // 立即重试当前 Frame（如 Frame 09）
+  // 前端示例立即重试；不派发真实 Queue/Provider 请求。
   const handleImmediateRetry = (frame: FrameDetailItem) => {
-    onShowToast(`已立即为 ${frame.frameCode} 派发重试请求`);
+    onShowToast(`${frame.frameCode} 前端示例已标记为重试中 · 未派发真实 Retry`);
     if (onUpdateRun) {
       const updatedFrames = run.frames.map(f => {
         if (f.frameNo === frame.frameNo) {
@@ -293,7 +293,21 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => onShowToast('已导出当前 Run 生产审计报告 (JSON)')}
+              onClick={() => {
+                const previewReport = {
+                  authority: 'FRONTEND_DEMO_NON_AUTHORITY',
+                  run,
+                  note: 'Local Web Console preview only. This export is not a StoryOS production audit artifact.',
+                };
+                const blob = new Blob([JSON.stringify(previewReport, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const anchor = document.createElement('a');
+                anchor.href = url;
+                anchor.download = `${run.runId}-web-console-preview.json`;
+                anchor.click();
+                URL.revokeObjectURL(url);
+                onShowToast('已下载本地 Run preview JSON · 非生产审计 Artifact');
+              }}
               className="px-2.5 py-1 rounded-[4px] bg-[var(--bg-subtle)] border border-[var(--border-normal)] hover:bg-[var(--bg-muted)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-xs font-mono flex items-center gap-1.5 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
@@ -301,7 +315,9 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => onShowToast(run.status === 'RUNNING' ? '已向集群下发暂停信号' : '已恢复生产调度')}
+              onClick={() => onShowToast(run.status === 'RUNNING'
+                ? '前端示例：未向集群下发暂停信号'
+                : '前端示例：未向 Runtime 下发恢复调度')}
               className={`px-3 py-1 rounded-[4px] border text-xs font-mono font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
                 run.status === 'RUNNING'
                   ? 'bg-[var(--warning)]/10 border-[var(--warning)]/30 text-[var(--warning)] hover:bg-[var(--warning)]/20'
@@ -831,8 +847,10 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                       </div>
                       <button
                         type="button"
-                        onClick={() => onShowToast(`正在下载产物: ${art.name}`)}
-                        className="p-1 hover:text-[var(--text-primary)] text-[var(--text-tertiary)] rounded-[4px] hover:bg-[var(--bg-muted)] cursor-pointer"
+                        disabled
+                        aria-label={`${art.name} 下载暂不可用`}
+                        title="未接 Artifact 下载 API"
+                        className="p-1 text-[var(--text-disabled)] rounded-[4px] cursor-not-allowed"
                       >
                         <Download className="w-3.5 h-3.5" />
                       </button>
@@ -1113,8 +1131,10 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                       <span className="text-[var(--text-tertiary)]">Artifact:</span>
                       <button
                         type="button"
-                        onClick={() => onShowToast(`正在下载产物: ${selectedFrame.artifactName}`)}
-                        className="text-[var(--success)] hover:underline flex items-center gap-1 cursor-pointer"
+                        disabled
+                        aria-label={`${selectedFrame.artifactName} 下载暂不可用`}
+                        title="未接 Artifact 下载 API"
+                        className="text-[var(--text-disabled)] flex items-center gap-1 cursor-not-allowed"
                       >
                         <span>{selectedFrame.artifactName}</span>
                         <span className="text-[var(--text-tertiary)]">({selectedFrame.artifactSize || '4.2 MB'})</span>
@@ -1448,10 +1468,10 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
             </div>
 
             <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-sans">
-              {confirmAction.type === 'REGENERATE' && '重新生成将覆盖当前分镜的产物图，并重新向推理引擎发起出图任务。'}
-              {confirmAction.type === 'SKIP' && '跳过该帧将写入系统预设占位，并推进流水线至下一个分镜。后续可在分镜审核中单独补发。'}
-              {confirmAction.type === 'FORCE_PASS' && '强制放行将跳过机器一致性质检，并直接标记该帧为 PASSED 状态。'}
-              {confirmAction.type === 'CANCEL' && '取消本次渲染将立即中断 Worker 端的生成管线，并将任务回退至排队态。'}
+              {confirmAction.type === 'REGENERATE' && '前端示例：仅把该帧本地状态改为 GENERATING，不覆盖产物，也不向 Provider 发起请求。'}
+              {confirmAction.type === 'SKIP' && '前端示例：仅把该帧本地状态标记为 SKIP/PASSED，不写入系统占位或推进真实流水线。'}
+              {confirmAction.type === 'FORCE_PASS' && '前端示例：仅修改本地展示状态，不跳过真实机器质检，也不写入 Review Authority。'}
+              {confirmAction.type === 'CANCEL' && '前端示例：仅把本地状态回退为 QUEUED，不中断 Worker 或真实生成管线。'}
             </p>
 
             <div className="flex justify-end gap-2 pt-1 font-mono text-xs">
