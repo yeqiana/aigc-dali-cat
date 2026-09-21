@@ -5,7 +5,13 @@ from typing import Any, Protocol
 
 
 class RuntimeEventRepository(Protocol):
-    def list_recent(self, *, limit: int = 50, offset: int = 0) -> list[dict]: ...
+    def list_recent(
+        self,
+        *,
+        limit: int = 50,
+        offset: int = 0,
+        episode_id: str | None = None,
+    ) -> list[dict]: ...
 
 
 class RuntimeEventApiService:
@@ -46,10 +52,23 @@ class RuntimeEventApiService:
             "task_id": row.get("task_id"),
         }
 
-    def list_events(self, *, limit: int | str = 50, offset: int | str = 0) -> dict[str, Any]:
+    def list_events(
+        self,
+        *,
+        limit: int | str = 50,
+        offset: int | str = 0,
+        episode_id: str = "",
+    ) -> dict[str, Any]:
         page_limit = self._page_value(limit, name="limit", minimum=1, maximum=100)
         page_offset = self._page_value(offset, name="offset", minimum=0, maximum=10000)
-        rows = self._repository.list_recent(limit=page_limit + 1, offset=page_offset)
+        normalized_episode_id = str(episode_id or "").strip()
+        if len(normalized_episode_id) > 64:
+            raise ValueError("episode_id must be at most 64 characters")
+        rows = self._repository.list_recent(
+            limit=page_limit + 1,
+            offset=page_offset,
+            episode_id=normalized_episode_id or None,
+        )
         selected = rows[:page_limit]
         return {
             "items": [self._item(row) for row in selected],
@@ -57,4 +76,5 @@ class RuntimeEventApiService:
             "limit": page_limit,
             "offset": page_offset,
             "has_more": len(rows) > page_limit,
+            "episode_id": normalized_episode_id or None,
         }

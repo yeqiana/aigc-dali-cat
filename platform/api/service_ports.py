@@ -46,4 +46,10 @@ class RuntimeStatusServicePort(Protocol):
 
 
 class RuntimeEventServicePort(Protocol):
-    def list_events(self, *, limit: int | str = 50, offset: int | str = 0) -> dict[str, Any]: ...
+    def list_events(
+        self,
+        *,
+        limit: int | str = 50,
+        offset: int | str = 0,
+        episode_id: str = "",
+    ) -> dict[str, Any]: ...

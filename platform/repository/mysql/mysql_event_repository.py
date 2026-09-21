@@ -34,6 +34,10 @@ _EVENT_RECENT_SQL = (
     "SELECT * FROM TB_EVENT_LOG "
     "ORDER BY OCCURRED_TIME DESC, EVENT_ID DESC LIMIT %s OFFSET %s"
 )
+_EVENT_RECENT_BY_EPISODE_SQL = (
+    "SELECT * FROM TB_EVENT_LOG WHERE EPISODE_ID=%s "
+    "ORDER BY OCCURRED_TIME DESC, EVENT_ID DESC LIMIT %s OFFSET %s"
+)
 _EVENT_AGGREGATE_SQL = (
     "SELECT * FROM TB_EVENT_LOG "
     "WHERE EVENT_TYPE=%s AND AGGREGATE_TYPE=%s AND AGGREGATE_ID=%s "
@@ -91,7 +95,20 @@ class MySqlEventRepository:
     def list_all(self) -> list[dict]:
         return _normalize_rows(self._conn().query_all(_EVENT_LIST_SQL))
 
-    def list_recent(self, *, limit: int = 50, offset: int = 0) -> list[dict]:
+    def list_recent(
+        self,
+        *,
+        limit: int = 50,
+        offset: int = 0,
+        episode_id: str | None = None,
+    ) -> list[dict]:
+        if episode_id:
+            return _normalize_rows(
+                self._conn().query_all(
+                    _EVENT_RECENT_BY_EPISODE_SQL,
+                    (str(episode_id), int(limit), int(offset)),
+                )
+            )
         return _normalize_rows(
             self._conn().query_all(_EVENT_RECENT_SQL, (int(limit), int(offset)))
         )

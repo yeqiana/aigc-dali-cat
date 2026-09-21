@@ -399,8 +399,8 @@ def test_runtime_events_api_is_bounded_read_only_projection():
         def __init__(self):
             self.calls = []
 
-        def list_recent(self, *, limit=50, offset=0):
-            self.calls.append((limit, offset))
+        def list_recent(self, *, limit=50, offset=0, episode_id=None):
+            self.calls.append((limit, offset, episode_id))
             return [
                 {
                     "event_id": "evt_2",
@@ -425,7 +425,7 @@ def test_runtime_events_api_is_bounded_read_only_projection():
     status, payload = dispatcher.dispatch("GET", "/api/v1/runtime/events?limit=1&offset=50")
 
     assert status == 200
-    assert repository.calls == [(2, 50)]
+    assert repository.calls == [(2, 50, None)]
     page = payload["data"]
     assert page["count"] == 1
     assert page["offset"] == 50
@@ -438,6 +438,14 @@ def test_runtime_events_api_is_bounded_read_only_projection():
     status, payload = dispatcher.dispatch("GET", "/api/v1/runtime/events?limit=101&offset=0")
     assert status == 400
     assert payload["code"] == "INVALID_REQUEST"
+
+    status, payload = dispatcher.dispatch(
+        "GET",
+        "/api/v1/runtime/events?limit=1&offset=0&episode_id=EPU_2",
+    )
+    assert status == 200
+    assert repository.calls[-1] == (2, 0, "EPU_2")
+    assert payload["data"]["episode_id"] == "EPU_2"
 
 
 def test_healthz_is_available_without_business_controllers():

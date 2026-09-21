@@ -79,9 +79,20 @@ class RuntimeEventApiController:
     def __init__(self, service: RuntimeEventServicePort) -> None:
         self._service = service
 
-    def list_events(self, limit: str = "50", offset: str = "0") -> ApiResponse[dict]:
+    def list_events(
+        self,
+        limit: str = "50",
+        offset: str = "0",
+        episode_id: str = "",
+    ) -> ApiResponse[dict]:
         try:
-            return ApiResponse.ok(self._service.list_events(limit=limit, offset=offset))
+            return ApiResponse.ok(
+                self._service.list_events(
+                    limit=limit,
+                    offset=offset,
+                    episode_id=episode_id,
+                )
+            )
         except ValueError as exc:
             return ApiResponse.error("INVALID_REQUEST", str(exc))
 

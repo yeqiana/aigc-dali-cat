@@ -18,12 +18,14 @@ export const RuntimeLogsView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  const [episodeDraft, setEpisodeDraft] = useState('');
+  const [episodeId, setEpisodeId] = useState('');
 
-  async function load(pageOffset = offset) {
+  async function load(pageOffset = offset, activeEpisodeId = episodeId) {
     setLoading(true);
     setError(null);
     try {
-      const page = await runtimeApi.listEvents(PAGE_SIZE, pageOffset);
+      const page = await runtimeApi.listEvents(PAGE_SIZE, pageOffset, activeEpisodeId);
       setRows(page.items);
       setOffset(page.offset);
       setHasMore(page.has_more);
@@ -35,8 +37,8 @@ export const RuntimeLogsView: React.FC = () => {
   }
 
   useEffect(() => {
-    void load(offset);
-  }, [offset]);
+    void load(offset, episodeId);
+  }, [offset, episodeId]);
 
   const filtered = useMemo(() => {
     const keyword = query.trim().toLowerCase();
@@ -67,7 +69,7 @@ export const RuntimeLogsView: React.FC = () => {
         <div className="flex items-center gap-2">
           <button type="button" onClick={() => setOffset((value) => Math.max(0, value - PAGE_SIZE))} disabled={loading || offset === 0} className="storyos-control h-8 px-2.5 text-[11px] font-mono disabled:opacity-50">PREV</button>
           <button type="button" onClick={() => setOffset((value) => value + PAGE_SIZE)} disabled={loading || !hasMore} className="storyos-control h-8 px-2.5 text-[11px] font-mono disabled:opacity-50">NEXT</button>
-          <button type="button" onClick={() => void load(offset)} disabled={loading} className="storyos-control h-8 px-2.5 inline-flex items-center gap-1.5 text-[11px] font-mono disabled:opacity-50">
+          <button type="button" onClick={() => void load(offset, episodeId)} disabled={loading} className="storyos-control h-8 px-2.5 inline-flex items-center gap-1.5 text-[11px] font-mono disabled:opacity-50">
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
             REFRESH
           </button>
@@ -83,12 +85,44 @@ export const RuntimeLogsView: React.FC = () => {
 
       <section className="storyos-surface overflow-hidden">
         <div className="min-h-11 px-3 py-1.5 border-b border-[var(--border-subtle)] flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--text-tertiary)]" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索 event / aggregate / episode / trace / task" className="storyos-control h-8 w-full pl-8 pr-3 text-xs font-mono outline-none focus:border-[var(--focus)]" />
+          <div className="flex flex-1 flex-col gap-2 lg:flex-row">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="当前页搜索 event / aggregate / trace / task" className="storyos-control h-8 w-full pl-8 pr-3 text-xs font-mono outline-none focus:border-[var(--focus)]" />
+            </div>
+            <form
+              className="flex items-center gap-1.5"
+              onSubmit={(event) => {
+                event.preventDefault();
+                setOffset(0);
+                setEpisodeId(episodeDraft.trim());
+              }}
+            >
+              <input
+                value={episodeDraft}
+                onChange={(event) => setEpisodeDraft(event.target.value)}
+                placeholder="Episode ID · server filter"
+                className="storyos-control h-8 w-[250px] max-w-full px-2.5 text-xs font-mono outline-none focus:border-[var(--focus)]"
+                aria-label="Runtime Event Episode ID 服务端筛选"
+              />
+              <button type="submit" className="storyos-control h-8 px-2.5 text-[11px] font-mono">APPLY</button>
+              {episodeId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEpisodeDraft('');
+                    setOffset(0);
+                    setEpisodeId('');
+                  }}
+                  className="storyos-control h-8 px-2.5 text-[11px] font-mono"
+                >
+                  CLEAR
+                </button>
+              )}
+            </form>
           </div>
           <span className="text-[10px] font-mono text-[var(--text-tertiary)]">
-            PAGE {Math.floor(offset / PAGE_SIZE) + 1} · {rows.length ? `${offset + 1}-${offset + rows.length}` : '0'} · FILTERED {filtered.length}{hasMore ? ' · MORE AVAILABLE' : ''}
+            {episodeId ? `EP ${episodeId} · ` : ''}PAGE {Math.floor(offset / PAGE_SIZE) + 1} · {rows.length ? `${offset + 1}-${offset + rows.length}` : '0'} · FILTERED {filtered.length}{hasMore ? ' · MORE AVAILABLE' : ''}
           </span>
         </div>
 

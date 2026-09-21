@@ -87,3 +87,17 @@ def test_mysql_event_repository_lists_recent_events_with_bounded_page():
     sql, params = connection.queried[-1]
     assert "ORDER BY OCCURRED_TIME DESC, EVENT_ID DESC" in sql
     assert params == (51, 50)
+
+
+def test_mysql_event_repository_lists_recent_events_by_episode_with_existing_index_shape():
+    connection = FakeConnection()
+    connection.rows = [{"EVENT_ID": "evt_ep", "EPISODE_ID": "EPU_1"}]
+    repository = MySqlEventRepository(connection)
+
+    rows = repository.list_recent(limit=11, offset=10, episode_id="EPU_1")
+
+    assert rows[0]["episode_id"] == "EPU_1"
+    sql, params = connection.queried[-1]
+    assert "WHERE EPISODE_ID=%s" in sql
+    assert "ORDER BY OCCURRED_TIME DESC, EVENT_ID DESC" in sql
+    assert params == ("EPU_1", 11, 10)

@@ -24,9 +24,12 @@ export const runtimeApi = {
       `/api/v1/runtime/statuses?limit=${limit}&offset=${offset}`,
     );
   },
-  listEvents(limit = 50, offset = 0) {
+  listEvents(limit = 50, offset = 0, episodeId = '') {
+    const episodeQuery = episodeId
+      ? `&episode_id=${encodeURIComponent(episodeId)}`
+      : '';
     return apiClient.get<RuntimeEventPage>(
-      `/api/v1/runtime/events?limit=${limit}&offset=${offset}`,
+      `/api/v1/runtime/events?limit=${limit}&offset=${offset}${episodeQuery}`,
     );
   },
 };

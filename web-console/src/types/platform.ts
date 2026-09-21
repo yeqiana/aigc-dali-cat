@@ -140,4 +140,5 @@ export interface RuntimeEventPage {
   limit: number;
   offset: number;
   has_more: boolean;
+  episode_id?: string | null;
 }

@@ -84,6 +84,8 @@ def test_production_index_and_logs_do_not_fall_back_to_demo_data():
     assert "setOffset((value) => value + PAGE_SIZE)" in series
     assert "runtimeApi.listEvents" in logs
     assert "MYSQL TB_EVENT_LOG · READ ONLY" in logs
+    assert "runtimeApi.listEvents(PAGE_SIZE, pageOffset, activeEpisodeId)" in logs
+    assert "Episode ID · server filter" in logs
     assert "SYSTEM_RUNTIME_LOGS" not in logs
     assert "LOCAL DEMO · NOT AUTHORITY" in header
     assert "MYSQL AUTHORITY · READ ONLY" in header
@@ -108,6 +110,7 @@ def test_runtime_console_uses_only_supported_execution_and_trace_endpoints():
     assert "getTrace(nextExecution.trace_id)" in runtime_page
     assert "/api/v1/runtime/statuses?limit=${limit}&offset=${offset}" in runtime
     assert "/api/v1/runtime/events?limit=${limit}&offset=${offset}" in runtime
+    assert "encodeURIComponent(episodeId)" in runtime
     assert "listEpisodeStatuses(pageSize, offset)" in runtime_page
     assert "loadEpisodeStatuses(episodeStatusOffset + pageSize)" in runtime_page
     assert "Math.max(0, episodeStatusOffset - pageSize)" in runtime_page
