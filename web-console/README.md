@@ -45,11 +45,9 @@ npm run build
 - `/executions`：Execution Explorer
 - `/traces`：Trace Explorer
 - `/memory`：Memory Console
-- `/projects`：Project Console
 - `/agents`：Agent Console
-- `/plugins`：Plugin Registry Console
 
-Marketplace 暂未暴露：当前后端没有可用的 Marketplace catalog/API 契约，前端不保留假入口。
+Project / Plugin / Marketplace 暂未暴露：当前默认 Platform HTTP composition 没有这些可用 controller/API 契约，前端不保留假入口。
 
 ## Docker
 

@@ -22,12 +22,20 @@ def test_web_console_uses_one_platform_api_base_url_contract():
 def test_main_console_routes_use_real_backend_backed_pages_only():
     app = (WEB / "src/App.tsx").read_text(encoding="utf-8")
     dashboard = (WEB / "src/pages/Dashboard.tsx").read_text(encoding="utf-8")
-    assert "import Dashboard from './pages/Dashboard';" in app
-    assert "import Agents from './pages/Agents';" in app
-    assert "import Memory from './pages/Memory';" in app
-    assert 'path="/" element={<Dashboard />}' in app
-    assert 'path="/agents" element={<Agents />}' in app
-    assert 'path="/memory" element={<Memory />}' in app
+    assert "lazy(() => import('./pages/Dashboard'))" in app
+    assert "lazy(() => import('./pages/Agents'))" in app
+    assert "lazy(() => import('./pages/Memory'))" in app
+    assert "lazy(() => import('./pages/ExecutionExplorer'))" in app
+    assert "lazy(() => import('./pages/TraceExplorer'))" in app
+    assert "lazy(() => import('./pages/RuntimeVisualization'))" in app
+    assert "{ path: '/platform', Component: PlatformDashboard }" in app
+    assert "{ path: '/agents', Component: AgentsConsole }" in app
+    assert "{ path: '/memory', Component: MemoryConsole }" in app
+    assert "{ path: '/executions', Component: ExecutionExplorer }" in app
+    assert "{ path: '/traces', Component: TraceExplorer }" in app
+    assert "{ path: '/runtime', Component: RuntimeVisualization }" in app
+    assert "/projects" not in app
+    assert "/plugins" not in app
     assert '/workflows' not in app
     assert "apiGet<Health>('/healthz')" in dashboard
 

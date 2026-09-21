@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Activity, Boxes, Brain, GitBranch, PlugZap, Workflow } from 'lucide-react';
+import { Activity, Brain, GitBranch, Workflow } from 'lucide-react';
 import { apiGet } from '../api/client';
 
 type Health = { status?: string };
@@ -19,8 +19,6 @@ export default function Dashboard() {
     { href: '/executions', label: 'Executions', desc: '按 Execution ID 查询事实记录', Icon: Workflow },
     { href: '/traces', label: 'Traces', desc: '按 Trace ID 查询链路记录', Icon: GitBranch },
     { href: '/memory', label: 'Memory', desc: '检索 Experience / Memory Store', Icon: Brain },
-    { href: '/plugins', label: 'Plugins', desc: '查看 Plugin Registry', Icon: PlugZap },
-    { href: '/projects', label: 'Projects', desc: '查看 Platform Project Context', Icon: Boxes },
   ];
 
   return (

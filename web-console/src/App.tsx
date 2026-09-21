@@ -12,10 +12,8 @@ import { Search, X, CheckCircle2, AlertCircle, Bell, Clock } from 'lucide-react'
 const PlatformDashboard = lazy(() => import('./pages/Dashboard'));
 const AgentsConsole = lazy(() => import('./pages/Agents'));
 const MemoryConsole = lazy(() => import('./pages/Memory'));
-const ProjectConsole = lazy(() => import('./pages/ProjectConsole'));
 const ExecutionExplorer = lazy(() => import('./pages/ExecutionExplorer'));
 const TraceExplorer = lazy(() => import('./pages/TraceExplorer'));
-const PluginConsole = lazy(() => import('./pages/PluginConsole'));
 const RuntimeVisualization = lazy(() => import('./pages/RuntimeVisualization'));
 const StatusFlowBanner = lazy(() => import('./components/StatusFlowBanner').then((module) => ({ default: module.StatusFlowBanner })));
 const ActivityStream = lazy(() => import('./components/ActivityStream').then((module) => ({ default: module.ActivityStream })));
@@ -33,10 +31,8 @@ const BACKEND_ROUTE_CONTRACT = [
   { path: '/platform', Component: PlatformDashboard },
   { path: '/agents', Component: AgentsConsole },
   { path: '/memory', Component: MemoryConsole },
-  { path: '/projects', Component: ProjectConsole },
   { path: '/executions', Component: ExecutionExplorer },
   { path: '/traces', Component: TraceExplorer },
-  { path: '/plugins', Component: PluginConsole },
   { path: '/runtime', Component: RuntimeVisualization },
 ] as const;
 
