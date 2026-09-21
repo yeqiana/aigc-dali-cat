@@ -4,8 +4,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Copy,
-  Download,
   Palette,
   Sliders,
   Terminal,
@@ -23,8 +21,8 @@ export const SettingsView: React.FC = () => {
   // 2. 主题详细配置
   const [darkThemePreset, setDarkThemePreset] = useState('Codex');
   const [accentColor, setAccentColor] = useState('默认');
-  const [bgColor, setBgColor] = useState('#0B0D10');
-  const [fgColor, setFgColor] = useState('#F1F3F5');
+  const bgColor = '#0B0D10';
+  const fgColor = '#F1F3F5';
   const [uiFont, setUiFont] = useState('系统默认');
   const [uiFontWeight, setUiFontWeight] = useState('常规');
   const [contentFont, setContentFont] = useState('与界面字体相同');

@@ -7,7 +7,7 @@ import { ProductionMonitorView } from './components/views/ProductionMonitorView'
 
 import { MOCK_EPISODES } from './mockData';
 import { Episode, NavigationTab, BatchItem } from './types';
-import { Search, X, CheckCircle2, AlertCircle, Bell, Clock } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
 
 const PlatformDashboard = lazy(() => import('./pages/Dashboard'));
 const AgentsConsole = lazy(() => import('./pages/Agents'));
@@ -124,7 +124,6 @@ function ProductionConsole() {
     setTimeout(() => {
       setIsGeneratingBatch(false);
       const nextCompleted = Math.min(activeEpisode.totalFrames, activeEpisode.completedFrames + 5);
-      const nextPercent = Math.round((nextCompleted / activeEpisode.totalFrames) * 100);
 
       const newItems: BatchItem[] = [21, 22, 23, 24, 25].map((idx) => ({
         id: `b5-f${idx}`,
@@ -240,12 +239,6 @@ function ProductionConsole() {
             <div className="w-full">
               <ProductionMonitorView
                 onShowToast={showToast}
-                onSelectStoryRun={(run) => {
-                  const matchEp = episodes.find(e => e.title === run.storyName);
-                  if (matchEp) {
-                    setActiveEpisode(matchEp);
-                  }
-                }}
               />
             </div>
           )}
@@ -331,7 +324,6 @@ function ProductionConsole() {
         <Suspense fallback={null}>
           <ContextPanel
             activeEpisode={activeEpisode}
-            onClose={() => setContextPanelOpen(false)}
             onShowToast={showToast}
           />
         </Suspense>

@@ -1,4 +1,4 @@
-import { Episode, NavigationTab } from './types';
+import { Episode } from './types';
 
 // Web Console 前端示例数据集；仅用于 UI 演示，不是 Episode Authority，也不代表真实生产状态。
 export const MOCK_EPISODES: Episode[] = [

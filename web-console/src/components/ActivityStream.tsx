@@ -5,11 +5,7 @@ import {
   Check,
   Play,
   ChevronRight,
-  Layers,
-  CheckCircle2,
-  AlertCircle,
   Wand2,
-  Eye
 } from 'lucide-react';
 import { Episode, BatchItem } from '../types';
 

@@ -3,9 +3,7 @@ import {
   Clapperboard,
   Search,
   Plus,
-  ArrowRight,
-  Check,
-  FolderOpen
+  ArrowRight
 } from 'lucide-react';
 import { Episode } from '../../types';
 

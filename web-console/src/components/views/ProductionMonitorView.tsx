@@ -1,49 +1,27 @@
 import React, { lazy, Suspense, useState, useEffect } from 'react';
 import {
-  Play,
-  Pause,
-  RotateCcw,
   Search,
   Filter,
   RefreshCw,
-  Maximize2,
-  Bell,
-  User,
-  CheckCircle2,
-  AlertCircle,
-  Clock,
-  MoreHorizontal,
-  ArrowRight,
-  Flame,
   Cpu,
-  Database,
-  Layers,
-  X,
-  ChevronRight,
-  ExternalLink,
   ShieldAlert,
-  SlidersHorizontal,
-  Check,
-  Zap
 } from 'lucide-react';
-import { StoryRunItem, FrameDetailItem, StoryRunStatus, StoryRunStage } from '../../types';
+import { StoryRunItem, StoryRunStatus } from '../../types';
 import { MOCK_STORY_RUNS, MOCK_MONITOR_METRICS } from '../../mockMonitorData';
 import { StatusBadge } from '../StatusBadge';
 
 const StoryRunDetailView = lazy(() => import('./StoryRunDetailView').then((module) => ({ default: module.StoryRunDetailView })));
 
 interface ProductionMonitorViewProps {
-  onSelectStoryRun?: (run: StoryRunItem) => void;
   onShowToast: (msg: string) => void;
 }
 
 export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
-  onSelectStoryRun,
   onShowToast,
 }) => {
   // 运行数据状态
   const [runs, setRuns] = useState<StoryRunItem[]>(MOCK_STORY_RUNS);
-  const [metrics, setMetrics] = useState(MOCK_MONITOR_METRICS);
+  const metrics = MOCK_MONITOR_METRICS;
 
   // 过滤状态
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -138,14 +116,6 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     onShowToast('筛选条件已重置');
   };
 
-  // Queue 积压判定规则：0–20 正常, 21–50 轻度积压, 51–100 中度积压, >100 严重积压
-  const getQueueSeverity = (count: number) => {
-    if (count <= 20) return { label: '正常', color: 'text-[var(--success)]', bg: 'bg-[var(--success)]/10' };
-    if (count <= 50) return { label: '轻度积压', color: 'text-[var(--warning)]', bg: 'bg-[var(--warning)]/10' };
-    if (count <= 100) return { label: '中度积压', color: 'text-[var(--warning)]', bg: 'bg-[var(--warning)]/10' };
-    return { label: '严重积压', color: 'text-[var(--danger)]', bg: 'bg-[var(--danger)]/10' };
-  };
-
   // Heartbeat 心跳状态规则：<15s 正常, 15–30s 弱提示, 30–120s 心跳延迟(黄), >120s 疑似失联(红)
   const getHeartbeatStatus = (seconds: number) => {
     if (seconds < 15) return { color: 'text-[var(--success)]', dot: 'bg-[var(--success)]', label: '正常' };
@@ -177,7 +147,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     );
   }
 
-  const getStageBadge = (stage: StoryRunStage, label: string) => {
+  const getStageBadge = (label: string) => {
     return (
       <span className="inline-flex items-center px-1.5 py-0.5 rounded-[3px] bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[var(--text-secondary)] text-[11px] font-mono whitespace-nowrap">
         {label}
@@ -477,7 +447,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
 
                       {/* 当前阶段 */}
                       <td className="px-3">
-                        {getStageBadge(run.currentStage, run.stageLabel)}
+                        {getStageBadge(run.stageLabel)}
                       </td>
 
                       {/* 状态 Badge (Dot + 文字，克制无大胶囊) */}

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  ChevronDown,
   Search,
   Bell,
   SquarePen,
@@ -11,7 +10,6 @@ import {
   FolderOpen,
   LayoutDashboard,
   Activity,
-  Layers
 } from 'lucide-react';
 import { Episode, NavigationTab } from '../types';
 

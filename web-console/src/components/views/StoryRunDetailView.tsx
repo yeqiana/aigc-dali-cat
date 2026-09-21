@@ -12,7 +12,6 @@ import {
   FileCode,
   Activity,
   Server,
-  CheckCircle2,
   Clock,
   ShieldAlert,
   Copy,
@@ -31,8 +30,7 @@ import {
 import {
   StoryRunItem,
   FrameDetailItem,
-  StoryRunStage,
-  FrameStatus
+  StoryRunStage
 } from '../../types';
 import { StatusBadge } from '../StatusBadge';
 

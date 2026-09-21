@@ -4,13 +4,11 @@ import { Episode } from '../types';
 
 interface ContextPanelProps {
   activeEpisode: Episode;
-  onClose?: () => void;
   onShowToast: (msg: string) => void;
 }
 
 export const ContextPanel: React.FC<ContextPanelProps> = ({
   activeEpisode,
-  onClose,
   onShowToast,
 }) => {
   const [activeJson, setActiveJson] = useState<{ title: string; json: unknown } | null>(null);
