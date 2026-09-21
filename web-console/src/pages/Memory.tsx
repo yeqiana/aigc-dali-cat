@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { AlertTriangle, Brain, Search } from 'lucide-react';
 import { memoryApi } from '../api/memory';
+import { PlatformPageHeader } from '../components/PlatformPageHeader';
 import type { MemoryItem } from '../types/platform';
 
 export default function Memory() {
@@ -32,11 +33,11 @@ export default function Memory() {
   return (
     <main className="storyos-shell min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] p-4 lg:p-6">
       <div className="max-w-5xl mx-auto space-y-4">
-        <header className="pb-3 border-b border-[var(--border-subtle)]">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Platform / Memory</div>
-          <h1 className="mt-1 text-xl font-semibold">Memory Console</h1>
-          <p className="mt-1 text-xs text-[var(--text-tertiary)]">检索 Experience / Memory Store，结果直接来自 Platform API。</p>
-        </header>
+        <PlatformPageHeader
+          section="Memory"
+          title="Memory Console"
+          description="检索 Experience / Memory Store，结果直接来自 Platform API。"
+        />
         <form onSubmit={search} className="storyos-surface min-h-12 px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="relative flex-1 min-w-0">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-tertiary)]" />

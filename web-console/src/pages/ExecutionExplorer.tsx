@@ -1,10 +1,11 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Activity, AlertTriangle, Search } from 'lucide-react';
 import { executionApi } from '../api/execution';
+import { PlatformPageHeader } from '../components/PlatformPageHeader';
 import type { ExecutionRecord } from '../types/platform';
 
 export default function ExecutionExplorer() {
-  const [id, setId] = useState('');
+  const [id, setId] = useState(() => new URLSearchParams(window.location.search).get('execution') ?? '');
   const [execution, setExecution] = useState<ExecutionRecord | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,14 +26,18 @@ export default function ExecutionExplorer() {
     }
   }
 
+  useEffect(() => {
+    if (id.trim()) void load();
+  }, []);
+
   return (
     <main className="storyos-shell min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] p-4 lg:p-6">
       <div className="max-w-5xl mx-auto space-y-4">
-        <header className="pb-3 border-b border-[var(--border-subtle)]">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Platform / Execution</div>
-          <h1 className="mt-1 text-xl font-semibold">Execution Explorer</h1>
-          <p className="mt-1 text-xs text-[var(--text-tertiary)]">按 Execution ID 查询真实 Platform API 记录，不生成前端替代状态。</p>
-        </header>
+        <PlatformPageHeader
+          section="Execution"
+          title="Execution Explorer"
+          description="按 Execution ID 查询真实 Platform API 记录，不生成前端替代状态。"
+        />
         <form onSubmit={load} className="storyos-surface min-h-12 px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="relative flex-1 min-w-0">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-tertiary)]" />
@@ -52,7 +57,7 @@ export default function ExecutionExplorer() {
               <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Status</span><span className="font-mono text-[var(--text-primary)]">{execution.status}</span></div>
               <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Agent</span><code className="font-mono">{execution.agent_code}@{execution.agent_version}</code></div>
               <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Type</span><code className="font-mono">{execution.execution_type}</code></div>
-              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Trace ID</span><code className="font-mono text-[var(--text-secondary)] break-all">{execution.trace_id || '-'}</code></div>
+              <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Trace ID</span>{execution.trace_id ? <a className="font-mono text-[var(--text-secondary)] break-all hover:text-[var(--primary)] hover:underline" href={`/traces?trace=${encodeURIComponent(execution.trace_id)}`}>{execution.trace_id}</a> : <code>-</code>}</div>
               <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Steps</span><span>{execution.skill_executions.length} skills · {execution.tool_executions.length} tools</span></div>
               <div className="min-h-10 px-3 py-2 grid grid-cols-[120px_1fr] gap-3"><span className="text-[var(--text-tertiary)]">Updated</span><code className="font-mono">{execution.updated_time}</code></div>
             </div>

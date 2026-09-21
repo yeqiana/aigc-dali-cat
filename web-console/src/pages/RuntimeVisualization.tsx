@@ -3,6 +3,7 @@ import { runtimeApi } from '../api/runtime';
 import { RuntimeMonitor } from '../components/RuntimeMonitor';
 import RuntimeTimeline from '../components/RuntimeTimeline';
 import TraceGraph from '../components/TraceGraph';
+import { PlatformPageHeader } from '../components/PlatformPageHeader';
 import type { ExecutionRecord, RuntimeEpisodeStatusPage, TraceRecord } from '../types/platform';
 
 export default function RuntimeVisualization() {
@@ -64,15 +65,11 @@ export default function RuntimeVisualization() {
   return (
     <div className="storyos-shell min-h-screen p-4 lg:p-6">
       <div className="max-w-6xl mx-auto space-y-4">
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between pb-3 border-b border-[var(--border-subtle)]">
-          <div>
-            <div className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Platform / Runtime</div>
-            <h2 className="text-[20px] leading-7 font-semibold text-[var(--text-primary)]">Runtime</h2>
-            <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">
-              Episode Runtime Status 为只读生产投影；Execution → Timeline → Trace 为 Agent 执行事实。
-            </p>
-          </div>
-          <form
+        <PlatformPageHeader
+          section="Runtime"
+          title="Runtime"
+          description="Episode Runtime Status 为只读生产投影；Execution → Timeline → Trace 为 Agent 执行事实。"
+          actions={<form
             className="flex items-center gap-2"
             onSubmit={(event) => {
               event.preventDefault();
@@ -93,8 +90,8 @@ export default function RuntimeVisualization() {
             >
               {loading ? 'Loading…' : 'Load Runtime'}
             </button>
-          </form>
-        </header>
+          </form>}
+        />
 
         <section className="storyos-surface overflow-hidden">
           <header className="min-h-10 px-3 py-2 border-b border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-2">

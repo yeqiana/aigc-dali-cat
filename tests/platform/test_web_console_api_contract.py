@@ -41,6 +41,16 @@ def test_main_console_routes_use_real_backend_backed_pages_only():
     assert "apiGet<Health>('/healthz')" in dashboard
 
 
+def test_execution_and_trace_deep_links_auto_query():
+    execution_page = (WEB / "src/pages/ExecutionExplorer.tsx").read_text(encoding="utf-8")
+    trace_page = (WEB / "src/pages/TraceExplorer.tsx").read_text(encoding="utf-8")
+
+    assert "URLSearchParams(window.location.search).get('execution')" in execution_page
+    assert "URLSearchParams(window.location.search).get('trace')" in trace_page
+    assert "if (id.trim()) void load();" in execution_page
+    assert "if (id.trim()) void load();" in trace_page
+
+
 def test_runtime_console_uses_only_supported_execution_and_trace_endpoints():
     client = (WEB / "src/api/client.ts").read_text(encoding="utf-8")
     execution = (WEB / "src/api/execution.ts").read_text(encoding="utf-8")

@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { AlertTriangle, Bot, Search } from 'lucide-react';
 import { agentApi } from '../api/agent';
+import { PlatformPageHeader } from '../components/PlatformPageHeader';
 import type { Agent, ExecutionRecord } from '../types/platform';
 
 export default function Agents() {
@@ -35,11 +36,11 @@ export default function Agents() {
   return (
     <main className="storyos-shell min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] p-4 lg:p-6">
       <div className="max-w-5xl mx-auto space-y-4">
-        <header className="pb-3 border-b border-[var(--border-subtle)]">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Platform / Agents</div>
-          <h1 className="mt-1 text-xl font-semibold">Agent Console</h1>
-          <p className="mt-1 text-xs text-[var(--text-tertiary)]">按 Agent ID 查询 Registry 定义与 Execution Records。</p>
-        </header>
+        <PlatformPageHeader
+          section="Agents"
+          title="Agent Console"
+          description="按 Agent ID 查询 Registry 定义与 Execution Records。"
+        />
 
         <form onSubmit={load} className="storyos-surface min-h-12 px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="relative flex-1 min-w-0">
@@ -69,7 +70,7 @@ export default function Agents() {
         <section className="storyos-surface overflow-hidden">
           <header className="h-10 px-3 border-b border-[var(--border-subtle)] flex items-center justify-between"><h2 className="text-xs font-semibold">Execution Records</h2><span className="text-[10px] font-mono text-[var(--text-tertiary)]">{executions.length} ROWS</span></header>
           {executions.length > 0 ? (
-            <div className="overflow-x-auto"><table className="w-full min-w-[720px] text-xs"><thead className="h-9 border-b border-[var(--border-subtle)] text-[var(--text-tertiary)]"><tr><th className="px-3 text-left">Execution ID</th><th className="px-3 text-left">Type</th><th className="px-3 text-left">Status</th><th className="px-3 text-left">Trace ID</th><th className="px-3 text-left">Updated</th></tr></thead><tbody>{executions.map((row) => <tr key={row.execution_id} className="h-11 border-b border-[var(--border-subtle)] last:border-b-0 hover:bg-[var(--bg-hover)]"><td className="px-3 font-mono text-[var(--text-primary)]">{row.execution_id}</td><td className="px-3 font-mono text-[var(--text-secondary)]">{row.execution_type}</td><td className="px-3 font-mono">{row.status}</td><td className="px-3 font-mono text-[var(--text-tertiary)]">{row.trace_id || '-'}</td><td className="px-3 font-mono text-[var(--text-tertiary)]">{row.updated_time}</td></tr>)}</tbody></table></div>
+            <div className="overflow-x-auto"><table className="w-full min-w-[720px] text-xs"><thead className="h-9 border-b border-[var(--border-subtle)] text-[var(--text-tertiary)]"><tr><th className="px-3 text-left">Execution ID</th><th className="px-3 text-left">Type</th><th className="px-3 text-left">Status</th><th className="px-3 text-left">Trace ID</th><th className="px-3 text-left">Updated</th></tr></thead><tbody>{executions.map((row) => <tr key={row.execution_id} className="h-11 border-b border-[var(--border-subtle)] last:border-b-0 hover:bg-[var(--bg-hover)]"><td className="px-3 font-mono"><a className="text-[var(--text-primary)] hover:text-[var(--primary)] hover:underline" href={`/executions?execution=${encodeURIComponent(row.execution_id)}`}>{row.execution_id}</a></td><td className="px-3 font-mono text-[var(--text-secondary)]">{row.execution_type}</td><td className="px-3 font-mono">{row.status}</td><td className="px-3 font-mono text-[var(--text-tertiary)]">{row.trace_id ? <a className="hover:text-[var(--primary)] hover:underline" href={`/traces?trace=${encodeURIComponent(row.trace_id)}`}>{row.trace_id}</a> : '-'}</td><td className="px-3 font-mono text-[var(--text-tertiary)]">{row.updated_time}</td></tr>)}</tbody></table></div>
           ) : <div className="px-3 py-8 text-center text-xs text-[var(--text-tertiary)]">暂无 Execution Record。</div>}
         </section>
       </div>
