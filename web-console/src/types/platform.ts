@@ -53,6 +53,9 @@ export interface MemoryItem {
   id: string;
   content: string;
   memory_type?: string;
+  evidence_ref?: string;
+  outcome?: string;
+  confidence?: number;
 }
 
 export interface TraceRecord {

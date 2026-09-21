@@ -4,7 +4,7 @@ import { agentApi } from '../api/agent';
 import type { Agent, ExecutionRecord } from '../types/platform';
 
 export default function Agents() {
-  const [agentId, setAgentId] = useState('default');
+  const [agentId, setAgentId] = useState('');
   const [agent, setAgent] = useState<Agent | null>(null);
   const [executions, setExecutions] = useState<ExecutionRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -44,7 +44,7 @@ export default function Agents() {
         <form onSubmit={load} className="storyos-surface min-h-12 px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="relative flex-1 min-w-0">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-tertiary)]" />
-            <input value={agentId} onChange={(event) => setAgentId(event.target.value)} aria-label="Agent ID" className="storyos-control w-full h-8 pl-8 pr-3 font-mono text-xs outline-none focus:border-[var(--focus)]" />
+            <input value={agentId} onChange={(event) => setAgentId(event.target.value)} placeholder="agent id" aria-label="Agent ID" className="storyos-control w-full h-8 pl-8 pr-3 font-mono text-xs outline-none focus:border-[var(--focus)]" />
           </div>
           <button type="submit" disabled={!agentId.trim() || loading} className="h-8 px-3 rounded-[var(--radius-md)] bg-[var(--primary)] text-white text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed">{loading ? '查询中…' : '查询 Agent'}</button>
         </form>

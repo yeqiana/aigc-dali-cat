@@ -6,7 +6,9 @@ import TraceGraph from '../components/TraceGraph';
 import type { ExecutionRecord, RuntimeEpisodeStatusPage, TraceRecord } from '../types/platform';
 
 export default function RuntimeVisualization() {
+  const pageSize = 20;
   const [episodeStatuses, setEpisodeStatuses] = useState<RuntimeEpisodeStatusPage>();
+  const [episodeStatusOffset, setEpisodeStatusOffset] = useState(0);
   const [episodeStatusLoading, setEpisodeStatusLoading] = useState(false);
   const [episodeStatusError, setEpisodeStatusError] = useState<string | null>(null);
   const [execution, setExecution] = useState<ExecutionRecord>();
@@ -16,11 +18,13 @@ export default function RuntimeVisualization() {
   const [error, setError] = useState<string | null>(null);
   const [traceError, setTraceError] = useState<string | null>(null);
 
-  async function loadEpisodeStatuses() {
+  async function loadEpisodeStatuses(offset = episodeStatusOffset) {
     setEpisodeStatusLoading(true);
     setEpisodeStatusError(null);
     try {
-      setEpisodeStatuses(await runtimeApi.listEpisodeStatuses(20, 0));
+      const page = await runtimeApi.listEpisodeStatuses(pageSize, offset);
+      setEpisodeStatuses(page);
+      setEpisodeStatusOffset(page.offset);
     } catch (cause) {
       setEpisodeStatuses(undefined);
       setEpisodeStatusError(cause instanceof Error ? cause.message : 'Episode Runtime Status 查询失败');
@@ -30,7 +34,7 @@ export default function RuntimeVisualization() {
   }
 
   useEffect(() => {
-    void loadEpisodeStatuses();
+    void loadEpisodeStatuses(0);
   }, []);
 
   async function load(id: string) {
@@ -100,11 +104,31 @@ export default function RuntimeVisualization() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono text-[var(--text-tertiary)]">
-                {episodeStatuses ? `${episodeStatuses.count} EPISODES${episodeStatuses.has_more ? ' · MORE' : ''}` : 'NO DATA'}
+                {episodeStatuses
+                  ? episodeStatuses.items.length > 0
+                    ? `${episodeStatuses.offset + 1}-${episodeStatuses.offset + episodeStatuses.items.length} · ${episodeStatuses.count} ROWS${episodeStatuses.has_more ? ' · MORE' : ''}`
+                    : '0 ROWS'
+                  : 'NO DATA'}
               </span>
               <button
                 type="button"
-                onClick={() => void loadEpisodeStatuses()}
+                onClick={() => void loadEpisodeStatuses(Math.max(0, episodeStatusOffset - pageSize))}
+                disabled={episodeStatusLoading || episodeStatusOffset === 0}
+                className="storyos-control h-7 px-2 text-[10px] font-mono disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                PREV
+              </button>
+              <button
+                type="button"
+                onClick={() => void loadEpisodeStatuses(episodeStatusOffset + pageSize)}
+                disabled={episodeStatusLoading || !episodeStatuses?.has_more}
+                className="storyos-control h-7 px-2 text-[10px] font-mono disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                NEXT
+              </button>
+              <button
+                type="button"
+                onClick={() => void loadEpisodeStatuses(episodeStatusOffset)}
                 disabled={episodeStatusLoading}
                 className="storyos-control h-7 px-2 text-[10px] font-mono disabled:opacity-50 disabled:cursor-not-allowed"
               >

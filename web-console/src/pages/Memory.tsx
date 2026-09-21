@@ -4,7 +4,7 @@ import { memoryApi } from '../api/memory';
 import type { MemoryItem } from '../types/platform';
 
 export default function Memory() {
-  const [query, setQuery] = useState('story');
+  const [query, setQuery] = useState('');
   const [items, setItems] = useState<MemoryItem[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,6 +56,11 @@ export default function Memory() {
                 <article key={item.id} className="px-3 py-2.5 hover:bg-[var(--bg-hover)]">
                   <div className="flex items-center justify-between gap-3 text-[11px]"><code className="font-mono text-[var(--text-secondary)] truncate">{item.id}</code><span className="font-mono text-[var(--text-tertiary)] shrink-0">{item.memory_type || 'memory'}</span></div>
                   <p className="mt-1 text-xs leading-5 text-[var(--text-primary)] whitespace-pre-wrap">{item.content}</p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono text-[var(--text-tertiary)]">
+                    <span>outcome: {item.outcome || '-'}</span>
+                    <span>confidence: {typeof item.confidence === 'number' ? item.confidence.toFixed(2) : '-'}</span>
+                    <span className="truncate">evidence: {item.evidence_ref || '-'}</span>
+                  </div>
                 </article>
               ))}
             </div>

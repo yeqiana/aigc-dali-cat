@@ -53,7 +53,9 @@ def test_runtime_console_uses_only_supported_execution_and_trace_endpoints():
     assert "/api/v1/traces/${traceId}" in runtime
     assert "getTrace(nextExecution.trace_id)" in runtime_page
     assert "/api/v1/runtime/statuses?limit=${limit}&offset=${offset}" in runtime
-    assert "listEpisodeStatuses(20, 0)" in runtime_page
+    assert "listEpisodeStatuses(pageSize, offset)" in runtime_page
+    assert "loadEpisodeStatuses(episodeStatusOffset + pageSize)" in runtime_page
+    assert "Math.max(0, episodeStatusOffset - pageSize)" in runtime_page
     assert not (WEB / "src/api/monitoring.ts").exists()
     assert not (WEB / "src/api/workflow.ts").exists()
     assert not (WEB / "src/api/permission.ts").exists()
