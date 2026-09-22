@@ -193,3 +193,47 @@ def test_to_naive_utc_leaves_naive_values_untouched():
     assert to_naive_utc("not-a-datetime") == "not-a-datetime"
     assert to_naive_utc(None) is None
 
+
+def _execute_in_new_thread(connection):
+    thread = threading.Thread(target=lambda: connection.execute("SELECT 1"))
+    thread.start()
+    thread.join()
+
+
+def test_connection_owned_by_finished_thread_is_reaped(fake_connect):
+    """ThreadingHTTPServer 每请求一线程；线程结束后其连接必须被回收，否则 1040。"""
+    connection = MySqlConnection()
+
+    _execute_in_new_thread(connection)
+    assert connection.connection_count == 1
+    assert fake_connect.created[0].open is True
+
+    _execute_in_new_thread(connection)
+
+    assert fake_connect.created[0].open is False
+    assert len(fake_connect.created) == 2
+    assert connection.connection_count == 1
+
+
+def test_connection_owned_by_live_thread_is_not_reaped(fake_connect):
+    connection = MySqlConnection()
+    started = threading.Event()
+    release = threading.Event()
+
+    def hold():
+        connection.execute("SELECT 1")
+        started.set()
+        release.wait(timeout=5)
+
+    holder = threading.Thread(target=hold)
+    holder.start()
+    assert started.wait(timeout=5)
+
+    _execute_in_new_thread(connection)
+
+    assert fake_connect.created[0].open is True
+    assert len(fake_connect.created) == 2
+    assert connection.connection_count == 2
+
+    release.set()
+    holder.join()

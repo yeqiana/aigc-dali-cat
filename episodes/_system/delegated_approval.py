@@ -14,6 +14,8 @@ import story_json
 import runtime_checkpoint
 import approval_persistence
 import delegated_release_persistence
+import story_review
+import visual_profile_review_persistence
 
 REL = Path('meta/delegated-approvals.json')
 CHECKPOINT = runtime_checkpoint.REL
@@ -87,6 +89,25 @@ def repo_file(raw: str) -> Path:
     return p
 
 
+AUTHORITY_ROLES = ('story_semantic_review', 'visual_profile_review')
+
+
+def authority_digest(ep: Path, role: object) -> str | None:
+    """Resolve a review-authority row to its current digest.
+
+    Authority rows carry an episode-relative legacy path (for example
+    ``meta/story-semantic-review.json``) because the review itself lives in the
+    MySQL review-record authority, not on disk. They must be verified against the
+    live authority, exactly like ``approval_lock.verify_lock`` does, instead of
+    being read as a repository-relative file.
+    """
+    if role == 'story_semantic_review':
+        return story_review.review_authority_sha256(ep)
+    if role == 'visual_profile_review':
+        return visual_profile_review_persistence.authority_sha256(ep)
+    return None
+
+
 def cmd_record(args: argparse.Namespace) -> int:
     ep = Path(args.episode_dir).resolve()
     ok, reason = authorized(ep)
@@ -141,6 +162,20 @@ def verify(ep: Path, kind: str) -> list[str]:
     for row in rows:
         if not isinstance(row, dict) or not row.get('path') or not row.get('sha256'):
             errors.append(f'{kind}: invalid artifact row')
+            continue
+        if row.get('kind') == 'authority':
+            role = row.get('role')
+            if role not in AUTHORITY_ROLES:
+                errors.append(f'{kind}: unknown authority artifact role {role}')
+                continue
+            actual = authority_digest(ep, role)
+            if not actual:
+                errors.append(f'{kind}: {role} authority missing')
+            elif actual.lower() != str(row['sha256']).lower():
+                errors.append(
+                    f'{kind}: {role} authority SHA256 drift'
+                    f'\nexpected={row["sha256"]}\nactual  ={actual}'
+                )
             continue
         try:
             p = repo_file(str(row['path']))

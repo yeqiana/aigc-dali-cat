@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "episode_performance",
+  "generated_at": "2026-09-22T13:54:50.549+08:00",
+  "telemetry_only": true,
+  "not_stage_gate": true,
+  "fail_soft": true,
+  "episode_path": "unused",
+  "started_at": "2026-09-22T13:54:50.550+08:00",
+  "updated_at": "2026-09-22T13:54:50.559+08:00",
+  "finalized_at": null,
+  "final_status": null,
+  "total_wall_seconds": null,
+  "stages": {},
+  "named_spans": {},
+  "state_transitions": [],
+  "image_attempts": [
+    {
+      "event_id": "aa95d5e0e879",
+      "frame": "01",
+      "scope": "unknown",
+      "kind": "original",
+      "status": "tech_failed",
+      "model": null,
+      "attempt": 1,
+      "started_at": null,
+      "ended_at": "2026-09-22T13:54:50.557+08:00",
+      "elapsed_seconds": null,
+      "queue_item_id": "q1",
+      "error_code": "TEST_FAILURE"
+    }
+  ],
+  "execution_sessions": [],
+  "summary": {
+    "stage_wall": {},
+    "named_span_wall": {},
+    "critical_path": {
+      "kind": "observed_end_to_end_wall",
+      "critical_path_seconds": null,
+      "image_backend_union_wall_seconds": 0.0,
+      "image_backend_resource_seconds": 0.0,
+      "parallel_saved_seconds": 0.0,
+      "dependency_chain": [],
+      "note": "End-to-end wall is the user-visible critical path; image resource time is overlap-aware and is not added to stage wall."
+    },
+    "execution_wall": {
+      "session_count": 0,
+      "latest": null,
+      "aggregate": {
+        "active_seconds": 0.0,
+        "host_wait_seconds": 0.0,
+        "idle_seconds": 0.0,
+        "user_wait_seconds": 0.0
+      },
+      "active_wall_seconds": null
+    },
+    "duration_breakdown": {
+      "runtime_active_seconds": 0.0,
+      "host_wait_seconds": 0.0,
+      "user_wait_seconds": 0.0,
+      "idle_seconds": 0.0,
+      "latest_session_active_seconds": null,
+      "latest_session_host_wait_seconds": null,
+      "latest_session_user_wait_seconds": null,
+      "latest_session_idle_seconds": null,
+      "primary_runtime_metric": "latest_session_active_seconds",
+      "aggregate_scope": "all_execution_sessions_interval_union",
+      "stage_wall_includes_wait": true,
+      "external_host_execution_seconds": null,
+      "external_host_execution_policy": "measure only explicit host start/complete evidence; never infer execution from HOST_WAIT",
+      "note": "episode aggregate covers all execution sessions with interval-union de-duplication; current efficiency/SLO uses the latest session active wall. stage_wall may include HOST_WAIT and is not production execution time."
+    },
+    "performance_slo": {
+      "health": "UNKNOWN",
+      "active_wall_seconds": null,
+      "gate": false
+    },
+    "images": {
+      "attempts": 1,
+      "successful_attempts": 0,
+      "repair_attempts": 0,
+      "technical_failures_or_retries": 1,
+      "image_backend_seconds": 0,
+      "average_attempt_seconds": null,
+      "max_attempt_seconds": null
+    },
+    "note": "stage/named wall_seconds are elapsed interval unions and may include HOST_WAIT; they are not production execution time. resource_seconds sum run durations and may overlap. Use duration_breakdown/execution_wall for wait attribution and do not add resource time to wall time."
+  }
+}

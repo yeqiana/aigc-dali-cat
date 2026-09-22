@@ -183,9 +183,9 @@ agent_runtime:
     config: config/agent_runtime/codex-subscription-batch.json
 
 runtime:
-  # Product-runtime-first：创作、评审、门禁与状态推进默认仍由 WORK 执行。
-  # 本机 codex.exe 不得接管 Story / PREIMAGE / Review / Release。
-  preferred_runtime: WORK
+  # 当前整体 Runtime = CODEX：创作、前期资产、门禁与状态推进由本机 Codex scoped worker 执行。
+  # 改回 WORK 即恢复 Product-runtime-first（ChatGPT/Work + DevSpace）默认路径。
+  preferred_runtime: CODEX
 
   # WORK 只定义创作/治理运行时角色；仓库访问由独立 Workspace Provider 提供。
   # WebCodex 通过 ChatGPT MCP -> WebCodex Server -> Runner 访问本机 Project。

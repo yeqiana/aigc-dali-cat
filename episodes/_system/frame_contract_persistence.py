@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
 import storage_config
 import story_json
 import episode_identity
+import mysql_connection_cache
 import runtime_workspace
 
 from platform.repository.frame_contract_projection import (
@@ -61,30 +62,28 @@ def persist(ep: Path, row: dict, *, status: str = "ACTIVE") -> dict:
     if mode == "json":
         return {"mode": mode, "mysql_written": False}
 
-    from platform.repository.mysql.mysql_connection import MySqlConnection
     from platform.repository.mysql.mysql_frame_contract_repository import (
         MySqlFrameContractRepository,
     )
     from platform.repository.mysql.schema_v2 import DATABASE_NAME
 
     kwargs = storage_config.mysql_connection_kwargs({"database": DATABASE_NAME})
-    connection = MySqlConnection(**kwargs)
-    try:
-        document_ref = externalize(Path(ep).resolve(), row)
-        saved = MySqlFrameContractRepository(connection).save_version(
-            {
-                "episode_id": _episode_id(Path(ep).resolve()),
-                "frame_no": int(row["frame"]),
-                "status": status,
-                "sha256": row["contract_sha256"],
-                "source_sha256": _source_sha(row),
-                "payload": row,
-                "payload_ref": document_ref,
-            }
-        )
-        return {"mode": mode, "mysql_written": True, "document_ref": document_ref, **saved}
-    finally:
-        connection.close()
+    # A reused connection, not a fresh TCP handshake per frame.  See
+    # mysql_connection_cache.
+    connection = mysql_connection_cache.shared_connection(kwargs)
+    document_ref = externalize(Path(ep).resolve(), row)
+    saved = MySqlFrameContractRepository(connection).save_version(
+        {
+            "episode_id": _episode_id(Path(ep).resolve()),
+            "frame_no": int(row["frame"]),
+            "status": status,
+            "sha256": row["contract_sha256"],
+            "source_sha256": _source_sha(row),
+            "payload": row,
+            "payload_ref": document_ref,
+        }
+    )
+    return {"mode": mode, "mysql_written": True, "document_ref": document_ref, **saved}
 
 
 def load_latest(ep: Path, frame: int | str, *, legacy_path: str | Path | None = None) -> dict | None:
@@ -92,16 +91,14 @@ def load_latest(ep: Path, frame: int | str, *, legacy_path: str | Path | None = 
     ep = Path(ep).resolve()
     mode = storage_config.episode_meta_store_config()["mode"]
     if mode in {"dual", "mysql"}:
-        from platform.repository.mysql.mysql_connection import MySqlConnection
         from platform.repository.mysql.mysql_frame_contract_repository import (
             MySqlFrameContractRepository,
         )
         from platform.repository.mysql.schema_v2 import DATABASE_NAME
 
         kwargs = storage_config.mysql_connection_kwargs({"database": DATABASE_NAME})
-        connection = None
         try:
-            connection = MySqlConnection(**kwargs)
+            connection = mysql_connection_cache.shared_connection(kwargs)
             row = MySqlFrameContractRepository(connection).get_latest(_episode_id(ep), int(frame))
             if row and isinstance(row.get("payload"), dict):
                 ref = document_reference(row["payload"])
@@ -121,9 +118,6 @@ def load_latest(ep: Path, frame: int | str, *, legacy_path: str | Path | None = 
             # silently resurrect compatibility JSON on repository failure.
             if mode == "mysql":
                 raise
-        finally:
-            if connection is not None:
-                connection.close()
         if mode == "mysql":
             return None
 

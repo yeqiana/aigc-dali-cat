@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import os
 import threading
+import weakref
 from contextlib import contextmanager
 from typing import Any
 
@@ -43,8 +44,10 @@ class MySqlConnection:
     - 连接丢失（2006/2013/2055）时自动重连并重试一次。
     - transaction() 上下文管理器临时关闭 autocommit，提供 commit/rollback 边界。
 
-    已知边界：这是“每线程连接”而非连接池，没有上限与空闲回收；
-    长期驻留进程若持续创建新线程，需要上层控制线程数量。
+    已知边界：这是“每线程连接”而非连接池。线程退出后其连接不会再被使用，
+    因此每次新建连接前会回收「所属线程已结束」的连接（reap）。这保证长期驻留、
+    持续创建请求线程的进程（如 ThreadingHTTPServer）不会线性泄漏远端连接。
+    存活的并发线程数仍决定瞬时上限，需要上层控制真正的并发度。
     """
 
     def __init__(
@@ -75,7 +78,9 @@ class MySqlConnection:
         self.read_timeout = read_timeout
         self.write_timeout = write_timeout
         self._local = threading.local()
-        self._connections: list[Any] = []
+        # [(owner_thread_ref, connection)]：线程退出后必须回收，
+        # 否则远端 MySQL max_connections 会被逐步耗尽（1040 Too many connections）。
+        self._connections: list[tuple[weakref.ref, Any]] = []
         self._lock = threading.RLock()
 
     # ---- 连接管理 ----
@@ -100,22 +105,55 @@ class MySqlConnection:
             return conn
         if conn is not None:
             self._forget(conn)
+        # 请求线程结束即回收其连接，避免“每请求一线程”模式下的连接泄漏。
+        self._reap()
         conn = self._open()
         self._local.connection = conn
         with self._lock:
-            self._connections.append(conn)
+            self._connections.append((weakref.ref(threading.current_thread()), conn))
         return conn
 
     def _forget(self, conn) -> None:
         if getattr(self._local, "connection", None) is conn:
             self._local.connection = None
         with self._lock:
-            if conn in self._connections:
-                self._connections.remove(conn)
+            self._connections = [
+                (owner_ref, item)
+                for owner_ref, item in self._connections
+                if item is not conn
+            ]
         try:
             conn.close()
         except Exception:
             pass
+
+    def _reap(self) -> int:
+        """关闭「所属线程已结束」的连接，返回回收数量。
+
+        只回收 owner 线程已退出的连接；存活线程的连接绝不关闭，
+        因此不会影响并发请求正在使用的连接。
+        """
+        with self._lock:
+            alive: list[tuple[weakref.ref, Any]] = []
+            dead: list[Any] = []
+            for owner_ref, conn in self._connections:
+                owner = owner_ref()
+                if owner is None or not owner.is_alive():
+                    dead.append(conn)
+                else:
+                    alive.append((owner_ref, conn))
+            self._connections = alive
+        for conn in dead:
+            try:
+                conn.close()
+            except Exception:
+                pass
+        return len(dead)
+
+    @property
+    def connection_count(self) -> int:
+        with self._lock:
+            return len(self._connections)
 
     def _with_reconnect(self, operation):
         try:
@@ -143,7 +181,7 @@ class MySqlConnection:
 
     def close(self) -> None:
         with self._lock:
-            connections = list(self._connections)
+            connections = [conn for _owner_ref, conn in self._connections]
             self._connections.clear()
         self._local.connection = None
         for conn in connections:
@@ -229,4 +267,3 @@ class MySqlConnection:
     def __exit__(self, exc_type, exc, tb):
         self.close()
         return False
-

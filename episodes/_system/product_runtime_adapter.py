@@ -155,6 +155,18 @@ def next_host_step(ep: Path, mode: str = "full_auto") -> tuple[str, str | None]:
             committed = _read_json(committed_path) if committed_path.is_file() else {}
             if not committed or preimage_authority_snapshot.stale_owned(ep, committed):
                 return "PREIMAGE_TASK_SET", None
+        # Dispatcher fast path.  The verify_all() below re-compiles every frame
+        # contract and re-reads the durable Episode contract store hundreds of
+        # times per frame; it exists only to answer "must PREIMAGE recompile the
+        # frame contracts".  Once the PREIMAGE handoff verifies, that answer can
+        # no longer matter: runtime_dag's PREIMAGE_COMPILE reuse branch returns
+        # REUSED for any valid handoff before it would ever recompile, and the
+        # real gate is validate_target on the next stage transition.  Without
+        # this, every dispatch during the whole VISUAL_LOCK phase paid that walk.
+        if handoff_valid:
+            if mode == "preproduction_only":
+                return "COMPLETE", "STORYBOARD_LOCKED"
+            return "VISUAL_LOCK", "VISUAL_CALIBRATED"
         contract_errors: list[str] = []
         if index.is_file():
             try:

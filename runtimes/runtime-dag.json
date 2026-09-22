@@ -3,7 +3,7 @@
   "name": "Story OS V2.1 Runtime DAG V1",
   "canonical_episode_stage_source": "meta/episode-state.json",
   "note": "Runtime execution DAG only; does not create a second episode stage system. scoped_model is resolved by the active runtime adapter (WORK/WEB/CODEX).",
-  "scoped_worker_timeout_seconds": 3600,
+  "scoped_worker_timeout_seconds": 7200,
   "steps": [
     {
       "id": "INCREMENTAL_PLAN",

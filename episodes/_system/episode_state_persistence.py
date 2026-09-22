@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+import mysql_connection_cache
 import runtime_workspace
 import storage_config
 import story_json
@@ -49,14 +50,17 @@ def deterministic_storage_id(ep: Path, business_episode_id: str) -> str:
 
 
 def _repositories():
-    from platform.repository.mysql.mysql_connection import MySqlConnection
     from platform.repository.mysql.mysql_episode_repository import MySqlEpisodeRepository
     from platform.repository.mysql.mysql_episode_state_repository import (
         MySqlEpisodeStateRepository,
     )
 
-    connection = MySqlConnection(
-        **storage_config.mysql_connection_kwargs({"database": DATABASE_NAME})
+    # A reused connection, not a fresh TCP handshake per read.  MySqlConnection is
+    # already a per-thread connection holder with reconnect-on-drop; building a
+    # new one for every call made each episode-state read pay a full handshake
+    # against the remote runtime MySQL.  See mysql_connection_cache.
+    connection = mysql_connection_cache.shared_connection(
+        storage_config.mysql_connection_kwargs({"database": DATABASE_NAME})
     )
     return (
         connection,
@@ -78,17 +82,13 @@ def list_episode_namespaces() -> list[str]:
     mode = _mode()
     if mode == "json":
         return []
-    connection = None
     try:
-        connection, episodes, _states = _repositories()
+        _connection, episodes, _states = _repositories()
         return episodes.list_namespaces()
     except Exception:
         if mode == "mysql":
             raise
         return []
-    finally:
-        if connection is not None:
-            connection.close()
 
 
 def _history_mode(previous: str | None, current: str) -> str | None:
@@ -133,22 +133,17 @@ def _document(episode: dict, state: dict, history: list[dict]) -> dict:
 
 
 def _load_mysql(ep: Path) -> dict | None:
-    connection = None
-    try:
-        connection, episodes, states = _repositories()
-        episode = episodes.get_by_namespace(episode_namespace(ep))
-        if not episode:
-            return None
-        state = states.get(str(episode["episode_id"]))
-        if not state:
-            return None
-        history = states.history(str(episode["episode_id"]))
-        if not history:
-            return None
-        return _document(episode, state, history)
-    finally:
-        if connection is not None:
-            connection.close()
+    _connection, episodes, states = _repositories()
+    episode = episodes.get_by_namespace(episode_namespace(ep))
+    if not episode:
+        return None
+    state = states.get(str(episode["episode_id"]))
+    if not state:
+        return None
+    history = states.history(str(episode["episode_id"]))
+    if not history:
+        return None
+    return _document(episode, state, history)
 
 
 def authority_sha256(data: dict | None) -> str | None:
@@ -236,22 +231,19 @@ def bootstrap(ep: Path, data: dict, *, source: str = "MIGRATION") -> str | None:
     if mode == "json":
         return None
     connection, episodes, states = _repositories()
-    try:
-        record = _episode_record(ep, data)
-        with connection.transaction():
-            episodes.upsert(record)
-            existing = states.get(record["episode_id"])
-            if existing is None:
-                history = _normalized_history(data)
-                states.initialize(
-                    record["episode_id"],
-                    str(data.get("current_state") or history[-1].get("state") or ""),
-                    history,
-                    source=source,
-                )
-        return record["episode_id"]
-    finally:
-        connection.close()
+    record = _episode_record(ep, data)
+    with connection.transaction():
+        episodes.upsert(record)
+        existing = states.get(record["episode_id"])
+        if existing is None:
+            history = _normalized_history(data)
+            states.initialize(
+                record["episode_id"],
+                str(data.get("current_state") or history[-1].get("state") or ""),
+                history,
+                source=source,
+            )
+    return record["episode_id"]
 
 
 def save_initial(ep: Path, data: dict, *, source: str = "INIT") -> dict:
@@ -287,27 +279,24 @@ def transition(
     if mode != "json":
         storage_id = bootstrap(ep, data, source="MIGRATION")
         connection, episodes, states = _repositories()
-        try:
-            row = states.get(str(storage_id))
-            if not row:
-                raise RuntimeError("EPISODE_STATE_MISSING_AFTER_BOOTSTRAP")
-            if str(row.get("current_state") or "") != current:
-                raise RuntimeError(
-                    f"EPISODE_STATE_CONFLICT: mysql={row.get('current_state')}; document={current}"
-                )
-            with connection.transaction():
-                states.transition(
-                    str(storage_id),
-                    expected_state=current,
-                    expected_version=int(row.get("state_version") or 0),
-                    target_state=str(target),
-                    source=str(source),
-                    reason=str(reason),
-                    at=at,
-                )
-                episodes.upsert(_episode_record(ep, updated))
-        finally:
-            connection.close()
+        row = states.get(str(storage_id))
+        if not row:
+            raise RuntimeError("EPISODE_STATE_MISSING_AFTER_BOOTSTRAP")
+        if str(row.get("current_state") or "") != current:
+            raise RuntimeError(
+                f"EPISODE_STATE_CONFLICT: mysql={row.get('current_state')}; document={current}"
+            )
+        with connection.transaction():
+            states.transition(
+                str(storage_id),
+                expected_state=current,
+                expected_version=int(row.get("state_version") or 0),
+                target_state=str(target),
+                source=str(source),
+                reason=str(reason),
+                at=at,
+            )
+            episodes.upsert(_episode_record(ep, updated))
     if mode != "mysql":
         story_json.write_json(ep / REL, updated)
     return updated
@@ -341,13 +330,10 @@ def update_disposition(
     if mode != "json":
         storage_id = bootstrap(ep, data, source="MIGRATION")
         connection, episodes, _states = _repositories()
-        try:
-            with connection.transaction():
-                episodes.update_disposition(
-                    str(storage_id), str(target).upper(), expected=current
-                )
-        finally:
-            connection.close()
+        with connection.transaction():
+            episodes.update_disposition(
+                str(storage_id), str(target).upper(), expected=current
+            )
     if mode != "mysql":
         story_json.write_json(ep / REL, updated)
     return updated

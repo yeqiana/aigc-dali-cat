@@ -137,6 +137,7 @@ episodes/**/*.zip
 /.storyos/alert-channel/
 /.storyos/metrics/
 /.storyos/runtime-launcher/
+/.storyos/platform-console/
 /.storyos/auto-recovery/
 
 # .storyos 工作台 / 版面探查产物为本地派生证据，不入库。

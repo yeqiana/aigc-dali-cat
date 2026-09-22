@@ -9,6 +9,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import episode_identity
+import mysql_connection_cache
 import runtime_workspace
 import storage_config
 import story_json
@@ -37,13 +38,14 @@ def _safe_type(contract_type: str) -> str:
 
 
 def _repository():
-    from platform.repository.mysql.mysql_connection import MySqlConnection
     from platform.repository.mysql.mysql_episode_contract_repository import (
         MySqlEpisodeContractRepository,
     )
 
-    connection = MySqlConnection(
-        **storage_config.mysql_connection_kwargs({"database": DATABASE_NAME})
+    # A reused connection, not a fresh TCP handshake per read.  Callers must not
+    # close it.  See mysql_connection_cache.
+    connection = mysql_connection_cache.shared_connection(
+        storage_config.mysql_connection_kwargs({"database": DATABASE_NAME})
     )
     return connection, MySqlEpisodeContractRepository(connection)
 
@@ -73,26 +75,23 @@ def persist(
         return {"mode": mode, "mysql_written": False}
     if not isinstance(payload, dict):
         raise ValueError("episode contract payload must be object")
-    connection, repository = _repository()
-    try:
-        ref = _externalize(ep, contract_type, payload)
-        saved = repository.save_version({
-            "episode_id": episode_identity.storage_episode_id(ep),
-            "contract_type": _safe_type(contract_type),
-            "status": str(status),
-            "sha256": payload_sha256(payload),
-            "source_sha256": source_sha256,
-            "payload": payload,
-            "payload_ref": ref,
-        })
-        return {
-            "mode": mode,
-            "mysql_written": True,
-            "document_ref": ref,
-            **saved,
-        }
-    finally:
-        connection.close()
+    _connection, repository = _repository()
+    ref = _externalize(ep, contract_type, payload)
+    saved = repository.save_version({
+        "episode_id": episode_identity.storage_episode_id(ep),
+        "contract_type": _safe_type(contract_type),
+        "status": str(status),
+        "sha256": payload_sha256(payload),
+        "source_sha256": source_sha256,
+        "payload": payload,
+        "payload_ref": ref,
+    })
+    return {
+        "mode": mode,
+        "mysql_written": True,
+        "document_ref": ref,
+        **saved,
+    }
 
 
 def load_latest(
@@ -104,9 +103,8 @@ def load_latest(
     ep = Path(ep).resolve()
     mode = _mode()
     if mode in {"dual", "mysql"}:
-        connection = None
         try:
-            connection, repository = _repository()
+            _connection, repository = _repository()
             row = repository.get_latest(
                 episode_identity.storage_episode_id(ep),
                 _safe_type(contract_type),
@@ -135,9 +133,6 @@ def load_latest(
         except Exception:
             if mode == "mysql":
                 raise
-        finally:
-            if connection is not None:
-                connection.close()
         if mode == "mysql":
             return None
 

@@ -365,17 +365,33 @@ def _build_wardrobe(ep: Path, character: dict, shots: dict[str, dict], temporal_
     }
 
 
-def _ensure_one(path: Path, builder, validator, label: str) -> str:
-    if path.is_file():
+def _ensure_one(path: Path, builder, validator, label: str, *, load=None, save=None):
+    """Create one directing contract only when it is missing.
+
+    Contracts whose authority is the Episode contract store (Capture Event,
+    Wardrobe) must be written through their own save(), so mysql mode lands in
+    the durable store: writing only the JSON mirror there stays invisible to the
+    contract's own loader, and its validator would report the contract missing
+    immediately after we wrote it.  World State and Temporal Continuity are
+    JSON-file contracts and keep the default path.
+    """
+    existing = load() if load is not None else (
+        story_json.read_json(path, default=None) if path.is_file() else None
+    )
+    if isinstance(existing, dict):
         errors = validator()
         if errors:
             raise ValueError(f"{label} exists but is invalid; refusing overwrite: " + "; ".join(errors[:8]))
-        return "REUSED"
-    story_json.write_json(path, builder())
+        return "REUSED", existing
+    data = builder()
+    if save is not None:
+        save(data)
+    else:
+        story_json.write_json(path, data)
     errors = validator()
     if errors:
         raise ValueError(f"{label} materialization invalid: " + "; ".join(errors[:8]))
-    return "CREATED"
+    return "CREATED", data
 
 
 def ensure(ep: Path) -> dict:
@@ -390,16 +406,17 @@ def ensure(ep: Path) -> dict:
         raise ValueError(f"shot progression frame count mismatch {len(shots)} != {total}")
 
     capture_path = ep / capture_event_contract.REL
-    capture_status = _ensure_one(
+    capture_status, capture = _ensure_one(
         capture_path,
         lambda: _build_capture(ep, character, shots),
         lambda: capture_event_contract.validate(ep, True),
         "capture-event-contract",
+        load=lambda: capture_event_contract.load(ep),
+        save=lambda data: capture_event_contract.save(ep, data),
     )
-    capture = _read(capture_path)
 
     world_path = ep / world_state.REL
-    world_status = _ensure_one(
+    world_status, _world = _ensure_one(
         world_path,
         lambda: _build_world(ep, character, shots, capture),
         lambda: world_state.validate(ep, True),
@@ -407,7 +424,7 @@ def ensure(ep: Path) -> dict:
     )
 
     temporal_path = ep / temporal_continuity_gate.REL
-    temporal_status = _ensure_one(
+    temporal_status, _temporal = _ensure_one(
         temporal_path,
         lambda: _build_temporal(ep, shots, world_path),
         lambda: temporal_continuity_gate.validate(ep, True),
@@ -415,11 +432,13 @@ def ensure(ep: Path) -> dict:
     )
 
     wardrobe_path = ep / wardrobe_contract.REL
-    wardrobe_status = _ensure_one(
+    wardrobe_status, _wardrobe = _ensure_one(
         wardrobe_path,
         lambda: _build_wardrobe(ep, character, shots, temporal_path),
         lambda: wardrobe_contract.validate(ep, True),
         "wardrobe-contract",
+        load=lambda: wardrobe_contract.load(ep),
+        save=lambda data: wardrobe_contract.save(ep, data),
     )
 
     return {

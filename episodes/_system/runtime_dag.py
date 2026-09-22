@@ -563,7 +563,17 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 rc=0 if outcome.get("status")=="PASS" else 4
                 if rc == 0:
                     import frame_contract
+                    import preimage_directing_materializer
                     try:
+                        # A committed PREIMAGE authority round licenses only deterministic
+                        # derivation, not new model judgment: materialize the strict per-frame
+                        # directing contracts from the committed authority before compiling
+                        # Frame Contracts.  This mirrors the WORK/Product host branch above;
+                        # without it a local CODEX run commits authority and then fails its own
+                        # PREIMAGE directing-quality gate because those four contracts were
+                        # never materialized.
+                        materialized=preimage_directing_materializer.ensure(ep)
+                        outcome["directing_contracts"]=materialized.get("contracts")
                         index=frame_contract.compile_all(ep)
                         outcome["frame_contract_index_sha256"]=index.get("index_sha256")
                     except Exception as exc:
