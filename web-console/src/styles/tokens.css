@@ -1,80 +1,30 @@
 :root {
-  color-scheme: dark;
-
-  --font-sans: Inter, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, ui-monospace, monospace;
-
-  --bg-app: #0b0d10;
-  --bg-sidebar: #0f1115;
-  --bg-workspace: #0f1115;
-  --bg-surface: #13161b;
-  --bg-subtle: #171b21;
-  --bg-muted: #1b2027;
-  --bg-elevated: #171b21;
-  --bg-hover: #1b2027;
-  --bg-selected: #20262e;
-
-  --text-primary: #f1f3f5;
-  --text-secondary: #a7afba;
-  --text-muted: #737d8a;
-  --text-tertiary: #737d8a;
-  --text-subtle: #626c78;
-  --text-disabled: #505864;
-
-  --primary: #4c8dff;
-  --primary-hover: #6aa0ff;
-  --primary-soft: rgba(76, 141, 255, 0.12);
-  --info: #4c8dff;
-  --info-soft: rgba(76, 141, 255, 0.12);
-  --focus: #58a6ff;
-
-  --success: #3fb950;
-  --success-soft: rgba(63, 185, 80, 0.10);
-  --warning: #c9a227;
-  --warning-soft: rgba(201, 162, 39, 0.10);
-  --retry: #d28b26;
-  --danger: #e05252;
-  --danger-soft: rgba(224, 82, 82, 0.10);
-
-  --border: #2d333d;
-  --border-soft: #232830;
-  --border-strong: #3a424e;
-  --border-subtle: #232830;
-  --border-normal: #2d333d;
-
-  --radius-xs: 3px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-pill: 999px;
-  --radius-drawer: 0px;
-
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-
+  --bg-app: #f3f6fa;
+  --bg-workspace: #f7f9fc;
+  --bg-sidebar: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: #f0f5ff;
+  --bg-selected: #e8f1ff;
+  --border-subtle: #e5eaf1;
+  --border-normal: #d6deea;
+  --border-strong: #b9c7d8;
+  --text-primary: #26354a;
+  --text-secondary: #536477;
+  --text-tertiary: #8794a6;
+  --text-disabled: #b2bdca;
+  --success: #18a66a;
+  --warning: #d4911d;
+  --retry: #d47b26;
+  --danger: #d95656;
+  --info: #3f80ed;
+  --focus: #2864c7;
   --sidebar-width: 224px;
   --sidebar-collapsed: 64px;
   --header-height: 48px;
   --control-height: 32px;
-  --table-header-height: 36px;
-  --table-row-height: 44px;
-  --table-row-compact: 40px;
-  --drawer-width: 440px;
-  --drawer-detail-width: 520px;
-
-  --shadow-xs: none;
-  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.18);
-  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.24);
-  --shadow-floating: 0 16px 40px rgba(0, 0, 0, 0.30);
-
-  --motion-fast: 120ms;
-  --motion-normal: 160ms;
-  --motion-stage: 180ms;
-  --motion-ease: cubic-bezier(.2, .8, .2, 1);
+  --content-max-width: 1440px;
+  --page-gutter: 24px;
+  --font-ui: "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: Consolas, "SFMono-Regular", monospace;
 }

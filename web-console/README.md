@@ -4,7 +4,7 @@ StoryOS 的前端生产控制台。默认入口是高密度 Production Monitor�
 
 ## 当前数据边界
 
-- Production Console 当前仍使用前端示例 Episode / Monitor 数据，并在界面常驻显示 `DEMO DATA · NOT AUTHORITY`。
+- Production Console 读取 Platform API 的真实运行投影，剧集进度节点在监控台行详情抽屉内展示，不回退前端示例数据。
 - 前端不得直接推进 Episode stage；正式阶段以 StoryOS canonical state transition 为准。
 - Platform 查询页读取真实 Platform API；失败会显式展示错误，不回退伪造结果。
 - WebCodex 是 Workspace Provider，不是 Episode Authority。
@@ -18,7 +18,7 @@ npm ci
 npm run dev
 ```
 
-默认开发服务监听 `0.0.0.0:3000`。
+默认开发服务监听 `0.0.0.0:3100`。
 
 如果 Platform API 不与前端同源，可设置：
 
