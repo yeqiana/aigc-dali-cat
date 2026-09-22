@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse, datetime as dt, json
 from pathlib import Path
 import image_provider_runtime
+import hot_state_bridge
 
 REL=Path("meta/batch-provider-capability.json")
 
@@ -10,6 +11,10 @@ def now():
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
 def read(ep:Path)->dict:
+    hot = hot_state_bridge.read(ep, "BATCH_CAPABILITY")
+    if hot.get("redis_read") and isinstance(hot.get("value"), dict):
+        return hot["value"]
+    if not hot_state_bridge.file_fallback_allowed(hot): return {}
     p=ep/REL
     if not p.is_file(): return {}
     data=json.loads(p.read_text(encoding="utf-8-sig"))
@@ -44,6 +49,7 @@ def record(
     }
     p=ep/REL;p.parent.mkdir(parents=True,exist_ok=True)
     p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    hot_state_bridge.mirror(ep, "BATCH_CAPABILITY", data)
     return data
 
 def supported(ep:Path)->bool|None:

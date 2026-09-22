@@ -26,28 +26,57 @@ def _contract_rows(ep,frame):
         if kind not in {"identity","prop","location","capture_style"} or not raw:continue
         if row.get("decision") not in {None,"pass","passed"}:continue
         fp=repo_file(raw)
-        if fp:refs.append({"path":repo_rel(fp),"role":str(row.get("role") or "continuity"),"kind":kind})
+        if fp:
+            refs.append({
+                "path":repo_rel(fp),
+                "role":str(row.get("role") or "continuity"),
+                "kind":kind,
+                "anchor":row.get("anchor") or row.get("id") or row.get("required_anchor")
+            })
     return c,hm,refs
-def _identity_need(ep,hm,contract_refs):
-    cv=json.loads((Path(ep)/character_visual_contract.REL).read_text(encoding="utf-8-sig"));ids=[str(x) for x in (cv.get("members") or {}).keys()];primary=str((hm.get("shot_progression") or {}).get("primary_subject") or "");matched=[cid for cid in ids if cid and cid in primary]
+def _contract_identity_ids(contract):
+    out=[]
+    for row in (contract or {}).get("identity_requirements") or []:
+        if not isinstance(row,dict):continue
+        cid=str(row.get("character_id") or "").strip().upper()
+        if cid and cid not in out:out.append(cid)
+    return out
+
+
+def _identity_need(ep,hm,contract_refs,scope="batch",identity_requirements=None):
+    cv=character_visual_contract.load(ep) or {};ids=[str(x) for x in (cv.get("members") or {}).keys()];shot=hm.get("shot_progression") or {};primary=str(shot.get("primary_subject") or "");matched=[cid for cid in ids if cid and cid in primary]
     if matched:
         cid=matched[0];idx=primary.find(cid);fragment=primary[max(0,idx-4):idx+len(cid)+12].lower()
         if any(tok.lower() in fragment for tok in NON_FACE_FRAGMENT_TOKENS):
+            if scope in {"visual_lock","repair"} and shot.get("human_present") is True:
+                return True,cid,"visual_lock_non_face_character_fragment"
             return False,None,"non_face_character_fragment"
         return True,cid,"primary_subject_character_id"
     if any(x.get("kind")=="identity" for x in contract_refs):return True,None,"contract_identity_reference"
+    if scope in {"visual_lock","repair"} and shot.get("human_present") is True:
+        # Visual Lock and its repair lanes calibrate recurring character identity.
+        # A human-present frame must not silently lose the Pixel Master merely
+        # because prose says "four people" instead of a token like "friend"/P01.
+        return True,None,"visual_lock_human_present"
     capture=hm.get("capture_event") or {}
     capture_text=" | ".join(str(capture.get(k) or "") for k in ("why_capture_now","device_position"))
     if any(tok.lower() in capture_text.lower() for tok in SELFIE_CAPTURE_TOKENS):
         photographer=str(capture.get("photographer_id") or "").strip()
         return True,photographer or None,"selfie_capture_event"
+    contract_ids=[]
+    for row in identity_requirements or []:
+        if not isinstance(row,dict):continue
+        cid=str(row.get("character_id") or "").strip().upper()
+        if cid and cid not in contract_ids:contract_ids.append(cid)
+    if contract_ids:
+        return True,contract_ids[0],"frame_contract_identity_requirements"
     low=primary.lower()
     if any(tok.lower() in low for tok in HUMAN_TOKENS):return True,None,"human_primary_subject"
     return False,None,"no_human_identity_signal"
 def _master_identity(ep,frame,scope,character_id):
     series_ref=character_visual_contract.series_identity_reference(ep,character_id)
     if series_ref:return {k:series_ref[k] for k in ("path","role","kind") if k in series_ref},"series_character_identity"
-    allow=scope=="visual_lock";group=character_visual_contract.pixel_master_reference(ep,allow_provisional=allow)
+    allow=scope in {"visual_lock","repair"};group=character_visual_contract.pixel_master_reference(ep,allow_provisional=allow)
     if not group:return None,None
     try:
         if int(str(group.get("frame") or "0"))==int(frame):return None,"self_reference_blocked"
@@ -57,10 +86,16 @@ def _master_identity(ep,frame,scope,character_id):
         if crop:return crop,"individual_crop"
     return {k:group[k] for k in ("path","role","kind") if k in group},"group_master"
 def select(ep,frame,scope="batch"):
-    ep=Path(ep).resolve();frame=int(frame);c,hm,contract_refs=_contract_rows(ep,frame);need,cid,need_reason=_identity_need(ep,hm,contract_refs)
+    ep=Path(ep).resolve();frame=int(frame);c,hm,contract_refs=_contract_rows(ep,frame);required_identity_ids=_contract_identity_ids(c);need,cid,need_reason=_identity_need(ep,hm,contract_refs,scope=scope,identity_requirements=c.get("identity_requirements") or [])
     identity_cid=None if need_reason=="selfie_capture_event" else cid
+    # Character authority policy: current episode pixel master has priority over
+    # historical series assets. Historical assets may supplement continuity but
+    # must never override the current calibrated identity.
     series_ref=character_visual_contract.series_identity_reference(ep,identity_cid) if need else None
-    if scope=="visual_lock" and need and not series_ref:
+    current_master=character_visual_contract.pixel_master_reference(ep,allow_provisional=(scope in {"visual_lock","repair"})) if need else None
+    if current_master and identity_cid:
+        series_ref=None
+    if scope in {"visual_lock","repair"} and need and not series_ref:
         try:group=character_visual_contract.pixel_master_reference(ep,allow_provisional=True)
         except Exception:group=None
         if group and int(str(group.get("frame") or "0"))==frame:need=False
@@ -68,6 +103,29 @@ def select(ep,frame,scope="batch"):
     if need:
         ident,source=_master_identity(ep,frame,scope,identity_cid)
         if ident:chosen.append(ident);meta["identity_source"]=source
+    # Frame Contract identity intent is execution evidence too.  When a shot
+    # contains multiple named/interaction characters, reserve the remaining
+    # reference slots for their current-episode individual crops before props.
+    if need and len(chosen)<MAX_REFS:
+        allow=scope in {"visual_lock","repair"}
+        for required_cid in required_identity_ids:
+            if required_cid==identity_cid:continue
+            crop=character_visual_contract.crop_reference(ep,required_cid,allow_provisional=allow)
+            if not crop:continue
+            if any(x.get("path")==crop.get("path") for x in chosen):continue
+            chosen.append(crop)
+            if len(chosen)>=MAX_REFS:break
+    # Multi-character identity contract: reserve remaining reference capacity for
+    # required identity anchors before contextual props/locations. A double-person
+    # baseline must not silently degrade into a single-person identity lock.
+    if need and len(chosen) < MAX_REFS:
+        for row in contract_refs:
+            if row.get("kind") != "identity":
+                continue
+            if any(x.get("path") == row.get("path") for x in chosen):
+                continue
+            chosen.append(row)
+            break
     others=[x for x in contract_refs if not (x.get("kind")=="identity" and chosen)];role=str((hm.get("frame_directive") or {}).get("narrative_role") or "")
     def score(row):
         kind=row.get("kind");base={"prop":40,"location":30,"capture_style":20,"identity":10}.get(kind,0)
@@ -78,6 +136,46 @@ def select(ep,frame,scope="batch"):
         if len(chosen)>=MAX_REFS:break
         if any(x.get("path")==row.get("path") for x in chosen):continue
         chosen.append(row)
-    meta["selected"]=[{"role":x.get("role"),"kind":x.get("kind"),"path":x.get("path")} for x in chosen];meta["policy"]="identity_if_needed_or_visual_lock_then_context_reference";return chosen,meta
+    # Attach semantic anchor labels before runtime validation. The path alone is not
+    # enough: a P02 face crop may historically be classified as continuity, but the
+    # execution contract must preserve that it satisfies P02_face.
+    chosen = _bind_required_anchor_labels(chosen, contract_refs, hm)
+    meta["selected"]=[{"role":x.get("role"),"anchor":x.get("anchor"),"kind":x.get("kind"),"path":x.get("path")} for x in chosen]
+    meta["policy"]="identity_if_needed_or_visual_lock_then_context_reference"
+    meta["required_anchor_execution_check"]="runtime_gate_reconciliation"
+    return chosen,meta
+
+
+def _bind_required_anchor_labels(selected, contract_refs, hm):
+    """Bind execution references to declared identity anchors by source evidence."""
+    result=[]
+    for row in selected:
+        item=dict(row)
+        for contract in contract_refs:
+            if item.get("path") == contract.get("path"):
+                anchor=contract.get("anchor")
+                cid=str(contract.get("id") or anchor or "").lower()
+                if "p02" in cid or "face" in cid:
+                    anchor="P02_face"
+                elif "couple" in cid or "identity" in cid or "selfie" in cid:
+                    anchor="protagonist_identity"
+                if anchor:
+                    item["anchor"]=anchor
+                    break
+        result.append(item)
+    return result
+
+
+def validate_required_anchor_execution(ep, frame, selected, gates=None):
+    """Fail closed when declared required identity anchors are not in execution refs."""
+    visual = (gates or {}).get("visual") if isinstance(gates, dict) else None
+    refs = visual.get("references") if isinstance(visual, dict) else None
+    if not isinstance(refs, dict) or refs.get("required") is not True:
+        return {"ok": True, "reason": "no_required_reference_contract"}
+    required={str(x) for x in refs.get("required_anchors") or []}
+    selected_anchors={str(x.get("anchor")) for x in selected if isinstance(x,dict) and x.get("anchor")}
+    missing=sorted(required-selected_anchors)
+    return {"ok": not missing, "missing_anchors": missing, "selected": selected}
+
 def self_test():assert MAX_REFS==2;print("REFERENCE ARBITRATOR SELF-TEST PASS")
 if __name__=="__main__":self_test()

@@ -1,7 +1,7 @@
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 BT = chr(96)
-P = 'reports/09-05婚礼前夜生产问题复盘_20260910.md'
+P = 'reports/archive/issue-history/09-05婚礼前夜生产问题复盘_20260910.md'
 t = open(P, encoding='utf-8', newline='').read()
 def rep(old, new):
     global t

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "MIGRATED",
+  "episode": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\天界普通女生的一天",
+  "at": "2026-09-15T16:13:22+08:00",
+  "from": "gpt-image-2",
+  "to": "gpt-image-2.5-flare",
+  "source_request_id": "20260913_013729_f5502b5f",
+  "request_id": "20260915_161322_913acd7a",
+  "request_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\runtime\\requests\\20260915_161322_913acd7a.json",
+  "queue_items_updated": 1,
+  "historical_generated_rows_preserved": true,
+  "preimage_authority_projection_sha256": "313b9ff41247ccd740108af6f5248510225accdb14d857c441890f7b51a9266a",
+  "preimage_authority_preserved": true,
+  "evidence_upgraded_at": "2026-09-15T16:28:30+08:00"
+}

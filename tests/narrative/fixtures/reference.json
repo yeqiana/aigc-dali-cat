@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "category": "reference",
+  "fixtures": [
+    {
+      "id": "REF_REAL_NEG_001",
+      "polarity": "negative",
+      "source_type": "real",
+      "source_episode": "EP003 雾中的另一座生活区（历史生产）",
+      "source_evidence": ["reports/Story_OS_稳定生产闭环_暴露问题清单_20260911.md W-17"],
+      "scenario": "Gate 声明 required_anchors=[protagonist_identity,P02_face]，但 Frame03/06/19 运行时实际只下发一条 P01/group identity reference；P02_face 没进入 worker references。",
+      "expected": {
+        "decision": "FAIL",
+        "issue_codes": ["REQUIRED_REFERENCE_NOT_EXECUTED"],
+        "reason": "配置存在不等于执行生效；必须对 required anchors 与 provider 实际引用集合做对账。"
+      },
+      "current_coverage": "fixed",
+      "future_capability": ["ReferenceContract"]
+    },
+    {
+      "id": "REF_REAL_POS_001",
+      "polarity": "positive",
+      "source_type": "real",
+      "source_episode": "EP003 雾中的另一座生活区（修复回归）",
+      "source_evidence": ["W-17 Frame19 回归"],
+      "scenario": "修复后 selected references 明确绑定 protagonist_identity 与 P02_face，missing_anchors=[]，image_scheduler 在执行前做 required anchor reconciliation。",
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "reason": "Reference Execution Evidence 已能证明关键身份锚实际进入执行链。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["ReferenceContract"]
+    },
+    {
+      "id": "REF_REAL_POS_002",
+      "polarity": "positive",
+      "source_type": "real",
+      "source_episode": "EP003 / current reference arbitration",
+      "source_evidence": ["W-18"],
+      "scenario": "身份 authority 优先级为当前 Episode Pixel Master > Series Character Master > Historical Episode Reference。",
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "reason": "当前校准身份不能被历史剧集 reference 反向覆盖。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["ReferenceContract"]
+    },
+    {
+      "id": "REF_DESIGN_NEG_001",
+      "polarity": "negative",
+      "source_type": "design_only",
+      "source_episode": "generic",
+      "source_evidence": ["POV 方法论吸收后的 StoryOS VNext 设计"],
+      "scenario": "一张只用于固定 P01 脸部身份的参考图，其背景、服装和姿态也被 Prompt Compiler 当成同等强约束继承。",
+      "expected": {
+        "decision": "FAIL",
+        "issue_codes": ["REFERENCE_SCOPE_OVERINHERIT"],
+        "reason": "未来 Reference Semantics 应支持 inherit/ignore/authority；身份参考不应默认继承背景、服装和姿态。"
+      },
+      "current_coverage": "design_gap",
+      "future_capability": ["ReferenceContract.inherit", "ReferenceContract.ignore", "ReferenceContract.authority"]
+    }
+  ]
+}
+

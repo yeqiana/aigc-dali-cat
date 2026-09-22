@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "episode_id": "10-03",
+  "reviewed_at": "2026-09-11T13:03:40+08:00",
+  "candidate_fingerprint_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "7e7620693aee7c21558ae3ce5cb97cd53e7f9279d05b78de181035c898914f8a",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "history_episode_ids": [
+    "09-04",
+    "10-01"
+  ],
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-11T13:03:40+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/recent5-semantic-attempt-1-request.json",
+    "request_id": "recent5-semantic-a1-eda71d8376adf26e",
+    "request_fingerprint": "eda71d8376adf26e7d223fe84b8a2b2005c44c4e05885ff06f2516fa930f0aab"
+  },
+  "comparisons": [
+    {
+      "episode_id": "09-04",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    },
+    {
+      "episode_id": "10-01",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    }
+  ]
+}

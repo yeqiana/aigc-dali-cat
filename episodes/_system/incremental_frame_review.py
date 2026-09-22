@@ -12,10 +12,13 @@ import codex_critic_runner as critic_runner
 import frame_semantic_review as base
 # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 from story_os_contract import story_os_version
+import final_acceptance
+import production_ledger
 import runtime_router
 import runtime_provenance
 import story_json
 import runtime_timeout_policy
+import visual_reality_score
 
 ROOT = Path(__file__).resolve().parents[2]
 STATE_REL = Path("meta/incremental-frame-review.json")
@@ -253,9 +256,52 @@ def _context_frames(keys: list[str], dirty: list[str]) -> list[str]:
     return [f"{n:02d}" for n in sorted(chosen)]
 
 
+def _pending_ledger_plan(ep: Path) -> dict | None:
+    """Describe unfinished production without asking final-review code to consume it.
+
+    Incremental semantic review only owns PASSED/LOCKED assets. Transitional ledger
+    states belong to image generation/recovery. In particular, an authority refresh is
+    a deliberate regeneration boundary, not a malformed production-passed frame.
+    """
+    ledger = production_ledger.load_authority(ep, default=None)
+    if not isinstance(ledger, dict):
+        return None
+    frames = ledger.get("frames")
+    if not isinstance(frames, dict) or not frames:
+        return None
+    pending: dict[str, str] = {}
+    for raw_key, row in frames.items():
+        if not isinstance(row, dict):
+            continue
+        key = str(raw_key).zfill(2)
+        status = str(row.get("status") or "")
+        if status not in production_ledger.ACCEPTED_LEDGER_STATES:
+            pending[key] = status or "UNKNOWN"
+    if not pending:
+        return None
+    authority_refresh = sorted(
+        key for key, status in pending.items() if status == "AUTHORITY_REFRESH_AUTHORIZED"
+    )
+    return {
+        "action": "AWAITING_AUTHORITY_REFRESH" if authority_refresh else "AWAITING_PRODUCTION",
+        "dirty_frames": authority_refresh if authority_refresh else sorted(pending),
+        "context_frames": [],
+        "reasons": {key: [f"ledger_status:{status}"] for key, status in sorted(pending.items())},
+        "pending_frames": sorted(pending),
+        "pending_statuses": dict(sorted(pending.items())),
+        "authority_refresh_frames": authority_refresh,
+        "accepted_known_defect_frames": [],
+        "accepted_reasons": {},
+        "caption_mode": "deferred_until_production_ready",
+    }
+
+
 def build_plan(ep: Path) -> dict:
     if not review_required(ep):
         return {"action": "NOT_REQUIRED", "dirty_frames": [], "context_frames": [], "reasons": ["legacy_contract"]}
+    pending_plan = _pending_ledger_plan(ep)
+    if pending_plan is not None:
+        return pending_plan
     frames = base.frame_records(ep, require_files=True)
     contexts = base.context_hashes(ep)
     captions = caption_state(ep, frames)
@@ -263,11 +309,20 @@ def build_plan(ep: Path) -> dict:
     directing_v3 = base.directing_v3_required(ep)
     dirty: list[str] = []
     reasons: dict[str, list[str]] = {}
+    accepted: list[str] = []
+    accepted_reasons: dict[str, list[str]] = {}
     context_change = False
     for frame in frames:
         data = _review_data(ep, frame["frame"])
         clean, why = _review_clean(ep, data, frame, contexts, captions["frame_sha256"][frame["frame"]], version, directing_v3)
         if not clean:
+            # A direct-user final acceptance (meta/final-acceptance.json) converts a
+            # known-defect frame into an accepted one so it does not re-enter the repair
+            # queue forever. It is recorded explicitly, never silently treated as clean.
+            if final_acceptance.covers(ep, frame["frame"]):
+                accepted.append(frame["frame"])
+                accepted_reasons[frame["frame"]] = why
+                continue
             dirty.append(frame["frame"])
             reasons[frame["frame"]] = why
             if {"story_visual_context_changed", "review_version_changed", "story_source_binding_changed"}.intersection(why):
@@ -278,6 +333,8 @@ def build_plan(ep: Path) -> dict:
             "dirty_frames": [],
             "context_frames": [],
             "reasons": {},
+            "accepted_known_defect_frames": accepted,
+            "accepted_reasons": accepted_reasons,
             "caption_mode": captions["mode"],
         }
     ratio = len(dirty) / max(1, len(frames))
@@ -287,6 +344,8 @@ def build_plan(ep: Path) -> dict:
         "dirty_frames": dirty,
         "context_frames": [row["frame"] for row in frames] if action == "FULL" else _context_frames([r["frame"] for r in frames], dirty),
         "reasons": reasons,
+        "accepted_known_defect_frames": accepted,
+        "accepted_reasons": accepted_reasons,
         "dirty_ratio": round(ratio, 4),
         "caption_mode": captions["mode"],
     }
@@ -407,7 +466,8 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
         root=ROOT,
         timeout=timeout,
         sandbox="workspace-write",
-        reasoning_effort_literal='model_reasoning_effort="medium"',
+        model=runtime_router.vision_review_model(),
+        reasoning_effort=runtime_router.vision_review_effort("default"),
         attachments=[row["path"] for row in selected],
         log_path=log,
     )
@@ -433,16 +493,15 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
         candidate_errors.append("critic summary.passed must be true")
 
     rows_by_frame = {str(r.get("frame") or "").zfill(2): r for r in (data.get("frames") or []) if isinstance(r, dict)}
-    provenance = {
-        "runtime": "CODEX_ISOLATED",
-        "isolated_session": True,
-        "review_scope": "INCREMENTAL_CONTEXT_SET",
-        "attempt": attempt,
-        "reviewed_at": now(),
-        "log": _repo_rel(log),
+    provenance = runtime_provenance.build_vision_critic_provenance(
+        attempt=attempt,
+        log=_repo_rel(log),
+        review_scope="INCREMENTAL_CONTEXT_SET",
+    )
+    provenance.update({
         "dirty_roots": plan["dirty_frames"],
         "context_frames": plan["context_frames"],
-    }
+    })
     for frame in selected:
         source = rows_by_frame.get(frame["frame"], {})
         bound = {
@@ -504,6 +563,11 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
     errors = list(base.verify_episode(ep, metadata_only=metadata_only, write_audit=False))
     if not review_required(ep):
         return errors
+    # E005 is an automated risk detector only. If present, a low score makes
+    # the review dirty/repairable; it does not manufacture a visual PASS.
+    score_path = Path(ep) / visual_reality_score.REL
+    if score_path.is_file() and not metadata_only:
+        errors.extend(visual_reality_score.verify(ep))
     version = base.episode_contract_version(ep)
     if version_tuple(version) < TARGET:
         if write_audit:
@@ -562,9 +626,13 @@ def run_review(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
             return 2
         print("INCREMENTAL FRAME REVIEW REUSE: 0 critic calls")
         return 0
+    if action in {"AWAITING_AUTHORITY_REFRESH", "AWAITING_PRODUCTION"}:
+        print(f"INCREMENTAL FRAME REVIEW DEFER: action={action} pending={plan.get('pending_frames') or []}")
+        return 3
     active_runtime, _ = runtime_router.detect()
-    if action == "FULL" or (action == "PATCH" and active_runtime in {"WORK", "WEB"} and not codex_raw):
-        reason = "product runtime avoids local Codex patch critic" if action == "PATCH" else "dirty/context threshold"
+    vision_runtime, _ = runtime_router.vision_review_runtime()
+    if action == "FULL" or (action == "PATCH" and vision_runtime != "CODEX" and not codex_raw):
+        reason = "vision runtime requires product review" if action == "PATCH" else "dirty/context threshold"
         print(f"INCREMENTAL FRAME REVIEW ESCALATE FULL: dirty={plan['dirty_frames']} reason={reason}")
         rc = base.run_critic(ep, attempt=attempt, codex_raw=codex_raw, timeout=timeout)
         if rc == 0:

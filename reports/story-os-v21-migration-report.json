@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "story_os_version": "2.1.0",
-  "generated_at": "2026-08-31T09:43:21+08:00",
+  "story_os_version": "2.6.1",
+  "generated_at": "2026-09-19T23:45:41+08:00",
   "policy": {
     "legacy_no_evidence_fabrication": true,
     "migration_default_read_only": true,
     "episode_stage_source_unchanged": "meta/episode-state.json"
   },
   "summary": {
-    "episodes": 2,
+    "episodes": 11,
     "legacy_compat": 2,
-    "unversioned_compat": 0,
-    "v21_active": 0,
-    "v21_missing_policy": 0
+    "unversioned_compat": 1,
+    "v21_active": 8,
+    "v21_missing_policy": 7
   },
   "episodes": [
     {
@@ -45,6 +45,37 @@
       "recommendation": "KEEP_LEGACY_NO_BACKFILL"
     },
     {
+      "episode": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉",
+      "detected_version": "2.6.1",
+      "current_state": "PUBLISH_READY",
+      "compatibility_status": "V21_ACTIVE",
+      "current_v21_policy_required": true,
+      "automatic_evidence_backfill_allowed": false,
+      "active_policies": {
+        "concept_ambition_versioned": true,
+        "environment_contract_present": true,
+        "frame_directives_present": true,
+        "four_admission_visual_lock": true,
+        "fast_frame_scout": false,
+        "final_candidate_snapshot": true
+      },
+      "missing_current_policy": [
+        "fast_frame_scout"
+      ],
+      "evidence_presence": {
+        "concept_ambition": true,
+        "environment_contract": true,
+        "frame_contract_index": true,
+        "visual_lock_v21": true,
+        "production_queue": true,
+        "fast_scout": false,
+        "final_snapshot": true,
+        "publish_event": false,
+        "post_publish_review": false
+      },
+      "recommendation": "PLAN_EXPLICIT_V21_POLICY_ACTIVATION"
+    },
+    {
       "episode": "episodes/10_山难伪纪录片/01_鳌太线_热汤",
       "detected_version": "2.0.3.6",
       "current_state": "PUBLISH_READY",
@@ -65,6 +96,263 @@
         "environment_contract": true,
         "frame_contract_index": false,
         "visual_lock_v21": true,
+        "production_queue": false,
+        "fast_scout": false,
+        "final_snapshot": false,
+        "publish_event": false,
+        "post_publish_review": false
+      },
+      "recommendation": "KEEP_LEGACY_NO_BACKFILL"
+    },
+    {
+      "episode": "episodes/10_彼此的天上/01_不存在的夜行路",
+      "detected_version": "2.2.1",
+      "current_state": "IDEA_LOCKED",
+      "compatibility_status": "V21_ACTIVE",
+      "current_v21_policy_required": true,
+      "automatic_evidence_backfill_allowed": false,
+      "active_policies": {
+        "concept_ambition_versioned": true,
+        "environment_contract_present": false,
+        "frame_directives_present": false,
+        "four_admission_visual_lock": false,
+        "fast_frame_scout": false,
+        "final_candidate_snapshot": false
+      },
+      "missing_current_policy": [
+        "environment_contract_present",
+        "frame_directives_present",
+        "four_admission_visual_lock",
+        "fast_frame_scout",
+        "final_candidate_snapshot"
+      ],
+      "evidence_presence": {
+        "concept_ambition": false,
+        "environment_contract": true,
+        "frame_contract_index": false,
+        "visual_lock_v21": false,
+        "production_queue": false,
+        "fast_scout": false,
+        "final_snapshot": false,
+        "publish_event": false,
+        "post_publish_review": false
+      },
+      "recommendation": "PLAN_EXPLICIT_V21_POLICY_ACTIVATION"
+    },
+    {
+      "episode": "episodes/10_彼此的天上/02_玻璃另一边的手",
+      "detected_version": "2.6.1",
+      "current_state": "VISUAL_CALIBRATED",
+      "compatibility_status": "V21_ACTIVE",
+      "current_v21_policy_required": true,
+      "automatic_evidence_backfill_allowed": false,
+      "active_policies": {
+        "concept_ambition_versioned": true,
+        "environment_contract_present": true,
+        "frame_directives_present": true,
+        "four_admission_visual_lock": true,
+        "fast_frame_scout": false,
+        "final_candidate_snapshot": false
+      },
+      "missing_current_policy": [
+        "fast_frame_scout",
+        "final_candidate_snapshot"
+      ],
+      "evidence_presence": {
+        "concept_ambition": true,
+        "environment_contract": true,
+        "frame_contract_index": true,
+        "visual_lock_v21": true,
+        "production_queue": true,
+        "fast_scout": false,
+        "final_snapshot": false,
+        "publish_event": false,
+        "post_publish_review": false
+      },
+      "recommendation": "PLAN_EXPLICIT_V21_POLICY_ACTIVATION"
+    },
+    {
+      "episode": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳",
+      "detected_version": "2.1.0",
+      "current_state": "PUBLISH_READY",
+      "compatibility_status": "V21_ACTIVE",
+      "current_v21_policy_required": true,
+      "automatic_evidence_backfill_allowed": false,
+      "active_policies": {
+        "concept_ambition_versioned": true,
+        "environment_contract_present": true,
+        "frame_directives_present": true,
+        "four_admission_visual_lock": true,
+        "fast_frame_scout": true,
+        "final_candidate_snapshot": true
+      },
+      "missing_current_policy": [],
+      "evidence_presence": {
+        "concept_ambition": true,
+        "environment_contract": true,
+        "frame_contract_index": true,
+        "visual_lock_v21": true,
+        "production_queue": true,
+        "fast_scout": true,
+        "final_snapshot": true,
+        "publish_event": false,
+        "post_publish_review": false
+      },
+      "recommendation": "CURRENT_V21_OK"
+    },
+    {
+      "episode": "episodes/11_仲夏夜惊魂/01_惊魂",
+      "detected_version": "2.2.1",
+      "current_state": "IDEA_LOCKED",
+      "compatibility_status": "V21_ACTIVE",
+      "current_v21_policy_required": true,
+      "automatic_evidence_backfill_allowed": false,
+      "active_policies": {
+        "concept_ambition_versioned": true,
+        "environment_contract_present": true,
+        "frame_directives_present": true,
+        "four_admission_visual_lock": false,
+        "fast_frame_scout": false,
+        "final_candidate_snapshot": false
+      },
+      "missing_current_policy": [
+        "four_admission_visual_lock",
+        "fast_frame_scout",
+        "final_candidate_snapshot"
+      ],
+      "evidence_presence": {
+        "concept_ambition": false,
+        "environment_contract": true,
+        "frame_contract_index": false,
+        "visual_lock_v21": false,
+        "production_queue": false,
+        "fast_scout": false,
+        "final_snapshot": false,
+        "publish_event": false,
+        "post_publish_review": false
+      },
+      "recommendation": "PLAN_EXPLICIT_V21_POLICY_ACTIVATION"
+    },
+    {
+      "episode": "episodes/埋儿那天_娘把我拦住了",
+      "detected_version": "2.6.1",
+      "current_state": "IDEA_LOCKED",
+      "compatibility_status": "V21_ACTIVE",
+      "current_v21_policy_required": true,
+      "automatic_evidence_backfill_allowed": false,
+      "active_policies": {
+        "concept_ambition_versioned": true,
+        "environment_contract_present": false,
+        "frame_directives_present": false,
+        "four_admission_visual_lock": false,
+        "fast_frame_scout": false,
+        "final_candidate_snapshot": false
+      },
+      "missing_current_policy": [
+        "environment_contract_present",
+        "frame_directives_present",
+        "four_admission_visual_lock",
+        "fast_frame_scout",
+        "final_candidate_snapshot"
+      ],
+      "evidence_presence": {
+        "concept_ambition": true,
+        "environment_contract": true,
+        "frame_contract_index": false,
+        "visual_lock_v21": false,
+        "production_queue": false,
+        "fast_scout": false,
+        "final_snapshot": false,
+        "publish_event": false,
+        "post_publish_review": false
+      },
+      "recommendation": "PLAN_EXPLICIT_V21_POLICY_ACTIVATION"
+    },
+    {
+      "episode": "episodes/天界普通女生的一天",
+      "detected_version": "2.6.1",
+      "current_state": "STORYBOARD_LOCKED",
+      "compatibility_status": "V21_ACTIVE",
+      "current_v21_policy_required": true,
+      "automatic_evidence_backfill_allowed": false,
+      "active_policies": {
+        "concept_ambition_versioned": true,
+        "environment_contract_present": true,
+        "frame_directives_present": true,
+        "four_admission_visual_lock": false,
+        "fast_frame_scout": false,
+        "final_candidate_snapshot": false
+      },
+      "missing_current_policy": [
+        "four_admission_visual_lock",
+        "fast_frame_scout",
+        "final_candidate_snapshot"
+      ],
+      "evidence_presence": {
+        "concept_ambition": true,
+        "environment_contract": true,
+        "frame_contract_index": true,
+        "visual_lock_v21": true,
+        "production_queue": true,
+        "fast_scout": false,
+        "final_snapshot": false,
+        "publish_event": false,
+        "post_publish_review": false
+      },
+      "recommendation": "PLAN_EXPLICIT_V21_POLICY_ACTIVATION"
+    },
+    {
+      "episode": "episodes/尸解仙",
+      "detected_version": "2.6.1",
+      "current_state": "VISUAL_CALIBRATED",
+      "compatibility_status": "V21_ACTIVE",
+      "current_v21_policy_required": true,
+      "automatic_evidence_backfill_allowed": false,
+      "active_policies": {
+        "concept_ambition_versioned": true,
+        "environment_contract_present": true,
+        "frame_directives_present": true,
+        "four_admission_visual_lock": true,
+        "fast_frame_scout": true,
+        "final_candidate_snapshot": false
+      },
+      "missing_current_policy": [
+        "final_candidate_snapshot"
+      ],
+      "evidence_presence": {
+        "concept_ambition": true,
+        "environment_contract": true,
+        "frame_contract_index": true,
+        "visual_lock_v21": true,
+        "production_queue": true,
+        "fast_scout": false,
+        "final_snapshot": false,
+        "publish_event": false,
+        "post_publish_review": false
+      },
+      "recommendation": "PLAN_EXPLICIT_V21_POLICY_ACTIVATION"
+    },
+    {
+      "episode": "episodes/江南卖花姑娘的一天",
+      "detected_version": "unversioned",
+      "current_state": "IDEA_LOCKED",
+      "compatibility_status": "UNVERSIONED_COMPAT",
+      "current_v21_policy_required": false,
+      "automatic_evidence_backfill_allowed": false,
+      "active_policies": {
+        "concept_ambition_versioned": false,
+        "environment_contract_present": false,
+        "frame_directives_present": false,
+        "four_admission_visual_lock": false,
+        "fast_frame_scout": false,
+        "final_candidate_snapshot": false
+      },
+      "missing_current_policy": [],
+      "evidence_presence": {
+        "concept_ambition": false,
+        "environment_contract": false,
+        "frame_contract_index": false,
+        "visual_lock_v21": false,
         "production_queue": false,
         "fast_scout": false,
         "final_snapshot": false,

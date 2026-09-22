@@ -22,6 +22,8 @@ import workflow_observability as obs
 import runtime_request as runtime_request_contract
 import image_model_policy
 import runtime_dag
+import runtime_node_registry
+import runtime_scheduler
 import runtime_execution
 import performance_guard_v211  # STORY_OS_V211_PERF_RECOVERY
 import storyos_config
@@ -30,11 +32,32 @@ import request_router
 import product_runtime_adapter
 import next_action
 import runtime_timeout_policy
+import runtime_command
+import episode_performance as episode_perf
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
 _CONFIG = storyos_config.load_config()
 CONTRACT = ROOT / str(storyos_config.get_path(_CONFIG, "paths.workflow_contract"))
+
+# STORY_OS_V2_6_2_CONTINUOUS_HOST_LOOP: `runtime.continuous_host_loop` used to have no reader
+# anywhere, so on WORK/WEB the DAG returned HOST_WAIT (rc=20) for every scoped step and the
+# image dispatch chain stayed manual (`image_scheduler.py run` by hand). The bound below keeps
+# the loop finite: only locally executable actions run, and only until the DAG stops asking.
+HOST_LOOP_MAX_CYCLES = int(storyos_config.get_path(_CONFIG, "runtime.host_loop_max_cycles", 64))
+
+
+def print_json_safe(data: object) -> None:
+    """Emit inspectable JSON without failing on legacy Windows console encodings."""
+    payload = json.dumps(data, ensure_ascii=False, indent=2)
+    encoding = sys.stdout.encoding or "utf-8"
+    try:
+        payload.encode(encoding, errors="strict")
+    except UnicodeEncodeError:
+        # Preserve a successful machine-readable inspection command when the
+        # hosting console is GBK and an episode path contains non-GBK text.
+        payload = json.dumps(data, ensure_ascii=True, indent=2)
+    print(payload)
 
 
 def resolve_episode(raw: str) -> Path:
@@ -49,7 +72,7 @@ def resolve_episode(raw: str) -> Path:
 
 
 def run(args: list[object]) -> subprocess.CompletedProcess[str]:
-    return subprocess.run([str(x) for x in args], cwd=ROOT, check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace")
+    return runtime_command.run_argv([str(x) for x in args], cwd=ROOT, capture=True)
 
 
 def load_contract() -> dict:
@@ -68,11 +91,64 @@ def plan(ep: Path) -> dict:
         raise SystemExit(cp.stdout[-2500:])
     data = json.loads(cp.stdout)
     runtime, reason = detect()
-    return {"story_os_version": story_os_version(), "workflow_version": load_contract()["workflow_version"], "runtime": runtime, "runtime_reason": reason, "closure": data}
+    # This is an inspectable plan only. Actual execution remains runtime_dag.execute,
+    # whose existing composite steps are released through the same scheduler.
+    dag_nodes = runtime_node_registry.runtime_step_nodes(runtime_dag.spec_rows())
+    scheduler = runtime_scheduler.schedule(dag_nodes, max_workers=1)
+    return {"story_os_version": story_os_version(), "workflow_version": load_contract()["workflow_version"], "runtime": runtime, "runtime_reason": reason, "closure": data, "scheduler": scheduler}
 
 
 def record_checkpoint_step(ep: Path, step: str, status: str, elapsed: float, note: str = "") -> None:
-    run([sys.executable, SYSTEM / "runtime_checkpoint.py", "record-step", ep, "--step", step, "--status", status, "--finished-at", perf.now(), "--note", f"{note} elapsed={elapsed:.3f}s"])
+    run([sys.executable, SYSTEM / "runtime_checkpoint.py", "record-step", ep, "--step", step, "--status", status, "--finished-at", perf.now(), "--elapsed-seconds", str(round(float(elapsed), 6)), "--note", note])
+
+
+def continuous_host_loop_enabled() -> bool:
+    return bool(storyos_config.get_path(_CONFIG, "runtime.continuous_host_loop", False))
+
+
+def host_loop_step(ep: Path) -> tuple[bool, str]:
+    """Run at most one locally executable host action.
+
+    Returns ``(progressed, detail)``; ``progressed=False`` means the pending action needs the
+    real host (Codex/ChatGPT Work), so the DAG result must be handed back unchanged.
+    """
+    import episode_runner
+    action = next_action.write(ep)
+    name = episode_runner.local_host_action(action)
+    if name is None:
+        return False, str(action.get("action") or "UNKNOWN")
+    rc = episode_runner.run_local_host_action(ep, action)
+    return True, f"{name} rc={rc}"
+
+
+def advance_host_loop(ep: Path, *, codex: str | None, timeout: int, run_id: str, trace_id: str,
+                      max_cycles: int | None = None) -> tuple[int, str]:
+    """Drain locally executable host actions, resuming the DAG between them.
+
+    Stops on the first DAG return code that is not HOST_WAIT, when no local executor owns the
+    pending action, or at the cycle cap. Never turns a required host decision into a PASS.
+    """
+    cap = int(max_cycles or HOST_LOOP_MAX_CYCLES)
+    rc = product_runtime_adapter.HOST_ACTION_REQUIRED_RC
+    note = ""
+    for cycle in range(1, cap + 1):
+        progressed, detail = host_loop_step(ep)
+        if not progressed:
+            return rc, f"{note} stop_cycle={cycle} host_owns={detail}".strip()
+        note = f"{note} cycle={cycle} {detail};".strip()
+        if detail.rsplit(" rc=", 1)[-1] != "0":
+            return 21, f"{note} host_action_technical_failure".strip()
+        rc = runtime_dag.execute(ep, codex=codex, timeout=timeout, run_id=run_id, trace_id=trace_id)
+        # A resumed episode can already be at a queue/review boundary that does
+        # not map to a remaining DAG step.  In that case the DAG correctly
+        # returns 0, but the continuous loop must still consume the next local
+        # action (for example baseline review -> dependent image generation).
+        import episode_runner
+        following = next_action.write(ep)
+        if rc == product_runtime_adapter.HOST_ACTION_REQUIRED_RC or episode_runner.local_host_action(following) is not None:
+            continue
+        return rc, f"{note} dag_rc={rc}".strip()
+    return rc, f"{note} max_cycles={cap}".strip()
 
 
 def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeout: int, request_file: str | None = None) -> int:
@@ -98,6 +174,11 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
     if runtime not in {"WORK", "WEB", "CODEX"}:
         raise SystemExit(f"unsupported runtime: {runtime}")
     run_id = perf.start_run(ep, runtime, "resume" if resume else "run")
+    episode_perf.safe_begin_execution_session(
+        ep, source="workflow_runner", session_id=run_id,
+        metadata={"runtime":runtime,"resume":bool(resume)})
+    episode_perf.safe_transition_execution_state(
+        ep,"ACTIVE",session_id=run_id,source="workflow_runner")
     route_decision = request_router.route_episode(ep, request_data, write=True) if request_data else None
     trace_id = runtime_trace.start_run(ep, run_id, request_data, runtime, route_decision)
     if route_decision:
@@ -106,6 +187,21 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         execution_mode = str(((request_data or {}).get("runtime") or {}).get("execution_mode") or storyos_config.get_path(_CONFIG,"runtime.execution_mode"))
         if runtime in {"WORK", "WEB"} or execution_mode == "dag":
             rc = runtime_dag.execute(ep, codex=codex, timeout=timeout, run_id=run_id, trace_id=trace_id)
+            host_loop_note = ""
+            # Runtime DAG owns canonical stage work.  Queue/review actions can
+            # exist at a completed DAG boundary, so inspect the derived next
+            # action as well as HOST_WAIT before deciding whether to drain the
+            # bounded local host loop.
+            import episode_runner
+            pending_action = next_action.write(ep)
+            has_local_host_action = episode_runner.local_host_action(pending_action) is not None
+            if continuous_host_loop_enabled() and (rc == product_runtime_adapter.HOST_ACTION_REQUIRED_RC or has_local_host_action):
+                t_loop = time.monotonic()
+                rc, host_loop_note = advance_host_loop(ep, codex=codex, timeout=timeout, run_id=run_id, trace_id=trace_id)
+                loop_elapsed = time.monotonic() - t_loop
+                loop_status = "HOST_WAIT" if rc == product_runtime_adapter.HOST_ACTION_REQUIRED_RC else ("PASS" if rc == 0 else "FAILED")
+                perf.record_step(ep, run_id, "HOST_LOOP", loop_status, loop_elapsed, host_loop_note[:500])
+                record_checkpoint_step(ep, "HOST_LOOP", loop_status, loop_elapsed, host_loop_note[:400])
             total = time.monotonic() - started
             final_status = "COMPLETE" if rc == 0 else ("HOST_WAIT" if rc == product_runtime_adapter.HOST_ACTION_REQUIRED_RC else "BLOCKED")
             perf.finish_run(ep, run_id, final_status, total)
@@ -115,9 +211,15 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
                 obs.collect(ep, write=True)
             except Exception:
                 pass
-            try: next_action.write(ep)
-            except Exception: pass
-            runtime_trace.finish_run(ep, trace_id, run_id, final_status, note="runtime_dag")
+            try: pending_after=next_action.write(ep)
+            except Exception: pending_after={}
+            execution_state=episode_perf.execution_state_for_result(rc,pending_after)
+            episode_perf.safe_transition_execution_state(
+                ep,execution_state,session_id=run_id,source="workflow_runner",
+                metadata={"return_code":rc,"action":pending_after.get("action") if isinstance(pending_after,dict) else None})
+            if execution_state=="IDLE":
+                episode_perf.safe_finish_execution_session(ep,session_id=run_id,status=final_status)
+            runtime_trace.finish_run(ep, trace_id, run_id, final_status, note=f"runtime_dag {host_loop_note}".strip())
             return rc  # RUNTIME_DAG_V1
         t0 = time.monotonic()
         p = plan(ep)
@@ -132,13 +234,16 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         if request_data:
             cmd += ["--runtime-request", str(ep / runtime_request_contract.EPISODE_REL)]
         t1 = time.monotonic()
-        child = subprocess.run([str(x) for x in cmd], cwd=ROOT, check=False)
+        child = runtime_command.run_argv([str(x) for x in cmd], cwd=ROOT, capture=False)
         child_elapsed = time.monotonic() - t1
         child_status = "PASS" if child.returncode == 0 else "FAILED"
         perf.record_step(ep, run_id, "CODEX_COMPAT_ADAPTER", child_status, child_elapsed, f"rc={child.returncode}")
         record_checkpoint_step(ep, "CODEX_COMPAT_ADAPTER", child_status, child_elapsed, f"rc={child.returncode}")
         total = time.monotonic() - started
         perf.finish_run(ep, run_id, "COMPLETE" if child.returncode == 0 else "FAILED", total)
+        episode_perf.safe_transition_execution_state(ep,"IDLE",session_id=run_id,source="workflow_runner")
+        episode_perf.safe_finish_execution_session(
+            ep,session_id=run_id,status="COMPLETE" if child.returncode == 0 else "FAILED")
         try: performance_guard_v211.observe(ep, run_id, context="COMPAT_FINISH")
         except Exception: pass
         try:
@@ -149,6 +254,8 @@ def execute(ep: Path, *, resume: bool, full_auto: bool, codex: str | None, timeo
         return child.returncode
     except BaseException:
         total = time.monotonic() - started
+        episode_perf.safe_transition_execution_state(ep,"IDLE",session_id=run_id,source="workflow_runner",metadata={"reason":"exception"})
+        episode_perf.safe_finish_execution_session(ep,session_id=run_id,status="BLOCKED")
         try:
             perf.finish_run(ep, run_id, "BLOCKED", total)
             try: performance_guard_v211.observe(ep, run_id, context="EXCEPTION_FINISH")
@@ -191,16 +298,16 @@ def main() -> int:
         assert data["rules"].get("data_reviewed_requires_48h") is True
         assert "PUBLISH_RECORD" in data["steps"]
         assert "DATA_REVIEWED_GATE" in data["steps"]
-        assert image_model_policy.DEFAULT_MODEL == "gpt-image-2"
+        assert image_model_policy.DEFAULT_MODEL == "gpt-image-2.5-flare"
         assert data["rules"].get("current_visual_lock_calibration_count") == 4
         assert (ROOT / "runtimes/runtime-dag.json").is_file()
         print("WORKFLOW RUNNER V2.1 SELF-TEST PASS | PHASE910")
         return 0
     ep = resolve_episode(args.episode_dir)
     if args.cmd == "plan":
-        print(json.dumps(plan(ep), ensure_ascii=False, indent=2)); return 0
+        print_json_safe(plan(ep)); return 0
     if args.cmd == "performance":
-        print(json.dumps(perf.read(ep), ensure_ascii=False, indent=2)); return 0
+        print_json_safe(perf.read(ep)); return 0
     return execute(ep, resume=args.cmd == "resume", full_auto=args.full_auto, codex=args.codex, timeout=runtime_timeout_policy.resolve("codex_supervisor_run", args.timeout), request_file=args.request_file)
 
 

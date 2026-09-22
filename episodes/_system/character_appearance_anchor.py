@@ -15,6 +15,8 @@ from typing import Any
 
 import world_identity_contract
 import story_json
+import character_contract
+import character_visual_contract
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/runtime/contracts/character-appearance-anchor.json")
@@ -50,20 +52,47 @@ def required(ep: Path) -> bool:
     return world_identity_contract.required(ep)
 
 
+def verify_frame01_identity_anchor(ep: Path) -> list[str]:
+    """Verify that character-driven episodes have a Frame01 identity entry point.
+
+    Frame01 is the preferred character identity anchor. This check only enforces
+    the production contract; it does not require every story to expose a face
+    when the story has no explicit character protagonist.
+    """
+    ep = Path(ep).resolve()
+    errors = []
+    contract = character_contract.load(ep)
+    if not isinstance(contract,dict):
+        return ["FRAME01_IDENTITY_ANCHOR_CHARACTER_CONTRACT_MISSING"]
+    members = ((contract.get("cast") or {}).get("members") or [])
+    if not members:
+        return []
+
+    anchor_path = ep / REL
+    if not anchor_path.is_file():
+        errors.append("FRAME01_IDENTITY_ANCHOR_MISSING")
+        return errors
+
+    anchor = read_json(anchor_path)
+    if not (anchor.get("members") or {}):
+        errors.append("FRAME01_IDENTITY_ANCHOR_ZERO_MEMBERS")
+
+    return errors
+
+
 def _source_errors(ep: Path) -> list[str]:
     errors = []
-    cp = ep / CHAR_REL
-    cv = ep / VISUAL_REL
-    if not cp.is_file():
+    cp = character_contract.load(ep)
+    cvd = character_visual_contract.load(ep)
+    if not isinstance(cp,dict):
         errors.append("CHARACTER_APPEARANCE_SOURCE_MISSING:character-contract")
-    if not cv.is_file():
+    if not isinstance(cvd,dict):
         errors.append(
             "CHARACTER_APPEARANCE_SOURCE_MISSING:character-visual-contract"
         )
     if errors:
         return errors
-    cpd = read_json(cp)
-    cvd = read_json(cv)
+    cpd = cp
     if cpd.get("status") != "LOCKED":
         errors.append(
             "CHARACTER_APPEARANCE_SOURCE_NOT_LOCKED:character-contract"
@@ -88,8 +117,8 @@ def build(ep: Path, *, write: bool = True) -> dict:
     if errors:
         raise ValueError("; ".join(errors))
 
-    cp = read_json(ep / CHAR_REL)
-    cv = read_json(ep / VISUAL_REL)
+    cp = character_contract.load(ep) or {}
+    cv = character_visual_contract.load(ep) or {}
     world = world_identity_contract.effective(ep)
     members = ((cp.get("cast") or {}).get("members") or [])
     visual_members = cv.get("members") or {}
@@ -172,10 +201,10 @@ def build(ep: Path, *, write: bool = True) -> dict:
             "effective_sha256"
         ),
         "character_contract_path": CHAR_REL.as_posix(),
-        "character_contract_sha256": sha256_file(ep / CHAR_REL),
+        "character_contract_sha256": character_contract.authority_sha256(ep),
         "character_visual_contract_path": VISUAL_REL.as_posix(),
-        "character_visual_contract_sha256": sha256_file(
-            ep / VISUAL_REL
+        "character_visual_contract_sha256": (
+            character_visual_contract.authority_sha256(ep)
         ),
         "members": rows,
         "pixel_master_relationship": (

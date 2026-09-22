@@ -9,12 +9,14 @@ from pathlib import Path
 
 from story_os_contract import story_os_version
 import storyos_config
+import workspace_provider
 
 ROOT = Path(__file__).resolve().parents[2]
 _CONFIG = storyos_config.load_config()
 CONTRACT = ROOT / str(storyos_config.get_path(_CONFIG, 'paths.runtime_contract'))
 VALID = {'CODEX', 'WORK', 'WEB'}
 VALID_IMAGE_RUNTIMES = {'CODEX', 'PRODUCT_RUNTIME', 'AUTO'}
+VALID_REVIEW_RUNTIMES = {'CODEX', 'WORK', 'AUTO'}
 
 
 def preferred_runtime() -> str:
@@ -36,15 +38,64 @@ def image_execution_runtime() -> tuple[str, str]:
     return configured, 'config runtime.image_execution_runtime'
 
 
+def text_review_runtime() -> tuple[str, str]:
+    configured = str(storyos_config.get_path(_CONFIG, 'runtime.review.text.runtime') or 'WORK').strip().upper()
+    if configured not in {'WORK'}:
+        raise ValueError(f'invalid runtime.review.text.runtime: {configured!r}')
+    return configured, 'config runtime.review.text.runtime'
+
+
+def vision_review_runtime() -> tuple[str, str]:
+    override = os.getenv('STORY_OS_VISION_RUNTIME', '').strip().upper()
+    if override:
+        if override not in VALID_REVIEW_RUNTIMES:
+            raise ValueError(f'invalid STORY_OS_VISION_RUNTIME: {override!r}')
+        return override, 'STORY_OS_VISION_RUNTIME override'
+    configured = str(storyos_config.get_path(_CONFIG, 'runtime.review.vision.runtime') or 'CODEX').strip().upper()
+    if configured not in VALID_REVIEW_RUNTIMES:
+        raise ValueError(f'invalid runtime.review.vision.runtime: {configured!r}')
+    return configured, 'config runtime.review.vision.runtime'
+
+
+def governance_review_runtime() -> tuple[str, str]:
+    configured = str(storyos_config.get_path(_CONFIG, 'runtime.review.governance.runtime') or 'WORK').strip().upper()
+    if configured not in {'WORK'}:
+        raise ValueError(f'invalid runtime.review.governance.runtime: {configured!r}')
+    return configured, 'config runtime.review.governance.runtime'
+
+
+def vision_review_model() -> str:
+    value = str(storyos_config.get_path(_CONFIG, 'runtime.review.vision.model') or '').strip()
+    if not value:
+        raise ValueError('runtime.review.vision.model is required')
+    return value
+
+
+def vision_review_effort(kind: str = 'default') -> str:
+    suffix = {'fast': 'fast', 'final': 'final'}.get(str(kind).lower(), 'default')
+    value = str(storyos_config.get_path(_CONFIG, f'runtime.review.vision.reasoning_effort_{suffix}') or '').strip().lower()
+    if value not in {'low', 'medium', 'high'}:
+        raise ValueError(f'invalid runtime.review.vision.reasoning_effort_{suffix}: {value!r}')
+    return value
+
+
+def vision_review_max_inflight_final() -> int:
+    value = storyos_config.get_path(_CONFIG, 'runtime.review.vision.max_inflight_final')
+    if type(value) is not int or not 1 <= value <= 6:
+        raise ValueError('runtime.review.vision.max_inflight_final must be an int between 1 and 6')
+    return value
+
+
 def _effective_runtime() -> str:
     override = os.getenv('STORY_OS_RUNTIME', '').strip().upper()
     return override if override in VALID else preferred_runtime()
 
 
 def local_codex_allowed(*, explicit: bool = False) -> bool:
-    """Return whether non-image Story OS work may launch local codex.exe.
+    """Return whether general non-image/non-vision work may launch local codex.exe.
 
-    A CODEX image execution runtime does not authorize Codex to own Story/PREIMAGE/Review.
+    CODEX image/vision capability never grants Codex Story, PREIMAGE, governance,
+    release-authority or full-auto ownership.
     """
     if _effective_runtime() == 'CODEX':
         return True
@@ -60,12 +111,25 @@ def local_codex_image_allowed(*, explicit: bool = False) -> bool:
     return image_runtime == 'AUTO' and _effective_runtime() == 'CODEX'
 
 
+def local_codex_vision_allowed(*, explicit: bool = False) -> bool:
+    if explicit:
+        return True
+    review_runtime, _ = vision_review_runtime()
+    if review_runtime == 'CODEX':
+        return True
+    return review_runtime == 'AUTO' and _effective_runtime() == 'CODEX'
+
+
 def capabilities() -> dict:
     override = os.getenv('STORY_OS_RUNTIME', '').strip().upper()
     codex = shutil.which('codex') or shutil.which('codex.exe') or shutil.which('codex.cmd')
     preferred = preferred_runtime()
     effective = _effective_runtime()
     image_runtime, image_runtime_reason = image_execution_runtime()
+    text_runtime, text_runtime_reason = text_review_runtime()
+    vision_runtime, vision_runtime_reason = vision_review_runtime()
+    governance_runtime, governance_runtime_reason = governance_review_runtime()
+    workspace = workspace_provider.current()
     return {
         'story_os_version': story_os_version(),
         'runtime_override': override if override in VALID else None,
@@ -82,9 +146,21 @@ def capabilities() -> dict:
         'codex_image_reasoning_effort': storyos_config.get_path(_CONFIG, 'runtime.codex_image_reasoning_effort'),
         'local_codex_image_spawn_allowed': bool(codex) and local_codex_image_allowed(),
         'codex_subscription_image_eligible': bool(codex) and local_codex_image_allowed(),
+        'text_review_runtime': text_runtime,
+        'text_review_runtime_reason': text_runtime_reason,
+        'vision_review_runtime': vision_runtime,
+        'vision_review_runtime_reason': vision_runtime_reason,
+        'vision_review_model': vision_review_model(),
+        'governance_review_runtime': governance_runtime,
+        'governance_review_runtime_reason': governance_runtime_reason,
+        'workspace_provider': workspace.provider_id,
+        'workspace_transport': workspace.transport,
+        'workspace_execution_mode': workspace.execution_mode,
+        'workspace_host_managed': workspace.host_managed,
+        'local_codex_vision_spawn_allowed': bool(codex) and local_codex_vision_allowed(),
         'product_runtime_host_required': effective in {'WORK', 'WEB'},
         'product_runtime_image_host_required': effective in {'WORK', 'WEB'} and image_runtime in {'PRODUCT_RUNTIME', 'AUTO'},
-        'note': 'WORK remains the authoring/review runtime. Image execution is independently routed; CODEX image mode authorizes only image generation/repair, not Codex full-auto ownership.',
+        'note': 'WORK is the ChatGPT authoring/governance runtime. WebCodex is its host-managed Workspace Provider, not a Runtime or Episode authority. Image generation/repair and actual-pixel vision review are independently routed Codex capabilities; neither grants Codex Story/PREIMAGE/Release authority.',
     }
 
 

@@ -1,0 +1,20 @@
+{
+  "schema_id": "review_reference",
+  "schema_version": 1,
+  "status": "mvp",
+  "creator_decisions": ["pending", "accepted", "revised", "ignored"],
+  "required": [
+    "review_id",
+    "advisor_report_id",
+    "episode_id",
+    "creator_decision",
+    "final_result",
+    "feedback",
+    "created_time"
+  ],
+  "policy": {
+    "memory_is_not_rule_engine": "Review references store experience, never hard rules or fixed scores.",
+    "creator_separation": "Advisor suggestion and creator decision stay separate fields."
+  }
+}
+

@@ -16,10 +16,12 @@ import frame_semantic_review as base
 import incremental_frame_review as inc
 import codex_critic_runner
 import runtime_command
+import runtime_provenance
 import runtime_router
 import product_review_adapter
 import subtitle_layout
 import runtime_timeout_policy
+import production_ledger
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/caption-image-audit.json")
@@ -33,8 +35,10 @@ class ProductReviewHostAction(RuntimeError):
         self.request = request
 
 
-def _review_kind(index: int) -> str:
-    return f"caption-image-audit-v2-{index:03d}"
+def _review_kind(index: int, cycle: int = 1) -> str:
+    if cycle <= 1:
+        return f"caption-image-audit-v2-{index:03d}"
+    return f"caption-image-audit-v2-r{cycle - 1}-{index:03d}"
 
 
 def _resolve_layout_y_ratio(layout: dict, canvas_height: int) -> tuple[float, bool]:
@@ -93,7 +97,7 @@ def _review_frame_records(ep: Path) -> tuple[list[dict], dict]:
     if report.get("engine") != subtitle_layout.ENGINE or report.get("canonical_renderer") is not True:
         raise ValueError("subtitle layout audit is not canonical")
     audited = report.get("frames") or {}
-    ledger = base.read_json(ep / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     try:
         canvas_height = int((ledger.get("canvas") or {}).get("height"))
     except Exception as exc:
@@ -171,20 +175,23 @@ Review ONLY the supplied FINAL publish pixels after subtitle rendering.
 For each frame judge two things:
 1. supported: the caption is honestly supported by the underlying photographed/generated scene; it must not invent a core event, prop, person, UI text, anomaly, action, or causal fact absent from the scene. The rendered subtitle text itself is NEVER visual evidence for supported=true; mentally ignore the overlay when judging support.
 2. subtitle_unobstructed: rendered text does not cover a face, anomaly evidence, hand/action, key prop, native text, or causal clue. Left/middle geometry and line-count are checked deterministically elsewhere; here judge actual pixel obstruction.
+3. If and only if subtitle_unobstructed=false while supported=true, recommend ONE safer vertical baseline using suggested_y_ratio from exactly {list(subtitle_layout.PIXEL_SAFE_Y_RATIOS)}. Choose from actual pixel evidence, not aesthetics. If none of those locations is clearly safer, return null. Also give obstruction_reason naming what is covered.
 Do not re-review overall story quality, character continuity, or visual style. Empty captions automatically pass both checks.
 Mappings:
 {mapping}
 
 Write ONLY JSON to {out.relative_to(ROOT).as_posix()}:
-{{"frames":[{{"frame":"01","supported":true,"subtitle_unobstructed":true,"notes":"specific pixel evidence"}}],"summary":{{"passed":true}}}}
+{{"frames":[{{"frame":"01","supported":true,"subtitle_unobstructed":true,"suggested_y_ratio":null,"obstruction_reason":"","notes":"specific pixel evidence"}}],"summary":{{"passed":true}}}}
 Return one row for every attached frame. summary.passed=false if any supported=false or subtitle_unobstructed=false.
 """
 
-def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str | None, timeout: int, index: int) -> dict:
-    out = ep / "meta" / f".caption-image-audit-candidate-{index:03d}.json"
+def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str | None, timeout: int, index: int, cycle: int = 1) -> dict:
+    suffix = f"{index:03d}" if cycle <= 1 else f"r{cycle - 1}-{index:03d}"
+    out = ep / "meta" / f".caption-image-audit-candidate-{suffix}.json"
     active_runtime, _ = runtime_router.detect()
-    if active_runtime in {"WORK", "WEB"} and not codex_raw:
-        kind = _review_kind(index)
+    vision_runtime, _ = runtime_router.vision_review_runtime()
+    if vision_runtime != "CODEX" and not codex_raw:
+        kind = _review_kind(index, cycle)
         request_file = product_review_adapter.request_path(ep, kind)
         if out.is_file() and request_file.is_file():
             data, provenance = product_review_adapter.finalize_candidate(
@@ -217,25 +224,115 @@ def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str
     codex = base.resolve_codex(codex_raw)
     cmd = base.command_prefix(codex) + [
         "exec", "--skip-git-repo-check", "--ephemeral",
-        "-c", 'model_reasoning_effort="low"',
+        "-m", runtime_router.vision_review_model(),
+        "-c", f'model_reasoning_effort="{runtime_router.vision_review_effort("fast")}"',
         "-s", codex_critic_runner.default_sandbox(), "-C", str(ROOT), "--json",
     ]
     for row in rows:
         cmd += ["-i", str(row["path"])]
     cmd += ["-"]
     cp = runtime_command.run_argv(cmd, cwd=ROOT, stdin_text=_prompt(ep, rows, texts, out), timeout=timeout, capture=True)
-    log = ep / "meta" / f"caption-image-audit-v2-{index:03d}.jsonl"
+    log = ep / "meta" / f"caption-image-audit-v2-{suffix}.jsonl"
     log.write_text(cp.stdout or "", encoding="utf-8", newline="\n")
     if cp.returncode != 0 or not out.is_file():
         raise RuntimeError(f"caption image critic failed rc={cp.returncode}; log={log}")
     data = json.loads(out.read_text(encoding="utf-8-sig"))
     out.unlink(missing_ok=True)
-    return data if isinstance(data, dict) else {}
+    if not isinstance(data, dict):
+        return {}
+    data["critic_provenance"] = runtime_provenance.build_vision_critic_provenance(
+        attempt=1,
+        log=log.resolve().relative_to(ROOT.resolve()).as_posix(),
+        review_scope="CAPTION_IMAGE_SUBTITLE_PIXELS",
+    )
+    return data
+
+
+def _suggested_ratio(result: dict) -> float | None:
+    raw = result.get("suggested_y_ratio")
+    if raw is None:
+        return None
+    try:
+        return subtitle_layout._pixel_safe_ratio(raw)
+    except Exception:
+        return None
+
+
+def _placement_repairs_used(ep: Path, frame: str) -> int:
+    path = ep / "meta/subtitle-layout.json"
+    if not path.is_file():
+        return 0
+    try:
+        row = (base.read_json(path).get("frames") or {}).get(str(frame).zfill(2)) or {}
+        return int(row.get("auto_placement_repairs_used") or 0) if isinstance(row, dict) else 0
+    except Exception:
+        return 0
+
+
+def _record_chunk_results(
+    *,
+    ep: Path,
+    chunk: list[dict],
+    data: dict,
+    dest: dict,
+    image_sha: dict[str, str],
+    caption_sha: dict[str, str],
+    cycle: int,
+) -> tuple[int, dict[str, dict]]:
+    got = {str(x.get("frame") or "").zfill(2): x for x in (data.get("frames") or []) if isinstance(x, dict)}
+    repairs: dict[str, dict] = {}
+    reviewed = 0
+    for row in chunk:
+        key = row["frame"]
+        result = got.get(key)
+        if not result:
+            raise RuntimeError(f"caption image critic omitted frame {key}")
+        supported = result.get("supported") is True
+        unobstructed = result.get("subtitle_unobstructed") is True
+        passed = supported and unobstructed
+        used = _placement_repairs_used(ep, key)
+        ratio = _suggested_ratio(result)
+        reason = str(result.get("obstruction_reason") or result.get("notes") or "").strip()
+        dest[key] = {
+            "schema_version": SCHEMA, "frame": key,
+            "image_sha256": image_sha[key], "caption_sha256": caption_sha[key],
+            "supported": supported,
+            "subtitle_unobstructed": unobstructed,
+            "passed": passed, "mode": "final_publish_pixel_critic",
+            "notes": str(result.get("notes") or ""),
+            "suggested_y_ratio": ratio,
+            "obstruction_reason": reason,
+            "placement_repairs_used": used,
+            "review_cycle": cycle,
+            "critic_provenance": data.get("critic_provenance"),
+        }
+        reviewed += 1
+        current_ratio = subtitle_layout.current_frame_y_ratio(ep, key)
+        if (
+            cycle == 1
+            and supported
+            and not unobstructed
+            and ratio is not None
+            and used < subtitle_layout.MAX_AUTO_PLACEMENT_REPAIRS_PER_FRAME
+            and (current_ratio is None or abs(current_ratio - ratio) > 0.005)
+            and reason
+        ):
+            repairs[key] = {
+                "y_ratio": ratio,
+                "reason": "actual-pixel subtitle obstruction: " + reason[:420],
+            }
+    return reviewed, repairs
 
 def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -> tuple[bool, dict]:
     ep = Path(ep).resolve()
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("review_critic")
+    # Crash-safe reconciliation: if a previous pixel audit wrote a new layout
+    # override but the process died before rendering it, consume only those
+    # configured dirty frames before calculating caption-audit fingerprints.
+    configured_dirty = subtitle_layout.configured_dirty_frames(ep)
+    if configured_dirty:
+        subtitle_layout.render_frames(ep, configured_dirty)
     dirty, current, image_sha, caption_sha, texts, source_meta = dirty_frames(ep)
     review_meta = source_meta.get("review_image") or {}
     if review_meta.get("mode") == "final_publish_with_subtitle" and review_meta.get("layout_current") is not True:
@@ -266,40 +363,58 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
         else:
             nonempty.append(row)
 
+    placement_repairs: dict[str, dict] = {}
     for start in range(0, len(nonempty), CHUNK):
         chunk = nonempty[start:start + CHUNK]
         data = _run_chunk(ep, chunk, texts, codex_raw, timeout, start // CHUNK + 1)
-        got = {str(x.get("frame") or "").zfill(2): x for x in (data.get("frames") or []) if isinstance(x, dict)}
-        for row in chunk:
-            key = row["frame"]
-            result = got.get(key)
-            if not result:
-                raise RuntimeError(f"caption image critic omitted frame {key}")
-            supported = result.get("supported") is True
-            unobstructed = result.get("subtitle_unobstructed") is True
-            passed = supported and unobstructed
-            dest[key] = {
-                "schema_version": SCHEMA, "frame": key,
-                "image_sha256": image_sha[key], "caption_sha256": caption_sha[key],
-                "supported": supported,
-                "subtitle_unobstructed": unobstructed,
-                "passed": passed, "mode": "final_publish_pixel_critic",
-                "notes": str(result.get("notes") or ""),
-                "critic_provenance": data.get("critic_provenance"),
-            }
-            reviewed += 1
+        count, repairs = _record_chunk_results(
+            ep=ep, chunk=chunk, data=data, dest=dest,
+            image_sha=image_sha, caption_sha=caption_sha, cycle=1)
+        reviewed += count
+        placement_repairs.update(repairs)
+
+    # Only the actual-pixel CODEX lane may auto-move text. Product Review host
+    # requests remain fail-closed across turns rather than mutating layout while
+    # an external review transaction is still open.
+    _active_runtime, _ = runtime_router.detect()
+    vision_runtime, _ = runtime_router.vision_review_runtime()
+    auto_repaired: list[str] = []
+    if placement_repairs and (vision_runtime == "CODEX" or codex_raw):
+        subtitle_layout.apply_pixel_safe_overrides(ep, placement_repairs)
+        repair_keys = sorted(placement_repairs)
+        subtitle_layout.render_frames(ep, repair_keys)
+        repaired_frames, repaired_meta = _review_frame_records(ep)
+        repaired_by_key = {row["frame"]: row for row in repaired_frames}
+        repaired_image_sha, repaired_caption_sha, repaired_texts, repaired_source_meta = _hashes(ep, repaired_frames)
+        repair_rows = [repaired_by_key[key] for key in repair_keys]
+        for start in range(0, len(repair_rows), CHUNK):
+            chunk = repair_rows[start:start + CHUNK]
+            data = _run_chunk(
+                ep, chunk, repaired_texts, codex_raw, timeout,
+                start // CHUNK + 1, cycle=2)
+            count, _ = _record_chunk_results(
+                ep=ep, chunk=chunk, data=data, dest=dest,
+                image_sha=repaired_image_sha, caption_sha=repaired_caption_sha, cycle=2)
+            reviewed += count
+        image_sha = repaired_image_sha
+        caption_sha = repaired_caption_sha
+        source_meta = {**repaired_source_meta, "review_image": repaired_meta}
+        auto_repaired = repair_keys
 
     evidence["summary"] = {
         "passed": all((dest.get(k) or {}).get("passed") is True for k in rows_by_key),
         "reviewed_dirty_frames": reviewed,
         "reused_frames": reused,
         "total_frames": len(rows_by_key),
+        "auto_repaired_frames": auto_repaired,
+        "auto_repair_count": len(auto_repaired),
         "visual_review_invalidated": False,
     }
     _write(ep, evidence)
 
     active_runtime, _ = runtime_router.detect()
-    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+    vision_runtime, _ = runtime_router.vision_review_runtime()
+    if vision_runtime != "CODEX" and not codex_raw:
         chunk_count = (len(nonempty) + CHUNK - 1) // CHUNK
         for index in range(1, chunk_count + 1):
             kind = _review_kind(index)
@@ -343,6 +458,7 @@ def self_test():
     assert CHUNK == 5
     assert SCHEMA == 2
     assert _review_kind(1) == "caption-image-audit-v2-001"
+    assert _review_kind(1, 2) == "caption-image-audit-v2-r1-001"
     ratio, legacy = _resolve_layout_y_ratio({"y": 918}, 1350)
     assert round(ratio, 2) == 0.68 and legacy is True
     ratio, legacy = _resolve_layout_y_ratio({"y_ratio": 0.52, "y": 702}, 1350)

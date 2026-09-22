@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "status": "DRAFT",
+  "derived_from_pools": true,
+  "not_episode_stage": true,
+  "created_at": "2026-09-15T17:07:28+08:00",
+  "selection_seed": 389313669485720831,
+  "era": {
+    "bucket": "2004_2010",
+    "year": 2010,
+    "source": "explicit_hint_or_weighted",
+    "world_era": null
+  },
+  "world_identity": null,
+  "fictional_world": null,
+  "cast": {
+    "type": "pair",
+    "size": 2,
+    "relationship": "大学同学",
+    "members": [
+      {
+        "id": "P01",
+        "pov": true,
+        "gender": "male",
+        "age": 20,
+        "build": "普通年轻人体型",
+        "hair": "普通黑色日常发型",
+        "clothing_anchor": "白色短袖+卡其休闲裤+帆布鞋",
+        "device_anchor": "MP3/MP4"
+      },
+      {
+        "id": "P02",
+        "pov": false,
+        "gender": "female",
+        "age": 21,
+        "build": "普通年轻人体型",
+        "hair": "普通黑色日常发型",
+        "clothing_anchor": "普通印花短袖+过膝裙+运动鞋",
+        "device_anchor": null
+      }
+    ]
+  },
+  "pov": {
+    "character_id": "P01",
+    "first_person": true
+  },
+  "entry": {
+    "type": "friends_hangout",
+    "label": "朋友聚会",
+    "source": "weighted",
+    "reason": "由 Story Build 基于该生活化动机具体化"
+  },
+  "scene": {
+    "primary_category": "county_town",
+    "primary_place": "汽车站"
+  },
+  "role_policy": {
+    "protagonist_role": "普通年轻人/普通朋友小团体",
+    "career_function": "arrival_only",
+    "solves_anomaly_professionally": false
+  },
+  "no_anomaly_test": {
+    "question": "如果删掉所有异常，这一天是否仍像真实生活？",
+    "ordinary_day_plan": "原本只是几个朋友聚会、打游戏、喝酒聊天",
+    "pass": true,
+    "must_be_rechecked_before_story_lock": true,
+    "rechecked_against_final_story": false
+  },
+  "continuity_policy": {
+    "member_count_changes_require_story_event": true,
+    "pov_character_id_stable": true,
+    "clothing_and_device_anchors_propagate_to_frame_contract": true
+  },
+  "ordinary_person_score": 100,
+  "forbidden_role_check": {
+    "pass": true,
+    "hits": []
+  },
+  "story_build_note": "这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。"
+}

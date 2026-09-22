@@ -1,0 +1,1 @@
+VL候选2 F16 角色=worst_capture_condition。保持Frame Contract、身份、服装、事件，不改剧情。修正：reality_first、not_cinematic、causal_imperfection。真实逆光/遮挡/走动模糊，脸可偏暗或局部过曝；禁止金色日落、HDR、整齐站位和旅游宣传构图。 第二候选再降精修感，增加生活杂物与非完美瞬间。

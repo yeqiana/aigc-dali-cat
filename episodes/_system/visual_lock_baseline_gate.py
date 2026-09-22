@@ -5,22 +5,27 @@ from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, shutil, subprocess, sys, tempfile
 from pathlib import Path
 import character_visual_contract
+import codex_user_runner
 import frame_contract
 import codex_critic_runner
 import episode_performance
 import product_review_adapter
+import production_queue_store
+import scheduler_core
 import runtime_provenance
 import runtime_router
 import storyos_config
-from codex_subscription_image import command_prefix, resolve_codex
 import story_json
 import runtime_timeout_policy
+import runtime_command
+import production_ledger
+import production_ledger_persistence
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
 REL=Path("meta/visual-lock-baseline-review.json")
 CANDIDATE_REL=Path("meta/.visual-lock-baseline-review.candidate.json")
-CHECKS=("visual_profile_match","reality_first","ordinary_life_density","unposed_capture","not_cinematic","capture_credibility","identity_usable","group_members_distinct")
+CHECKS=("visual_profile_match","reality_first","ordinary_life_density","unposed_capture","not_cinematic","capture_credibility","identity_usable","group_members_distinct","identity_anchor_usable")
 
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read_json(p):
@@ -47,8 +52,8 @@ def baseline_plan(ep):
 def baseline_frame(ep):return int(baseline_plan(ep)["frame"])
 
 def generated_baseline(ep):
-    ep=Path(ep).resolve();frame=baseline_frame(ep);q=read_json(ep/"meta/production-queue.json")
-    rows=[x for x in (q.get("items") or []) if int(x.get("frame") or -1)==frame and x.get("scope") in {"visual_lock","repair"} and x.get("status")=="generated" and x.get("output_path")]
+    ep=Path(ep).resolve();frame=baseline_frame(ep);q=scheduler_core.load_queue(ep)
+    rows=[x for x in (q.get("items") or []) if int(x.get("frame") or -1)==frame and x.get("scope") in {"visual_lock","repair","baseline_candidate"} and x.get("status")=="generated" and x.get("output_path")]
     if not rows:raise ValueError(f"ordinary_baseline frame {frame:02d} is not generated")
     row=rows[-1];asset=repo_file(row["output_path"])
     return {"frame":frame,"asset_path":repo_rel(asset),"sha256":sha_file(asset),"frame_contract_sha256":frame_contract.compile_frame(ep,frame,write_cache=False)["contract_sha256"],"queue_item_id":row.get("id")}
@@ -56,7 +61,7 @@ def generated_baseline(ep):
 def prepare_review(ep,force=False):
     ep=Path(ep).resolve();p=ep/REL
     if p.is_file() and not force:return read_json(p)
-    src=generated_baseline(ep);cv=read_json(ep/character_visual_contract.REL);primary=[str(x) for x in (cv.get("primary_cast_ids") or [])]
+    src=generated_baseline(ep);cv=character_visual_contract.load(ep) or {};primary=[str(x) for x in (cv.get("primary_cast_ids") or [])]
     d={"schema_version":1,"status":"DRAFT","decision":"PENDING","created_at":now(),"role":"ordinary_baseline",**src,
        "reviewer_scope":"delegated_pixel_review","checks":{k:"PENDING" for k in CHECKS},
        "face_boxes":[{"character_id":cid,"x":None,"y":None,"w":None,"h":None} for cid in primary],
@@ -68,7 +73,7 @@ def prepare_review(ep,force=False):
 
 def _box_errors(ep,review):
     if not character_visual_contract.pixel_master_required(ep):return []
-    primary=set(str(x) for x in (read_json(Path(ep)/character_visual_contract.REL).get("primary_cast_ids") or []));boxes=review.get("face_boxes") or [];seen=set();e=[]
+    primary=set(str(x) for x in ((character_visual_contract.load(Path(ep)) or {}).get("primary_cast_ids") or []));boxes=review.get("face_boxes") or [];seen=set();e=[]
     for row in boxes:
         cid=str((row or {}).get("character_id") or "")
         if cid not in primary:continue
@@ -87,8 +92,10 @@ def validate_review(ep):
     if d.get("decision")!="PASS":e.append("baseline review decision must be PASS")
     try:src=generated_baseline(ep)
     except Exception as exc:return [str(exc)]
-    for k in ("frame","asset_path","sha256","frame_contract_sha256"):
+    for k in ("frame","asset_path","sha256"):
         if str(d.get(k) or "").lower()!=str(src.get(k) or "").lower():e.append(f"baseline review {k} stale")
+    if not frame_contract.recorded_contract_matches_current(ep, d.get("frame") or src.get("frame"), str(d.get("frame_contract_sha256") or "")):
+        e.append("baseline review frame_contract_sha256 stale")
     for k in CHECKS:
         if str((d.get("checks") or {}).get(k) or "").upper()!="PASS":e.append(f"baseline review check {k} must PASS")
     e.extend(_box_errors(ep,d));return e
@@ -102,12 +109,21 @@ def _mark_baseline_pass(ep,review):
     write_json(gpath,g)
 
 def _ledger_pass(ep,frame):
-    lp=Path(ep)/"meta/production-ledger.json"
-    if not lp.is_file():return
-    d=read_json(lp);status=str(((d.get("frames") or {}).get(f"{int(frame):02d}") or {}).get("status") or "")
-    if status not in {"ORIGINAL_READY","REPAIR_READY"}:return
-    cp=subprocess.run([sys.executable,str(SYSTEM/"production_ledger.py"),"review",str(ep),"--frame",f"{int(frame):02d}","--decision","pass","--notes","Visual Lock ordinary baseline separate PASS"],cwd=ROOT,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
-    if cp.returncode!=0:raise ValueError("baseline ledger PASS failed: "+cp.stdout[-1200:])
+    ep=Path(ep).resolve()
+    if not production_ledger.authority_exists(ep):return
+    key=f"{int(frame):02d}"
+    d=production_ledger.load_authority(ep,default={}) or {};row=((d.get("frames") or {}).get(key) or {});status=str(row.get("status") or "")
+    if status in {"ORIGINAL_READY","REPAIR_READY"}:
+        cp=runtime_command.run_argv([sys.executable,str(SYSTEM/"production_ledger.py"),"review",str(ep),"--frame",key,"--decision","pass","--notes","Visual Lock ordinary baseline separate PASS"],cwd=ROOT,capture=True)
+        if cp.returncode!=0:raise ValueError("baseline ledger PASS failed: "+cp.stdout[-1200:])
+        d=production_ledger.load_authority(ep,default={}) or {};row=((d.get("frames") or {}).get(key) or {});status=str(row.get("status") or "")
+    # A baseline PASS is already a real actual-pixel approval. Leaving the row
+    # PASSED with approved_asset=null breaks incremental review and later release
+    # binding. Promote the exact SHA-bound candidate immediately; locking still
+    # remains the responsibility of the later canonical production/release path.
+    if status=="PASSED" and not isinstance(row.get("approved_asset"),dict):
+        cp=runtime_command.run_argv([sys.executable,str(SYSTEM/"production_ledger.py"),"promote",str(ep),"--frame",key],cwd=ROOT,capture=True)
+        if cp.returncode!=0:raise ValueError("baseline ledger promote failed: "+cp.stdout[-1200:])
 
 def critic_prompt(ep):
     draft=prepare_review(ep,force=False);candidate=Path(ep)/CANDIDATE_REL
@@ -115,16 +131,39 @@ def critic_prompt(ep):
 Inspect the attached baseline image itself. This PASS unlocks the parallel-three Visual Lock images and may create the provisional character pixel master, so fail closed on visible identity/capture/style problems.
 Required checks: {list(CHECKS)}
 The target is an ordinary believable phone/photo baseline: reality-first, unposed, non-cinematic, usable identity, distinct group members where applicable.
+If this Episode is an explicit pure daily-life / no-anomaly story, ordinary_life_density means believable resident/friend life (breakfast, walking, chatting, errands, rest). Do NOT require a visible job workflow merely because a reusable celestial visual profile also supports worker stories.
+For core characters, this baseline is also Frame01 Character Identity Anchor evidence. The image must be usable as a later identity reference: clear face visibility, recognizable person, not only back view, not too distant, and suitable for Character Master creation.
 Write ONLY JSON to {repo_rel(candidate)}:
-{{"decision":"PASS|FAIL","checks":{{"visual_profile_match":"PASS|FAIL","reality_first":"PASS|FAIL","ordinary_life_density":"PASS|FAIL","unposed_capture":"PASS|FAIL","not_cinematic":"PASS|FAIL","capture_credibility":"PASS|FAIL","identity_usable":"PASS|FAIL","group_members_distinct":"PASS|FAIL"}},"face_boxes":[{{"character_id":"P01","x":0.0,"y":0.0,"w":0.1,"h":0.1}}],"note":"actual-pixel evidence"}}
+{{"decision":"PASS|FAIL","checks":{{"visual_profile_match":"PASS|FAIL","reality_first":"PASS|FAIL","ordinary_life_density":"PASS|FAIL","unposed_capture":"PASS|FAIL","not_cinematic":"PASS|FAIL","capture_credibility":"PASS|FAIL","identity_usable":"PASS|FAIL","group_members_distinct":"PASS|FAIL","identity_anchor_usable":"PASS|FAIL"}},"face_boxes":[{{"character_id":"P01","x":0.0,"y":0.0,"w":0.1,"h":0.1}}],"note":"actual-pixel evidence"}}
 Face boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.
 Do not modify source files or the image.
 """
 
+def codex_critic_prompt(ep):
+    candidate=Path(ep)/CANDIDATE_REL
+    schema='{"pixel_evidence_available":true,"decision":"PASS|FAIL","checks":{"visual_profile_match":"PASS|FAIL","reality_first":"PASS|FAIL","ordinary_life_density":"PASS|FAIL","unposed_capture":"PASS|FAIL","not_cinematic":"PASS|FAIL","capture_credibility":"PASS|FAIL","identity_usable":"PASS|FAIL","group_members_distinct":"PASS|FAIL","identity_anchor_usable":"PASS|FAIL"},"face_boxes":[{"character_id":"P01","x":0.0,"y":0.0,"w":0.1,"h":0.1}],"note":"actual-pixel evidence"}'
+    return f"""You are a fresh isolated Story OS Visual Lock ordinary-baseline actual-pixel reviewer.
+The baseline image is already attached to this request. Inspect the attached pixels directly.
+Do NOT search the filesystem, do NOT call shell/tools, and do NOT modify any source file or image.
+This PASS unlocks the parallel-three Visual Lock images and may create the provisional character pixel master, so fail closed on visible identity/capture/style problems.
+Required checks: {list(CHECKS)}
+The target is an ordinary believable phone/photo baseline: reality-first, unposed, non-cinematic, usable identity, distinct group members where applicable.
+If this Episode is an explicit pure daily-life / no-anomaly story, ordinary_life_density means believable resident/friend life (breakfast, walking, chatting, errands, rest). Do NOT require a visible job workflow merely because a reusable celestial visual profile also supports worker stories.
+For core characters, this baseline is also Frame01 Character Identity Anchor evidence. The image must be usable as a later identity reference: clear face visibility, recognizable person, not only back view, not too distant, and suitable for Character Master creation.
+Face boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.
+If the attachment cannot actually be decoded/seen, set pixel_evidence_available=false; that is an infrastructure failure, not a content FAIL.
+Respond ONLY with one JSON object matching this schema, with no markdown and no commentary:
+{schema}
+The CLI will persist your final JSON response to {repo_rel(candidate)}.
+"""
+
+
 def run_product_critic(ep,attempt=1):
     ep=Path(ep).resolve();draft=prepare_review(ep,force=False);runtime,_=runtime_router.detect()
     if runtime not in {"WORK","WEB"}:raise ValueError("baseline product critic requires WORK/WEB")
-    sources=[repo_file(draft["asset_path"]),ep/"meta/story-gates.json",ep/character_visual_contract.REL]
+    spec_source=character_visual_contract.materialize_export(ep)
+    sources=[repo_file(draft["asset_path"]),ep/"meta/story-gates.json"]
+    if spec_source is not None:sources.append(spec_source)
     prov=frame_contract.provenance(ep,int(draft["frame"]))
     if prov and prov.get("path"):
         prov_path=(ep/str(prov["path"])).resolve()
@@ -147,30 +186,43 @@ def finalize_product_critic(ep,attempt=1,runtime="WORK"):
     return {"status":"PASS",**result}
 
 def run_codex_critic(ep,attempt=1,codex_raw=None,timeout=None):
-    ep=Path(ep).resolve();draft=prepare_review(ep,force=False);candidate=ep/CANDIDATE_REL;candidate.unlink(missing_ok=True)
+    ep=Path(ep).resolve();draft=prepare_review(ep,force=True);candidate=ep/CANDIDATE_REL;candidate.unlink(missing_ok=True)
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("visual_baseline_critic")
     asset=repo_file(draft["asset_path"]);before=sha_file(asset)
-    staging=Path(tempfile.mkdtemp(prefix="story-os-baseline-"));staged=staging/("baseline"+asset.suffix.lower())
+    staging=codex_user_runner.workspace_path(prefix="story-os-baseline-");staged=staging/("baseline"+asset.suffix.lower())
     shutil.copy2(asset,staged)
     # STORY_OS_CRITIC_MODEL_OVERRIDE: see visual_lock_v21.py. The pinned image
     # controller model is for image generation; a vision critic uses the optional
     # dedicated critic key when configured, else the Codex CLI default model.
-    cfg=storyos_config.load_config()
-    model=str(storyos_config.get_path(cfg,"runtime.codex_critic_model") or "") or None
-    effort=str(storyos_config.get_path(cfg,"runtime.codex_critic_reasoning_effort") or storyos_config.get_path(cfg,"runtime.codex_image_reasoning_effort"))
-    codex=resolve_codex(codex_raw);log=ep/"meta"/f"visual-lock-baseline-critic-attempt-{attempt}.jsonl"
-    cmd=command_prefix(codex)+["exec","--skip-git-repo-check","--ephemeral"]+(["-m",model] if model else [])+["-c",f'model_reasoning_effort="{effort}"',"-s",codex_critic_runner.default_sandbox(),"-C",str(ROOT),"--json","-i",str(staged),"-"]
+    model=runtime_router.vision_review_model()
+    effort=runtime_router.vision_review_effort("final")
+    codex=codex_critic_runner.resolve_codex(codex_raw);log=ep/"meta"/f"visual-lock-baseline-critic-attempt-{attempt}.jsonl"
     try:
-        with log.open("w",encoding="utf-8",newline="\n") as handle:
-            done=subprocess.run(cmd,input=critic_prompt(ep).encode("utf-8"),stdout=handle,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+        done=codex_critic_runner.launch(
+            codex_critic_prompt(ep),
+            codex=codex,
+            root=ROOT,
+            timeout=timeout,
+            output_path=candidate,
+            attachments=[staged],
+            model=model,
+            reasoning_effort=effort,
+            sandbox=codex_critic_runner.default_sandbox(),
+            log_path=log,
+        )
     finally:
         shutil.rmtree(staging,ignore_errors=True)
     if done.returncode!=0:raise ValueError(f"baseline Codex critic failed rc={done.returncode}; log={repo_rel(log)}")
     if not candidate.is_file():raise ValueError(f"baseline Codex critic did not produce candidate JSON; log={repo_rel(log)}")
     if sha_file(asset)!=before:raise ValueError("baseline Codex critic modified source image")
-    data=read_json(candidate);provenance=runtime_provenance.build_critic_provenance("CODEX",attempt=attempt,log=repo_rel(log));provenance["log_sha256"]=sha_file(log)
-    review={**draft,"decision":str(data.get("decision") or "FAIL").upper(),"checks":data.get("checks") or {},"face_boxes":data.get("face_boxes") or [],"note":str(data.get("note") or ""),"critic_provenance":provenance}
+    data=read_json(candidate);provenance=runtime_provenance.build_vision_critic_provenance(attempt=attempt,log=repo_rel(log),review_scope="VISUAL_LOCK_BASELINE",allow_bounded_candidate_attempt=attempt>2);provenance["log_sha256"]=sha_file(log)
+    note=str(data.get("note") or "")
+    no_pixels=(data.get("pixel_evidence_available") is False or any(token in note.lower() for token in ("no pixel evidence","could not be decoded","vision sidecar","cannot inspect pixels","unable to inspect pixels")))
+    if no_pixels:
+        candidate.unlink(missing_ok=True)
+        return {"status":"TECHNICAL_FAILURE","issue_codes":["INPUT_IMAGES_UNAVAILABLE"],"note":note,"critic_provenance":provenance}
+    review={**draft,"decision":str(data.get("decision") or "FAIL").upper(),"checks":data.get("checks") or {},"face_boxes":data.get("face_boxes") or [],"note":note,"critic_provenance":provenance}
     write_json(ep/REL,review);errors=validate_review(ep)
     candidate.unlink(missing_ok=True)
     if errors:return {"status":"FAIL","errors":errors}
@@ -186,7 +238,7 @@ def approve(ep):
     if needs_master:
         master=character_visual_contract.lock_provisional_pixel_master(ep,frame=review["frame"],asset_path=review["asset_path"],asset_sha256=review["sha256"],frame_contract_sha256=review["frame_contract_sha256"],baseline_review_sha256=review_sha,face_boxes=review.get("face_boxes") or [])
         if Path(review["asset_path"]).suffix.lower()==".png":
-            primary=set(str(x) for x in (read_json(ep/character_visual_contract.REL).get("primary_cast_ids") or []));made=set(((read_json(ep/character_visual_contract.CROPS_REL).get("items") or {}).keys())) if (ep/character_visual_contract.CROPS_REL).is_file() else set();missing=primary-made
+            primary=set(str(x) for x in ((character_visual_contract.load(ep) or {}).get("primary_cast_ids") or []));made=set(((read_json(ep/character_visual_contract.CROPS_REL).get("items") or {}).keys())) if (ep/character_visual_contract.CROPS_REL).is_file() else set();missing=primary-made
             if missing:raise ValueError("primary derived crops missing: "+",".join(sorted(missing)))
     episode_performance.safe_end_named_span(ep,"VISUAL_LOCK_BASELINE_REVIEW",status="PASS",
                                             metadata={"frame":review["frame"],"pixel_master_status":(master or {}).get("status")})
@@ -194,6 +246,19 @@ def approve(ep):
 
 def approved(ep):
     ep=Path(ep).resolve()
+    # A later higher-level pixel review may explicitly reopen a previously
+    # PASSED baseline. In that state the historical baseline review/Pixel Master
+    # are superseded evidence only and must not satisfy dependency gates.
+    try:
+        frame = baseline_frame(ep)
+        ledger = production_ledger.load_authority(ep,default={}) or {}
+        row = ((ledger.get("frames") or {}).get(f"{int(frame):02d}") or {})
+        if str(row.get("status") or "") not in {"PASSED", "LOCKED"}:
+            return False
+    except production_ledger_persistence.ProductionLedgerAuthorityIncomplete:
+        raise
+    except Exception:
+        return False
     if validate_review(ep):return False
     if character_visual_contract.pixel_master_required(ep):return not character_visual_contract.validate_pixel_master(ep,allow_provisional=True)
     return True
@@ -220,9 +285,30 @@ def awaiting_review(ep,q):
     try:
         frame=baseline_frame(ep)
         if approved(ep):return False
-        generated=any(int(x.get("frame") or -1)==frame and x.get("status")=="generated" for x in (q.get("items") or []))
-        dependents=any(x.get("status")=="queued" and x.get("scope")=="visual_lock" and frame in [int(v) for v in (x.get("depends_on") or [])] for x in (q.get("items") or []))
-        return generated and dependents
+        # Once a bounded repair has been authorized, generation must run before
+        # another review. Otherwise the original generated row would keep this
+        # gate true and starve the queued repair forever.
+        generation_active=any(
+            int(x.get("frame") or -1)==frame and x.get("kind") in {"repair","baseline_candidate"}
+            and x.get("status") in {"queued","running","tech_failed"}
+            for x in (q.get("items") or [])
+        )
+        if generation_active:return False
+        try:
+            current=generated_baseline(ep)
+        except Exception:
+            return False
+        # Do not re-review the exact same failed pixels forever. Once a SHA-bound
+        # FAIL has been recorded, the runtime must either enqueue the next bounded
+        # baseline candidate or stop after the pool is exhausted.
+        review=read_json(Path(ep)/REL) if (Path(ep)/REL).is_file() else {}
+        if str(review.get("decision") or "").upper()=="FAIL" and str(review.get("sha256") or "").lower()==str(current.get("sha256") or "").lower():
+            return False
+        # Visual Lock dependents may have moved into repair/baseline-candidate
+        # scopes after bounded review failures. They still depend on the current
+        # baseline identity anchor and must keep baseline review routable.
+        dependents=any(x.get("status")=="queued" and frame in [int(v) for v in (x.get("depends_on") or [])] for x in (q.get("items") or []))
+        return bool(current.get("asset_path")) and dependents
     except Exception:return False
 
 def self_test():assert len(CHECKS)>=8;print("VISUAL LOCK BASELINE GATE SELF-TEST PASS")
@@ -237,7 +323,8 @@ def main():
     try:
         if a.cmd=="prepare-review":print(json.dumps(prepare_review(ep,a.force),ensure_ascii=False,indent=2));return 0
         if a.cmd=="run-critic":
-            if a.codex:
+            vision_runtime,_=runtime_router.vision_review_runtime()
+            if a.codex or vision_runtime=="CODEX":
                 result=run_codex_critic(ep,a.attempt,a.codex,a.timeout);print(json.dumps(result,ensure_ascii=False,indent=2));return 0 if result.get("status")=="PASS" else 2
             print(json.dumps(run_product_critic(ep,a.attempt),ensure_ascii=False,indent=2));return product_review_adapter.HOST_ACTION_REQUIRED_RC
         if a.cmd=="finalize-review":
@@ -247,6 +334,7 @@ def main():
             e=validate_review(ep)
             if e:[print("FAIL:",x) for x in e];return 2
             print("VISUAL LOCK BASELINE REVIEW VERIFIED");return 0
-        print(json.dumps({"approved":approved(ep),"awaiting_review":awaiting_review(ep,read_json(ep/"meta/production-queue.json")) if (ep/"meta/production-queue.json").is_file() else False},ensure_ascii=False,indent=2));return 0
+        queue=scheduler_core.load_queue(ep)
+        print(json.dumps({"approved":approved(ep),"awaiting_review":awaiting_review(ep,queue)},ensure_ascii=False,indent=2));return 0
     except Exception as exc:print("BASELINE GATE ERROR:",exc);return 3
 if __name__=="__main__":raise SystemExit(main())

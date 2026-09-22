@@ -17,11 +17,18 @@ import json
 from pathlib import Path
 from typing import Any
 import story_json
+import episode_contract_persistence
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REL = Path("config/profiles/world_identity/default.json")
 OVERRIDE_REL = Path("meta/world-identity.json")
+CONTRACT_TYPE = "WORLD_IDENTITY"
 MIN_VERSION = (2, 2, 1)
+CELESTIAL_HEAVEN_PROFILES = {
+    "M02_HEAVEN_MUNDANE_WORKER_V1",
+    "M04_HEAVEN_MUNDANE_LIFE_V1",
+}
 
 
 def read_json(path: Path) -> dict:
@@ -30,6 +37,33 @@ def read_json(path: Path) -> dict:
 
 def write_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
+
+
+
+def load_override(ep: Path) -> dict | None:
+    ep = Path(ep).resolve()
+    return episode_contract_persistence.load_latest(
+        ep,
+        CONTRACT_TYPE,
+        legacy_path=ep / OVERRIDE_REL,
+    )
+
+
+def save_override(ep: Path, data: dict) -> dict:
+    ep = Path(ep).resolve()
+    episode_contract_persistence.save(
+        ep,
+        CONTRACT_TYPE,
+        OVERRIDE_REL,
+        data,
+        status=str(data.get("status") or "ACTIVE"),
+    )
+    return data
+
+
+def override_sha256(ep: Path) -> str | None:
+    data = load_override(ep)
+    return sha256_json(data) if isinstance(data, dict) else None
 
 
 def sha256_json(data: Any) -> str:
@@ -57,11 +91,15 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 def episode_version(ep: Path) -> str:
     ep = Path(ep)
     versions = []
-    for rel in (
-        "meta/episode-state.json",
-        "meta/release-manifest.json",
-        "meta/story-gates.json",
-    ):
+    try:
+        state = episode_state_persistence.load(ep) or {}
+        raw = str(state.get("tool_version") or "")
+        vt = version_tuple(raw)
+        if vt != (0,):
+            versions.append((vt, raw))
+    except Exception:
+        pass
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -104,8 +142,7 @@ def default_profile() -> dict:
 def effective(ep: Path) -> dict:
     ep = Path(ep).resolve()
     base = default_profile()
-    override_path = ep / OVERRIDE_REL
-    override = read_json(override_path) if override_path.is_file() else None
+    override = load_override(ep)
 
     if override is None:
         merged = copy.deepcopy(base)
@@ -136,7 +173,7 @@ def effective(ep: Path) -> dict:
                 ),
             }
         source = "EPISODE_OVERRIDE"
-        override_sha = sha256_file(override_path)
+        override_sha = sha256_json(override)
 
     effective_data = {
         "schema_version": 1,
@@ -197,9 +234,8 @@ def verify(ep: Path) -> list[str]:
             "population.default_protagonist_age_range"
         )
 
-    override = ep / OVERRIDE_REL
-    if override.is_file():
-        raw = read_json(override)
+    raw = load_override(ep)
+    if isinstance(raw, dict):
         if raw.get("inherit_default") is False:
             if not isinstance(raw.get("world"), dict):
                 errors.append(
@@ -243,6 +279,71 @@ def prompt_block(ep: Path) -> str:
             ),
         ]
     )
+
+
+def ensure_visual_profile_override(ep: Path, profile_id: str | None) -> dict | None:
+    """Install the canonical Episode world identity implied by a governed visual world.
+
+    Only M02 currently requires replacing the real-world Mainland-China default. The
+    helper is idempotent and never overwrites an existing explicit Episode override.
+    Other profiles return None and keep the normal default/Story-authored behavior.
+    """
+    ep = Path(ep).resolve()
+    pid = str(profile_id or "").strip()
+    if pid not in CELESTIAL_HEAVEN_PROFILES:
+        return None
+    existing = load_override(ep)
+    if isinstance(existing, dict):
+        return existing
+    resident_mode = pid == "M04_HEAVEN_MUNDANE_LIFE_V1"
+    data = {
+        "schema_version": 1,
+        "inherit_default": False,
+        "profile_id": "CELESTIAL_MUNDANE_WORLD_V1",
+        "description": (
+            "M04 天界普通居民生活世界身份；虚构世界，不继承现实国家默认值。"
+            if resident_mode else
+            "M02 天界普通工作人员世界身份；虚构世界，不继承现实国家默认值。"
+        ),
+        "world": {
+            "country": "天界（虚构世界）",
+            "region": "云海普通居民区、公共生活区与基层设施",
+            "culture_context": (
+                "东方天界普通居民生活；强调吃饭、逛街、朋友相处、通勤与回家等日常秩序，不强制岗位流程，不做神话英雄叙事"
+                if resident_mode else
+                "东方天界的普通居民生活与基层单位文化；强调通勤、食堂、交接、工单和下班等日常秩序，不做神话英雄叙事"
+            ),
+            "language_context": "作品可读文字使用简体中文呈现，世界内视为天界通用文字",
+            "architecture_context": (
+                "自洽的东方天界普通生活设施：朴素石木住宅、云街、云桥、食肆、旧市与公共休息区；禁止宏大神殿宣传片化"
+                if resident_mode else
+                "自洽的东方天界基层公共设施：朴素石木工作站、云桥、通勤站台、宿舍与食堂；禁止宏大神殿宣传片化"
+            ),
+            "traffic_context": "天界本地居民通行与生活运输规则",
+            "consumer_goods_context": "天界普通居民使用的朴素日用品",
+        },
+        "population": {
+            "nationality_context": "天界居民（虚构世界身份，不映射现实国籍）",
+            "resident_context": "天界普通本地居民" if resident_mode else "天界普通本地居民与基层工作人员",
+            "default_protagonist_age_range": [19, 30],
+            "default_protagonist_identity": (
+                "二十多岁的普通天界居民，东方式自然年轻人外貌，不英雄化"
+                if resident_mode else
+                "二十多岁的普通天界基层工作人员，东方式自然年轻人外貌，不英雄化"
+            ),
+            "ethnicity_policy": "fictional_world_local_population",
+            "foreign_character_policy": "story_defined",
+        },
+        "visual_rules": {
+            "visible_text_context": "简体中文可读呈现",
+            "do_not_import_foreign_architecture_by_default": False,
+            "do_not_import_foreign_population_by_default": False,
+            "do_not_import_foreign_cultural_props_by_default": False,
+            "preserve_location_specific_chinese_regional_detail": False,
+        },
+        "note": f"Canonical {pid} world identity override generated from the governed Visual Profile; Story may further specify the fictional locality without reverting to a real-world country default.",
+    }
+    return save_override(ep, data)
 
 
 def set_override(
@@ -291,8 +392,7 @@ def set_override(
             "China profile for this Episode."
         ),
     }
-    write_json(ep / OVERRIDE_REL, data)
-    return data
+    return save_override(ep, data)
 
 
 def self_test() -> None:

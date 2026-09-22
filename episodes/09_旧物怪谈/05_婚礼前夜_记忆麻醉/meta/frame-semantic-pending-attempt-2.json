@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "attempt": 2,
+  "recorded_at": "2026-09-15T23:11:12+08:00",
+  "contexts": {
+    "story_sha256": "05f9a3c997b22f00c3f3acdeacf880997e40d09b7bf985cc2606917f888055e8",
+    "storyboard_sha256": "d98a762d3a2611dc7c1697808d34076a39f5f6fb8ce4e9c52f4acb5179e9dbcc",
+    "visual_contract_sha256": "52eed9d5001518961bbe7b598d07aa6a288855b45f26f600d47a93113404bcdc"
+  },
+  "assets": [
+    {
+      "frame": "01",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/01.png",
+      "sha256": "334619eca6a74e2786654440b7633fbc263a59f487bac44c2dd71a4da4140be6"
+    },
+    {
+      "frame": "02",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/02.png",
+      "sha256": "c9f688f00c89828c552aa5cb5ad2b4846d3b2e8da22dd8471f030341efc1314a"
+    },
+    {
+      "frame": "03",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-740bc23e704d-a1.png",
+      "sha256": "12b97a2a55df8da3a2cf70e9ee949ee0016684296c90cc32ddcc710abc652e4c"
+    },
+    {
+      "frame": "04",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/04.png",
+      "sha256": "63af8ae1cbb9fb287b64c39e11840d5149966c7e8dd6e5c2581dfb6133022db8"
+    },
+    {
+      "frame": "05",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/05.png",
+      "sha256": "945cfd898c11da6f819ee6d6e34193f4f1d33ad759322ac323c7e31a048f64ed"
+    },
+    {
+      "frame": "06",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/06.png",
+      "sha256": "90cad6e836f711a2b0c37eb2fdfc76242c7466bcbdd36b34bcaf1724449a9203"
+    },
+    {
+      "frame": "07",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/07-51e66ee258c8-a1.png",
+      "sha256": "d1ef1090483c216bf64b88fbc82a9ce7bd3dcf0ffb3b540c23f5865de432041a"
+    },
+    {
+      "frame": "08",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/08.png",
+      "sha256": "c54f64eb41bb105ede413f78d2090c4bea066a1707a221ad848d433bc8743633"
+    },
+    {
+      "frame": "09",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/09.png",
+      "sha256": "4dd3e8012e5faf499146d4eba6550428f8c31c52b58329c780cfcc6f3e671bbb"
+    },
+    {
+      "frame": "10",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/10.png",
+      "sha256": "129fae805bb51d7719fa83a89514007ba2fd9a4f8343b88c89286c6a514c60a8"
+    },
+    {
+      "frame": "11",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/11.png",
+      "sha256": "a9098924f5be9d4c20a3f146c41aa88c133428ad69fec4a86de5d636984f2c6c"
+    },
+    {
+      "frame": "12",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/12.png",
+      "sha256": "ce415f673790fdbb82987bf6b83136be0decbff9f1021d6fc7e5b62371276c61"
+    },
+    {
+      "frame": "13",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/13.png",
+      "sha256": "f046ae5ed4d5835cd9515b8bc855e0a1696f68de28c03b62defa48e5495d5136"
+    },
+    {
+      "frame": "14",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/14.png",
+      "sha256": "816bb7d48e5ae49ce5c3659dbcc8b495f18898a471fefe049f6dc68f275f46bd"
+    },
+    {
+      "frame": "15",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/15.png",
+      "sha256": "964a941eaa5d9f9bc81aaa9a6303732f00b5c283e7b0b4b5e740153a945f75c5"
+    },
+    {
+      "frame": "16",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/16.png",
+      "sha256": "187830e66cbfa3f9460823475889a2c121968908e877487ff0760491780d7645"
+    },
+    {
+      "frame": "17",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/17.png",
+      "sha256": "6a83f51ee324a848a5537f5a0c8290239113febdfdbafa704b4f52d64d41b9e9"
+    },
+    {
+      "frame": "18",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/18.png",
+      "sha256": "706bb98eb4f07d529eb39d8ca49134847facf4c53b32005f4cc0b6c02e149526"
+    },
+    {
+      "frame": "19",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/19.png",
+      "sha256": "e34914d959133c7ff3cd45ce5fcd68ccacb065798adf29f39db21719db67962d"
+    },
+    {
+      "frame": "20",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/20.png",
+      "sha256": "7176c89beca19d65b8c78526ef1a02c82df14fa347982eb9c6f278b69c1f1be8"
+    }
+  ]
+}

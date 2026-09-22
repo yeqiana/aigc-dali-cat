@@ -8,7 +8,9 @@ UNCERTAIN always defers to the formal final frame review.
 from __future__ import annotations
 import json, os, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
+import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import frame_contract
+import rolling_review_persistence
 import runtime_capability_cache  # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
 import runtime_router
 import runtime_timeout_policy
@@ -19,13 +21,11 @@ REL=Path("meta/runtime/rolling-reviews")
 VALID={"PASS_PREVIEW","REPAIR_NOW","UNCERTAIN"}
 
 def resolve_codex(raw):
-    v=raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not v: raise RuntimeError("Codex CLI not found")
-    return Path(v).expanduser().resolve()
+    import codex_cli_contract
+    return codex_cli_contract.resolve_path(raw)
 def prefix(p):
-    if p.suffix.lower()==".py": return [sys.executable,str(p)]
-    if os.name=="nt" and p.suffix.lower() in {".cmd",".bat"}: return ["cmd.exe","/d","/c",str(p)]
-    return [str(p)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(p)
 def review(ep,frame,image,codex_raw=None,timeout=None):
     image=Path(image).resolve()
     if timeout is None:
@@ -35,16 +35,18 @@ def review(ep,frame,image,codex_raw=None,timeout=None):
     if not runtime_capability_cache.vision_verified(caps):
         return {"decision":"UNCERTAIN","reason":"vision_capability_not_verified","fast_path_deferred":True,"final_pass_authority":False,"returncode":0}
     active_runtime,_=runtime_router.detect()
-    if active_runtime in {"WORK","WEB"} and not codex_raw:
+    vision_runtime,_=runtime_router.vision_review_runtime()
+    if vision_runtime != "CODEX" and not codex_raw:
         return {
             "decision":"UNCERTAIN",
-            "reason":"product_runtime_defers_to_final_review_without_local_codex",
-            "runtime":active_runtime,
+            "reason":"vision_runtime_defers_to_final_review",
+            "runtime":vision_runtime,
             "final_pass_authority":False,
             "returncode":0,
         }
     contract=frame_contract.compile_frame(ep,int(frame),write_cache=True)
-    out=ep/REL/f"{int(frame):02d}-{int(time.time())}.json"; out.parent.mkdir(parents=True,exist_ok=True)
+    attempt_no=int(time.time())
+    out=ep/REL/f"{int(frame):02d}-{attempt_no}.json"; out.parent.mkdir(parents=True,exist_ok=True)
     prompt=f"""Review the attached generated frame as an actual-pixel PRE-FINAL Story OS review.
 Frame contract:
 {contract["prompt_contract"]}
@@ -59,17 +61,17 @@ REPAIR_NOW only for clear visible defects. UNCERTAIN if evidence is ambiguous.
     codex=resolve_codex(codex_raw)
     # Codex's image sidecar can fail to resolve Windows paths containing Chinese
     # characters. Stage a byte-identical ASCII-only temporary attachment.
-    staging=Path(tempfile.mkdtemp(prefix="story-os-rolling-"))
+    staging=codex_user_runner.workspace_path(prefix="story-os-rolling-")
     staged_image=staging/("frame-"+f"{int(frame):02d}"+image.suffix.lower())
     shutil.copy2(image,staged_image)
-    cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"-i",str(staged_image),"--json","-"]
+    cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-m",runtime_router.vision_review_model(),"-c",f'model_reasoning_effort="{runtime_router.vision_review_effort("fast")}"',"-s","workspace-write","-C",str(ROOT),"-i",str(staged_image),"--json","-"]
     log=ep/"meta/rolling-review-workers"/f"{int(frame):02d}-{int(time.time())}.jsonl"; log.parent.mkdir(parents=True,exist_ok=True)
     try:
         with log.open("w",encoding="utf-8",newline="\n") as h:
             try:
                 # On Windows, text=True encodes stdin through the active console code page.
                 # Codex expects UTF-8, and frame contracts routinely contain Chinese text.
-                cp=subprocess.run(cmd,input=prompt.encode("utf-8"),stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+                cp=codex_user_runner.run_codex(cmd,input=prompt.encode("utf-8"),stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="review")
             except subprocess.TimeoutExpired: return {"decision":"UNCERTAIN","reason":"timeout","returncode":124}
     finally:
         shutil.rmtree(staging,ignore_errors=True)
@@ -78,6 +80,7 @@ REPAIR_NOW only for clear visible defects. UNCERTAIN if evidence is ambiguous.
     except Exception: return {"decision":"UNCERTAIN","reason":"invalid_json","returncode":cp.returncode}
     if data.get("decision") not in VALID: data["decision"]="UNCERTAIN"
     data["final_pass_authority"]=False
+    rolling_review_persistence.save(ep,data,attempt_no=attempt_no,candidate_path=out)
     return data
 def self_test():
     assert "PASS_PREVIEW" in VALID

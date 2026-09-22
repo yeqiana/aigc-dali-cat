@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "10-03",
+  "series": "10_彼此的天上",
+  "title": "雾中的另一座生活区",
+  "current_state": "PRODUCTION_PASSED",
+  "updated_at": "2026-09-11T18:14:49+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-11T12:56:43+08:00",
+      "note": "EP003正式进入Story OS生产"
+    },
+    {
+      "state": "STORYBOARD_LOCKED",
+      "at": "2026-09-11T13:13:42+08:00",
+      "mode": "advance",
+      "note": "EP003 Story/Storyboard machine gates + delegated Story Lock passed"
+    },
+    {
+      "state": "VISUAL_CALIBRATED",
+      "at": "2026-09-11T14:55:22+08:00",
+      "mode": "advance",
+      "note": "EP003 Visual Lock 1+3 完成：Frame01 baseline + Frame06 worst + Frame03 first-anomaly + Frame19 high-impact，评审/verify/evidence gate 全 PASS。"
+    },
+    {
+      "state": "PRODUCTION_PASSED",
+      "at": "2026-09-11T18:14:49+08:00",
+      "mode": "advance",
+      "note": "EP003 Production 收口：20/20 帧 PASSED；正式字幕源+声音卡+text audit(0/0)+字幕声音评审五项 PASS；temporal continuity LOCKED；machine/evidence gate PRODUCTION_PASSED 全 PASS"
+    }
+  ]
+}

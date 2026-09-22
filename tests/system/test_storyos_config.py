@@ -24,17 +24,26 @@ class StoryOSConfigTests(unittest.TestCase):
 
     def test_current_image_configuration(self):
         config = storyos_config.load_config()
-        self.assertEqual(storyos_config.get_path(config, "image.model"), "gpt-image-2")
+        self.assertEqual(storyos_config.get_path(config, "image.model"), "gpt-image-2.5-flare")
         self.assertEqual(storyos_config.get_path(config, "image.quality"), "high")
         self.assertEqual(storyos_config.get_path(config, "visual.default_profile_id"), "M00")
         self.assertEqual(storyos_config.get_path(config, "normalize.automatic_ratio_delta_max"), 0.01)
         self.assertEqual(storyos_config.get_path(config, "normalize.review_ratio_delta_max"), 0.03)
         self.assertEqual(storyos_config.get_path(config, "production.max_inflight_images"), 3)
+        self.assertEqual(storyos_config.get_path(config, "runtime.review.vision.max_inflight_final"), 4)
 
     def test_stage_read_sets_start_with_config(self):
         index = storyos_config.load_index()
         for step, paths in index["stage_read_sets"].items():
             self.assertEqual(paths[0], "config/storyos.yaml", step)
+
+    def test_invalid_final_review_concurrency_fails_fast(self):
+        config = copy.deepcopy(storyos_config.load_config())
+        config["runtime"]["review"]["vision"]["max_inflight_final"] = 7
+        self.assertIn(
+            "runtime.review.vision.max_inflight_final must be an int between 1 and 6",
+            storyos_config.validate(config),
+        )
 
     def test_invalid_quality_fails_fast(self):
         config = copy.deepcopy(storyos_config.load_config())

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "note": "Diagnostic only; quota percentages are never guessed.",
+  "snapshots": [
+    {
+      "at": "2026-09-19T21:42:37+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {},
+        "files_scanned": [
+          "meta/scoped-workers/creative_story.jsonl"
+        ],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after CREATIVE_STORY"
+    }
+  ],
+  "updated_at": "2026-09-19T21:42:37+08:00",
+  "kind": "quota_observability",
+  "generated_at": "2026-09-19T21:42:37+08:00"
+}

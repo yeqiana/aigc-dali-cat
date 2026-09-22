@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "status": "AVAILABLE_PASS",
+  "consecutive_technical_failures": 0,
+  "last_fingerprint": null,
+  "events": [
+    {
+      "at": "2026-09-11T14:51:05+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 1,
+      "issue_codes": [],
+      "status": "AVAILABLE_PASS",
+      "log": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/visual-lock-attempt-1-request.json",
+      "visual_lock_run_id": "3ae58f16a4b0",
+      "visual_lock_started_at": "2026-09-11T14:30:50.515+08:00"
+    }
+  ],
+  "speculative_production_allowed": false,
+  "last_issue_codes": [],
+  "last_event_at": "2026-09-11T14:51:05+08:00",
+  "last_visual_lock_run_id": "3ae58f16a4b0"
+}

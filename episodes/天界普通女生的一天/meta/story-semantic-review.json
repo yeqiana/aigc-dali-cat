@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "story_sha256": "f0123089568b626465a9c47fcb5ae61dac956061a251a81a5244c8eb419e6990",
+  "storyboard_sha256": "f3ff7edb1d6b267f7002bfc84d5d8b160c31a3cb17e2068a83fe115fab490cf7",
+  "revision_count": 1,
+  "critic_provenance": {
+    "schema_version": 2,
+    "runtime": "WORK_DEVSPACE_BOUNDED",
+    "base_runtime": "WORK",
+    "isolated_session": false,
+    "execution_source": "product_runtime",
+    "workspace_transport": "DEVSPACE",
+    "isolation_mode": "bounded_request_only",
+    "webcodex_used": false,
+    "full_auto_user_authorized": true,
+    "ordinary_life_only": true,
+    "attempt": 2,
+    "reviewed_at": "2026-09-13T10:36:06+08:00",
+    "request_path": "episodes/天界普通女生的一天/meta/runtime/reviews/story-semantic-attempt-2-request.json",
+    "request_id": "story-semantic-a2-4d0781cf9bdb8d48",
+    "request_fingerprint": "4d0781cf9bdb8d48b64a64d0e4a7aeaa15d804bc1ac791c08dc6e29410f7f1aa"
+  },
+  "contract": {
+    "protagonist": "P01，24岁普通天界女生，本集第一人称生活相册记录者；长相自然好看但不网红化，与P02女、P03男、P04男三位老朋友一起度过普通休息日。",
+    "presence_reason": "P01就在自己的天界居民区正常生活，没有调查、任务或异常到场动机；清晨从自家云廊出门，与熟悉朋友吃早餐、短暂轮值、吃午饭、逛旧云市、看晚霞后回家。",
+    "personal_stake": "没有危机型利害；人物真正想保留的是与老朋友把原本普通的一天自然延长到傍晚的生活记忆。结构上的情感利害是‘要不要现在散开回家，还是再一起待一会儿’。",
+    "core_anomaly": "NOT_APPLICABLE：本集被明确锁定为纯生活日常，设计上不存在异常机制、恐怖、调查或需要解释的秘密。",
+    "rule": "NOT_APPLICABLE：唯一硬规则是保持非异常日常逻辑；天界奇观只作为居民习以为常的生活背景，不能突然产生超自然回应或悬疑规则。",
+    "trigger": "NOT_APPLICABLE：不设置异常触发。普通推进触发点是Frame10午饭后P02临时提议去旧云市，原本准备散开的四人因此继续同行。",
+    "direct_consequence": "NOT_APPLICABLE：没有异常后果。Frame10改路线的直接普通后果是后半日增加旧云市、木簪、茶摊和西桥行程，关系时间被自然延长到夜灯亮起。",
+    "midpoint_reframe": "Frame10把‘吃完午饭就散开’改成‘临时继续去旧云市’，故事从上午的固定日常转为朋友们不断临时起意的下午，后半段由计划外相处驱动。",
+    "climax_choice": "Frame16看到西侧云桥被夕光照亮时，四人再次选择不马上回家，而是再去桥边坐一会；Frame17-18用巨大云海、四人并坐和分最后一包点心完成本集情感与视觉峰值，代价只是把回家时间再往后拖，是纯日常题材应有的轻量选择。",
+    "ending_recontextualization": [
+      "Frame12买下/试戴的小木簪在Frame20回到P01的回家静物里，证明下午的临时绕路留下了具体生活痕迹。",
+      "Frame13买点心、Frame18分最后一包点心，到Frame20只剩空纸包，把整天朋友相处从热闹动作收束成一个普通小物件。",
+      "Frame01从云廊自拍出门，Frame20又回到同一类云廊生活空间并收起留影玉牌，前后把宏大天界重新压回一个普通女生的一天。",
+      "Frame10和Frame16两次‘临时再去一下’在Frame19朋友终于分路回家时被重新理解为：这一天的价值正来自没有计划地一再延长相处。"
+    ]
+  },
+  "blind_retell": {
+    "protagonist_and_reason": "一个24岁的普通天界女生在自己的生活区过普通一天，清晨自拍后和三个男女好友吃饭、走云桥、短暂轮值、逛旧云市、喝茶、看晚霞，整集就是她的第一人称生活相册。",
+    "core_anomaly_rule": "NOT_APPLICABLE：没有异常规则；天界的云桥、云海、旧云市等都是当地居民的正常生活环境，故事禁止恐怖、调查、探秘和超自然异常回应。",
+    "worsening_choice": "NOT_APPLICABLE：没有危机升级。普通推进来自两次临时延长行程——Frame10午饭后改去旧云市，Frame16原本可以回家时又去西桥坐一会，时间与关系自然从白天延长到傍晚。",
+    "climax_resolution": "Frame17-18四个朋友在巨大的傍晚云海前坐着，把最后一包点心分成四份；这不是英雄式高潮，而是把宏大天界尺度和最普通朋友动作压在同一画面里，完成本集最强情感/视觉峰值。",
+    "ending_reinterpretation": "Frame19朋友各自回家后，Frame20只剩鞋边、空点心纸包、下午买的小木簪和最后一点晚霞；这些小物件把前面所有宏大云海与街市重新解释成一个普通女生和朋友无所事事却很开心的一天。"
+  },
+  "hard_checks": {
+    "clarity": true,
+    "causal_chain": true,
+    "mechanism_consistency": true,
+    "motivation_stake": true,
+    "trigger_consequence": true,
+    "midpoint_reframe": true,
+    "climax_payoff": true,
+    "ending_payoff": true,
+    "storyboard_information_gain": true,
+    "delete_frame_test": true
+  },
+  "issue_codes": [],
+  "notes": [
+    "普通日常逻辑保持一致：20帧没有突然插入异常、调查、秘密或英雄任务。",
+    "关系推进不是连续摆拍：早餐会合、轮值等待、午饭改路线、木簪互动、茶摊、傍晚分点心承担不同关系功能。",
+    "中点Frame10和二次延长Frame16构成清晰普通因果链；Frame17-18为视觉/情感峰值，Frame19-20完成散场与物件回收。",
+    "删图测试的最弱段是14-15茶摊，但14负责场景/节奏切换，15负责朋友无关紧要闲聊的生活真实性，两者功能不同；其余5帧窗口均有场景、时间、关系或行动增量。",
+    "第一张自拍、女主身份、男女好友、写实生活感、现代元素克制及无恐怖/无调查约束与Story Lock一致。"
+  ],
+  "summary": {"passed": true}
+}

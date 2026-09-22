@@ -13,6 +13,8 @@ from pathlib import Path
 import storyos_config
 import request_intent
 import story_json
+import runtime_request_persistence
+import storage_config
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUESTS_DIR = ROOT / "runtime" / "requests"
@@ -34,6 +36,7 @@ RELEASE_ONLY_SIGNALS = ("只做发布","只做release","release only","release_o
 DATA_REVIEW_SIGNALS = ("只做复盘","数据复盘","data review","data_review")
 PREPRODUCTION_SIGNALS = ("只做前期资产","只做前期","不要生成图片","不生图","做到可以正式生图的交接状态","做到生图交接状态","preproduction only","preproduction_only")
 IMAGE_CONTINUE_SIGNALS = ("从生图开始","从图片开始","接管前期资产","接管已经完成的前期资产","不要重写剧情","image continue","image_continue")
+CREATIVE_SECTION_MARKERS = ("【创作要求】", "[创作要求]", "创作要求：", "创作要求:")
 
 def now():
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -46,6 +49,39 @@ def contains_any(text,signals):
     low=text.lower(); return any(s.lower() in low for s in signals)
 def request_id(text):
     return dt.datetime.now().strftime("%Y%m%d_%H%M%S")+"_"+hashlib.sha256(text.encode("utf-8")).hexdigest()[:8]
+
+
+def preimage_authority_projection(data):
+    """Creative Runtime Request fields that can legitimately affect PREIMAGE.
+
+    Image provider/model/quality, worker counts, delivery mode, request timestamps
+    and retry/resume bookkeeping are execution concerns. Hashing the whole request
+    made a provider-model upgrade falsely invalidate Character/Environment/World
+    authority. Keep only fields PREIMAGE consumers actually use as creative input.
+    """
+    row=data if isinstance(data,dict) else {}
+    provenance=row.get("provenance") or {}
+    return {
+        "topic": row.get("topic") or {},
+        "story_input": row.get("story_input") or {},
+        "creative_hints": row.get("creative_hints") or [],
+        "visual_profile": row.get("visual_profile"),
+        "provenance": {
+            "source": provenance.get("source"),
+            "original_request": provenance.get("original_request"),
+        },
+    }
+
+
+def preimage_authority_projection_sha256(data):
+    raw=json.dumps(preimage_authority_projection(data),ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def authority_sha256(data):
+    row=data if isinstance(data,dict) else {}
+    raw=json.dumps(row,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
 
 def parse_topic(text):
     for left,right in (("「","」"),("《","》"),("『","』"),('"','"'),("“","”")):
@@ -101,6 +137,104 @@ def story_input(text):
         return {"mode":"user_seed","raw":split_after_marker(text,SEED_SIGNALS) or text.strip(),"constraints":[],"rewrite_policy":"strengthen_and_rewrite","preserve_core_intent":True,"allow_structure_rewrite":True}
     return {"mode":"auto_create","raw":None,"constraints":[],"rewrite_policy":"auto_create","preserve_core_intent":True,"allow_structure_rewrite":True}
 
+
+def _explicit_creative_section(text):
+    """Return (creative, operator-prefix) only for an explicit creative boundary.
+
+    We intentionally do not guess from command-looking lines.  Existing requests
+    without a declared creative section keep their legacy semantics; prompts that
+    explicitly distinguish execution instructions from 创作要求 get a safe split.
+    """
+    raw=str(text or "")
+    for marker in CREATIVE_SECTION_MARKERS:
+        idx=raw.find(marker)
+        if idx >= 0:
+            creative=raw[idx+len(marker):].strip()
+            operator=raw[:idx].strip()
+            return (creative or None, operator or None)
+    return None, None
+
+
+def creative_request_view(data):
+    """Derived creative-only view; never mutates the immutable Runtime Request."""
+    row=data if isinstance(data,dict) else {}
+    provenance=row.get("provenance") or {}
+    creative_text,_operator=_explicit_creative_section(provenance.get("original_request"))
+    if creative_text:
+        parsed_story=story_input(creative_text)
+        # An explicit creative section is user-supplied creative intent even when
+        # it does not contain legacy seed trigger phrases. Treating it as
+        # auto_create would discard the section because auto_create.raw is None.
+        if parsed_story.get("mode")=="auto_create":
+            parsed_story={
+                "mode":"user_seed",
+                "raw":creative_text,
+                "constraints":[],
+                "rewrite_policy":"strengthen_and_rewrite",
+                "preserve_core_intent":True,
+                "allow_structure_rewrite":True,
+            }
+        return {
+            "topic": row.get("topic") or {},
+            "story_input": parsed_story,
+            "creative_hints": creative_hints(creative_text),
+            "visual_profile": row.get("visual_profile"),
+        }
+    return {
+        "topic": row.get("topic") or {},
+        "story_input": row.get("story_input") or {},
+        "creative_hints": row.get("creative_hints") or [],
+        "visual_profile": row.get("visual_profile"),
+    }
+
+
+def execution_policy_view(data):
+    """Derived execution-only view for runtime/router consumers."""
+    row=data if isinstance(data,dict) else {}
+    return {
+        "mode": row.get("mode"),
+        "repository": row.get("repository") or {},
+        "intent": row.get("intent") or {},
+        "image": row.get("image") or {},
+        "image_model": row.get("image_model"),
+        "image_quality": row.get("image_quality"),
+        "runtime": row.get("runtime") or {},
+        "delivery": row.get("delivery") or {},
+        "user_intent": row.get("user_intent") or {},
+    }
+
+
+def operator_instructions_view(data):
+    """Derived operator-only instructions, deliberately excluded from creative input."""
+    row=data if isinstance(data,dict) else {}
+    provenance=row.get("provenance") or {}
+    _creative,operator=_explicit_creative_section(provenance.get("original_request"))
+    return {
+        "raw": operator,
+        "source": "explicit_prefix_before_creative_section" if operator else "none",
+    }
+
+
+def partitioned_view(data):
+    return {
+        "creative_request": creative_request_view(data),
+        "execution_policy": execution_policy_view(data),
+        "operator_instructions": operator_instructions_view(data),
+    }
+
+
+def creative_source_text(data):
+    """Plain text used by creative/character selection without operator commands."""
+    creative=creative_request_view(data)
+    story=creative.get("story_input") or {}
+    bits=[
+        str(((creative.get("topic") or {}).get("title")) or ""),
+        str(story.get("raw") or ""),
+        "\n".join(str(x) for x in (story.get("constraints") or [])),
+        " ".join(str(x) for x in (creative.get("creative_hints") or [])),
+    ]
+    return "\n".join(x for x in bits if x)
+
 def parse_mode(text):
     if contains_any(text,RESUME_SIGNALS):return "resume"
     if contains_any(text,IMAGE_CONTINUE_SIGNALS):return "image_continue"
@@ -132,8 +266,9 @@ def compile_request(text):
     expected_intent=request_intent.expected_intent_for_mode(mode)
     if intent.get("intent") != expected_intent:
         intent={**intent,"intent":expected_intent,"reason_codes":[*(intent.get("reason_codes") or []),f"MODE_OVERRIDE_{mode.upper()}"]}
+    rid=request_id(text)
     data={
-        "schema_version":1,"request_id":request_id(text),"created_at":now(),"mode":mode,
+        "schema_version":1,"request_id":rid,"created_at":now(),"mode":mode,
         "repository":{"branch":branch,"source":branch_source},
         "topic":{"title":title,"raw":raw_topic},
         "story_input":story,
@@ -145,7 +280,7 @@ def compile_request(text):
         "runtime":{"execution_mode":str(storyos_config.get_path(_CONFIG,"runtime.execution_mode")),"continuous_execution":bool(full_auto),"resume":True,"max_image_workers":DEFAULT_MAX_IMAGE_WORKERS,"fail_soft":True,"incremental_reuse":True},
         "delivery":{"mode":"auto","zip_required_for_completion":False},
         "user_intent":{"full_auto_authorized":bool(full_auto),"allow_story_strengthening":story["mode"]!="locked_story","allow_story_rewrite":story["mode"] in {"auto_create","user_seed","core_constraints"},"ask_before_each_step":not bool(full_auto)},
-        "provenance":{"source":"natural_language","original_request":text.strip()},
+        "provenance":{"source":"natural_language","original_request":text.strip(),"creative_request_id":rid},
     }
     errors=validate_request(data)
     if errors:raise ValueError("; ".join(errors))
@@ -179,29 +314,42 @@ def validate_request(data):
 
 def write_compiled(data,output=None):
     target=output.resolve() if output else REQUESTS_DIR/f"{data['request_id']}.json"; write_json(target,data); return target
-def bind_request(request_path,episode_dir,force=False):
-    request_path=request_path.resolve(); episode_dir=episode_dir.resolve()
-    if not request_path.is_file():raise ValueError(f"request file missing: {request_path}")
-    try:episode_dir.relative_to(ROOT.resolve())
+def bind_data(data,episode_dir,force=False,repository_root=None):
+    episode_dir=Path(episode_dir).resolve()
+    repo_root=Path(repository_root).resolve() if repository_root is not None else ROOT.resolve()
+    try:episode_dir.relative_to(repo_root)
     except ValueError as exc:raise ValueError("episode must be inside repository") from exc
-    data=read_json(request_path); errors=validate_request(data)
+    errors=validate_request(data)
     if errors:raise ValueError("; ".join(errors))
     target=episode_dir/EPISODE_REL
-    if target.is_file() and not force:
-        existing=read_json(target)
+    existing=authority_for_episode(episode_dir)
+    if existing is not None and not force:
         if existing!=data:raise ValueError("episode already has a different immutable runtime-request; use --force only for explicit correction")
         return target
-    write_json(target,data); return target
+    mode=storage_config.episode_meta_store_config()["mode"]
+    if mode!="mysql":
+        write_json(target,data)
+    runtime_request_persistence.persist(episode_dir,data)
+    return target
+
+def bind_request(request_path,episode_dir,force=False):
+    request_path=request_path.resolve()
+    if not request_path.is_file():raise ValueError(f"request file missing: {request_path}")
+    return bind_data(read_json(request_path),episode_dir,force=force)
+
+def authority_for_episode(episode_dir):
+    return runtime_request_persistence.load(Path(episode_dir).resolve())
+
 def effective_for_episode(episode_dir):
-    p=episode_dir/EPISODE_REL
-    if not p.is_file():return None
-    data=read_json(p); errors=validate_request(data)
+    data=authority_for_episode(episode_dir)
+    if data is None:return None
+    errors=validate_request(data)
     if errors:raise ValueError("; ".join(errors))
     return data
 
 def self_test():
     a=compile_request("读取 story 分支。全自动做一篇「仲夏夜惊魂」。")
-    assert a["story_input"]["mode"]=="auto_create" and a["image_model"]=="gpt-image-2" and a["image_quality"]=="high"
+    assert a["story_input"]["mode"]=="auto_create" and a["image_model"]==DEFAULT_IMAGE_MODEL and a["image_quality"]=="high"
     assert a["intent"]["intent"]=="CREATE_EPISODE"
     b=compile_request("读取 story 分支。全自动做一篇「仲夏夜惊魂」。剧情大概是：几个人住进山里民宿。")
     assert b["story_input"]["mode"]=="user_seed" and "山里民宿" in b["story_input"]["raw"]

@@ -1,18 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import annotations
-import argparse, concurrent.futures as cf, json, subprocess, sys, time
+import argparse, concurrent.futures as cf, hashlib, json, subprocess, sys, time, uuid
 from pathlib import Path
 
 import quota_observability
 import execution_capsule
 import character_contract
+import character_visual_contract
+import capture_event_contract
+import voice_contract
+import wardrobe_contract
+import episode_state_persistence
+import review_record_persistence
+import visual_profile_review_persistence
+import production_ledger
 import provisional_release
 import preproduction_handoff
 import resource_library
 import intro_policy
 import multi_level_cache
 import runtime_execution
+import runtime_request
 import scoped_codex_worker
 import runtime_mode_router
 import directing_quality
@@ -28,6 +37,16 @@ import product_runtime_adapter
 import next_action
 import episode_performance
 import runtime_timeout_policy
+import runtime_node_registry
+import runtime_node_evidence
+import storyos_config
+import runtime_scheduler
+import runtime_checkpoint
+import runtime_command
+import runtime_ownership
+import validate_episode
+import machine_gate
+import evidence_gate
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -35,31 +54,152 @@ DAG_FILE=ROOT/"runtimes/runtime-dag.json"
 from story_os_contract import canonical_stages
 STAGES=tuple(canonical_stages())
 
+# STORY_OS_PHASE461_VISUAL_PROFILE_CLOSURE: returned when the pre-resume Visual Profile
+# reconciliation refuses to continue (a committed production asset exists on a profile that
+# nobody has confirmed).
+RECONCILE_BLOCKED_RC=9
+
+# STORY_OS_V211_INCREMENTAL_PLAN_REUSE: the incremental planner's real input surface,
+# read off incremental_closure.plan(). The generic input_hash cannot be reused for this
+# step: its evidence_paths is meta/runtime-checkpoint.json, which checkpoint() rewrites
+# on every step of every pass, so that hash never repeats and would never hit. These are
+# the files plan() actually inspects -- episode-state, story-gates (via subtitle_required)
+# and the four evidence files. production-ledger.json belongs here because it moves with
+# the pixel assets, which is exactly when the plan does need recomputing.
+INCREMENTAL_PLAN_STEP="INCREMENTAL_PLAN"
+INCREMENTAL_PLAN_INPUTS=[
+    "meta/episode-state.json","meta/story-gates.json","meta/story-semantic-review.json",
+    "meta/visual-profile-review.json","meta/production-ledger.json",
+    "meta/subtitle-layout-audit.json","meta/text-audit.json",
+]
+
+
+def _story_review_authority_sha(ep):
+    return review_record_persistence.authority_sha256(
+        Path(ep).resolve(),
+        "STORY_SEMANTIC",
+        legacy_path=Path(ep).resolve()/"meta/story-semantic-review.json",
+    )
+
+
+AUTHORITY_HASHERS={
+    "meta/episode-state.json":episode_state_persistence.authority_sha256,
+    character_contract.REL.as_posix():character_contract.authority_sha256,
+    character_visual_contract.REL.as_posix():character_visual_contract.authority_sha256,
+    capture_event_contract.REL.as_posix():capture_event_contract.authority_sha256,
+    voice_contract.REL.as_posix():voice_contract.authority_sha256,
+    wardrobe_contract.REL.as_posix():wardrobe_contract.authority_sha256,
+    "meta/story-semantic-review.json":_story_review_authority_sha,
+    "meta/visual-profile-review.json":visual_profile_review_persistence.authority_sha256,
+    "meta/production-ledger.json":production_ledger.authority_sha256,
+}
+
+
+def _evidence_input_hash(ep,paths):
+    files=[];authority=[]
+    for rel in paths:
+        rel=str(rel)
+        hasher=AUTHORITY_HASHERS.get(rel)
+        if hasher is None:
+            files.append(rel)
+            continue
+        digest=hasher(Path(ep).resolve())
+        authority.append(f"{rel}={digest or 'MISSING'}")
+    file_hash=proto.evidence_hash(ep,files)
+    return hashlib.sha256(
+        ("|".join([file_hash,*authority])).encode("utf-8")
+    ).hexdigest()
+
+
+def _step_input_hash(ep, paths):
+    evidence_hash=_evidence_input_hash(ep,paths)
+    request=runtime_request.authority_for_episode(ep) or {}
+    request_hash=runtime_request.authority_sha256(request)
+    return hashlib.sha256((request_hash+"|"+evidence_hash).encode("utf-8")).hexdigest()
+
+
+def reconcile_visual_profile_closure(ep):
+    """Phase 4.6.1: reconcile the Visual Profile closure before the DAG resumes.
+
+    A promote hook only runs at a promotion, so a production asset committed while the profile
+    was not yet LOCKED can leave LOCKED + committed asset + not FROZEN with no later trigger.
+    This is the single runtime recovery point for that state. It only *consumes*
+    visual_profile_closure.reconcile_episode: no registry, lifecycle or asset-commit rule is
+    re-implemented here, and nothing is confirmed.
+
+    Returns None when the runtime may continue (frozen / noop / skipped), or a list of blocking
+    lines when it may not. A refused recovery (VISUAL_PROFILE_NOT_LOCKED) must not be turned
+    into a pass, so this returns a block rather than a diagnostic.
+    """
+    try:
+        import visual_profile_closure as closure
+        report=closure.reconcile_episode(ep)
+    except Exception as exc:
+        return ["visual profile closure reconcile unavailable: "+type(exc).__name__+": "+str(exc)]
+    status=str(report.get("status") or "")
+    if status!=closure.RESULT_FAIL:
+        return None
+    return [
+        "visual profile closure reconcile refused: "+str(report.get("code")),
+        "lifecycle_state="+str(report.get("lifecycle_state")),
+        str(report.get("detail") or ""),
+    ]
+
 def run(cmd):
-    return subprocess.run([str(x) for x in cmd],cwd=ROOT,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
+    return runtime_command.run_argv([str(x) for x in cmd],cwd=ROOT,capture=True)
 def load_dag():
     d=json.loads(DAG_FILE.read_text(encoding="utf-8-sig"))
     if d.get("schema_version")!=1: raise ValueError("invalid runtime-dag schema")
     return d
 def state(ep):
-    p=ep/"meta/episode-state.json"
-    if not p.is_file(): return None
-    return json.loads(p.read_text(encoding="utf-8-sig")).get("current_state")
+    return (episode_state_persistence.load(Path(ep).resolve()) or {}).get("current_state")
 def stage_at_least(cur,target):
     return cur in STAGES and target in STAGES and STAGES.index(cur)>=STAGES.index(target)
 def request_mode(ep):
     return runtime_execution.effective_mode(ep)
 def validate_target(ep,target):
-    outputs=[]
-    for script in ("validate_episode.py","machine_gate.py","evidence_gate.py"):
-        cp=run([sys.executable,SYSTEM/script,ep,"--target",target]); outputs.append(cp.stdout)
-        if cp.returncode!=0: return False,"\n".join(outputs)[-5000:]
+    ep=Path(ep).resolve()
+    findings=validate_episode.validate_episode(ep,ROOT,False,target)
+    failed=[str(x) for x in findings if getattr(x,"level",None)=="FAIL"]
+    if failed: return False,"\n".join(failed)[-5000:]
+    findings=machine_gate.validate(ep,target,metadata_only=False)
+    failed=[str(x) for x in findings if getattr(x,"level",None)=="FAIL"]
+    if failed: return False,"\n".join(failed)[-5000:]
+    ok,messages=evidence_gate.run_gate(ep,target)
+    if not ok: return False,"\n".join(str(x) for x in messages)[-5000:]
     return True,"PASS"
-def checkpoint(ep,step,status,elapsed,note,attempt=1,input_hash=None,output_hash=None):
-    cmd=[sys.executable,SYSTEM/"runtime_checkpoint.py","record-step",ep,"--step",step,"--status",status,"--attempt",str(attempt),"--finished-at",proto.now(),"--note",note]
-    if input_hash: cmd += ["--input-hash",input_hash]
-    if output_hash: cmd += ["--output-hash",output_hash]
-    run(cmd)
+
+# STORY_OS_V262_DAG_STOP_TARGET: an explicit --until target lets a bounded pass end on a chosen
+# stage instead of running the whole DAG. It is a caller-imposed stop, never a second stage
+# authority: the stop only counts once the canonical state has advanced AND the same three gates
+# that guard advancement accept that stage, so --until can never report "reached" for a stage the
+# Episode has not actually validated. Default None means every existing caller is unaffected.
+STOP_TARGET_REACHED="STOP_TARGET_REACHED"
+
+def stop_target_reached(ep,target):
+    """Return (reached, detail) for an --until stop target.
+
+    The canonical state read is cheap and happens first, so the three gate subprocesses are
+    spawned only once the Episode has actually arrived at the target.
+    """
+    cur=state(ep)
+    if not stage_at_least(cur,target):
+        return False,"current_state="+str(cur)
+    ok,msg=validate_target(ep,target)
+    if not ok:
+        return False,"gate rejected "+target+": "+str(msg)[-800:]
+    return True,"PASS"
+def checkpoint(ep,step,status,elapsed,note,attempt=1,input_hash=None,output_hash=None,returncode=None):
+    try:
+        runtime_checkpoint.record_step(
+            ep,step=step,status=status,attempt=attempt,finished_at=proto.now(),note=note,
+            input_hash=input_hash,output_hash=output_hash,
+            elapsed_seconds=elapsed,returncode=returncode)
+    except FileNotFoundError:
+        # Compatibility with the former subprocess path: runtime_checkpoint.py
+        # returned non-zero when the file was absent, but DAG intentionally did
+        # not treat that recovery-projection failure as stage authority.
+        return None
 
 def spec_rows():
     d=load_dag(); rows=[]
@@ -69,6 +209,107 @@ def spec_rows():
             covers=tuple(x.get("covers") or []),target_state=x.get("target_state"),
             evidence_paths=tuple(x.get("evidence_paths") or []),expensive=bool(x.get("expensive"))))
     return rows
+
+
+def normalize_node_contracts(nodes):
+    """Validate scheduling-only nodes without reading or writing Episode state."""
+    if isinstance(nodes, dict):
+        nodes = nodes.get("nodes")
+    if not isinstance(nodes, list):
+        raise ValueError("node contract must contain a nodes list")
+    result = []
+    ids = set()
+    for index, raw in enumerate(nodes):
+        if not isinstance(raw, dict):
+            raise ValueError(f"node at index {index} must be an object")
+        node_id = str(raw.get("node_id") or "").strip()
+        if not node_id or node_id in ids:
+            raise ValueError(f"node_id must be unique and non-empty: {node_id!r}")
+        depends_on = raw.get("depends_on") or []
+        if not isinstance(depends_on, list) or any(not str(x).strip() for x in depends_on):
+            raise ValueError(f"node {node_id} has invalid depends_on")
+        item = dict(raw)
+        item["node_id"] = node_id
+        item["depends_on"] = [str(x) for x in depends_on]
+        item["_order"] = index
+        result.append(item)
+        ids.add(node_id)
+    unknown = sorted({dep for item in result for dep in item["depends_on"] if dep not in ids})
+    if unknown:
+        raise ValueError("unknown node dependencies: " + ", ".join(unknown))
+    return result
+
+
+def resolve_node_dependencies(nodes, *, completed=(), failed=()):
+    """Return ready, waiting and downstream-blocked nodes for one scheduling pass.
+
+    This is deliberately a pure function.  It neither executes a node nor records
+    a runtime status, so it cannot become an Episode stage authority.
+    """
+    rows = normalize_node_contracts(nodes)
+    completed = {str(value) for value in completed}
+    failed = {str(value) for value in failed}
+    known = {row["node_id"] for row in rows}
+    unknown_outcomes = (completed | failed) - known
+    if unknown_outcomes:
+        raise ValueError("unknown completed/failed nodes: " + ", ".join(sorted(unknown_outcomes)))
+    if completed & failed:
+        raise ValueError("a node cannot be both completed and failed")
+
+    blocked = set()
+    changed = True
+    while changed:
+        changed = False
+        for row in rows:
+            node_id = row["node_id"]
+            if node_id in completed or node_id in failed or node_id in blocked:
+                continue
+            if any(dep in failed or dep in blocked for dep in row["depends_on"]):
+                blocked.add(node_id)
+                changed = True
+
+    ready = []
+    waiting = []
+    for row in rows:
+        node_id = row["node_id"]
+        if node_id in completed or node_id in failed or node_id in blocked:
+            continue
+        if set(row["depends_on"]).issubset(completed):
+            ready.append(row)
+        else:
+            waiting.append(row)
+    return {"ready": ready, "waiting": waiting, "blocked": [
+        row for row in rows if row["node_id"] in blocked
+    ]}
+
+def production_scheduler_resources() -> dict:
+    """Resolved capacity presented to the top-level production scheduler.
+
+    Top-level Runtime steps stay serial unless their Node Contract explicitly
+    declares ``parallel_safe``.  The snapshot therefore exposes real lane
+    capacity without forcing unsafe composite steps to run concurrently.  Image
+    concurrency remains delegated to image_scheduler and PREIMAGE concurrency to
+    its task protocol, but the scheduler no longer plans against a fake global
+    ``max_workers=1`` resource model.
+    """
+    config=storyos_config.load_config()
+    authority=max(1,int(storyos_config.get_path(config,"runtime.workers.local_codex_preimage",4)))
+    derived=max(1,int(storyos_config.get_path(config,"runtime.workers.derived",6)))
+    image=max(1,int(storyos_config.get_path(config,"production.max_inflight_images",3)))
+    max_workers=max(authority,derived,image,1)
+    return {
+        "max_workers":max_workers,
+        "current_workers":0,
+        "runtime_capacity":{
+            "text":1,
+            "review":1,
+            "preimage":authority,
+            "authority":authority,
+            "derived":derived,
+            "image":image,
+        },
+    }
+
 
 def plan(ep):
     cur=state(ep); saved=proto.load_state(ep)
@@ -84,7 +325,49 @@ def plan(ep):
         out.append(row)
     return {"current_state":cur,"steps":out}
 
-def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
+def run_release_preflight_recovery(ep: Path, codex=None, timeout=None) -> tuple[int, str]:
+    """Run targeted release evidence recovery after the scoped RELEASE worker.
+
+    The scoped worker creates captions/copy/assets.  This hook reuses the
+    existing prepare-auto recovery only after those sources exist, so stale
+    caption/compliance/release-review evidence does not force a second full
+    RELEASE worker invocation.  Non-zero results are preserved fail-closed.
+    """
+    import argparse
+    import release_preflight
+    try:
+        rc = int(release_preflight.cmd_prepare_auto(argparse.Namespace(
+            episode_dir=str(ep), codex=codex, timeout=timeout,
+        )))
+    except Exception as exc:
+        return 4, f"RELEASE PREFLIGHT AUTO RECOVERY FAIL: {exc}"
+    if rc != 0:
+        return rc, f"RELEASE PREFLIGHT AUTO RECOVERY rc={rc}"
+    return 0, "RELEASE PREFLIGHT AUTO RECOVERY PASS"
+
+
+def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
+    # W-11: a recorded production-owner switch only becomes effective when the
+    # Production Kernel consumes it. Direct DAG execution is a production entry,
+    # so fail closed before any reconcile/executor side effect.
+    runtime_ownership.assert_v3_owner("runtime_dag.execute")
+    # STORY_OS_V262_DAG_STOP_TARGET: a stop target is a canonical Episode stage, never a step id.
+    # Reject an unknown target before any reconcile, lock or executor exists.
+    if until is not None and until not in STAGES:
+        raise ValueError("unknown runtime DAG stop target: "+str(until))
+    # Direct DAG callers (including bounded recovery/test harnesses) may not be
+    # wrapped by workflow_runner. Give their spans a real local context instead
+    # of allowing uncorrelatable SPAN_* events; the normal wrapper still owns
+    # the durable TRACE_START/TRACE_END lifecycle.
+    trace_run_id = run_id or "dag_" + uuid.uuid4().hex
+    trace_id = trace_id or "ST_" + uuid.uuid4().hex[:16]
+    blocked=reconcile_visual_profile_closure(ep)
+    if blocked is not None:
+        # Phase 4.6.1: an unreconcilable Visual Profile closure fails closed. It is never
+        # reported as a pass, and no production step is started.
+        print("VISUAL PROFILE CLOSURE RECONCILE BLOCKED")
+        for line in blocked: print(line)
+        return RECONCILE_BLOCKED_RC
     dag=load_dag(); specs=spec_rows(); total_start=time.monotonic()
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("codex_supervisor_run")
@@ -106,14 +389,52 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
         resource_library.resolve(ep,write=True)
     provisional_future=None
     background=cf.ThreadPoolExecutor(max_workers=1,thread_name_prefix="story-os-release-prep")
-    for s in specs:
+    # V3 V2.1: retain existing executors and evidence/Gate behavior, but let the
+    # scheduler release the next real Runtime step from its declared dependencies.
+    # max_workers remains 1 because these composite legacy steps are not yet safe
+    # to execute concurrently.
+    step_by_id={spec.step_id: spec for spec in specs}
+    completed_nodes=set()
+    node_contract=runtime_node_registry.runtime_step_nodes(specs)
+    scheduler_resources=production_scheduler_resources()
+    if until:
+        # Already at or past the target: stopping is a no-op, so do not spawn INCREMENTAL_PLAN
+        # or any other step merely to arrive back here.
+        reached,detail=stop_target_reached(ep,until)
+        if reached:
+            background.shutdown(wait=False,cancel_futures=True)
+            print(STOP_TARGET_REACHED+" "+until+" (already valid)")
+            return 0
+    while len(completed_nodes)<len(specs):
+        wave=runtime_scheduler.schedule(
+            node_contract,
+            completed=completed_nodes,
+            max_workers=scheduler_resources["max_workers"],
+            resource_snapshot=scheduler_resources,
+        )
+        if not wave["dispatch"]:
+            background.shutdown(wait=False,cancel_futures=True)
+            print("RUNTIME DAG SCHEDULER BLOCKED", json.dumps({
+                "waiting":[x["node_id"] for x in wave["waiting"]],
+                "blocked":[x["node_id"] for x in wave["blocked"]],
+            },ensure_ascii=True))
+            return 2
+        s=step_by_id[wave["dispatch"][0]["node_id"]]
         cur=state(ep)
         if s.step_id=="CREATIVE_STORY" and not stage_at_least(cur,"STORYBOARD_LOCKED"):
             directing_quality.before_step(ep,s.step_id)
+            preparation_started=proto.now()
             character_contract.prepare(ep,force=False)
+            character_visual_contract.prepare(ep,force=False)
+            runtime_node_evidence.record(
+                ep,node_id="character_prepare",start_time=preparation_started,end_time=proto.now(),
+                status="PASS",attempt=1,output="character + character_visual contract scaffolds prepared",
+                evidence=["meta/character-contract.json","meta/character-visual-contract.json"])
         prior=(proto.load_state(ep).get("steps") or {}).get(s.step_id) or {}
         attempt=int(prior.get("attempt") or 0)+1
-        input_hash=proto.evidence_hash(ep,["meta/runtime-request.json","meta/episode-state.json",*s.evidence_paths])
+        input_hash=_step_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+        if s.step_id==INCREMENTAL_PLAN_STEP:
+            input_hash=_evidence_input_hash(ep,INCREMENTAL_PLAN_INPUTS)
         if s.step_id=="PREIMAGE_COMPILE":
             handoff_valid=False
             try:
@@ -122,31 +443,59 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
                 handoff_valid=False
             if handoff_valid or stage_at_least(cur,"VISUAL_CALIBRATED"):
                 reason="preproduction handoff already valid" if handoff_valid else "downstream stage already valid; legacy preimage not backfilled"
-                out_hash=proto.evidence_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+                out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
                 res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,reason,0)
                 proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,reason,attempt,input_hash,out_hash)
                 if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,reason)
-                episode_performance.safe_end_stage(ep,s.step_id,status="PASS",metadata={"reused":True,"reason":reason})
+                episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"reason":reason})
                 next_action.write(ep)
+                runtime_node_evidence.record(
+                    ep,node_id=s.step_id,start_time=res.started_at,end_time=res.finished_at,
+                    status="REUSED",attempt=attempt,output=reason,evidence=s.evidence_paths)
+                completed_nodes.add(s.step_id)
                 if mode=="preproduction_only":
                     background.shutdown(wait=False,cancel_futures=True)
                     return 0
                 continue
+        # STORY_OS_V211_INCREMENTAL_PLAN_REUSE: the planner is a pure function of the files
+        # in INCREMENTAL_PLAN_INPUTS (all four subcommands it spawns are read-only) and
+        # incremental_closure.py:143 returns 0 unconditionally, so re-running it on unchanged
+        # inputs recomputes a verdict this DAG discards anyway. Skip the ~4 subprocess spawns.
+        if (s.step_id==INCREMENTAL_PLAN_STEP and prior.get("status") in {"PASS","REUSED"}
+                and prior.get("input_hash")==input_hash):
+            reason="plan inputs unchanged since last run"
+            out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+            res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,reason,0)
+            proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,reason,attempt,input_hash,out_hash)
+            if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,reason)
+            episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"reason":reason})
+            _t=time.monotonic()
+            _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=trace_run_id,attrs={"reused":True})
+            runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=trace_run_id,attrs={"reason":reason})
+            runtime_node_evidence.record(
+                ep,node_id=s.step_id,start_time=res.started_at,end_time=res.finished_at,
+                status="REUSED",attempt=attempt,output=reason,evidence=s.evidence_paths)
+            completed_nodes.add(s.step_id)
+            continue
         if s.target_state and stage_at_least(cur,s.target_state):
             ok,msg=validate_target(ep,s.target_state)
             if ok:
-                out_hash=proto.evidence_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+                out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
                 res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,"target already valid",0)
                 proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,"target already valid",attempt,input_hash,out_hash)
                 if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,"target already valid")
-                episode_performance.safe_end_stage(ep,s.step_id,status="PASS",metadata={"reused":True,"target_state":s.target_state})
+                episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"target_state":s.target_state})
                 _t=time.monotonic()
-                _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"reused":True})
-                runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=run_id,attrs={"target_state":s.target_state})
+                _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=trace_run_id,attrs={"reused":True})
+                runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=trace_run_id,attrs={"target_state":s.target_state})
+                runtime_node_evidence.record(
+                    ep,node_id=s.step_id,start_time=res.started_at,end_time=res.finished_at,
+                    status="REUSED",attempt=attempt,output="target already valid",evidence=s.evidence_paths)
+                completed_nodes.add(s.step_id)
                 continue
         started_at=proto.now(); t0=time.monotonic(); rc=0; note=""
         episode_performance.safe_begin_stage(ep,s.step_id,source="runtime_dag",metadata={"executor":s.executor,"target_state":s.target_state})
-        trace_span=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=run_id,attrs={"executor":s.executor,"target_state":s.target_state})
+        trace_span=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=trace_run_id,attrs={"executor":s.executor,"target_state":s.target_state})
         if s.step_id=="PREIMAGE_COMPILE":
             resource_library.resolve(ep,write=True)
             intro_policy.resolve(ep,write=True)
@@ -156,10 +505,80 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
             execution_capsule.compile_capsule(ep,s.step_id,write=True)
             active_runtime,_=runtime_router.detect()
             if active_runtime in {"WORK","WEB"} and not codex:
-                request=product_runtime_adapter.build_request(
-                    ep,runtime=active_runtime,mode=mode,resume=True,source=f"runtime_dag:{s.step_id}")
-                rc=product_runtime_adapter.HOST_ACTION_REQUIRED_RC
-                note=json.dumps(request,ensure_ascii=True)
+                deterministic_preimage_step=None
+                if s.step_id=="PREIMAGE_COMPILE":
+                    host_step,_=product_runtime_adapter.next_host_step(ep,mode)
+                    if host_step=="PREIMAGE_FRAME_CONTRACT_COMPILE":
+                        import frame_contract
+                        import preimage_directing_materializer
+                        try:
+                            materialized=preimage_directing_materializer.ensure(ep)
+                            index=frame_contract.compile_all(ep)
+                            deterministic_preimage_step=host_step
+                            note=json.dumps({"deterministic_step":host_step,"directing_contracts":materialized.get("contracts"),"frame_contract_index_sha256":index.get("index_sha256")},ensure_ascii=True)
+                        except Exception as exc:
+                            rc=4
+                            note=f"PREIMAGE FRAME CONTRACT COMPILE FAIL: {exc}"
+                    elif host_step=="PREIMAGE_VERIFY":
+                        import frame_contract
+                        import preimage_directing_materializer
+                        try:
+                            materialized=preimage_directing_materializer.ensure(ep)
+                            # A hosted authority commit can make the strict directing
+                            # contracts appear after an earlier Frame Contract compile.
+                            # Recompile here so final PREIMAGE verification binds the
+                            # exact materialized contract SHAs instead of stale/missing ones.
+                            index=frame_contract.compile_all(ep)
+                            deterministic_preimage_step=host_step
+                            note=json.dumps({"deterministic_step":host_step,"reason":"current authority exists; materialize strict directing contracts and verify/build handoff locally","directing_contracts":materialized.get("contracts"),"frame_contract_index_sha256":index.get("index_sha256")},ensure_ascii=True)
+                        except Exception as exc:
+                            rc=4
+                            note=f"PREIMAGE VERIFY MATERIALIZATION FAIL: {exc}"
+                if deterministic_preimage_step is not None:
+                    rc=0
+                elif rc==0:
+                    request=product_runtime_adapter.build_request(
+                        ep,runtime=active_runtime,mode=mode,resume=True,source=f"runtime_dag:{s.step_id}")
+                    rc=product_runtime_adapter.HOST_ACTION_REQUIRED_RC
+                    note=json.dumps(request,ensure_ascii=True)
+            elif s.step_id=="PREIMAGE_COMPILE":
+                # A local explicit CODEX run executes four bounded workers.  It
+                # is not a threaded wrapper around the legacy composite prompt.
+                import preimage_protocol
+                import preimage_task_contract
+                # Fail here, before the fan-out, if any task's step is missing
+                # from a registry: the alternative is discovering it inside a
+                # worker 20 minutes in, with the other three already running.
+                preimage_task_contract.assert_registries_aligned()
+                # This branch is the explicit local-Codex PREIMAGE fallback only.
+                # WORK + Workspace Provider production goes through the host-action branch above;
+                # its concurrency is owned by the host transport, not this local pool.
+                workers=int(storyos_config.get_path(storyos_config.load_config(),"runtime.workers.local_codex_preimage") or 4)
+                def _worker(task):
+                    step=preimage_task_contract.canonical_step(task["task_type"])
+                    execution_capsule.compile_capsule(ep,step,write=True)
+                    value, _log=scoped_codex_worker.run_step(ep,step,codex_raw=codex,timeout=timeout)
+                    return value
+                outcome=preimage_protocol.execute_local(ep,_worker,max_workers=workers)
+                rc=0 if outcome.get("status")=="PASS" else 4
+                if rc == 0:
+                    import frame_contract
+                    import preimage_directing_materializer
+                    try:
+                        # A committed PREIMAGE authority round licenses only deterministic
+                        # derivation, not new model judgment: materialize the strict per-frame
+                        # directing contracts from the committed authority before compiling
+                        # Frame Contracts.  This mirrors the WORK/Product host branch above;
+                        # without it a local CODEX run commits authority and then fails its own
+                        # PREIMAGE directing-quality gate because those four contracts were
+                        # never materialized.
+                        materialized=preimage_directing_materializer.ensure(ep)
+                        outcome["directing_contracts"]=materialized.get("contracts")
+                        index=frame_contract.compile_all(ep)
+                        outcome["frame_contract_index_sha256"]=index.get("index_sha256")
+                    except Exception as exc:
+                        rc=4; outcome["frame_contract_compile_error"]=str(exc)
+                note=(note+" "+json.dumps(outcome,ensure_ascii=True))[-5000:]
             else:
                 if s.step_id=="RELEASE" and provisional_future is not None:
                     try:
@@ -208,15 +627,23 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
             if quality_errors:
                 rc=4
                 note=(note+"\nDIRECTING QUALITY FAIL\n"+"\n".join(quality_errors))[-5000:]
+        if rc==0 and s.step_id=="RELEASE":
+            recovery_rc,recovery_note=run_release_preflight_recovery(ep,codex=codex,timeout=timeout)
+            note=(note+"\n"+recovery_note)[-5000:]
+            if recovery_rc!=0:
+                rc=recovery_rc
         if rc==0 and s.target_state:
             ok,msg=validate_target(ep,s.target_state)
             if not ok: rc=4; note=(note+"\nPOSTCONDITION FAIL\n"+msg)[-5000:]
         status="PASS" if rc==0 else ("HOST_WAIT" if rc==product_runtime_adapter.HOST_ACTION_REQUIRED_RC else ("BLOCKED" if rc in {124,3,4} else "FAILED"))
-        out_hash=proto.evidence_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+        out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
         res=proto.StepResult(s.step_id,status,attempt,started_at,proto.now(),elapsed,input_hash,out_hash,note,rc)
-        proto.save_result(ep,res); checkpoint(ep,s.step_id,status,elapsed,note[-1200:],attempt,input_hash,out_hash)
+        proto.save_result(ep,res); checkpoint(ep,s.step_id,status,elapsed,note[-1200:],attempt,input_hash,out_hash,returncode=rc)
+        runtime_node_evidence.record(
+            ep,node_id=s.step_id,start_time=started_at,end_time=res.finished_at,status=status,
+            attempt=attempt,output=note[-1200:],evidence=s.evidence_paths)
         if run_id: perf.record_step(ep,run_id,s.step_id,status,elapsed,note[-500:])
-        runtime_trace.end_span(ep,trace_span,name=s.step_id,category="workflow_step",status=status,started_monotonic=t0,trace_id=trace_id,run_id=run_id,attrs={"rc":rc,"attempt":attempt})
+        runtime_trace.end_span(ep,trace_span,name=s.step_id,category="workflow_step",status=status,started_monotonic=t0,trace_id=trace_id,run_id=trace_run_id,attrs={"rc":rc,"attempt":attempt})
         if status != "HOST_WAIT":
             episode_performance.safe_end_stage(ep,s.step_id,status=status,metadata={"rc":rc,"attempt":attempt})
         try: quota_observability.snapshot(ep,note=f"after {s.step_id}")
@@ -237,6 +664,15 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None):
                     if run_id: perf.record_step(ep,run_id,"SPECULATIVE_PRODUCTION","FAILED",0.0,str(exc)[:500])
             background.shutdown(wait=False,cancel_futures=True)
             return rc
+        completed_nodes.add(s.step_id)
+        if until:
+            reached,detail=stop_target_reached(ep,until)
+            if reached:
+                # The step already wrote its checkpoint, node evidence, trace span and
+                # next-action above, so a clean stop here loses no evidence.
+                background.shutdown(wait=False,cancel_futures=True)
+                print(STOP_TARGET_REACHED+" "+until+" after "+s.step_id)
+                return 0
         if mode=="preproduction_only" and s.step_id=="PREIMAGE_COMPILE":
             try:
                 # 900s was the historical review-critic default; build() now owns that default.
@@ -255,6 +691,14 @@ def self_test():
     rows=spec_rows()
     assert [x.step_id for x in rows]==["INCREMENTAL_PLAN","CREATIVE_STORY","PREIMAGE_COMPILE","VISUAL_LOCK","PRODUCTION","RELEASE"]
     assert rows[-1].target_state=="PUBLISH_READY"
+    # STORY_OS_V262_DAG_STOP_TARGET: --until takes a canonical stage, and every step's
+    # declared target_state must be one, so a stop target and a step target are comparable.
+    assert "PRODUCTION_PASSED" in STAGES, STAGES
+    assert "PRODUCTION" not in STAGES, "a step id is not a stage"
+    for row in rows:
+        assert row.target_state is None or row.target_state in STAGES, row
+    assert stage_at_least("PRODUCTION_PASSED","PRODUCTION_PASSED")
+    assert not stage_at_least("VISUAL_CALIBRATED","PRODUCTION_PASSED")
     print("RUNTIME DAG V1 SELF-TEST PASS")
 
 def main():
@@ -262,13 +706,14 @@ def main():
     p=sub.add_parser("plan"); p.add_argument("episode_dir")
     for n in ("run","resume"):
         p=sub.add_parser(n); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout",type=int,default=None)
+        p.add_argument("--until",choices=STAGES,default=None,help="stop cleanly once this canonical stage is reached and validated")
     p=sub.add_parser("show"); p.add_argument("episode_dir")
     sub.add_parser("self-test"); a=ap.parse_args()
     if a.cmd=="self-test": self_test(); return 0
     ep=Path(a.episode_dir).resolve()
     if a.cmd=="plan": print(json.dumps(plan(ep),ensure_ascii=True,indent=2)); return 0
     if a.cmd=="show": print(json.dumps(proto.load_state(ep),ensure_ascii=True,indent=2)); return 0
-    return execute(ep,codex=a.codex,timeout=runtime_timeout_policy.resolve("codex_supervisor_run", a.timeout))
+    return execute(ep,codex=a.codex,timeout=runtime_timeout_policy.resolve("codex_supervisor_run", a.timeout),until=a.until)
 
 if __name__=="__main__": raise SystemExit(main())
 

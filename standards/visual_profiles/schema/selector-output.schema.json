@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "storyos://standards/visual_profiles/schema/selector-output.schema.json",
+  "title": "Story OS Visual Profile Selector Output",
+  "description": "Phase 3.2 selector output contract. selected_profile is null unless status is selected or defaulted. The referenced evidence document is validated separately by selector-evidence.schema.json.",
+  "type": "object",
+  "required": ["schema_version", "status", "selected_profile", "candidates", "evidence"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "status": { "enum": ["selected", "needs_confirmation", "defaulted", "rejected"] },
+    "selected_profile": { "type": ["string", "null"] },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["profile", "matched_rules"],
+        "properties": {
+          "profile": { "type": "string", "minLength": 1 },
+          "matched_rules": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "evidence": { "type": "object" }
+  }
+}
+

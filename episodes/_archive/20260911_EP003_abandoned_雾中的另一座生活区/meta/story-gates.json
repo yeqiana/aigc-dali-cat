@@ -1,0 +1,568 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "10-03",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_profile": "auto",
+    "override_reason": null
+  },
+  "story": {
+    "recent5_checked": true,
+    "four_locks_diff_count": 4,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [
+      4,
+      6,
+      10,
+      13,
+      14,
+      16,
+      17,
+      18
+    ],
+    "climax_frame": 19,
+    "payoff_frame": 20,
+    "semantic_review_path": "meta/story-semantic-review.json"
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [
+      1,
+      6,
+      3,
+      19
+    ],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "P01/P02 同一系列人物；身份权威见 episodes/10_彼此的天上/meta/series-character-identity.json，Frame01 强制用 EP001 已批准情侣自拍建立本集身份",
+        "location": "同一川西雨后山谷停车点；现实侧为湿路/护栏/白车，另一边为同一山谷地形中的低矮生活区",
+        "key_prop": "普通消费级折叠无人机+普通遥控器+同一辆白色家用车；Frame18/19远处白车必须与现实侧同车",
+        "wardrobe": "P01灰色系轻薄防风外套/卫衣+深色长裤；P02浅灰轻薄防风外套/卫衣+深色直筒长裤；整集同一雨停时段不换装",
+        "weather_time": "2023夏季雨后下午；阵雨已停、地面持续潮湿、低云压山谷、阴天散射光，20帧不跨昼夜"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "2023年夏季，中国大陆普通智能手机与消费级折叠无人机均合理存在",
+      "location": "川西山谷公路旁普通可停车观景位置；雨后低云、湿护栏和湿路面",
+      "photographer": "主记录者P01；Frame01由P02用前置手机自拍，Frame15由P02临时拿P01手机，其余现实手机帧P01；无人机画面由P01操控的消费级无人机相机产生",
+      "shooting_reason": "情侣自驾旅行随手记录；雨停后P01只想补拍普通云海/山谷风景，不是调查、测绘、探秘或取证任务",
+      "primary_capture": {
+        "id": "CP_PHONE_2023",
+        "device": "2023年普通中国大陆智能手机；自然HDR/自动曝光但禁止电影调色"
+      },
+      "secondary_captures": [
+        {
+          "id": "CP_CONSUMER_DRONE_2023",
+          "device": "普通消费级折叠无人机相机",
+          "source": "车内原本携带的旅行拍风景设备",
+          "frames": "03-14,16-19"
+        }
+      ],
+      "secondary_source_explanation": "无人机从Frame02现实后备箱/收纳包建立来源，Frame03后才出现其真实航拍缓存；不是凭空第三摄影机。",
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "Frame01-14：手机或无人机正常自动曝光、真实空气透视、普通旅行记录；无人机画面不电影化",
+        "restricted": "低云、雾后远距、小人物尺度、阴天低对比、部分前景遮挡与轻微压缩限制信息读取",
+        "lost_control": "Frame16-19：返航方向漂移、构图逐渐倾斜、下降运动造成轻微拖影和低信号压缩；禁止用巨大故障UI代替物理异常"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": true,
+        "current_device_visibility_explanation": "Frame15/20可看见无人机遥控器；Frame20手机本身可作为P01用另一角度/同设备拍摄后的道具画面，不能在同一帧无物理解释地拍到正在拍摄的手机完整机身。",
+        "photographer_may_be_fully_visible": true,
+        "photographer_visibility_explanation": "Frame01由P02自拍可见P02；Frame15由P02拿P01手机，因此P01可完整入镜。无人机帧摄影者P01位于现实停车点，不得凭空出现在另一边近景。"
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "worst_condition": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "first_major_anomaly": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "schema_version": 2,
+      "policy": "four_admission_v21",
+      "items": [
+        {
+          "id": "V-B",
+          "role": "ordinary_baseline",
+          "frame": 1,
+          "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-9ae48137181c-a2.png",
+          "sha256": "3666919bd9f18e7232c977f11ab67ad7652ca1cb6fff478f8dc107eb98e160cc",
+          "decision": "passed",
+          "frame_contract_sha256": "db91b9b929238588dd2bed43a39b7bcb12df29bf4cee4a0f5373388ed1bc3e1d",
+          "note": "baseline separately PASS; parallel-three may start",
+          "contract_sha256": "db91b9b929238588dd2bed43a39b7bcb12df29bf4cee4a0f5373388ed1bc3e1d"
+        },
+        {
+          "id": "V-W",
+          "role": "worst_capture_condition",
+          "frame": 6,
+          "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/06-9681b74863df-a2.png",
+          "sha256": "b1dc85c53ca220d6ddd87723dbc46a62a9a3cb864c0e08241998d8e52992a99a",
+          "decision": "passed",
+          "frame_contract_sha256": "fe3e925b671f5334750bece321b8e3cc8fa6b65baa7814fda1908a4e3ac38886",
+          "note": "",
+          "contract_sha256": "fe3e925b671f5334750bece321b8e3cc8fa6b65baa7814fda1908a4e3ac38886"
+        },
+        {
+          "id": "V-A",
+          "role": "first_major_anomaly",
+          "frame": 3,
+          "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/03-e0447e36a876-a2.png",
+          "sha256": "01754866e6146ef74da5dbd7880eec49fcc21074039ac5579e954506c45b2d27",
+          "decision": "passed",
+          "frame_contract_sha256": "0d279988f7524512b48d38500934dd915989ac384c4b8a09b5a6139984f83260",
+          "note": "",
+          "contract_sha256": "0d279988f7524512b48d38500934dd915989ac384c4b8a09b5a6139984f83260"
+        },
+        {
+          "id": "V-H",
+          "role": "high_impact_admission",
+          "frame": 19,
+          "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/19-90ef429163b5-a2.png",
+          "sha256": "5ee72e97858da506d77a6afc4ef21ff8d7d6735e01ecbb5364540fbcf01a0e28",
+          "decision": "passed",
+          "frame_contract_sha256": "bc7272b6996f6bad69590fe241337e9f745415496434669cac8532a28d767295",
+          "note": "",
+          "contract_sha256": "bc7272b6996f6bad69590fe241337e9f745415496434669cac8532a28d767295"
+        }
+      ],
+      "finalizer_reconciled": true,
+      "finalizer_source": "meta/visual-lock-final-report.json"
+    },
+    "calibration_contact_sheet": {
+      "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/review/contact-sheets/visual-lock-admission.jpg",
+      "sha256": "b611a4216349c0ccfb217ac62250f0a77022ccae2ea0abf0774cc5e26a287416"
+    },
+    "references": {
+      "required": true,
+      "required_anchors": [
+        "protagonist_identity",
+        "P02_face"
+      ],
+      "items": [
+        {
+          "id": "ep001-couple-selfie",
+          "anchor": "protagonist_identity",
+          "kind": "identity",
+          "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/01_情侣自拍_正脸.png",
+          "sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c",
+          "decision": "passed",
+          "note": "系列P01/P02同脸关系锚；EP003 Frame01必须优先使用"
+        },
+        {
+          "id": "ep001-p02-face",
+          "anchor": "P02_face",
+          "kind": "identity",
+          "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/11_车内夜间_正侧脸.png",
+          "sha256": "d5bc8e55dadbd4eaabefcb926e1d4816f7e72453e4c17b50ed7453aff2b4da32",
+          "decision": "passed",
+          "note": "P02主脸/发型辅助锚；不得换脸"
+        }
+      ]
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "summer",
+      "baseline": {
+        "condition": "rain_just_stopped_low_cloud_mountain_valley",
+        "time_of_day": "afternoon",
+        "temperature_feel": "cool_damp_after_rain",
+        "ground_state": "wet_asphalt_wet_guardrail_mud_darkened_by_rain",
+        "visibility": "clear_near_field_but_low_cloud_and_mist_reduce_long_range_contrast",
+        "wind": "light_irregular_valley_breeze",
+        "precipitation": "none_currently_recent_rain_residue_only",
+        "physical_cues": [
+          "wet road reflections remain weak under overcast sky",
+          "low cloud sits on mid-slope rather than decorative fog filter",
+          "vegetation and roofs look rain-darkened",
+          "no direct sun or cinematic beam"
+        ]
+      },
+      "segments": [
+        {
+          "id": "S_REALITY_SETUP",
+          "start_frame": 1,
+          "end_frame": 2,
+          "condition": "ordinary_rainstop_roadside_reality",
+          "physical_cues": [
+            "white family car on wet roadside",
+            "ordinary guardrail and damp valley",
+            "drone bag physically established before flight"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S_OVERLAP_DISCOVERY",
+          "start_frame": 3,
+          "end_frame": 12,
+          "condition": "same_valley_low_cloud_reveals_other_side_living_area",
+          "physical_cues": [
+            "fog gaps expose real roofs/farms/roads rather than glowing portals",
+            "all people/animals/buildings obey one terrain scale and wet-weather physics",
+            "other-side surfaces share the same just-rained dampness"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "distant detail softens and contrast drops",
+              "when": [
+                "long range drone view",
+                "through low cloud"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S_RECIPROCAL_OBSERVATION",
+          "start_frame": 13,
+          "end_frame": 15,
+          "condition": "other_side_residents_notice_drone_while_reality_weather_stays_unchanged",
+          "physical_cues": [
+            "resident reactions are asynchronous",
+            "no supernatural light or synchronized crowd motion",
+            "reality-side car/road remains ordinary and wet"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S_DEVICE_DRIFT",
+          "start_frame": 16,
+          "end_frame": 19,
+          "condition": "drone_return_vector_no_longer_maps_cleanly_to_reality_side",
+          "physical_cues": [
+            "relative terrain motion shows drone moving closer despite return attempt",
+            "slight tilt and motion blur increase naturally",
+            "far reality-side bright zone is caused by sky exposure through cloud boundary, not energy glow"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "compression and motion smear increase modestly",
+              "when": [
+                "signal weakens",
+                "drone descends while drifting"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S_AFTERMATH",
+          "start_frame": 20,
+          "end_frame": 20,
+          "condition": "ordinary_reality_side_after_drone_loss",
+          "physical_cues": [
+            "same wet roadside and white car",
+            "controller and phone remain physical evidence",
+            "drone itself is absent"
+          ],
+          "conditional_effects": []
+        }
+      ],
+      "frame_overrides": {
+        "17": {
+          "visibility": "near other-side road remains readable; far bright zone only partially legible"
+        },
+        "18": {
+          "visibility": "far guardrail and tiny white car become barely but physically legible through atmospheric perspective"
+        },
+        "19": {
+          "visibility": "final cache must retain single-perspective scale: young woman foreground/midground, tiny white car and two figures far background"
+        }
+      }
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "P01/P02 same approved series faces in casual front selfie",
+          "wet car window and ordinary travel clutter"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "wet roadside/guardrail",
+          "low cloud valley",
+          "consumer drone bag physically present"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "03": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "single low roof through fog gap",
+          "one correctly scaled person repairing rain leak",
+          "majority of frame still ordinary valley"
+        ],
+        "scale_reference": "roof/person versus valley slope",
+        "escalation_from": null
+      },
+      "04": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "worked farmland and field paths",
+          "person handling rain cover at realistic drone scale"
+        ],
+        "scale_reference": "field rows and human body",
+        "escalation_from": null
+      },
+      "05": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "wet dirt road",
+          "livestock with handler",
+          "wood/material piles proving routine transport"
+        ],
+        "scale_reference": "livestock/human/road width",
+        "escalation_from": null
+      },
+      "06": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "road geometry visibly continues through fog into other-side settlement",
+          "real mountain ridge and road scale remain readable"
+        ],
+        "scale_reference": "known road width and mountain slope",
+        "escalation_from": 3
+      },
+      "07": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "ordinary family yard",
+          "adult and children doing different post-rain chores"
+        ],
+        "scale_reference": "doorway and human proportions",
+        "escalation_from": null
+      },
+      "08": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "small market/road junction",
+          "trade/argument/passersby all asynchronous"
+        ],
+        "scale_reference": "stall/road/human proportions",
+        "escalation_from": null
+      },
+      "09": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "pale coarse woven cloth repeated as ordinary household material",
+          "foreground awning occlusion"
+        ],
+        "scale_reference": "cloth bundles and nearby structures",
+        "escalation_from": null
+      },
+      "10": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "one coherent full living area containing homes/roads/farms/yards/livestock/market",
+          "low cloud still hides some boundaries",
+          "no fantasy city styling"
+        ],
+        "scale_reference": "people, livestock, road widths and mountain terrain",
+        "escalation_from": 7
+      },
+      "11": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "large weathered stone structure in same settlement system",
+          "ordinary homes remain nearby"
+        ],
+        "scale_reference": "nearby homes and people",
+        "escalation_from": null
+      },
+      "12": {
+        "narrative_role": "transition",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "same ordinary young woman with pale headscarf and child",
+          "post-rain household chore, not mystical pose"
+        ],
+        "scale_reference": "human/doorway/road proportions",
+        "escalation_from": null
+      },
+      "13": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "only one old man first looks up and points",
+          "other residents remain on their own tasks"
+        ],
+        "scale_reference": "street width and human bodies",
+        "escalation_from": null
+      },
+      "14": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "different households react at different speeds",
+          "pull child / close window / pack stall / some unaware"
+        ],
+        "scale_reference": "multiple separate households across same street",
+        "escalation_from": 13
+      },
+      "15": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "P01 with ordinary controller beside same white car",
+          "P02 hand gripping sleeve while filming",
+          "wet roadside unchanged"
+        ],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "16": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "drone frame tilts modestly",
+          "terrain motion shows settlement getting closer despite return attempt",
+          "low cloud removes clean reality-side bearing"
+        ],
+        "scale_reference": "roof/road sizes across successive frames",
+        "escalation_from": 14
+      },
+      "17": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "same young woman protects child and looks up",
+          "far area naturally brighter through cloud boundary",
+          "no portal/rift/energy edge"
+        ],
+        "scale_reference": "woman/child/road versus distant valley opening",
+        "escalation_from": 16
+      },
+      "18": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 4,
+        "required_visual_cues": [
+          "distant realistic road guardrail",
+          "tiny white family car shape embedded in far depth",
+          "other-side foreground still physically continuous"
+        ],
+        "scale_reference": "guardrail height, white car size, nearby houses",
+        "escalation_from": 17
+      },
+      "19": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 4,
+        "required_visual_cues": [
+          "young woman/child and settlement foreground-midground",
+          "far white car and two tiny human figures in one consistent perspective",
+          "weak-signal compression but evidence remains legible",
+          "no supernatural glow"
+        ],
+        "scale_reference": "human body, house, road, car and two far figures across one depth stack",
+        "escalation_from": 18
+      },
+      "20": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "same white car and wet roadside",
+          "controller plus phone showing Frame19 cache thumbnail",
+          "P02 closing car door",
+          "drone physically absent"
+        ],
+        "scale_reference": "real controller/phone/car proportions",
+        "escalation_from": 19
+      }
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": true,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "passed",
+    "subtitle": "passed",
+    "production": "passed",
+    "recommendation_fit": "pending",
+    "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 1,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true
+  }
+}

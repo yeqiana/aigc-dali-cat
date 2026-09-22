@@ -16,7 +16,9 @@ from story_review import review_required as story_review_required, verify as ver
 from visual_review import review_required as visual_review_required, verify as verify_visual_review
 from subtitle_layout import layout_required as subtitle_layout_required, verify_audit as verify_layout_audit
 from release_preflight import verify_recent5_evidence, verify_series_lock, verify_release_semantic, verify_governance
+from reference_execution_receipt import verify as verify_reference_execution
 import story_json
+import runtime_evidence_contract
 
 ROOT=Path(__file__).resolve().parents[2]
 STATES=canonical_stages()
@@ -69,6 +71,8 @@ def run_gate(ep,target):
     state=load_json(ep/'meta/episode-state.json');manifest=load_json(ep/'meta/release-manifest.json')
     if not is_enforced(state,manifest):return True,['legacy/pre-V1.8 episode: evidence gate not enforced until metadata is upgraded']
     idx=STATES.index(target);errors=[];info=[]
+    if idx>=STATES.index('PRODUCTION_PASSED'):
+        errors.extend(['runtime_evidence: '+x for x in runtime_evidence_contract.verify(ep)])
     if idx>=STATES.index('STORYBOARD_LOCKED'):
         ok,e,b=any_approval(ep,'story_lock');errors.extend(['story_lock: '+x for x in e] if not ok else []);info.extend(['story_lock basis='+b] if ok else [])
         if story_review_required(ep):
@@ -77,6 +81,7 @@ def run_gate(ep,target):
     if idx>=STATES.index('VISUAL_CALIBRATED'):
         try:resolve_profile(ep)
         except SystemExit as exc:errors.append('visual profile: '+str(exc))
+        errors.extend(['reference_execution: '+x for x in verify_reference_execution(ep)])
         ok,e,b=any_approval(ep,'visual_lock');errors.extend(['visual_lock: '+x for x in e] if not ok else []);info.extend(['visual_lock basis='+b] if ok else [])
         if visual_review_required(ep):
             errors.extend(['visual_profile_review: '+x for x in verify_visual_review(ep)])

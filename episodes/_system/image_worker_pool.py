@@ -9,6 +9,7 @@ persistent image-generation daemon/session contract.
 from __future__ import annotations
 import argparse
 import os
+import uuid
 from pathlib import Path
 
 import codex_subscription_image as backend
@@ -68,21 +69,26 @@ def execute(ep,item,timeout,codex):
         return result
     budget_kind=raw_candidate_budget.kind_for_queue_item(item)
     budget_token=str(item["id"])
-    budget_ok,budget_row=raw_candidate_budget.claim(ep,frame,budget_kind,reason=f"formal_generation_entrypoint scope={item.get('scope')} attempt={attempt}",token=budget_token)
+    budget_semantic_key=raw_candidate_budget.semantic_key_for_queue_item(item)
+    budget_ok,budget_row=raw_candidate_budget.claim(ep,frame,budget_kind,reason=f"formal_generation_entrypoint scope={item.get('scope')} attempt={attempt}",token=budget_token,semantic_key=budget_semantic_key)
     if not budget_ok:
         result={"returncode":98,"stdout":"RAW_CANDIDATE_BUDGET_EXHAUSTED: "+str(budget_row),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None,"budget":budget_row}
         production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=result["stdout"], result=result)
         return result
+    runner_request_id = uuid.uuid4().hex
+    item.setdefault("execution", {})["runner_request_id"] = runner_request_id
     ns=argparse.Namespace(
         episode_dir=ep,frame=f"{frame:02d}",prompt_file=prompt,output=out,log=log,
         reference=refs,timeout=timeout,codex=codex,image_model=model,image_quality=quality,overwrite=False,
         _image_model_policy=effective_model_policy,
-        _raw_candidate_budget_preclaimed=True,_raw_candidate_token=budget_token,candidate_kind=budget_kind)
+        _raw_candidate_budget_preclaimed=True,_raw_candidate_token=budget_token,candidate_kind=budget_kind,
+        _runner_request_id=runner_request_id)
     trace_span=runtime_trace.start_span(ep,f"image.generate.frame.{frame:02d}",category="image_generation",attrs={"frame":frame,"model":model,"quality":quality})
     trace_started=time.monotonic()
     try:
         production_recovery.write_lifecycle(ep, item, "BACKEND_INVOKED", worker_pid=os.getpid(),
-                                            expected_output=str(out), expected_log=str(log))
+                                            expected_output=str(out), expected_log=str(log),
+                                            runner_request_id=runner_request_id)
         payload=backend.generate_for_frame(ns)
     except Exception as exc:
         code=runtime_circuit_breaker.classify_text(str(exc))
@@ -91,6 +97,21 @@ def execute(ep,item,timeout,codex):
         runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="FAILED",started_monotonic=trace_started,attrs={"frame":frame,"error":str(exc)})
         result={"returncode":99,"stdout":str(exc),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None,"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
         production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=str(exc), result=result)
+        return result
+
+    # A backend return is not success by itself.  Historical workers could
+    # return rc=0 while producing no usable artifact, which let the scheduler
+    # commit budget and only discover the missing file later.  Fail closed at
+    # the worker boundary so technical retry/failover sees an explicit cause.
+    if not out.is_file() or out.stat().st_size <= 0:
+        code="IMAGE_BACKEND_NO_OUTPUT"
+        raw_candidate_budget.release(ep,budget_token,reason="backend_returned_without_output")
+        runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",
+                               status="FAILED",started_monotonic=trace_started,
+                               attrs={"frame":frame,"error":code,"runner_request_id":runner_request_id})
+        result={"returncode":95,"stdout":f"{code}: expected={out}","payload":payload,"output":None,"log":log,
+                "attempt":attempt,"scout":None,"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
+        production_recovery.write_lifecycle(ep,item,"FAILED",worker_pid=os.getpid(),error=result["stdout"],result=result)
         return result
 
     commit_ok,commit_row=raw_candidate_budget.commit(ep,budget_token,reason="normalized_candidate_exists")

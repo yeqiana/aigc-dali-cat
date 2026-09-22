@@ -9,6 +9,11 @@ from pathlib import Path
 
 from story_os_contract import canonical_stages
 import story_json
+import episode_state_persistence
+import story_review
+import visual_profile_review_persistence
+import production_ledger
+import runtime_command
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -16,7 +21,7 @@ STATES = canonical_stages()
 
 
 def run(args: list[object]) -> tuple[int, str]:
-    cp = subprocess.run([str(x) for x in args], cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace", check=False)
+    cp = runtime_command.run_argv([str(x) for x in args], cwd=ROOT, capture=True)
     return cp.returncode, cp.stdout
 
 
@@ -25,7 +30,7 @@ def read_json(path: Path) -> dict:
 
 
 def current_state(ep: Path) -> str:
-    return str(read_json(ep / "meta/episode-state.json").get("current_state") or "UNKNOWN")
+    return str((episode_state_persistence.load(ep) or {}).get("current_state") or "UNKNOWN")
 
 
 def state_at_least(state: str, target: str) -> bool:
@@ -57,22 +62,22 @@ def plan(ep: Path) -> dict:
         "missing": [],
     }
 
-    story_path = ep / "meta/story-semantic-review.json"
-    if story_path.is_file():
+    story_data = story_review.load_review(ep)
+    if isinstance(story_data, dict):
         ok, _ = command_ok("story_review.py", "verify", ep)
         result["story"] = "CLEAN" if ok else "DIRTY"
     elif state_at_least(state, "STORYBOARD_LOCKED"):
         result["story"] = "MISSING"; result["missing"].append("meta/story-semantic-review.json")
 
-    visual_path = ep / "meta/visual-profile-review.json"
-    if visual_path.is_file():
+    visual_data = visual_profile_review_persistence.load(ep)
+    if isinstance(visual_data, dict):
         ok, _ = command_ok("visual_review.py", "verify", ep)
         result["visual"] = "CLEAN" if ok else "DIRTY"
     elif state_at_least(state, "VISUAL_CALIBRATED"):
         result["visual"] = "MISSING"; result["missing"].append("meta/visual-profile-review.json")
 
-    ledger = ep / "meta/production-ledger.json"
-    if ledger.is_file():
+    ledger_data = production_ledger.load_authority(ep, default=None)
+    if isinstance(ledger_data, dict):
         rc, out = run([sys.executable, SYSTEM / "incremental_frame_review.py", "plan", ep])
         if rc == 0:
             try:
@@ -80,10 +85,13 @@ def plan(ep: Path) -> dict:
             except Exception:
                 fp = {"action": "ERROR", "raw": out[-1000:]}
             result["frame_plan"] = fp
-            result["frames"] = "CLEAN" if fp.get("action") in {"NOOP", "NOT_REQUIRED"} else "DIRTY"
+            if fp.get("action") == "ERROR":
+                result["frames"] = "ERROR"
+            else:
+                result["frames"] = "CLEAN" if fp.get("action") in {"NOOP", "NOT_REQUIRED"} else "DIRTY"
         else:
-            result["frames"] = "DIRTY"
-            result["frame_plan"] = {"action": "ERROR", "raw": out[-1500:]}
+            result["frames"] = "ERROR"
+            result["frame_plan"] = {"action": "ERROR", "returncode": rc, "raw": out[-1500:]}
     elif state_at_least(state, "PRODUCTION_PASSED"):
         result["frames"] = "MISSING"; result["missing"].append("meta/production-ledger.json")
 
@@ -98,7 +106,9 @@ def plan(ep: Path) -> dict:
         result["subtitle"] = "NOT_APPLICABLE"
 
     ordered = [result["story"], result["visual"], result["frames"], result["subtitle"]]
-    if "MISSING" in ordered:
+    if "ERROR" in ordered:
+        result["action"] = "ERROR"
+    elif "MISSING" in ordered:
         result["action"] = "MISSING_EVIDENCE"
     elif result["story"] == "DIRTY":
         result["action"] = "STORY_REVIEW_REQUIRED"
@@ -139,8 +149,11 @@ def main() -> int:
         ep.relative_to(ROOT.resolve())
     except ValueError:
         raise SystemExit("episode must be inside repository")
-    print(json.dumps(plan(ep), ensure_ascii=False, indent=2))
-    return 0
+    result = plan(ep)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    # Planner/inner-action failure is technical failure. Returning 0 here lets
+    # runtime_dag record the outer INCREMENTAL_PLAN step as PASS, which is false.
+    return 4 if result.get("action") == "ERROR" else 0
 
 
 if __name__ == "__main__":

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "derived_at": "2026-09-11T18:15:02+08:00",
+  "episode": "episodes/10_彼此的天上/03_雾中的另一座生活区",
+  "episode_state": "PRODUCTION_PASSED",
+  "execution_mode": "full_auto",
+  "authoring_runtime": "WORK",
+  "image_execution_runtime": "CODEX",
+  "stage_authority": "meta/episode-state.json",
+  "derived_runtime_only": true,
+  "continue_without_user_prompt": true,
+  "work_pending": true,
+  "auto_recoverable": true,
+  "hard_stop": false,
+  "progress": {
+    "configured_limit": 3,
+    "next_run_limit": 3,
+    "last_reported_inflight": 0,
+    "last_run_effective_limit": 1,
+    "historical_adaptive_parallel": 1,
+    "adaptive_parallel_semantics": "history_only",
+    "generated_frames": 20,
+    "content_passed_frames": 20,
+    "pending_review_frames": 0,
+    "pending_decision_frames": 0,
+    "canonical_stage": "PRODUCTION_PASSED",
+    "formal_gates": {
+      "production_gate": "pass",
+      "propagation_score": null,
+      "s_min_score": null,
+      "propagation_decision": "pending",
+      "publish_decision": "hold",
+      "decision_note": null
+    },
+    "publication": {
+      "platform": "douyin",
+      "actual_title": null,
+      "description": null,
+      "topics": [],
+      "pinned_comment": null,
+      "published_at": null,
+      "timing_window": null,
+      "post_url": null
+    },
+    "budget": {
+      "limit": 35,
+      "source": "derived_frame_count_plus_15",
+      "override_applied": false,
+      "committed": 21,
+      "inflight_reserved": 0,
+      "available": 14,
+      "pending_generation": 0,
+      "episode_capacity": 0,
+      "additional_capacity_needed": 0,
+      "per_frame_limits_still_apply": true
+    }
+  },
+  "action": "RELEASE",
+  "executor": "WORK",
+  "blocking": false,
+  "target_state": "PUBLISH_READY",
+  "reason": "final release closure remains"
+}

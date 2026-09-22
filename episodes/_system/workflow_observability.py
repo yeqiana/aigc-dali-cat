@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
 from collections import Counter
 from pathlib import Path
@@ -16,9 +17,23 @@ import runtime_trace
 import batch_runtime_metrics
 import story_json
 import runtime_observability
+import derived_freshness
+import runtime_checkpoint
+import episode_state_persistence
+import production_queue_store
+import scheduler_core
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = runtime_observability.WORKFLOW_OBSERVABILITY_REL
+SOURCE_RELS = (
+    "meta/episode-state.json", "meta/runtime-checkpoint.json",
+    runtime_observability.EPISODE_PERFORMANCE_REL,
+    runtime_observability.WORKFLOW_PERFORMANCE_REL,
+    runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL,
+    production_queue_store.REL.as_posix(), "meta/production-ledger.json",
+    "meta/frame-scout-summary.json", "meta/final-candidate-snapshot.json",
+    "meta/post-publish-review.json", runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL,
+)
 
 
 def now() -> str:
@@ -31,8 +46,47 @@ def read_json(path: Path) -> dict:
 
 
 def maybe(ep: Path, rel: Path | str) -> dict:
+    try:
+        runtime_observability.resolve_known_path(rel)
+        return runtime_observability.read_summary(ep, rel, default={})
+    except ValueError:
+        pass
     p = ep / rel
     return read_json(p) if p.is_file() else {}
+
+
+def source_snapshot(ep: Path) -> tuple[list[dict], str]:
+    rows = []
+    for rel in SOURCE_RELS:
+        logical = str(rel).replace("\\", "/")
+        if logical == episode_state_persistence.REL.as_posix():
+            payload = episode_state_persistence.load(ep)
+            rows.append({
+                "path": logical,
+                "sha256": episode_state_persistence.authority_sha256(payload),
+            })
+            continue
+        if logical == runtime_checkpoint.REL.as_posix():
+            payload = runtime_checkpoint.load(ep, {})
+            rows.append({
+                "path": logical,
+                "sha256": runtime_checkpoint.authority_sha256(payload),
+            })
+            continue
+        elif logical == production_queue_store.REL.as_posix():
+            payload = scheduler_core.load_queue(ep)
+            raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            rows.append({"path": logical, "sha256": hashlib.sha256(raw).hexdigest()})
+            continue
+        elif Path(rel) in runtime_observability.KNOWN_PATHS.values():
+            payload = runtime_observability.read_summary(ep, rel, default={})
+            raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            rows.append({"path": logical, "sha256": hashlib.sha256(raw).hexdigest()})
+            continue
+        else:
+            path = ep / rel
+        rows.append({"path": logical, "sha256": derived_freshness.sha256_file(path)})
+    return rows, derived_freshness.fingerprint(rows)
 
 
 def write_json(path: Path, data: dict) -> None:
@@ -56,10 +110,11 @@ def counts(rows, key):
 
 def collect(ep: Path, *, write: bool = True) -> dict:
     state = maybe(ep, "meta/episode-state.json")
-    checkpoint = maybe(ep, "meta/runtime-checkpoint.json")
+    checkpoint = runtime_checkpoint.load(ep, {})
+    episode_performance = maybe(ep, runtime_observability.EPISODE_PERFORMANCE_REL)
     performance = maybe(ep, runtime_observability.WORKFLOW_PERFORMANCE_REL)
     scheduler = maybe(ep, runtime_observability.IMAGE_SCHEDULER_PERFORMANCE_REL)
-    queue = maybe(ep, "meta/production-queue.json")
+    queue = scheduler_core.load_queue(ep)
     ledger = maybe(ep, "meta/production-ledger.json")
     scout = maybe(ep, "meta/frame-scout-summary.json")
     snapshot = maybe(ep, "meta/final-candidate-snapshot.json")
@@ -84,6 +139,7 @@ def collect(ep: Path, *, write: bool = True) -> dict:
 
     qitems = queue.get("items") or []
     ledger_rows = list((ledger.get("frames") or {}).values())
+    image_attempts = episode_performance.get("image_attempts") or []
     scout_rows = scout.get("rows") or []
 
     failure_taxonomy = {
@@ -97,12 +153,15 @@ def collect(ep: Path, *, write: bool = True) -> dict:
 
     waves = scheduler.get("waves") or []
     parallel = [int((x or {}).get("parallel") or 0) for x in waves if isinstance(x, dict)]
+    source_files, source_fingerprint = source_snapshot(ep)
     report = {
         "schema_version": 1,
         "generated_at": now(),
         "kind": "workflow_observability",
         "diagnostic_only": True,
-        "stage_source": "meta/episode-state.json",
+        "source_files": source_files,
+        "source_fingerprint": source_fingerprint,
+        "stage_source": "episode_state_authority",
         "episode": ep.relative_to(ROOT).as_posix(),
         "current_state": state.get("current_state"),
         "latest_workflow_run": {
@@ -114,6 +173,9 @@ def collect(ep: Path, *, write: bool = True) -> dict:
         "production": {
             "ledger_status_counts": counts(ledger_rows, "status"),
             "queue_status_counts": counts(qitems, "status"),
+            "image_attempt_count": len(image_attempts),
+            "image_attempt_status_counts": counts(image_attempts, "status"),
+            "image_attempt_kind_counts": counts(image_attempts, "kind"),
             "scheduler_wave_count": len(waves),
             "max_observed_parallel": max(parallel) if parallel else 0,
             "adaptive_parallel_current": scheduler.get("adaptive_parallel"),
@@ -145,8 +207,20 @@ def collect(ep: Path, *, write: bool = True) -> dict:
         },
     }
     if write:
-        write_json(ep / REL, report)
+        runtime_observability.write_summary(ep,REL,kind="workflow_observability",payload=report)
     return report
+
+
+def load_fresh(ep: Path, *, write: bool = True) -> dict:
+    ep = Path(ep).resolve()
+    existing = maybe(ep, REL)
+    _rows, current = source_snapshot(ep)
+    if (
+        isinstance(existing, dict)
+        and str(existing.get("source_fingerprint") or "").lower() == current.lower()
+    ):
+        return existing
+    return collect(ep, write=write)
 
 
 def self_test() -> None:
@@ -168,8 +242,7 @@ def main() -> int:
     if a.cmd == "collect":
         print(json.dumps(collect(ep, write=True), ensure_ascii=False, indent=2)); return 0
     p = ep / REL
-    if not p.is_file():
-        collect(ep, write=True)
+    load_fresh(ep, write=True)
     print(p.read_text(encoding="utf-8")); return 0
 
 

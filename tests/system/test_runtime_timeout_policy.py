@@ -88,6 +88,8 @@ class RuntimeTimeoutPolicyTests(unittest.TestCase):
             "visual_baseline_critic": 300,
             "fast_scout": 240,
             "review_critic": 900,
+            "codex_auth_probe": 30,
+            "driver_carrier_control": 60,
             "image_probe": 900,
             "deep_semantic_review": 1800,
             "release_semantic": 1800,

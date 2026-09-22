@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "storyos://standards/story/schema/story-intent.schema.json",
+  "title": "Story OS Story Intent Contract",
+  "description": "Autonomous Production Pipeline Phase 5.1. The machine form of a one sentence story request. Declarative only: no prompt text, no scoring. The world/era/theme/genre/experience_type/audience enums are the Visual Profile Selector input enums (standards/visual_profiles/schema/selector-input.schema.json) so a Story Intent can be handed to visual_profile_selector without translation.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "parser_version",
+    "intent_id",
+    "source_text",
+    "world",
+    "era",
+    "location",
+    "theme",
+    "genre",
+    "experience_type",
+    "fantasy_level",
+    "realism_expectation",
+    "characters",
+    "audience_expectation",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "parser_version": { "type": "string", "minLength": 1 },
+    "intent_id": { "type": "string", "pattern": "^intent:[0-9a-f]{16}$" },
+    "source_text": { "type": "string", "minLength": 1 },
+    "world": { "enum": ["real", "historical_real", "fictional", ""] },
+    "era": { "enum": ["modern", "ancient", "unspecified", ""] },
+    "location": { "type": "string" },
+    "theme": { "enum": ["daily_life", "work_life", "anomaly_mystery", "folk_life", "travel_life", ""] },
+    "genre": { "enum": ["daily_life", "work_life", "anomaly_mystery", "folk_life", "travel_life", ""] },
+    "theme_detail": { "type": ["string", "null"] },
+    "experience_type": { "enum": ["observed", "immersive_first_person", ""] },
+    "fantasy_level": { "enum": ["none", "low", "high", ""] },
+    "realism_expectation": { "enum": ["maximum", "high", ""] },
+    "characters": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "audience_expectation": {
+      "type": "object",
+      "properties": {
+        "realism": { "enum": ["maximum", "high", ""] },
+        "immersion": { "enum": ["low", "medium", "high", ""] },
+        "fantasy_level": { "enum": ["none", "low", "high", ""] }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["parser_version", "source", "inputs_digest", "signals"],
+      "properties": {
+        "parser_version": { "type": "string", "minLength": 1 },
+        "source": { "const": "rule_parser" },
+        "inputs_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "signals": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

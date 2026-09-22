@@ -8,10 +8,12 @@ import re
 from pathlib import Path
 
 from contract_sync import collect_errors
+import preimage_task_contract
 import storyos_config
 import runtime_log_policy
 import episode_discovery
 import story_json
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -31,11 +33,11 @@ def scan_episode_meta(issues):
     for ep in episode_discovery.iter_episode_roots(episodes):
         state_path = ep / "meta/episode-state.json"
         try:
-            state = load_json(state_path)
+            state = episode_state_persistence.load(ep)
         except Exception as e:
             issue(issues, "ERROR", "STATE_JSON", f"{state_path.relative_to(ROOT)}: {e}")
             continue
-        current = state.get("current_state")
+        current = state.get("current_state") if isinstance(state, dict) else None
         if not current:
             issue(issues, "ERROR", "STATE_MISSING", f"{ep.relative_to(ROOT)} 缺 current_state")
         gates_path = ep / "meta/story-gates.json"
@@ -97,6 +99,14 @@ def run_doctor():
         storyos_config.load_index()
     except Exception as e:
         issue(issues, "ERROR", "CONFIG_INVALID", str(e))
+
+    try:
+        # PREIMAGE task -> DAG step registration. Checked here so the drift is a
+        # doctor finding instead of a ValueError raised inside a worker after the
+        # fan-out has already started (P0-E).
+        preimage_task_contract.assert_registries_aligned()
+    except Exception as e:
+        issue(issues, "ERROR", "PREIMAGE_REGISTRY_DRIFT", str(e))
 
     for error in collect_errors(ROOT):
         issue(issues, "ERROR", "CONTRACT_SYNC", error)

@@ -1,27 +1,38 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""WORK/WEB actual-pixel review barrier for one generated Production logical batch.
+"""Actual-pixel review barrier for one generated Production logical batch.
 
-This is an early content-repair gate, never final Production PASS authority.
+Default new-production route is an isolated Codex Vision critic. WORK remains the
+review/governance authority and consumes the resulting evidence; this early gate
+never grants final Production PASS authority.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
+import codex_critic_runner
+import codex_user_runner
 import frame_contract
 import image_scheduler
 import product_review_adapter
+import production_queue_store
+import scheduler_core
+import runtime_provenance
 import runtime_router
+import runtime_timeout_policy
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
-QUEUE_REL = Path("meta/production-queue.json")
+# Backward-compatible public alias; physical path ownership remains in the Queue Store.
+QUEUE_REL = production_queue_store.REL
 REVIEW_DIR = Path("meta/runtime/batch-reviews")
 VALID = {"PASS_PREVIEW", "REPAIR_NOW", "UNCERTAIN"}
 
@@ -134,7 +145,7 @@ def record_unit(ep: Path, batch_id: str, unit: dict) -> dict:
 
 
 def batch_items(ep: Path, batch_id: str) -> list[dict]:
-    q = read_json(ep / QUEUE_REL)
+    q = scheduler_core.load_queue(ep)
     rows = [x for x in q.get("items") or [] if isinstance(x, dict) and x.get("batch_id") == batch_id and x.get("output_path")]
     return sorted(rows, key=lambda x: int(x.get("frame") or 0))
 
@@ -200,13 +211,13 @@ def _prepare_locked(ep: Path, batch_id: str, *, attempt: int = 1) -> dict:
         if result["pending_frames"] or (final.get("critic_provenance") or {}).get("request_fingerprint") != request.get("request_fingerprint"):
             raise ValueError("finalized batch evidence invalid; prepare a new review attempt")
         return result
-    q = read_json(ep / QUEUE_REL)
+    q = scheduler_core.load_queue(ep)
     ids = {x.get("id") for x in rows}
     for row in q.get("items") or []:
         if row.get("id") in ids and row.get("status") == "generated":
             row["status"] = "review_pending"
             row["batch_review_request"] = request.get("request_path")
-    write_json(ep / QUEUE_REL, q)
+    scheduler_core.save_queue(ep, q)
     return result
 
 
@@ -225,13 +236,10 @@ def _ledger_review(ep: Path, frame: int, decision: str, notes: str) -> None:
         raise RuntimeError(f"production ledger review failed frame={frame:02d}: {cp.stdout[-1000:]}")
 
 
-def _finalize_locked(ep: Path, batch_id: str, *, runtime: str = "WORK", attempt: int = 1) -> dict:
+def _apply_review_data_locked(ep: Path, batch_id: str, *, data: dict, provenance: dict, attempt: int = 1,
+                              mark_product_review_complete: bool = False) -> dict:
     ep = ep.resolve(); candidate = candidate_path(ep, batch_id)
     rows = batch_items(ep, batch_id)
-    contracts = review_contracts(ep, rows)
-    data, provenance = product_review_adapter.finalize_candidate(
-        ep, kind=kind(batch_id), runtime=runtime, attempt=attempt, candidate_path=candidate,
-        source_bindings={c["frame"]: c for c in contracts})
     if str(data.get("batch_id") or "") != batch_id:
         raise ValueError("batch review batch_id mismatch")
     expected = {f"{int(x['frame']):02d}" for x in rows}
@@ -247,7 +255,7 @@ def _finalize_locked(ep: Path, batch_id: str, *, runtime: str = "WORK", attempt:
         item = next(x for x in rows if f"{int(x['frame']):02d}" == frame)
         if any(row.get(k) != v for k, v in unit_binding(ep, item).items()):
             raise ValueError(f"batch review unit SHA drift frame {frame}")
-    q = read_json(ep / QUEUE_REL)
+    q = scheduler_core.load_queue(ep)
     previous = read_json(final_path(ep, batch_id)) if final_path(ep, batch_id).is_file() else {}
     history = [*(previous.get("unit_history") or []), *(previous.get("frames") or []), *(data.get("unit_history") or [])]
     item_by_frame = {f"{int(x.get('frame') or 0):02d}": x for x in q.get("items") or [] if x.get("batch_id") == batch_id}
@@ -256,18 +264,30 @@ def _finalize_locked(ep: Path, batch_id: str, *, runtime: str = "WORK", attempt:
         if not item:
             continue
         decision = review["decision"]
-        item["work_batch_review"] = {"decision": decision, "reason": review.get("reason"), "issue_codes": review.get("issue_codes") or []}
+        item["vision_batch_review"] = {"decision": decision, "reason": review.get("reason"), "issue_codes": review.get("issue_codes") or []}
         if decision == "REPAIR_NOW":
-            _ledger_review(ep, int(frame), "repair", "WORK batch actual-pixel review: " + str(review.get("reason") or "clear visible defect"))
+            _ledger_review(ep, int(frame), "repair", "Codex Vision batch actual-pixel review: " + str(review.get("reason") or "clear visible defect"))
             item["status"] = "scout_repair"
         else:
             item["status"] = "generated"
     final = {**data, "schema_version": 1, "batch_id": batch_id, "review_scope": "EARLY_BATCH_ACTUAL_PIXELS",
              "final_pass_authority": False, "critic_provenance": provenance, "unit_history": history}
-    out = final_path(ep, batch_id); write_json(out, final); write_json(ep / QUEUE_REL, q)
-    product_review_adapter.mark_complete(ep, kind(batch_id), attempt=attempt, final_path=out)
+    out = final_path(ep, batch_id); write_json(out, final); scheduler_core.save_queue(ep, q)
+    if mark_product_review_complete:
+        product_review_adapter.mark_complete(ep, kind(batch_id), attempt=attempt, final_path=out)
     candidate.unlink(missing_ok=True)
     return final
+
+
+def _finalize_locked(ep: Path, batch_id: str, *, runtime: str = "WORK", attempt: int = 1) -> dict:
+    ep = ep.resolve(); candidate = candidate_path(ep, batch_id)
+    rows = batch_items(ep, batch_id)
+    contracts = review_contracts(ep, rows)
+    data, provenance = product_review_adapter.finalize_candidate(
+        ep, kind=kind(batch_id), runtime=runtime, attempt=attempt, candidate_path=candidate,
+        source_bindings={c["frame"]: c for c in contracts})
+    return _apply_review_data_locked(ep, batch_id, data=data, provenance=provenance, attempt=attempt,
+                                     mark_product_review_complete=True)
 
 
 def finalize(ep: Path, batch_id: str, *, runtime: str = "WORK", attempt: int = 1) -> dict:
@@ -275,9 +295,71 @@ def finalize(ep: Path, batch_id: str, *, runtime: str = "WORK", attempt: int = 1
         return _finalize_locked(ep, batch_id, runtime=runtime, attempt=attempt)
 
 
+def run_codex_review(ep: Path, batch_id: str, *, attempt: int = 1, codex_raw: str | None = None,
+                     timeout: int | None = None) -> dict:
+    """Review one logical batch in a fresh isolated Codex Vision session."""
+    ep = Path(ep).resolve()
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("review_critic")
+    rows = batch_items(ep, batch_id)
+    if not rows:
+        raise ValueError(f"batch has no generated reviewable items: {batch_id}")
+    contracts = review_contracts(ep, rows)
+    candidate = candidate_path(ep, batch_id)
+    candidate.unlink(missing_ok=True)
+    before = {f"{int(row['frame']):02d}": unit_binding(ep, row) for row in rows}
+    staging = codex_user_runner.workspace_path(prefix="story-os-batch-review-")
+    attachments: list[Path] = []
+    try:
+        for row in rows:
+            source = repo_file(str(row["output_path"]))
+            staged = staging / f"frame-{int(row['frame']):02d}{source.suffix.lower()}"
+            shutil.copy2(source, staged)
+            attachments.append(staged)
+        codex = codex_critic_runner.resolve_codex(codex_raw)
+        log = ep / "meta/runtime/batch-reviews" / f"{batch_id}-attempt-{attempt}.jsonl"
+        result = codex_critic_runner.launch(
+            prompt(ep, batch_id, rows, candidate, contracts=contracts),
+            codex=codex,
+            root=ROOT,
+            timeout=timeout,
+            output_path=candidate,
+            attachments=attachments,
+            model=runtime_router.vision_review_model(),
+            reasoning_effort=runtime_router.vision_review_effort("default"),
+            sandbox="workspace-write",
+            log_path=log,
+        )
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
+    if result.returncode != 0:
+        raise RuntimeError(f"Codex Vision batch critic failed rc={result.returncode}; log={result.log_path}")
+    if not candidate.is_file():
+        raise RuntimeError("Codex Vision batch critic did not produce candidate JSON")
+    after = {f"{int(row['frame']):02d}": unit_binding(ep, row) for row in rows}
+    if after != before:
+        raise RuntimeError("Codex Vision batch critic source bindings drifted")
+    data = read_json(candidate)
+    provenance = runtime_provenance.build_vision_critic_provenance(
+        attempt=attempt,
+        log=result.log_path.resolve().relative_to(ROOT.resolve()).as_posix(),
+        review_scope="EARLY_BATCH_ACTUAL_PIXELS",
+    )
+    with image_scheduler.queue_transaction(ep):
+        return _apply_review_data_locked(ep, batch_id, data=data, provenance=provenance, attempt=attempt)
+
+
 def pending(ep: Path) -> list[str]:
-    q = read_json(Path(ep) / QUEUE_REL)
-    return sorted({str(x.get("batch_id")) for x in q.get("items") or [] if x.get("status") == "review_pending" and x.get("batch_id")})
+    ep = Path(ep).resolve()
+    q = scheduler_core.load_queue(ep)
+    batch_ids = sorted({str(x.get("batch_id")) for x in q.get("items") or []
+                        if x.get("batch_id") and x.get("status") in {"generated", "review_pending"}})
+    result = []
+    for batch_id in batch_ids:
+        rows = batch_items(ep, batch_id)
+        if rows and len(reusable_units(ep, batch_id, rows)) != len(rows):
+            result.append(batch_id)
+    return result
 
 
 def self_test() -> None:
@@ -290,6 +372,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__); sub = ap.add_subparsers(dest="cmd", required=True)
     p=sub.add_parser("prepare");p.add_argument("episode_dir");p.add_argument("batch_id");p.add_argument("--attempt",type=int,default=1)
     p=sub.add_parser("finalize");p.add_argument("episode_dir");p.add_argument("batch_id");p.add_argument("--attempt",type=int,default=1);p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK")
+    p=sub.add_parser("run-critic");p.add_argument("episode_dir");p.add_argument("batch_id");p.add_argument("--attempt",type=int,default=1);p.add_argument("--codex");p.add_argument("--timeout",type=int,default=None)
     p=sub.add_parser("pending");p.add_argument("episode_dir")
     p=sub.add_parser("record-unit");p.add_argument("episode_dir");p.add_argument("batch_id");p.add_argument("--file",required=True)
     sub.add_parser("self-test");a=ap.parse_args()
@@ -298,6 +381,7 @@ def main() -> int:
     if a.cmd=="record-unit":print(json.dumps(record_unit(ep,a.batch_id,read_json(Path(a.file))),ensure_ascii=False,indent=2));return 0
     if a.cmd=="prepare":print(json.dumps(prepare(ep,a.batch_id,attempt=a.attempt),ensure_ascii=False,indent=2));return product_review_adapter.HOST_ACTION_REQUIRED_RC
     if a.cmd=="finalize":print(json.dumps(finalize(ep,a.batch_id,runtime=a.runtime,attempt=a.attempt),ensure_ascii=False,indent=2));return 0
+    if a.cmd=="run-critic":print(json.dumps(run_codex_review(ep,a.batch_id,attempt=a.attempt,codex_raw=a.codex,timeout=a.timeout),ensure_ascii=False,indent=2));return 0
     print(json.dumps({"pending_batches":pending(ep)},ensure_ascii=False,indent=2));return 0
 
 if __name__=="__main__":raise SystemExit(main())

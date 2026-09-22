@@ -2,11 +2,14 @@
 from __future__ import annotations
 
 import argparse
+import concurrent.futures as cf
 import datetime as dt
 import hashlib
 import json
 import subprocess
+import threading
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Iterable
 
 from PIL import Image
@@ -20,16 +23,28 @@ import runtime_router
 import runtime_provenance
 import product_review_adapter
 import production_ledger
+import frame_review_persistence
 import story_json
 import runtime_timeout_policy
+import runtime_workspace
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_DIR = Path("meta/frame-reviews")
 SUMMARY_REL = Path("meta/frame-semantic-review.json")
 CANDIDATE_REL = Path("meta/.frame-semantic-review.candidate.json")
+EXCEPTION_CANDIDATE_REL = Path("meta/.frame-semantic-exception-review.candidate.json")
+EXCEPTION_PENDING_REL = Path("meta/frame-semantic-exception-pending-attempt-3.json")
+CONTINUATION_CANDIDATE_REL = Path("meta/.frame-semantic-continuation-review.candidate.json")
+CONTINUATION_PENDING_REL = Path("meta/frame-semantic-continuation-pending.json")
+PATCH_CANDIDATE_REL = Path("meta/.frame-semantic-patch-review.candidate.json")
+PATCH_PENDING_REL = Path("meta/frame-semantic-patch-pending.json")
 AUDIT_REL = Path("meta/frame-semantic-audit.json")
+PENDING_REQUEST_PREFIX = "frame-semantic-pending-attempt-"
 TARGET_CONTRACT = (2, 0, 3, 3)
 SCHEMA_VERSION = 2
+ABSOLUTE_MAX_FULL_REVIEW_SHARDS = 6
+FULL_REVIEW_FANOUT_MIN_FRAMES = 6
 
 CHECKS = [
     "scene_storyboard_fidelity",
@@ -44,6 +59,8 @@ CHECKS = [
     "caption_image_support",
     "actual_information_gain",
 ]
+
+ANATOMY_CHECK = "anatomy_limb_hand_integrity"
 
 V22_VISUAL_NARRATIVE_CHECKS = [
     "camera_authorship_physical",
@@ -81,7 +98,7 @@ def directing_v3_required(ep: Path) -> bool:
     try: return int(read_json(p).get("schema_version") or 0) >= 3
     except Exception: return False
 
-def checks_for_version(version: str, directing_v3: bool = False) -> list[str]:
+def checks_for_version(version: str, directing_v3: bool = False, *, anatomy_required: bool = True) -> list[str]:
     checks = CHECKS + (V21_PHASE3_CHECKS if version_tuple(version) >= (2, 1, 0) else [])
     if version_tuple(version) >= (2, 2, 0):
         checks += V22_VISUAL_NARRATIVE_CHECKS
@@ -89,6 +106,8 @@ def checks_for_version(version: str, directing_v3: bool = False) -> list[str]:
         checks += V221_WORLD_IDENTITY_CHECKS
     if directing_v3:
         checks += DIRECTING_V3_CHECKS
+    if anatomy_required:
+        checks += [ANATOMY_CHECK]
     return checks
 
 ISSUE_CODES = {
@@ -126,6 +145,31 @@ ISSUE_CODES = {
     "CINEMATIC_TRANSLATION_FAILED",
     "LIGHTING_DESIGN_MISMATCH",
     "ANOMALY_CONCEALMENT_MISSING",
+    "ANATOMY_DISTORTION",
+    "LIMB_COUNT_ERROR",
+    "HAND_INTEGRITY_FAILURE",
+}
+
+GLOBAL_CLOSURE_CHECKS = [
+    "identity_wardrobe_continuity",
+    "spatial_temporal_continuity",
+    "visual_memory_continuity",
+    "narrative_progression",
+    "ending_payoff_coherence",
+]
+GLOBAL_CLOSURE_ISSUE_CODES = {
+    "IDENTITY_DRIFT",
+    "WARDROBE_DRIFT",
+    "SPATIAL_CONTINUITY_BROKEN",
+    "TEMPORAL_CONTRADICTION",
+    "WEATHER_CONTINUITY_BROKEN",
+    "VISUAL_MEMORY_BROKEN",
+    "NARRATIVE_REDUNDANCY",
+    "ACTUAL_INFORMATION_GAIN_MISSING",
+    "STORY_BEAT_NOT_VISIBLE",
+    "WORLD_IDENTITY_DRIFT",
+    "CHARACTER_APPEARANCE_DRIFT",
+    "CULTURAL_CONTEXT_DRIFT",
 }
 
 
@@ -162,7 +206,10 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 
 def review_required(ep: Path) -> bool:
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    if version_tuple(state.get("tool_version")) >= TARGET_CONTRACT:
+        return True
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -176,7 +223,12 @@ def review_required(ep: Path) -> bool:
 
 def episode_contract_version(ep: Path) -> str:
     versions: list[tuple[tuple[int, ...], str]] = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    raw = str(state.get("tool_version") or "")
+    vt = version_tuple(raw)
+    if vt != (0,):
+        versions.append((vt, raw))
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -278,7 +330,7 @@ def phase4_binding_errors(ep: Path, frames: list[dict]) -> list[str]:
 
 
 def frame_records(ep: Path, *, require_files: bool) -> list[dict]:
-    ledger = read_json(ep / "meta/production-ledger.json")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     frames = ledger.get("frames")
     if not isinstance(frames, dict) or not frames:
         raise ValueError("production ledger frames missing")
@@ -308,6 +360,79 @@ def frame_records(ep: Path, *, require_files: bool) -> list[dict]:
             "sha256": expected_sha,
         })
     return rows
+
+
+def reviewable_frame_records(ep: Path, *, require_files: bool) -> list[dict]:
+    """Return the complete production frame set before final promotion.
+
+    Final semantic review is the authority that grants Production PASS.  It
+    therefore must be able to inspect the current candidate before
+    ``approved_asset`` exists; otherwise approval and review wait on each
+    other.  Already-approved rows are reused by SHA.
+    """
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    frames = ledger.get("frames")
+    if not isinstance(frames, dict) or not frames:
+        raise ValueError("production ledger frames missing")
+    rows: list[dict] = []
+    for key in sorted(frames):
+        frame = frames[key]
+        if not isinstance(frame, dict):
+            raise ValueError(f"ledger frame {key} invalid")
+        status = str(frame.get("status") or "")
+        approved = frame.get("approved_asset") if isinstance(frame.get("approved_asset"), dict) else None
+        candidate = frame.get("current_candidate") if isinstance(frame.get("current_candidate"), dict) else None
+        if approved and status in production_ledger.ACCEPTED_LEDGER_STATES:
+            asset = approved
+            source_kind = "approved"
+        elif candidate and status in production_ledger.READY_LEDGER_STATES:
+            asset = candidate
+            source_kind = "candidate"
+        else:
+            raise ValueError(f"frame {key} has no reviewable production asset: status={status!r}")
+        raw_path = asset.get("path") or asset.get("asset_path")
+        expected_sha = str(asset.get("sha256") or "").lower()
+        if len(expected_sha) != 64:
+            raise ValueError(f"frame {key} reviewable asset sha256 invalid")
+        path = repo_path(raw_path, f"frame {key} {source_kind}.path", require_file=require_files)
+        if require_files:
+            actual = sha256_file(path)
+            if actual.lower() != expected_sha:
+                raise ValueError(f"frame {key} {source_kind} SHA drift: ledger={expected_sha}, actual={actual}")
+        rows.append({
+            "frame": key.zfill(2),
+            "path": path,
+            "path_rel": repo_rel(path),
+            "sha256": expected_sha,
+            "source_kind": source_kind,
+            "ledger_status": status,
+        })
+    return rows
+
+
+def reviewable_phase4_binding_errors(ep: Path, frames: list[dict]) -> list[str]:
+    """Verify generation-contract binding for approved assets or live candidates."""
+    if not phase4_contract.required(ep):
+        return []
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    errors: list[str] = []
+    for row in frames:
+        key = row["frame"]
+        if row.get("source_kind") == "approved":
+            errors.extend(phase4_contract.verify_approved_asset_binding(ep, key, row["sha256"]))
+            continue
+        frame = ((ledger.get("frames") or {}).get(key) or {})
+        candidate = frame.get("current_candidate") or {}
+        attempt_id = str(candidate.get("attempt_id") or "")
+        attempt = next((x for x in (frame.get("attempts") or []) if str(x.get("attempt_id") or "") == attempt_id), None)
+        if not isinstance(attempt, dict):
+            errors.append(f"frame {key} candidate generation attempt missing")
+            continue
+        expected = str(phase4_contract.compile_frame(ep, int(key), write_cache=False).get("contract_sha256") or "").lower()
+        requested = str(((attempt.get("request") or {}).get("frame_contract_sha256")) or "").lower()
+        if not requested or requested != expected:
+            errors.append(f"frame {key} candidate Frame Contract drift: attempt={requested or 'missing'} current={expected}")
+    return errors
 
 
 def _bits_to_hex(bits: Iterable[bool]) -> str:
@@ -420,6 +545,306 @@ def validate_candidate_rows(rows: object, expected_frames: list[dict], version: 
     return errors
 
 
+def validate_candidate_gate_rows(rows: object, expected_frames: list[dict], version: str, directing_v3: bool) -> list[str]:
+    """Validate a final critic result before it is allowed to mutate the ledger.
+
+    Unlike ``validate_candidate_rows`` this accepts both pass and fail rows so
+    failed candidates can enter the existing repair flow.  Schema/provenance
+    errors never change Production Ledger state.
+    """
+    errors: list[str] = []
+    expected = {row["frame"] for row in expected_frames}
+    if not isinstance(rows, list) or len(rows) != len(expected_frames):
+        return [f"critic must return exactly {len(expected_frames)} frame rows"]
+    seen: set[str] = set()
+    required_checks = checks_for_version(version, directing_v3)
+    for idx, row in enumerate(rows):
+        if not isinstance(row, dict):
+            errors.append(f"frames[{idx}] must be object")
+            continue
+        key = str(row.get("frame") or "").zfill(2)
+        if key not in expected:
+            errors.append(f"unexpected frame row: {key}")
+            continue
+        if key in seen:
+            errors.append(f"duplicate frame row: {key}")
+        seen.add(key)
+        checks = row.get("checks")
+        if not isinstance(checks, dict):
+            errors.append(f"frame {key} checks must be object")
+            continue
+        missing = [name for name in required_checks if not isinstance(checks.get(name), bool)]
+        if missing:
+            errors.append(f"frame {key} checks missing/non-bool: {missing}")
+        codes = row.get("issue_codes")
+        if not isinstance(codes, list):
+            errors.append(f"frame {key} issue_codes must be list")
+            codes = []
+        unknown = [x for x in codes if x not in ISSUE_CODES]
+        if unknown:
+            errors.append(f"frame {key} unknown issue_codes: {unknown}")
+        decision = str(row.get("decision") or "")
+        if decision not in {"pass", "fail"}:
+            errors.append(f"frame {key} decision must be pass or fail")
+        elif decision == "pass" and (codes or any(checks.get(name) is not True for name in required_checks)):
+            errors.append(f"frame {key} pass requires all checks true and no issue_codes")
+        elif decision == "fail" and not codes and all(checks.get(name) is True for name in required_checks):
+            errors.append(f"frame {key} fail requires a visible failed check or issue_code")
+    if seen != expected:
+        errors.append(f"critic frame set mismatch: expected={sorted(expected)}, actual={sorted(seen)}")
+    return errors
+
+
+def pending_request_path(ep: Path, attempt: int) -> Path:
+    return ep / "meta" / f"{PENDING_REQUEST_PREFIX}{attempt}.json"
+
+
+def _pending_request_payload(ep: Path, frames: list[dict], attempt: int) -> dict:
+    return {
+        "schema_version": 1,
+        "attempt": attempt,
+        "recorded_at": now(),
+        "contexts": context_hashes(ep),
+        "assets": [
+            {"frame": row["frame"], "path": row["path_rel"], "sha256": row["sha256"]}
+            for row in frames
+        ],
+    }
+
+
+def _ledger_frame(ep: Path, frame: str) -> dict:
+    return (((production_ledger.load_authority(ep, default={}) or {}).get("frames") or {}).get(str(frame).zfill(2)) or {})
+
+
+def _apply_candidate_gate(
+    ep: Path,
+    *,
+    data: dict,
+    reviewed: list[dict],
+    contexts: dict,
+    provenance: dict,
+    attempt: int,
+) -> int:
+    """Let the final semantic critic close candidate -> PASS -> approved -> lock."""
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    errors = validate_candidate_gate_rows(data.get("frames"), reviewed, version, directing_v3)
+    global_codes = data.get("issue_codes")
+    if not isinstance(global_codes, list):
+        errors.append("global issue_codes must be list")
+    elif any(code not in ISSUE_CODES for code in global_codes):
+        errors.append(f"global issue_codes contain unknown values: {global_codes}")
+    if errors:
+        print("FRAME SEMANTIC CANDIDATE GATE INVALID")
+        for error in errors:
+            print("FAIL:", error)
+        return 3
+
+    rows = {str(row.get("frame") or "").zfill(2): row for row in data.get("frames") or []}
+
+    # Preflight every Ledger transition before writing any PASS/LOCK state.  Final
+    # semantic review is a set-level decision: a predictable policy failure on a
+    # later frame (for example an already-LOCKED frame whose ordinary repair
+    # budget is exhausted) must not happen after earlier PASS frames were already
+    # promoted and locked.  We still keep per-frame durable writes, but all known
+    # state/policy incompatibilities are resolved into an explicit plan first and
+    # failures are applied before passes.
+    ledger_data = production_ledger.load_authority(ep, default={}) or {}
+    ledger_frames = ledger_data.get("frames") or {}
+    repair_limit = production_ledger.content_repair_limit(ledger_data)
+    plan: list[tuple[str, dict, dict, str]] = []
+    preflight_errors: list[str] = []
+    for source in reviewed:
+        key = source["frame"]
+        review = rows[key]
+        frame = ledger_frames.get(key) or {}
+        status = str(frame.get("status") or "")
+        decision = str(review.get("decision") or "")
+        if decision == "pass":
+            if status not in {"ORIGINAL_READY", "REPAIR_READY", "PASSED", "LOCKED"}:
+                preflight_errors.append(f"frame {key} cannot close PASS from status={status}")
+            else:
+                plan.append(("pass", source, review, status))
+            continue
+        if status in {"ORIGINAL_READY", "REPAIR_READY"}:
+            plan.append(("review_failure", source, review, status))
+        elif status == "LOCKED" and int(frame.get("content_repairs_used") or 0) < repair_limit:
+            plan.append(("authorize_locked_repair", source, review, status))
+        elif status in {"LOCKED", "PASSED"}:
+            plan.append(("escalate_needs_user", source, review, status))
+        else:
+            preflight_errors.append(f"frame {key} cannot close FAIL from status={status}")
+    if preflight_errors:
+        raise RuntimeError("final semantic Ledger preflight failed: " + "; ".join(preflight_errors))
+
+    failures: list[str] = []
+    # Failure transitions first: if an unexpected write-time problem still occurs,
+    # no newly passing frame has been promoted/locked by this invocation yet.
+    for operation, source, review, _status in [x for x in plan if x[0] != "pass"]:
+        key = source["frame"]
+        notes = "Final semantic critic candidate review: " + str(review.get("notes") or review.get("issue_codes") or "")
+        failures.append(key)
+        if operation == "escalate_needs_user":
+            production_ledger.mark_review_needs_user(ep, key, reason=notes[:500])
+            continue
+        if operation == "authorize_locked_repair":
+            production_ledger.cmd_authorize_repair(SimpleNamespace(
+                episode_dir=str(ep), frame=key,
+                note=notes[:500], delegated_auto=True))
+            continue
+        production_ledger.cmd_review(SimpleNamespace(
+            episode_dir=str(ep), frame=key, decision="repair", notes=notes[:500]))
+        status = str(_ledger_frame(ep, key).get("status") or "")
+        if status == "CONTENT_FAILED":
+            production_ledger.cmd_authorize_repair(SimpleNamespace(
+                episode_dir=str(ep), frame=key,
+                note=notes[:500], delegated_auto=True))
+
+    for operation, source, review, _status in [x for x in plan if x[0] == "pass"]:
+        key = source["frame"]
+        status = str(_ledger_frame(ep, key).get("status") or "")
+        notes = "Final semantic critic candidate review: " + str(review.get("notes") or review.get("issue_codes") or "")
+        if status in {"ORIGINAL_READY", "REPAIR_READY"}:
+            production_ledger.cmd_review(SimpleNamespace(
+                episode_dir=str(ep), frame=key, decision="pass", notes=notes[:500]))
+            status = str(_ledger_frame(ep, key).get("status") or "")
+        if status == "PASSED":
+            production_ledger.cmd_promote(SimpleNamespace(episode_dir=str(ep), frame=key))
+            production_ledger.cmd_lock(SimpleNamespace(
+                episode_dir=str(ep), frame=key,
+                reason=f"final semantic critic attempt {attempt} PASS"))
+        elif status != "LOCKED":
+            raise RuntimeError(f"frame {key} cannot close PASS from status={status}")
+
+    evidence = {
+        "schema_version": 1,
+        "attempt": attempt,
+        "review_scope": "CANDIDATE_FULL_FRAME_SET",
+        "critic_provenance": provenance,
+        "reviewed_assets": [{"frame": x["frame"], "path": x["path_rel"], "sha256": x["sha256"]} for x in reviewed],
+        "critic_result": data,
+        "failed_frames": failures,
+        "recorded_at": now(),
+    }
+    write_json(ep / "meta" / f"frame-semantic-candidate-attempt-{attempt}.json", evidence)
+    if failures:
+        print("FRAME SEMANTIC REVIEW FAIL: repair required frames=" + ",".join(failures))
+        return 2
+
+    approved = frame_records(ep, require_files=True)
+    before_sha = {row["frame"]: row["sha256"] for row in reviewed}
+    after_sha = {row["frame"]: row["sha256"] for row in approved}
+    if before_sha != after_sha:
+        raise RuntimeError("candidate -> approved promotion changed reviewed pixels")
+    binding_errors = phase4_binding_errors(ep, approved)
+    if binding_errors:
+        raise RuntimeError("approved Frame Contract binding failed: " + "; ".join(binding_errors))
+    approved_sources = review_source_bindings(ep, approved)
+    provenance = dict(provenance)
+    provenance["review_scope"] = "FULL_FRAME_SET"
+    provenance["reviewed_candidate_assets"] = evidence["reviewed_assets"]
+    return _persist_candidate(
+        ep,
+        data=data,
+        current=approved,
+        contexts=contexts,
+        phashes=perceptual_rows(approved),
+        provenance=provenance,
+        frozen_sources=approved_sources,
+    )
+
+
+def apply_pending_candidate(ep: Path, *, attempt: int) -> int:
+    """Resume a critic whose parent process vanished after the model wrote JSON."""
+    request_path = pending_request_path(ep, attempt)
+    candidate = ep / CANDIDATE_REL
+    log = ep / "meta" / f"frame-semantic-critic-attempt-{attempt}.jsonl"
+    if not request_path.is_file():
+        raise RuntimeError(f"pending semantic request missing: {request_path}")
+    if not candidate.is_file():
+        raise RuntimeError(f"semantic candidate missing: {candidate}")
+    pending = read_json(request_path)
+    current = reviewable_frame_records(ep, require_files=True)
+    expected_assets = pending.get("assets")
+    actual_assets = [{"frame": x["frame"], "path": x["path_rel"], "sha256": x["sha256"]} for x in current]
+    if expected_assets != actual_assets:
+        raise RuntimeError("pending semantic request asset set drifted; refuse orphan recovery")
+    if pending.get("contexts") != context_hashes(ep):
+        raise RuntimeError("pending semantic request Story/Storyboard/visual context drifted")
+    binding_errors = reviewable_phase4_binding_errors(ep, current)
+    if binding_errors:
+        raise RuntimeError("pending semantic request Frame Contract drifted: " + "; ".join(binding_errors))
+    data = read_json(candidate)
+    sharded_path = ep / "meta" / f"frame-semantic-sharded-attempt-{attempt}.json"
+    if sharded_path.is_file():
+        sharded = read_json(sharded_path)
+        expected_coverage = [row["frame"] for row in current]
+        if int(sharded.get("attempt") or 0) != attempt:
+            raise RuntimeError("sharded semantic recovery attempt mismatch")
+        if sharded.get("target_coverage") != expected_coverage:
+            raise RuntimeError("sharded semantic recovery target coverage mismatch")
+        if str(sharded.get("candidate_sha256") or "").lower() != sha256_file(candidate).lower():
+            raise RuntimeError("sharded semantic recovery merged candidate SHA mismatch")
+        if str(sharded.get("source_bindings_sha256") or "").lower() != sha256_json(review_source_bindings(ep, current)).lower():
+            raise RuntimeError("sharded semantic recovery source binding drift")
+        shards = sharded.get("shards") or []
+        if int(sharded.get("shard_count") or 0) != len(shards) or len(shards) < 2:
+            raise RuntimeError("sharded semantic recovery evidence incomplete")
+        shard_logs = [str(row.get("log_path") or "") for row in shards if isinstance(row, dict)]
+        if len(shard_logs) != len(shards) or any(not value for value in shard_logs):
+            raise RuntimeError("sharded semantic recovery log bindings incomplete")
+        for raw in shard_logs:
+            path = repo_path(raw, "sharded semantic recovery log")
+            if not path.is_file():
+                raise RuntimeError(f"sharded semantic recovery log missing: {raw}")
+        closure = sharded.get("global_closure") or {}
+        closure_status = str(closure.get("status") or "")
+        if int(sharded.get("schema_version") or 1) >= 2:
+            if closure_status not in {"COMPLETED", "SKIPPED_LOCAL_FAILURE"}:
+                raise RuntimeError("sharded semantic recovery global closure status invalid")
+            if closure_status == "COMPLETED":
+                closure_log_raw = str(closure.get("log_path") or "")
+                closure_candidate_raw = str(closure.get("candidate_path") or "")
+                if not closure_log_raw or not closure_candidate_raw:
+                    raise RuntimeError("sharded semantic recovery global closure bindings incomplete")
+                closure_log = repo_path(closure_log_raw, "sharded semantic recovery global closure log")
+                closure_candidate = repo_path(
+                    closure_candidate_raw, "sharded semantic recovery global closure candidate")
+                if str(closure.get("candidate_sha256") or "").lower() != sha256_file(closure_candidate).lower():
+                    raise RuntimeError("sharded semantic recovery global closure candidate SHA mismatch")
+        provenance = runtime_provenance.build_vision_critic_provenance(
+            attempt=attempt, log=shard_logs[0], review_scope="FULL_FRAME_SET")
+        provenance.update({
+            "sharded_review": True,
+            "shard_count": len(shards),
+            "max_review_inflight": int(sharded.get("max_review_inflight") or 0),
+            "shard_logs": shard_logs,
+            "sharded_evidence": repo_rel(sharded_path),
+            "global_closure_status": closure_status or None,
+            "global_closure_passed": closure.get("passed"),
+            "global_closure_log": closure.get("log_path"),
+        })
+    else:
+        if not log.is_file():
+            raise RuntimeError(f"semantic critic log missing: {log}")
+        log_rel = log.relative_to(ROOT).as_posix() if log.stat().st_size > 0 else None
+        provenance = runtime_provenance.build_vision_critic_provenance(
+            attempt=attempt, log=log_rel, review_scope="FULL_FRAME_SET")
+        if log.stat().st_size <= 0:
+            provenance["critic_stdout_log_empty_after_parent_timeout"] = True
+    provenance["anatomy_integrity_enforced"] = True
+    provenance["recovered_after_parent_timeout"] = True
+    provenance["candidate_sha256"] = sha256_file(candidate)
+    return _apply_candidate_gate(
+        ep,
+        data=data,
+        reviewed=current,
+        contexts=context_hashes(ep),
+        provenance=provenance,
+        attempt=attempt,
+    )
+
+
 def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: str, metadata_only: bool, phase3_contexts: dict | None = None, directing_v3: bool = False, ep: Path | None = None) -> list[str]:
     errors: list[str] = []
     key = frame["frame"]
@@ -447,10 +872,12 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
         errors.append(f"frame {key} {error}")
     if provenance.get("review_scope") not in {"FULL_FRAME_SET", "INCREMENTAL_CONTEXT_SET"}:
         errors.append(f"frame {key} critic review_scope must be FULL_FRAME_SET or INCREMENTAL_CONTEXT_SET")
-    if provenance.get("attempt") not in {1, 2}:
-        errors.append(f"frame {key} critic attempt must be 1 or 2")
+    attempt = provenance.get("attempt")
+    if attempt not in {1, 2} and not (attempt == 3 and provenance.get("direct_user_exception_review") is True):
+        errors.append(f"frame {key} critic attempt must be 1/2, or 3 for a direct-user-exception re-review")
     checks = data.get("checks") or {}
-    for check in checks_for_version(version, directing_v3):
+    anatomy_required = provenance.get("anatomy_integrity_enforced") is True
+    for check in checks_for_version(version, directing_v3, anatomy_required=anatomy_required):
         if checks.get(check) is not True:
             errors.append(f"frame {key} checks.{check} must be true")
     codes = data.get("issue_codes")
@@ -518,12 +945,11 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
 
     directing_v3 = directing_v3_required(ep)
     for frame in frames:
-        path = ep / REVIEW_DIR / f"{frame['frame']}.json"
-        if not path.is_file():
-            errors.append(f"missing frame semantic review: {path.relative_to(ep)}")
+        data = frame_review_persistence.load(ep, int(frame["frame"]))
+        if not isinstance(data, dict):
+            errors.append(f"missing frame semantic review: {REVIEW_DIR.as_posix()}/{frame['frame']}.json")
             continue
         try:
-            data = read_json(path)
             errors.extend(validate_bound_review(data, frame=frame, contexts=contexts, version=expected_version, metadata_only=metadata_only, phase3_contexts=phase3_context_hashes(ep, frame["frame"]), directing_v3=directing_v3, ep=ep))
         except Exception as exc:
             errors.append(f"frame {frame['frame']} review source validation failed: {exc}")
@@ -607,7 +1033,7 @@ Read these locked sources before judging:
 - standards/Resolved_Frame_Contract规范_V1.0.md
 - standards/Fast_Frame_Scout_与_Final_Candidate_Snapshot规范_V1.0.md
 Fast Scout evidence is triage only. Do NOT trust PASS_FAST as a final pass; independently judge every supplied actual frame.
-Resolved Frame Contracts: {rel_ep}/meta/runtime/contracts/frames/NN.json. The frame review must honor the SAME contract SHA used by the generation attempt.
+Resolved Frame Contracts: {runtime_workspace.workspace_path(ep, phase4_contract.CACHE_ROOT).as_posix()}/NN.json. The frame review must honor the SAME contract SHA used by the generation attempt.
 
 Attached images are in numeric order and map as follows:
 {mapping}
@@ -636,8 +1062,9 @@ Hard rules for EVERY frame:
 17. camera_defect_physics: blur/noise/reflection/underexposure must have a plausible physical cause.
 18. screen_content_physics: phone/map/dashboard/time/camera UI must be internally, perspectivally and narratively coherent.
 19. visual_memory_continuity: character/wardrobe/vehicle/props/route/weather/light/anomaly evidence must persist unless explicitly changed.
-20. For shot-progression schema_version >=3 only: shot_scale_fidelity must match the locked shot_scale; scene_position_uniqueness_fidelity must not collapse different planned positions into visibly repeated camera setups; cinematic_structure_translation_fidelity must use the locked structural technique without becoming an exact film-still recreation; practical_lighting_design_fidelity must honor the declared real light source/contrast/suspense function; anomaly_concealment_fidelity must visibly use the locked mirror/water/glass/fog/light-shadow/screen/occlusion carrier when declared.
-21. PASS only if all required checks are true, issue_codes is empty and decision=pass.
+20. anatomy_limb_hand_integrity: visible human anatomy must be physically plausible. Extra/missing/fused limbs, impossible joint topology, duplicated or melted fingers/hands, detached body parts, or severe anatomy deformation are hard failures even when identity/story/POV are otherwise correct.
+21. For shot-progression schema_version >=3 only: shot_scale_fidelity must match the locked shot_scale; scene_position_uniqueness_fidelity must not collapse different planned positions into visibly repeated camera setups; cinematic_structure_translation_fidelity must use the locked structural technique without becoming an exact film-still recreation; practical_lighting_design_fidelity must honor the declared real light source/contrast/suspense function; anomaly_concealment_fidelity must visibly use the locked mirror/water/glass/fog/light-shadow/screen/occlusion carrier when declared.
+22. PASS only if all required checks are true, issue_codes is empty and decision=pass.
 
 Use issue codes only from this set:
 {', '.join(sorted(ISSUE_CODES))}
@@ -663,15 +1090,588 @@ Return one row for EVERY attached frame. If any hard check fails, mark it false,
 """
 
 
+def _full_review_parallelism(frame_count: int) -> int:
+    """Choose bounded Final Semantic fan-out from frame count and the canonical config cap."""
+    count = max(0, int(frame_count))
+    cap = min(runtime_router.vision_review_max_inflight_final(), ABSOLUTE_MAX_FULL_REVIEW_SHARDS)
+    if count <= 5:
+        desired = 1
+    elif count <= 10:
+        desired = 2
+    elif count <= 15:
+        desired = 3
+    elif count <= 20:
+        desired = 4
+    else:
+        desired = 5
+    return max(1, min(desired, cap))
+
+
+def _full_review_shards(frames: list[dict], max_shards: int | None = None) -> list[dict]:
+    """Split FULL review targets into contiguous shards with read-only neighbor context.
+
+    Every frame is owned by exactly one target shard.  Immediate neighbors may be
+    repeated as context, so a boundary continuity defect can veto the owner's PASS
+    during conservative merge without giving any shard Ledger authority.
+    """
+    ordered = sorted(frames, key=lambda row: int(row["frame"]))
+    if not ordered:
+        return []
+    configured_cap = min(runtime_router.vision_review_max_inflight_final(), ABSOLUTE_MAX_FULL_REVIEW_SHARDS)
+    requested = _full_review_parallelism(len(ordered)) if max_shards is None else int(max_shards)
+    shard_count = max(1, min(requested, configured_cap, len(ordered)))
+    base_size, extra = divmod(len(ordered), shard_count)
+    shards: list[dict] = []
+    offset = 0
+    for index in range(shard_count):
+        size = base_size + (1 if index < extra else 0)
+        start, end = offset, offset + size
+        targets = ordered[start:end]
+        selected_start = max(0, start - 1)
+        selected_end = min(len(ordered), end + 1)
+        selected = ordered[selected_start:selected_end]
+        # Frame01 and the final frame are cheap global visual-memory anchors.
+        # Repeating them as read-only context gives each shard whole-episode
+        # orientation without serializing every frame through one critic.
+        selected_by_key = {row["frame"]: row for row in selected}
+        selected_by_key.setdefault(ordered[0]["frame"], ordered[0])
+        selected_by_key.setdefault(ordered[-1]["frame"], ordered[-1])
+        selected = [selected_by_key[key] for key in sorted(selected_by_key, key=int)]
+        target_keys = [row["frame"] for row in targets]
+        target_set = set(target_keys)
+        shards.append({
+            "index": index + 1,
+            "target_frames": target_keys,
+            "context_frames": [row["frame"] for row in selected if row["frame"] not in target_set],
+            "selected": selected,
+        })
+        offset = end
+    coverage = [key for shard in shards for key in shard["target_frames"]]
+    expected = [row["frame"] for row in ordered]
+    if sorted(coverage) != sorted(expected) or len(coverage) != len(set(coverage)):
+        raise RuntimeError("full semantic shard target coverage must be exact and non-overlapping")
+    return shards
+
+
+def _sharded_critic_prompt(ep: Path, shard: dict, candidate: Path, attempt: int) -> str:
+    selected = shard["selected"]
+    base_prompt = critic_prompt(ep, selected, candidate, attempt)
+    rel_ep = ep.relative_to(ROOT).as_posix()
+    original = f"You are reviewing the COMPLETE final approved frame set for exactly {rel_ep}."
+    replacement = (
+        f"You are one NON-AUTHORITATIVE shard of the complete final frame review for exactly {rel_ep}.\n"
+        f"TARGET frames owned by this shard: {', '.join(shard['target_frames'])}.\n"
+        f"Read-only CONTEXT frames: {', '.join(shard['context_frames']) or '<none>'}.\n"
+        "Judge EVERY supplied frame with the same full hard checks. Context failures must be reported; "
+        "the parent will conservatively merge overlapping judgments. Do not assume frames outside this shard PASS."
+    )
+    if original not in base_prompt:
+        raise RuntimeError("full semantic critic prompt anchor drifted")
+    return base_prompt.replace(original, replacement, 1)
+
+
+def _launch_full_review_shard(
+    ep: Path,
+    shard: dict,
+    *,
+    attempt: int,
+    codex: Path,
+    timeout: int,
+) -> dict:
+    index = int(shard["index"])
+    candidate = ep / "meta" / f".frame-semantic-shard-{attempt}-{index}.candidate.json"
+    log = ep / "meta" / f"frame-semantic-critic-attempt-{attempt}-shard-{index}.jsonl"
+    candidate.unlink(missing_ok=True)
+    completed = critic_runner.launch(
+        _sharded_critic_prompt(ep, shard, candidate, attempt),
+        codex=codex,
+        root=ROOT,
+        timeout=timeout,
+        sandbox="workspace-write",
+        model=runtime_router.vision_review_model(),
+        reasoning_effort=runtime_router.vision_review_effort("final"),
+        attachments=[row["path"] for row in shard["selected"]],
+        log_path=log,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(f"final semantic shard {index} failed rc={completed.returncode}; log={log}")
+    if not candidate.is_file():
+        raise RuntimeError(f"final semantic shard {index} did not produce {candidate}")
+    data = read_json(candidate)
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    errors = validate_candidate_gate_rows(data.get("frames"), shard["selected"], version, directing_v3)
+    global_codes = data.get("issue_codes")
+    if not isinstance(global_codes, list):
+        errors.append("global issue_codes must be list")
+    else:
+        unknown = [code for code in global_codes if code not in ISSUE_CODES]
+        if unknown:
+            errors.append(f"global issue_codes contain unknown values: {unknown}")
+    decisions = [str(row.get("decision") or "") for row in (data.get("frames") or []) if isinstance(row, dict)]
+    expected_summary = bool(decisions) and all(value == "pass" for value in decisions)
+    if (data.get("summary") or {}).get("passed") is not expected_summary:
+        errors.append("critic summary.passed does not match shard frame decisions")
+    if errors:
+        raise RuntimeError(f"final semantic shard {index} candidate invalid: " + "; ".join(errors))
+    return {
+        "index": index,
+        "target_frames": list(shard["target_frames"]),
+        "context_frames": list(shard["context_frames"]),
+        "selected_frames": [row["frame"] for row in shard["selected"]],
+        "candidate_path": repo_rel(candidate),
+        "candidate_sha256": sha256_file(candidate),
+        "log_path": repo_rel(log),
+        "data": data,
+    }
+
+
+def _execute_full_review_shards(
+    ep: Path,
+    shards: list[dict],
+    *,
+    attempt: int,
+    codex: Path,
+    timeout: int,
+) -> tuple[list[dict], int]:
+    """Run read-only critic shards concurrently and return only after all settle."""
+    if not shards:
+        raise RuntimeError("full semantic review requires at least one shard")
+    max_workers = min(runtime_router.vision_review_max_inflight_final(), ABSOLUTE_MAX_FULL_REVIEW_SHARDS, len(shards))
+    counter_lock = threading.Lock()
+    active = 0
+    peak = 0
+
+    def invoke(shard: dict) -> dict:
+        nonlocal active, peak
+        with counter_lock:
+            active += 1
+            peak = max(peak, active)
+        try:
+            return _launch_full_review_shard(
+                ep, shard, attempt=attempt, codex=codex, timeout=timeout)
+        finally:
+            with counter_lock:
+                active -= 1
+
+    results: list[dict] = []
+    failures: list[str] = []
+    with cf.ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="final-semantic") as pool:
+        futures = {pool.submit(invoke, shard): shard for shard in shards}
+        for future in cf.as_completed(futures):
+            shard = futures[future]
+            try:
+                results.append(future.result())
+            except Exception as exc:
+                failures.append(f"shard {shard['index']}: {type(exc).__name__}: {exc}")
+    if failures:
+        raise RuntimeError("final semantic sharded critic failed closed: " + " | ".join(sorted(failures)))
+    return sorted(results, key=lambda row: int(row["index"])), peak
+
+
+def _merge_full_review_shards(results: list[dict], frames: list[dict]) -> dict:
+    """Conservatively merge overlapping shard judgments into one full-set result."""
+    expected = [row["frame"] for row in sorted(frames, key=lambda item: int(item["frame"]))]
+    owned = [key for result in results for key in result.get("target_frames") or []]
+    if sorted(owned) != sorted(expected) or len(owned) != len(set(owned)):
+        raise RuntimeError("final semantic shard owner coverage mismatch")
+    observations: dict[str, list[tuple[int, dict]]] = {key: [] for key in expected}
+    top_codes: list[str] = []
+    for result in results:
+        index = int(result["index"])
+        data = result.get("data") or {}
+        for code in data.get("issue_codes") or []:
+            if code not in top_codes:
+                top_codes.append(code)
+        for row in data.get("frames") or []:
+            if not isinstance(row, dict):
+                continue
+            key = str(row.get("frame") or "").zfill(2)
+            if key in observations:
+                observations[key].append((index, row))
+            for code in row.get("issue_codes") or []:
+                if code not in top_codes:
+                    top_codes.append(code)
+    # Check names are identical across all rows for one Episode; use the first
+    # observation as the superset and AND every supplied boolean conservatively.
+    merged_rows: list[dict] = []
+    for key in expected:
+        seen = observations.get(key) or []
+        if not seen:
+            raise RuntimeError(f"final semantic shard merge missing frame {key}")
+        check_names: set[str] = set()
+        for _, row in seen:
+            check_names.update((row.get("checks") or {}).keys())
+        checks = {
+            name: all((row.get("checks") or {}).get(name) is True for _, row in seen)
+            for name in sorted(check_names)
+        }
+        codes: list[str] = []
+        notes: list[str] = []
+        any_fail = False
+        for index, row in seen:
+            if str(row.get("decision") or "") != "pass":
+                any_fail = True
+            for code in row.get("issue_codes") or []:
+                if code not in codes:
+                    codes.append(code)
+            note = str(row.get("notes") or "").strip()
+            if note:
+                notes.append(f"s{index}:{note}")
+        all_checks = bool(checks) and all(checks.values())
+        decision = "pass" if not any_fail and all_checks and not codes else "fail"
+        merged_rows.append({
+            "frame": key,
+            "checks": checks,
+            "issue_codes": codes,
+            "notes": " | ".join(notes)[:2000],
+            "decision": decision,
+        })
+    passed = all(row["decision"] == "pass" for row in merged_rows)
+    return {
+        "frames": merged_rows,
+        "issue_codes": top_codes,
+        "summary": {"passed": passed, "notes": f"conservative merge of {len(results)} final semantic shards"},
+    }
+
+
+def _global_closure_anchor_rows(frames: list[dict], shards: list[dict]) -> list[dict]:
+    """Pick only whole-episode and cross-shard boundary anchors for closure review."""
+    ordered = sorted(frames, key=lambda row: int(row["frame"]))
+    if not ordered:
+        return []
+    by_key = {row["frame"]: row for row in ordered}
+    keys = {ordered[0]["frame"], ordered[-1]["frame"]}
+    for shard in shards:
+        targets = list(shard.get("target_frames") or [])
+        if targets:
+            keys.add(str(targets[0]).zfill(2))
+            keys.add(str(targets[-1]).zfill(2))
+    return [by_key[key] for key in sorted(keys, key=int) if key in by_key]
+
+
+def _global_closure_prompt(
+    ep: Path,
+    anchors: list[dict],
+    shard_results: list[dict],
+    candidate: Path,
+    attempt: int,
+) -> str:
+    story, storyboard = episode_files(ep)
+    rel_ep = ep.relative_to(ROOT).as_posix()
+    rel_out = repo_rel(candidate)
+    anchor_lines = "\n".join(
+        f"- Frame {row['frame']}: {row['path_rel']}" for row in anchors)
+    shard_digest = [{
+        "index": row["index"],
+        "target_frames": row["target_frames"],
+        "summary": (row.get("data") or {}).get("summary") or {},
+        "issue_codes": (row.get("data") or {}).get("issue_codes") or [],
+    } for row in shard_results]
+    return f"""You are the FINAL GLOBAL CLOSURE critic for exactly {rel_ep}.
+Local pixel/detail review has already been completed by bounded parallel shards. Do NOT redo anatomy, local scene fidelity, or other per-frame checks unless a supplied boundary image reveals a cross-shard contradiction.
+
+Read these locked sources:
+- Story: {repo_rel(story)}
+- Storyboard: {repo_rel(storyboard)}
+- Episode visual contract: {rel_ep}/meta/story-gates.json
+
+Read-only boundary/whole-episode anchor images:
+{anchor_lines}
+
+Shard summaries (NON-AUTHORITATIVE; use as context, not as proof):
+{json.dumps(shard_digest, ensure_ascii=False, indent=2)}
+
+Judge ONLY these five cross-shard checks:
+1. identity_wardrobe_continuity: the same people and wardrobe persist coherently across shard boundaries.
+2. spatial_temporal_continuity: route/location/time/weather progression has no cross-shard contradiction.
+3. visual_memory_continuity: vehicles, props, environment and anomaly evidence persist unless the locked story changes them.
+4. narrative_progression: each shard advances evidence/story; boundaries do not collapse into unexplained repetition or missing information gain.
+5. ending_payoff_coherence: the final boundary and ending pay off the established sequence without contradicting earlier evidence.
+
+Allowed issue codes for this closure only:
+{', '.join(sorted(GLOBAL_CLOSURE_ISSUE_CODES))}
+
+If a cross-shard failure exists, affected_frames MUST contain the supplied boundary frame(s) that expose it. Do not name an unattached frame. If all five checks pass, affected_frames and issue_codes must both be empty.
+
+Write ONLY valid JSON to {rel_out}:
+{{
+  "boundary_checks": {{
+    "identity_wardrobe_continuity": true,
+    "spatial_temporal_continuity": true,
+    "visual_memory_continuity": true,
+    "narrative_progression": true,
+    "ending_payoff_coherence": true
+  }},
+  "affected_frames": [],
+  "issue_codes": [],
+  "notes": "specific cross-shard evidence",
+  "summary": {{"passed": true}}
+}}
+This is attempt {attempt}. Do not modify any other repository file.
+"""
+
+
+def _validate_global_closure_candidate(data: object, anchors: list[dict]) -> list[str]:
+    errors: list[str] = []
+    if not isinstance(data, dict):
+        return ["global closure candidate must be object"]
+    checks = data.get("boundary_checks")
+    if not isinstance(checks, dict):
+        errors.append("global closure boundary_checks must be object")
+        checks = {}
+    missing = [name for name in GLOBAL_CLOSURE_CHECKS if not isinstance(checks.get(name), bool)]
+    if missing:
+        errors.append(f"global closure checks missing/non-bool: {missing}")
+    unknown_checks = [name for name in checks if name not in GLOBAL_CLOSURE_CHECKS]
+    if unknown_checks:
+        errors.append(f"global closure unknown checks: {unknown_checks}")
+
+    codes = data.get("issue_codes")
+    if not isinstance(codes, list):
+        errors.append("global closure issue_codes must be list")
+        codes = []
+    unknown_codes = [code for code in codes if code not in GLOBAL_CLOSURE_ISSUE_CODES]
+    if unknown_codes:
+        errors.append(f"global closure unknown issue_codes: {unknown_codes}")
+
+    affected_raw = data.get("affected_frames")
+    if not isinstance(affected_raw, list):
+        errors.append("global closure affected_frames must be list")
+        affected_raw = []
+    affected = [str(value).zfill(2) for value in affected_raw]
+    allowed = {row["frame"] for row in anchors}
+    outside = [key for key in affected if key not in allowed]
+    if outside:
+        errors.append(f"global closure affected_frames not attached: {outside}")
+    if len(affected) != len(set(affected)):
+        errors.append("global closure affected_frames must be unique")
+
+    summary = data.get("summary")
+    passed = summary.get("passed") if isinstance(summary, dict) else None
+    if not isinstance(passed, bool):
+        errors.append("global closure summary.passed must be bool")
+        passed = False
+    expected_passed = (
+        all(checks.get(name) is True for name in GLOBAL_CLOSURE_CHECKS)
+        and not codes and not affected
+    )
+    if passed is not expected_passed:
+        errors.append("global closure summary.passed does not match checks/issues/affected_frames")
+    if passed is False and (not codes or not affected):
+        errors.append("global closure FAIL requires issue_codes and affected_frames")
+    return errors
+
+
+def _launch_global_closure(
+    ep: Path,
+    *,
+    anchors: list[dict],
+    shard_results: list[dict],
+    attempt: int,
+    codex: Path,
+    timeout: int,
+) -> dict:
+    candidate = ep / "meta" / f".frame-semantic-global-closure-{attempt}.candidate.json"
+    log = ep / "meta" / f"frame-semantic-global-closure-attempt-{attempt}.jsonl"
+    candidate.unlink(missing_ok=True)
+    completed = critic_runner.launch(
+        _global_closure_prompt(ep, anchors, shard_results, candidate, attempt),
+        codex=codex,
+        root=ROOT,
+        timeout=timeout,
+        sandbox="workspace-write",
+        model=runtime_router.vision_review_model(),
+        reasoning_effort=runtime_router.vision_review_effort("final"),
+        attachments=[row["path"] for row in anchors],
+        log_path=log,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(f"final semantic global closure failed rc={completed.returncode}; log={log}")
+    if not candidate.is_file():
+        raise RuntimeError(f"final semantic global closure did not produce {candidate}")
+    data = read_json(candidate)
+    errors = _validate_global_closure_candidate(data, anchors)
+    if errors:
+        raise RuntimeError("final semantic global closure candidate invalid: " + "; ".join(errors))
+    return {
+        "status": "COMPLETED",
+        "anchor_frames": [row["frame"] for row in anchors],
+        "candidate_path": repo_rel(candidate),
+        "candidate_sha256": sha256_file(candidate),
+        "log_path": repo_rel(log),
+        "data": data,
+    }
+
+
+def _apply_global_closure(merged: dict, closure: dict) -> dict:
+    """Let closure veto boundary frames without granting it direct Ledger authority."""
+    out = json.loads(json.dumps(merged, ensure_ascii=False))
+    passed = bool((closure.get("summary") or {}).get("passed"))
+    note = str(closure.get("notes") or "").strip()
+    summary = out.setdefault("summary", {})
+    previous = str(summary.get("notes") or "").strip()
+    if passed:
+        summary["passed"] = bool(summary.get("passed"))
+        summary["notes"] = (previous + " | global closure PASS").strip(" |")
+        return out
+
+    affected = {str(value).zfill(2) for value in closure.get("affected_frames") or []}
+    codes = [code for code in closure.get("issue_codes") or [] if code in GLOBAL_CLOSURE_ISSUE_CODES]
+    for row in out.get("frames") or []:
+        key = str(row.get("frame") or "").zfill(2)
+        if key not in affected:
+            continue
+        row["decision"] = "fail"
+        row_codes = row.setdefault("issue_codes", [])
+        for code in codes:
+            if code not in row_codes:
+                row_codes.append(code)
+        row_note = str(row.get("notes") or "").strip()
+        closure_note = f"global-closure:{note}" if note else "global-closure:cross-shard contradiction"
+        row["notes"] = (row_note + " | " + closure_note).strip(" |")[:2000]
+    top_codes = out.setdefault("issue_codes", [])
+    for code in codes:
+        if code not in top_codes:
+            top_codes.append(code)
+    summary["passed"] = False
+    summary["notes"] = (previous + " | global closure FAIL: " + (note or ",".join(codes))).strip(" |")
+    return out
+
+
+def _run_sharded_full_critic(
+    ep: Path,
+    *,
+    frames: list[dict],
+    attempt: int,
+    codex: Path,
+    timeout: int,
+    candidate_gate: bool,
+    contexts: dict,
+    frozen_sources: dict,
+    before: dict[str, str],
+    stable_before: dict,
+    phashes: list[dict],
+) -> int:
+    shards = _full_review_shards(frames)
+    results, peak = _execute_full_review_shards(
+        ep, shards, attempt=attempt, codex=codex, timeout=timeout)
+
+    current = reviewable_frame_records(ep, require_files=True) if candidate_gate else frame_records(ep, require_files=True)
+    if {row["frame"]: sha256_file(row["path"]) for row in current} != before:
+        raise RuntimeError("sharded frame semantic critic reviewed assets drifted during review")
+    story, storyboard = episode_files(ep)
+    stable_after = {
+        "story": sha256_file(story),
+        "storyboard": sha256_file(storyboard),
+        "visual": sha256_json(stable_visual_contract(ep)),
+    }
+    if stable_after != stable_before:
+        raise RuntimeError("sharded frame semantic critic Story/Storyboard/visual context drifted")
+    if review_source_bindings(ep, current) != frozen_sources:
+        raise RuntimeError("sharded frame semantic critic source bindings drifted")
+
+    merged = _merge_full_review_shards(results, current)
+    closure_evidence: dict = {
+        "status": "SKIPPED_LOCAL_FAILURE",
+        "anchor_frames": [],
+        "reason": "one or more local shard observations already failed",
+    }
+    if bool((merged.get("summary") or {}).get("passed")):
+        anchors = _global_closure_anchor_rows(current, shards)
+        closure = _launch_global_closure(
+            ep,
+            anchors=anchors,
+            shard_results=results,
+            attempt=attempt,
+            codex=codex,
+            timeout=timeout,
+        )
+        # The lightweight closure is still part of the same frozen review set.
+        # It may veto a merged PASS, but source drift invalidates the whole round.
+        current_after_closure = (
+            reviewable_frame_records(ep, require_files=True)
+            if candidate_gate else frame_records(ep, require_files=True)
+        )
+        if {row["frame"]: sha256_file(row["path"]) for row in current_after_closure} != before:
+            raise RuntimeError("global closure reviewed assets drifted during review")
+        story_after, storyboard_after = episode_files(ep)
+        stable_after_closure = {
+            "story": sha256_file(story_after),
+            "storyboard": sha256_file(storyboard_after),
+            "visual": sha256_json(stable_visual_contract(ep)),
+        }
+        if stable_after_closure != stable_before:
+            raise RuntimeError("global closure Story/Storyboard/visual context drifted")
+        if review_source_bindings(ep, current_after_closure) != frozen_sources:
+            raise RuntimeError("global closure source bindings drifted")
+        merged = _apply_global_closure(merged, closure["data"])
+        closure_evidence = {key: value for key, value in closure.items() if key != "data"}
+        closure_evidence["passed"] = bool((closure["data"].get("summary") or {}).get("passed"))
+
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    merge_errors = validate_candidate_gate_rows(merged.get("frames"), current, version, directing_v3)
+    if merge_errors:
+        raise RuntimeError("sharded frame semantic merged candidate invalid: " + "; ".join(merge_errors))
+    candidate = ep / CANDIDATE_REL
+    write_json(candidate, merged)
+    evidence_path = ep / "meta" / f"frame-semantic-sharded-attempt-{attempt}.json"
+    evidence = {
+        "schema_version": 2,
+        "attempt": attempt,
+        "review_scope": "SHARDED_FULL_FRAME_SET",
+        "recorded_at": now(),
+        "shard_count": len(results),
+        "max_review_inflight": peak,
+        "target_coverage": [row["frame"] for row in current],
+        "candidate_path": repo_rel(candidate),
+        "candidate_sha256": sha256_file(candidate),
+        "source_bindings_sha256": sha256_json(frozen_sources),
+        "global_closure": closure_evidence,
+        "shards": [{
+            "index": result["index"],
+            "target_frames": result["target_frames"],
+            "context_frames": result["context_frames"],
+            "selected_frames": result["selected_frames"],
+            "candidate_path": result["candidate_path"],
+            "candidate_sha256": result["candidate_sha256"],
+            "log_path": result["log_path"],
+        } for result in results],
+    }
+    write_json(evidence_path, evidence)
+    first_log = results[0]["log_path"] if results else None
+    provenance = runtime_provenance.build_vision_critic_provenance(
+        attempt=attempt, log=first_log, review_scope="FULL_FRAME_SET")
+    provenance.update({
+        "anatomy_integrity_enforced": True,
+        "sharded_review": True,
+        "shard_count": len(results),
+        "max_review_inflight": peak,
+        "shard_logs": [result["log_path"] for result in results],
+        "sharded_evidence": repo_rel(evidence_path),
+        "global_closure_status": closure_evidence.get("status"),
+        "global_closure_passed": closure_evidence.get("passed"),
+        "global_closure_log": closure_evidence.get("log_path"),
+    })
+    if candidate_gate:
+        return _apply_candidate_gate(
+            ep, data=merged, reviewed=current, contexts=contexts,
+            provenance=provenance, attempt=attempt)
+    return _persist_candidate(
+        ep, data=merged, current=current, contexts=contexts, phashes=phashes,
+        provenance=provenance, frozen_sources=frozen_sources)
+
+
 def _rebind_incremental_captions(ep: Path) -> None:
     """Keep the V2.0.3.4 caption binding fresh for frame semantic evidence.
 
-    Both writers below (full critic rewrite and the reuse path) leave the
-    per-frame reviews and the summary without caption SHAs, which the delivery
-    machine gate rejects.  The rebind only rewrites those derived fields and the
-    incremental helper refuses to run while assets/contracts are dirty, so this
-    stays a bookkeeping step and never turns a stale review into a passing one.
+    Caption binding is a release/delivery concern. A verified formal review may
+    exist before ``release-manifest.json`` is created; in that state the reuse
+    path must stay metadata-only and must not rescan frame assets.
     """
+    if not (ep / "meta/release-manifest.json").is_file():
+        return
     try:
         import incremental_frame_review as incremental
 
@@ -712,8 +1712,6 @@ def _persist_candidate(
         candidate_errors.append("critic summary.passed must be true")
 
     rows_by_frame = {str(row.get("frame") or "").zfill(2): row for row in (data.get("frames") or []) if isinstance(row, dict)}
-    review_dir = ep / REVIEW_DIR
-    review_dir.mkdir(parents=True, exist_ok=True)
     for frame in current:
         source = rows_by_frame.get(frame["frame"], {})
         bound = {
@@ -730,7 +1728,7 @@ def _persist_candidate(
             "notes": source.get("notes") or "",
             "decision": source.get("decision") or "fail",
         }
-        write_json(review_dir / f"{frame['frame']}.json", bound)
+        frame_review_persistence.save(ep, bound)
 
     summary = {
         "schema_version": SCHEMA_VERSION,
@@ -807,9 +1805,14 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         _rebind_incremental_captions(ep)
         print("FRAME SEMANTIC REVIEW REUSED: current assets, contracts and critic evidence verified")
         return 0
-    frames = frame_records(ep, require_files=True)
+    candidate_gate = False
+    try:
+        frames = frame_records(ep, require_files=True)
+    except ValueError:
+        frames = reviewable_frame_records(ep, require_files=True)
+        candidate_gate = True
     contexts = context_hashes(ep)
-    binding_errors = phase4_binding_errors(ep, frames)
+    binding_errors = reviewable_phase4_binding_errors(ep, frames) if candidate_gate else phase4_binding_errors(ep, frames)
     if binding_errors:
         print("FRAME SEMANTIC REVIEW FAIL: stale/missing generation Frame Contract")
         for error in binding_errors:
@@ -845,7 +1848,8 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     }
 
     active_runtime, _ = runtime_router.detect()
-    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+    vision_runtime, _ = runtime_router.vision_review_runtime()
+    if vision_runtime != "CODEX" and not codex_raw:
         sources = [
             story,
             storyboard,
@@ -870,7 +1874,22 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         return product_review_adapter.HOST_ACTION_REQUIRED_RC
 
     candidate.unlink(missing_ok=True)
+    write_json(pending_request_path(ep, attempt), _pending_request_payload(ep, frames, attempt))
     codex = resolve_codex(codex_raw)
+    if len(frames) >= FULL_REVIEW_FANOUT_MIN_FRAMES:
+        return _run_sharded_full_critic(
+            ep,
+            frames=frames,
+            attempt=attempt,
+            codex=codex,
+            timeout=timeout,
+            candidate_gate=candidate_gate,
+            contexts=contexts,
+            frozen_sources=frozen_sources,
+            before=before,
+            stable_before=stable_before,
+            phashes=phashes,
+        )
     log = ep / "meta" / f"frame-semantic-critic-attempt-{attempt}.jsonl"
     completed = critic_runner.launch(
         critic_prompt(ep, frames, candidate, attempt),
@@ -878,7 +1897,8 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         root=ROOT,
         timeout=timeout,
         sandbox="workspace-write",
-        reasoning_effort_literal='model_reasoning_effort="high"',
+        model=runtime_router.vision_review_model(),
+        reasoning_effort=runtime_router.vision_review_effort("final"),
         attachments=[row["path"] for row in frames],
         log_path=log,
     )
@@ -887,9 +1907,9 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     if not candidate.is_file():
         raise RuntimeError(f"frame semantic critic did not produce {candidate}")
 
-    current = frame_records(ep, require_files=True)
+    current = reviewable_frame_records(ep, require_files=True) if candidate_gate else frame_records(ep, require_files=True)
     if {row["frame"]: sha256_file(row["path"]) for row in current} != before:
-        raise RuntimeError("frame semantic critic modified approved image assets")
+        raise RuntimeError("frame semantic critic modified reviewed image assets")
     stable_after = {
         "story": sha256_file(story),
         "storyboard": sha256_file(storyboard),
@@ -899,10 +1919,19 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         raise RuntimeError("frame semantic critic modified Story Lock / storyboard / visual continuity context")
 
     data = read_json(candidate)
-    provenance = runtime_provenance.build_critic_provenance(
-        "CODEX", attempt=attempt, log=log.relative_to(ROOT).as_posix()
+    provenance = runtime_provenance.build_vision_critic_provenance(
+        attempt=attempt, log=log.relative_to(ROOT).as_posix(), review_scope="FULL_FRAME_SET"
     )
-    provenance["review_scope"] = "FULL_FRAME_SET"
+    provenance["anatomy_integrity_enforced"] = True
+    if candidate_gate:
+        return _apply_candidate_gate(
+            ep,
+            data=data,
+            reviewed=current,
+            contexts=contexts,
+            provenance=provenance,
+            attempt=attempt,
+        )
     return _persist_candidate(
         ep,
         data=data,
@@ -912,6 +1941,955 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         provenance=provenance,
         frozen_sources=frozen_sources,
     )
+
+
+def _parse_exception_frames(raw: str) -> list[str]:
+    frames: list[str] = []
+    for part in str(raw or "").split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if not part.isdigit():
+            raise ValueError(f"invalid exception frame: {part!r}")
+        key = f"{int(part):02d}"
+        if key not in frames:
+            frames.append(key)
+    if not frames:
+        raise ValueError("at least one exception frame is required")
+    if len(frames) > 5:
+        raise ValueError("exception semantic review is limited to at most 5 target frames")
+    return sorted(frames)
+
+
+def _exception_context_keys(all_keys: list[str], targets: list[str]) -> list[str]:
+    nums = sorted(int(x) for x in all_keys)
+    allowed = set(nums)
+    total = max(nums) if nums else 0
+    selected: set[int] = set()
+    for raw in targets:
+        n = int(raw)
+        radius = 2 if n >= max(1, total - 2) else 1
+        for value in range(n - radius, n + radius + 1):
+            if value in allowed:
+                selected.add(value)
+    return [f"{x:02d}" for x in sorted(selected)]
+
+
+def _exception_review_records(ep: Path, targets: list[str], *, require_files: bool = True) -> tuple[list[dict], list[str]]:
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    frames = ledger.get("frames") or {}
+    all_keys = sorted(k for k in frames if str(k).isdigit())
+    missing = [key for key in targets if key not in frames]
+    if missing:
+        raise ValueError(f"unknown exception review frames: {missing}")
+    context_keys = _exception_context_keys(all_keys, targets)
+    rows: list[dict] = []
+    for key in context_keys:
+        frame = frames.get(key) or {}
+        status = str(frame.get("status") or "")
+        is_target = key in targets
+        if is_target:
+            if status != "REPAIR_READY":
+                raise ValueError(f"exception review target {key} requires REPAIR_READY, got {status}")
+            if int(frame.get("content_repairs_used") or 0) != 1 or int(frame.get("user_exception_repairs_used") or 0) != 1:
+                raise ValueError(f"exception review target {key} requires one ordinary and one direct-user exception repair")
+            asset = frame.get("current_candidate")
+            source_kind = "candidate"
+        else:
+            if status not in production_ledger.ACCEPTED_LEDGER_STATES:
+                raise ValueError(f"exception review context {key} must already be approved/locked, got {status}")
+            asset = frame.get("approved_asset")
+            source_kind = "approved"
+        if not isinstance(asset, dict):
+            raise ValueError(f"exception review {source_kind} missing for frame {key}")
+        raw_path = asset.get("path") or asset.get("asset_path")
+        sha = str(asset.get("sha256") or "").lower()
+        if len(sha) != 64:
+            raise ValueError(f"exception review frame {key} sha256 invalid")
+        path = repo_path(raw_path, f"exception review frame {key} {source_kind}", require_file=require_files)
+        if require_files and sha256_file(path).lower() != sha:
+            raise ValueError(f"exception review frame {key} asset SHA drift")
+        rows.append({
+            "frame": key,
+            "path": path,
+            "path_rel": repo_rel(path),
+            "sha256": sha,
+            "source_kind": source_kind,
+            "ledger_status": status,
+            "exception_target": is_target,
+        })
+    return rows, context_keys
+
+
+def _exception_review_prompt(ep: Path, rows: list[dict], targets: list[str], candidate: Path) -> str:
+    story, storyboard = episode_files(ep)
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    checks = checks_for_version(version, directing_v3)
+    checks_block = ",\n".join(f'        "{name}": true' for name in checks)
+    mapping = "\n".join(
+        f"- {'TARGET' if row['exception_target'] else 'CONTEXT'} frame {row['frame']}: {row['path_rel']}"
+        for row in rows
+    )
+    return f"""You are a FRESH isolated final Production Frame Semantic Critic.
+This is a DIRECT-USER-EXCEPTION re-review. Do NOT generate or edit images and do NOT trust earlier PASS/FAIL labels.
+Only the TARGET frames may change Production Ledger state. CONTEXT frames are already locked and are supplied only to judge continuity.
+Targets: {', '.join(targets)}.
+
+Read these locked authorities before judging:
+- {story.relative_to(ROOT).as_posix()}
+- {storyboard.relative_to(ROOT).as_posix()}
+- {(ep / 'meta/story-gates.json').relative_to(ROOT).as_posix()}
+- standards/制作规范_正式版.md
+- standards/生产帧语义强制规范_V1.0.md
+- standards/Resolved_Frame_Contract规范_V1.0.md
+Resolved Frame Contracts live at {runtime_workspace.workspace_path(ep, phase4_contract.CACHE_ROOT).as_posix()}/NN.json.
+
+Attached mapping:
+{mapping}
+
+Judge ACTUAL pixels against Story Lock, storyboard, Frame Contract, camera-authorship physics, world identity, continuity and anomaly readability.
+PASS only when every required check is true and issue_codes is empty. Context rows must also remain valid; if a context row is inconsistent with a target, fail the relevant row rather than hiding the conflict.
+Use issue codes only from: {', '.join(sorted(ISSUE_CODES))}
+
+Write ONLY valid JSON to {candidate.relative_to(ROOT).as_posix()} with exactly one row for every attached frame:
+{{
+  "frames": [{{
+    "frame": "01",
+    "checks": {{
+{checks_block}
+    }},
+    "issue_codes": [],
+    "notes": "specific pixel-level evidence",
+    "decision": "pass"
+  }}],
+  "issue_codes": [],
+  "summary": {{"passed": true, "notes": "exception patch judgment"}}
+}}
+If any supplied row fails, set that row decision=fail and summary.passed=false.
+"""
+
+
+def _exception_pending_payload(ep: Path, rows: list[dict], targets: list[str]) -> dict:
+    return {
+        "schema_version": 1,
+        "attempt": 3,
+        "recorded_at": now(),
+        "targets": targets,
+        "contexts": context_hashes(ep),
+        "assets": [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in rows],
+    }
+
+
+def _apply_exception_review(ep: Path, *, data: dict, rows: list[dict], targets: list[str], provenance: dict) -> int:
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    errors = validate_candidate_gate_rows(data.get("frames"), rows, version, directing_v3)
+    codes = data.get("issue_codes")
+    if not isinstance(codes, list):
+        errors.append("global issue_codes must be list")
+    elif any(code not in ISSUE_CODES for code in codes):
+        errors.append(f"global issue_codes contain unknown values: {codes}")
+    if errors:
+        print("EXCEPTION FRAME SEMANTIC REVIEW INVALID")
+        for error in errors:
+            print("FAIL:", error)
+        return 3
+
+    by_key = {str(row.get("frame") or "").zfill(2): row for row in data.get("frames") or []}
+    context_failures = [row["frame"] for row in rows if not row["exception_target"] and by_key[row["frame"]].get("decision") != "pass"]
+    evidence = {
+        "schema_version": 1,
+        "attempt": 3,
+        "review_scope": "DIRECT_USER_EXCEPTION_PATCH",
+        "targets": targets,
+        "critic_provenance": provenance,
+        "reviewed_assets": [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in rows],
+        "critic_result": data,
+        "context_failures": context_failures,
+        "recorded_at": now(),
+    }
+    write_json(ep / "meta/frame-semantic-exception-attempt-3.json", evidence)
+    if context_failures:
+        print("EXCEPTION FRAME SEMANTIC REVIEW FAIL: locked context failed=" + ",".join(context_failures))
+        return 2
+
+    contexts = context_hashes(ep)
+    frozen = review_source_bindings(ep, rows)
+    failures: list[str] = []
+    for source in rows:
+        key = source["frame"]
+        if key not in targets:
+            continue
+        result = by_key[key]
+        status = str(_ledger_frame(ep, key).get("status") or "")
+        if status != "REPAIR_READY":
+            raise RuntimeError(f"exception target {key} drifted from REPAIR_READY to {status}")
+        note = "Direct-user exception semantic critic attempt 3: " + str(result.get("notes") or result.get("issue_codes") or "")
+        if result.get("decision") == "pass":
+            production_ledger.cmd_review(SimpleNamespace(
+                episode_dir=str(ep), frame=key, decision="pass", notes=note[:500]))
+            production_ledger.cmd_promote(SimpleNamespace(episode_dir=str(ep), frame=key))
+            production_ledger.cmd_lock(SimpleNamespace(
+                episode_dir=str(ep), frame=key, reason="direct-user exception semantic critic attempt 3 PASS"))
+            locked = _ledger_frame(ep, key)
+            approved = locked.get("approved_asset") or {}
+            if str(approved.get("sha256") or "").lower() != source["sha256"].lower():
+                raise RuntimeError(f"exception target {key} promotion changed reviewed pixels")
+            bound = {
+                "schema_version": SCHEMA_VERSION,
+                "story_os_version": version,
+                "frame": key,
+                "asset_path": str(approved.get("path") or ""),
+                "asset_sha256": str(approved.get("sha256") or "").lower(),
+                **contexts,
+                **phase3_context_hashes(ep, key),
+                "source_binding": source_binding(ep, key),
+                "critic_provenance": provenance,
+                "checks": result.get("checks") or {},
+                "issue_codes": result.get("issue_codes") or [],
+                "notes": result.get("notes") or "",
+                "decision": "pass",
+            }
+            frame_review_persistence.save(ep, bound)
+        else:
+            production_ledger.cmd_review(SimpleNamespace(
+                episode_dir=str(ep), frame=key, decision="repair", notes=note[:500]))
+            failures.append(key)
+
+    evidence["failed_targets"] = failures
+    evidence["completed_at"] = now()
+    write_json(ep / "meta/frame-semantic-exception-attempt-3.json", evidence)
+    if failures:
+        print("EXCEPTION FRAME SEMANTIC REVIEW FAIL: targets=" + ",".join(failures))
+        return 2
+    print("EXCEPTION FRAME SEMANTIC REVIEW PASS: targets=" + ",".join(targets))
+    return 0
+
+
+def run_exception_critic(ep: Path, *, targets: list[str], codex_raw: str | None, timeout: int | None = None) -> int:
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("deep_semantic_review")
+    rows, _ = _exception_review_records(ep, targets, require_files=True)
+    binding_errors = reviewable_phase4_binding_errors(ep, rows)
+    if binding_errors:
+        for error in binding_errors:
+            print("FAIL:", error)
+        return 2
+    candidate = ep / EXCEPTION_CANDIDATE_REL
+    candidate.unlink(missing_ok=True)
+    write_json(ep / EXCEPTION_PENDING_REL, _exception_pending_payload(ep, rows, targets))
+    log = ep / "meta/frame-semantic-exception-critic-attempt-3.jsonl"
+    completed = critic_runner.launch(
+        _exception_review_prompt(ep, rows, targets, candidate),
+        codex=resolve_codex(codex_raw),
+        root=ROOT,
+        timeout=timeout,
+        sandbox="workspace-write",
+        model=runtime_router.vision_review_model(),
+        reasoning_effort=runtime_router.vision_review_effort("final"),
+        attachments=[row["path"] for row in rows],
+        log_path=log,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(f"isolated exception semantic critic failed rc={completed.returncode}; log={log}")
+    if not candidate.is_file():
+        raise RuntimeError(f"exception semantic critic did not produce {candidate}")
+    current, _ = _exception_review_records(ep, targets, require_files=True)
+    expected = [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in rows]
+    actual = [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in current]
+    if expected != actual:
+        raise RuntimeError("exception semantic review assets drifted during review")
+    provenance = runtime_provenance.build_critic_provenance(
+        "CODEX", attempt=3, log=log.relative_to(ROOT).as_posix(), allow_user_exception_attempt=True)
+    provenance["review_scope"] = "INCREMENTAL_CONTEXT_SET"
+    provenance["anatomy_integrity_enforced"] = True
+    provenance["direct_user_exception_frames"] = targets
+    return _apply_exception_review(ep, data=read_json(candidate), rows=current, targets=targets, provenance=provenance)
+
+
+def apply_exception_candidate(ep: Path) -> int:
+    pending_path = ep / EXCEPTION_PENDING_REL
+    candidate = ep / EXCEPTION_CANDIDATE_REL
+    log = ep / "meta/frame-semantic-exception-critic-attempt-3.jsonl"
+    if not pending_path.is_file() or not candidate.is_file():
+        raise RuntimeError("exception semantic pending/candidate evidence missing")
+    pending = read_json(pending_path)
+    targets = [str(x).zfill(2) for x in (pending.get("targets") or [])]
+    rows, _ = _exception_review_records(ep, targets, require_files=True)
+    assets = [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in rows]
+    if pending.get("assets") != assets:
+        raise RuntimeError("exception semantic pending asset set drifted")
+    if pending.get("contexts") != context_hashes(ep):
+        raise RuntimeError("exception semantic Story/Storyboard/visual context drifted")
+    binding_errors = reviewable_phase4_binding_errors(ep, rows)
+    if binding_errors:
+        raise RuntimeError("exception semantic Frame Contract drifted: " + "; ".join(binding_errors))
+    log_rel = log.relative_to(ROOT).as_posix() if log.is_file() and log.stat().st_size > 0 else None
+    provenance = runtime_provenance.build_critic_provenance(
+        "CODEX", attempt=3, log=log_rel, allow_user_exception_attempt=True)
+    provenance["review_scope"] = "INCREMENTAL_CONTEXT_SET"
+    provenance["anatomy_integrity_enforced"] = True
+    provenance["direct_user_exception_frames"] = targets
+    provenance["recovered_after_parent_timeout"] = True
+    provenance["candidate_sha256"] = sha256_file(candidate)
+    if not log_rel:
+        provenance["critic_stdout_log_empty_after_parent_timeout"] = True
+    return _apply_exception_review(ep, data=read_json(candidate), rows=rows, targets=targets, provenance=provenance)
+
+
+def _frame_current_capture_id(frame: dict) -> str:
+    current = frame.get("current_candidate") if isinstance(frame, dict) else None
+    if not isinstance(current, dict):
+        return ""
+    attempt_id = str(current.get("attempt_id") or "")
+    if not attempt_id:
+        return ""
+    for attempt in reversed(frame.get("attempts") or []):
+        if not isinstance(attempt, dict) or str(attempt.get("attempt_id") or "") != attempt_id:
+            continue
+        request = attempt.get("request") if isinstance(attempt.get("request"), dict) else {}
+        return str(request.get("capture_id") or "")
+    return ""
+
+
+def _ordinary_patch_review_records(ep: Path, targets: list[str], *, require_files: bool = True) -> tuple[list[dict], list[str]]:
+    """Return ordinary-repair targets plus locked continuity context.
+
+    W-103: ordinary repair candidates are intentionally different from the
+    direct-user exception/continuation lanes.  They may be reviewed as a bounded
+    patch only while every non-target frame is still LOCKED.  Context frames are
+    read-only review evidence; only targets may mutate the Production Ledger.
+    """
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    frames = ledger.get("frames") or {}
+    all_keys = sorted(k for k in frames if str(k).isdigit())
+    missing = [key for key in targets if key not in frames]
+    if missing:
+        raise ValueError(f"unknown ordinary patch review frames: {missing}")
+    if not targets:
+        raise ValueError("ordinary patch review requires at least one target")
+    if len(targets) / max(1, len(all_keys)) > 0.25:
+        raise ValueError("ordinary patch review exceeds 25% dirty-frame limit")
+    target_set = set(targets)
+    for key in all_keys:
+        if key in target_set:
+            continue
+        status = str((frames.get(key) or {}).get("status") or "")
+        if status != "LOCKED":
+            raise ValueError(f"ordinary patch sibling {key} must remain LOCKED, got {status}")
+
+    context_keys = _exception_context_keys(all_keys, targets)
+    rows: list[dict] = []
+    for key in context_keys:
+        frame = frames.get(key) or {}
+        status = str(frame.get("status") or "")
+        is_target = key in target_set
+        if is_target:
+            if status != "REPAIR_READY":
+                raise ValueError(f"ordinary patch target {key} requires REPAIR_READY, got {status}")
+            if int(frame.get("content_repairs_used") or 0) <= 0:
+                raise ValueError(f"ordinary patch target {key} has not consumed its ordinary repair")
+            capture_id = _frame_current_capture_id(frame)
+            if capture_id.startswith("user-continuation-") or capture_id.startswith("user-exception-"):
+                raise ValueError(f"ordinary patch target {key} belongs to a direct-user review lane")
+            asset = frame.get("current_candidate")
+            source_kind = "candidate"
+        else:
+            if status != "LOCKED":
+                raise ValueError(f"ordinary patch context {key} must be LOCKED, got {status}")
+            asset = frame.get("approved_asset")
+            source_kind = "approved"
+        if not isinstance(asset, dict):
+            raise ValueError(f"ordinary patch {source_kind} missing for frame {key}")
+        raw_path = asset.get("path") or asset.get("asset_path")
+        sha = str(asset.get("sha256") or "").lower()
+        if len(sha) != 64:
+            raise ValueError(f"ordinary patch frame {key} sha256 invalid")
+        path = repo_path(raw_path, f"ordinary patch frame {key} {source_kind}", require_file=require_files)
+        if require_files and sha256_file(path).lower() != sha:
+            raise ValueError(f"ordinary patch frame {key} asset SHA drift")
+        rows.append({
+            "frame": key,
+            "path": path,
+            "path_rel": repo_rel(path),
+            "sha256": sha,
+            "source_kind": source_kind,
+            "ledger_status": status,
+            "patch_target": is_target,
+        })
+    return rows, context_keys
+
+
+def ordinary_patch_eligible(ep: Path, targets: list[str]) -> bool:
+    """Fail-closed admission for W-103 candidate-aware incremental review."""
+    targets = sorted({str(x).zfill(2) for x in targets if str(x)})
+    try:
+        rows, _ = _ordinary_patch_review_records(ep, targets, require_files=True)
+        ledger = production_ledger.load_authority(ep, default={}) or {}
+        frames = ledger.get("frames") or {}
+        contexts = context_hashes(ep)
+        version = episode_contract_version(ep)
+        directing_v3 = directing_v3_required(ep)
+        target_set = set(targets)
+        # Reusing a locked sibling is allowed only when its previous critic
+        # evidence is still bound to the current pixels and all semantic inputs.
+        for key, frame in sorted(frames.items()):
+            key = str(key).zfill(2)
+            if key in target_set or not isinstance(frame, dict):
+                continue
+            approved = frame.get("approved_asset") or {}
+            raw_path = approved.get("path") or approved.get("asset_path")
+            sha = str(approved.get("sha256") or "").lower()
+            path = repo_path(raw_path, f"ordinary patch sibling {key} approved_asset")
+            record = {"frame": key, "path": path, "path_rel": repo_rel(path), "sha256": sha}
+            review = frame_review_persistence.load(ep, int(key))
+            if not isinstance(review, dict):
+                return False
+            if review.get("decision") != "pass" or review.get("issue_codes") not in ([], None):
+                return False
+            if validate_bound_review(
+                review,
+                frame=record,
+                contexts=contexts,
+                version=version,
+                metadata_only=True,
+                phase3_contexts=phase3_context_hashes(ep, key),
+                directing_v3=directing_v3,
+                ep=ep,
+            ):
+                return False
+        # Candidate generation contract must also be current before spending a critic.
+        if reviewable_phase4_binding_errors(ep, rows):
+            return False
+        return True
+    except Exception:
+        return False
+
+
+def _ordinary_patch_prompt(ep: Path, rows: list[dict], targets: list[str], candidate: Path) -> str:
+    story, storyboard = episode_files(ep)
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    checks = checks_for_version(version, directing_v3)
+    checks_block = ",\n".join(f'        "{name}": true' for name in checks)
+    mapping = "\n".join(
+        f"- {'TARGET' if row['patch_target'] else 'CONTEXT'} frame {row['frame']}: {row['path_rel']}"
+        for row in rows
+    )
+    return f"""You are a FRESH isolated final Production Frame Semantic Critic.
+This is a BOUNDED ORDINARY-REPAIR PATCH review. Do NOT generate or edit images and do NOT trust earlier labels.
+Only TARGET frames may change Production Ledger state. CONTEXT frames are already LOCKED and are supplied only to judge continuity.
+Targets: {', '.join(targets)}.
+
+Read these locked authorities before judging:
+- {story.relative_to(ROOT).as_posix()}
+- {storyboard.relative_to(ROOT).as_posix()}
+- {(ep / 'meta/story-gates.json').relative_to(ROOT).as_posix()}
+- standards/制作规范_正式版.md
+- standards/生产帧语义强制规范_V1.0.md
+- standards/Resolved_Frame_Contract规范_V1.0.md
+
+Attached mapping:
+{mapping}
+
+Judge ACTUAL pixels against Story Lock, storyboard, Frame Contract, camera-authorship physics, world identity, continuity and anomaly readability.
+PASS only when every required check is true and issue_codes is empty. A CONTEXT failure invalidates this patch review and must not be hidden.
+Use issue codes only from: {', '.join(sorted(ISSUE_CODES))}
+
+Write ONLY valid JSON to {candidate.relative_to(ROOT).as_posix()} with exactly one row for every attached frame:
+{{
+  "frames": [{{
+    "frame": "01",
+    "checks": {{
+{checks_block}
+    }},
+    "issue_codes": [],
+    "notes": "specific pixel-level evidence",
+    "decision": "pass"
+  }}],
+  "issue_codes": [],
+  "summary": {{"passed": true, "notes": "bounded ordinary repair patch judgment"}}
+}}
+If any supplied row fails, set that row decision=fail and summary.passed=false.
+"""
+
+
+def _ordinary_patch_pending_payload(ep: Path, rows: list[dict], targets: list[str], attempt: int) -> dict:
+    return {
+        "schema_version": 1,
+        "attempt": attempt,
+        "recorded_at": now(),
+        "targets": targets,
+        "contexts": context_hashes(ep),
+        "assets": [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in rows],
+    }
+
+
+def _refresh_patch_summary(ep: Path, *, provenance: dict, targets: list[str], context_frames: list[str]) -> None:
+    approved = frame_records(ep, require_files=True)
+    phashes = perceptual_rows(approved)
+    duplicates = duplicate_pairs(phashes)
+    if duplicates:
+        raise RuntimeError("ordinary patch produced a near-duplicate final set")
+    contexts = context_hashes(ep)
+    summary = {
+        "schema_version": SCHEMA_VERSION,
+        "story_os_version": episode_contract_version(ep),
+        **contexts,
+        "critic_provenance": {
+            **provenance,
+            "review_scope": "BASELINE_PLUS_PATCHES",
+            "dirty_roots": targets,
+            "context_frames": context_frames,
+        },
+        "frames": [{"frame": row["frame"], "asset_sha256": row["sha256"]} for row in approved],
+        "perceptual_hashes": phashes,
+        "near_duplicate_pairs": [],
+        "issue_codes": [],
+        "critic_summary": {"passed": True, "notes": "baseline plus bounded ordinary repair patch"},
+        "incremental_contract": {
+            "version": 1,
+            "mode": "candidate_patch",
+            "dirty_roots": targets,
+            "context_frames": context_frames,
+        },
+        "summary": {"passed": True},
+    }
+    write_json(ep / SUMMARY_REL, summary)
+    _rebind_incremental_captions(ep)
+
+
+def _apply_ordinary_patch_review(ep: Path, *, data: dict, rows: list[dict], targets: list[str], provenance: dict, attempt: int) -> int:
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    errors = validate_candidate_gate_rows(data.get("frames"), rows, version, directing_v3)
+    codes = data.get("issue_codes")
+    if not isinstance(codes, list):
+        errors.append("global issue_codes must be list")
+    elif any(code not in ISSUE_CODES for code in codes):
+        errors.append(f"global issue_codes contain unknown values: {codes}")
+    if errors:
+        print("ORDINARY PATCH FRAME SEMANTIC REVIEW INVALID")
+        for error in errors:
+            print("FAIL:", error)
+        return 3
+    by_key = {str(row.get("frame") or "").zfill(2): row for row in data.get("frames") or []}
+    context_failures = [
+        row["frame"] for row in rows
+        if not row["patch_target"] and by_key[row["frame"]].get("decision") != "pass"
+    ]
+    context_frames = [row["frame"] for row in rows]
+    evidence = {
+        "schema_version": 1,
+        "attempt": attempt,
+        "review_scope": "ORDINARY_REPAIR_PATCH",
+        "targets": targets,
+        "critic_provenance": provenance,
+        "reviewed_assets": [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in rows],
+        "critic_result": data,
+        "context_failures": context_failures,
+        "recorded_at": now(),
+    }
+    evidence_path = ep / "meta" / f"frame-semantic-patch-attempt-{attempt}.json"
+    write_json(evidence_path, evidence)
+    if context_failures:
+        print("ORDINARY PATCH FRAME SEMANTIC REVIEW FAIL: locked context failed=" + ",".join(context_failures))
+        return 2
+
+    # Preflight all targets before any target mutation.  Failure transitions are
+    # then applied first, preserving the W-71 single-writer closure rule.
+    for key in targets:
+        status = str(_ledger_frame(ep, key).get("status") or "")
+        if status != "REPAIR_READY":
+            raise RuntimeError(f"ordinary patch target {key} drifted from REPAIR_READY to {status}")
+    failures = [key for key in targets if by_key[key].get("decision") != "pass"]
+    for key in failures:
+        result = by_key[key]
+        note = "Ordinary repair patch semantic critic: " + str(result.get("notes") or result.get("issue_codes") or "")
+        # Canonical Ledger transition: a REPAIR_READY candidate reviewed as
+        # repair automatically becomes NEEDS_USER.  Do not bypass cmd_review
+        # with the later-review escalation helper (it only accepts LOCKED/PASSED).
+        production_ledger.cmd_review(SimpleNamespace(
+            episode_dir=str(ep), frame=key, decision="repair", notes=note[:500]))
+
+    contexts = context_hashes(ep) if len(failures) < len(targets) else {}
+    for source in rows:
+        key = source["frame"]
+        if key not in targets or key in failures:
+            continue
+        result = by_key[key]
+        note = "Ordinary repair patch semantic critic: " + str(result.get("notes") or "")
+        production_ledger.cmd_review(SimpleNamespace(
+            episode_dir=str(ep), frame=key, decision="pass", notes=note[:500]))
+        production_ledger.cmd_promote(SimpleNamespace(episode_dir=str(ep), frame=key))
+        production_ledger.cmd_lock(SimpleNamespace(
+            episode_dir=str(ep), frame=key, reason=f"ordinary repair patch semantic critic attempt {attempt} PASS"))
+        locked = _ledger_frame(ep, key)
+        approved = locked.get("approved_asset") or {}
+        if str(approved.get("sha256") or "").lower() != source["sha256"].lower():
+            raise RuntimeError(f"ordinary patch target {key} promotion changed reviewed pixels")
+        bound = {
+            "schema_version": SCHEMA_VERSION,
+            "story_os_version": version,
+            "frame": key,
+            "asset_path": str(approved.get("path") or ""),
+            "asset_sha256": str(approved.get("sha256") or "").lower(),
+            **contexts,
+            **phase3_context_hashes(ep, key),
+            "source_binding": source_binding(ep, key),
+            "critic_provenance": provenance,
+            "checks": result.get("checks") or {},
+            "issue_codes": result.get("issue_codes") or [],
+            "notes": result.get("notes") or "",
+            "decision": "pass",
+        }
+        frame_review_persistence.save(ep, bound)
+
+    evidence["failed_targets"] = failures
+    evidence["completed_at"] = now()
+    write_json(evidence_path, evidence)
+    if failures:
+        print("ORDINARY PATCH FRAME SEMANTIC REVIEW FAIL: targets=" + ",".join(failures))
+        return 2
+    _refresh_patch_summary(ep, provenance=provenance, targets=targets, context_frames=context_frames)
+    verify_errors = verify_episode(ep, metadata_only=False, write_audit=True)
+    if verify_errors:
+        raise RuntimeError("ordinary patch final semantic verification failed: " + "; ".join(verify_errors))
+    print("ORDINARY PATCH FRAME SEMANTIC REVIEW PASS: targets=" + ",".join(targets))
+    return 0
+
+
+def run_patch_critic(ep: Path, *, targets: list[str], attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("deep_semantic_review")
+    targets = sorted({str(x).zfill(2) for x in targets if str(x)})
+    if not ordinary_patch_eligible(ep, targets):
+        raise RuntimeError("ordinary patch eligibility failed; use full final semantic review")
+    rows, _ = _ordinary_patch_review_records(ep, targets, require_files=True)
+    # Far-away duplicates are still a set-level invariant even though the critic
+    # sees only local continuity context.
+    all_rows = reviewable_frame_records(ep, require_files=True)
+    if duplicate_pairs(perceptual_rows(all_rows)):
+        print("ORDINARY PATCH FRAME SEMANTIC REVIEW FAIL: NEAR_DUPLICATE_ACTUAL_FRAMES")
+        return 2
+    candidate = ep / PATCH_CANDIDATE_REL
+    candidate.unlink(missing_ok=True)
+    write_json(ep / PATCH_PENDING_REL, _ordinary_patch_pending_payload(ep, rows, targets, attempt))
+    before = [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in rows]
+    log = ep / "meta" / f"frame-semantic-patch-critic-attempt-{attempt}.jsonl"
+    completed = critic_runner.launch(
+        _ordinary_patch_prompt(ep, rows, targets, candidate),
+        codex=resolve_codex(codex_raw),
+        root=ROOT,
+        timeout=timeout,
+        sandbox="workspace-write",
+        model=runtime_router.vision_review_model(),
+        reasoning_effort=runtime_router.vision_review_effort("final"),
+        attachments=[row["path"] for row in rows],
+        log_path=log,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(f"isolated ordinary patch semantic critic failed rc={completed.returncode}; log={log}")
+    if not candidate.is_file():
+        raise RuntimeError(f"ordinary patch semantic critic did not produce {candidate}")
+    current, _ = _ordinary_patch_review_records(ep, targets, require_files=True)
+    after = [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in current]
+    if before != after:
+        raise RuntimeError("ordinary patch semantic review assets drifted during review")
+    provenance = runtime_provenance.build_vision_critic_provenance(
+        attempt=attempt, log=log.relative_to(ROOT).as_posix(), review_scope="INCREMENTAL_CONTEXT_SET")
+    provenance["anatomy_integrity_enforced"] = True
+    provenance["ordinary_repair_patch_frames"] = targets
+    return _apply_ordinary_patch_review(
+        ep, data=read_json(candidate), rows=current, targets=targets, provenance=provenance, attempt=attempt)
+
+
+def _continuation_review_records(ep: Path, targets: list[str], *, require_files: bool = True) -> tuple[list[dict], int]:
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    frames = ledger.get("frames") or {}
+    all_keys = sorted(k for k in frames if str(k).isdigit())
+    missing = [key for key in targets if key not in frames]
+    if missing:
+        raise ValueError(f"unknown continuation review frames: {missing}")
+    context_keys = _exception_context_keys(all_keys, targets)
+    rows: list[dict] = []
+    target_indices: list[int] = []
+    for key in context_keys:
+        frame = frames.get(key) or {}
+        status = str(frame.get("status") or "")
+        is_target = key in targets
+        continuation_index = 0
+        if is_target:
+            if status != "REPAIR_READY":
+                raise ValueError(f"continuation review target {key} requires REPAIR_READY, got {status}")
+            continuation_index = int(frame.get("user_continuation_repairs_used") or 0)
+            if continuation_index <= 0:
+                raise ValueError(f"continuation review target {key} has no consumed user continuation candidate")
+            capture_id = _frame_current_capture_id(frame)
+            if not capture_id.startswith("user-continuation-"):
+                raise ValueError(f"continuation review target {key} current candidate is not user-continuation provenance")
+            authorizations = [row for row in (frame.get("user_continuation_authorizations") or []) if isinstance(row, dict)]
+            if not any(
+                int(row.get("continuation_index") or 0) == continuation_index
+                and row.get("user_approved") is True
+                and str(row.get("approval_text") or "").strip()
+                for row in authorizations
+            ):
+                raise ValueError(f"continuation review target {key} lacks matching direct-user continuation authorization")
+            asset = frame.get("current_candidate")
+            source_kind = "candidate"
+            target_indices.append(continuation_index)
+        else:
+            if status not in production_ledger.ACCEPTED_LEDGER_STATES:
+                raise ValueError(f"continuation review context {key} must already be approved/locked, got {status}")
+            asset = frame.get("approved_asset")
+            source_kind = "approved"
+        if not isinstance(asset, dict):
+            raise ValueError(f"continuation review {source_kind} missing for frame {key}")
+        raw_path = asset.get("path") or asset.get("asset_path")
+        sha = str(asset.get("sha256") or "").lower()
+        if len(sha) != 64:
+            raise ValueError(f"continuation review frame {key} sha256 invalid")
+        path = repo_path(raw_path, f"continuation review frame {key} {source_kind}", require_file=require_files)
+        if require_files and sha256_file(path).lower() != sha:
+            raise ValueError(f"continuation review frame {key} asset SHA drift")
+        rows.append({
+            "frame": key,
+            "path": path,
+            "path_rel": repo_rel(path),
+            "sha256": sha,
+            "source_kind": source_kind,
+            "ledger_status": status,
+            "continuation_target": is_target,
+            "continuation_index": continuation_index,
+        })
+    if not target_indices:
+        raise ValueError("continuation review has no target continuation index")
+    return rows, 3 + max(target_indices)
+
+
+def _continuation_review_prompt(ep: Path, rows: list[dict], targets: list[str], candidate: Path) -> str:
+    story, storyboard = episode_files(ep)
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    checks = checks_for_version(version, directing_v3)
+    checks_block = ",\n".join(f'        "{name}": true' for name in checks)
+    mapping = "\n".join(
+        f"- {'TARGET' if row['continuation_target'] else 'CONTEXT'} frame {row['frame']}: {row['path_rel']}"
+        for row in rows
+    )
+    return f"""You are a FRESH isolated final Production Frame Semantic Critic.
+This is a DIRECT-USER-CONTINUATION re-review of newly generated pixels. Do NOT generate or edit images and do NOT trust earlier PASS/FAIL labels.
+Only TARGET frames may change Production Ledger state. CONTEXT frames are already locked and are supplied only to judge continuity.
+Targets: {', '.join(targets)}.
+
+Read these locked authorities before judging:
+- {story.relative_to(ROOT).as_posix()}
+- {storyboard.relative_to(ROOT).as_posix()}
+- {(ep / 'meta/story-gates.json').relative_to(ROOT).as_posix()}
+- standards/制作规范_正式版.md
+- standards/生产帧语义强制规范_V1.0.md
+- standards/Resolved_Frame_Contract规范_V1.0.md
+Resolved Frame Contracts live at {runtime_workspace.workspace_path(ep, phase4_contract.CACHE_ROOT).as_posix()}/NN.json.
+
+Attached mapping:
+{mapping}
+
+Judge ACTUAL pixels against Story Lock, storyboard, Frame Contract, camera-authorship physics, world identity, continuity and anomaly readability.
+PASS only when every required check is true and issue_codes is empty. Context rows must also remain valid; if a context row is inconsistent with a target, fail the relevant row rather than hiding the conflict.
+Use issue codes only from: {', '.join(sorted(ISSUE_CODES))}
+
+Write ONLY valid JSON to {candidate.relative_to(ROOT).as_posix()} with exactly one row for every attached frame:
+{{
+  "frames": [{{
+    "frame": "01",
+    "checks": {{
+{checks_block}
+    }},
+    "issue_codes": [],
+    "notes": "specific pixel-level evidence",
+    "decision": "pass"
+  }}],
+  "issue_codes": [],
+  "summary": {{"passed": true, "notes": "continuation patch judgment"}}
+}}
+If any supplied row fails, set that row decision=fail and summary.passed=false.
+"""
+
+
+def _continuation_pending_payload(ep: Path, rows: list[dict], targets: list[str], attempt: int) -> dict:
+    return {
+        "schema_version": 1,
+        "attempt": attempt,
+        "recorded_at": now(),
+        "targets": targets,
+        "contexts": context_hashes(ep),
+        "assets": [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in rows],
+    }
+
+
+def _apply_continuation_review(ep: Path, *, data: dict, rows: list[dict], targets: list[str], provenance: dict, attempt: int) -> int:
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    errors = validate_candidate_gate_rows(data.get("frames"), rows, version, directing_v3)
+    codes = data.get("issue_codes")
+    if not isinstance(codes, list):
+        errors.append("global issue_codes must be list")
+    elif any(code not in ISSUE_CODES for code in codes):
+        errors.append(f"global issue_codes contain unknown values: {codes}")
+    if errors:
+        print("CONTINUATION FRAME SEMANTIC REVIEW INVALID")
+        for error in errors:
+            print("FAIL:", error)
+        return 3
+
+    by_key = {str(row.get("frame") or "").zfill(2): row for row in data.get("frames") or []}
+    context_failures = [row["frame"] for row in rows if not row["continuation_target"] and by_key[row["frame"]].get("decision") != "pass"]
+    evidence_path = ep / "meta" / f"frame-semantic-continuation-attempt-{attempt}.json"
+    evidence = {
+        "schema_version": 1,
+        "attempt": attempt,
+        "review_scope": "DIRECT_USER_CONTINUATION_PATCH",
+        "targets": targets,
+        "critic_provenance": provenance,
+        "reviewed_assets": [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in rows],
+        "critic_result": data,
+        "context_failures": context_failures,
+        "recorded_at": now(),
+    }
+    write_json(evidence_path, evidence)
+    if context_failures:
+        print("CONTINUATION FRAME SEMANTIC REVIEW FAIL: locked context failed=" + ",".join(context_failures))
+        return 2
+
+    contexts = context_hashes(ep)
+    failures: list[str] = []
+    for source in rows:
+        key = source["frame"]
+        if key not in targets:
+            continue
+        result = by_key[key]
+        status = str(_ledger_frame(ep, key).get("status") or "")
+        if status != "REPAIR_READY":
+            raise RuntimeError(f"continuation target {key} drifted from REPAIR_READY to {status}")
+        note = f"Direct-user continuation semantic critic attempt {attempt}: " + str(result.get("notes") or result.get("issue_codes") or "")
+        if result.get("decision") == "pass":
+            production_ledger.cmd_review(SimpleNamespace(
+                episode_dir=str(ep), frame=key, decision="pass", notes=note[:500]))
+            production_ledger.cmd_promote(SimpleNamespace(episode_dir=str(ep), frame=key))
+            production_ledger.cmd_lock(SimpleNamespace(
+                episode_dir=str(ep), frame=key, reason=f"direct-user continuation semantic critic attempt {attempt} PASS"))
+            locked = _ledger_frame(ep, key)
+            approved = locked.get("approved_asset") or {}
+            if str(approved.get("sha256") or "").lower() != source["sha256"].lower():
+                raise RuntimeError(f"continuation target {key} promotion changed reviewed pixels")
+            bound = {
+                "schema_version": SCHEMA_VERSION,
+                "story_os_version": version,
+                "frame": key,
+                "asset_path": str(approved.get("path") or ""),
+                "asset_sha256": str(approved.get("sha256") or "").lower(),
+                **contexts,
+                **phase3_context_hashes(ep, key),
+                "source_binding": source_binding(ep, key),
+                "critic_provenance": provenance,
+                "checks": result.get("checks") or {},
+                "issue_codes": result.get("issue_codes") or [],
+                "notes": result.get("notes") or "",
+                "decision": "pass",
+            }
+            frame_review_persistence.save(ep, bound)
+        else:
+            production_ledger.cmd_review(SimpleNamespace(
+                episode_dir=str(ep), frame=key, decision="repair", notes=note[:500]))
+            failures.append(key)
+
+    evidence["failed_targets"] = failures
+    evidence["completed_at"] = now()
+    write_json(evidence_path, evidence)
+    if failures:
+        print("CONTINUATION FRAME SEMANTIC REVIEW FAIL: targets=" + ",".join(failures))
+        return 2
+    print("CONTINUATION FRAME SEMANTIC REVIEW PASS: targets=" + ",".join(targets))
+    return 0
+
+
+def run_continuation_critic(ep: Path, *, targets: list[str], codex_raw: str | None, timeout: int | None = None) -> int:
+    if timeout is None:
+        timeout = runtime_timeout_policy.seconds("deep_semantic_review")
+    rows, attempt = _continuation_review_records(ep, targets, require_files=True)
+    binding_errors = reviewable_phase4_binding_errors(ep, rows)
+    if binding_errors:
+        for error in binding_errors:
+            print("FAIL:", error)
+        return 2
+    candidate = ep / CONTINUATION_CANDIDATE_REL
+    candidate.unlink(missing_ok=True)
+    write_json(ep / CONTINUATION_PENDING_REL, _continuation_pending_payload(ep, rows, targets, attempt))
+    log = ep / "meta" / f"frame-semantic-continuation-critic-attempt-{attempt}.jsonl"
+    completed = critic_runner.launch(
+        _continuation_review_prompt(ep, rows, targets, candidate),
+        codex=resolve_codex(codex_raw),
+        root=ROOT,
+        timeout=timeout,
+        sandbox="workspace-write",
+        model=runtime_router.vision_review_model(),
+        reasoning_effort=runtime_router.vision_review_effort("final"),
+        attachments=[row["path"] for row in rows],
+        log_path=log,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(f"isolated continuation semantic critic failed rc={completed.returncode}; log={log}")
+    if not candidate.is_file():
+        raise RuntimeError(f"continuation semantic critic did not produce {candidate}")
+    current, current_attempt = _continuation_review_records(ep, targets, require_files=True)
+    if current_attempt != attempt:
+        raise RuntimeError("continuation semantic review attempt drifted during review")
+    expected = [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in rows]
+    actual = [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in current]
+    if expected != actual:
+        raise RuntimeError("continuation semantic review assets drifted during review")
+    provenance = runtime_provenance.build_critic_provenance(
+        "CODEX", attempt=attempt, log=log.relative_to(ROOT).as_posix(), allow_user_continuation_attempt=True)
+    provenance["review_scope"] = "INCREMENTAL_CONTEXT_SET"
+    provenance["anatomy_integrity_enforced"] = True
+    provenance["direct_user_continuation_frames"] = targets
+    return _apply_continuation_review(
+        ep, data=read_json(candidate), rows=current, targets=targets, provenance=provenance, attempt=attempt)
+
+
+def apply_continuation_candidate(ep: Path) -> int:
+    pending_path = ep / CONTINUATION_PENDING_REL
+    candidate = ep / CONTINUATION_CANDIDATE_REL
+    if not pending_path.is_file() or not candidate.is_file():
+        raise RuntimeError("continuation semantic pending/candidate evidence missing")
+    pending = read_json(pending_path)
+    targets = [str(x).zfill(2) for x in (pending.get("targets") or [])]
+    rows, attempt = _continuation_review_records(ep, targets, require_files=True)
+    if int(pending.get("attempt") or 0) != attempt:
+        raise RuntimeError("continuation semantic pending attempt drifted")
+    assets = [{"frame": r["frame"], "path": r["path_rel"], "sha256": r["sha256"]} for r in rows]
+    if pending.get("assets") != assets:
+        raise RuntimeError("continuation semantic pending asset set drifted")
+    if pending.get("contexts") != context_hashes(ep):
+        raise RuntimeError("continuation semantic Story/Storyboard/visual context drifted")
+    binding_errors = reviewable_phase4_binding_errors(ep, rows)
+    if binding_errors:
+        raise RuntimeError("continuation semantic Frame Contract drifted: " + "; ".join(binding_errors))
+    log = ep / "meta" / f"frame-semantic-continuation-critic-attempt-{attempt}.jsonl"
+    log_rel = log.relative_to(ROOT).as_posix() if log.is_file() and log.stat().st_size > 0 else None
+    provenance = runtime_provenance.build_critic_provenance(
+        "CODEX", attempt=attempt, log=log_rel, allow_user_continuation_attempt=True)
+    provenance["review_scope"] = "INCREMENTAL_CONTEXT_SET"
+    provenance["anatomy_integrity_enforced"] = True
+    provenance["direct_user_continuation_frames"] = targets
+    provenance["recovered_after_parent_timeout"] = True
+    provenance["candidate_sha256"] = sha256_file(candidate)
+    if not log_rel:
+        provenance["critic_stdout_log_empty_after_parent_timeout"] = True
+    return _apply_continuation_review(
+        ep, data=read_json(candidate), rows=rows, targets=targets, provenance=provenance, attempt=attempt)
 
 
 def self_test() -> None:
@@ -954,6 +2932,23 @@ def main() -> int:
     p.add_argument("--attempt", type=int, default=1)
     p.add_argument("--codex")
     p.add_argument("--timeout", type=int, default=None)
+    p = sub.add_parser("apply-candidate")
+    p.add_argument("episode_dir")
+    p.add_argument("--attempt", type=int, default=1)
+    p = sub.add_parser("continuation-review")
+    p.add_argument("episode_dir")
+    p.add_argument("--frames", required=True, help="comma-separated direct-user-continuation target frames")
+    p.add_argument("--codex")
+    p.add_argument("--timeout", type=int, default=None)
+    p = sub.add_parser("apply-continuation-candidate")
+    p.add_argument("episode_dir")
+    p = sub.add_parser("exception-review")
+    p.add_argument("episode_dir")
+    p.add_argument("--frames", required=True, help="comma-separated direct-user-exception target frames")
+    p.add_argument("--codex")
+    p.add_argument("--timeout", type=int, default=None)
+    p = sub.add_parser("apply-exception-candidate")
+    p.add_argument("episode_dir")
     p = sub.add_parser("finalize-review")
     p.add_argument("episode_dir")
     p.add_argument("--attempt", type=int, default=1)
@@ -979,6 +2974,38 @@ def main() -> int:
             return run_critic(ep, attempt=args.attempt, codex_raw=args.codex, timeout=args.timeout)
         except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
             print("FRAME SEMANTIC REVIEW ERROR:", exc)
+            return 3
+    if args.cmd == "apply-candidate":
+        try:
+            return apply_pending_candidate(ep, attempt=args.attempt)
+        except (OSError, RuntimeError, ValueError) as exc:
+            print("FRAME SEMANTIC RECOVERY ERROR:", exc)
+            return 3
+    if args.cmd == "continuation-review":
+        try:
+            return run_continuation_critic(
+                ep, targets=_parse_exception_frames(args.frames), codex_raw=args.codex, timeout=args.timeout)
+        except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+            print("CONTINUATION FRAME SEMANTIC REVIEW ERROR:", exc)
+            return 3
+    if args.cmd == "apply-continuation-candidate":
+        try:
+            return apply_continuation_candidate(ep)
+        except (OSError, RuntimeError, ValueError) as exc:
+            print("CONTINUATION FRAME SEMANTIC RECOVERY ERROR:", exc)
+            return 3
+    if args.cmd == "exception-review":
+        try:
+            return run_exception_critic(
+                ep, targets=_parse_exception_frames(args.frames), codex_raw=args.codex, timeout=args.timeout)
+        except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+            print("EXCEPTION FRAME SEMANTIC REVIEW ERROR:", exc)
+            return 3
+    if args.cmd == "apply-exception-candidate":
+        try:
+            return apply_exception_candidate(ep)
+        except (OSError, RuntimeError, ValueError) as exc:
+            print("EXCEPTION FRAME SEMANTIC RECOVERY ERROR:", exc)
             return 3
     if args.cmd == "finalize-review":
         try:

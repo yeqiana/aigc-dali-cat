@@ -28,11 +28,13 @@ import production_recovery
 import production_ledger
 import runtime_observability
 import runtime_timeout_policy
+import episode_performance
 CAPABILITY_WAIT=24
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
-QUEUE_REL=Path("meta/production-queue.json")
+# Backward-compatible public alias. Physical storage is owned by production_queue_store via scheduler_core.
+QUEUE_REL=scheduler_core.QUEUE_REL
 
 READY_LEDGER_STATES=production_ledger.READY_LEDGER_STATES
 
@@ -81,7 +83,7 @@ def load_queue(ep):
 def save_queue(ep,q):
     scheduler_core.save_queue(ep,q)
 def ledger(ep):
-    p=ep/"meta/production-ledger.json";return read_json(p) if p.is_file() else {}
+    return production_ledger.load_authority(ep, default={}) or {}
 def ledger_state(ep,frame):
     return str((((ledger(ep).get("frames") or {}).get(f"{frame:02d}") or {}).get("status") or "PENDING"))
 def dependency_satisfied(ep,q,dep):
@@ -155,20 +157,18 @@ def run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     Batch planning/review/ledger semantics stay here; only execution scheduling
     moves to async_task_runtime.
     """
-    import runner_state_store
-    lock_rel=Path("meta/runtime-image-scheduler.lock")
-    if not runner_state_store.acquire_lock(ep,lock_rel=lock_rel):
-        return 21
     try:
-        return asyncio.run(_run_async(ep,max_workers,timeout,codex))
-    finally:
-        runner_state_store.release_lock(ep,lock_rel=lock_rel)
+        with scheduler_core.queue_transaction(ep):
+            return asyncio.run(_run_async(ep,max_workers,timeout,codex))
+    except scheduler_core.QueueMutationBusy:
+        return 21
 
 
 async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     resource_library.ensure_fresh(ep)
     q=load_queue(ep)
     production_recovery.reconcile_locked(ep,q)
+    scheduler_core.terminalize_superseded_history(ep,q)
     save_queue(ep,q)
     ready=ready_items(ep,q)
     if not ready:
@@ -264,8 +264,12 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                         item["log_path"]=Path(result["log"]).resolve().relative_to(ROOT.resolve()).as_posix() if result.get("log") else None
                         item["prompt_package"]=result.get("prompt_package")
                         item["last_error"]=None
+                        item.pop("technical_failure_code",None)
+                        item.pop("external_block",None)
+                        item.pop("retry_exhausted",None)
                         successful_results+=1
                         production_recovery.mark_terminal(ep,item,"COMMITTED")
+                        episode_performance.safe_record_queue_image_attempt(ep,item,status="generated")
                     else:
                         # The backend already produced pixels; keep the open
                         # attempt/candidate for reconciliation, never regenerate.
@@ -273,6 +277,8 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                         item["candidate_output_path"]=str(result["output"])
                         item["last_error"]="CANDIDATE_COMMIT_FAILED: "+msg
                         production_recovery.mark_terminal(ep,item,"BLOCKED",reason=item["last_error"])
+                        episode_performance.safe_record_queue_image_attempt(
+                            ep,item,status="blocked",error_code="CANDIDATE_COMMIT_FAILED")
                         has_human_block=True
                 else:
                     err=str(result.get("stdout") or result.get("error") or "worker returned success without output")
@@ -280,18 +286,24 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                     code=classify_error(err)
                     ledger_tech_fail(ep,item,code,err)
                     item["status"]="blocked" if code in NON_REGENERATING_FAILURE_CODES else "tech_failed"
+                    item["technical_failure_code"]=code
                     if result.get("output"):
                         item["candidate_output_path"]=str(result["output"])
                     has_human_block=has_human_block or item["status"]=="blocked"
                     item["last_error"]=err[-1000:]
                     production_recovery.mark_terminal(ep,item,"BLOCKED" if item["status"]=="blocked" else "TECH_FAILED",code=code)
+                    episode_performance.safe_record_queue_image_attempt(
+                        ep,item,status=item["status"],error_code=code)
                     has_technical_failure=True
             elif image_event.event == "IMAGE_FAILED":
                 err=str(payload.get("error") or payload.get("result") or "worker failed")
                 ledger_tech_fail(ep,item,"WORKER_FAILED",err)
                 item["status"]="tech_failed"
+                item["technical_failure_code"]="WORKER_FAILED"
                 item["last_error"]=err[:1000]
                 production_recovery.mark_terminal(ep,item,"TECH_FAILED",code="WORKER_FAILED")
+                episode_performance.safe_record_queue_image_attempt(
+                    ep,item,status="tech_failed",error_code="WORKER_FAILED")
                 has_technical_failure=True
 
         q.setdefault("runtime_events",[]).append({
@@ -367,9 +379,22 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                 item["scout"]={"decision":"DEFER_TO_FINAL","notes":str(exc),"final_critic_still_required":True}
         item.pop("_defer_scout",None)
     save_queue(ep,q)
-    perf_path=ep/runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL
-    perf=read_json(perf_path) if perf_path.is_file() else {"schema_version":1,"batches":[]}
-    completed=[x for x in q.get("items") or [] if x.get("id") in submitted and x.get("output_path")]
+    perf=runtime_observability.read_summary(ep,runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL,default={"schema_version":1,"batches":[]})
+    submitted_rows=[x for x in q.get("items") or [] if x.get("id") in submitted]
+    completed=[x for x in submitted_rows if x.get("output_path")]
+    terminal_status_counts={}
+    failure_code_counts={}
+    for row in submitted_rows:
+        status=str(row.get("status") or "UNKNOWN")
+        terminal_status_counts[status]=terminal_status_counts.get(status,0)+1
+        code=str(row.get("technical_failure_code") or "").strip().upper()
+        if not code and status in {"tech_failed","external_blocked","blocked"}:
+            # Metrics aggregate execution facts; they must not re-classify old
+            # diagnostic strings with scheduler business logic.  Historical
+            # rows without a machine code stay explicitly unclassified.
+            code="UNCLASSIFIED_FAILURE"
+        if code:
+            failure_code_counts[code]=failure_code_counts.get(code,0)+1
     perf.setdefault("kind","batch_runtime_performance")
     perf.setdefault("schema_version",1)
     perf.setdefault("generated_at",now())
@@ -378,8 +403,13 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
         "logical_batch":provider["provider"]=="codex_subscription",
         "native_multi_image":native_completed,"single_http_request":native_completed,
         "execution_mode":provider.get("execution_mode"),"max_workers":max_workers,
+        "terminal_status_counts":terminal_status_counts,
+        "failure_code_counts":failure_code_counts,
+        "empty_result":bool(started and not completed),
+        "timeout_count":int(failure_code_counts.get("TIMEOUT",0)),
+        "network_connect_count":int(failure_code_counts.get("NETWORK_CONNECT",0)),
         "evidence_not_authority":True,"finished_at":now()})
-    write_json(perf_path,perf)
+    runtime_observability.write_summary(ep,runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL,kind="batch_runtime_performance",payload=perf)
     if has_human_block and not ready_items(ep,load_queue(ep)):
         return HUMAN_REQUIRED
     if has_technical_failure:

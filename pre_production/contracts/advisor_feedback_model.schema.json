@@ -1,0 +1,39 @@
+{
+  "schema_id": "advisor_feedback_model",
+  "schema_version": 1,
+  "status": "mvp",
+  "advisor_decisions": ["PASS", "WARNING", "NEEDS_REVISION"],
+  "creator_decisions": ["ACCEPT", "REVISE", "IGNORE"],
+  "recommendation_results": ["USEFUL", "PARTIAL", "NOT_USEFUL"],
+  "judgement_sources": ["human"],
+  "required": [
+    "schema",
+    "schema_version",
+    "feedback_id",
+    "episode_id",
+    "advisor_report_id",
+    "advisor_decision",
+    "creator_decision",
+    "recommendation_result",
+    "risk_acknowledged",
+    "revision_direction",
+    "final_effect",
+    "notes",
+    "judgement_source",
+    "created_time",
+    "advisory_only",
+    "blocks_production",
+    "authority"
+  ],
+  "bool_fields": ["risk_acknowledged"],
+  "must_be_true": ["advisory_only"],
+  "must_be_false": ["blocks_production"],
+  "forbidden_key_patterns": ["score", "rating", "percent", "percentage", "points", "grade", "rank", "stars"],
+  "policy": {
+    "human_only": "Feedback records a human judgement; automated judgement is not allowed in this phase.",
+    "no_auto_rule": "Feedback never edits the advisor, its rules or the Story Lock; it is only experience data.",
+    "no_score": "Recommendation result is one of three qualitative labels, never a number.",
+    "advisory_only": "Feedback never blocks production."
+  }
+}
+

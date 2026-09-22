@@ -5,17 +5,23 @@
   "canonical_entrypoints": [
     "story_os.py",
     "workflow_runner.py",
-    "runtime_dag.py",
     "next_action.py"
+  ],
+  "step_engines": [
+    "runtime_dag.py"
   ],
   "runtime": [
     "runtime_router.py",
+    "codex_user_runner.py",
     "product_runtime_adapter.py",
     "product_review_adapter.py",
     "runtime_checkpoint.py",
     "runtime_trace.py",
     "runtime_portability.py",
-    "episode_discovery.py"
+    "episode_discovery.py",
+    "runtime_driver.py",
+    "inflight_codex_task.py",
+    "effective_config.py"
   ],
   "preimage": [
     "preproduction_handoff.py",
@@ -37,6 +43,7 @@
     "story_review.py",
     "visual_lock_v21.py",
     "frame_semantic_review.py",
+    "incremental_frame_review.py",
     "release_preflight.py"
   ],
   "release": [
@@ -47,11 +54,11 @@
   "data_health": [
     "text_encoding_health.py",
     "runtime_portability.py",
-    "episode_discovery.py"
+    "episode_discovery.py",
+    "archive_relocation.py"
   ],
   "legacy_or_migration_patterns": [
     "*_v20*.py",
-    "*_v21*.py",
     "*_v22*.py",
     "migrate_*.py",
     "visual_review_legacy.py",
@@ -60,5 +67,5 @@
   "test_patterns": [
     "test_*.py"
   ],
-  "agent_read_policy": "Start from canonical_entrypoints and the category required by next-action.json. Do not broad-read legacy/test modules unless a gate, migration, or regression requires them."
+  "agent_read_policy": "Start from canonical_entrypoints and the category required by next-action.json. Do not broad-read legacy/test modules unless a gate, migration, or regression requires them. step_engines are steps, not drivers: runtime_dag.py executes named nodes and returns -- it never starts the host loop, writes no heartbeat and leaves no HOST_LOOP evidence. The only resident driver is story_os.py runner. Long steps outlive the host call's budget via `story_os.py driver start`, which launches that same resident driver detached (`runtime_driver.py`) -- it is not a second driver. A restarted driver claims its predecessor's in-flight Codex result (`inflight_codex_task.py`) instead of paying for the same step twice."
 }

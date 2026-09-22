@@ -18,7 +18,7 @@ ChatGPT / Work + DevSpace
 → machine/evidence gates
 ```
 
-**本机存在 `codex.exe` 只代表“可用能力”，不再代表整个 Runtime=CODEX。** 当前默认 `runtime.preferred_runtime=WORK`，同时 `runtime.image_execution_runtime=CODEX`：只有正式图片生成/图片返修允许调用本地 Codex；Codex 图片控制模型固定 `gpt-5.6-luna` + `reasoning=medium`，实际图片仍由 `gpt-image-2` + `quality=high` 生成。Story、PREIMAGE、Critic、Review、Gate、Release 仍由 WORK/产品运行时执行。需要整套 CODEX Runtime 时仍必须显式设置 `STORY_OS_RUNTIME=CODEX`。
+**本机存在 `codex.exe` 只代表“可用能力”，不再代表整个 Runtime=CODEX。** 当前默认 `runtime.preferred_runtime=WORK`，同时 `runtime.image_execution_runtime=CODEX`：只有正式图片生成/图片返修允许调用本地 Codex；Codex 图片控制模型固定 `gpt-5.6-luna` + `reasoning=medium`，实际图片模型统一读取 `config/storyos.yaml:image.model` 并使用 `quality=high`。Story、PREIMAGE、Critic、Review、Gate、Release 仍由 WORK/产品运行时执行。需要整套 CODEX Runtime 时仍必须显式设置 `STORY_OS_RUNTIME=CODEX`。
 
 Concept / Story / Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，均必须 fresh + SHA-bound。图片执行层可用 `STORY_OS_IMAGE_RUNTIME=CODEX|PRODUCT_RUNTIME|AUTO` 覆盖；只有显式选择 `PRODUCT_RUNTIME` 时，缺文件传输能力才返回 `HOST_ACTION_REQUIRED / HOST_WAIT`。Host Action 以 request_id 保存历史，Product Review 以 attempt-scoped request 保存历史。WORK `--full-auto` 必须进入统一 Runtime DAG 连续推进；`PREIMAGE_COMPILE` 是独立 Runtime 节点但不是第八个 Episode stage。每次宿主/审图动作后读取派生 `meta/runtime/next-action.json` 自动继续，不得因为正常 Host Action 再询问用户。Visual Lock baseline 与每个 Production Logical Batch 生成后都必须回 WORK 做 actual-pixel review，再放行后续生成。
 
@@ -81,7 +81,7 @@ Phase 10：真实发布后记录 `meta/publish-event.json`，不要修改已被 
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_BEGIN -->
 ## Runtime Request P0
 
-新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `image_model=gpt-image-2`、`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 Visual Lock 固定为 4 张准入帧。
+新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认模型读取 `config/storyos.yaml:image.model`，`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 Visual Lock 固定为 4 张准入帧。
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_END -->
 
 ## 0. 黄金路径（Golden Path）
@@ -129,16 +129,17 @@ IDEA_LOCKED
 
 不要为了“更保险”把整个 `standards/` 全部读一遍。旧版本和 superseded 文件只用于历史追溯。
 
-## 2. 四个必须停下来的人工锁点
+## 2. 三个正式人工锁点 + 返修范围授权
 
 除非用户已经明确授权连续执行，否则以下节点必须显式确认后再继续：
 
 1. **Story Lock**：故事与专业分镜是否锁定。
 2. **Visual Lock**：四张准入帧是否完成统一 Critic 并锁定。
-3. **Repair Lock**：需要返修哪些图；未点名已通过帧不得连带重做。
-4. **Release Lock**：标题、封面、字幕、简介、话题、发布图是否为最终版。
+3. **Release Lock**：标题、封面、字幕、简介、话题、发布图是否为最终版。
 
-这四个锁点不是新状态机，只是人工决策 Gate。
+**返修不是第四个 Lock。** 返修使用 Production Ledger 已有的 repair authorization / reopen lane：只授权明确失败或被用户点名的帧；未授权的已通过帧不得连带重做。它是范围授权，不创造新的状态或 Gate。
+
+以上三个 Lock 不是新状态机，只是人工决策 Gate。
 
 ## 3. Visual Baseline → Trial → Batch
 
@@ -351,6 +352,8 @@ python episodes/_system/incremental_frame_review.py review <episode_dir> --attem
 
 新篇本地媒体统一放：`media/calibration|raw|candidates|approved|publish|review|archive`；交付放 `release/`；Git 只跟踪 `meta/media-index.json` 与文本/证据，不跟踪这些像素资产。
 
+例外且为强制项：**系列剧本的母版图必须提交 Git**。被 `episodes/**/meta/series-character-identity.json` 引用的 `group_identity_asset` / `primary_asset` / `supporting_assets` 落在 `assets/characters/`，必须入库；`python episodes/_system/contract_sync.py` 会对未入库的母版图 FAIL。
+
 媒体工具：
 
 ```bash
@@ -456,3 +459,38 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 Final Visual Freeze 只绑定视觉 SHA，Caption 变化只触发 Caption ↔ Image Audit，不得重新拉起全量 Visual Critic。
 Golden/性能回归（B5）：`golden_episode_regression.py run` 读 `reports/golden-episode-registry.json` 逐项回归（当前空骨架：现役候选未同时具备 density/voice/capture/world/lineage/propagation/text 全零错误输入，不降门槛注册）；`performance_regression_v211.py replay` 回放 `tests/performance/replays/PERF-REPLAY-V2.1.1-20260831-停电夜蜕壳.json`。两入口已由 story-gates.yml `golden-replay` job（workflow_dispatch）接线，本机与远端执行同一命令。
 <!-- STORY_OS_V2_6_0_PERFORMANCE_RUNTIME_END -->
+
+<!-- STORY_OS_SINGLE_DRIVER_BEGIN -->
+## V2.6.1.1 单一驱动契约（Single Driver）
+
+一个剧集同时只能有一个驱动者。**唯一常驻驱动**是：
+
+```text
+python episodes/_system/story_os.py runner <episode_dir>
+```
+
+它转发 `episode_runner.py`，是**唯一**会写 `meta/runtime-runner-state.json`、持续心跳、并在每个循环落 `HOST_LOOP` 证据的进程。宿主 Agent 的职责是**确保它在跑**，不是手工替代它。
+
+`python episodes/_system/story_os.py run <episode_dir> --full-auto` 是**有界排空**：进入统一 Runtime DAG 连续推进，遇到宿主动作（`HOST_ACTION_REQUIRED`）即退出交回，不常驻。它是这条驱动的一个受限入口，不是第二套驱动。
+
+长任务必须脱离宿主调用的生命周期。**官方分离入口**是：
+
+```text
+python episodes/_system/story_os.py driver start <episode_dir> [--codex <codex>] [--resume]
+```
+
+它启动的**就是上面那一个常驻驱动**（同一个 owner lock、同一份心跳），只是不再挂在发起调用的进程下面——宿主 tool 调用的 300 秒预算杀不掉它，退出码与 stdout 由它自己落盘，`driver status` / `driver logs` 只读地报告它是否还活着、退出码是什么、日志在哪。`driver recover` **不杀任何进程**：恢复动作就是再 start 一次。`meta/runtime/in-flight-codex.json` 记录在跑的 Codex 任务，重启后的驱动领取前任已经付过钱的结果，而不是把同一个 scoped 步骤再跑一遍。
+
+**`runtime_dag.py`（`story_os.py dag run`）是步骤引擎，不是驱动器。** 它执行被点名的节点后返回：不启动宿主循环、不写心跳、不落 `HOST_LOOP` 证据。绕过驱动的手工 DAG 推进会得到一个「看起来在推进、实际无人负责」的剧集。
+
+判活只读派生字段，不要靠猜：
+
+- `host_loop`：只有 `RUNNING` 证明有活着的循环；其余（含 `HOST_WAIT` / `RECOVERY_REQUIRED` / `UNKNOWN`）一律 `IDLE`。
+- `orphaned_pending_work`：`true` 表示**有工作欠着、却没人在跑循环**——这正是 2026-09-14 `尸解仙` 的形态。
+
+读取点：`meta/runtime/next-action.json`（`host_loop`、`runner_status`、`orphaned_pending_work`、`suppressed_product_reviews`）。
+
+**这不是自动重启信号。引擎不提供看门狗：** 没有任何**自动**路径会 start / stop / restart 一个 runner——`story_os.py driver start` 是**显式**入口，只在你（或宿主 Agent）明确调用时启动一次，不轮询、不自愈、不代替判断。看到 `orphaned_pending_work: true`，正确反应是**由人重新拉起驱动者**，不是等引擎自愈。
+
+`runtime.continuous_host_loop` 只影响 `run --full-auto` 内部的一次有界排空，不改变上述任何一条。
+<!-- STORY_OS_SINGLE_DRIVER_END -->

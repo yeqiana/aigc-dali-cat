@@ -10,12 +10,11 @@ TOKEN_KEYS={"input_tokens","output_tokens","total_tokens","cached_input_tokens",
 
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def read(ep):
-    p=ep/REL
-    if not p.is_file(): return {"schema_version":1,"note":"Diagnostic only; quota percentages are never guessed.","snapshots":[]}
-    d=json.loads(p.read_text(encoding="utf-8-sig")); d.setdefault("snapshots",[]); return d
+    d=runtime_observability.read_summary(ep,REL,default={"schema_version":1,"note":"Diagnostic only; quota percentages are never guessed.","snapshots":[]})
+    d.setdefault("snapshots",[]); return d
 def write(ep,d):
     d.setdefault("kind","quota_observability"); d.setdefault("schema_version",1); d.setdefault("generated_at",now())
-    p=ep/REL; p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+    runtime_observability.write_summary(ep,REL,kind="quota_observability",payload=d)
 def walk_tokens(obj,out):
     if isinstance(obj,dict):
         for k,v in obj.items():

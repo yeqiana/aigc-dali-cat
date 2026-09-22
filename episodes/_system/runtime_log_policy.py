@@ -13,6 +13,8 @@ import json
 import subprocess
 from pathlib import Path
 
+import story_json
+
 ROOT = Path(__file__).resolve().parents[2]
 LOCAL_ONLY_PATTERNS = (
     "episodes/**/meta/image-workers/**",
@@ -20,8 +22,69 @@ LOCAL_ONLY_PATTERNS = (
     "episodes/**/meta/scoped-workers/**",
     "episodes/**/meta/codex-auto-run.jsonl",
     "episodes/**/meta/runtime/trace-events.jsonl",
+    "episodes/**/meta/runtime/node-execution.jsonl",
+    "episodes/**/meta/runtime/authority-commit.jsonl",
+    "episodes/**/meta/runtime/preimage-candidates/**",
+    "episodes/**/meta/episode-performance-ledger.json",
     "episodes/**/meta/workflow-run.jsonl",
 )
+
+# W-14: Codex emits user-environment diagnostics (plugins/MCP/telemetry/shell
+# snapshot/hooks) into the same stdout stream as the image backend. Keep that raw
+# stream untouched for audit, but never let unrelated warnings become image
+# provider 401/429/network evidence. Matching is intentionally line-scoped.
+CODEX_NOISE_RULES = {
+    "legacy_notify": ("legacy_notify", "hook_runtime"),
+    "powershell_shell_snapshot": ("shell snapshot not supported yet for powershell",),
+    "mcp": (" mcp ", "mcp_", '"mcp'),
+    "plugin": ("plugin",),
+    "telemetry": ("telemetry", "opentelemetry"),
+    "websocket_prewarm": ("websocket prewarm", "prewarm websocket"),
+}
+
+
+def _codex_noise_kind(line: str) -> str | None:
+    low = str(line or "").lower()
+    for kind, markers in CODEX_NOISE_RULES.items():
+        if any(marker in low for marker in markers):
+            return kind
+    return None
+
+
+def codex_noise_summary(text: str) -> dict:
+    counts: dict[str, int] = {}
+    total_lines = 0
+    noise_lines = 0
+    for line in str(text or "").splitlines():
+        total_lines += 1
+        kind = _codex_noise_kind(line)
+        if kind is None:
+            continue
+        counts[kind] = counts.get(kind, 0) + 1
+        noise_lines += 1
+    return {
+        "schema_version": 1,
+        "policy": "raw_log_preserved_provider_classification_filtered",
+        "total_lines": total_lines,
+        "noise_lines": noise_lines,
+        "provider_relevant_lines": max(0, total_lines - noise_lines),
+        "counts": counts,
+    }
+
+
+def provider_relevant_codex_text(text: str) -> str:
+    """Return a classifier-only view; the raw worker log remains unchanged."""
+    return "\n".join(
+        line for line in str(text or "").splitlines()
+        if _codex_noise_kind(line) is None
+    )
+
+
+def write_codex_noise_summary(log_path: Path, text: str) -> dict:
+    summary = codex_noise_summary(text)
+    sidecar = Path(str(log_path) + ".noise.json")
+    story_json.write_json(sidecar, summary)
+    return summary
 
 
 def tracked_local_logs(root: Path = ROOT) -> list[Path]:
@@ -60,6 +123,14 @@ def audit(root: Path = ROOT) -> dict:
 def self_test() -> None:
     assert "episodes/**/meta/image-workers/**" in LOCAL_ONLY_PATTERNS
     assert "episodes/**/meta/workflow-run.jsonl" in LOCAL_ONLY_PATTERNS
+    assert "episodes/**/meta/runtime/node-execution.jsonl" in LOCAL_ONLY_PATTERNS
+    assert "episodes/**/meta/runtime/authority-commit.jsonl" in LOCAL_ONLY_PATTERNS
+    assert "episodes/**/meta/runtime/preimage-candidates/**" in LOCAL_ONLY_PATTERNS
+    assert "episodes/**/meta/episode-performance-ledger.json" in LOCAL_ONLY_PATTERNS
+    sample = "WARN plugin request 429\nimage generation failed: 503 Service Unavailable\nlegacy_notify os error 206"
+    assert codex_noise_summary(sample)["noise_lines"] == 2
+    assert "503 Service Unavailable" in provider_relevant_codex_text(sample)
+    assert "429" not in provider_relevant_codex_text(sample)
     print("RUNTIME LOG POLICY V2.6.1.1 SELF-TEST PASS")
 
 

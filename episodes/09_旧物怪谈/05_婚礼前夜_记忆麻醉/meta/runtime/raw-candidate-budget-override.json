@@ -1,10 +1,11 @@
 {
-  "schema_version": 1,
-  "max_total_content_candidates": 55,
+  "schema_version": 2,
+  "max_total_content_candidates": 75,
   "authorization": {
     "approved": true,
-    "source": "delegated_continuous_execution (runtime-checkpoint) + revision 20260909_reveal_order_v2: authorized full regeneration after frame-contract drift; exceeded default derived budget 20+15 by design",
-    "authorized_at": "2026-09-09T14:30:00+08:00"
+    "source": "user:2026-09-15:按计划收W-02",
+    "note": "W-02 closure requires 20 machine-verified authority-refresh candidates after legal Frame Contract recompile; no content-repair budget reset",
+    "authorized_at": "2026-09-15T22:11:22+08:00"
   },
   "note": "official override file read by raw_candidate_budget.py; no ledger/pass rewrite",
   "per_frame_authorizations": [
@@ -44,5 +45,7 @@
       },
       "restore_defaults_by": "remove this entry (module falls back to the fixed per-frame limit)"
     }
-  ]
+  ],
+  "status": "AUTHORIZED",
+  "updated_at": "2026-09-15T22:11:22+08:00"
 }

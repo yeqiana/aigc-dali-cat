@@ -20,6 +20,14 @@ from frame_semantic_review import (
 from machine_gate import validate as validate_machine_gate
 import final_candidate_snapshot as final_snapshot
 import story_json
+import runtime_checkpoint
+import episode_state_persistence
+import frame_review_persistence
+import delegated_release_persistence
+import story_review
+import visual_profile_review_persistence
+import production_ledger
+from final_acceptance import allows as acceptance_allows
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT_REL = Path('meta/delegated-release.json')
@@ -66,8 +74,10 @@ def preflight(ep: Path) -> None:
         if errors: raise SystemExit('final candidate snapshot preflight failed: ' + '; '.join(errors))
     if frame_semantic_required(ep):
         errors = verify_frame_semantic_episode(ep, metadata_only=False, write_audit=True)
-        if errors:
+        if errors and not acceptance_allows(ep, "frame_semantic"):
             raise SystemExit('frame semantic preflight failed: ' + '; '.join(errors))
+        if errors:
+            print('DELEGATED DELIVERY WARN: frame semantic preflight accepted as known defects (meta/final-acceptance.json): ' + '; '.join(errors[:4]))
     if machine_gate_required_for_delivery(ep):
         findings = validate_machine_gate(ep, 'PRODUCTION_PASSED', metadata_only=False)
         failures = [str(x) for x in findings if getattr(x, 'level', None) == 'FAIL']
@@ -122,15 +132,24 @@ def gather(ep: Path) -> tuple[list[dict], dict]:
     if ((audit.get('summary') or {}).get('passed')) is not True: raise SystemExit('text audit is not PASS')
     files.append(row(text_audit,'text_audit','qa/text-audit.json'))
     files.append(row(manifest_path,'release_manifest','release-manifest.json'))
-    checkpoint=ep/'meta/runtime-checkpoint.json'
-    if checkpoint.is_file(): files.append(row(checkpoint,'runtime_checkpoint','evidence/runtime-checkpoint.json'))
-    ledger=ep/'meta/production-ledger.json'
-    if ledger.is_file(): files.append(row(ledger,'production_ledger','evidence/production-ledger.json'))
+    checkpoint=runtime_checkpoint.materialize_export(ep)
+    if checkpoint is not None and checkpoint.is_file():
+        files.append(row(checkpoint,'runtime_checkpoint','evidence/runtime-checkpoint.json'))
+    state_export=episode_state_persistence.materialize_export(ep)
+    if state_export is not None and state_export.is_file():
+        files.append(row(state_export,'episode_state','evidence/episode-state.json'))
+    ledger=production_ledger.materialize_export(ep)
+    if ledger is not None and ledger.is_file(): files.append(row(ledger,'production_ledger','evidence/production-ledger.json'))
+    story_review_export=story_review.materialize_review_export(ep,story_review.load_review(ep))
+    if story_review_export is not None and story_review_export.is_file():
+        files.append(row(story_review_export,'story_semantic_review','qa/story-semantic-review.json'))
+    visual_review_export=visual_profile_review_persistence.materialize_export(
+        ep,visual_profile_review_persistence.load(ep)
+    )
+    if visual_review_export is not None and visual_review_export.is_file():
+        files.append(row(visual_review_export,'visual_profile_review','qa/visual-profile-review.json'))
     for rel_path, role, arc in [
-        ('meta/episode-state.json','episode_state','evidence/episode-state.json'),
         ('meta/story-gates.json','story_gates','evidence/story-gates.json'),
-        ('meta/story-semantic-review.json','story_semantic_review','qa/story-semantic-review.json'),
-        ('meta/visual-profile-review.json','visual_profile_review','qa/visual-profile-review.json'),
         ('meta/subtitle-layout-audit.json','subtitle_layout_audit','qa/subtitle-layout-audit.json'),
         ('meta/frame-semantic-review.json','frame_semantic_review','qa/frame-semantic-review.json'),
         ('meta/frame-semantic-audit.json','frame_semantic_audit','qa/frame-semantic-audit.json'),
@@ -139,13 +158,11 @@ def gather(ep: Path) -> tuple[list[dict], dict]:
         if p.is_file(): files.append(row(p,role,arc))
         elif frame_semantic_required(ep) and rel_path in {'meta/frame-semantic-review.json','meta/frame-semantic-audit.json'}:
             raise SystemExit(f'required semantic evidence missing: {rel_path}')
-    review_dir=ep/'meta/frame-reviews'
     if frame_semantic_required(ep):
-        reviews=sorted(review_dir.glob('[0-9][0-9].json')) if review_dir.is_dir() else []
         expected=((manifest.get('release') or {}).get('body_frame_count'))
-        if not isinstance(expected,int) or len(reviews)!=expected:
-            raise SystemExit(f'frame semantic review count mismatch: expected={expected}, found={len(reviews)}')
-        for p in reviews: files.append(row(p,f'frame_review:{p.stem}',f'qa/frame-reviews/{p.name}'))
+        proof=frame_review_persistence.evidence_digest(ep)
+        if not isinstance(expected,int) or proof.get('count')!=expected:
+            raise SystemExit(f"frame semantic review count mismatch: expected={expected}, found={proof.get('count')}")
     return files,manifest
 
 def build(ep: Path,label: str) -> Path:
@@ -158,21 +175,25 @@ def build(ep: Path,label: str) -> Path:
         'schema_version':3,'story_os_version':episode_contract_version(ep),'approval_basis':'delegated_auto_review','direct_release_lock':False,
         'built_at':dt.datetime.now().astimezone().isoformat(),'episode':manifest.get('episode') or {},'files':files,'package':None,
     }
+    if frame_semantic_required(ep):
+        report['frame_review_db_evidence']=frame_review_persistence.evidence_digest(ep)
     checks=''.join(f"{x['sha256']}  {x['archive_path']}\n" for x in files)
     with zipfile.ZipFile(temp,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as zf:
         for x in files:
             p=resolve_repo(x['path'],'delivery.file'); zf.write(p,x['archive_path'])
+        if isinstance(report.get('frame_review_db_evidence'),dict):
+            zf.writestr('qa/frame-reviews-db.json',json.dumps(report['frame_review_db_evidence'],ensure_ascii=False,sort_keys=True,indent=2)+'\n')
         zf.writestr('checksums.sha256',checks)
         zf.writestr('DELEGATED_AUTO_REPORT.json',json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     temp.replace(out)
     report['package']={'path':repo_rel(out),'sha256':sha256_file(out),'bytes':out.stat().st_size}
-    write_json(ep/REPORT_REL,report)
+    delegated_release_persistence.save(ep, report)
     return out
 
 def verify(ep: Path) -> list[str]:
-    rp=ep/REPORT_REL
-    if not rp.is_file(): return ['delegated release report missing']
-    d=read_json(rp); errors=[]; package=d.get('package') or {}
+    d=delegated_release_persistence.load(ep)
+    if not isinstance(d,dict): return ['delegated release report missing']
+    errors=[]; package=d.get('package') or {}
     if d.get('story_os_version') != episode_contract_version(ep): errors.append('delegated report story_os_version mismatch')
     try: zp=resolve_repo(package.get('path'),'delegated.package')
     except SystemExit as exc:return [str(exc)]
@@ -185,6 +206,14 @@ def verify(ep: Path) -> list[str]:
                 arc=x.get('archive_path')
                 if arc not in names: errors.append(f'ZIP missing {arc}'); continue
                 if hashlib.sha256(zf.read(arc)).hexdigest().lower()!=str(x.get('sha256') or '').lower(): errors.append(f'ZIP file hash drift {arc}')
+            proof=d.get('frame_review_db_evidence')
+            if isinstance(proof,dict):
+                if 'qa/frame-reviews-db.json' not in names:
+                    errors.append('ZIP missing qa/frame-reviews-db.json')
+                elif json.loads(zf.read('qa/frame-reviews-db.json').decode('utf-8')) != proof:
+                    errors.append('ZIP frame review database evidence drift')
+                if frame_review_persistence.evidence_digest(ep) != proof:
+                    errors.append('delegated frame review database evidence drift')
             if 'checksums.sha256' not in names or 'DELEGATED_AUTO_REPORT.json' not in names: errors.append('ZIP metadata missing')
     except (zipfile.BadZipFile,OSError) as exc: errors.append(str(exc))
     for x in d.get('files') or []:
@@ -201,7 +230,7 @@ def main() -> int:
     args=ap.parse_args(); ep=Path(args.episode_dir).resolve()
     if args.cmd=='build':
         out=build(ep,args.label); print(out); print('SHA256',sha256_file(out)); return 0
-    if args.cmd=='show': print((ep/REPORT_REL).read_text(encoding='utf-8')); return 0
+    if args.cmd=='show': print(json.dumps(delegated_release_persistence.load(ep) or {},ensure_ascii=False,indent=2)); return 0
     errors=verify(ep)
     if errors:
         for e in errors: print('FAIL:',e)

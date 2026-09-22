@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "review_kind": "subtitle_voice_semantic",
+  "story_os_version": "2.6.1",
+  "episode_id": "10-03",
+  "reviewed_at": "2026-09-11T19:05:00+08:00",
+  "reviewer_provenance": {
+    "runtime": "WORK",
+    "execution_source": "runtime_self_review",
+    "delegated_auto_review": true,
+    "user_reviewed": false,
+    "note": "Runtime 按 Voice Contract + 锁定的 20 张分镜草案执行字幕语义评审；用户 Release Lock 仍未发生，不得当作人工亲审。"
+  },
+  "voice_contract_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/voice-contract.json",
+  "voice_contract_sha256": "1a2225c100863429102d9a3f28e6de7d8ad90623b49d21fea61aa7afa0ff7b73",
+  "caption_source_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/subtitles.yaml",
+  "caption_source_sha256": "bfa352da206a99d8a01ca1f74874e94ee96d76bf71a0053aa2162a4a820c6465",
+  "text_audit_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/text-audit.json",
+  "caption_count": 18,
+  "silent_frames": [10, 17],
+  "frame_coverage": "18 条字幕 + 2 张无字幕关键图，覆盖分镜 01-20 全部帧号",
+  "continuous_three_frame_test": "PASS",
+  "read_aloud_test": "PASS",
+  "delete_subtitle_test": "PASS",
+  "knowledge_boundary_test": "PASS",
+  "clue_payoff_test": "PASS",
+  "evidence": {
+    "continuous_three_frame_test": "01-03、03-05、13-15、18-20 逐窗朗读：句长在 12-26 字之间波动，后帧使用“那条 / 那种 / 下面 / 就这几秒”等前指；无连续三帧同前缀，无每帧重新介绍世界观。",
+    "read_aloud_test": "全部为第一人称口语短句，含停顿与改口（15“我说好，但还是多看了几秒”）；15-16 处于要求返航与图传失控之间，句子变短不做分析腔。",
+    "delete_subtitle_test": "10 / 17 登记无字幕，异常与对面反应由画面自证；其余帧字幕给的是画面之外的信息（原因、选择、认知顺序），03 只交代“升高一点先看到屋顶”的观察顺序，19 只交代放大回看的动作。",
+    "knowledge_boundary_test": "未出现来源解释、对方身份/年代裁决或“我更早知道真相”；声音卡 forbidden_technical_terms 零命中（meta/text-audit.json hard=0）。",
+    "clue_payoff_test": "03 屋顶 → 04/05 田与牲口 → 07/08 院落与整套生活 → 10 全景 → 11 旧石建筑 → 13/14 对方异步反应 → 15 人物选择 → 16 返航漂移 → 18/19 白车与两个人影 → 20 失联后果闭环；EP02 浅色粗布在 09 回收、EP01 夜行路在 06 回收。"
+  },
+  "known_limits": [
+    "本评审只判定“说什么、怎么说”是否符合 Voice Contract 与字幕规范，不判定字幕视觉位置。",
+    "字幕视觉位置与压字检查由 subtitle_layout.py render-all + audit 在发布渲染阶段负责。"
+  ]
+}

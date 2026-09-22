@@ -4,8 +4,14 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
 from pathlib import Path
+
+import runtime_workspace
+import runtime_checkpoint_persistence
+import story_json
+from runtime_atomic_store import FileLock, update_json as atomic_update_json
 
 REL = Path("meta/runtime-checkpoint.json")
 VALID_STEP_STATUS = {"PASS", "REUSED", "DIRTY", "FAILED", "BLOCKED", "HOST_WAIT", "SKIPPED_NOT_APPLICABLE"}
@@ -15,18 +21,104 @@ def now() -> str:
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
 
-def rd(p: Path) -> dict:
-    data = json.loads(p.read_text(encoding="utf-8-sig"))
+def read_path(episode_dir: Path) -> Path:
+    return runtime_workspace.resolve_read_path(Path(episode_dir).resolve(), REL)
+
+
+def write_path(episode_dir: Path) -> Path:
+    return runtime_workspace.workspace_path(Path(episode_dir).resolve(), REL)
+
+
+def exists(episode_dir: Path) -> bool:
+    ep = Path(episode_dir).resolve()
+    mode = runtime_checkpoint_persistence.mode()
+    if mode in {"dual", "mysql"}:
+        data = runtime_checkpoint_persistence.load(ep)
+        if isinstance(data, dict):
+            return True
+        if mode == "mysql":
+            return False
+    return read_path(ep).is_file()
+
+
+def load(episode_dir: Path, default: dict | None = None) -> dict:
+    ep = Path(episode_dir).resolve()
+    mode = runtime_checkpoint_persistence.mode()
+    if mode in {"dual", "mysql"}:
+        data = runtime_checkpoint_persistence.load(ep)
+        if isinstance(data, dict):
+            return data
+        if mode == "mysql":
+            return dict(default or {})
+    path = read_path(ep)
+    if not path.is_file():
+        return dict(default or {})
+    data = story_json.read_json(path, default=default or {}, require_object=False)
     if not isinstance(data, dict):
         raise SystemExit("runtime checkpoint root must be object")
     return data
 
 
-def wr(p: Path, d: dict) -> None:
-    p.parent.mkdir(parents=True, exist_ok=True)
-    tmp = p.with_suffix(p.suffix + ".tmp")
-    tmp.write_text(json.dumps(d, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-    tmp.replace(p)
+def authority_sha256(data: dict | None) -> str | None:
+    if not isinstance(data, dict):
+        return None
+    raw = json.dumps(
+        data, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def materialize_export(episode_dir: Path) -> Path | None:
+    ep = Path(episode_dir).resolve()
+    existing = read_path(ep)
+    if existing.is_file():
+        return existing
+    data = load(ep, {})
+    if not data:
+        return None
+    target = runtime_workspace.workspace_path(
+        ep, Path("exports/runtime-checkpoint.json")
+    )
+    story_json.write_json(target, data)
+    return target
+
+
+def save(episode_dir: Path, data: dict) -> Path:
+    ep = Path(episode_dir).resolve()
+    path = write_path(ep)
+    mode = runtime_checkpoint_persistence.mode()
+    if mode != "mysql":
+        story_json.write_json(path, data)
+    runtime_checkpoint_persistence.persist(ep, data)
+    return path
+
+
+def update(episode_dir: Path, mutator, *, require_existing: bool = False):
+    ep = Path(episode_dir).resolve()
+    if require_existing and not exists(ep):
+        raise FileNotFoundError("runtime checkpoint missing")
+
+    def default_factory() -> dict:
+        return load(ep, {})
+
+    mode = runtime_checkpoint_persistence.mode()
+    if mode == "mysql":
+        path = write_path(ep)
+        with FileLock(path):
+            current = load(ep, {})
+            if not isinstance(current, dict):
+                current = {}
+            result = mutator(current)
+            runtime_checkpoint_persistence.persist(ep, current)
+            return result
+
+    result = atomic_update_json(write_path(ep), default_factory, mutator)
+    if mode == "dual":
+        current = story_json.read_json(write_path(ep), default={}, require_object=False)
+        if not isinstance(current, dict):
+            raise SystemExit("runtime checkpoint root must be object")
+        runtime_checkpoint_persistence.persist(ep, current)
+    return result
 
 
 def ensure_shape(d: dict) -> dict:
@@ -41,13 +133,49 @@ def ensure_shape(d: dict) -> dict:
     return d
 
 
+def record_step(episode_dir: Path, *, step: str, status: str, attempt: int = 1,
+                started_at: str | None = None, finished_at: str | None = None,
+                note: str = "", input_hash: str | None = None,
+                output_hash: str | None = None,
+                elapsed_seconds: float | None = None,
+                returncode: int | None = None) -> dict:
+    """Append one Runtime step record without spawning a second Python process."""
+    if status not in VALID_STEP_STATUS:
+        raise ValueError(f"invalid runtime checkpoint status: {status}")
+    if isinstance(attempt, bool) or int(attempt) < 1:
+        raise ValueError("attempt must be at least 1")
+    row = {
+        "step": str(step),
+        "status": status,
+        "input_hash": input_hash,
+        "output_hash": output_hash,
+        "attempt": int(attempt),
+        "started_at": started_at,
+        "finished_at": finished_at or now(),
+        "note": str(note),
+    }
+    if elapsed_seconds is not None:
+        row["elapsed_seconds"] = round(float(elapsed_seconds), 6)
+    if returncode is not None:
+        row["returncode"] = int(returncode)
+
+    def mutate(data: dict):
+        ensure_shape(data)
+        data["step_runs"].append(row)
+        data["step_runs"] = data["step_runs"][-200:]
+        data["updated_at"] = now()
+        return row
+
+    return update(Path(episode_dir).resolve(), mutate, require_existing=True)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("init"); p.add_argument("episode_dir"); p.add_argument("--runtime", required=True, choices=["CODEX", "WORK", "WEB"]); p.add_argument("--full-auto", action="store_true")
     p = sub.add_parser("show"); p.add_argument("episode_dir")
     p = sub.add_parser("set"); p.add_argument("episode_dir"); p.add_argument("--last-completed"); p.add_argument("--next-action"); p.add_argument("--lock-frame", action="append", default=[]); p.add_argument("--fail-frame", action="append", default=[])
-    p = sub.add_parser("record-step"); p.add_argument("episode_dir"); p.add_argument("--step", required=True); p.add_argument("--status", required=True, choices=sorted(VALID_STEP_STATUS)); p.add_argument("--input-hash"); p.add_argument("--output-hash"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--started-at"); p.add_argument("--finished-at"); p.add_argument("--note", default="")
+    p = sub.add_parser("record-step"); p.add_argument("episode_dir"); p.add_argument("--step", required=True); p.add_argument("--status", required=True, choices=sorted(VALID_STEP_STATUS)); p.add_argument("--input-hash"); p.add_argument("--output-hash"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--started-at"); p.add_argument("--finished-at"); p.add_argument("--elapsed-seconds", type=float); p.add_argument("--returncode", type=int); p.add_argument("--note", default="")
     sub.add_parser("self-test")
     a = ap.parse_args()
     if a.cmd == "self-test":
@@ -55,9 +183,9 @@ def main() -> int:
         assert isinstance(d["step_runs"], list)
         print("RUNTIME CHECKPOINT SELF-TEST PASS")
         return 0
-    ep = Path(a.episode_dir).resolve(); path = ep / REL
+    ep = Path(a.episode_dir).resolve()
     if a.cmd == "init":
-        d = ensure_shape(rd(path) if path.exists() else {})
+        d = ensure_shape(load(ep, {}))
         d["runtime"] = a.runtime
         if a.full_auto:
             d["continuous_execution_authorized"] = True
@@ -65,32 +193,25 @@ def main() -> int:
         else:
             d.setdefault("continuous_execution_authorized", False)
             d.setdefault("approval_basis", "interactive")
-        d["updated_at"] = now(); wr(path, d); print(path); return 0
-    if not path.exists():
+        d["updated_at"] = now(); path = save(ep, d); print(path); return 0
+    if not exists(ep):
         raise SystemExit("runtime checkpoint missing")
-    d = ensure_shape(rd(path))
+    d = ensure_shape(load(ep, {}))
     if a.cmd == "show":
         print(json.dumps(d, ensure_ascii=False, indent=2)); return 0
     if a.cmd == "record-step":
-        row = {
-            "step": a.step,
-            "status": a.status,
-            "input_hash": a.input_hash,
-            "output_hash": a.output_hash,
-            "attempt": a.attempt,
-            "started_at": a.started_at,
-            "finished_at": a.finished_at or now(),
-            "note": a.note,
-        }
-        d["step_runs"].append(row)
-        # Keep the latest 200 entries to prevent unbounded growth.
-        d["step_runs"] = d["step_runs"][-200:]
-        d["updated_at"] = now(); wr(path, d); print(path); return 0
+        record_step(
+            ep, step=a.step, status=a.status, attempt=a.attempt,
+            started_at=a.started_at, finished_at=a.finished_at, note=a.note,
+            input_hash=a.input_hash, output_hash=a.output_hash,
+            elapsed_seconds=a.elapsed_seconds, returncode=a.returncode,
+        )
+        print(write_path(ep)); return 0
     if a.last_completed: d["last_completed"] = a.last_completed
     if a.next_action: d["next_action"] = a.next_action
     d["locked_frames"] = sorted(set(d.get("locked_frames", [])) | {str(x).zfill(2) for x in a.lock_frame})
     d["failed_frames"] = sorted(set(d.get("failed_frames", [])) | {str(x).zfill(2) for x in a.fail_frame})
-    d["updated_at"] = now(); wr(path, d); print(path); return 0
+    d["updated_at"] = now(); path = save(ep, d); print(path); return 0
 
 
 if __name__ == "__main__":

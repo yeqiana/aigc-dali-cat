@@ -7,6 +7,9 @@ from pathlib import Path
 import frame_contract
 import image_model_policy
 import story_json
+import runtime_workspace
+import storage_config
+import prompt_package_persistence
 
 REL=Path("meta/runtime/prompt-packages")
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -17,7 +20,8 @@ def compile_frame(ep,frame,prompt_file,write=True):
     if not scene:
         raise ValueError(f"frame {int(frame):02d} prompt empty")
     contract=frame_contract.compile_frame(ep,int(frame),write_cache=write)
-    previous=story_json.read_json(ep/REL/f"{int(frame):02d}.json",default={})
+    rel=REL/f"{int(frame):02d}.json"
+    previous=prompt_package_persistence.load_latest(ep,frame) or {}
     scene_sha=h(scene.encode("utf-8"))
     if (previous.get("scene_prompt_sha256")==scene_sha
             and previous.get("frame_contract_sha256")
@@ -36,7 +40,10 @@ def compile_frame(ep,frame,prompt_file,write=True):
     raw=json.dumps(material,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
     data={**material,"package_sha256":h(raw),"compiled_at":now()}
     if write:
-        story_json.write_json(ep/REL/f"{int(frame):02d}.json",data)
+        mode=storage_config.episode_meta_store_config()["mode"]
+        if mode != "mysql":
+            runtime_workspace.write_json(ep,rel,data)
+        prompt_package_persistence.persist(ep,data)
     return data
 def self_test():
     assert REL.as_posix()=="meta/runtime/prompt-packages"

@@ -5,12 +5,21 @@ from __future__ import annotations
 import argparse, datetime as dt, hashlib, json
 from pathlib import Path
 import production_ledger
+import production_queue_store
 import runtime_capability_cache
 import story_json
+import derived_freshness
+import runtime_checkpoint
+import runtime_workspace
+import runtime_request
+import episode_state_persistence
+import scheduler_core
+import approval_persistence
+import hot_state_bridge
 
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/resume-capsule.json")
-SOURCE_RELS=["meta/episode-state.json","meta/production-ledger.json","meta/production-queue.json","meta/runtime-request.json","meta/story-gates.json","meta/runtime-checkpoint.json","meta/final-acceptance.json"]
+SOURCE_RELS=["meta/episode-state.json","meta/production-ledger.json",production_queue_store.REL.as_posix(),"meta/runtime-request.json","meta/story-gates.json","meta/runtime-checkpoint.json","meta/final-acceptance.json"]
 STAGES=["IDEA_LOCKED","STORYBOARD_LOCKED","VISUAL_CALIBRATED","PRODUCTION_PASSED","PUBLISH_READY","PUBLISHED","DATA_REVIEWED"]
 STEP_BY_STATE={"IDEA_LOCKED":"CREATIVE_STORY","STORYBOARD_LOCKED":"VISUAL_LOCK","VISUAL_CALIBRATED":"PRODUCTION","PRODUCTION_PASSED":"RELEASE","PUBLISH_READY":"RELEASE","PUBLISHED":"RELEASE","DATA_REVIEWED":"RELEASE"}
 
@@ -19,9 +28,33 @@ def read_json(p):
     return story_json.read_json(p, default=None)
 def sha(p):
     p=Path(p)
-    return hashlib.sha256(p.read_bytes()).hexdigest() if p.is_file() else None
+    return derived_freshness.sha256_file(p)
 def write_json(p,d):
     story_json.write_json(p, d)
+def source_snapshot(ep):
+    ep=Path(ep).resolve();rows=[]
+    for rel in SOURCE_RELS:
+        logical=str(rel).replace("\\","/")
+        if logical==episode_state_persistence.REL.as_posix():
+            state=episode_state_persistence.load(ep); digest=episode_state_persistence.authority_sha256(state)
+        elif logical=="meta/production-ledger.json":
+            digest=production_ledger.authority_sha256(ep)
+        elif logical==runtime_checkpoint.REL.as_posix():
+            checkpoint=runtime_checkpoint.load(ep,{}); digest=runtime_checkpoint.authority_sha256(checkpoint)
+        elif logical==production_queue_store.REL.as_posix():
+            queue=scheduler_core.load_queue(ep); raw=json.dumps(queue,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8"); digest=hashlib.sha256(raw).hexdigest()
+        elif logical==runtime_request.EPISODE_REL.as_posix():
+            request=runtime_request.authority_for_episode(ep); digest=runtime_request.authority_sha256(request) if request else None
+        elif logical==approval_persistence.REL_BY_TYPE[approval_persistence.FINAL_ACCEPTANCE].as_posix():
+            digest=approval_persistence.source_sha(ep, approval_persistence.FINAL_ACCEPTANCE)
+        else:
+            path=ep/rel; digest=derived_freshness.sha256_file(path)
+        rows.append({"path":logical,"sha256":digest})
+    return rows,derived_freshness.fingerprint(rows)
+def sources_fresh(ep,data):
+    if not isinstance(data,dict) or not data.get("source_fingerprint"):return False
+    _rows,current=source_snapshot(ep)
+    return str(data.get("source_fingerprint") or "").lower()==current.lower()
 def _ledger_summary(ledger):
     frames=(ledger or {}).get("frames") or {};status_counts={}; blocking=[];tech=[];ready=[]
     for k,row in frames.items():
@@ -36,11 +69,11 @@ def _queue_summary(q):
         st=str(row.get("status") or "unknown");counts[st]=counts.get(st,0)+1
     return counts
 def compile_capsule(ep,write=True):
-    ep=Path(ep).resolve(); state=read_json(ep/"meta/episode-state.json") or {};cur=str(state.get("current_state") or "UNKNOWN")
+    ep=Path(ep).resolve(); state=episode_state_persistence.load(ep) or {};cur=str(state.get("current_state") or "UNKNOWN")
     next_target=None
     if cur in STAGES and STAGES.index(cur)<len(STAGES)-1:next_target=STAGES[STAGES.index(cur)+1]
-    sources=[{"path":rel,"sha256":sha(ep/rel)} for rel in SOURCE_RELS]
-    led=read_json(ep/"meta/production-ledger.json") or {};q=read_json(ep/"meta/production-queue.json") or {}
+    sources, source_fingerprint = source_snapshot(ep)
+    led=production_ledger.load_authority(ep,default={}) or {};q=scheduler_core.load_queue(ep)
     caps=runtime_capability_cache.ensure(ep);ls=_ledger_summary(led);qs=_queue_summary(q)
     actions=[]
     if ls["tech_retry_frames"]:actions.append("retry technical-failure frames only; do not regenerate successful siblings")
@@ -51,10 +84,21 @@ def compile_capsule(ep,write=True):
         elif cur=="PRODUCTION_PASSED":actions.append("continue Text/Release/Final Snapshot")
         elif cur=="PUBLISH_READY":actions.append("complete; do not reopen production unless user requests changes")
         else:actions.append("continue only the next canonical stage")
-    material=json.dumps(sources,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode("utf-8")
-    data={"schema_version":1,"module_version":"2.5.1","generated_at":now(),"episode":ep.relative_to(ROOT).as_posix() if ep.is_relative_to(ROOT) else str(ep),"current_state":cur,"next_target":next_target,"runtime_step":STEP_BY_STATE.get(cur),"source_fingerprint":hashlib.sha256(material).hexdigest(),"source_files":sources,"ledger":ls,"queue_status_counts":qs,"runtime_capabilities":caps,"next_actions":actions,"read_policy":"Read this capsule first after context loss. Do not broad-rescan repository authority unless a listed SHA changed, a required detail is missing, or a gate reports drift.","authority_policy":"Derived cache only; source authority always wins."}
-    if write:write_json(ep/REL,data)
+    data={"schema_version":1,"module_version":"2.5.1","generated_at":now(),"episode":ep.relative_to(ROOT).as_posix() if ep.is_relative_to(ROOT) else str(ep),"current_state":cur,"next_target":next_target,"runtime_step":STEP_BY_STATE.get(cur),"source_fingerprint":source_fingerprint,"source_files":sources,"ledger":ls,"queue_status_counts":qs,"runtime_capabilities":caps,"next_actions":actions,"read_policy":"Read this capsule first after context loss. Rebuild on source_fingerprint drift; source authority always wins.","authority_policy":"Derived cache only; source authority always wins."}
+    if write:
+        if hot_state_bridge.compatibility_write_allowed():
+            runtime_workspace.write_json(ep,REL,data)
+        hot_state_bridge.mirror(ep, "RESUME_CAPSULE", data)
     return data
+def load_fresh(ep,write=True):
+    ep=Path(ep).resolve()
+    hot = hot_state_bridge.read(ep, "RESUME_CAPSULE")
+    existing = hot_state_bridge.value_or_fallback(
+        hot,
+        lambda: runtime_workspace.read_json(ep,REL,default={}) or {},
+        default={},
+    )
+    return existing if sources_fresh(ep,existing) else compile_capsule(ep,write)
 def self_test():
     x=_ledger_summary({"frames":{"01":{"status":"PASSED"},"02":{"status":"TECH_FAILED"},"03":{"status":"NEEDS_USER"}}})
     assert x["tech_retry_frames"]==["02"] and x["blocking_frames"]==["03"]
@@ -65,6 +109,6 @@ def main():
     p=sub.add_parser("show");p.add_argument("episode_dir")
     sub.add_parser("self-test");a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0
-    ep=Path(a.episode_dir).resolve();d=compile_capsule(ep,write=a.cmd=="build") if a.cmd=="build" else (read_json(ep/REL) or compile_capsule(ep,False))
+    ep=Path(a.episode_dir).resolve();d=compile_capsule(ep,write=True) if a.cmd=="build" else load_fresh(ep,write=True)
     print(json.dumps(d,ensure_ascii=False,indent=2));return 0
 if __name__=="__main__":raise SystemExit(main())

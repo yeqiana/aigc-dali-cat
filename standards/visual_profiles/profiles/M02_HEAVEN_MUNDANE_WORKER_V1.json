@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "profile_schema_version": 2,
+  "id": "M02_HEAVEN_MUNDANE_WORKER_V1",
+  "profile_id": "M02_HEAVEN_MUNDANE_WORKER_V1",
+  "name": "天界普通工作人员日常",
+  "profile_name": "天界普通工作人员日常",
+  "profile_name_en": "Fictional Mundane Worker Daily Life",
+  "profile_version": "1.0",
+  "platform_min_version": "2.8.0",
+  "scope": "account_immersive_profile",
+  "default_when_unspecified": false,
+  "era": "fictional",
+  "reality_basis": "fictional_world_mundane",
+  "reality_basis_note": "天界不是现实世界，不能继承 real_world；但必须继承现实母规范里的纪实拍法与普通人生活密度，只把物理规则换成这个世界自洽的规则。",
+  "capture_philosophy": "mundane_worklog_documentary",
+  "diegetic_capture_device": {
+    "device": "随身上岗记录牌",
+    "holder": "当班的工作人员本人，或同岗位的同事",
+    "why_exists": "天界普通岗位有考勤与工单留痕制度，上岗牌自带留影功能；照片是留痕的副产品，不是艺术创作。",
+    "capture_reason": "上岗打卡、任务前后留证、给同事看现场",
+    "save_reason": "工单归档与交接",
+    "resolves_ghost_camera": "拍摄者始终在画面外有物理持机身份（本人或同事），视角来源可追溯，因此不构成 Capture Grammar 禁止的幽灵机位。"
+  },
+  "camera_language": {
+    "operator": "participant_or_companion_inside_event",
+    "viewpoint": "first_person_or_companion_eye",
+    "capture_grammar_ref": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "capture_profile_ref": "CP03",
+    "who_records": "当班的普通工作人员本人或同事；不是神仙，不是主角，不是摄制组。",
+    "how_recorded": "用随身上岗记录牌随手留痕，任务前后拍一张，不构图不摆姿势。",
+    "why_exists": "这个世界没有幽灵机位：每一张留影都有一个真实持机的人，和一条真实的工作理由。",
+    "ghost_camera": "forbidden"
+  },
+  "realism_level": "maximum",
+  "lighting_rules": {
+    "source": "diegetic_and_available_only",
+    "allowed": ["world_native_daylight", "workplace_practical_light", "lantern", "glow_source_with_physical_origin"],
+    "forbidden": ["studio_lighting", "three_point_setup", "beauty_dish", "cinematic_lighting", "god_ray_spectacle"]
+  },
+  "prohibited_patterns": [
+    "神仙大战大片",
+    "神话宣传片",
+    "电影级特效",
+    "英雄机位与对称构图",
+    "概念设计图质感",
+    "塑料皮肤与磨皮",
+    "无来源幽灵机位"
+  ],
+  "compatible_story_types": [
+    "mythic_mundane_work",
+    "celestial_ordinary_life"
+  ],
+  "must_keep": [
+    "普通岗位与工作流程",
+    "自洽的世界物理",
+    "非摆拍的手持记录感",
+    "每帧可追溯的持机者与拍摄理由"
+  ],
+  "forbidden": [
+    "神仙大战大片",
+    "神话宣传片",
+    "电影级特效"
+  ],
+  "principle": "拍天界上班族的日常，不是拍神话宣传片；世界物理自洽优先，纪实拍法不放松。",
+  "precedence": [
+    "explicit_episode_or_series_visual_profile",
+    "fictional_world_physics",
+    "M02_visual_language"
+  ],
+  "visual_dna": {
+    "reality_first": true,
+    "era": "fictional_world_mundane",
+    "people": "ordinary_unprepared_not_heroic",
+    "subject_awareness": "mostly_unaware_or_natural",
+    "practical_available_light": true,
+    "cinematic_lighting": "forbidden_by_default",
+    "commercial_hdr": "forbidden",
+    "beautification": "forbidden",
+    "scene_cleaning": "forbidden_by_default",
+    "life_clutter": "preserve",
+    "environment_imperfection": "preserve",
+    "anomaly": "embedded_in_mundane_work_life_before_spectacle",
+    "camera_authorship": "required",
+    "ghost_camera": "forbidden",
+    "diegetic_capture_device": "required",
+    "continuity": "strict",
+    "visual_polish_ceiling": "documentary_realism"
+  },
+  "anti_homogeneity": {
+    "lock_texture_not_scene": true,
+    "rule": "统一世界物理、拍摄行为与现场光，不统一剧情空间、异常载体和关键道具。"
+  }
+}

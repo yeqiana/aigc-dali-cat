@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "category": "continuity",
+  "fixtures": [
+    {
+      "id": "CONT_REAL_POS_001",
+      "polarity": "positive",
+      "source_type": "real",
+      "source_episode": "婚礼前夜·记忆麻醉",
+      "source_evidence": ["StoryLock V2 / Storyboard V2"],
+      "scenario": "01-18同一婚前夜无换装；09婚鞋只拿起不穿；10-15金镯未扣合；16-18继续穿原布鞋且泥污延续。",
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "reason": "人物衣着、关键道具状态和污损状态形成连续的可追踪状态链。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["FrameContract", "SequenceReview"]
+    },
+    {
+      "id": "CONT_REAL_NEG_001",
+      "polarity": "negative",
+      "source_type": "real",
+      "source_episode": "天界普通女生的一天",
+      "source_evidence": ["reports/天界普通女生的一天_修复实施记录_20260914.md R-20260914-07"],
+      "scenario": "Environment baseline 为 morning，但 S03-S06 只在 condition 写 midday/afternoon/dusk/early evening，最终 effective time_of_day 仍错误继承 morning；Frame17 还混入 golden/warm 宣传片诱导。",
+      "expected": {
+        "decision": "FAIL",
+        "issue_codes": ["EFFECTIVE_DAYPART_CONFLICT", "REALITY_FIRST_PROMO_CONFLICT"],
+        "reason": "声明文本看似包含正确时段，不代表最终有效合同状态正确。"
+      },
+      "current_coverage": "fixed",
+      "future_capability": ["FrameContract", "SequenceReview"]
+    },
+    {
+      "id": "CONT_REAL_POS_002",
+      "polarity": "positive",
+      "source_type": "real",
+      "source_episode": "天界普通女生的一天",
+      "source_evidence": ["reports/天界普通女生的一天_修复实施记录_20260914.md R-20260914-03"],
+      "scenario": "Frame17 authority/像素变化后，只让 Frame17 admission dirty；Frame01/05/16 绑定相同 asset SHA + contract SHA + profile SHA 的既有 PASS 不重新随机评审。",
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "reason": "连续性审核需要精确 dirty set，兄弟帧变化不能让未变像素无理由回到失败域。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["DependencyPropagation"]
+    },
+    {
+      "id": "CONT_REAL_NEG_002",
+      "polarity": "negative",
+      "source_type": "real",
+      "source_episode": "婚礼前夜·记忆麻醉",
+      "source_evidence": ["reports/09-05婚礼前夜生产问题复盘_20260910.md §4"],
+      "scenario": "Frame01 替换为新正脸版本后，旧 cover/contact-sheet/snapshot/delivery 仍未自动失效，需要人工发现并重建。",
+      "expected": {
+        "decision": "FAIL",
+        "issue_codes": ["DEPENDENT_ARTIFACT_STALE"],
+        "reason": "这是跨资产连续性/失效传播问题；不能让新正文与旧封面/快照同时保持有效。"
+      },
+      "current_coverage": "open_gap",
+      "future_capability": ["DependencyPropagation"]
+    }
+  ]
+}
+

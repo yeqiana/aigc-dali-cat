@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "storyos://standards/visual_profiles/schema/visual-lock.schema.json",
+  "title": "Story OS Visual Lock",
+  "description": "Visual Profile Governance Phase 3.5. A Visual Lock records the selection fact and the confirmation fact for one Episode so a gate can verify that a profile was chosen on purpose, by someone, at a certain time. Existence of a file is not evidence; the locked selection and its adjudication are.",
+  "type": "object",
+  "required": ["schema_version", "profile_id", "profile_path", "selection_evidence"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "profile_id": { "type": "string", "minLength": 1 },
+    "profile_path": { "type": "string", "minLength": 1 },
+    "selection": {
+      "description": "Adjudicated outcome. A string is the selector status; an object is the free-form selection payload.",
+      "oneOf": [
+        { "type": "string", "enum": ["selected", "needs_confirmation", "defaulted", "rejected"] },
+        { "type": "object" }
+      ]
+    },
+    "status": {
+      "description": "Equivalent top-level spelling of the selector status.",
+      "type": "string",
+      "enum": ["selected", "needs_confirmation", "defaulted", "rejected"]
+    },
+    "selection_evidence": {
+      "description": "The selection fact emitted by the Selector (Phase 3.2 contract). Copied, never recomputed.",
+      "type": "object",
+      "required": ["selector_version", "inputs_digest", "matched_rules", "reason", "source"],
+      "properties": {
+        "selector_version": { "type": "string", "minLength": 1 },
+        "inputs_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "matched_rules": { "type": "array", "items": { "type": "string" } },
+        "reason": { "type": ["array", "string"] },
+        "source": { "type": "string", "minLength": 1 },
+        "registry": { "type": "string" },
+        "inputs_summary": { "type": "object" },
+        "rejected": { "type": "array" }
+      }
+    },
+    "confirmed_by": { "type": ["string", "null"] },
+    "confirmed_at": { "type": ["string", "null"] },
+    "confirmation_mode": {
+      "description": "human and system are canonical; direct_user and delegated_auto are accepted equivalents of human review.",
+      "enum": ["human", "system", "direct_user", "delegated_auto"]
+    },
+    "confirmed_note": { "type": "string" },
+    "lifecycle_state": {
+      "description": "Visual Profile Governance Phase 4.2 lifecycle. SELECTED and NEEDS_CONFIRMATION are drafts; LOCKED is adjudicated; FROZEN means production assets exist and the profile may no longer change.",
+      "enum": ["DRAFT", "SELECTED", "NEEDS_CONFIRMATION", "LOCKED", "FROZEN"]
+    },
+    "confirmation": {
+      "description": "Phase 4.2 confirmation record. The top-level confirmation_mode / confirmed_by / confirmed_at fields stay the canonical Phase 3.5 spelling and are kept in sync with this block.",
+      "type": "object",
+      "properties": {
+        "mode": { "enum": ["human", "system", "direct_user", "delegated_auto"] },
+        "confirmed_by": { "type": ["string", "null"] },
+        "confirmed_at": { "type": ["string", "null"] },
+        "reason": { "type": ["string", "null"] }
+      }
+    },
+    "frozen_at": { "type": "string" },
+    "frozen_by": { "type": "string" },
+    "lock_policy": { "type": "string" },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  }
+}

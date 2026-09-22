@@ -27,6 +27,7 @@ PATH_LITERALS = (
     "meta/image-scheduler-performance.json",
     "meta/batch-runtime-performance.json",
     "meta/quota-observability.json",
+    "meta/runtime/trace-summary.json",
     "meta/runtime/trace-events.jsonl",
 )
 
@@ -42,6 +43,7 @@ EXPECTED_CONSUMERS = {
     "quota_observability.py",
     "runtime_daemon_event_bridge.py",
     "runtime_fast_path.py",
+    "runtime_trace.py",
 }
 
 
@@ -57,7 +59,7 @@ class ObservabilityPathRegistryTests(unittest.TestCase):
     def test_path_literals_only_in_registry_or_documented_exceptions(self):
         violations = []
         for py in sorted(SYSTEM.glob("*.py")):
-            if py.name == "runtime_observability.py":
+            if py.name in {"runtime_observability.py", "episode_storage_policy.py"}:
                 continue
             if _is_test_fixture(py):
                 continue

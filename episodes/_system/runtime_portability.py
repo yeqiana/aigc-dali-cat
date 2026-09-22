@@ -33,6 +33,39 @@ def validate_repo_relative(raw: object, *, field: str) -> list[str]:
     return []
 
 
+def validate_episode_directory(path: Path) -> list[str]:
+    """Reject repository-local pseudo Episodes outside the canonical episodes root."""
+    resolved = Path(path).resolve()
+    try:
+        rel = resolved.relative_to(ROOT.resolve())
+    except ValueError:
+        # External unit-test fixtures are allowed; production paths inside this
+        # checkout must live below episodes/.
+        return []
+    parts = rel.parts
+    if len(parts) < 2 or parts[0] != "episodes" or parts[1] == "_system":
+        return [f"episode directory must be under episodes/, got {rel.as_posix() or '.'}"]
+    return []
+
+
+def assert_episode_directory(path: Path) -> None:
+    errors = validate_episode_directory(path)
+    if errors:
+        raise ValueError(errors[0])
+
+
+def episode_label(path: Path) -> str:
+    """Portable evidence label for a formal Episode or an external test fixture."""
+    resolved = Path(path).resolve()
+    try:
+        return resolved.relative_to(ROOT.resolve()).as_posix()
+    except ValueError:
+        # External fixtures are permitted by validate_episode_directory() for unit
+        # tests, but persisted/derived evidence must never embed machine-specific
+        # absolute paths.
+        return f"external-fixture/{resolved.name}"
+
+
 def sanitize_diagnostic_text(raw: object) -> str:
     text = str(raw or "")
     root_text = str(ROOT.resolve())

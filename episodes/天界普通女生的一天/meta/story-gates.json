@@ -1,0 +1,645 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "天界普通女生的一天",
+  "visual_profile": {
+    "mode": "explicit",
+    "profile_id": "M04_HEAVEN_MUNDANE_LIFE_V1",
+    "profile_path": "standards/visual_profiles/profiles/M04_HEAVEN_MUNDANE_LIFE_V1.json",
+    "capture_profile": "auto",
+    "override_reason": "visual_profile_selector"
+  },
+  "story": {
+    "recent5_checked": true,
+    "four_locks_diff_count": 4,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [
+      10,
+      11,
+      16,
+      17,
+      18
+    ],
+    "climax_frame": 17,
+    "payoff_frame": 20,
+    "semantic_review_path": "meta/story-semantic-review.json",
+    "recent5_evidence_note": "已完成 meta/recent5-review.json 与 meta/recent5-semantic-review.json：对 09-04《瓶中世界》、10-01《鳌太线·热汤》的 exact/semantic similarity 均为 0，mechanism_veto=false；本集为女性好友群纯天界生活相册，无异常、无调查、无生存风险。",
+    "competing_explanations_note": "本集没有谜题机制；这里保留两个合法叙事重心供 Story Critic 比较：A 朋友关系与无计划休息日；B 普通居民视角下的天界生活空间。两者都不引入异常解释。"
+  },
+  "character": {
+    "finalize": {
+      "character": "P01 female lead with stable P02/P03/P04 mixed friend group",
+      "identity": "four original believable young celestial residents; no celebrity or influencer likeness; P01 is attractive but natural",
+      "pov": "P01 first-person album; Frame01 is a natural selfie with friends partially entering frame",
+      "appearance": "P01 natural black medium-long hair, visible skin texture, ivory/light-cyan everyday celestial clothing; P02 dusty-pink/ivory, P03 grey-blue, P04 light-brown/blue-grey; faces/hair/clothing anchors remain stable",
+      "continuity": "same four identities across the episode; no pixel master claimed before Visual Lock",
+      "friendship_rule": "friends interact casually and asynchronously; avoid repeated commercial group-photo posing"
+    }
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": null,
+        "location": null,
+        "key_prop": null,
+        "wardrobe": null,
+        "weather_time": null
+      }
+    },
+    "authenticity_card": {
+      "story_era": null,
+      "location": null,
+      "photographer": null,
+      "shooting_reason": null,
+      "primary_capture": {
+        "id": null,
+        "device": null
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": null,
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": null,
+        "restricted": null,
+        "lost_control": null
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": null,
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": null
+      }
+    },
+    "calibration": {
+      "schema_version": 2,
+      "policy": "VISUAL_LOCK_1_PLUS_3_V21",
+      "ordinary_life_override": true,
+      "legacy_first_major_anomaly_semantics": "first_major_visual_contrast",
+      "items": [
+        {
+          "id": "V-B",
+          "role": "ordinary_baseline",
+          "frame": 1,
+          "asset_path": "episodes/天界普通女生的一天/media/candidates/scheduled/01-281a1d44f404-a2.png",
+          "sha256": "4ff7a94d486416f5ff049ebbd8c239fbb682e9e1f5586b2ea4d795186debd5d6",
+          "decision": "passed",
+          "frame_contract_sha256": "83efe10c929571e1c7960da6b7fe6987322612ca012793487ce28d0fcc008cd3",
+          "note": "baseline separately PASS; parallel-three may start"
+        },
+        {
+          "id": "V-W",
+          "role": "worst_capture_condition",
+          "frame": 16,
+          "asset_path": "episodes/天界普通女生的一天/media/candidates/scheduled/16-7f51ea4bbe36-a11.png",
+          "sha256": "8b8a01b493fd3ead5db5bf7242222eff068efddfac2a19df3f5b8a8fb87d6d21",
+          "decision": "failed",
+          "frame_contract_sha256": "c878069d9e21b81f833b2eea4abc35213670765383489761d554b1b5c544bd33",
+          "note": "dusk bridge / strongest ordinary capture condition"
+        },
+        {
+          "id": "V-A",
+          "role": "first_major_anomaly",
+          "frame": 5,
+          "asset_path": "episodes/天界普通女生的一天/media/candidates/scheduled/05-71e4e98dafa2-a1.png",
+          "sha256": "f397389a28536012af4965e30116994ac36f9cfc71d877c80e849659a81e23dd",
+          "decision": "passed",
+          "frame_contract_sha256": "5ff6a953e1f2881c4b29baf6e7804267228277aabaa4e8feb41895086c3ab886",
+          "note": "ordinary-life override: legacy anomaly slot means first major celestial-world visual contrast"
+        },
+        {
+          "id": "V-H",
+          "role": "high_impact_admission",
+          "frame": 17,
+          "asset_path": "episodes/天界普通女生的一天/media/candidates/scheduled/17-17fd33741fdf-a1.png",
+          "sha256": "a1f064f1396df0860af3e5aeb48942390852ea4a2e94f40aa38a41fbafde7c02",
+          "decision": "failed",
+          "frame_contract_sha256": "ff0dc68d79ecf675016adcde950cf8cea8fa8280f5e788df6090ec9c11bc1da7",
+          "note": "world-scale daily-life climax, no anomaly"
+        }
+      ]
+    },
+    "calibration_contact_sheet": {
+      "path": null,
+      "sha256": null
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "mild late-spring-like celestial day",
+      "baseline": {
+        "condition": "clear calm ordinary celestial residential weather",
+        "time_of_day": "morning",
+        "temperature_feel": "mild",
+        "ground_state": "dry stone and timber walking surfaces",
+        "visibility": "clear with natural atmospheric depth over cloud sea",
+        "wind": "light breeze, stronger only on exposed bridges",
+        "precipitation": "none",
+        "physical_cues": [
+          "soft natural sky light",
+          "dry stone steps",
+          "ordinary residents using streets",
+          "cloud sea used as background geography rather than magical effect"
+        ]
+      },
+      "segments": [
+        {
+          "id": "S01_MORNING_HOME",
+          "start_frame": 1,
+          "end_frame": 4,
+          "condition": "soft clear morning in residential lane and breakfast area",
+          "time_of_day": "morning",
+          "physical_cues": [
+            "low warm morning light",
+            "steam from breakfast stall",
+            "light breeze moving loose hair"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S02_LATE_MORNING",
+          "start_frame": 5,
+          "end_frame": 7,
+          "condition": "brightening late morning on commute bridge and public duty room",
+          "time_of_day": "morning",
+          "physical_cues": [
+            "clear cloud depth",
+            "soft window light",
+            "dry bridge surface"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S03_MIDDAY",
+          "start_frame": 8,
+          "end_frame": 10,
+          "condition": "bright mild midday around family eatery and street",
+          "time_of_day": "day",
+          "physical_cues": [
+            "neutral daylight",
+            "busy lunch foot traffic",
+            "window reflections remain physically plausible"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S04_AFTERNOON_MARKET",
+          "start_frame": 11,
+          "end_frame": 15,
+          "condition": "warm afternoon in old cloud market and tea stall",
+          "time_of_day": "afternoon",
+          "physical_cues": [
+            "angled daylight under low eaves",
+            "cloth banners moving lightly",
+            "mixed open-sky and shaded shop light"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S05_DUSK_BRIDGE",
+          "start_frame": 16,
+          "end_frame": 18,
+          "condition": "clear dusk on exposed west cloud bridge",
+          "time_of_day": "dusk",
+          "physical_cues": [
+            "warm low-angle sunlight",
+            "large golden cloud sea",
+            "moderate bridge breeze",
+            "people remain ordinary small figures"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S06_EVENING_HOME",
+          "start_frame": 19,
+          "end_frame": 20,
+          "condition": "early evening in residential street and home cloud corridor",
+          "time_of_day": "dusk",
+          "physical_cues": [
+            "street lanterns becoming visible",
+            "remaining blue-gold dusk sky",
+            "warm practical light near homes"
+          ],
+          "conditional_effects": []
+        }
+      ],
+      "frame_overrides": {
+        "17": {
+          "time_of_day": "dusk",
+          "visibility": "clear dusk with natural atmospheric haze softening distant cloud-sea city detail",
+          "physical_cues": [
+            "off-axis late-day sunlight with the sun near or outside the frame edge, never centered as a hero element",
+            "broad dusk cloud sea with uneven ordinary-device exposure rather than golden HDR rendering",
+            "moderate bridge breeze with small natural clothing and hair movement",
+            "people remain ordinary small figures while distant architecture loses contrast through atmospheric depth"
+          ]
+        }
+      }
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "natural P01 selfie face",
+          "P02 adjusting loose hair",
+          "P03 breakfast entering background",
+          "lived-in cloud corridor"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "ordinary residential stone steps",
+          "laundry and water-carrying details"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "03": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "steam",
+          "porridge",
+          "hot cakes",
+          "small dishes",
+          "ordinary breakfast stall"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "04": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "P04 arriving slightly late",
+          "paper snack bag placed on table",
+          "casual laughter"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "05": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "commute cloud bridge",
+          "ordinary residents",
+          "simple transport carts",
+          "friends walking naturally"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "06": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "plain public-duty room",
+          "paper slips",
+          "tea cup",
+          "window daylight"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "07": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "friends waiting outside window",
+          "P03 tapping glass casually",
+          "no posed lineup"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "08": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "busy family eatery",
+          "four friends finding window table",
+          "ordinary diners"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "09": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "home-style dishes",
+          "four pairs of chopsticks",
+          "friends eating rather than posing"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "10": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "street outside eatery",
+          "P02 proposing old market detour",
+          "group changing direction"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "11": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "layered old cloud market",
+          "low timber shops",
+          "cloth banners",
+          "ordinary shoppers and vendors"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "12": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "small copper mirror",
+          "cheap wooden hairpin",
+          "P01 helping P02 gather hair"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "13": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "small snack parcels",
+          "P03 and P04 playful carrying gesture",
+          "P01/P02 looking back naturally"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "14": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "rough ceramic tea cups",
+          "timber window",
+          "new wooden hairpin on table",
+          "market outside"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "15": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "four friends chatting around small table",
+          "relaxed unsynchronized expressions"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "16": {
+        "narrative_role": "escalation",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "west bridge catching sunset",
+          "friends deciding to stay longer",
+          "warmer low-angle light"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "17": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "vast dusk cloud sea under uneven off-axis backlight; sun is not centered and may sit partly or fully outside the frame",
+          "P01/P03/P04 as three ordinary small figures against the landscape",
+          "P02 remains behind the camera and leaves visible physical camera-owner evidence at the frame edge: dusty-pink sleeve, hand, or jade-device edge",
+          "friends remain off-center and asynchronous; no three-person or four-person lineup",
+          "backlight must preserve real exposure loss: partial silhouette, clipped sky highlight, or underexposed faces",
+          "natural stance or lean at bridge edge",
+          "distant city and bridge detail softened by atmospheric haze; no complete skyline showcase",
+          "no hero pose or tourism-poster blocking"
+        ],
+        "scale_reference": "three full figures remain visibly small against the vast sunset cloud sea while P02 is evidenced only by a near-edge sleeve/hand/device fragment as the photographer",
+        "escalation_from": 16,
+        "generation_depends_on": []
+      },
+      "18": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "friends seated casually",
+          "last snack divided into four pieces",
+          "sunset still present but secondary"
+        ],
+        "scale_reference": "",
+        "escalation_from": 17,
+        "generation_depends_on": []
+      },
+      "19": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "street lanterns on",
+          "friends leaving through different lanes",
+          "P02 turning back to wave"
+        ],
+        "scale_reference": "",
+        "escalation_from": 18,
+        "generation_depends_on": []
+      },
+      "20": {
+        "narrative_role": "residue",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "P01 shoes at corridor edge",
+          "empty snack wrapper",
+          "new wooden hairpin",
+          "last strip of dusk",
+          "album device being put away"
+        ],
+        "scale_reference": "",
+        "escalation_from": 19,
+        "generation_depends_on": []
+      }
+    },
+    "world_identity": {
+      "applicable": true,
+      "profile_id": "CELESTIAL_MUNDANE_WORLD_V1",
+      "world": "东方天界的普通居民生活区，不映射现实国家；云海、云桥和层叠街区是日常地理，不是异常或法术展示",
+      "population": "普通二十多岁天界本地居民，外貌自然可信，禁止英雄化、明星化、网红化",
+      "architecture": "朴素石木居民区、公共轮值房、家常食肆、旧云市、茶摊、云桥；避免宏大神殿与仙侠宣传片构图",
+      "modern_element_budget": "visible modern content <=10%; 留影玉牌只承担相册记录功能"
+    },
+    "world_state": {
+      "applicable": true,
+      "initial_time": "morning",
+      "initial_location": "P01 home cloud corridor",
+      "weather": "clear mild dry day",
+      "recorder": "P01 normally uses the handheld image-jade device; at Frame17 P02 temporarily takes P01's device and stays behind the camera with only a dusty-pink sleeve/hand/device-edge fragment allowed in frame; the device returns to P01 from Frame18 onward",
+      "recorder_exception_frame17": "photographer=P02; active_device remains P01 image-jade; P01/P03/P04 are the three distant complete figures; P02 must not fully enter frame",
+      "persistent_props": [
+        "image-jade device",
+        "small snack parcels",
+        "wooden hairpin after Frame12"
+      ],
+      "character_presence": "P01/P02/P03 present from opening; P04 joins at Frame04; all four remain together until Frame19 goodbye",
+      "anomaly_phase": "ordinary; no anomaly exists"
+    },
+    "temporal_continuity": {
+      "applicable": true,
+      "timeline": [
+        "Frames01-04 morning",
+        "Frames05-07 late morning",
+        "Frames08-10 midday",
+        "Frames11-15 afternoon",
+        "Frames16-18 dusk",
+        "Frames19-20 early evening"
+      ],
+      "weather_rule": "clear/mild/dry throughout; only sun angle and ambient light change",
+      "continuity_rule": "all daypart changes require positive elapsed time; dusk/evening shift is motivated by hours spent together"
+    },
+    "wardrobe": {
+      "applicable": true,
+      "temperature_band": "mild",
+      "weather": "clear dry mild day",
+      "look_policy": "single stable everyday look per character for whole episode unless a visible story reason exists",
+      "P01": "ivory/light-cyan everyday ruqun-like clothing with light outer layer; practical flat shoes; natural hair",
+      "P02": "dusty pink-grey and ivory everyday dress; practical flat shoes",
+      "P03": "grey-blue short jacket and deep-grey trousers",
+      "P04": "light-brown short top and blue-grey trousers",
+      "physics": "clothing remains plausible for mild walking/market/bridge activity; no cold-weather or high-altitude special gear needed"
+    },
+    "narrative_core": {
+      "story_mode": "ordinary_daily_life",
+      "anomaly_applicable": false,
+      "core_visual_contrast": "vast celestial geography versus tiny ordinary friendship actions",
+      "relationship_arc": "morning meetup -> shared errands/meals -> spontaneous afternoon extension -> sunset pause -> goodbye",
+      "midpoint": "Frame10 spontaneous detour to old cloud market",
+      "visual_emotional_peak": "Frames17-18 sunset cloud sea and splitting the last snack",
+      "ending": "Frame20 reduces the vast day to shoes, empty wrapper, wooden hairpin and remaining dusk",
+      "forbidden": [
+        "horror",
+        "mystery",
+        "investigation",
+        "anomaly injection",
+        "hero pose",
+        "commercial group portrait",
+        "over-retouched faces"
+      ]
+    },
+    "shot_progression": {
+      "source": "meta/shot-progression-review.json",
+      "grammar": "realistic casual album capture",
+      "scale_arc": "close selfie -> residential medium/wide -> market mixed scales -> extreme-wide sunset climax -> close residue",
+      "interaction_density": "meaningful friend interaction appears regularly but does not dominate every frame",
+      "scene_reuse": "no exact scene_position_id reuse",
+      "lighting": "only physically motivated morning/day/afternoon/dusk/lantern light",
+      "frame01_rule": "natural selfie with clearly readable P01 face; friends enter casually",
+      "frame17_rule": "largest world-scale daily-life image; P02 temporarily takes P01's image-jade and stays behind the camera, leaving only a dusty-pink sleeve/hand/device-edge fragment at the frame edge; P01/P03/P04 remain three distant off-center figures continuing to watch/chat/lean without looking toward camera; dusk sun stays off-axis or partly outside frame, distant city loses contrast in atmospheric haze, and ordinary-device backlight preserves clipped highlights/underexposure instead of golden HDR or poster polish"
+    },
+    "capture_grammar": {
+      "device": "P01 handheld image-jade album device; friend-taken/placed shots only when diegetically justified; Frame17 is explicitly P02 temporarily handholding P01's device, with P02 remaining behind camera and only a sleeve/hand/device-edge fragment allowed as camera-owner evidence",
+      "photo_feel": "realistic private mobile-album immediacy, slight imperfection, natural skin texture, non-cinematic posing; Frame17 explicitly favors ordinary-device exposure loss and atmospheric depth over golden-hour HDR, rim-light polish, or fantasy tourism imagery",
+      "composition": "subject-first casual framing with lived-in background; avoid symmetrical poster composition; Frame17 must keep asymmetric friend-taken framing, P01/P03/P04 small and off-center against the vast cloud sea, visible P02 edge evidence, natural railing/clothing occlusion, no subject looking or turning for camera, sun off-axis or outside frame, softened distant skyline, and no tourism-poster lineup",
+      "modern_budget": "device metaphor is the primary modern-like element; visible scene content remains >90% old-world celestial",
+      "continuity": "P01/P02/P03/P04 identities and clothing anchors remain stable; no identity master is claimed before Visual Lock",
+      "anomaly_progression": "NOT_APPLICABLE; keep all frames ordinary"
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": false,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "pending",
+    "continuity": "pending",
+    "visual_admission": "failed",
+    "subtitle": "pending",
+    "production": "pending",
+    "recommendation_fit": "pending",
+    "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 2,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true
+  }
+}

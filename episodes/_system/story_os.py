@@ -10,6 +10,7 @@ from pathlib import Path
 from story_os_contract import canonical_stages, story_os_version
 import storyos_config
 import runtime_timeout_policy
+import episode_state_persistence
 
 SYSTEM_DIR = Path(__file__).resolve().parent
 ROOT = SYSTEM_DIR.parents[1]
@@ -26,28 +27,26 @@ GATE_HINTS = {
 
 
 def load_state(ep: Path):
-    p = ep / "meta/episode-state.json"
-    if not p.exists(): return None
-    return json.loads(p.read_text(encoding="utf-8-sig"))
+    return episode_state_persistence.load(Path(ep).resolve())
 
 
 def cmd_status(ep: Path):
     s = load_state(ep)
     if not s:
-        print("NO_STATE: 该剧集尚未接入 episode-state.json"); return 1
+        print("NO_STATE: 该剧集尚未接入 Episode State authority"); return 1
     print(s.get("current_state", "UNKNOWN")); return 0
 
 
 def cmd_next(ep: Path):
     s = load_state(ep)
     if not s:
-        print("当前剧集没有 meta/episode-state.json。")
+        print("当前剧集没有 Episode State authority。")
         print(f"先初始化：python episodes/_system/episode_state.py init \"{ep}\" --id <id> --series <series> --title <title> --frame-count <N>")
         return 1
     cur = s.get("current_state")
     print(f"Current: {cur}")
     if cur not in STATES:
-        print("状态不在 Story OS 七阶段中，请先修复 episode-state.json。"); return 2
+        print("状态不在 Story OS 七阶段中，请先修复 Episode State authority。"); return 2
     idx = STATES.index(cur); print(f"Now: {GATE_HINTS[cur]}")
     if idx == len(STATES) - 1:
         print("Next: 已完成数据复盘；下一步进入新选题，不再推进本集状态。"); return 0
@@ -84,7 +83,10 @@ def main():
     p = sub.add_parser("performance"); p.add_argument("episode_dir")
     # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
     p = sub.add_parser("fast-path"); p.add_argument("fast_cmd", choices=["prepare","resume","capabilities","candidate","slo"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
-    p = sub.add_parser("dag"); p.add_argument("dag_cmd", choices=["plan", "run", "resume", "show"]); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None)
+    # STORY_OS_V262_DAG_STOP_TARGET: --until is passed through unvalidated on purpose. STAGES in
+    # runtime_dag.py is the single source of truth for canonical stage names, and forwarding lets
+    # an invalid value fail there with the real choice list instead of a second copy drifting here.
+    p = sub.add_parser("dag"); p.add_argument("dag_cmd", choices=["plan", "run", "resume", "show"]); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None); p.add_argument("--until")
     p = sub.add_parser("quota"); p.add_argument("quota_cmd", choices=["auto", "snapshot", "report"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("checklist"); p.add_argument("episode_dir"); p.add_argument("--no-validators", action="store_true")
     p = sub.add_parser("audit-text"); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
@@ -95,7 +97,7 @@ def main():
     p = sub.add_parser("release-package"); p.add_argument("episode_dir"); p.add_argument("release_cmd", choices=["build", "verify", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("runtime"); p.add_argument("runtime_cmd", choices=["detect", "capabilities", "contract", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("request"); p.add_argument("request_cmd", choices=["compile", "validate", "bind", "show", "show-episode"]); p.add_argument("extra", nargs=argparse.REMAINDER)
-    p = sub.add_parser("image-model"); p.add_argument("image_model_cmd", choices=["resolve"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("image-model"); p.add_argument("image_model_cmd", choices=["resolve", "migrate-system-default"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("checkpoint"); p.add_argument("episode_dir"); p.add_argument("checkpoint_cmd", choices=["init", "show", "set", "record-step"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("capture-profile"); p.add_argument("profile_cmd", choices=["validate", "list", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("regression"); p.add_argument("regression_cmd", choices=["run", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
@@ -123,12 +125,47 @@ def main():
     p = sub.add_parser("quality"); p.add_argument("quality_cmd", choices=["enable","verify-story","verify-preimage","verify-release","show"]); p.add_argument("episode_dir")
     p = sub.add_parser("lineage"); p.add_argument("lineage_cmd", choices=["record","verify","show"]); p.add_argument("episode_dir"); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("golden"); p.add_argument("golden_cmd", choices=["register","run","show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sub.add_parser("create", help="one sentence request -> canonical full-auto production")
+    p.add_argument("request_text")
+    p.add_argument("--visual-profile", default=None, help="force a registered Visual Profile id (default: the Selector decides from the Story Intent)")
+    p.add_argument("--full-auto", action="store_true", help="authorize the delegated continuous run")
+    p.add_argument("--dry-run", action="store_true", help="resolve intent + profile only; write nothing")
+    p.add_argument("--title", default=None, help="Episode title (defaults to the request text)")
+    p.add_argument("--timeout", type=int, default=None)
+    p.add_argument("--json", action="store_true", help="print the full status document")
     p = sub.add_parser("run"); p.add_argument("episode_dir"); p.add_argument("--full-auto", action="store_true"); p.add_argument("--resume", action="store_true"); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None); p.add_argument("--request-file")
+    # STORY_OS_V2_6_2_CONTINUOUS_HOST_LOOP: the bounded recovery coordinator previously had no
+    # CLI entry, so next-action/image dispatch could only be reached by calling the script by path.
+    p = sub.add_parser("runner"); p.add_argument("episode_dir"); p.add_argument("--interval", type=int, default=10); p.add_argument("--resume", action="store_true"); p.add_argument("--codex")
+    # STORY_OS_V262_DETACHED_DRIVER: the resident Driver outlives the host tool call.
+    # `runner` is the same Driver in the foreground; `driver` launches it detached.
+    p = sub.add_parser("driver"); p.add_argument("driver_cmd", choices=["start", "status", "recover", "logs"]); p.add_argument("episode_dir"); p.add_argument("--codex"); p.add_argument("--interval", type=int, default=10); p.add_argument("--resume", action="store_true"); p.add_argument("--lines", type=int, default=20); p.add_argument("--json", action="store_true")
     p = sub.add_parser("image-backend"); p.add_argument("backend_cmd", choices=["generate", "generate-for-frame", "self-test"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("delegated-delivery"); p.add_argument("episode_dir"); p.add_argument("delivery_cmd", choices=["build", "verify", "show"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     p = sub.add_parser("delegated-approval"); p.add_argument("episode_dir"); p.add_argument("approval_cmd", choices=["record", "verify", "show"]); p.add_argument("kind", nargs="?", choices=["story_lock", "visual_lock", "release_lock"]); p.add_argument("extra", nargs=argparse.REMAINDER)
     args = ap.parse_args()
 
+    if args.cmd == "create":
+        # Canonical one sentence entry (Phase 5.6). This handler only wires existing
+        # modules: Story Intent -> Episode -> Visual Lock -> the Runtime DAG
+        # (workflow_runner + runtime_dag + image_scheduler) -> auto_review_loop ->
+        # repair_engine -> the canonical repair lane -> Release Candidate. The runtime
+        # DAG, the ledger, the gates and canonical Episode State authority stay authoritative;
+        # this CLI never forks a second production chain.
+        import production_orchestrator
+
+        document = production_orchestrator.run_full_auto(
+            ROOT,
+            args.request_text,
+            title=args.title,
+            forced_profile_id=args.visual_profile,
+            full_auto=args.full_auto,
+            dry_run=args.dry_run,
+            timeout=args.timeout,
+        )
+        print(json.dumps(document, ensure_ascii=False, indent=2) if args.json
+              else production_orchestrator.format_full_auto(document))
+        return production_orchestrator.full_auto_exit_code(document.get("status"))
     if args.cmd == "evidence": return forward("evidence_tool.py", args.extra)
     if args.cmd == "config": return forward("storyos_config.py", [args.config_cmd])
     if args.cmd == "doctor": return forward("story_os_doctor.py", [])
@@ -147,12 +184,27 @@ def main():
     if args.cmd == "golden": return forward("golden_episode_regression.py", [args.golden_cmd, *args.extra])
     if args.cmd == "resource" and args.resource_cmd=="register": return forward("resource_library.py", ["register", *args.extra])
     ep = Path(args.episode_dir).resolve()
+    if args.cmd == "runner":
+        extra = [str(ep), "--interval", str(args.interval)]
+        if args.resume: extra.append("--resume")
+        if args.codex: extra += ["--codex", args.codex]
+        return forward("episode_runner.py", extra)
+    if args.cmd == "driver":
+        extra=[args.driver_cmd, str(ep)]
+        if args.driver_cmd in {"start"}:
+            if args.codex: extra += ["--codex", args.codex]
+            if args.interval != 10: extra += ["--interval", str(args.interval)]
+            if args.resume: extra.append("--resume")
+        if args.driver_cmd == "logs" and args.lines != 20: extra += ["--lines", str(args.lines)]
+        if args.json and args.driver_cmd != "logs": extra.append("--json")
+        return forward("runtime_driver.py", extra)
     if args.cmd in {"run","plan"}:
         subprocess.call([sys.executable, str(SYSTEM_DIR / "runtime_fast_path.py"), "prepare", str(ep)], cwd=ROOT)
     if args.cmd == "dag":
         extra=[args.dag_cmd, str(ep)]
         if args.codex: extra += ["--codex", args.codex]
         if args.dag_cmd in {"run","resume"}: extra += ["--timeout", str(runtime_timeout_policy.resolve("codex_supervisor_run", args.timeout))]
+        if args.until: extra += ["--until", args.until]
         return forward("runtime_dag.py", extra)
     if args.cmd == "run":
         mode = "resume" if args.resume else "run"

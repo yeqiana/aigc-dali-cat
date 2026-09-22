@@ -1,0 +1,233 @@
+{
+  "candidates": [
+    {
+      "id": "C01",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 19,
+        "escalation_ceiling": 19,
+        "climax_visual_payoff": 15,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 94,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "Cover/Mid/Climax 三张都能脱离字幕成立",
+        "从普通屋顶到完整社会再到反向看见自己的车，尺度与认知双升级",
+        "人物多停几秒直接触发设备越界，高潮不是纯发现"
+      ],
+      "risks": [
+        "前半段社会展示如果镜头重复会变成古城旅游图集",
+        "末帧白车必须在像素中可辨但不能做成发光传送门"
+      ]
+    },
+    {
+      "id": "C02",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 17,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 81,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "雾缝拼图的尺度升级直观",
+        "现实采集感容易成立"
+      ],
+      "risks": [
+        "高潮主要是看见更大范围，人物后果偏弱",
+        "容易与普通云开雾散风景图混淆"
+      ]
+    },
+    {
+      "id": "C03",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 86,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "群体动作回应让另一边成为真实社会而非布景",
+        "从单人抬头到家庭收摊关窗，视觉因果明确"
+      ],
+      "risks": [
+        "如果居民同步动作会显得NPC化",
+        "缺少最终空间反转时终局不如C01"
+      ]
+    },
+    {
+      "id": "C04",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 16,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 83,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "跨集道路回收能提升系列回看价值",
+        "空间连续性比文字解释更适合图像叙事"
+      ],
+      "risks": [
+        "新观众未看EP01时传播力会下降",
+        "道路几何需要非常精确的视觉连续性"
+      ]
+    },
+    {
+      "id": "C05",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 17,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 12,
+        "discussion_space": 9
+      },
+      "concept_voltage": 83,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "非怪物化的完整社会是系列独特气质",
+        "市场、牲畜、家庭行为提供高社会密度"
+      ],
+      "risks": [
+        "单帧可能很真实但不够异常",
+        "连续多张社会展示容易降低滑动速度"
+      ]
+    },
+    {
+      "id": "C06",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 12,
+        "discussion_space": 9
+      },
+      "concept_voltage": 88,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "普通人的求证欲与社会级反应形成明确动作回应链",
+        "多停几秒这一选择让高潮有责任和代价"
+      ],
+      "risks": [
+        "需要用镜头差异表现反应扩散，不能只靠字幕说大家发现了",
+        "无人机失控不能做成夸张故障UI"
+      ]
+    },
+    {
+      "id": "C07",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 18,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 15,
+        "mechanism_novelty": 12,
+        "discussion_space": 9
+      },
+      "concept_voltage": 91,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "远景亮区逐步辨认成自己的车，天然制造观众主动找证据",
+        "终局可以在真实曝光差异中成立，不需要特效"
+      ],
+      "risks": [
+        "亮区过亮会误读成传送门",
+        "车辆与人影尺度太小会导致像素证据不可读"
+      ]
+    },
+    {
+      "id": "C08",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 19,
+        "escalation_ceiling": 19,
+        "climax_visual_payoff": 15,
+        "mechanism_novelty": 11,
+        "discussion_space": 9
+      },
+      "concept_voltage": 92,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "单帧同时出现两边空间，是全组最强世界规则丧失画面",
+        "不用字幕即可完成彼此互看题眼"
+      ],
+      "risks": [
+        "过早使用双空间同框会抢走EP04/EP05递进空间",
+        "几何如果不可信会像AI拼贴而不是手机/无人机实拍"
+      ]
+    }
+  ],
+  "selected_id": "C01",
+  "selection_reason": "C01 在不改变既有五集主线的前提下同时保留 C06 的人物选择后果、C07 的反向车证据，并把完整社会规模作为中段升级；它的 Cover/Mid/Climax 都能无字成立，同时没有像 C08 那样过早把系列终极空间关系一次说死，最适合 EP003 的承上启下位置。",
+  "issue_codes": [],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "candidates_sha256": "a2f4d225e46534bee2a78823ea41fa4281c836c455c35d85c952d7d8fba56cc7",
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-11T13:01:37+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/concept-ambition-attempt-1-request.json",
+    "request_id": "concept-ambition-a1-e8d4decfb3408a3b",
+    "request_fingerprint": "e8d4decfb3408a3b52a0d76a6ee35db6465d8cea5ec66ae7a807882c76a58f5e"
+  }
+}

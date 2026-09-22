@@ -1,0 +1,231 @@
+{
+  "candidates": [
+    {
+      "id": "C01",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 14,
+        "discussion_space": 9
+      },
+      "concept_voltage": 89,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "女主+三位好友关系在第一张就成立",
+        "全天生活线完整，宏大云海与小动作反差稳定"
+      ],
+      "risks": [
+        "如果中段旧云市和吃饭镜头重复，会削弱状态变化"
+      ]
+    },
+    {
+      "id": "C02",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 17,
+        "escalation_ceiling": 15,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 80,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "早餐和早市具备强生活细节",
+        "多层云街能提供足够世界尺度"
+      ],
+      "risks": [
+        "题材时间跨度只到中午，情绪收束弱于全天结构"
+      ]
+    },
+    {
+      "id": "C03",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 14,
+        "discussion_space": 8
+      },
+      "concept_voltage": 88,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "纵向云市空间层次最强",
+        "木簪、点心等普通目标能压住仙侠感"
+      ],
+      "risks": [
+        "容易被画成旅游宣传照，需要持续保留朋友随手拍与生活人流"
+      ]
+    },
+    {
+      "id": "C04",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 15,
+        "hero_frame": 16,
+        "escalation_ceiling": 13,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 11,
+        "discussion_space": 7
+      },
+      "concept_voltage": 73,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": false
+      },
+      "strengths": [
+        "公共食肆生活共鸣直接",
+        "居民与基层工作人员混坐能快速建立天界日常秩序"
+      ],
+      "risks": [
+        "空间变化较少，容易变成单场景食堂图集"
+      ]
+    },
+    {
+      "id": "C05",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 17,
+        "escalation_ceiling": 15,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 81,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "长云桥提供稳定的大尺度世界背景",
+        "分点心和各自回家是自然关系收束"
+      ],
+      "risks": [
+        "事件密度偏低，需要镜头语言避免连续散步重复"
+      ]
+    },
+    {
+      "id": "C06",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 19,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 15,
+        "discussion_space": 8
+      },
+      "concept_voltage": 91,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "整片云顶晒衣场是最强无异常生活奇观之一",
+        "从满场布料到傍晚收空有强烈无字幕状态变化"
+      ],
+      "risks": [
+        "题材会让晒衣任务压过朋友关系主线"
+      ]
+    },
+    {
+      "id": "C07",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 13,
+        "discussion_space": 8
+      },
+      "concept_voltage": 87,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "灯笼逐层亮起提供天然视觉状态变化",
+        "朋友在不同巷口道别可同时完成空间和关系收束"
+      ],
+      "risks": [
+        "若过度追求灯海会滑向唯美宣传片，必须保留买菜回家等普通动作"
+      ]
+    },
+    {
+      "id": "C08",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 19,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 15,
+        "mechanism_novelty": 14,
+        "discussion_space": 10
+      },
+      "concept_voltage": 95,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "最贴合用户硬约束：纯日常、女主、男女好友、第一张自拍、无恐怖无调查",
+        "从清晨自拍到夜灯亮起形成完整时间轴，关系与世界尺度同时推进",
+        "核心新鲜点不是异常，而是‘住在天界也会和朋友无所事事地过一天’这一生活反差"
+      ],
+      "risks": [
+        "没有强事件，需要严格依靠场景、时间、人物互动和视觉状态变化避免流水账"
+      ]
+    }
+  ],
+  "selected_id": "C08",
+  "selection_reason": "C08 最符合本集明确的普通天界女生+男女好友+纯生活日常约束，同时在无异常前提下仍有最完整的 Cover/Mid/Climax：清晨自然自拍立人物关系，中段早餐/旧云市/茶摊通过临时改计划制造生活推进，结尾在巨大晚霞云海边分点心并等到街灯亮起完成无字幕时间状态变化。C06 的云顶晒衣场世界尺度更奇观化，但会让具体任务压过朋友关系；C03/C07 的空间和光线也强，但更像单一地点体验。故选择 C08。",
+  "issue_codes": [],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "candidates_sha256": "fc781e2c77932c993027942c9f8bed5ab508b60343e1182aa8e80e1e57b39f60",
+  "critic_provenance": {
+    "schema_version": 2,
+    "runtime": "WORK_DEVSPACE_BOUNDED",
+    "base_runtime": "WORK",
+    "isolated_session": false,
+    "execution_source": "product_runtime",
+    "workspace_transport": "DEVSPACE",
+    "isolation_mode": "bounded_request_only",
+    "webcodex_used": false,
+    "full_auto_user_authorized": true,
+    "ordinary_life_only": true,
+    "attempt": 2,
+    "reviewed_at": "2026-09-13T10:33:12+08:00",
+    "request_path": "episodes/天界普通女生的一天/meta/runtime/reviews/concept-ambition-attempt-2-request.json",
+    "request_id": "concept-ambition-a2-2e46c5a7f1e3ca76",
+    "request_fingerprint": "2e46c5a7f1e3ca7602a2a85058aeaa473dea9268ddd616f235d78383a7e803cd"
+  }
+}

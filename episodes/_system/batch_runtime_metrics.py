@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import runtime_observability
+import batch_capability_probe
+import codex_logical_batch_worker
 
 def _read(path:Path)->dict:
     if not path.is_file():return {}
@@ -12,9 +14,9 @@ def _read(path:Path)->dict:
     except Exception:return {}
 
 def collect(ep:Path)->dict:
-    perf=_read(ep/runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL)
-    cap=_read(ep/"meta/batch-provider-capability.json")
-    codex=_read(ep/"meta/codex-subscription-batch-capability.json")
+    perf=runtime_observability.read_summary(ep,runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL,default={})
+    cap=batch_capability_probe.read(ep)
+    codex=codex_logical_batch_worker.read(ep)
     decision_dir=ep/"meta/batch-repair-decisions"
     decisions=[]
     if decision_dir.is_dir():
@@ -27,6 +29,10 @@ def collect(ep:Path)->dict:
     ordinary=sum(1 for x in decisions if isinstance(x,dict) and x.get("action")=="SINGLE_REPAIR")
     waits=sum(1 for x in decisions if isinstance(x,dict) and x.get("action")=="WAIT_BATCH")
     providers={}
+    failure_codes={}
+    empty_batches=0
+    timeout_failures=0
+    network_connect_failures=0
     logical_batches=0
     for row in batches:
         if isinstance(row,dict):
@@ -34,6 +40,12 @@ def collect(ep:Path)->dict:
             providers[name]=providers.get(name,0)+1
             if row.get("logical_batch"):
                 logical_batches+=1
+            if row.get("empty_result") is True or (int(row.get("planned_count") or 0)>0 and int(row.get("returned_count") or 0)==0):
+                empty_batches+=1
+            timeout_failures+=int(row.get("timeout_count") or 0)
+            network_connect_failures+=int(row.get("network_connect_count") or 0)
+            for code,count in (row.get("failure_code_counts") or {}).items():
+                failure_codes[str(code)]=failure_codes.get(str(code),0)+int(count or 0)
     return {
         "enabled":bool(perf),
         "batch_count":len(batches),
@@ -42,6 +54,10 @@ def collect(ep:Path)->dict:
         "images_returned":returned,
         "fallback_single_frames":int(perf.get("fallback_single_frames") or 0),
         "provider_counts":providers,
+        "failure_code_counts":failure_codes,
+        "empty_batch_count":empty_batches,
+        "timeout_failure_count":timeout_failures,
+        "network_connect_failure_count":network_connect_failures,
         "native_multi_image_supported":cap.get("native_multi_image_supported",cap.get("supported")),
         "single_http_request":cap.get("single_http_request"),
         "provider":cap.get("provider"),
@@ -72,8 +88,17 @@ def self_test():
     with tempfile.TemporaryDirectory(prefix="storyos-metrics-") as td:
         ep=Path(td); (ep/"meta").mkdir()
         assert collect(ep)["images_requested"]==0
-        (ep/runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL).write_text(json.dumps({"batches":[{"planned_count":5,"returned_count":4,"provider":"codex_subscription","logical_batch":True}]}),encoding="utf-8")
+        (ep/runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL).write_text(json.dumps({"batches":[
+            {"planned_count":5,"returned_count":4,"provider":"codex_subscription","logical_batch":True,
+             "failure_code_counts":{"NETWORK_CONNECT":1},"network_connect_count":1},
+            {"planned_count":1,"returned_count":0,"provider":"codex_subscription","logical_batch":True,
+             "failure_code_counts":{"TIMEOUT":1},"timeout_count":1,"empty_result":True},
+        ]}),encoding="utf-8")
         row=collect(ep)
-        assert (row["images_requested"],row["images_returned"],row["logical_codex_batch_count"])==(5,4,1)
+        assert (row["images_requested"],row["images_returned"],row["logical_codex_batch_count"])==(6,4,2)
+        assert row["failure_code_counts"]=={"NETWORK_CONNECT":1,"TIMEOUT":1}
+        assert row["empty_batch_count"]==1
+        assert row["timeout_failure_count"]==1
+        assert row["network_connect_failure_count"]==1
     print("BATCH RUNTIME METRICS V2.4.2 SELF-TEST PASS")
 if __name__=="__main__":self_test()

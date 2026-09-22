@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "reconciled_at": "2026-09-15T16:51:46+08:00",
+  "rows": [
+    {
+      "item_id": "vl01b001a001",
+      "frame": 1,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "vl05a005a005",
+      "frame": 5,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "vl16a016a016",
+      "frame": 16,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "TECH_FAILED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "vl17a017a017",
+      "frame": 17,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "REPAIR_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "d27055ffab33",
+      "frame": 1,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "282c066af622",
+      "frame": 5,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "d7368d3009a6",
+      "frame": 16,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "TECH_FAILED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "b5fa21eff81e",
+      "frame": 17,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "REPAIR_READY",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "71e4e98dafa2",
+      "frame": 5,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "281a1d44f404",
+      "frame": 1,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "17fd33741fdf",
+      "frame": 17,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "REPAIR_READY",
+      "lifecycle_state": "FAILED"
+    }
+  ]
+}

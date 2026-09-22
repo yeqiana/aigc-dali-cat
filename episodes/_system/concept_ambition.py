@@ -5,11 +5,14 @@ from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, os, shutil, subprocess, sys
 from pathlib import Path
 from story_os_contract import story_os_version
+import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import runtime_router
 import runtime_provenance
 import product_review_adapter
 import story_json
+import runtime_review_persistence
 import runtime_timeout_policy
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 CANDIDATES_REL = Path("meta/concept-candidates.json")
@@ -45,7 +48,11 @@ def version_tuple(raw):
 
 def episode_contract_version(ep):
     versions = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    raw = str(state.get("tool_version") or "")
+    vt = version_tuple(raw)
+    if vt != (0,): versions.append((vt, raw))
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file(): continue
         try:
@@ -170,24 +177,37 @@ def verify(ep):
     except Exception as exc: return [str(exc)]
 
 def resolve_codex(raw):
-    value=raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not value: raise RuntimeError("Codex CLI not found")
-    p=Path(value).expanduser().resolve()
-    if not p.exists(): raise RuntimeError(f"Codex CLI not found: {p}")
-    return p
+    import codex_cli_contract
+    return codex_cli_contract.resolve_path(raw)
 
 def prefix(codex):
-    if codex.suffix.lower()==".py": return [sys.executable,str(codex)]
-    if os.name=="nt" and codex.suffix.lower() in {".cmd",".bat"}: return ["cmd.exe","/d","/c",str(codex)]
-    return [str(codex)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(codex)
+
+def ordinary_life_mode(ep):
+    p=Path(ep)/"meta/shot-progression-review.json"
+    if not p.is_file():return False
+    try:
+        d=read_json(p)
+        return d.get("anomaly_applicable") is False and bool(text(d.get("anomaly_exception_reason")))
+    except Exception:
+        return False
 
 def critic_prompt(ep, cp, out, attempt):
     rel_ep=ep.relative_to(ROOT).as_posix()
     rel_cp=cp.relative_to(ROOT).as_posix()
     rel_out=out.relative_to(ROOT).as_posix()
+    ordinary_override="" if not ordinary_life_mode(ep) else """
+ORDINARY-LIFE AMBITION OVERRIDE (takes precedence over anomaly-band wording below):
+- This Episode is explicitly anomaly_applicable=false. Do NOT add horror, mystery, investigation, paranormal behavior or an anomaly merely to raise concept_voltage.
+- Interpret ambition bands by image/world/social scale for this Episode: A1 restrained everyday moment; A2 clear setting contrast; A3 strong celestial-life visual contrast; A4 large/high-impact world-scale daily-life image; A5 overwhelming world-scale daily-life image that still preserves ordinary behavior.
+- Reward realistic celestial scale, character appeal, friendship chemistry, ordinary-life specificity, visual state change and wordless Cover/Mid/Climax readability.
+- mechanism_novelty means novelty of the everyday-life visual/story engine, not an anomaly mechanism.
+- At least 3 A4/A5 directions are still required, but they must achieve that through peaceful celestial-world scale and ordinary-life contrast, never through anomaly injection.
+"""
     return f"""You are the independent Story OS V2.1 Concept Ambition + Image-first Propagation Critic.
 Review ALL 8-12 concepts in {rel_cp}. This is a fresh isolated review.
-
+{ordinary_override}
 DOCTRINE:
 - Concept ambition comes BEFORE capture realism.
 - Do NOT lower a concept because its place, creature, ruin, dream-space, anomaly scale, case phenomenon, geography or world rule cannot exist in reality.
@@ -272,7 +292,7 @@ def run_critic(ep, attempt, codex_raw, timeout=None):
     cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-c",'model_reasoning_effort="medium"'," -s".strip(),"workspace-write","-C",str(ROOT),"--json","-"]
     log=ep/"meta"/f"concept-ambition-critic-attempt-{attempt}.jsonl"
     with log.open("w",encoding="utf-8",newline="\n") as h:
-        done=subprocess.run(cmd,input=critic_prompt(ep,cp,candidate,attempt),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+        done=codex_user_runner.run_codex(cmd,input=critic_prompt(ep,cp,candidate,attempt),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="critic")
     if done.returncode != 0: raise RuntimeError(f"concept critic failed rc={done.returncode}; log={log}")
     if sha256_file(cp) != before: raise RuntimeError("concept critic modified candidate pool")
     if not candidate.is_file(): raise RuntimeError("concept critic did not produce candidate JSON")
@@ -302,7 +322,45 @@ def self_test():
                      "discussion_question":"x"})
     assert validate_candidates({"candidates":rows}) == []
     assert validate_candidates({"candidates":rows[:7]})
+    old=ordinary_life_mode
+    globals()["ordinary_life_mode"]=lambda _ep:True
+    try:
+        prompt=critic_prompt(ROOT,ROOT/"dummy-concepts.json",ROOT/"dummy-review.json",1)
+        assert "ORDINARY-LIFE AMBITION OVERRIDE" in prompt
+        assert "Do NOT add horror" in prompt
+        assert "peaceful celestial-world scale" in prompt
+    finally:
+        globals()["ordinary_life_mode"]=old
     print("CONCEPT AMBITION V2.1 SELF-TEST PASS")
+
+def re_review_plan(ep: Path) -> dict:
+    ep = Path(ep).resolve()
+    cp = ep / CANDIDATES_REL
+    review_path = ep / REVIEW_REL
+    if not cp.is_file():
+        return {"required": False, "reason": "CANDIDATES_MISSING"}
+    current_sha = sha256_file(cp)
+    review = read_json(review_path) if review_path.is_file() else {}
+    reviewed_sha = str(review.get("candidates_sha256") or "").lower()
+    drifted = bool(reviewed_sha and reviewed_sha != current_sha.lower())
+    attempts = []
+    for row in runtime_review_persistence.list_attempts(ep, "concept-ambition"):
+        try:
+            attempts.append(int((row.get("payload") or {}).get("attempt") or 0))
+        except (TypeError, ValueError):
+            continue
+    reviewed_attempt = int(((review.get("critic_provenance") or {}).get("attempt") or 0)) if isinstance(review, dict) else 0
+    next_attempt = max([reviewed_attempt, *attempts, 0]) + 1
+    return {
+        "required": (not review_path.is_file()) or drifted,
+        "reason": "CANDIDATES_SHA_DRIFT" if drifted else ("REVIEW_MISSING" if not review_path.is_file() else "CURRENT_REVIEW_VALID"),
+        "current_candidates_sha256": current_sha,
+        "reviewed_candidates_sha256": reviewed_sha or None,
+        "preserve_existing_review": review_path.is_file(),
+        "next_attempt": next_attempt,
+        "action": "RUN_CONCEPT_AMBITION_CRITIC" if ((not review_path.is_file()) or drifted) else "NONE",
+    }
+
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest="cmd",required=True)
@@ -311,11 +369,14 @@ def main():
     p=sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt",type=int,default=1); p.add_argument("--runtime",choices=["WORK","WEB"],default="WORK")
     p=sub.add_parser("verify"); p.add_argument("episode_dir")
     p=sub.add_parser("show"); p.add_argument("episode_dir")
+    p=sub.add_parser("re-review-plan"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
     a=ap.parse_args()
     if a.cmd=="self-test": self_test(); return 0
     ep=resolve_ep(a.episode_dir)
     if a.cmd=="init": return init_candidates(ep)
+    if a.cmd=="re-review-plan":
+        print(json.dumps(re_review_plan(ep),ensure_ascii=False,indent=2)); return 0
     if a.cmd=="show":
         for rel in (CANDIDATES_REL,REVIEW_REL):
             p=ep/rel; print(f"--- {rel} ---"); print(p.read_text(encoding="utf-8") if p.is_file() else "{}")

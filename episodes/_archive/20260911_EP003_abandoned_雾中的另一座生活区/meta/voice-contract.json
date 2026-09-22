@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "authority": "Story Build Voice Contract",
+  "voice_card": {
+    "person": "P01",
+    "role": "24岁普通中国男青年，川西自驾旅行当事人",
+    "age": 24,
+    "education_and_knowledge_boundary": "普通城市年轻人，只懂日常手机、导航和消费级无人机的基本使用；不具备气象、测绘、地理、影像取证或异常研究专业知识。",
+    "recording_reason": "和女友旅行时习惯用手机随手记录，车里带的无人机只用于拍普通风景和云海；不是调查取证。",
+    "knows_now": "只知道前两次经历并非单纯自己看错；这次亲眼看见雾后存在一个完整生活区、下面的人会注意到无人机、无人机最终失联且缓存留下异常空间证据。",
+    "does_not_know": "不知道另一边是什么地方、为什么会出现、是否属于过去未来或其他世界，也不知道无人机为何失控；不得替系统下结论。",
+    "stress_language": "紧张时句子变短，会出现‘先回来’‘等一下’‘不对’‘我再看一眼’这类普通口语，不使用分析腔。",
+    "fear_language_change": "从前半段还能解释和自我怀疑，后半段逐渐减少完整解释句，只保留确认、否认和行动反应；最后回到克制复盘。",
+    "ordinary_vocabulary": "雨停了、雾、下面、屋顶、田、路、车、图传、没信号、回来、别飞了、我们走吧、看错了没有",
+    "forbidden_technical_terms": "平行宇宙、维度、量子、空间裂隙、虫洞、时空重叠模型、坐标异常、磁场干扰、测绘数据、遥感异常"
+  },
+  "subtitle_policy": {
+    "max_visible_chars": 48,
+    "continuous_three_frame_test": true,
+    "read_aloud_test": true,
+    "delete_subtitle_test": true,
+    "do_not_repeat_visible_anomaly": true,
+    "allow_short_fragments_and_self_correction": true
+  }
+}

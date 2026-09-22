@@ -10,8 +10,11 @@ from pathlib import Path
 from story_os_contract import story_os_version
 from frame_semantic_review import review_required as frame_semantic_required, verify_episode as verify_frame_semantic_episode
 import final_candidate_snapshot as final_snapshot
-from final_acceptance import valid as acceptance_valid
+from final_acceptance import allows as acceptance_allows
 import story_json
+import frame_review_persistence
+import story_review
+import visual_profile_review_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_REL = Path('meta/release-manifest.json')
@@ -106,7 +109,7 @@ def build_payload(ep: Path) -> dict:
     if frame_semantic_required(ep):
         semantic_errors = verify_frame_semantic_episode(ep, metadata_only=False, write_audit=True)
         if semantic_errors:
-            if acceptance_valid(ep) is None:
+            if not acceptance_allows(ep, "frame_semantic"):
                 raise SystemExit('frame semantic release preflight failed: ' + '; '.join(semantic_errors))
             print('RELEASE PACKAGE WARN: frame semantic known defects accepted (meta/final-acceptance.json)')
     manifest = load_json(ep / MANIFEST_REL)
@@ -160,12 +163,20 @@ def build_payload(ep: Path) -> dict:
     if frame_semantic_required(ep):
         evidence_paths = [
             ep/'meta/frame-semantic-review.json', ep/'meta/frame-semantic-audit.json',
-            ep/'meta/story-semantic-review.json', ep/'meta/visual-profile-review.json',
             ep/'meta/subtitle-layout-audit.json', ep/'meta/story-gates.json',
-        ] + sorted((ep/'meta/frame-reviews').glob('[0-9][0-9].json'))
+        ]
+        story_review_export=story_review.materialize_review_export(ep,story_review.load_review(ep))
+        if story_review_export is not None and story_review_export.is_file():
+            evidence_paths.append(story_review_export)
+        visual_review_export=visual_profile_review_persistence.materialize_export(
+            ep,visual_profile_review_persistence.load(ep)
+        )
+        if visual_review_export is not None and visual_review_export.is_file():
+            evidence_paths.append(visual_review_export)
         missing = [str(p.relative_to(ep)) for p in evidence_paths[:2] if not p.is_file()]
         if missing: raise SystemExit('release evidence missing: ' + ', '.join(missing))
         payload['evidence'] = [file_row(p, 'evidence') for p in evidence_paths if p.is_file()]
+        payload['frame_review_db_evidence'] = frame_review_persistence.evidence_digest(ep)
     payload['package_sha256'] = digest_payload(payload)
     return payload
 
@@ -203,6 +214,11 @@ def verify_payload(ep: Path, payload: dict) -> list[str]:
     body = payload.get('body') or []
     if isinstance(expected_count, int) and len(body) != expected_count:
         errors.append(f'release-package body count mismatch: expected={expected_count}, package={len(body)}')
+    expected_reviews = payload.get('frame_review_db_evidence')
+    if isinstance(expected_reviews, dict):
+        actual_reviews = frame_review_persistence.evidence_digest(ep)
+        if expected_reviews != actual_reviews:
+            errors.append('release frame review database evidence drift')
     return errors
 
 

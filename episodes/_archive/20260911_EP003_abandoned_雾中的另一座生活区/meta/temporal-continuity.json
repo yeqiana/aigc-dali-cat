@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_world_state_sha256": "51fc58f45721b12a03802ee0966f716796d0a0844758f41c5a1311c62349efb3",
+  "world_state_synced": true,
+  "frames": [
+    {"frame":"01","elapsed_minutes_from_prev":0,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"02","elapsed_minutes_from_prev":2,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"03","elapsed_minutes_from_prev":3,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"04","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"05","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"06","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"07","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"08","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"09","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"10","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"11","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"12","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"13","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"14","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"15","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"16","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"17","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"18","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"19","elapsed_minutes_from_prev":1,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""},
+    {"frame":"20","elapsed_minutes_from_prev":3,"daypart":"afternoon","weather":"rain_just_stopped_low_cloud_valley","precipitation":"none_ground_still_wet","ambient_light":"overcast_day","large_transition":false,"transition_reason":""}
+  ]
+}

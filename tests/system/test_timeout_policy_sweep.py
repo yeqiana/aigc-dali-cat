@@ -33,8 +33,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = ROOT / "episodes/_system"
 
-# Modules whose scoped-codex step timeout and supervisor default must come from
-# the policy module (story_os.py facade is the entry that forwards to them).
+# Modules that must keep resolving their role timeouts through the policy module
+# (story_os.py facade is the entry that forwards to them). W-89 added
+# production_recovery.py (recovery namespace carries the image_worker_request
+# default). Host-managed Workspace Providers do not own local polling timeouts.
 EXPECTED_POLICY_CONSUMERS = {
     "batch_scheduler.py",
     "caption_image_audit.py",
@@ -49,12 +51,14 @@ EXPECTED_POLICY_CONSUMERS = {
     "image_scheduler.py",
     "image_worker_pool.py",
     "incremental_frame_review.py",
+    "production_recovery.py",
     "provisional_release.py",
     "release_preflight.py",
     "release_preflight_recent5.py",
     "rolling_frame_review.py",
     "runtime_dag.py",
     "runtime_mode_router.py",
+    "runtime_driver.py",
     "scoped_codex_worker.py",
     "speculative_production.py",
     "story_os.py",

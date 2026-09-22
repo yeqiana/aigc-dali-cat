@@ -5,7 +5,10 @@ from __future__ import annotations
 import argparse, hashlib, json
 from pathlib import Path
 import character_contract, environment_contract, frame_contract, resource_library, runtime_execution
+import capture_event_contract, character_visual_contract, voice_contract, wardrobe_contract
+import episode_state_persistence
 import directing_quality
+import runtime_request
 import story_json
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -21,11 +24,11 @@ def sha(p):
         for b in iter(lambda:f.read(1024*1024),b""):h.update(b)
     return h.hexdigest()
 def stage(ep):
-    p=ep/"meta/episode-state.json";return (read_json(p).get("current_state") if p.is_file() else None)
+    return (episode_state_persistence.load(Path(ep).resolve()) or {}).get("current_state")
 def authority_files(ep):
     rows=[]
     # Only hash assets that should stay immutable after the handoff.
-    for rel in ("meta/runtime-request.json","meta/character-contract.json","meta/resource-selection.json","meta/intro-policy.json","meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/character-visual-contract.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json"):
+    for rel in ("meta/character-contract.json","meta/resource-selection.json","meta/intro-policy.json","meta/directing-quality.json","meta/voice-contract.json","meta/storyboard-density-review.json","meta/opening-social-anchor.json","meta/character-visual-contract.json","meta/shot-progression-review.json","meta/capture-event-contract.json","meta/world-state.json","meta/temporal-continuity.json","meta/wardrobe-contract.json"):
         p=ep/rel
         if p.is_file():rows.append(p)
     story=ep/"story"
@@ -38,6 +41,43 @@ def authority_files(ep):
         rp=p.resolve()
         if rp not in seen:seen.add(rp);out.append(p)
     return out
+
+
+
+AUTHORITY_OWNERS = {
+    character_contract.REL.as_posix(): character_contract,
+    voice_contract.REL.as_posix(): voice_contract,
+    character_visual_contract.REL.as_posix(): character_visual_contract,
+    capture_event_contract.REL.as_posix(): capture_event_contract,
+    wardrobe_contract.REL.as_posix(): wardrobe_contract,
+}
+
+
+def _authority_row(ep, rel, owner):
+    data=owner.load(ep)
+    if not isinstance(data,dict):return None
+    digest=owner.authority_sha256(ep)
+    if not digest:return None
+    raw=json.dumps(data,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
+    return {"kind":"authority","path":rel,"sha256":digest,"bytes":len(raw)}
+
+
+def authority_asset_rows(ep):
+    ep=Path(ep).resolve();rows=[]
+    for rel,owner in AUTHORITY_OWNERS.items():
+        row=_authority_row(ep,rel,owner)
+        if row is not None:rows.append(row)
+    migrated=set(AUTHORITY_OWNERS)
+    for p in authority_files(ep):
+        rel=p.relative_to(ep).as_posix()
+        if rel in migrated:continue
+        rows.append({"kind":"file","path":rel,"sha256":sha(p),"bytes":p.stat().st_size})
+    return rows
+
+
+def _current_authority_row(ep, rel):
+    owner=AUTHORITY_OWNERS.get(str(rel))
+    return _authority_row(Path(ep).resolve(),str(rel),owner) if owner is not None else None
 def stable_story_gate_subset(ep):
     p=ep/"meta/story-gates.json"
     if not p.is_file():return {}
@@ -67,9 +107,12 @@ def build(ep,source_runtime="chatgpt"):
         qerrors=directing_quality.verify_story(ep)+directing_quality.verify_preimage(ep)
         if qerrors:raise ValueError("directing quality invalid: "+"; ".join(qerrors[:12]))
     resource_library.resolve(ep,True)
-    files=authority_files(ep)
-    assets=[{"kind":"file","path":p.relative_to(ep).as_posix(),"sha256":sha(p),"bytes":p.stat().st_size} for p in files]
-    subsets=[{"kind":"json_subset","path":"meta/story-gates.json","name":"stable_preproduction_subset","sha256":json_sha(stable_story_gate_subset(ep))}]
+    assets=authority_asset_rows(ep)
+    runtime_data=runtime_request.authority_for_episode(ep) or {}
+    subsets=[
+        {"kind":"json_subset","path":"meta/story-gates.json","name":"stable_preproduction_subset","sha256":json_sha(stable_story_gate_subset(ep))},
+        {"kind":"json_subset","path":"meta/runtime-request.json","name":"runtime_request_preimage_authority","sha256":runtime_request.preimage_authority_projection_sha256(runtime_data)},
+    ]
     q_enabled=directing_quality.enabled(ep)
     data={"schema_version":2 if q_enabled else 1,"handoff_type":"preproduction_to_image","source_runtime":source_runtime,"authority_boundary_version":2,"created_at_stage":"STORYBOARD_LOCKED","authority_assets":assets,"authority_subsets":subsets,"derived_rebuildable":["meta/runtime/execution-capsules","meta/runtime/contracts","meta/runtime/prompt-packages"],"quality_contracts_enabled":q_enabled,"story_rewrite_allowed":False,"next_mode":"image_continue","handoff_ready":True}
     material=json.dumps(data,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
@@ -139,6 +182,24 @@ def _legacy_boundary_migration_valid(ep,d,row):
         m.get("stable_subset_sha256")==json_sha(stable_story_gate_subset(ep))
     )
 
+def _runtime_request_model_migration_valid(ep,d,row):
+    """Allow a legacy full-file request SHA to differ only after canonical model migration."""
+    current=runtime_request.authority_for_episode(ep) or {}
+    evidence=read_json(ep/"meta/runtime/image-model-migration.json") if (ep/"meta/runtime/image-model-migration.json").is_file() else {}
+    migration=(current.get("provenance") or {}).get("image_model_migration") or {}
+    projection=runtime_request.preimage_authority_projection_sha256(current)
+    return bool(
+        row.get("path")=="meta/runtime-request.json"
+        and evidence.get("preimage_authority_preserved") is True
+        and str(evidence.get("preimage_authority_projection_sha256") or "")==projection
+        and str(evidence.get("request_id") or "")==str(current.get("request_id") or "")
+        and str(evidence.get("from") or "")==str(migration.get("from") or "")
+        and str(evidence.get("to") or "")==str(migration.get("to") or "")
+        and str(evidence.get("source_request_id") or "")==str(migration.get("source_request_id") or "")
+        and d.get("story_rewrite_allowed") is False
+    )
+
+
 def verify(ep):
     ep=Path(ep).resolve();p=ep/REL
     if not p.is_file():return ["HANDOFF_MISSING"]
@@ -150,10 +211,23 @@ def verify(ep):
     cur=stage(ep)
     if cur not in order or order.index(cur)<order.index("STORYBOARD_LOCKED"):errors.append("HANDOFF_STAGE_MISMATCH")
     for row in d.get("authority_assets") or []:
+        if row.get("kind")=="authority":
+            current=_current_authority_row(ep,row.get("path"))
+            if current is None:
+                errors.append("HANDOFF_AUTHORITY_MISSING:"+str(row.get("path") or ""))
+            elif current.get("sha256")!=row.get("sha256"):
+                errors.append("HANDOFF_SHA_MISMATCH:"+str(row.get("path") or ""))
+            continue
         f=ep/row["path"]
         if not f.is_file():errors.append("HANDOFF_FILE_MISSING:"+row["path"]);continue
-        if sha(f)!=row.get("sha256"):errors.append("HANDOFF_SHA_MISMATCH:"+row["path"])
+        if sha(f)!=row.get("sha256") and not _runtime_request_model_migration_valid(ep,d,row):
+            errors.append("HANDOFF_SHA_MISMATCH:"+row["path"])
     for row in d.get("authority_subsets") or []:
+        if row.get("name")=="runtime_request_preimage_authority":
+            current_request=runtime_request.authority_for_episode(ep) or {}
+            if runtime_request.preimage_authority_projection_sha256(current_request)!=row.get("sha256"):
+                errors.append("HANDOFF_SHA_MISMATCH:meta/runtime-request.json#runtime_request_preimage_authority")
+            continue
         if row.get("name")!="stable_preproduction_subset":continue
         if int(d.get("authority_boundary_version") or 1)>=2:
             if json_sha(stable_story_gate_subset(ep))!=row.get("sha256"):

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "storyos://standards/visual_profiles/schema/selector-input.schema.json",
+  "title": "Story OS Visual Profile Selector Input",
+  "description": "Phase 3.2 selector input contract. Only these fields are read by the selector. An unknown or unregistered profile id is never accepted.",
+  "type": "object",
+  "properties": {
+    "story_intent": {
+      "type": "object",
+      "required": ["world"],
+      "properties": {
+        "world": { "enum": ["real", "historical_real", "fictional", ""] },
+        "era": { "enum": ["modern", "ancient", "unspecified", ""] },
+        "theme": { "type": "string" },
+        "genre": { "enum": ["daily_life", "work_life", "anomaly_mystery", "folk_life", "travel_life", ""] },
+        "location": { "type": "string" },
+        "experience_type": { "enum": ["observed", "immersive_first_person", ""] }
+      }
+    },
+    "episode_context": {
+      "type": "object",
+      "properties": {
+        "account": { "type": "string" },
+        "series": { "type": "string" },
+        "previous_profile": { "type": ["string", "null"] }
+      }
+    },
+    "audience_expectation": {
+      "type": "object",
+      "properties": {
+        "realism": { "enum": ["maximum", "high", ""] },
+        "immersion": { "enum": ["low", "medium", "high", ""] },
+        "fantasy_level": { "enum": ["none", "low", "high", ""] }
+      }
+    },
+    "user_override": {
+      "type": "object",
+      "properties": {
+        "forced_profile_id": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
+

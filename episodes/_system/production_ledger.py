@@ -10,11 +10,27 @@ from __future__ import annotations
 
 from production_ledger_core import *  # noqa: F401,F403  (full public library)
 from production_ledger_run import (cmd_authorize_repair, cmd_begin,
-    cmd_restore_evidence_gap_review, cmd_review, cmd_success, cmd_tech_fail)
+    cmd_recover_success, cmd_restore_evidence_gap_review, cmd_review, cmd_success, cmd_tech_fail)
 from production_ledger_manage import (cmd_accept_user_exception_candidate,
-    cmd_audit, cmd_authorize_authority_refresh, cmd_authorize_user_exception_repair,
+    cmd_audit, cmd_authorize_authority_refresh, cmd_authorize_user_continuation_repair, cmd_authorize_user_exception_repair,
     cmd_authorize_user_locked_repair, cmd_authorize_user_passed_repair,
-    cmd_batch_begin, cmd_batch_end, cmd_init, cmd_lock, cmd_promote, cmd_show)
+    cmd_batch_begin, cmd_batch_end, cmd_init, cmd_lock, cmd_promote, cmd_show,
+    mark_review_needs_user)
+
+# ``frame_contract -> identity_continuity -> production_ledger`` creates a
+# short bootstrap cycle.  During that cycle the implementation modules can
+# receive a partial ``from production_ledger_core import *`` snapshot.  The
+# core is complete by the time the facade reaches this point, so backfill any
+# public core helpers that were not visible during the early import.  This is
+# limited to missing names and does not alter the command API.
+import production_ledger_core as _ledger_core
+import production_ledger_run as _ledger_run
+import production_ledger_manage as _ledger_manage
+for _module in (_ledger_run, _ledger_manage):
+    for _name, _value in vars(_ledger_core).items():
+        if not _name.startswith("_") and _name not in _module.__dict__:
+            setattr(_module, _name, _value)
+del _module, _name, _value, _ledger_core, _ledger_run, _ledger_manage
 
 
 def parser() -> argparse.ArgumentParser:
@@ -31,7 +47,7 @@ def parser() -> argparse.ArgumentParser:
     s = sub.add_parser("begin", help="record generation preflight and request fingerprint")
     s.add_argument("episode_dir")
     s.add_argument("--frame", required=True)
-    s.add_argument("--kind", choices=["original", "repair"], default="original")
+    s.add_argument("--kind", choices=["original", "repair", "baseline_candidate"], default="original")
     s.add_argument("--prompt")
     s.add_argument("--prompt-file")
     s.add_argument("--capture-id", required=True)
@@ -50,6 +66,16 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--path", required=True)
     s.add_argument("--provider-receipt", help="provider RAW dimension receipt JSON")
     s.set_defaults(func=cmd_success)
+
+    s = sub.add_parser("recover-success", help="correct an exact technical-failure transaction after durable runner success is recovered")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--path", required=True)
+    s.add_argument("--provider-receipt")
+    s.add_argument("--transaction-id", required=True)
+    s.add_argument("--runner-request-id")
+    s.add_argument("--recovery-reason", help="auditable correction reason; defaults to late durable user-runner success")
+    s.set_defaults(func=cmd_recover_success)
 
     s = sub.add_parser("tech-fail", help="record network/timeout/no-candidate failure without consuming content repair")
     s.add_argument("episode_dir")
@@ -99,6 +125,13 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--approval-text", required=True)
     s.add_argument("--reason", required=True)
     s.set_defaults(func=cmd_authorize_user_exception_repair)
+
+    s = sub.add_parser("authorize-user-continuation-repair", help="authorize exactly one additional candidate after an explicit user continue decision")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--approval-text", required=True)
+    s.add_argument("--reason", required=True)
+    s.set_defaults(func=cmd_authorize_user_continuation_repair)
 
     s = sub.add_parser("accept-user-exception-candidate", help="accept an existing NEEDS_USER exception candidate with direct user approval")
     s.add_argument("episode_dir")

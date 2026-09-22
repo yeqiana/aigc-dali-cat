@@ -40,15 +40,24 @@ class SchedulerCoreTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             scheduler_core.load_queue(self.ep)
 
-    def test_queue_transaction_serializes(self):
+    def test_queue_transaction_is_same_thread_reentrant(self):
         with scheduler_core.queue_transaction(self.ep):
             q = scheduler_core.load_queue(self.ep)
             q["items"].append({"frame": 1})
-            scheduler_core.save_queue(self.ep, q)
-        with self.assertRaises(scheduler_core.QueueMutationBusy):
             with scheduler_core.queue_transaction(self.ep):
-                with scheduler_core.queue_transaction(self.ep):
-                    pass
+                scheduler_core.save_queue(self.ep, q)
+        self.assertEqual(scheduler_core.load_queue(self.ep)["items"][0]["frame"], 1)
+
+    def test_save_queue_fails_when_foreign_lock_is_held(self):
+        import runner_state_store
+        self.assertTrue(runner_state_store.acquire_lock(
+            self.ep, lock_rel=scheduler_core.SCHEDULER_LOCK_REL))
+        try:
+            with self.assertRaises(scheduler_core.QueueMutationBusy):
+                scheduler_core.save_queue(self.ep, scheduler_core.empty_queue())
+        finally:
+            runner_state_store.release_lock(
+                self.ep, lock_rel=scheduler_core.SCHEDULER_LOCK_REL)
 
     def test_ledger_state_defaults_pending(self):
         self.assertEqual(scheduler_core.ledger_state(self.ep, 1), "PENDING")

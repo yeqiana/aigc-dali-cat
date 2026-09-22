@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse, copy, hashlib, json
 from pathlib import Path
 import story_json
+import character_contract
 
 REL=Path("meta/world-state.json")
 IDENTITY_FIELDS={"clothing_anchor","device_anchor","hair","build","injury","status"}
@@ -39,7 +40,7 @@ def _merge(base,delta):
 def prepare(ep, force=False):
     ep=Path(ep).resolve();target=ep/REL
     if target.is_file() and not force:return read_json(target)
-    cp=read_json(ep/"meta/character-contract.json") if (ep/"meta/character-contract.json").is_file() else {}
+    cp=character_contract.load(ep) or {}
     members=((cp.get("cast") or {}).get("members") or [])
     chars={}
     for m in members:

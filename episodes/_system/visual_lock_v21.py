@@ -27,10 +27,15 @@ from story_os_contract import FOUR_ADMISSION_V21_POLICY, story_os_version
 from visual_profile import compile_prompt_contract
 import environment_contract
 import frame_contract
+import production_queue_store
+import scheduler_core
 import character_visual_contract
 import visual_lock_baseline_gate
 import visual_narrative_core_v22  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
+import propagation_core_gate
+import shot_progression_gate
 import critic_runtime_v211  # STORY_OS_V211_PERF_RECOVERY
+import codex_user_runner
 import codex_critic_runner as critic_runner
 import runtime_router
 import runtime_provenance
@@ -39,10 +44,14 @@ import storyos_config
 import story_json
 import visual_review_schema
 import runtime_timeout_policy
+import visual_lock_admission_state
+import episode_state_persistence
+import visual_profile_review_persistence
+import production_ledger
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES_REL = Path("meta/story-gates.json")
-REVIEW_REL = Path("meta/visual-profile-review.json")
+REVIEW_REL = visual_profile_review_persistence.LEGACY_REL
 PLAN_REL = Path("meta/visual-lock-plan.json")
 CANDIDATE_REL = Path("meta/.visual-lock-review.candidate.json")
 MIN_VERSION = (2, 1, 0)
@@ -113,7 +122,14 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 def episode_version(ep: Path) -> str:
     versions = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    try:
+        raw = str((episode_state_persistence.load(Path(ep).resolve()) or {}).get("tool_version") or "")
+        vt = version_tuple(raw)
+        if vt != (0,):
+            versions.append((vt, raw))
+    except Exception:
+        pass
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -196,16 +212,29 @@ def _rows(ep: Path) -> list[dict]:
     for n in range(1, total + 1):
         resolved = environment_contract.resolve_frame(ep, n)
         d = resolved.get("directive") or {}
+        shot = shot_progression_gate.resolve_frame(ep, n).get("shot_progression") or {}
         rows.append({
             "frame": n,
             "mode": str(d.get("frame_mode") or ""),
             "role": str(d.get("narrative_role") or ""),
             "impact": int(d.get("impact_level") or 0),
             "scale_reference": str(d.get("scale_reference") or ""),
+            "anomaly_logic_stage": str(shot.get("anomaly_logic_stage") or "ordinary"),
             "environment_severity": _severity(resolved.get("environment") or {}),
             "contract_sha256": frame_contract.compile_frame(ep, n, write_cache=True)["contract_sha256"],
         })
     return rows
+
+
+def _semantic_first_anomaly_candidates(rows: list[dict]) -> list[dict]:
+    """Prefer locked Story semantics over downstream PREIMAGE render hints."""
+    semantic = [
+        r for r in rows
+        if str(r.get("anomaly_logic_stage") or "ordinary") != "ordinary"
+    ]
+    if semantic:
+        return semantic
+    return [r for r in rows if r["mode"] == "anomaly_reveal" or r["impact"] >= 2] or rows
 
 def _opening_social_baseline(ep: Path, rows: list[dict]) -> dict | None:
     p=ep/"meta/opening-social-anchor.json"
@@ -265,12 +294,26 @@ def choose_plan(ep: Path) -> dict:
     # Reserve scarce semantic roles before the generic worst-environment slot.
     # A common episode has exactly one true climax/high-impact frame; selecting
     # `worst` first can consume that frame and make a valid 1+3 plan impossible.
+    ordinary_life = not propagation_core_gate.anomaly_applicable(ep)
     high = take(sorted(
         [r for r in rows if r["mode"] in {"climax_impact", "anomaly_amplified"} or r["impact"] >= 3] or rows,
         key=lambda r: (-r["impact"], r["mode"] != "climax_impact", -r["frame"])
     ))
+    if ordinary_life:
+        # Keep the four-admission schema stable, but reinterpret the historical
+        # first_major_anomaly slot as the first strong visual/world contrast.
+        # Pure daily-life episodes must never invent an anomaly just to satisfy
+        # calibration planning.
+        first_anomaly_candidates = [
+            r for r in rows
+            if r["frame"] != baseline["frame"]
+            and r["impact"] >= 1
+            and r["role"] in {"transition", "escalation", "climax", "payoff"}
+        ] or [r for r in rows if r["frame"] != baseline["frame"]]
+    else:
+        first_anomaly_candidates = _semantic_first_anomaly_candidates(rows)
     first_anomaly = take(sorted(
-        [r for r in rows if r["mode"] == "anomaly_reveal" or r["impact"] >= 2] or rows,
+        first_anomaly_candidates,
         key=lambda r: (r["frame"], -r["impact"])
     ))
     worst = take(sorted(
@@ -295,6 +338,10 @@ def choose_plan(ep: Path) -> dict:
             "baseline_selection": baseline_selection,
             "baseline_frame": baseline["frame"],
             "opening_social_anchor_machine_priority": True,
+            "ordinary_life_override": ordinary_life,
+            "legacy_first_major_anomaly_semantics": (
+                "first_major_visual_contrast" if ordinary_life else "first_major_anomaly"
+            ),
         },
         "items": plan_rows,
     }
@@ -307,21 +354,30 @@ def prepare(ep: Path) -> dict:
     g = read_json(gates_path)
     visual = g.setdefault("visual", {})
     calibration = visual.setdefault("calibration", {})
+    previous = {
+        (str(item.get("role") or ""), int(item.get("frame") or 0)): item
+        for item in (calibration.get("items") or []) if isinstance(item, dict)
+    }
     calibration["schema_version"] = 2
     calibration["policy"] = FOUR_ADMISSION_V21_POLICY
-    calibration["items"] = [
-        {
-            "id": row["id"],
-            "role": row["role"],
-            "frame": row["frame"],
-            "asset_path": None,
-            "sha256": None,
-            "decision": "pending",
-            "frame_contract_sha256": row["contract_sha256"],
-            "note": "",
-        }
-        for row in plan["items"]
-    ]
+    refreshed = []
+    for row in plan["items"]:
+        old = previous.get((row["role"], int(row["frame"])))
+        same_contract = old and str(old.get("frame_contract_sha256") or "") == str(row["contract_sha256"])
+        if same_contract:
+            refreshed.append({
+                "id": row["id"], "role": row["role"], "frame": row["frame"],
+                "asset_path": old.get("asset_path"), "sha256": old.get("sha256"),
+                "decision": old.get("decision") or "pending",
+                "frame_contract_sha256": row["contract_sha256"], "note": old.get("note") or "",
+            })
+        else:
+            refreshed.append({
+                "id": row["id"], "role": row["role"], "frame": row["frame"],
+                "asset_path": None, "sha256": None, "decision": "pending",
+                "frame_contract_sha256": row["contract_sha256"], "note": "",
+            })
+    calibration["items"] = refreshed
     write_json(gates_path, g)
     return plan
 
@@ -329,10 +385,9 @@ def prepare(ep: Path) -> dict:
 def _find_attempt_binding(ep: Path, frame: int, asset_sha: str) -> list[str]:
     if not frame_contract.required(ep):
         return []
-    ledger_path = ep / "meta/production-ledger.json"
-    if not ledger_path.is_file():
+    ledger = production_ledger.load_authority(ep, default=None)
+    if not isinstance(ledger, dict):
         return [f"frame {frame:02d} production ledger missing"]
-    ledger = read_json(ledger_path)
     row = (ledger.get("frames") or {}).get(f"{frame:02d}")
     if not isinstance(row, dict):
         return [f"frame {frame:02d} production ledger row missing"]
@@ -387,7 +442,7 @@ def calibration_assets(ep: Path, *, metadata_only: bool = False) -> list[dict]:
             asset_sha = sha256_file(p)
             current = frame_contract.compile_frame(ep, frame, write_cache=False)
             recorded_fc = str(item.get("frame_contract_sha256") or "")
-            if recorded_fc and recorded_fc != current["contract_sha256"]:
+            if recorded_fc and not frame_contract.recorded_contract_matches_current(ep, frame, recorded_fc):
                 raise ValueError(f"{role} frame contract stale")
             binding_errors = _find_attempt_binding(ep, frame, asset_sha)
             if binding_errors:
@@ -399,7 +454,11 @@ def calibration_assets(ep: Path, *, metadata_only: bool = False) -> list[dict]:
                 "path": p,
                 "asset_path": repo_rel(p),
                 "sha256": asset_sha,
-                "frame_contract_sha256": current["contract_sha256"],
+                # Pixel/review evidence stays bound to the contract that actually
+                # generated these pixels. A separately recorded projection-only
+                # migration may prove that old contract equivalent to current;
+                # never rewrite historical critic evidence to the new SHA.
+                "frame_contract_sha256": recorded_fc or current["contract_sha256"],
                 "impact_level": current["hash_material"]["frame_directive"].get("impact_level"),
                 "frame_mode": current["hash_material"]["frame_directive"].get("frame_mode"),
                 "scale_reference": current["hash_material"]["frame_directive"].get("scale_reference"),
@@ -411,16 +470,97 @@ def calibration_assets(ep: Path, *, metadata_only: bool = False) -> list[dict]:
     return [by_role[x] for x in ROLES]
 
 
+def _dirty_detection_assets(ep: Path) -> list[dict]:
+    """Resolve bindings for routing even when an existing admission is stale.
+
+    Review/verification remains strict through ``calibration_assets``.  Routing,
+    however, must convert an old Frame Contract binding into a dirty admission
+    instead of crashing before the authority-refresh image can be generated.
+    """
+    try:
+        return calibration_assets(ep)
+    except ValueError:
+        rows = calibration_assets(ep, metadata_only=True)
+        for row in rows:
+            current = frame_contract.compile_frame(ep, int(row["frame"]), write_cache=False)
+            row["frame_contract_sha256"] = current["contract_sha256"]
+            row["binding_stale_for_review"] = True
+        return rows
+
+
+def stale_generation_bindings(ep: Path) -> list[dict]:
+    """Return Visual Lock frames whose current pixels were generated under an old contract.
+
+    This is narrower than a dirty review. A stale review can be repeated; stale
+    generation provenance must be regenerated before any pixel critic sees it.
+    The Production Ledger current candidate is the source of truth so an older
+    gate projection cannot invalidate a newer candidate by itself.
+    """
+    if not frame_contract.required(ep):
+        return []
+    gates = read_json(ep / GATES_REL)
+    items = ((((gates.get("visual") or {}).get("calibration") or {}).get("items")) or [])
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    ledger_frames = ledger.get("frames") or {}
+    stale: list[dict] = []
+    for item in items:
+        if not isinstance(item, dict) or item.get("frame") is None:
+            continue
+        frame = int(item["frame"])
+        key = f"{frame:02d}"
+        frame_row = ledger_frames.get(key) or ledger_frames.get(str(frame)) or {}
+        candidate = frame_row.get("current_candidate") or {}
+        candidate_sha = str(candidate.get("sha256") or "").lower()
+        if not candidate_sha:
+            continue
+        attempt = next(
+            (
+                row for row in reversed(frame_row.get("attempts") or [])
+                if str(((row or {}).get("candidate") or {}).get("sha256") or "").lower() == candidate_sha
+            ),
+            None,
+        )
+        if not isinstance(attempt, dict):
+            continue
+        recorded = (attempt.get("request") or {}).get("frame_contract")
+        errors = frame_contract.verify_recorded_provenance(ep, frame, recorded)
+        if not any("frame_contract_sha256 stale" in str(error) for error in errors):
+            continue
+        current = frame_contract.compile_frame(ep, frame, write_cache=False)
+        stale.append({
+            "frame": frame,
+            "role": str(item.get("role") or ""),
+            "candidate_sha256": candidate_sha,
+            "candidate_path": str(candidate.get("path") or ""),
+            "recorded_frame_contract_sha256": str((recorded or {}).get("contract_sha256") or ""),
+            "current_frame_contract_sha256": str(current.get("contract_sha256") or ""),
+            "errors": errors,
+        })
+    return stale
+
+
+def dirty_admission_assets(ep: Path) -> list[dict]:
+    """Return only admissions whose SHA-bound PASS evidence is absent/stale."""
+    contract = compile_prompt_contract(ep)
+    assets = _dirty_detection_assets(ep)
+    return visual_lock_admission_state.dirty_assets(
+        ep,
+        assets,
+        profile_sha256=contract["profile_sha256"],
+        story_os_version=episode_version(ep),
+    )
+
+
+def dirty_admission_frames(ep: Path) -> list[int]:
+    return sorted({int(row["frame"]) for row in dirty_admission_assets(ep)})
+
+
 def bind_from_queue(ep: Path) -> dict:
-    qpath = ep / "meta/production-queue.json"
-    if not qpath.is_file():
-        raise ValueError("meta/production-queue.json missing")
-    q = read_json(qpath)
-    ledger_path = ep / "meta/production-ledger.json"
-    ledger = read_json(ledger_path) if ledger_path.is_file() else {"frames": {}}
+    q = scheduler_core.load_queue(ep)
+    ledger = production_ledger.load_authority(ep, default={"frames": {}}) or {"frames": {}}
     generated = {}
     for item in q.get("items") or []:
-        if item.get("scope") not in {"visual_lock", "repair"}:
+        if item.get("scope") not in {"visual_lock", "repair", "baseline_candidate"}:
             continue
         key = f"{int(item['frame']):02d}"
         if item.get("status") == "generated":
@@ -446,8 +586,20 @@ def bind_from_queue(ep: Path) -> dict:
     items = (((g.get("visual") or {}).get("calibration") or {}).get("items") or [])
     if len(items) != 4:
         raise ValueError("Visual Lock plan missing; run prepare first")
+    baseline_review = read_json(ep / visual_lock_baseline_gate.REL) if (ep / visual_lock_baseline_gate.REL).is_file() else {}
     for item in items:
         key = f"{int(item['frame']):02d}"
+        if item.get("role") == "ordinary_baseline" and baseline_review.get("status") == "LOCKED" and baseline_review.get("decision") == "PASS":
+            output = repo_file(baseline_review.get("asset_path"))
+            expected_sha = str(baseline_review.get("sha256") or "").lower()
+            actual_sha = sha256_file(output)
+            if actual_sha != expected_sha:
+                raise ValueError("locked baseline asset hash drift")
+            item["asset_path"] = repo_rel(output)
+            item["sha256"] = actual_sha
+            item["decision"] = "candidate"
+            item["frame_contract_sha256"] = str(baseline_review.get("frame_contract_sha256") or frame_contract.compile_frame(ep, int(key), write_cache=True)["contract_sha256"])
+            continue
         qrow = generated.get(key)
         if not qrow:
             raise ValueError(f"Visual Lock frame {key} not generated by scheduler")
@@ -524,14 +676,33 @@ def verify(ep: Path, *, metadata_only: bool = False) -> list[str]:
     """
     if not required(ep):
         return []
-    path = ep / REVIEW_REL
-    if not path.is_file():
+    data = visual_profile_review_persistence.load(ep)
+    if not isinstance(data, dict):
         return ["meta/visual-profile-review.json missing"]
     try:
         contract = compile_prompt_contract(ep)
         assets = calibration_assets(ep, metadata_only=metadata_only)
-        data = read_json(path)
         errors = validate_payload(data, contract=contract, assets=assets, version=episode_version(ep))
+        weak_ids = {
+            str(asset.get("id") or "")
+            for asset in assets
+            if (visual_lock_admission_state.valid_pass(
+                ep, asset, profile_sha256=contract["profile_sha256"],
+                story_os_version=episode_version(ep)
+            ) or {}).get("status") == "WEAK_PASS"
+        }
+        if weak_ids and errors:
+            # Keep the critic FAIL payload untouched. Only the verifier projects a
+            # SHA-bound WEAK_PASS over its row-level soft findings and global FAIL
+            # summary; schema/provenance/hash/binding errors remain fatal.
+            row_errors = tuple(f"{rid}.checks." for rid in weak_ids)
+            issue_errors = {f"{rid}.issues must be empty for PASS" for rid in weak_ids}
+            errors = [
+                error for error in errors
+                if not error.startswith(row_errors)
+                and error not in issue_errors
+                and error not in {"issue_codes must be empty for PASS", "summary.passed must be true"}
+            ]
         if not metadata_only:
             if not errors:
                 errors.extend("BASELINE_GATE:"+x for x in visual_lock_baseline_gate.validate_final_requirement(ep))
@@ -549,6 +720,7 @@ prefix = critic_runner.prefix
 
 def critic_prompt(ep: Path, contract: dict, assets: list[dict], candidate: Path, attempt: int) -> str:
     rel_out = candidate.relative_to(ROOT).as_posix()
+    count = len(assets)
     listed = "\n".join(
         f"- id={r['id']} role={r['role']} frame={r['frame']:02d} "
         f"mode={r['frame_mode']} impact={r['impact_level']} scale_reference={r['scale_reference']!r} "
@@ -556,7 +728,8 @@ def critic_prompt(ep: Path, contract: dict, assets: list[dict], candidate: Path,
         for r in assets
     )
     return f"""You are the adversarial Story OS V2.1 Visual Lock Critic in a fresh isolated session.
-Review exactly FOUR attached calibration/admission images in the listed order. Do not generate or edit images.
+Review exactly {count} DIRTY calibration/admission image(s) in the listed order. Do not generate or edit images.
+Unchanged admissions with valid SHA-bound PASS evidence are intentionally omitted and MUST NOT be re-judged.
 
 Resolved visual profile:
 <visual_contract>
@@ -574,6 +747,12 @@ Role expectations:
 - worst_capture_condition: difficult weather/light/capture state must obey physical causes; no blanket weather filter.
 - first_major_anomaly: anomaly must be clearly readable yet embedded into believable reality rather than promo concept art.
 - high_impact_admission: impact 3-4 must visibly deliver its promised abnormal scale/consequence, include readable real-world scale reference, and STILL look like an accidental/working record rather than a cinematic poster.
+
+ORDINARY-LIFE VISUAL LOCK OVERRIDE:
+If this Episode is explicitly anomaly_applicable=false, do NOT invent or require an anomaly for calibration. The legacy first_major_anomaly slot means first_major_visual_contrast: judge whether the first strong celestial-world/life contrast is readable while ordinary behavior stays believable. high_impact_admission means high-impact world-scale daily-life imagery, not abnormal spectacle.
+For pure daily-life Episodes, ordinary_life_density means credible resident/friend life and everyday activity. Do NOT require a visible job, workplace, labor tool, shift workflow, or other worker-specific evidence unless the Frame Contract for that exact frame requires it. A reusable visual profile may support worker stories without making every frame a work scene.
+For camera authorship, the per-frame Capture Event is authoritative. Explicit timer/fixed-mount capture, a device resting on a railing/table, a documented companion handoff, or a story-authorized selfie are valid physical camera sources and MUST NOT be failed as GHOST_CAMERA merely because every known character appears in frame.
+For worst_capture_condition in an ordinary-life Episode, judge the most constrained/least ideal capture condition actually promised by the selected Frame Contract. Do NOT demand storm, fog, darkness, extreme blur, or other hardship that the Story/Environment Contract never promised.
 
 For every image judge the checks required for Story OS contract version {episode_version(ep)}:
 {", ".join(checks_for_version(episode_version(ep)))}.
@@ -615,44 +794,87 @@ Return ONLY valid JSON as your final response. Do not call shell/exec/PowerShell
   "issue_codes": [],
   "summary": {{"passed": true}}
 }}
-PASS only if every check returned by checks_for_version for this Episode version is true on all 4 images. This is attempt {attempt}.
+PASS each returned admission row only if every check returned by checks_for_version for this Episode version is true on that attached image. This is attempt {attempt}.
 """
 
 
-def _mark_decisions(ep: Path, passed: bool) -> None:
+def _row_failed(ep: Path, row: dict) -> bool:
+    checks = row.get("checks") or {}
+    return row.get("issues") not in ([], None) or any(
+        checks.get(k) is not True for k in checks_for_version(episode_version(ep))
+    )
+
+
+def _merge_reused_admissions(ep: Path, *, data: dict, current: list[dict], contract: dict) -> dict:
+    """Merge fresh dirty-row verdicts with still-valid SHA-bound PASS rows."""
+    incoming = {
+        str(row.get("id") or ""): dict(row)
+        for row in (data.get("calibration") or [])
+        if isinstance(row, dict)
+    }
+    reused = visual_lock_admission_state.reusable_review_rows(
+        ep,
+        current,
+        profile_sha256=contract["profile_sha256"],
+        story_os_version=episode_version(ep),
+    )
+    for row in reused:
+        incoming.setdefault(str(row.get("id") or ""), row)
+    data["calibration"] = [incoming.get(str(asset.get("id") or ""), {}) for asset in current]
+    issue_codes: list[str] = []
+    for row in data["calibration"]:
+        if not isinstance(row, dict):
+            continue
+        for code in row.get("issues") or []:
+            if code not in issue_codes:
+                issue_codes.append(code)
+    data["issue_codes"] = issue_codes
+    data["summary"] = {"passed": bool(data["calibration"]) and all(not _row_failed(ep, row) for row in data["calibration"])}
+    return data
+
+
+def _mark_decisions(ep: Path, data: dict) -> None:
     gates_path = ep / GATES_REL
     g = read_json(gates_path)
     items = (((g.get("visual") or {}).get("calibration") or {}).get("items") or [])
+    by_id = {str(row.get("id") or ""): row for row in (data.get("calibration") or []) if isinstance(row, dict)}
     for item in items:
-        if isinstance(item, dict):
-            item["decision"] = "passed" if passed else "failed"
+        if not isinstance(item, dict):
+            continue
+        row = by_id.get(str(item.get("id") or ""))
+        if row is not None:
+            item["decision"] = "failed" if _row_failed(ep, row) else "passed"
     reviews = g.setdefault("reviews", {})
-    reviews["visual_admission"] = "passed" if passed else "failed"
+    reviews["visual_admission"] = "passed" if items and all(x.get("decision") == "passed" for x in items if isinstance(x, dict)) else "failed"
     write_json(gates_path, g)
 
 
-def _record_failed_calibration_frames(ep: Path, data: dict) -> None:
+def _record_calibration_frames(ep: Path, data: dict) -> None:
     # A critic that could not access its image inputs has no content finding to
-    # propagate into the production ledger.
+    # propagate into the production ledger. Reused PASS rows are already bound
+    # and must not be replayed into the ledger.
     if "INPUT_IMAGES_UNAVAILABLE" in (data.get("issue_codes") or []):
         return
     for row in data.get("calibration") or []:
-        checks = row.get("checks") or {}
-        failed = row.get("issues") not in ([], None) or any(checks.get(k) is not True for k in checks_for_version(episode_version(ep)))
-        if not failed:
+        if row.get("admission_reused") is True:
             continue
         try:
             frame = int(row.get("frame"))
         except Exception:
             continue
+        decision = "repair" if _row_failed(ep, row) else "pass"
+        notes = (
+            "Phase5 Visual Lock critic failed actual-pixel admission"
+            if decision == "repair"
+            else "Phase5 Visual Lock per-frame SHA-bound admission PASS"
+        )
         cp = subprocess.run(
             [sys.executable, str(Path(__file__).resolve().parent / "production_ledger.py"),
-             "review", str(ep), "--frame", f"{frame:02d}", "--decision", "repair",
-             "--notes", "Phase5 Visual Lock critic failed actual-pixel admission"],
+             "review", str(ep), "--frame", f"{frame:02d}", "--decision", decision,
+             "--notes", notes],
             cwd=ROOT, check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             text=True, encoding="utf-8", errors="replace"
         )
-        # Do not hide a state mismatch; leave it visible in the Visual Lock review notes.
         if cp.returncode != 0:
             row.setdefault("ledger_review_warnings", []).append(cp.stdout[-1200:])
 
@@ -672,6 +894,12 @@ def _finalize_review_payload(
     data["profile_path"] = contract["profile_path"]
     data["profile_sha256"] = contract["profile_sha256"]
     data["critic_provenance"] = provenance
+    reviewed_ids = {
+        str(row.get("id") or "")
+        for row in (data.get("calibration") or [])
+        if isinstance(row, dict)
+    }
+    data = _merge_reused_admissions(ep, data=data, current=current, contract=contract)
     by_id = {r["id"]: r for r in current}
     for row in data.get("calibration") or []:
         rid = str(row.get("id") or "")
@@ -684,7 +912,12 @@ def _finalize_review_payload(
     technical_codes = critic_runtime_v211.classify_issue_codes(data.get("issue_codes") or [])
     evidence_ref = provenance.get("log") or provenance.get("request_path") or "product_runtime_review"
     if technical_codes:
-        write_json(ep / REVIEW_REL, data)
+        visual_profile_review_persistence.save(
+            ep,
+            data,
+            decision="TECHNICAL_FAILURE",
+            source_sha256=contract["profile_sha256"],
+        )
         (ep / CANDIDATE_REL).unlink(missing_ok=True)
         health = critic_runtime_v211.record_technical_failure(
             ep,
@@ -697,9 +930,27 @@ def _finalize_review_payload(
         return 11
 
     errors = validate_payload(data, contract=contract, assets=current, version=episode_version(ep))
-    if errors:
-        _record_failed_calibration_frames(ep, data)
-    write_json(ep / REVIEW_REL, data)
+    _record_calibration_frames(ep, data)
+    fresh_rows = [
+        row for row in (data.get("calibration") or [])
+        if isinstance(row, dict) and str(row.get("id") or "") in reviewed_ids
+    ]
+    visual_lock_admission_state.record_rows(
+        ep,
+        rows=fresh_rows,
+        assets=current,
+        profile_sha256=contract["profile_sha256"],
+        story_os_version=episode_version(ep),
+        required_checks=checks_for_version(episode_version(ep)),
+        provenance=provenance,
+        attempt=attempt,
+    )
+    visual_profile_review_persistence.save(
+        ep,
+        data,
+        decision="PASS" if not errors else "FAIL",
+        source_sha256=contract["profile_sha256"],
+    )
     (ep / CANDIDATE_REL).unlink(missing_ok=True)
     critic_runtime_v211.record_content_result(
         ep,
@@ -708,7 +959,7 @@ def _finalize_review_payload(
         issue_codes=data.get("issue_codes") or [],
         log=str(evidence_ref),
     )
-    _mark_decisions(ep, not errors)
+    _mark_decisions(ep, data)
     if errors:
         print("VISUAL LOCK V2.1 REVIEW FAIL")
         for error in errors:
@@ -752,8 +1003,56 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
         attempt=attempt,
     )
     if rc == 0:
-        product_review_adapter.mark_complete(ep, "visual-lock", attempt=attempt, final_path=ep / REVIEW_REL)
+        final_export = visual_profile_review_persistence.materialize_export(
+            ep,
+            visual_profile_review_persistence.load(ep),
+        )
+        if final_export is None:
+            raise RuntimeError("visual profile review export missing after PASS")
+        product_review_adapter.mark_complete(
+            ep,
+            "visual-lock",
+            attempt=attempt,
+            final_path=final_export,
+        )
     return rc
+
+
+def _direct_user_exception_frames(ep: Path, assets: list[dict]) -> list[int]:
+    """Return Visual Lock assets currently backed by a direct-user exception.
+
+    Visual Lock review attempts are global rounds, while the exception authority
+    is per frame. Bind the provenance to the exact SHA/attempt that produced the
+    current calibration asset so an older exception authorization cannot bless a
+    newer unrelated image.
+    """
+    ledger = production_ledger.load_authority(Path(ep).resolve(), default=None)
+    if not isinstance(ledger, dict):
+        return []
+    result = []
+    for asset in assets:
+        try:
+            frame = int(asset.get("frame"))
+        except Exception:
+            continue
+        row = ((ledger.get("frames") or {}).get(f"{frame:02d}") or {})
+        candidate = row.get("current_candidate") or {}
+        if str(candidate.get("sha256") or "").lower() != str(asset.get("sha256") or "").lower():
+            continue
+        attempt_id = str(candidate.get("attempt_id") or "")
+        accepted = next(
+            (x for x in reversed(row.get("attempts") or []) if str((x or {}).get("attempt_id") or "") == attempt_id),
+            None,
+        )
+        capture_id = str(((accepted or {}).get("request") or {}).get("capture_id") or "")
+        if (
+            accepted
+            and accepted.get("result") == "success"
+            and capture_id.startswith("user-exception-")
+            and int(row.get("user_exception_repairs_used") or 0) == 1
+        ):
+            result.append(frame)
+    return sorted(set(result))
 
 
 def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
@@ -762,25 +1061,46 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     if attempt < 1:
         raise RuntimeError("attempt must be >= 1")
     active_runtime, _ = runtime_router.detect()
+    vision_runtime, _ = runtime_router.vision_review_runtime()
     if attempt > 2 and (active_runtime not in {"WORK", "WEB"} or codex_raw):
-        raise RuntimeError("extended Visual Lock attempts require WORK/WEB product review after finalized source drift")
+        raise RuntimeError("extended Visual Lock attempts require WORK product review after finalized source drift")
     baseline_errors=visual_lock_baseline_gate.validate_review(ep)
     if baseline_errors:raise RuntimeError("ordinary_baseline separate review must PASS before final Visual Lock critic: "+"; ".join(baseline_errors[:8]))
     contract = compile_prompt_contract(ep)
     assets = calibration_assets(ep)
+    dirty_assets = visual_lock_admission_state.dirty_assets(
+        ep,
+        assets,
+        profile_sha256=contract["profile_sha256"],
+        story_os_version=episode_version(ep),
+    )
     candidate = ep / CANDIDATE_REL
     candidate.unlink(missing_ok=True)
     before = {r["id"]: r["sha256"] for r in assets}
-    if active_runtime in {"WORK", "WEB"} and not codex_raw:
+    if not dirty_assets:
+        provenance = runtime_provenance.build_vision_critic_provenance(
+            attempt=attempt,
+            log="meta/visual-lock-admissions.json",
+            review_scope="VISUAL_LOCK_REUSED_ADMISSIONS",
+        )
+        return _finalize_review_payload(
+            ep,
+            data={"calibration": [], "issue_codes": [], "summary": {"passed": True}},
+            contract=contract,
+            current=assets,
+            provenance=provenance,
+            attempt=attempt,
+        )
+    if vision_runtime != "CODEX" and not codex_raw:
         profile_path = Path(contract["profile_path"])
         profile_path = profile_path.resolve() if profile_path.is_absolute() else (ROOT / profile_path).resolve()
-        sources = [ep / GATES_REL, profile_path, *[r["path"] for r in assets]]
+        sources = [ep / GATES_REL, profile_path, *[r["path"] for r in dirty_assets]]
         request = product_review_adapter.prepare(
             ep,
             kind="visual-lock",
             runtime=active_runtime,
             attempt=attempt,
-            prompt=critic_prompt(ep, contract, assets, candidate, attempt),
+            prompt=critic_prompt(ep, contract, dirty_assets, candidate, attempt),
             source_paths=sources,
             candidate_path=candidate,
         )
@@ -789,9 +1109,9 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     codex = resolve_codex(codex_raw)
     # Codex's Windows image sidecar may not resolve Chinese workspace paths.
     # Supply byte-identical ASCII-only temporary attachments for this review.
-    staging = Path(tempfile.mkdtemp(prefix="story-os-visual-lock-"))
+    staging = codex_user_runner.workspace_path(prefix="story-os-visual-lock-")
     staged_assets = []
-    for row in assets:
+    for row in dirty_assets:
         staged = staging / f"{row['id']}-{int(row['frame']):02d}{Path(row['path']).suffix.lower()}"
         shutil.copy2(row["path"], staged)
         staged_assets.append(staged)
@@ -801,13 +1121,12 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     # let the Codex CLI choose its default model (same behaviour as the frame semantic
     # and caption audits). Without this, a controller model whose vision sidecar
     # rejects attachments silently yields an all-false "no pixel evidence" sentinel.
-    cfg=storyos_config.load_config()
-    model=str(storyos_config.get_path(cfg,"runtime.codex_critic_model") or "") or None
-    effort=str(storyos_config.get_path(cfg,"runtime.codex_critic_reasoning_effort") or storyos_config.get_path(cfg,"runtime.codex_image_reasoning_effort"))
+    model=runtime_router.vision_review_model()
+    effort=runtime_router.vision_review_effort("final")
     log = ep / "meta" / f"visual-lock-critic-attempt-{attempt}.jsonl"
     try:
         done = critic_runner.launch(
-            critic_prompt(ep, contract, assets, candidate, attempt),
+            critic_prompt(ep, contract, dirty_assets, candidate, attempt),
             codex=codex,
             root=ROOT,
             timeout=timeout,
@@ -821,15 +1140,27 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         )
     finally:
         shutil.rmtree(staging, ignore_errors=True)
-    if done.returncode != 0:
-        log_text = done.log_text
-        codes = critic_runtime_v211.classify_log_text(log_text) or ["CRITIC_PROCESS_ERROR"]
-        health = critic_runtime_v211.record_technical_failure(
-            ep, issue_codes=codes, attempt=attempt,
-            log=log.relative_to(ROOT).as_posix(), source="visual_lock_critic_process")
-        print("VISUAL LOCK CRITIC TECHNICAL FAIL:", ",".join(codes), "status="+health["status"])
-        return 11
-    if not candidate.is_file():
+    data = None
+    recovery_basis = None
+    if candidate.is_file():
+        try:
+            data = read_json(candidate)
+        except Exception:
+            data = None
+    if data is None:
+        recovered = critic_runner.recover_completed_agent_json(done.log_text)
+        if recovered is not None:
+            data = recovered
+            recovery_basis = "agent_message_json_followed_by_turn_completed"
+    if data is None:
+        if done.returncode != 0:
+            log_text = done.log_text
+            codes = critic_runtime_v211.classify_log_text(log_text) or ["CRITIC_PROCESS_ERROR"]
+            health = critic_runtime_v211.record_technical_failure(
+                ep, issue_codes=codes, attempt=attempt,
+                log=log.relative_to(ROOT).as_posix(), source="visual_lock_critic_process")
+            print("VISUAL LOCK CRITIC TECHNICAL FAIL:", ",".join(codes), "status="+health["status"])
+            return 11
         health = critic_runtime_v211.record_technical_failure(
             ep, issue_codes=["CRITIC_OUTPUT_MISSING"], attempt=attempt,
             log=log.relative_to(ROOT).as_posix(), source="visual_lock_critic_output")
@@ -838,10 +1169,20 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     current = calibration_assets(ep)
     if {r["id"]: r["sha256"] for r in current} != before:
         raise RuntimeError("Visual Lock critic modified calibration images")
-    data = read_json(candidate)
-    provenance = runtime_provenance.build_critic_provenance(
-        "CODEX", attempt=attempt, log=log.relative_to(ROOT).as_posix()
+    exception_frames = _direct_user_exception_frames(ep, current)
+    provenance = runtime_provenance.build_vision_critic_provenance(
+        attempt=attempt,
+        log=log.relative_to(ROOT).as_posix(),
+        review_scope="VISUAL_LOCK_DIRTY_ADMISSION",
+        allow_bounded_candidate_attempt=attempt > 2 and not exception_frames,
+        allow_user_exception_attempt=bool(exception_frames),
     )
+    if exception_frames:
+        provenance["direct_user_exception_frames"] = exception_frames
+    if recovery_basis:
+        provenance["recovered_from_post_answer_process_failure"] = True
+        provenance["recovery_basis"] = recovery_basis
+        provenance["process_returncode"] = int(done.returncode)
     return _finalize_review_payload(
         ep,
         data=data,
@@ -850,6 +1191,20 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         provenance=provenance,
         attempt=attempt,
     )
+
+
+def reconcile_admissions(ep: Path) -> dict:
+    contract = compile_prompt_contract(ep)
+    assets = calibration_assets(ep)
+    result = visual_lock_admission_state.reconcile_historical_passes(
+        ep,
+        assets=assets,
+        profile_sha256=contract["profile_sha256"],
+        story_os_version=episode_version(ep),
+        required_checks=checks_for_version(episode_version(ep)),
+    )
+    result["gate_projection"] = visual_lock_admission_state.sync_gate_decisions(ep)
+    return result
 
 
 def self_test() -> None:
@@ -869,6 +1224,7 @@ def main() -> int:
     p = sub.add_parser("bind-from-queue"); p.add_argument("episode_dir")
     p = sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None)
     p = sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
+    p = sub.add_parser("reconcile-admissions"); p.add_argument("episode_dir")
     p = sub.add_parser("verify"); p.add_argument("episode_dir")
     p = sub.add_parser("show-plan"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
@@ -892,6 +1248,8 @@ def main() -> int:
             return run_critic(ep, attempt=args.attempt, codex_raw=args.codex, timeout=args.timeout)
         if args.cmd == "finalize-review":
             return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime)
+        if args.cmd == "reconcile-admissions":
+            print(json.dumps(reconcile_admissions(ep), ensure_ascii=False, indent=2)); return 0
         errors = verify(ep)
         if errors:
             for error in errors:

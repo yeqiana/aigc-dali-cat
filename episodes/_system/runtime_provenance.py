@@ -11,6 +11,9 @@ from __future__ import annotations
 import datetime as dt
 from typing import Any
 
+import evidence_time
+import workspace_provider
+
 BASE_RUNTIMES = {"CODEX", "WORK", "WEB"}
 ISOLATED_RUNTIME_BY_BASE = {
     "CODEX": "CODEX_ISOLATED",
@@ -18,6 +21,15 @@ ISOLATED_RUNTIME_BY_BASE = {
     "WEB": "WEB_ISOLATED",
 }
 ALLOWED_ISOLATED_RUNTIMES = set(ISOLATED_RUNTIME_BY_BASE.values())
+LEGACY_DEVSPACE_BOUNDED_RUNTIME = "WORK_DEVSPACE_BOUNDED"
+ALLOWED_CRITIC_RUNTIMES = ALLOWED_ISOLATED_RUNTIMES | {LEGACY_DEVSPACE_BOUNDED_RUNTIME}
+
+# New Story OS product reviews are executed by the surrounding WORK runtime
+# through the configured Workspace Provider. These legacy names remain only so
+# historical DevSpace evidence can still be validated during resume/audit.
+LEGACY_DEVSPACE_WORKSPACE_TRANSPORT = "DEVSPACE"
+VISION_REVIEW_CAPABILITY = "vision"
+CURRENT_PROVENANCE_SCHEMA_VERSION = 3
 
 
 def now() -> str:
@@ -48,10 +60,36 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
     if not isinstance(provenance, dict):
         return ["critic_provenance must be object"]
     runtime = str(provenance.get("runtime") or "").strip().upper()
-    if runtime not in ALLOWED_ISOLATED_RUNTIMES:
+    if runtime not in ALLOWED_CRITIC_RUNTIMES:
         errors.append(
-            "critic runtime must be one of " + ", ".join(sorted(ALLOWED_ISOLATED_RUNTIMES))
+            "critic runtime must be one of " + ", ".join(sorted(ALLOWED_CRITIC_RUNTIMES))
         )
+        return errors
+    schema_version = int(provenance.get("schema_version") or 1)
+    errors.extend(evidence_time.validate_timestamp(
+        provenance.get("reviewed_at"),
+        field="critic_provenance.reviewed_at",
+        required=schema_version >= CURRENT_PROVENANCE_SCHEMA_VERSION,
+    ))
+    if runtime == LEGACY_DEVSPACE_BOUNDED_RUNTIME:
+        if provenance.get("isolated_session") is not False:
+            errors.append("legacy bounded DevSpace critic must declare isolated_session=false")
+        if str(provenance.get("base_runtime") or "").upper() != "WORK":
+            errors.append("legacy bounded DevSpace critic base_runtime must be WORK")
+        if str(provenance.get("execution_source") or "") != "product_runtime":
+            errors.append("legacy bounded DevSpace critic execution_source must be product_runtime")
+        if str(provenance.get("workspace_transport") or "").upper() != LEGACY_DEVSPACE_WORKSPACE_TRANSPORT:
+            errors.append("legacy bounded DevSpace critic workspace_transport must be DEVSPACE")
+        if str(provenance.get("isolation_mode") or "") != "bounded_request_only":
+            errors.append("legacy bounded DevSpace critic isolation_mode must be bounded_request_only")
+        if provenance.get("webcodex_used") is not False:
+            errors.append("legacy bounded DevSpace critic webcodex_used must be false")
+        if provenance.get("full_auto_user_authorized") is not True:
+            errors.append("legacy bounded DevSpace critic requires full_auto_user_authorized=true")
+        if provenance.get("ordinary_life_only") is not True:
+            errors.append("legacy bounded DevSpace critic requires ordinary_life_only=true")
+        if attempt_required and provenance.get("attempt") not in {1, 2}:
+            errors.append("legacy bounded DevSpace critic attempt must be 1 or 2")
         return errors
     if provenance.get("isolated_session") is not True:
         errors.append("critic must be an isolated session")
@@ -64,6 +102,29 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
         errors.append("WORK/WEB critic execution_source must be product_runtime")
     if base == "CODEX" and source not in {"", "local_codex_cli"}:
         errors.append("CODEX critic execution_source must be local_codex_cli")
+    if base == "CODEX" and provenance.get("review_capability") == VISION_REVIEW_CAPABILITY:
+        if provenance.get("ephemeral") is not True:
+            errors.append("CODEX vision critic must declare ephemeral=true")
+        if provenance.get("session_reused_from_generation") is not False:
+            errors.append("CODEX vision critic must not reuse the generation session")
+    if schema_version >= 3 and base == "WORK":
+        provider_id = str(provenance.get("workspace_provider") or "").strip().lower()
+        spec = workspace_provider.PROVIDERS.get(provider_id)
+        if spec is None:
+            errors.append("WORK critic workspace_provider is unsupported")
+        elif str(provenance.get("workspace_transport") or "").upper() != spec.transport:
+            errors.append("WORK critic workspace_transport does not match workspace_provider")
+        if str(provenance.get("isolation_mode") or "") != "fresh_product_review_turn":
+            errors.append("WORK critic isolation_mode must be fresh_product_review_turn")
+        if spec is not None and provenance.get("webcodex_used") is not spec.is_webcodex:
+            errors.append("WORK critic webcodex_used does not match workspace_provider")
+    elif schema_version >= 2 and base == "WORK":
+        if str(provenance.get("workspace_transport") or "").upper() != LEGACY_DEVSPACE_WORKSPACE_TRANSPORT:
+            errors.append("legacy WORK critic workspace_transport must be DEVSPACE")
+        if str(provenance.get("isolation_mode") or "") != "fresh_product_review_turn":
+            errors.append("legacy WORK critic isolation_mode must be fresh_product_review_turn")
+        if provenance.get("webcodex_used") is not False:
+            errors.append("legacy WORK critic webcodex_used must be false")
     if attempt_required:
         attempt = provenance.get("attempt")
         extended = (
@@ -72,9 +133,58 @@ def validate_critic_provenance(provenance: Any, *, attempt_required: bool = True
             and provenance.get("extended_source_drift_review") is True
             and base in {"WORK", "WEB"}
         )
-        if attempt not in {1, 2} and not extended:
-            errors.append("critic attempt must be 1 or 2 unless this is a validated WORK/WEB source-drift re-review")
+        user_exception = (
+            isinstance(attempt, int)
+            and attempt >= 3
+            and provenance.get("direct_user_exception_review") is True
+        )
+        user_continuation = (
+            isinstance(attempt, int)
+            and attempt >= 3
+            and provenance.get("direct_user_continuation_review") is True
+        )
+        bounded_visual = (
+            isinstance(attempt, int)
+            and attempt >= 3
+            and provenance.get("bounded_visual_candidate_review") is True
+            and base == "CODEX"
+            and provenance.get("review_capability") == VISION_REVIEW_CAPABILITY
+        )
+        if attempt not in {1, 2} and not extended and not user_exception and not user_continuation and not bounded_visual:
+            errors.append("critic attempt must be 1 or 2 unless this is source-drift, direct-user-exception, direct-user-continuation, or bounded baseline-candidate vision review")
     return errors
+
+
+def build_vision_critic_provenance(
+    *,
+    attempt: int,
+    log: str | None = None,
+    review_scope: str | None = None,
+    allow_bounded_candidate_attempt: bool = False,
+    allow_user_exception_attempt: bool = False,
+    allow_user_continuation_attempt: bool = False,
+) -> dict:
+    """Build provenance for an actual-pixel Codex critic.
+
+    Keep runtime=CODEX_ISOLATED for historical validator compatibility while
+    explicitly recording the capability and the non-reuse guarantee.
+    """
+    data = build_critic_provenance(
+        "CODEX",
+        attempt=attempt,
+        log=log,
+        allow_bounded_visual_attempt=allow_bounded_candidate_attempt,
+        allow_user_exception_attempt=allow_user_exception_attempt,
+        allow_user_continuation_attempt=allow_user_continuation_attempt,
+    )
+    data.update({
+        "review_capability": VISION_REVIEW_CAPABILITY,
+        "ephemeral": True,
+        "session_reused_from_generation": False,
+    })
+    if review_scope:
+        data["review_scope"] = review_scope
+    return data
 
 
 def build_critic_provenance(
@@ -84,13 +194,30 @@ def build_critic_provenance(
     log: str | None = None,
     request_path: str | None = None,
     allow_extended_attempt: bool = False,
+    allow_user_exception_attempt: bool = False,
+    allow_user_continuation_attempt: bool = False,
+    allow_bounded_visual_attempt: bool = False,
 ) -> dict:
     base = normalize_base_runtime(base_runtime)
     if attempt < 1:
         raise ValueError("attempt must be >= 1")
-    if attempt > 2 and not (allow_extended_attempt and base in {"WORK", "WEB"}):
-        raise ValueError("attempt must be 1 or 2 unless this is a validated WORK/WEB source-drift re-review")
+    allowed_extended = allow_extended_attempt and base in {"WORK", "WEB"}
+    # Some review surfaces use a global review-round counter rather than a
+    # per-frame attempt number. A direct-user exception can therefore appear at
+    # round 4+ after bounded candidates were already reviewed. The explicit
+    # flag is the authority; ordinary callers still cannot exceed attempt 2.
+    allowed_user_exception = allow_user_exception_attempt and attempt >= 3
+    allowed_user_continuation = allow_user_continuation_attempt and attempt >= 3
+    # The candidate pool is bounded per explicit prompt-policy revision, while
+    # review attempt numbers are intentionally monotonic across revisions. A
+    # later policy epoch can therefore legitimately reach attempt 6+ without
+    # becoming an unbounded retry loop. The explicit bounded-review flag is the
+    # authority; candidate capacity itself is enforced by visual_lock_candidate_pool.
+    allowed_bounded_visual = allow_bounded_visual_attempt and base == "CODEX" and attempt >= 3
+    if attempt > 2 and not (allowed_extended or allowed_user_exception or allowed_user_continuation or allowed_bounded_visual):
+        raise ValueError("attempt must be 1 or 2 unless this is source-drift, direct-user-exception, direct-user-continuation, or bounded baseline-candidate vision review")
     data = {
+        "schema_version": CURRENT_PROVENANCE_SCHEMA_VERSION,
         "runtime": isolated_runtime(base),
         "base_runtime": base,
         "isolated_session": True,
@@ -98,8 +225,23 @@ def build_critic_provenance(
         "attempt": attempt,
         "reviewed_at": now(),
     }
+    if base == "WORK":
+        workspace = workspace_provider.current()
+        data.update({
+            "workspace_provider": workspace.provider_id,
+            "workspace_transport": workspace.transport,
+            "isolation_mode": "fresh_product_review_turn",
+            "webcodex_used": workspace.is_webcodex,
+        })
     if attempt > 2:
-        data["extended_source_drift_review"] = True
+        if allowed_user_exception:
+            data["direct_user_exception_review"] = True
+        elif allowed_user_continuation:
+            data["direct_user_continuation_review"] = True
+        elif allowed_bounded_visual:
+            data["bounded_visual_candidate_review"] = True
+        else:
+            data["extended_source_drift_review"] = True
     if log:
         data["log"] = log
     if request_path:
@@ -109,8 +251,29 @@ def build_critic_provenance(
 
 def self_test() -> None:
     assert validate_critic_provenance(build_critic_provenance("CODEX", attempt=1)) == []
-    assert validate_critic_provenance(build_critic_provenance("WORK", attempt=2)) == []
+    vision = build_vision_critic_provenance(attempt=1, log="vision.jsonl", review_scope="BASELINE")
+    assert vision["runtime"] == "CODEX_ISOLATED"
+    assert vision["review_capability"] == "vision"
+    assert vision["ephemeral"] is True
+    assert vision["session_reused_from_generation"] is False
+    assert validate_critic_provenance(vision) == []
+    work = build_critic_provenance("WORK", attempt=2)
+    assert work["workspace_provider"] == "webcodex"
+    assert work["workspace_transport"] == "WEBCODEX"
+    assert work["isolation_mode"] == "fresh_product_review_turn"
+    assert work["webcodex_used"] is True
+    assert validate_critic_provenance(work) == []
     assert validate_critic_provenance(build_critic_provenance("WORK", attempt=3, allow_extended_attempt=True)) == []
+    assert validate_critic_provenance(build_critic_provenance("CODEX", attempt=3, allow_user_exception_attempt=True)) == []
+    continuation = build_vision_critic_provenance(attempt=4, log="vision-cont-a4.jsonl", review_scope="DIRECT_USER_CONTINUATION_PATCH", allow_user_continuation_attempt=True)
+    assert continuation["direct_user_continuation_review"] is True
+    assert validate_critic_provenance(continuation) == []
+    exception_round = build_vision_critic_provenance(attempt=6, log="vision-a6.jsonl", review_scope="VISUAL_LOCK_FOUR_ADMISSION", allow_user_exception_attempt=True)
+    assert exception_round["direct_user_exception_review"] is True
+    assert validate_critic_provenance(exception_round) == []
+    bounded_vision = build_vision_critic_provenance(attempt=3, log="vision-a3.jsonl", review_scope="VISUAL_LOCK_BASELINE", allow_bounded_candidate_attempt=True)
+    assert bounded_vision["bounded_visual_candidate_review"] is True
+    assert validate_critic_provenance(bounded_vision) == []
     bad = build_critic_provenance("WEB", attempt=1)
     bad["execution_source"] = "local_codex_cli"
     assert validate_critic_provenance(bad)

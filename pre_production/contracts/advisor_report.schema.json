@@ -1,0 +1,25 @@
+{
+  "schema_id": "advisor_report",
+  "schema_version": 1,
+  "status": "mvp",
+  "decisions": ["PASS", "WARNING", "NEEDS_REVISION"],
+  "confidence_levels": ["LOW", "MEDIUM", "HIGH"],
+  "risk_types": ["similarity", "hook"],
+  "required": [
+    "report_id",
+    "episode_id",
+    "decision",
+    "risks",
+    "evidence",
+    "recommendations",
+    "confidence",
+    "created_time"
+  ],
+  "risk_required": ["type", "level", "evidence"],
+  "forbidden_key_patterns": ["score", "percent", "percentage", "points", "grade", "rank"],
+  "policy": {
+    "non_blocking": "The advisor never blocks production; it only reports PASS/WARNING/NEEDS_REVISION.",
+    "evidence_bound": "Every risk must carry evidence.",
+    "recommendation_not_decision": "Recommendations are suggestions; the creator owns the final decision."
+  }
+}

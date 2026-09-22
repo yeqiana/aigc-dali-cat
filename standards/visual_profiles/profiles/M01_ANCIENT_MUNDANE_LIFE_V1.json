@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "profile_schema_version": 2,
+  "id": "M01_ANCIENT_MUNDANE_LIFE_V1",
+  "profile_id": "M01_ANCIENT_MUNDANE_LIFE_V1",
+  "name": "古代普通人生活纪实",
+  "profile_name": "古代普通人生活纪实",
+  "profile_name_en": "Ancient Ordinary Life Documentary",
+  "profile_version": "1.0",
+  "platform_min_version": "2.8.0",
+  "scope": "account_immersive_profile",
+  "default_when_unspecified": false,
+  "era": "historical",
+  "reality_basis": "real_world_historical",
+  "capture_philosophy": "ancient_daily_documentary",
+  "camera_language": {
+    "operator": "participant_or_companion_inside_event",
+    "viewpoint": "first_person_or_companion_eye",
+    "capture_grammar_ref": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "capture_profile_ref": "CP03",
+    "who_records": "同行的人或本人；不是史官，不是画师，不是摄制组。",
+    "how_recorded": "手里正好有能留影的物件（旧相纸、随身画样、账本夹页），随手记下眼前这一刻，不作姿态。",
+    "why_exists": "记住今天做了什么、给家里或同伴留个念想；不是创作，不是宣传。",
+    "ghost_camera": "forbidden"
+  },
+  "realism_level": "maximum",
+  "lighting_rules": {
+    "source": "natural_and_available_only",
+    "allowed": ["daylight", "overcast_daylight", "window_light", "oil_lamp", "candle", "hearth_fire", "lantern"],
+    "forbidden": ["studio_lighting", "three_point_setup", "beauty_dish", "cinematic_lighting", "modern_electric_light"]
+  },
+  "prohibited_patterns": [
+    "影视古装大片",
+    "影楼写真",
+    "现代摄影设备入镜",
+    "完美棚拍",
+    "英雄机位与对称构图",
+    "塑料皮肤与磨皮",
+    "概念设计图质感",
+    "现代纺织与工业成衣质感"
+  ],
+  "compatible_story_types": [
+    "historical_ordinary_life",
+    "folk_craft_and_errands",
+    "market_and_water_town_life"
+  ],
+  "must_keep": [
+    "真人实景与时代生活物理",
+    "自然光与油灯烛火",
+    "非摆拍的手持记录感"
+  ],
+  "forbidden": [
+    "影视古装大片",
+    "影楼写真",
+    "现代摄影设备入镜",
+    "完美棚拍"
+  ],
+  "principle": "记录一个普通人的一天，不是拍一部古装剧；具体朝代与地方生活物理优先。",
+  "precedence": [
+    "explicit_episode_or_series_visual_profile",
+    "era_and_life_physics",
+    "M01_visual_language"
+  ],
+  "visual_dna": {
+    "reality_first": true,
+    "era": "pre_modern_era_ordinary_life",
+    "people": "ordinary_unprepared_not_actor_like",
+    "subject_awareness": "mostly_unaware_or_natural",
+    "practical_available_light": true,
+    "cinematic_lighting": "forbidden_by_default",
+    "commercial_hdr": "forbidden",
+    "beautification": "forbidden",
+    "scene_cleaning": "forbidden_by_default",
+    "life_clutter": "preserve",
+    "environment_imperfection": "preserve",
+    "anomaly": "embedded_in_mundane_daily_life_before_spectacle",
+    "camera_authorship": "required",
+    "ghost_camera": "forbidden",
+    "narrative_information_gain": "required_after_frame_01",
+    "continuity": "strict",
+    "visual_polish_ceiling": "documentary_realism"
+  },
+  "anti_homogeneity": {
+    "lock_texture_not_scene": true,
+    "rule": "统一古代生活物理、拍摄行为与现场光，不统一剧情空间、异常载体和关键道具。"
+  }
+}

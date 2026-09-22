@@ -19,6 +19,7 @@ import batch_scheduler
 import scheduler_core
 import raw_candidate_budget as budget
 import prompt_package
+import runtime_workspace
 import production_batch_review as batch_review
 import frame_semantic_review as semantic
 import incremental_frame_review as incr
@@ -28,6 +29,7 @@ import openai_batch_prompt_compiler
 import golden_episode_regression as golden
 import codex_subscription_image as single_backend
 import batch_image_worker as batch_delivery
+import episode_performance
 from test_repair_concurrency_lane import make_episode
 
 
@@ -110,6 +112,12 @@ class EntryBehavior(unittest.TestCase):
         self.assertEqual(peak, 3)
         self.assertEqual(len(starts), 6)
         self.assertTrue(all(x['attempts'] == 1 for x in q['items']))
+        perf = episode_performance.load(ep, False)
+        self.assertEqual(len(perf.get('image_attempts') or []), 6)
+        self.assertEqual(
+            {(x.get('queue_item_id'), x.get('attempt')) for x in perf['image_attempts']},
+            {(x['id'], 1) for x in q['items']},
+        )
         if not failures:
             self.assertEqual(rc, 0)
             self.assertLess(ordering.index(('start', 4)), ordering.index(('end', 1)))
@@ -128,6 +136,33 @@ class EntryBehavior(unittest.TestCase):
         for lane in (image_scheduler, batch_scheduler):
             with self.subTest(lane=lane.__name__):
                 self.exercise(lane, failures=(1, 2))
+
+    def test_single_scheduler_no_output_is_explicit_retryable_failure(self):
+        td, ep = make_episode([{'frame': 1}])
+        self.addCleanup(td.cleanup)
+
+        async def no_output(*_args):
+            return {
+                'returncode': 95,
+                'stdout': 'IMAGE_BACKEND_NO_OUTPUT: expected=missing.png',
+                'output': None,
+                'payload': None,
+            }
+
+        with ExitStack() as stack:
+            stack.enter_context(patch.object(image_scheduler, 'ledger_begin', return_value=(True, '')))
+            stack.enter_context(patch.object(image_scheduler, 'ledger_tech_fail', return_value=None))
+            stack.enter_context(patch.object(image_scheduler.resource_library, 'ensure_fresh', return_value=None))
+            stack.enter_context(patch.object(image_scheduler.runtime_router, 'detect', return_value=('CODEX', 'test')))
+            stack.enter_context(patch.object(image_scheduler.runtime_router, 'image_execution_runtime', return_value=('CODEX', 'test')))
+            stack.enter_context(patch.object(image_scheduler, 'async_backend_worker', no_output))
+            rc = image_scheduler.run_scheduler_async(ep, 1, 30, None)
+
+        queue = scheduler_core.load_queue(ep)
+        self.assertEqual(rc, 21)
+        self.assertEqual(queue['items'][0]['status'], 'tech_failed')
+        self.assertEqual(queue['items'][0]['technical_failure_code'], 'IMAGE_BACKEND_NO_OUTPUT')
+        self.assertIn('IMAGE_BACKEND_NO_OUTPUT', queue['items'][0]['last_error'])
 
 
 class BudgetResolution(unittest.TestCase):
@@ -177,12 +212,15 @@ class EvidenceRecovery(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(dir=ROOT, prefix='evidence-test-')
         self.addCleanup(self.tmp.cleanup)
         self.ep = Path(self.tmp.name)
+        runtime_root = patch.object(runtime_workspace, 'DEFAULT_ROOT', self.ep / '.runtime-workspace')
+        runtime_root.start()
+        self.addCleanup(runtime_root.stop)
 
     def test_old_prompt_new_contract_rejected_without_rebinding_package(self):
         prompt = self.ep / 'prompt.txt'; prompt.write_text('old scene', encoding='utf-8')
         with patch.object(prompt_package.frame_contract, 'compile_frame', return_value={'contract_sha256': 'old'}), patch.object(prompt_package.image_model_policy, 'for_episode', return_value={}):
             prompt_package.compile_frame(self.ep, 1, prompt)
-        path = self.ep / prompt_package.REL / '01.json'
+        path = runtime_workspace.workspace_path(self.ep, prompt_package.REL / '01.json')
         before = path.read_bytes()
         with patch.object(prompt_package.frame_contract, 'compile_frame', return_value={'contract_sha256': 'new'}), patch.object(prompt_package.image_model_policy, 'for_episode', return_value={}):
             with self.assertRaisesRegex(ValueError, 'PROMPT_SOURCE_DRIFT'):
@@ -325,6 +363,22 @@ class EvidenceRecovery(unittest.TestCase):
             with self.assertRaisesRegex(FileNotFoundError, 'Contract missing'):
                 incr.build_plan(self.ep)
 
+    def test_incremental_plan_defers_authority_refresh_instead_of_treating_it_as_bad_pass(self):
+        batch_review.write_json(self.ep / 'meta/production-ledger.json', {
+            'frames': {
+                '01': {'status': 'AUTHORITY_REFRESH_AUTHORIZED'},
+                '02': {'status': 'PENDING'},
+                '05': {'status': 'AUTHORITY_REFRESH_AUTHORIZED'},
+            }
+        })
+        with patch.object(incr, 'review_required', return_value=True), \
+                patch.object(semantic, 'frame_records', side_effect=AssertionError('final frame reader must not run')):
+            plan = incr.build_plan(self.ep)
+        self.assertEqual(plan['action'], 'AWAITING_AUTHORITY_REFRESH')
+        self.assertEqual(plan['dirty_frames'], ['01', '05'])
+        self.assertEqual(plan['authority_refresh_frames'], ['01', '05'])
+        self.assertEqual(plan['pending_statuses']['02'], 'PENDING')
+
     def batch_fixture(self, batch_id='RESUME'):
         out = self.ep / f'{batch_id}.png'; out.write_bytes(b'candidate')
         row = {'id': batch_id, 'frame': 1, 'status': 'generated',
@@ -332,8 +386,19 @@ class EvidenceRecovery(unittest.TestCase):
         batch_review.write_json(self.ep / batch_review.QUEUE_REL, {'items': [row]})
         return row
 
+    def test_batch_prepare_rejects_disabled_review_routes(self):
+        # Runtime realignment: a new product review requires WORK while workspace access is
+        # supplied by the configured provider. Legacy WEB and local CODEX review routes are
+        # disabled, so prepare must fail closed instead of
+        # opening a review the Runtime can never complete.
+        self.batch_fixture('WEB')
+        with patch.object(batch_review.runtime_router, 'detect', return_value=('WEB', 'test')), patch.object(
+                batch_review.frame_contract, 'compile_frame', return_value={'contract_sha256': 'contract', 'prompt_contract': 'locked scene'}):
+            with self.assertRaisesRegex(product_review.ProductReviewError, 'require WORK runtime'):
+                batch_review.prepare(self.ep, 'WEB')
+
     def test_batch_prepare_resume_finalize_preserves_request_and_authority(self):
-        for runtime in ('WORK', 'WEB'):
+        for runtime in ('WORK',):
             with self.subTest(runtime=runtime), patch.object(batch_review.runtime_router, 'detect', return_value=(runtime, 'test')), patch.object(
                     batch_review.frame_contract, 'compile_frame', return_value={'contract_sha256': 'contract', 'prompt_contract': 'locked scene'}):
                 row = self.batch_fixture(runtime)
@@ -421,8 +486,12 @@ class EvidenceRecovery(unittest.TestCase):
         with patch.object(semantic, 'review_required', return_value=True), patch.object(semantic, 'verify_episode', return_value=[]), patch.object(semantic, 'frame_records') as frames:
             self.assertEqual(semantic.run_critic(self.ep, attempt=1, codex_raw=None), 0)
             frames.assert_not_called()
-        with patch.object(semantic, 'review_required', return_value=True), patch.object(semantic, 'verify_episode', return_value=['drift']), patch.object(semantic, 'frame_records', side_effect=ValueError('new review required')):
-            with self.assertRaisesRegex(ValueError, 'new review required'):
+        # Drift invalidates the cached summary. run_critic must then rebuild the frame set
+        # from the production ledger instead of reusing it, and a ledger whose frames are
+        # neither approved nor live candidates is a hard failure, never a silent PASS.
+        scheduler_core.write_json(self.ep / 'meta/production-ledger.json', {'frames': {'01': {'status': 'DRAFT'}}})
+        with patch.object(semantic, 'review_required', return_value=True), patch.object(semantic, 'verify_episode', return_value=['drift']):
+            with self.assertRaisesRegex(ValueError, 'no reviewable production asset'):
                 semantic.run_critic(self.ep, attempt=1, codex_raw=None)
 
     def test_semantic_finalize_rejects_contract_drift_before_any_pass_is_written(self):
@@ -440,6 +509,9 @@ class EvidenceRecovery(unittest.TestCase):
             ):
                 stack.enter_context(patch.object(semantic, name, return_value=value))
             stack.enter_context(patch.object(semantic.runtime_router, 'detect', return_value=('WORK', 'test')))
+            # The lane that owns actual-pixel review cannot see pixels here, so run_critic
+            # must open a bounded Host Action instead of launching a local critic.
+            stack.enter_context(patch.object(semantic.runtime_router, 'vision_review_runtime', return_value=('WORK', 'test')))
             stack.enter_context(patch.object(semantic, 'phase3_context_hashes', side_effect=lambda *a: {'frame_contract_sha256': semantic.sha256_file(contract)}))
             # Prepare through the real entrypoint and the real immutable request adapter.
             with patch('builtins.print'):
@@ -478,7 +550,7 @@ class EvidenceRecovery(unittest.TestCase):
                     self.assertIn('<scene>\ncurrent scene\n</scene>', result['text'])
                     self.assertIn('<frame_contract>\nlocked contract\n</frame_contract>', result['text'])
                     self.assertNotIn('\ufeff', result['text'])
-                    package = self.ep / prompt_package.REL / '01.json'
+                    package = runtime_workspace.workspace_path(self.ep, prompt_package.REL / '01.json')
                     before = package.read_bytes()
                     resolved.return_value = {'contract_sha256': 'new', 'prompt_contract': 'new contract'}
                     with self.assertRaisesRegex(ValueError, 'PROMPT_SOURCE_DRIFT'):
@@ -581,9 +653,10 @@ class SourceProofEntries(unittest.TestCase):
 
         def fake_invoke(prompt_path, refs, raw_output, log, size, timeout, codex,
                         visual_contract, frame_contract_text, image_model, image_quality,
-                        strict_model, *, scene_text=None):
+                        strict_model, *, scene_text=None, runner_request_id=None):
             calls.append({'scene': scene_text, 'contract': frame_contract_text,
-                          'model': image_model, 'quality': image_quality})
+                          'model': image_model, 'quality': image_quality,
+                          'runner_request_id': runner_request_id})
             return 1.2
 
         ns = argparse.Namespace(episode_dir=self.ep, frame='01', prompt_file=self.prompt,
@@ -652,10 +725,13 @@ class SourceProofEntries(unittest.TestCase):
             state = batch_review.read_json(self.ep / incr.STATE_REL)
             self.assertEqual(state['action'], 'PATCH')
             with patch.object(incr.runtime_router, 'detect', return_value=('WORK', 'test')), \
+                    patch.object(incr.runtime_router, 'vision_review_runtime', return_value=('WORK', 'test')), \
                     patch.object(incr, '_run_patch', return_value=0) as run_patch, \
                     patch.object(semantic, 'run_critic', return_value=0) as run_critic, \
                     patch.object(incr, '_decorate_full') as decorate:
-                # WORK with no explicit codex must escalate PATCH to the full product review.
+                # Escalation is decided by the vision lane, not by the governance runtime:
+                # a lane with no local pixel review must escalate PATCH to the full product
+                # review instead of pretending to judge images it cannot see.
                 self.assertEqual(incr.run_review(self.ep, attempt=1, codex_raw=None), 0)
                 run_critic.assert_called_once()
                 run_patch.assert_not_called()

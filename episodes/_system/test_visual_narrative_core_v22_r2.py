@@ -60,6 +60,19 @@ def main() -> None:
         assert core.required(regression) is False
         assert core.regression_active(regression) is True
 
+    assert core._owner_class({"pov_mode": "ground_phone"}) == "diegetic_device_camera"
+    assert core._camera_owner({"pov_mode": "ground_phone"}, {"photographer_id": "P01"}) == "P01_phone"
+    impossible = {
+        "pov_mode": "dropping_phone",
+        "primary_subject": "P01手与正在下落的手机",
+        "camera_position": "手机离手后的倾斜下落机位",
+        "action": "P01松手",
+        "capture_purpose": "记录动作",
+        "visual_function": "选择反转",
+        "new_information": True,
+    }
+    assert any("SELF_CAMERA_VISIBLE" in x for x in core._camera_authorship_errors(root, 17, impossible))
+
     print("V2.2 R2 ACTIVATION LEGACY SELF-TEST PASS")
 
 

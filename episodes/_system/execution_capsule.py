@@ -8,6 +8,10 @@ Codex worker reread the whole repository policy stack before doing bounded work.
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json
 import runtime_execution
+import runtime_request
+import episode_state_persistence
+import runtime_workspace
+import character_contract
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -51,19 +55,21 @@ def file_row(path,base):
 def read_json(path):
     return story_json.read_json(path, default=None)
 def current_state(ep):
-    d=read_json(ep/"meta/episode-state.json") or {}
+    d=episode_state_persistence.load(ep) or {}
     return d.get("current_state")
 def compile_capsule(ep,step,write=True):
     if step not in STEP_EVIDENCE: raise ValueError(f"unsupported step: {step}")
+    import runtime_capability_cache
+    import runtime_resume_capsule
     wf=read_json(ROOT/"runtimes/workflow-contract.json") or {}
     rules=wf.get("rules") or {}
-    request=read_json(ep/"meta/runtime-request.json")
+    request=runtime_request.authority_for_episode(ep)
     execution=read_json(ep/"meta/runtime-execution.json")
     effective_mode=runtime_execution.effective_mode(ep)
     # STORY_OS_V2_5_1_RUNTIME_FAST_PATH
     runtime_fast_path=read_json(ROOT/"runtimes/runtime-fast-path-v251.json")
-    runtime_capabilities=read_json(ep/"meta/runtime/runtime-capabilities.json")
-    resume_capsule=read_json(ep/"meta/runtime/resume-capsule.json")
+    runtime_capabilities=runtime_capability_cache.load(ep, create=False)
+    resume_capsule=runtime_resume_capsule.load_fresh(ep, write=False)
     authority=[file_row(ROOT/x,ROOT) for x in AUTHORITY_FILES]
     evidence=[]
     evidence_paths=list(STEP_EVIDENCE[step])
@@ -75,6 +81,19 @@ def compile_capsule(ep,step,write=True):
         p=(ep/rel) if local else (ROOT/rel)
         base=ep if local else ROOT
         evidence.append(file_row(p,base))
+    preimage_task = None
+    # Reverse lookup through the same mapping the producers use. Stripping the
+    # prefix by hand gave "ENVIRONMENT" for the registered step
+    # PREIMAGE_ENVIRONMENT, which is not a task type -- so this enrichment was
+    # dead for all three _PREPARE tasks even after the name was registered.
+    import preimage_task_contract
+    kind = preimage_task_contract.task_type_for_step(step)
+    if kind is not None:
+        try:
+            snapshot = story_json.read_json(ep/"meta/runtime/preimage-authority-snapshot.json", default={}) or {}
+            preimage_task = preimage_task_contract.task_contract(ep, kind, snapshot) if snapshot else None
+        except Exception:
+            preimage_task = None
     material={
       "schema_version":1,"story_os":"2.1","step":step,"current_state":current_state(ep),
       "runtime_request":request,
@@ -83,7 +102,8 @@ def compile_capsule(ep,step,write=True):
       "runtime_fast_path":runtime_fast_path,
       "runtime_capabilities":runtime_capabilities,
       "resume_capsule":resume_capsule,
-      "character_contract":read_json(ep/"meta/character-contract.json"),
+      "character_contract":character_contract.load(ep),
+      "preimage_task": preimage_task,
       "invariants":{k:rules.get(k) for k in RULE_KEYS if k in rules},
       "authority_files":authority,
       "evidence_files":evidence,
@@ -93,12 +113,12 @@ def compile_capsule(ep,step,write=True):
     raw=json.dumps(material,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
     data={**material,"source_sha256":sha_bytes(raw),"compiled_at":now()}
     if write:
-        out=ep/REL/f"{step.lower()}.json"; out.parent.mkdir(parents=True,exist_ok=True)
-        out.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
+        runtime_workspace.write_json(ep, REL/f"{step.lower()}.json", data)
     return data
 def self_test():
     assert "default_image_model" in RULE_KEYS
     assert "default_image_quality" in RULE_KEYS
+    assert "PREIMAGE_ENVIRONMENT" in STEP_EVIDENCE
     print("EXECUTION CAPSULE SELF-TEST PASS")
 def main():
     ap=argparse.ArgumentParser(); sub=ap.add_subparsers(dest="cmd",required=True)

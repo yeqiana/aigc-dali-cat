@@ -21,9 +21,13 @@ def frame_count(ep):
     d=read_json(Path(ep)/"meta/release-manifest.json")
     return int(((d.get("release") or {}).get("body_frame_count")) or 0)
 
-def prepare(ep,force=False):
+def prepare(ep,force=False,destructive_reset=False):
     ep=Path(ep).resolve();target=ep/REL
-    if target.is_file() and not force:return read_json(target)
+    if target.is_file():
+        existing=read_json(target)
+        if not force:return existing
+        if existing.get("status")=="LOCKED" and not destructive_reset:
+            raise ValueError("refusing destructive temporal prepare --force on LOCKED authority; use rebind-source or --destructive-reset")
     ws=ep/"meta/world-state.json";total=frame_count(ep)
     rows=[{"frame":f"{n:02d}","elapsed_minutes_from_prev":0 if n==1 else None,
            "daypart":"","weather":"","precipitation":"","ambient_light":"",
@@ -33,7 +37,7 @@ def prepare(ep,force=False):
        "world_state_synced":False,"frames":rows}
     write_json(target,d);return d
 
-def validate(ep,require_locked=True):
+def validate(ep,require_locked=True,ignore_source_binding=False):
     ep=Path(ep).resolve();p=ep/REL
     if not p.is_file():return ["meta/temporal-continuity.json missing"]
     d=read_json(p);e=[];total=frame_count(ep)
@@ -41,7 +45,7 @@ def validate(ep,require_locked=True):
     if require_locked and d.get("status")!="LOCKED":e.append("temporal continuity must be LOCKED")
     ws=ep/"meta/world-state.json"
     if not ws.is_file():e.append("world-state missing for temporal continuity")
-    elif str(d.get("source_world_state_sha256") or "").lower()!=sha(ws).lower():e.append("temporal continuity source_world_state_sha256 stale")
+    elif not ignore_source_binding and str(d.get("source_world_state_sha256") or "").lower()!=sha(ws).lower():e.append("temporal continuity source_world_state_sha256 stale")
     if d.get("world_state_synced") is not True:e.append("temporal continuity must confirm world_state_synced=true")
     rows=d.get("frames") or []
     if len(rows)!=total:e.append(f"temporal frame count mismatch {len(rows)} != {total}")
@@ -67,6 +71,27 @@ def validate(ep,require_locked=True):
         prev={"daypart":day,"ambient_light":light,"weather":row.get("weather"),"precipitation":row.get("precipitation")}
     return e
 
+def rebind_source(ep,reason):
+    ep=Path(ep).resolve();target=ep/REL;ws=ep/"meta/world-state.json"
+    if not target.is_file():raise ValueError("meta/temporal-continuity.json missing")
+    if not ws.is_file():raise ValueError("world-state missing for temporal continuity")
+    reason=str(reason or "").strip()
+    if not reason:raise ValueError("rebind-source requires a non-empty reason")
+    d=read_json(target)
+    if d.get("status")!="LOCKED":raise ValueError("rebind-source requires LOCKED temporal authority")
+    content_errors=validate(ep,True,ignore_source_binding=True)
+    if content_errors:raise ValueError("temporal content invalid; refusing source rebind: "+"; ".join(content_errors[:8]))
+    old=str(d.get("source_world_state_sha256") or "")
+    new=sha(ws)
+    if old.lower()==new.lower():return d
+    d["source_world_state_sha256"]=new
+    d["world_state_synced"]=True
+    d.setdefault("source_rebind_history",[]).append({"from":old,"to":new,"reason":reason})
+    write_json(target,d)
+    errors=validate(ep,True)
+    if errors:raise ValueError("temporal source rebind failed validation: "+"; ".join(errors[:8]))
+    return d
+
 def resolve_frame(ep,frame):
     d=read_json(Path(ep).resolve()/REL);key=f"{int(frame):02d}"
     row=next((x for x in (d.get("frames") or []) if str(x.get("frame")).zfill(2)==key),None)
@@ -78,14 +103,16 @@ def self_test():
 
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)
-    p=sub.add_parser("prepare");p.add_argument("episode_dir");p.add_argument("--force",action="store_true")
+    p=sub.add_parser("prepare");p.add_argument("episode_dir");p.add_argument("--force",action="store_true");p.add_argument("--destructive-reset",action="store_true")
+    p=sub.add_parser("rebind-source");p.add_argument("episode_dir");p.add_argument("--reason",required=True)
     p=sub.add_parser("validate");p.add_argument("episode_dir");p.add_argument("--allow-draft",action="store_true")
     p=sub.add_parser("resolve-frame");p.add_argument("episode_dir");p.add_argument("frame",type=int)
     p=sub.add_parser("show");p.add_argument("episode_dir")
     sub.add_parser("self-test");a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0
     ep=Path(a.episode_dir).resolve()
-    if a.cmd=="prepare":print(json.dumps(prepare(ep,a.force),ensure_ascii=False,indent=2));return 0
+    if a.cmd=="prepare":print(json.dumps(prepare(ep,a.force,a.destructive_reset),ensure_ascii=False,indent=2));return 0
+    if a.cmd=="rebind-source":print(json.dumps(rebind_source(ep,a.reason),ensure_ascii=False,indent=2));return 0
     if a.cmd=="validate":
         e=validate(ep,not a.allow_draft)
         if e:[print("FAIL:",x) for x in e];return 2

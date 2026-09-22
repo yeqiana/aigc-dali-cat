@@ -13,7 +13,7 @@
 - Host Action 使用 `meta/runtime/host-requests/<request_id>.json` 保存不可覆盖历史；`product-host-request.json` 只作为当前指针。
 - Product Review 使用 `<kind>-attempt-<n>-request.json`，同一 attempt 的 frozen inputs 不得覆盖。
 - Concept / Story Critic provenance 支持 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`；均必须 fresh、source-SHA-bound、不可伪造 PASS。
-- Codex 图片执行只消费已锁 Prompt / Frame Contract / References；控制模型固定 `gpt-5.6-luna` + `reasoning=medium`，实际图片模型固定 `gpt-image-2` + `quality=high`。图片产出后仍回 Story OS 做 Normalize / Ledger / Review / Gate。
+- Codex 图片执行只消费已锁 Prompt / Frame Contract / References；控制模型固定 `gpt-5.6-luna` + `reasoning=medium`，实际图片模型统一读取 `config/storyos.yaml:image.model` 并使用 `quality=high`。图片产出后仍回 Story OS 做 Normalize / Ledger / Review / Gate。
 
 <!-- STORY_OS_V2_1_CONCEPT_BEGIN -->
 ## Story OS V2.1：概念野心优先
@@ -90,7 +90,7 @@
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_BEGIN -->
 ## Runtime Request P0
 
-新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认 `image_model=gpt-image-2`、`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 Visual Lock 固定为 4 张准入帧。
+新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认模型读取 `config/storyos.yaml:image.model`，`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 Visual Lock 固定为 4 张准入帧。
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_END -->
 
 <!-- STORY_OS_V1_6_GOLDEN_PATH_BEGIN -->

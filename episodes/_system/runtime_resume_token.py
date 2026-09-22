@@ -7,8 +7,10 @@ Recovery metadata only. It never replaces episode-state.json as stage authority.
 from __future__ import annotations
 
 import datetime as dt
-import json
 from pathlib import Path
+
+import runtime_workspace
+import hot_state_bridge
 
 REL = Path("meta/runtime-resume-token.json")
 
@@ -32,17 +34,19 @@ def save(episode: Path, *, stage: str, step: str, attempt: int,
         "resume_action": resume_action,
         "updated_at": now(),
     }
-    path = episode / REL
-    path.parent.mkdir(parents=True, exist_ok=True)
-    from runtime_atomic_store import atomic_write_json
-    atomic_write_json(path,payload)
+    if hot_state_bridge.compatibility_write_allowed():
+        runtime_workspace.write_json(episode, REL, payload)
+    hot_state_bridge.mirror(episode, "RESUME_TOKEN", payload)
 
 
 def load(episode: Path) -> dict:
-    path = episode / REL
-    if not path.exists():
-        return {}
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    hot = hot_state_bridge.read(episode, "RESUME_TOKEN")
+    data = hot_state_bridge.value_or_fallback(
+        hot,
+        lambda: runtime_workspace.read_json(episode, REL, default={}),
+        default={},
+    )
+    return data if isinstance(data, dict) else {}
 
 
 if __name__ == "__main__":

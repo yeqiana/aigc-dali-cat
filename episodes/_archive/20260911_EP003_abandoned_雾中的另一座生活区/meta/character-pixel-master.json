@@ -1,0 +1,18 @@
+{
+  "schema_version": 2,
+  "status": "LOCKED",
+  "created_at": "2026-09-11T13:56:17+08:00",
+  "updated_at": "2026-09-11T14:51:05+08:00",
+  "source_role": "ordinary_baseline",
+  "frame": "01",
+  "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-9ae48137181c-a2.png",
+  "sha256": "3666919bd9f18e7232c977f11ab67ad7652ca1cb6fff478f8dc107eb98e160cc",
+  "frame_contract_sha256": "db91b9b929238588dd2bed43a39b7bcb12df29bf4cee4a0f5373388ed1bc3e1d",
+  "character_visual_contract_path": "meta/character-visual-contract.json",
+  "character_visual_contract_sha256": "e46c4af6d29840c4156428ee537f4ca46894c710fe5048cd37d62aa7571a0b8b",
+  "baseline_review_path": "meta/visual-lock-baseline-review.json",
+  "baseline_review_sha256": "3cfd5a9b1d457ffdecefe2b07323edd70aaacebf510fdc98f8defc6aa8aab02e",
+  "crop_manifest_path": "meta/character-master-crops.json",
+  "crop_manifest_sha256": "1b5ccdf7606728dfd2beeffabcf9703572fafb1db7ab808e0182a1703f8c2867",
+  "immutable_identity_evidence": true
+}

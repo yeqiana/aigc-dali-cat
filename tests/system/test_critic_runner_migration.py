@@ -11,6 +11,7 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import codex_critic_runner as runner
+import runtime_router
 import fast_frame_scout
 import visual_review_legacy
 import visual_lock_v21
@@ -61,10 +62,22 @@ class CriticRunnerMigrationTests(unittest.TestCase):
             self.assertIn("critic_runner.launch(", self.source(module))
 
     def test_lane_effort_and_attachment_contracts_preserved(self):
-        self.assertIn('model_reasoning_effort="low"', self.source(fast_frame_scout))
-        self.assertIn('model_reasoning_effort="high"', self.source(visual_review_legacy))
-        self.assertIn('model_reasoning_effort="high"', self.source(frame_semantic_review))
-        self.assertIn('model_reasoning_effort="medium"', self.source(incremental_frame_review))
+        # W-88: reasoning effort is no longer a per-lane source literal. Every vision lane
+        # reads it through runtime_router.vision_review_effort(kind), so the values live in
+        # config/storyos.yaml (runtime.review.vision.reasoning_effort_*) instead of drifting
+        # apart across five modules.
+        for module, kind in (
+            (fast_frame_scout, "fast"),
+            (frame_semantic_review, "final"),
+            (incremental_frame_review, "default"),
+            (visual_lock_v21, "final"),
+        ):
+            self.assertIn(f'runtime_router.vision_review_effort("{kind}")', self.source(module))
+        # visual_review_legacy is the only lane still declaring an effort literal directly.
+        self.assertIn('reasoning_effort_literal=\'model_reasoning_effort="high"\'',
+                      self.source(visual_review_legacy))
+        for kind in ("fast", "final", "default"):
+            self.assertIn(runtime_router.vision_review_effort(kind), {"low", "medium", "high"})
         visual_lock_src = self.source(visual_lock_v21)
         self.assertIn("attachments=staged_assets", visual_lock_src)
         self.assertIn("output_path=candidate", visual_lock_src)

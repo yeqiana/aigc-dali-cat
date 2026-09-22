@@ -9,11 +9,14 @@ from __future__ import annotations
 import argparse, datetime as dt, hashlib, json, random, re
 from pathlib import Path
 import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
+import runtime_request
 import story_json
+import episode_contract_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 STD = ROOT / "standards"
 REL = Path("meta/character-contract.json")
+CONTRACT_TYPE = "CHARACTER"
 POOL_FILES = {
     "characters": STD / "character-pools.json",
     "entries": STD / "entry-motivation-pools.json",
@@ -30,26 +33,58 @@ def read_json(path):
 def write_json(path,data):
     story_json.write_json(path, data)
 
+
+
+def load(ep):
+    ep=Path(ep).resolve()
+    return episode_contract_persistence.load_latest(
+        ep, CONTRACT_TYPE, legacy_path=ep/REL
+    )
+
+
+def save(ep,data):
+    ep=Path(ep).resolve()
+    episode_contract_persistence.save(
+        ep,
+        CONTRACT_TYPE,
+        REL,
+        data,
+        status=str(data.get("status") or "ACTIVE"),
+    )
+    return data
+
+
+def authority_sha256(ep):
+    data=load(ep)
+    if not isinstance(data,dict):return None
+    raw=json.dumps(data,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
 def pools():
     return {k:read_json(v) for k,v in POOL_FILES.items()}
 
 def request(ep):
-    p=ep/"meta/runtime-request.json"
-    return read_json(p) if p.is_file() else {}
+    return runtime_request.authority_for_episode(Path(ep).resolve()) or {}
+
+def visual_profile_id(ep):
+    r=request(ep)
+    return str(r.get("visual_profile") or "").strip()
+
 
 def source_text(ep):
-    r=request(ep)
-    bits=[
-        str(((r.get("topic") or {}).get("title")) or ""),
-        str(((r.get("story_input") or {}).get("raw")) or ""),
-        str(((r.get("provenance") or {}).get("original_request")) or ""),
-        " ".join(str(x) for x in (r.get("creative_hints") or [])),
-    ]
-    return "\n".join(x for x in bits if x)
+    # Runtime Request may contain operational commands alongside an explicit
+    # 创作要求 section.  Character selection must consume creative intent only.
+    return runtime_request.creative_source_text(request(ep))
 
 def seed_for(ep):
     r=request(ep)
-    raw=str(r.get("request_id") or "")+"|"+str(((r.get("topic") or {}).get("title")) or "")+"|"+ep.as_posix()
+    provenance=r.get("provenance") or {}
+    migration=provenance.get("image_model_migration") or {}
+    # Provider/model migrations mint a new execution request id but must not
+    # reshuffle creative identity. Keep the original creative request stable.
+    creative_id=(provenance.get("creative_request_id") or migration.get("source_request_id")
+                 or r.get("request_id") or "")
+    raw=str(creative_id)+"|"+str(((r.get("topic") or {}).get("title")) or "")+"|"+ep.as_posix()
     return int(hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16],16)
 
 def weighted_choice(rng,weights):
@@ -131,15 +166,44 @@ def member_rows(era,cast_type,size,rng,p):
 
 def prepare(ep,force=False):
     ep=Path(ep).resolve()
-    target=ep/REL
-    if target.is_file() and not force:return read_json(target)
+    existing=load(ep)
+    if isinstance(existing,dict) and not force:return existing
     p=pools(); text=source_text(ep); rng=random.Random(seed_for(ep))
+    profile_id=visual_profile_id(ep)
+    fictional_mundane_worker = profile_id == "M02_HEAVEN_MUNDANE_WORKER_V1"
+    fictional_mundane_resident = profile_id == "M04_HEAVEN_MUNDANE_LIFE_V1"
+    fictional_mundane = fictional_mundane_worker or fictional_mundane_resident
     era,year,era_source=choose_era(text,rng,p)
-    cast_type,size=choose_cast(text,rng,p)
-    entry,entry_source=choose_entry(text,rng,p)
-    scene_cat,scene_place=choose_scene(entry,rng,p)
+    if fictional_mundane_worker:
+        # M02 is the explicit fictional-world workplace profile. Reuse the modern
+        # pool only as a human age/body baseline; do not route into travel/horror.
+        era="modern_2020s"; year=2026; era_source="fictional_world_human_baseline"
+        cast_type=rng.choice(["single_male","single_female"]); size=1
+        entry="casual_work"; entry_source="visual_profile:M02_HEAVEN_MUNDANE_WORKER_V1"
+        scene_cat="casual_work_site"; scene_place="天界普通基层工作站"
+    elif fictional_mundane_resident:
+        # M04 is ordinary resident life, not a disguised worker profile. Preserve
+        # explicit friend/group wording while keeping the entry itself mundane.
+        era="modern_2020s"; year=2026; era_source="fictional_world_human_baseline"
+        cast_type,size=choose_cast(text,rng,p)
+        entry="daily_life"; entry_source="visual_profile:M04_HEAVEN_MUNDANE_LIFE_V1"
+        scene_cat="modern_indoor"; scene_place="天界普通居民区、云街与公共生活区"
+    else:
+        cast_type,size=choose_cast(text,rng,p)
+        entry,entry_source=choose_entry(text,rng,p)
+        scene_cat,scene_place=choose_scene(entry,rng,p)
     rel=rng.choice(p["characters"]["relationship_pool"]) if size>1 else "单人"
     members=member_rows(era,cast_type,size,rng,p)
+    if fictional_mundane_worker:
+        for member in members:
+            member["clothing_anchor"] = "朴素耐磨的米白灰蓝天界基层工作服，真实布料褶皱与使用痕迹，无华丽仙袍"
+            if member.get("pov"):
+                member["device_anchor"] = "随身上岗记录牌（自带留影功能）"
+    elif fictional_mundane_resident:
+        for member in members:
+            member["clothing_anchor"] = "朴素轻便的东方天界日常衣着，真实布料褶皱与生活使用痕迹，无华丽仙袍"
+            if member.get("pov"):
+                member["device_anchor"] = "随身留影玉牌（仅承担私人相册记录功能）"
     world_identity = world_identity_contract.effective(ep) if world_identity_contract.required(ep) else None
     if world_identity is not None:
         population = world_identity.get("population") or {}
@@ -164,20 +228,42 @@ def prepare(ep,force=False):
         "not_episode_stage":True,
         "created_at":now(),
         "selection_seed":seed_for(ep),
-        "era":{"bucket":era,"year":year,"source":era_source},
+        "era":{"bucket":era,"year":year,"source":era_source,
+               "world_era":"fictional" if fictional_mundane else None},
         "world_identity":world_identity_summary,
+        "fictional_world": ({
+            "profile_id": profile_id,
+            "reality_basis": "fictional_world_mundane",
+            "ordinary_life_rule": (
+                "天界基层岗位按普通工作流程运转，人物是普通工作人员而非英雄/神仙主角"
+                if fictional_mundane_worker else
+                "天界按普通居民的生活秩序运转，人物是普通居民和朋友，不承担岗位强制、英雄、调查或神秘任务"
+            ),
+            "capture_device": (
+                "随身上岗记录牌（自带留影功能）" if fictional_mundane_worker
+                else "随身留影玉牌（仅承担私人相册记录功能）"
+            ),
+        } if fictional_mundane else None),
         "cast":{"type":cast_type,"size":size,"relationship":rel,"members":members},
         "pov":{"character_id":"P01","first_person":True},
         "entry":{"type":entry,"label":p["entries"]["entries"][entry]["label"],"source":entry_source,"reason":"由 Story Build 基于该生活化动机具体化"},
         "scene":{"primary_category":scene_cat,"primary_place":scene_place},
         "role_policy":{
-            "protagonist_role":"普通年轻人/普通朋友小团体",
-            "career_function":"arrival_only",
+            "protagonist_role":(
+                "天界普通基层工作人员" if fictional_mundane_worker
+                else "天界普通居民/普通朋友小团体" if fictional_mundane_resident
+                else "普通年轻人/普通朋友小团体"
+            ),
+            "career_function":"none" if fictional_mundane else "arrival_only",
             "solves_anomaly_professionally":False
         },
         "no_anomaly_test":{
             "question":"如果删掉所有异常，这一天是否仍像真实生活？",
-            "ordinary_day_plan":no_plan,
+            "ordinary_day_plan":(
+                "正常上班、交接、处理工单、吃饭、收尾后下班" if fictional_mundane_worker
+                else "起床、吃饭、办普通生活琐事、和朋友相处、散步后回家" if fictional_mundane_resident
+                else no_plan
+            ),
             "pass":True,
             "must_be_rechecked_before_story_lock":True,
             "rechecked_against_final_story":False
@@ -189,10 +275,15 @@ def prepare(ep,force=False):
         },
         "ordinary_person_score":100,
         "forbidden_role_check":{"pass":True,"hits":[]},
-        "story_build_note":"这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。"
+        "story_build_note":(
+            "这是 M02 天界普通工作人员 Story Build Input Contract。工作是故事日常本身，不得升级成神仙英雄任务；Story Lock 前锁定具体岗位并复核 NO-ANOMALY TEST。"
+            if fictional_mundane_worker else
+            "这是 M04 天界普通居民生活 Story Build Input Contract。生活和朋友关系是故事本身，不得为了视觉档案强行加入岗位/工单，也不得升级成英雄、调查或探秘任务。"
+            if fictional_mundane_resident else
+            "这是 Story Build Input Contract。可以在同一母池边界内细化，但不得换成抢修/调查等功能型职业主角。Story Lock 前将 status 改为 LOCKED 并复核字段。"
+        )
     }
-    write_json(target,data)
-    return data
+    return save(ep,data)
 
 def forbidden_hits(data,p):
     raw=json.dumps(data,ensure_ascii=False)
@@ -222,9 +313,10 @@ def score(data,p):
     return max(0,s)
 
 def validate(ep,require_locked=False):
-    ep=Path(ep).resolve(); target=ep/REL
-    if not target.is_file():return ["meta/character-contract.json missing; run prepare"]
-    p=pools(); data=read_json(target); errors=[]
+    ep=Path(ep).resolve()
+    data=load(ep)
+    if not isinstance(data,dict):return ["meta/character-contract.json missing; run prepare"]
+    p=pools(); errors=[]
     if world_identity_contract.required(ep):
         errors.extend(world_identity_contract.verify(ep))
         wi = world_identity_contract.effective(ep)
@@ -268,13 +360,11 @@ def lock(ep):
     p=pools()
     data["forbidden_role_check"]={"pass":not bool(forbidden_hits(data,p)),"hits":forbidden_hits(data,p)}
     data["ordinary_person_score"]=score(data,p)
-    write_json(ep/REL,data)
-    return data
+    return save(ep,data)
 
 def prompt_block(ep):
-    p=Path(ep).resolve()/REL
-    if not p.is_file():return ""
-    d=read_json(p)
+    d=load(ep)
+    if not isinstance(d,dict):return ""
     return json.dumps(d,ensure_ascii=False,sort_keys=True)
 
 def self_test():
@@ -304,7 +394,6 @@ def main():
         if errors:
             [print("FAIL:",x) for x in errors];return 2
         print("CHARACTER CONTRACT VERIFIED");return 0
-    p=ep/REL
-    print(p.read_text(encoding="utf-8-sig") if p.is_file() else "{}");return 0
+    print(json.dumps(load(ep) or {},ensure_ascii=False,indent=2));return 0
 
 if __name__=="__main__": raise SystemExit(main())

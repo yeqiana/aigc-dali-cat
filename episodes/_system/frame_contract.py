@@ -8,6 +8,7 @@ Files under meta/runtime/contracts are derived caches only.
 from __future__ import annotations
 
 import argparse
+import concurrent.futures as cf
 import datetime as dt
 import hashlib
 import json
@@ -28,11 +29,22 @@ import wardrobe_contract
 import visual_narrative_core_v22  # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
 import character_appearance_anchor  # STORY_OS_V221_CHARACTER_CONTINUITY
+import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
+import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
+import story_dna_trace  # STORY_OS_V3_E003_STORY_DNA_TRACE
 import story_json
+import preimage_authority_snapshot
+import runtime_node_execution
+import storyos_config
+import runtime_workspace
+import storage_config
+import production_ledger
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
 INDEX_REL = Path("meta/runtime/contracts/frame-contract-index.json")
+PROJECTION_MIGRATION_REL = Path("meta/runtime/frame-contract-projection-migrations.json")
 MIN_VERSION = (2, 1, 0)
 SCHEMA_VERSION = 1
 MAX_EXCERPT = 2200
@@ -76,7 +88,17 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 def episode_version(ep: Path) -> str:
     versions: list[tuple[tuple[int, ...], str]] = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    # Test/temporary compile fixtures may intentionally omit episode-state.json.
+    # In that case there is no state authority to read; version evidence below
+    # remains the only valid source.  Do not force storage-mode configuration
+    # just to inspect an unversioned derived-cache fixture.
+    state_path = Path(ep).resolve() / "meta/episode-state.json"
+    state = episode_state_persistence.load(Path(ep).resolve()) or {} if state_path.is_file() else {}
+    raw = str(state.get("tool_version") or "")
+    vt = version_tuple(raw)
+    if vt != (0,):
+        versions.append((vt, raw))
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -320,16 +342,16 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     story_path, storyboard_path = artifact_paths(ep)
     g = gates(ep)
     visual = g.get("visual") or {}
-    character = read_json(ep / character_contract.REL) if (ep / character_contract.REL).is_file() else {}
+    character = character_contract.load(ep) or {}
     visual_profile = compile_prompt_contract(ep)
     env = environment_contract.resolve_frame(ep, n)
     directive = env.get("directive") or {}
-    capture_event = capture_event_contract.resolve_frame(ep,n) if (ep/capture_event_contract.REL).is_file() else {"capture_event":{},"capture_event_sha256":None}
+    capture_event = capture_event_contract.resolve_frame(ep,n) if capture_event_contract.exists(ep) else {"capture_event":{},"capture_event_sha256":None}
     world = world_state.resolve_frame(ep,n) if (ep/world_state.REL).is_file() else {"world_state":{},"world_state_sha256":None}
-    character_visual = read_json(ep/character_visual_contract.REL) if (ep/character_visual_contract.REL).is_file() else {}
+    character_visual = character_visual_contract.load(ep) or {}
     progression = shot_progression_gate.resolve_frame(ep,n) if (ep/shot_progression_gate.REL).is_file() else {"shot_progression":{}}
     temporal = temporal_continuity_gate.resolve_frame(ep,n) if (ep/temporal_continuity_gate.REL).is_file() else {"temporal_state":{}}
-    wardrobe = wardrobe_contract.resolve_frame(ep,n) if (ep/wardrobe_contract.REL).is_file() else {"wardrobe":{}}
+    wardrobe = wardrobe_contract.resolve_frame(ep,n) if wardrobe_contract.exists(ep) else {"wardrobe":{}}
     visual_narrative_active = visual_narrative_core_v22.required(ep)
     visual_narrative = visual_narrative_core_v22.resolve_frame(ep,n) if visual_narrative_active else None
     world_identity_active = world_identity_contract.required(ep)
@@ -340,9 +362,17 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         # the same file once per compile/verify frame is redundant and can trigger
         # Windows file/path failures during verify_all's second compile pass.
         ca_errors = character_appearance_anchor.verify(ep)
-        character_anchor = character_appearance_anchor.build(ep, write=bool(ca_errors))
+        ca_errors.extend(character_appearance_anchor.verify_frame01_identity_anchor(ep))
+        if ca_errors:
+            raise ValueError("; ".join(ca_errors))
+        character_anchor = character_appearance_anchor.build(ep, write=False)
     excerpt = extract_frame_excerpt(storyboard_path, n)
     refs = resolved_references(ep, n)
+    # P1-1: per-frame identity requirement is derived review evidence. It is
+    # deliberately excluded from hash_material so publishing it cannot invalidate
+    # historical contract SHAs (same policy as source_binding).
+    identity_requirements = identity_continuity.contract_requirements(
+        ep, n, refs, progression.get("shot_progression") or {})
 
     source_trace = {
         "story": {"path": repo_rel(story_path), "sha256": sha256_file(story_path)},
@@ -354,18 +384,32 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
         },
         "character_contract": {
             "path": character_contract.REL.as_posix(),
-            "sha256": sha256_file(ep / character_contract.REL) if (ep / character_contract.REL).is_file() else None,
+            "sha256": character_contract.authority_sha256(ep),
         },
-        "capture_event_contract": {"path":capture_event_contract.REL.as_posix(),"sha256":sha256_file(ep/capture_event_contract.REL) if (ep/capture_event_contract.REL).is_file() else None},
+        "capture_event_contract": {"path":capture_event_contract.REL.as_posix(),"sha256":capture_event_contract.authority_sha256(ep)},
         "world_state": {"path":world_state.REL.as_posix(),"sha256":sha256_file(ep/world_state.REL) if (ep/world_state.REL).is_file() else None},
-        "character_visual_contract": {"path":character_visual_contract.REL.as_posix(),"sha256":sha256_file(ep/character_visual_contract.REL) if (ep/character_visual_contract.REL).is_file() else None},
+        "character_visual_contract": {"path":character_visual_contract.REL.as_posix(),"sha256":character_visual_contract.authority_sha256(ep)},
         "shot_progression": {"path":shot_progression_gate.REL.as_posix(),"sha256":sha256_file(ep/shot_progression_gate.REL) if (ep/shot_progression_gate.REL).is_file() else None},
         "temporal_continuity": {"path":temporal_continuity_gate.REL.as_posix(),"sha256":sha256_file(ep/temporal_continuity_gate.REL) if (ep/temporal_continuity_gate.REL).is_file() else None},
-        "wardrobe_contract": {"path":wardrobe_contract.REL.as_posix(),"sha256":sha256_file(ep/wardrobe_contract.REL) if (ep/wardrobe_contract.REL).is_file() else None},
+        "wardrobe_contract": {"path":wardrobe_contract.REL.as_posix(),"sha256":wardrobe_contract.authority_sha256(ep)},
         "world_identity_default": {"path":world_identity_contract.DEFAULT_REL.as_posix(),"sha256":sha256_file(ROOT/world_identity_contract.DEFAULT_REL) if world_identity_active else None},
-        "world_identity_override": {"path":world_identity_contract.OVERRIDE_REL.as_posix(),"sha256":sha256_file(ep/world_identity_contract.OVERRIDE_REL) if world_identity_active and (ep/world_identity_contract.OVERRIDE_REL).is_file() else None},
+        "world_identity_override": {"path":world_identity_contract.OVERRIDE_REL.as_posix(),"sha256":world_identity_contract.override_sha256(ep) if world_identity_active else None},
         "character_appearance_anchor": {"path":character_appearance_anchor.REL.as_posix(),"sha256":sha256_file(ep/character_appearance_anchor.REL) if world_identity_active and (ep/character_appearance_anchor.REL).is_file() else None},
     }
+
+    # W-22: per-frame story semantic requirement is derived review evidence. Like
+    # source_binding it is deliberately excluded from hash_material so publishing
+    # it cannot invalidate historical contract SHAs.
+    story_semantic_requirements = story_semantic_trace.contract_requirements(
+        ep, n, source_trace["story"])
+    dna = story_json.read_json(ep / story_dna_trace.REL, default={}) or {}
+    story_dna_mapping = ((dna.get("frame_mapping") or {}).get(key)
+                         if isinstance(dna, dict) else None)
+    if not isinstance(story_dna_mapping, dict):
+        # No intent is invented. This visible pending block makes missing DNA
+        # evidence detectable at PUBLISH_READY without changing contract SHA.
+        story_dna_mapping = {"story_goal": None, "emotional_goal": None,
+                             "reversal_contribution": None, "required": False}
 
     # Hash material is deliberately per-frame where possible.
     # storyboard source SHA is trace-only; localized excerpt SHA avoids all-frame invalidation.
@@ -491,17 +535,32 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
             "extraction_mode": excerpt["mode"],
             "frame_sha256": excerpt["sha256"],
         },
+        "identity_requirements": identity_requirements,
+        "story_semantic_requirements": story_semantic_requirements,
+        "story_dna_mapping": story_dna_mapping,
         "hash_material": hash_material,
         "contract_sha256": contract_sha,
         "prompt_contract": "\n".join(prompt_lines),
     }
     if write_cache:
-        path = ep / CACHE_ROOT / f"{key}.json"
-        write_json(path, result)
+        mode = storage_config.episode_meta_store_config()["mode"]
+        if mode != "mysql":
+            write_json(cache_write_path(ep, key), result)
+        # json keeps only the compatibility cache; dual writes both; mysql
+        # persists the contract without recreating the per-frame JSON cache.
+        import frame_contract_persistence
+        frame_contract_persistence.persist(ep, result)
     return result
 
 
 def compile_all(ep: Path) -> dict:
+    ep = Path(ep).resolve()
+    # E003 is created at the same canonical boundary as the resolved frame
+    # contracts. It is a gate-evidence document, never a stage/state document.
+    # Missing editorial fields remain visibly invalid at PUBLISH_READY rather
+    # than being inferred or filled with a fabricated PASS.
+    if not (ep / story_dna_trace.REL).is_file():
+        story_dna_trace.build(ep)
     if required(ep):
         errors = environment_contract.verify(ep)
         if errors:
@@ -517,9 +576,48 @@ def compile_all(ep: Path) -> dict:
             ca_errors = character_appearance_anchor.verify(ep)
             if ca_errors:
                 raise ValueError("V2.2.1 Character Appearance Anchor must PASS before Frame Contract compile: " + "; ".join(ca_errors[:12]))
+    # The split PREIMAGE protocol has a distinct committed snapshot.  Derived
+    # frame work must never start while Candidate authority is still pending.
+    task_state = story_json.read_json(ep / "meta/runtime/preimage-task-state.json", default={}) or {}
+    if task_state:
+        import preimage_protocol
+        committed_path = ep / "meta/runtime/preimage-committed-snapshot.json"
+        if not preimage_protocol.barrier_ready(ep) or not committed_path.is_file():
+            raise ValueError("PREIMAGE_AUTHORITY_READY required before Frame Contract compile")
+        snapshot = story_json.read_json(committed_path, default={}) or {}
+        if not snapshot or preimage_authority_snapshot.stale(ep, snapshot):
+            raise ValueError("STALE PREIMAGE_COMMITTED_SNAPSHOT before Frame Contract compile")
+    else:
+        snapshot=preimage_authority_snapshot.build(ep,write=True)
+    total=frame_count(ep)
+    workers=int(storyos_config.get_path(storyos_config.load_config(),"runtime.workers.derived",6))
+    failures=[]; compiled={}
+    def one(n):
+        started=runtime_node_execution.now()
+        try:
+            row=compile_frame(ep,n,write_cache=True)
+            stale=preimage_authority_snapshot.stale(ep,snapshot)
+            runtime_node_execution.record(ep,node_id="frame_contract_compile",task_id=f"frame-{n:02d}",snapshot_id=snapshot["snapshot_id"],worker_id=f"frame-{n:02d}",start_time=started,end_time=runtime_node_execution.now(),status="STALE" if stale else "PASS",stale=stale,output_sha=row["contract_sha256"],evidence=[(CACHE_ROOT/f"{n:02d}.json").as_posix()])
+            if stale: raise ValueError("STALE authority snapshot")
+            return row
+        except Exception as exc:
+            runtime_node_execution.record(ep,node_id="frame_contract_compile",task_id=f"frame-{n:02d}",snapshot_id=snapshot["snapshot_id"],worker_id=f"frame-{n:02d}",start_time=started,end_time=runtime_node_execution.now(),status="FAILED",failure_type="technical_failure",output=str(exc)[:500])
+            raise
+    if storyos_config.get_path(storyos_config.load_config(),"runtime.preimage_parallel_enabled",False):
+        with cf.ThreadPoolExecutor(max_workers=workers,thread_name_prefix="storyos-frame") as pool:
+            futures={pool.submit(one,n):n for n in range(1,total+1)}
+            for future,n in [(f,futures[f]) for f in cf.as_completed(futures)]:
+                try: compiled[n]=future.result()
+                except Exception as exc: failures.append(f"frame {n:02d}: {exc}")
+    else:
+        for n in range(1,total+1):
+            try: compiled[n]=one(n)
+            except Exception as exc: failures.append(f"frame {n:02d}: {exc}")
+    if failures: raise ValueError("Frame Contract compile failures: "+"; ".join(failures))
+    if preimage_authority_snapshot.stale(ep,snapshot): raise ValueError("STALE authority snapshot before frame index commit")
     rows = []
-    for n in range(1, frame_count(ep) + 1):
-        row = compile_frame(ep, n, write_cache=True)
+    for n in range(1,total + 1):
+        row=compiled[n]
         rows.append({
             "frame": row["frame"],
             "path": (CACHE_ROOT / f"{row['frame']}.json").as_posix(),
@@ -541,8 +639,145 @@ def compile_all(ep: Path) -> dict:
     return index
 
 
+def cache_rel(frame: int | str) -> Path:
+    return CACHE_ROOT / f"{int(frame):02d}.json"
+
+
+def cache_read_path(ep: Path, frame: int | str) -> Path:
+    return runtime_workspace.resolve_read_path(Path(ep).resolve(), cache_rel(frame))
+
+
+def cache_write_path(ep: Path, frame: int | str) -> Path:
+    return runtime_workspace.workspace_path(Path(ep).resolve(), cache_rel(frame))
+
+
+def cache_read_dirs(ep: Path) -> tuple[Path, ...]:
+    return runtime_workspace.read_candidates(Path(ep).resolve(), CACHE_ROOT)
+
+
 def cache_path(ep: Path, frame: int | str) -> Path:
-    return Path(ep).resolve() / CACHE_ROOT / f"{int(frame):02d}.json"
+    """Backward-compatible physical read path for the derived frame cache."""
+    return cache_read_path(ep, frame)
+
+
+def load_cached_contract(ep: Path, frame: int | str) -> dict | None:
+    """Repository-first read in dual mode, with the physical cache as fallback."""
+    import frame_contract_persistence
+
+    return frame_contract_persistence.load_latest(
+        Path(ep).resolve(), frame, legacy_path=cache_read_path(ep, frame)
+    )
+
+
+def _monotonic_projection_fill(old: object, new: object) -> bool:
+    """Allow only empty->derived-value completion; never rewrite existing authority."""
+    if old is None or old == "":
+        return True
+    if isinstance(old, dict):
+        if not isinstance(new, dict):
+            return False
+        return all(key in new and _monotonic_projection_fill(value, new[key]) for key, value in old.items())
+    if isinstance(old, list):
+        return old == new
+    return old == new
+
+
+def _projection_only_upgrade(cached: dict, current: dict) -> bool:
+    old_material = cached.get("hash_material") or {}
+    new_material = current.get("hash_material") or {}
+    if not isinstance(old_material, dict) or not isinstance(new_material, dict):
+        return False
+    old_rest = dict(old_material)
+    new_rest = dict(new_material)
+    old_auth = old_rest.pop("authenticity_card", None)
+    new_auth = new_rest.pop("authenticity_card", None)
+    old_cont = old_rest.pop("continuity", None)
+    new_cont = new_rest.pop("continuity", None)
+    return (
+        old_rest == new_rest
+        and _monotonic_projection_fill(old_auth, new_auth)
+        and _monotonic_projection_fill(old_cont, new_cont)
+    )
+
+
+def _migration_rows(ep: Path) -> list[dict]:
+    data = story_json.read_json(Path(ep).resolve() / PROJECTION_MIGRATION_REL, default={})
+    rows = data.get("items") if isinstance(data, dict) else []
+    return rows if isinstance(rows, list) else []
+
+
+def recorded_contract_matches_current(ep: Path, frame: int | str, recorded_sha256: str) -> bool:
+    """Accept exact SHA or a recorded, strictly projection-only old->new migration."""
+    ep = Path(ep).resolve()
+    key = f"{int(frame):02d}"
+    recorded = str(recorded_sha256 or "").lower()
+    current = compile_frame(ep, frame, write_cache=False)
+    current_sha = str(current.get("contract_sha256") or "").lower()
+    if recorded and recorded == current_sha:
+        return True
+    for row in _migration_rows(ep):
+        if (
+            str(row.get("frame") or "").zfill(2) == key
+            and str(row.get("from_contract_sha256") or "").lower() == recorded
+            and str(row.get("to_contract_sha256") or "").lower() == current_sha
+            and row.get("reason") == "machine_visual_projection_only"
+        ):
+            return True
+    path = cache_path(ep, frame)
+    if not recorded or not path.is_file():
+        return False
+    try:
+        cached = read_json(path)
+    except Exception:
+        return False
+    return (
+        str(cached.get("contract_sha256") or "").lower() == recorded
+        and _projection_only_upgrade(cached, current)
+    )
+
+
+def record_projection_migrations(ep: Path) -> dict:
+    """Freeze semantic-equivalence evidence before refreshing derived frame caches."""
+    ep = Path(ep).resolve()
+    existing = story_json.read_json(ep / PROJECTION_MIGRATION_REL, default={})
+    items = list(existing.get("items") or []) if isinstance(existing, dict) else []
+    known = {
+        (str(row.get("frame") or "").zfill(2), str(row.get("from_contract_sha256") or "").lower(), str(row.get("to_contract_sha256") or "").lower())
+        for row in items if isinstance(row, dict)
+    }
+    added = []
+    for frame in range(1, frame_count(ep) + 1):
+        path = cache_path(ep, frame)
+        if not path.is_file():
+            continue
+        cached = read_json(path)
+        current = compile_frame(ep, frame, write_cache=False)
+        old_sha = str(cached.get("contract_sha256") or "").lower()
+        new_sha = str(current.get("contract_sha256") or "").lower()
+        if not old_sha or old_sha == new_sha:
+            continue
+        if not _projection_only_upgrade(cached, current):
+            continue
+        marker = (f"{frame:02d}", old_sha, new_sha)
+        if marker in known:
+            continue
+        row = {
+            "frame": f"{frame:02d}",
+            "from_contract_sha256": old_sha,
+            "to_contract_sha256": new_sha,
+            "reason": "machine_visual_projection_only",
+            "allowed_projection_keys": ["authenticity_card", "continuity"],
+            "recorded_at": now(),
+        }
+        items.append(row)
+        added.append(row)
+        known.add(marker)
+    if added:
+        story_json.write_json(ep / PROJECTION_MIGRATION_REL, {
+            "schema_version": 1,
+            "items": items,
+        })
+    return {"status": "PASS", "added": added, "count": len(added)}
 
 
 def provenance(ep: Path, frame: int | str) -> dict | None:
@@ -560,17 +795,13 @@ def verify_frame(ep: Path, frame: int | str) -> list[str]:
     if not required(ep):
         return []
     current = compile_frame(ep, frame, write_cache=False)
-    path = cache_path(ep, frame)
-    if not path.is_file():
-        return [f"resolved frame contract cache missing: {path.relative_to(ep)}"]
-    try:
-        cached = read_json(path)
-    except Exception as exc:
-        return [str(exc)]
+    cached = load_cached_contract(ep, frame)
+    if not isinstance(cached, dict):
+        return [f"resolved frame contract cache missing: {cache_rel(frame).as_posix()}"]
     errors = []
     if cached.get("derived_cache") is not True:
         errors.append(f"frame {int(frame):02d} cache must declare derived_cache=true")
-    if cached.get("contract_sha256") != current["contract_sha256"]:
+    if cached.get("contract_sha256") != current["contract_sha256"] and not recorded_contract_matches_current(ep, frame, cached.get("contract_sha256")):
         errors.append(f"frame {int(frame):02d} resolved contract stale")
     if cached.get("frame") != current["frame"]:
         errors.append(f"frame {int(frame):02d} cache frame mismatch")
@@ -601,10 +832,18 @@ def verify_all(ep: Path) -> list[str]:
                 expected = []
                 for n in range(1, total + 1):
                     row = compile_frame(ep, n, write_cache=False)
+                    effective_contract_sha = row["contract_sha256"]
+                    cached = load_cached_contract(ep, n)
+                    if isinstance(cached, dict):
+                        cached_sha = str(cached.get("contract_sha256") or "")
+                        if cached_sha and recorded_contract_matches_current(ep, n, cached_sha):
+                            # Keep the committed PREIMAGE index immutable when the
+                            # only delta is a recorded machine projection fill.
+                            effective_contract_sha = cached_sha
                     expected.append({
                         "frame": row["frame"],
                         "path": (CACHE_ROOT / f"{row['frame']}.json").as_posix(),
-                        "contract_sha256": row["contract_sha256"],
+                        "contract_sha256": effective_contract_sha,
                         "storyboard_frame_sha256": row["hash_material"]["storyboard_frame_sha256"],
                         "environment_frame_sha256": row["hash_material"]["environment_frame_sha256"],
                         "frame_directive_sha256": row["hash_material"]["frame_directive_sha256"],
@@ -623,7 +862,7 @@ def verify_recorded_provenance(ep: Path, frame: int | str, recorded: object) -> 
         return [f"frame {int(frame):02d} generation request missing frame_contract provenance"]
     current = compile_frame(ep, frame, write_cache=False)
     errors = []
-    if str(recorded.get("contract_sha256") or "").lower() != current["contract_sha256"].lower():
+    if not recorded_contract_matches_current(ep, frame, str(recorded.get("contract_sha256") or "")):
         errors.append(f"frame {int(frame):02d} generation frame_contract_sha256 stale")
     expected_path = (CACHE_ROOT / f"{int(frame):02d}.json").as_posix()
     if str(recorded.get("path") or "") != expected_path:
@@ -636,11 +875,10 @@ def verify_approved_asset_binding(ep: Path, frame: int | str, asset_sha256: str)
     if not required(ep):
         return []
     key = f"{int(frame):02d}"
-    ledger_path = ep / "meta/production-ledger.json"
-    if not ledger_path.is_file():
-        return [f"frame {key} production ledger missing for frame-contract binding"]
     try:
-        ledger = read_json(ledger_path)
+        ledger = production_ledger.load_authority(ep, default=None)
+        if not isinstance(ledger, dict):
+            return [f"frame {key} production ledger missing for frame-contract binding"]
         row = (ledger.get("frames") or {}).get(key)
         if not isinstance(row, dict):
             return [f"frame {key} production ledger row missing"]

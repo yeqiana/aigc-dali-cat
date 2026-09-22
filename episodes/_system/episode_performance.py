@@ -8,7 +8,7 @@ image_backend_seconds may overlap stage wall time and must not be summed
 with stage totals as if they were independent.
 """
 from __future__ import annotations
-import argparse, datetime as dt, json, math, os, statistics, uuid
+import argparse, datetime as dt, json, math, os, statistics, tempfile, uuid
 from pathlib import Path
 import story_json
 import runtime_observability
@@ -17,6 +17,7 @@ ROOT=Path(__file__).resolve().parents[2]
 REL=runtime_observability.EPISODE_PERFORMANCE_REL
 REPORT_REL=Path("reports/story-os-performance-summary.json")
 STAGE_NAMES={"CREATIVE_STORY","PREIMAGE_COMPILE","VISUAL_LOCK","PRODUCTION","RELEASE","FULL_AUTO_LEGACY","VISUAL_LOCK_BASELINE_REVIEW"}
+EXECUTION_STATES={"ACTIVE","HOST_WAIT","USER_WAIT","IDLE"}
 
 def now_dt():
     return dt.datetime.now(dt.timezone.utc).astimezone()
@@ -53,23 +54,25 @@ def _new(ep):
       "named_spans":{},
       "state_transitions":[],
       "image_attempts":[],
+      "execution_sessions":[],
       "summary":{}
     }
 
 def load(ep,create=True):
     ep=Path(ep).resolve();p=ep/REL
-    if p.is_file():
-        try:return read_json(p)
-        except Exception:
-            if not create:raise
+    try:
+        loaded=runtime_observability.read_summary(ep,REL,default={})
+        if loaded:return loaded
+    except Exception:
+        if not create:raise
     d=_new(ep)
-    if create:write_json(p,d)
+    if create:runtime_observability.write_summary(ep,REL,kind="episode_performance",payload=d)
     return d
 
 def save(ep,d):
     d["updated_at"]=now()
     _refresh_summary(d)
-    write_json(Path(ep).resolve()/REL,d)
+    runtime_observability.write_summary(Path(ep).resolve(),REL,kind="episode_performance",payload=d)
     return d
 
 def safe_start_episode(ep,source="runtime"):
@@ -82,20 +85,34 @@ def safe_start_episode(ep,source="runtime"):
 
 def begin_stage(ep,stage,source="scoped_worker",metadata=None):
     stage=str(stage).upper()
-    d=load(ep,True);rid=uuid.uuid4().hex[:12];at=now()
+    d=load(ep,True);bucket=d.setdefault("stages",{}).setdefault(stage,{"runs":[]})
+    # STORY_OS_V211_UNCLOSED_SPAN_REUSE: one row per logical attempt, not per pass.
+    # A scoped_model step hands back to the host (HOST_WAIT, rc=20) many times before
+    # it finishes. Reusing the still-open run_id keeps runs[-1] stable across those
+    # round-trips (critic_runtime_v211 reads it as the visual-lock binding) and stops
+    # the ledger filling with rows nothing ever closes. Mirrors begin_named_span().
+    running=next((x for x in reversed(bucket["runs"]) if x.get("status")=="RUNNING"),None)
+    if running:return running["run_id"]
+    rid=uuid.uuid4().hex[:12];at=now()
     row={"run_id":rid,"started_at":at,"ended_at":None,"duration_seconds":None,
          "status":"RUNNING","source":source,"metadata":metadata or {}}
-    d.setdefault("stages",{}).setdefault(stage,{"runs":[]})["runs"].append(row)
+    bucket["runs"].append(row)
     save(ep,d);return rid
 
 def end_stage(ep,stage,run_id=None,status="PASS",metadata=None):
     stage=str(stage).upper();d=load(ep,True);runs=(d.setdefault("stages",{}).setdefault(stage,{"runs":[]})["runs"])
     row=None
-    if run_id:row=next((x for x in reversed(runs) if x.get("run_id")==run_id),None)
-    if row is None:row=next((x for x in reversed(runs) if x.get("status")=="RUNNING"),None)
-    if row is None:
-        row={"run_id":run_id or uuid.uuid4().hex[:12],"started_at":now(),"source":"recovered","metadata":{}}
-        runs.append(row)
+    if run_id:
+        row=next((x for x in reversed(runs) if x.get("run_id")==run_id),None)
+    else:
+        row=next((x for x in reversed(runs) if x.get("status")=="RUNNING"),None)
+    # STORY_OS_V211_NO_FABRICATED_SPAN: no match means no span was ever opened for
+    # this attempt, so there is nothing to close. Never invent a row -- a fabricated
+    # row carries started_at=now() and reports a duration belonging to no execution.
+    # An explicit run_id must not fall back to an unrelated open row either: that
+    # merge closed a span opened hours earlier and inflated stage walls past 100h.
+    # fail-soft no-op, same contract as safe_end_stage().
+    if row is None:return None
     ended=now();row["ended_at"]=ended;row["duration_seconds"]=seconds_between(row.get("started_at"),ended) or 0.0
     row["status"]=str(status);row.setdefault("metadata",{}).update(metadata or {})
     save(ep,d);return row
@@ -157,11 +174,110 @@ def record_image_attempt(ep,*,frame,scope,kind,status,model=None,attempt=1,
       "elapsed_seconds":float(elapsed_seconds) if isinstance(elapsed_seconds,(int,float)) else None,
       "queue_item_id":queue_item_id,"error_code":error_code
     }
-    d.setdefault("image_attempts",[]).append(row);save(ep,d);return row
+    rows=d.setdefault("image_attempts",[])
+    existing=None
+    if queue_item_id:
+        existing=next((x for x in reversed(rows)
+                       if str(x.get("queue_item_id") or "")==str(queue_item_id)
+                       and int(x.get("attempt") or 0)==int(row["attempt"])),None)
+    if existing is not None:
+        event_id=existing.get("event_id")
+        existing.update(row)
+        if event_id:existing["event_id"]=event_id
+        row=existing
+    else:
+        rows.append(row)
+    save(ep,d);return row
+
+def record_queue_image_attempt(ep,item,*,status,error_code=None,ended_at=None):
+    """Record one terminal scheduler/import attempt from its queue contract."""
+    return record_image_attempt(
+        ep,frame=int(item["frame"]),scope=item.get("scope"),kind=item.get("kind"),
+        status=status,model=item.get("model"),attempt=max(1,int(item.get("attempts") or 0)),
+        started_at=item.get("started_at"),ended_at=ended_at or item.get("completed_at") or now(),
+        queue_item_id=item.get("id"),error_code=error_code)
+
+def safe_record_queue_image_attempt(ep,item,**kwargs):
+    try:record_queue_image_attempt(ep,item,**kwargs);return True
+    except Exception:return False
 
 def safe_record_image_attempt(ep,**kwargs):
     try:record_image_attempt(ep,**kwargs);return True
     except Exception:return False
+
+def _close_execution_state(session, ended):
+    states=session.get("states") or []
+    row=next((x for x in reversed(states) if not x.get("ended_at")),None)
+    if row is None:return None
+    row["ended_at"]=ended
+    row["duration_seconds"]=seconds_between(row.get("started_at"),ended) or 0.0
+    return row
+
+def _close_execution_session(session, ended, status):
+    _close_execution_state(session,ended)
+    session["ended_at"]=ended
+    session["duration_seconds"]=seconds_between(session.get("started_at"),ended) or 0.0
+    session["status"]=str(status)
+    return session
+
+def begin_execution_session(ep,source="runtime",session_id=None,metadata=None,at=None):
+    d=load(ep,True);at=at or now();sessions=d.setdefault("execution_sessions",[])
+    sid=str(session_id or uuid.uuid4().hex[:12])
+    existing=next((x for x in reversed(sessions) if str(x.get("session_id") or "")==sid),None)
+    if existing and not existing.get("ended_at"):return sid
+    for old in reversed(sessions):
+        if not old.get("ended_at"):
+            _close_execution_session(old,at,"HANDOFF_TO_NEXT_SESSION")
+            break
+    sessions.append({"session_id":sid,"source":str(source),"started_at":at,"ended_at":None,
+                     "duration_seconds":None,"status":"RUNNING","metadata":metadata or {},"states":[]})
+    save(ep,d);return sid
+
+def transition_execution_state(ep,state,*,session_id=None,source="runtime",metadata=None,at=None):
+    state=str(state).upper()
+    if state not in EXECUTION_STATES:raise ValueError("invalid execution state: "+state)
+    d=load(ep,True);at=at or now();sessions=d.setdefault("execution_sessions",[])
+    session=None
+    if session_id is not None:
+        session=next((x for x in reversed(sessions) if str(x.get("session_id") or "")==str(session_id) and not x.get("ended_at")),None)
+    if session is None:session=next((x for x in reversed(sessions) if not x.get("ended_at")),None)
+    if session is None:
+        sid=begin_execution_session(ep,source=source,session_id=session_id,at=at)
+        d=load(ep,True);sessions=d.setdefault("execution_sessions",[])
+        session=next(x for x in reversed(sessions) if str(x.get("session_id") or "")==sid and not x.get("ended_at"))
+    states=session.setdefault("states",[])
+    current=next((x for x in reversed(states) if not x.get("ended_at")),None)
+    if current and current.get("state")==state:
+        current.setdefault("metadata",{}).update(metadata or {});save(ep,d);return current
+    if current:_close_execution_state(session,at)
+    row={"state":state,"started_at":at,"ended_at":None,"duration_seconds":None,
+         "source":str(source),"metadata":metadata or {}}
+    states.append(row);save(ep,d);return row
+
+def finish_execution_session(ep,session_id=None,status="COMPLETE",at=None):
+    d=load(ep,True);at=at or now();sessions=d.setdefault("execution_sessions",[])
+    session=None
+    if session_id is not None:
+        session=next((x for x in reversed(sessions) if str(x.get("session_id") or "")==str(session_id) and not x.get("ended_at")),None)
+    if session is None:session=next((x for x in reversed(sessions) if not x.get("ended_at")),None)
+    if session is None:return None
+    _close_execution_session(session,at,status);save(ep,d);return session
+
+def safe_begin_execution_session(ep,**kwargs):
+    try:return begin_execution_session(ep,**kwargs)
+    except Exception:return None
+def safe_transition_execution_state(ep,state,**kwargs):
+    try:transition_execution_state(ep,state,**kwargs);return True
+    except Exception:return False
+def safe_finish_execution_session(ep,**kwargs):
+    try:finish_execution_session(ep,**kwargs);return True
+    except Exception:return False
+
+def execution_state_for_result(return_code,action=None):
+    name=str((action or {}).get("action") or "") if isinstance(action,dict) else ""
+    if int(return_code)==22 or name=="USER_DECISION_REQUIRED":return "USER_WAIT"
+    if int(return_code)==20:return "HOST_WAIT"
+    return "IDLE"
 
 def observe_checkpoint(ep,state):
     try:
@@ -179,8 +295,23 @@ def observe_checkpoint(ep,state):
         return True
     except Exception:return False
 
+def _close_open_telemetry(d,ended):
+    """Close dangling telemetry spans without turning them into PASS evidence."""
+    for section in ("stages","named_spans"):
+        for bucket in (d.get(section) or {}).values():
+            for row in (bucket or {}).get("runs") or []:
+                if row.get("status")!="RUNNING":continue
+                row["ended_at"]=ended
+                row["duration_seconds"]=seconds_between(row.get("started_at"),ended) or 0.0
+                row["status"]="CLOSED_AT_FINALIZE"
+                row.setdefault("metadata",{})["auto_closed_at_finalize"]=True
+    for session in d.get("execution_sessions") or []:
+        if not session.get("ended_at"):
+            _close_execution_session(session,ended,"CLOSED_AT_FINALIZE")
+
 def finalize(ep,status="COMPLETE"):
     ep=Path(ep).resolve();d=load(ep,True);ended=now()
+    _close_open_telemetry(d,ended)
     d["finalized_at"]=ended;d["final_status"]=status
     d["total_wall_seconds"]=seconds_between(d.get("started_at"),ended)
     save(ep,d)
@@ -198,6 +329,13 @@ def _run_total(bucket):
         v=row.get("duration_seconds")
         if isinstance(v,(int,float)):vals.append(float(v))
     return round(sum(vals),3)
+
+def _run_wall(bucket):
+    intervals=[]
+    for row in (bucket or {}).get("runs") or []:
+        a=row.get("started_at");b=row.get("ended_at")
+        if a and b:intervals.append((a,b))
+    return _interval_union_seconds(intervals)
 
 # STORY_OS_V211_RUNTIME_CLOSURE_R3: overlap-aware end-to-end critical-path telemetry.
 def _interval_union_seconds(intervals):
@@ -247,9 +385,37 @@ def _critical_path_summary(d):
       "note":"End-to-end wall is the user-visible critical path; image resource time is overlap-aware and is not added to stage wall."
     }
 
+def _execution_summary(d):
+    sessions=d.get("execution_sessions") or []
+    observed_end=d.get("updated_at") or now()
+    aggregate={state:[] for state in EXECUTION_STATES}
+    def one(session):
+        by_state={state:[] for state in EXECUTION_STATES}
+        all_intervals=[]
+        for row in session.get("states") or []:
+            state=str(row.get("state") or "")
+            if state not in EXECUTION_STATES:continue
+            end=row.get("ended_at") or observed_end
+            if row.get("started_at") and end:
+                interval=(row["started_at"],end);by_state[state].append(interval);aggregate[state].append(interval);all_intervals.append(interval)
+        out={state.lower()+"_seconds":_interval_union_seconds(by_state[state]) for state in sorted(EXECUTION_STATES)}
+        out["wall_seconds"]=_interval_union_seconds(all_intervals)
+        out.update({"session_id":session.get("session_id"),"source":session.get("source"),"status":session.get("status")})
+        return out
+    session_summaries=[one(session) for session in sessions]
+    latest=session_summaries[-1] if session_summaries else None
+    total={state.lower()+"_seconds":_interval_union_seconds(aggregate[state]) for state in sorted(EXECUTION_STATES)}
+    return {"session_count":len(sessions),"latest":latest,"aggregate":total,
+            "active_wall_seconds":None if latest is None else latest["active_seconds"]}
+
 def _refresh_summary(d):
-    stages={k:{"wall_seconds":_run_total(v),"runs":len(v.get("runs") or [])} for k,v in (d.get("stages") or {}).items()}
-    spans={k:{"wall_seconds":_run_total(v),"runs":len(v.get("runs") or [])} for k,v in (d.get("named_spans") or {}).items()}
+    def bucket_summary(v):
+        runs=v.get("runs") or []
+        return {"wall_seconds":_run_wall(v),"resource_seconds":_run_total(v),"runs":len(runs),
+                "unclosed_runs":sum(1 for x in runs if x.get("status")=="RUNNING"),
+                "metric_kind":"elapsed_stage_span","may_include_wait":True,"not_execution_time":True}
+    stages={k:bucket_summary(v) for k,v in (d.get("stages") or {}).items()}
+    spans={k:bucket_summary(v) for k,v in (d.get("named_spans") or {}).items()}
     imgs=d.get("image_attempts") or []
     completed=[x for x in imgs if str(x.get("status") or "") in {"generated","PASSED","PASS","success"}]
     repair=[x for x in imgs if str(x.get("kind") or "")=="repair"]
@@ -258,7 +424,27 @@ def _refresh_summary(d):
     image_backend=sum(vals)
     critical_path=_critical_path_summary(d)  # STORY_OS_V211_RUNTIME_CLOSURE_R3
     # STORY_OS_V2_5_1_RUNTIME_FAST_PATH: advisory active-wall SLO; never a gate.
-    active_wall=((d.get("run_wall") or {}).get("active_wall_seconds"))
+    execution_wall=_execution_summary(d)
+    aggregate_execution=execution_wall.get("aggregate") or {}
+    latest_execution=execution_wall.get("latest") or {}
+    duration_breakdown={
+      "runtime_active_seconds":aggregate_execution.get("active_seconds"),
+      "host_wait_seconds":aggregate_execution.get("host_wait_seconds"),
+      "user_wait_seconds":aggregate_execution.get("user_wait_seconds"),
+      "idle_seconds":aggregate_execution.get("idle_seconds"),
+      "latest_session_active_seconds":latest_execution.get("active_seconds"),
+      "latest_session_host_wait_seconds":latest_execution.get("host_wait_seconds"),
+      "latest_session_user_wait_seconds":latest_execution.get("user_wait_seconds"),
+      "latest_session_idle_seconds":latest_execution.get("idle_seconds"),
+      "primary_runtime_metric":"latest_session_active_seconds",
+      "aggregate_scope":"all_execution_sessions_interval_union",
+      "stage_wall_includes_wait":True,
+      "external_host_execution_seconds":None,
+      "external_host_execution_policy":"measure only explicit host start/complete evidence; never infer execution from HOST_WAIT",
+      "note":"episode aggregate covers all execution sessions with interval-union de-duplication; current efficiency/SLO uses the latest session active wall. stage_wall may include HOST_WAIT and is not production execution time.",
+    }
+    active_wall=execution_wall.get("active_wall_seconds")
+    if not isinstance(active_wall,(int,float)): active_wall=((d.get("run_wall") or {}).get("active_wall_seconds"))
     if not isinstance(active_wall,(int,float)): active_wall=d.get("total_wall_seconds")
     if isinstance(active_wall,(int,float)):
         perf_health="GREEN" if active_wall<=5400 else ("YELLOW" if active_wall<=7200 else "RED")
@@ -268,6 +454,8 @@ def _refresh_summary(d):
       "stage_wall":stages,
       "named_span_wall":spans,
       "critical_path":critical_path,
+      "execution_wall":execution_wall,
+      "duration_breakdown":duration_breakdown,
       "performance_slo":performance_slo,
       "images":{
         "attempts":len(imgs),"successful_attempts":len(completed),"repair_attempts":len(repair),
@@ -276,7 +464,7 @@ def _refresh_summary(d):
         "average_attempt_seconds":round(statistics.mean(vals),3) if vals else None,
         "max_attempt_seconds":round(max(vals),3) if vals else None,
       },
-      "note":"stage wall time and image backend resource time can overlap; do not add them together."
+      "note":"stage/named wall_seconds are elapsed interval unions and may include HOST_WAIT; they are not production execution time. resource_seconds sum run durations and may overlap. Use duration_breakdown/execution_wall for wait attribution and do not add resource time to wall time."
     }
 
 def episode_summary(ep):
@@ -321,6 +509,22 @@ def self_test():
     assert abs(percentile([10,20,30],0.5)-20)<0.001
     assert REL==runtime_observability.EPISODE_PERFORMANCE_REL
     assert _interval_union_seconds([])==0.0
+    # STORY_OS_V211_UNCLOSED_SPAN_REUSE + _NO_FABRICATED_SPAN. Temp episode must live
+    # under ROOT: _new() records episode_path relative to it.
+    with tempfile.TemporaryDirectory(dir=ROOT/"episodes/_tests") as td:
+        ep=Path(td);stage="VISUAL_LOCK"
+        def rows():return load(ep,False)["stages"][stage]["runs"]
+        first=begin_stage(ep,stage)
+        assert begin_stage(ep,stage)==first,"a second begin must adopt the open span"
+        assert len(rows())==1
+        # An unmatched run_id must not close an unrelated open row, nor invent one.
+        assert end_stage(ep,stage,run_id="nosuchrun") is None
+        assert len(rows())==1 and rows()[0]["status"]=="RUNNING"
+        closed=end_stage(ep,stage,status="REUSED")
+        assert closed and closed["run_id"]==first and isinstance(closed["duration_seconds"],float)
+        # Nothing open -> no-op, and never a fabricated 'recovered' row.
+        assert end_stage(ep,stage) is None
+        assert len(rows())==1 and not any(r.get("source")=="recovered" for r in rows())
     print("EPISODE PERFORMANCE + R3 CRITICAL PATH SELF-TEST PASS")
 
 def main():

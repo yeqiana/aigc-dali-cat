@@ -16,14 +16,19 @@ Lane policy stays with the consumer for B0/B1:
 from __future__ import annotations
 
 import datetime as dt
+import threading
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Callable
 
+import production_queue_store
+import hot_state_bridge
+
 ROOT = Path(__file__).resolve().parents[2]
-QUEUE_REL = Path("meta/production-queue.json")
+QUEUE_REL = production_queue_store.REL
 SCHEDULER_LOCK_REL = Path("meta/runtime-image-scheduler.lock")
 EMPTY_QUEUE = {"schema_version": 1, "items": [], "waves": []}
+_QUEUE_LOCK_LOCAL = threading.local()
 
 
 def now() -> str:
@@ -109,19 +114,35 @@ def empty_queue(*, max_parallel: int | None = None) -> dict:
     return q
 
 
+def queue_read_path(ep: Path) -> Path:
+    return production_queue_store.read_path(Path(ep).resolve())
+
+
+def queue_write_path(ep: Path) -> Path:
+    return production_queue_store.write_path(Path(ep).resolve())
+
+
 def load_queue(ep: Path, *, max_parallel: int | None = None) -> dict:
     """Read production queue with the portability path guard.
 
     Missing file returns EMPTY_QUEUE (same semantics as both scheduler lanes'
     private copies).
     """
-    p = Path(ep).resolve() / QUEUE_REL
-    if not p.is_file():
+    ep = Path(ep).resolve()
+    hot = hot_state_bridge.read(ep, "QUEUE")
+    q = hot.get("value") if isinstance(hot.get("value"), dict) else None
+    if q is None and not hot_state_bridge.file_fallback_allowed(hot):
         q = dict(EMPTY_QUEUE)
         if max_parallel is not None:
             q["max_parallel"] = int(max_parallel)
-        return q
-    q = read_json(p)
+    elif q is None:
+        p = production_queue_store.read_path(ep)
+        if not p.is_file():
+            q = dict(EMPTY_QUEUE)
+            if max_parallel is not None:
+                q["max_parallel"] = int(max_parallel)
+            return q
+        q = read_json(p)
     import runtime_portability
 
     errors = runtime_portability.queue_path_errors(q)
@@ -132,8 +153,18 @@ def load_queue(ep: Path, *, max_parallel: int | None = None) -> dict:
 
 
 def save_queue(ep: Path, q: dict) -> None:
-    q["updated_at"] = now()
-    write_json(Path(ep).resolve() / QUEUE_REL, q)
+    ep = Path(ep).resolve()
+    import episode_lifecycle
+    episode_lifecycle.assert_writable(ep, "production_queue.write")
+    with queue_transaction(ep):
+        q["updated_at"] = now()
+        import storage_config
+        current_mode = storage_config.hot_state_config()["mode"]
+        # Redis-only means Redis is the sole queue authority. File/workspace
+        # writes are retained only for file/dual compatibility modes.
+        if current_mode != "redis":
+            write_json(production_queue_store.write_path(ep), q)
+        hot_state_bridge.mirror(ep, "QUEUE", q)
 
 
 def progress(ep: Path, q: dict, *, requested_workers: int = 3) -> dict:
@@ -141,11 +172,12 @@ def progress(ep: Path, q: dict, *, requested_workers: int = 3) -> dict:
     import storyos_config
     import raw_candidate_budget
     import story_json
+    import episode_state_persistence
     configured = min(3, int(storyos_config.get_path(storyos_config.load_config(),
                                                   "production.max_inflight_images")))
     rows = list((ledger(ep).get("frames") or {}).values())
     pending = sum(x.get("status") == "queued" for x in q.get("items") or [])
-    stage = story_json.read_json(ep / "meta/episode-state.json", default={})
+    stage = episode_state_persistence.load(ep) or {}
     manifest = story_json.read_json(ep / "meta/release-manifest.json", default={})
     last = next((w for w in reversed(q.get("waves") or []) if "inflight_after" in w), {})
     return {
@@ -156,7 +188,7 @@ def progress(ep: Path, q: dict, *, requested_workers: int = 3) -> dict:
         "historical_adaptive_parallel": q.get("adaptive_parallel"),
         "adaptive_parallel_semantics": "history_only",
         "generated_frames": sum(any(a.get("result") == "success" for a in r.get("attempts") or []) for r in rows),
-        "content_passed_frames": sum(r.get("status") in {"PASSED", "LOCKED"} for r in rows),
+        "content_passed_frames": sum(r.get("status") in {"PASSED", "WEAK_PASS", "LOCKED"} for r in rows),
         "pending_review_frames": sum(r.get("status") in {"ORIGINAL_READY", "REPAIR_READY"} for r in rows),
         "pending_decision_frames": sum(r.get("status") == "NEEDS_USER" for r in rows),
         "canonical_stage": stage.get("current_state"),
@@ -174,33 +206,92 @@ class QueueMutationBusy(RuntimeError):
 def queue_transaction(ep: Path):
     """Serialize queue read-modify-write against image execution.
 
-    Both scheduler lanes hold this same OS lock for the whole run, so small
-    direct mutations fail with QueueMutationBusy while pixels/ledger
-    transitions are in flight.  The caller can retry later.
+    The OS advisory lock remains the cross-thread/process authority.  A
+    thread-local depth makes the lock re-entrant only for the same Episode in
+    the same thread, allowing central ``save_queue`` to protect every write
+    without deadlocking callers that already own a queue transaction.
     """
     import runner_state_store
 
     ep = Path(ep).resolve()
+    key = ep.as_posix()
+    depths = getattr(_QUEUE_LOCK_LOCAL, "depths", None)
+    if depths is None:
+        depths = {}
+        _QUEUE_LOCK_LOCAL.depths = depths
+    depth = int(depths.get(key) or 0)
+    if depth:
+        depths[key] = depth + 1
+        try:
+            yield
+        finally:
+            remaining = int(depths.get(key) or 1) - 1
+            if remaining > 0:
+                depths[key] = remaining
+            else:
+                depths.pop(key, None)
+        return
+
     if not runner_state_store.acquire_lock(ep, lock_rel=SCHEDULER_LOCK_REL):
         raise QueueMutationBusy("QUEUE_MUTATION_BUSY: image scheduler owns "
                                 "the production queue; retry later")
+    depths[key] = 1
     try:
         yield
     finally:
+        depths.pop(key, None)
         runner_state_store.release_lock(ep, lock_rel=SCHEDULER_LOCK_REL)
 
 
 def ledger(ep: Path) -> dict:
-    p = Path(ep).resolve() / "meta/production-ledger.json"
-    if not p.is_file():
-        return {}
-    data = read_json(p)
+    from production_ledger_core import load_authority
+    data = load_authority(Path(ep).resolve(), default={})
     return data if isinstance(data, dict) else {}
 
 
 def ledger_state(ep: Path, frame: int) -> str:
     return str((((ledger(ep).get("frames") or {}).get(f"{frame:02d}") or {})
                 .get("status") or "PENDING"))
+
+
+def terminalize_superseded_history(ep: Path, q: dict) -> list[dict]:
+    """Mark only provably superseded technical queue history terminal.
+
+    This mutates ``q`` in memory; callers must hold the scheduler lock and call
+    ``save_queue``. Unknown history is deliberately left untouched.
+    """
+    frames = ledger(ep).get("frames") or {}
+    items = q.get("items") or []
+    changed: list[dict] = []
+    for index, item in enumerate(items):
+        if item.get("status") not in {"tech_failed", "blocked", "interrupted_unknown"}:
+            continue
+        frame_no = int(item.get("frame") or 0)
+        if frame_no <= 0:
+            continue
+        evidence = None
+        for later in items[index + 1:]:
+            if int(later.get("frame") or 0) == frame_no and later.get("status") == "generated":
+                evidence = {"type": "queue_item", "id": later.get("id")}
+                break
+        frame = frames.get(f"{frame_no:02d}") or frames.get(str(frame_no)) or {}
+        if evidence is None and isinstance(frame, dict):
+            approved = frame.get("approved_asset")
+            current = frame.get("current_candidate")
+            candidate = approved if isinstance(approved, dict) and approved.get("sha256") else current
+            if isinstance(candidate, dict) and candidate.get("sha256"):
+                failed_at = str(item.get("completed_at") or item.get("started_at") or item.get("queued_at") or "")
+                recorded_at = str(candidate.get("recorded_at") or "")
+                if not failed_at or not recorded_at or recorded_at >= failed_at:
+                    evidence = {"type": "ledger_candidate", "sha256": candidate.get("sha256"), "recorded_at": recorded_at or None}
+        if evidence is None:
+            continue
+        item["superseded_from_status"] = item.get("status")
+        item["status"] = "superseded"
+        item["superseded_at"] = now()
+        item["superseded_by"] = evidence
+        changed.append(item)
+    return changed
 
 
 def dependency_satisfied(ep: Path, q: dict, dep: int,
@@ -257,8 +348,16 @@ def _prompt_path(item: dict) -> Path:
 
 
 def _ledger_references(item: dict) -> list[str]:
-    return [f"{(ROOT / ref['path']).resolve()}::{ref['role']}::{ref['kind']}"
-            for ref in item.get("references") or []]
+    # W-21: keep the declared anchor/id with the reference so production ledger
+    # execution evidence stays attributable to one identity anchor.
+    out = []
+    for ref in item.get("references") or []:
+        value = f"{(ROOT / ref['path']).resolve()}::{ref['role']}::{ref['kind']}"
+        anchor = str(ref.get("anchor") or ref.get("id") or "").strip()
+        if anchor:
+            value = f"{value}::{anchor}"
+        out.append(value)
+    return out
 
 
 def ledger_begin(ep: Path, item: dict, *, notes: str | None = None,
@@ -334,8 +433,10 @@ def ledger_success(ep: Path, item: dict, result: dict,
 def ledger_tech_fail(ep: Path, item: dict, code: str, message: str) -> None:
     import ledger_call
 
+    runner_request_id = str(((item.get("execution") or {}).get("runner_request_id")) or "").strip() or None
     ledger_call.tech_fail(ep, frame=int(item["frame"]), code=code,
-                          message=message)
+                          message=message, provider_invoked=bool(runner_request_id),
+                          runner_request_id=runner_request_id)
 
 
 def self_test() -> None:
@@ -349,12 +450,9 @@ def self_test() -> None:
         assert load_queue(ep)["max_parallel"] == 3
         with queue_transaction(ep):
             assert load_queue(ep)["schema_version"] == 1
-        try:
+        with queue_transaction(ep):
             with queue_transaction(ep):
-                with queue_transaction(ep):
-                    raise AssertionError("nested queue_transaction must fail")
-        except QueueMutationBusy:
-            pass
+                save_queue(ep, load_queue(ep))
     print("SCHEDULER CORE SELF-TEST PASS")
 
 

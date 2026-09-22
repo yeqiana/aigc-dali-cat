@@ -17,9 +17,11 @@ import product_review_adapter
 import story_json
 import visual_review_schema
 import runtime_timeout_policy
+import episode_state_persistence
+import visual_profile_review_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
-REVIEW_REL = Path("meta/visual-profile-review.json")
+REVIEW_REL = visual_profile_review_persistence.LEGACY_REL
 CANDIDATE_REL = Path("meta/.visual-profile-review.candidate.json")
 TARGET_CONTRACT = (2, 0, 3, 2)
 CHECKS = [
@@ -62,7 +64,14 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 def episode_contract_version(ep: Path) -> str:
     versions = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    try:
+        raw = str((episode_state_persistence.load(Path(ep).resolve()) or {}).get("tool_version") or "")
+        vt = version_tuple(raw)
+        if vt != (0,):
+            versions.append((vt, raw))
+    except Exception:
+        pass
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -77,15 +86,19 @@ def episode_contract_version(ep: Path) -> str:
 
 
 def review_required(ep: Path) -> bool:
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json"):
-        p = ep / rel
-        if not p.is_file():
-            continue
+    try:
+        if version_tuple(
+            (episode_state_persistence.load(Path(ep).resolve()) or {}).get("tool_version")
+        ) >= TARGET_CONTRACT:
+            return True
+    except Exception:
+        pass
+    p = Path(ep).resolve() / "meta/release-manifest.json"
+    if p.is_file():
         try:
-            if version_tuple(read_json(p).get("tool_version")) >= TARGET_CONTRACT:
-                return True
+            return version_tuple(read_json(p).get("tool_version")) >= TARGET_CONTRACT
         except Exception:
-            continue
+            pass
     return False
 
 
@@ -193,13 +206,12 @@ def validate_payload(data: dict, *, profile_id: str, profile_sha: str, assets: l
 def verify(ep: Path) -> list[str]:
     if not review_required(ep):
         return []
-    path = ep / REVIEW_REL
-    if not path.is_file():
+    data = visual_profile_review_persistence.load(ep)
+    if not isinstance(data, dict):
         return ["meta/visual-profile-review.json missing"]
     try:
         contract = compile_prompt_contract(ep)
         assets = calibration_assets(ep)
-        data = read_json(path)
     except Exception as exc:
         return [str(exc)]
     return validate_payload(
@@ -336,8 +348,12 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         assets=current_assets,
         version=episode_contract_version(ep),
     )
-    final = ep / REVIEW_REL
-    write_json(final, data)
+    visual_profile_review_persistence.save(
+        ep,
+        data,
+        decision="PASS" if not errors else "FAIL",
+        source_sha256=contract["profile_sha256"],
+    )
     candidate.unlink(missing_ok=True)
     if errors:
         print("VISUAL PROFILE REVIEW FAIL")
@@ -377,14 +393,26 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
         assets=assets,
         version=episode_contract_version(ep),
     )
-    final = ep / REVIEW_REL
-    write_json(final, data)
+    visual_profile_review_persistence.save(
+        ep,
+        data,
+        decision="PASS" if not errors else "FAIL",
+        source_sha256=contract["profile_sha256"],
+    )
     if errors:
         print("VISUAL PROFILE REVIEW FAIL")
         for error in errors:
             print("FAIL:", error)
         return 2
-    product_review_adapter.mark_complete(ep, "visual-profile-legacy", attempt=attempt, final_path=final)
+    final_export = visual_profile_review_persistence.materialize_export(ep, data)
+    if final_export is None:
+        raise RuntimeError("visual profile review export missing after PASS")
+    product_review_adapter.mark_complete(
+        ep,
+        "visual-profile-legacy",
+        attempt=attempt,
+        final_path=final_export,
+    )
     candidate.unlink(missing_ok=True)
     print("VISUAL PROFILE REVIEW PASS")
     return 0
@@ -450,8 +478,11 @@ def main() -> int:
             print("VISUAL PROFILE REVIEW ERROR:", exc)
             return 3
     if args.cmd == "show":
-        p = ep / REVIEW_REL
-        print(p.read_text(encoding="utf-8") if p.is_file() else "{}")
+        print(json.dumps(
+            visual_profile_review_persistence.load(ep) or {},
+            ensure_ascii=False,
+            indent=2,
+        ))
         return 0
     errors = verify(ep)
     if errors:

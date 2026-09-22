@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "intent": "CREATE_EPISODE",
+  "request": "江南卖花姑娘的一天",
+  "execution_mode": "dag",
+  "visual_profile": "M00_ANCIENT_DAILY_LIFE_V1"
+}

@@ -15,6 +15,9 @@ from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
 from visual_profile import compile_prompt_contract
 import frame_contract as resolved_frame_contract
 import storyos_config
+import episode_lifecycle
+import episode_state_persistence
+import production_ledger_persistence
 from runtime_atomic_store import atomic_write_json
 
 LEDGER_FILE = Path("meta/production-ledger.json")
@@ -33,18 +36,20 @@ FRAME_STATES = {
     "REPAIR_AUTHORIZED",
     "AUTHORITY_REFRESH_AUTHORIZED",
     "EXCEPTION_REPAIR_AUTHORIZED",
+    "USER_CONTINUATION_REPAIR_AUTHORIZED",
     "REPAIRING",
     "REPAIR_READY",
     "PASSED",
+    "WEAK_PASS",
     "NEEDS_USER",
     "LOCKED",
 }
 REFERENCE_KINDS = {"identity", "prop", "location", "capture_style"}
 # Canonical derived subsets of FRAME_STATES. Consumers import these instead of
 # re-typing the member sets so scheduler/recovery/gate vocabulary cannot drift.
-READY_LEDGER_STATES = frozenset({"ORIGINAL_READY", "REPAIR_READY", "PASSED", "LOCKED"})
+READY_LEDGER_STATES = frozenset({"ORIGINAL_READY", "REPAIR_READY", "PASSED", "WEAK_PASS", "LOCKED"})
 ACTIVE_LEDGER_STATES = frozenset({"GENERATING", "REPAIRING"})
-ACCEPTED_LEDGER_STATES = frozenset({"PASSED", "LOCKED"})
+ACCEPTED_LEDGER_STATES = frozenset({"PASSED", "WEAK_PASS", "LOCKED"})
 
 
 def now_iso() -> str:
@@ -72,7 +77,75 @@ def load_json(path: Path) -> dict:
 
 
 def save_json(path: Path, data: dict) -> None:
+    path = Path(path).resolve()
+    if path.name == LEDGER_FILE.name and path.parent.name == "meta":
+        ep = path.parent.parent
+        episode_lifecycle.assert_writable(ep, "production_ledger.write")
+        current_mode = production_ledger_persistence.mode()
+        if current_mode in {"dual", "mysql"}:
+            # MySQL is written first. In mysql-only mode the Episode JSON is
+            # not written at all; in dual it remains a compatibility replica.
+            production_ledger_persistence.persist_authority(ep, data)
+        if current_mode != "mysql":
+            atomic_write_json(path, data)
+        return
     atomic_write_json(path, data)
+
+
+
+def load_authority(ep: Path, default=None):
+    """Read the complete Production Ledger from its configured authority.
+
+    mysql is strict DB authority with no stale-file fallback. dual prefers
+    MySQL and may fall back to the compatibility file during migration.
+    """
+    ep = Path(ep).resolve()
+    current_mode = production_ledger_persistence.mode()
+    if current_mode in {"dual", "mysql"}:
+        try:
+            data = production_ledger_persistence.load_authority(ep)
+            if isinstance(data, dict):
+                return data
+        except Exception:
+            if current_mode == "mysql":
+                raise
+        if current_mode == "mysql":
+            return default
+    path = ep / LEDGER_FILE
+    if not path.is_file():
+        return default
+    return load_json(path)
+
+
+def authority_exists(ep: Path) -> bool:
+    return isinstance(load_authority(ep, default=None), dict)
+
+
+def authority_sha256(ep: Path) -> str | None:
+    data = load_authority(ep, default=None)
+    if not isinstance(data, dict):
+        return None
+    raw = json.dumps(
+        data, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def materialize_export(ep: Path) -> Path | None:
+    """Materialize a delivery/export view without restoring file authority."""
+    ep = Path(ep).resolve()
+    compatibility = ep / LEDGER_FILE
+    if production_ledger_persistence.mode() != "mysql" and compatibility.is_file():
+        return compatibility
+    data = load_authority(ep, default=None)
+    if not isinstance(data, dict):
+        return None
+    import runtime_workspace
+    target = runtime_workspace.workspace_path(
+        ep, Path("exports/production-ledger.json")
+    )
+    atomic_write_json(target, data)
+    return target
 
 
 def episode_dir(raw: str) -> Path:
@@ -183,6 +256,7 @@ def blank_frame(number: int) -> dict:
 
 
 def init_ledger(ep: Path, *, count: int | None = None, ratio: str | None = None, overwrite: bool = False) -> dict:
+    production_ledger_persistence.assert_full_authority_available()
     path = ep / LEDGER_FILE
     if path.exists() and not overwrite:
         return load_json(path)
@@ -237,11 +311,16 @@ def init_ledger(ep: Path, *, count: int | None = None, ratio: str | None = None,
 
 
 def get_ledger(ep: Path) -> tuple[Path, dict]:
+    production_ledger_persistence.assert_full_authority_available()
     path = ep / LEDGER_FILE
-    if not path.exists():
+    # Always read through the configured authority facade. In mysql mode the
+    # compatibility JSON may be stale (or intentionally absent) and must never
+    # become the source for a subsequent command in the same ledger lifecycle.
+    # In particular, begin persists its pending attempt to MySQL only; success
+    # must read that same authority or it will lose the generation attempt.
+    data = load_authority(ep, default=None)
+    if not isinstance(data, dict):
         data = init_ledger(ep)
-    else:
-        data = load_json(path)
     return path, data
 
 
@@ -287,20 +366,26 @@ def parse_references(values: list[str] | None) -> list[dict]:
     out = []
     for value in values or []:
         parts = value.split("::")
-        if len(parts) != 3:
-            raise SystemExit("--reference format must be PATH::ROLE::KIND")
-        raw_path, role, kind = (x.strip() for x in parts)
+        # W-21: an optional 4th field carries the declared anchor/id (for example
+        # protagonist_identity) so reference execution evidence stays attributable.
+        if len(parts) not in {3, 4}:
+            raise SystemExit("--reference format must be PATH::ROLE::KIND[::ANCHOR]")
+        raw_path, role, kind = (x.strip() for x in parts[:3])
+        anchor = parts[3].strip() if len(parts) == 4 else ""
         if kind not in REFERENCE_KINDS:
             raise SystemExit(f"invalid reference kind {kind!r}; choose {sorted(REFERENCE_KINDS)}")
         p = Path(raw_path).resolve()
         if not p.is_file():
             raise SystemExit(f"reference file not found: {p}")
-        out.append({
+        row = {
             "path": repo_relative(p),
             "role": role,
             "kind": kind,
             "sha256": sha256_file(p),
-        })
+        }
+        if anchor:
+            row["id"] = anchor
+        out.append(row)
     if len(out) > 2:
         raise SystemExit("formal request supports at most 2 references by default; reduce references or split continuity anchors")
     return out
@@ -314,15 +399,19 @@ def _version_tuple(raw: object) -> tuple[int, ...]:
 
 
 def creative_enforcement_required(ep: Path) -> bool:
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json"):
-        p = ep / rel
-        if not p.is_file():
-            continue
+    try:
+        state = episode_state_persistence.load(ep) or {}
+        if _version_tuple(state.get("tool_version")) >= (2, 0, 3, 2):
+            return True
+    except Exception:
+        pass
+    p = ep / "meta/release-manifest.json"
+    if p.is_file():
         try:
             if _version_tuple(load_json(p).get("tool_version")) >= (2, 0, 3, 2):
                 return True
         except Exception:
-            continue
+            pass
     return False
 
 

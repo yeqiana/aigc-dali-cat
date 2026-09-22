@@ -16,6 +16,8 @@ import sys
 from pathlib import Path
 from typing import Any
 import story_json
+import runtime_command
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -62,23 +64,14 @@ def rel(path: Path) -> str:
 
 
 def state(ep: Path) -> str:
-    p = ep / "meta/episode-state.json"
-    if not p.is_file():
+    data = episode_state_persistence.load(Path(ep).resolve())
+    if not isinstance(data, dict):
         raise ValueError("meta/episode-state.json missing")
-    return str(read_json(p).get("current_state") or "")
+    return str(data.get("current_state") or "")
 
 
 def run_cmd(args: list[object]) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        [str(x) for x in args],
-        cwd=ROOT,
-        check=False,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
+    return runtime_command.run_argv([str(x) for x in args], cwd=ROOT, capture=True)
 
 
 def gate_transition(ep: Path, target: str, note: str) -> None:

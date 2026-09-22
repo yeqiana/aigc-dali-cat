@@ -34,14 +34,23 @@ class CodexCriticRunnerTests(unittest.TestCase):
         self.assertEqual(runner.prefix(py)[0], sys.executable)
         plain = self.root / "codex"
         plain.write_text("", encoding="utf-8")
-        self.assertEqual(runner.prefix(plain), [str(plain)])
+        self.assertEqual(
+            [os.path.normcase(value) for value in runner.prefix(plain)],
+            [os.path.normcase(str(plain))],
+        )
 
     @unittest.skipUnless(os.name == "nt", "cmd wrapper is Windows-only")
     def test_prefix_cmd_wrapper(self):
         cmd = self.root / "codex.cmd"
         cmd.write_text("@echo off", encoding="utf-8")
-        self.assertEqual(runner.prefix(cmd)[:3],
-                         ["cmd.exe", "/d", "/c"])
+        with mock.patch.object(runner.codex_user_runner, "bridge_required", return_value=False):
+            self.assertEqual(runner.prefix(cmd)[:3],
+                             ["cmd.exe", "/d", "/c"])
+        with mock.patch.object(runner.codex_user_runner, "bridge_required", return_value=True):
+            self.assertEqual(
+                [os.path.normcase(value) for value in runner.prefix(cmd)],
+                [os.path.normcase(str(cmd))],
+            )
 
     def test_build_command_shape(self):
         cmd = runner.build_command(
@@ -67,7 +76,7 @@ class CodexCriticRunnerTests(unittest.TestCase):
     def test_launch_writes_log_and_returns_rc(self):
         target = self.root / "out.json"
         log = self.root / "meta" / "attempt-1.jsonl"
-        with mock.patch.object(runner.subprocess, "run",
+        with mock.patch.object(runner.codex_user_runner, "run_codex",
                                return_value=FakeCompleted(0)) as run:
             result = runner.launch(
                 "prompt",
@@ -86,7 +95,7 @@ class CodexCriticRunnerTests(unittest.TestCase):
 
     def test_timeout_propagates(self):
         log = self.root / "meta" / "attempt-1.jsonl"
-        with mock.patch.object(runner.subprocess, "run",
+        with mock.patch.object(runner.codex_user_runner, "run_codex",
                                side_effect=TimeoutError("boom")):
             with self.assertRaises(TimeoutError):
                 runner.launch("prompt", codex=Path("codex.exe"),

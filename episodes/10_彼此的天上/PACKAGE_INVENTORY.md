@@ -12,12 +12,7 @@
 - `02_玻璃另一边的手/docs/05_玻璃另一边的手_发布文案_DRAFT_V1.0.md`
 - `02_玻璃另一边的手/meta/PENDING_MACHINE_EVIDENCE.md`
 - `02_玻璃另一边的手/meta/recommendation-fit.draft.json`
-- `03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md`
-- `03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md`
-- `03_雾中的另一座生活区/docs/04_雾中的另一座生活区_视觉规范_DRAFT_V1.0.md`
-- `03_雾中的另一座生活区/docs/05_雾中的另一座生活区_发布文案_DRAFT_V1.0.md`
-- `03_雾中的另一座生活区/meta/PENDING_MACHINE_EVIDENCE.md`
-- `03_雾中的另一座生活区/meta/recommendation-fit.draft.json`
+- `03_雾中的另一座生活区`（EP003）：已于 2026-09-11 废弃归档 → episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/（权威清单见 episodes/_archive/EP003_abandoned_manifest_20260911.txt）
 - `04_一步之外的另一条路/docs/02_一步之外的另一条路_StoryLock_DRAFT_V1.0.md`
 - `04_一步之外的另一条路/docs/03_一步之外的另一条路_20张正式分镜_DRAFT_V1.0.md`
 - `04_一步之外的另一条路/docs/04_一步之外的另一条路_视觉规范_DRAFT_V1.0.md`

@@ -3,6 +3,7 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import raw_candidate_budget
 import runtime_atomic_store
@@ -12,6 +13,27 @@ import runtime_circuit_breaker
 ROOT = Path(__file__).resolve().parents[2]
 
 class RuntimePerformanceV260Test(unittest.TestCase):
+    def test_atomic_store_retries_transient_windows_replace_denial(self):
+        with tempfile.TemporaryDirectory(prefix="Story OS atomic retry ") as td:
+            path = Path(td) / "state.json"
+            denied = PermissionError(5, "access denied")
+            denied.winerror = 5
+            real_replace = runtime_atomic_store.os.replace
+            calls = {"n": 0}
+
+            def flaky(src, dst):
+                calls["n"] += 1
+                if calls["n"] == 1:
+                    raise denied
+                return real_replace(src, dst)
+
+            with patch.object(runtime_atomic_store.os, "name", "nt"), \
+                    patch.object(runtime_atomic_store.os, "replace", side_effect=flaky), \
+                    patch.object(runtime_atomic_store.time, "sleep", return_value=None):
+                runtime_atomic_store.atomic_write_json(path, {"ok": True})
+            self.assertEqual(runtime_atomic_store.read_json(path, {}), {"ok": True})
+            self.assertGreaterEqual(calls["n"], 2)
+
     def test_candidate_commit_is_irreversible_by_review_failure(self):
         with tempfile.TemporaryDirectory(prefix="Story OS v260 ") as td:
             ep = Path(td)

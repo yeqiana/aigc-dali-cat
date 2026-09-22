@@ -12,7 +12,7 @@
   },
   "openai_images_api": {
     "enabled": true,
-    "model": "gpt-image-2",
+    "model": "gpt-image-2.5-flare",
     "native_n_supported": true,
     "native_n_min": 1,
     "native_n_max": 10,
@@ -37,17 +37,7 @@
     "enabled": true,
     "native_multi_output_supported": false,
     "logical_parallel_fallback": true,
-    "artifact_recovery_from_tool_log": true,
-    "logical_batch_size": 5,
-    "max_inflight_logical_images": 5,
-    "adaptive_concurrency_steps": [
-      5,
-      3,
-      1
-    ],
-    "partial_success_preserved": true,
-    "retry_failed_only": true,
-    "api_key_required": false
+    "batch_config": "config/agent_runtime/codex-subscription-batch.json"
   },
   "security": {
     "never_persist_api_key": true,

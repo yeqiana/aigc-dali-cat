@@ -18,9 +18,12 @@ import frame_contract
 import image_model_policy
 import image_scheduler
 import preproduction_handoff
+import production_queue_store
+import scheduler_core
 import visual_lock_v21
 import story_json
 import runtime_timeout_policy
+import episode_state_persistence
 
 MAX_SPECULATIVE_FRAMES = 6
 
@@ -31,8 +34,8 @@ def read_json(path: Path) -> dict:
 
 
 def stage(ep: Path) -> str | None:
-    p = ep / "meta/episode-state.json"
-    return read_json(p).get("current_state") if p.is_file() else None
+    data = episode_state_persistence.load(Path(ep).resolve())
+    return str(data.get("current_state") or "") if isinstance(data, dict) else None
 
 
 def visual_lock_candidates_ready(ep: Path) -> tuple[bool, str]:
@@ -63,17 +66,15 @@ def visual_lock_candidates_ready(ep: Path) -> tuple[bool, str]:
 
 
 def discover_prompt_dir(ep: Path) -> Path | None:
-    qpath = ep / image_scheduler.QUEUE_REL
+    q = scheduler_core.load_queue(ep)
     candidates = []
-    if qpath.is_file():
-        q = read_json(qpath)
-        for item in q.get("items") or []:
-            raw = item.get("prompt_file")
-            if not raw:
-                continue
-            p = (image_scheduler.ROOT / raw).resolve()
-            if p.is_file():
-                candidates.append(p.parent)
+    for item in q.get("items") or []:
+        raw = item.get("prompt_file")
+        if not raw:
+            continue
+        p = (image_scheduler.ROOT / raw).resolve()
+        if p.is_file():
+            candidates.append(p.parent)
     scored = {}
     for p in ep.rglob("*.txt"):
         if len(p.stem) == 2 and p.stem.isdigit():

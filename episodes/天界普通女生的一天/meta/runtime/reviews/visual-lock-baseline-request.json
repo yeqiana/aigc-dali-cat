@@ -1,0 +1,56 @@
+{
+  "schema_version": 3,
+  "request_id": "visual-lock-baseline-a1-d586e71f0d07409c",
+  "request_fingerprint": "d586e71f0d07409cf3090641db58197da281fe141b7dc805907e1daa3ec91e75",
+  "created_at": "2026-09-13T12:26:01+08:00",
+  "status": "AWAITING_PRODUCT_REVIEW",
+  "review_kind": "visual-lock-baseline",
+  "runtime": "WORK",
+  "critic_runtime": "WORK_ISOLATED",
+  "workspace_transport": "DEVSPACE",
+  "review_execution_contract": {
+    "runtime": "WORK",
+    "critic_runtime": "WORK_ISOLATED",
+    "workspace_transport": "DEVSPACE",
+    "fresh_product_review_turn_required": true,
+    "devspace_bounded_fallback_allowed": true,
+    "bounded_fallback_runtime": "WORK_DEVSPACE_BOUNDED",
+    "source_access": "read_only",
+    "candidate_write_scope": "candidate_path_only",
+    "webcodex_allowed": false,
+    "local_codex_review_allowed": false
+  },
+  "attempt": 1,
+  "source_files": [
+    {
+      "path": "episodes/天界普通女生的一天/media/candidates/scheduled/01-vl01b001a001-a1.png",
+      "sha256": "05c119054e67bf52d89eb9fbc1323cb0c8eb9d2986004bfa3d4483f577a523ea"
+    },
+    {
+      "path": "episodes/天界普通女生的一天/meta/story-gates.json",
+      "sha256": "3db74bf5b2b074e3739baf52f9876ca7a20bc320a0c090313997329be01ef15a"
+    },
+    {
+      "path": "episodes/天界普通女生的一天/meta/character-visual-contract.json",
+      "sha256": "2d6c25027600914a2582c3ee05732743f33ebce071f8d668e8640b5c6fe4d3cd"
+    },
+    {
+      "path": "episodes/天界普通女生的一天/meta/runtime/contracts/frames/01.json",
+      "sha256": "630f123493a22c2e6f8396e6418f89391d89d72679208d65e40a819cc82235b8"
+    }
+  ],
+  "candidate_path": "episodes/天界普通女生的一天/meta/.visual-lock-baseline-review.candidate.json",
+  "prompt_sha256": "98dc754e5c31b9d19f43b36fb9ed5d5445c03fa837f3069c5c6f7a0fa4b3c73c",
+  "local_codex_spawn_allowed": false,
+  "instructions": [
+    "Run this as a fresh adversarial WORK_ISOLATED review turn when an isolated turn is available.",
+    "For an explicitly full-auto anomaly_applicable=false episode only, a bounded same-WORK DevSpace review may be used if review_execution_contract.devspace_bounded_fallback_allowed=true; it must be recorded as WORK_DEVSPACE_BOUNDED, never WORK_ISOLATED.",
+    "Use DevSpace/workspace tools as the only repository access path.",
+    "Do not use WebCodex and do not spawn local Codex for review.",
+    "Do not modify source files.",
+    "Write only the requested candidate JSON to candidate_path.",
+    "Do not claim PASS if any hard check fails."
+  ],
+  "prompt": "You are a fresh isolated Story OS Visual Lock ordinary-baseline actual-pixel reviewer.\nInspect the attached baseline image itself. This PASS unlocks the parallel-three Visual Lock images and may create the provisional character pixel master, so fail closed on visible identity/capture/style problems.\nRequired checks: ['visual_profile_match', 'reality_first', 'ordinary_life_density', 'unposed_capture', 'not_cinematic', 'capture_credibility', 'identity_usable', 'group_members_distinct', 'identity_anchor_usable']\nThe target is an ordinary believable phone/photo baseline: reality-first, unposed, non-cinematic, usable identity, distinct group members where applicable.\nFor core characters, this baseline is also Frame01 Character Identity Anchor evidence. The image must be usable as a later identity reference: clear face visibility, recognizable person, not only back view, not too distant, and suitable for Character Master creation.\nWrite ONLY JSON to episodes/天界普通女生的一天/meta/.visual-lock-baseline-review.candidate.json:\n{\"decision\":\"PASS|FAIL\",\"checks\":{\"visual_profile_match\":\"PASS|FAIL\",\"reality_first\":\"PASS|FAIL\",\"ordinary_life_density\":\"PASS|FAIL\",\"unposed_capture\":\"PASS|FAIL\",\"not_cinematic\":\"PASS|FAIL\",\"capture_credibility\":\"PASS|FAIL\",\"identity_usable\":\"PASS|FAIL\",\"group_members_distinct\":\"PASS|FAIL\",\"identity_anchor_usable\":\"PASS|FAIL\"},\"face_boxes\":[{\"character_id\":\"P01\",\"x\":0.0,\"y\":0.0,\"w\":0.1,\"h\":0.1}],\"note\":\"actual-pixel evidence\"}\nFace boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.\nDo not modify source files or the image.\n",
+  "attempt_request_path": "episodes/天界普通女生的一天/meta/runtime/reviews/visual-lock-baseline-attempt-1-request.json"
+}

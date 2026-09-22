@@ -3,6 +3,7 @@ from __future__ import annotations
 import shutil, subprocess, tempfile, time
 from pathlib import Path
 
+import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 from canvas_normalize import NormalizeError, normalize, read_canvas
 import batch_prompt_compiler
 import batch_result_mapper
@@ -15,6 +16,7 @@ import image_provider_router
 import openai_images_provider
 import openai_batch_prompt_compiler
 import provider_capability
+import runtime_log_policy
 import runtime_trace
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
 
@@ -39,7 +41,7 @@ def _shared_refs(items:list[dict])->list[Path]:
 def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],timeout:int,codex_raw:str|None,log:Path)->tuple[list[dict],float]:
     codex=single_backend.resolve_codex(codex_raw)
     started=time.monotonic()
-    with tempfile.TemporaryDirectory(prefix="story-os-batch-image-") as raw_dir:
+    with codex_user_runner.workspace(prefix="story-os-batch-image-") as raw_dir:
         workdir=Path(raw_dir)
         local_refs=[]
         for idx,source in enumerate(refs,1):
@@ -55,13 +57,15 @@ def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],tim
         log.parent.mkdir(parents=True,exist_ok=True)
         with log.open("w",encoding="utf-8",newline="\n") as h:
             try:
-                done=subprocess.run(cmd,input=prompt_text,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,
-                    timeout=timeout,check=False)
+                done=codex_user_runner.run_codex(cmd,input=prompt_text,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,
+                    timeout=timeout,check=False,task_type="image")
             except subprocess.TimeoutExpired as exc:
                 raise BatchBackendError(f"TIMEOUT: batch image worker timeout after {timeout}s; log={log}") from exc
+        raw_log_text=log.read_text(encoding="utf-8",errors="replace") if log.is_file() else ""
+        runtime_log_policy.write_codex_noise_summary(log,raw_log_text)
         if done.returncode!=0:
-            tail=log.read_text(encoding="utf-8",errors="replace")[-6000:] if log.is_file() else ""
-            code=image_model_policy.classify_backend_error(tail)
+            tail=runtime_log_policy.provider_relevant_codex_text(raw_log_text)[-6000:]
+            code=image_model_policy.classify_backend_error(tail, source="image_backend")
             raise BatchBackendError(f"{code or 'BATCH_IMAGE_BACKEND_ERROR'}: rc={done.returncode}; log={log}")
         mapped=batch_result_mapper.map_outputs(workdir,contract)
         persisted=[]
@@ -144,7 +148,8 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
     try:
         for item in items:
             budget_kind=raw_candidate_budget.kind_for_queue_item(item);token=str(item["id"])
-            ok,row=raw_candidate_budget.claim(ep,int(item["frame"]),budget_kind,reason=f"provider_batch batch={contract['batch_id']}",token=token)
+            budget_semantic_key=raw_candidate_budget.semantic_key_for_queue_item(item)
+            ok,row=raw_candidate_budget.claim(ep,int(item["frame"]),budget_kind,reason=f"provider_batch batch={contract['batch_id']}",token=token,semantic_key=budget_semantic_key)
             if not ok:
                 raise BatchBackendError("RAW_CANDIDATE_BUDGET_EXHAUSTED: "+str(row))
             budget_tokens.append(token)
@@ -185,6 +190,8 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
                 "provider_request_size":provider_evidence.get("provider_request_size"),
                 "secrets_persisted":False,
             }
+            # W-21: record the reference files really handed to this provider call.
+            receipt_data["references"]=provider_capability.reference_evidence(refs)
             receipt=provider_capability.write_receipt(ep,frame,receipt_data)
             try:
                 norm=normalize(row["path"],out,width,height)

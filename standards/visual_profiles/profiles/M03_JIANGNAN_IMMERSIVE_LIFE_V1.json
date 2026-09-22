@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "profile_schema_version": 2,
+  "id": "M03_JIANGNAN_IMMERSIVE_LIFE_V1",
+  "profile_id": "M03_JIANGNAN_IMMERSIVE_LIFE_V1",
+  "name": "江南沉浸式生活",
+  "profile_name": "江南沉浸式生活",
+  "profile_name_en": "Jiangnan Immersive Life",
+  "profile_version": "1.0",
+  "platform_min_version": "2.8.0",
+  "scope": "account_immersive_profile",
+  "default_when_unspecified": false,
+  "era": "unspecified",
+  "era_policy": {
+    "allowed": ["modern", "historical", "unspecified"],
+    "default": "unspecified",
+    "rule": "定位是地域与生活氛围，不是年代；不得默认古代，实例必须在 Episode 层显式声明 era。"
+  },
+  "reality_basis": "real_world",
+  "capture_philosophy": "immersive_place_life_documentary",
+  "camera_language": {
+    "operator": "participant_or_companion_inside_event",
+    "viewpoint": "first_person_or_companion_eye",
+    "capture_grammar_ref": "FIRST_PERSON_CASUAL_SNAPSHOT_V1",
+    "capture_profile_ref": "CP01",
+    "who_records": "住在这里或来这里生活的人本人，和同行的家人朋友；不是摄影师，不是导游。",
+    "how_recorded": "在日常生活节奏里随手拍：买菜、洗东西、喝茶、走巷子，不找角度不摆拍。",
+    "why_exists": "记录在这里过的日子，给家里人或朋友看；不是旅游打卡，不是城市宣传。",
+    "ghost_camera": "forbidden"
+  },
+  "realism_level": "maximum",
+  "lighting_rules": {
+    "source": "natural_and_available_only",
+    "allowed": ["daylight", "overcast_daylight", "window_light", "wet_reflection", "practical_indoor_light"],
+    "forbidden": ["studio_lighting", "three_point_setup", "beauty_dish", "cinematic_lighting", "golden_hour_glamour"]
+  },
+  "prohibited_patterns": [
+    "旅游宣传片",
+    "风景大片",
+    "商业摄影",
+    "航拍明信片视角",
+    "糖水滤镜与饱和度拉满",
+    "摆拍游客照"
+  ],
+  "compatible_story_types": [
+    "jiangnan_immersive_life",
+    "water_town_daily_life"
+  ],
+  "must_keep": [
+    "真实生活空间与人文氛围",
+    "地方生活物理与季节真实",
+    "非摆拍的手持记录感"
+  ],
+  "forbidden": [
+    "旅游宣传片",
+    "风景大片",
+    "商业摄影"
+  ],
+  "principle": "拍在江南过日子的普通人，不是拍水乡风景宣传；地域与生活氛围优先，年代由实例声明。",
+  "precedence": [
+    "explicit_episode_or_series_visual_profile",
+    "episode_declared_era_and_life_physics",
+    "M03_visual_language"
+  ],
+  "visual_dna": {
+    "reality_first": true,
+    "era": "declared_by_episode_not_assumed",
+    "people": "ordinary_unprepared_not_actor_like",
+    "subject_awareness": "mostly_unaware_or_natural",
+    "practical_available_light": true,
+    "cinematic_lighting": "forbidden_by_default",
+    "commercial_hdr": "forbidden",
+    "beautification": "forbidden",
+    "scene_cleaning": "forbidden_by_default",
+    "life_clutter": "preserve",
+    "environment_imperfection": "preserve",
+    "anomaly": "embedded_in_mundane_daily_life_before_spectacle",
+    "camera_authorship": "required",
+    "ghost_camera": "forbidden",
+    "continuity": "strict",
+    "visual_polish_ceiling": "documentary_realism"
+  },
+  "anti_homogeneity": {
+    "lock_texture_not_scene": true,
+    "rule": "统一记录行为、生活密度与现场光，不统一景点、道具与构图。"
+  }
+}

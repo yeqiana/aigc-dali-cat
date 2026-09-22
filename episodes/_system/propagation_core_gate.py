@@ -6,6 +6,8 @@ import argparse, json
 from pathlib import Path
 from story_os_contract import story_os_version
 import story_json
+import episode_state_persistence
+import review_record_persistence
 
 REVIEW_REL=Path("meta/story-semantic-review.json")
 FORMAL_MIN_VERSION=(2,5,0)
@@ -22,7 +24,11 @@ def version_tuple(raw):
 
 def episode_version(ep):
     ep=Path(ep);versions=[]
-    for rel in ("meta/episode-state.json","meta/release-manifest.json","meta/story-gates.json"):
+    try:
+        raw=str((episode_state_persistence.load(ep) or {}).get("tool_version") or "");vt=version_tuple(raw)
+        if vt!=(0,):versions.append((vt,raw))
+    except Exception:pass
+    for rel in ("meta/release-manifest.json","meta/story-gates.json"):
         p=ep/rel
         if not p.is_file():continue
         try:
@@ -31,7 +37,24 @@ def episode_version(ep):
         except Exception:pass
     return max(versions,key=lambda x:x[0])[1] if versions else story_os_version()
 
-def required(ep):return version_tuple(episode_version(ep))>=FORMAL_MIN_VERSION
+def anomaly_applicable(ep):
+    """Whether this Episode is governed by the anomaly action-response contract.
+
+    Story OS supports explicit ordinary-life Episodes.  A locked Shot Progression
+    may opt out only by setting anomaly_applicable=false with a concrete reason;
+    absence of that evidence keeps the historical strict anomaly behavior.
+    """
+    p=Path(ep)/"meta/shot-progression-review.json"
+    if not p.is_file():return True
+    try:
+        d=read_json(p)
+        if d.get("anomaly_applicable") is False and text(d.get("anomaly_exception_reason")):
+            return False
+    except Exception:
+        pass
+    return True
+
+def required(ep):return version_tuple(episode_version(ep))>=FORMAL_MIN_VERSION and anomaly_applicable(ep)
 
 def frame_count(ep):
     p=Path(ep)/"meta/release-manifest.json"
@@ -82,10 +105,13 @@ def validate_payload(core,total_frames):
 def verify(ep,force=False):
     ep=Path(ep).resolve()
     if not force and not required(ep):return []
-    p=ep/REVIEW_REL
-    if not p.is_file():return ["PROPAGATION_CORE_MISSING:meta/story-semantic-review.json missing"]
-    try:d=read_json(p)
+    try:d=review_record_persistence.load_latest(
+        ep,
+        "STORY_SEMANTIC",
+        legacy_path=ep/REVIEW_REL,
+    )
     except Exception as exc:return [f"PROPAGATION_CORE_MISSING:{exc}"]
+    if not isinstance(d,dict):return ["PROPAGATION_CORE_MISSING:meta/story-semantic-review.json missing"]
     return validate_payload(d.get("propagation_core"),frame_count(ep))
 
 def self_test():
@@ -98,6 +124,16 @@ def self_test():
     assert validate_payload(good,20)==[]
     late=dict(good);late["trigger_frame"]=13;late["response_frame"]=14;late["payoff_frame"]=15
     assert any(x.startswith("TRIGGER_TOO_LATE") for x in validate_payload(late,20))
+    import tempfile
+    with tempfile.TemporaryDirectory() as raw:
+        ep=Path(raw);(ep/"meta").mkdir(parents=True)
+        story_json.write_json(ep/"meta/episode-state.json",{"tool_version":"2.6.1"})
+        story_json.write_json(ep/"meta/shot-progression-review.json",{
+            "anomaly_applicable":False,"anomaly_exception_reason":"explicit ordinary-life story"
+        })
+        assert anomaly_applicable(ep) is False
+        assert required(ep) is False
+        assert verify(ep)==[]
     print("PROPAGATION CORE V2.5 SELF-TEST PASS")
 
 def main():
@@ -108,8 +144,8 @@ def main():
     if a.cmd=="self-test":self_test();return 0
     ep=Path(a.episode_dir).resolve()
     if a.cmd=="show":
-        p=ep/REVIEW_REL
-        print(json.dumps((read_json(p).get("propagation_core") or {}) if p.is_file() else {},ensure_ascii=False,indent=2));return 0
+        data=review_record_persistence.load_latest(ep,"STORY_SEMANTIC",legacy_path=ep/REVIEW_REL)
+        print(json.dumps(((data or {}).get("propagation_core") or {}),ensure_ascii=False,indent=2));return 0
     errs=verify(ep,a.force)
     if errs:
         [print("FAIL:",x) for x in errs];return 2

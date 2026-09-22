@@ -2,13 +2,13 @@
   "schema_version": 1,
   "status": "LOCKED",
   "decision": "PASS",
-  "created_at": "2026-09-10T11:24:54+08:00",
+  "created_at": "2026-09-19T22:33:18+08:00",
   "role": "ordinary_baseline",
   "frame": 1,
-  "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-0d0b9814d146-a1.png",
-  "sha256": "cef5b7b929e12b720b6becdbfcded43d3b0f34d0a2f82070741097af5fd812f6",
-  "frame_contract_sha256": "551c1be47c9686277276019958185a6bce70c1a52232d5dea796c7344f0e1203",
-  "queue_item_id": "0d0b9814d146",
+  "asset_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-1298ba331a97-a1.png",
+  "sha256": "64614363fe6f3c45bb68e835692dba001f059390677d5a0f55b16050d5060673",
+  "frame_contract_sha256": "209c3bc04151f5cc70fd03f2edd725f351f6055cde33affc7ed0e42b1ed30ee6",
+  "queue_item_id": "1298ba331a97",
   "reviewer_scope": "delegated_pixel_review",
   "checks": {
     "visual_profile_match": "PASS",
@@ -18,29 +18,34 @@
     "not_cinematic": "PASS",
     "capture_credibility": "PASS",
     "identity_usable": "PASS",
-    "group_members_distinct": "PASS"
+    "group_members_distinct": "PASS",
+    "identity_anchor_usable": "PASS"
   },
   "face_boxes": [
     {
       "character_id": "P01",
-      "x": 0.405,
-      "y": 0.075,
-      "w": 0.18,
-      "h": 0.205
+      "x": 0.427,
+      "y": 0.056,
+      "w": 0.16,
+      "h": 0.15
     }
   ],
-  "note": "实际像素审核(1080x1350, sha256 cef5b7b9...12f6)：2007年前后西北农村土房婚房婚前夜留影成立。现场光=裸白炽灯+机身直闪，人脸额头/鼻梁/脸颊有直闪高光、背景自然掉暗，全图高频颗粒sigma约2.3-2.7，与皮肤高频细节同量级，未见磨皮、瓷白、过度对称或AI美人脸；无电影级布光、无浅景深人像虚化、无商业HDR/海报感。生活密度高：红被木床、红布窗与圆纹红帘、喜字与红纸斗方、搪瓷花碗与盆、木桌杂物、土墙泥地、地面碎屑、左侧亲友在桌边整理红绸，画面边缘自然裁入旁人。P01(唯一 primary cast)：正面、无遮挡、五官自然可辨(眉/眼/唇与轻微笑意露出上齿)，齐肩黑发低马尾红绳、浅色碎花长袖、深色长裤、深色鞋与角色外观锚一致，可直接作为像素母版身份来源；机位略高于被摄者、近距离广角造成下肢透视压缩，属旧卡片机真实成像而非风格漂移。本帧无药瓶/药片/铁栏/锁链；地面右侧一枚失焦小透明杂物不可辨认，不构成药瓶读法。",
+  "note": "actual-pixel evidence",
   "critic_provenance": {
-    "runtime": "WORK_ISOLATED",
-    "base_runtime": "WORK",
+    "schema_version": 2,
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
     "isolated_session": true,
-    "execution_source": "product_runtime",
-    "attempt": 2,
-    "reviewed_at": "2026-09-10T11:40:01+08:00",
-    "request_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/runtime/reviews/visual-lock-baseline-attempt-2-request.json",
-    "request_id": "visual-lock-baseline-a2-b0a219d65fa6a511",
-    "request_fingerprint": "b0a219d65fa6a511c2ce42f9fab27443d646a136223b12920dc7c2fed30c5e4d"
+    "execution_source": "local_codex_cli",
+    "attempt": 1,
+    "reviewed_at": "2026-09-19T22:34:12+08:00",
+    "log": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/visual-lock-baseline-critic-attempt-1.jsonl",
+    "review_capability": "vision",
+    "ephemeral": true,
+    "session_reused_from_generation": false,
+    "review_scope": "VISUAL_LOCK_BASELINE",
+    "log_sha256": "8b8996e1cc3cb1568a94685c7afd6a033471e64132878878857af5e2f3ea001b"
   },
-  "approved_at": "2026-09-10T11:40:01+08:00",
+  "approved_at": "2026-09-19T22:41:45+08:00",
   "provisional_master_created": false
 }

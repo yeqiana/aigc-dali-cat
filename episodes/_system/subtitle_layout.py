@@ -7,11 +7,13 @@ import json
 import os
 import re
 from pathlib import Path
+import production_ledger
 
 from story_os_contract import story_os_version
 from canvas_spec import CANONICAL_SIZES
 from text_audit import captions_from_text, discover_input, parse_simple_subtitles_yaml
 import story_json
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT_REL = Path("meta/subtitle-layout-audit.json")
@@ -21,6 +23,8 @@ ENGINE = "story_os_subtitle_layout_v1"
 DEFAULT_Y_RATIO = 0.52
 LEFT_MIDDLE_MIN_RATIO = 0.42
 LEFT_MIDDLE_MAX_RATIO = 0.62
+PIXEL_SAFE_Y_RATIOS = (0.32, 0.44, 0.52, 0.60, 0.70)
+MAX_AUTO_PLACEMENT_REPAIRS_PER_FRAME = 1
 
 
 def sha256_file(path: Path) -> str:
@@ -47,15 +51,16 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 
 def layout_required(ep: Path) -> bool:
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json"):
-        p = ep / rel
-        if not p.is_file():
-            continue
+    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    if version_tuple(state.get("tool_version")) >= TARGET_CONTRACT:
+        return True
+    p = ep / "meta/release-manifest.json"
+    if p.is_file():
         try:
             if version_tuple(read_json(p).get("tool_version")) >= TARGET_CONTRACT:
                 return True
         except Exception:
-            continue
+            pass
     return False
 
 
@@ -200,17 +205,118 @@ def render_one(base: Path, output: Path, caption: str, *, y: int | None, font_pa
     }
 
 
-def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float = DEFAULT_Y_RATIO) -> Path:
+def _layout_config(ep: Path) -> tuple[Path, dict]:
+    path = ep / "meta/subtitle-layout.json"
+    return path, (read_json(path) if path.is_file() else {})
+
+
+def _pixel_safe_ratio(raw: object) -> float:
+    try:
+        value = float(raw)
+    except Exception as exc:
+        raise RuntimeError(f"invalid pixel-safe subtitle y ratio: {raw!r}") from exc
+    for allowed in PIXEL_SAFE_Y_RATIOS:
+        if abs(value - allowed) <= 0.005:
+            return allowed
+    raise RuntimeError(
+        "pixel-safe subtitle y ratio must be one of " + ", ".join(str(x) for x in PIXEL_SAFE_Y_RATIOS)
+    )
+
+
+def current_frame_y_ratio(ep: Path, frame: str) -> float | None:
+    report = ep / REPORT_REL
+    if not report.is_file():
+        return None
+    row = (read_json(report).get("frames") or {}).get(str(frame).zfill(2))
+    if not isinstance(row, dict):
+        return None
+    try:
+        return float(row.get("y_ratio"))
+    except Exception:
+        return None
+
+
+def apply_pixel_safe_overrides(ep: Path, repairs: dict[str, dict]) -> dict:
+    """Persist one bounded actual-pixel placement repair per frame.
+
+    This is layout configuration, not visual-review authority.  The final publish
+    pixels must still be rerendered and pass caption_image_audit afterwards.
+    """
+    if not repairs:
+        return {"updated": []}
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    try:
+        height = int((ledger.get("canvas") or {}).get("height"))
+    except Exception as exc:
+        raise RuntimeError("production ledger canvas height missing") from exc
+    config_path, config = _layout_config(ep)
+    config.setdefault("schema_version", 1)
+    frames = config.setdefault("frames", {})
+    updated: list[str] = []
+    for raw_key, repair in sorted(repairs.items()):
+        key = str(raw_key).zfill(2)
+        if key not in (ledger.get("frames") or {}):
+            raise RuntimeError(f"pixel-safe subtitle repair references unknown frame {key}")
+        if not isinstance(repair, dict):
+            raise RuntimeError(f"pixel-safe subtitle repair {key} must be object")
+        ratio = _pixel_safe_ratio(repair.get("y_ratio"))
+        reason = str(repair.get("reason") or "").strip()
+        if not reason:
+            raise RuntimeError(f"pixel-safe subtitle repair {key} requires obstruction reason")
+        current = frames.get(key) or frames.get(str(int(key))) or {}
+        used = int(current.get("auto_placement_repairs_used") or 0) if isinstance(current, dict) else 0
+        if used >= MAX_AUTO_PLACEMENT_REPAIRS_PER_FRAME:
+            raise RuntimeError(f"frame {key} automatic subtitle placement repair budget exhausted")
+        current_ratio = current_frame_y_ratio(ep, key)
+        if current_ratio is not None and abs(current_ratio - ratio) <= 0.005:
+            raise RuntimeError(f"frame {key} suggested subtitle placement does not move the text")
+        frames[key] = {
+            **(current if isinstance(current, dict) else {}),
+            "y": int(round(height * ratio)),
+            "safe_zone_override_reason": reason[:500],
+            "auto_placement_repairs_used": used + 1,
+            "placement_source": "caption_image_actual_pixel_audit",
+            "suggested_y_ratio": ratio,
+        }
+        updated.append(key)
+    write_json(config_path, config)
+    return {"updated": updated, "config_path": config_path.relative_to(ROOT).as_posix()}
+
+
+def configured_dirty_frames(ep: Path) -> list[str]:
+    """Return configured frames whose rendered audit has not consumed that config yet."""
+    config_path, config = _layout_config(ep)
+    report_path = ep / REPORT_REL
+    if not config_path.is_file() or not report_path.is_file():
+        return []
+    configured = config.get("frames") or {}
+    rendered = read_json(report_path).get("frames") or {}
+    dirty: list[str] = []
+    for raw_key, row in configured.items():
+        key = str(raw_key).zfill(2) if str(raw_key).isdigit() else str(raw_key)
+        if not isinstance(row, dict) or row.get("y") is None:
+            continue
+        actual = rendered.get(key)
+        if not isinstance(actual, dict) or int(actual.get("y") or -1) != int(row["y"]):
+            dirty.append(key)
+    return sorted(set(dirty))
+
+
+def render_all(
+    ep: Path,
+    *,
+    font_raw: str | None = None,
+    default_y_ratio: float = DEFAULT_Y_RATIO,
+    only_frames: set[str] | None = None,
+) -> Path:
     if not (0.1 <= default_y_ratio <= 0.85):
         raise RuntimeError("default_y_ratio must be 0.1..0.85")
     source = discover_input(ep)
     data = load_caption_data(source)
     frames = data.get("frames") or {}
     silent = set(data.get("silent_frames") or [])
-    ledger_path = ep / "meta/production-ledger.json"
-    ledger = read_json(ledger_path)
-    layout_cfg_path = ep / "meta/subtitle-layout.json"
-    layout_cfg = read_json(layout_cfg_path) if layout_cfg_path.is_file() else {}
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    layout_cfg_path, layout_cfg = _layout_config(ep)
     y_cfg = layout_cfg.get("frames") or {}
     font_path = find_font(font_raw)
 
@@ -223,8 +329,24 @@ def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float 
     if (canonical_width, canonical_height) not in CANONICAL_SIZES:
         raise RuntimeError(f"subtitle renderer requires canonical ledger canvas; got {canonical_width}x{canonical_height}")
 
-    rows = {}
+    out = ep / REPORT_REL
+    if only_frames is not None:
+        only_frames = {str(key).zfill(2) for key in only_frames}
+        if not only_frames:
+            raise RuntimeError("targeted subtitle rerender requires at least one frame")
+        if not out.is_file():
+            raise RuntimeError("targeted subtitle rerender requires an existing canonical layout audit")
+        prior = read_json(out)
+        if prior.get("engine") != ENGINE or prior.get("canonical_renderer") is not True:
+            raise RuntimeError("targeted subtitle rerender requires a canonical prior layout audit")
+        if str(prior.get("source_sha256") or "").lower() != sha256_file(source).lower():
+            raise RuntimeError("targeted subtitle rerender refused: caption source changed")
+        rows = dict(prior.get("frames") or {})
+    else:
+        rows = {}
     for key, frame in sorted((ledger.get("frames") or {}).items()):
+        if only_frames is not None and key not in only_frames:
+            continue
         number = int(key)
         approved = frame.get("approved_asset")
         if not isinstance(approved, dict) or not approved.get("path"):
@@ -296,10 +418,14 @@ def render_all(ep: Path, *, font_raw: str | None = None, default_y_ratio: float 
         "frames": rows,
         "summary": {"passed": True, "frame_count": len(rows)},
     }
-    out = ep / REPORT_REL
     write_json(out, report)
-    print(f"SUBTITLE RENDER PASS | frames={len(rows)} | report={out}")
+    mode = "targeted" if only_frames is not None else "all"
+    print(f"SUBTITLE RENDER PASS | mode={mode} | frames={len(rows)} | report={out}")
     return out
+
+
+def render_frames(ep: Path, frames: list[str] | set[str], *, font_raw: str | None = None) -> Path:
+    return render_all(ep, font_raw=font_raw, only_frames={str(key).zfill(2) for key in frames})
 
 
 def verify_audit(ep: Path) -> list[str]:
@@ -325,11 +451,11 @@ def verify_audit(ep: Path) -> list[str]:
         errors.append("punctuation-only second-line policy missing")
 
     frames = report.get("frames")
-    ledger_path = ep / "meta/production-ledger.json"
-    if not ledger_path.is_file():
+    ledger = production_ledger.load_authority(ep, default=None)
+    if not isinstance(ledger, dict):
         errors.append("production ledger missing for subtitle layout verification")
         return errors
-    ledger_keys = set((read_json(ledger_path).get("frames") or {}).keys())
+    ledger_keys = set((ledger.get("frames") or {}).keys())
     if not isinstance(frames, dict) or not frames:
         errors.append("subtitle layout frame audit missing")
         return errors
@@ -376,6 +502,12 @@ def self_test() -> None:
     assert lines == ["昨天我明明锁进柜子里了"] and dropped
     lines, dropped = sanitize_wrapped_lines(["第一行", "第二行。"])
     assert lines == ["第一行", "第二行。"] and not dropped
+    assert _pixel_safe_ratio(0.44) == 0.44
+    try:
+        _pixel_safe_ratio(0.47)
+        raise AssertionError("arbitrary subtitle auto-repair ratio must be rejected")
+    except RuntimeError:
+        pass
     print("SUBTITLE LAYOUT SELF-TEST PASS")
 
 
@@ -386,6 +518,10 @@ def main() -> int:
     p.add_argument("episode_dir")
     p.add_argument("--font")
     p.add_argument("--default-y-ratio", type=float, default=DEFAULT_Y_RATIO)
+    p = sub.add_parser("render-frames")
+    p.add_argument("episode_dir")
+    p.add_argument("--frames", required=True)
+    p.add_argument("--font")
     p = sub.add_parser("audit")
     p.add_argument("episode_dir")
     sub.add_parser("self-test")
@@ -402,6 +538,14 @@ def main() -> int:
             return 0
         except Exception as exc:
             print("SUBTITLE RENDER FAIL:", exc)
+            return 2
+    if args.cmd == "render-frames":
+        try:
+            keys = [part.strip().zfill(2) for part in str(args.frames).split(",") if part.strip()]
+            render_frames(ep, keys, font_raw=args.font)
+            return 0
+        except Exception as exc:
+            print("SUBTITLE TARGETED RENDER FAIL:", exc)
             return 2
     errors = verify_audit(ep)
     if errors:

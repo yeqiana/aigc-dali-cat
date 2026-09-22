@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "beeb3d20c90bf35698a8f8c88102274df6555df5439fba54ec1cbf8d4094210d",
+  "snapshot_kind": "PREIMAGE_INPUT_SNAPSHOT",
+  "created_at": "2026-09-19T21:42:39+08:00",
+  "authority_sha256": {
+    "owned_scopes": {
+      "character.finalize": "a8c28494d508a29e55d3e10479d68e683b0f8682ca0cf67145639da3e1b037c4",
+      "visual.environment_contract": "43930972a41e43773f1c54628b9cd7624bb267b859d0c4a92d18c09332be0edc",
+      "visual.frame_directives": "cf16ed89eb47e30bf399d73c7470588f9d2f0b58a49f9833235a55149e55201a",
+      "visual.world_identity": "35d4da7b9dff682ce879569e2856253d8e6f98adea7c4bb83ce172134e9e2961",
+      "visual.world_state": "35b33d1b2e3f448525d32597e9f9b04af142613ad17017bc369fe13831002458",
+      "visual.temporal_continuity": "e771b36f52a94459b38d8d0fd7d0c9d3242e36ec82a8a322599af9182ebc2434",
+      "visual.wardrobe": "d3eaa58e341062b64c349766bdf310e9197e89f4bbe11ce85fb82f6e761622fc",
+      "visual.narrative_core": "87e635ba0f2254eb21ec57a821c0edce8bf0c8b09d073d65a63ad1d0180359da",
+      "visual.shot_progression": "24a9b415efcbff84eee7020eee3c05cd4e7f3659d3c3e095ae12213e84f55217",
+      "visual.capture_grammar": "abec40e13ad7d44d74e9e331b14ad7d593b2181959866a6e983b8ed3e9534bee"
+    },
+    "character_contract": "54a06e375bf9ee26fb49820d0734255746ce3e269b7092710ec2d4d943b6ed7f",
+    "character_visual_contract": "7df627f920695fb5b20a0835efff5e1b11994d172a03275fde3c4261b5ba82f5",
+    "story_semantic_review": "d466a6532166e6dc1a22bf38083c78e98cac0f5f2a02982d2bae0b9f184d2c56",
+    "world_identity": "886d29658a78faa682763664ce9e2c284011aaf3e1c84812f34da20d1e5a3fbf",
+    "runtime_request_preimage": "313b9ff41247ccd740108af6f5248510225accdb14d857c441890f7b51a9266a",
+    "story_lock": "fdd7f4ac06fcfd6decd33c8545c7009ff8e2c73721e710dff7e2ea64431d053c",
+    "visual_profile": "e1cefbd26880f41ccc050710d5e3877c5297d66c393cc5a8a282361d569ba78e"
+  },
+  "whole_authority_sha256": {
+    "story_gates": "4253f5969ddd2410171c86ad511b0b40812d8c26c109d632b4d1b6799ee5f343",
+    "character_contract": "54a06e375bf9ee26fb49820d0734255746ce3e269b7092710ec2d4d943b6ed7f",
+    "character_visual_contract": "7df627f920695fb5b20a0835efff5e1b11994d172a03275fde3c4261b5ba82f5",
+    "story_semantic_review": "d466a6532166e6dc1a22bf38083c78e98cac0f5f2a02982d2bae0b9f184d2c56",
+    "world_identity": "886d29658a78faa682763664ce9e2c284011aaf3e1c84812f34da20d1e5a3fbf",
+    "runtime_request_preimage": "313b9ff41247ccd740108af6f5248510225accdb14d857c441890f7b51a9266a",
+    "story_lock": "fdd7f4ac06fcfd6decd33c8545c7009ff8e2c73721e710dff7e2ea64431d053c",
+    "visual_profile": "e1cefbd26880f41ccc050710d5e3877c5297d66c393cc5a8a282361d569ba78e"
+  },
+  "derived_execution_evidence": true,
+  "episode_state_mutated": false,
+  "gate_pass": null
+}

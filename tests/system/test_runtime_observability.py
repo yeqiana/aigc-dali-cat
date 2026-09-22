@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = ROOT / "episodes/_system"
@@ -12,6 +13,7 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import story_json
+import storage_config
 import runtime_observability as obs
 
 
@@ -20,6 +22,13 @@ class RuntimeObservabilityTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(prefix="obs-test-")
         self.addCleanup(self.tmp.cleanup)
         self.ep = Path(self.tmp.name)
+        self.mode_patch = patch.object(
+            storage_config,
+            "episode_meta_store_config",
+            return_value={"mode": "json"},
+        )
+        self.mode_patch.start()
+        self.addCleanup(self.mode_patch.stop)
 
     def test_constants_match_existing_single_paths(self):
         import critic_runtime_v211
@@ -80,6 +89,28 @@ class RuntimeObservabilityTests(unittest.TestCase):
                  if line.strip()]
         self.assertEqual(len(lines), 2)
         self.assertEqual(story_json.read_json(a, default=None), None)
+
+    def test_mysql_mode_does_not_read_legacy_json_when_projection_is_missing(self):
+        target = self.ep / obs.EPISODE_PERFORMANCE_REL
+        target.parent.mkdir(parents=True, exist_ok=True)
+        story_json.write_json(target, {"source": "legacy"})
+        import metric_snapshot_persistence
+
+        with patch.object(storage_config, "episode_meta_store_config", return_value={"mode": "mysql"}), \
+             patch.object(metric_snapshot_persistence, "load_latest", return_value=None):
+            self.assertEqual(
+                obs.read_summary(self.ep, obs.EPISODE_PERFORMANCE_REL, default={"source": "default"}),
+                {"source": "default"},
+            )
+
+    def test_mysql_mode_write_failure_does_not_create_legacy_json(self):
+        import metric_snapshot_persistence
+
+        with patch.object(storage_config, "episode_meta_store_config", return_value={"mode": "mysql"}), \
+             patch.object(metric_snapshot_persistence, "save", side_effect=RuntimeError("db down")):
+            with self.assertRaisesRegex(RuntimeError, "db down"):
+                obs.write_summary(self.ep, obs.EPISODE_PERFORMANCE_REL, kind="episode", payload={})
+        self.assertFalse((self.ep / obs.EPISODE_PERFORMANCE_REL).exists())
 
 
 if __name__ == "__main__":

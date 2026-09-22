@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "category": "transition",
+  "fixtures": [
+    {
+      "id": "TRANS_REAL_POS_001",
+      "polarity": "positive",
+      "source_type": "real",
+      "source_episode": "EP003 雾中的另一座生活区（历史归档）",
+      "source_evidence": ["frames 10-11", "temporal-continuity.json"],
+      "scenario": "10女友要求返航且男主已经执行掉头；11无人机返航转向时，下面孩子首先抬头发现设备。",
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "reason": "动作桥与时间连续成立，第二帧是前一动作的自然后果。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["TransitionContract"]
+    },
+    {
+      "id": "TRANS_REAL_NEG_001",
+      "polarity": "negative",
+      "source_type": "real",
+      "source_episode": "天界普通女生的一天",
+      "source_evidence": ["reports/天界普通女生的一天_修复实施记录_20260914.md R-20260914-02"],
+      "scenario": "Frame17 capture-event-contract 与 shot-progression 已声明 P02 临时持机，但 persistent world-state 仍把 recorder 记为 P01。",
+      "expected": {
+        "decision": "FAIL",
+        "issue_codes": ["RECORDER_STATE_CONFLICT"],
+        "reason": "同一帧多个权威来源对摄影者身份矛盾，不能继续编译为可信 Frame Contract。"
+      },
+      "current_coverage": "fixed",
+      "future_capability": ["TransitionContract", "FrameContract"]
+    },
+    {
+      "id": "TRANS_REAL_POS_002",
+      "polarity": "positive",
+      "source_type": "real",
+      "source_episode": "天界普通女生的一天",
+      "source_evidence": ["reports/天界普通女生的一天_修复实施记录_20260914.md R-20260914-02"],
+      "scenario": "修复后 Frame17 recorder=P02、active device 仍为 P01 的留影玉牌；Frame18 记录设备归还，recorder 恢复 P01。",
+      "expected": {
+        "decision": "PASS",
+        "issue_codes": [],
+        "reason": "摄影者切换与设备所有权分离，并通过显式交接事件完成相邻帧闭环。"
+      },
+      "current_coverage": "covered",
+      "future_capability": ["TransitionContract"]
+    },
+    {
+      "id": "TRANS_SYN_NEG_001",
+      "polarity": "negative",
+      "source_type": "synthetic_mutation",
+      "source_episode": "generic",
+      "source_evidence": ["基于真实 recorder/空间连续性问题构造"],
+      "scenario": "Frame N 仍在路上骑行观察；Frame N+1 已坐到目标桌前，既没有停车、靠近、坐下的动作桥，也没有时间跳转声明。",
+      "expected": {
+        "decision": "FAIL",
+        "issue_codes": ["ACTION_BRIDGE_MISSING", "SPATIAL_TRANSITION_UNEXPLAINED"],
+        "reason": "两张单帧都可能正确，但 N→N+1 不能因此自动通过。"
+      },
+      "current_coverage": "partial",
+      "future_capability": ["TransitionContract", "TransitionReview"]
+    }
+  ]
+}
+

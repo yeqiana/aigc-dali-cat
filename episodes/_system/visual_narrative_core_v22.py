@@ -21,9 +21,11 @@ import hashlib
 import json
 from pathlib import Path
 from typing import Any
+import episode_state_persistence
 
 import capture_grammar_v228
 import shot_progression_gate
+import capture_event_contract
 
 ROOT = Path(__file__).resolve().parents[2]
 PRODUCTION_REL = Path("meta/shot-progression-review.json")
@@ -36,6 +38,9 @@ FORBIDDEN_POV_TOKENS = {
     "impossible_third_person",
 }
 RECAP_FUNCTIONS = {"recap", "repeat", "duplicate", "same_evidence"}
+DEVICE_POV_TOKENS = ("dropping_phone", "ground_phone", "fixed_phone", "mounted_phone", "resting_phone", "device_pov")
+HANDHELD_DEVICE_TOKENS = ("手持", "handheld", "hand-held")
+SELF_CAMERA_SUBJECT_TOKENS = ("正在下落的手机", "下落的手机", "这部手机", "phone itself", "falling phone", "dropping phone")
 
 
 def _read(path: Path) -> dict:
@@ -71,11 +76,12 @@ def _version_tuple(raw: object) -> tuple[int, ...]:
 def episode_version(ep: Path) -> str:
     ep = Path(ep)
     versions: list[tuple[tuple[int, ...], str]] = []
-    for rel in (
-        "meta/episode-state.json",
-        "meta/release-manifest.json",
-        "meta/story-gates.json",
-    ):
+    state = episode_state_persistence.load(ep) or {}
+    raw = str(state.get("tool_version") or "")
+    vt = _version_tuple(raw)
+    if vt != (0,):
+        versions.append((vt, raw))
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -284,6 +290,36 @@ def _family(row: dict) -> str:
     return "other:" + pos
 
 
+def _device_pov(row: dict) -> bool:
+    pov = str(row.get("pov_mode") or "").strip().lower()
+    return any(token in pov for token in DEVICE_POV_TOKENS)
+
+
+def _camera_owner(row: dict, capture_row: dict | None = None) -> str:
+    capture_row = capture_row if isinstance(capture_row, dict) else {}
+    photographer = str(capture_row.get("photographer_id") or "").strip()
+    if _device_pov(row):
+        return (photographer + "_phone") if photographer else "diegetic_phone"
+    return photographer or _owner_class(row)
+
+
+def _camera_authorship_errors(ep: Path, n: int, row: dict) -> list[str]:
+    errors: list[str] = []
+    primary = str(row.get("primary_subject") or "").lower()
+    if _device_pov(row) and any(token.lower() in primary for token in SELF_CAMERA_SUBJECT_TOKENS):
+        errors.append(f"SELF_CAMERA_VISIBLE:{n:02d}:active camera cannot depict its own device body")
+    if not capture_event_contract.exists(ep):
+        return errors
+    try:
+        capture = capture_event_contract.resolve_frame(ep, n).get("capture_event") or {}
+    except Exception:
+        return errors
+    device = str(capture.get("capture_device") or "").lower()
+    if _device_pov(row) and any(token.lower() in device for token in HANDHELD_DEVICE_TOKENS):
+        errors.append(f"CAMERA_DEVICE_STATE_CONFLICT:{n:02d}:device POV cannot still be handheld")
+    return errors
+
+
 def _owner_class(row: dict) -> str:
     pov = str(row.get("pov_mode") or "").strip().lower()
     itype = str(
@@ -291,6 +327,8 @@ def _owner_class(row: dict) -> str:
     ).strip().lower()
     if "selfie" in pov or itype == "group_selfie":
         return "selfie_operator"
+    if _device_pov(row):
+        return "diegetic_device_camera"
     if any(
         x in pov for x in ("companion", "secondary", "同行", "同伴")
     ):
@@ -319,6 +357,7 @@ def resolve_frame(ep: Path, frame: int | str) -> dict:
         raise ValueError(f"VISUAL_NARRATIVE_MISSING:{key}")
 
     capture = capture_grammar_v228.compile_capture_contract(ep)
+    capture_event = (capture_event_contract.resolve_frame(ep, n).get("capture_event") or {}) if capture_event_contract.exists(ep) else {}
     act = activation(ep)
 
     contract = {
@@ -328,6 +367,10 @@ def resolve_frame(ep: Path, frame: int | str) -> dict:
         "frame": key,
         "camera_authorship": {
             "owner_class": _owner_class(row),
+            "camera_owner": _camera_owner(row, capture_event),
+            "capture_device": capture_event.get("capture_device"),
+            "device_state": ("diegetic_device_pov" if _device_pov(row) else "operated_camera"),
+            "active_camera_body_must_not_appear_in_frame": _device_pov(row),
             "pov_mode": row.get("pov_mode"),
             "camera_position": row.get("camera_position"),
             "ghost_camera_forbidden": True,
@@ -467,7 +510,7 @@ def verify_frame(ep: Path, frame: int | str) -> list[str]:
     row = _frame_row(ep, n)
     if not row:
         return [f"VISUAL_NARRATIVE_MISSING:{n:02d}"]
-    return _validate_row(row, n)
+    return _validate_row(row, n) + _camera_authorship_errors(ep, n, row)
 
 
 def verify_all(ep: Path) -> list[str]:
@@ -487,6 +530,14 @@ def verify_all(ep: Path) -> list[str]:
     else:
         # Regression input is never passed to the formal production gate.
         errors.extend(_validate_sequence(data))
+    for row in data.get("frames") or []:
+        if not isinstance(row, dict):
+            continue
+        try:
+            n = int(row.get("frame"))
+        except Exception:
+            continue
+        errors.extend(_camera_authorship_errors(ep, n, row))
     return errors
 
 

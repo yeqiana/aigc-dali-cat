@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse, datetime as dt, json, os, shutil, subprocess, sys
 from pathlib import Path
 
+import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 from story_os_contract import canonical_stages, story_os_version
 import episode_performance
 import image_model_policy
@@ -17,8 +18,12 @@ import production_ledger
 import runtime_router
 import story_json
 import runtime_timeout_policy
+import runtime_command
+import runtime_request
+import runtime_checkpoint
+import episode_state_persistence
 
-ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=Path('meta/runtime-checkpoint.json')
+ROOT=Path(__file__).resolve().parents[2]; SYSTEM=Path(__file__).resolve().parent; CHECKPOINT=runtime_checkpoint.REL
 STORY_OS_VERSION=story_os_version(); STATES=canonical_stages()
 
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec='seconds')
@@ -31,28 +36,38 @@ def resolve_episode(raw):
     except ValueError: raise SystemExit('episode must be inside repository')
     return ep
 def resolve_codex(raw):
-    value=raw or shutil.which('codex') or shutil.which('codex.exe') or shutil.which('codex.cmd')
-    if not value: raise SystemExit('Codex CLI not found. Install/login Codex, then retry.')
-    return Path(value).resolve()
+    import codex_cli_contract
+    try:
+        return codex_cli_contract.resolve_path(raw)
+    except codex_cli_contract.CodexCliContractError as exc:
+        raise SystemExit(str(exc)) from exc
 def prefix(codex):
-    if codex.suffix.lower()=='.py': return [sys.executable,str(codex)]
-    if os.name=='nt' and codex.suffix.lower() in {'.cmd','.bat'}: return ['cmd.exe','/d','/c',str(codex)]
-    return [str(codex)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(codex)
 def update_checkpoint(ep,state,next_action,error=None,completion=None):
-    p=ep/CHECKPOINT; d=read_json(p) if p.exists() else {'schema_version':2,'locked_frames':[],'failed_frames':[],'step_runs':[]}
-    d.update({'story_os_version':STORY_OS_VERSION,'runtime':'CODEX','continuous_execution_authorized':True,'approval_basis':'delegated_continuous_execution','last_completed':state,'next_action':next_action,'updated_at':now()})
-    d.setdefault('step_runs',[])
-    if error:d['last_error']=error
-    else:d.pop('last_error',None)
-    if completion:d['completion']=completion
-    write_json(p,d)
+    def mutate(d):
+        runtime_checkpoint.ensure_shape(d)
+        d.update({'story_os_version':STORY_OS_VERSION,'runtime':'CODEX','continuous_execution_authorized':True,'approval_basis':'delegated_continuous_execution','last_completed':state,'next_action':next_action,'updated_at':now()})
+        d.setdefault('step_runs',[])
+        if error:d['last_error']=error
+        else:d.pop('last_error',None)
+        if completion:d['completion']=completion
+    runtime_checkpoint.update(ep, mutate)
     episode_performance.observe_checkpoint(ep,state)
 def runtime_request_block(ep, request_path=None):
-    path = Path(request_path).resolve() if request_path else (ep / "meta/runtime-request.json")
-    if not path.is_file(): return ""
-    data = read_json(path)
-    story = data.get("story_input") or {}
-    image = data.get("image") or {}
+    if request_path:
+        path = Path(request_path).resolve()
+        if not path.is_file(): return ""
+        data = read_json(path)
+    else:
+        data = runtime_request.authority_for_episode(ep)
+        if not data: return ""
+    sections = runtime_request.partitioned_view(data)
+    creative = sections["creative_request"]
+    execution = sections["execution_policy"]
+    operator = sections["operator_instructions"]
+    story = creative.get("story_input") or {}
+    image = execution.get("image") or {}
     image_model = data.get("image_model") or image.get("model") or image_model_policy.DEFAULT_MODEL
     image_quality = data.get("image_quality") or image.get("quality") or image_model_policy.DEFAULT_QUALITY
     mode = story.get("mode")
@@ -62,7 +77,16 @@ def runtime_request_block(ep, request_path=None):
         "core_constraints": "The user supplied hard story constraints. Preserve every constraint, but optimize the remaining structure and escalation.",
         "locked_story": "The user explicitly locked the story. Only logic/polish repairs are allowed; do not structurally rewrite it.",
     }
-    return "\n<RUNTIME_REQUEST>\n" + json.dumps(data, ensure_ascii=False, indent=2) + "\n</RUNTIME_REQUEST>\nRUNTIME REQUEST DIRECTIVE: " + directives.get(mode, "") + f"\nIMAGE MODEL CONTRACT: requested={image_model} quality={image_quality} source={image.get('source')} strict={bool(image.get('strict_model'))}. Never silently substitute an explicitly requested image model or quality.\n"
+    return (
+        "\n<CREATIVE_REQUEST>\n" + json.dumps(creative, ensure_ascii=False, indent=2) +
+        "\n</CREATIVE_REQUEST>\n<EXECUTION_POLICY>\n" + json.dumps(execution, ensure_ascii=False, indent=2) +
+        "\n</EXECUTION_POLICY>\n<OPERATOR_INSTRUCTIONS>\n" + json.dumps(operator, ensure_ascii=False, indent=2) +
+        "\n</OPERATOR_INSTRUCTIONS>\n"
+        "BOUNDARY CONTRACT: CREATIVE_REQUEST is the only story/character creative input. "
+        "OPERATOR_INSTRUCTIONS are execution-only and MUST NEVER be interpreted as plot, character, world, frame, or visual requirements.\n"
+        "RUNTIME REQUEST DIRECTIVE: " + directives.get(mode, "") +
+        f"\nIMAGE MODEL CONTRACT: requested={image_model} quality={image_quality} source={image.get('source')} strict={bool(image.get('strict_model'))}. Never silently substitute an explicitly requested image model or quality.\n"
+    )
 
 def worker_instruction(ep,resume,request_path=None):
     rel=ep.relative_to(ROOT).as_posix(); mode='resume from checkpoint' if resume else 'start from real current repository state'
@@ -179,12 +203,12 @@ If Snapshot is STALE, stop and resolve the drift; never hand-edit snapshot SHAs.
 Use delegated approval provenance honestly. Never fabricate --user-approved.
 Update runtime-checkpoint continuously. Do not build a ZIP in CODEX. Do not claim completion yourself; the parent performs deterministic postflight and stops at PUBLISH_READY + evidence PASS.
 """
-def run_cmd(args,cwd=ROOT): return subprocess.run([str(x) for x in args],cwd=cwd,check=False,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding='utf-8',errors='replace')
+def run_cmd(args,cwd=ROOT): return runtime_command.run_argv([str(x) for x in args],cwd=cwd,capture=True)
 def advance_to_publish_ready(ep):
-    sp=ep/'meta/episode-state.json'
-    if not sp.is_file(): return False,'episode-state missing'
+    state=episode_state_persistence.load(ep)
+    if not isinstance(state,dict): return False,'episode-state missing'
     for _ in range(6):
-        state=read_json(sp); cur=state.get('current_state')
+        state=episode_state_persistence.load(ep) or {}; cur=state.get('current_state')
         if cur=='PUBLISH_READY': return True,''
         if cur not in STATES: return False,'invalid episode state'
         idx=STATES.index(cur)
@@ -194,12 +218,12 @@ def advance_to_publish_ready(ep):
         if r.returncode!=0: return False,r.stdout[-2000:]
     return False,'transition loop exhausted'
 def postflight(ep):
-    cp=read_json(ep/CHECKPOINT) if (ep/CHECKPOINT).is_file() else {}
+    cp=runtime_checkpoint.load(ep, {})
     failed=cp.get('failed_frames') or []
     if failed:return 'PAUSED',f'failed_frames present: {failed}'
-    ledger_path=ep/'meta/production-ledger.json'
-    if not ledger_path.is_file(): return 'PAUSED','production ledger missing'
-    ledger=read_json(ledger_path); incomplete=[f'{k}:{v.get("status")}' for k,v in (ledger.get('frames') or {}).items() if v.get('status') not in production_ledger.ACCEPTED_LEDGER_STATES]
+    ledger=production_ledger.load_authority(ep,default=None)
+    if not isinstance(ledger,dict): return 'PAUSED','production ledger missing'
+    incomplete=[f'{k}:{v.get("status")}' for k,v in (ledger.get('frames') or {}).items() if v.get('status') not in production_ledger.ACCEPTED_LEDGER_STATES]
     if incomplete:return 'PAUSED','production ledger incomplete: '+', '.join(incomplete[:12])
     r=run_cmd([sys.executable,SYSTEM/'production_ledger.py','audit',ep,'--require-passed'])
     if r.returncode!=0:return 'PAUSED','production ledger not fully passed:\n'+r.stdout[-2000:]
@@ -237,7 +261,7 @@ def run_worker(args,resume):
     update_checkpoint(ep,'ORCHESTRATOR_STARTED','CODEX_WORKER_RUNNING')
     cmd=prefix(codex)+['exec','--skip-git-repo-check','--ephemeral','-s','workspace-write','-C',str(ROOT),'--json','-']
     with log.open('a',encoding='utf-8',newline='\n') as h:
-        try: completed=subprocess.run(cmd,input=worker_instruction(ep,resume,args.runtime_request),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=args.timeout,check=False)
+        try: completed=codex_user_runner.run_codex(cmd,input=worker_instruction(ep,resume,args.runtime_request),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=args.timeout,check=False)
         except subprocess.TimeoutExpired:
             update_checkpoint(ep,'ORCHESTRATOR_BLOCKED','RESUME_FULL_AUTO','worker timeout'); print('FULL-AUTO BLOCKED: worker timeout'); return 3
     if completed.returncode!=0:
@@ -257,7 +281,7 @@ def main():
     if a.cmd=='self-test':
         assert STATES[4]=='PUBLISH_READY'; assert CHECKPOINT.as_posix()=='meta/runtime-checkpoint.json'; print('CODEX AUTO ORCHESTRATOR V2.1 ADAPTER SELF-TEST PASS'); return 0
     if a.cmd=='status':
-        ep=resolve_episode(a.episode_dir); p=ep/CHECKPOINT; print(p.read_text(encoding='utf-8-sig') if p.exists() else 'NO CHECKPOINT'); return 0
+        ep=resolve_episode(a.episode_dir); data=runtime_checkpoint.load(ep,{}); print(json.dumps(data,ensure_ascii=False,indent=2) if data else 'NO CHECKPOINT'); return 0
     if a.cmd=='postflight':
         ep=resolve_episode(a.episode_dir); status,reason=postflight(ep); print(status,reason); return 0 if status=='COMPLETE' else 4 if status=='PAUSED' else 3
     if not a.full_auto: raise SystemExit('run/resume requires explicit --full-auto')

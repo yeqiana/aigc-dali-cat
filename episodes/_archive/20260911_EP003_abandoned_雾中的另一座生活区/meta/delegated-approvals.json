@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "approvals": {
+    "story_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "story_lock",
+      "approved_at": "2026-09-11T13:13:41+08:00",
+      "artifacts": [
+        {
+          "role": "story",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/02_雾中的另一座生活区_StoryLock_DRAFT_V1.0.md",
+          "sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f"
+        },
+        {
+          "role": "storyboard",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+          "sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6"
+        },
+        {
+          "role": "story_semantic_review",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/story-semantic-review.json",
+          "sha256": "4a1f985399a134cc622f39ccdb4a540fa18f7c710caf198992c0096c5d2d1292"
+        }
+      ],
+      "note": "用户已明确开始EP003连续生产；Story Critic与Recent-5/Concept/导演/密度门禁通过，按full_auto授权记录delegated_auto_review，不冒充直接用户审稿。"
+    },
+    "visual_lock": {
+      "approved": true,
+      "user_approved": false,
+      "delegated_auto_review": true,
+      "approval_basis": "delegated_auto_review",
+      "kind": "visual_lock",
+      "approved_at": "2026-09-11T14:55:12+08:00",
+      "artifacts": [
+        {
+          "role": "visual_spec",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/docs/04_雾中的另一座生活区_视觉规范_DRAFT_V1.0.md",
+          "sha256": "5092e00fb4857e77e6a45bdd2c5b5c2c84d0876fe20a738e0a5d305022d0be36"
+        },
+        {
+          "role": "calibration_contact_sheet",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/review/contact-sheets/visual-lock-admission.jpg",
+          "sha256": "b611a4216349c0ccfb217ac62250f0a77022ccae2ea0abf0774cc5e26a287416"
+        },
+        {
+          "role": "reference:ep001-couple-selfie",
+          "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/01_情侣自拍_正脸.png",
+          "sha256": "4d6ff79d95ede6d0be708278d8b27f16350cddc6d435c276cf980ec90f39111c"
+        },
+        {
+          "role": "reference:ep001-p02-face",
+          "path": "episodes/10_彼此的天上/01_不存在的夜行路/assets/characters/female-lead/11_车内夜间_正侧脸.png",
+          "sha256": "d5bc8e55dadbd4eaabefcb926e1d4816f7e72453e4c17b50ed7453aff2b4da32"
+        },
+        {
+          "role": "visual_profile:M00",
+          "path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+          "sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+        },
+        {
+          "role": "visual_profile_review",
+          "path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/visual-profile-review.json",
+          "sha256": "89d7c54fbddde13485129225593e31fb1b0423381b106f39388340c0e0a56bf7"
+        }
+      ],
+      "note": "EP003 V2.1 四口径 Visual Lock：1 baseline + worst/first-anomaly/high-impact 三张并行；评审与 verify 均 PASS，contact sheet 已生成。",
+      "resolved_visual_profile": {
+        "selection": "default",
+        "profile_id": "M00",
+        "profile_name": "现实生活纪实母版",
+        "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+        "capture_profile": "auto",
+        "override_reason": null,
+        "rule": "默认视觉母风格只约束视觉语言；具体年代/设备物理表现优先。",
+        "authority_source": "story-gates/default"
+      }
+    }
+  }
+}

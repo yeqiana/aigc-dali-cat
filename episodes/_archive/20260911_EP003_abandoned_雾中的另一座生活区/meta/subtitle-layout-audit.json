@@ -1,0 +1,424 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "engine": "story_os_subtitle_layout_v1",
+  "canonical_renderer": true,
+  "source": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/subtitles.yaml",
+  "source_sha256": "bfa352da206a99d8a01ca1f74874e94ee96d76bf71a0053aa2162a4a820c6465",
+  "policy": {
+    "punctuation_only_second_line": "drop_entire_second_line",
+    "max_lines": 2,
+    "font": "Microsoft YaHei Bold",
+    "font_size": 42,
+    "stroke_width": 4,
+    "left_margin": 72,
+    "horizontal_alignment": "left",
+    "default_y_ratio": 0.52,
+    "preferred_vertical_zone": [
+      0.42,
+      0.62
+    ],
+    "outside_zone_requires_reason": true
+  },
+  "frames": {
+    "01": {
+      "caption": "前两天的事，我们都没再提。",
+      "lines": [
+        "前两天的事，我们都没再提。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 804,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/01.png",
+      "base_sha256": "3666919bd9f18e7232c977f11ab67ad7652ca1cb6fff478f8dc107eb98e160cc",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/01.png",
+      "output_sha256": "7e3264a0e59054b9db652bbdc951a8ac22acb8eb09b6bfe951801b4e5bb518e0",
+      "y_ratio": 0.5956,
+      "safe_zone_override_reason": ""
+    },
+    "02": {
+      "caption": "雨停了，我想顺手补一点云海和山谷。",
+      "lines": [
+        "雨停了，我想顺手补一点云海和山谷。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/02.png",
+      "base_sha256": "f8dad54e9b4cba926fe08928e2e7b84fe92234778b98c9e8872ce5ad3874e940",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/02.png",
+      "output_sha256": "08fb6a9b12b6c9e296538057e271e8fce831b27966680f275cd08d3a6ea15f71",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "03": {
+      "caption": "升高一点，雾下面先露出一个屋顶。",
+      "lines": [
+        "升高一点，雾下面先露出一个屋顶。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/03.png",
+      "base_sha256": "01754866e6146ef74da5dbd7880eec49fcc21074039ac5579e954506c45b2d27",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/03.png",
+      "output_sha256": "b82127aa529f7b14da6b5fe7a0f3b1710a839d84c9219941e49bcd6c548cba2c",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "04": {
+      "caption": "往旁边再挪一点，下面还有田。",
+      "lines": [
+        "往旁边再挪一点，下面还有田。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/04.png",
+      "base_sha256": "ea91aff3a92e74d05991e3b3d99e2fc38e1d0669b0b1322ff311ba75021d1e0a",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/04.png",
+      "output_sha256": "3f43100a29839743ffca3a35fd8286aaf90263868b38707bb0896a5e3424bc13",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "05": {
+      "caption": "路上还有人在赶牲口，像刚淋过同一场雨。",
+      "lines": [
+        "路上还有人在赶牲口，像刚淋过同一场雨。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/05.png",
+      "base_sha256": "0d42343407ae3c3df45f5cc3a6b5f980dd72d43fd62b3e1c5598063411536aff",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/05.png",
+      "output_sha256": "daba817590ed6bf61f73242783e1cca283f1a5c1e9f442b54d1944ccfd8e5bc8",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "06": {
+      "caption": "她先认出来的，那条弯路像第一晚那条。",
+      "lines": [
+        "她先认出来的，那条弯路像第一晚那条。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 567,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/06.png",
+      "base_sha256": "b1dc85c53ca220d6ddd87723dbc46a62a9a3cb864c0e08241998d8e52992a99a",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/06.png",
+      "output_sha256": "0916e0fe365e0ad35342c377f3ee263ff00ad53d1ea64c78701527ef0b506fb0",
+      "y_ratio": 0.42,
+      "safe_zone_override_reason": ""
+    },
+    "07": {
+      "caption": "那不是人影，下面有人在过日子。",
+      "lines": [
+        "那不是人影，下面有人在过日子。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/07.png",
+      "base_sha256": "c1e45c81f3ca25bbb7b0446f9fcc18243f11cc7dd493420f4308091589156c1b",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/07.png",
+      "output_sha256": "062664b93e2a2fa0ac0d431a6a471be0241dcd9f52c591cdf4ee1837c444bf05",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "08": {
+      "caption": "我第一次觉得，下面不像临时聚起来的一群人。",
+      "lines": [
+        "我第一次觉得，下面不像临时聚起来的一群人。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/08.png",
+      "base_sha256": "6fe028c1761861d5c9a3d8b1518ed4026c6e299a95f15e9b0656b5f86e1643c4",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/08.png",
+      "output_sha256": "f58e8d221a7fdc83a886a30d711f1fec1f9d8312ca67ebd383f4939951aabd68",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "09": {
+      "caption": "她说，那种浅色粗布我们好像见过。",
+      "lines": [
+        "她说，那种浅色粗布我们好像见过。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/09.png",
+      "base_sha256": "dbf60f3d8ae70ff8373c0a87f93ab21126a41eb79c4ca40335aea21e4f457fdd",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/09.png",
+      "output_sha256": "e5612a24e1636781822cec08f9d79623c0d340bf0f3b7dcd8b34afe34c47fc71",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "10": {
+      "caption": "",
+      "lines": [],
+      "dropped_punctuation_only_second_line": false,
+      "silent": true,
+      "x": 72,
+      "y": 702,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/10.png",
+      "base_sha256": "083763496d98a7b06c2b47fa933ace54b2731f6e8a1cc8ea568701394ed74380",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/10.png",
+      "output_sha256": "f97cc8c49982ec4a1f0c67e3d4ba40b3efdaccac501a5b8fee883589e2e67163",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "11": {
+      "caption": "最远那边，还有一座很大的旧石头建筑。",
+      "lines": [
+        "最远那边，还有一座很大的旧石头建筑。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/11.png",
+      "base_sha256": "7d300149ec08ad158c4a7b87afb2f4245c85a646bee082b98fa11f4782a63325",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/11.png",
+      "output_sha256": "6dd36a557e88038f055504fcfbe04be51395901ecfc65839b28d0aec691e7dfd",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "12": {
+      "caption": "路边那个人，我当时根本没注意。",
+      "lines": [
+        "路边那个人，我当时根本没注意。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/12.png",
+      "base_sha256": "93862f0be8bdbde96a60436bc4261235fdfae99ce88c1836816792b665c5ebbe",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/12.png",
+      "output_sha256": "0a1bd60e7fa1e420fdabb404083b50ae4f7e6e0f0bb9ed796e02b7383de774d0",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "13": {
+      "caption": "第一个抬头的，是个老人。",
+      "lines": [
+        "第一个抬头的，是个老人。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/13.png",
+      "base_sha256": "a0841585fcbbbfbe091a9b66d2038f79b77d35715600c3ab8ad26c42b29f3d63",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/13.png",
+      "output_sha256": "a981e0a70d4946c82d91c6a9722507fecc51ff47e9510f1029f78670583ed750",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "14": {
+      "caption": "接着，下面的人开始一个个往屋里收东西。",
+      "lines": [
+        "接着，下面的人开始一个个往屋里收东西。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/14.png",
+      "base_sha256": "54c0c828b0d58b7eb1e0dc3a99de9e660811a63cbca51eedc6502bb2bf3e2fb1",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/14.png",
+      "output_sha256": "70b6b168f9a1a75dd1c8e2b7dc619a1c83abd115a77c953210dbc8111e842b62",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "15": {
+      "caption": "她让我回来。我说好，但还是多看了几秒。",
+      "lines": [
+        "她让我回来。我说好，但还是多看了几秒。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 823,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/15.png",
+      "base_sha256": "129aed42b908d2659598c5d1bc5778a2a8bf457a8c5fb0f1d48da18d516bb55a",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/15.png",
+      "output_sha256": "5b2c4b895a3295620b158b6bd95cd7970153783552de7a008b399241292c9f86",
+      "y_ratio": 0.6096,
+      "safe_zone_override_reason": ""
+    },
+    "16": {
+      "caption": "就这几秒，返航方向开始不对了。",
+      "lines": [
+        "就这几秒，返航方向开始不对了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/16.png",
+      "base_sha256": "5e0ddd818dbe321085f3a0c203344672c365b7a82c05af47a23f4dc4b122fcd4",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/16.png",
+      "output_sha256": "a2cc8b3e3224f03cc5832e5dc261130f36f6441af65297d89475f3665465b455",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "17": {
+      "caption": "",
+      "lines": [],
+      "dropped_punctuation_only_second_line": false,
+      "silent": true,
+      "x": 72,
+      "y": 702,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/17.png",
+      "base_sha256": "6a3d2deeb59581e8b81e058e554b3b08a5f1d68bc7576c0e91af38b7ea0d97e7",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/17.png",
+      "output_sha256": "b9906bcaa997f75c48646fc15f841ced17e41a70cec2f7cc32d3c4dd4231463a",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "18": {
+      "caption": "我当时只觉得，远处那块特别亮。",
+      "lines": [
+        "我当时只觉得，远处那块特别亮。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/18.png",
+      "base_sha256": "47cc8a688701146ff76efff3a8466637d5aa4e8dbcb76609a8f96f04bc302491",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/18.png",
+      "output_sha256": "ed5672282bbaa9cd0a48f6c583a7d877c4f4983c96791490394ca80d5b8a6b19",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "19": {
+      "caption": "后来放大最后一帧，我才看见车旁边还有人。",
+      "lines": [
+        "后来放大最后一帧，我才看见车旁边还有人。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/19.png",
+      "base_sha256": "5ee72e97858da506d77a6afc4ef21ff8d7d6735e01ecbb5364540fbcf01a0e28",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/19.png",
+      "output_sha256": "333109e4da94e82d610394740d31f459f6b360dc845139ffefb3896b045a082e",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "20": {
+      "caption": "我们没下山找。她关上车门，我也没再说要证明什么。",
+      "lines": [
+        "我们没下山找。她关上车门，我也没再说要证明什",
+        "么。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/20.png",
+      "base_sha256": "826e06b7d3c038687f79cad6962dc2ee1d49a967fb9959cb9b6dafffd8a68202",
+      "output_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/production/publish/20.png",
+      "output_sha256": "ad02530e5cc3e745dcfad136507dcafe410f1ea3e0490e9254ec3ed6a7f5705a",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    }
+  },
+  "summary": {
+    "passed": true,
+    "frame_count": 20
+  }
+}

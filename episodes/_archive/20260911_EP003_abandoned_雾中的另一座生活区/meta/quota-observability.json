@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "note": "Diagnostic only; quota percentages are never guessed.",
+  "snapshots": [
+    {
+      "at": "2026-09-11T12:57:50+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {},
+        "files_scanned": [],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after INCREMENTAL_PLAN"
+    },
+    {
+      "at": "2026-09-11T12:57:50+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {},
+        "files_scanned": [],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after CREATIVE_STORY"
+    },
+    {
+      "at": "2026-09-11T13:13:51+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {},
+        "files_scanned": [],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after INCREMENTAL_PLAN"
+    },
+    {
+      "at": "2026-09-11T13:13:52+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {},
+        "files_scanned": [],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after PREIMAGE_COMPILE"
+    },
+    {
+      "at": "2026-09-11T14:22:58+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {
+          "input_tokens": 301899,
+          "cached_input_tokens": 229632,
+          "output_tokens": 1638
+        },
+        "files_scanned": [
+          "meta/image-workers/01-9ae48137181c-a1.jsonl",
+          "meta/image-workers/01-9ae48137181c-a2.jsonl"
+        ],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after INCREMENTAL_PLAN"
+    },
+    {
+      "at": "2026-09-11T14:23:00+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {
+          "input_tokens": 301899,
+          "cached_input_tokens": 229632,
+          "output_tokens": 1638
+        },
+        "files_scanned": [
+          "meta/image-workers/01-9ae48137181c-a1.jsonl",
+          "meta/image-workers/01-9ae48137181c-a2.jsonl"
+        ],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after VISUAL_LOCK"
+    },
+    {
+      "at": "2026-09-11T14:27:09+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {
+          "input_tokens": 301899,
+          "cached_input_tokens": 229632,
+          "output_tokens": 1638
+        },
+        "files_scanned": [
+          "meta/image-workers/01-9ae48137181c-a1.jsonl",
+          "meta/image-workers/01-9ae48137181c-a2.jsonl"
+        ],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after INCREMENTAL_PLAN"
+    },
+    {
+      "at": "2026-09-11T14:27:11+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {
+          "input_tokens": 301899,
+          "cached_input_tokens": 229632,
+          "output_tokens": 1638
+        },
+        "files_scanned": [
+          "meta/image-workers/01-9ae48137181c-a1.jsonl",
+          "meta/image-workers/01-9ae48137181c-a2.jsonl"
+        ],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after VISUAL_LOCK"
+    },
+    {
+      "at": "2026-09-11T14:28:22+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {
+          "input_tokens": 301899,
+          "cached_input_tokens": 229632,
+          "output_tokens": 1638
+        },
+        "files_scanned": [
+          "meta/image-workers/01-9ae48137181c-a1.jsonl",
+          "meta/image-workers/01-9ae48137181c-a2.jsonl"
+        ],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after INCREMENTAL_PLAN"
+    },
+    {
+      "at": "2026-09-11T14:28:23+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {
+          "input_tokens": 301899,
+          "cached_input_tokens": 229632,
+          "output_tokens": 1638
+        },
+        "files_scanned": [
+          "meta/image-workers/01-9ae48137181c-a1.jsonl",
+          "meta/image-workers/01-9ae48137181c-a2.jsonl"
+        ],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after VISUAL_LOCK"
+    },
+    {
+      "at": "2026-09-11T14:28:59+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {
+          "input_tokens": 301899,
+          "cached_input_tokens": 229632,
+          "output_tokens": 1638
+        },
+        "files_scanned": [
+          "meta/image-workers/01-9ae48137181c-a1.jsonl",
+          "meta/image-workers/01-9ae48137181c-a2.jsonl"
+        ],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after INCREMENTAL_PLAN"
+    },
+    {
+      "at": "2026-09-11T14:29:00+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {
+          "input_tokens": 301899,
+          "cached_input_tokens": 229632,
+          "output_tokens": 1638
+        },
+        "files_scanned": [
+          "meta/image-workers/01-9ae48137181c-a1.jsonl",
+          "meta/image-workers/01-9ae48137181c-a2.jsonl"
+        ],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after VISUAL_LOCK"
+    },
+    {
+      "at": "2026-09-11T14:30:48+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {
+          "input_tokens": 301899,
+          "cached_input_tokens": 229632,
+          "output_tokens": 1638
+        },
+        "files_scanned": [
+          "meta/image-workers/01-9ae48137181c-a1.jsonl",
+          "meta/image-workers/01-9ae48137181c-a2.jsonl"
+        ],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after INCREMENTAL_PLAN"
+    },
+    {
+      "at": "2026-09-11T14:30:50+08:00",
+      "quota": {
+        "five_hour_remaining_pct": null,
+        "weekly_remaining_pct": null,
+        "source": "UNAVAILABLE"
+      },
+      "observed_usage": {
+        "source": "local_jsonl_best_effort",
+        "token_counters": {
+          "input_tokens": 301899,
+          "cached_input_tokens": 229632,
+          "output_tokens": 1638
+        },
+        "files_scanned": [
+          "meta/image-workers/01-9ae48137181c-a1.jsonl",
+          "meta/image-workers/01-9ae48137181c-a2.jsonl"
+        ],
+        "warning": "Local counters may not equal product quota accounting."
+      },
+      "note": "after VISUAL_LOCK"
+    }
+  ],
+  "updated_at": "2026-09-11T14:30:50+08:00",
+  "kind": "quota_observability",
+  "generated_at": "2026-09-11T12:57:50+08:00"
+}

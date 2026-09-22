@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 import runtime_atomic_store as atomic
+import hot_state_bridge
 
 REL = Path("meta/runtime/circuit-breaker.json")
 HARD_CODES = {
@@ -28,14 +29,31 @@ def default_state():
 def _key(route: str, code: str) -> str:
     return f"{route}:{code}"
 
+
+def _load_state(ep: Path) -> dict:
+    ep = Path(ep).resolve()
+    hot = hot_state_bridge.read(ep, "CIRCUIT_BREAKER")
+    data = hot_state_bridge.value_or_fallback(
+        hot,
+        lambda: atomic.read_json(ep / REL, default_state()),
+        default=None,
+    )
+    return data if isinstance(data, dict) else default_state()
+
+
+def _save_state(ep: Path, data: dict) -> None:
+    if hot_state_bridge.compatibility_write_allowed():
+        atomic.atomic_write_json(Path(ep) / REL, data)
+    hot_state_bridge.mirror(Path(ep), "CIRCUIT_BREAKER", data)
+
 def record_failure(ep, route: str, code: str, *, threshold: int = 2, cooldown_seconds: int = 900) -> dict:
     ep = Path(ep).resolve()
     code = str(code or "UNKNOWN")
-    result = {}
-    def mutate(d):
-        d.setdefault("circuits", {})
+    with atomic.FileLock(ep / REL):
+        data = _load_state(ep)
+        data.setdefault("circuits", {})
         key = _key(route, code)
-        row = d["circuits"].setdefault(key, {"failures": 0, "state": "CLOSED"})
+        row = data["circuits"].setdefault(key, {"failures": 0, "state": "CLOSED"})
         row["failures"] = int(row.get("failures") or 0) + 1
         row["last_failure_at"] = now()
         row["code"] = code
@@ -44,25 +62,25 @@ def record_failure(ep, route: str, code: str, *, threshold: int = 2, cooldown_se
             until = now_dt() + dt.timedelta(seconds=cooldown_seconds)
             row["state"] = "OPEN"
             row["open_until"] = until.isoformat(timespec="seconds")
-        d["updated_at"] = now()
-        result.update(row)
-    atomic.update_json(ep / REL, default_state, mutate)
-    return result
+        data["updated_at"] = now()
+        _save_state(ep, data)
+        return dict(row)
 
 def record_success(ep, route: str) -> None:
     ep = Path(ep).resolve()
-    def mutate(d):
-        for row in (d.get("circuits") or {}).values():
+    with atomic.FileLock(ep / REL):
+        data = _load_state(ep)
+        for row in (data.get("circuits") or {}).values():
             if row.get("route") == route:
                 row["failures"] = 0
                 row["state"] = "CLOSED"
                 row["open_until"] = None
-        d["updated_at"] = now()
-    atomic.update_json(ep / REL, default_state, mutate)
+        data["updated_at"] = now()
+        _save_state(ep, data)
 
 def blocking(ep, route: str) -> dict | None:
     ep = Path(ep).resolve()
-    d = atomic.read_json(ep / REL, default_state())
+    d = _load_state(ep)
     for row in (d.get("circuits") or {}).values():
         if row.get("route") != route or row.get("state") != "OPEN":
             continue
@@ -84,6 +102,7 @@ def classify_text(text: str) -> str | None:
     if "model_unavailable" in low or "model unavailable" in low: return "MODEL_UNAVAILABLE"
     if "image tool" in low and ("unavailable" in low or "not available" in low): return "IMAGE_TOOL_UNAVAILABLE"
     if "sandbox" in low and ("denied" in low or "forbidden" in low): return "SANDBOX_DENIED"
+    if "network_error" in low or "network error" in low or "error sending request" in low: return "NETWORK_ERROR"
     return None
 
 def self_test():
@@ -97,6 +116,7 @@ def self_test():
         assert blocking(ep, "image") is not None
         record_success(ep, "image")
         assert blocking(ep, "image") is None
+        assert classify_text("NETWORK_ERROR: error sending request") == "NETWORK_ERROR"
     print("RUNTIME CIRCUIT BREAKER V2.6.0 SELF-TEST PASS")
 
 def main():

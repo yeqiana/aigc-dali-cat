@@ -9,6 +9,7 @@ from pathlib import Path
 import codex_subscription_batch_runtime as batch_cfg
 import image_worker_pool
 import runtime_trace
+import hot_state_bridge
 
 REL=Path("meta/codex-subscription-batch-capability.json")
 
@@ -16,6 +17,11 @@ def now():
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
 def _read(ep:Path)->dict:
+    hot = hot_state_bridge.read(ep, "CODEX_BATCH_CAPABILITY")
+    if hot.get("redis_read") and isinstance(hot.get("value"), dict):
+        return hot["value"]
+    if not hot_state_bridge.file_fallback_allowed(hot):
+        return {}
     p=ep/REL
     if not p.is_file():
         return {}
@@ -25,10 +31,15 @@ def _read(ep:Path)->dict:
     except Exception:
         return {}
 
+def read(ep:Path)->dict:
+    """Read the rebuildable capability projection through the hot-state boundary."""
+    return _read(ep)
+
 def _write(ep:Path,data:dict)->None:
     p=ep/REL
     p.parent.mkdir(parents=True,exist_ok=True)
     p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    hot_state_bridge.mirror(ep, "CODEX_BATCH_CAPABILITY", data)
 
 def current_concurrency(ep:Path)->int:
     evidence=_read(ep)

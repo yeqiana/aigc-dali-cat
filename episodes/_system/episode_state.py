@@ -13,6 +13,8 @@ from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
 from story_os_contract import canonical_stages, story_os_version
 import episode_performance
 import story_json
+import episode_lifecycle
+import episode_state_persistence
 
 STATES = canonical_stages()
 STATE_FILE = Path("meta/episode-state.json")
@@ -31,6 +33,10 @@ def load_json(path: Path) -> dict:
 
 def save_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
+
+
+def load_state(episode_dir: Path) -> dict:
+    return episode_state_persistence.load(Path(episode_dir).resolve()) or {}
 
 
 def child_process_env() -> dict[str, str]:
@@ -177,29 +183,37 @@ def new_gates(episode_id: str, *, aspect_ratio: str | None = None, strict: bool 
     return enable_machine_contract(gates, strict=strict, aspect_ratio=aspect_ratio)
 
 
-def init_cmd(args: argparse.Namespace) -> None:
-    episode_dir = ensure_episode_dir(args.episode_dir)
-    state_path = episode_dir / STATE_FILE
-    manifest_path = episode_dir / MANIFEST_FILE
-    gates_path = episode_dir / GATES_FILE
-    if state_path.exists() or manifest_path.exists() or gates_path.exists():
-        raise SystemExit("meta already exists; refusing to overwrite")
+def initial_documents(*, episode_id: str, series: str, title: str, frame_count: int = 20,
+                      format_name: str = "douyin_photo_carousel",
+                      aspect_ratio: str = DEFAULT_ASPECT_RATIO, note: str | None = None,
+                      strict: bool = True) -> tuple[dict, dict, dict]:
+    """Build the canonical initial state / manifest / story-gates triplet.
 
+    This is the single constructor shared by the CLI initializer and the one-sentence
+    story_creator bootstrap. It is pure: callers own persistence and overwrite policy.
+    """
     at = now_iso()
-    canvas = resolve_canvas_spec(args.aspect_ratio)
+    canvas = resolve_canvas_spec(aspect_ratio)
     state = {
         "schema_version": 1,
         "tool_version": SYSTEM_VERSION,
-        "episode_id": args.id,
-        "series": args.series,
-        "title": args.title,
+        "episode_id": episode_id,
+        "series": series,
+        "title": title,
         "current_state": "IDEA_LOCKED",
+        "disposition": episode_lifecycle.ACTIVE,
+        "runtime_storage": {
+            "production_queue": {
+                "authority": "runtime_workspace",
+                "policy": "native_workspace_v1",
+            },
+        },
         "updated_at": at,
         "history": [
             {
                 "state": "IDEA_LOCKED",
                 "at": at,
-                "note": args.note or "项目已完成选题与核心故事锁定",
+                "note": note or "项目已完成选题与核心故事锁定",
             }
         ],
     }
@@ -207,15 +221,15 @@ def init_cmd(args: argparse.Namespace) -> None:
         "schema_version": 1,
         "tool_version": SYSTEM_VERSION,
         "episode": {
-            "id": args.id,
-            "series": args.series,
-            "title": args.title,
-            "format": args.format,
+            "id": episode_id,
+            "series": series,
+            "title": title,
+            "format": format_name,
             "aspect_ratio": canvas.aspect_ratio,
         },
         "release": {
             "version": None,
-            "body_frame_count": args.frame_count,
+            "body_frame_count": int(frame_count),
             "publish_dir": None,
             "body_glob": "[0-9][0-9].png",
             "cover_path": None,
@@ -267,9 +281,31 @@ def init_cmd(args: argparse.Namespace) -> None:
             },
         },
     }
-    save_json(state_path, state)
+    gates = new_gates(episode_id, aspect_ratio=canvas.aspect_ratio, strict=strict)
+    return state, manifest, gates
+
+
+def init_cmd(args: argparse.Namespace) -> None:
+    episode_dir = ensure_episode_dir(args.episode_dir)
+    state_path = episode_dir / STATE_FILE
+    manifest_path = episode_dir / MANIFEST_FILE
+    gates_path = episode_dir / GATES_FILE
+    if episode_state_persistence.load(episode_dir) is not None or manifest_path.exists() or gates_path.exists():
+        raise SystemExit("meta already exists; refusing to overwrite")
+
+    state, manifest, gates = initial_documents(
+        episode_id=args.id,
+        series=args.series,
+        title=args.title,
+        frame_count=args.frame_count,
+        format_name=args.format,
+        aspect_ratio=args.aspect_ratio,
+        note=args.note,
+        strict=True,
+    )
+    episode_state_persistence.save_initial(episode_dir, state, source="episode_state.init")
     save_json(manifest_path, manifest)
-    save_json(gates_path, new_gates(args.id, aspect_ratio=canvas.aspect_ratio, strict=True))
+    save_json(gates_path, gates)
     episode_performance.safe_start_episode(episode_dir,source="episode_state.init")
     print(f"initialized: {episode_dir}")
     print(f"state   : {state_path}")
@@ -285,9 +321,9 @@ def migrate_gates_cmd(args: argparse.Namespace) -> None:
     gates_path = episode_dir / GATES_FILE
     if gates_path.exists():
         raise SystemExit(f"story gates already exist: {gates_path}")
-    if not state_path.exists() or not manifest_path.exists():
-        raise SystemExit("legacy episode must already have episode-state.json + release-manifest.json")
-    state = load_json(state_path)
+    state = episode_state_persistence.load(episode_dir)
+    if state is None or not manifest_path.exists():
+        raise SystemExit("legacy episode must already have Episode state authority + release-manifest.json")
     manifest = load_json(manifest_path)
     episode_id = state.get("episode_id") or (manifest.get("episode") or {}).get("id")
     if not isinstance(episode_id, str) or not episode_id.strip():
@@ -323,11 +359,10 @@ def enable_machine_cmd(args: argparse.Namespace) -> None:
 
 def transition_cmd(args: argparse.Namespace) -> None:
     episode_dir = ensure_episode_dir(args.episode_dir)
-    state_path = episode_dir / STATE_FILE
-    if not state_path.exists():
-        raise SystemExit(f"missing state file: {state_path}")
-
-    data = load_json(state_path)
+    data = episode_state_persistence.load(episode_dir)
+    if data is None:
+        raise SystemExit(f"missing Episode state authority: {episode_dir}")
+    episode_lifecycle.assert_writable(episode_dir, "episode_state.transition")
     current = data.get("current_state")
     target = args.target
     if current not in STATES:
@@ -373,21 +408,31 @@ def transition_cmd(args: argparse.Namespace) -> None:
         )
 
     at = now_iso()
-    data["current_state"] = target
-    data["updated_at"] = at
     data["tool_version"] = SYSTEM_VERSION
-    data.setdefault("history", []).append(
-        {"state": target, "at": at, "mode": mode, "note": args.note}
+    data = episode_state_persistence.transition(
+        episode_dir,
+        data,
+        target,
+        transition_mode=mode,
+        source="episode_state.transition",
+        reason=args.note,
+        at=at,
     )
-    save_json(state_path, data)
     episode_performance.safe_record_state_transition(episode_dir,current,target,at)
     print(f"{current} -> {target}")
+
+
+def terminate_cmd(args: argparse.Namespace) -> None:
+    episode_dir = ensure_episode_dir(args.episode_dir)
+    data = episode_lifecycle.terminate(
+        episode_dir, target=args.disposition, source=args.source, reason=args.reason)
+    print(f"episode disposition: {data['disposition']} (stage preserved: {data.get('current_state')})")
 
 
 def show_cmd(args: argparse.Namespace) -> None:
     episode_dir = ensure_episode_dir(args.episode_dir)
     data = {
-        "state": load_json(episode_dir / STATE_FILE),
+        "state": episode_state_persistence.load(episode_dir) or {},
         "manifest": load_json(episode_dir / MANIFEST_FILE),
     }
     gates = episode_dir / GATES_FILE
@@ -426,6 +471,13 @@ def build_parser() -> argparse.ArgumentParser:
     tr.add_argument("--note", required=True)
     tr.add_argument("--rewind", action="store_true")
     tr.set_defaults(func=transition_cmd)
+
+    term = sub.add_parser("terminate", help="terminally void/abandon an Episode without changing its canonical stage")
+    term.add_argument("episode_dir")
+    term.add_argument("--disposition", required=True, choices=sorted(episode_lifecycle.TERMINAL))
+    term.add_argument("--source", required=True, help="auditable authority, e.g. direct_user:<decision>")
+    term.add_argument("--reason", required=True)
+    term.set_defaults(func=terminate_cmd)
 
     show = sub.add_parser("show", help="show state + manifest + gates")
     show.add_argument("episode_dir")

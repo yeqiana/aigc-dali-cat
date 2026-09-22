@@ -11,9 +11,14 @@ from pathlib import Path
 from approval_lock import story_assets, visual_assets
 from story_os_contract import story_os_version
 import story_json
+import runtime_checkpoint
+import approval_persistence
+import delegated_release_persistence
+import story_review
+import visual_profile_review_persistence
 
 REL = Path('meta/delegated-approvals.json')
-CHECKPOINT = Path('meta/runtime-checkpoint.json')
+CHECKPOINT = runtime_checkpoint.REL
 ROOT = Path(__file__).resolve().parents[2]
 STORY_OS_VERSION = story_os_version()
 
@@ -42,10 +47,9 @@ def sha256_file(path: Path) -> str:
 
 
 def authorized(ep: Path) -> tuple[bool, str]:
-    p = ep / CHECKPOINT
-    if not p.is_file():
+    if not runtime_checkpoint.exists(ep):
         return False, 'runtime-checkpoint missing'
-    d = read_json(p)
+    d = runtime_checkpoint.load(ep, {})
     if d.get('continuous_execution_authorized') is not True:
         return False, 'continuous_execution_authorized is not true'
     if d.get('approval_basis') not in {'delegated_continuous_execution', 'delegated_auto_review'}:
@@ -68,8 +72,9 @@ def base_payload(kind: str, rows: list[dict], note: str) -> dict:
 
 def load_store(ep: Path) -> tuple[Path, dict]:
     p = ep / REL
-    if p.is_file():
-        return p, read_json(p)
+    data = approval_persistence.load(ep, approval_persistence.DELEGATED_BUNDLE)
+    if isinstance(data, dict):
+        return p, data
     return p, {'schema_version': 1, 'story_os_version': STORY_OS_VERSION, 'approvals': {}}
 
 
@@ -84,6 +89,25 @@ def repo_file(raw: str) -> Path:
     return p
 
 
+AUTHORITY_ROLES = ('story_semantic_review', 'visual_profile_review')
+
+
+def authority_digest(ep: Path, role: object) -> str | None:
+    """Resolve a review-authority row to its current digest.
+
+    Authority rows carry an episode-relative legacy path (for example
+    ``meta/story-semantic-review.json``) because the review itself lives in the
+    MySQL review-record authority, not on disk. They must be verified against the
+    live authority, exactly like ``approval_lock.verify_lock`` does, instead of
+    being read as a repository-relative file.
+    """
+    if role == 'story_semantic_review':
+        return story_review.review_authority_sha256(ep)
+    if role == 'visual_profile_review':
+        return visual_profile_review_persistence.authority_sha256(ep)
+    return None
+
+
 def cmd_record(args: argparse.Namespace) -> int:
     ep = Path(args.episode_dir).resolve()
     ok, reason = authorized(ep)
@@ -95,10 +119,9 @@ def cmd_record(args: argparse.Namespace) -> int:
     elif args.kind == 'visual_lock':
         rows, profile = visual_assets(ep)
     else:
-        report = ep / 'meta' / 'delegated-release.json'
-        if not report.is_file():
+        d = delegated_release_persistence.load(ep)
+        if not isinstance(d, dict):
             raise SystemExit('delegated release report missing; build delegated delivery first')
-        d = read_json(report)
         rows = d.get('files') or []
         package = d.get('package') or {}
         if not rows or not package.get('path') or not package.get('sha256'):
@@ -115,7 +138,7 @@ def cmd_record(args: argparse.Namespace) -> int:
     path, store = load_store(ep)
     store['story_os_version'] = STORY_OS_VERSION
     store.setdefault('approvals', {})[args.kind] = payload
-    write_json(path, store)
+    approval_persistence.save(ep, approval_persistence.DELEGATED_BUNDLE, store)
     print(f'{args.kind}: DELEGATED AUTO LOCKED')
     return 0
 
@@ -124,10 +147,10 @@ def verify(ep: Path, kind: str) -> list[str]:
     ok, reason = authorized(ep)
     if not ok:
         return ['delegated authorization invalid: ' + reason]
-    path = ep / REL
-    if not path.is_file():
+    store = approval_persistence.load(ep, approval_persistence.DELEGATED_BUNDLE)
+    if not isinstance(store, dict):
         return ['delegated approvals missing']
-    item = (read_json(path).get('approvals') or {}).get(kind)
+    item = (store.get('approvals') or {}).get(kind)
     if not isinstance(item, dict):
         return [f'{kind}: delegated approval missing']
     if item.get('approved') is not True or item.get('delegated_auto_review') is not True or item.get('user_approved') is not False:
@@ -139,6 +162,20 @@ def verify(ep: Path, kind: str) -> list[str]:
     for row in rows:
         if not isinstance(row, dict) or not row.get('path') or not row.get('sha256'):
             errors.append(f'{kind}: invalid artifact row')
+            continue
+        if row.get('kind') == 'authority':
+            role = row.get('role')
+            if role not in AUTHORITY_ROLES:
+                errors.append(f'{kind}: unknown authority artifact role {role}')
+                continue
+            actual = authority_digest(ep, role)
+            if not actual:
+                errors.append(f'{kind}: {role} authority missing')
+            elif actual.lower() != str(row['sha256']).lower():
+                errors.append(
+                    f'{kind}: {role} authority SHA256 drift'
+                    f'\nexpected={row["sha256"]}\nactual  ={actual}'
+                )
             continue
         try:
             p = repo_file(str(row['path']))
@@ -172,8 +209,8 @@ def main() -> int:
     args = ap.parse_args()
     ep = Path(args.episode_dir).resolve()
     if args.cmd == 'show':
-        path = ep / REL
-        print(path.read_text(encoding='utf-8') if path.is_file() else '{}')
+        data = approval_persistence.load(ep, approval_persistence.DELEGATED_BUNDLE) or {}
+        print(json.dumps(data, ensure_ascii=False, indent=2))
         return 0
     if args.cmd == 'record':
         return cmd_record(args)

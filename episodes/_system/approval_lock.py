@@ -8,8 +8,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from visual_profile import resolve_profile
-from story_review import review_required as story_review_required, verify as verify_story_review
+from story_review import REVIEW_REL as STORY_REVIEW_REL, review_authority_sha256, review_required as story_review_required, verify as verify_story_review
 from visual_review import review_required as visual_review_required, verify as verify_visual_review
+import visual_profile_review_persistence
 import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -71,6 +72,34 @@ def row_for_path(path: Path, role: str) -> dict:
     }
 
 
+
+def row_for_story_review_authority(ep: Path) -> dict:
+    digest = review_authority_sha256(ep)
+    if not digest:
+        raise SystemExit('story semantic review authority missing')
+    return {
+        'role': 'story_semantic_review',
+        'path': STORY_REVIEW_REL.as_posix(),
+        'sha256': digest,
+        'kind': 'authority',
+        'authority': 'TB_REVIEW_RECORD:STORY_SEMANTIC',
+    }
+
+
+
+def row_for_visual_review_authority(ep: Path) -> dict:
+    digest = visual_profile_review_persistence.authority_sha256(ep)
+    if not digest:
+        raise SystemExit('visual profile review authority missing')
+    return {
+        'role': 'visual_profile_review',
+        'path': visual_profile_review_persistence.LEGACY_REL.as_posix(),
+        'sha256': digest,
+        'kind': 'authority',
+        'authority': 'TB_REVIEW_RECORD:VISUAL_PROFILE',
+    }
+
+
 def story_assets(ep: Path) -> list[dict]:
     manifest = load_json(ep / MANIFEST_REL)
     artifacts = manifest.get('artifacts') or {}
@@ -81,7 +110,7 @@ def story_assets(ep: Path) -> list[dict]:
         errors = verify_story_review(ep)
         if errors:
             raise SystemExit('story semantic review failed: ' + '; '.join(errors))
-        rows.append(row_for_path(ep / 'meta/story-semantic-review.json', 'story_semantic_review'))
+        rows.append(row_for_story_review_authority(ep))
     return rows
 
 
@@ -90,17 +119,52 @@ def visual_assets(ep: Path) -> tuple[list[dict], dict]:
     gates = load_json(ep / GATES_REL)
     artifacts = manifest.get('artifacts') or {}
     visual = gates.get('visual') or {}
+    calibration = visual.get('calibration') or {}
+    admission_items = calibration.get('items') or []
+    modern_four_admission = (
+        calibration.get('policy') == 'four_admission_v21'
+        and isinstance(admission_items, list)
+        and len(admission_items) == 4
+    )
     rows: list[dict] = []
-    spec = repo_path(artifacts.get('visual_spec'), 'manifest.artifacts.visual_spec')
-    rows.append(row_for_path(spec, 'visual_spec'))
+    raw_spec = artifacts.get('visual_spec')
+    if isinstance(raw_spec, str) and raw_spec.strip():
+        spec = repo_path(raw_spec, 'manifest.artifacts.visual_spec')
+        rows.append(row_for_path(spec, 'visual_spec'))
+    elif modern_four_admission:
+        # V2.1+ no longer needs a separately authored legacy visual-spec markdown.
+        # The frozen Visual Profile is the current visual specification authority.
+        spec = ep / 'meta/visual-profile.json'
+        if not spec.is_file():
+            raise SystemExit('modern Visual Lock requires meta/visual-profile.json')
+        rows.append(row_for_path(spec, 'visual_profile_lock'))
+    else:
+        raise SystemExit('manifest.artifacts.visual_spec missing')
 
     sheet = visual.get('calibration_contact_sheet') or {}
-    sheet_path = repo_path(sheet.get('path'), 'visual.calibration_contact_sheet.path')
-    sheet_row = row_for_path(sheet_path, 'calibration_contact_sheet')
-    expected_sheet = str(sheet.get('sha256') or '').lower()
-    if expected_sheet and expected_sheet != sheet_row['sha256'].lower():
-        raise SystemExit('calibration contact sheet hash already drifted before Visual Lock')
-    rows.append(sheet_row)
+    if sheet.get('path'):
+        sheet_path = repo_path(sheet.get('path'), 'visual.calibration_contact_sheet.path')
+        sheet_row = row_for_path(sheet_path, 'calibration_contact_sheet')
+        expected_sheet = str(sheet.get('sha256') or '').lower()
+        if expected_sheet and expected_sheet != sheet_row['sha256'].lower():
+            raise SystemExit('calibration contact sheet hash already drifted before Visual Lock')
+        rows.append(sheet_row)
+    elif modern_four_admission:
+        # A contact sheet is presentation-only. Bind delegated approval directly
+        # to all four exact admission pixels so current Visual Lock never has to
+        # manufacture a legacy three-frame sheet merely to satisfy approval IO.
+        for item in admission_items:
+            if not isinstance(item, dict) or item.get('decision') != 'passed':
+                raise SystemExit('modern Visual Lock admission must be passed before delegated approval')
+            admission_id = str(item.get('id') or '')
+            p = repo_path(item.get('asset_path'), f'visual admission[{admission_id}].asset_path')
+            row = row_for_path(p, f'visual_admission:{admission_id}')
+            expected = str(item.get('sha256') or '').lower()
+            if not expected or expected != row['sha256'].lower():
+                raise SystemExit(f'visual admission hash drift before Visual Lock: {admission_id}')
+            rows.append(row)
+    else:
+        raise SystemExit('visual.calibration_contact_sheet.path missing')
 
     refs = visual.get('references') or {}
     for item in refs.get('items') or []:
@@ -120,7 +184,7 @@ def visual_assets(ep: Path) -> tuple[list[dict], dict]:
         errors = verify_visual_review(ep)
         if errors:
             raise SystemExit('visual profile review failed: ' + '; '.join(errors))
-        rows.append(row_for_path(ep / 'meta/visual-profile-review.json', 'visual_profile_review'))
+        rows.append(row_for_visual_review_authority(ep))
     return rows, profile
 
 
@@ -157,6 +221,23 @@ def verify_lock(ep: Path, kind: str) -> list[str]:
             continue
         raw = row.get('path')
         expected = str(row.get('sha256') or '')
+        if row.get('kind') == 'authority':
+            role = row.get('role')
+            if role == 'story_semantic_review':
+                actual = review_authority_sha256(ep)
+            elif role == 'visual_profile_review':
+                actual = visual_profile_review_persistence.authority_sha256(ep)
+            else:
+                errors.append(f'{kind}: unknown authority artifact role {role}')
+                continue
+            if not actual:
+                errors.append(f'{kind}: {role} authority missing')
+            elif actual.lower() != expected.lower():
+                errors.append(
+                    f'{kind}: authority SHA256 drift {raw}\n'
+                    f'expected={expected}\nactual  ={actual}'
+                )
+            continue
         try:
             p = repo_path(raw, f'{kind}.artifact')
         except SystemExit as e:

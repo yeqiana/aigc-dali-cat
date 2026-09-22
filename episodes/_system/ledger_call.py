@@ -85,13 +85,16 @@ def success(
     return _invoke(production_ledger.cmd_success, namespace)
 
 
-def tech_fail(ep: Path, *, frame: int, code: str, message: str) -> tuple[bool, str]:
+def tech_fail(ep: Path, *, frame: int, code: str, message: str,
+              provider_invoked: bool = False, runner_request_id: str | None = None) -> tuple[bool, str]:
     """Mirror ``production_ledger.py tech-fail`` for a worker failure."""
     namespace = SimpleNamespace(
         episode_dir=str(Path(ep).resolve()),
         frame=f"{int(frame):02d}",
         code=code,
         message=message[:1000],
+        provider_invoked=bool(provider_invoked),
+        runner_request_id=runner_request_id,
     )
     return _invoke(production_ledger.cmd_tech_fail, namespace)
 
@@ -113,12 +116,30 @@ def review(
     return _invoke(production_ledger.cmd_review, namespace)
 
 
+def authorize_repair(
+    ep: Path,
+    *,
+    frame: int,
+    note: str,
+    delegated_auto: bool = True,
+) -> tuple[bool, str]:
+    """Mirror ``production_ledger.py authorize-repair`` for one bounded repair."""
+    namespace = SimpleNamespace(
+        episode_dir=str(Path(ep).resolve()),
+        frame=f"{int(frame):02d}",
+        note=str(note),
+        delegated_auto=bool(delegated_auto),
+    )
+    return _invoke(production_ledger.cmd_authorize_repair, namespace)
+
+
 def self_test() -> None:
     assert _invoke.__name__ == "_invoke"
     assert begin.__name__ == "begin"
     assert success.__name__ == "success"
     assert tech_fail.__name__ == "tech_fail"
     assert review.__name__ == "review"
+    assert authorize_repair.__name__ == "authorize_repair"
     print("LEDGER CALL SELF-TEST PASS")
 
 

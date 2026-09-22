@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "decision": "PASS",
+  "created_at": "2026-09-11T13:50:41+08:00",
+  "role": "ordinary_baseline",
+  "frame": 1,
+  "asset_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/media/candidates/scheduled/01-9ae48137181c-a2.png",
+  "sha256": "3666919bd9f18e7232c977f11ab67ad7652ca1cb6fff478f8dc107eb98e160cc",
+  "frame_contract_sha256": "db91b9b929238588dd2bed43a39b7bcb12df29bf4cee4a0f5373388ed1bc3e1d",
+  "queue_item_id": "9ae48137181c",
+  "reviewer_scope": "delegated_pixel_review",
+  "checks": {
+    "visual_profile_match": "PASS",
+    "reality_first": "PASS",
+    "ordinary_life_density": "PASS",
+    "unposed_capture": "PASS",
+    "not_cinematic": "PASS",
+    "capture_credibility": "PASS",
+    "identity_usable": "PASS",
+    "group_members_distinct": "PASS",
+    "identity_anchor_usable": "PASS"
+  },
+  "face_boxes": [
+    {
+      "character_id": "P01",
+      "x": 0.27,
+      "y": 0.2,
+      "w": 0.23,
+      "h": 0.32
+    },
+    {
+      "character_id": "P02",
+      "x": 0.58,
+      "y": 0.28,
+      "w": 0.24,
+      "h": 0.32
+    }
+  ],
+  "note": "实际像素复核（委派机器像素审阅 WORK_ISOLATED，非用户亲审）。可见证据：手机前置手持车内自拍，P02 位于副驾一侧举机并把驾驶位 P01 带进画面（左驾布局成立，画面内无正在被拍摄的手机，相机来源可解释）；两张正脸清楚、可辨识，非背影、非远距、非遮挡，适合作为 Frame01 Character Identity Anchor 与后续身份参考。日常密度：湿车窗雨珠水痕、后排旅行袋/硬壳箱/收纳包、杯架矿泉水瓶、充电线等生活杂物。光线为阴天散射车窗光，无电影调色、无棚拍感、无美颜磨皮（近距可见自然皮肤质感）。两人为可区分的不同个体（性别、发型、衣着均不同）。face_boxes 依据实际人脸像素位置标定，仅用于派生身份裁切。",
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-11T13:56:17+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/visual-lock-baseline-attempt-1-request.json",
+    "request_id": "visual-lock-baseline-a1-6d9ec2fd8a8fc6bf",
+    "request_fingerprint": "6d9ec2fd8a8fc6bfc8e9adffbe5deb30831ed9b0fb67c3b6596ff1ec615ce752"
+  },
+  "approved_at": "2026-09-11T13:56:17+08:00",
+  "provisional_master_created": true
+}

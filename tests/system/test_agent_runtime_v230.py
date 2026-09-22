@@ -26,6 +26,15 @@ class ProviderCapabilityTests(unittest.TestCase):
             self.assertEqual(r["normalize_decision"],"AUTO_NORMALIZE")
             self.assertEqual(r["provider_raw_canvas"]["resize_direction_to_release"],"upscale")
 
+    def test_degenerate_provider_thumbnail_fails_before_ratio_normalize(self):
+        with tempfile.TemporaryDirectory() as td:
+            p=Path(td)/"raw.png";Image.new("RGB",(100,100)).save(p)
+            with self.assertRaises(provider_capability.ProviderCapabilityError) as ctx:
+                provider_capability.inspect(
+                    p,1080,1350,model="gpt-image-2",route="codex_subscription",frame=1)
+            self.assertEqual(ctx.exception.code,"PROVIDER_RAW_CANVAS_DEGENERATE")
+            self.assertIn("100x100",str(ctx.exception))
+
 class IntentTests(unittest.TestCase):
     def test_rules(self):
         self.assertEqual(request_intent.resolve("不要生成图片，只做前期")["intent"],"PREPRODUCTION")
@@ -58,6 +67,11 @@ class TraceTests(unittest.TestCase):
             s=runtime_trace.finish_run(ep,trace,"run-test","COMPLETE")
             self.assertGreaterEqual(s["span_end_count"],1)
             self.assertFalse(s["stage_authority"])
+
+    def test_trace_span_requires_context(self):
+        with tempfile.TemporaryDirectory() as td:
+            with self.assertRaises(runtime_trace.TraceContextUnavailable):
+                runtime_trace.start_span(Path(td), "UNIT", category="test")
 
 class PlatformTests(unittest.TestCase):
     def test_platform(self):

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "storyos://standards/visual_profiles/schema/selector-evidence.schema.json",
+  "title": "Story OS Visual Profile Selection Evidence",
+  "description": "Phase 3.2 evidence contract. Existence of a profile is not evidence; a selection fact must be traceable: inputs, matched rules, excluded profiles, final reason and selector version.",
+  "type": "object",
+  "required": [
+    "selector_version",
+    "source",
+    "registry",
+    "inputs_digest",
+    "inputs_summary",
+    "matched_rules",
+    "rejected",
+    "reason"
+  ],
+  "properties": {
+    "selector_version": { "type": "string", "minLength": 1 },
+    "source": { "const": "rule_engine" },
+    "registry": { "type": "string", "minLength": 1 },
+    "inputs_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "inputs_summary": { "type": "object" },
+    "matched_rules": { "type": "array", "items": { "type": "string" } },
+    "rejected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["profile", "reason"],
+        "properties": {
+          "profile": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "reason": { "type": "array", "items": { "type": "string" } },
+    "candidate_count": { "type": "integer", "minimum": 0 },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  }
+}
+

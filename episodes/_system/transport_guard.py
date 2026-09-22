@@ -8,6 +8,8 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 import story_json
+import hot_state_bridge
+import production_ledger
 
 STATE_REL = Path('meta/transport-state.json')
 LEDGER_REL = Path('meta/production-ledger.json')
@@ -35,6 +37,8 @@ def load_json(path: Path) -> dict:
 
 def save_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
+    if path.name == STATE_REL.name and path.parent.name == "meta":
+        hot_state_bridge.mirror(path.parent.parent, "TRANSPORT_STATE", data)
 
 
 def resolve_episode(raw: str) -> Path:
@@ -46,7 +50,10 @@ def resolve_episode(raw: str) -> Path:
 
 def ensure_state(ep: Path) -> tuple[Path, dict]:
     path = ep / STATE_REL
-    if path.exists():
+    hot = hot_state_bridge.read(ep, "TRANSPORT_STATE")
+    if hot.get("redis_read") and isinstance(hot.get("value"), dict):
+        return path, hot["value"]
+    if hot_state_bridge.file_fallback_allowed(hot) and path.exists():
         return path, load_json(path)
     data = {
         'schema_version': SCHEMA_VERSION,
@@ -65,7 +72,7 @@ def ensure_state(ep: Path) -> tuple[Path, dict]:
 
 
 def ledger_frame(ep: Path, raw_frame: str) -> tuple[str, dict, dict]:
-    ledger = load_json(ep / LEDGER_REL)
+    ledger = production_ledger.load_authority(ep, default={}) or {}
     try:
         key = f'{int(raw_frame):02d}'
     except ValueError:

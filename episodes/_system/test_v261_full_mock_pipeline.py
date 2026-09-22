@@ -416,7 +416,6 @@ def run() -> dict:
                 "artifacts": hashes,
                 "critic_provenance": runtime_provenance.build_critic_provenance("WORK", attempt=1),
                 "release_checks": {k: True for k in release_preflight.RELEASE_CHECKS},
-                "governance_checks": {k: True for k in release_preflight.GOV_CHECKS},
                 "issue_codes": [],
                 "notes": ["mock semantic critic pass"],
                 "summary": {"passed": True},

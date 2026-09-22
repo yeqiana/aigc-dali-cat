@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "resolver_version": 3,
+  "catalog_sha": "20ecd1817b3dc4f9ffb01873307f32aa5c354b21831d463764473d588e8d3dc4",
+  "primary_place": "川西山谷公路旁可停车观景位置与雨后低云山谷",
+  "source_tags": [
+    "modern_2020s",
+    "mountain_road_valley",
+    "travel",
+    "川西山谷公路旁可停车观景位置与雨后低云山谷"
+  ],
+  "selected": [
+    {
+      "id": "CAPTURE_PHONE_REALISM",
+      "type": "capture_descriptor",
+      "path": "library/capture/capture-presets.json",
+      "tags": [
+        "modern_2020s",
+        "phone",
+        "first_person",
+        "realistic"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.2,
+      "match_score": 1
+    },
+    {
+      "id": "ERA_MODERN_2020S_YOUTH",
+      "type": "character_era_descriptor",
+      "path": "library/characters/era-presets.json",
+      "tags": [
+        "modern_2020s",
+        "young_people",
+        "ordinary",
+        "smartphone"
+      ],
+      "reuse_scope": "prompt_reference",
+      "quality_score": 9.0,
+      "match_score": 1
+    }
+  ],
+  "policy": {
+    "reference_only": true,
+    "reuse_final_episode_images": false
+  },
+  "cache_hit": true
+}

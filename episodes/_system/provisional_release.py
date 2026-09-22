@@ -7,6 +7,7 @@ This file is runtime-only draft evidence. It never mutates release-manifest, sna
 from __future__ import annotations
 import argparse, json, os, shutil, subprocess, sys, tempfile
 from pathlib import Path
+import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import execution_capsule
 import intro_policy
 import runtime_router
@@ -16,13 +17,11 @@ import runtime_timeout_policy
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/provisional-release.json")
 def resolve_codex(raw):
-    v=raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not v: raise RuntimeError("Codex CLI not found")
-    return Path(v).expanduser().resolve()
+    import codex_cli_contract
+    return codex_cli_contract.resolve_path(raw)
 def prefix(p):
-    if p.suffix.lower()==".py": return [sys.executable,str(p)]
-    if os.name=="nt" and p.suffix.lower() in {".cmd",".bat"}: return ["cmd.exe","/d","/c",str(p)]
-    return [str(p)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(p)
 def build(ep,codex_raw=None,timeout=None):
     active_runtime,_=runtime_router.detect()
     if timeout is None:
@@ -66,7 +65,7 @@ Do not claim final approval. Stop after this file exists.
     cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"--json","-"]
     log=ep/"meta/scoped-workers/provisional-release.jsonl"; log.parent.mkdir(parents=True,exist_ok=True)
     with log.open("a",encoding="utf-8",newline="\n") as h:
-        try: cp=subprocess.run(cmd,input=prompt,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+        try: cp=codex_user_runner.run_codex(cmd,input=prompt,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="review")
         except subprocess.TimeoutExpired: return {"ok":False,"returncode":124,"log":str(log)}
     ok=cp.returncode==0 and out.is_file()
     if ok:

@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
+
+import workspace_provider
 
 try:
     import yaml
@@ -48,6 +51,16 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("schema_version must be 1")
     if not isinstance(get_path(cfg, "image.model"), str) or not get_path(cfg, "image.model").strip():
         errors.append("image.model must be a non-empty model id")
+    fallback_models = get_path(cfg, "image.fallback_models", [])
+    if not isinstance(fallback_models, list) or any(
+            not isinstance(row, str) or not row.strip() for row in fallback_models):
+        errors.append("image.fallback_models must be a list of non-empty model ids")
+    else:
+        normalized = [row.strip() for row in fallback_models]
+        if len(normalized) != len(set(normalized)):
+            errors.append("image.fallback_models must not contain duplicates")
+        if str(get_path(cfg, "image.model") or "").strip() in normalized:
+            errors.append("image.fallback_models must not repeat image.model")
     if get_path(cfg, "image.quality") != "high":
         errors.append("image.quality must be high")
     default_ratio = str(get_path(cfg, "image.default_aspect_ratio", ""))
@@ -62,6 +75,9 @@ def validate(data: dict | None = None) -> list[str]:
     review = get_path(cfg, "normalize.review_ratio_delta_max")
     if not isinstance(auto, (int, float)) or not isinstance(review, (int, float)) or not 0 <= auto < review <= 0.05:
         errors.append("normalize ratio thresholds must satisfy 0 <= automatic < review <= 0.05")
+    raw_min_dimension = get_path(cfg, "normalize.provider_raw_min_dimension")
+    if not isinstance(raw_min_dimension, int) or not 64 <= raw_min_dimension <= 512:
+        errors.append("normalize.provider_raw_min_dimension must be an int between 64 and 512")
     workers = get_path(cfg, "production.max_inflight_images")
     if not isinstance(workers, int) or not 1 <= workers <= 3:
         errors.append("production.max_inflight_images must be 1..3")
@@ -71,6 +87,8 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("normalize.enabled and normalize.preserve_raw must be true")
     if get_path(cfg, "normalize.technical_failure_triggers_generation") is not False:
         errors.append("normalize.technical_failure_triggers_generation must be false")
+    if not isinstance(get_path(cfg, "normalize.provider_ratio_crop_exception_enabled"), bool):
+        errors.append("normalize.provider_ratio_crop_exception_enabled must be a bool")
     if get_path(cfg, "production.continuous_first_completed") is not True or get_path(cfg, "production.wave_barrier") is not False:
         errors.append("production must use continuous_first_completed=true and wave_barrier=false")
     if get_path(cfg, "production.ledger_single_writer") is not True:
@@ -81,6 +99,8 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("provider.measure_raw_dimensions_locally must be true")
     if get_path(cfg, "provider.provider_receipt_required") is not True:
         errors.append("provider.provider_receipt_required must be true")
+    if not isinstance(get_path(cfg, "provider.group_reference_proxy"), bool):
+        errors.append("provider.group_reference_proxy must be a bool")
     if get_path(cfg, "agent_runtime.trace.enabled") is not True:
         errors.append("agent_runtime.trace.enabled must be true")
     if get_path(cfg, "agent_runtime.intent.enabled") is not True:
@@ -103,6 +123,56 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("runtime.codex_image_reasoning_effort must be medium")
     if get_path(cfg, "runtime.local_codex_fallback") != "explicit_only":
         errors.append("runtime.local_codex_fallback must be explicit_only")
+    errors.extend(workspace_provider.validate_config(cfg))
+    # Review capability routing. WORK remains text/governance authority; actual-pixel
+    # review is a separate isolated Codex capability and does not switch the whole Runtime.
+    if str(get_path(cfg, "runtime.review.text.runtime", "")).upper() != "WORK":
+        errors.append("runtime.review.text.runtime must be WORK")
+    if get_path(cfg, "runtime.review.text.isolated_required") is not True:
+        errors.append("runtime.review.text.isolated_required must be true")
+    if get_path(cfg, "runtime.review.text.fresh_turn_required") is not True:
+        errors.append("runtime.review.text.fresh_turn_required must be true")
+    if str(get_path(cfg, "runtime.review.vision.runtime", "")).upper() != "CODEX":
+        errors.append("runtime.review.vision.runtime must be CODEX")
+    if str(get_path(cfg, "runtime.review.vision.model", "")) != "gpt-5.6-terra":
+        errors.append("runtime.review.vision.model must be gpt-5.6-terra")
+    if get_path(cfg, "runtime.review.vision.isolated_required") is not True:
+        errors.append("runtime.review.vision.isolated_required must be true")
+    if get_path(cfg, "runtime.review.vision.ephemeral") is not True:
+        errors.append("runtime.review.vision.ephemeral must be true")
+    if get_path(cfg, "runtime.review.vision.generation_session_reuse") is not False:
+        errors.append("runtime.review.vision.generation_session_reuse must be false")
+    for key in ("reasoning_effort_default", "reasoning_effort_fast", "reasoning_effort_final"):
+        if str(get_path(cfg, f"runtime.review.vision.{key}", "")) not in {"low", "medium", "high"}:
+            errors.append(f"runtime.review.vision.{key} must be low, medium or high")
+    final_review_cap = get_path(cfg, "runtime.review.vision.max_inflight_final")
+    if type(final_review_cap) is not int or not 1 <= final_review_cap <= 6:
+        errors.append("runtime.review.vision.max_inflight_final must be an int between 1 and 6")
+    if str(get_path(cfg, "runtime.review.governance.runtime", "")).upper() != "WORK":
+        errors.append("runtime.review.governance.runtime must be WORK")
+    if get_path(cfg, "runtime.review.allow_web_runtime") is not False:
+        errors.append("runtime.review.allow_web_runtime must be false")
+    host_loop_cap = get_path(cfg, "runtime.host_loop_max_cycles")
+    if type(host_loop_cap) is not int or not 8 <= host_loop_cap <= 256:
+        errors.append("runtime.host_loop_max_cycles must be an int between 8 and 256")
+
+    # Legacy runtime aliases stay validated during migration. Workspace provider
+    # identity is canonical only under runtime.workspace.
+    if str(get_path(cfg, "runtime.review.runtime", "")).upper() != "WORK":
+        errors.append("runtime.review.runtime legacy alias must be WORK")
+    if get_path(cfg, "runtime.review.isolated_critic_required") is not True:
+        errors.append("runtime.review.isolated_critic_required legacy alias must be true")
+    if get_path(cfg, "runtime.review.fresh_product_review_turn_required") is not True:
+        errors.append("runtime.review.fresh_product_review_turn_required legacy alias must be true")
+    if get_path(cfg, "runtime.review.allow_local_codex_review") is not False:
+        errors.append("runtime.review.allow_local_codex_review legacy text/governance alias must be false")
+    for key, expected in (("runtime.workers.local_codex_preimage",4),("runtime.workers.derived",6)):
+        if get_path(cfg,key) != expected: errors.append(f"{key} must be {expected}")
+    # W-91: runtime.parallel.authority_enabled / derived_enabled were removed rather
+    # than pinned here. A key whose only reader is this type check is exactly the
+    # "declared but never consumed" state the config-reality contract forbids.
+    if not isinstance(get_path(cfg,"runtime.preimage_parallel_enabled"), bool):
+        errors.append("runtime.preimage_parallel_enabled must be a bool")
     for key in (
         "provider.registry",
         "provider.runtime",
@@ -128,6 +198,24 @@ def validate(data: dict | None = None) -> list[str]:
     repair_limit=get_path(cfg,"production.max_content_repairs_per_frame")
     if type(repair_limit) is not int or repair_limit not in {0,1}:
         errors.append("production.max_content_repairs_per_frame must be 0 or 1")
+    baseline_pool_enabled=get_path(cfg,"production.visual_lock_baseline_pool.enabled")
+    baseline_pool_max=get_path(cfg,"production.visual_lock_baseline_pool.max_additional_candidates")
+    if baseline_pool_enabled is not True:
+        errors.append("production.visual_lock_baseline_pool.enabled must be true")
+    if type(baseline_pool_max) is not int or not 0 <= baseline_pool_max <= 3:
+        errors.append("production.visual_lock_baseline_pool.max_additional_candidates must be 0..3")
+    admission_pool_enabled=get_path(cfg,"production.visual_lock_admission_pool.enabled")
+    admission_pool_max=get_path(cfg,"production.visual_lock_admission_pool.max_additional_candidates_per_frame")
+    if admission_pool_enabled is not True:
+        errors.append("production.visual_lock_admission_pool.enabled must be true")
+    if type(admission_pool_max) is not int or not 0 <= admission_pool_max <= 3:
+        errors.append("production.visual_lock_admission_pool.max_additional_candidates_per_frame must be 0..3")
+    tech_retry_max=get_path(cfg,"production.technical_retry.max_attempts_per_item")
+    tech_retry_backoff=get_path(cfg,"production.technical_retry.backoff_seconds")
+    if type(tech_retry_max) is not int or not 1 <= tech_retry_max <= 5:
+        errors.append("production.technical_retry.max_attempts_per_item must be 1..5")
+    if not isinstance(tech_retry_backoff,list) or len(tech_retry_backoff) != max(0, int(tech_retry_max or 0)-1) or any(type(x) is not int or x < 0 or x > 300 for x in tech_retry_backoff):
+        errors.append("production.technical_retry.backoff_seconds must contain max_attempts_per_item-1 integer delays in 0..300")
     policy = get_path(cfg, "timeout_policy")
     try:
         from runtime_timeout_policy import REQUIRED_ROLES, VALID_RANGE
@@ -158,6 +246,66 @@ def validate(data: dict | None = None) -> list[str]:
             value = compat.get(key)
             if not isinstance(value, bool):
                 errors.append(f"compatibility.{key} must be a bool")
+    # storage 契约位：只放非敏感部署拓扑，凭据一律只以环境变量「名字」出现。
+    # password_env 的格式校验是「禁止把密码写进仓库」的机器化防线：任何看起来
+    # 像密码字面量的值都匹配不上 STORYOS_* 变量名，会在这里 fail-fast。
+    storage = get_path(cfg, "storage")
+    if not isinstance(storage, dict):
+        errors.append("storage must be a mapping")
+    else:
+        for name, required in (
+            ("mysql", ("host", "port", "user", "database", "password_env")),
+            ("redis", ("host", "port", "db", "timeout_seconds", "password_env")),
+        ):
+            section = storage.get(name)
+            if not isinstance(section, dict):
+                errors.append(f"storage.{name} must be a mapping")
+                continue
+            for key in required:
+                if key not in section:
+                    errors.append(f"storage.{name}.{key} is required")
+            if not isinstance(section.get("host"), str) or not str(section.get("host") or "").strip():
+                errors.append(f"storage.{name}.host must be a non-empty string")
+            port = section.get("port")
+            if type(port) is not int or not 1 <= port <= 65535:
+                errors.append(f"storage.{name}.port must be an int in 1..65535")
+            password_env = section.get("password_env")
+            if not isinstance(password_env, str) or not re.fullmatch(r"STORYOS_[A-Z0-9_]+", password_env):
+                errors.append(
+                    f"storage.{name}.password_env must name a STORYOS_* environment variable; "
+                    "credential literals must never be written into this file"
+                )
+        mysql = storage.get("mysql") if isinstance(storage.get("mysql"), dict) else {}
+        redis = storage.get("redis") if isinstance(storage.get("redis"), dict) else {}
+        if not isinstance(mysql.get("user"), str) or not str(mysql.get("user") or "").strip():
+            errors.append("storage.mysql.user must be a non-empty string")
+        if not isinstance(mysql.get("database"), str) or not str(mysql.get("database") or "").strip():
+            errors.append("storage.mysql.database must be a non-empty string")
+        redis_db = redis.get("db")
+        if type(redis_db) is not int or redis_db < 0:
+            errors.append("storage.redis.db must be a non-negative int")
+        redis_timeout = redis.get("timeout_seconds")
+        if type(redis_timeout) not in (int, float) or isinstance(redis_timeout, bool) or redis_timeout <= 0:
+            errors.append("storage.redis.timeout_seconds must be a positive number")
+        runtime_store = storage.get("runtime_store")
+        if not isinstance(runtime_store, dict):
+            errors.append("storage.runtime_store must be a mapping")
+        else:
+            if str(runtime_store.get("mode") or "").lower() not in {"jsonl", "mysql", "dual"}:
+                errors.append("storage.runtime_store.mode must be jsonl, mysql or dual")
+            jsonl_root = runtime_store.get("jsonl_root")
+            if not isinstance(jsonl_root, str) or not jsonl_root.strip():
+                errors.append("storage.runtime_store.jsonl_root must be a non-empty string")
+        episode_meta_store = storage.get("episode_meta_store")
+        if not isinstance(episode_meta_store, dict):
+            errors.append("storage.episode_meta_store must be a mapping")
+        elif str(episode_meta_store.get("mode") or "").lower() not in {"json", "dual", "mysql"}:
+            errors.append("storage.episode_meta_store.mode must be json, dual or mysql")
+        hot_state = storage.get("hot_state")
+        if not isinstance(hot_state, dict):
+            errors.append("storage.hot_state must be a mapping")
+        elif str(hot_state.get("mode") or "").lower() not in {"file", "dual", "redis"}:
+            errors.append("storage.hot_state.mode must be file, dual or redis")
     return errors
 
 
@@ -193,7 +341,8 @@ def validate_index(data: dict | None = None) -> list[str]:
             if not (ROOT / raw).exists():
                 errors.append(f"{section}.{name} points to missing path: {raw}")
     stages = index.get("stage_read_sets")
-    if not isinstance(stages, dict) or set(stages) != {"CREATIVE_STORY", "PREIMAGE_COMPILE", "VISUAL_LOCK", "PRODUCTION", "RELEASE"}:
+    required_steps={"CREATIVE_STORY", "PREIMAGE_COMPILE", "VISUAL_LOCK", "PRODUCTION", "RELEASE"}
+    if not isinstance(stages, dict) or not required_steps.issubset(set(stages)):
         errors.append("stage_read_sets must declare the five bounded workflow steps")
     else:
         for step, paths in stages.items():

@@ -20,6 +20,7 @@ attempt/technical-failure bookkeeping and their own prompts.
 from __future__ import annotations
 
 import argparse
+import codex_user_runner
 import json
 import os
 import shutil
@@ -40,22 +41,13 @@ class LaunchResult:
 
 
 def resolve_codex(raw):
-    value = raw or shutil.which("codex") or shutil.which("codex.exe") \
-        or shutil.which("codex.cmd")
-    if not value:
-        raise RuntimeError("Codex CLI not found")
-    p = Path(value).expanduser().resolve()
-    if not p.exists():
-        raise RuntimeError(f"Codex CLI not found: {p}")
-    return p
+    import codex_cli_contract
+    return codex_cli_contract.resolve_path(raw)
 
 
 def prefix(codex):
-    if codex.suffix.lower() == ".py":
-        return [sys.executable, str(codex)]
-    if os.name == "nt" and codex.suffix.lower() in {".cmd", ".bat"}:
-        return ["cmd.exe", "/d", "/c", str(codex)]
-    return [str(codex)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(codex)
 
 
 def default_sandbox():
@@ -152,13 +144,17 @@ def launch(
         extra=extra,
     )
     with resolved_log.open("w", encoding="utf-8", newline="\n") as handle:
-        done = subprocess.run(
+        # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE: one execution contract for every
+        # critic lane. Direct when Story OS already runs as the interactive user,
+        # otherwise the same declarative task is forwarded to the user-mode runner.
+        done = codex_user_runner.run_codex(
             cmd,
             input=prompt.encode("utf-8"),
             stdout=handle,
             stderr=subprocess.STDOUT,
             timeout=timeout,
             check=False,
+            task_type="critic",
         )
     log_text = resolved_log.read_text(encoding="utf-8-sig", errors="replace")
     return LaunchResult(returncode=done.returncode, log_path=resolved_log,
@@ -180,6 +176,45 @@ def parse_json_file(path):
     return story_json.read_json(path)
 
 
+def recover_completed_agent_json(log_text: str) -> dict | None:
+    """Recover a completed critic answer when Codex crashes after the answer.
+
+    Fail closed: accept only a JSONL ``item.completed`` agent_message whose
+    inner text is a JSON object and which is followed by ``turn.completed``.
+    This deliberately rejects partial streaming output and pre-completion
+    messages. The caller must still validate source hashes and the review schema.
+    """
+    last_agent: tuple[int, dict] | None = None
+    completed_indexes: list[int] = []
+    for index, raw in enumerate(str(log_text or "").splitlines()):
+        try:
+            event = json.loads(raw)
+        except Exception:
+            continue
+        if not isinstance(event, dict):
+            continue
+        if event.get("type") == "turn.completed":
+            completed_indexes.append(index)
+            continue
+        item = event.get("item") if event.get("type") == "item.completed" else None
+        if not isinstance(item, dict) or item.get("type") != "agent_message":
+            continue
+        text = item.get("text")
+        if not isinstance(text, str) or not text.strip():
+            continue
+        try:
+            payload = parse_json_text(text)
+        except Exception:
+            continue
+        last_agent = (index, payload)
+    if not last_agent:
+        return None
+    index, payload = last_agent
+    if not any(done_index > index for done_index in completed_indexes):
+        return None
+    return payload
+
+
 def self_test():
     import tempfile
 
@@ -197,6 +232,14 @@ def self_test():
         out.write_text(json.dumps(payload), encoding="utf-8")
         assert parse_json_file(out) == payload
         assert parse_json_text(json.dumps(payload)) == payload
+        recovered_log = "\n".join([
+            json.dumps({"type":"item.completed","item":{"type":"agent_message","text":json.dumps(payload)}}),
+            json.dumps({"type":"turn.completed","usage":{}}),
+            "memory allocation failed",
+        ])
+        assert recover_completed_agent_json(recovered_log) == payload
+        partial_log = json.dumps({"type":"item.completed","item":{"type":"agent_message","text":json.dumps(payload)}})
+        assert recover_completed_agent_json(partial_log) is None
         try:
             parse_json_text("[1]")
             raise AssertionError("non-object JSON must be rejected")

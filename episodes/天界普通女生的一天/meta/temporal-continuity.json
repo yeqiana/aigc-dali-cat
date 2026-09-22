@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_world_state_sha256": "2eb2f49ff3d78b170be044d530a55768837b4153f73dad5bec210c1cf78dd4f5",
+  "world_state_synced": true,
+  "frames": [
+    {
+      "frame": "01",
+      "elapsed_minutes_from_prev": 0,
+      "daypart": "morning",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "opening morning state"
+    },
+    {
+      "frame": "02",
+      "elapsed_minutes_from_prev": 8,
+      "daypart": "morning",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "03",
+      "elapsed_minutes_from_prev": 12,
+      "daypart": "morning",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "04",
+      "elapsed_minutes_from_prev": 15,
+      "daypart": "morning",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "05",
+      "elapsed_minutes_from_prev": 20,
+      "daypart": "morning",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "06",
+      "elapsed_minutes_from_prev": 18,
+      "daypart": "morning",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "07",
+      "elapsed_minutes_from_prev": 35,
+      "daypart": "morning",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "08",
+      "elapsed_minutes_from_prev": 30,
+      "daypart": "day",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "late morning advances into lunch period"
+    },
+    {
+      "frame": "09",
+      "elapsed_minutes_from_prev": 15,
+      "daypart": "day",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "10",
+      "elapsed_minutes_from_prev": 25,
+      "daypart": "day",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "11",
+      "elapsed_minutes_from_prev": 40,
+      "daypart": "afternoon",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "lunch ends and the group walks to old cloud market"
+    },
+    {
+      "frame": "12",
+      "elapsed_minutes_from_prev": 18,
+      "daypart": "afternoon",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "13",
+      "elapsed_minutes_from_prev": 20,
+      "daypart": "afternoon",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "14",
+      "elapsed_minutes_from_prev": 25,
+      "daypart": "afternoon",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "15",
+      "elapsed_minutes_from_prev": 35,
+      "daypart": "afternoon",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "16",
+      "elapsed_minutes_from_prev": 55,
+      "daypart": "dusk",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": "the group has spent the afternoon at the market and tea stall; sun is now low"
+    },
+    {
+      "frame": "17",
+      "elapsed_minutes_from_prev": 15,
+      "daypart": "dusk",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "18",
+      "elapsed_minutes_from_prev": 12,
+      "daypart": "dusk",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "19",
+      "elapsed_minutes_from_prev": 35,
+      "daypart": "night",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": "sunset has faded and residential lanterns are now the practical light source"
+    },
+    {
+      "frame": "20",
+      "elapsed_minutes_from_prev": 15,
+      "daypart": "night",
+      "weather": "clear mild",
+      "precipitation": "none",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    }
+  ]
+}

@@ -19,9 +19,11 @@ from pathlib import Path
 
 import codex_critic_runner as critic_runner
 import frame_contract
+import frame_scout_persistence
 import runtime_router
 import story_json
 import runtime_timeout_policy
+import production_ledger
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY_PATH = ("visual", "fast_frame_scout")
@@ -148,6 +150,14 @@ def _result_path(ep:Path,frame:int)->Path:
     return ep/RESULT_DIR/f"{frame:02d}.json"
 
 
+def _load_result(ep:Path,frame:int)->dict|None:
+    return frame_scout_persistence.load(ep, frame)
+
+
+def _save_result(ep:Path,result:dict)->dict:
+    return frame_scout_persistence.save(ep, result)
+
+
 def _candidate_path(ep:Path,frame:int,asset_sha:str)->Path:
     return ep/"meta"/f".frame-scout-{frame:02d}-{asset_sha[:10]}.candidate.json"
 
@@ -183,10 +193,10 @@ def evaluate_candidate(ep:Path,frame:int,image:Path|str,*,codex_raw:str|None=Non
     }
     if not required(ep):
         result={**base,"decision":"DEFER_TO_FINAL","issue_codes":[],"notes":"Scout policy disabled for this episode.","model_called":False,"scout_status":"disabled"}
-        write_json(_result_path(ep,frame),result);return result
+        _save_result(ep,result);return result
     if risk["risk_level"]=="LOW":
         result={**base,"decision":"DEFER_TO_FINAL","issue_codes":[],"notes":"Low-risk frame: skip extra critic call; final critic remains authoritative.","model_called":False,"scout_status":"low_risk_defer"}
-        write_json(_result_path(ep,frame),result);return result
+        _save_result(ep,result);return result
 
     candidate=_candidate_path(ep,frame,asset_sha);candidate.unlink(missing_ok=True)
     rel_out=candidate.relative_to(ROOT).as_posix()
@@ -216,23 +226,26 @@ Write ONLY JSON to {rel_out}:
 Allowed issue codes: {sorted(ISSUE_CODES)}
 """
     active_runtime,_=runtime_router.detect()
-    if active_runtime in {"WORK","WEB"} and not codex_raw:
+    vision_runtime,_=runtime_router.vision_review_runtime()
+    if vision_runtime != "CODEX" and not codex_raw:
         result={
             **base,
             "decision":"DEFER_TO_FINAL",
             "issue_codes":[],
-            "notes":f"{active_runtime} product runtime: Fast Scout is non-blocking and does not launch local Codex; defer actual-pixel authority to product/final review.",
+            "notes":f"vision runtime={vision_runtime}: Fast Scout defers actual-pixel authority to final review.",
             "model_called":False,
-            "scout_status":"product_runtime_defer",
+            "scout_status":"vision_runtime_defer",
         }
-        write_json(_result_path(ep,frame),result)
+        _save_result(ep,result)
         return result
     try:
         codex=resolve_codex(codex_raw)
         log=ep/"meta/frame-scouts"/f"{frame:02d}.jsonl"
+        log.parent.mkdir(parents=True,exist_ok=True)
         done=critic_runner.launch(
             prompt,codex=codex,root=ROOT,timeout=timeout,
-            sandbox="workspace-write",reasoning_effort_literal='model_reasoning_effort="low"',
+            sandbox="workspace-write",model=runtime_router.vision_review_model(),
+            reasoning_effort=runtime_router.vision_review_effort("fast"),
             attachments=[image],log_path=log)
         if done.returncode!=0 or not candidate.is_file():
             raise RuntimeError(f"scout critic failed rc={done.returncode}")
@@ -242,14 +255,14 @@ Allowed issue codes: {sorted(ISSUE_CODES)}
         result={**base,**model,"model_called":True,"scout_status":"model_complete","critic_log":log.relative_to(ROOT).as_posix()}
     except Exception as exc:
         result={**base,"decision":"DEFER_TO_FINAL","issue_codes":[],"notes":f"Scout technical defer: {exc}","model_called":True,"scout_status":"technical_defer"}
-    write_json(_result_path(ep,frame),result)
+    _save_result(ep,result)
     return result
 
 
 def latest_candidate_rows(ep:Path)->list[dict]:
-    p=ep/"meta/production-ledger.json"
-    if not p.is_file():return []
-    d=read_json(p);rows=[]
+    d=production_ledger.load_authority(ep,default=None)
+    if not isinstance(d,dict):return []
+    rows=[]
     for key,row in sorted((d.get("frames") or {}).items()):
         if not isinstance(row,dict):continue
         asset=row.get("approved_asset") or row.get("current_candidate")
@@ -265,9 +278,8 @@ def audit(ep:Path,*,write_summary:bool=True)->list[str]:
     errors=[];rows=[]
     for item in latest_candidate_rows(ep):
         risk=classify_frame(ep,item["frame"])
-        scout_path=_result_path(ep,item["frame"])
         required_now=risk["risk_level"]=="HIGH"
-        scout=read_json(scout_path) if scout_path.is_file() else None
+        scout=_load_result(ep,item["frame"])
         if required_now and not isinstance(scout,dict):
             errors.append(f"high-risk frame {item['frame']:02d} missing Fast Scout")
             continue
@@ -286,10 +298,10 @@ def audit(ep:Path,*,write_summary:bool=True)->list[str]:
         # A wall-clock timestamp here would change the evidence SHA on every verification.
         evidence_times=[]
         for row in rows:
-            sp=_result_path(ep,int(row["frame"]))
-            if sp.is_file():
-                try:evidence_times.append(str(read_json(sp).get("scouted_at") or ""))
-                except Exception:pass
+            try:
+                scout=_load_result(ep,int(row["frame"]))
+                if isinstance(scout,dict):evidence_times.append(str(scout.get("scouted_at") or ""))
+            except Exception:pass
         write_json(ep/SUMMARY_REL,{"schema_version":1,"evidence_updated_at":max(evidence_times) if evidence_times else None,"policy":"risk_based_v21","rows":rows,"errors":errors,"summary":{"passed":not errors,"final_critic_still_required":True}})
     return errors
 
@@ -323,7 +335,7 @@ def main()->int:
                 [print("FAIL:",x) for x in errors];return 2
             print("FAST FRAME SCOUT AUDIT PASS");return 0
         if a.frame:
-            p=_result_path(ep,a.frame);print(p.read_text(encoding="utf-8") if p.is_file() else "{}")
+            result=_load_result(ep,a.frame);print(json.dumps(result or {},ensure_ascii=False,indent=2))
         else:
             p=ep/SUMMARY_REL;print(p.read_text(encoding="utf-8") if p.is_file() else "{}")
         return 0

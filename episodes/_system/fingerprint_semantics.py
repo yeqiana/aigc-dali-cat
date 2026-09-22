@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import codex_critic_runner
 import datetime as dt
 import hashlib
 import json
@@ -19,6 +20,7 @@ import product_review_adapter
 from story_os_contract import story_os_version
 import story_json
 import runtime_timeout_policy
+import episode_state_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -76,7 +78,12 @@ def required(contract_version: str) -> bool:
 
 def episode_contract_version(ep: Path) -> str:
     versions: list[tuple[tuple[int, ...], str]] = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    state = episode_state_persistence.load(Path(ep).resolve()) or {}
+    raw = str(state.get("tool_version") or "")
+    vt = version_tuple(raw)
+    if vt != (0,):
+        versions.append((vt, raw))
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -97,17 +104,12 @@ def history_from_registry(current: dict, registry: dict) -> list[dict]:
     ][-5:]
 
 def resolve_codex(raw: str | None) -> Path:
-    value = raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not value:
-        raise RuntimeError("Codex CLI not found for semantic Recent-5 critic")
-    return Path(value).expanduser().resolve()
+    import codex_cli_contract
+    return codex_cli_contract.resolve_path(raw)
 
 def prefix(codex: Path) -> list[str]:
-    if codex.suffix.lower() == ".py":
-        return [sys.executable, str(codex)]
-    if os.name == "nt" and codex.suffix.lower() in {".cmd", ".bat"}:
-        return ["cmd.exe", "/d", "/c", str(codex)]
-    return [str(codex)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(codex)
 
 def score_from_flags(flags: dict) -> tuple[int, bool, list[str]]:
     matched = [k for k in FINGERPRINT_KEYS if flags.get(k) is True]
@@ -404,21 +406,23 @@ def run_review(root: Path, ep: Path, fp_path: Path, registry_path: Path, history
         )
         raise ProductReviewHostAction(request)
     codex = resolve_codex(codex_raw)
-    cmd = prefix(codex) + [
-        "exec", "--skip-git-repo-check", "--ephemeral",
-        "-c", 'model_reasoning_effort="high"',
-        "-s", "workspace-write", "-C", str(root), "--json", "-"
-    ]
-    with log_path.open("w", encoding="utf-8", newline="\n") as handle:
-        completed = subprocess.run(
-            cmd,
-            input=critic_prompt(root, ep, fp_path, registry_path, current, history, candidate),
-            text=True,
-            stdout=handle,
-            stderr=subprocess.STDOUT,
-            timeout=timeout,
-            check=False,
-        )
+    direct_prompt = critic_prompt(root, ep, fp_path, registry_path, current, history, candidate) + """
+
+DIRECT CODEX EXECUTION OVERRIDE:
+Do not edit or write any repository file in this execution.
+Return ONLY the exact candidate JSON object as your final answer, with no prose,
+no Markdown fences and no status summary. The parent process persists it.
+"""
+    completed = codex_critic_runner.launch(
+        direct_prompt,
+        codex=codex,
+        root=root,
+        timeout=timeout,
+        output_path=candidate,
+        reasoning_effort="high",
+        sandbox="workspace-write",
+        log_path=log_path,
+    )
     if completed.returncode != 0:
         raise RuntimeError(f"semantic recent5 critic failed rc={completed.returncode}; log={log_path}")
     if before_fp != sha256_file(fp_path) or before_reg != sha256_file(registry_path):

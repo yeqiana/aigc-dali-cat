@@ -32,6 +32,7 @@ def cmd_init_compliance(args: argparse.Namespace) -> int:
     return 0
 
 def verify_governance(ep: Path) -> list[str]:
+    """Verify policy/governance evidence; release semantic critics have no authority here."""
     if not guard_required(ep):
         return []
     p = ep / COMPLIANCE_REL
@@ -66,6 +67,28 @@ def verify_release_semantic(ep: Path) -> list[str]:
         return validate_release_review(ep, read_json(p))
     except Exception as exc:
         return [str(exc)]
+
+def verify_release_evidence(ep: Path) -> dict[str, list[str]]:
+    """Canonical release-evidence policy shared by preflight and snapshot.
+
+    File presence is never enough: each evidence family is validated through its
+    authoritative verifier so stale/invalid semantic or governance evidence fails
+    closed everywhere that consumes release readiness.
+    """
+    ep = Path(ep).resolve()
+    return {
+        "release_semantic": verify_release_semantic(ep),
+        "governance": verify_governance(ep),
+    }
+
+
+def release_evidence_errors(ep: Path) -> list[str]:
+    errors: list[str] = []
+    for family, family_errors in verify_release_evidence(ep).items():
+        for error in family_errors:
+            errors.append(f"{family}: {error}")
+    return errors
+
 
 def cmd_enable(args: argparse.Namespace) -> int:
     ep = ep_path(args.episode_dir)

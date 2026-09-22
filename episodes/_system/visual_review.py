@@ -8,6 +8,7 @@ from pathlib import Path
 from story_os_contract import FOUR_ADMISSION_V21_POLICY
 import story_json
 import runtime_timeout_policy
+import episode_state_persistence
 
 SYSTEM = Path(__file__).resolve().parent
 ROOT = SYSTEM.parents[1]
@@ -24,7 +25,13 @@ def version_tuple(raw):
 
 def is_v21(ep: Path) -> bool:
     versions=[]
-    for rel in ("meta/episode-state.json","meta/release-manifest.json","meta/story-gates.json"):
+    try:
+        versions.append(version_tuple(
+            (episode_state_persistence.load(Path(ep).resolve()) or {}).get("tool_version")
+        ))
+    except Exception:
+        pass
+    for rel in ("meta/release-manifest.json","meta/story-gates.json"):
         p=ep/rel
         if p.is_file():
             try: versions.append(version_tuple(read_json(p).get("tool_version")))

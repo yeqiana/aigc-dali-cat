@@ -1,0 +1,50 @@
+{
+  "schema_id": "experience_record",
+  "schema_version": 1,
+  "status": "design",
+  "record_kind": "episode_experience",
+  "authority_values": ["derived_non_authority"],
+  "required": [
+    "schema",
+    "schema_version",
+    "experience_id",
+    "record_kind",
+    "episode_id",
+    "story_dna_reference",
+    "advisor_report_reference",
+    "observation_reference",
+    "feedback_reference",
+    "production_outcome",
+    "audience_feedback",
+    "created_time",
+    "advisory_only",
+    "blocks_production",
+    "authority"
+  ],
+  "reference_fields": [
+    "story_dna_reference",
+    "advisor_report_reference",
+    "observation_reference",
+    "feedback_reference"
+  ],
+  "must_be_true": ["advisory_only"],
+  "must_be_false": ["blocks_production"],
+  "forbidden_key_patterns": [
+    "score",
+    "rating",
+    "percent",
+    "percentage",
+    "points",
+    "grade",
+    "rank",
+    "stars",
+    "threshold"
+  ],
+  "policy": {
+    "storage_only": "The Experience Store stores history; it never judges a story and never edits a rule.",
+    "reference_only": "An experience record points at existing derived artifacts; it never copies or overrides them.",
+    "not_authority": "Experience is derived data; it never replaces episode-state.json or story-gates.json.",
+    "no_score": "Audience feedback is stored as raw facts and free text; this layer never turns it into a score or a threshold.",
+    "advisory_only": "An experience record never blocks production."
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "note": "EP003 字幕安全区排布。默认 y=702（0.52 画高，左中安全区 0.42-0.62，x=72 左对齐）。逐帧以边缘密度（低信息带）在安全区内择优，当默认 y=702 同时满足“低信息带”与“不压关键道具/动作”时保持不变；仅 01/06 因信息密度、15 因压住关键道具与动作而偏离。全部落点均在左中安全区内，无需 safe_zone_override_reason。",
+  "default_y_ratio": 0.52,
+  "inspection": {
+    "method": "per-frame edge-density scan inside y=567..837 with default preference",
+    "frames_deviating": [
+      "01",
+      "06",
+      "15"
+    ],
+    "deviations": {
+      "01": {
+        "y": 804,
+        "edge_density_at_default": 7.2,
+        "edge_density_chosen": 3.3,
+        "reason": "默认 702 落在副驾车门/车内结构边缘带，下移到 804 贴近车内平滑区，避开人物手臂与车窗外的山谷细节。"
+      },
+      "06": {
+        "y": 567,
+        "edge_density_at_default": 18.4,
+        "edge_density_chosen": 11.2,
+        "reason": "默认 702 压在近景湿滑弯路与护栏的强边缘上（该帧关键证据即弯路形状），上移到 567 落在山谷/林坡的低信息带，不遮挡路面与护栏线索。"
+      },
+      "15": {
+        "y": 823,
+        "edge_density_at_default": 10.22,
+        "edge_density_chosen": 10.99,
+        "reason": "默认 702 压在 P01 双手与遥控器/手机（关键道具与人物动作）上，且上方 567-620 落在她抓袖口的手与肩部动作带上；下移到 823（0.61，仍在左中安全区）落在车身下部与湿路面，不遮挡控制器、抓握动作和人物侧脸。"
+      }
+    }
+  },
+  "frames": {
+    "01": {
+      "y": 804
+    },
+    "06": {
+      "y": 567
+    },
+    "15": {
+      "y": 823
+    }
+  }
+}

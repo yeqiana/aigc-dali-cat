@@ -1,5 +1,18 @@
 # 项目协作规则（Codex 自动读取）
 
+## StoryOS 前端 / UI 任务入口
+
+涉及 Web Console、Production Monitor、Run Detail、Dashboard、Data Grid、Drawer、UI 改版、视觉精修、截图评审或“去 AI 味”时：
+
+1. 先读取根 `DESIGN.md`；
+2. 再读取 `skills/storyos-ui-design/SKILL.md`；
+3. 先识别现有 Theme / Token / Shared Components，再决定 Direction / Extract / Audit / Build / Polish 模式；
+4. 不得用外部 Skill 覆盖 StoryOS 已有 Design Contract、业务状态语义或 API Contract；
+5. CREATE / VISUAL REDESIGN / POLISH 完成前按 `skills/storyos-ui-design/checklists/visual-review.md` 做视觉验收；
+6. UI 默认目标是高密度生产控制台，不是营销页、AI SaaS 模板或赛博朋克大屏。
+
+外部 UI Skill 只作为参考知识；吸收来源和边界记录在 `skills/storyos-ui-design/references/external-skills.md`。
+
 ## Story OS 当前执行入口
 
 涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须先读取仓库根目录 `START_HERE.md`，再读取 `SKILL.md`。
@@ -37,7 +50,7 @@
 - 用户说“剧情大概是…”：`user_seed`。必须强化和重写，禁止把用户原文直接拆成 20 张。
 - 用户说“必须保留/结尾必须”：`core_constraints`。硬约束必须保留，其他结构允许优化。
 - 只有用户明确说“剧情已经定了/不要改剧情”才使用 `locked_story`。
-- 用户不写 image：默认 `image_model=gpt-image-2`、`image_quality=high`；正式生产不得静默降级 Quality。
+- 用户不写 image：默认模型必须读取 `config/storyos.yaml:image.model`，`image_quality=high`；正式生产不得静默降级 Quality。
 - 用户显式指定 image：强绑定，禁止静默替换。
 - 当前 V2.1 Visual Lock 永远按 4 张口径执行；“3 张校准”只允许出现在明确 legacy-only 的兼容代码/历史说明中。
 
@@ -103,7 +116,7 @@
 - 显式本地 Codex：`runtimes/CODEX.md`
 - 普通 ChatGPT Web：`runtimes/WEB.md`
 
-**本机存在 `codex.exe` 不再自动推导整个 Runtime=CODEX。** 当前默认整体 Runtime 仍是 WORK，但图片执行层显式配置为 `runtime.image_execution_runtime=CODEX`；只有 image generation / image repair 可以启动本地 Codex。图片控制模型必须使用 `gpt-5.6-luna` + `reasoning=medium`，实际图片模型仍为 `gpt-image-2` + `quality=high`。Story、PREIMAGE、Critic、Review、Gate、Release 不得因此交给 Codex full-auto。整套 CODEX Runtime 仍必须显式设置 `STORY_OS_RUNTIME=CODEX`。
+**本机存在 `codex.exe` 不再自动推导整个 Runtime=CODEX。** 当前默认整体 Runtime 仍是 WORK，但图片执行层显式配置为 `runtime.image_execution_runtime=CODEX`；只有 image generation / image repair 可以启动本地 Codex。图片控制模型必须使用 `gpt-5.6-luna` + `reasoning=medium`；实际图片模型统一读取 `config/storyos.yaml:image.model` 并使用 `quality=high`。Story、PREIMAGE、Critic、Review、Gate、Release 不得因此交给 Codex full-auto。整套 CODEX Runtime 仍必须显式设置 `STORY_OS_RUNTIME=CODEX`。
 
 Runtime DAG 使用通用 `scoped_model`；WORK/WEB 的非图片步骤通过 `product_runtime_adapter.py` 暴露宿主动作，CODEX 整体 Runtime 才使用 `scoped_codex_worker.py`。图片 Scheduler 独立读取 `STORY_OS_IMAGE_RUNTIME` / `runtime.image_execution_runtime`。宿主请求使用 `meta/runtime/host-requests/<request_id>.json` 保存不可覆盖历史，正常等待宿主执行记为 `HOST_WAIT`；Product Review 使用 attempt-scoped request。Concept/Story/Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，但都必须 fresh + source-SHA-bound。
 
@@ -161,15 +174,17 @@ Visual Lock 不再只看三张“风格图”：先 baseline，随后 worst cond
 
 ## 提交规则
 
-1. 允许提交 git 的图片/大文件仅限以下两类：
-   - 角色参考图：`episodes/**/assets/characters/`
+1. **系列剧本的母版图必须提交 Git。** 凡被 `episodes/**/meta/series-character-identity.json` 引用的 `group_identity_asset` / `primary_asset` / `supporting_assets`，都是系列身份权威的像素锚点，必须入库并保持 SHA 绑定一致；它们在本地存在但未提交，等于让 fresh clone 拿到悬空身份绑定。落盘沿用 `episodes/**/assets/characters/`，不搬迁既有已冻结证据引用的文件。
+   - 校验：`python episodes/_system/contract_sync.py` 会对未入库的系列母版图 FAIL。不得用「像素资产默认不入 Git」把母版图留在本地。
+2. 允许提交 git 的图片/大文件仅限以下两类：
+   - 角色参考图：`episodes/**/assets/characters/`（含上一条的系列母版图）
    - 竞品与账号截图：`research/competitors/`、`research/account/`
-2. 其他图片、视频、音频、压缩包一律禁止提交，已由 `.gitignore` 默认忽略，包括：
+3. 其他图片、视频、音频、压缩包一律禁止提交，已由 `.gitignore` 默认忽略，包括：
    - 各集 `images/`、`publish/` 成片
    - `assets/` 下 frames、subtitled、references、shenshi、materials 等中间资产
    - 发布包 zip、`workbench/` 中间处理资产、`.playwright-cli/` 截图
-3. 新增大文件前先 `git status` 确认只出现白名单文件；可用 `git check-ignore <文件>` 验证是否被忽略。
-4. 已误提交的非白名单文件用 `git rm --cached` 移出索引（保留本地），不要删本地文件。
+4. 新增大文件前先 `git status` 确认只出现白名单文件；可用 `git check-ignore <文件>` 验证是否被忽略。
+5. 已误提交的非白名单文件用 `git rm --cached` 移出索引（保留本地），不要删本地文件。
 
 <!-- STORY_OS_V1_8_AGENTS_BEGIN -->
 ## V1.8 默认视觉路由

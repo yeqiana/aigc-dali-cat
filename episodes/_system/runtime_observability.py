@@ -31,6 +31,7 @@ WORKFLOW_OBSERVABILITY_REL = Path("meta/workflow-observability.json")
 IMAGE_SCHEDULER_PERFORMANCE_REL = Path("meta/image-scheduler-performance.json")
 BATCH_RUNTIME_PERFORMANCE_REL = Path("meta/batch-runtime-performance.json")
 QUOTA_OBSERVABILITY_REL = Path("meta/quota-observability.json")
+TRACE_SUMMARY_REL = Path("meta/runtime/trace-summary.json")
 TRACE_EVENTS_REL = Path("meta/runtime/trace-events.jsonl")
 _TRACE_LOCK = threading.Lock()
 
@@ -41,7 +42,16 @@ KNOWN_PATHS = {
     "image_scheduler_performance": IMAGE_SCHEDULER_PERFORMANCE_REL,
     "batch_runtime_performance": BATCH_RUNTIME_PERFORMANCE_REL,
     "quota_observability": QUOTA_OBSERVABILITY_REL,
+    "trace_summary": TRACE_SUMMARY_REL,
 }
+
+
+def kind_for_path(rel: Path | str) -> str:
+    p = Path(rel)
+    for kind, known in KNOWN_PATHS.items():
+        if p == known:
+            return kind
+    raise ValueError(f"observability path is not registered: {p}")
 
 
 def now() -> str:
@@ -70,17 +80,65 @@ def resolve_known_path(rel: Path | str) -> Path:
     raise ValueError(f"observability path is not registered: {p}")
 
 
+def read_summary(ep: Path | str, rel: Path | str, *, default: dict | None = None) -> dict:
+    """Read one metric summary from its configured authority.
+
+    ``dual`` keeps the compatibility-file fallback. ``mysql`` is fail-closed:
+    a MySQL failure or missing row never resurrects a local JSON projection.
+    """
+    import story_json
+    import storage_config
+
+    episode = Path(ep).resolve()
+    known = resolve_known_path(rel)
+    kind = kind_for_path(known)
+    mode = storage_config.episode_meta_store_config()["mode"]
+    if mode in {"dual", "mysql"}:
+        try:
+            import metric_snapshot_persistence
+            loaded = metric_snapshot_persistence.load_latest(episode, kind)
+            if isinstance(loaded, dict):
+                return loaded
+        except Exception:
+            if mode == "mysql":
+                raise
+        if mode == "mysql":
+            return dict(default or {})
+    target = episode / known
+    if target.is_file():
+        data = story_json.read_json(target, require_object=False)
+        if isinstance(data, dict):
+            return data
+    return dict(default or {})
+
+
 def write_summary(ep: Path | str, rel: Path | str, *, kind: str,
                   payload: dict, schema_version: int = 1) -> Path:
-    """Deterministic atomic write of one registered observability summary."""
+    """Persist one registered summary using its configured authority.
+
+    ``dual`` remains fail-soft for migration. ``mysql`` propagates persistence
+    failures and never creates a local JSON shadow that could become a false
+    authority.
+    """
     import story_json
+    import storage_config
 
     target = Path(ep).resolve() / resolve_known_path(rel)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    story_json.write_json(
-        target,
-        summary_document(kind, payload, schema_version=schema_version),
-    )
+    data = summary_document(kind, payload, schema_version=schema_version)
+    mode = storage_config.episode_meta_store_config()["mode"]
+    db_saved = False
+    if mode in {"dual", "mysql"}:
+        try:
+            import metric_snapshot_persistence
+            metric_snapshot_persistence.save(Path(ep).resolve(), kind, data)
+            db_saved = True
+        except Exception:
+            if mode == "mysql":
+                raise
+            db_saved = False
+    if mode != "mysql" or not db_saved:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        story_json.write_json(target, data)
     return target
 
 

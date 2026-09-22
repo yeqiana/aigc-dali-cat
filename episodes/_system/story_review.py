@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import codex_critic_runner
 import datetime as dt
 import hashlib
 import json
@@ -18,9 +19,13 @@ import runtime_provenance
 import product_review_adapter
 import story_json
 import runtime_timeout_policy
+import episode_state_persistence
+import review_record_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_REL = Path("meta/story-semantic-review.json")
+REVIEW_TYPE = "STORY_SEMANTIC"
+EXPORT_REL = Path("meta/runtime/review-exports/story-semantic.json")
 CANDIDATE_REL = Path("meta/.story-semantic-review.candidate.json")
 TARGET_CONTRACT = (2, 0, 3, 2)
 
@@ -76,6 +81,48 @@ def write_json(path: Path, data: dict) -> None:
     story_json.write_json(path, data)
 
 
+
+def load_review(ep: Path) -> dict | None:
+    ep = Path(ep).resolve()
+    return review_record_persistence.load_latest(
+        ep, REVIEW_TYPE, legacy_path=ep / REVIEW_REL
+    )
+
+
+def review_authority_sha256(ep: Path) -> str | None:
+    return review_record_persistence.authority_sha256(
+        Path(ep).resolve(), REVIEW_TYPE, legacy_path=Path(ep).resolve() / REVIEW_REL
+    )
+
+
+def save_review(
+    ep: Path,
+    data: dict,
+    *,
+    decision: str,
+    source_sha256: str | None = None,
+) -> dict:
+    provenance = data.get("critic_provenance") or {}
+    return review_record_persistence.save(
+        Path(ep).resolve(),
+        REVIEW_TYPE,
+        REVIEW_REL,
+        data,
+        decision=decision,
+        reviewer_type=str(provenance.get("runtime") or "") or None,
+        source_sha256=source_sha256,
+    )
+
+
+def materialize_review_export(ep: Path, data: dict | None = None) -> Path | None:
+    return review_record_persistence.materialize_export(
+        Path(ep).resolve(),
+        REVIEW_TYPE,
+        payload=data,
+        filename="story-semantic.json",
+    )
+
+
 def version_tuple(raw: object) -> tuple[int, ...]:
     try:
         return tuple(int(x) for x in str(raw or "").split("."))
@@ -85,7 +132,15 @@ def version_tuple(raw: object) -> tuple[int, ...]:
 
 def episode_contract_version(ep: Path) -> str:
     versions = []
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json", "meta/story-gates.json"):
+    try:
+        state = episode_state_persistence.load(Path(ep).resolve()) or {}
+        raw = str(state.get("tool_version") or "")
+        vt = version_tuple(raw)
+        if vt != (0,):
+            versions.append((vt, raw))
+    except Exception:
+        pass
+    for rel in ("meta/release-manifest.json", "meta/story-gates.json"):
         p = ep / rel
         if not p.is_file():
             continue
@@ -100,15 +155,19 @@ def episode_contract_version(ep: Path) -> str:
 
 
 def review_required(ep: Path) -> bool:
-    for rel in ("meta/episode-state.json", "meta/release-manifest.json"):
-        p = ep / rel
-        if not p.is_file():
-            continue
+    try:
+        if version_tuple(
+            (episode_state_persistence.load(Path(ep).resolve()) or {}).get("tool_version")
+        ) >= TARGET_CONTRACT:
+            return True
+    except Exception:
+        pass
+    p = Path(ep).resolve() / "meta/release-manifest.json"
+    if p.is_file():
         try:
-            if version_tuple(read_json(p).get("tool_version")) >= TARGET_CONTRACT:
-                return True
+            return version_tuple(read_json(p).get("tool_version")) >= TARGET_CONTRACT
         except Exception:
-            continue
+            pass
     return False
 
 
@@ -189,12 +248,11 @@ def validate_payload(data: dict, *, story_sha: str, storyboard_sha: str, version
 def verify(ep: Path) -> list[str]:
     if not review_required(ep):
         return []
-    path = ep / REVIEW_REL
-    if not path.is_file():
+    data = load_review(ep)
+    if not isinstance(data, dict):
         return ["meta/story-semantic-review.json missing"]
     try:
         story, storyboard = story_paths(ep)
-        data = read_json(path)
     except Exception as exc:
         return [str(exc)]
     errors = validate_payload(
@@ -203,27 +261,19 @@ def verify(ep: Path) -> list[str]:
         storyboard_sha=sha256_file(storyboard),
         version=episode_contract_version(ep),
     )
-    if version_tuple(episode_contract_version(ep)) >= (2, 5, 0):
-        errors.extend(propagation_core_gate.verify(ep, force=True))
+    if propagation_core_gate.required(ep):
+        errors.extend(propagation_core_gate.verify(ep))
     return errors
 
 
 def resolve_codex(raw: str | None) -> Path:
-    value = raw or shutil.which("codex") or shutil.which("codex.exe") or shutil.which("codex.cmd")
-    if not value:
-        raise RuntimeError("Codex CLI not found")
-    path = Path(value).expanduser().resolve()
-    if not path.exists():
-        raise RuntimeError(f"Codex CLI not found: {path}")
-    return path
+    import codex_cli_contract
+    return codex_cli_contract.resolve_path(raw)
 
 
 def command_prefix(codex: Path) -> list[str]:
-    if codex.suffix.lower() == ".py":
-        return [sys.executable, str(codex)]
-    if os.name == "nt" and codex.suffix.lower() in {".cmd", ".bat"}:
-        return ["cmd.exe", "/d", "/c", str(codex)]
-    return [str(codex)]
+    import codex_cli_contract
+    return codex_cli_contract.command_prefix(codex)
 
 
 def critic_prompt(ep: Path, story: Path, storyboard: Path, candidate: Path, attempt: int) -> str:
@@ -231,6 +281,15 @@ def critic_prompt(ep: Path, story: Path, storyboard: Path, candidate: Path, atte
     rel_story = story.relative_to(ROOT).as_posix()
     rel_board = storyboard.relative_to(ROOT).as_posix()
     rel_out = candidate.relative_to(ROOT).as_posix()
+    ordinary_life_override = "" if propagation_core_gate.anomaly_applicable(ep) else """
+ORDINARY-LIFE OVERRIDE (takes precedence over anomaly-specific rules below):
+- This Episode is explicitly locked as anomaly_applicable=false. Do NOT invent horror, mystery, paranormal behavior, investigation, anomaly rules, or an abnormal response merely to satisfy generic schema wording.
+- Evaluate whether the ordinary-day arc, relationships, spatial progression, midpoint route change, emotional/visual peak, ending payoff and delete-frame density are coherent and production-worthy.
+- contract.core_anomaly / rule / trigger / direct_consequence and blind_retell.core_anomaly_rule must be non-empty explicit NOT_APPLICABLE statements explaining that the no-anomaly design is intentional.
+- hard_checks.mechanism_consistency means the Episode remains consistently non-anomalous; hard_checks.trigger_consequence means ordinary actions have readable ordinary responses/consequences rather than an abnormal mechanism.
+- ending_recontextualization may pay off at least three earlier ordinary-life facts, objects, or relationship beats; it does not need a twist.
+- V2.5 anomaly propagation_core is NOT required for this explicitly ordinary-life Episode. Omit it rather than fabricating an abnormal_response.
+"""
     return f"""You are an adversarial Story Critic in a fresh isolated session.
 Do NOT rewrite the story. Do NOT score it politely. Your job is to find reasons it should NOT enter production.
 Read:
@@ -242,7 +301,7 @@ Read:
 - standards/传播核与动作回应链规范_V1.0.md
 
 This is critic attempt {attempt}. Ignore propagation scores and author self-evaluation.
-
+{ordinary_life_override}
 Hard rules:
 1. A viewer must be able to explain protagonist, why they are here, their personal stake, the ONE core anomaly rule, trigger, direct consequence, midpoint reframe, climax choice/cost, result and aftermath.
 2. The main events must be explainable by one coherent underlying anomaly mechanism. If an object first returns by itself, later guides people, then suddenly "marks the next person" without one established rule explaining all three, mechanism_consistency=false.
@@ -332,11 +391,14 @@ def _finalize_review(ep: Path, data: dict, *, attempt: int, before_story: str, b
         storyboard_sha=before_board,
         version=episode_contract_version(ep),
     )
-    final = ep / REVIEW_REL
-    write_json(final, data)
+    decision = "PASS" if not errors else "FAIL"
+    source_sha = hashlib.sha256(
+        f"{before_story}|{before_board}".encode("utf-8")
+    ).hexdigest()
+    save_review(ep, data, decision=decision, source_sha256=source_sha)
     (ep / CANDIDATE_REL).unlink(missing_ok=True)
-    if version_tuple(episode_contract_version(ep)) >= (2, 5, 0):
-        errors.extend(propagation_core_gate.verify(ep, force=True))
+    if propagation_core_gate.required(ep):
+        errors.extend(propagation_core_gate.verify(ep))
     if errors:
         print("STORY SEMANTIC REVIEW FAIL")
         for error in errors:
@@ -367,7 +429,12 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
         provenance=provenance,
     )
     if rc == 0:
-        product_review_adapter.mark_complete(ep, "story-semantic", attempt=attempt, final_path=ep / REVIEW_REL)
+        final_export = materialize_review_export(ep, load_review(ep))
+        if final_export is None:
+            raise RuntimeError("story semantic review export missing after PASS")
+        product_review_adapter.mark_complete(
+            ep, "story-semantic", attempt=attempt, final_path=final_export
+        )
     return rc
 
 
@@ -405,24 +472,25 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         return product_review_adapter.HOST_ACTION_REQUIRED_RC
 
     codex = resolve_codex(codex_raw)
-    cmd = command_prefix(codex) + [
-        "exec", "--skip-git-repo-check", "--ephemeral",
-        "-c", 'model_reasoning_effort="high"',
-        "-s", "workspace-write", "-C", str(ROOT), "--json", "-"
-    ]
     log = ep / "meta" / f"story-critic-attempt-{attempt}.jsonl"
     log.parent.mkdir(parents=True, exist_ok=True)
-    with log.open("w", encoding="utf-8", newline="\n") as handle:
-        completed = subprocess.run(
-            cmd,
-            input=critic_prompt(ep, story, storyboard, candidate, attempt),
-            text=True,
-            encoding="utf-8",
-            stdout=handle,
-            stderr=subprocess.STDOUT,
-            timeout=timeout,
-            check=False,
-        )
+    direct_prompt = critic_prompt(ep, story, storyboard, candidate, attempt) + """
+
+DIRECT CODEX EXECUTION OVERRIDE:
+Do not edit or write any repository file in this execution.
+Return ONLY the exact candidate JSON object as your final answer, with no prose,
+no Markdown fences and no status summary. The parent process persists it.
+"""
+    completed = codex_critic_runner.launch(
+        direct_prompt,
+        codex=codex,
+        root=ROOT,
+        timeout=timeout,
+        output_path=candidate,
+        reasoning_effort="high",
+        sandbox="workspace-write",
+        log_path=log,
+    )
     if completed.returncode != 0:
         raise RuntimeError(f"isolated story critic failed rc={completed.returncode}; log={log}")
     if sha256_file(story) != before_story or sha256_file(storyboard) != before_board:
@@ -463,6 +531,15 @@ def self_test() -> None:
     assert validate_payload(data, story_sha=h, storyboard_sha=h, version=story_os_version()) == []
     data["hard_checks"]["mechanism_consistency"] = False
     assert any("mechanism_consistency" in x for x in validate_payload(data, story_sha=h, storyboard_sha=h, version=story_os_version()))
+    old=propagation_core_gate.anomaly_applicable
+    propagation_core_gate.anomaly_applicable=lambda _ep:False
+    try:
+        prompt=critic_prompt(ROOT,ROOT/"dummy-story.md",ROOT/"dummy-board.md",ROOT/"dummy-candidate.json",1)
+        assert "ORDINARY-LIFE OVERRIDE" in prompt
+        assert "Do NOT invent horror" in prompt
+        assert "propagation_core is NOT required" in prompt
+    finally:
+        propagation_core_gate.anomaly_applicable=old
     print("STORY SEMANTIC REVIEW SELF-TEST PASS")
 
 
@@ -504,8 +581,7 @@ def main() -> int:
             print("STORY SEMANTIC REVIEW FINALIZE ERROR:", exc)
             return 3
     if args.cmd == "show":
-        path = ep / REVIEW_REL
-        print(path.read_text(encoding="utf-8") if path.is_file() else "{}")
+        print(json.dumps(load_review(ep) or {}, ensure_ascii=False, indent=2))
         return 0
     errors = verify(ep)
     if errors:

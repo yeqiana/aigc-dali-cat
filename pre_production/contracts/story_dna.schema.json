@@ -1,0 +1,42 @@
+{
+  "schema_id": "story_dna",
+  "schema_version": 1,
+  "status": "mvp",
+  "required_top_level": [
+    "story_id",
+    "setting",
+    "relationship",
+    "character",
+    "anomaly",
+    "emotion",
+    "narrative",
+    "visual_pattern",
+    "series_fit"
+  ],
+  "dimensions": {
+    "setting": ["location", "environment", "time_period", "social_context"],
+    "relationship": ["protagonist", "companion", "relationship_type"],
+    "character": ["protagonist_profile", "ordinary_level", "motivation"],
+    "anomaly": ["anomaly_type", "anomaly_mechanism", "anomaly_visibility", "escalation_pattern"],
+    "emotion": ["primary_emotion", "secondary_emotion", "audience_feeling"],
+    "narrative": ["hook_type", "conflict_type", "ending_style"],
+    "visual_pattern": ["camera_style", "environment_pattern", "recurring_visual_elements"],
+    "series_fit": ["account_style", "audience_expectation", "differentiation_evidence"]
+  },
+  "comparison_fields": {
+    "setting": ["location", "environment"],
+    "relationship": ["relationship_type"],
+    "character": ["protagonist_profile", "motivation"],
+    "anomaly": ["anomaly_type", "anomaly_mechanism"],
+    "emotion": ["primary_emotion", "audience_feeling"],
+    "narrative": ["hook_type", "ending_style"],
+    "visual_pattern": ["camera_style", "recurring_visual_elements"]
+  },
+  "value_rule": "Every subfield is a string or an array of strings. An empty value means 'no evidence in the Story Lock', never an inferred value.",
+  "forbidden_key_patterns": ["score", "rating", "percent", "percentage", "points", "grade", "star", "rank"],
+  "policy": {
+    "scoring": "Story DNA must not contain or compute quality scores.",
+    "structure_only": "Story DNA only structures what the story is, never whether it is good."
+  }
+}
+

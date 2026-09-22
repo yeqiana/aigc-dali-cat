@@ -7,6 +7,37 @@ are imported from production_ledger_core; the CLI facade re-exports these.
 from __future__ import annotations
 
 from production_ledger_core import *  # noqa: F401,F403  (shared ledger globals)
+import sys
+
+
+def episode_dir(raw: str) -> Path:
+    """Resolve an episode lazily during the ledger facade import cycle."""
+    from production_ledger_core import episode_dir as resolve_episode_dir
+    return resolve_episode_dir(raw)
+
+
+def _freeze_visual_profile_after_promote(ep: Path, key: str) -> None:
+    """Phase 4.6-B: the first formal production asset freezes the Visual Profile.
+
+    Promotion is the one place where a reviewed frame candidate becomes the Episode
+    approved asset, so it is the only honest moment to ask the canonical lifecycle
+    for LOCKED -> FROZEN. The closure is advisory: any failure is reported and never
+    aborts the promotion.
+    """
+    try:
+        import visual_profile_closure as closure
+        report = closure.freeze_on_first_asset_commit(ep, frame=key)
+    except Exception as exc:  # a closure failure is never a production failure
+        print(f"WARN: visual profile freeze hook failed for {key}: {type(exc).__name__}: {exc}",
+              file=sys.stderr)
+        return
+    status = report.get("status")
+    if status == closure.RESULT_FROZEN:
+        print(f"visual-profile: FROZEN by frame {key} ({closure.FREEZE_TRIGGER})")
+    elif status == closure.RESULT_FAIL:
+        print(f"WARN: visual profile freeze not applied for {key}: {report.get('code')} "
+              f"{report.get('detail')}", file=sys.stderr)
+
 
 def cmd_init(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
@@ -71,6 +102,25 @@ def cmd_authorize_user_passed_repair(args: argparse.Namespace) -> None:
     print(f"{key}: REPAIR_AUTHORIZED (direct-user passed-frame authority change recorded)")
 
 
+def _refresh_authority_derived_caches(ep: Path) -> None:
+    """Rebuild stale derived authority caches before resolving a new frame contract.
+
+    Authority refresh is specifically entered because upstream authority changed.
+    A derived cache must never create a circular prerequisite where the refreshed
+    Frame Contract is required before the cache derived from that authority can be
+    rebuilt. Only deterministic derived caches are touched here; locked source
+    contracts and review evidence are never rewritten.
+    """
+    import character_appearance_anchor
+    errors = character_appearance_anchor.verify(ep)
+    rebuildable = {
+        "CHARACTER_APPEARANCE_ANCHOR_STALE",
+        "CHARACTER_APPEARANCE_ANCHOR_MISSING:run character_appearance_anchor.py build",
+    }
+    if errors and all(error in rebuildable for error in errors):
+        character_appearance_anchor.build(ep, write=True)
+
+
 def cmd_authorize_authority_refresh(args: argparse.Namespace) -> None:
     """Reopen a ready/passed frame after non-content authority or contract drift.
 
@@ -85,11 +135,12 @@ def cmd_authorize_authority_refresh(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
     key, frame = frame_obj(data, args.frame)
-    if frame["status"] not in {"PASSED", "ORIGINAL_READY", "REPAIR_READY", "LOCKED"}:
-        raise SystemExit(f"authority refresh requires PASSED/ORIGINAL_READY/REPAIR_READY/LOCKED, got {frame['status']}")
+    if frame["status"] not in {"PASSED", "ORIGINAL_READY", "REPAIR_READY", "LOCKED", "NEEDS_USER"}:
+        raise SystemExit(f"authority refresh requires PASSED/ORIGINAL_READY/REPAIR_READY/LOCKED/NEEDS_USER, got {frame['status']}")
     approval = args.approval_text.strip()
     if not approval:
         raise SystemExit("direct user approval text is required")
+    _refresh_authority_derived_caches(ep)
     current_contract = current_frame_contract_provenance(ep, key)
     if not current_contract:
         raise SystemExit("current frame contract provenance missing")
@@ -117,6 +168,90 @@ def cmd_authorize_authority_refresh(args: argparse.Namespace) -> None:
     print(f"{key}: AUTHORITY_REFRESH_AUTHORIZED (content repair budget unchanged)")
 
 
+def authorize_machine_contract_refresh(ep: Path, frame_number: int, *, reason: str) -> dict:
+    """Reopen a candidate only when its recorded generation contract is provably stale.
+
+    This is deterministic recovery, not a user semantic decision. The old
+    candidate and attempt remain audit history and the content repair budget is
+    unchanged.
+    """
+    ep = Path(ep).resolve()
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, frame_number)
+    allowed = {"PASSED", "ORIGINAL_READY", "REPAIR_READY", "LOCKED", "NEEDS_USER"}
+    current_contract = current_frame_contract_provenance(ep, key) or {}
+    if frame.get("status") == "AUTHORITY_REFRESH_AUTHORIZED":
+        auth = frame.get("authority_refresh_authorization") or {}
+        if (
+            str(auth.get("approval_basis") or "") == "machine_verified_frame_contract_drift"
+            and str(auth.get("frame_contract_sha256") or "").lower()
+            == str(current_contract.get("contract_sha256") or "").lower()
+        ):
+            return {
+                "status": "REUSED",
+                "frame": int(frame_number),
+                "frame_contract_sha256": current_contract.get("contract_sha256"),
+            }
+    if frame.get("status") not in allowed:
+        raise ValueError(f"machine contract refresh requires {sorted(allowed)}, got {frame.get('status')}")
+    if not current_contract:
+        raise ValueError("current frame contract provenance missing")
+    candidate = frame.get("current_candidate") or {}
+    candidate_sha = str(candidate.get("sha256") or "").lower()
+    if not candidate_sha:
+        raise ValueError("machine contract refresh requires current candidate sha256")
+    attempt = next(
+        (
+            row for row in reversed(frame.get("attempts") or [])
+            if str(((row or {}).get("candidate") or {}).get("sha256") or "").lower() == candidate_sha
+        ),
+        None,
+    )
+    if not isinstance(attempt, dict):
+        raise ValueError("machine contract refresh requires matching generation attempt")
+    recorded = (attempt.get("request") or {}).get("frame_contract")
+    errors = resolved_frame_contract.verify_recorded_provenance(ep, key, recorded)
+    if not any("frame_contract_sha256 stale" in str(error) for error in errors):
+        raise ValueError("machine contract refresh refused: current candidate is not stale against Frame Contract")
+    previous_contract = str((recorded or {}).get("contract_sha256") or "")
+    prior_status = str(frame.get("status") or "")
+    prior_lock = frame.get("lock") if prior_status == "LOCKED" else None
+    if prior_lock:
+        frame.setdefault("superseded_locks", []).append({
+            "at": now_iso(), "lock": prior_lock, "approved_asset": frame.get("approved_asset")
+        })
+    frame.setdefault("authority_refresh_history", []).append({
+        "at": now_iso(),
+        "previous_status": prior_status,
+        "current_candidate": frame.get("current_candidate"),
+        "reviews": list(frame.get("reviews") or []),
+        "reason": reason,
+        "authorization_basis": "machine_verified_frame_contract_drift",
+        "previous_frame_contract_sha256": previous_contract,
+        "current_frame_contract_sha256": current_contract.get("contract_sha256"),
+    })
+    frame["status"] = "AUTHORITY_REFRESH_AUTHORIZED"
+    frame["authority_refresh_authorization"] = {
+        "at": now_iso(),
+        "reason": reason,
+        "approval_basis": "machine_verified_frame_contract_drift",
+        "frame_contract_sha256": current_contract.get("contract_sha256"),
+        "previous_frame_contract_sha256": previous_contract,
+        "candidate_sha256": candidate_sha,
+        "verification_errors": list(errors),
+        "content_repair_budget_unchanged": True,
+    }
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    return {
+        "status": "AUTHORITY_REFRESH_AUTHORIZED",
+        "frame": int(frame_number),
+        "previous_frame_contract_sha256": previous_contract,
+        "frame_contract_sha256": current_contract.get("contract_sha256"),
+        "candidate_sha256": candidate_sha,
+    }
+
+
 def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     """Record one explicit, non-delegable user exception after a hard repair failure.
 
@@ -127,8 +262,8 @@ def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
     key, frame = frame_obj(data, args.frame)
-    if frame["status"] not in {"NEEDS_USER", "LOCKED"}:
-        raise SystemExit(f"user exception repair requires NEEDS_USER or LOCKED, got {frame['status']}")
+    if frame["status"] not in {"NEEDS_USER", "LOCKED", "PASSED"}:
+        raise SystemExit(f"user exception repair requires NEEDS_USER, LOCKED, or downstream-invalidated PASSED; got {frame['status']}")
     if frame.get("content_repairs_used", 0) != 1:
         raise SystemExit("user exception repair requires exactly one ordinary content repair")
     if frame.get("user_exception_repairs_used", 0) >= 1:
@@ -136,9 +271,26 @@ def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     approval = args.approval_text.strip()
     if not approval:
         raise SystemExit("direct user approval text is required")
-    prior_lock = frame.get("lock") if frame["status"] == "LOCKED" else None
+    prior_status = frame.get("status")
+    prior_lock = frame.get("lock") if prior_status == "LOCKED" else None
     if prior_lock:
         frame.setdefault("superseded_locks", []).append({"at": now_iso(), "lock": prior_lock, "approved_asset": frame.get("approved_asset")})
+        frame["lock"] = None
+    if prior_status == "PASSED":
+        frame.setdefault("superseded_passes", []).append({
+            "at": now_iso(),
+            "current_candidate": frame.get("current_candidate"),
+            "approved_asset": frame.get("approved_asset"),
+            "reviews": list(frame.get("reviews") or []),
+            "reason": args.reason,
+            "invalidation_basis": "later_downstream_actual_pixel_review",
+        })
+    if prior_status in {"PASSED", "LOCKED"}:
+        # The downstream review explicitly invalidated the previously approved
+        # pixels. Keep the old asset only inside superseded_* evidence; leaving
+        # it active would make dependency checks treat a reopened baseline as
+        # still approved and would leak a stale Pixel Master into dependents.
+        frame["approved_asset"] = None
     frame["status"] = "EXCEPTION_REPAIR_AUTHORIZED"
     frame.setdefault("user_exception_authorizations", []).append({
         "at": now_iso(),
@@ -151,6 +303,93 @@ def cmd_authorize_user_exception_repair(args: argparse.Namespace) -> None:
     data["updated_at"] = now_iso()
     save_json(path, data)
     print(f"{key}: EXCEPTION_REPAIR_AUTHORIZED (direct user exception recorded)")
+
+
+def mark_review_needs_user(ep: Path, frame_no: int | str, *, reason: str) -> dict:
+    """Escalate an already accepted frame after a later machine review invalidates it.
+
+    This records a *need for user authority* only.  It never fabricates user
+    approval and never resets any repair counter.  The previously approved/locked
+    asset is preserved under superseded evidence so downstream dependency checks
+    cannot keep treating invalidated pixels as current authority.
+    """
+    ep = episode_dir(str(ep))
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, frame_no)
+    prior_status = str(frame.get("status") or "")
+    if prior_status not in {"LOCKED", "PASSED"}:
+        raise SystemExit(f"review escalation requires LOCKED or PASSED, got {prior_status}")
+    note = str(reason or "").strip()
+    if not note:
+        raise SystemExit("review escalation requires an evidence reason")
+
+    if prior_status == "LOCKED":
+        frame.setdefault("superseded_locks", []).append({
+            "at": now_iso(),
+            "lock": frame.get("lock"),
+            "approved_asset": frame.get("approved_asset"),
+            "reason": note,
+        })
+        frame["lock"] = None
+    else:
+        frame.setdefault("superseded_passes", []).append({
+            "at": now_iso(),
+            "current_candidate": frame.get("current_candidate"),
+            "approved_asset": frame.get("approved_asset"),
+            "reviews": list(frame.get("reviews") or []),
+            "reason": note,
+            "invalidation_basis": "later_downstream_actual_pixel_review",
+        })
+    frame["approved_asset"] = None
+    frame.setdefault("reviews", []).append({
+        "at": now_iso(),
+        "decision": "needs_user",
+        "notes": note,
+    })
+    frame.setdefault("review_escalations", []).append({
+        "at": now_iso(),
+        "from_status": prior_status,
+        "to_status": "NEEDS_USER",
+        "reason": note,
+        "approval_granted": False,
+        "basis": "later_machine_review_invalidated_accepted_pixels",
+    })
+    frame["status"] = "NEEDS_USER"
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    return {"frame": key, "status": "NEEDS_USER", "from_status": prior_status}
+
+
+def cmd_authorize_user_continuation_repair(args: argparse.Namespace) -> None:
+    """Authorize exactly one additional content candidate after an explicit user continue decision.
+
+    This is intentionally separate from the ordinary repair, authority refresh,
+    and the one-shot user exception. It never resets those counters. Each call
+    records the exact direct-user approval and authorizes one continuation
+    generation transaction; another retry requires another explicit user
+    decision plus a separate raw-candidate budget raise.
+    """
+    ep = episode_dir(args.episode_dir)
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, args.frame)
+    if frame["status"] != "NEEDS_USER":
+        raise SystemExit(f"user continuation repair requires NEEDS_USER, got {frame['status']}")
+    approval = args.approval_text.strip()
+    if not approval:
+        raise SystemExit("direct user approval text is required")
+    frame["status"] = "USER_CONTINUATION_REPAIR_AUTHORIZED"
+    frame.setdefault("user_continuation_authorizations", []).append({
+        "at": now_iso(),
+        "approval_text": approval,
+        "reason": args.reason,
+        "user_approved": True,
+        "delegated_auto_review": False,
+        "approval_basis": "direct_user_continuation_after_exhaustion",
+        "continuation_index": int(frame.get("user_continuation_repairs_used") or 0) + 1,
+    })
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    print(f"{key}: USER_CONTINUATION_REPAIR_AUTHORIZED")
 
 
 def cmd_accept_user_exception_candidate(args: argparse.Namespace) -> None:
@@ -210,8 +449,8 @@ def cmd_promote(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)
     key, frame = frame_obj(data, args.frame)
-    if frame["status"] != "PASSED":
-        raise SystemExit(f"promote requires PASSED and refuses to overwrite LOCKED assets, got {frame['status']}")
+    if frame["status"] not in {"PASSED", "WEAK_PASS"}:
+        raise SystemExit(f"promote requires PASSED/WEAK_PASS and refuses to overwrite LOCKED assets, got {frame['status']}")
     candidate_info = frame.get("current_candidate")
     if not isinstance(candidate_info, dict) or not candidate_info.get("path"):
         raise SystemExit("current candidate missing")
@@ -235,6 +474,7 @@ def cmd_promote(args: argparse.Namespace) -> None:
     data["updated_at"] = now_iso()
     save_json(path, data)
     print(f"{key}: approved -> {dst}")
+    _freeze_visual_profile_after_promote(ep, key)
 
 
 def cmd_lock(args: argparse.Namespace) -> None:

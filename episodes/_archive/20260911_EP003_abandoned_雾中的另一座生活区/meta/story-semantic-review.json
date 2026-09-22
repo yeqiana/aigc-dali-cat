@@ -1,0 +1,81 @@
+{
+  "contract": {
+    "protagonist": "P01，24岁普通中国男青年，与女友P02继续川西自驾旅行。",
+    "presence_reason": "雨停后两人在普通山谷停车点休息，P01用车里本来用于旅行拍风景的消费级无人机补拍云海和山谷。",
+    "personal_stake": "前两次经历让P01一直介意证据太模糊，他想确认自己没有看错；P02更在意及时停止靠近，因此P01继续求证会直接伤害两人的信任并带来设备损失。",
+    "core_anomaly": "雨后低云覆盖的同一山谷会短暂与另一边仍在正常生活的完整社会空间发生可观察、可被设备越入的重叠。",
+    "rule": "在重叠存在时，双方可以通过真实空间和设备互相看见；设备越靠近另一边，现实端的返航方向就不再可靠，但异常始终由同一处雾中空间重叠解释，不新增第二套能力。",
+    "trigger": "Frame15：P02明确要求返航后，P01虽然答应却仍盯着图传多停了几秒，没有立刻结束靠近。",
+    "direct_consequence": "Frame16起无人机返航方向漂移，实际运动反而更靠近生活区，随后越飞越低并最终失联。",
+    "midpoint_reframe": "Frame10把此前零散屋顶、农田、牲畜、家庭和市场重新解释成一个完整社会；Frame13-14又把观察关系从‘我们看他们’改成‘他们也在判断我们’。",
+    "climax_choice": "无人机失联并留下Frame19反向空间证据后，P01在Frame20选择不下山寻找、不继续证明，接受失去无人机和无法彻底解释证据的代价，与P02一起离开。",
+    "ending_recontextualization": [
+      "Frame06与EP01相似的弯道路形不再只是巧合，而成为两边空间可能连续的早期证据。",
+      "Frame13-14居民抬头、拉孩子、收摊和关窗不再只是害怕陌生机器，而是在对来自现实这一边的观察者作出普通人的风险反应。",
+      "Frame17-18远处特别亮的山口、护栏和白车形在Frame19被重读为现实停车点，说明双方并非单向观看。",
+      "Frame15的几秒犹豫在Frame16-20被重读为真实代价的因果起点，而不是无后果的好奇。"
+    ]
+  },
+  "propagation_core": {
+    "retell_sentence": "情侣雨后航拍发现雾里有完整生活区，男生被劝返仍多看几秒，无人机反而越飞越近并失联，最后缓存里拍到他们自己的车。",
+    "protagonist_action": "P02要求返航后，P01仍让无人机在另一边上空多停留几秒继续看。",
+    "abnormal_response": "返航指令后无人机没有按现实方向回来，图传中的生活区反而持续逼近。",
+    "consequence": "无人机失联，最后缓存留下另一边居民与现实停车点疑似同框的证据，P01也放弃继续下山求证。",
+    "response_latency": "immediate",
+    "visual_causality": "strong",
+    "retellable_in_10s": true,
+    "social_send_impulse": "strong",
+    "trigger_frame": 15,
+    "response_frame": 16,
+    "payoff_frame": 20,
+    "late_trigger_exception_reason": "EP003前半段必须先用03-10建立‘零散异常其实是一套完整生活社会’，再用13-14让对方发现无人机；只有在P02已经明确要求返航后，P01继续多看几秒才构成有伦理和关系代价的真正选择。晚触发不是拖延，而是让触发从单纯发现升级为人物选择。",
+    "surface_copy_guard": {
+      "structural_reference_only": true,
+      "copied_surface_elements": []
+    }
+  },
+  "blind_retell": {
+    "protagonist_and_reason": "一对普通情侣继续川西自驾，雨停停车休息时用普通消费级无人机补拍风景。",
+    "core_anomaly_rule": "低云下的山谷短暂与另一边完整生活社会发生空间重叠，无人机既能看见那里，也能越入到返航方向不再对应现实这一边的区域。",
+    "worsening_choice": "居民发现无人机、P02要求返航后，P01为了确认对方是否真的在看他们，仍多停留几秒。",
+    "climax_resolution": "无人机因此返航漂移并失联，缓存末帧从另一边拍到现实停车点的白车和两个人影；P01最终选择不下山寻找、不再继续证明。",
+    "ending_reinterpretation": "相似道路、居民的防备动作和远处亮区都被末帧重读成双方处在可互相观察的空间关系中，而P01的求证欲第一次留下真实损失。"
+  },
+  "hard_checks": {
+    "clarity": true,
+    "causal_chain": true,
+    "mechanism_consistency": true,
+    "motivation_stake": true,
+    "trigger_consequence": true,
+    "midpoint_reframe": true,
+    "climax_payoff": true,
+    "ending_payoff": true,
+    "storyboard_information_gain": true,
+    "delete_frame_test": true
+  },
+  "issue_codes": [],
+  "notes": [
+    "核心异常始终只有‘雾中空间重叠/设备可越界’一套机制；道路、完整社会、居民反应、返航漂移和末帧都从这套机制派生。",
+    "Frame19本身是认知反转证据，不单独冒充高潮选择；真正的人物高潮在Frame15的继续求证与Frame20的停止证明/接受损失之间闭合。",
+    "20帧密度合同已逐帧证明删除损失；没有连续5帧只做同类展示。"
+  ],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "story_sha256": "2ed0c8c9b160615a87bac88491877ec01b930caf4f6b1ebc3ebce3634640fb7f",
+  "storyboard_sha256": "7d1cea34b0f16a504e1b62ddf657f12f23f4e6707b281617b33dd9e64e89a1b6",
+  "revision_count": 0,
+  "critic_provenance": {
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-11T13:13:09+08:00",
+    "request_path": "episodes/10_彼此的天上/03_雾中的另一座生活区/meta/runtime/reviews/story-semantic-attempt-1-request.json",
+    "request_id": "story-semantic-a1-202b2c4451a86aeb",
+    "request_fingerprint": "202b2c4451a86aeb1090ebacd4ef9d04f04b5b16ff169212717756f40ddfc7a3"
+  }
+}

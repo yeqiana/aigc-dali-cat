@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "attempt": 4,
+  "review_scope": "DIRECT_USER_CONTINUATION_PATCH",
+  "targets": [
+    "12"
+  ],
+  "critic_provenance": {
+    "schema_version": 2,
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 4,
+    "reviewed_at": "2026-09-16T00:45:07+08:00",
+    "direct_user_continuation_review": true,
+    "log": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-continuation-critic-attempt-4.jsonl",
+    "review_scope": "INCREMENTAL_CONTEXT_SET",
+    "anatomy_integrity_enforced": true,
+    "direct_user_continuation_frames": [
+      "12"
+    ]
+  },
+  "reviewed_assets": [
+    {
+      "frame": "11",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/11.png",
+      "sha256": "a9098924f5be9d4c20a3f146c41aa88c133428ad69fec4a86de5d636984f2c6c"
+    },
+    {
+      "frame": "12",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-2ed4ecabc591-a1.png",
+      "sha256": "025c6645e89a33b4fe4180b74e9dd45ece7de18b4c0f0651ae751c3a1a8c5f0c"
+    },
+    {
+      "frame": "13",
+      "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/approved/13.png",
+      "sha256": "f046ae5ed4d5835cd9515b8bc855e0a1696f68de28c03b62defa48e5495d5136"
+    }
+  ],
+  "critic_result": {
+    "frames": [
+      {
+        "frame": "11",
+        "checks": {
+          "scene_storyboard_fidelity": true,
+          "story_beat_fidelity": true,
+          "key_prop_fidelity": true,
+          "character_identity": true,
+          "wardrobe_continuity": true,
+          "pov_photographer_legality": true,
+          "spatial_continuity": true,
+          "temporal_continuity": true,
+          "anomaly_readability": true,
+          "caption_image_support": true,
+          "actual_information_gain": true,
+          "environment_physics_fidelity": true,
+          "anomaly_escalation_fidelity": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "narrative_evidence_gain": true,
+          "shot_grammar_diversity": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "visual_memory_continuity": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true,
+          "shot_scale_fidelity": true,
+          "scene_position_uniqueness_fidelity": true,
+          "cinematic_structure_translation_fidelity": true,
+          "practical_lighting_design_fidelity": true,
+          "anomaly_concealment_fidelity": true,
+          "anatomy_limb_hand_integrity": true
+        },
+        "issue_codes": [],
+        "notes": "P01左手以碎花袖掀起红布，窗洞内固定铁栏与窗框连接清楚；婚房土墙、红被和夜色连续，铁栏作为新证据而非土墙本身成立。",
+        "decision": "pass"
+      },
+      {
+        "frame": "12",
+        "checks": {
+          "scene_storyboard_fidelity": true,
+          "story_beat_fidelity": true,
+          "key_prop_fidelity": true,
+          "character_identity": true,
+          "wardrobe_continuity": true,
+          "pov_photographer_legality": false,
+          "spatial_continuity": true,
+          "temporal_continuity": true,
+          "anomaly_readability": true,
+          "caption_image_support": true,
+          "actual_information_gain": true,
+          "environment_physics_fidelity": true,
+          "anomaly_escalation_fidelity": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": false,
+          "moment_capture_credibility": true,
+          "narrative_evidence_gain": true,
+          "shot_grammar_diversity": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "visual_memory_continuity": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true,
+          "shot_scale_fidelity": true,
+          "scene_position_uniqueness_fidelity": true,
+          "cinematic_structure_translation_fidelity": true,
+          "practical_lighting_design_fidelity": true,
+          "anomaly_concealment_fidelity": true,
+          "anatomy_limb_hand_integrity": true
+        },
+        "issue_codes": [
+          "POV_ILLEGAL",
+          "CAMERA_OWNER_UNRESOLVED"
+        ],
+        "notes": "货车后门旁的男人、车厢内多名红嫁衣成年女性及可辨脚踝铁环均把囚禁扩展到多人，车厢、人物和车灯也提供尺度与夜间现场光依据。但左下角出现大面积碎花上身与深色屈腿，画面仍正向穿过门缝观察，实际读感像镜头位于P01身后/侧后方拍到她，而非P01单手持机的主观眼位；合同没有登记第二拍摄者、固定机位或镜面解释。",
+        "decision": "fail"
+      },
+      {
+        "frame": "13",
+        "checks": {
+          "scene_storyboard_fidelity": true,
+          "story_beat_fidelity": true,
+          "key_prop_fidelity": true,
+          "character_identity": true,
+          "wardrobe_continuity": true,
+          "pov_photographer_legality": true,
+          "spatial_continuity": true,
+          "temporal_continuity": true,
+          "anomaly_readability": true,
+          "caption_image_support": true,
+          "actual_information_gain": true,
+          "environment_physics_fidelity": true,
+          "anomaly_escalation_fidelity": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "narrative_evidence_gain": true,
+          "shot_grammar_diversity": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "visual_memory_continuity": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true,
+          "shot_scale_fidelity": true,
+          "scene_position_uniqueness_fidelity": true,
+          "cinematic_structure_translation_fidelity": true,
+          "practical_lighting_design_fidelity": true,
+          "anomaly_concealment_fidelity": true,
+          "anatomy_limb_hand_integrity": true
+        },
+        "issue_codes": [],
+        "notes": "从P01屋内眼位，深色外套男人以身体占据前门方向，同时递出药片、水杯并持小白瓶；室内婚床与门外夜色连贯，控制关系无需依赖字幕即可成立。",
+        "decision": "pass"
+      }
+    ],
+    "issue_codes": [
+      "POV_ILLEGAL",
+      "CAMERA_OWNER_UNRESOLVED"
+    ],
+    "summary": {
+      "passed": false,
+      "notes": "Frame 12 preserves the required human-consequence reveal but fails the locked P01 first-person camera-ownership requirement; contexts 11 and 13 remain valid."
+    }
+  },
+  "context_failures": [],
+  "recorded_at": "2026-09-16T00:45:07+08:00",
+  "failed_targets": [
+    "12"
+  ],
+  "completed_at": "2026-09-16T00:45:07+08:00"
+}

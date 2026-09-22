@@ -4,5 +4,48 @@
   "continuous_execution_authorized": true,
   "approval_basis": "delegated_continuous_execution",
   "authorized_at": "2026-09-09T00:30:00+08:00",
-  "note": "用户明确要求全自动做到 PUBLISH_READY，授权自动审核与规范内返修，不步步确认。"
+  "note": "用户明确要求全自动做到 PUBLISH_READY，授权自动审核与规范内返修，不步步确认。",
+  "last_completed": "RUNTIME_INITIALIZED",
+  "next_action": "READ_EPISODE_STATE",
+  "locked_frames": [],
+  "failed_frames": [],
+  "step_runs": [],
+  "runner_events": [
+    {
+      "at": "2026-09-15T22:15:47+08:00",
+      "type": "machine_host_action",
+      "action": "RESUME_BUDGET_AUTHORIZED_IMAGES",
+      "status": "PASS"
+    },
+    {
+      "at": "2026-09-15T22:36:01+08:00",
+      "type": "machine_host_action",
+      "action": "RESOLVE_IMAGE_NORMALIZATION",
+      "status": "PASS"
+    },
+    {
+      "at": "2026-09-15T23:07:34+08:00",
+      "type": "machine_host_action",
+      "action": "RESOLVE_IMAGE_NORMALIZATION",
+      "status": "PASS"
+    },
+    {
+      "at": "2026-09-15T23:50:46+08:00",
+      "type": "vision_host_action",
+      "action": "REVIEW_FINAL_EXCEPTION",
+      "status": "FAIL"
+    },
+    {
+      "at": "2026-09-16T00:45:07+08:00",
+      "type": "vision_host_action",
+      "action": "REVIEW_FINAL_CONTINUATION",
+      "status": "FAIL"
+    },
+    {
+      "at": "2026-09-16T00:55:19+08:00",
+      "type": "vision_host_action",
+      "action": "REVIEW_FINAL_CONTINUATION",
+      "status": "PASS"
+    }
+  ]
 }

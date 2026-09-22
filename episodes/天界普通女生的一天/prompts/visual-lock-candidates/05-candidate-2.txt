@@ -1,0 +1,1 @@
+VL候选2 F05 角色=first_major_anomaly。保持Frame Contract、身份、服装、事件，不改剧情。修正：capture_credibility、camera_authorship_phys、GHOST_CAMERA。走路随手拍，近处人和杂物优先，远景被屋檐/行人/水汽遮挡；禁止大全景、极深景深和海报式奇观。 第二候选再降精修感，增加生活杂物与非完美瞬间。

@@ -6,6 +6,7 @@ import argparse, hashlib, json
 from pathlib import Path
 import multi_level_cache as cache
 import story_json
+import character_contract
 
 ROOT=Path(__file__).resolve().parents[2]
 LIB=ROOT/"library"
@@ -23,9 +24,9 @@ def file_sha(p):
     return h.hexdigest()
 def tags_for_episode(ep):
     tags=set()
-    cp=ep/"meta/character-contract.json"
-    if cp.is_file():
-        d=read_json(cp); era=d.get("era") or {}; entry=d.get("entry") or {}; scene=d.get("scene") or {}
+    d=character_contract.load(ep) or {}
+    if d:
+        era=d.get("era") or {}; entry=d.get("entry") or {}; scene=d.get("scene") or {}
         for x in (era.get("bucket"),entry.get("type"),scene.get("primary_category"),scene.get("primary_place")):
             if x:tags.add(str(x))
         cast=d.get("cast") or {}
@@ -38,9 +39,9 @@ def tags_for_episode(ep):
     return tags
 
 def primary_place_for_episode(ep):
-    cp=ep/"meta/character-contract.json"
-    if not cp.is_file():return ""
-    scene=(read_json(cp).get("scene") or {})
+    cp=character_contract.load(ep) or {}
+    if not cp:return ""
+    scene=(cp.get("scene") or {})
     return str(scene.get("primary_place") or "").strip()
 
 def _norm(value):
