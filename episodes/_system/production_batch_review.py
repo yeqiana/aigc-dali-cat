@@ -340,6 +340,17 @@ def run_codex_review(ep: Path, batch_id: str, *, attempt: int = 1, codex_raw: st
     if after != before:
         raise RuntimeError("Codex Vision batch critic source bindings drifted")
     data = read_json(candidate)
+    # A logical Codex batch may contain one frame while the provider capability
+    # probe is still warming up.  Some isolated critics return the requested
+    # unit directly despite the envelope requested above; normalize that
+    # single-unit shape without accepting a partial multi-frame review.
+    if len(rows) == 1 and not data.get("batch_id") and data.get("frame"):
+        data = {
+            "batch_id": batch_id,
+            "frames": [data],
+            "summary": "single-frame logical batch review normalized",
+        }
+        write_json(candidate, data)
     provenance = runtime_provenance.build_vision_critic_provenance(
         attempt=attempt,
         log=result.log_path.resolve().relative_to(ROOT.resolve()).as_posix(),

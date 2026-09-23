@@ -45,6 +45,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
 INDEX_REL = Path("meta/runtime/contracts/frame-contract-index.json")
 PROJECTION_MIGRATION_REL = Path("meta/runtime/frame-contract-projection-migrations.json")
+CONTRACT_EXCEPTION_REL = Path("meta/runtime/frame-contract-exceptions.json")
 MIN_VERSION = (2, 1, 0)
 SCHEMA_VERSION = 1
 MAX_EXCERPT = 2200
@@ -706,6 +707,18 @@ def _migration_rows(ep: Path) -> list[dict]:
     return rows if isinstance(rows, list) else []
 
 
+def _contract_exception_rows(ep: Path) -> list[dict]:
+    """Read explicit user-approved old-contract bindings for this Episode.
+
+    These bindings are a narrow compatibility boundary for already generated
+    pixels. They never rewrite the current Frame Contract and require direct
+    user approval recorded in the sidecar.
+    """
+    data = story_json.read_json(Path(ep).resolve() / CONTRACT_EXCEPTION_REL, default={})
+    rows = data.get("items") if isinstance(data, dict) else []
+    return rows if isinstance(rows, list) else []
+
+
 def recorded_contract_matches_current(ep: Path, frame: int | str, recorded_sha256: str) -> bool:
     """Accept exact SHA or a recorded, strictly projection-only old->new migration."""
     ep = Path(ep).resolve()
@@ -715,6 +728,17 @@ def recorded_contract_matches_current(ep: Path, frame: int | str, recorded_sha25
     current_sha = str(current.get("contract_sha256") or "").lower()
     if recorded and recorded == current_sha:
         return True
+    for row in _contract_exception_rows(ep):
+        if (
+            str(row.get("frame") or "").zfill(2) == key
+            and str(row.get("from_contract_sha256") or "").lower() == recorded
+            and str(row.get("to_contract_sha256") or "").lower() == current_sha
+            and row.get("user_approved") is True
+            and row.get("delegated_auto_review") is False
+            and str(row.get("approval_basis") or "") == "direct_user_contract_exception"
+            and str(row.get("user_statement") or "").strip()
+        ):
+            return True
     for row in _migration_rows(ep):
         if (
             str(row.get("frame") or "").zfill(2) == key

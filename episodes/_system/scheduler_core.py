@@ -264,22 +264,43 @@ def terminalize_superseded_history(ep: Path, q: dict) -> list[dict]:
     items = q.get("items") or []
     changed: list[dict] = []
     for index, item in enumerate(items):
-        if item.get("status") not in {"tech_failed", "blocked", "interrupted_unknown"}:
+        if item.get("status") not in {"tech_failed", "blocked", "external_blocked", "interrupted_unknown"}:
             continue
         frame_no = int(item.get("frame") or 0)
         if frame_no <= 0:
             continue
         evidence = None
+        # A retry can be re-enqueued with the default kind="original" after
+        # the ledger has already authorized a repair. ledger_begin correctly
+        # rejects that duplicate; once the matching repair row exists, preserve
+        # the rejected row as terminal history instead of letting it hard-stop
+        # the whole episode forever.
+        expected_kind = "repair" if "technical retry must preserve attempt kind 'repair'" in str(item.get("last_error") or "").lower() else None
+        if item.get("status") == "blocked" and expected_kind:
+            for matching in items:
+                if (matching is not item
+                        and int(matching.get("frame") or 0) == frame_no
+                        and str(matching.get("kind") or "") == expected_kind
+                        and matching.get("status") in {"queued", "running", "generated", "tech_failed", "external_blocked"}):
+                    evidence = {"type": "queue_item", "id": matching.get("id"), "reason": "ledger_rejected_wrong_attempt_kind"}
+                    break
         for later in items[index + 1:]:
+            if evidence is not None:
+                break
             if int(later.get("frame") or 0) == frame_no and later.get("status") == "generated":
                 evidence = {"type": "queue_item", "id": later.get("id")}
                 break
         frame = frames.get(f"{frame_no:02d}") or frames.get(str(frame_no)) or {}
         if evidence is None and isinstance(frame, dict):
+            current = frame.get("current_candidate") or {}
+            accepted = next((row for row in reversed(frame.get("retry_exhaustion_acceptances") or [])
+                             if row.get("user_authorized") is True
+                             and row.get("candidate_sha256") == current.get("sha256")), None)
+            if frame.get("status") == "PASSED" and accepted:
+                evidence = {"type": "ledger_retry_exhaustion_acceptance", "candidate_sha256": accepted.get("candidate_sha256")}
             approved = frame.get("approved_asset")
-            current = frame.get("current_candidate")
             candidate = approved if isinstance(approved, dict) and approved.get("sha256") else current
-            if isinstance(candidate, dict) and candidate.get("sha256"):
+            if evidence is None and isinstance(candidate, dict) and candidate.get("sha256"):
                 failed_at = str(item.get("completed_at") or item.get("started_at") or item.get("queued_at") or "")
                 recorded_at = str(candidate.get("recorded_at") or "")
                 if not failed_at or not recorded_at or recorded_at >= failed_at:

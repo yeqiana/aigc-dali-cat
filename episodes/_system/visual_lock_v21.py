@@ -691,12 +691,23 @@ def verify(ep: Path, *, metadata_only: bool = False) -> list[str]:
                 story_os_version=episode_version(ep)
             ) or {}).get("status") == "WEAK_PASS"
         }
-        if weak_ids and errors:
+        direct_user_ids = {
+            str(asset.get("id") or "")
+            for asset in assets
+            if (
+                visual_lock_admission_state.valid_pass(
+                    ep, asset, profile_sha256=contract["profile_sha256"],
+                    story_os_version=episode_version(ep),
+                ) or {}
+            ).get("provenance", {}).get("approval_basis") == "direct_user_visual_admission"
+        }
+        projected_ids = weak_ids | direct_user_ids
+        if projected_ids and errors:
             # Keep the critic FAIL payload untouched. Only the verifier projects a
-            # SHA-bound WEAK_PASS over its row-level soft findings and global FAIL
-            # summary; schema/provenance/hash/binding errors remain fatal.
-            row_errors = tuple(f"{rid}.checks." for rid in weak_ids)
-            issue_errors = {f"{rid}.issues must be empty for PASS" for rid in weak_ids}
+            # SHA-bound policy/user decisions over row-level findings and global
+            # FAIL summary; schema/provenance/hash/binding errors remain fatal.
+            row_errors = tuple(f"{rid}.checks." for rid in projected_ids)
+            issue_errors = {f"{rid}.issues must be empty for PASS" for rid in projected_ids}
             errors = [
                 error for error in errors
                 if not error.startswith(row_errors)
@@ -1207,6 +1218,55 @@ def reconcile_admissions(ep: Path) -> dict:
     return result
 
 
+def accept_direct_user_admission(ep: Path, *, frame: int, user_statement: str) -> dict:
+    """Project an explicit direct-user decision for one current admission.
+
+    The exact current candidate must already be recorded as a user-exception
+    candidate in the production ledger. The automatic critic result remains in
+    the review payload and is never rewritten.
+    """
+    contract = compile_prompt_contract(ep)
+    assets = calibration_assets(ep)
+    asset = next((row for row in assets if int(row.get("frame") or 0) == int(frame)), None)
+    if asset is None:
+        raise ValueError(f"Visual Lock frame {int(frame):02d} is not a current admission")
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    ledger_frame = ((ledger.get("frames") or {}).get(f"{int(frame):02d}") or {})
+    candidate = ledger_frame.get("current_candidate") or {}
+    if ledger_frame.get("status") != "PASSED":
+        raise ValueError(f"frame {int(frame):02d} must be PASSED in production ledger")
+    if str(candidate.get("sha256") or "").lower() != str(asset.get("sha256") or "").lower():
+        raise ValueError(f"frame {int(frame):02d} candidate SHA does not match Visual Lock asset")
+    acceptance = (ledger_frame.get("user_exception_acceptances") or [])[-1:]
+    if not acceptance or acceptance[0].get("approval_basis") != "direct_user_review_exception_acceptance":
+        raise ValueError(f"frame {int(frame):02d} has no direct user exception acceptance")
+    if str(acceptance[0].get("candidate_sha256") or "").lower() != str(asset.get("sha256") or "").lower():
+        raise ValueError(f"frame {int(frame):02d} user acceptance SHA does not match current asset")
+    review = visual_profile_review_persistence.load(ep) or {}
+    rows = review.get("calibration") or []
+    row = next((dict(item) for item in rows if str(item.get("id") or "") == str(asset.get("id") or "")), None)
+    if row is None:
+        raise ValueError(f"automatic Visual Lock review row missing for frame {int(frame):02d}")
+    source_attempt = int((review.get("critic_provenance") or {}).get("attempt") or 0)
+    entry = visual_lock_admission_state.record_direct_user_pass(
+        ep,
+        asset=asset,
+        review_row=row,
+        profile_sha256=contract["profile_sha256"],
+        story_os_version=episode_version(ep),
+        user_statement=user_statement,
+        source_review_attempt=source_attempt,
+    )
+    projection = visual_lock_admission_state.sync_gate_decisions(ep)
+    return {
+        "frame": int(frame),
+        "asset_sha256": asset.get("sha256"),
+        "status": entry.get("status"),
+        "approval_basis": entry.get("provenance", {}).get("approval_basis"),
+        "gate_projection": projection,
+    }
+
+
 def self_test() -> None:
     assert len(ROLES) == 4
     assert len(BASE_CHECKS) == 11
@@ -1225,6 +1285,7 @@ def main() -> int:
     p = sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None)
     p = sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
     p = sub.add_parser("reconcile-admissions"); p.add_argument("episode_dir")
+    p = sub.add_parser("accept-direct-user-admission"); p.add_argument("episode_dir"); p.add_argument("--frame", type=int, required=True); p.add_argument("--user-statement", required=True)
     p = sub.add_parser("verify"); p.add_argument("episode_dir")
     p = sub.add_parser("show-plan"); p.add_argument("episode_dir")
     sub.add_parser("self-test")
@@ -1250,6 +1311,8 @@ def main() -> int:
             return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime)
         if args.cmd == "reconcile-admissions":
             print(json.dumps(reconcile_admissions(ep), ensure_ascii=False, indent=2)); return 0
+        if args.cmd == "accept-direct-user-admission":
+            print(json.dumps(accept_direct_user_admission(ep, frame=args.frame, user_statement=args.user_statement), ensure_ascii=False, indent=2)); return 0
         errors = verify(ep)
         if errors:
             for error in errors:

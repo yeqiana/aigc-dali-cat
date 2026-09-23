@@ -445,6 +445,133 @@ def cmd_accept_user_exception_candidate(args: argparse.Namespace) -> None:
     print(f"{key}: PASSED (direct-user exception candidate acceptance recorded)")
 
 
+def cmd_accept_after_retry_exhaustion(args: argparse.Namespace) -> None:
+    """Record the user's explicit continuity override after bounded image retries.
+
+    The existing, hash-bound candidate is retained; technical failures are not
+    rewritten as successful generations. This decision only marks the frame
+    accepted for production continuity and remains visible to final review.
+    """
+    ep = episode_dir(args.episode_dir)
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, args.frame)
+    if frame.get("status") != "TECH_FAILED":
+        raise SystemExit(f"retry-exhaustion acceptance requires TECH_FAILED, got {frame.get('status')}")
+    candidate = frame.get("current_candidate") or {}
+    raw_path = candidate.get("path")
+    if not raw_path:
+        raise SystemExit("retry-exhaustion acceptance requires an existing candidate")
+    candidate_path = (repo_root() / raw_path).resolve() if not Path(raw_path).is_absolute() else Path(raw_path).resolve()
+    if not candidate_path.is_file() or sha256_file(candidate_path) != str(candidate.get("sha256") or "").lower():
+        raise SystemExit("retry-exhaustion candidate missing or hash drifted")
+    matching = next((row for row in reversed(frame.get("attempts") or [])
+                     if ((row.get("candidate") or {}).get("sha256") == candidate.get("sha256"))), None)
+    if not isinstance(matching, dict) or matching.get("result") != "success":
+        raise SystemExit("retry-exhaustion candidate has no successful source attempt")
+    verify_attempt_frame_contract_provenance(ep, key, matching)
+    verify_attempt_visual_provenance(ep, matching)
+    limit = int(storyos_config.get_path(storyos_config.load_config(), "production.technical_retry.max_attempts_per_item"))
+    failures = []
+    for attempt in reversed(frame.get("attempts") or []):
+        if attempt.get("kind") != "repair":
+            break
+        if attempt.get("result") != "technical_failure":
+            break
+        failures.append(attempt)
+    if len(failures) < limit:
+        raise SystemExit(f"retry limit not reached: repair technical failures={len(failures)}, required={limit}")
+    reason = str(args.reason or "").strip()
+    if not reason:
+        raise SystemExit("an auditable user-authorized reason is required")
+    at = now_iso()
+    decision = {
+        "at": at,
+        "decision": "pass",
+        "notes": "User-authorized production-continuity acceptance after technical retry exhaustion: " + reason,
+        "approval_basis": "direct_user_retry_exhaustion_override",
+        "candidate_sha256": candidate["sha256"],
+        "visual_quality_reviewed": False,
+    }
+    frame.setdefault("reviews", []).append(decision)
+    frame.setdefault("retry_exhaustion_acceptances", []).append({
+        "at": at,
+        "reason": reason,
+        "candidate_sha256": candidate["sha256"],
+        "technical_failures": len(failures),
+        "required_failures": limit,
+        "user_authorized": True,
+        "visual_quality_reviewed": False,
+    })
+    frame["status"] = "PASSED"
+    data["updated_at"] = at
+    save_json(path, data)
+    print(f"{key}: PASSED (user-authorized retry-exhaustion acceptance; candidate retained for final review)")
+
+
+def cmd_accept_user_contract_exception(args: argparse.Namespace) -> None:
+    """Keep an existing candidate under an explicitly selected old contract.
+
+    The candidate must already exist, its attempt must carry the old SHA, and
+    the Episode sidecar must contain the direct-user contract exception. This
+    changes only the ledger decision; it never rewrites the current contract.
+    """
+    ep = episode_dir(args.episode_dir)
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, args.frame)
+    allowed = {"TECH_FAILED", "AUTHORITY_REFRESH_AUTHORIZED", "ORIGINAL_READY", "REPAIR_READY", "PASSED", "WEAK_PASS", "NEEDS_USER"}
+    if frame.get("status") not in allowed:
+        raise SystemExit(f"contract exception acceptance requires one of {sorted(allowed)}, got {frame.get('status')}")
+    approval = args.approval_text.strip()
+    if not approval:
+        raise SystemExit("direct user approval text is required")
+    candidate = frame.get("current_candidate") or {}
+    raw_path = candidate.get("path")
+    candidate_sha = str(candidate.get("sha256") or "").lower()
+    if not raw_path or not candidate_sha:
+        raise SystemExit("current candidate missing")
+    candidate_path = (repo_root() / raw_path).resolve() if not Path(raw_path).is_absolute() else Path(raw_path)
+    if not candidate_path.is_file() or sha256_file(candidate_path) != candidate_sha:
+        raise SystemExit("current candidate missing or hash drifted")
+    matching_attempt = next(
+        (row for row in reversed(frame.get("attempts") or [])
+         if str(((row or {}).get("candidate") or {}).get("sha256") or "").lower() == candidate_sha),
+        None,
+    )
+    if not isinstance(matching_attempt, dict):
+        raise SystemExit("current candidate has no matching generation attempt")
+    request = matching_attempt.get("request") or {}
+    recorded = request.get("frame_contract") or {}
+    recorded_sha = str(recorded.get("contract_sha256") or "").lower()
+    if not recorded_sha or not resolved_frame_contract.recorded_contract_matches_current(ep, key, recorded_sha):
+        raise SystemExit("candidate is not bound to a current or explicitly user-approved contract exception")
+    verify_attempt_visual_provenance(ep, matching_attempt)
+    prior_status = str(frame.get("status") or "")
+    acceptance = {
+        "at": now_iso(),
+        "approval_text": approval,
+        "reason": args.reason,
+        "user_approved": True,
+        "delegated_auto_review": False,
+        "approval_basis": "direct_user_contract_exception",
+        "frame_contract_sha256": recorded_sha,
+        "candidate_sha256": candidate_sha,
+        "previous_status": prior_status,
+    }
+    frame.setdefault("contract_exception_acceptances", []).append(acceptance)
+    frame.setdefault("reviews", []).append({
+        "at": acceptance["at"],
+        "decision": "pass",
+        "notes": "Direct user selected the existing candidate under the explicitly approved original Frame Contract: " + args.reason,
+        "approval_basis": acceptance["approval_basis"],
+        "candidate_sha256": candidate_sha,
+        "frame_contract_sha256": recorded_sha,
+    })
+    frame["status"] = "PASSED"
+    data["updated_at"] = now_iso()
+    save_json(path, data)
+    print(f"{key}: PASSED (direct-user original-contract exception recorded)")
+
+
 def cmd_promote(args: argparse.Namespace) -> None:
     ep = episode_dir(args.episode_dir)
     path, data = get_ledger(ep)

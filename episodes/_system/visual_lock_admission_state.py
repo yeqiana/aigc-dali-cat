@@ -135,6 +135,53 @@ def record_rows(
     story_json.write_json(ep / REL, data)
 
 
+def record_direct_user_pass(
+    ep: Path,
+    *,
+    asset: dict,
+    review_row: dict,
+    profile_sha256: str,
+    story_os_version: str,
+    user_statement: str,
+    source_review_attempt: int,
+) -> dict:
+    """Record an explicit user visual-admission override.
+
+    The automatic critic row is retained verbatim. The PASS status is a separate,
+    SHA-bound authority entry whose provenance states that the user accepted the
+    current pixels after seeing the known automatic defect. This keeps the
+    machine review honest while allowing an explicit direct-user decision.
+    """
+    statement = str(user_statement or "").strip()
+    if not statement:
+        raise ValueError("direct user visual-admission statement is required")
+    ep = Path(ep)
+    data = load(ep)
+    entry = binding(asset, profile_sha256=profile_sha256, story_os_version=story_os_version)
+    entry.update({
+        "status": "PASS",
+        "reviewed_at": now(),
+        "attempt": int(source_review_attempt),
+        "review_row": dict(review_row),
+        "provenance": {
+            "approval_basis": "direct_user_visual_admission",
+            "user_statement": statement,
+            "automatic_review_status": "FAIL",
+            "automatic_review_attempt": int(source_review_attempt),
+        },
+        "direct_user_override": {
+            "accepted": True,
+            "statement": statement,
+            "accepted_at": now(),
+            "known_automatic_defect": True,
+        },
+    })
+    data.setdefault("items", {})[str(asset.get("id") or "")] = entry
+    data["updated_at"] = now()
+    story_json.write_json(ep / REL, data)
+    return entry
+
+
 def _sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as f:

@@ -251,6 +251,9 @@ class MySqlConnection:
         注意：若块内发生断连重连，事务会退化为普通语句，需要上层重跑。
         """
         conn = self._ensure_connected()
+        # 证据门禁等长流程可能让这条连接空闲到被远端 MySQL 断开；
+        # ``Connection.open`` 仍可能保持 True，必须在事务握手前主动探活。
+        conn.ping(reconnect=True)
         conn.autocommit(False)
         try:
             yield self

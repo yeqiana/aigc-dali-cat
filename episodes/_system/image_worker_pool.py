@@ -83,7 +83,16 @@ def execute(ep,item,timeout,codex):
         _image_model_policy=effective_model_policy,
         _raw_candidate_budget_preclaimed=True,_raw_candidate_token=budget_token,candidate_kind=budget_kind,
         _runner_request_id=runner_request_id)
-    trace_span=runtime_trace.start_span(ep,f"image.generate.frame.{frame:02d}",category="image_generation",attrs={"frame":frame,"model":model,"quality":quality})
+    # Resident Runner image workers do not always inherit a workflow trace
+    # context. Keep the span evidence correlated instead of turning a missing
+    # observability context into a false worker failure.
+    trace_context = runtime_trace.current(ep)
+    trace_id = str(trace_context.get("trace_id") or ("ST_" + uuid.uuid4().hex[:16]))
+    trace_run_id = trace_context.get("run_id")
+    trace_span=runtime_trace.start_span(
+        ep,f"image.generate.frame.{frame:02d}",category="image_generation",
+        trace_id=trace_id,run_id=trace_run_id,
+        attrs={"frame":frame,"model":model,"quality":quality})
     trace_started=time.monotonic()
     try:
         production_recovery.write_lifecycle(ep, item, "BACKEND_INVOKED", worker_pid=os.getpid(),
@@ -94,7 +103,7 @@ def execute(ep,item,timeout,codex):
         code=runtime_circuit_breaker.classify_text(str(exc))
         if code:runtime_circuit_breaker.record_failure(ep,"image",code)
         raw_candidate_budget.release(ep,budget_token,reason="generation_failed_before_candidate_commit")
-        runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="FAILED",started_monotonic=trace_started,attrs={"frame":frame,"error":str(exc)})
+        runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="FAILED",started_monotonic=trace_started,trace_id=trace_id,run_id=trace_run_id,attrs={"frame":frame,"error":str(exc)})
         result={"returncode":99,"stdout":str(exc),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None,"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
         production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=str(exc), result=result)
         return result
@@ -108,6 +117,7 @@ def execute(ep,item,timeout,codex):
         raw_candidate_budget.release(ep,budget_token,reason="backend_returned_without_output")
         runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",
                                status="FAILED",started_monotonic=trace_started,
+                               trace_id=trace_id,run_id=trace_run_id,
                                attrs={"frame":frame,"error":code,"runner_request_id":runner_request_id})
         result={"returncode":95,"stdout":f"{code}: expected={out}","payload":payload,"output":None,"log":log,
                 "attempt":attempt,"scout":None,"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
@@ -116,7 +126,7 @@ def execute(ep,item,timeout,codex):
 
     commit_ok,commit_row=raw_candidate_budget.commit(ep,budget_token,reason="normalized_candidate_exists")
     if not commit_ok:
-        runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="FAILED",started_monotonic=trace_started,attrs={"frame":frame,"error":"candidate commit failed"})
+        runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="FAILED",started_monotonic=trace_started,trace_id=trace_id,run_id=trace_run_id,attrs={"frame":frame,"error":"candidate commit failed"})
         result={"returncode":96,"stdout":"CANDIDATE_COMMIT_FAILED: "+str(commit_row),"payload":payload,"output":out,"log":log,"attempt":attempt,"scout":None}
         production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=result["stdout"], result=result)
         return result
@@ -128,7 +138,7 @@ def execute(ep,item,timeout,codex):
             scout=frame_scout.evaluate_candidate(ep,frame,out,codex_raw=codex,timeout=runtime_timeout_policy.clamp("fast_scout",timeout))
         except Exception as exc:
             scout={"decision":"UNCERTAIN","reason":"scout_technical_failure","error":str(exc),"candidate_committed":True}
-    runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="PASS",started_monotonic=trace_started,attrs={"frame":frame,"backend":payload.get("backend"),"candidate_committed":True})
+    runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="PASS",started_monotonic=trace_started,trace_id=trace_id,run_id=trace_run_id,attrs={"frame":frame,"backend":payload.get("backend"),"candidate_committed":True})
     result={"returncode":0,"stdout":"","payload":payload,"output":out,"log":log,"attempt":attempt,"scout":scout,"candidate_budget":commit_row,"prompt_package":{"package_sha256":package["package_sha256"],"scene_prompt_sha256":package["scene_prompt_sha256"],"frame_contract_sha256":package["frame_contract_sha256"]},"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
     production_recovery.write_lifecycle(ep, item, "SUCCEEDED", worker_pid=os.getpid(), result=result)
     return result

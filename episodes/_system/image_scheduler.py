@@ -56,7 +56,7 @@ RETRYABLE_TECH_CODES = {
     "NETWORK_ERROR", "NETWORK_CONNECT", "RATE_LIMIT_429", "BACKEND_5XX", "PROVIDER_CAPACITY", "TIMEOUT", "IMAGE_BACKEND_ERROR",
     "IMAGE_BACKEND_NO_OUTPUT",
     "LOCAL_WORKSPACE_PERMISSION",
-    "PROVIDER_ARTIFACT_SAVE_COLLISION", "WORKER_INTERRUPTED_FAILURE", "WORKER_PROCESS_LOST",
+    "PROVIDER_ARTIFACT_SAVE_COLLISION", "WORKER_FAILED", "WORKER_INTERRUPTED_FAILURE", "WORKER_PROCESS_LOST",
 }
 NON_REGENERATING_FAILURE_CODES = {
     "NORMALIZE_REVIEW", "ASPECT_RATIO_MISMATCH", "NORMALIZE_TECHNICAL_FAILURE",
@@ -172,6 +172,14 @@ def contract_references(ep:Path,frame:int,scope:str="batch")->list[dict]:
 
 def init_queue(ep:Path,force:bool=False)->dict:
     with queue_transaction(ep):
+        # In Redis hot-state mode the compatibility file is intentionally absent;
+        # consult the authoritative projection before deciding to initialize.
+        # Otherwise every prepare cycle recreates an empty queue and discards the
+        # items already admitted in Redis.
+        import hot_state_bridge
+        hot = hot_state_bridge.read(ep, "QUEUE")
+        if not force and isinstance(hot.get("value"), dict):
+            return hot["value"]
         p=scheduler_core.queue_read_path(ep)
         if p.exists() and not force:return read_json(p)
         q={"schema_version":1,"created_at":now(),"updated_at":now(),"max_parallel":MAX_SUPPORTED_WORKERS,"adaptive_parallel":MAX_SUPPORTED_WORKERS,"stable_waves":0,"items":[],"waves":[]}

@@ -290,8 +290,8 @@ def _expected_frames(ep: Path) -> int:
         return 0
 
 
-def _represented_original_frames(q: dict) -> set[int]:
-    return {
+def _represented_original_frames(q: dict, ep: Path | None = None) -> set[int]:
+    represented = {
         int(row.get("frame") or 0)
         for row in (q.get("items") or [])
         if isinstance(row, dict)
@@ -300,6 +300,21 @@ def _represented_original_frames(q: dict) -> set[int]:
         and int(row.get("frame") or 0) > 0
         and row.get("status") != "superseded"
     }
+    # Visual Lock frames are already durable production representations even
+    # when they are intentionally absent from the production queue.  Count
+    # them here so a calibrated episode can move from queue preparation to
+    # generation instead of repeatedly preparing the same missing-frame set.
+    if ep is not None:
+        ledger = (production_ledger.load_authority(ep, default={}) or {}).get("frames") or {}
+        represented.update(
+            int(key)
+            for key, row in ledger.items()
+            if str(key).isdigit()
+            and isinstance(row, dict)
+            and str(row.get("status") or "") in production_ledger.READY_LEDGER_STATES
+            and int(key) > 0
+        )
+    return represented
 
 
 def _current_candidate_capture_id(frame: dict) -> str:
@@ -681,7 +696,7 @@ def derive(ep: Path) -> dict:
 
         if cur=="VISUAL_CALIBRATED":
             expected=_expected_frames(ep)
-            represented=_represented_original_frames(q)
+            represented=_represented_original_frames(q, ep)
             if expected>0 and len(represented)<expected:
                 return action_result(action="PREPARE_PRODUCTION_BATCH", executor="MACHINE",
                         represented_frames=sorted(represented), expected_frames=expected,

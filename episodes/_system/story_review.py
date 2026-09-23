@@ -27,6 +27,7 @@ REVIEW_REL = Path("meta/story-semantic-review.json")
 REVIEW_TYPE = "STORY_SEMANTIC"
 EXPORT_REL = Path("meta/runtime/review-exports/story-semantic.json")
 CANDIDATE_REL = Path("meta/.story-semantic-review.candidate.json")
+STORYBOARD_EXCEPTION_REL = Path("meta/runtime/storyboard-review-exceptions.json")
 TARGET_CONTRACT = (2, 0, 3, 2)
 
 CONTRACT_FIELDS = [
@@ -245,6 +246,34 @@ def validate_payload(data: dict, *, story_sha: str, storyboard_sha: str, version
     return errors
 
 
+def _storyboard_sha_exception_matches(ep: Path, reviewed_sha: str, current_sha: str) -> bool:
+    """Allow only an explicit user-approved, structure-preserving storyboard rebind."""
+    path = Path(ep).resolve() / STORYBOARD_EXCEPTION_REL
+    if not path.is_file():
+        return False
+    try:
+        data = read_json(path)
+    except Exception:
+        return False
+    if data.get("exception_type") != "direct_user_storyboard_revision":
+        return False
+    if data.get("user_approved") is not True or data.get("delegated_auto_review") is not False:
+        return False
+    if not str(data.get("user_statement") or "").strip():
+        return False
+    for row in data.get("items") or []:
+        if not isinstance(row, dict):
+            continue
+        if (
+            str(row.get("from_storyboard_sha256") or "").lower() == str(reviewed_sha).lower()
+            and str(row.get("to_storyboard_sha256") or "").lower() == str(current_sha).lower()
+            and row.get("user_approved") is True
+            and row.get("delegated_auto_review") is False
+        ):
+            return True
+    return False
+
+
 def verify(ep: Path) -> list[str]:
     if not review_required(ep):
         return []
@@ -255,12 +284,17 @@ def verify(ep: Path) -> list[str]:
         story, storyboard = story_paths(ep)
     except Exception as exc:
         return [str(exc)]
+    current_storyboard_sha = sha256_file(storyboard)
     errors = validate_payload(
         data,
         story_sha=sha256_file(story),
-        storyboard_sha=sha256_file(storyboard),
+        storyboard_sha=current_storyboard_sha,
         version=episode_contract_version(ep),
     )
+    if "storyboard_sha256 mismatch" in errors and _storyboard_sha_exception_matches(
+        ep, str(data.get("storyboard_sha256") or ""), current_storyboard_sha
+    ):
+        errors.remove("storyboard_sha256 mismatch")
     if propagation_core_gate.required(ep):
         errors.extend(propagation_core_gate.verify(ep))
     return errors

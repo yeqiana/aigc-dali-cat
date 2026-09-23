@@ -12,6 +12,8 @@ from production_ledger_core import *  # noqa: F401,F403  (full public library)
 from production_ledger_run import (cmd_authorize_repair, cmd_begin,
     cmd_recover_success, cmd_restore_evidence_gap_review, cmd_review, cmd_success, cmd_tech_fail)
 from production_ledger_manage import (cmd_accept_user_exception_candidate,
+    cmd_accept_after_retry_exhaustion,
+    cmd_accept_user_contract_exception,
     cmd_audit, cmd_authorize_authority_refresh, cmd_authorize_user_continuation_repair, cmd_authorize_user_exception_repair,
     cmd_authorize_user_locked_repair, cmd_authorize_user_passed_repair,
     cmd_batch_begin, cmd_batch_end, cmd_init, cmd_lock, cmd_promote, cmd_show,
@@ -139,6 +141,19 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--approval-text", required=True)
     s.add_argument("--reason", required=True)
     s.set_defaults(func=cmd_accept_user_exception_candidate)
+
+    s = sub.add_parser("accept-after-retry-exhaustion", help="record an explicit continuity acceptance after all bounded repair image attempts fail technically")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--reason", required=True)
+    s.set_defaults(func=cmd_accept_after_retry_exhaustion)
+
+    s = sub.add_parser("accept-user-contract-exception", help="accept an existing candidate under a direct-user-selected original Frame Contract")
+    s.add_argument("episode_dir")
+    s.add_argument("--frame", required=True)
+    s.add_argument("--approval-text", required=True)
+    s.add_argument("--reason", required=True)
+    s.set_defaults(func=cmd_accept_user_contract_exception)
 
     s = sub.add_parser("restore-evidence-gap-review", help="restore a candidate incorrectly failed solely by an unavailable-input review")
     s.add_argument("episode_dir")

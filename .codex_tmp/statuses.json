@@ -1,0 +1,67 @@
+[
+ {
+  "episode_ref": "误入桃花源",
+  "stage": "STORYBOARD_LOCKED",
+  "src": "episode_state.transition"
+ },
+ {
+  "episode_ref": "尸解仙",
+  "stage": "IDEA_LOCKED",
+  "src": "episode_state.user_story_restart"
+ },
+ {
+  "episode_ref": "一步之外的另一条路",
+  "stage": null,
+  "src": null
+ },
+ {
+  "episode_ref": "江南卖花姑娘的一天",
+  "stage": "IDEA_LOCKED",
+  "src": "MYSQL_REDIS_CUTOVER"
+ },
+ {
+  "episode_ref": "天界普通女生的一天",
+  "stage": "STORYBOARD_LOCKED",
+  "src": "MYSQL_REDIS_CUTOVER"
+ },
+ {
+  "episode_ref": "埋儿那天_娘把我拦住了",
+  "stage": "IDEA_LOCKED",
+  "src": "MYSQL_REDIS_CUTOVER"
+ },
+ {
+  "episode_ref": "11_仲夏夜惊魂/01_惊魂",
+  "stage": "IDEA_LOCKED",
+  "src": "MYSQL_REDIS_CUTOVER"
+ },
+ {
+  "episode_ref": "11_仲夏夜惊魂/01_停电夜蜕壳",
+  "stage": "PUBLISH_READY",
+  "src": "MYSQL_REDIS_CUTOVER"
+ },
+ {
+  "episode_ref": "10_彼此的天上/02_玻璃另一边的手",
+  "stage": "VISUAL_CALIBRATED",
+  "src": "MYSQL_REDIS_CUTOVER"
+ },
+ {
+  "episode_ref": "10_彼此的天上/01_不存在的夜行路",
+  "stage": "IDEA_LOCKED",
+  "src": "MYSQL_REDIS_CUTOVER"
+ },
+ {
+  "episode_ref": "10_山难伪纪录片/01_鳌太线_热汤",
+  "stage": "PUBLISH_READY",
+  "src": "MYSQL_REDIS_CUTOVER"
+ },
+ {
+  "episode_ref": "09_旧物怪谈/05_婚礼前夜_记忆麻醉",
+  "stage": "PUBLISH_READY",
+  "src": "MYSQL_REDIS_CUTOVER"
+ },
+ {
+  "episode_ref": "09_旧物怪谈/04_瓶中世界",
+  "stage": "PUBLISH_READY",
+  "src": "MYSQL_REDIS_CUTOVER"
+ }
+]

@@ -260,11 +260,24 @@ def execute(ep: Path, action: dict) -> dict:
         return {"status": "REUSED", "action": name, "runtime": "CODEX_VISION", "reason": "no pending generated batch review"}
     reviewed = []
     for batch_id in batch_ids:
-        reviewed.append(production_batch_review.run_codex_review(
-            ep,
-            batch_id,
-            attempt=int(action.get("attempt") or 1),
-            codex_raw=None,
-            timeout=runtime_timeout_policy.seconds("review_critic"),
-        ))
+        try:
+            reviewed.append(production_batch_review.run_codex_review(
+                ep,
+                batch_id,
+                attempt=int(action.get("attempt") or 1),
+                codex_raw=None,
+                timeout=runtime_timeout_policy.seconds("review_critic"),
+            ))
+        except Exception as exc:
+            # A malformed or incomplete isolated critic response is a bounded
+            # technical failure. Keep the resident Runner alive so the next
+            # cycle can retry the review instead of losing the whole queue.
+            return {
+                "status": "TECHNICAL_FAILURE",
+                "action": name,
+                "runtime": "CODEX_VISION",
+                "batch_ids": batch_ids,
+                "reviewed": reviewed,
+                "error": str(exc),
+            }
     return {"status": "PASS", "action": name, "runtime": "CODEX_VISION", "batch_ids": batch_ids, "reviews": reviewed}
