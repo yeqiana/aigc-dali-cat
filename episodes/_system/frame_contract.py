@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures as cf
+import contextvars
 import datetime as dt
 import hashlib
 import json
@@ -40,6 +41,7 @@ import runtime_workspace
 import storage_config
 import production_ledger
 import episode_state_persistence
+import episode_contract_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
@@ -329,6 +331,7 @@ def _compact_json(value: object, limit: int = 1800) -> str:
     return text if len(text) <= limit else text[:limit] + "…"
 
 
+@episode_contract_persistence.operation_cached
 def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> dict:
     ep = Path(ep).resolve()
     total = frame_count(ep)
@@ -554,6 +557,7 @@ def compile_frame(ep: Path, frame: int | str, *, write_cache: bool = True) -> di
     return result
 
 
+@episode_contract_persistence.operation_cached
 def compile_all(ep: Path) -> dict:
     ep = Path(ep).resolve()
     # E003 is created at the same canonical boundary as the resolved frame
@@ -606,7 +610,7 @@ def compile_all(ep: Path) -> dict:
             raise
     if storyos_config.get_path(storyos_config.load_config(),"runtime.preimage_parallel_enabled",False):
         with cf.ThreadPoolExecutor(max_workers=workers,thread_name_prefix="storyos-frame") as pool:
-            futures={pool.submit(one,n):n for n in range(1,total+1)}
+            futures={pool.submit(contextvars.copy_context().run,one,n):n for n in range(1,total+1)}
             for future,n in [(f,futures[f]) for f in cf.as_completed(futures)]:
                 try: compiled[n]=future.result()
                 except Exception as exc: failures.append(f"frame {n:02d}: {exc}")
@@ -820,6 +824,10 @@ def verify_frame(ep: Path, frame: int | str) -> list[str]:
         return []
     current = compile_frame(ep, frame, write_cache=False)
     cached = load_cached_contract(ep, frame)
+    return _verify_compiled_frame(ep, frame, current, cached)
+
+
+def _verify_compiled_frame(ep: Path, frame: int | str, current: dict, cached: object) -> list[str]:
     if not isinstance(cached, dict):
         return [f"resolved frame contract cache missing: {cache_rel(frame).as_posix()}"]
     errors = []
@@ -832,6 +840,7 @@ def verify_frame(ep: Path, frame: int | str) -> list[str]:
     return errors
 
 
+@episode_contract_persistence.operation_cached
 def verify_all(ep: Path) -> list[str]:
     if not required(ep):
         return []
@@ -842,8 +851,12 @@ def verify_all(ep: Path) -> list[str]:
         if env_errors:
             errors.extend(env_errors)
             return errors
+        compiled = []
         for n in range(1, total + 1):
-            errors.extend(verify_frame(ep, n))
+            current = compile_frame(ep, n, write_cache=False)
+            cached = load_cached_contract(ep, n)
+            errors.extend(_verify_compiled_frame(ep, n, current, cached))
+            compiled.append((current, cached))
         index_path = ep / INDEX_REL
         if not index_path.is_file():
             errors.append("frame-contract-index.json missing; run compile-all")
@@ -854,10 +867,8 @@ def verify_all(ep: Path) -> list[str]:
                 errors.append("frame contract index frame count mismatch")
             else:
                 expected = []
-                for n in range(1, total + 1):
-                    row = compile_frame(ep, n, write_cache=False)
+                for n, (row, cached) in enumerate(compiled, start=1):
                     effective_contract_sha = row["contract_sha256"]
-                    cached = load_cached_contract(ep, n)
                     if isinstance(cached, dict):
                         cached_sha = str(cached.get("contract_sha256") or "")
                         if cached_sha and recorded_contract_matches_current(ep, n, cached_sha):
