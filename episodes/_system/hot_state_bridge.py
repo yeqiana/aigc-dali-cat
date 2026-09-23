@@ -5,6 +5,7 @@ from pathlib import Path
 import storage_config
 import story_json
 import episode_identity
+import redis_connection_cache
 
 
 class HotStateAuthorityError(RuntimeError):
@@ -46,13 +47,13 @@ def mirror(ep: Path, kind: str, value: dict) -> dict:
     if mode == "file":
         return {"mode": mode, "redis_written": False}
 
-    from platform.state.redis_connection import RedisConnection
     from platform.state.redis_runtime_state_store import RedisRuntimeStateStore
     from platform.state.storyos_hot_state import EpisodeHotStateStore
 
-    connection = None
     try:
-        connection = RedisConnection(**storage_config.redis_connection_kwargs())
+        connection = redis_connection_cache.shared_connection(
+            storage_config.redis_connection_kwargs()
+        )
         store = EpisodeHotStateStore(RedisRuntimeStateStore(connection.client))
         store.put(_episode_id(Path(ep).resolve()), kind, value)
         return {"mode": mode, "redis_written": True}
@@ -66,9 +67,6 @@ def mirror(ep: Path, kind: str, value: dict) -> dict:
             "redis_written": False,
             "error": f"{type(exc).__name__}: {exc}",
         }
-    finally:
-        if connection is not None:
-            connection.close()
 
 
 def read(ep: Path, kind: str) -> dict:
@@ -82,13 +80,13 @@ def read(ep: Path, kind: str) -> dict:
     if mode == "file":
         return {"mode": mode, "redis_read": False, "value": None}
 
-    from platform.state.redis_connection import RedisConnection
     from platform.state.redis_runtime_state_store import RedisRuntimeStateStore
     from platform.state.storyos_hot_state import EpisodeHotStateStore
 
-    connection = None
     try:
-        connection = RedisConnection(**storage_config.redis_connection_kwargs())
+        connection = redis_connection_cache.shared_connection(
+            storage_config.redis_connection_kwargs()
+        )
         store = EpisodeHotStateStore(RedisRuntimeStateStore(connection.client))
         value = store.get(_episode_id(Path(ep).resolve()), kind)
         return {
@@ -108,9 +106,6 @@ def read(ep: Path, kind: str) -> dict:
             "value": None,
             "error": f"{type(exc).__name__}: {exc}",
         }
-    finally:
-        if connection is not None:
-            connection.close()
 
 
 def delete(ep: Path, kind: str) -> dict:
@@ -119,13 +114,13 @@ def delete(ep: Path, kind: str) -> dict:
     if mode == "file":
         return {"mode": mode, "redis_deleted": False}
 
-    from platform.state.redis_connection import RedisConnection
     from platform.state.redis_runtime_state_store import RedisRuntimeStateStore
     from platform.state.storyos_hot_state import EpisodeHotStateStore
 
-    connection = None
     try:
-        connection = RedisConnection(**storage_config.redis_connection_kwargs())
+        connection = redis_connection_cache.shared_connection(
+            storage_config.redis_connection_kwargs()
+        )
         store = EpisodeHotStateStore(RedisRuntimeStateStore(connection.client))
         store.delete(_episode_id(Path(ep).resolve()), kind)
         return {"mode": mode, "redis_deleted": True}
@@ -139,7 +134,3 @@ def delete(ep: Path, kind: str) -> dict:
             "redis_deleted": False,
             "error": f"{type(exc).__name__}: {exc}",
         }
-    finally:
-        if connection is not None:
-            connection.close()
-

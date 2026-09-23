@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import mysql_connection_cache
+import episode_state_cache
 import runtime_workspace
 import storage_config
 import story_json
@@ -155,6 +156,15 @@ def authority_sha256(data: dict | None) -> str | None:
     return hashlib.sha256(raw).hexdigest()
 
 
+def _file_stamp(path: Path):
+    """Cheap revision marker for a file-backed authority document."""
+    try:
+        info = path.stat()
+    except OSError:
+        return None
+    return (int(info.st_mtime_ns), int(info.st_size))
+
+
 
 def materialize_export(ep: Path) -> Path | None:
     """Materialize authority for delivery without restoring legacy authority."""
@@ -175,19 +185,34 @@ def materialize_export(ep: Path) -> Path | None:
 def load_with_source(ep: Path) -> tuple[dict | None, str]:
     ep = Path(ep).resolve()
     mode = _mode()
+    path = ep / REL
+    # File-backed entries are keyed to the file revision, so an external write
+    # is observed without an explicit invalidate().  MySQL authority results
+    # stay cached for the documented single-process step window.
+    stamp = _file_stamp(path)
+    cached = episode_state_cache.get(ep, mode, stamp)
+    if cached is not None:
+        data, source = cached
+        return data, source
+    mysql_failed = False
     if mode in {"dual", "mysql"}:
         try:
             data = _load_mysql(ep)
             if isinstance(data, dict):
+                episode_state_cache.put(ep, mode, data, "mysql")
                 return data, "mysql"
         except Exception:
             if mode == "mysql":
                 raise
+            mysql_failed = True
         if mode == "mysql":
+            episode_state_cache.put(ep, mode, None, "mysql")
             return None, "mysql"
-    path = ep / REL
     if path.is_file():
-        return story_json.read_json(path, default=None), "episode"
+        data = story_json.read_json(path, default=None)
+        if not mysql_failed:
+            episode_state_cache.put(ep, mode, data, "episode", stamp)
+        return data, "episode"
     return None, "missing"
 
 
@@ -230,6 +255,7 @@ def bootstrap(ep: Path, data: dict, *, source: str = "MIGRATION") -> str | None:
     mode = _mode()
     if mode == "json":
         return None
+    episode_state_cache.invalidate(ep)
     connection, episodes, states = _repositories()
     record = _episode_record(ep, data)
     with connection.transaction():
@@ -243,16 +269,19 @@ def bootstrap(ep: Path, data: dict, *, source: str = "MIGRATION") -> str | None:
                 history,
                 source=source,
             )
+    episode_state_cache.invalidate(ep)
     return record["episode_id"]
 
 
 def save_initial(ep: Path, data: dict, *, source: str = "INIT") -> dict:
     ep = Path(ep).resolve()
+    episode_state_cache.invalidate(ep)
     mode = _mode()
     if mode != "json":
         bootstrap(ep, data, source=source)
     if mode != "mysql":
         story_json.write_json(ep / REL, data)
+    episode_state_cache.invalidate(ep)
     return data
 
 
@@ -267,6 +296,7 @@ def transition(
     at: str,
 ) -> dict:
     ep = Path(ep).resolve()
+    episode_state_cache.invalidate(ep)
     current = str(data.get("current_state") or "")
     updated = deepcopy(data)
     updated["current_state"] = str(target)
@@ -299,6 +329,7 @@ def transition(
             episodes.upsert(_episode_record(ep, updated))
     if mode != "mysql":
         story_json.write_json(ep / REL, updated)
+    episode_state_cache.invalidate(ep)
     return updated
 
 
@@ -312,6 +343,7 @@ def update_disposition(
     at: str,
 ) -> dict:
     ep = Path(ep).resolve()
+    episode_state_cache.invalidate(ep)
     updated = deepcopy(data)
     current = str(updated.get("disposition") or "ACTIVE").upper()
     updated["disposition"] = str(target).upper()
@@ -336,4 +368,5 @@ def update_disposition(
             )
     if mode != "mysql":
         story_json.write_json(ep / REL, updated)
+    episode_state_cache.invalidate(ep)
     return updated

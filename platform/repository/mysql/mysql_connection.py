@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import os
 import threading
-import weakref
 from contextlib import contextmanager
 from typing import Any
 
@@ -26,6 +25,7 @@ import pymysql
 from pymysql.err import OperationalError
 
 from platform.core.clock import to_naive_utc
+from platform.repository.mysql.mysql_connection_pool import shared_pool
 
 # 兼容旧导入路径：to_naive_utc 已移动到 platform.core.clock。
 __all__ = ["MySqlConnection", "to_naive_utc"]
@@ -40,14 +40,9 @@ class MySqlConnection:
     """pymysql 连接适配器。
 
     - 默认 autocommit=True：单条 execute 立即提交，保证 save() 的持久化语义。
-    - 每线程持有独立连接（pymysql Connection 非线程安全，不能跨线程复用）。
+    - 通过进程内有界 DBUtils 池借还连接，不跨线程同时共享物理连接。
     - 连接丢失（2006/2013/2055）时自动重连并重试一次。
     - transaction() 上下文管理器临时关闭 autocommit，提供 commit/rollback 边界。
-
-    已知边界：这是“每线程连接”而非连接池。线程退出后其连接不会再被使用，
-    因此每次新建连接前会回收「所属线程已结束」的连接（reap）。这保证长期驻留、
-    持续创建请求线程的进程（如 ThreadingHTTPServer）不会线性泄漏远端连接。
-    存活的并发线程数仍决定瞬时上限，需要上层控制真正的并发度。
     """
 
     def __init__(
@@ -78,14 +73,23 @@ class MySqlConnection:
         self.read_timeout = read_timeout
         self.write_timeout = write_timeout
         self._local = threading.local()
-        # [(owner_thread_ref, connection)]：线程退出后必须回收，
-        # 否则远端 MySQL max_connections 会被逐步耗尽（1040 Too many connections）。
-        self._connections: list[tuple[weakref.ref, Any]] = []
-        self._lock = threading.RLock()
+        self._pool = shared_pool({
+            "host": self.host,
+            "port": self.port,
+            "user": self.user,
+            "password": self.password,
+            "database": self.database,
+            "charset": self.charset,
+            "autocommit": True,
+            "connect_timeout": self.connect_timeout,
+            "read_timeout": self.read_timeout,
+            "write_timeout": self.write_timeout,
+        })
 
     # ---- 连接管理 ----
 
     def _open(self) -> "pymysql.connections.Connection":
+        """Compatibility helper used by tests and diagnostics."""
         return pymysql.connect(
             host=self.host,
             port=self.port,
@@ -99,73 +103,30 @@ class MySqlConnection:
             write_timeout=self.write_timeout,
         )
 
-    def _ensure_connected(self) -> "pymysql.connections.Connection":
-        conn = getattr(self._local, "connection", None)
-        if conn is not None and getattr(conn, "open", False):
-            return conn
-        if conn is not None:
-            self._forget(conn)
-        # 请求线程结束即回收其连接，避免“每请求一线程”模式下的连接泄漏。
-        self._reap()
-        conn = self._open()
-        self._local.connection = conn
-        with self._lock:
-            self._connections.append((weakref.ref(threading.current_thread()), conn))
-        return conn
-
-    def _forget(self, conn) -> None:
-        if getattr(self._local, "connection", None) is conn:
-            self._local.connection = None
-        with self._lock:
-            self._connections = [
-                (owner_ref, item)
-                for owner_ref, item in self._connections
-                if item is not conn
-            ]
+    @contextmanager
+    def _borrow(self):
+        """Borrow one pooled connection, or reuse the active transaction's one."""
+        active = getattr(self._local, "transaction_connection", None)
+        if active is not None:
+            yield active
+            return
+        conn = self._pool.connection()
         try:
+            yield conn
+        finally:
             conn.close()
-        except Exception:
-            pass
-
-    def _reap(self) -> int:
-        """关闭「所属线程已结束」的连接，返回回收数量。
-
-        只回收 owner 线程已退出的连接；存活线程的连接绝不关闭，
-        因此不会影响并发请求正在使用的连接。
-        """
-        with self._lock:
-            alive: list[tuple[weakref.ref, Any]] = []
-            dead: list[Any] = []
-            for owner_ref, conn in self._connections:
-                owner = owner_ref()
-                if owner is None or not owner.is_alive():
-                    dead.append(conn)
-                else:
-                    alive.append((owner_ref, conn))
-            self._connections = alive
-        for conn in dead:
-            try:
-                conn.close()
-            except Exception:
-                pass
-        return len(dead)
-
-    @property
-    def connection_count(self) -> int:
-        with self._lock:
-            return len(self._connections)
 
     def _with_reconnect(self, operation):
-        try:
-            return operation()
-        except OperationalError as exc:
-            code = exc.args[0] if exc.args else None
-            if code not in _RECONNECT_ERROR_CODES:
-                raise
-            conn = getattr(self._local, "connection", None)
-            if conn is not None:
-                self._forget(conn)
-            return operation()
+        in_transaction = getattr(self._local, "transaction_connection", None) is not None
+        attempts = 1 if in_transaction else 2
+        for attempt in range(attempts):
+            try:
+                with self._borrow() as conn:
+                    return operation(conn)
+            except OperationalError as exc:
+                code = exc.args[0] if exc.args else None
+                if code not in _RECONNECT_ERROR_CODES or attempt + 1 >= attempts:
+                    raise
 
     @staticmethod
     def _normalize_params(params):
@@ -180,15 +141,8 @@ class MySqlConnection:
     # ---- 查询接口 ----
 
     def close(self) -> None:
-        with self._lock:
-            connections = [conn for _owner_ref, conn in self._connections]
-            self._connections.clear()
-        self._local.connection = None
-        for conn in connections:
-            try:
-                conn.close()
-            except Exception:
-                pass
+        """Retained for call-site compatibility; operation scopes return leases."""
+        return None
 
     def health_check(self) -> dict[str, Any]:
         """真实探活：连不上或查询失败会抛异常，不做静默降级。"""
@@ -208,8 +162,7 @@ class MySqlConnection:
     def execute(self, sql: str, params: tuple | list | dict | None = None) -> int:
         params = self._normalize_params(params)
 
-        def operation() -> int:
-            conn = self._ensure_connected()
+        def operation(conn) -> int:
             with conn.cursor() as cur:
                 cur.execute(sql, params or ())
                 return cur.rowcount
@@ -219,8 +172,7 @@ class MySqlConnection:
     def query_one(self, sql: str, params: tuple | list | dict | None = None) -> dict[str, Any] | None:
         params = self._normalize_params(params)
 
-        def operation() -> dict[str, Any] | None:
-            conn = self._ensure_connected()
+        def operation(conn) -> dict[str, Any] | None:
             with conn.cursor() as cur:
                 cur.execute(sql, params or ())
                 row = cur.fetchone()
@@ -234,8 +186,7 @@ class MySqlConnection:
     def query_all(self, sql: str, params: tuple | list | dict | None = None) -> list[dict[str, Any]]:
         params = self._normalize_params(params)
 
-        def operation() -> list[dict[str, Any]]:
-            conn = self._ensure_connected()
+        def operation(conn) -> list[dict[str, Any]]:
             with conn.cursor() as cur:
                 cur.execute(sql, params or ())
                 rows = cur.fetchall()
@@ -250,23 +201,25 @@ class MySqlConnection:
 
         注意：若块内发生断连重连，事务会退化为普通语句，需要上层重跑。
         """
-        conn = self._ensure_connected()
-        # 证据门禁等长流程可能让这条连接空闲到被远端 MySQL 断开；
-        # ``Connection.open`` 仍可能保持 True，必须在事务握手前主动探活。
-        conn.ping(reconnect=True)
-        conn.autocommit(False)
+        if getattr(self._local, "transaction_connection", None) is not None:
+            raise RuntimeError("nested MySQL transactions are not supported")
+        conn = self._pool.connection()
         try:
+            # 证据门禁等长流程可能让池内空闲连接被远端 MySQL 断开。
+            conn.ping(reconnect=True)
+            conn.begin()
+            self._local.transaction_connection = conn
             yield self
             conn.commit()
         except Exception:
             conn.rollback()
             raise
         finally:
-            conn.autocommit(True)
+            self._local.transaction_connection = None
+            conn.close()
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc, tb):
-        self.close()
         return False

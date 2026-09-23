@@ -11,6 +11,7 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import hot_state_bridge  # noqa: E402
+import redis_connection_cache  # noqa: E402
 import storage_config  # noqa: E402
 
 
@@ -49,9 +50,8 @@ class _FailingConnection:
 def test_extended_hot_state_bridge_round_trips_without_file_cleanup(monkeypatch, tmp_path):
     monkeypatch.setattr(storage_config, "hot_state_config", lambda: {"mode": "dual"})
     monkeypatch.setattr(storage_config, "redis_connection_kwargs", lambda: {})
-    monkeypatch.setattr(
-        "platform.state.redis_connection.RedisConnection", _FakeConnection
-    )
+    redis_connection_cache.reset()
+    monkeypatch.setattr(redis_connection_cache, "RedisConnection", _FakeConnection)
     _FakeConnection.client.data.clear()
     ep = tmp_path / "episode"
     ep.mkdir()
@@ -81,7 +81,8 @@ def test_extended_hot_state_bridge_round_trips_without_file_cleanup(monkeypatch,
 def test_redis_authority_missing_never_uses_file_fallback(monkeypatch, tmp_path):
     monkeypatch.setattr(storage_config, "hot_state_config", lambda: {"mode": "redis"})
     monkeypatch.setattr(storage_config, "redis_connection_kwargs", lambda: {})
-    monkeypatch.setattr("platform.state.redis_connection.RedisConnection", _FakeConnection)
+    redis_connection_cache.reset()
+    monkeypatch.setattr(redis_connection_cache, "RedisConnection", _FakeConnection)
     _FakeConnection.client.data.clear()
     ep = tmp_path / "episode"
     ep.mkdir()
@@ -104,7 +105,8 @@ def test_redis_authority_missing_never_uses_file_fallback(monkeypatch, tmp_path)
 def test_redis_authority_connection_failures_are_fail_closed(monkeypatch, tmp_path):
     monkeypatch.setattr(storage_config, "hot_state_config", lambda: {"mode": "redis"})
     monkeypatch.setattr(storage_config, "redis_connection_kwargs", lambda: {})
-    monkeypatch.setattr("platform.state.redis_connection.RedisConnection", _FailingConnection)
+    redis_connection_cache.reset()
+    monkeypatch.setattr(redis_connection_cache, "RedisConnection", _FailingConnection)
     ep = tmp_path / "episode"
     ep.mkdir()
 
@@ -119,9 +121,8 @@ def test_redis_authority_connection_failures_are_fail_closed(monkeypatch, tmp_pa
 def test_hot_state_bridge_delete_is_scoped_to_redis(monkeypatch, tmp_path):
     monkeypatch.setattr(storage_config, "hot_state_config", lambda: {"mode": "dual"})
     monkeypatch.setattr(storage_config, "redis_connection_kwargs", lambda: {})
-    monkeypatch.setattr(
-        "platform.state.redis_connection.RedisConnection", _FakeConnection
-    )
+    redis_connection_cache.reset()
+    monkeypatch.setattr(redis_connection_cache, "RedisConnection", _FakeConnection)
     _FakeConnection.client.data.clear()
     ep = tmp_path / "episode"
     ep.mkdir()

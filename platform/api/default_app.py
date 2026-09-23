@@ -86,6 +86,9 @@ def build_default_controllers(
     Unsupported future console surfaces are deliberately absent; the HTTP
     dispatcher returns CAPABILITY_NOT_CONFIGURED instead of fabricated data.
     """
+    from platform.repository.mysql.mysql_connection_pool import set_process_role
+
+    set_process_role("api")
     stores = record_stores or build_platform_record_stores(platform_state_root)
     if agent_service is None:
         trace_observer = TraceObserver(MySqlTraceRepository(MySqlConnection()))

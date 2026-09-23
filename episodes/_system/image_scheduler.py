@@ -416,6 +416,9 @@ def run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int
     Image execution no longer depends on the legacy image ThreadPool path.
     Rolling review remains isolated on its own review executor.
     """
+    from platform.repository.mysql.mysql_connection_pool import set_process_role
+
+    set_process_role("scheduler")
     try:
         with scheduler_core.queue_transaction(ep):
             return asyncio.run(_run_scheduler_async(ep,max_workers,timeout,codex))
@@ -793,6 +796,9 @@ def self_test()->None:
 
 
 def main()->int:
+    from platform.repository.mysql.mysql_connection_pool import set_process_role
+
+    set_process_role("scheduler")
     ap=argparse.ArgumentParser(description=__doc__);sub=ap.add_subparsers(dest="cmd",required=True)
     p=sub.add_parser("init");p.add_argument("episode_dir");p.add_argument("--force",action="store_true")
     p=sub.add_parser("add");p.add_argument("episode_dir");p.add_argument("--frame",type=int,required=True);p.add_argument("--kind",choices=["original","repair","baseline_candidate"],default="original");p.add_argument("--scope",choices=["visual_lock","batch","repair","baseline_candidate"],default="batch");p.add_argument("--prompt-file",required=True);p.add_argument("--reference",action="append",default=[]);p.add_argument("--capture-id");p.add_argument("--model");p.add_argument("--quality",choices=["high"]);p.add_argument("--depends-on",action="append",default=[]);p.add_argument("--replace",action="store_true")
