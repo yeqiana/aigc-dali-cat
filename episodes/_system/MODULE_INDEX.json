@@ -46,6 +46,11 @@
     "incremental_frame_review.py",
     "release_preflight.py"
   ],
+  "diagnostic_tools": [
+    "caption_ocr_diagnostic.py",
+    "visual_face_diagnostic.py",
+    "identity_sface_diagnostic.py"
+  ],
   "release": [
     "final_candidate_snapshot.py",
     "delegated_delivery.py",

@@ -1,0 +1,3 @@
+# Optional local subtitle OCR shadow diagnostic; keep out of base runtime.
+rapidocr>=3.9,<4
+onnxruntime>=1.19,<2

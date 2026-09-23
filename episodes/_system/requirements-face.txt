@@ -1,0 +1,2 @@
+# Optional local face-box shadow diagnostic; keep out of base runtime.
+opencv-python-headless>=4.10,<5
