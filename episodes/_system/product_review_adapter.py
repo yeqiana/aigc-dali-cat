@@ -131,6 +131,10 @@ def transition_request(ep: Path, kind: str, *, attempt: int, status: str, actor:
     episode_performance.safe_end_named_span(
         ep, f"PRODUCT_REVIEW_{kind}", status="BLOCKED",
         metadata={"attempt": attempt, "request_status": status, "reason": reason})
+    if kind == "frame-semantic":
+        episode_performance.safe_end_review_span(
+            ep, "FULL", attempt, status="BLOCKED",
+            metadata={"request_status": status, "reason": reason})
     return req
 
 
@@ -625,6 +629,10 @@ def mark_complete(ep: Path, kind: str, *, final_path: Path, attempt: int | None 
     episode_performance.safe_end_named_span(
         ep, f"PRODUCT_REVIEW_{kind}", status="PASS",
         metadata={"attempt": attempt, "final_path": _repo_rel(final_path)})
+    if kind == "frame-semantic":
+        episode_performance.safe_end_review_span(
+            ep, "FULL", attempt, status="PASS",
+            metadata={"final_path": _repo_rel(final_path), "request_status": "FINALIZED"})
 
 
 def self_test() -> None:

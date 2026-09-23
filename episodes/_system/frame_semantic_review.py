@@ -23,6 +23,7 @@ import runtime_router
 import runtime_provenance
 import product_review_adapter
 import production_ledger
+import episode_performance
 import frame_review_persistence
 import story_json
 import runtime_timeout_policy
@@ -1796,12 +1797,20 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
     return rc
 
 
-def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
+def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("deep_semantic_review")
     if attempt not in {1, 2}:
         raise RuntimeError("attempt must be 1 or 2; only one automatic content-repair round is permitted")
     if (ep / SUMMARY_REL).is_file() and review_required(ep) and not verify_episode(ep):
+        try:
+            prior_frames = (read_json(ep / SUMMARY_REL).get("frames") or [])
+            episode_performance.safe_update_named_span(
+                ep, episode_performance.review_span_name("FULL", attempt),
+                {"target_frame_count": len(prior_frames), "shard_count": 0, "review_reused": True},
+            )
+        except Exception:
+            pass
         _rebind_incremental_captions(ep)
         print("FRAME SEMANTIC REVIEW REUSED: current assets, contracts and critic evidence verified")
         return 0
@@ -1811,6 +1820,14 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     except ValueError:
         frames = reviewable_frame_records(ep, require_files=True)
         candidate_gate = True
+    episode_performance.safe_update_named_span(
+        ep,
+        episode_performance.review_span_name("FULL", attempt),
+        {
+            "target_frame_count": len(frames),
+            "shard_count": _full_review_parallelism(len(frames)) if len(frames) >= FULL_REVIEW_FANOUT_MIN_FRAMES else 1,
+        },
+    )
     contexts = context_hashes(ep)
     binding_errors = reviewable_phase4_binding_errors(ep, frames) if candidate_gate else phase4_binding_errors(ep, frames)
     if binding_errors:
@@ -1941,6 +1958,24 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         provenance=provenance,
         frozen_sources=frozen_sources,
     )
+
+
+def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
+    """Run a FULL review and record best-effort performance diagnostics."""
+    episode_performance.safe_begin_review_span(ep, "FULL", attempt)
+    try:
+        result = _run_critic_uninstrumented(ep, attempt=attempt, codex_raw=codex_raw, timeout=timeout)
+    except BaseException as exc:
+        episode_performance.safe_end_review_span(
+            ep, "FULL", attempt, status="ERROR", metadata={"error_type": type(exc).__name__})
+        raise
+    # The product runtime completes asynchronously. Keep the same attempt span
+    # open so its waiting interval is reported as HOST_WAIT by the state ledger.
+    if result == product_review_adapter.HOST_ACTION_REQUIRED_RC:
+        return result
+    status = episode_performance.review_status_for_code(result)
+    episode_performance.safe_end_review_span(ep, "FULL", attempt, status=status, metadata={"result_code": result})
+    return result
 
 
 def _parse_exception_frames(raw: str) -> list[str]:
@@ -2167,7 +2202,38 @@ def _apply_exception_review(ep: Path, *, data: dict, rows: list[dict], targets: 
     return 0
 
 
+def _review_instrumented(ep: Path, kind: str, attempt_number: int, lane: str | None,
+                         metadata: dict, runner, **kwargs) -> int:
+    """Run one review entry point with best-effort timing telemetry.
+
+    Telemetry is fail-soft and never changes the review result or the episode
+    state; a telemetry failure surfaces as no span rather than a raised error.
+    """
+    episode_performance.safe_begin_review_span(ep, kind, attempt_number, metadata=metadata, lane=lane)
+    try:
+        result = runner(ep, **kwargs)
+    except BaseException as exc:
+        episode_performance.safe_end_review_span(
+            ep, kind, attempt_number, status="ERROR", lane=lane,
+            metadata={"error_type": type(exc).__name__})
+        raise
+    episode_performance.safe_end_review_span(
+        ep, kind, attempt_number, lane=lane,
+        status=episode_performance.review_status_for_code(result),
+        metadata={"result_code": result})
+    return result
+
+
 def run_exception_critic(ep: Path, *, targets: list[str], codex_raw: str | None, timeout: int | None = None) -> int:
+    return _review_instrumented(
+        ep, "PATCH", 3, "EXCEPTION",
+        {"target_frame_count": len(targets), "shard_count": 1,
+         "targets": [str(x).zfill(2) for x in targets]},
+        _run_exception_critic_uninstrumented,
+        targets=targets, codex_raw=codex_raw, timeout=timeout)
+
+
+def _run_exception_critic_uninstrumented(ep: Path, *, targets: list[str], codex_raw: str | None, timeout: int | None = None) -> int:
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("deep_semantic_review")
     rows, _ = _exception_review_records(ep, targets, require_files=True)
@@ -2561,6 +2627,15 @@ def _apply_ordinary_patch_review(ep: Path, *, data: dict, rows: list[dict], targ
 
 
 def run_patch_critic(ep: Path, *, targets: list[str], attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
+    return _review_instrumented(
+        ep, "PATCH", attempt, "FINAL_PATCH",
+        {"target_frame_count": len(targets), "shard_count": 1,
+         "targets": [str(x).zfill(2) for x in targets]},
+        _run_patch_critic_uninstrumented,
+        targets=targets, attempt=attempt, codex_raw=codex_raw, timeout=timeout)
+
+
+def _run_patch_critic_uninstrumented(ep: Path, *, targets: list[str], attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("deep_semantic_review")
     targets = sorted({str(x).zfill(2) for x in targets if str(x)})
@@ -2816,9 +2891,42 @@ def _apply_continuation_review(ep: Path, *, data: dict, rows: list[dict], target
 
 
 def run_continuation_critic(ep: Path, *, targets: list[str], codex_raw: str | None, timeout: int | None = None) -> int:
+    """Run a continuation review, timing it once its attempt number is known."""
+    state: dict = {"attempt": None}
+
+    def note(attempt: int, frame_count: int) -> None:
+        state["attempt"] = int(attempt)
+        episode_performance.safe_begin_review_span(
+            ep, "PATCH", attempt, lane="CONTINUATION",
+            metadata={"target_frame_count": len(targets), "review_frame_count": frame_count,
+                      "shard_count": 1, "targets": [str(x).zfill(2) for x in targets]})
+
+    try:
+        result = _run_continuation_critic_uninstrumented(
+            ep, targets=targets, codex_raw=codex_raw, timeout=timeout, on_attempt=note)
+    except BaseException as exc:
+        if state["attempt"] is not None:
+            episode_performance.safe_end_review_span(
+                ep, "PATCH", state["attempt"], status="ERROR", lane="CONTINUATION",
+                metadata={"error_type": type(exc).__name__})
+        raise
+    if state["attempt"] is not None:
+        episode_performance.safe_end_review_span(
+            ep, "PATCH", state["attempt"], lane="CONTINUATION",
+            status=episode_performance.review_status_for_code(result),
+            metadata={"result_code": result})
+    return result
+
+
+def _run_continuation_critic_uninstrumented(
+    ep: Path, *, targets: list[str], codex_raw: str | None, timeout: int | None = None,
+    on_attempt=None,
+) -> int:
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("deep_semantic_review")
     rows, attempt = _continuation_review_records(ep, targets, require_files=True)
+    if on_attempt is not None:
+        on_attempt(int(attempt), len(rows))
     binding_errors = reviewable_phase4_binding_errors(ep, rows)
     if binding_errors:
         for error in binding_errors:

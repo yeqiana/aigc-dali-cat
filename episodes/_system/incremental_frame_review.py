@@ -19,6 +19,7 @@ import runtime_provenance
 import story_json
 import runtime_timeout_policy
 import visual_reality_score
+import episode_performance
 
 ROOT = Path(__file__).resolve().parents[2]
 STATE_REL = Path("meta/incremental-frame-review.json")
@@ -434,7 +435,7 @@ def rebind_captions(ep: Path, *, allow_dirty: bool = False) -> dict:
     }
 
 
-def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
+def _run_patch_uninstrumented(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
     all_frames = base.frame_records(ep, require_files=True)
     binding_errors = base.phase4_binding_errors(ep, all_frames)
     if binding_errors:
@@ -557,6 +558,27 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
         return 2
     print(f"INCREMENTAL FRAME REVIEW PASS: dirty={plan['dirty_frames']} context={plan['context_frames']}")
     return 0
+
+
+def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, timeout: int) -> int:
+    dirty = plan.get("dirty_frames") if isinstance(plan.get("dirty_frames"), list) else []
+    contexts = plan.get("context_frames") if isinstance(plan.get("context_frames"), list) else []
+    episode_performance.safe_begin_review_span(ep, "PATCH", attempt, metadata={
+        "target_frame_count": len(dirty),
+        "shard_count": 1,
+        "dirty_frames": list(dirty),
+        "context_frame_count": len(contexts),
+    })
+    try:
+        result = _run_patch_uninstrumented(ep, plan, attempt=attempt, codex_raw=codex_raw, timeout=timeout)
+    except BaseException as exc:
+        episode_performance.safe_end_review_span(
+            ep, "PATCH", attempt, status="ERROR", metadata={"error_type": type(exc).__name__})
+        raise
+    episode_performance.safe_end_review_span(
+        ep, "PATCH", attempt, status=episode_performance.review_status_for_code(result),
+        metadata={"result_code": result})
+    return result
 
 
 def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool = False) -> list[str]:

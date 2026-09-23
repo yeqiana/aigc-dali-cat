@@ -148,6 +148,60 @@ def safe_end_named_span(ep,name,status="PASS",metadata=None):
     try:end_named_span(ep,name,status,metadata);return True
     except Exception:return False
 
+def review_span_name(review_type,attempt,lane=None):
+    """Build the named-span key for one review lane and attempt.
+
+    ``lane`` separates review entry points that share a kind and attempt number
+    (for example an incremental PATCH and a bounded final-patch review) so two
+    unrelated reviews cannot merge into one measurement bucket.
+    """
+    kind=str(review_type or "").strip().upper()
+    if kind not in {"FULL","PATCH"}:raise ValueError("review_type must be FULL or PATCH")
+    token="".join(ch if ch.isalnum() else "_" for ch in str(lane or "").strip().upper()).strip("_")
+    return f"REVIEW_{kind}_{token}_{max(1,int(attempt or 1))}" if token else f"REVIEW_{kind}_{max(1,int(attempt or 1))}"
+
+def safe_begin_review_span(ep,review_type,attempt,metadata=None,lane=None):
+    try:
+        if not Path(ep).is_dir():return None
+        name=review_span_name(review_type,attempt,lane)
+        return safe_begin_named_span(ep,name,source="frame_review",metadata={
+            "review_type":str(review_type).upper(),"attempt":max(1,int(attempt or 1)),
+            "review_lane":str(lane).upper() if lane else None,**(metadata or {})})
+    except Exception:return None
+
+def safe_update_named_span(ep,name,metadata=None):
+    """Best-effort metadata update on the currently open span."""
+    try:
+        if not Path(ep).is_dir():return False
+        d=load(ep,True);bucket=(d.get("named_spans") or {}).get(str(name),{})
+        row=next((x for x in reversed(bucket.get("runs") or []) if x.get("status")=="RUNNING"),None)
+        if row is None:return False
+        row.setdefault("metadata",{}).update(metadata or {})
+        save(ep,d);return True
+    except Exception:return False
+
+def safe_end_review_span(ep,review_type,attempt,status="PASS",metadata=None,lane=None):
+    try:
+        if not Path(ep).is_dir():return False
+        name=review_span_name(review_type,attempt,lane)
+        bucket=(load(ep,True).get("named_spans") or {}).get(name) or {}
+        if not any(x.get("status")=="RUNNING" for x in bucket.get("runs") or []):return False
+        return safe_end_named_span(ep,name,status=status,metadata=metadata)
+    except Exception:return False
+
+# A span closed at finalize never produced a verdict, so it belongs with the
+# deferred/blocked rows instead of being reported as a content failure.
+REVIEW_PASS_STATUSES=frozenset({"PASS","REUSED"})
+REVIEW_NOT_EXECUTED_STATUSES=frozenset({"DEFERRED","BLOCKED","CLOSED_AT_FINALIZE"})
+
+def review_status_for_code(return_code):
+    """Map a review return code to the span status recorded in telemetry."""
+    try:code=int(return_code)
+    except (TypeError,ValueError):return "FAILED"
+    if code==0:return "PASS"
+    if code==3:return "DEFERRED"
+    return "FAILED"
+
 def record_state_transition(ep,source_state,target_state,at=None):
     d=load(ep,True)
     row={"from":str(source_state),"to":str(target_state),"at":at or now()}
@@ -408,6 +462,87 @@ def _execution_summary(d):
     return {"session_count":len(sessions),"latest":latest,"aggregate":total,
             "active_wall_seconds":None if latest is None else latest["active_seconds"]}
 
+def _overlap_union_seconds(intervals, state_intervals):
+    intersections=[]
+    for start,end in intervals:
+        a=parse_ts(start);b=parse_ts(end)
+        if not a or not b or b<a:continue
+        for state_start,state_end in state_intervals:
+            c=parse_ts(state_start);e=parse_ts(state_end)
+            if not c or not e or e<c:continue
+            left=max(a,c);right=min(b,e)
+            if right>left:intersections.append((left.isoformat(),right.isoformat()))
+    return _interval_union_seconds(intersections)
+
+def _review_summary(d):
+    spans=d.get("named_spans") or {}
+    if not isinstance(spans,dict):spans={}
+    sessions=d.get("execution_sessions") or []
+    if not isinstance(sessions,list):sessions=[]
+    state_intervals={state:[] for state in EXECUTION_STATES}
+    observed_end=d.get("updated_at") or now()
+    for session in sessions:
+        if not isinstance(session,dict):continue
+        for row in session.get("states") or []:
+            if not isinstance(row,dict):continue
+            state=str(row.get("state") or "")
+            if state not in state_intervals or not row.get("started_at"):continue
+            state_intervals[state].append((row["started_at"],row.get("ended_at") or observed_end))
+    result={}
+    for kind in ("FULL","PATCH"):
+        attempts=[];intervals=[];frame_counts=[];shard_counts=[]
+        prefix=f"REVIEW_{kind}_"
+        for name,bucket in spans.items():
+            if not str(name).startswith(prefix):continue
+            if not isinstance(bucket,dict):continue
+            for row in bucket.get("runs") or []:
+                if not isinstance(row,dict):continue
+                attempts.append(row)
+                start=row.get("started_at");end=row.get("ended_at")
+                a=parse_ts(start);b=parse_ts(end)
+                if a and b and b>=a:intervals.append((start,end))
+                metadata=row.get("metadata") or {}
+                if not isinstance(metadata,dict):metadata={}
+                if isinstance(metadata.get("target_frame_count"),(int,float)):
+                    frame_counts.append(float(metadata["target_frame_count"]))
+                if isinstance(metadata.get("shard_count"),(int,float)):
+                    shard_counts.append(float(metadata["shard_count"]))
+        completed=[x for x in attempts if x.get("status")!="RUNNING" and parse_ts(x.get("started_at"))
+                   and parse_ts(x.get("ended_at")) and parse_ts(x.get("ended_at"))>=parse_ts(x.get("started_at"))]
+        frame_samples=sum(1 for x in attempts if isinstance((x.get("metadata") if isinstance(x.get("metadata"),dict) else {}).get("target_frame_count"),(int,float)))
+        shard_samples=sum(1 for x in attempts if isinstance((x.get("metadata") if isinstance(x.get("metadata"),dict) else {}).get("shard_count"),(int,float)))
+        intervals_complete=bool(attempts) and len(intervals)==len(attempts)
+        state_rows=[interval for rows in state_intervals.values() for interval in rows]
+        review_wall=_interval_union_seconds(intervals) if intervals_complete else None
+        attributed_wall=_overlap_union_seconds(intervals,state_rows) if intervals_complete and state_rows else None
+        state_status=("UNKNOWN" if not state_rows or attributed_wall is None else
+                      "OK" if abs(attributed_wall-review_wall)<=0.001 else "INCOMPLETE")
+        def _status(row):return str(row.get("status") or "").upper()
+        passed=[x for x in completed if _status(x) in REVIEW_PASS_STATUSES]
+        deferred=[x for x in completed if _status(x) in REVIEW_NOT_EXECUTED_STATUSES]
+        failed=[x for x in completed if _status(x) not in REVIEW_PASS_STATUSES|REVIEW_NOT_EXECUTED_STATUSES]
+        fields={"attempt_count":len(attempts) if attempts else None,
+                "completed_count":len(completed) if attempts else None,
+                "passed_count":len(passed) if attempts else None,
+                "failed_count":len(failed) if attempts else None,
+                "deferred_count":len(deferred) if attempts else None,
+                "unclosed_count":sum(1 for x in attempts if x.get("status")=="RUNNING") if attempts else None,
+                "target_frame_sample_count":frame_samples if attempts else None,
+                "shard_sample_count":shard_samples if attempts else None,
+                "target_frame_count_total":sum(frame_counts) if attempts and frame_samples==len(attempts) else None,
+                "shard_count_total":sum(shard_counts) if attempts and shard_samples==len(attempts) else None,
+                "wall_seconds":review_wall,
+                "active_seconds":_overlap_union_seconds(intervals,state_intervals["ACTIVE"]) if state_status=="OK" else None,
+                "host_wait_seconds":_overlap_union_seconds(intervals,state_intervals["HOST_WAIT"]) if state_status=="OK" else None,
+                "user_wait_seconds":_overlap_union_seconds(intervals,state_intervals["USER_WAIT"]) if state_status=="OK" else None,
+                "idle_seconds":_overlap_union_seconds(intervals,state_intervals["IDLE"]) if state_status=="OK" else None,
+                "state_attribution_status":state_status,
+                "status":("UNKNOWN" if not attempts else
+                          "INCOMPLETE" if len(completed)!=len(attempts) or not intervals_complete or frame_samples!=len(attempts) or shard_samples!=len(attempts) else
+                          "OK" if completed else "INCOMPLETE")}
+        result[kind.lower()]=fields
+    return result
+
 def _refresh_summary(d):
     def bucket_summary(v):
         runs=v.get("runs") or []
@@ -457,6 +592,7 @@ def _refresh_summary(d):
       "execution_wall":execution_wall,
       "duration_breakdown":duration_breakdown,
       "performance_slo":performance_slo,
+      "review":_review_summary(d),
       "images":{
         "attempts":len(imgs),"successful_attempts":len(completed),"repair_attempts":len(repair),
         "technical_failures_or_retries":len(tech),
@@ -489,15 +625,19 @@ def rebuild_report(root=ROOT):
         if not p.is_file():continue
         try:
             d=read_json(p);_refresh_summary(d)
-            if isinstance(d.get("total_wall_seconds"),(int,float)):
-                rows.append({"episode":ep.relative_to(root).as_posix(),
-                             "total_wall_seconds":float(d["total_wall_seconds"]),
+            rows.append({"episode":ep.relative_to(root).as_posix(),
+                             "total_wall_seconds":float(d["total_wall_seconds"]) if isinstance(d.get("total_wall_seconds"),(int,float)) else None,
+                             "sample_status":"OK" if isinstance(d.get("total_wall_seconds"),(int,float)) else "INCOMPLETE",
                              "final_status":d.get("final_status"),
                              "images":(d.get("summary") or {}).get("images") or {},
+                             "review":(d.get("summary") or {}).get("review") or {},
+                             "duration_breakdown":(d.get("summary") or {}).get("duration_breakdown") or {},
+                             "critical_path":(d.get("summary") or {}).get("critical_path") or {},
                              "stage_wall":(d.get("summary") or {}).get("stage_wall") or {}})
         except Exception:continue
-    totals=[x["total_wall_seconds"] for x in rows]
-    report={"schema_version":1,"generated_at":now(),"sample_size":len(rows),
+    totals=[x["total_wall_seconds"] for x in rows if isinstance(x.get("total_wall_seconds"),(int,float))]
+    report={"schema_version":2,"generated_at":now(),"episode_count":len(rows),"sample_size":len(totals),
+            "sample_status":"NO_DATA" if not totals else ("INSUFFICIENT_SAMPLE" if len(totals)<3 else "READY"),
             "p50_total_seconds":round(percentile(totals,0.50),3) if totals else None,
             "p90_total_seconds":round(percentile(totals,0.90),3) if totals else None,
             "average_total_seconds":round(statistics.mean(totals),3) if totals else None,
