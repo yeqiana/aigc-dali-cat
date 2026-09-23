@@ -152,6 +152,9 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("runtime.review.governance.runtime must be WORK")
     if get_path(cfg, "runtime.review.allow_web_runtime") is not False:
         errors.append("runtime.review.allow_web_runtime must be false")
+    for key in ("enabled", "gate_hint", "local_gate_enabled"):
+        if not isinstance(get_path(cfg, f"runtime.review.local_vision_shadow.{key}"), bool):
+            errors.append(f"runtime.review.local_vision_shadow.{key} must be a bool")
     host_loop_cap = get_path(cfg, "runtime.host_loop_max_cycles")
     if type(host_loop_cap) is not int or not 8 <= host_loop_cap <= 256:
         errors.append("runtime.host_loop_max_cycles must be an int between 8 and 256")

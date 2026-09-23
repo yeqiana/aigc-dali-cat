@@ -104,6 +104,7 @@ def test_caption_audit_moves_only_obstructed_frame_then_reaudits_new_pixels():
                 {"01": "b" * 64}, {"01": "d" * 64}, {"01": "文案"}, {"source_path": "captions.yaml", "source_sha256": "c" * 64})), \
             patch.object(caption_image_audit.runtime_router, "detect", return_value=("WORK", "test")), \
             patch.object(caption_image_audit.runtime_router, "vision_review_runtime", return_value=("CODEX", "test")), \
+            patch.object(caption_image_audit.local_vision_shadow, "run_caption_ocr_shadow"), \
             patch.object(caption_image_audit, "_write"):
         ok, evidence = caption_image_audit.ensure(ep, codex_raw=None, timeout=30)
     assert ok is True
@@ -113,3 +114,41 @@ def test_caption_audit_moves_only_obstructed_frame_then_reaudits_new_pixels():
     assert evidence["frames"]["01"]["image_sha256"] == "b" * 64
     assert evidence["frames"]["01"]["review_cycle"] == 2
     assert evidence["summary"]["auto_repaired_frames"] == ["01"]
+
+
+def test_local_clear_frame_does_not_start_vision_critic():
+    ep = Path("ep")
+    row = {"frame": "01", "path": Path("base.png"), "path_rel": "base.png", "sha256": "a" * 64}
+    source = {"review_image": {"mode": "final_publish_with_subtitle", "layout_current": True}}
+    with patch.object(caption_image_audit.subtitle_layout, "configured_dirty_frames", return_value=[]), \
+            patch.object(caption_image_audit, "dirty_frames", return_value=(
+                [row], {"frames": {}}, {"01": "a" * 64}, {"01": "b" * 64}, {"01": "字幕"}, source)), \
+            patch.object(caption_image_audit.base, "frame_records", return_value=[row]), \
+            patch.object(caption_image_audit.local_vision_shadow, "run_caption_ocr_shadow", return_value={"status": "COMPLETE"}), \
+            patch.object(caption_image_audit.local_vision_shadow, "locally_clear_caption_frames", return_value={"01": {"base_sha256": "a" * 64}}), \
+            patch.object(caption_image_audit, "_run_chunk", side_effect=AssertionError("vision critic called")), \
+            patch.object(caption_image_audit.runtime_router, "detect", return_value=("CODEX", "test")), \
+            patch.object(caption_image_audit.runtime_router, "vision_review_runtime", return_value=("CODEX", "test")), \
+            patch.object(caption_image_audit, "_write"):
+        ok, evidence = caption_image_audit.ensure(ep, timeout=30)
+    assert ok is True
+    assert evidence["summary"]["local_review_count"] == 1
+    assert evidence["summary"]["reviewed_dirty_frames"] == 0
+
+
+def test_corrupt_subtitle_render_stops_before_vision_critic():
+    ep = Path("ep")
+    row = {"frame": "01", "path": Path("publish.png"), "path_rel": "publish.png", "sha256": "a" * 64}
+    source = {"review_image": {"mode": "final_publish_with_subtitle", "layout_current": True}}
+    with patch.object(caption_image_audit.subtitle_layout, "configured_dirty_frames", return_value=[]), \
+            patch.object(caption_image_audit, "dirty_frames", return_value=(
+                [row], {"frames": {}}, {"01": "a" * 64}, {"01": "b" * 64}, {"01": "字幕"}, source)), \
+            patch.object(caption_image_audit.base, "frame_records", return_value=[row]), \
+            patch.object(caption_image_audit.subtitle_render_integrity, "inspect_frames", return_value={
+                "01": {"status": "FAIL", "reason": "PIXELS_CHANGED_OUTSIDE_SUBTITLE"}}), \
+            patch.object(caption_image_audit, "_run_chunk", side_effect=AssertionError("vision critic called")):
+        try:
+            caption_image_audit.ensure(ep, timeout=30)
+            raise AssertionError("corrupt render should fail before critic")
+        except ValueError as exc:
+            assert "render integrity" in str(exc)

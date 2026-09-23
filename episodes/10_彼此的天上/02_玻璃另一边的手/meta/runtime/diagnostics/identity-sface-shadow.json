@@ -1,0 +1,843 @@
+{
+  "schema_version": 1,
+  "diagnostic_only": true,
+  "may_affect_gate": false,
+  "generated_at": "2026-09-23T20:34:23+08:00",
+  "episode_id": "02_玻璃另一边的手",
+  "status": "DIAGNOSTIC_READY",
+  "tool": {
+    "name": "OpenCV YuNet + SFace",
+    "opencv_version": "5.0.0",
+    "yunet_model_filename": "face_detection_yunet_2026may.onnx",
+    "yunet_model_sha256": "ebafce4e3c118d6554634be5c27ab333b4c047a9a8c3faf1d7cf93101c22f0f0",
+    "sface_model_filename": "face_recognition_sface_2021dec.onnx",
+    "sface_model_sha256": "0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79"
+  },
+  "inputs": {
+    "reference": {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/identity/character-masters/P02.png",
+      "sha256": "da59da5ff9f7e1b3f716837a956a8282f3787527a8cd3305cd0fed92f4bd6b68"
+    },
+    "candidate_count": 20
+  },
+  "policy": {
+    "character_assignment": "NOT_PERFORMED",
+    "frame_review_write": "NOT_PERFORMED",
+    "threshold": "UNSET_REQUIRES_PROJECT_DATASET_CALIBRATION",
+    "note": "Similarity ranking is a triage hint; style, pose, lighting, occlusion, and face size can change scores."
+  },
+  "summary": {
+    "reference_face_count": 2,
+    "candidate_count": 20,
+    "candidate_with_face_count": 16,
+    "top_candidate_match": {
+      "reference_face_index": 0,
+      "candidate_index": 0,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/01.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.86749
+    },
+    "elapsed_seconds": 5.721
+  },
+  "reference_faces": [
+    {
+      "box_xywh": [
+        236.51,
+        373.9,
+        259.96,
+        300.92
+      ],
+      "box_normalized_xywh": [
+        0.310386,
+        0.370564,
+        0.341156,
+        0.298232
+      ],
+      "confidence": 0.935823
+    },
+    {
+      "box_xywh": [
+        -3.83,
+        348.47,
+        106.61,
+        343.96
+      ],
+      "box_normalized_xywh": [
+        -0.005022,
+        0.345362,
+        0.139904,
+        0.340891
+      ],
+      "confidence": 0.761387
+    }
+  ],
+  "candidate_ranking": [
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/01.png",
+      "sha256": "0d61f5fa5e278d30473260cf1a565d9be5f09031642ee9feca2511da897de892",
+      "face_count": 2,
+      "faces": [
+        {
+          "box_xywh": [
+            543.92,
+            568.62,
+            258.39,
+            292.62
+          ],
+          "box_normalized_xywh": [
+            0.503626,
+            0.421199,
+            0.239246,
+            0.216753
+          ],
+          "confidence": 0.938677
+        },
+        {
+          "box_xywh": [
+            192.73,
+            459.4,
+            279.37,
+            339.39
+          ],
+          "box_normalized_xywh": [
+            0.178453,
+            0.340299,
+            0.258676,
+            0.251399
+          ],
+          "confidence": 0.93182
+        }
+      ],
+      "top_cosine_similarity": 0.86749
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/17.png",
+      "sha256": "79e3d7d0e0947138db43036bad3c08d5133b4ef8a92fa6101ec3f1ec68c1456a",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            570.56,
+            282.67,
+            152.46,
+            201.63
+          ],
+          "box_normalized_xywh": [
+            0.528297,
+            0.209389,
+            0.141164,
+            0.149356
+          ],
+          "confidence": 0.929399
+        }
+      ],
+      "top_cosine_similarity": 0.505785
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/06.png",
+      "sha256": "e3fa7deb92c98c6bdc41e09e7e6279645b0bd38c28295ba82a6b904f7b63cf00",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            440.22,
+            338.64,
+            173.83,
+            219.92
+          ],
+          "box_normalized_xywh": [
+            0.407613,
+            0.250848,
+            0.160955,
+            0.162905
+          ],
+          "confidence": 0.916129
+        }
+      ],
+      "top_cosine_similarity": 0.413859
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/02.png",
+      "sha256": "50522866677dc3583fac3c843d3991d0bc211368753904040986ec1479a51a9e",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            563.97,
+            250.63,
+            59.6,
+            74.16
+          ],
+          "box_normalized_xywh": [
+            0.522199,
+            0.185651,
+            0.055184,
+            0.054935
+          ],
+          "confidence": 0.928448
+        }
+      ],
+      "top_cosine_similarity": 0.346274
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/03.png",
+      "sha256": "b421da74adeb65fec6014b9eefb0cb59f66c663cb0a2e277ae6cc2453e9a448f",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            250.32,
+            248.09,
+            122.42,
+            153.65
+          ],
+          "box_normalized_xywh": [
+            0.231776,
+            0.183771,
+            0.113349,
+            0.113818
+          ],
+          "confidence": 0.941068
+        }
+      ],
+      "top_cosine_similarity": 0.286967
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/16.png",
+      "sha256": "de3a1c821fbe40941984ff5bb56631645347b58bbc472b70b10d4229fa5bc6f9",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            291.06,
+            205.68,
+            156.41,
+            205.39
+          ],
+          "box_normalized_xywh": [
+            0.269498,
+            0.152358,
+            0.144827,
+            0.152138
+          ],
+          "confidence": 0.922828
+        }
+      ],
+      "top_cosine_similarity": 0.253753
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/19.png",
+      "sha256": "94e673cf93f84ed94c4e8073f8dec641ce5aee526389d540014257b6cf1c54c1",
+      "face_count": 3,
+      "faces": [
+        {
+          "box_xywh": [
+            238.39,
+            512.4,
+            98.47,
+            120.38
+          ],
+          "box_normalized_xywh": [
+            0.220732,
+            0.379558,
+            0.091171,
+            0.089167
+          ],
+          "confidence": 0.909697
+        },
+        {
+          "box_xywh": [
+            760.22,
+            916.91,
+            63.6,
+            91.67
+          ],
+          "box_normalized_xywh": [
+            0.703909,
+            0.679196,
+            0.058892,
+            0.067903
+          ],
+          "confidence": 0.796079
+        },
+        {
+          "box_xywh": [
+            605.32,
+            301.43,
+            40.64,
+            79.76
+          ],
+          "box_normalized_xywh": [
+            0.560481,
+            0.223285,
+            0.037625,
+            0.059078
+          ],
+          "confidence": 0.648799
+        }
+      ],
+      "top_cosine_similarity": 0.253293
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/20.png",
+      "sha256": "a562deec14d1a69925bb1beaae64429cda81552bc2daea0b09c3f727de2b066f",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            608.08,
+            473.49,
+            52.82,
+            97.56
+          ],
+          "box_normalized_xywh": [
+            0.563035,
+            0.350733,
+            0.048908,
+            0.07227
+          ],
+          "confidence": 0.800383
+        }
+      ],
+      "top_cosine_similarity": 0.179682
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/13.png",
+      "sha256": "aa9c683bee17c964ba6e7c1c80890d8af82e57a88c0ca577d34f6fe5b183629f",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            687.59,
+            579.3,
+            96.79,
+            142.22
+          ],
+          "box_normalized_xywh": [
+            0.63666,
+            0.429108,
+            0.089625,
+            0.105346
+          ],
+          "confidence": 0.682942
+        }
+      ],
+      "top_cosine_similarity": 0.173422
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/15.png",
+      "sha256": "8095586ad6757bf79a7974bf8b95626411d341b50672cddede0ba1fa7695225b",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            517.02,
+            401.55,
+            67.78,
+            97.04
+          ],
+          "box_normalized_xywh": [
+            0.478721,
+            0.297444,
+            0.062755,
+            0.071882
+          ],
+          "confidence": 0.854235
+        }
+      ],
+      "top_cosine_similarity": 0.168489
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/14.png",
+      "sha256": "f3aa095093e23e8a7a476c73f504ec6f42639710f6a81bef3710272a8dbd906c",
+      "face_count": 3,
+      "faces": [
+        {
+          "box_xywh": [
+            359.59,
+            143.61,
+            127.27,
+            217.42
+          ],
+          "box_normalized_xywh": [
+            0.33295,
+            0.106379,
+            0.117839,
+            0.16105
+          ],
+          "confidence": 0.908013
+        },
+        {
+          "box_xywh": [
+            667.0,
+            530.8,
+            28.15,
+            33.23
+          ],
+          "box_normalized_xywh": [
+            0.617595,
+            0.393182,
+            0.026065,
+            0.024614
+          ],
+          "confidence": 0.732358
+        },
+        {
+          "box_xywh": [
+            667.03,
+            584.14,
+            30.09,
+            36.92
+          ],
+          "box_normalized_xywh": [
+            0.61762,
+            0.432695,
+            0.027861,
+            0.027349
+          ],
+          "confidence": 0.624127
+        }
+      ],
+      "top_cosine_similarity": 0.158912
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/05.png",
+      "sha256": "e6ce633de4f1a6dadef766f097864bd5661dbe71e212130db345e078ee30e304",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            304.44,
+            330.6,
+            126.33,
+            221.27
+          ],
+          "box_normalized_xywh": [
+            0.281888,
+            0.244887,
+            0.11697,
+            0.163903
+          ],
+          "confidence": 0.813484
+        }
+      ],
+      "top_cosine_similarity": 0.145339
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/12.png",
+      "sha256": "78498f09c16e450c88fb300cc1e329c95bc486102bcfc0b31b02f62144fa6e54",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            811.22,
+            616.23,
+            34.79,
+            44.21
+          ],
+          "box_normalized_xywh": [
+            0.751133,
+            0.456466,
+            0.032214,
+            0.032745
+          ],
+          "confidence": 0.90009
+        }
+      ],
+      "top_cosine_similarity": 0.129031
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/18.png",
+      "sha256": "b1ea1d70d6a091bcdbb023943760681de4f494ef8ea50fd38cf47ecad84f5d7b",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            124.63,
+            503.84,
+            30.22,
+            52.4
+          ],
+          "box_normalized_xywh": [
+            0.115398,
+            0.373214,
+            0.027982,
+            0.038818
+          ],
+          "confidence": 0.828073
+        }
+      ],
+      "top_cosine_similarity": 0.091471
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/04.png",
+      "sha256": "c31782fd941af22cb8892aa44e75b431d2dc529c0f9fdd2241d97c34f138a551",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            632.8,
+            233.22,
+            39.86,
+            60.02
+          ],
+          "box_normalized_xywh": [
+            0.585929,
+            0.172753,
+            0.036909,
+            0.044459
+          ],
+          "confidence": 0.832745
+        }
+      ],
+      "top_cosine_similarity": 0.066355
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/11.png",
+      "sha256": "52ccd4eff64b2cfa64a310ddfd40276afdaecdbb60bd7475214fd6172a390bdd",
+      "face_count": 1,
+      "faces": [
+        {
+          "box_xywh": [
+            665.23,
+            324.7,
+            47.73,
+            61.62
+          ],
+          "box_normalized_xywh": [
+            0.615955,
+            0.240516,
+            0.044192,
+            0.045645
+          ],
+          "confidence": 0.87975
+        }
+      ],
+      "top_cosine_similarity": 0.017718
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/07.png",
+      "sha256": "7bacb1bf82181acbde1932d40a7bea11ecea09910af6b61ee334424fda80ab7b",
+      "face_count": 0,
+      "faces": [],
+      "top_cosine_similarity": null
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/08.png",
+      "sha256": "7b369625ef043bdb3c3ae0aeef0b8f95eda187477d7a08d4e45db2af434f6425",
+      "face_count": 0,
+      "faces": [],
+      "top_cosine_similarity": null
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/09.png",
+      "sha256": "60ce59c566230fdeee76fcde462eb007f6841cfd537c0b72978f58e2f84705a7",
+      "face_count": 0,
+      "faces": [],
+      "top_cosine_similarity": null
+    },
+    {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/10.png",
+      "sha256": "7f4b23dc7fe6553663c474f0f18e869f7286bf2aeb845629ce74829421c16811",
+      "face_count": 0,
+      "faces": [],
+      "top_cosine_similarity": null
+    }
+  ],
+  "comparisons": [
+    {
+      "reference_face_index": 0,
+      "candidate_index": 0,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/01.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.86749
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 16,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/17.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.505785
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 5,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/06.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.413859
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 0,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/01.png",
+      "candidate_face_index": 1,
+      "cosine_similarity": 0.388414
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 1,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/02.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.346274
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 0,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/01.png",
+      "candidate_face_index": 1,
+      "cosine_similarity": 0.313438
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 2,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/03.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.286967
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 15,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/16.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.253753
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 18,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/19.png",
+      "candidate_face_index": 2,
+      "cosine_similarity": 0.253293
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 19,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/20.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.179682
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 12,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/13.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.173422
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 15,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/16.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.171782
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 14,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/15.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.168489
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 0,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/01.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.168448
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 13,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/14.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.158912
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 4,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/05.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.145339
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 12,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/13.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.135364
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 11,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/12.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.129031
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 17,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/18.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.091471
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 2,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/03.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.088161
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 16,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/17.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.078801
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 18,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/19.png",
+      "candidate_face_index": 1,
+      "cosine_similarity": 0.077835
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 11,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/12.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.07207
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 3,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/04.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.066355
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 18,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/19.png",
+      "candidate_face_index": 1,
+      "cosine_similarity": 0.06452
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 14,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/15.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.059009
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 1,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/02.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.046182
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 13,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/14.png",
+      "candidate_face_index": 2,
+      "cosine_similarity": 0.025322
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 10,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/11.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.017718
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 5,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/06.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.015449
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 18,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/19.png",
+      "candidate_face_index": 2,
+      "cosine_similarity": 0.013198
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 18,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/19.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.011158
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 13,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/14.png",
+      "candidate_face_index": 1,
+      "cosine_similarity": 0.00878
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 13,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/14.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": 0.003217
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 18,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/19.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": -0.030205
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 19,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/20.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": -0.045826
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 10,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/11.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": -0.052284
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 4,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/05.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": -0.072282
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 13,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/14.png",
+      "candidate_face_index": 2,
+      "cosine_similarity": -0.082104
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 17,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/18.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": -0.139838
+    },
+    {
+      "reference_face_index": 0,
+      "candidate_index": 13,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/14.png",
+      "candidate_face_index": 1,
+      "cosine_similarity": -0.172266
+    },
+    {
+      "reference_face_index": 1,
+      "candidate_index": 3,
+      "candidate_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/publish/04.png",
+      "candidate_face_index": 0,
+      "cosine_similarity": -0.189455
+    }
+  ]
+}

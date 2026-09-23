@@ -20,6 +20,7 @@ import runtime_timeout_policy
 import runtime_command
 import production_ledger
 import production_ledger_persistence
+import local_vision_shadow
 
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=Path(__file__).resolve().parent
@@ -67,6 +68,9 @@ def prepare_review(ep,force=False):
        "face_boxes":[{"character_id":cid,"x":None,"y":None,"w":None,"h":None} for cid in primary],
        "note":"Inspect actual pixels. Face boxes are normalized 0..1 and derive crops only."}
     write_json(p,d)
+    # Local YuNet shadow: derived candidate face boxes for the baseline image.
+    # Fail-soft; never changes the review, face_boxes, gates, or episode state.
+    local_vision_shadow.run_visual_face_shadow(ep)
     episode_performance.safe_begin_named_span(ep,"VISUAL_LOCK_BASELINE_REVIEW",source="visual_lock_baseline_gate",
                                               metadata={"frame":src.get("frame"),"asset_path":src.get("asset_path")})
     return d
@@ -127,6 +131,7 @@ def _ledger_pass(ep,frame):
 
 def critic_prompt(ep):
     draft=prepare_review(ep,force=False);candidate=Path(ep)/CANDIDATE_REL
+    face_hint=local_vision_shadow.face_hint(ep)
     return f"""You are a fresh isolated Story OS Visual Lock ordinary-baseline actual-pixel reviewer.
 Inspect the attached baseline image itself. This PASS unlocks the parallel-three Visual Lock images and may create the provisional character pixel master, so fail closed on visible identity/capture/style problems.
 Required checks: {list(CHECKS)}
@@ -136,12 +141,16 @@ For core characters, this baseline is also Frame01 Character Identity Anchor evi
 Write ONLY JSON to {repo_rel(candidate)}:
 {{"decision":"PASS|FAIL","checks":{{"visual_profile_match":"PASS|FAIL","reality_first":"PASS|FAIL","ordinary_life_density":"PASS|FAIL","unposed_capture":"PASS|FAIL","not_cinematic":"PASS|FAIL","capture_credibility":"PASS|FAIL","identity_usable":"PASS|FAIL","group_members_distinct":"PASS|FAIL","identity_anchor_usable":"PASS|FAIL"}},"face_boxes":[{{"character_id":"P01","x":0.0,"y":0.0,"w":0.1,"h":0.1}}],"note":"actual-pixel evidence"}}
 Face boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.
+Local pre-scan (advisory only, never authoritative):
+{face_hint or "none"}
+
 Do not modify source files or the image.
 """
 
 def codex_critic_prompt(ep):
     candidate=Path(ep)/CANDIDATE_REL
     schema='{"pixel_evidence_available":true,"decision":"PASS|FAIL","checks":{"visual_profile_match":"PASS|FAIL","reality_first":"PASS|FAIL","ordinary_life_density":"PASS|FAIL","unposed_capture":"PASS|FAIL","not_cinematic":"PASS|FAIL","capture_credibility":"PASS|FAIL","identity_usable":"PASS|FAIL","group_members_distinct":"PASS|FAIL","identity_anchor_usable":"PASS|FAIL"},"face_boxes":[{"character_id":"P01","x":0.0,"y":0.0,"w":0.1,"h":0.1}],"note":"actual-pixel evidence"}'
+    face_hint=local_vision_shadow.face_hint(ep)
     return f"""You are a fresh isolated Story OS Visual Lock ordinary-baseline actual-pixel reviewer.
 The baseline image is already attached to this request. Inspect the attached pixels directly.
 Do NOT search the filesystem, do NOT call shell/tools, and do NOT modify any source file or image.
@@ -152,6 +161,9 @@ If this Episode is an explicit pure daily-life / no-anomaly story, ordinary_life
 For core characters, this baseline is also Frame01 Character Identity Anchor evidence. The image must be usable as a later identity reference: clear face visibility, recognizable person, not only back view, not too distant, and suitable for Character Master creation.
 Face boxes use normalized 0..1 coordinates and must cover every primary cast member when pixel master is required.
 If the attachment cannot actually be decoded/seen, set pixel_evidence_available=false; that is an infrastructure failure, not a content FAIL.
+Local pre-scan (advisory only, never authoritative):
+{face_hint or "none"}
+
 Respond ONLY with one JSON object matching this schema, with no markdown and no commentary:
 {schema}
 The CLI will persist your final JSON response to {repo_rel(candidate)}.

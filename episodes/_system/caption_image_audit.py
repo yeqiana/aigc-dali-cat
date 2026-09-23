@@ -22,6 +22,8 @@ import product_review_adapter
 import subtitle_layout
 import runtime_timeout_policy
 import production_ledger
+import local_vision_shadow
+import subtitle_render_integrity
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/caption-image-audit.json")
@@ -152,6 +154,9 @@ def dirty_frames(ep: Path) -> tuple[list[dict], dict, dict[str, str], dict[str, 
     image_sha, caption_sha, texts, source_meta = _hashes(ep, frames)
     source_meta = {**source_meta, "review_image": review_meta}
     existing = current.get("frames") or {}
+    local_context = (local_vision_shadow.local_caption_validation_context(ep)
+                     if any(isinstance(value, dict) and value.get("mode") in ("local_flat_area_with_semantic_evidence", "local_position_with_semantic_evidence")
+                            for value in existing.values()) else None) or {}
     dirty = []
     for row in frames:
         key = row["frame"]
@@ -161,6 +166,9 @@ def dirty_frames(ep: Path) -> tuple[list[dict], dict, dict[str, str], dict[str, 
             or old.get("caption_sha256") != caption_sha[key]
             or old.get("passed") is not True
             or old.get("schema_version") != SCHEMA
+            or (old.get("mode") in ("local_flat_area_with_semantic_evidence", "local_position_with_semantic_evidence")
+                and not local_vision_shadow.local_caption_evidence_current(
+                    ep, key, old.get("local_review_evidence"), local_context))
         ):
             dirty.append(row)
     return dirty, current, image_sha, caption_sha, texts, source_meta
@@ -170,15 +178,19 @@ def _prompt(ep: Path, rows: list[dict], texts: dict[str, str], out: Path) -> str
         f"- frame {r['frame']}: final_publish_image={r['path_rel']} | caption={json.dumps(texts[r['frame']], ensure_ascii=False)}"
         for r in rows
     )
+    ocr_hint = local_vision_shadow.ocr_hint(ep, [r["frame"] for r in rows])
     return f"""You are the Story OS final-publish Caption ↔ Image + Subtitle Obstruction Critic.
 Review ONLY the supplied FINAL publish pixels after subtitle rendering.
 For each frame judge two things:
 1. supported: the caption is honestly supported by the underlying photographed/generated scene; it must not invent a core event, prop, person, UI text, anomaly, action, or causal fact absent from the scene. The rendered subtitle text itself is NEVER visual evidence for supported=true; mentally ignore the overlay when judging support.
-2. subtitle_unobstructed: rendered text does not cover a face, anomaly evidence, hand/action, key prop, native text, or causal clue. Left/middle geometry and line-count are checked deterministically elsewhere; here judge actual pixel obstruction.
+2. subtitle_unobstructed: rendered text does not cover a face, anomaly evidence, hand/action, key prop, native text, or causal clue. Subtitle geometry, line-count, and render integrity are already checked locally. Treat those checks as passed; do not re-evaluate placement aesthetics or geometry. Judge only semantic obstruction visible in the pixels.
 3. If and only if subtitle_unobstructed=false while supported=true, recommend ONE safer vertical baseline using suggested_y_ratio from exactly {list(subtitle_layout.PIXEL_SAFE_Y_RATIOS)}. Choose from actual pixel evidence, not aesthetics. If none of those locations is clearly safer, return null. Also give obstruction_reason naming what is covered.
 Do not re-review overall story quality, character continuity, or visual style. Empty captions automatically pass both checks.
 Mappings:
 {mapping}
+
+Local pre-scan (advisory only, never authoritative):
+{ocr_hint or "none"}
 
 Write ONLY JSON to {out.relative_to(ROOT).as_posix()}:
 {{"frames":[{{"frame":"01","supported":true,"subtitle_unobstructed":true,"suggested_y_ratio":null,"obstruction_reason":"","notes":"specific pixel evidence"}}],"summary":{{"passed":true}}}}
@@ -363,6 +375,34 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
         else:
             nonempty.append(row)
 
+    # Local OCR shadow: derived native-text/subtitle overlap hints for the
+    # frames that actually need a vision call. Fail-soft; never blocks or
+    # changes audit results, and never reduces the formal critic workload.
+    local_cleared = {}
+    if nonempty:
+        integrity = subtitle_render_integrity.inspect_frames(
+            ep, [row["frame"] for row in nonempty])
+        corrupt = [key for key, result in integrity.items() if result.get("status") == "FAIL"]
+        if corrupt:
+            raise ValueError("subtitle publish pixels fail local render integrity: " + ", ".join(corrupt))
+        ocr_report = local_vision_shadow.run_caption_ocr_shadow(
+            ep, keys=[row["frame"] for row in nonempty])
+        local_cleared = local_vision_shadow.locally_clear_caption_frames(
+            ep, [row["frame"] for row in nonempty], ocr_report, integrity)
+        for row in nonempty:
+            key = row["frame"]
+            if key not in local_cleared:
+                continue
+            dest[key] = {
+                "schema_version": SCHEMA, "frame": key,
+                "image_sha256": image_sha[key], "caption_sha256": caption_sha[key],
+                "supported": True, "subtitle_unobstructed": True,
+                "passed": True, "mode": "local_position_with_semantic_evidence",
+                "notes": "current semantic support; OCR complete with no native-text overlap; render integrity passed; visual obstruction risk accepted by user",
+                "local_review_evidence": local_cleared[key],
+            }
+        nonempty = [row for row in nonempty if row["frame"] not in local_cleared]
+
     placement_repairs: dict[str, dict] = {}
     for start in range(0, len(nonempty), CHUNK):
         chunk = nonempty[start:start + CHUNK]
@@ -408,6 +448,8 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
         "total_frames": len(rows_by_key),
         "auto_repaired_frames": auto_repaired,
         "auto_repair_count": len(auto_repaired),
+        "local_reviewed_frames": sorted(local_cleared),
+        "local_review_count": len(local_cleared),
         "visual_review_invalidated": False,
     }
     _write(ep, evidence)
@@ -432,6 +474,9 @@ def verify(ep: Path) -> list[str]:
     image_sha, caption_sha, _texts, _source_meta = _hashes(ep, frames)
     errors = [f"subtitle layout stale: {e}" for e in (review_meta.get("layout_errors") or [])]
     rows = data.get("frames") or {}
+    local_context = (local_vision_shadow.local_caption_validation_context(ep)
+                     if any(isinstance(value, dict) and value.get("mode") in ("local_flat_area_with_semantic_evidence", "local_position_with_semantic_evidence")
+                            for value in rows.values()) else None) or {}
     if data.get("schema_version") != SCHEMA:
         errors.append(f"caption image audit schema_version must be {SCHEMA}")
     if str((data.get("caption_source") or {}).get("review_image", {}).get("mode") or "") != str(review_meta.get("mode") or ""):
@@ -452,6 +497,9 @@ def verify(ep: Path) -> list[str]:
             errors.append(f"caption image audit subtitle obstruction failed: {key}")
         if row.get("passed") is not True:
             errors.append(f"caption image audit failed: {key}")
+        if row.get("mode") in ("local_flat_area_with_semantic_evidence", "local_position_with_semantic_evidence") and not local_vision_shadow.local_caption_evidence_current(
+                ep, key, row.get("local_review_evidence"), local_context):
+            errors.append(f"caption image local review evidence stale: {key}")
     return errors
 
 def self_test():

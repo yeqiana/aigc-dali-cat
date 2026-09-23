@@ -228,6 +228,17 @@ runtime:
     governance:
       runtime: WORK
     allow_web_runtime: false
+    # 本地视觉影子诊断（RapidOCR / OpenCV YuNet）。只产出派生提示，绝不替代
+    # 正式像素审核：enabled 控制是否运行影子；gate_hint 控制是否把影子结果作为
+    # 参考提示注入正式 Critic 上下文。gate_hint=true 时模型仍独立看像素、独立
+    # 判定，本地预检缺省不等于 PASS，不放行也不跳过审核。
+    local_vision_shadow:
+      enabled: true
+      gate_hint: true
+      # 本地字幕直审：当前逐帧语义证据有效、OCR 完整无文字重叠、布局与渲染完整性通过时，
+      # 直接跳过该帧视觉复审。此策略不判断字幕是否遮挡人物/道具等非文字线索，属于用户
+      # 确认接受的取舍；关闭即可恢复原有全量审核。
+      local_gate_enabled: true
 
     # Legacy runtime aliases: workspace/provider 已迁移到 runtime.workspace。
     # `allow_local_codex_review=false` now means text/governance review only; vision review uses review.vision.
