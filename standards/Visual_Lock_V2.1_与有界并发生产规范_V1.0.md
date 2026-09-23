@@ -63,7 +63,8 @@ Production Ledger 的所有 begin / success / tech-fail 写入由 Scheduler 主�
 - 正常：5
 - 某波技术失败：降为 4
 - 再失败：继续降为 3 / 2 / 1
-- 连续稳定两波：逐级恢复
+- 同一次调度中连续两帧成功完成：恢复一级；再次技术失败则重新计数
+- 下次调度从配置的并发上限重新开始
 - 最大永远不超过 5
 
 ## Critical Path

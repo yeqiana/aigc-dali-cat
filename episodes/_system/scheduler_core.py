@@ -40,8 +40,9 @@ async def run_execution_loop(tasks, handler, consume, *, workers,
     """Single execution owner; lane callbacks own admission and ledger policy.
 
     A fixed task list is a batch barrier. Dynamic admission may unlock new
-    dependencies after consumption. Technical failures lower this run's cap,
-    never the next run's configured limit. All callbacks execute serially.
+    dependencies after consumption. Technical failures lower this run's cap;
+    two consecutive successes restore one slot. The next run starts at its
+    configured limit. All callbacks execute serially.
     """
     import asyncio
     from async_task_runtime import AsyncTaskRuntime
@@ -57,11 +58,11 @@ async def run_execution_loop(tasks, handler, consume, *, workers,
     events = asyncio.Queue()
     runner = asyncio.create_task(pool.run(events.put))
     inflight = 0
-    failures = 0
+    cap = workers
+    consecutive_successes = 0
     seen = set()
     try:
         while True:
-            cap = max(1, workers - failures)
             for row in await admission(max(0, cap - inflight)):
                 key = str(row['id'])
                 if key in seen:
@@ -77,9 +78,17 @@ async def run_execution_loop(tasks, handler, consume, *, workers,
             status = await consume(event)
             inflight -= 1
             if status == 'tech_failed':
-                failures += 1
+                cap = max(1, cap - 1)
+                consecutive_successes = 0
+            elif status in {'success', 'generated'}:
+                consecutive_successes += 1
+                if consecutive_successes >= 2:
+                    cap = min(workers, cap + 1)
+                    consecutive_successes = 0
+            else:
+                consecutive_successes = 0
             if completed:
-                await completed(event, status, inflight, max(1, workers - failures))
+                await completed(event, status, inflight, cap)
         await pool.queue.join()
     finally:
         # Drain submitted work before releasing resources, including on a

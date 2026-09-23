@@ -46,6 +46,52 @@ class SchedulerCoreTests(unittest.TestCase):
             tasks, handler, consume, workers=6))
         self.assertEqual(peak, 5)
 
+    def test_execution_loop_restores_one_slot_after_two_successes(self):
+        statuses = ["tech_failed", "generated", "generated", "tech_failed",
+                    "blocked", "generated", "generated"]
+        reported_caps = []
+        dispatched_caps = []
+
+        async def handler(_task):
+            return {"ok": True}
+
+        async def consume(_event):
+            return statuses.pop(0)
+
+        async def completed(_event, _status, _active, cap):
+            reported_caps.append(cap)
+
+        async def dispatched(_row, _active, cap):
+            dispatched_caps.append(cap)
+
+        tasks = [{"id": str(index)} for index in range(7)]
+        asyncio.run(scheduler_core.run_execution_loop(
+            tasks, handler, consume, workers=3,
+            completed=completed, dispatched=dispatched))
+        self.assertEqual(reported_caps, [2, 2, 3, 2, 2, 2, 3])
+        self.assertIn(3, dispatched_caps[3:])
+
+    def test_execution_loop_failure_floor_and_new_run_reset(self):
+        async def handler(_task):
+            return {"ok": True}
+
+        async def run_with(statuses):
+            caps = []
+
+            async def consume(_event):
+                return statuses.pop(0)
+
+            async def completed(_event, _status, _active, cap):
+                caps.append(cap)
+
+            tasks = [{"id": str(index)} for index in range(len(statuses))]
+            await scheduler_core.run_execution_loop(
+                tasks, handler, consume, workers=3, completed=completed)
+            return caps
+
+        self.assertEqual(asyncio.run(run_with(["tech_failed"] * 4)), [2, 1, 1, 1])
+        self.assertEqual(asyncio.run(run_with(["generated"])), [3])
+
     def test_empty_queue_roundtrip(self):
         q = scheduler_core.empty_queue(max_parallel=5)
         scheduler_core.save_queue(self.ep, q)

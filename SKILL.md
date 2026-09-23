@@ -56,7 +56,7 @@
 - high-impact 不因异常巨大而失败；必须同时满足 impact 兑现、尺度参照和真实拍摄可信度。
 - 正式生图由 `image_scheduler.py` 调度，最大并发 5。
 - 并发只发生在 image backend；Production Ledger begin/success/tech-fail 严格单写者。
-- 429/timeout/5xx 自动 5→4→3→2→1 降速；稳定两波逐级恢复。
+- 技术失败在本次调度中逐级降速，最低 1；连续两帧成功完成后恢复一级，最高不超过配置的并发上限。下次调度从配置上限重新开始。
 - technical failure 不消耗内容返修；失败依赖链阻塞，无关帧继续。
 - Repair 继续遵守每帧普通内容返修最多一次。
 <!-- STORY_OS_V2_1_PHASE56_END -->
