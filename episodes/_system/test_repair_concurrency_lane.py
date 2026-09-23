@@ -40,7 +40,7 @@ def make_episode(items, prefix="lane_test"):
     prompts.mkdir(parents=True)
     q = {
         "schema_version": 1, "created_at": "t", "updated_at": "t",
-        "max_parallel": 3, "adaptive_parallel": 3, "stable_waves": 0,
+        "max_parallel": 5, "adaptive_parallel": 5, "stable_waves": 0,
         "items": [], "waves": [], "runtime_events": [],
     }
     for spec in items:
@@ -98,7 +98,7 @@ def run_lane(ep, fake_backend):
     S.ledger_begin = lambda ep_arg, item: (True, "mock begin ok")
     S.ledger_success = lambda ep_arg, item, result: (True, "mock commit ok")
     S.ledger_tech_fail = lambda ep_arg, item, code, message: None
-    return S.run_scheduler_async(ep, max_workers=3, timeout=30, codex=None)
+    return S.run_scheduler_async(ep, max_workers=5, timeout=30, codex=None)
 
 
 def load_q(ep):

@@ -540,7 +540,7 @@
     "image_scheduler": {
       "tool": "episodes/_system/image_scheduler.py",
       "queue": "meta/production-queue.json",
-      "max_parallel": 3,
+      "max_parallel": 5,
       "adaptive": true,
       "ledger_writer": "scheduler_main_thread_only",
       "fail_soft": true

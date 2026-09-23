@@ -46,7 +46,7 @@ async def run_execution_loop(tasks, handler, consume, *, workers,
     import asyncio
     from async_task_runtime import AsyncTaskRuntime
 
-    workers = max(1, min(3, int(workers)))
+    workers = max(1, min(5, int(workers)))
     pending = list(tasks)
     async def fixed_admit(limit):
         rows = pending[:limit]
@@ -167,13 +167,13 @@ def save_queue(ep: Path, q: dict) -> None:
         hot_state_bridge.mirror(ep, "QUEUE", q)
 
 
-def progress(ep: Path, q: dict, *, requested_workers: int = 3) -> dict:
+def progress(ep: Path, q: dict, *, requested_workers: int = 5) -> dict:
     """Read-only common interpretation; historical caps never control a run."""
     import storyos_config
     import raw_candidate_budget
     import story_json
     import episode_state_persistence
-    configured = min(3, int(storyos_config.get_path(storyos_config.load_config(),
+    configured = min(5, int(storyos_config.get_path(storyos_config.load_config(),
                                                   "production.max_inflight_images")))
     rows = list((ledger(ep).get("frames") or {}).values())
     pending = sum(x.get("status") == "queued" for x in q.get("items") or [])
@@ -466,9 +466,9 @@ def self_test() -> None:
     with tempfile.TemporaryDirectory(prefix="scheduler core self test ") as td:
         ep = Path(td)
         assert load_queue(ep) == EMPTY_QUEUE
-        q = empty_queue(max_parallel=3)
+        q = empty_queue(max_parallel=5)
         save_queue(ep, q)
-        assert load_queue(ep)["max_parallel"] == 3
+        assert load_queue(ep)["max_parallel"] == 5
         with queue_transaction(ep):
             assert load_queue(ep)["schema_version"] == 1
         with queue_transaction(ep):

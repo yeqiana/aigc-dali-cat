@@ -176,13 +176,24 @@ class SingleAuthorityTests(unittest.TestCase):
 
         self.addCleanup(restore)
         data = json.loads(original)
-        data["max_inflight_codex_images"] = 7
-        data["adaptive_concurrency_steps"] = [7, 4, 1]
+        data["max_inflight_codex_images"] = 4
+        data["adaptive_concurrency_steps"] = [4, 3, 1]
         path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
-        self.assertEqual(codex_subscription_batch_runtime.max_inflight(), 7,
+        self.assertEqual(codex_subscription_batch_runtime.max_inflight(), 4,
                          "改了权威文件而消费者没变——消费者读的不是这个文件")
-        self.assertEqual(codex_subscription_batch_runtime.adaptive_steps(), [7, 4, 1])
+        self.assertEqual(codex_subscription_batch_runtime.adaptive_steps(), [4, 3, 1])
+
+    def test_batch_worker_limit_rejects_values_above_five(self) -> None:
+        path = ROOT / AUTHORITY
+        original = path.read_text(encoding="utf-8")
+        self.addCleanup(lambda: path.write_text(original, encoding="utf-8"))
+        data = json.loads(original)
+        data["max_inflight_codex_images"] = 6
+        data["adaptive_concurrency_steps"] = [6, 4, 1]
+        path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "must be 1..5"):
+            codex_subscription_batch_runtime.max_inflight()
 
     def test_every_pointer_names_a_file_that_exists(self) -> None:
         pointers = []

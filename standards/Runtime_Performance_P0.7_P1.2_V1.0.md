@@ -6,10 +6,10 @@
 
 ## P0.7 Continuous Image Scheduler
 
-- 最多 3 个 image worker 不变。
+- 最多 5 个 image worker。
 - 不再采用“整波全部结束后才能开下一波”。
 - 任一 worker 完成后，主线程单写 Ledger，随后立即补充下一个 READY frame。
-- adaptive 3→2→1、fail-soft、技术失败不消耗内容返修继续保留。
+- adaptive 5→4→3→2→1、fail-soft、技术失败不消耗内容返修继续保留。
 
 ## P0.8 Execution Capsule
 
@@ -90,5 +90,5 @@ Production PASS 后必须结合最终图片正式 Finalize；草稿不能推进 
 - Final Frame Review 不删。
 - Final Candidate Snapshot / Release Gate 不删。
 - Production Ledger 仍然单写。
-- image max workers 仍为 3。
+- image max workers 上限为 5。
 - Codex image conversation 仍隔离，不伪造持久 session。

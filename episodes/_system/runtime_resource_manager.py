@@ -69,7 +69,7 @@ def normalize(snapshot=None, *, max_workers: int = 1) -> dict:
     capacity.setdefault("authority", limit)
     capacity.setdefault("derived", limit)
     capacity.setdefault("review", limit)
-    capacity.setdefault("image", min(limit, 3))
+    capacity.setdefault("image", min(limit, 5))
     if any(int(value) < 0 for value in capacity.values()):
         raise ValueError("runtime_capacity must be non-negative")
     quota = raw.get("quota")

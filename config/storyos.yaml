@@ -126,7 +126,7 @@ normalize:
 
 production:
   # 同时在途图片上限，不是固定波次大小。任一任务完成即补下一张。
-  max_inflight_images: 3
+  max_inflight_images: 5
   continuous_first_completed: true
   wave_barrier: false
   ledger_single_writer: true
@@ -177,7 +177,7 @@ agent_runtime:
     enabled: true
     config: config/agent_runtime/batch.json
 
-  # Codex 图片执行能力：Logical Batch 仍按 5 帧管理，但实际最多 3 个 Codex 图片 worker 同时在途，失败时 3→2→1。整体 Runtime 可保持 WORK。
+  # Codex 图片执行能力：Logical Batch 仍按 5 帧管理，实际最多 5 个 Codex 图片 worker 同时在途，失败时 5→4→3→2→1。整体 Runtime 可保持 WORK。
   codex_subscription_batch:
     enabled: true
     config: config/agent_runtime/codex-subscription-batch.json

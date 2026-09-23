@@ -41,7 +41,7 @@ Resolved Frame Contract PASS
 默认：
 
 ```text
-max_parallel_image_workers = 3
+max_parallel_image_workers = 5
 ```
 
 并发仅用于真正耗时的 image backend。
@@ -60,11 +60,11 @@ Production Ledger 的所有 begin / success / tech-fail 写入由 Scheduler 主�
 
 ## 自适应降速
 
-- 正常：3
-- 某波技术失败：降为 2
-- 再失败：降为 1
+- 正常：5
+- 某波技术失败：降为 4
+- 再失败：继续降为 3 / 2 / 1
 - 连续稳定两波：逐级恢复
-- 最大永远不超过 3
+- 最大永远不超过 5
 
 ## Critical Path
 

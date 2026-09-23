@@ -29,7 +29,7 @@ class StoryOSConfigTests(unittest.TestCase):
         self.assertEqual(storyos_config.get_path(config, "visual.default_profile_id"), "M00")
         self.assertEqual(storyos_config.get_path(config, "normalize.automatic_ratio_delta_max"), 0.01)
         self.assertEqual(storyos_config.get_path(config, "normalize.review_ratio_delta_max"), 0.03)
-        self.assertEqual(storyos_config.get_path(config, "production.max_inflight_images"), 3)
+        self.assertEqual(storyos_config.get_path(config, "production.max_inflight_images"), 5)
         self.assertEqual(storyos_config.get_path(config, "runtime.review.vision.max_inflight_final"), 4)
 
     def test_stage_read_sets_start_with_config(self):
@@ -49,6 +49,14 @@ class StoryOSConfigTests(unittest.TestCase):
         config = copy.deepcopy(storyos_config.load_config())
         config["image"]["quality"] = "medium"
         self.assertIn("image.quality must be high", storyos_config.validate(config))
+
+    def test_image_worker_limit_rejects_values_above_five(self):
+        config = copy.deepcopy(storyos_config.load_config())
+        config["production"]["max_inflight_images"] = 6
+        self.assertIn(
+            "production.max_inflight_images must be 1..5",
+            storyos_config.validate(config),
+        )
 
     def test_compat_switches_must_be_typed_bools(self):
         base = storyos_config.load_config()

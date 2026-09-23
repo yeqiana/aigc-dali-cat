@@ -79,8 +79,8 @@ def validate(data: dict | None = None) -> list[str]:
     if not isinstance(raw_min_dimension, int) or not 64 <= raw_min_dimension <= 512:
         errors.append("normalize.provider_raw_min_dimension must be an int between 64 and 512")
     workers = get_path(cfg, "production.max_inflight_images")
-    if not isinstance(workers, int) or not 1 <= workers <= 3:
-        errors.append("production.max_inflight_images must be 1..3")
+    if not isinstance(workers, int) or not 1 <= workers <= 5:
+        errors.append("production.max_inflight_images must be 1..5")
     if get_path(cfg, "normalize.default_crop") != "forbidden":
         errors.append("normalize.default_crop must be forbidden")
     if get_path(cfg, "normalize.enabled") is not True or get_path(cfg, "normalize.preserve_raw") is not True:

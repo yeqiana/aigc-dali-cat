@@ -33,7 +33,7 @@
     "execution_mode": "dag",
     "continuous_execution": true,
     "resume": true,
-    "max_image_workers": 3,
+    "max_image_workers": 5,
     "fail_soft": true,
     "incremental_reuse": true
   },

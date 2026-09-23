@@ -145,7 +145,7 @@
     ],
     "visual_lock_schema_version": 2,
     "visual_lock_calibration_count": 4,
-    "image_scheduler_max_parallel": 3,
+    "image_scheduler_max_parallel": 5,
     "production_ledger_single_writer": true,
     "fast_frame_scout_summary": "meta/frame-scout-summary.json",
     "final_candidate_snapshot": "meta/final-candidate-snapshot.json",

@@ -70,7 +70,7 @@
 <!-- STORY_OS_RUNTIME_PERFORMANCE_PACK_AGENTS_BEGIN -->
 ## Runtime Performance Pack
 
-- Image Scheduler 使用 continuous first-completed 调度，但 image max workers 仍是 3，Ledger 仍单写。
+- Image Scheduler 使用 continuous first-completed 调度，image max workers 上限为 5，Ledger 仍单写。
 - Scoped Codex 优先使用 `meta/runtime/execution-capsules/*.json`；Capsule 是 derived cache，冲突时源规范优先。
 - 高风险 rolling review 只能输出 PASS_PREVIEW / REPAIR_NOW / UNCERTAIN；PASS_PREVIEW 永远不是最终通过。
 - Prompt Package 是 derived cache，Frame Contract/scene SHA 漂移时必须重新编译。
@@ -145,7 +145,7 @@ Environment / Impact Contract 通过后先编译全部 Frame Contracts，再进�
 <!-- STORY_OS_V2_1_PHASE56_AGENTS_BEGIN -->
 ## V2.1 Phase 5/6 Execution
 
-Visual Lock 不再只看三张“风格图”：先 baseline，随后 worst condition / first anomaly / high-impact admission 三张可并行，最后统一 Critic。正式 Batch 不允许手工连续调用 image backend 形成隐式串行，应建立 production queue 并由 `image_scheduler.py run --max-workers 3` 执行。Scheduler 返回 PARTIAL 时先处理/重试技术失败，不得把缺帧当 PASS。
+Visual Lock 不再只看三张“风格图”：先 baseline，随后 worst condition / first anomaly / high-impact admission 三张可并行，最后统一 Critic。正式 Batch 不允许手工连续调用 image backend 形成隐式串行，应建立 production queue 并由 `image_scheduler.py run --max-workers 5` 执行。Scheduler 返回 PARTIAL 时先处理/重试技术失败，不得把缺帧当 PASS。
 <!-- STORY_OS_V2_1_PHASE56_AGENTS_END -->
 
 <!-- STORY_OS_V2_1_PHASE78_AGENTS_BEGIN -->
@@ -265,7 +265,7 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 
 没有 `OPENAI_API_KEY` 时，Production Batch 正式走：
 
-`1 Story OS Logical Batch = 5 frames; up to 3 isolated Codex image workers in flight`
+`1 Story OS Logical Batch = 5 frames; up to 5 isolated Codex image workers in flight`
 
 这是 Logical Batch，不是 Provider-native `n=5`：
 
@@ -273,9 +273,9 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 - `native_multi_image=false`
 - `single_http_request=false`
 - 不需要 API Key，使用本机 ChatGPT/Codex 登录态
-- Logical Batch 仍按 5 帧管理，但默认最多 3 个 Codex 图片 worker 同时在途
+- Logical Batch 仍按 5 帧管理，但默认最多 5 个 Codex 图片 worker 同时在途
 - 无 API Key 时全局只允许 1 个 Logical Batch 在途，避免多个 Logical Batch 叠加造成并发放大
-- 技术失败自适应 3→2→1，只重试失败帧
+- 技术失败自适应 5→4→3→2→1，只重试失败帧
 - 成功帧永不因为同批其他帧技术失败而重生
 - Fast Scout 延迟到 5 帧原始生成 barrier terminal 后再执行
 <!-- STORY_OS_V242_CODEX_SUBSCRIPTION_BATCH_END -->

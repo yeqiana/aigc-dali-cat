@@ -34,6 +34,15 @@ class RuntimeRequestQualityTests(unittest.TestCase):
         self.assertEqual(request["image"]["model"], request["image_model"])
         self.assertEqual(request["image"]["quality"], request["image_quality"])
         self.assertEqual(runtime_request.validate_request(request), [])
+        self.assertEqual(request["runtime"]["max_image_workers"], 5)
+
+    def test_request_rejects_more_than_five_image_workers(self):
+        request = runtime_request.compile_request("全自动做一篇「并发上限测试」。")
+        request["runtime"]["max_image_workers"] = 6
+        self.assertIn(
+            "runtime.max_image_workers must be 1..5",
+            runtime_request.validate_request(request),
+        )
 
     def test_legacy_request_defaults_to_high_without_mutation(self):
         request = {"image": {"provider": "openai", "model": "gpt-image-2", "source": "system_default", "strict_model": False}}
@@ -59,7 +68,7 @@ class ImageModelMigrationTests(unittest.TestCase):
                 "image_model": "gpt-image-2",
                 "image_quality": "high",
                 "image": {"provider": "openai", "model": "gpt-image-2", "source": "system_default", "strict_model": False, "quality": "high"},
-                "runtime": {"execution_mode": "dag", "continuous_execution": True, "resume": True, "max_image_workers": 3, "fail_soft": True, "incremental_reuse": True},
+                "runtime": {"execution_mode": "dag", "continuous_execution": True, "resume": True, "max_image_workers": 5, "fail_soft": True, "incremental_reuse": True},
                 "delivery": {"mode": "auto", "zip_required_for_completion": False},
                 "user_intent": {"full_auto_authorized": True, "allow_story_strengthening": True, "allow_story_rewrite": True, "ask_before_each_step": False},
                 "provenance": {"source": "natural_language", "original_request": "test"},
@@ -98,7 +107,7 @@ class ImageModelMigrationTests(unittest.TestCase):
                 "image_model": "gpt-image-2",
                 "image_quality": "high",
                 "image": {"provider": "openai", "model": "gpt-image-2", "source": "user_explicit", "strict_model": True, "quality": "high"},
-                "runtime": {"max_image_workers": 3},
+                "runtime": {"max_image_workers": 5},
             })
             with self.assertRaisesRegex(ValueError, "MIGRATION_FORBIDDEN"):
                 image_model_policy.migrate_system_default(ep)

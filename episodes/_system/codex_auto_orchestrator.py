@@ -164,7 +164,7 @@ For the current V2.1 Phase5 flow, activate the four-admission policy:
 3. Initialize/import the scheduler:
    python episodes/_system/image_scheduler.py init "{rel}"
    python episodes/_system/image_scheduler.py import-visual-lock "{rel}" --prompt-dir "{rel}/prompts/production"
-4. Run `python episodes/_system/image_scheduler.py run "{rel}" --max-workers 3`. The baseline dependency makes baseline run first; after it succeeds, the other three admissions may run concurrently. If the scheduler returns PARTIAL because of TECH_FAILED, it has already continued all unrelated work. Use `retry-tech` and rerun after inspecting the technical reason; do not consume content repair.
+4. Run `python episodes/_system/image_scheduler.py run "{rel}" --max-workers 5`. The baseline dependency makes baseline run first; after it succeeds, the other three admissions may run concurrently. If the scheduler returns PARTIAL because of TECH_FAILED, it has already continued all unrelated work. Use `retry-tech` and rerun after inspecting the technical reason; do not consume content repair.
 5. Run `python episodes/_system/visual_lock_v21.py bind-from-queue "{rel}"`.
 6. Run `python episodes/_system/visual_review.py run-critic "{rel}" --attempt 1`; for Phase5 episodes this dispatches to the four-image unified Visual Lock Critic.
 7. If attempt 1 FAILS, read the actual failed calibration rows. The Visual Lock tool records those ready candidates as CONTENT_FAILED in the production ledger when possible. Authorize ONLY the failed frames with `production_ledger.py authorize-repair --delegated-auto`, create concise repair prompts, enqueue them with `image_scheduler.py add --kind repair --scope repair`, run the scheduler, bind-from-queue again, then run critic attempt 2. If attempt 2 still fails, stop.
@@ -179,14 +179,14 @@ Do NOT manually serialize all formal `codex_subscription_image.py` calls. Phase6
 - Import remaining original frames:
   python episodes/_system/image_scheduler.py import-batch "{rel}" --prompt-dir "{rel}/prompts/production"
 - Inspect `image_scheduler.py plan`, then run:
-  python episodes/_system/image_scheduler.py run "{rel}" --max-workers 3
-The scheduler uses high-risk/critical-path priority, `escalation_from` dependencies, unique worker outputs/logs, adaptive 3→2→1 throttling, and fail-soft execution. Only image backend work is concurrent; all production-ledger mutations remain serial in the scheduler main thread.
+  python episodes/_system/image_scheduler.py run "{rel}" --max-workers 5
+The scheduler uses high-risk/critical-path priority, `escalation_from` dependencies, unique worker outputs/logs, adaptive 5→4→3→2→1 throttling, and fail-soft execution. Only image backend work is concurrent; all production-ledger mutations remain serial in the scheduler main thread.
 - Scheduler PARTIAL is not Production PASS. If TECH_FAILED exists, unrelated frames have already continued; use `retry-tech` then rerun. Technical failure never consumes content-repair budget.
 - After all current approved/candidate frames exist, run:
   python episodes/_system/incremental_frame_review.py review "{rel}" --attempt 1
 - If content review FAILS, repair ONLY failed dirty frames. Use the existing single content-repair authorization, write a repair prompt, enqueue with:
   python episodes/_system/image_scheduler.py add "{rel}" --frame NN --kind repair --scope repair --prompt-file <path> ...
-  python episodes/_system/image_scheduler.py run "{rel}" --max-workers 3
+  python episodes/_system/image_scheduler.py run "{rel}" --max-workers 5
   Then run frame review attempt 2.
 - Before leaving production:
   python episodes/_system/incremental_frame_review.py audit "{rel}"

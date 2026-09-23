@@ -74,9 +74,9 @@ def run_matrix() -> dict:
             rules.get("do_not_create_second_episode_stage") is True and wf.get("episode_stage_source")=="meta/episode-state.json",
             "episode-state remains sole stage source"
         )),
-        case("R04_max3_single_writer_failsoft",lambda: assert_true(
-            rules.get("max_parallel_image_workers")==3 and rules.get("production_ledger_single_writer") is True and rules.get("scheduler_fail_soft") is True,
-            "image concurrency max3 + ledger single-writer + fail-soft"
+        case("R04_max5_single_writer_failsoft",lambda: assert_true(
+            rules.get("max_parallel_image_workers")==5 and rules.get("production_ledger_single_writer") is True and rules.get("scheduler_fail_soft") is True,
+            "image concurrency max5 + ledger single-writer + fail-soft"
         )),
         case("R05_fast_scout_never_final_pass",lambda: assert_true(
             rules.get("fast_scout_never_final_pass") is True and (steps.get("FAST_FRAME_SCOUT") or {}).get("final_pass_authority") is False,

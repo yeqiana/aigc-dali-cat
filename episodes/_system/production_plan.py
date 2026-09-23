@@ -15,7 +15,7 @@ def build(episode: Path, *, max_workers: int = 2) -> dict:
     """Return a diagnostic topology estimate only; never a production scheduler input."""
     nodes = runtime_node_registry.first_batch_nodes()
     config=storyos_config.load_config()
-    image_limit = int(storyos_config.get_path(config, "production.max_inflight_images", 3))
+    image_limit = int(storyos_config.get_path(config, "production.max_inflight_images", 5))
     # Logical topology estimate only. `authority` below maps to the explicit
     # local-Codex fallback pool; WORK+Workspace-Provider host concurrency is intentionally
     # not invented here. Review has no independent worker knob, and image work is

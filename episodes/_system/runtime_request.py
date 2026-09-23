@@ -308,7 +308,7 @@ def validate_request(data):
     if data.get("image_quality") is not None and image.get("quality") is not None and str(data["image_quality"]).lower()!=str(image["quality"]).lower():errors.append("image_quality must match image.quality")
     if image.get("source")=="user_explicit" and image.get("strict_model") is not True:errors.append("user_explicit image model requires strict_model=true")
     workers=(data.get("runtime") or {}).get("max_image_workers")
-    if not isinstance(workers,int) or not 1<=workers<=3:errors.append("runtime.max_image_workers must be 1..3")
+    if not isinstance(workers,int) or not 1<=workers<=5:errors.append("runtime.max_image_workers must be 1..5")
     if not str((data.get("topic") or {}).get("title") or "").strip():errors.append("topic.title missing")
     return errors
 

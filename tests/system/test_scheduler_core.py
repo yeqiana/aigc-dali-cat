@@ -4,6 +4,7 @@ from __future__ import annotations
 import sys
 import tempfile
 import unittest
+import asyncio
 from pathlib import Path
 from unittest import mock
 
@@ -25,11 +26,31 @@ class SchedulerCoreTests(unittest.TestCase):
         q = scheduler_core.load_queue(self.ep)
         self.assertEqual(q, scheduler_core.EMPTY_QUEUE)
 
+    def test_execution_loop_honors_five_worker_cap(self):
+        active = 0
+        peak = 0
+
+        async def handler(_task):
+            nonlocal active, peak
+            active += 1
+            peak = max(peak, active)
+            await asyncio.sleep(0.03)
+            active -= 1
+            return {"ok": True}
+
+        async def consume(_event):
+            return "success"
+
+        tasks = [{"id": str(index)} for index in range(6)]
+        asyncio.run(scheduler_core.run_execution_loop(
+            tasks, handler, consume, workers=6))
+        self.assertEqual(peak, 5)
+
     def test_empty_queue_roundtrip(self):
-        q = scheduler_core.empty_queue(max_parallel=3)
+        q = scheduler_core.empty_queue(max_parallel=5)
         scheduler_core.save_queue(self.ep, q)
         loaded = scheduler_core.load_queue(self.ep)
-        self.assertEqual(loaded["max_parallel"], 3)
+        self.assertEqual(loaded["max_parallel"], 5)
         self.assertEqual(loaded["schema_version"], 1)
         self.assertEqual(loaded["items"], [])
 

@@ -54,9 +54,9 @@
 - 新篇 `visual.calibration.policy=four_admission_v21`。
 - Visual Lock 必须有 baseline / worst / first anomaly / high-impact 四张实际像素准入图。
 - high-impact 不因异常巨大而失败；必须同时满足 impact 兑现、尺度参照和真实拍摄可信度。
-- 正式生图由 `image_scheduler.py` 调度，最大并发 3。
+- 正式生图由 `image_scheduler.py` 调度，最大并发 5。
 - 并发只发生在 image backend；Production Ledger begin/success/tech-fail 严格单写者。
-- 429/timeout/5xx 自动 3→2→1 降速；稳定两波逐级恢复。
+- 429/timeout/5xx 自动 5→4→3→2→1 降速；稳定两波逐级恢复。
 - technical failure 不消耗内容返修；失败依赖链阻塞，无关帧继续。
 - Repair 继续遵守每帧普通内容返修最多一次。
 <!-- STORY_OS_V2_1_PHASE56_END -->
@@ -498,7 +498,7 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 
 没有 `OPENAI_API_KEY` 时，Production Batch 正式走：
 
-`1 Story OS Logical Batch = 5 frames; up to 3 isolated Codex image workers in flight`
+`1 Story OS Logical Batch = 5 frames; up to 5 isolated Codex image workers in flight`
 
 这是 Logical Batch，不是 Provider-native `n=5`：
 
@@ -506,9 +506,9 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 - `native_multi_image=false`
 - `single_http_request=false`
 - 不需要 API Key，使用本机 ChatGPT/Codex 登录态
-- Logical Batch 仍按 5 帧管理，但默认最多 3 个 Codex 图片 worker 同时在途
+- Logical Batch 仍按 5 帧管理，但默认最多 5 个 Codex 图片 worker 同时在途
 - 无 API Key 时全局只允许 1 个 Logical Batch 在途，避免多个 Logical Batch 叠加造成并发放大
-- 技术失败自适应 3→2→1，只重试失败帧
+- 技术失败自适应 5→4→3→2→1，只重试失败帧
 - 成功帧永不因为同批其他帧技术失败而重生
 - Fast Scout 延迟到 5 帧原始生成 barrier terminal 后再执行
 <!-- STORY_OS_V242_CODEX_SUBSCRIPTION_BATCH_END -->

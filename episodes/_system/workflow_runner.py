@@ -286,7 +286,7 @@ def main() -> int:
         data = load_contract()
         assert data["rules"]["zip_is_delivery_adapter_not_stage_gate"] is True
         assert "RESTORE" in data["steps"]
-        assert data["rules"].get("max_parallel_image_workers") == 3
+        assert data["rules"].get("max_parallel_image_workers") == 5
         assert data["rules"].get("production_ledger_single_writer") is True
         assert "IMAGE_WAVES" in data["steps"]
         assert data["rules"].get("fast_scout_never_final_pass") is True

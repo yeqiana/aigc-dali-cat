@@ -295,7 +295,7 @@ def production_scheduler_resources() -> dict:
     config=storyos_config.load_config()
     authority=max(1,int(storyos_config.get_path(config,"runtime.workers.local_codex_preimage",4)))
     derived=max(1,int(storyos_config.get_path(config,"runtime.workers.derived",6)))
-    image=max(1,int(storyos_config.get_path(config,"production.max_inflight_images",3)))
+    image=max(1,int(storyos_config.get_path(config,"production.max_inflight_images",5)))
     max_workers=max(authority,derived,image,1)
     return {
         "max_workers":max_workers,

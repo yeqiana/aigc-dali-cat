@@ -26,15 +26,15 @@ def batch_size()->int:
     return n
 
 def max_inflight()->int:
-    n=int(load().get("max_inflight_codex_images") or 3)
-    if n<1 or n>10:
-        raise ValueError("max_inflight_codex_images must be 1..10")
+    n=int(load().get("max_inflight_codex_images") or 5)
+    if n<1 or n>5:
+        raise ValueError("max_inflight_codex_images must be 1..5")
     return n
 
 def adaptive_steps()->list[int]:
-    raw=load().get("adaptive_concurrency_steps") or [3,2,1]
+    raw=load().get("adaptive_concurrency_steps") or [5,4,3,2,1]
     values=[int(x) for x in raw]
-    if not values or values[-1]!=1 or any(x<1 or x>10 for x in values):
+    if not values or values[-1]!=1 or any(x<1 or x>5 for x in values):
         raise ValueError("adaptive_concurrency_steps invalid")
     if values!=sorted(values,reverse=True):
         raise ValueError("adaptive_concurrency_steps must be descending")
@@ -43,8 +43,8 @@ def adaptive_steps()->list[int]:
 def self_test():
     assert enabled() is True
     assert batch_size()==5
-    assert max_inflight()==3
-    assert adaptive_steps()==[3,2,1]
+    assert max_inflight()==5
+    assert adaptive_steps()==[5,4,3,2,1]
     assert load()["api_key_required"] is False
     print("CODEX SUBSCRIPTION BATCH RUNTIME V2.6.1 H3 SELF-TEST PASS")
 

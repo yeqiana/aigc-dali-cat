@@ -5,8 +5,10 @@
   "enabled": true,
   "mode": "parallel_single_frame_fanout",
   "logical_batch_size": 5,
-  "max_inflight_codex_images": 3,
+  "max_inflight_codex_images": 5,
   "adaptive_concurrency_steps": [
+    5,
+    4,
     3,
     2,
     1
