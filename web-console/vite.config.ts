@@ -1,20 +1,26 @@
-import vue2 from '@vitejs/plugin-vue2';
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
 import path from 'path';
-import {defineConfig} from 'vite';
+import { defineConfig } from 'vite';
+
+// Web Console 只通过这一组代理访问 Platform API（默认 http://127.0.0.1:8080）。
+// 与 web-console/.env.example 的 VITE_PLATFORM_API_URL 同源，二者不形成第二入口。
+const platformApiTarget = process.env.VITE_PLATFORM_API_URL || 'http://127.0.0.1:8080';
+
+const platformProxy = {
+  '/api': {
+    target: platformApiTarget,
+    changeOrigin: true,
+  },
+  '/healthz': {
+    target: platformApiTarget,
+    changeOrigin: true,
+  },
+};
 
 export default defineConfig(() => {
-  const platformProxy = {
-    '/api': {
-      target: process.env.VITE_PLATFORM_API_URL || 'http://127.0.0.1:8080',
-      changeOrigin: true,
-    },
-    '/healthz': {
-      target: process.env.VITE_PLATFORM_API_URL || 'http://127.0.0.1:8080',
-      changeOrigin: true,
-    },
-  };
   return {
-    plugins: [vue2()],
+    plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
@@ -27,6 +33,6 @@ export default defineConfig(() => {
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
       proxy: platformProxy,
     },
-    preview: {proxy: platformProxy},
+    preview: { proxy: platformProxy },
   };
 });

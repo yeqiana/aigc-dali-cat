@@ -1,12 +1,12 @@
 # StoryOS Web Console
 
-StoryOS 的前端生产控制台。默认入口是高密度 Production Monitor，并提供 Runtime、Execution、Trace、Memory、Project、Agent、Plugin 等 Platform API 查询页。
+StoryOS 的 React + TypeScript 前端生产控制台。默认入口是高密度 Production Monitor，并通过唯一的 Platform API 边界读取运行态、执行链路与生产证据。
 
 ## 当前数据边界
 
-- Production Console 读取 Platform API 的真实运行投影，剧集进度节点在监控台行详情抽屉内展示，不回退前端示例数据。
+- Web Console 只通过 `VITE_PLATFORM_API_URL` / Vite 同源代理访问 StoryOS Platform API，不直接调用 Gemini 或其他模型 SDK。
 - 前端不得直接推进 Episode stage；正式阶段以 StoryOS canonical state transition 为准。
-- Platform 查询页读取真实 Platform API；失败会显式展示错误，不回退伪造结果。
+- `src/data/storyosRealData.ts` 是从当前工作区 canonical evidence 生成的只读投影；生成器不复制生产像素资产到 `web-console/public`。
 - WebCodex 是 Workspace Provider，不是 Episode Authority。
 
 ## 本地运行
@@ -26,7 +26,7 @@ npm run dev
 VITE_PLATFORM_API_URL=http://127.0.0.1:<platform-port>
 ```
 
-未设置 `VITE_PLATFORM_API_URL` 时，API 请求使用当前页面同源地址。
+未设置 `VITE_PLATFORM_API_URL` 时，Vite dev/preview 代理默认转发到 `http://127.0.0.1:8080`。
 
 ## 校验
 
@@ -39,15 +39,9 @@ npm run build
 
 ## 主要入口
 
-- `/`：Production Console
-- `/platform`：Platform Console
-- `/runtime`：Runtime Visualization
-- `/executions`：Execution Explorer
-- `/traces`：Trace Explorer
-- `/memory`：Memory Console
-- `/agents`：Agent Console
+当前 React 版本是单页控制台，浏览器入口统一为 `/`，不再维护旧 Vue Router 的独立 URL。侧栏在同一页面内切换 Production Monitor、生产流水线、剧集/素材、Agent、数据看板、异常中心、系统设置与运行日志等工作区视图。
 
-Project / Plugin / Marketplace 暂未暴露：当前默认 Platform HTTP composition 没有这些可用 controller/API 契约，前端不保留假入口。
+后端能力仍以 Platform API 的真实可用契约为准；前端不为尚未提供的 controller/API 保留伪造入口。
 
 ## Docker
 

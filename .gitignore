@@ -49,6 +49,12 @@ __pycache__/
 
 # Web console / Node build artifacts
 web-console/node_modules/
+# Local Web Console migration/runtime artifacts; never commit generated dev logs,
+# alternate lockfiles, or copied pixel previews outside the episode media policy.
+npm-dev.*
+web-console/npm-dev.*
+web-console/bun.lock
+web-console/public/assets/characters/female-lead/
 
 # Codex tool output
 .codex/
