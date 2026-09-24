@@ -37,10 +37,8 @@ def write_json(path, data):
     story_json.write_json(path, data)
 
 def sha256_file(path):
-    h = hashlib.sha256()
-    with path.open("rb") as f:
-        for b in iter(lambda: f.read(1024 * 1024), b""): h.update(b)
-    return h.hexdigest()
+    import content_fingerprint
+    return content_fingerprint.sha256_file(path)
 
 def version_tuple(raw):
     try: return tuple(int(x) for x in str(raw or "").split("."))

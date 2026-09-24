@@ -15,7 +15,9 @@ PATHS={"story_gates":"meta/story-gates.json","character_contract":"meta/characte
        "story_semantic_review":"meta/story-semantic-review.json","world_identity":"meta/world-identity.json"}
 def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 def sha(path: Path):
-    return hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+    if not path.is_file(): return None
+    import content_fingerprint
+    return content_fingerprint.sha256_file(path)
 def _json_sha(value): return hashlib.sha256(json.dumps(value,ensure_ascii=False,sort_keys=True).encode()).hexdigest()
 def owned_scopes() -> tuple[str,...]:
     """The authority scopes the PREIMAGE tasks own; single-sourced from the task contract.

@@ -347,6 +347,29 @@ def run_release_preflight_recovery(ep: Path, codex=None, timeout=None) -> tuple[
 
 
 def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
+    """Give direct DAG invocations the same active/wait accounting as a runner."""
+    runtime_ownership.assert_v3_owner("runtime_dag.execute")
+    sessions=(episode_performance.load(ep,True).get("execution_sessions") or [])
+    open_session=next((row for row in reversed(sessions) if not row.get("ended_at")),None)
+    owned=open_session is None
+    session=open_session.get("session_id") if open_session else None
+    if owned:
+        session=episode_performance.safe_begin_execution_session(ep,source="runtime_dag")
+    if owned or (open_session or {}).get("source")=="runtime_dag":
+        episode_performance.safe_transition_execution_state(ep,"ACTIVE",session_id=session,source="runtime_dag")
+    rc=None
+    try:
+        rc=_execute(ep,codex=codex,timeout=timeout,run_id=run_id,trace_id=trace_id,until=until)
+        return rc
+    finally:
+        if owned or (open_session or {}).get("source")=="runtime_dag":
+            state=episode_performance.execution_state_for_result(rc if rc is not None else 1)
+            episode_performance.safe_transition_execution_state(ep,state,session_id=session,source="runtime_dag")
+            if state=="IDLE":
+                episode_performance.safe_finish_execution_session(ep,session_id=session,status="COMPLETE" if rc==0 else "BLOCKED")
+
+
+def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
     # W-11: a recorded production-owner switch only becomes effective when the
     # Production Kernel consumes it. Direct DAG execution is a production entry,
     # so fail closed before any reconcile/executor side effect.
@@ -420,6 +443,8 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             },ensure_ascii=True))
             return 2
         s=step_by_id[wave["dispatch"][0]["node_id"]]
+        node_started=runtime_node_execution.now()
+        node_t0=time.monotonic()
         cur=state(ep)
         if s.step_id=="CREATIVE_STORY" and not stage_at_least(cur,"STORYBOARD_LOCKED"):
             directing_quality.before_step(ep,s.step_id)
@@ -444,9 +469,10 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             if handoff_valid or stage_at_least(cur,"VISUAL_CALIBRATED"):
                 reason="preproduction handoff already valid" if handoff_valid else "downstream stage already valid; legacy preimage not backfilled"
                 out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
-                res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,reason,0)
-                proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,reason,attempt,input_hash,out_hash)
-                if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,reason)
+                reused_elapsed=time.monotonic()-node_t0
+                res=proto.StepResult(s.step_id,"REUSED",attempt,node_started,runtime_node_execution.now(),reused_elapsed,input_hash,out_hash,reason,0)
+                proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",reused_elapsed,reason,attempt,input_hash,out_hash)
+                if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",reused_elapsed,reason)
                 episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"reason":reason})
                 next_action.write(ep)
                 runtime_node_evidence.record(
@@ -465,9 +491,10 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 and prior.get("input_hash")==input_hash):
             reason="plan inputs unchanged since last run"
             out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
-            res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,reason,0)
-            proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,reason,attempt,input_hash,out_hash)
-            if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,reason)
+            reused_elapsed=time.monotonic()-node_t0
+            res=proto.StepResult(s.step_id,"REUSED",attempt,node_started,runtime_node_execution.now(),reused_elapsed,input_hash,out_hash,reason,0)
+            proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",reused_elapsed,reason,attempt,input_hash,out_hash)
+            if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",reused_elapsed,reason)
             episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"reason":reason})
             _t=time.monotonic()
             _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=trace_run_id,attrs={"reused":True})
@@ -481,9 +508,10 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             ok,msg=validate_target(ep,s.target_state)
             if ok:
                 out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
-                res=proto.StepResult(s.step_id,"REUSED",attempt,proto.now(),proto.now(),0.0,input_hash,out_hash,"target already valid",0)
-                proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",0,"target already valid",attempt,input_hash,out_hash)
-                if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",0,"target already valid")
+                reused_elapsed=time.monotonic()-node_t0
+                res=proto.StepResult(s.step_id,"REUSED",attempt,node_started,runtime_node_execution.now(),reused_elapsed,input_hash,out_hash,"target already valid",0)
+                proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",reused_elapsed,"target already valid",attempt,input_hash,out_hash)
+                if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",reused_elapsed,"target already valid")
                 episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"target_state":s.target_state})
                 _t=time.monotonic()
                 _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=trace_run_id,attrs={"reused":True})
@@ -493,7 +521,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                     status="REUSED",attempt=attempt,output="target already valid",evidence=s.evidence_paths)
                 completed_nodes.add(s.step_id)
                 continue
-        started_at=proto.now(); t0=time.monotonic(); rc=0; note=""
+        started_at=runtime_node_execution.now(); t0=time.monotonic(); rc=0; note=""
         episode_performance.safe_begin_stage(ep,s.step_id,source="runtime_dag",metadata={"executor":s.executor,"target_state":s.target_state})
         trace_span=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=trace_run_id,attrs={"executor":s.executor,"target_state":s.target_state})
         if s.step_id=="PREIMAGE_COMPILE":
@@ -637,7 +665,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             if not ok: rc=4; note=(note+"\nPOSTCONDITION FAIL\n"+msg)[-5000:]
         status="PASS" if rc==0 else ("HOST_WAIT" if rc==product_runtime_adapter.HOST_ACTION_REQUIRED_RC else ("BLOCKED" if rc in {124,3,4} else "FAILED"))
         out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
-        res=proto.StepResult(s.step_id,status,attempt,started_at,proto.now(),elapsed,input_hash,out_hash,note,rc)
+        res=proto.StepResult(s.step_id,status,attempt,started_at,runtime_node_execution.now(),elapsed,input_hash,out_hash,note,rc)
         proto.save_result(ep,res); checkpoint(ep,s.step_id,status,elapsed,note[-1200:],attempt,input_hash,out_hash,returncode=rc)
         runtime_node_evidence.record(
             ep,node_id=s.step_id,start_time=started_at,end_time=res.finished_at,status=status,

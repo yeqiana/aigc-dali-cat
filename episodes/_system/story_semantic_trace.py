@@ -72,11 +72,8 @@ def write_json(path, data) -> None:
 
 
 def sha256_file(path) -> str:
-    digest = hashlib.sha256()
-    with Path(path).open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
+    import content_fingerprint
+    return content_fingerprint.sha256_file(Path(path))
 
 
 def repo_rel(path) -> str:
@@ -440,4 +437,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

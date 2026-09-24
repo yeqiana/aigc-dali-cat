@@ -5,6 +5,7 @@ import datetime as dt, hashlib, json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 import story_json
+import content_fingerprint
 import runtime_workspace
 import runtime_checkpoint
 import runtime_checkpoint_persistence
@@ -25,11 +26,11 @@ def evidence_hash(ep,paths):
     for rel in paths:
         p=ep/rel; h.update(rel.encode("utf-8"))
         if p.is_file():
-            h.update(b"F"); h.update(p.read_bytes())
+            h.update(b"F"); h.update(content_fingerprint.normalized_bytes(p))
         elif p.is_dir():
             h.update(b"D")
             for child in sorted(x for x in p.rglob("*") if x.is_file()):
-                h.update(child.relative_to(ep).as_posix().encode("utf-8")); h.update(child.read_bytes())
+                h.update(child.relative_to(ep).as_posix().encode("utf-8")); h.update(content_fingerprint.normalized_bytes(child))
         else:
             h.update(b"MISSING")
     return h.hexdigest()

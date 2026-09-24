@@ -468,7 +468,23 @@ def cmd_accept_after_retry_exhaustion(args: argparse.Namespace) -> None:
                      if ((row.get("candidate") or {}).get("sha256") == candidate.get("sha256"))), None)
     if not isinstance(matching, dict) or matching.get("result") != "success":
         raise SystemExit("retry-exhaustion candidate has no successful source attempt")
-    verify_attempt_frame_contract_provenance(ep, key, matching)
+    authority_refresh_fallback = False
+    try:
+        verify_attempt_frame_contract_provenance(ep, key, matching)
+    except SystemExit:
+        # The user explicitly authorized continuity after the new-contract
+        # refresh exhausted its technical retries. Keep the old candidate
+        # auditable; never rewrite its provenance as if it used the current
+        # contract. Final semantic review applies the matching narrow exception.
+        refresh = frame.get("authority_refresh_authorization") or {}
+        current = current_frame_contract_provenance(ep, key) or {}
+        if (frame.get("status") == "TECH_FAILED"
+                and str(refresh.get("frame_contract_sha256") or "").lower()
+                == str(current.get("contract_sha256") or "").lower()
+                and str(refresh.get("frame_contract_sha256") or "").strip()):
+            authority_refresh_fallback = True
+        else:
+            raise
     verify_attempt_visual_provenance(ep, matching)
     limit = int(storyos_config.get_path(storyos_config.load_config(), "production.technical_retry.max_attempts_per_item"))
     failures = []
@@ -492,8 +508,16 @@ def cmd_accept_after_retry_exhaustion(args: argparse.Namespace) -> None:
         "candidate_sha256": candidate["sha256"],
         "visual_quality_reviewed": False,
     }
+    if authority_refresh_fallback:
+        decision["authority_refresh_fallback"] = True
+        decision["current_frame_contract_sha256"] = str(
+            (frame.get("authority_refresh_authorization") or {}).get("frame_contract_sha256") or ""
+        ).lower()
+        decision["candidate_attempt_frame_contract_sha256"] = str(
+            ((matching.get("request") or {}).get("frame_contract_sha256") or "")
+        ).lower()
     frame.setdefault("reviews", []).append(decision)
-    frame.setdefault("retry_exhaustion_acceptances", []).append({
+    acceptance = {
         "at": at,
         "reason": reason,
         "candidate_sha256": candidate["sha256"],
@@ -501,11 +525,54 @@ def cmd_accept_after_retry_exhaustion(args: argparse.Namespace) -> None:
         "required_failures": limit,
         "user_authorized": True,
         "visual_quality_reviewed": False,
-    })
+    }
+    if authority_refresh_fallback:
+        acceptance["authority_refresh_fallback"] = True
+        acceptance["current_frame_contract_sha256"] = decision["current_frame_contract_sha256"]
+        acceptance["candidate_attempt_frame_contract_sha256"] = decision["candidate_attempt_frame_contract_sha256"]
+    frame.setdefault("retry_exhaustion_acceptances", []).append(acceptance)
     frame["status"] = "PASSED"
     data["updated_at"] = at
     save_json(path, data)
     print(f"{key}: PASSED (user-authorized retry-exhaustion acceptance; candidate retained for final review)")
+
+
+def force_pass_content_exhaustion(ep: Path, frame_number: str, reason: str) -> dict:
+    """Accept an existing proven candidate once the content repair budget is spent."""
+    path, data = get_ledger(ep)
+    key, frame = frame_obj(data, frame_number)
+    limit = content_repair_limit(data)
+    used = int(frame.get("content_repairs_used") or 0)
+    if used < limit:
+        raise ValueError(f"frame {key} repair budget remains: {used}/{limit}")
+    if frame.get("status") not in {"ORIGINAL_READY", "REPAIR_READY", "PASSED", "LOCKED", "NEEDS_USER"}:
+        raise ValueError(f"frame {key} has no reviewable candidate: {frame.get('status')}")
+    candidate = frame.get("current_candidate") or {}
+    raw_path = candidate.get("path")
+    candidate_sha = str(candidate.get("sha256") or "").lower()
+    if not raw_path or not candidate_sha:
+        raise ValueError(f"frame {key} has no candidate")
+    candidate_path = (repo_root() / raw_path).resolve() if not Path(raw_path).is_absolute() else Path(raw_path).resolve()
+    if not candidate_path.is_file() or sha256_file(candidate_path) != candidate_sha:
+        raise ValueError(f"frame {key} candidate missing or drifted")
+    matching = next((a for a in reversed(frame.get("attempts") or [])
+                     if (a.get("candidate") or {}).get("sha256") == candidate_sha and a.get("result") == "success"), None)
+    if matching is None:
+        raise ValueError(f"frame {key} has no successful generation attempt")
+    verify_attempt_frame_contract_provenance(ep, key, matching)
+    verify_attempt_visual_provenance(ep, matching)
+    marker = {"at": now_iso(), "forced_pass": True, "basis": "direct_user_repair_exhaustion_policy",
+              "reason": reason, "candidate_sha256": candidate_sha,
+              "content_repairs_used": used, "content_repair_limit": limit,
+              "visual_quality_reviewed": False}
+    frame.setdefault("forced_passes", []).append(marker)
+    frame.setdefault("reviews", []).append({"at": marker["at"], "decision": "pass",
+        "forced_pass": True, "notes": reason, "candidate_sha256": candidate_sha})
+    if frame["status"] != "LOCKED":
+        frame["status"] = "PASSED"
+    data["updated_at"] = marker["at"]
+    save_json(path, data)
+    return marker
 
 
 def cmd_accept_user_contract_exception(args: argparse.Namespace) -> None:

@@ -34,6 +34,7 @@ import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
 import story_semantic_trace  # STORY_OS_W22_STORY_SEMANTIC_TRACE
 import story_dna_trace  # STORY_OS_V3_E003_STORY_DNA_TRACE
 import story_json
+import content_fingerprint
 import preimage_authority_snapshot
 import runtime_node_execution
 import storyos_config
@@ -70,11 +71,7 @@ def sha256_bytes(data: bytes) -> str:
 
 
 def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open("rb") as f:
-        for block in iter(lambda: f.read(1024 * 1024), b""):
-            h.update(block)
-    return h.hexdigest()
+    return content_fingerprint.sha256_file(path)
 
 
 def sha256_json(data: Any) -> str:
