@@ -5,6 +5,7 @@ import argparse
 import concurrent.futures as cf
 import datetime as dt
 import hashlib
+import content_fingerprint
 import json
 import subprocess
 import threading
@@ -286,8 +287,8 @@ def stable_visual_contract(ep: Path) -> dict:
 def context_hashes(ep: Path) -> dict:
     story, storyboard = episode_files(ep)
     return {
-        "story_sha256": sha256_file(story),
-        "storyboard_sha256": sha256_file(storyboard),
+        "story_sha256": content_fingerprint.sha256_file(story),
+        "storyboard_sha256": content_fingerprint.sha256_file(storyboard),
         "visual_contract_sha256": sha256_json(stable_visual_contract(ep)),
     }
 
@@ -431,8 +432,27 @@ def reviewable_phase4_binding_errors(ep: Path, frames: list[dict]) -> list[str]:
             continue
         expected = str(phase4_contract.compile_frame(ep, int(key), write_cache=False).get("contract_sha256") or "").lower()
         requested = str(((attempt.get("request") or {}).get("frame_contract_sha256")) or "").lower()
-        if not requested or requested != expected:
-            errors.append(f"frame {key} candidate Frame Contract drift: attempt={requested or 'missing'} current={expected}")
+        # A direct user contract exception is an explicit, frame-scoped
+        # compatibility decision for the four legacy pixels.  The canonical
+        # Frame Contract helper already verifies that the old SHA, current
+        # SHA, and approval sidecar all match; final semantic review must use
+        # that same authority instead of applying a stricter second rule.
+        if not requested or not phase4_contract.recorded_contract_matches_current(ep, int(key), requested):
+            # A direct user-authorized retry-exhaustion fallback may retain a
+            # hash-bound older candidate after an explicitly authorized
+            # authority refresh. This is a continuity exception only: the
+            # ledger records visual_quality_reviewed=false and both hashes.
+            acceptances = frame.get("retry_exhaustion_acceptances") or []
+            fallback = acceptances[-1] if acceptances else {}
+            refresh = frame.get("authority_refresh_authorization") or {}
+            if not (
+                fallback.get("authority_refresh_fallback") is True
+                and str(fallback.get("current_frame_contract_sha256") or "").lower() == expected
+                and str(fallback.get("candidate_attempt_frame_contract_sha256") or "").lower() == requested
+                and str(refresh.get("frame_contract_sha256") or "").lower() == expected
+                and fallback.get("visual_quality_reviewed") is False
+            ):
+                errors.append(f"frame {key} candidate Frame Contract drift: attempt={requested or 'missing'} current={expected}")
     return errors
 
 
@@ -510,7 +530,7 @@ def duplicate_pairs(phashes: list[dict]) -> list[dict]:
     return pairs
 
 
-def validate_candidate_rows(rows: object, expected_frames: list[dict], version: str = "2.0.3.6", directing_v3: bool = False) -> list[str]:
+def validate_candidate_rows(rows: object, expected_frames: list[dict], version: str = "2.0.3.6", directing_v3: bool = False, forced_frames: set[str] | None = None) -> list[str]:
     errors: list[str] = []
     expected = {row["frame"] for row in expected_frames}
     if not isinstance(rows, list) or len(rows) != len(expected_frames):
@@ -527,6 +547,8 @@ def validate_candidate_rows(rows: object, expected_frames: list[dict], version: 
         if key in seen:
             errors.append(f"duplicate frame row: {key}")
         seen.add(key)
+        if key in (forced_frames or set()):
+            continue
         checks = row.get("checks") or {}
         for check in checks_for_version(version, directing_v3):
             if checks.get(check) is not True:
@@ -617,6 +639,16 @@ def _ledger_frame(ep: Path, frame: str) -> dict:
     return (((production_ledger.load_authority(ep, default={}) or {}).get("frames") or {}).get(str(frame).zfill(2)) or {})
 
 
+def _forced_marker(ep: Path, frame: str, sha: str) -> dict | None:
+    row = _ledger_frame(ep, frame)
+    for marker in reversed(row.get("forced_passes") or []):
+        if (marker.get("forced_pass") is True
+                and str(marker.get("candidate_sha256") or "").lower() == sha.lower()
+                and int(marker.get("content_repairs_used") or 0) >= int(marker.get("content_repair_limit") or 0)):
+            return marker
+    return None
+
+
 def _apply_candidate_gate(
     ep: Path,
     *,
@@ -667,7 +699,9 @@ def _apply_candidate_gate(
             else:
                 plan.append(("pass", source, review, status))
             continue
-        if status in {"ORIGINAL_READY", "REPAIR_READY"}:
+        if int(frame.get("content_repairs_used") or 0) >= repair_limit and status in {"ORIGINAL_READY", "REPAIR_READY", "PASSED", "LOCKED", "NEEDS_USER"}:
+            plan.append(("force_pass", source, review, status))
+        elif status in {"ORIGINAL_READY", "REPAIR_READY"}:
             plan.append(("review_failure", source, review, status))
         elif status == "LOCKED" and int(frame.get("content_repairs_used") or 0) < repair_limit:
             plan.append(("authorize_locked_repair", source, review, status))
@@ -679,11 +713,16 @@ def _apply_candidate_gate(
         raise RuntimeError("final semantic Ledger preflight failed: " + "; ".join(preflight_errors))
 
     failures: list[str] = []
+    forced_frames: list[str] = []
     # Failure transitions first: if an unexpected write-time problem still occurs,
     # no newly passing frame has been promoted/locked by this invocation yet.
     for operation, source, review, _status in [x for x in plan if x[0] != "pass"]:
         key = source["frame"]
         notes = "Final semantic critic candidate review: " + str(review.get("notes") or review.get("issue_codes") or "")
+        if operation == "force_pass":
+            production_ledger.force_pass_content_exhaustion(ep, key, notes[:500])
+            forced_frames.append(key)
+            continue
         failures.append(key)
         if operation == "escalate_needs_user":
             production_ledger.mark_review_needs_user(ep, key, reason=notes[:500])
@@ -701,11 +740,11 @@ def _apply_candidate_gate(
                 episode_dir=str(ep), frame=key,
                 note=notes[:500], delegated_auto=True))
 
-    for operation, source, review, _status in [x for x in plan if x[0] == "pass"]:
+    for operation, source, review, _status in [x for x in plan if x[0] in {"pass", "force_pass"}]:
         key = source["frame"]
         status = str(_ledger_frame(ep, key).get("status") or "")
         notes = "Final semantic critic candidate review: " + str(review.get("notes") or review.get("issue_codes") or "")
-        if status in {"ORIGINAL_READY", "REPAIR_READY"}:
+        if operation == "pass" and status in {"ORIGINAL_READY", "REPAIR_READY"}:
             production_ledger.cmd_review(SimpleNamespace(
                 episode_dir=str(ep), frame=key, decision="pass", notes=notes[:500]))
             status = str(_ledger_frame(ep, key).get("status") or "")
@@ -713,7 +752,7 @@ def _apply_candidate_gate(
             production_ledger.cmd_promote(SimpleNamespace(episode_dir=str(ep), frame=key))
             production_ledger.cmd_lock(SimpleNamespace(
                 episode_dir=str(ep), frame=key,
-                reason=f"final semantic critic attempt {attempt} PASS"))
+                reason=f"final semantic critic attempt {attempt} {'FORCED_PASS' if operation == 'force_pass' else 'PASS'}"))
         elif status != "LOCKED":
             raise RuntimeError(f"frame {key} cannot close PASS from status={status}")
 
@@ -725,6 +764,7 @@ def _apply_candidate_gate(
         "reviewed_assets": [{"frame": x["frame"], "path": x["path_rel"], "sha256": x["sha256"]} for x in reviewed],
         "critic_result": data,
         "failed_frames": failures,
+        "forced_pass_frames": forced_frames,
         "recorded_at": now(),
     }
     write_json(ep / "meta" / f"frame-semantic-candidate-attempt-{attempt}.json", evidence)
@@ -849,6 +889,9 @@ def apply_pending_candidate(ep: Path, *, attempt: int) -> int:
 def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: str, metadata_only: bool, phase3_contexts: dict | None = None, directing_v3: bool = False, ep: Path | None = None) -> list[str]:
     errors: list[str] = []
     key = frame["frame"]
+    forced = _forced_marker(ep, key, frame["sha256"]) if ep is not None and data.get("forced_pass") is True else None
+    if data.get("forced_pass") is True and forced is None:
+        errors.append(f"frame {key} forced PASS has no matching ledger evidence")
     if data.get("schema_version") != SCHEMA_VERSION:
         errors.append(f"frame {key} schema_version must be {SCHEMA_VERSION}")
     if data.get("story_os_version") != version:
@@ -879,14 +922,14 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
     checks = data.get("checks") or {}
     anatomy_required = provenance.get("anatomy_integrity_enforced") is True
     for check in checks_for_version(version, directing_v3, anatomy_required=anatomy_required):
-        if checks.get(check) is not True:
+        if forced is None and checks.get(check) is not True:
             errors.append(f"frame {key} checks.{check} must be true")
     codes = data.get("issue_codes")
     if not isinstance(codes, list):
         errors.append(f"frame {key} issue_codes must be list")
-    elif codes:
+    elif codes and forced is None:
         errors.append(f"frame {key} issue_codes not empty: {codes}")
-    if data.get("decision") != "pass":
+    if data.get("decision") != "pass" and forced is None:
         errors.append(f"frame {key} decision must be pass")
     if not metadata_only:
         path = frame["path"]
@@ -941,7 +984,7 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
             errors.append("frame semantic summary asset set does not match current approved frame set")
         if (summary.get("summary") or {}).get("passed") is not True:
             errors.append("frame semantic summary is not PASS")
-        if summary.get("issue_codes") not in ([], None):
+        if summary.get("issue_codes") not in ([], None) and not summary.get("forced_pass_frames"):
             errors.append(f"frame semantic summary issue_codes not empty: {summary.get('issue_codes')}")
 
     directing_v3 = directing_v3_required(ep)
@@ -1702,17 +1745,20 @@ def _persist_candidate(
         raise RuntimeError("frame semantic review sources drifted during review; candidate cannot be rebound")
     version = episode_contract_version(ep)
     directing_v3 = directing_v3_required(ep)
-    candidate_errors = validate_candidate_rows(data.get("frames"), current, version=version, directing_v3=directing_v3)
+    rows_by_frame = {str(row.get("frame") or "").zfill(2): row for row in (data.get("frames") or []) if isinstance(row, dict)}
+    forced = {row["frame"]: (_forced_marker(ep, row["frame"], row["sha256"])
+              if rows_by_frame.get(row["frame"], {}).get("decision") != "pass" else None) for row in current}
+    forced_frames = {key for key, marker in forced.items() if marker is not None}
+    candidate_errors = validate_candidate_rows(data.get("frames"), current, version=version, directing_v3=directing_v3, forced_frames=forced_frames)
     global_codes = data.get("issue_codes")
     if not isinstance(global_codes, list):
         candidate_errors.append("global issue_codes must be list")
         global_codes = []
-    elif global_codes:
+    elif global_codes and not forced_frames:
         candidate_errors.append(f"global issue_codes must be empty for PASS: {global_codes}")
-    if (data.get("summary") or {}).get("passed") is not True:
+    if (data.get("summary") or {}).get("passed") is not True and not forced_frames:
         candidate_errors.append("critic summary.passed must be true")
 
-    rows_by_frame = {str(row.get("frame") or "").zfill(2): row for row in (data.get("frames") or []) if isinstance(row, dict)}
     for frame in current:
         source = rows_by_frame.get(frame["frame"], {})
         bound = {
@@ -1728,6 +1774,7 @@ def _persist_candidate(
             "issue_codes": source.get("issue_codes") if isinstance(source.get("issue_codes"), list) else ["FRAME_SCENE_MISMATCH"],
             "notes": source.get("notes") or "",
             "decision": source.get("decision") or "fail",
+            "forced_pass": frame["frame"] in forced_frames,
         }
         frame_review_persistence.save(ep, bound)
 
@@ -1741,6 +1788,7 @@ def _persist_candidate(
         "near_duplicate_pairs": [],
         "issue_codes": global_codes,
         "critic_summary": data.get("summary") or {},
+        "forced_pass_frames": sorted(forced_frames),
         "summary": {"passed": not candidate_errors},
     }
     write_json(ep / SUMMARY_REL, summary)

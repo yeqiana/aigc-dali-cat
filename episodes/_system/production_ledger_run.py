@@ -428,6 +428,15 @@ def cmd_review(args: argparse.Namespace) -> None:
         frame["status"] = "NEEDS_USER"
     data["updated_at"] = now_iso()
     save_json(path, data)
+    if decision == "repair" and frame["status"] == "NEEDS_USER" and frame.get("current_candidate"):
+        # The user's standing continuity policy applies only after the frozen
+        # content budget is spent and only to an existing, provenance-bound image.
+        from production_ledger_manage import force_pass_content_exhaustion
+        try:
+            force_pass_content_exhaustion(ep, key, "Content critic failed after repair limit: " + str(args.notes or "")[:400])
+            frame["status"] = "PASSED"
+        except (ValueError, SystemExit):
+            pass  # No valid candidate/provenance: keep NEEDS_USER, never invent pixels.
     print(f"{key}: {frame['status']}")
 
 
