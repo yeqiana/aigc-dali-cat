@@ -248,10 +248,16 @@ def run_caption_ocr_shadow(ep, keys=None) -> dict:
         return {"status": "DISABLED", "diagnostic_only": True, "may_affect_gate": False}
     try:
         from rapidocr import RapidOCR
-        engine = RapidOCR()
     except ImportError as exc:
         data = _skipped({"name": "RapidOCR", "version": "unknown"},
                         "DEPENDENCY_MISSING", str(exc), started)
+        _safe_write(ep / OCR_OUTPUT_REL, data)
+        return data
+    try:
+        engine = RapidOCR()
+    except Exception as exc:
+        data = _skipped({"name": "RapidOCR", "version": "unknown"},
+                        "INITIALIZATION_FAILED", f"{type(exc).__name__}: {exc}", started)
         _safe_write(ep / OCR_OUTPUT_REL, data)
         return data
     try:

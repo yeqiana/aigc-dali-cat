@@ -36,6 +36,24 @@ def test_caption_ocr_missing_dependency_is_skipped_and_writes_report():
         assert (ep / local_vision_shadow.OCR_OUTPUT_REL).is_file()
 
 
+def test_caption_ocr_initialization_failure_is_classified_separately():
+    with _temp_episode() as raw:
+        ep = Path(raw)
+
+        class BrokenRapidOCR:
+            def __init__(self):
+                raise RuntimeError("runtime init failed")
+
+        fake = type("fake_rapidocr", (), {"RapidOCR": BrokenRapidOCR})
+        with patch.dict(sys.modules, {"rapidocr": fake}):
+            data = local_vision_shadow.run_caption_ocr_shadow(ep)
+        assert data["status"] == "SKIPPED"
+        assert data["reason"] == "INITIALIZATION_FAILED"
+        assert "RuntimeError: runtime init failed" in data["detail"]
+        assert data["may_affect_gate"] is False
+        assert (ep / local_vision_shadow.OCR_OUTPUT_REL).is_file()
+
+
 def test_caption_ocr_diagnose_failure_is_fail_soft_and_writes_report():
     with _temp_episode() as raw:
         ep = Path(raw)
