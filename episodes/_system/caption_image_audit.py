@@ -10,11 +10,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from pathlib import Path
 
 import frame_semantic_review as base
 import incremental_frame_review as inc
 import codex_critic_runner
+import episode_performance
 import runtime_command
 import runtime_provenance
 import runtime_router
@@ -24,6 +26,7 @@ import runtime_timeout_policy
 import production_ledger
 import local_vision_shadow
 import subtitle_render_integrity
+import quota_observability
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/caption-image-audit.json")
@@ -41,6 +44,21 @@ def _review_kind(index: int, cycle: int = 1) -> str:
     if cycle <= 1:
         return f"caption-image-audit-v2-{index:03d}"
     return f"caption-image-audit-v2-r{cycle - 1}-{index:03d}"
+
+
+def _tokens_from_jsonl(text: str) -> dict:
+    """Best-effort token counters from a Codex --json output stream. Never raises."""
+    totals: dict = {}
+    for line in (text or "").splitlines():
+        try:
+            obj = json.loads(line)
+        except Exception:
+            continue
+        try:
+            quota_observability.walk_tokens(obj, totals)
+        except Exception:
+            continue
+    return totals
 
 
 def _resolve_layout_y_ratio(layout: dict, canvas_height: int) -> tuple[float, bool]:
@@ -243,7 +261,9 @@ def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str
     for row in rows:
         cmd += ["-i", str(row["path"])]
     cmd += ["-"]
+    started = time.perf_counter()
     cp = runtime_command.run_argv(cmd, cwd=ROOT, stdin_text=_prompt(ep, rows, texts, out), timeout=timeout, capture=True)
+    vision_elapsed = time.perf_counter() - started
     log = ep / "meta" / f"caption-image-audit-v2-{suffix}.jsonl"
     log.write_text(cp.stdout or "", encoding="utf-8", newline="\n")
     if cp.returncode != 0 or not out.is_file():
@@ -257,6 +277,12 @@ def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str
         log=log.resolve().relative_to(ROOT.resolve()).as_posix(),
         review_scope="CAPTION_IMAGE_SUBTITLE_PIXELS",
     )
+    data["_vision_telemetry"] = {
+        "vision_call": True,
+        "elapsed_seconds": round(vision_elapsed, 3),
+        "tokens": _tokens_from_jsonl(cp.stdout or ""),
+        "log": log.resolve().relative_to(ROOT.resolve()).as_posix(),
+    }
     return data
 
 
@@ -360,12 +386,17 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
     dest = evidence.setdefault("frames", {})
     reviewed = 0
     reused = len(rows_by_key) - len(dirty)
+    empty_caption_count = 0
+    vision_call_count = 0
+    vision_elapsed_seconds = 0.0
+    vision_tokens: dict = {}
 
     # Empty captions are deterministic passes and require no vision call.
     nonempty = []
     for row in dirty:
         key = row["frame"]
         if not texts.get(key, "").strip():
+            empty_caption_count += 1
             dest[key] = {
                 "schema_version": SCHEMA, "frame": key,
                 "image_sha256": image_sha[key], "caption_sha256": caption_sha[key],
@@ -374,6 +405,7 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
             }
         else:
             nonempty.append(row)
+    vision_candidate_frames = len(nonempty)
 
     # Local OCR shadow: derived native-text/subtitle overlap hints for the
     # frames that actually need a vision call. Fail-soft; never blocks or
@@ -403,56 +435,114 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
             }
         nonempty = [row for row in nonempty if row["frame"] not in local_cleared]
 
-    placement_repairs: dict[str, dict] = {}
-    for start in range(0, len(nonempty), CHUNK):
-        chunk = nonempty[start:start + CHUNK]
-        data = _run_chunk(ep, chunk, texts, codex_raw, timeout, start // CHUNK + 1)
-        count, repairs = _record_chunk_results(
-            ep=ep, chunk=chunk, data=data, dest=dest,
-            image_sha=image_sha, caption_sha=caption_sha, cycle=1)
-        reviewed += count
-        placement_repairs.update(repairs)
-
-    # Only the actual-pixel CODEX lane may auto-move text. Product Review host
-    # requests remain fail-closed across turns rather than mutating layout while
-    # an external review transaction is still open.
-    _active_runtime, _ = runtime_router.detect()
-    vision_runtime, _ = runtime_router.vision_review_runtime()
-    auto_repaired: list[str] = []
-    if placement_repairs and (vision_runtime == "CODEX" or codex_raw):
-        subtitle_layout.apply_pixel_safe_overrides(ep, placement_repairs)
-        repair_keys = sorted(placement_repairs)
-        subtitle_layout.render_frames(ep, repair_keys)
-        repaired_frames, repaired_meta = _review_frame_records(ep)
-        repaired_by_key = {row["frame"]: row for row in repaired_frames}
-        repaired_image_sha, repaired_caption_sha, repaired_texts, repaired_source_meta = _hashes(ep, repaired_frames)
-        repair_rows = [repaired_by_key[key] for key in repair_keys]
-        for start in range(0, len(repair_rows), CHUNK):
-            chunk = repair_rows[start:start + CHUNK]
-            data = _run_chunk(
-                ep, chunk, repaired_texts, codex_raw, timeout,
-                start // CHUNK + 1, cycle=2)
-            count, _ = _record_chunk_results(
+    span_name = "REVIEW_CAPTION_IMAGE"
+    span_started = False
+    if ep.is_dir():
+        episode_performance.safe_begin_named_span(
+            ep, span_name, source="caption_image_audit",
+            metadata={
+                "review_type": "CAPTION_IMAGE",
+                "target_frame_count": vision_candidate_frames,
+                "shard_count": (vision_candidate_frames + CHUNK - 1) // CHUNK,
+            })
+        span_started = True
+    span_status = "FAILED"
+    span_metadata: dict = {}
+    try:
+        placement_repairs: dict[str, dict] = {}
+        for start in range(0, len(nonempty), CHUNK):
+            chunk = nonempty[start:start + CHUNK]
+            data = _run_chunk(ep, chunk, texts, codex_raw, timeout, start // CHUNK + 1)
+            telemetry = data.get("_vision_telemetry") if isinstance(data, dict) else None
+            if isinstance(telemetry, dict):
+                data.pop("_vision_telemetry", None)
+                if telemetry.get("vision_call"):
+                    vision_call_count += 1
+                    vision_elapsed_seconds += float(telemetry.get("elapsed_seconds") or 0.0)
+                    for tok, value in (telemetry.get("tokens") or {}).items():
+                        if isinstance(value, (int, float)):
+                            vision_tokens[tok] = vision_tokens.get(tok, 0) + int(value)
+            count, repairs = _record_chunk_results(
                 ep=ep, chunk=chunk, data=data, dest=dest,
-                image_sha=repaired_image_sha, caption_sha=repaired_caption_sha, cycle=2)
+                image_sha=image_sha, caption_sha=caption_sha, cycle=1)
             reviewed += count
-        image_sha = repaired_image_sha
-        caption_sha = repaired_caption_sha
-        source_meta = {**repaired_source_meta, "review_image": repaired_meta}
-        auto_repaired = repair_keys
+            placement_repairs.update(repairs)
 
-    evidence["summary"] = {
-        "passed": all((dest.get(k) or {}).get("passed") is True for k in rows_by_key),
-        "reviewed_dirty_frames": reviewed,
-        "reused_frames": reused,
-        "total_frames": len(rows_by_key),
-        "auto_repaired_frames": auto_repaired,
-        "auto_repair_count": len(auto_repaired),
-        "local_reviewed_frames": sorted(local_cleared),
-        "local_review_count": len(local_cleared),
-        "visual_review_invalidated": False,
-    }
-    _write(ep, evidence)
+        # Only the actual-pixel CODEX lane may auto-move text. Product Review host
+        # requests remain fail-closed across turns rather than mutating layout while
+        # an external review transaction is still open.
+        _active_runtime, _ = runtime_router.detect()
+        vision_runtime, _ = runtime_router.vision_review_runtime()
+        auto_repaired: list[str] = []
+        if placement_repairs and (vision_runtime == "CODEX" or codex_raw):
+            subtitle_layout.apply_pixel_safe_overrides(ep, placement_repairs)
+            repair_keys = sorted(placement_repairs)
+            subtitle_layout.render_frames(ep, repair_keys)
+            repaired_frames, repaired_meta = _review_frame_records(ep)
+            repaired_by_key = {row["frame"]: row for row in repaired_frames}
+            repaired_image_sha, repaired_caption_sha, repaired_texts, repaired_source_meta = _hashes(ep, repaired_frames)
+            repair_rows = [repaired_by_key[key] for key in repair_keys]
+            for start in range(0, len(repair_rows), CHUNK):
+                chunk = repair_rows[start:start + CHUNK]
+                data = _run_chunk(
+                    ep, chunk, repaired_texts, codex_raw, timeout,
+                    start // CHUNK + 1, cycle=2)
+                telemetry = data.get("_vision_telemetry") if isinstance(data, dict) else None
+                if isinstance(telemetry, dict):
+                    data.pop("_vision_telemetry", None)
+                    if telemetry.get("vision_call"):
+                        vision_call_count += 1
+                        vision_elapsed_seconds += float(telemetry.get("elapsed_seconds") or 0.0)
+                        for tok, value in (telemetry.get("tokens") or {}).items():
+                            if isinstance(value, (int, float)):
+                                vision_tokens[tok] = vision_tokens.get(tok, 0) + int(value)
+                count, _ = _record_chunk_results(
+                    ep=ep, chunk=chunk, data=data, dest=dest,
+                    image_sha=repaired_image_sha, caption_sha=repaired_caption_sha, cycle=2)
+                reviewed += count
+            image_sha = repaired_image_sha
+            caption_sha = repaired_caption_sha
+            source_meta = {**repaired_source_meta, "review_image": repaired_meta}
+            auto_repaired = repair_keys
+
+        passed = all((dest.get(k) or {}).get("passed") is True for k in rows_by_key)
+        evidence["summary"] = {
+            "passed": passed,
+            "reviewed_dirty_frames": reviewed,
+            "reused_frames": reused,
+            "total_frames": len(rows_by_key),
+            "auto_repaired_frames": auto_repaired,
+            "auto_repair_count": len(auto_repaired),
+            "local_reviewed_frames": sorted(local_cleared),
+            "local_review_count": len(local_cleared),
+            "visual_review_invalidated": False,
+            "vision_review_telemetry": {
+                "vision_candidate_frames": vision_candidate_frames,
+                "empty_caption_count": empty_caption_count,
+                "local_skipped_frames": len(local_cleared),
+                "vision_frames": reviewed,
+                "vision_call_count": vision_call_count,
+                "vision_elapsed_seconds": round(vision_elapsed_seconds, 3),
+                "vision_tokens": vision_tokens,
+                "vision_chunks_saved_estimate": max(0, (vision_candidate_frames + CHUNK - 1) // CHUNK - (max(0, vision_candidate_frames - len(local_cleared)) + CHUNK - 1) // CHUNK),
+                "note": "local direct-pass skips LLM vision for non-empty captions whose semantic support and subtitle placement are locally verified; visual (non-text) obstruction risk is accepted by user",
+            },
+        }
+        _write(ep, evidence)
+        span_status = "PASS" if passed else "FAILED"
+        span_metadata = {
+            "vision_call_count": vision_call_count,
+            "vision_frames": reviewed,
+            "local_skipped_frames": len(local_cleared),
+            "empty_caption_count": empty_caption_count,
+            "vision_elapsed_seconds": round(vision_elapsed_seconds, 3),
+        }
+    except ProductReviewHostAction:
+        span_status = "DEFERRED"
+        raise
+    finally:
+        if span_started:
+            episode_performance.safe_end_named_span(ep, span_name, status=span_status, metadata=span_metadata)
 
     active_runtime, _ = runtime_router.detect()
     vision_runtime, _ = runtime_router.vision_review_runtime()
