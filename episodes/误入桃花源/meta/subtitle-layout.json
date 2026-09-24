@@ -54,6 +54,34 @@
       "auto_placement_repairs_used": 1,
       "placement_source": "caption_image_actual_pixel_audit",
       "suggested_y_ratio": 0.32
+    },
+    "05": {
+      "y": 945,
+      "safe_zone_override_reason": "actual-pixel subtitle obstruction: 第二轮像素审计确认 0.32 仍横跨村落主体；按 critic 建议下移到 0.70，落在前景低信息区，避开屋顶和道路。",
+      "auto_placement_repairs_used": 1,
+      "placement_source": "caption_image_actual_pixel_audit",
+      "suggested_y_ratio": 0.7
+    },
+    "04": {
+      "y": 68,
+      "safe_zone_override_reason": "manual pixel inspection: 左中默认位会压住侧身挤行的背部/躯干；上移到远离人物的顶部岩壁空区。",
+      "auto_placement_repairs_used": 0,
+      "placement_source": "manual_pixel_inspection_2026_09_24",
+      "suggested_y_ratio": 0.05
+    },
+    "12": {
+      "y": 945,
+      "safe_zone_override_reason": "manual pixel inspection: 默认位直接压住少年嘴部与下半张脸；下移到胸腹衣物区域，完整保留眼睛、嘴部和惊讶表情。",
+      "auto_placement_repairs_used": 0,
+      "placement_source": "manual_pixel_inspection_2026_09_24",
+      "suggested_y_ratio": 0.7
+    },
+    "20": {
+      "y": 68,
+      "safe_zone_override_reason": "manual pixel inspection: 默认位压住人物下半身附近；上移到远山/天空低信息区，完整保留迈步双腿和下山动作。",
+      "auto_placement_repairs_used": 0,
+      "placement_source": "manual_pixel_inspection_2026_09_24",
+      "suggested_y_ratio": 0.05
     }
   }
 }

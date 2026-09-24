@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "audited_at": "2026-09-23T19:25:05+08:00",
+  "audited_at": "2026-09-24T22:41:44+08:00",
   "source": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\episodes\\误入桃花源\\meta\\subtitles.yaml",
   "caption_count": 20,
   "silent_frames": [],
@@ -12,5 +12,5 @@
     "passed": true
   },
   "voice_contract_sha256": "7cd6a6d69ca9c13a8a3f9849bd456200844767fe493f5f7ff5e34cb484233ed3",
-  "source_sha256": "8abb71225472d2be923e417d36cd64d7397f8863e49f1405d50df5acb75f95a0"
+  "source_sha256": "4a7a4cb7daa7bd2fb2b92c5c143ed707952636133ea51d3e3ffbb2d3c8323480"
 }
